@@ -1,77 +1,116 @@
-"use client";
+"use client"; // Next.js Client Component के लिए जरूरी है
 
-import { Drawer, Button } from "antd";
-import { CloseOutlined } from "@ant-design/icons";
 import React from "react";
-import { useCrudStore } from "@/store/zustand/crud/store";
-import { X, Check } from "lucide-react";
+import { Drawer, Tooltip } from "antd";
+import moment from "moment";
+import { useCrudContext } from "@/context/crud"; // ⚡ Redux हटाया, केवल CrudContext का उपयोग किया
+import CollapseBox from "./CollapsedBox";
 
-export default function DrawerPage() {
-  // Zustand Store से स्टेट्स और एक्शन्स को सब्सक्राइब किया
-  const isDrawerOpen = useCrudStore((state) => state.isDrawerOpen);
-  const drawerContent = useCrudStore((state) => state.drawerContent);
-  const drawerTitle = useCrudStore((state) => state.drawerTitle);
-  const drawerButtonText = useCrudStore((state) => state.drawerButtonText);
-  const drawerOnSave = useCrudStore((state) => state.drawerOnSave);
-  const isDrawerLoading = useCrudStore((state) => state.isDrawerLoading);
-  const drawer = useCrudStore((state) => state.drawer);
+export default function SidePanel({ config, topContent, bottomContent }) {
+  const { ADD_NEW_ENTITY, ENTITY_NAME, entity } = config;
+  // =========================
+  // CRUD CONTEXT
+  // =========================
+  const { state, crudContextAction } = useCrudContext();
+  const { isPanelClose, isBoxCollapsed, isReadBoxOpen, current } = state; // ⚡ FIXED: Redux की जगह current को context state से निकाला
+  const { panel, collapsedBox } = crudContextAction;
 
-  // 🛠️ फ़ंक्शन: जब यूज़र सेव बटन दबाए
-  const handleSaveClick = () => {
-    if (drawerOnSave) {
-      drawerOnSave();
+  const student = current;
+
+  // =========================
+  // ACTIONS
+  // =========================
+  const collapsePanel = () => {
+    if (panel && typeof panel.close === "function") {
+      panel.close();
+    } else if (panel && typeof panel.collapse === "function") {
+      panel.collapse();
     }
   };
 
+  const collapsePanelBox = () => {
+    if (collapsedBox && typeof collapsedBox.collapse === "function") {
+      collapsedBox.collapse();
+    }
+  };
+
+  // =========================
+  // TITLE CONTENT
+  // =========================
+  const titleContent = (
+    <div className="flex justify-between items-center px-2 py-1 w-full select-none">
+      <span className="capitalize font-bold text-gray-700 text-sm tracking-wide">
+        {ENTITY_NAME} Panel
+      </span>
+
+      {student?.createdAt && (
+        <Tooltip title="Student Record Created On" placement="left">
+          <span className="bg-blue-50 text-blue-700 text-xs font-semibold px-2 py-1 rounded-md border border-blue-100">
+            Created: {moment(student.createdAt).format("DD-MMM-YYYY")}
+          </span>
+        </Tooltip>
+      )}
+    </div>
+  );
+
+  // =========================
+  // DYNAMIC DRAWER WIDTH
+  // =========================
+  let drawerWidth = 380;
+
+  // READ VIEW WIDTH
+  if (isReadBoxOpen) {
+    drawerWidth = 1000;
+  }
+
+  // ENTITY BASED SPECIAL WIDTHS
+  if (entity === "applications") {
+    drawerWidth = 1200;
+  }
+  if (entity === "incentives") {
+    drawerWidth = 750;
+  }
+  if (entity === "webhooks-generate-sode") {
+    drawerWidth = 1250;
+  }
+  if (entity === "universities") {
+    drawerWidth = 1350;
+  }
+  if (entity === "ivr-calls") {
+    drawerWidth = 700;
+  }
+
   return (
     <Drawer
-      open={isDrawerOpen}
-      onClose={drawer.close}
-      title={
-        <>
-          <div className="text-gray-700 text-balance font-medium px-3 capitalize">
-            {drawerTitle}
-          </div>
-        </>
-      }
+      title={titleContent}
+      placement="right"
+      closable={true}
+      onClose={collapsePanel}
+      open={!isPanelClose}
+      size={drawerWidth}
       destroyOnHidden
-      closeIcon={false}
       styles={{
-        wrapper: {
-          width: 450,
-          maxWidth: "100%",
+        body: {
+          padding: isReadBoxOpen ? 0 : "16px",
+          backgroundColor: "#FFFFFF",
         },
         header: {
-          padding: 6,
-        },
-        body: {
-          padding: "14px",
+          padding: "14px 16px",
+          borderBottom: "1px solid #e5e7eb",
+          backgroundColor: "#ffffff",
+          boxShadow: "0 1px 3px rgba(0,0,0,0.02)",
         },
       }}
-      // 📥 Lucide Icons के साथ अपडेटेड फुटर
-      footer={
-        <div className="flex items-center justify-start gap-1.5">
-          <Button
-            type="dashed"
-            onClick={drawer.close}
-            className="rounded-lg flex items-center gap-1 text-gray-600 border-gray-300"
-            icon={<X size={14} />}
-          >
-            Close
-          </Button>
-          <Button
-            type="primary"
-            loading={isDrawerLoading}
-            onClick={handleSaveClick}
-            className="bg-blue-500 hover:bg-blue-600 rounded-lg flex items-center gap-1 border-none shadow-sm font-medium"
-            icon={!isDrawerLoading && <Check size={14} />}
-          >
-            {drawerButtonText}
-          </Button>
-        </div>
-      }
     >
-      {drawerContent}
+      <div className={`transition-all duration-300 ease-in-out`}>
+        <CollapseBox
+          buttonTitle={ADD_NEW_ENTITY}
+          isCollapsed={isBoxCollapsed}
+          onCollapse={collapsePanelBox}
+          topContent={topContent}
+          bottomContent={bottomContent}
+        />
+      </div>
     </Drawer>
   );
 }

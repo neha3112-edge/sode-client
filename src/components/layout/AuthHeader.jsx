@@ -1,4 +1,4 @@
-"use client";
+"use client"; // Next.js Client Component के लिए जरूरी है
 
 import { Layout, Button, theme } from "antd";
 import {
@@ -8,15 +8,16 @@ import {
 } from "@ant-design/icons";
 import { useLogoutMutation } from "@/redux/auth/action";
 import { useRouter } from "next/navigation";
-import { useUiStore } from "@/store/zustand/store"; // 🆕 Zustand Store कनेक्ट किया
+import { useAppContext } from "@/context/app"; // ⚡ FIXED: Zustand हटाया, अपना App Context हुक इम्पोर्ट किया
 
 const { Header: AntdHeader } = Layout;
 
 export default function AuthHeader() {
   const router = useRouter();
 
-  // 🚀 Zustand से स्टेट और टॉगल फ़ंक्शन निकाला
-  const { collapsed, toggleCollapsed } = useUiStore();
+  // ⚡ FIXED: App Context से स्टेट (isNavMenuClose) और एक्शन्स निकाले
+  const { state, appContextAction } = useAppContext();
+  const collapsed = state.isNavMenuClose;
 
   const {
     token: { colorBgContainer },
@@ -40,13 +41,17 @@ export default function AuthHeader() {
       className="h-16 border-b border-zinc-200"
     >
       <div className="flex items-center">
+        {/* 🌟 FIXED: अब बटन क्लिक करने पर आपका कॉन्टेक्स्ट रिड्यूसर एक्शन (collapse) ट्रिगर होगा */}
         <Button
           type="text"
           icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-          onClick={toggleCollapsed} // 🚀 सीधे Zustand का Action ट्रिगर किया
+          onClick={() => appContextAction.navMenu.collapse()} // ⚡ स्टेट टॉगल करने के लिए
           style={{ fontSize: "16px", width: 64, height: 64 }}
+          className="cursor-pointer"
         />
-        <h1 className="text-base font-bold text-zinc-800 ml-2">Admin Area</h1>
+        <h1 className="text-base font-bold text-zinc-800 ml-2 select-none">
+          Admin Area
+        </h1>
       </div>
 
       <Button
@@ -55,7 +60,7 @@ export default function AuthHeader() {
         icon={<LogoutOutlined />}
         loading={isLogoutLoading}
         onClick={handleSignOut}
-        className="flex items-center gap-1 font-bold text-xs"
+        className="flex items-center gap-1 font-bold text-xs cursor-pointer"
       >
         {isLogoutLoading ? "Logging out..." : "Logout"}
       </Button>

@@ -15,8 +15,6 @@ export default function AppRouter() {
   }
 
   let resolvedComponent = componentMap[routeKey] || componentMap.dashboard;
-
-  // 🛡️ Turbopack Dynamic Module Unwrapper Loop
   while (
     resolvedComponent &&
     typeof resolvedComponent === "object" &&
