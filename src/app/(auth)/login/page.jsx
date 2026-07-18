@@ -2,12 +2,12 @@
 
 import { useEffect } from "react";
 import Image from "next/image";
-import { Button, Divider, Input, Form } from "antd";
+import { Button, Divider, Input, Form, message as antdMessage } from "antd";
 import {
   FacebookFilled,
   GoogleOutlined,
   LockOutlined,
-  MailOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import { useLoginMutation } from "@/redux/auth/action";
 import { useRouter } from "next/navigation";
@@ -15,7 +15,9 @@ import { useRouter } from "next/navigation";
 export default function LoginPage() {
   const router = useRouter();
   const [loginForm] = Form.useForm();
-  const [triggerLogin, { isLoading: isLoginLoading }, isSuccess] =
+
+  // RTK Mutation Hook
+  const [triggerLogin, { isLoading: isLoginLoading, isSuccess }] =
     useLoginMutation();
 
   useEffect(() => {
@@ -25,7 +27,12 @@ export default function LoginPage() {
   }, [isSuccess, router]);
 
   const handleLogin = async (values) => {
-    await triggerLogin({ loginData: values }).unwrap();
+    try {
+      // 🎯 FIXED: अब Antd Form सीधे 'username' कैप्चर करता है और पेलोड में पास करता है
+      await triggerLogin({ loginData: values }).unwrap();
+    } catch (error) {
+      console.error("Login component submission error:", error);
+    }
   };
 
   return (
@@ -118,28 +125,25 @@ export default function LoginPage() {
             requiredMark={false}
             className="w-full space-y-1 ant-form-custom-styles"
           >
+            {/* 🎯 FIXED: Field changed from Email to Username (accepts user/email/phone) */}
             <Form.Item
               label={
                 <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">
-                  Email Address
+                  Username / Email / Phone
                 </span>
               }
-              name="email"
+              name="username"
               rules={[
                 {
                   required: true,
-                  message: "Please enter your email address.",
-                },
-                {
-                  type: "email",
-                  message: "Please enter a valid email address.",
+                  message: "Please enter your username, email or phone number.",
                 },
               ]}
             >
               <Input
                 size="medium"
-                placeholder="admin@sode.com"
-                prefix={<MailOutlined className="text-zinc-400 mr-1" />}
+                placeholder="abhijadon"
+                prefix={<UserOutlined className="text-zinc-400 mr-1" />}
                 className="rounded-xl h-12 bg-zinc-50 border-zinc-200 focus:bg-white"
               />
             </Form.Item>
@@ -186,17 +190,21 @@ export default function LoginPage() {
           <div className="grid grid-cols-2 gap-4 w-full">
             <Button
               icon={<GoogleOutlined />}
-              onClick={() => alert("Google SSO initialization setup flow...")}
-              className="h-11 rounded-xl font-bold border-zinc-200 hover:border-zinc-400! text-zinc-700 flex items-center justify-center gap-2"
+              onClick={() =>
+                antdMessage.info("Google SSO initialization setup flow...")
+              }
+              className="h-11 rounded-xl font-bold border-zinc-200 text-zinc-700 flex items-center justify-center gap-2"
             >
               Google
             </Button>
             <Button
               icon={<FacebookFilled className="text-[#1877F2]" />}
               onClick={() =>
-                alert("Facebook Authentication sequence setup flow...")
+                antdMessage.info(
+                  "Facebook Authentication sequence setup flow...",
+                )
               }
-              className="h-11 rounded-xl font-bold border-zinc-200 hover:border-zinc-400! text-zinc-700 flex items-center justify-center gap-2"
+              className="h-11 rounded-xl font-bold border-zinc-200 text-zinc-700 flex items-center justify-center gap-2"
             >
               Facebook
             </Button>

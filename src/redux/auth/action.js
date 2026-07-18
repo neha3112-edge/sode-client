@@ -1,13 +1,9 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { message } from "antd";
 import axios from "axios";
 import { API_BASE_URL } from "@/config";
 import errorHandler from "@/request/error";
 import successHandler from "@/request/success";
 
-/* =========================================================
-   RTK QUERY AXIOS BASE QUERY WRAPPER
-========================================================= */
 const axiosBaseQuery =
   () =>
   async ({ url, method, data, params, withCredentials = false }) => {
@@ -34,9 +30,6 @@ const axiosBaseQuery =
     }
   };
 
-/* =========================================================
-   AUTH RTK QUERY API SLICE
-========================================================= */
 export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: axiosBaseQuery(),
@@ -45,7 +38,7 @@ export const authApi = createApi({
       queryFn: async (args, api, extraOptions, baseQuery) => {
         const mutableLoginData = { ...args.loginData };
         const result = await baseQuery({
-          url: "auth/login",
+          url: "user/login",
           method: "POST",
           data: mutableLoginData,
         });
@@ -68,7 +61,6 @@ export const authApi = createApi({
             };
             window.localStorage.setItem("auth", JSON.stringify(syncState));
             window.localStorage.setItem("isLoggedIn", "true");
-            message.success("Logged in successfully!");
           }
           return { data: { ...serverData, isOTPVerified, user: userPayload } };
         }
@@ -76,70 +68,32 @@ export const authApi = createApi({
       },
     }),
 
-    verifyOTP: builder.mutation({
-      query: (args) => ({
-        url: "verify-otp",
-        method: "POST",
-        data: args.otpData,
-      }),
-      transformResponse: (response) => {
-        if (response?.success) {
-          const syncState = {
-            current: {
-              ...response.result.user,
-              token: response.result.accessToken,
-            },
-            isLoggedIn: true,
-            isOTPVerified: true,
-          };
-          window.localStorage.setItem("auth", JSON.stringify(syncState));
-          window.localStorage.setItem("isLoggedIn", "true");
-          message.success("OTP verified successfully!");
-          return syncState;
-        }
-        return response;
-      },
-    }),
-
-    register: builder.mutation({
-      query: (args) => ({
-        url: "register",
-        method: "POST",
-        data: args.registerData,
-      }),
-    }),
-
-    resetPassword: builder.mutation({
-      query: ({ id, jsonData }) => ({
-        url: `auth/resetpassword/${id}`,
-        method: "PUT",
-        data: {
-          newPassword: jsonData.newPassword,
-          confirmPassword: jsonData.confirmPassword,
-        },
-      }),
-    }),
-
+    // 🎯 FIXED & OPTIMIZED: अब लॉगआउट की पूरी जिम्मेदारी Redux Lifecycle की है
     logout: builder.mutation({
-      queryFn: async (args, api, extraOptions, baseQuery) => {
-        const result = await baseQuery({
-          url: "auth/logout",
-          method: "POST",
-          withCredentials: true,
-        });
-        window.localStorage.removeItem("isLoggedIn");
-        window.localStorage.removeItem("auth");
-        message.info("Logged out successfully.");
-        return result;
+      query: () => ({
+        url: "user/logout",
+        method: "POST",
+        withCredentials: true,
+      }),
+      async onQueryStarted(args, { queryFulfilled }) {
+        try {
+          // API कॉल के पूरा होने का इंतज़ार करें
+          await queryFulfilled;
+        } catch (err) {
+          console.error(
+            "Server logout failed, clearing local state anyway:",
+            err,
+          );
+        } finally {
+          // 🧠 सेंट्रलाइज्ड क्लीनअप: चाहे API सक्सेस हो या फेल (सर्वर डाउन हो), लोकल स्टोरेज हमेशा साफ होगा
+          if (typeof window !== "undefined") {
+            window.localStorage.removeItem("isLoggedIn");
+            window.localStorage.removeItem("auth");
+          }
+        }
       },
     }),
   }),
 });
 
-export const {
-  useLoginMutation,
-  useVerifyOTPMutation,
-  useRegisterMutation,
-  useResetPasswordMutation,
-  useLogoutMutation,
-} = authApi;
+export const { useLoginMutation, useLogoutMutation } = authApi;
