@@ -1,10 +1,10 @@
 "use client"; // Next.js Client Component के लिए जरूरी है
 
 import React from "react";
-import CreateForm from "@/components/shared/Create";
-import UpdateForm from "@/components/shared/Update";
-import DataTable from "@/components/shared/Crud";
-import { CrudLayout } from "@/layout";
+import CreateForm from "@/components/cms/Create";
+import UpdateForm from "@/components/cms/Update";
+import DataTable from "@/components/cms/Crud";
+import { CrudLayout } from "@/components/cms/layouts";
 
 function SidePanelTopContent({ config, formElements, withUpload }) {
   return (
