@@ -63,12 +63,12 @@ Use mobile apps to read study material or watch lectures during your daily commu
   }
 };
 
-export default function BlogDetailView({ slug: propSlug }) {
+export default function BlogDetailView({ slug: propSlug, initialBlog }) {
   const params = useParams();
   const router = useRouter();
   const slug = propSlug || params?.slug;
 
-  const blog = BLOG_DETAILS[slug] || BLOG_DETAILS["understanding-ugc-deb-approvals"];
+  const blog = initialBlog || BLOG_DETAILS[slug] || BLOG_DETAILS["understanding-ugc-deb-approvals"];
 
   return (
     <div className="bg-[#f8fafc] py-12 px-4 md:px-8 font-sans">

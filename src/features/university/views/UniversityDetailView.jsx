@@ -83,12 +83,12 @@ const UNI_DETAILS = {
   }
 };
 
-export default function UniversityDetailView({ slug: propSlug }) {
+export default function UniversityDetailView({ slug: propSlug, initialUniversity }) {
   const params = useParams();
   const router = useRouter();
   const slug = propSlug || params?.slug;
 
-  const uni = UNI_DETAILS[slug] || UNI_DETAILS["golden-gate-university"];
+  const uni = initialUniversity || UNI_DETAILS[slug] || UNI_DETAILS["golden-gate-university"];
 
   return (
     <div className="bg-[#f8fafc] py-12 px-4 md:px-8 font-sans">

@@ -84,12 +84,12 @@ const COURSE_DETAILS = {
   }
 };
 
-export default function CourseDetailView({ slug: propSlug }) {
+export default function CourseDetailView({ slug: propSlug, initialCourse }) {
   const params = useParams();
   const router = useRouter();
   const slug = propSlug || params?.slug;
 
-  const course = COURSE_DETAILS[slug] || COURSE_DETAILS["distance-mba"];
+  const course = initialCourse || COURSE_DETAILS[slug] || COURSE_DETAILS["distance-mba"];
 
   return (
     <div className="bg-[#f8fafc] py-12 px-4 md:px-8 font-sans">

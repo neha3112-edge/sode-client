@@ -29,7 +29,9 @@ const INITIAL_BLOGS = [
   },
 ];
 
-export default function BlogListView() {
+export default function BlogListView({ initialBlogs }) {
+  const blogs = initialBlogs || INITIAL_BLOGS;
+
   return (
     <div className="bg-[#f8fafc] py-12 px-4 md:px-8">
       <div className="max-w-6xl mx-auto">
@@ -51,7 +53,7 @@ export default function BlogListView() {
 
         {/* Blog Cards Grid */}
         <Row gutter={[24, 24]}>
-          {INITIAL_BLOGS.map((blog) => (
+          {blogs.map((blog) => (
             <Col xs={24} sm={12} md={8} key={blog.slug}>
               <Card
                 hoverable

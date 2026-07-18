@@ -52,11 +52,13 @@ const INITIAL_UNIVERSITIES = [
   },
 ];
 
-export default function UniversityListView() {
+export default function UniversityListView({ initialUniversities }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("All");
 
-  const filteredUniversities = INITIAL_UNIVERSITIES.filter((uni) => {
+  const universities = initialUniversities || INITIAL_UNIVERSITIES;
+
+  const filteredUniversities = universities.filter((uni) => {
     const matchesSearch = uni.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           uni.location.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = activeFilter === "All" || uni.type === activeFilter;

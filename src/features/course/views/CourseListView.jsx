@@ -53,11 +53,13 @@ const INITIAL_COURSES = [
   },
 ];
 
-export default function CourseListView() {
+export default function CourseListView({ initialCourses }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
 
-  const filteredCourses = INITIAL_COURSES.filter((course) => {
+  const courses = initialCourses || INITIAL_COURSES;
+
+  const filteredCourses = courses.filter((course) => {
     const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           course.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = activeCategory === "all" || course.category === activeCategory;
