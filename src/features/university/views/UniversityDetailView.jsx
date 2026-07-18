@@ -83,10 +83,10 @@ const UNI_DETAILS = {
   }
 };
 
-export default function UniversityDetailView() {
+export default function UniversityDetailView({ slug: propSlug }) {
   const params = useParams();
   const router = useRouter();
-  const slug = params?.slug;
+  const slug = propSlug || params?.slug;
 
   const uni = UNI_DETAILS[slug] || UNI_DETAILS["golden-gate-university"];
 

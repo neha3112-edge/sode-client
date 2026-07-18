@@ -84,10 +84,10 @@ const COURSE_DETAILS = {
   }
 };
 
-export default function CourseDetailView() {
+export default function CourseDetailView({ slug: propSlug }) {
   const params = useParams();
   const router = useRouter();
-  const slug = params?.slug;
+  const slug = propSlug || params?.slug;
 
   const course = COURSE_DETAILS[slug] || COURSE_DETAILS["distance-mba"];
 

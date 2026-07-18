@@ -63,10 +63,10 @@ Use mobile apps to read study material or watch lectures during your daily commu
   }
 };
 
-export default function BlogDetailView() {
+export default function BlogDetailView({ slug: propSlug }) {
   const params = useParams();
   const router = useRouter();
-  const slug = params?.slug;
+  const slug = propSlug || params?.slug;
 
   const blog = BLOG_DETAILS[slug] || BLOG_DETAILS["understanding-ugc-deb-approvals"];
 
