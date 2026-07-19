@@ -2,35 +2,10 @@
 
 import { useState } from "react";
 import { Container } from "@/components/ui/container";
+import { faqs as defaultFaqs } from "@/constants/faqData";
 
-const faqs = [
-  {
-    q: "Are the degrees and certificates from these programs globally recognised?",
-    a: "Yes. All programs of Top International Global Universities that are offered through SODE are from accredited institutions such as WES-recognised, AACSB-accredited, or approved by British/Swiss/US agencies, ensuring global validity.",
-  },
-  {
-    q: "What documents are typically required during the application process?",
-    a: "Professionals are required to have a structured document set of 10th and 12th marksheets, Bachelors degree certificate/marksheets, and Master's degree certificate/marksheets. Also, they need to have valid identity proofs, such as an Aadhaar Card and a PAN Card, for verification purposes. Candidates applying for programmes with work experience criteria must also provide an experience letter. A recent passport-size photograph is required to complete the application and enrollment process.",
-  },
-  {
-    q: "Is there an entrance exam required to enrol in any executive educational programs?",
-    a: "No, there is no entrance exam required for executive educational programs . Applicants can enrol easily having bachelors and masters degree, and some programs require prior work experience.",
-  },
-  {
-    q: "Are there any scholarships available for programs listed on SODE?",
-    a: "Yes, SODE offers flexible financing options where aspirants can enrol with NO cost EMI. As per the course duration, they can easily balance and divide it per month.",
-  },
-  {
-    q: "Are these degrees valid in India and internationally?",
-    a: "Yes. All university partners listed on SODE include international universities like Golden Gate University, which is WES & AACSB accredited, Rushford Business School is QS 5-star rated, and Edgewood, which holds ACBSP accreditation, making them globally excellent. Indian institutions like IIMs and IITs are government-recognised under UGC norms.",
-  },
-  {
-    q: "What is the minimum work experience required to enrol in Executive Management Programs & Certification Courses?",
-    a: "SODE offers a diverse portfolio of executive management programmes and certifications designed to equip professionals with technological skills powered by Data science, AI, and ML needed for upskilling. Most Executive Management Programs and Certification Courses require candidates to have a minimum of 3 years of professional work experience, although eligibility criteria may vary depending on the programme and partnering university.",
-  },
-];
-
-export function FAQ() {
+export function FAQ({ initialFaqs = defaultFaqs }) {
+  const faqsList = initialFaqs || defaultFaqs;
   const [openIdx, setOpenIdx] = useState(null);
 
   const toggle = (idx) => {
@@ -58,41 +33,61 @@ export function FAQ() {
             </p>
           </div>
 
-          {/* Right Column: Dynamic FAQ accordion list */}
-          <div className="lg:col-span-7 space-y-4 w-full">
-            {faqs.map((faq, idx) => {
+          {/* Right Column: Accordion list */}
+          <div className="lg:col-span-7 flex flex-col space-y-4">
+            {faqsList.map((item, idx) => {
               const isOpen = openIdx === idx;
               return (
                 <div
                   key={idx}
-                  className={`border rounded-xl transition-all duration-300 bg-white ${
-                    isOpen ? "border-slate-300 shadow-sm" : "border-slate-200"
-                  }`}
+                  className="border border-slate-200 rounded-2xl overflow-hidden transition-all duration-200"
                 >
                   <button
-                    className="w-full px-6 py-5 flex items-center justify-between text-left focus:outline-none cursor-pointer group"
+                    type="button"
                     onClick={() => toggle(idx)}
+                    className="w-full flex items-center justify-between p-5 md:p-6 text-left bg-white hover:bg-slate-50 transition-colors cursor-pointer gap-4"
                   >
-                    <span className="font-semibold text-slate-800 text-[12px] md:text-[14px] leading-snug pr-4">
-                      <span className="font-extrabold text-slate-800 mr-1.5">
-                        Q{idx + 1}.
-                      </span>
-                      {faq.q}
+                    <span className="font-bold text-[#1d3557] text-sm md:text-base leading-snug">
+                      {item.q}
                     </span>
-                    <span className="text-[#A66E38] text-[20px] font-light shrink-0 transition-transform duration-300 select-none">
-                      {isOpen ? "−" : "+"}
-                    </span>
+                    <div className="shrink-0 text-slate-400">
+                      {isOpen ? (
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          strokeWidth="2.5"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M20 12H4"
+                          />
+                        </svg>
+                      ) : (
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          strokeWidth="2.5"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M12 4v16m8-8H4"
+                          />
+                        </svg>
+                      )}
+                    </div>
                   </button>
 
-                  <div
-                    className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                      isOpen ? "max-h-75 opacity-100" : "max-h-0 opacity-0"
-                    }`}
-                  >
-                    <div className="px-6 pb-5 text-gray-600 text-xs md:text-[13px] leading-relaxed font-medium border-t border-slate-50 pt-4">
-                      {faq.a}
+                  {isOpen && (
+                    <div className="px-5 pb-6 md:px-6 md:pb-6 text-gray-600 text-xs md:text-sm leading-relaxed border-t border-slate-100 pt-4 bg-slate-50/50">
+                      {item.a}
                     </div>
-                  </div>
+                  )}
                 </div>
               );
             })}

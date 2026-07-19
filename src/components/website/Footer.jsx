@@ -8,28 +8,18 @@ import PrivacyContent from "@/components/common/legal/PrivacyContent";
 import TermsContent from "@/components/common/legal/TermsContent";
 import FormWrapper from "@/components/forms/FormWrapper";
 
-const UNIVERSITIES = [
-  "Golden Gate University",
-  "Rushford University",
-  "ESGCI Paris",
-  "SSBM GENEVA",
-  "IIIT Bangalore",
-  "Liverpool Business School",
-  "IIM Kozhikode",
-  "MICA",
-];
+import {
+  UNIVERSITIES as defaultUniversities,
+  PROGRAMS as defaultPrograms,
+} from "@/constants/footerData";
 
-const PROGRAMS = [
-  "Doctorate · DBA",
-  "Master · MBA",
-  "DBA + MBA Dual",
-  "HR Analytics",
-  "Data Science & AI",
-  "Certifications",
-  "Executive Programs",
-];
+export function Footer({
+  initialUniversities = defaultUniversities,
+  initialPrograms = defaultPrograms,
+}) {
+  const UNIVERSITIES = initialUniversities || defaultUniversities;
+  const PROGRAMS = initialPrograms || defaultPrograms;
 
-export function Footer() {
   const [expertOpen, setExpertOpen] = useState(false);
   const [activeDialog, setActiveDialog] = useState(null);
 
@@ -99,13 +89,16 @@ export function Footer() {
                   COLUMN 1: LOGO, ADDRESS, SOCIALS AND MAP
               ================================================== */}
               <div className="flex flex-col items-start md:col-span-2 lg:col-span-4">
-                <Image
-                  src="/assets/images/sode_footer_logo.png"
-                  alt="School of Online and Distance Education"
-                  width={230}
-                  height={100}
-                  className="mb-5 h-auto w-[200px] object-contain md:w-[230px]"
-                />
+                <div className="relative mb-5 h-20 w-[200px] md:w-[230px]">
+                  <Image
+                    src="/assets/images/sode_footer_logo.png"
+                    alt="School of Online and Distance Education"
+                    fill
+                    sizes="230px"
+                    loading="eager"
+                    className="object-contain object-left"
+                  />
+                </div>
 
                 <address className="max-w-[320px] not-italic text-[13px] leading-6 text-gray-700 md:text-[13.5px]">
                   B-63, B Block, Sector 2

@@ -27,6 +27,7 @@ export function Header() {
             alt="Company Logo"
             width={74}
             height={74}
+            style={{ width: "auto", height: "auto" }}
             priority
             className="object-contain cursor-pointer"
           />
@@ -48,6 +49,7 @@ export function Header() {
                       alt="Company Logo"
                       width={16}
                       height={16}
+                      style={{ width: "auto", height: "auto" }}
                       priority
                       className="object-contain cursor-pointer"
                     />

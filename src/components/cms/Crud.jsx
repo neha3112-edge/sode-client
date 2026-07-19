@@ -5,14 +5,13 @@ import {
   EyeOutlined,
   EditOutlined,
   DeleteOutlined,
-  EllipsisOutlined,
   RedoOutlined,
   KeyOutlined,
 } from "@ant-design/icons";
-import { Dropdown, Table, Button, Input } from "antd";
+import { Table, Button, Input, Space, Tooltip } from "antd";
 import useLanguage from "@/components/common/locale/userLanguage";
 import { dataForTable } from "@/components/common/locale/dataStructure";
-import { useGetDynamicListQuery } from "@/store/redux/dynamic/action"; // ⚡ FIXED: RTK Query हुक को इम्पोर्ट किया
+import { useGetDynamicListQuery } from "@/store/redux/dynamic/action";
 import { useCrudContext } from "@/context/crud";
 import { Undo2 } from "lucide-react";
 import PageHeader from "./PageHeader";
@@ -49,7 +48,6 @@ export default function DataTable({ config, extra = [] }) {
   let { entity, dataTableColumns, DATATABLE_TITLE, fields, searchConfig } =
     config;
 
-  // पेजिनेशन और सर्च क्वेरी के लिए लोकल स्टेट्स (RTK Query पैरामीटर्स के लिए)
   const [pageOptions, setPageOptions] = useState({ page: 1, items: 10 });
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -58,13 +56,11 @@ export default function DataTable({ config, extra = [] }) {
     crudContextAction;
 
   const translate = useLanguage();
-
   const isMounted = true;
 
   // ==========================================
-  // DATA FETCHING VIA RTK QUERY হুডস (FIXED)
+  // DATA FETCHING VIA RTK QUERY
   // ==========================================
-  // ⚡ dynamicApi पैरामीटर्स को ऑब्जेक्ट फॉर्मेट में तैयार किया
   const queryArgs = useMemo(() => {
     const options = {
       page: pageOptions.page,
@@ -83,7 +79,6 @@ export default function DataTable({ config, extra = [] }) {
     };
   }, [entity, pageOptions, searchQuery, searchConfig]);
 
-  // ⚡ RTK Query हुक को कॉल किया जो ऑटोमैटिकली कैशे, लोडिंग और डेटा होल्ड करता है
   const {
     data: apiResponse,
     isLoading: listIsLoading,
@@ -91,7 +86,6 @@ export default function DataTable({ config, extra = [] }) {
     refetch,
   } = useGetDynamicListQuery(queryArgs, { skip: !isMounted });
 
-  // आपके transformResponse के स्ट्रक्चर के अनुसार डेटा निकालना
   const dataSource = apiResponse?.items || [];
   const pagination = apiResponse?.pagination || {
     current: 1,
@@ -99,7 +93,6 @@ export default function DataTable({ config, extra = [] }) {
     total: 0,
   };
 
-  // टेबल का पेज या साइज बदलने पर ट्रिगर होने वाला फंक्शन
   const handelDataTableLoad = useCallback((paginationData) => {
     setPageOptions({
       page: paginationData?.current || 1,
@@ -107,15 +100,14 @@ export default function DataTable({ config, extra = [] }) {
     });
   }, []);
 
-  // 🔎 लाइव सर्च हैंडलर जो 400ms डिबाउंस के साथ भी काम कर सकता है
   const filterTable = (e) => {
     const value = e.target.value;
     setSearchQuery(value);
-    setPageOptions((prev) => ({ ...prev, page: 1 })); // सर्च करने पर पेज 1 पर रीसेट करें
+    setPageOptions((prev) => ({ ...prev, page: 1 }));
   };
 
   // ==========================================
-  // CLICK HANDLERS (CONTEXT ACTION SYNC)
+  // CLICK HANDLERS
   // ==========================================
   const handleRead = (record) => {
     contextDispatch({ type: "OPEN_READ_BOX", payload: record });
@@ -143,38 +135,6 @@ export default function DataTable({ config, extra = [] }) {
     if (collapsedBox?.open) collapsedBox.open();
   };
 
-  // 📥 Dropdown Actions Config
-  const items = useMemo(
-    () => [
-      {
-        label: translate("Show"),
-        key: "read",
-        icon: <EyeOutlined />,
-      },
-      {
-        label: translate("Edit"),
-        key: "edit",
-        icon: <EditOutlined />,
-      },
-      {
-        label: translate("Update Password"),
-        key: "updatePassword",
-        icon: <KeyOutlined />,
-      },
-      ...extra,
-      {
-        type: "divider",
-      },
-      {
-        label: translate("Delete"),
-        key: "delete",
-        icon: <DeleteOutlined className="text-red-500" />,
-        danger: true,
-      },
-    ],
-    [translate, extra],
-  );
-
   // ==========================================
   // COLUMNS COMPILER
   // ==========================================
@@ -191,38 +151,65 @@ export default function DataTable({ config, extra = [] }) {
       title: "Actions",
       key: "action",
       fixed: "right",
-      width: 80,
+      width: 150, // पर्याप्त स्पेस ताकि आइकन्स रैप न हों
       render: (_, record) => (
-        <Dropdown
-          menu={{
-            items,
-            onClick: ({ key }) => {
-              switch (key) {
-                case "read":
-                  handleRead(record);
-                  break;
-                case "edit":
-                  handleEdit(record);
-                  break;
-                case "delete":
-                  handleDelete(record);
-                  break;
-                case "updatePassword":
-                  handleUpdatePassword(record);
-                  break;
-                default:
-                  break;
-              }
-            },
-          }}
-          trigger={["click"]}
-        >
-          <EllipsisOutlined
-            style={{ cursor: "pointer", fontSize: "22px" }}
-            className="text-gray-500 hover:text-blue-600 transition-colors"
-            onClick={(e) => e.preventDefault()}
-          />
-        </Dropdown>
+        <div className="flex items-center">
+          {/* SHOW BUTTON */}
+          <Tooltip title={translate("Show")}>
+            <Button
+              type="text"
+              shape="circle"
+              icon={<EyeOutlined className="text-blue-600 text-base" />}
+              onClick={() => handleRead(record)}
+            />
+          </Tooltip>
+
+          {/* EDIT BUTTON */}
+          <Tooltip title={translate("Edit")}>
+            <Button
+              type="text"
+              shape="circle"
+              icon={<EditOutlined className="text-gray-600 text-base" />}
+              onClick={() => handleEdit(record)}
+            />
+          </Tooltip>
+
+          {/* UPDATE PASSWORD BUTTON */}
+          <Tooltip title={translate("Update Password")}>
+            <Button
+              type="text"
+              shape="circle"
+              icon={<KeyOutlined className="text-gray-600 text-base" />}
+              onClick={() => handleUpdatePassword(record)}
+            />
+          </Tooltip>
+
+          {/* EXTRA BUTTONS (IF PROVIDED) */}
+          {extra.map((item, idx) => {
+            if (item.type === "divider") return null;
+            return (
+              <Tooltip title={item.label} key={idx}>
+                <Button
+                  type="text"
+                  shape="circle"
+                  icon={item.icon}
+                  danger={item.danger}
+                  onClick={() => item.onClick && item.onClick(record)}
+                />
+              </Tooltip>
+            );
+          })}
+
+          {/* DELETE BUTTON */}
+          <Tooltip title={translate("Delete")}>
+            <Button
+              type="text"
+              shape="circle"
+              icon={<DeleteOutlined className="text-gray-600 text-base" />}
+              onClick={() => handleDelete(record)}
+            />
+          </Tooltip>
+        </div>
       ),
     },
   ];
@@ -256,10 +243,10 @@ export default function DataTable({ config, extra = [] }) {
             className="w-64"
           />
           <Button
-            onClick={() => refetch()} // ⚡ FIXED: RTK Query के कोर रिफ्रेश फ़ंक्शन का उपयोग किया
+            onClick={() => refetch()}
             key="btn-refresh-table"
             icon={<RedoOutlined />}
-            loading={isFetching} // रिफ्रेश होते समय स्पिनर इफेक्ट
+            loading={isFetching}
             className="rounded-lg flex items-center justify-center cursor-pointer border-gray-300 text-gray-600 hover:text-blue-600"
           >
             Refresh
