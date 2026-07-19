@@ -6,7 +6,7 @@ import Script from "next/script";
 import Lottie from "lottie-react";
 import { Headphones, Home, Mail } from "lucide-react";
 
-import successAnimation from "../../public/assets/animations/check.json";
+import successAnimation from "@/../public/assets/animations/check.json";
 import { getAssetPath } from "@/lib/utils";
 
 /* =========================================================
