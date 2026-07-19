@@ -254,7 +254,7 @@ export function About() {
             <div className="mt-2 md:mt-5 text-center">
               <Button
                 onClick={onClick}
-                className="bg-linear-to-r from-[#EEC471] via-[#F3CD73] to-[#FADA9A] text-[#102441] rounded-md px-8 py-5 text-base font-bold shadow-lg transition-all transform hover:scale-[1.02] cursor-pointer duration-200"
+                className="bg-linear-to-r from-[#EEC471] via-[#F3CD73] to-[#FADA9A] text-[#102441] rounded-md px-8 py-2 text-base font-bold shadow-lg transition-all transform hover:scale-[1.02] cursor-pointer duration-200"
               >
                 Book 1:1 Personalised Counselling
               </Button>
