@@ -85,6 +85,7 @@ export function Hero() {
             fill
             priority
             sizes="100vw"
+            loading="eager"
             className="object-cover object-center"
           />
         </div>
@@ -182,6 +183,8 @@ export function Hero() {
                   width={623}
                   height={773}
                   priority
+                  fetchPriority="high"
+                  sizes="(max-width: 768px) 100vw, 623px"
                   className="h-auto max-w-full object-contain"
                 />
               </div>

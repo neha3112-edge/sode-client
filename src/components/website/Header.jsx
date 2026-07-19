@@ -71,6 +71,8 @@ export function Header() {
 
         {/* Mobile Toggle */}
         <button
+          type="button"
+          aria-label="Toggle navigation menu"
           className="lg:hidden p-2 bg-primary text-gray-800 rounded-md flex items-center justify-center transition-all duration-300"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
