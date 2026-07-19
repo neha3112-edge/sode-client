@@ -22,15 +22,16 @@ export function Header() {
       <div className="max-w-7xl mx-auto px-4 md:px-8 flex items-center justify-between h-20">
         {/* LOGO */}
         <Link href="/" className="flex items-center">
-          <Image
-            src={getAssetPath("/assets/images/new_sode_tm_logo.png")}
-            alt="Company Logo"
-            width={74}
-            height={74}
-            style={{ width: "auto", height: "auto" }}
-            priority
-            className="object-contain cursor-pointer"
-          />
+          <div className="relative h-14 w-28 md:h-16 md:w-32 flex items-center">
+            <Image
+              src={getAssetPath("/assets/images/new_sode_tm_logo.png")}
+              alt="Company Logo"
+              fill
+              sizes="150px"
+              priority
+              className="object-contain object-left cursor-pointer"
+            />
+          </div>
         </Link>
 
         {/* ✅ Desktop Navigation */}
@@ -49,7 +50,6 @@ export function Header() {
                       alt="Company Logo"
                       width={16}
                       height={16}
-                      style={{ width: "auto", height: "auto" }}
                       priority
                       className="object-contain cursor-pointer"
                     />
