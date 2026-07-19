@@ -6,6 +6,15 @@ import { getUniversities } from "@/services/api";
 
 export const revalidate = 3600; // ISR revalidation: 1 hour
 
+export const metadata = {
+  title: "Top UGC Recognized Distance Universities | Distance Education School",
+  description: "Explore accredited Indian and global partner universities offering distance and online degree programs.",
+  openGraph: {
+    title: "Top UGC Recognized Distance Universities | Distance Education School",
+    description: "Explore accredited Indian and global partner universities offering distance and online degree programs.",
+  },
+};
+
 export default async function UniversitiesPage() {
   const initialUniversities = await getUniversities();
   

@@ -4,7 +4,6 @@ import { Layout, theme } from "antd";
 import Sidebar from "@/components/cms/Sidebar";
 import AuthHeader from "@/components/cms/AuthHeader";
 import { AppContextProvider } from "@/context/app";
-import StoreProvider from "@/app/storeProvider";
 
 const { Content } = Layout;
 
@@ -14,24 +13,22 @@ export default function AdminDashboardLayout({ children }) {
   } = theme.useToken();
 
   return (
-    <StoreProvider>
-      <AppContextProvider>
+    <AppContextProvider>
+      <Layout style={{ minHeight: "100vh" }}>
+        <Sidebar />
         <Layout style={{ minHeight: "100vh" }}>
-          <Sidebar />
-          <Layout style={{ minHeight: "100vh" }}>
-            <AuthHeader />
-            <Content
-              className="m-2 max-h-screen overflow-auto p-6"
-              style={{
-                background: colorBgContainer,
-                borderRadius: borderRadiusLG,
-              }}
-            >
-              {children}
-            </Content>
-          </Layout>
+          <AuthHeader />
+          <Content
+            className="m-2 max-h-screen overflow-auto p-6"
+            style={{
+              background: colorBgContainer,
+              borderRadius: borderRadiusLG,
+            }}
+          >
+            {children}
+          </Content>
         </Layout>
-      </AppContextProvider>
-    </StoreProvider>
+      </Layout>
+    </AppContextProvider>
   );
 }

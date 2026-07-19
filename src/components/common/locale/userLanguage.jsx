@@ -12,6 +12,8 @@ const getLabel = (key) => {
 
     const label = conversionOfAllFirstCharacterofEachWord.join(" ");
 
+    if (typeof window === "undefined") return label;
+
     const result = window.localStorage.getItem("lang");
     if (!result) {
       let list = {};

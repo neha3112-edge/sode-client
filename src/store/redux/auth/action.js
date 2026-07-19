@@ -59,8 +59,10 @@ export const authApi = createApi({
               isLoggedIn: true,
               isOTPVerified: true,
             };
-            window.localStorage.setItem("auth", JSON.stringify(syncState));
-            window.localStorage.setItem("isLoggedIn", "true");
+            if (typeof window !== "undefined") {
+              window.localStorage.setItem("auth", JSON.stringify(syncState));
+              window.localStorage.setItem("isLoggedIn", "true");
+            }
           }
           return { data: { ...serverData, isOTPVerified, user: userPayload } };
         }

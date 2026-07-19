@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import StoreProvider from "./storeProvider";
+import CookieConsent from "@/components/common/CookieConsent";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,18 +15,22 @@ const geistMono = Geist_Mono({
 
 export const metadata = {
   title: "SODE",
-  description: "SODE",
+  description: "School of Online & Distance Education",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html
-      lang="en"
+      lang="en-IN"
+      data-scroll-behavior="smooth"
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
-        {/* Puri app ko Redux Store ke andar wrap kar diya */}
-        <StoreProvider>{children}</StoreProvider>
+      <body className="min-h-full flex flex-col" suppressHydrationWarning>
+        <StoreProvider>
+          {children}
+          <CookieConsent />
+        </StoreProvider>
       </body>
     </html>
   );

@@ -115,7 +115,7 @@ export default function NotFound() {
                   <Button
                     type="primary"
                     icon={<HomeOutlined />}
-                    className="h-12 cursor-pointer rounded-xl bg-[#FFC107] border-none text-black font-bold shadow-md hover:!bg-[#e6af06] hover:!text-black flex items-center justify-center gap-2 text-sm px-6"
+                    className="h-12 cursor-pointer rounded-xl bg-[#FFC107] border-none text-black font-bold shadow-md hover:bg-[#e6af06]! hover:!text-black flex items-center justify-center gap-2 text-sm px-6"
                   >
                     Back to Home
                   </Button>
@@ -126,7 +126,7 @@ export default function NotFound() {
                   <Button
                     variant="outlined"
                     icon={<ArrowLeftOutlined />}
-                    className="h-12 cursor-pointer rounded-xl border-2 border-[#1C3569]/15 text-[#1C3569] font-bold hover:!border-[#1C3569]/30 hover:!bg-[#1C3569]/5 hover:!text-[#1C3569] flex items-center justify-center gap-2 text-sm px-6"
+                    className="h-12 cursor-pointer rounded-xl border-2 border-[#1C3569]/15 text-[#1C3569] font-bold hover:border-[#1C3569]/30! hover:!bg-[#1C3569]/5 hover:!text-[#1C3569] flex items-center justify-center gap-2 text-sm px-6"
                   >
                     Explore Programs
                   </Button>
@@ -137,7 +137,7 @@ export default function NotFound() {
             {/* =================================================
                 RIGHT VISUAL GRADIENT PANEL
             ================================================== */}
-            <section className="relative flex min-h-[360px] items-center justify-center overflow-hidden bg-gradient-to-br from-[#1C3569] via-[#17305e] to-[#005382] px-6 py-12">
+            <section className="relative flex min-h-[360px] items-center justify-center overflow-hidden bg-linear-to-br from-[#1C3569] via-[#17305e] to-[#005382] px-6 py-12">
               <div
                 aria-hidden="true"
                 className="absolute left-6 top-6 h-24 w-24 rounded-full border border-white/10"

@@ -6,6 +6,7 @@ import Link from "next/link";
 import DisclaimerContent from "@/components/common/legal/DisclaimerContent";
 import PrivacyContent from "@/components/common/legal/PrivacyContent";
 import TermsContent from "@/components/common/legal/TermsContent";
+import FormWrapper from "@/components/forms/FormWrapper";
 
 const UNIVERSITIES = [
   "Golden Gate University",
@@ -424,6 +425,15 @@ export function Footer() {
             </div>
           </div>
         )}
+
+        {/* Form Modal for Talk to Experts */}
+        <FormWrapper
+          isModal
+          isOpen={expertOpen}
+          onClose={closeExpertForm}
+          title="Talk to Experts"
+          subtitle="Select your course and our academic experts will assist you"
+        />
       </footer>
     </>
   );

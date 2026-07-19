@@ -8,7 +8,7 @@ const errorHandler = (error) => {
     });
   };
 
-  if (!navigator.onLine) {
+  if (typeof window !== "undefined" && !navigator.onLine) {
     const errorMessage =
       "Cannot connect to the Internet. Check your internet connection.";
 
@@ -36,7 +36,7 @@ const errorHandler = (error) => {
     };
   }
 
-  if (response?.data?.jwtExpired) {
+  if (typeof window !== "undefined" && response?.data?.jwtExpired) {
     const auth = window.localStorage.getItem("auth");
     const logoutData = window.localStorage.getItem("isLogout");
 
