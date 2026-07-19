@@ -9,7 +9,11 @@ const SITE_TITLE =
 const SITE_DESCRIPTION =
   "Certifications & Online Degree Courses from top IITs, IIMs & global universities via SODE. Enroll in our MBA, DBA & executive leadership programs.";
 const OG_IMAGE = `${SITE_URL}/assets/images/sode-homepage-og-card-image.png`;
-const FAVICON_PATH = "/assets/images/favicon.ico";
+const FAVICON_ICO = "/assets/images/favicon.ico";
+const FAVICON_SVG = "/assets/images/favicon.svg";
+const FAVICON_96 = "/assets/images/favicon-96x96.png";
+const APPLE_TOUCH_ICON = "/assets/images/apple-touch-icon.png";
+const WEBMANIFEST = "/assets/images/site.webmanifest";
 
 const GTM_ID = "GTM-567GP8S9";
 const GOOGLE_ADS_IDS = ["AW-17917271919", "AW-17946162864"];
@@ -49,16 +53,21 @@ export const metadata = {
   },
   icons: {
     icon: [
-      {
-        url: FAVICON_PATH,
-        type: "image/x-icon",
-      },
+      /* Browser favicon - classic .ico (IE / older browsers) */
+      { url: FAVICON_ICO, type: "image/x-icon" },
+      /* Modern browsers prefer SVG for crisp scaling */
+      { url: FAVICON_SVG, type: "image/svg+xml" },
+      /* Fallback 96px PNG for browsers that don't support SVG favicons */
+      { url: FAVICON_96, type: "image/png", sizes: "96x96" },
     ],
-    shortcut: FAVICON_PATH,
+    shortcut: FAVICON_ICO,
+    /* Apple devices: Safari on iPhone / iPad / macOS */
     apple: [
-      {
-        url: FAVICON_PATH,
-      },
+      { url: APPLE_TOUCH_ICON, sizes: "180x180", type: "image/png" },
+    ],
+    /* Android Chrome PWA manifest */
+    other: [
+      { rel: "manifest", url: WEBMANIFEST },
     ],
   },
   openGraph: {
