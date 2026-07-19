@@ -210,21 +210,29 @@ export default function Sidebar() {
       {/* BRAND LOGO AREA */}
       <div className="h-16 flex items-center justify-center border-b border-zinc-100 px-4 overflow-hidden">
         {collapsed ? (
-          <Image
-            src="/assets/images/sode-icon.png"
-            alt="SODE Icon"
-            width={32}
-            height={32}
-            className="object-contain"
-          />
+          <div className="relative w-8 h-8 flex items-center justify-center">
+            <Image
+              src="/assets/images/sode-icon.png"
+              alt="SODE Icon"
+              fill
+              sizes="32px"
+              priority
+              loading="eager"
+              className="object-contain"
+            />
+          </div>
         ) : (
-          <Image
-            src="/assets/images/SODE-LOGO.png"
-            alt="SODE Logo"
-            width={140}
-            height={40}
-            className="object-contain"
-          />
+          <div className="relative w-36 h-10 flex items-center justify-center">
+            <Image
+              src="/assets/images/SODE-LOGO.png"
+              alt="SODE Logo"
+              fill
+              sizes="150px"
+              priority
+              loading="eager"
+              className="object-contain"
+            />
+          </div>
         )}
       </div>
 

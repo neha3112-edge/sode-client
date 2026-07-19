@@ -4,6 +4,47 @@ import moment from "moment";
 import SidebarForm from "./forms/SidebarForm";
 import { Tag, Space, Switch } from "antd";
 
+import * as LucideIcons from "lucide-react";
+import * as FaIcons from "react-icons/fa";
+import * as MdIcons from "react-icons/md";
+import * as AiIcons from "react-icons/ai";
+import * as BiIcons from "react-icons/bi";
+import * as FiIcons from "react-icons/fi";
+import * as HiIcons from "react-icons/hi";
+import * as RiIcons from "react-icons/ri";
+import * as GiIcons from "react-icons/gi";
+
+const iconLibraries = {
+  lucide: LucideIcons,
+  fa: FaIcons,
+  "react-fa": FaIcons,
+  md: MdIcons,
+  ai: AiIcons,
+  bi: BiIcons,
+  fi: FiIcons,
+  hi: HiIcons,
+  ri: RiIcons,
+  gi: GiIcons,
+};
+
+const renderIcon = (icon) => {
+  if (!icon) return "-";
+  if (icon.library) {
+    const IconSet = iconLibraries[icon.library] || LucideIcons;
+    if (IconSet) {
+      const IconComponent = IconSet[icon.name] || LucideIcons[icon.name];
+      if (IconComponent) {
+        return <IconComponent size={18} />;
+      }
+    }
+  }
+  if (icon.name && LucideIcons[icon.name]) {
+    const IconComponent = LucideIcons[icon.name];
+    return <IconComponent size={18} />;
+  }
+  return "-";
+};
+
 export default function Index() {
   const entity = "sidebar";
 
@@ -38,8 +79,13 @@ export default function Index() {
     {
       title: "Icon",
       key: "icon",
-      render: (_, record) =>
-        record.icon ? `${record.icon.library}:${record.icon.name}` : "-",
+      render: (_, record) => (
+        <span className="flex items-center gap-2 font-medium text-slate-700">
+          <span className="text-blue-500 flex items-center justify-center">
+            {renderIcon(record.icon)}
+          </span>
+        </span>
+      ),
     },
     {
       title: "Path",

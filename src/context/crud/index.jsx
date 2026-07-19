@@ -25,6 +25,7 @@ function useCrudContext() {
 
   return {
     state,
+    dispatch,
     crudContextAction,
     crudContextSelector,
   };
