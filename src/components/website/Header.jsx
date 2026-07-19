@@ -69,7 +69,7 @@ export function Header() {
 
         {/* Mobile Toggle */}
         <button
-          className="lg:hidden p-2 bg-primary text-white rounded-md flex items-center justify-center transition-all duration-300"
+          className="lg:hidden p-2 bg-primary text-gray-800 rounded-md flex items-center justify-center transition-all duration-300"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
           {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
