@@ -211,8 +211,6 @@ export default function FormWrapper({
         ...getUTMParams(),
       };
 
-      console.log("Lead payload:", payload);
-
       const response = await fetch(getAssetPath("/api/lead"), {
         method: "POST",
         headers: {
@@ -287,8 +285,8 @@ export default function FormWrapper({
     <div
       ref={containerRef}
       className={`transition-all duration-300 ${closing
-          ? "translate-y-2 scale-95 opacity-0"
-          : "translate-y-0 scale-100 opacity-100"
+        ? "translate-y-2 scale-95 opacity-0"
+        : "translate-y-0 scale-100 opacity-100"
         }`}
     >
       {/* ===================================================

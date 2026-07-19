@@ -204,178 +204,11 @@ export async function POST(req) {
       ip_address: userIp,
     };
 
-    console.log("Final lead payload:", finalPayload);
-
-    /*
-    |--------------------------------------------------------------------------
-    | 1. Submit to Secondary CRM
-    |--------------------------------------------------------------------------
-    */
-
     const secondaryCrmUrl = process.env.SECONDARY_CRM_URL;
     const secondaryCrmApiKey = process.env.SECONDARY_CRM_API_KEY;
-
-    if (secondaryCrmUrl && secondaryCrmApiKey) {
-      try {
-        console.log("Submitting lead to Secondary CRM...");
-
-        const secondaryCrmResponse = await fetch(secondaryCrmUrl, {
-          method: "POST",
-
-          headers: {
-            "Content-Type": "application/json",
-            "x-api-key": secondaryCrmApiKey,
-          },
-
-          body: JSON.stringify(finalPayload),
-
-          cache: "no-store",
-        });
-
-        const secondaryCrmResponseText = await secondaryCrmResponse.text();
-        console.log("Secondary CRM Response:", secondaryCrmResponseText);
-      } catch (secondaryCrmError) {
-        console.error("Failed to send lead to Secondary CRM:", secondaryCrmError);
-      }
-    } else {
-      console.warn("SECONDARY_CRM_URL or SECONDARY_CRM_API_KEY missing");
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | 2. Submit to Gallabox Webhook
-    |--------------------------------------------------------------------------
-    */
-
     const gallaboxWebhookUrl = process.env.GALLABOX_WEBHOOK_URL;
-
-    if (
-      gallaboxWebhookUrl &&
-      gallaboxWebhookUrl !== "your_gallabox_webhook_url_here"
-    ) {
-      try {
-        console.log("Submitting lead to Gallabox Webhook...");
-
-        const gallaboxResponse = await fetch(gallaboxWebhookUrl, {
-          method: "POST",
-
-          headers: {
-            "Content-Type": "application/json",
-          },
-
-          body: JSON.stringify({
-            name: String(name).trim(),
-
-            phone: phoneWithPlus,
-
-            email: email || "",
-
-            course: course || "MBA",
-
-            state: state || "",
-
-            source: source || "SODE",
-
-            tags: ["Success"],
-
-            utm_source: finalUtmSource,
-
-            utm_medium: finalUtmMedium,
-
-            utm_campaign: finalUtmCampaign,
-
-            utm_term: finalUtmTerm,
-
-            utm_content: finalUtmContent,
-          }),
-
-          cache: "no-store",
-        });
-
-        if (!gallaboxResponse.ok) {
-          const gallaboxError = await gallaboxResponse.text();
-
-          console.error("Gallabox Webhook error:", gallaboxError);
-        } else {
-          console.log("Lead successfully submitted to Gallabox");
-        }
-      } catch (gallaboxError) {
-        console.error("Failed to send lead to Gallabox:", gallaboxError);
-      }
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | 3. Submit to Brevo
-    |--------------------------------------------------------------------------
-    */
-
     const brevoApiKey = process.env.BREVO_API_KEY;
-
     const brevoListId = Number(process.env.BREVO_LIST_ID) || 217;
-
-    if (brevoApiKey && brevoApiKey !== "your_brevo_api_key_here") {
-      try {
-        console.log("Submitting lead to Brevo...");
-
-        const brevoResponse = await fetch("https://api.brevo.com/v3/contacts", {
-          method: "POST",
-
-          headers: {
-            "api-key": brevoApiKey,
-            "Content-Type": "application/json",
-          },
-
-          body: JSON.stringify({
-            email: email || undefined,
-
-            listIds: [brevoListId],
-
-            attributes: {
-              FULLNAME: String(name).trim(),
-
-              SMS: phoneWithPlus,
-
-              MOBILE: phoneWithPlus,
-
-              COURSES: course || "MBA",
-
-              STATES: state || "",
-
-              UTM_SOURCE: finalUtmSource,
-
-              UTM_CAMPAIGN: finalUtmCampaign,
-
-              UTM_MEDIUM: finalUtmMedium,
-
-              UTM_TERM: finalUtmTerm,
-
-              SOURCE: source || "SODE",
-            },
-
-            updateEnabled: true,
-          }),
-
-          cache: "no-store",
-        });
-
-        if (!brevoResponse.ok) {
-          const brevoError = await brevoResponse.text();
-
-          console.error("Brevo API error:", brevoError);
-        } else {
-          console.log("Lead successfully submitted to Brevo");
-        }
-      } catch (brevoError) {
-        console.error("Failed to send lead to Brevo:", brevoError);
-      }
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | 4. Submit selected leads to Google Sheets
-    |--------------------------------------------------------------------------
-    */
 
     const shouldSubmitToGoogleSheets =
       finalPayload.source === "IIITB LP" ||
@@ -383,40 +216,140 @@ export async function POST(req) {
       finalPayload.form_name.includes("Coupon Form") ||
       finalPayload.form_name.includes("Compare University Form");
 
-    if (shouldSubmitToGoogleSheets) {
-      try {
-        console.log("Submitting lead to IIITB Google Sheets...");
+    /*
+    |--------------------------------------------------------------------------
+    | Fire all external API calls in PARALLEL (Promise.allSettled)
+    | Sequential calls would take ~4s total; parallel takes ~1s
+    |--------------------------------------------------------------------------
+    */
 
-        const googleSheetsResponse = await fetch(
+    const tasks = [];
+
+    /* 1. Secondary CRM */
+    if (secondaryCrmUrl && secondaryCrmApiKey) {
+      tasks.push(
+        fetch(secondaryCrmUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": secondaryCrmApiKey,
+          },
+          body: JSON.stringify(finalPayload),
+          cache: "no-store",
+        })
+          .then(async (res) => {
+            const text = await res.text();
+            console.log("Secondary CRM Response:", text);
+          })
+          .catch((err) =>
+            console.error("Failed to send lead to Secondary CRM:", err)
+          )
+      );
+    } else {
+      console.warn("SECONDARY_CRM_URL or SECONDARY_CRM_API_KEY missing");
+    }
+
+    /* 2. Gallabox */
+    if (gallaboxWebhookUrl && gallaboxWebhookUrl !== "your_gallabox_webhook_url_here") {
+      tasks.push(
+        fetch(gallaboxWebhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: String(name).trim(),
+            phone: phoneWithPlus,
+            email: email || "",
+            course: course || "MBA",
+            state: state || "",
+            source: source || "SODE",
+            tags: ["Success"],
+            utm_source: finalUtmSource,
+            utm_medium: finalUtmMedium,
+            utm_campaign: finalUtmCampaign,
+            utm_term: finalUtmTerm,
+            utm_content: finalUtmContent,
+          }),
+          cache: "no-store",
+        })
+          .then(async (res) => {
+            if (!res.ok) {
+              console.error("Gallabox Webhook error:", await res.text());
+            } else {
+              console.log("Lead successfully submitted to Gallabox");
+            }
+          })
+          .catch((err) =>
+            console.error("Failed to send lead to Gallabox:", err)
+          )
+      );
+    }
+
+    /* 3. Brevo */
+    if (brevoApiKey && brevoApiKey !== "your_brevo_api_key_here") {
+      tasks.push(
+        fetch("https://api.brevo.com/v3/contacts", {
+          method: "POST",
+          headers: {
+            "api-key": brevoApiKey,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: email || undefined,
+            listIds: [brevoListId],
+            attributes: {
+              FULLNAME: String(name).trim(),
+              SMS: phoneWithPlus,
+              MOBILE: phoneWithPlus,
+              COURSES: course || "MBA",
+              STATES: state || "",
+              UTM_SOURCE: finalUtmSource,
+              UTM_CAMPAIGN: finalUtmCampaign,
+              UTM_MEDIUM: finalUtmMedium,
+              UTM_TERM: finalUtmTerm,
+              SOURCE: source || "SODE",
+            },
+            updateEnabled: true,
+          }),
+          cache: "no-store",
+        })
+          .then(async (res) => {
+            if (!res.ok) {
+              console.error("Brevo API error:", await res.text());
+            } else {
+              console.log("Lead successfully submitted to Brevo");
+            }
+          })
+          .catch((err) => console.error("Failed to send lead to Brevo:", err))
+      );
+    }
+
+    /* 4. Google Sheets (conditional) */
+    if (shouldSubmitToGoogleSheets) {
+      tasks.push(
+        fetch(
           "https://script.google.com/macros/s/AKfycbwCXWFhWQAxt0tR-JOK-6cGBK4MjkiDGSYsxUlcVWjlpJeqJKv5V6a0fm7i9EZFeTV7hw/exec",
           {
             method: "POST",
-
-            headers: {
-              "Content-Type": "application/json",
-            },
-
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(finalPayload),
-
             cache: "no-store",
           }
-        );
-
-        if (!googleSheetsResponse.ok) {
-          console.error(
-            "Google Sheets error:",
-            await googleSheetsResponse.text()
-          );
-        } else {
-          console.log("Lead successfully submitted to Google Sheets");
-        }
-      } catch (googleSheetsError) {
-        console.error(
-          "Failed to send lead to Google Sheets:",
-          googleSheetsError
-        );
-      }
+        )
+          .then(async (res) => {
+            if (!res.ok) {
+              console.error("Google Sheets error:", await res.text());
+            } else {
+              console.log("Lead successfully submitted to Google Sheets");
+            }
+          })
+          .catch((err) =>
+            console.error("Failed to send lead to Google Sheets:", err)
+          )
+      );
     }
+
+    /* Wait for all tasks — any failure is logged but won't block response */
+    await Promise.allSettled(tasks);
 
     /*
     |--------------------------------------------------------------------------
