@@ -65,6 +65,7 @@ export default function CourseListView({ initialCourses }) {
     const titleText = (course?.title || "").toLowerCase();
     const descText = (course?.description || "").toLowerCase();
     const query = searchTerm.toLowerCase();
+    const matchesSearch = titleText.includes(query) || descText.includes(query);
 
     const cat = course?.category;
     const catSlug = typeof cat === "object" ? (cat?.slug || cat?.name || "").toLowerCase() : String(cat || "").toLowerCase();
