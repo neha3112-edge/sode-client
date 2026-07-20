@@ -10,28 +10,32 @@ export function cn(...inputs) {
 
 /**
  * Resolves an image/asset path to the correct URL.
- *
- * Priority:
- * 1. If already a MinIO URL → convert to /media/... proxy path (SEO-friendly same domain)
- * 2. If a local /assets/* path → look up in mediaMap.json and return MinIO proxy URL
- * 3. If other http/https → pass through
- * 4. Otherwise → return as-is (local public folder path)
+ * Supports both string URLs and populated Media objects ({ _id, url, name }).
  */
 export function getAssetPath(path = "") {
   if (!path) return "";
+  let targetPath = path;
+
+  if (typeof path === "object" && path !== null) {
+    targetPath = path?.url || path?.src || path?.path || "";
+  }
+
+  if (typeof targetPath !== "string") return "";
+  targetPath = targetPath.trim();
+  if (!targetPath) return "";
 
   // 1. Convert MinIO internal URLs to same-domain proxy path
-  if (path.startsWith("http://172.236.183.64:9000/")) {
-    return path.replace("http://172.236.183.64:9000/", "/media/");
+  if (targetPath.startsWith("http://172.236.183.64:9000/")) {
+    return targetPath.replace("http://172.236.183.64:9000/", "/media/");
   }
 
   // 2. Any other external http/https URL → pass through as-is
-  if (path.startsWith("http://") || path.startsWith("https://")) return path;
+  if (targetPath.startsWith("http://") || targetPath.startsWith("https://")) return targetPath;
 
   // 3. Local asset path → look up in mediaMap and convert to MinIO proxy
-  const lookup = path.toLowerCase();
-  if (mediaMap[path]) {
-    const minioUrl = mediaMap[path];
+  const lookup = targetPath.toLowerCase();
+  if (mediaMap[targetPath]) {
+    const minioUrl = mediaMap[targetPath];
     return minioUrl.replace("http://172.236.183.64:9000/", "/media/");
   }
   if (mediaMap[lookup]) {
@@ -40,6 +44,6 @@ export function getAssetPath(path = "") {
   }
 
   // 4. Fallback: return path unchanged (serves from Next.js public folder)
-  if (path.startsWith("/")) return path;
-  return `/${path}`;
+  if (targetPath.startsWith("/")) return targetPath;
+  return `/${targetPath}`;
 }

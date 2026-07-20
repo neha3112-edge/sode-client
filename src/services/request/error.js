@@ -42,10 +42,14 @@ const errorHandler = (error) => {
       response?.data?.jwtExpired ||
       response?.data?.tokenExpired)
   ) {
-    window.localStorage.removeItem("auth");
-    window.localStorage.removeItem("isLoggedIn");
-    window.localStorage.removeItem("isLogout");
-    window.location.href = "/login";
+    const currentPath = window.location.pathname || "";
+    // Only redirect to /login if the user is attempting to access admin dashboard routes
+    if (currentPath.startsWith("/admin-dashboard")) {
+      window.localStorage.removeItem("auth");
+      window.localStorage.removeItem("isLoggedIn");
+      window.localStorage.removeItem("isLogout");
+      window.location.href = "/login";
+    }
     return {
       success: false,
       result: null,

@@ -26,9 +26,35 @@ export function Courses({
   const programsList = initialPrograms || defaultPrograms;
 
   const filteredPrograms =
-    activeTab === "all"
+    !activeTab || activeTab === "all" || activeTab === "all-programs"
       ? programsList
-      : programsList.filter((program) => program.category === activeTab);
+      : programsList.filter((program) => {
+          const cat = program?.category;
+          if (!cat) return false;
+
+          const target = String(activeTab).toLowerCase().trim();
+
+          if (typeof cat === "object" && cat !== null) {
+            const catSlug = String(cat.slug || "").toLowerCase().trim();
+            const catName = String(cat.name || "").toLowerCase().trim();
+            const catId = String(cat._id || "").trim();
+
+            return (
+              catSlug === target ||
+              catName === target ||
+              catId === target ||
+              (target === "certification" && catSlug.includes("certif")) ||
+              (target === "certifications" && catSlug.includes("certif")) ||
+              (target === "executive" && catSlug.includes("execut")) ||
+              (target === "executive programs" && catSlug.includes("execut")) ||
+              (target === "master" && catSlug.includes("master")) ||
+              (target === "doctorate" && catSlug.includes("doctor"))
+            );
+          }
+
+          const catStr = String(cat).toLowerCase().trim();
+          return catStr === target || catStr.includes(target);
+        });
 
   /* =========================================================
      GET BROCHURE
@@ -81,13 +107,14 @@ export function Courses({
 
         <div className="flex flex-wrap items-center justify-center gap-3 md:gap-4 mb-12 max-w-4xl mx-auto">
           {tabsList.map((tab) => {
-            const isActive = activeTab === tab.id;
+            const tabKey = tab.slug || tab.id || tab._id;
+            const isActive = activeTab === tabKey || activeTab === tab.id || activeTab === tab.slug;
 
             return (
               <button
-                key={tab.id}
+                key={tabKey || tab.label}
                 type="button"
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => setActiveTab(tabKey)}
                 className={`px-5 py-2.5 rounded-full font-bold text-xs md:text-sm transition-all duration-300 cursor-pointer border select-none ${isActive
                     ? "bg-[#A66E38] text-white border-transparent shadow-[0_4px_12px_rgba(166,110,56,0.3)]"
                     : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
@@ -157,7 +184,7 @@ export function Courses({
                     <path d="M335.9 84.2C326.1 78.6 314 78.6 304.1 84.2L80.1 212.2C67.5 219.4 61.3 234.2 65 248.2C68.7 262.2 81.5 272 96 272H128V480L76.8 518.4C68.7 524.4 64 533.9 64 544C64 561.7 78.3 576 96 576H544C561.7 576 576 561.7 576 544C576 533.9 571.3 524.4 563.2 518.4L512 480V272H544C558.5 272 571.2 262.2 574.9 248.2C578.6 234.2 572.4 219.4 559.8 212.2L335.9 84.2ZM464 272V480H400V272H464ZM352 272V480H288V272H352ZM240 272V480H176V272H240ZM320 160C337.7 160 352 174.3 352 192C352 209.7 337.7 224 320 224C302.3 224 288 209.7 288 192C288 174.3 302.3 160 320 160Z" />
                   </svg>
 
-                  <span>{item.university}</span>
+                  <span>{typeof item.university === "object" ? item.university?.name : item.university}</span>
                 </div>
 
                 {/* Description */}
@@ -179,7 +206,7 @@ export function Courses({
                     </span>
 
                     <span className="text-[#1C293F] font-bold ml-1">
-                      {item.duration}
+                      {typeof item.duration === "object" ? item.duration?.title : item.duration}
                     </span>
                   </div>
 
@@ -193,7 +220,7 @@ export function Courses({
                     </span>
 
                     <span className="text-[#1C293F] font-bold ml-1">
-                      {item.eligibility}
+                      {typeof item.eligibility === "object" ? item.eligibility?.title : item.eligibility}
                     </span>
                   </div>
                 </div>

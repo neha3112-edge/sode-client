@@ -1,7 +1,7 @@
 "use client";
 
-import UniversitiesCmsIndex from "@/features/universities";
+import UniversityCmsIndex from "@/features/university";
 
 export default function AdminUniversitiesPage() {
-  return <UniversitiesCmsIndex />;
+  return <UniversityCmsIndex />;
 }

@@ -5,6 +5,8 @@ import { Card, Tag, Input, Button, Row, Col, Space, Breadcrumb } from "antd";
 import { SearchOutlined, BookOutlined, ClockCircleFilled } from "@ant-design/icons";
 import Link from "next/link";
 
+import { useGetDynamicOptionsQuery } from "@/store/redux/dynamic/action";
+
 const INITIAL_COURSES = [
   {
     title: "Master of Business Administration (MBA)",
@@ -64,10 +66,37 @@ export default function CourseListView({ initialCourses }) {
     const descText = (course?.description || "").toLowerCase();
     const query = searchTerm.toLowerCase();
 
-    const matchesSearch = titleText.includes(query) || descText.includes(query);
-    const matchesCategory = activeCategory === "all" || course?.category === activeCategory;
+    const cat = course?.category;
+    const catSlug = typeof cat === "object" ? (cat?.slug || cat?.name || "").toLowerCase() : String(cat || "").toLowerCase();
+    const matchesCategory =
+      activeCategory === "all" ||
+      catSlug === activeCategory ||
+      catSlug.includes(activeCategory) ||
+      activeCategory.includes(catSlug);
+
     return matchesSearch && matchesCategory;
   });
+
+  const { data: rawCategoryOptions = [] } = useGetDynamicOptionsQuery({
+    entity: "category",
+    endPoint: "options",
+  });
+
+  const categoryButtons = [
+    { label: "All Levels", value: "all" },
+    ...(Array.isArray(rawCategoryOptions) && rawCategoryOptions.length > 0
+      ? rawCategoryOptions.map((c) => ({
+        label: c.name || c.label,
+        value: (c.slug || c.name || "").toLowerCase(),
+      }))
+      : [
+        { label: "UG (Undergrad)", value: "ug" },
+        { label: "PG (Postgrad)", value: "pg" },
+        { label: "Doctorate", value: "doctorate" },
+        { label: "Executive", value: "executive" },
+        { label: "Certification", value: "certification" },
+      ]),
+  ];
 
   return (
     <div className="bg-[#f8fafc] py-12 px-4 md:px-8">
@@ -99,20 +128,14 @@ export default function CourseListView({ initialCourses }) {
           />
 
           <div className="flex gap-2 flex-wrap">
-            {[
-              { label: "All Levels", value: "all" },
-              { label: "UG (Undergrad)", value: "ug" },
-              { label: "PG (Postgrad)", value: "pg" },
-              { label: "Doctorate", value: "doctorate" },
-            ].map((cat) => (
+            {categoryButtons.map((cat) => (
               <Button
                 key={cat.value}
                 onClick={() => setActiveCategory(cat.value)}
-                className={`rounded-full px-5 h-9 font-semibold text-sm cursor-pointer transition-all ${
-                  activeCategory === cat.value 
-                    ? "bg-[#1C3569] text-white border-none shadow-sm hover:!bg-[#1C3569] hover:!text-white" 
+                className={`rounded-full px-5 h-9 font-semibold text-sm cursor-pointer transition-all ${activeCategory === cat.value
+                    ? "bg-[#1C3569] text-white border-none shadow-sm hover:!bg-[#1C3569] hover:!text-white"
                     : "border-slate-200 text-slate-600 hover:!border-slate-400 hover:!text-slate-800"
-                }`}
+                  }`}
               >
                 {cat.label}
               </Button>
@@ -134,14 +157,14 @@ export default function CourseListView({ initialCourses }) {
                     {course.level}
                   </Tag>
                   <span className="text-slate-400 text-xs font-bold flex items-center gap-1">
-                    <ClockCircleFilled /> {course.duration}
+                    <ClockCircleFilled /> {typeof course?.duration === "object" ? course?.duration?.title : course?.duration}
                   </span>
                 </div>
 
                 <h3 className="text-lg font-bold text-slate-800 m-0 mb-2 leading-snug">
                   {course.title}
                 </h3>
-                
+
                 <p className="text-slate-500 text-xs leading-relaxed mb-4 flex-grow">
                   {course.description}
                 </p>
@@ -160,7 +183,7 @@ export default function CourseListView({ initialCourses }) {
                 </div>
 
                 <Link href={`/courses/${course.slug}`} className="mt-auto block">
-                  <Button 
+                  <Button
                     type="primary"
                     className="w-full bg-[#1C3569] hover:!bg-[#122449] border-none font-semibold rounded-xl h-10 cursor-pointer"
                   >

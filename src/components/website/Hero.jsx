@@ -9,8 +9,29 @@ import { Container } from "@/components/ui/container";
 import FormWrapper from "@/components/forms/FormWrapper";
 import { getAssetPath } from "@/lib/utils";
 
+import { useGetDynamicOptionsQuery } from "@/store/redux/dynamic/action";
+
 export function Hero() {
   const [downloadOpen, setDownloadOpen] = useState(false);
+
+  // Fetch dynamic categories for Hero section from Category API
+  const { data: categoryOptions = [] } = useGetDynamicOptionsQuery({
+    entity: "category",
+    endPoint: "options",
+  });
+
+  // Hero Section displays: Doctorate, Certifications, Executive Programs, Banking, Finance, Leadership
+  const displayCategories =
+    Array.isArray(categoryOptions) && categoryOptions.length > 0
+      ? categoryOptions.filter((c) => c.slug !== "master")
+      : [
+          { name: "Doctorate" },
+          { name: "Certifications" },
+          { name: "Executive Programs" },
+          { name: "Banking" },
+          { name: "Finance" },
+          { name: "Leadership" },
+        ];
 
   /* =========================================================
      OPEN MODAL
@@ -126,33 +147,31 @@ export function Hero() {
               ================================================== */}
 
               <div className="hidden flex-col space-y-3 pt-2 lg:flex">
+                {/* Row 1: Doctorate, Certification, Executive Programs */}
                 <div className="flex flex-wrap gap-3">
-                  <span className="rounded-md border border-white/30 bg-white/5 px-4 py-2 text-sm font-semibold">
-                    Doctorate
-                  </span>
-
-                  <span className="rounded-md border border-white/30 bg-white/5 px-4 py-2 text-sm font-semibold">
-                    Certification
-                  </span>
-
-                  <span className="rounded-md border border-white/30 bg-white/5 px-4 py-2 text-sm font-semibold">
-                    Executive Programs
-                  </span>
+                  {displayCategories.slice(0, 3).map((cat, idx) => (
+                    <span
+                      key={cat._id || cat.slug || idx}
+                      className="rounded-md border border-white/30 bg-white/5 px-4 py-2 text-sm font-semibold text-white backdrop-blur-xs transition-all hover:bg-white/10"
+                    >
+                      {cat.name || cat.label || cat.title}
+                    </span>
+                  ))}
                 </div>
 
-                <div className="flex flex-wrap gap-3">
-                  <span className="rounded-md border border-white/30 bg-white/5 px-4 py-2 text-sm font-semibold">
-                    Banking
-                  </span>
-
-                  <span className="rounded-md border border-white/30 bg-white/5 px-4 py-2 text-sm font-semibold">
-                    Finance
-                  </span>
-
-                  <span className="rounded-md border border-white/30 bg-white/5 px-4 py-2 text-sm font-semibold">
-                    Leadership
-                  </span>
-                </div>
+                {/* Row 2: Banking, Finance, Leadership */}
+                {displayCategories.length > 3 && (
+                  <div className="flex flex-wrap gap-3">
+                    {displayCategories.slice(3).map((cat, idx) => (
+                      <span
+                        key={cat._id || cat.slug || idx}
+                        className="rounded-md border border-white/30 bg-white/5 px-4 py-2 text-sm font-semibold text-white backdrop-blur-xs transition-all hover:bg-white/10"
+                      >
+                        {cat.name || cat.label || cat.title}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Desktop Action Button */}

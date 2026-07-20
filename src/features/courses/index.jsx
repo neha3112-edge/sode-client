@@ -39,22 +39,51 @@ export default function CoursesCmsIndex() {
       title: "Category",
       dataIndex: "category",
       key: "category",
-      render: (category) => (
-        <Tag color={categoryColors[category] || "default"} className="capitalize font-semibold">
-          {category}
-        </Tag>
-      ),
+      render: (category) => {
+        const catName = typeof category === "object" ? category?.name : category;
+        const catSlug = typeof category === "object" ? category?.slug : category;
+        return (
+          <Tag color={categoryColors[catSlug] || "blue"} className="capitalize font-semibold">
+            {catName || "N/A"}
+          </Tag>
+        );
+      },
     },
     {
       title: "University",
       dataIndex: "university",
       key: "university",
-      render: (text) => <span className="font-semibold text-slate-700">{text}</span>,
+      render: (university) => {
+        const uniName = typeof university === "object" ? university?.name : university;
+        return <span className="font-semibold text-slate-700">{uniName || "N/A"}</span>;
+      },
     },
     {
       title: "Duration",
       dataIndex: "duration",
       key: "duration",
+      render: (duration) => {
+        const durText = typeof duration === "object" ? duration?.title : duration;
+        return <span className="font-semibold text-slate-700">{durText || "N/A"}</span>;
+      },
+    },
+    {
+      title: "Eligibility",
+      dataIndex: "eligibility",
+      key: "eligibility",
+      render: (eligibility) => {
+        const text = typeof eligibility === "object" ? eligibility?.title : eligibility;
+        return <span className="text-xs text-slate-600 font-medium">{text || "N/A"}</span>;
+      },
+    },
+    {
+      title: "Fee",
+      dataIndex: "fee",
+      key: "fee",
+      render: (fee) => {
+        const title = typeof fee === "object" ? fee?.title : fee;
+        return <span className="font-semibold text-emerald-600">{title || "N/A"}</span>;
+      },
     },
     {
       title: "Featured",
