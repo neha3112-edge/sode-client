@@ -18,9 +18,10 @@ export default function LoginPage() {
   const [loginForm] = Form.useForm();
 
   // RTK Mutation Hook
-  const [triggerLogin, { isLoading: isLoginLoading, isSuccess }] =
+  const [triggerLogin, { isLoading: isLoginLoading }] =
     useLoginMutation();
 
+  // ✅ Agar pehle se logged in hai to seedha dashboard bhejo
   useEffect(() => {
     if (typeof window !== "undefined") {
       const isLoggedIn = window.localStorage.getItem("isLoggedIn");
@@ -31,18 +32,21 @@ export default function LoginPage() {
     }
   }, [router]);
 
-  useEffect(() => {
-    if (isSuccess) {
-      router.push("/admin-dashboard");
-    }
-  }, [isSuccess, router]);
-
   const handleLogin = async (values) => {
     try {
-      // 🎯 FIXED: अब Antd Form सीधे 'username' कैप्चर करता है और पेलोड में पास करता है
-      await triggerLogin({ loginData: values }).unwrap();
+      const result = await triggerLogin({ loginData: values }).unwrap();
+      // ✅ localStorage set hone ke BAAD redirect karo
+      // auth/action.js ke queryFn ne localStorage set kar diya hoga unwrap() se pehle
+      if (result?.success !== false) {
+        const isLoggedIn = typeof window !== "undefined"
+          ? window.localStorage.getItem("isLoggedIn")
+          : null;
+        if (isLoggedIn) {
+          router.push("/admin-dashboard");
+        }
+      }
     } catch (error) {
-      console.error("Login component submission error:", error);
+      console.error("Login failed:", error);
     }
   };
 
