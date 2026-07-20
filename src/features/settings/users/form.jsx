@@ -1,35 +1,39 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import { Form, Input, Select, Switch, Row, Col } from "antd";
-import { useDispatch, useSelector } from "react-redux";
-// import { fetchOptions } from "@/redux/options/actions";
-// import {
-//     selectSpecificEntityLoading,
-//     selectSpecificEntityData,
-// } from "@/redux/options/selectors"; // अपने Redux पाथ के अनुसार बदलें
+import { useGetDynamicOptionsQuery } from "@/store/redux/dynamic/action";
 
 export default function UserForm({ isUpdateForm = false }) {
-    // const dispatch = useDispatch();
-    // const hasFetchedOptions = useRef(false);
+    // Dropdown options via RTK Query using 'options' endPoint
+    const { data: rolesData = [], isLoading: loadingRoles } =
+        useGetDynamicOptionsQuery({ entity: "role", endPoint: "options" });
+    const { data: workspacesData = [], isLoading: loadingWorkspaces } =
+        useGetDynamicOptionsQuery({ entity: "workspace", endPoint: "options" });
+    const { data: usersData = [], isLoading: loadingUsers } =
+        useGetDynamicOptionsQuery({ entity: "user", endPoint: "options" });
 
-    // Dropdown ऑप्शंस फ़ेच करना (Roles, Workspaces, Users)
-    // useEffect(() => {
-    //     if (!hasFetchedOptions.current) {
-    //         hasFetchedOptions.current = true;
-    //         dispatch(fetchOptions("role"));
-    //         dispatch(fetchOptions("workspace"));
-    //         dispatch(fetchOptions("user")); // 'reportsTo' (Manager) सिलेक्ट करने के लिए
-    //     }
-    // }, [dispatch]);
+    const roles = Array.isArray(rolesData)
+        ? rolesData
+        : Array.isArray(rolesData?.result)
+        ? rolesData.result
+        : Array.isArray(rolesData?.items)
+        ? rolesData.items
+        : [];
 
-    // Redux Selectors से डेटा निकालना
-    // const roles = useSelector((state) => selectSpecificEntityData(state, "role")) || [];
-    // const workspaces = useSelector((state) => selectSpecificEntityData(state, "workspace")) || [];
-    // const users = useSelector((state) => selectSpecificEntityData(state, "user")) || [];
+    const workspaces = Array.isArray(workspacesData)
+        ? workspacesData
+        : Array.isArray(workspacesData?.result)
+        ? workspacesData.result
+        : Array.isArray(workspacesData?.items)
+        ? workspacesData.items
+        : [];
 
-    // Loading States
-    // const loadingRoles = useSelector((state) => selectSpecificEntityLoading(state, "role"));
-    // const loadingWorkspaces = useSelector((state) => selectSpecificEntityLoading(state, "workspace"));
-    // const loadingUsers = useSelector((state) => selectSpecificEntityLoading(state, "user"));
+    const users = Array.isArray(usersData)
+        ? usersData
+        : Array.isArray(usersData?.result)
+        ? usersData.result
+        : Array.isArray(usersData?.items)
+        ? usersData.items
+        : [];
 
     return (
         <>
@@ -84,7 +88,7 @@ export default function UserForm({ isUpdateForm = false }) {
                 </Col>
             </Row>
 
-            {/* Password - केवल Create Form में Required होना चाहिए, Update में ऑप्शनल या हिडन */}
+            {/* Password */}
             {!isUpdateForm && (
                 <Form.Item
                     label="Password"
@@ -97,51 +101,57 @@ export default function UserForm({ isUpdateForm = false }) {
 
             <Row gutter={16}>
                 {/* Role Assignment */}
-                {/* <Col span={12}>
+                <Col span={12}>
                     <Form.Item
                         label="Assign Role"
                         name="role"
                         rules={[{ required: true, message: "Please select a role" }]}
                     >
-                        <Select placeholder="Select Role" loading={loadingRoles} showSearch filterOption={(input, option) => option.children.toLowerCase().includes(input.toLowerCase())}>
-                            {roles.map((role) => (
-                                <Select.Option key={role._id} value={role._id}>
-                                    {role.name}
-                                </Select.Option>
-                            ))}
-                        </Select>
+                        <Select
+                            placeholder="Select Role"
+                            loading={loadingRoles}
+                            showSearch
+                            optionFilterProp="label"
+                            options={roles.map((role) => ({
+                                label: role.name || role.title,
+                                value: String(role._id || role.id),
+                            }))}
+                        />
                     </Form.Item>
-                </Col> */}
+                </Col>
 
                 {/* Reports To (Manager) */}
-                {/* <Col span={12}>
+                <Col span={12}>
                     <Form.Item label="Reports To (Manager)" name="reportsTo">
-                        <Select placeholder="Select Manager" loading={loadingUsers} allowClear showSearch filterOption={(input, option) => option.children.toLowerCase().includes(input.toLowerCase())}>
-                            {users.map((u) => (
-                                <Select.Option key={u._id} value={u._id}>
-                                    {u.fullname} ({u.username})
-                                </Select.Option>
-                            ))}
-                        </Select>
+                        <Select
+                            placeholder="Select Manager"
+                            loading={loadingUsers}
+                            allowClear
+                            showSearch
+                            optionFilterProp="label"
+                            options={users.map((u) => ({
+                                label: `${u.fullname || u.name || u.username} (${u.username})`,
+                                value: String(u._id || u.id),
+                            }))}
+                        />
                     </Form.Item>
-                </Col> */}
+                </Col>
             </Row>
 
             {/* Workspace Multiple Selection */}
-            {/* <Form.Item label="Workspaces" name="workspace">
+            <Form.Item label="Workspaces" name="workspace">
                 <Select
                     mode="multiple"
                     placeholder="Select Workspaces"
                     loading={loadingWorkspaces}
                     allowClear
-                >
-                    {workspaces.map((ws) => (
-                        <Select.Option key={ws._id} value={ws._id}>
-                            {ws.name}
-                        </Select.Option>
-                    ))}
-                </Select>
-            </Form.Item> */}
+                    optionFilterProp="label"
+                    options={workspaces.map((ws) => ({
+                        label: ws.name || ws.title,
+                        value: String(ws._id || ws.id),
+                    }))}
+                />
+            </Form.Item>
 
             <Row gutter={16}>
                 {/* Account Enabled Switch */}

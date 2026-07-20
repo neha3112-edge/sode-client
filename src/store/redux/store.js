@@ -1,14 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { dynamicApi } from "./dynamic/action";
-import { authApi } from "./auth/action"; // 👈 Auth API slice import kiya
+import { authApi } from "./auth/action";
+import crudReducer from "./crud/slice";
 
 export const store = configureStore({
   reducer: {
-    // Dono API services ke reducers yahan register ho gaye
+    crud: crudReducer,
     [dynamicApi.reducerPath]: dynamicApi.reducer,
     [authApi.reducerPath]: authApi.reducer,
   },
-  // Dono API slices ke caching aur stream middlewares ko sequence mein inject kiya
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
       .concat(dynamicApi.middleware)

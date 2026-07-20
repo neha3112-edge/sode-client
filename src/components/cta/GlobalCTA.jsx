@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import BottomCTA from "./BottomCTA";
 import FloatingButton from "./FloatingButton";
 import FormWrapper from "@/components/forms/FormWrapper";
+import { getAssetPath } from "@/lib/utils";
 
 export default function GlobalCTA({
   whatsappPhone = "917065777755",
@@ -19,7 +20,7 @@ export default function GlobalCTA({
   brochureFormSubtitle = "Select your preferred course to receive the brochure",
   brochureFormName = "SODE Mobile Bottom Brochure Form",
 
-  brochureUrl = "/assets/pdf/mba_overall.pdf",
+  brochureUrl = getAssetPath("/assets/pdf/mba_overall.pdf"),
   showBrochureFormOnClick = true,
   dynamicCourseBrochures = true,
   ...formProps

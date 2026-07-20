@@ -1,25 +1,11 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import { Form, Input, Select, Switch, InputNumber, Row, Col } from "antd";
 
 export default function CourseForm({ isUpdateForm = false }) {
-  const [form] = Form.useForm();
-
-  // Auto-generate slug from title if title changes on create form
-  const handleTitleChange = (e) => {
-    if (!isUpdateForm) {
-      const titleValue = e.target.value;
-      const generatedSlug = titleValue
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)+/g, "");
-      form.setFieldsValue({ slug: generatedSlug });
-    }
-  };
-
   return (
-    <Form form={form} layout="vertical">
+    <>
       <Row gutter={16}>
         <Col span={12}>
           <Form.Item
@@ -27,10 +13,7 @@ export default function CourseForm({ isUpdateForm = false }) {
             label="Course Title"
             rules={[{ required: true, message: "Please enter course title" }]}
           >
-            <Input
-              placeholder="e.g. Doctor of Business Administration"
-              onChange={handleTitleChange}
-            />
+            <Input placeholder="e.g. Doctor of Business Administration" />
           </Form.Item>
         </Col>
 
@@ -190,6 +173,6 @@ export default function CourseForm({ isUpdateForm = false }) {
           </Form.Item>
         </Col>
       </Row>
-    </Form>
+    </>
   );
 }

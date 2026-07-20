@@ -36,27 +36,21 @@ const errorHandler = (error) => {
     };
   }
 
-  if (typeof window !== "undefined" && response?.data?.jwtExpired) {
-    const auth = window.localStorage.getItem("auth");
-    const logoutData = window.localStorage.getItem("isLogout");
-
-    let isLogout = false;
-
-    try {
-      if (logoutData) {
-        const parsedLogoutData = JSON.parse(logoutData);
-        isLogout = parsedLogoutData?.isLogout || false;
-      }
-    } catch (parseError) {
-      console.error("Failed to parse logout data:", parseError);
-    }
-
+  if (
+    typeof window !== "undefined" &&
+    (response?.status === 401 ||
+      response?.data?.jwtExpired ||
+      response?.data?.tokenExpired)
+  ) {
     window.localStorage.removeItem("auth");
+    window.localStorage.removeItem("isLoggedIn");
     window.localStorage.removeItem("isLogout");
-
-    if (auth || isLogout) {
-      window.location.href = "/";
-    }
+    window.location.href = "/login";
+    return {
+      success: false,
+      result: null,
+      message: "Session expired. Please log in again.",
+    };
   }
 
   if (response?.status) {

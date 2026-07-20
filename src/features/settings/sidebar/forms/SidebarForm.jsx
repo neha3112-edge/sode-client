@@ -1,5 +1,6 @@
 import React from "react";
 import { Form, Input, InputNumber, Select, Switch } from "antd";
+import { useGetDynamicOptionsQuery } from "@/store/redux/dynamic/action";
 
 const iconLibraries = [
   "lucide",
@@ -15,17 +16,19 @@ const iconLibraries = [
 ];
 
 export default function SidebarForm() {
+  const { data: rolesData = [], isLoading: loadingRoles } =
+    useGetDynamicOptionsQuery({ entity: "role", endPoint: "options" });
+
+  const roles = Array.isArray(rolesData)
+    ? rolesData
+    : Array.isArray(rolesData?.result)
+    ? rolesData.result
+    : Array.isArray(rolesData?.items)
+    ? rolesData.items
+    : [];
+
   return (
     <>
-      <Form.Item
-        label="Enabled"
-        name="enabled"
-        valuePropName="checked"
-        initialValue={true}
-      >
-        <Switch />
-      </Form.Item>
-
       <Form.Item
         label="Title"
         name="title"
@@ -55,13 +58,9 @@ export default function SidebarForm() {
         name={["icon", "library"]}
         initialValue="lucide"
       >
-        <Select>
-          {iconLibraries.map((lib) => (
-            <Select.Option key={lib} value={lib}>
-              {lib}
-            </Select.Option>
-          ))}
-        </Select>
+        <Select
+          options={iconLibraries.map((lib) => ({ label: lib, value: lib }))}
+        />
       </Form.Item>
 
       <Form.Item
@@ -76,20 +75,13 @@ export default function SidebarForm() {
         <Input placeholder="/admin/dashboard" />
       </Form.Item>
 
-      {/* Future me Parent Sidebar dropdown laga sakte ho */}
-      {/* <Form.Item label="Parent Menu" name="parentId">
-        <Select
-          placeholder="Select Parent"
-          allowClear
-          options={parentOptions}
-        />
-      </Form.Item> */}
-
       <Form.Item label="Target" name="target" initialValue="_self">
-        <Select>
-          <Select.Option value="_self">Same Tab (_self)</Select.Option>
-          <Select.Option value="_blank">New Tab (_blank)</Select.Option>
-        </Select>
+        <Select
+          options={[
+            { label: "Same Tab (_self)", value: "_self" },
+            { label: "New Tab (_blank)", value: "_blank" },
+          ]}
+        />
       </Form.Item>
 
       <Form.Item
@@ -109,14 +101,28 @@ export default function SidebarForm() {
         <Input placeholder="red / green / blue" />
       </Form.Item>
 
-      {/* Future me Roles API se load kar lena */}
-      {/* <Form.Item label="Roles" name="roles">
+      <Form.Item label="Roles" name="roles">
         <Select
           mode="multiple"
           placeholder="Select Roles"
-          options={roleOptions}
+          loading={loadingRoles}
+          allowClear
+          optionFilterProp="label"
+          options={roles.map((role) => ({
+            label: role.name || role.title,
+            value: String(role._id || role.id),
+          }))}
         />
-      </Form.Item> */}
+      </Form.Item>
+
+      <Form.Item
+        label="Enabled"
+        name="enabled"
+        valuePropName="checked"
+        initialValue={true}
+      >
+        <Switch />
+      </Form.Item>
     </>
   );
 }

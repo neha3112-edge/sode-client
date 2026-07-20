@@ -2,10 +2,8 @@
 
 import { useState } from "react";
 import { Container } from "@/components/ui/container";
-import { faqs as defaultFaqs } from "@/constants/faqData";
-
-export function FAQ({ initialFaqs = defaultFaqs }) {
-  const faqsList = initialFaqs || defaultFaqs;
+export function FAQ({ initialFaqs = [] }) {
+  const faqsList = Array.isArray(initialFaqs) ? initialFaqs : [];
   const [openIdx, setOpenIdx] = useState(null);
 
   const toggle = (idx) => {

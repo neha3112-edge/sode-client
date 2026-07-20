@@ -12,6 +12,8 @@ import { Table, Button, Input, Space, Tooltip } from "antd";
 import useLanguage from "@/components/common/locale/userLanguage";
 import { dataForTable } from "@/components/common/locale/dataStructure";
 import { useGetDynamicListQuery } from "@/store/redux/dynamic/action";
+import { useDispatch } from "react-redux";
+import { crud } from "@/store/redux/crud/slice";
 import { useCrudContext } from "@/context/crud";
 import { Undo2 } from "lucide-react";
 import PageHeader from "./PageHeader";
@@ -106,10 +108,13 @@ export default function DataTable({ config, extra = [] }) {
     setPageOptions((prev) => ({ ...prev, page: 1 }));
   };
 
+  const reduxDispatch = useDispatch();
+
   // ==========================================
   // CLICK HANDLERS
   // ==========================================
   const handleRead = (record) => {
+    reduxDispatch(crud.currentItem({ data: record }));
     contextDispatch({ type: "OPEN_READ_BOX", payload: record });
     if (panel?.open) panel.open();
     if (collapsedBox?.open) collapsedBox.open();
@@ -117,6 +122,8 @@ export default function DataTable({ config, extra = [] }) {
   };
 
   const handleEdit = (record) => {
+    reduxDispatch(crud.currentItem({ data: record }));
+    reduxDispatch(crud.currentAction({ actionType: "update", data: record }));
     contextDispatch({ type: "OPEN_EDIT_BOX", payload: record });
     if (editBox?.open) editBox.open();
     if (panel?.open) panel.open();
@@ -124,11 +131,14 @@ export default function DataTable({ config, extra = [] }) {
   };
 
   const handleDelete = (record) => {
+    reduxDispatch(crud.currentAction({ actionType: "delete", data: record }));
     contextDispatch({ type: "OPEN_MODAL", payload: record });
     if (modal?.open) modal.open();
   };
 
   const handleUpdatePassword = (record) => {
+    reduxDispatch(crud.currentItem({ data: record }));
+    reduxDispatch(crud.currentAction({ actionType: "update", data: record }));
     contextDispatch({ type: "OPEN_ADVANCED_BOX", payload: record });
     if (advancedBox?.open) advancedBox.open();
     if (panel?.open) panel.open();

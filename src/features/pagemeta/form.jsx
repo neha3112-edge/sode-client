@@ -4,10 +4,8 @@ import React from "react";
 import { Form, Input, Switch, Row, Col } from "antd";
 
 export default function PageMetaForm({ isUpdateForm = false }) {
-  const [form] = Form.useForm();
-
   return (
-    <Form form={form} layout="vertical">
+    <>
       <Row gutter={16}>
         <Col span={12}>
           <Form.Item
@@ -99,6 +97,6 @@ export default function PageMetaForm({ isUpdateForm = false }) {
           </Form.Item>
         </Col>
       </Row>
-    </Form>
+    </>
   );
 }

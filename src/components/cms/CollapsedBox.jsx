@@ -45,15 +45,17 @@ export default function CollapseBox({
   buttonTitle,
   isCollapsed,
   onCollapse,
+  showButton = false,
 }) {
   return (
     <>
-      {/* ⚡ FIXED: बटन को रेंडर किया ताकि फ़ॉर्म ओपन/क्लोज़ एक्शन काम करे */}
-      <CollapseBoxButton
-        title={buttonTitle}
-        onChange={onCollapse}
-        isCollapsed={isCollapsed}
-      />
+      {showButton && (
+        <CollapseBoxButton
+          title={buttonTitle}
+          onChange={onCollapse}
+          isCollapsed={isCollapsed}
+        />
+      )}
       <TopCollapseBox isOpen={isCollapsed}>{topContent}</TopCollapseBox>
       <BottomCollapseBox isOpen={isCollapsed}>
         {bottomContent}

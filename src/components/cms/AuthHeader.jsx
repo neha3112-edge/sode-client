@@ -25,8 +25,16 @@ export default function AuthHeader() {
   const [triggerLogout, { isLoading: isLogoutLoading }] = useLogoutMutation();
 
   const handleSignOut = async () => {
-    await triggerLogout();
-    router.push("/login");
+    try {
+      await triggerLogout().unwrap();
+    } catch (e) {
+      console.error("Logout error:", e);
+    } finally {
+      if (typeof window !== "undefined") {
+        window.localStorage.clear();
+        window.location.href = "/login";
+      }
+    }
   };
 
   return (

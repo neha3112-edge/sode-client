@@ -9,22 +9,22 @@ export function Stats() {
     {
       value: "50%",
       label: "Avg. Salary Hike",
-      icon: "/assets/images/salary-hike-logo.jpg",
+      icon: getAssetPath("/assets/images/salary-hike-logo.jpg"),
     },
     {
       value: "15K+",
       label: "Professionals Enrolled",
-      icon: "/assets/images/professional-enrolled-logo.jpg",
+      icon: getAssetPath("/assets/images/professional-enrolled-logo.jpg"),
     },
     {
       value: "50+",
       label: "Certification Courses",
-      icon: "/assets/images/certification-logo.jpg",
+      icon: getAssetPath("/assets/images/certification-logo.jpg"),
     },
     {
       value: "20+",
       label: "IIT, IIM, Global University",
-      icon: "/assets/images/global-university-logo.jpg",
+      icon: getAssetPath("/assets/images/global-university-logo.jpg"),
     },
   ];
 

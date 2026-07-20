@@ -1,6 +1,7 @@
 import Script from "next/script";
 import JsonLd from "@/components/common/JsonLd";
 import GlobalCTA from "@/components/cta/GlobalCTA";
+import CookieConsent from "@/components/common/CookieConsent";
 import { getPageMetaData } from "@/constants/pageMetaData";
 import { getSiteSettingData } from "@/constants/siteSettingData";
 
@@ -125,6 +126,9 @@ export default async function WebsiteLayout({ children }) {
 
       {/* GLOBAL FLOATING SCHOLARSHIP BUTTON & MOBILE BOTTOM CTA */}
       {siteSetting.showGlobalCta !== false && <GlobalCTA />}
+
+      {/* COOKIE CONSENT BANNER FOR PUBLIC WEBSITE */}
+      <CookieConsent />
 
       {/* GOOGLE TAG MANAGER SCRIPT */}
       {gtmId && (

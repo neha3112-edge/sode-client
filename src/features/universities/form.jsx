@@ -5,22 +5,8 @@ import { Form, Input, Select, Switch, InputNumber, Row, Col, Button, Space } fro
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 
 export default function UniversityForm({ isUpdateForm = false }) {
-  const [form] = Form.useForm();
-
-  // Auto-generate slug from name on create form
-  const handleNameChange = (e) => {
-    if (!isUpdateForm) {
-      const nameValue = e.target.value;
-      const generatedSlug = nameValue
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)+/g, "");
-      form.setFieldsValue({ slug: generatedSlug });
-    }
-  };
-
   return (
-    <Form form={form} layout="vertical">
+    <>
       <Row gutter={16}>
         <Col span={12}>
           <Form.Item
@@ -28,10 +14,7 @@ export default function UniversityForm({ isUpdateForm = false }) {
             label="University Name"
             rules={[{ required: true, message: "Please enter university name" }]}
           >
-            <Input
-              placeholder="e.g. Golden Gate University"
-              onChange={handleNameChange}
-            />
+            <Input placeholder="e.g. Golden Gate University" />
           </Form.Item>
         </Col>
 
@@ -175,6 +158,6 @@ export default function UniversityForm({ isUpdateForm = false }) {
           </Form.Item>
         </Col>
       </Row>
-    </Form>
+    </>
   );
 }

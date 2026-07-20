@@ -4,10 +4,8 @@ import React from "react";
 import { Form, Input, Switch, Select, Row, Col } from "antd";
 
 export default function SiteSettingForm({ isUpdateForm = false }) {
-  const [form] = Form.useForm();
-
   return (
-    <Form form={form} layout="vertical">
+    <>
       <Row gutter={16}>
         <Col span={12}>
           <Form.Item
@@ -122,6 +120,6 @@ export default function SiteSettingForm({ isUpdateForm = false }) {
       <Form.Item name="footerScript" label="Custom Footer Chat / Tracking Script">
         <Input.TextArea rows={3} placeholder="<!-- Custom footer code -->" />
       </Form.Item>
-    </Form>
+    </>
   );
 }

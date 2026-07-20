@@ -1,4 +1,5 @@
 import { API_BASE_URL } from "@/config";
+import { getAssetPath } from "@/lib/utils";
 
 const SITE_NAME = "SODE";
 const SITE_URL = "https://sode.co.in";
@@ -9,12 +10,12 @@ const DEFAULT_SITE_SETTING = {
   siteUrl: SITE_URL,
   gtmId: "GTM-567GP8S9",
   googleAdsIds: ["AW-17917271919", "AW-17946162864"],
-  faviconIco: "/assets/images/favicon.ico",
-  faviconSvg: "/assets/images/favicon.svg",
-  favicon96: "/assets/images/favicon-96x96.png",
-  appleTouchIcon: "/assets/images/apple-touch-icon.png",
-  webmanifest: "/assets/images/site.webmanifest",
-  ogImage: `${SITE_URL}/assets/images/sode-homepage-og-card-image.png`,
+  faviconIco: getAssetPath("/assets/images/favicon.ico"),
+  faviconSvg: getAssetPath("/assets/images/favicon.svg"),
+  favicon96: getAssetPath("/assets/images/favicon-96x96.png"),
+  appleTouchIcon: getAssetPath("/assets/images/apple-touch-icon.png"),
+  webmanifest: getAssetPath("/assets/images/site.webmanifest"),
+  ogImage: `${SITE_URL}/media/images/2026/07/20/sode-homepage-og-card-image.png`,
   showGlobalCta: true,
   headerScript: null,
   footerScript: null,

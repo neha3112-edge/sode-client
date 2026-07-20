@@ -7,6 +7,7 @@ import DisclaimerContent from "@/components/common/legal/DisclaimerContent";
 import PrivacyContent from "@/components/common/legal/PrivacyContent";
 import TermsContent from "@/components/common/legal/TermsContent";
 import FormWrapper from "@/components/forms/FormWrapper";
+import { getAssetPath } from "@/lib/utils";
 
 import {
   UNIVERSITIES as defaultUniversities,
@@ -91,7 +92,7 @@ export function Footer({
               <div className="flex flex-col items-start md:col-span-2 lg:col-span-4">
                 <div className="relative mb-5 h-20 w-[200px] md:w-[230px]">
                   <Image
-                    src="/assets/images/sode_footer_logo.png"
+                    src={getAssetPath("/assets/images/sode_footer_logo.png")}
                     alt="School of Online and Distance Education"
                     fill
                     sizes="230px"
@@ -222,7 +223,7 @@ export function Footer({
                     title="Pinterest"
                   >
                     <Image
-                      src="/assets/images/pinterest.png"
+                      src={getAssetPath("/assets/images/pinterest.png")}
                       alt="Pinterest"
                       width={32}
                       height={32}

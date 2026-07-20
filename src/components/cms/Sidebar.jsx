@@ -22,7 +22,9 @@ import * as RiIcons from "react-icons/ri";
 import * as GiIcons from "react-icons/gi";
 
 import { useGetDynamicListQuery } from "@/store/redux/dynamic/action";
+import { useLogoutMutation } from "@/store/redux/auth/action";
 import { useAppContext } from "@/context/app";
+import { getAssetPath } from "@/lib/utils";
 
 const { Sider } = Layout;
 
@@ -32,11 +34,26 @@ export default function Sidebar() {
   const activeItem = pathname;
   const [openDropdown, setOpenDropdown] = useState({});
 
-  // ⚡ Context से स्टेट और एक्शन्स निकालना
+  const [triggerLogout] = useLogoutMutation();
+
+  const handleLogout = async () => {
+    try {
+      await triggerLogout().unwrap();
+    } catch (e) {
+      console.error("Logout error:", e);
+    } finally {
+      if (typeof window !== "undefined") {
+        window.localStorage.clear();
+        window.location.href = "/login";
+      }
+    }
+  };
+
+  // Context से स्टेट और एक्शन्स निकालना
   const { state, appContextAction } = useAppContext();
   const collapsed = state.isNavMenuClose;
 
-  // ⚡ RTK Query से सीधे डायनेमिक ट्री डेटा फ़ेच करना
+  // RTK Query से सीधे डायनेमिक ट्री डेटा फ़ेच करना
   const { data: sidebarData, isLoading } = useGetDynamicListQuery({
     entity: "sidebar",
     endPoint: "tree",
@@ -47,7 +64,7 @@ export default function Sidebar() {
     ? sidebarData
     : sidebarData?.items || sidebarData?.result || [];
 
-  // ✅ ICON LIBRARIES MAP
+  // ICON LIBRARIES MAP
   const iconLibraries = {
     lucide: LucideIcons,
     fa: FaIcons,
@@ -61,7 +78,7 @@ export default function Sidebar() {
     gi: GiIcons,
   };
 
-  // ✅ RENDER ICON MULTI-LIBRARY SYSTEM
+  // RENDER ICON MULTI-LIBRARY SYSTEM
   const renderIcon = (icon) => {
     if (!icon) return null;
     if (icon.library) {
@@ -69,7 +86,7 @@ export default function Sidebar() {
       if (IconSet) {
         const IconComponent = IconSet[icon.name];
         if (IconComponent) {
-          return <IconComponent size={16} />;
+          return <IconComponent size={18} />;
         }
       }
     }
@@ -79,73 +96,53 @@ export default function Sidebar() {
     return null;
   };
 
-  const handleClick = (item) => {
-    if (item.newTab) {
-      window.open(item.path, "_blank");
-    } else {
-      router.push(item.path);
-    }
-  };
-
-  // ✅ ANTD ITEMS STRUCTURE BUILDER
+  // ANTD ITEMS STRUCTURE BUILDER (Using official Ant Design icon + label props)
   const getAntdItems = (menuItems = []) =>
     menuItems.map((item) => {
       const key = item.path || item._id;
       const hasChildren = item.children?.length > 0;
+      const iconNode = renderIcon(item.icon);
 
-      const content = (
-        <span className="flex items-center gap-2 text-gray-600 w-full font-medium">
-          {renderIcon(item.icon)}
-          {!collapsed && <span className="truncate">{item.title}</span>}
-          {!collapsed && item.badge?.value && (
+      const labelContent = (
+        <span className="flex items-center justify-between w-full font-medium">
+          <span className="truncate">{item.title}</span>
+          {item.badge?.value && (
             <Badge
               count={item.badge.value}
               style={{
                 backgroundColor: item.badge.color || "#ff4d4f",
-                marginLeft: "auto",
+                marginLeft: 8,
               }}
             />
           )}
         </span>
       );
 
-      const label = hasChildren ? (
-        content
-      ) : item.path ? (
+      const label = item.path ? (
         <Link href={item.path} target={item.newTab ? "_blank" : "_self"}>
-          {content}
+          {labelContent}
         </Link>
       ) : (
-        content
+        labelContent
       );
 
       if (hasChildren) {
         return {
           key,
-          label: collapsed ? (
-            <Tooltip title={item.title} placement="right">
-              {content}
-            </Tooltip>
-          ) : (
-            label
-          ),
+          icon: iconNode,
+          label,
           children: getAntdItems(item.children),
         };
       }
 
       return {
         key,
-        label: collapsed ? (
-          <Tooltip title={item.title} placement="right">
-            {label}
-          </Tooltip>
-        ) : (
-          label
-        ),
+        icon: iconNode,
+        label,
       };
     });
 
-  // ✅ GROUP ITEMS BY SECTION
+  // GROUP ITEMS BY SECTION
   const menuConfigStructure = useMemo(() => {
     const grouped = {};
     dataSource.forEach((item) => {
@@ -165,7 +162,7 @@ export default function Sidebar() {
     }));
   }, [dataSource, collapsed]);
 
-  // ✅ BOTTOM PROFILE DROPDOWN MENU
+  // BOTTOM PROFILE DROPDOWN MENU
   const profileMenuItems = [
     {
       key: "profile",
@@ -184,7 +181,7 @@ export default function Sidebar() {
       key: "logout",
       icon: <LogoutOutlined className="text-red-500" />,
       label: <span className="text-red-500 font-medium">Logout</span>,
-      onClick: () => console.log("User logged out"),
+      onClick: handleLogout,
     },
   ];
 
@@ -212,7 +209,7 @@ export default function Sidebar() {
         {collapsed ? (
           <div className="relative w-8 h-8 flex items-center justify-center">
             <Image
-              src="/assets/images/sode-icon.png"
+              src={getAssetPath("/assets/images/sode-icon.png")}
               alt="SODE Icon"
               fill
               sizes="32px"
@@ -224,7 +221,7 @@ export default function Sidebar() {
         ) : (
           <div className="relative w-36 h-10 flex items-center justify-center">
             <Image
-              src="/assets/images/SODE-LOGO.png"
+              src={getAssetPath("/assets/images/SODE-LOGO.png")}
               alt="SODE Logo"
               fill
               sizes="150px"

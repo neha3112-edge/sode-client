@@ -3,6 +3,7 @@ import axios from "axios";
 import { API_BASE_URL } from "@/config";
 import errorHandler from "@/services/request/error";
 import successHandler from "@/services/request/success";
+import { dynamicApi } from "../dynamic/action";
 
 const axiosBaseQuery =
   () =>
@@ -11,8 +12,12 @@ const axiosBaseQuery =
       if (withCredentials) {
         axios.defaults.withCredentials = true;
       }
+      const targetUrl = url.startsWith("http")
+        ? url
+        : `${API_BASE_URL.replace(/\/+$/, "")}/${url.replace(/^\/+/, "")}`;
+
       const response = await axios({
-        url: API_BASE_URL + url,
+        url: targetUrl,
         method,
         data,
         params,
@@ -60,6 +65,7 @@ export const authApi = createApi({
               isOTPVerified: true,
             };
             if (typeof window !== "undefined") {
+              window.localStorage.clear();
               window.localStorage.setItem("auth", JSON.stringify(syncState));
               window.localStorage.setItem("isLoggedIn", "true");
             }
@@ -70,16 +76,14 @@ export const authApi = createApi({
       },
     }),
 
-    // 🎯 FIXED & OPTIMIZED: अब लॉगआउट की पूरी जिम्मेदारी Redux Lifecycle की है
     logout: builder.mutation({
       query: () => ({
         url: "user/logout",
         method: "POST",
         withCredentials: true,
       }),
-      async onQueryStarted(args, { queryFulfilled }) {
+      async onQueryStarted(args, { dispatch, queryFulfilled }) {
         try {
-          // API कॉल के पूरा होने का इंतज़ार करें
           await queryFulfilled;
         } catch (err) {
           console.error(
@@ -87,11 +91,11 @@ export const authApi = createApi({
             err,
           );
         } finally {
-          // 🧠 सेंट्रलाइज्ड क्लीनअप: चाहे API सक्सेस हो या फेल (सर्वर डाउन हो), लोकल स्टोरेज हमेशा साफ होगा
           if (typeof window !== "undefined") {
-            window.localStorage.removeItem("isLoggedIn");
-            window.localStorage.removeItem("auth");
+            window.localStorage.clear();
           }
+          dispatch(dynamicApi.util.resetApiState());
+          dispatch(authApi.util.resetApiState());
         }
       },
     }),

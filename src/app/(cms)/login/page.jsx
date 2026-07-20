@@ -10,6 +10,7 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { useLoginMutation } from "@/store/redux/auth/action";
+import { getAssetPath } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
@@ -19,6 +20,16 @@ export default function LoginPage() {
   // RTK Mutation Hook
   const [triggerLogin, { isLoading: isLoginLoading, isSuccess }] =
     useLoginMutation();
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const isLoggedIn = window.localStorage.getItem("isLoggedIn");
+      const auth = window.localStorage.getItem("auth");
+      if (isLoggedIn && auth) {
+        router.replace("/admin-dashboard");
+      }
+    }
+  }, [router]);
 
   useEffect(() => {
     if (isSuccess) {
@@ -99,7 +110,7 @@ export default function LoginPage() {
           {/* Logo */}
           <div className="mb-6">
             <Image
-              src="/assets/images/new_sode_tm_logo.png"
+              src={getAssetPath("/assets/images/new_sode_tm_logo.png")}
               alt="SODE Logo"
               width={85}
               height={85}
