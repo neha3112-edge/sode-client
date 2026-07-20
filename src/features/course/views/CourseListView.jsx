@@ -57,12 +57,15 @@ export default function CourseListView({ initialCourses }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
 
-  const courses = initialCourses || INITIAL_COURSES;
+  const courses = Array.isArray(initialCourses) && initialCourses.length > 0 ? initialCourses : INITIAL_COURSES;
 
   const filteredCourses = courses.filter((course) => {
-    const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          course.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = activeCategory === "all" || course.category === activeCategory;
+    const titleText = (course?.title || "").toLowerCase();
+    const descText = (course?.description || "").toLowerCase();
+    const query = searchTerm.toLowerCase();
+
+    const matchesSearch = titleText.includes(query) || descText.includes(query);
+    const matchesCategory = activeCategory === "all" || course?.category === activeCategory;
     return matchesSearch && matchesCategory;
   });
 
@@ -148,7 +151,7 @@ export default function CourseListView({ initialCourses }) {
                 <div className="mb-6">
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2">Target Career Roles</span>
                   <div className="flex gap-1.5 flex-wrap">
-                    {course.jobs.map((job, idx) => (
+                    {(course.jobs || ["Management Lead", "Career Expert"]).map((job, idx) => (
                       <Tag key={idx} className="bg-slate-50 text-slate-600 border-slate-200 text-xs font-semibold rounded px-2 m-0">
                         {job}
                       </Tag>

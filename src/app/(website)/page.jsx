@@ -15,8 +15,33 @@ import { getAboutData } from "@/constants/aboutData";
 import { getFaqData } from "@/constants/faqData";
 import { getTestimonialsData } from "@/constants/testimonialsData";
 import { getFooterData } from "@/constants/footerData";
+import { getPageMetaData } from "@/constants/pageMetaData";
 
 export const revalidate = 300; // Next.js ISR: Revalidate cache every 5 minutes
+
+export async function generateMetadata() {
+  const pageMeta = await getPageMetaData("/");
+
+  return {
+    title: pageMeta.title,
+    description: pageMeta.description,
+    keywords: pageMeta.keywords,
+    alternates: {
+      canonical: pageMeta.canonicalUrl,
+    },
+    openGraph: {
+      title: pageMeta.ogTitle,
+      description: pageMeta.ogDescription,
+      images: [{ url: pageMeta.ogImage }],
+    },
+    twitter: {
+      card: pageMeta.twitterCard,
+      title: pageMeta.ogTitle,
+      description: pageMeta.ogDescription,
+      images: [pageMeta.ogImage],
+    },
+  };
+}
 
 export default async function Home() {
   const { tabs, programs } = await getCoursesData();

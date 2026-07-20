@@ -120,6 +120,34 @@ export default function UniversityForm({ isUpdateForm = false }) {
 
       <Row gutter={16}>
         <Col span={12}>
+          <Form.Item name="metaTitle" label="SEO Meta Title">
+            <Input placeholder="e.g. Rushford Business School | Online DBA & Executive Programs" />
+          </Form.Item>
+        </Col>
+
+        <Col span={12}>
+          <Form.Item name="metaDescription" label="SEO Meta Description">
+            <Input.TextArea rows={2} placeholder="Meta description for search engines..." />
+          </Form.Item>
+        </Col>
+      </Row>
+
+      <Row gutter={16}>
+        <Col span={12}>
+          <Form.Item name="metaKeywords" label="SEO Keywords">
+            <Input placeholder="e.g. Rushford, Rushford Business School, Switzerland DBA" />
+          </Form.Item>
+        </Col>
+
+        <Col span={12}>
+          <Form.Item name="ogImage" label="Social Preview Image (OG Image)">
+            <Input placeholder="e.g. /assets/images/rushford-image.png" />
+          </Form.Item>
+        </Col>
+      </Row>
+
+      <Row gutter={16}>
+        <Col span={8}>
           <Form.Item name="order" label="Sort Order" initialValue={0}>
             <InputNumber min={0} className="w-full" />
           </Form.Item>

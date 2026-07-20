@@ -3,17 +3,33 @@ import { Header } from "@/components/website/Header";
 import { Footer } from "@/components/website/Footer";
 import UniversityListView from "@/features/university/views/UniversityListView";
 import { getUniversities } from "@/services/api";
+import { getPageMetaData } from "@/constants/pageMetaData";
 
-export const revalidate = 3600; // ISR revalidation: 1 hour
+export const revalidate = 300; // ISR revalidation: 5 minutes
 
-export const metadata = {
-  title: "Top UGC Recognized Distance Universities | Distance Education School",
-  description: "Explore accredited Indian and global partner universities offering distance and online degree programs.",
-  openGraph: {
-    title: "Top UGC Recognized Distance Universities | Distance Education School",
-    description: "Explore accredited Indian and global partner universities offering distance and online degree programs.",
-  },
-};
+export async function generateMetadata() {
+  const pageMeta = await getPageMetaData("/universities");
+
+  return {
+    title: pageMeta.title,
+    description: pageMeta.description,
+    keywords: pageMeta.keywords,
+    alternates: {
+      canonical: pageMeta.canonicalUrl,
+    },
+    openGraph: {
+      title: pageMeta.ogTitle,
+      description: pageMeta.ogDescription,
+      images: [{ url: pageMeta.ogImage }],
+    },
+    twitter: {
+      card: pageMeta.twitterCard,
+      title: pageMeta.ogTitle,
+      description: pageMeta.ogDescription,
+      images: [pageMeta.ogImage],
+    },
+  };
+}
 
 export default async function UniversitiesPage() {
   const initialUniversities = await getUniversities();

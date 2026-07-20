@@ -56,12 +56,15 @@ export default function UniversityListView({ initialUniversities }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("All");
 
-  const universities = initialUniversities || INITIAL_UNIVERSITIES;
+  const universities = Array.isArray(initialUniversities) && initialUniversities.length > 0 ? initialUniversities : INITIAL_UNIVERSITIES;
 
   const filteredUniversities = universities.filter((uni) => {
-    const matchesSearch = uni.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          uni.location.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = activeFilter === "All" || uni.type === activeFilter;
+    const nameText = (uni?.name || "").toLowerCase();
+    const locText = (uni?.location || "").toLowerCase();
+    const query = searchTerm.toLowerCase();
+
+    const matchesSearch = nameText.includes(query) || locText.includes(query);
+    const matchesFilter = activeFilter === "All" || uni?.type === activeFilter;
     return matchesSearch && matchesFilter;
   });
 
@@ -113,66 +116,74 @@ export default function UniversityListView({ initialUniversities }) {
 
         {/* Grid List */}
         <Row gutter={[24, 24]}>
-          {filteredUniversities.map((uni) => (
-            <Col xs={24} sm={12} key={uni.slug}>
-              <Card
-                hoverable
-                className="border border-slate-200/60 rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full flex flex-col"
-                styles={{ body: { padding: "24px", display: "flex", flexDirection: "column", flex: 1 } }}
-              >
-                <div className="flex items-start gap-4 mb-4">
-                  <div 
-                    className="w-12 h-12 rounded-xl flex items-center justify-center text-white text-lg font-bold flex-shrink-0"
-                    style={{ backgroundColor: uni.logoBg }}
-                  >
-                    {uni.name.charAt(0)}
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold text-slate-800 m-0 leading-tight">
-                      {uni.name}
-                    </h3>
-                    <span className="text-xs text-slate-500 font-semibold mt-1 block">
-                      {uni.location}
-                    </span>
-                  </div>
-                </div>
+          {filteredUniversities.map((uni) => {
+            const uniName = uni?.name || "University";
+            const uniLocation = uni?.location || "Accredited Campus";
+            const uniApprovals = Array.isArray(uni?.approvals) && uni.approvals.length > 0 
+              ? uni.approvals 
+              : (Array.isArray(uni?.courses) && uni.courses.length > 0 ? uni.courses : ["Recognized Degree"]);
 
-                <div className="flex gap-1.5 flex-wrap mb-4">
-                  {uni.approvals.map((app, i) => (
-                    <Tag color="blue" key={i} className="font-semibold text-xs border-none rounded bg-blue-50 text-blue-700 px-2 py-0.5 m-0">
-                      <CheckCircleFilled className="mr-1 text-[10px]" /> {app}
-                    </Tag>
-                  ))}
-                </div>
-
-                <div className="h-px bg-slate-100 my-4" />
-
-                <div className="space-y-1 mb-6 flex-grow">
-                  <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Featured Program</span>
-                  <p className="text-sm font-semibold text-slate-700 m-0">
-                    {uni.featuredCourse}
-                  </p>
-                </div>
-
-                <div className="flex justify-between items-center mt-auto">
-                  <div className="flex items-center gap-1.5">
-                    <StarFilled className="text-amber-500 text-sm" />
-                    <span className="text-sm font-bold text-slate-700">{uni.rating}</span>
-                    <span className="text-xs text-slate-400 font-medium">({uni.reviews})</span>
-                  </div>
-
-                  <Link href={`/universities/${uni.slug}`}>
-                    <Button 
-                      type="primary"
-                      className="bg-[#1C3569] hover:!bg-[#122449] border-none font-semibold rounded-lg h-9 px-4 cursor-pointer"
+            return (
+              <Col xs={24} sm={12} key={uni.slug || uni._id}>
+                <Card
+                  hoverable
+                  className="border border-slate-200/60 rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full flex flex-col"
+                  styles={{ body: { padding: "24px", display: "flex", flexDirection: "column", flex: 1 } }}
+                >
+                  <div className="flex items-start gap-4 mb-4">
+                    <div 
+                      className="w-12 h-12 rounded-xl flex items-center justify-center text-white text-lg font-bold flex-shrink-0"
+                      style={{ backgroundColor: uni?.logoBg || "#1C3569" }}
                     >
-                      View Details
-                    </Button>
-                  </Link>
-                </div>
-              </Card>
-            </Col>
-          ))}
+                      {uniName.charAt(0)}
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-slate-800 m-0 leading-tight">
+                        {uniName}
+                      </h3>
+                      <span className="text-xs text-slate-500 font-semibold mt-1 block">
+                        {uniLocation}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-1.5 flex-wrap mb-4">
+                    {uniApprovals.map((app, i) => (
+                      <Tag color="blue" key={i} className="font-semibold text-xs border-none rounded bg-blue-50 text-blue-700 px-2 py-0.5 m-0">
+                        <CheckCircleFilled className="mr-1 text-[10px]" /> {app}
+                      </Tag>
+                    ))}
+                  </div>
+
+                  <div className="h-px bg-slate-100 my-4" />
+
+                  <div className="space-y-1 mb-6 flex-grow">
+                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Featured Program</span>
+                    <p className="text-sm font-semibold text-slate-700 m-0">
+                      {uni?.featuredCourse || (Array.isArray(uni?.courses) ? uni.courses.join(", ") : "Executive & Online Degrees")}
+                    </p>
+                  </div>
+
+                  <div className="flex justify-between items-center mt-auto">
+                    <div className="flex items-center gap-1.5">
+                      <StarFilled className="text-amber-500 text-sm" />
+                      <span className="text-sm font-bold text-slate-700">{uni?.rating || 4.8}</span>
+                      <span className="text-xs text-slate-400 font-medium">({uni?.reviews || 250})</span>
+                    </div>
+
+                    <Link href={`/universities/${uni?.slug || ""}`}>
+                      <Button 
+                        type="primary"
+                        className="bg-[#1C3569] hover:!bg-[#122449] border-none font-semibold rounded-lg h-9 px-4 cursor-pointer"
+                      >
+                        View Details
+                      </Button>
+                    </Link>
+                  </div>
+                </Card>
+              </Col>
+            );
+          })}
         </Row>
 
         {filteredUniversities.length === 0 && (
