@@ -7,11 +7,9 @@ import { dynamicApi } from "../dynamic/action";
 
 const axiosBaseQuery =
   () =>
-  async ({ url, method, data, params, withCredentials = false }) => {
+  async ({ url, method, data, params }) => {
     try {
-      if (withCredentials) {
-        axios.defaults.withCredentials = true;
-      }
+      axios.defaults.withCredentials = true;
       const targetUrl = url.startsWith("http")
         ? url
         : `${API_BASE_URL.replace(/\/+$/, "")}/${url.replace(/^\/+/, "")}`;
@@ -21,6 +19,7 @@ const axiosBaseQuery =
         method,
         data,
         params,
+        withCredentials: true,
       });
 
       successHandler(
