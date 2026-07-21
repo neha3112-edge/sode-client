@@ -33,7 +33,7 @@ export async function generateMetadata() {
 
 export default async function UniversitiesPage() {
   const initialUniversities = await getUniversities();
-  
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />

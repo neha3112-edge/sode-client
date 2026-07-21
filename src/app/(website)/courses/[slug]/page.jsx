@@ -2,32 +2,28 @@ import React from "react";
 import { Header } from "@/components/website/Header";
 import { Footer } from "@/components/website/Footer";
 import CourseDetailView from "@/features/course/views/CourseDetailView";
-import { getCourseBySlug, getCourses } from "@/services/api";
+import { getCourseBySlug } from "@/services/api";
 
-export const revalidate = 3600; // ISR revalidation: 1 hour
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 // Dynamic SEO Metadata Generation
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const course = await getCourseBySlug(slug);
   
+  const title = course?.title || "Course Details";
+  const desc = course?.description?.substring(0, 160) || `Learn more about ${title} distance program eligibility, duration, and fees.`;
+
   return {
-    title: `${course.title} - Distance Education School`,
-    description: course.description?.substring(0, 160) || `Learn more about ${course.title} distance program eligibility, duration, and fees.`,
+    title: `${title} - Distance Education School`,
+    description: desc,
     openGraph: {
-      title: `${course.title} - Distance Education School`,
-      description: course.description?.substring(0, 160),
+      title: `${title} - Distance Education School`,
+      description: desc,
       type: "website",
     }
   };
-}
-
-// Generate static params for SSG
-export async function generateStaticParams() {
-  const courses = await getCourses();
-  return courses.map((course) => ({
-    slug: course.slug,
-  }));
 }
 
 export default async function CourseDetailPage({ params }) {

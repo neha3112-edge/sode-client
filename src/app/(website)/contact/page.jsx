@@ -33,7 +33,7 @@ export default function ContactPage() {
         <Row gutter={[32, 32]}>
           {/* Contact Form */}
           <Col xs={24} md={14}>
-            <Card className="rounded-2xl border border-slate-100 shadow-sm p-6 bg-white" title={<span className="text-lg font-bold text-slate-800">Send us a Message</span>} bordered={false}>
+            <Card className="rounded-2xl border border-slate-100 shadow-sm p-6 bg-white" title={<span className="text-lg font-bold text-slate-800">Send us a Message</span>} variant="borderless">
               <Form layout="vertical" className="space-y-4" onSubmitCapture={(e) => e.preventDefault()}>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Form.Item label="Your Name" required className="m-0">
@@ -69,7 +69,7 @@ export default function ContactPage() {
 
           {/* Contact Details Sidebar */}
           <Col xs={24} md={10} className="space-y-6">
-            <Card className="rounded-2xl border border-slate-100 shadow-sm p-6 bg-white" title={<span className="text-lg font-bold text-slate-800">Contact Information</span>} bordered={false}>
+            <Card className="rounded-2xl border border-slate-100 shadow-sm p-6 bg-white" title={<span className="text-lg font-bold text-slate-800">Contact Information</span>} variant="borderless">
               <div className="space-y-6">
                 <div className="flex gap-4">
                   <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#1C3569] flex items-center justify-center flex-shrink-0">

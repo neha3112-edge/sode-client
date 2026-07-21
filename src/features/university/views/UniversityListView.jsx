@@ -2,8 +2,9 @@
 
 import React, { useState } from "react";
 import { Card, Tag, Input, Button, Row, Col, Space, Breadcrumb } from "antd";
-import { SearchOutlined, CheckCircleFilled, StarFilled } from "@ant-design/icons";
+import { SearchOutlined, CheckCircleFilled, StarFilled, SwapOutlined } from "@ant-design/icons";
 import Link from "next/link";
+import { useCompare } from "@/context/CompareContext";
 
 const INITIAL_UNIVERSITIES = [
   {
@@ -53,6 +54,7 @@ const INITIAL_UNIVERSITIES = [
 ];
 
 export default function UniversityListView({ initialUniversities }) {
+  const { isInCompare, toggleCompare } = useCompare();
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("All");
 
@@ -171,14 +173,27 @@ export default function UniversityListView({ initialUniversities }) {
                       <span className="text-xs text-slate-400 font-medium">({uni?.reviews || 250})</span>
                     </div>
 
-                    <Link href={`/universities/${uni?.slug || ""}`}>
-                      <Button 
-                        type="primary"
-                        className="bg-[#1C3569] hover:!bg-[#122449] border-none font-semibold rounded-lg h-9 px-4 cursor-pointer"
+                    <div className="flex items-center gap-2">
+                      <Button
+                        type={isInCompare(uni?.slug) ? "default" : "dashed"}
+                        onClick={() => toggleCompare(uni)}
+                        icon={<SwapOutlined className={isInCompare(uni?.slug) ? "text-amber-600" : ""} />}
+                        className={`font-semibold rounded-lg h-9 px-3 text-xs cursor-pointer ${
+                          isInCompare(uni?.slug) ? "border-amber-500 bg-amber-50 text-amber-700 font-bold" : "border-slate-300 text-slate-700"
+                        }`}
                       >
-                        View Details
+                        {isInCompare(uni?.slug) ? "In Compare ✓" : "+ Compare"}
                       </Button>
-                    </Link>
+
+                      <Link href={`/universities/${uni?.slug || ""}`}>
+                        <Button 
+                          type="primary"
+                          className="bg-[#1C3569] hover:!bg-[#122449] border-none font-semibold rounded-lg h-9 px-4 cursor-pointer"
+                        >
+                          View Details
+                        </Button>
+                      </Link>
+                    </div>
                   </div>
                 </Card>
               </Col>

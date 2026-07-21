@@ -9,10 +9,12 @@ import {
   ArrowLeftOutlined, 
   FileTextOutlined,
   DollarOutlined,
-  FileProtectOutlined
+  FileProtectOutlined,
+  SwapOutlined
 } from "@ant-design/icons";
 import { Building2, MapPin, GraduationCap } from "lucide-react";
 import Link from "next/link";
+import { useCompare } from "@/context/CompareContext";
 
 const UNI_DETAILS = {
   "golden-gate-university": {
@@ -84,6 +86,7 @@ const UNI_DETAILS = {
 };
 
 export default function UniversityDetailView({ slug: propSlug, initialUniversity }) {
+  const { isInCompare, toggleCompare } = useCompare();
   const params = useParams();
   const router = useRouter();
   const slug = propSlug || params?.slug;
@@ -100,13 +103,26 @@ export default function UniversityDetailView({ slug: propSlug, initialUniversity
             { title: <Link href="/universities">Universities</Link> },
             { title: uni.name }
           ]} />
-          <Button 
-            icon={<ArrowLeftOutlined />} 
-            onClick={() => router.push("/universities")}
-            className="w-fit flex items-center font-semibold rounded-lg h-9 text-slate-600 cursor-pointer"
-          >
-            Back to Universities
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              type={isInCompare(slug) ? "default" : "dashed"}
+              onClick={() => toggleCompare({ ...uni, slug })}
+              icon={<SwapOutlined className={isInCompare(slug) ? "text-amber-600" : ""} />}
+              className={`font-semibold rounded-lg h-9 px-3 text-xs cursor-pointer ${
+                isInCompare(slug) ? "border-amber-500 bg-amber-50 text-amber-700 font-bold" : "border-slate-300 text-slate-700"
+              }`}
+            >
+              {isInCompare(slug) ? "In Compare Bucket ✓" : "+ Add to Compare"}
+            </Button>
+
+            <Button 
+              icon={<ArrowLeftOutlined />} 
+              onClick={() => router.push("/universities")}
+              className="w-fit flex items-center font-semibold rounded-lg h-9 text-slate-600 cursor-pointer"
+            >
+              Back to Universities
+            </Button>
+          </div>
         </div>
 
         {/* Hero Card */}
@@ -150,15 +166,15 @@ export default function UniversityDetailView({ slug: propSlug, initialUniversity
         <Row gutter={[32, 32]}>
           {/* Main Details */}
           <Col xs={24} lg={16} className="space-y-8">
-            <Card className="rounded-2xl border border-slate-100 shadow-sm p-6" title={<span className="text-lg font-bold text-slate-800"><FileTextOutlined className="mr-2 text-blue-600" />About University</span>} bordered={false}>
+            <Card className="rounded-2xl border border-slate-100 shadow-sm p-6" title={<span className="text-lg font-bold text-slate-800"><FileTextOutlined className="mr-2 text-blue-600" />About University</span>} variant="borderless">
               <p className="text-slate-600 leading-relaxed text-sm md:text-base m-0">
                 {uni.description}
               </p>
             </Card>
 
-            <Card className="rounded-2xl border border-slate-100 shadow-sm p-6" title={<span className="text-lg font-bold text-slate-800"><FileProtectOutlined className="mr-2 text-emerald-600" />Accreditations & Approvals</span>} bordered={false}>
+            <Card className="rounded-2xl border border-slate-100 shadow-sm p-6" title={<span className="text-lg font-bold text-slate-800"><FileProtectOutlined className="mr-2 text-emerald-600" />Accreditations & Approvals</span>} variant="borderless">
               <Alert 
-                message="Recognized & Validated"
+                title="Recognized & Validated"
                 description="This institution is fully approved by regulatory bodies (such as UGC-DEB in India or WASC/EduQua internationally), ensuring the certificates are 100% valid for government, private sector, and higher education globally."
                 type="success"
                 showIcon
@@ -166,7 +182,7 @@ export default function UniversityDetailView({ slug: propSlug, initialUniversity
               />
             </Card>
 
-            <Card className="rounded-2xl border border-slate-100 shadow-sm p-6" title={<span className="text-lg font-bold text-slate-800"><GraduationCap className="mr-2 text-violet-600 w-5 h-5 inline-block" />Offered Courses</span>} bordered={false}>
+            <Card className="rounded-2xl border border-slate-100 shadow-sm p-6" title={<span className="text-lg font-bold text-slate-800"><GraduationCap className="mr-2 text-violet-600 w-5 h-5 inline-block" />Offered Courses</span>} variant="borderless">
               <div className="divide-y divide-slate-100">
                 {uni.courses.map((course, idx) => (
                   <div key={idx} className="py-4 first:pt-0 last:pb-0 flex justify-between items-center gap-4">
@@ -184,7 +200,7 @@ export default function UniversityDetailView({ slug: propSlug, initialUniversity
               </div>
             </Card>
 
-            <Card className="rounded-2xl border border-slate-100 shadow-sm p-6" title={<span className="text-lg font-bold text-slate-800"><DollarOutlined className="mr-2 text-amber-600" />Eligibility & Fees</span>} bordered={false}>
+            <Card className="rounded-2xl border border-slate-100 shadow-sm p-6" title={<span className="text-lg font-bold text-slate-800"><DollarOutlined className="mr-2 text-amber-600" />Eligibility & Fees</span>} variant="borderless">
               <Descriptions column={1} bordered={false} className="[&_.ant-descriptions-item]:pb-4">
                 <Descriptions.Item label={<span className="font-bold text-slate-600">Course Fees</span>}>
                   <span className="font-semibold text-slate-800">{uni.fees}</span>
@@ -198,7 +214,7 @@ export default function UniversityDetailView({ slug: propSlug, initialUniversity
 
           {/* Sidebar Inquiry Form */}
           <Col xs={24} lg={8}>
-            <Card className="sticky top-6 rounded-2xl border border-slate-100 shadow-lg p-6 bg-white" title={<span className="text-base font-bold text-[#1C3569] m-0 block">Inquire About Admission</span>} bordered={false}>
+            <Card className="sticky top-6 rounded-2xl border border-slate-100 shadow-lg p-6 bg-white" title={<span className="text-base font-bold text-[#1C3569] m-0 block">Inquire About Admission</span>} variant="borderless">
               <Form layout="vertical" className="space-y-4" onSubmitCapture={(e) => e.preventDefault()}>
                 <Form.Item label="Your Name" required className="m-0">
                   <Input placeholder="Enter your full name" className="h-10 rounded-lg border-slate-200" />

@@ -1,4 +1,5 @@
 import { API_BASE_URL } from "@/config";
+import { getAssetPath } from "@/lib/utils";
 
 const SITE_NAME = "SODE";
 const SITE_URL = "https://sode.co.in";
@@ -12,7 +13,7 @@ const DEFAULT_META = {
   ogTitle: "Certifications & Online Degree Courses from IITs, IIMs | DBA MBA – SODE",
   ogDescription:
     "Certifications & Online Degree Courses from top IITs, IIMs & global universities via SODE. Enroll in our MBA, DBA & executive leadership programs.",
-  ogImage: `${SITE_URL}/assets/images/sode-homepage-og-card-image.png`,
+  ogImage: getAssetPath("/assets/images/sode-homepage-og-card-image.png"),
   twitterCard: "summary_large_image",
 };
 

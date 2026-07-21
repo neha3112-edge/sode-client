@@ -11,6 +11,12 @@ export default function PartnerUniversityForm({ isUpdateForm = false }) {
       endPoint: "options",
     });
 
+  const { data: courseOptions = [], isLoading: isCourseLoading } =
+    useGetDynamicOptionsQuery({
+      entity: "course",
+      endPoint: "options",
+    });
+
   return (
     <>
       <Row gutter={16}>
@@ -50,14 +56,35 @@ export default function PartnerUniversityForm({ isUpdateForm = false }) {
 
       <Form.Item
         name="courses"
-        label="Associated Featured Courses / Badges"
-        help="Type course tags and press enter (e.g. Online DBA, Online MBA)"
+        label="Associated Master Courses"
+        help="Select master courses offered by this partner university"
+        getValueFromEvent={(val) =>
+          Array.isArray(val)
+            ? val.map((item) => (typeof item === "object" ? item?._id || item : item))
+            : val
+        }
+        getValueProps={(val) => ({
+          value: Array.isArray(val)
+            ? val.map((item) => (typeof item === "object" ? item?._id || item : item))
+            : val || [],
+        })}
       >
         <Select
-          mode="tags"
+          mode="multiple"
           style={{ width: "100%" }}
-          placeholder="Enter course titles (e.g. Online DBA, Online MBA)"
-        />
+          placeholder="Select Associated Global Master Courses"
+          loading={isCourseLoading}
+          showSearch
+          allowClear
+          optionFilterProp="children"
+        >
+          {Array.isArray(courseOptions) &&
+            courseOptions.map((c) => (
+              <Select.Option key={c._id} value={c._id}>
+                {c.title || c.name || c.label}
+              </Select.Option>
+            ))}
+        </Select>
       </Form.Item>
 
       <Form.Item

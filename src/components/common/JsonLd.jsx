@@ -1,11 +1,13 @@
 import React from "react";
+import { getAssetPath } from "@/lib/utils";
 
 const SITE_URL = "https://sode.co.in";
 const SITE_NAME = "SODE";
 const SITE_DESCRIPTION =
   "Certifications & Online Degree Courses from top IITs, IIMs & global universities via SODE. Enroll in our MBA, DBA & executive leadership programs.";
-const OG_IMAGE = `${SITE_URL}/assets/images/sode-homepage-og-card-image.png`;
-const ORGANIZATION_LOGO = `${SITE_URL}/assets/img/sode_header_logo.png`;
+
+const OG_IMAGE = getAssetPath("/assets/images/sode-homepage-og-card-image.png");
+const ORGANIZATION_LOGO = getAssetPath("/assets/images/sode-logo.png");
 
 export const websiteSchema = {
   "@context": "https://schema.org",
@@ -39,40 +41,20 @@ export const organizationSchema = {
   description: SITE_DESCRIPTION,
   address: {
     "@type": "PostalAddress",
-    streetAddress: "Unit No. 1, 3rd Floor Vardhman Trade Centre, Nehru Place",
-    addressLocality: "New Delhi",
-    postalCode: "110019",
     addressCountry: "IN",
   },
-  areaServed: {
-    "@type": "Country",
-    name: "India",
-  },
-  sameAs: [
-    "https://www.facebook.com/distanceeducationschool/",
-    "https://x.com/distance_school",
-    "https://www.instagram.com/distanceeducationschool/",
-    "https://in.linkedin.com/company/distanceeducationschool",
-    "https://www.youtube.com/@distanceeducationschool",
-    "https://in.pinterest.com/distanceeducationschoolportal/",
-  ],
+  sameAs: [],
 };
 
-export default function JsonLd() {
+export default function JsonLdScript({ data }) {
+  if (!data) return null;
+  const jsonString = JSON.stringify(data).replace(/</g, "\\u003c");
+
   return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(websiteSchema).replace(/</g, "\\u003c"),
-        }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(organizationSchema).replace(/</g, "\\u003c"),
-        }}
-      />
-    </>
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: jsonString }}
+    />
   );
 }
+

@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { Modal } from "antd";
 
 import { Container } from "@/components/ui/container";
 import { Card } from "@/components/ui/card";
@@ -21,6 +23,13 @@ export function Courses({
 
   const [activeModal, setActiveModal] = useState(null);
   const [selectedProgram, setSelectedProgram] = useState(null);
+
+  // Mobile Category Modal State
+  const [mobileCategoryModal, setMobileCategoryModal] = useState({
+    open: false,
+    tab: null,
+    label: "",
+  });
 
   const tabsList = initialTabs || defaultTabs;
   const programsList = initialPrograms || defaultPrograms;
@@ -57,6 +66,24 @@ export function Courses({
         });
 
   /* =========================================================
+     TAB CLICK HANDLER (Mobile Modal vs Desktop Filter)
+  ========================================================= */
+
+  const handleTabClick = (tab) => {
+    const tabKey = tab.slug || tab.id || tab._id;
+    setActiveTab(tabKey);
+
+    // If on mobile screen (< 768px width), open Antd Modal with category courses
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      setMobileCategoryModal({
+        open: true,
+        tab: tabKey,
+        label: tab.label || "Category Programs",
+      });
+    }
+  };
+
+  /* =========================================================
      GET BROCHURE
   ========================================================= */
 
@@ -64,6 +91,7 @@ export function Courses({
     sessionStorage.setItem("brochureUrl", getAssetPath(program.brochureUrl));
 
     setSelectedProgram(program);
+    setMobileCategoryModal({ open: false, tab: null, label: "" });
     setActiveModal("brochure");
   };
 
@@ -73,11 +101,12 @@ export function Courses({
 
   const handleApplyNow = (program) => {
     setSelectedProgram(program);
+    setMobileCategoryModal({ open: false, tab: null, label: "" });
     setActiveModal("apply");
   };
 
   /* =========================================================
-     CLOSE MODAL
+     CLOSE ENQUIRY MODAL
   ========================================================= */
 
   const closeModal = () => {
@@ -105,7 +134,7 @@ export function Courses({
 
         {/* Tabs Buttons Flex container */}
 
-        <div className="flex flex-wrap items-center justify-center gap-3 md:gap-4 mb-12 max-w-4xl mx-auto">
+        <div className="w-full flex overflow-x-auto no-scrollbar items-center justify-start md:justify-center gap-2 md:gap-4 mb-10 max-w-5xl mx-auto px-4 py-2 scroll-smooth">
           {tabsList.map((tab) => {
             const tabKey = tab.slug || tab.id || tab._id;
             const isActive = activeTab === tabKey || activeTab === tab.id || activeTab === tab.slug;
@@ -114,8 +143,8 @@ export function Courses({
               <button
                 key={tabKey || tab.label}
                 type="button"
-                onClick={() => setActiveTab(tabKey)}
-                className={`px-5 py-2.5 rounded-full font-bold text-xs md:text-sm transition-all duration-300 cursor-pointer border select-none ${isActive
+                onClick={() => handleTabClick(tab)}
+                className={`px-3.5 md:px-5 py-2 md:py-2.5 rounded-full font-bold text-xs md:text-sm shrink-0 whitespace-nowrap transition-all duration-300 cursor-pointer border select-none ${isActive
                     ? "bg-[#A66E38] text-white border-transparent shadow-[0_4px_12px_rgba(166,110,56,0.3)]"
                     : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
                   }`}
@@ -139,7 +168,7 @@ export function Courses({
             >
               {/* Card Image */}
 
-              <div className="relative w-full h-40 shrink-0">
+              <Link href={`/courses/${item.slug}`} className="relative w-full h-40 shrink-0 block group">
                 <Image
                   src={getAssetPath(item.image)}
                   alt={item.title}
@@ -147,9 +176,9 @@ export function Courses({
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   priority={index === 0}
                   loading={index === 0 ? "eager" : "lazy"}
-                  className="object-cover rounded-3xl"
+                  className="object-cover rounded-3xl group-hover:scale-105 transition-transform duration-300"
                 />
-              </div>
+              </Link>
 
               <div className="pt-0 pb-6 px-6 flex flex-col grow text-left relative">
                 {/* Institution Logo overlay */}
@@ -158,7 +187,7 @@ export function Courses({
                   <div className="relative w-full h-15">
                     <Image
                       src={getAssetPath(item.logo)}
-                      alt={item.university}
+                      alt={typeof item.university === "object" ? item.university?.name || "University" : String(item.university || "University")}
                       fill
                       sizes="200px"
                       className="object-contain"
@@ -168,9 +197,11 @@ export function Courses({
 
                 {/* Course Title */}
 
-                <h3 className="text-[14px] font-bold text-[#1d3557] leading-snug mb-3">
-                  {item.title}
-                </h3>
+                <Link href={`/courses/${item.slug}`} className="hover:text-[#A66E38] transition-colors">
+                  <h3 className="text-[14px] font-bold text-[#1d3557] leading-snug mb-3">
+                    {item.title}
+                  </h3>
+                </Link>
 
                 {/* University Name */}
 
@@ -278,6 +309,86 @@ export function Courses({
         </div>
       </Container>
 
+      {/* ✅ Mobile Ant Design Modal for Category Courses */}
+      <Modal
+        title={
+          <div className="text-center border-b border-gray-100 pb-3">
+            <span className="text-[#1d3557] font-extrabold text-base md:text-lg">
+              {mobileCategoryModal.label}
+            </span>
+          </div>
+        }
+        open={mobileCategoryModal.open}
+        onCancel={() => setMobileCategoryModal({ open: false, tab: null, label: "" })}
+        footer={null}
+        centered
+        styles={{ body: { maxHeight: "75vh", overflowY: "auto", padding: "16px" } }}
+      >
+        <div className="space-y-4">
+          {filteredPrograms.length > 0 ? (
+            filteredPrograms.map((item, index) => (
+              <div
+                key={`modal-${item.title}-${index}`}
+                className="bg-slate-50 rounded-2xl p-4 border border-gray-200 flex flex-col gap-3 hover:border-amber-500 transition-colors"
+              >
+                <Link
+                  href={`/courses/${item.slug}`}
+                  onClick={() => setMobileCategoryModal({ open: false, tab: null, label: "" })}
+                  className="flex items-center justify-between gap-3 group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="relative w-12 h-12 shrink-0 rounded-xl overflow-hidden bg-white border border-gray-200 p-1">
+                      <Image
+                        src={getAssetPath(item.logo)}
+                        alt={typeof item.university === "object" ? item.university?.name || "University" : String(item.university || "University")}
+                        fill
+                        className="object-contain"
+                      />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-[#1d3557] group-hover:text-[#A66E38] leading-snug transition-colors">
+                        {item.title}
+                      </h4>
+                      <p className="text-xs font-semibold text-[#A66E38]">
+                        {typeof item.university === "object" ? item.university?.name : item.university}
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+
+                {item.description && (
+                  <p className="text-xs text-gray-600 line-clamp-2">
+                    {item.description}
+                  </p>
+                )}
+
+                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-gray-200">
+                  <button
+                    type="button"
+                    onClick={() => handleGetBrochure(item)}
+                    className="flex items-center justify-center gap-1 border border-[#1d3557] text-[#1d3557] font-bold py-2 px-2.5 rounded-lg text-xs hover:bg-[#1d3557] hover:text-white transition-colors cursor-pointer"
+                  >
+                    Brochure
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleApplyNow(item)}
+                    className="flex items-center justify-center gap-1 bg-[#1d3557] text-white font-bold py-2 px-2.5 rounded-lg text-xs hover:bg-[#14243c] transition-colors cursor-pointer"
+                  >
+                    Apply Now
+                  </button>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="text-center py-8 text-gray-500 font-medium text-sm">
+              No programs found in this category.
+            </div>
+          )}
+        </div>
+      </Modal>
+
+      {/* Enquiry Form Wrapper Modal */}
       {selectedProgram && (
         <FormWrapper
           isModal

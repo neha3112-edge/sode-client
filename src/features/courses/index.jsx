@@ -4,7 +4,7 @@ import React from "react";
 import CrudModule from "@/module/crud";
 import moment from "moment";
 import CourseForm from "./form";
-import { Tag, Switch, Space } from "antd";
+import { Tag, Switch } from "antd";
 
 export default function CoursesCmsIndex() {
   const entity = "course";
@@ -25,7 +25,7 @@ export default function CoursesCmsIndex() {
       render: (value) => <Switch checked={value} disabled size="small" />,
     },
     {
-      title: "Course Title",
+      title: "Master Course Title",
       dataIndex: "title",
       key: "title",
       render: (text, record) => (
@@ -50,40 +50,11 @@ export default function CoursesCmsIndex() {
       },
     },
     {
-      title: "University",
-      dataIndex: "university",
-      key: "university",
-      render: (university) => {
-        const uniName = typeof university === "object" ? university?.name : university;
-        return <span className="font-semibold text-slate-700">{uniName || "N/A"}</span>;
-      },
-    },
-    {
-      title: "Duration",
-      dataIndex: "duration",
-      key: "duration",
-      render: (duration) => {
-        const durText = typeof duration === "object" ? duration?.title : duration;
-        return <span className="font-semibold text-slate-700">{durText || "N/A"}</span>;
-      },
-    },
-    {
-      title: "Eligibility",
-      dataIndex: "eligibility",
-      key: "eligibility",
-      render: (eligibility) => {
-        const text = typeof eligibility === "object" ? eligibility?.title : eligibility;
-        return <span className="text-xs text-slate-600 font-medium">{text || "N/A"}</span>;
-      },
-    },
-    {
-      title: "Fee",
-      dataIndex: "fee",
-      key: "fee",
-      render: (fee) => {
-        const title = typeof fee === "object" ? fee?.title : fee;
-        return <span className="font-semibold text-emerald-600">{title || "N/A"}</span>;
-      },
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
+      ellipsis: true,
+      render: (text) => <span className="text-xs text-slate-600 font-medium">{text || "N/A"}</span>,
     },
     {
       title: "Featured",
@@ -108,26 +79,31 @@ export default function CoursesCmsIndex() {
   const readColumns = [...dataTableColumns];
 
   const labels = {
-    PANEL_TITLE: "Courses CMS Management",
-    DATATABLE_TITLE: "All Courses List",
-    ADD_NEW_ENTITY: "Add New Course",
-    ENTITY_NAME: "Course",
-    CREATE_ENTITY: "Save Course",
-    UPDATE_ENTITY: "Update Course",
+    PANEL_TITLE: "Master Courses CMS Management",
+    DATATABLE_TITLE: "Master Courses List",
+    ADD_NEW_ENTITY: "Add Master Course",
+    ENTITY_NAME: "Master Course",
+    CREATE_ENTITY: "Save Master Course",
+    UPDATE_ENTITY: "Update Master Course",
   };
 
   const config = {
     entity,
-    ...labels,
+    labels,
     dataTableColumns,
     readColumns,
+    searchConfig: {
+      displayLabels: ["title", "slug"],
+      searchFields: "title,slug",
+      outputValue: "_id",
+    },
   };
 
   return (
     <CrudModule
+      config={config}
       createForm={<CourseForm />}
       updateForm={<CourseForm isUpdateForm={true} />}
-      config={config}
     />
   );
 }

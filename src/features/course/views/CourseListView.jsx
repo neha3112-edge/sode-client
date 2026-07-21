@@ -1,207 +1,739 @@
 "use client";
 
-import React, { useState } from "react";
-import { Card, Tag, Input, Button, Row, Col, Space, Breadcrumb } from "antd";
-import { SearchOutlined, BookOutlined, ClockCircleFilled } from "@ant-design/icons";
+import React, { useState, useEffect, useMemo } from "react";
+import Image from "next/image";
 import Link from "next/link";
+import { Checkbox, Input, Button, Drawer, Tag, Breadcrumb, Radio, Spin, Select } from "antd";
+import {
+  SearchOutlined,
+  FilterOutlined,
+  CloseCircleFilled,
+  DownloadOutlined,
+  RightOutlined,
+  EnvironmentFilled,
+  ReloadOutlined,
+  ThunderboltFilled,
+  BookOutlined,
+  PhoneFilled,
+  ClockCircleFilled,
+  SortAscendingOutlined,
+  LoadingOutlined
+} from "@ant-design/icons";
 
-import { useGetDynamicOptionsQuery } from "@/store/redux/dynamic/action";
+import FormWrapper from "@/components/forms/FormWrapper";
+import { getAssetPath } from "@/lib/utils";
+import { getWebsiteCoursesFilter } from "@/services/api";
 
-const INITIAL_COURSES = [
-  {
-    title: "Master of Business Administration (MBA)",
-    slug: "distance-mba",
-    level: "Post Graduate",
-    duration: "2 Years",
-    category: "pg",
-    description: "Highly sought after dynamic management degree with dual specializations in Finance, Marketing, HR, etc.",
-    jobs: ["Product Manager", "Consultant", "HR Executive"],
-  },
-  {
-    title: "Doctor of Business Administration (DBA)",
-    slug: "online-dba",
-    level: "Doctorate",
-    duration: "3 Years",
-    category: "doctorate",
-    description: "International doctoral degree for senior executives focusing on applied corporate research.",
-    jobs: ["Research Director", "Chief Strategy Officer", "Academician"],
-  },
-  {
-    title: "Bachelor of Business Administration (BBA)",
-    slug: "distance-bba",
-    level: "Under Graduate",
-    duration: "3 Years",
-    category: "ug",
-    description: "Foundational business administration degree offering knowledge of core corporate operations.",
-    jobs: ["Management Trainee", "Business Analyst", "Sales Manager"],
-  },
-  {
-    title: "Master of Computer Applications (MCA)",
-    slug: "online-mca",
-    level: "Post Graduate",
-    duration: "2 Years",
-    category: "pg",
-    description: "Specialized computer applications and software engineering degree designed for IT professionals.",
-    jobs: ["Software Engineer", "Systems Analyst", "IT Lead"],
-  },
-  {
-    title: "Bachelor of Computer Applications (BCA)",
-    slug: "online-bca",
-    level: "Under Graduate",
-    duration: "3 Years",
-    category: "ug",
-    description: "Comprehensive software development and applications base degree with practical coding curriculum.",
-    jobs: ["Web Developer", "Programmer Analyst", "Support Engineer"],
-  },
-];
+// Reusable Sidebar Filter Component defined OUTSIDE to maintain stable React DOM identity
+function FilterSidebarContent({
+  activeFilterCount,
+  handleClearFilters,
+  searchInputValue,
+  setSearchInputValue,
+  setAppliedSearchTerm,
+  sortBy,
+  setSortBy,
+  selectedDuration,
+  setSelectedDuration,
+  courseOptions,
+  selectedCourses,
+  setSelectedCourses,
+  courseSearchText,
+  setCourseSearchText,
+  filteredCourseOptions,
+  universityOptions,
+  selectedUniversities,
+  setSelectedUniversities,
+  uniSearchText,
+  setUniSearchText,
+  filteredUniversityOptions,
+  setSelectedProgram,
+  setActiveModal,
+}) {
+  return (
+    <div className="space-y-6 text-slate-800">
+      {/* Sidebar Header */}
+      <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+        <h3 className="font-extrabold text-base text-[#1C3569] m-0 flex items-center gap-2">
+          <FilterOutlined className="text-amber-600" /> Filter Options
+        </h3>
+        {activeFilterCount > 0 && (
+          <button
+            type="button"
+            onClick={handleClearFilters}
+            className="text-xs font-bold text-red-600 hover:text-red-700 cursor-pointer flex items-center gap-1 bg-red-50 px-2 py-1 rounded-md"
+          >
+            <ReloadOutlined className="text-[10px]" /> Reset
+          </button>
+        )}
+      </div>
 
-export default function CourseListView({ initialCourses }) {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [activeCategory, setActiveCategory] = useState("all");
+      {/* 1. Global Search Box with Antd Input.Search */}
+      <div>
+        <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+          Live Search Mongoose DB
+        </label>
+        <Input.Search
+          placeholder="e.g. MCA, MBA, DBA..."
+          allowClear
+          enterButton={<span className="font-medium text-xs">Search</span>}
+          size="middle"
+          value={searchInputValue}
+          onChange={(e) => {
+            setSearchInputValue(e.target.value);
+            if (!e.target.value) setAppliedSearchTerm("");
+          }}
+          onSearch={(value) => setAppliedSearchTerm(value)}
+          className="rounded-xl border-slate-200"
+        />
+      </div>
 
-  const courses = Array.isArray(initialCourses) && initialCourses.length > 0 ? initialCourses : INITIAL_COURSES;
+      {/* 2. Sort By Control in Sidebar */}
+      <div>
+        <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5 flex items-center gap-1">
+          <SortAscendingOutlined className="text-amber-600" /> Sort Results By
+        </label>
+        <Select
+          value={sortBy}
+          onChange={(val) => setSortBy(val)}
+          className="w-full font-semibold rounded-xl"
+          options={[
+            { value: "featured", label: "Featured First" },
+            { value: "title-asc", label: "Title: A to Z" },
+            { value: "title-desc", label: "Title: Z to A" },
+          ]}
+        />
+      </div>
 
-  const filteredCourses = courses.filter((course) => {
-    const titleText = (course?.title || "").toLowerCase();
-    const descText = (course?.description || "").toLowerCase();
-    const query = searchTerm.toLowerCase();
-    const matchesSearch = titleText.includes(query) || descText.includes(query);
+      {/* 3. Filter by Duration */}
+      <div className="border-t border-slate-100 pt-4">
+        <h4 className="font-bold text-xs uppercase tracking-wider text-[#1C3569] mb-3 flex items-center gap-1">
+          <ClockCircleFilled className="text-amber-600" /> Program Duration
+        </h4>
+        <Radio.Group
+          value={selectedDuration}
+          onChange={(e) => setSelectedDuration(e.target.value)}
+          className="flex flex-col gap-2"
+        >
+          <Radio value="all" className="text-xs font-semibold text-slate-700">All Durations</Radio>
+          <Radio value="1-year" className="text-xs font-semibold text-slate-700">1 Year (Executive / Certifications)</Radio>
+          <Radio value="2-year" className="text-xs font-semibold text-slate-700">2 Years (Master's / MBA / MCA)</Radio>
+          <Radio value="3-year" className="text-xs font-semibold text-slate-700">3 Years (Doctorate / DBA / UG)</Radio>
+        </Radio.Group>
+      </div>
 
-    const cat = course?.category;
-    const catSlug = typeof cat === "object" ? (cat?.slug || cat?.name || "").toLowerCase() : String(cat || "").toLowerCase();
-    const matchesCategory =
-      activeCategory === "all" ||
-      catSlug === activeCategory ||
-      catSlug.includes(activeCategory) ||
-      activeCategory.includes(catSlug);
+      {/* 4. Filter by Course Titles (With Search) */}
+      <div className="border-t border-slate-100 pt-4">
+        <div className="flex items-center justify-between mb-2">
+          <h4 className="font-bold text-xs uppercase tracking-wider text-[#1C3569] m-0">
+            Filter by Course ({courseOptions.length})
+          </h4>
+          {selectedCourses.length > 0 && (
+            <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-md">
+              {selectedCourses.length} selected
+            </span>
+          )}
+        </div>
 
-    return matchesSearch && matchesCategory;
-  });
+        <Input
+          placeholder="Search course title..."
+          size="small"
+          prefix={<SearchOutlined className="text-slate-300 text-xs" />}
+          value={courseSearchText}
+          onChange={(e) => setCourseSearchText(e.target.value)}
+          className="mb-2 rounded-lg text-xs"
+        />
 
-  const { data: rawCategoryOptions = [] } = useGetDynamicOptionsQuery({
-    entity: "category",
-    endPoint: "options",
-  });
+        <div className="max-h-44 overflow-y-auto no-scrollbar space-y-1 pr-1">
+          <Checkbox.Group
+            value={selectedCourses}
+            onChange={(val) => setSelectedCourses(val)}
+            className="flex flex-col gap-1.5"
+          >
+            {filteredCourseOptions.map((item) => (
+              <Checkbox key={item.title} value={item.title} className="text-xs font-medium text-slate-700">
+                <span className="flex items-center justify-between w-full gap-2">
+                  <span className="truncate max-w-[170px]">{item.title}</span>
+                  <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-full">
+                    {item.count}
+                  </span>
+                </span>
+              </Checkbox>
+            ))}
+          </Checkbox.Group>
+        </div>
+      </div>
 
-  const categoryButtons = [
-    { label: "All Levels", value: "all" },
-    ...(Array.isArray(rawCategoryOptions) && rawCategoryOptions.length > 0
-      ? rawCategoryOptions.map((c) => ({
-        label: c.name || c.label,
-        value: (c.slug || c.name || "").toLowerCase(),
-      }))
-      : [
-        { label: "UG (Undergrad)", value: "ug" },
-        { label: "PG (Postgrad)", value: "pg" },
-        { label: "Doctorate", value: "doctorate" },
-        { label: "Executive", value: "executive" },
-        { label: "Certification", value: "certification" },
-      ]),
-  ];
+      {/* 5. Filter by University (With Search) */}
+      <div className="border-t border-slate-100 pt-4">
+        <div className="flex items-center justify-between mb-2">
+          <h4 className="font-bold text-xs uppercase tracking-wider text-[#1C3569] m-0">
+            Filter by University ({universityOptions.length})
+          </h4>
+          {selectedUniversities.length > 0 && (
+            <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-md">
+              {selectedUniversities.length} selected
+            </span>
+          )}
+        </div>
+
+        <Input
+          placeholder="Search university..."
+          size="small"
+          prefix={<SearchOutlined className="text-slate-300 text-xs" />}
+          value={uniSearchText}
+          onChange={(e) => setUniSearchText(e.target.value)}
+          className="mb-2 rounded-lg text-xs"
+        />
+
+        <div className="max-h-44 overflow-y-auto no-scrollbar space-y-1 pr-1">
+          <Checkbox.Group
+            value={selectedUniversities}
+            onChange={(val) => setSelectedUniversities(val)}
+            className="flex flex-col gap-1.5"
+          >
+            {filteredUniversityOptions.map((uni) => (
+              <Checkbox key={uni.slug} value={uni.slug} className="text-xs font-medium text-slate-700">
+                <span className="flex items-center justify-between w-full gap-2">
+                  <span className="truncate max-w-[170px]">{uni.name}</span>
+                  <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-full">
+                    {uni.count}
+                  </span>
+                </span>
+              </Checkbox>
+            ))}
+          </Checkbox.Group>
+        </div>
+      </div>
+
+      {/* Student Assistance Counselor Box */}
+      <div className="bg-gradient-to-br from-[#1C3569] to-[#0d1d3d] text-white p-4 rounded-2xl space-y-2 text-center shadow-md">
+        <span className="text-amber-400 font-bold text-xs uppercase tracking-wider block">🎓 Need Expert Advice?</span>
+        <p className="text-xs text-slate-200 font-medium m-0 leading-snug">
+          Confused about course selection or university approvals? Talk to senior advisors for free!
+        </p>
+        <Button
+          type="primary"
+          onClick={() => { setSelectedProgram({ title: "General Inquiry" }); setActiveModal("apply"); }}
+          className="w-full bg-[#FFC107] hover:!bg-[#e5ac00] text-black font-bold text-xs h-9 rounded-xl border-none cursor-pointer mt-1"
+        >
+          <PhoneFilled /> Request Free Counseling
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+export default function CourseListView({ initialCourses = [], initialUniversities = [] }) {
+  const initialList = useMemo(() => {
+    if (Array.isArray(initialCourses)) return initialCourses;
+    if (initialCourses && Array.isArray(initialCourses.programs)) return initialCourses.programs;
+    return [];
+  }, [initialCourses]);
+
+  const [programsList, setProgramsList] = useState(initialList);
+  const [totalCount, setTotalCount] = useState(initialList.length);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Search States
+  const [searchInputValue, setSearchInputValue] = useState("");
+  const [appliedSearchTerm, setAppliedSearchTerm] = useState("");
+
+  const [activeCategoryTab, setActiveCategoryTab] = useState("all");
+  const [selectedCourses, setSelectedCourses] = useState([]);
+  const [selectedUniversities, setSelectedUniversities] = useState([]);
+  const [selectedDuration, setSelectedDuration] = useState("all");
+  const [sortBy, setSortBy] = useState("featured");
+  const [uniSearchText, setUniSearchText] = useState("");
+  const [courseSearchText, setCourseSearchText] = useState("");
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
+
+  // Brochure & Apply Modal State
+  const [activeModal, setActiveModal] = useState(null);
+  const [selectedProgram, setSelectedProgram] = useState(null);
+
+  // Synchronize initialList when props change
+  useEffect(() => {
+    if (initialList && initialList.length > 0 && !appliedSearchTerm && activeCategoryTab === "all" && selectedCourses.length === 0 && selectedUniversities.length === 0) {
+      setProgramsList(initialList);
+      setTotalCount(initialList.length);
+    }
+  }, [initialList]);
+
+  // Live Mongoose Backend Fetch Effect
+  useEffect(() => {
+    let isCancelled = false;
+    setIsLoading(true);
+
+    getWebsiteCoursesFilter({
+      search: appliedSearchTerm,
+      category: activeCategoryTab,
+      university: selectedUniversities,
+      course: selectedCourses,
+      duration: selectedDuration,
+      sort: sortBy,
+    })
+      .then((data) => {
+        if (!isCancelled && data && Array.isArray(data.programs)) {
+          setProgramsList(data.programs);
+          setTotalCount(typeof data.total === "number" ? data.total : data.programs.length);
+        }
+      })
+      .catch((err) => {
+        console.error("Backend filter fetch error:", err);
+      })
+      .finally(() => {
+        if (!isCancelled) setIsLoading(false);
+      });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [appliedSearchTerm, activeCategoryTab, selectedCourses, selectedUniversities, selectedDuration, sortBy]);
+
+  // Category Tabs metadata
+  const categoryTabs = useMemo(() => {
+    const map = new Map();
+    map.set("all", { label: "All Programs", count: initialList.length, slug: "all" });
+
+    initialList.forEach((p) => {
+      const catObj = p?.category;
+      let label = "Other";
+      let slug = "other";
+
+      if (typeof catObj === "object" && catObj !== null) {
+        label = catObj.name || catObj.title || "Other";
+        slug = catObj.slug || label.toLowerCase();
+      } else if (typeof catObj === "string" && catObj.trim().length > 0) {
+        label = catObj;
+        slug = catObj.toLowerCase();
+      }
+
+      const existing = map.get(slug) || { label, count: 0, slug };
+      existing.count += 1;
+      map.set(slug, existing);
+    });
+
+    return Array.from(map.values());
+  }, [initialList]);
+
+  // Unique course options with counts
+  const courseOptions = useMemo(() => {
+    const map = new Map();
+    initialList.forEach((p) => {
+      if (p?.title) {
+        const count = map.get(p.title) || 0;
+        map.set(p.title, count + 1);
+      }
+    });
+    return Array.from(map.entries()).map(([title, count]) => ({ title, count })).sort((a, b) => b.count - a.count);
+  }, [initialList]);
+
+  const filteredCourseOptions = useMemo(() => {
+    if (!courseSearchText.trim()) return courseOptions;
+    const q = courseSearchText.toLowerCase();
+    return courseOptions.filter((c) => c.title.toLowerCase().includes(q));
+  }, [courseOptions, courseSearchText]);
+
+  // Unique university options with counts
+  const universityOptions = useMemo(() => {
+    const map = new Map();
+    initialList.forEach((p) => {
+      const u = p?.university;
+      let name = "Partner University";
+      let slug = "university";
+
+      if (typeof u === "object" && u !== null && u.name) {
+        name = u.name;
+        slug = u.slug || u.name;
+      } else if (typeof u === "string") {
+        name = u;
+        slug = u;
+      }
+
+      const existing = map.get(slug) || { name, slug, count: 0 };
+      existing.count += 1;
+      map.set(slug, existing);
+    });
+    return Array.from(map.values()).sort((a, b) => b.count - a.count);
+  }, [initialList]);
+
+  const filteredUniversityOptions = useMemo(() => {
+    if (!uniSearchText.trim()) return universityOptions;
+    const q = uniSearchText.toLowerCase();
+    return universityOptions.filter((u) => u.name.toLowerCase().includes(q));
+  }, [universityOptions, uniSearchText]);
+
+  // Filter & Sort Active Programs Result
+  const processedPrograms = useMemo(() => {
+    let result = [...programsList];
+
+    // Additional Duration Filter
+    if (selectedDuration !== "all") {
+      result = result.filter((program) => {
+        const durText = String(typeof program.duration === "object" ? program.duration?.title : (program.duration || "")).toLowerCase();
+        if (selectedDuration === "1-year" && !durText.includes("1") && !durText.includes("12")) return false;
+        if (selectedDuration === "2-year" && !durText.includes("2") && !durText.includes("24")) return false;
+        if (selectedDuration === "3-year" && !durText.includes("3") && !durText.includes("36")) return false;
+        return true;
+      });
+    }
+
+    // Sort Logic
+    if (sortBy === "title-asc") {
+      result.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+    } else if (sortBy === "title-desc") {
+      result.sort((a, b) => (b.title || "").localeCompare(a.title || ""));
+    }
+
+    return result;
+  }, [programsList, selectedDuration, sortBy]);
+
+  // Clear All Filters
+  const handleClearFilters = () => {
+    setSearchInputValue("");
+    setAppliedSearchTerm("");
+    setActiveCategoryTab("all");
+    setSelectedCourses([]);
+    setSelectedUniversities([]);
+    setSelectedDuration("all");
+    setSortBy("featured");
+    setUniSearchText("");
+    setCourseSearchText("");
+  };
+
+  const activeFilterCount = (activeCategoryTab !== "all" ? 1 : 0) + selectedCourses.length + selectedUniversities.length + (selectedDuration !== "all" ? 1 : 0) + (appliedSearchTerm ? 1 : 0);
+
+  const handleGetBrochure = (program) => {
+    sessionStorage.setItem("brochureUrl", getAssetPath(program.brochureUrl));
+    setSelectedProgram(program);
+    setActiveModal("brochure");
+  };
+
+  const filterSidebarProps = {
+    activeFilterCount,
+    handleClearFilters,
+    searchInputValue,
+    setSearchInputValue,
+    setAppliedSearchTerm,
+    sortBy,
+    setSortBy,
+    selectedDuration,
+    setSelectedDuration,
+    courseOptions,
+    selectedCourses,
+    setSelectedCourses,
+    courseSearchText,
+    setCourseSearchText,
+    filteredCourseOptions,
+    universityOptions,
+    selectedUniversities,
+    setSelectedUniversities,
+    uniSearchText,
+    setUniSearchText,
+    filteredUniversityOptions,
+    setSelectedProgram,
+    setActiveModal,
+  };
 
   return (
-    <div className="bg-[#f8fafc] py-12 px-4 md:px-8">
-      <div className="max-w-6xl mx-auto">
+    <div className="bg-[#f8fafc] min-h-screen pt-32 pb-16 px-4 md:px-8 font-sans">
+      <div className="max-w-7xl mx-auto">
+
         {/* Breadcrumb */}
-        <Breadcrumb className="mb-6" items={[
+        <Breadcrumb className="mb-4 text-xs font-semibold" items={[
           { title: <Link href="/">Home</Link> },
-          { title: "Courses" }
+          { title: "Browse Courses" }
         ]} />
 
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-extrabold text-[#1C3569] m-0">
-            Distance & Online Courses
+        {/* Page Banner Title */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-800 px-3.5 py-1 rounded-full text-xs font-bold mb-3 shadow-xs">
+            <ThunderboltFilled className="text-amber-500" />
+            <span>100% Online &amp; UGC Approved Degree Programs</span>
+          </div>
+
+          <h1 className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-[#1C3569] leading-tight m-0">
+            Select Online Course &amp; Get Top Online &amp; Distance Universities
           </h1>
-          <p className="text-slate-500 mt-2 m-0 text-base">
-            Explore UGC recognized, career-oriented undergraduate, postgraduate, and executive degrees.
+          <p className="text-slate-500 text-xs md:text-sm font-semibold mt-2 m-0 max-w-2xl mx-auto">
+            Compare fees, approvals, eligibility, and curriculum from top UGC &amp; WES recognized institutions
           </p>
         </div>
 
-        {/* Search & Categories */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <Input
-            placeholder="Search courses by title or keyword..."
-            prefix={<SearchOutlined className="text-slate-400" />}
-            className="h-11 max-w-md rounded-xl border-slate-200"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-
-          <div className="flex gap-2 flex-wrap">
-            {categoryButtons.map((cat) => (
-              <Button
-                key={cat.value}
-                onClick={() => setActiveCategory(cat.value)}
-                className={`rounded-full px-5 h-9 font-semibold text-sm cursor-pointer transition-all ${activeCategory === cat.value
-                    ? "bg-[#1C3569] text-white border-none shadow-sm hover:!bg-[#1C3569] hover:!text-white"
-                    : "border-slate-200 text-slate-600 hover:!border-slate-400 hover:!text-slate-800"
+        {/* Quick Category Tab Pills Bar */}
+        <div className="w-full flex overflow-x-auto no-scrollbar items-center justify-start md:justify-center gap-2 mb-8 px-2 py-1 scroll-smooth">
+          {categoryTabs.map((tab) => {
+            const isActive = activeCategoryTab === tab.slug;
+            return (
+              <button
+                key={tab.slug}
+                type="button"
+                onClick={() => setActiveCategoryTab(tab.slug)}
+                className={`px-4 py-2 rounded-full font-bold text-xs shrink-0 whitespace-nowrap transition-all duration-300 cursor-pointer border select-none flex items-center gap-2 ${isActive
+                  ? "bg-[#A66E38] text-white border-transparent shadow-[0_4px_12px_rgba(166,110,56,0.3)]"
+                  : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
                   }`}
               >
-                {cat.label}
-              </Button>
-            ))}
-          </div>
+                <span>{tab.label}</span>
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${isActive ? "bg-white/20 text-white" : "bg-slate-100 text-slate-600"
+                  }`}>
+                  {tab.count}
+                </span>
+              </button>
+            );
+          })}
         </div>
 
-        {/* Course Cards Grid */}
-        <Row gutter={[24, 24]}>
-          {filteredCourses.map((course) => (
-            <Col xs={24} sm={12} key={course.slug}>
-              <Card
-                hoverable
-                className="border border-slate-200/60 rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full flex flex-col"
-                styles={{ body: { padding: "24px", display: "flex", flexDirection: "column", flex: 1 } }}
-              >
-                <div className="flex justify-between items-start mb-3">
-                  <Tag color="blue" className="font-semibold text-xs border-none rounded bg-blue-50 text-blue-700 px-2 py-0.5 m-0">
-                    {course.level}
-                  </Tag>
-                  <span className="text-slate-400 text-xs font-bold flex items-center gap-1">
-                    <ClockCircleFilled /> {typeof course?.duration === "object" ? course?.duration?.title : course?.duration}
-                  </span>
-                </div>
-
-                <h3 className="text-lg font-bold text-slate-800 m-0 mb-2 leading-snug">
-                  {course.title}
-                </h3>
-
-                <p className="text-slate-500 text-xs leading-relaxed mb-4 flex-grow">
-                  {course.description}
-                </p>
-
-                <div className="h-px bg-slate-100 my-4" />
-
-                <div className="mb-6">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2">Target Career Roles</span>
-                  <div className="flex gap-1.5 flex-wrap">
-                    {(course.jobs || ["Management Lead", "Career Expert"]).map((job, idx) => (
-                      <Tag key={idx} className="bg-slate-50 text-slate-600 border-slate-200 text-xs font-semibold rounded px-2 m-0">
-                        {job}
-                      </Tag>
-                    ))}
-                  </div>
-                </div>
-
-                <Link href={`/courses/${course.slug}`} className="mt-auto block">
-                  <Button
-                    type="primary"
-                    className="w-full bg-[#1C3569] hover:!bg-[#122449] border-none font-semibold rounded-xl h-10 cursor-pointer"
-                  >
-                    View Course Details
-                  </Button>
-                </Link>
-              </Card>
-            </Col>
-          ))}
-        </Row>
-
-        {filteredCourses.length === 0 && (
-          <div className="text-center py-20 bg-white rounded-3xl border border-slate-100 shadow-sm mt-8">
-            <p className="text-slate-400 text-base font-medium">No courses found matching your search term.</p>
+        {/* Mobile Filter Button Bar (< lg screens) */}
+        <div className="lg:hidden flex items-center gap-2 mb-6 bg-white p-2.5 rounded-2xl border border-slate-200 shadow-xs">
+          <div className="flex-1 min-w-0">
+            <Input.Search
+              placeholder="Search course or university..."
+              allowClear
+              enterButton={<SearchOutlined className="text-white" />}
+              value={searchInputValue}
+              onChange={(e) => {
+                setSearchInputValue(e.target.value);
+                if (!e.target.value) setAppliedSearchTerm("");
+              }}
+              onSearch={(value) => setAppliedSearchTerm(value)}
+              className="w-full"
+            />
           </div>
-        )}
+          <Button
+            type="primary"
+            icon={<FilterOutlined />}
+            onClick={() => setIsMobileDrawerOpen(true)}
+            className="bg-[#1C3569] hover:!bg-[#0d1d3d] font-bold h-8 rounded-lg cursor-pointer shrink-0 text-xs px-3 border-none flex items-center gap-1"
+          >
+            Filter {activeFilterCount > 0 && `(${activeFilterCount})`}
+          </Button>
+        </div>
+
+        {/* Main Grid: Left Sidebar + Right Course Cards */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+          {/* Left Sidebar Filters (Desktop lg:col-span-3) */}
+          <div className="hidden lg:block lg:col-span-3 bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs sticky top-28">
+            <FilterSidebarContent {...filterSidebarProps} />
+          </div>
+
+          {/* Right Main Course Listing (lg:col-span-9) */}
+          <div className="lg:col-span-9 space-y-6">
+
+            {/* Header Controls: Count Bar & Inline Active Filter Chips */}
+            <div className="bg-white p-4 rounded-2xl border border-slate-200/80 flex flex-wrap items-center justify-between gap-3 shadow-xs">
+              <div className="text-xs font-bold text-slate-700 flex items-center gap-2 shrink-0">
+                <BookOutlined className="text-[#1C3569]" />
+                <span>
+                  Showing <span className="text-[#A66E38] text-sm font-extrabold">{processedPrograms.length}</span> out of {totalCount} Programs
+                </span>
+                {isLoading && (
+                  <Spin indicator={<LoadingOutlined className="text-amber-600 text-sm ml-2" spin />} />
+                )}
+              </div>
+
+              {/* Active Filter Chips (Inline Flex) */}
+              {activeFilterCount > 0 && (
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  {appliedSearchTerm && (
+                    <Tag
+                      closable
+                      onClose={() => {
+                        setSearchInputValue("");
+                        setAppliedSearchTerm("");
+                      }}
+                      color="blue"
+                      className="rounded-lg text-[11px] font-semibold m-0"
+                    >
+                      Search: {appliedSearchTerm}
+                    </Tag>
+                  )}
+                  {activeCategoryTab !== "all" && (
+                    <Tag closable onClose={() => setActiveCategoryTab("all")} color="gold" className="rounded-lg text-[11px] font-semibold m-0">
+                      Category: {activeCategoryTab}
+                    </Tag>
+                  )}
+                  {selectedDuration !== "all" && (
+                    <Tag closable onClose={() => setSelectedDuration("all")} color="orange" className="rounded-lg text-[11px] font-semibold m-0">
+                      Duration: {selectedDuration}
+                    </Tag>
+                  )}
+                  {selectedCourses.map((c) => (
+                    <Tag key={c} closable onClose={() => setSelectedCourses(selectedCourses.filter(x => x !== c))} color="purple" className="rounded-lg text-[11px] font-semibold m-0">
+                      {c}
+                    </Tag>
+                  ))}
+                  {selectedUniversities.map((u) => (
+                    <Tag key={u} closable onClose={() => setSelectedUniversities(selectedUniversities.filter(x => x !== u))} color="cyan" className="rounded-lg text-[11px] font-semibold m-0">
+                      {u}
+                    </Tag>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={handleClearFilters}
+                    className="text-[11px] font-bold text-red-600 underline cursor-pointer ml-1"
+                  >
+                    Clear All
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Course Cards Vertical Stack */}
+            {isLoading ? (
+              <div className="bg-white rounded-3xl p-16 text-center border border-slate-200 shadow-xs flex flex-col items-center justify-center gap-3">
+                <Spin indicator={<LoadingOutlined className="text-4xl text-[#1C3569]" spin />} />
+                <p className="text-slate-600 font-bold text-sm m-0">Filtering Mongoose Database Courses...</p>
+              </div>
+            ) : processedPrograms.length > 0 ? (
+              processedPrograms.map((item, index) => {
+                const uniName = typeof item.university === "object" ? item.university?.name || "Partner University" : String(item.university || "Partner University");
+                const location = typeof item.university === "object" ? item.university?.location || "India / Global" : "Global";
+                const feeText = typeof item.fee === "object" ? item.fee?.title || `₹${item.fee?.amount || "Flexible"}` : (item.fee || "Flexible Fees");
+                const durationText = typeof item.duration === "object" ? item.duration?.title : (item.duration || "2 Years");
+
+                return (
+                  <div
+                    key={`${item.title}-${uniName}-${index}`}
+                    className="bg-white rounded-3xl border border-slate-200/80 shadow-[0_10px_30px_rgba(0,0,0,0.03)] hover:shadow-xl transition-all duration-300 overflow-hidden relative flex flex-col md:flex-row group"
+                  >
+                    {/* Top Ribbon Badge */}
+                    <div className="absolute top-0 right-0 bg-gradient-to-l from-amber-500 to-amber-600 text-white font-extrabold text-[10px] uppercase tracking-wider px-3.5 py-1 rounded-bl-xl shadow-xs z-10">
+                      UGC APPROVED • 100% ONLINE
+                    </div>
+
+                    {/* Left Column: Image & University Logo */}
+                    <div className="md:w-[38%] relative h-48 sm:h-52 md:h-auto shrink-0 bg-slate-100 overflow-hidden">
+                      <Image
+                        src={getAssetPath(item.image)}
+                        alt={item.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 400px"
+                        priority={index === 0}
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent md:hidden" />
+
+                      {/* University Logo Badge Overlay */}
+                      <div className="absolute bottom-3 left-3 bg-white/95 backdrop-blur-xs px-2.5 py-1 rounded-xl shadow-md border border-slate-100 flex items-center gap-2 max-w-[85%]">
+                        <div className="relative w-6 h-6 shrink-0">
+                          <Image
+                            src={getAssetPath(item.logo)}
+                            alt={uniName}
+                            fill
+                            className="object-contain"
+                          />
+                        </div>
+                        <span className="text-[11px] font-bold text-[#1C3569] truncate">{uniName}</span>
+                      </div>
+                    </div>
+
+                    {/* Right Column: Course Details */}
+                    <div className="p-5 md:p-6 md:w-[62%] flex flex-col justify-between space-y-4">
+                      <div>
+                        {/* Title */}
+                        <Link href={`/courses/${item.slug}`} className="group-hover:text-[#A66E38] transition-colors">
+                          <h3 className="text-base md:text-lg font-extrabold text-[#1C3569] leading-snug mb-2 pr-16">
+                            {uniName} {item.title}: Complete Guidebook
+                          </h3>
+                        </Link>
+
+                        {/* Specs Key-Value Grid */}
+                        <div className="grid grid-cols-2 gap-y-2 gap-x-4 border-t border-b border-slate-100 py-3 my-3 text-xs">
+                          <div>
+                            <span className="text-slate-400 font-semibold block text-[11px]">Course Fee :</span>
+                            <span className="font-extrabold text-slate-800 text-xs md:text-sm">{feeText}</span>
+                          </div>
+
+                          <div>
+                            <span className="text-slate-400 font-semibold block text-[11px]">Location :</span>
+                            <span className="font-bold text-slate-700 flex items-center gap-1">
+                              <EnvironmentFilled className="text-amber-600 text-xs" /> {location}
+                            </span>
+                          </div>
+
+                          <div>
+                            <span className="text-slate-400 font-semibold block text-[11px]">Approvals :</span>
+                            <span className="font-bold text-slate-700">UGC | NAAC A+ | AICTE</span>
+                          </div>
+
+                          <div>
+                            <span className="text-slate-400 font-semibold block text-[11px]">Duration :</span>
+                            <span className="font-bold text-slate-700">{durationText}</span>
+                          </div>
+                        </div>
+
+                        {/* Description */}
+                        {item.description && (
+                          <p className="text-slate-500 text-xs line-clamp-2 leading-relaxed m-0">
+                            {item.description}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Action Buttons */}
+                      <div className="flex items-center gap-3 pt-2">
+                        <Link href={`/courses/${item.slug}`} className="flex-1">
+                          <Button
+                            type="primary"
+                            className="w-full bg-[#059669] hover:!bg-[#047857] text-white font-bold h-10 rounded-xl border-none cursor-pointer text-xs flex items-center justify-center gap-1.5 shadow-xs"
+                          >
+                            Know More <RightOutlined className="text-[10px]" />
+                          </Button>
+                        </Link>
+
+                        <Button
+                          type="primary"
+                          onClick={() => handleGetBrochure(item)}
+                          className="flex-1 bg-[#1D4ED8] hover:!bg-[#1E40AF] text-white font-bold h-10 rounded-xl border-none cursor-pointer text-xs flex items-center justify-center gap-1.5 shadow-xs"
+                        >
+                          Get Brochure <DownloadOutlined />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="bg-white rounded-3xl p-12 text-center border border-slate-200 shadow-xs">
+                <p className="text-slate-700 font-extrabold text-base m-0">No matching courses found in database for your active filters.</p>
+                <p className="text-slate-400 text-xs mt-1">Try resetting your search query or university checkboxes.</p>
+                <Button onClick={handleClearFilters} className="mt-4 font-bold rounded-xl bg-[#1C3569] text-[#A66E38] border-none h-10 px-6">
+                  Reset All Filters
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
+
+      {/* Mobile Antd Filter Drawer */}
+      <Drawer
+        title={<span className="font-bold text-[#1C3569] text-base">Filter Options</span>}
+        placement="left"
+        onClose={() => setIsMobileDrawerOpen(false)}
+        open={isMobileDrawerOpen}
+        className="lg:hidden"
+        style={{ width: "85%", maxWidth: 340 }}
+      >
+        <FilterSidebarContent {...filterSidebarProps} />
+      </Drawer>
+
+      {/* Enquiry Form Modal */}
+      {selectedProgram && (
+        <FormWrapper
+          isModal
+          isOpen={!!activeModal}
+          title={activeModal === "brochure" ? "Download Course Brochure" : "Apply / Book 1:1 Counselling"}
+          subtitle={activeModal === "brochure" ? "Enter your details to download brochure PDF" : "Get expert guidance from senior counselors"}
+          onClose={() => { setActiveModal(null); setSelectedProgram(null); }}
+          isBrochureForm={activeModal === "brochure"}
+          brochureUrl={activeModal === "brochure" ? getAssetPath(selectedProgram.brochureUrl) : ""}
+          defaultCourse={selectedProgram.title}
+        />
+      )}
     </div>
   );
 }

@@ -1,48 +1,31 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Form, Input, Upload, Button, Select, Divider, message, Spin } from "antd";
 import { UploadOutlined, FolderAddOutlined, PlusOutlined } from "@ant-design/icons";
-import axios from "axios";
-import { API_BASE_URL } from "@/config";
+import {
+  useGetDynamicReadQuery,
+  useCreateDynamicMutation,
+} from "@/store/redux/dynamic/action";
 
 /**
- * MediaForm — standard CrudModule pattern.
- * NO internal Submit button — Drawer footer provides it via form="cms-drawer-form".
- *
- * Features:
- * - File picker (create only)
- * - Bucket selector (existing buckets from MinIO) + inline "Create New Bucket" option
- * - Display Name + Alt Text
+ * MediaForm — standard CrudModule pattern with 100% Redux RTK Query pipeline.
  */
 export default function MediaForm({ isUpdateForm = false }) {
   const [fileList, setFileList] = useState([]);
-  const [buckets, setBuckets] = useState([]);
-  const [bucketsLoading, setBucketsLoading] = useState(false);
   const [newBucketName, setNewBucketName] = useState("");
-  const [creatingBucket, setCreatingBucket] = useState(false);
 
-  // ─── Load existing buckets from MinIO ───────────────────────────────────
-  useEffect(() => {
-    const load = async () => {
-      setBucketsLoading(true);
-      try {
-        const res = await axios.get(`${API_BASE_URL}media/buckets`, {
-          withCredentials: true,
-        });
-        if (res.data?.success) {
-          setBuckets(res.data.result || []);
-        }
-      } catch {
-        // silently fail — bucket select still works, just empty
-      } finally {
-        setBucketsLoading(false);
-      }
-    };
-    load();
-  }, []);
+  // Load existing MinIO buckets using Redux RTK Query
+  const { data: bucketData, isLoading: bucketsLoading } = useGetDynamicReadQuery({
+    entity: "media",
+    endPoint: "buckets",
+  });
 
-  // ─── Create new bucket inline ────────────────────────────────────────────
+  const [createDynamic, { isLoading: creatingBucket }] = useCreateDynamicMutation();
+
+  const buckets = bucketData?.result || [];
+
+  // Create new bucket inline using Redux Mutation
   const handleCreateBucket = async () => {
     const name = newBucketName.trim().toLowerCase().replace(/\s+/g, "-");
     if (!name || name.length < 3) {
@@ -50,24 +33,21 @@ export default function MediaForm({ isUpdateForm = false }) {
       return;
     }
 
-    setCreatingBucket(true);
     try {
-      const res = await axios.post(
-        `${API_BASE_URL}media/buckets/create`,
-        { name },
-        { withCredentials: true }
-      );
-      if (res.data?.success) {
-        message.success(res.data.message || `Bucket "${name}" created!`);
-        setBuckets((prev) => [...prev, { name, createdAt: new Date() }]);
+      const res = await createDynamic({
+        entity: "media",
+        endPoint: "buckets/create",
+        jsonData: { name },
+      }).unwrap();
+
+      if (res?.success) {
+        message.success(res.message || `Bucket "${name}" created!`);
         setNewBucketName("");
       } else {
-        message.error(res.data?.message || "Failed to create bucket");
+        message.error(res?.message || "Failed to create bucket");
       }
     } catch (err) {
-      message.error(err?.response?.data?.message || "Error creating bucket");
-    } finally {
-      setCreatingBucket(false);
+      message.error(err?.data?.message || err?.message || "Error creating bucket");
     }
   };
 

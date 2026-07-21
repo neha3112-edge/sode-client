@@ -10,12 +10,19 @@ export const revalidate = 3600; // ISR revalidation: 1 hour
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const uni = await getUniversityBySlug(slug);
-  
+
+  if (!uni) {
+    return {
+      title: "University Details | SODE",
+      description: "Explore accredited online and distance universities with SODE.",
+    };
+  }
+
   return {
-    title: `${uni.name} Admission & Details - Distance Education School`,
+    title: `${uni.name} Admission & Details`,
     description: uni.description?.substring(0, 160) || `Learn more about ${uni.name} accreditation, courses, fees, and eligibility.`,
     openGraph: {
-      title: `${uni.name} Admission & Details - Distance Education School`,
+      title: `${uni.name} Admission & Details`,
       description: uni.description?.substring(0, 160),
       type: "website",
     }
@@ -33,11 +40,11 @@ export async function generateStaticParams() {
 export default async function UniversityDetailPage({ params }) {
   const { slug } = await params;
   const university = await getUniversityBySlug(slug);
-  
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <main className="flex-grow">
+      <main className="grow">
         <UniversityDetailView slug={slug} initialUniversity={university} />
       </main>
       <Footer />

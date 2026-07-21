@@ -93,7 +93,7 @@ export default function BlogDetailView({ slug: propSlug, initialBlog }) {
         <Row gutter={[32, 32]}>
           {/* Article Content */}
           <Col xs={24} lg={16}>
-            <Card className="rounded-2xl border border-slate-100 shadow-sm p-6 md:p-8" bordered={false}>
+            <Card className="rounded-2xl border border-slate-100 shadow-sm p-6 md:p-8" variant="borderless">
               <div className="flex items-center gap-3 mb-4">
                 <Tag color="orange" className="font-semibold text-xs border-none rounded px-2.5 py-0.5 m-0">
                   {blog.category}
@@ -132,7 +132,7 @@ export default function BlogDetailView({ slug: propSlug, initialBlog }) {
 
           {/* Sidebar */}
           <Col xs={24} lg={8}>
-            <Card className="sticky top-6 rounded-2xl border border-slate-100 shadow-lg p-6 bg-white" title={<span className="text-base font-bold text-[#1C3569] m-0 block">Get Career Counseling</span>} bordered={false}>
+            <Card className="sticky top-6 rounded-2xl border border-slate-100 shadow-lg p-6 bg-white" title={<span className="text-base font-bold text-[#1C3569] m-0 block">Get Career Counseling</span>} variant="borderless">
               <p className="text-xs text-slate-400 m-0 mb-4 leading-normal">Our academic counselors are available to answer your questions and help you choose the right course.</p>
               
               <Form layout="vertical" className="space-y-4" onSubmitCapture={(e) => e.preventDefault()}>

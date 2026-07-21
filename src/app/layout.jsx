@@ -17,6 +17,9 @@ export const metadata = {
   description: "School of Online & Distance Education",
 };
 
+import { CompareProvider } from "@/context/CompareContext";
+import CompareDrawerWidget from "@/components/website/CompareDrawerWidget";
+
 export default function RootLayout({ children }) {
   return (
     <html
@@ -27,7 +30,10 @@ export default function RootLayout({ children }) {
     >
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <StoreProvider>
-          {children}
+          <CompareProvider>
+            {children}
+            <CompareDrawerWidget />
+          </CompareProvider>
         </StoreProvider>
       </body>
     </html>
