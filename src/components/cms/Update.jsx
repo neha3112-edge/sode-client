@@ -20,24 +20,54 @@ export default function UpdateForm({
 
   const [updateDynamic] = useUpdateDynamicMutation();
 
+  // Helper to sanitize populated objects vs sub-document arrays for Ant Design Forms
+  const sanitizeFormValue = (val) => {
+    if (Array.isArray(val)) {
+      return val.map((item) => {
+        if (item && typeof item === "object" && item !== null) {
+          // If item is a sub-document object (e.g. slides, faqs, options), retain object & sanitize nested fields
+          const keys = Object.keys(item);
+          const isSubDocument =
+            keys.length > 2 ||
+            keys.some((k) =>
+              [
+                "title",
+                "subtitle",
+                "badge",
+                "label",
+                "description",
+                "primaryCtaText",
+                "secondaryCtaText",
+                "question",
+                "answer",
+              ].includes(k)
+            );
+
+          if (isSubDocument) {
+            const cleanSubDoc = { ...item };
+            Object.keys(cleanSubDoc).forEach((subKey) => {
+              cleanSubDoc[subKey] = sanitizeFormValue(cleanSubDoc[subKey]);
+            });
+            return cleanSubDoc;
+          }
+
+          // If it's a simple populated reference object (e.g. {_id, name, url}), return string _id
+          if (item._id) return String(item._id);
+        }
+        return item;
+      });
+    } else if (val && typeof val === "object" && val !== null) {
+      if (val._id) return String(val._id);
+    }
+    return val;
+  };
+
   useEffect(() => {
     if (current) {
       const formData = { ...current };
 
-      // Transform nested populated objects (role: {_id}, workspace: [{_id}]) into string ObjectIds
       Object.keys(formData).forEach((key) => {
-        const val = formData[key];
-        if (Array.isArray(val)) {
-          formData[key] = val.map((item) =>
-            item && typeof item === "object" && item._id
-              ? String(item._id)
-              : typeof item === "string"
-              ? item
-              : item
-          );
-        } else if (val && typeof val === "object" && val._id) {
-          formData[key] = String(val._id);
-        }
+        formData[key] = sanitizeFormValue(formData[key]);
       });
 
       form.setFieldsValue(formData);
@@ -60,16 +90,9 @@ export default function UpdateForm({
     const { _id, id: fieldId, createdAt, updatedAt, __v, ...cleanFields } =
       fieldsValue || {};
 
-    // Sanitize nested populated objects (e.g., roles: [{_id}], parentId: {_id}) into string ObjectIds
+    // Sanitize nested populated objects
     Object.keys(cleanFields).forEach((key) => {
-      const val = cleanFields[key];
-      if (Array.isArray(val)) {
-        cleanFields[key] = val.map((item) =>
-          item && typeof item === "object" && item._id ? String(item._id) : item
-        );
-      } else if (val && typeof val === "object" && val._id) {
-        cleanFields[key] = String(val._id);
-      }
+      cleanFields[key] = sanitizeFormValue(cleanFields[key]);
     });
 
     try {

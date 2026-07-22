@@ -71,7 +71,9 @@ export default function DataTable({ config, extra = [] }) {
 
     if (searchQuery) {
       options.q = searchQuery;
-      options.fields = searchConfig?.searchFields || "name";
+      if (searchConfig?.searchFields) {
+        options.fields = searchConfig.searchFields;
+      }
     }
 
     return {
@@ -102,9 +104,8 @@ export default function DataTable({ config, extra = [] }) {
     });
   }, []);
 
-  const filterTable = (e) => {
-    const value = e.target.value;
-    setSearchQuery(value);
+  const handleSearch = (value) => {
+    setSearchQuery(value || "");
     setPageOptions((prev) => ({ ...prev, page: 1 }));
   };
 
@@ -247,7 +248,7 @@ export default function DataTable({ config, extra = [] }) {
         <div className="flex items-center gap-2">
           <Input.Search
             key="searchFilterDataTable"
-            onChange={filterTable}
+            onSearch={handleSearch}
             placeholder="Search..."
             allowClear
             className="w-64"

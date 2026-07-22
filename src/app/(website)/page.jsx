@@ -8,6 +8,7 @@ import { Testimonials } from "@/components/website/Testimonials";
 import { FAQ } from "@/components/website/FAQ";
 import { Footer } from "@/components/website/Footer";
 import FaqJsonLd from "@/components/common/FaqJsonLd";
+import { SearchBar, LearningJourney, IimIitLogos, MobileBottomNav } from "@/components/website/MockupAdditions";
 
 import { getCoursesData } from "@/constants/coursesData";
 import { getUniversitiesData } from "@/constants/universitiesData";
@@ -16,6 +17,7 @@ import { getFaqData } from "@/constants/faqData";
 import { getTestimonialsData } from "@/constants/testimonialsData";
 import { getFooterData } from "@/constants/footerData";
 import { getPageMetaData } from "@/constants/pageMetaData";
+import { getWebsiteHero } from "@/services/api";
 
 export const revalidate = 300; // Next.js ISR: Revalidate cache every 5 minutes
 
@@ -44,6 +46,7 @@ export async function generateMetadata() {
 }
 
 export default async function Home() {
+  const heroData = await getWebsiteHero("home");
   const { tabs, programs } = await getCoursesData();
   const universities = await getUniversitiesData();
   const { leftCards, rightCards } = await getAboutData();
@@ -57,9 +60,12 @@ export default async function Home() {
       <FaqJsonLd faqs={faqs} />
       <Header />
 
-      <main className="flex w-full flex-1 flex-col md:mt-10">
-        <Hero />
+      <main className="flex w-full flex-1 flex-col md:mt-10 pb-16 lg:pb-0">
+        <Hero initialHeroData={heroData} />
+        <SearchBar />
         <Stats />
+        <LearningJourney />
+        <IimIitLogos />
         <Courses initialTabs={tabs} initialPrograms={programs} />
         <Universities initialUniversities={universities} />
         <About initialLeftCards={leftCards} initialRightCards={rightCards} />
@@ -71,6 +77,7 @@ export default async function Home() {
         initialUniversities={footerUniversities}
         initialPrograms={footerPrograms}
       />
+      <MobileBottomNav />
     </div>
   );
 }

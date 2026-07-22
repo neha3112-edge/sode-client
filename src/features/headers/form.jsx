@@ -100,6 +100,12 @@ export default function HeaderForm({ isUpdateForm = false }) {
               <Select
                 placeholder="None (Root Main Navigation Item)"
                 allowClear
+                showSearch
+                virtual={false}
+                optionFilterProp="label"
+                filterOption={(input, option) =>
+                  (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                }
                 options={parentHeaders.map((p) => ({
                   label: `📂 ${p.label || p.name || p.title}`,
                   value: p._id,
@@ -150,6 +156,12 @@ export default function HeaderForm({ isUpdateForm = false }) {
               <Select
                 placeholder="Select Course (Auto-fills Logo & Link)"
                 allowClear
+                showSearch
+                virtual={false}
+                optionFilterProp="label"
+                filterOption={(input, option) =>
+                  (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                }
                 onChange={handleCourseSelect}
                 options={courses.map((c) => ({
                   label: `🎓 ${c.title || c.name}`,
@@ -164,6 +176,12 @@ export default function HeaderForm({ isUpdateForm = false }) {
               <Select
                 placeholder="Select University (Auto-fills Logo & Link)"
                 allowClear
+                showSearch
+                virtual={false}
+                optionFilterProp="label"
+                filterOption={(input, option) =>
+                  (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                }
                 onChange={handleUniversitySelect}
                 options={universities.map((u) => ({
                   label: `🏛️ ${u.name || u.title}`,
@@ -183,6 +201,12 @@ export default function HeaderForm({ isUpdateForm = false }) {
               <Select
                 placeholder="Pick image from Media Collection"
                 allowClear
+                showSearch
+                virtual={false}
+                optionFilterProp="label"
+                filterOption={(input, option) =>
+                  (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                }
                 onChange={(mId) => {
                   const found = mediaList.find((m) => m._id === mId);
                   if (found) {
@@ -203,6 +227,12 @@ export default function HeaderForm({ isUpdateForm = false }) {
               <Select
                 placeholder="Select Media ObjectId for Logo"
                 allowClear
+                showSearch
+                virtual={false}
+                optionFilterProp="label"
+                filterOption={(input, option) =>
+                  (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                }
                 onChange={(mId) => {
                   const found = mediaList.find((m) => m._id === mId);
                   if (found) {

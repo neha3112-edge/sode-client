@@ -133,7 +133,7 @@ export default function UniversityCompareView() {
         />
 
         {/* Banner Title */}
-        <div className="bg-gradient-to-r from-[#1C3569] via-[#152a54] to-[#0d1d3d] rounded-3xl p-6 md:p-10 text-white relative overflow-hidden shadow-lg">
+        <div className="bg-linear-to-r from-[#1C3569] via-[#152a54] to-[#0d1d3d] rounded-3xl p-6 md:p-10 text-white relative overflow-hidden shadow-lg">
           <div className="relative z-10 max-w-3xl space-y-3">
             <div className="inline-flex items-center gap-2 bg-amber-400/20 border border-amber-400/40 text-amber-300 px-3.5 py-1 rounded-full text-xs font-bold shadow-xs">
               <SwapOutlined />
@@ -199,7 +199,7 @@ export default function UniversityCompareView() {
             </div>
 
             <div className="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-x-auto relative">
-              <table className="w-full text-left border-collapse min-w-[700px]">
+              <table className="w-full text-left border-collapse min-w-175">
 
                 {/* Header Row: University Name & Logo */}
                 <thead>

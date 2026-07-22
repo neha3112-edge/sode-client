@@ -97,7 +97,7 @@ export default function SidePanel({ config, topContent, bottomContent }) {
   if (entity === "sitesetting") {
     drawerWidth = 800;
   }
-  if (entity === "pagemeta") {
+  if (entity === "pagemeta" || entity === "hero") {
     drawerWidth = 750;
   }
   if (entity === "user" || entity === "users") {

@@ -5,10 +5,11 @@ import { API_BASE_URL } from "@/config";
 // (All Static Fallbacks Removed as Requested)
 // ==========================================
 
-async function fetchFromApi(endpoint) {
+async function fetchFromApi(endpoint, options = {}) {
   try {
     const res = await fetch(`${API_BASE_URL}${endpoint}`, {
-      next: { revalidate: 60 },
+      cache: "no-store",
+      ...options,
     });
 
     if (!res.ok) return null;
@@ -100,8 +101,40 @@ export async function getCourseBySlug(slug) {
 // 🎯 Fetch Partner Universities from Backend
 export async function getUniversities() {
   const data = await fetchFromApi("partneruniversities/website-list");
-  return Array.isArray(data) ? data : [];
+  if (!Array.isArray(data)) return [];
+
+  // Fix relative/corrupted Media URLs before passing to client
+  return data.map((uni) => ({
+    ...uni,
+    logoSrc: fixMediaUrl(uni?.logoSrc),
+    imageSrc: fixMediaUrl(uni?.imageSrc),
+  }));
 }
+
+/**
+ * Normalise a Media object URL:
+ *  - Strips "Image preview" text accidentally appended in DB
+ *  - Converts relative paths to absolute using API_BASE_URL origin
+ */
+function fixMediaUrl(media) {
+  if (!media || typeof media !== "object") return media;
+  const raw = media.url || "";
+  if (!raw) return media;
+
+  // Strip noise
+  let cleaned = raw.replace(/\s*image\s*preview\s*$/i, "").trim();
+  if (!cleaned) return { ...media, url: null };
+
+  // Make absolute if relative
+  if (!cleaned.startsWith("http://") && !cleaned.startsWith("https://")) {
+    // API_BASE_URL is like "http://localhost:5001/api/" — extract origin
+    const origin = API_BASE_URL.replace(/\/api\/?$/, "");
+    cleaned = `${origin}${cleaned.startsWith("/") ? "" : "/"}${cleaned}`;
+  }
+
+  return { ...media, url: cleaned };
+}
+
 
 // 🎯 Fetch Universities for Comparison from Backend
 export async function getWebsiteUniversitiesCompare(slugs = []) {
@@ -122,14 +155,41 @@ export async function getUniversityBySlug(slug) {
   return await fetchFromApi(`partneruniversities/website-read?slug=${slug}`);
 }
 
-// 🎯 Fetch Blogs from Backend
-export async function getBlogs() {
-  const data = await fetchFromApi("blog/list");
-  return Array.isArray(data) ? data : [];
+// 🎯 Fetch Dynamic Hero Section from Backend
+export async function getWebsiteHero(page = "home") {
+  try {
+    const data = await fetchFromApi(`hero/website-read?page=${page}`);
+    if (!data) return null;
+
+    return {
+      ...data,
+      image: fixMediaUrl(data.image),
+      bgImage: fixMediaUrl(data.bgImage),
+      mobileImage: fixMediaUrl(data.mobileImage),
+      slides: Array.isArray(data.slides)
+        ? data.slides.map((s) => ({
+          ...s,
+          image: fixMediaUrl(s.image),
+          bgImage: fixMediaUrl(s.bgImage),
+          mobileImage: fixMediaUrl(s.mobileImage),
+        }))
+        : [],
+    };
+  } catch (error) {
+    console.error("❌ Hero fetch error:", error);
+    return null;
+  }
 }
+
 
 // 🎯 Fetch Blog by Slug from Backend
 export async function getBlogBySlug(slug) {
   if (!slug) return null;
   return await fetchFromApi(`blog/read?slug=${slug}`);
+}
+
+// 🎯 Fetch Blogs from Backend
+export async function getBlogs() {
+  const data = await fetchFromApi("blog/list");
+  return Array.isArray(data) ? data : [];
 }
