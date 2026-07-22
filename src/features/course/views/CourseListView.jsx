@@ -23,6 +23,7 @@ import {
 import FormWrapper from "@/components/forms/FormWrapper";
 import { getAssetPath } from "@/lib/utils";
 import { getWebsiteCoursesFilter } from "@/services/api";
+import { useSearchParams } from "next/navigation";
 
 // Reusable Sidebar Filter Component defined OUTSIDE to maintain stable React DOM identity
 function FilterSidebarContent({
@@ -251,6 +252,27 @@ export default function CourseListView({ initialCourses = [], initialUniversitie
   // Brochure & Apply Modal State
   const [activeModal, setActiveModal] = useState(null);
   const [selectedProgram, setSelectedProgram] = useState(null);
+
+  const searchParams = useSearchParams();
+
+  // Synchronize URL query parameters (category, search, university, etc.) into component filter state
+  useEffect(() => {
+    if (!searchParams) return;
+    const cat = searchParams.get("category");
+    const q = searchParams.get("search");
+    const uni = searchParams.get("university");
+
+    if (cat) {
+      setActiveCategoryTab(cat);
+    }
+    if (q) {
+      setSearchInputValue(q);
+      setAppliedSearchTerm(q);
+    }
+    if (uni) {
+      setSelectedUniversities(uni.split(",").map((u) => u.trim()));
+    }
+  }, [searchParams]);
 
   // Synchronize initialList when props change
   useEffect(() => {

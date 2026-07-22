@@ -11,6 +11,12 @@ export default function CategoryForm({ isUpdateForm = false }) {
       endPoint: "options",
     });
 
+  const { data: mediaOptions = [], isLoading: isMediaLoading } =
+    useGetDynamicOptionsQuery({
+      entity: "media",
+      endPoint: "options",
+    });
+
   return (
     <>
       <Row gutter={16}>
@@ -76,6 +82,10 @@ export default function CategoryForm({ isUpdateForm = false }) {
         <Input.TextArea rows={3} placeholder="Category summary or notes..." />
       </Form.Item>
 
+      <Form.Item name="title" label="Title (SEO / Custom Display)">
+        <Input placeholder="e.g. Online Doctoral Programs (DBA)" />
+      </Form.Item>
+
       <Row gutter={16}>
         <Col span={12}>
           <Form.Item name="icon" label="Icon Name or Class">
@@ -86,6 +96,86 @@ export default function CategoryForm({ isUpdateForm = false }) {
         <Col span={12}>
           <Form.Item name="image" label="Category Image / Banner Path">
             <Input placeholder="e.g. /assets/images/categories/doctorate.png" />
+          </Form.Item>
+        </Col>
+      </Row>
+
+      <Row gutter={16}>
+        <Col span={8}>
+          <Form.Item
+            name="logo"
+            label="Logo Media Asset"
+            getValueFromEvent={(val) => (typeof val === "object" ? val?._id || val : val)}
+            getValueProps={(val) => ({
+              value: typeof val === "object" ? val?._id || val : val,
+            })}
+          >
+            <Select
+              placeholder="Select from Media Library"
+              loading={isMediaLoading}
+              allowClear
+              showSearch
+              optionFilterProp="children"
+            >
+              {Array.isArray(mediaOptions) &&
+                mediaOptions.map((media) => (
+                  <Select.Option key={media._id} value={media._id}>
+                    {media.name || media.fileName || media.label}
+                  </Select.Option>
+                ))}
+            </Select>
+          </Form.Item>
+        </Col>
+
+        <Col span={8}>
+          <Form.Item
+            name="logoSrc"
+            label="LogoSrc Media Asset"
+            getValueFromEvent={(val) => (typeof val === "object" ? val?._id || val : val)}
+            getValueProps={(val) => ({
+              value: typeof val === "object" ? val?._id || val : val,
+            })}
+          >
+            <Select
+              placeholder="Select from Media Library"
+              loading={isMediaLoading}
+              allowClear
+              showSearch
+              optionFilterProp="children"
+            >
+              {Array.isArray(mediaOptions) &&
+                mediaOptions.map((media) => (
+                  <Select.Option key={media._id} value={media._id}>
+                    {media.name || media.fileName || media.label}
+                  </Select.Option>
+                ))}
+            </Select>
+          </Form.Item>
+        </Col>
+
+        <Col span={8}>
+          <Form.Item
+            name="imageSrc"
+            label="ImageSrc Media Asset"
+            getValueFromEvent={(val) => (typeof val === "object" ? val?._id || val : val)}
+            getValueProps={(val) => ({
+              value: typeof val === "object" ? val?._id || val : val,
+            })}
+          >
+            <Select
+              placeholder="Select from Media Library"
+              loading={isMediaLoading}
+              allowClear
+              showSearch
+              optionFilterProp="children"
+            >
+              {Array.isArray(mediaOptions) &&
+                mediaOptions.map((media) => (
+                  <Select.Option key={media._id} value={media._id}>
+                    {media.name || media.fileName || media.label}
+                  </Select.Option>
+                ))}
+            </Select>
           </Form.Item>
         </Col>
       </Row>

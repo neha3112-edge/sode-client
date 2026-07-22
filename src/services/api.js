@@ -46,6 +46,49 @@ export async function getWebsiteHeaders() {
   }
 }
 
+// 🎯 Fetch Dynamic Website Categories & Tree from Backend Category API
+export async function getWebsiteCategories() {
+  try {
+    const res = await fetch(`${API_BASE_URL}category/website-list`, {
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) return { categories: [], tree: [] };
+    const data = await res.json();
+    if (data && data.success && data.result) {
+      return {
+        categories: data.result.categories || [],
+        tree: data.result.tree || [],
+      };
+    }
+    return { categories: [], tree: [] };
+  } catch (error) {
+    console.error("❌ Error fetching website categories:", error);
+    return { categories: [], tree: [] };
+  }
+}
+
+// 🎯 Fetch Single Category & its Subcategories via SSR Category Website Read API
+export async function getWebsiteCategoryBySlug(slug) {
+  try {
+    if (!slug) return { category: null, children: [] };
+    const res = await fetch(`${API_BASE_URL}category/website-read?slug=${encodeURIComponent(slug)}`, {
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) return { category: null, children: [] };
+    const data = await res.json();
+    if (data && data.success && data.result) {
+      return {
+        category: data.result.category || null,
+        children: data.result.children || [],
+      };
+    }
+    return { category: null, children: [] };
+  } catch (error) {
+    console.error("❌ Error fetching website category by slug:", error);
+    return { category: null, children: [] };
+  }
+}
+
 // 🎯 Fetch Courses with dynamic Mongoose backend query parameters
 export async function getWebsiteCoursesFilter(params = {}) {
   try {
@@ -80,14 +123,38 @@ export async function getWebsiteCoursesFilter(params = {}) {
   }
 }
 
-// 🎯 Fetch All Public Courses from Backend
-export async function getCourses() {
-  const data = await fetchFromApi("courses/website-list");
-  if (data && Array.isArray(data.programs)) {
-    return data.programs;
+// 🎯 Fetch Courses with Tabs from Backend (to get categories)
+export async function getCoursesWithTabs() {
+  try {
+    const data = await fetchFromApi("courses/website-list");
+    if (data && Array.isArray(data.tabs)) {
+      const fixedTabs = data.tabs.map((tab) => ({
+        ...tab,
+        logo: fixMediaUrl(tab.logo),
+        logoSrc: fixMediaUrl(tab.logoSrc),
+        image: fixMediaUrl(tab.image),
+        imageSrc: fixMediaUrl(tab.imageSrc),
+      }));
+      return {
+        ...data,
+        tabs: fixedTabs,
+      };
+    }
+    return { tabs: [], programs: [] };
+  } catch (error) {
+    console.error("Error fetching courses with tabs:", error);
+    return { tabs: [], programs: [] };
   }
-  if (Array.isArray(data)) {
-    return data;
+}
+
+// 🎯 Fetch All Public Courses from Backend (supporting query parameters)
+export async function getCourses(params = {}) {
+  const result = await getWebsiteCoursesFilter(params);
+  if (result && Array.isArray(result.programs)) {
+    return result.programs;
+  }
+  if (Array.isArray(result)) {
+    return result;
   }
   return [];
 }
@@ -99,8 +166,17 @@ export async function getCourseBySlug(slug) {
 }
 
 // 🎯 Fetch Partner Universities from Backend
-export async function getUniversities() {
-  const data = await fetchFromApi("partneruniversities/website-list");
+export async function getUniversities(params = {}) {
+  const query = new URLSearchParams();
+  if (params.type) query.append("type", params.type);
+  if (params.category) query.append("category", params.category);
+  if (params.limit) query.append("limit", params.limit);
+  if (params.page) query.append("page", params.page);
+
+  const queryString = query.toString();
+  const endpoint = `partneruniversities/website-list${queryString ? `?${queryString}` : ""}`;
+
+  const data = await fetchFromApi(endpoint);
   if (!Array.isArray(data)) return [];
 
   // Fix relative/corrupted Media URLs before passing to client
@@ -186,6 +262,16 @@ export async function getWebsiteHero(page = "home") {
 export async function getBlogBySlug(slug) {
   if (!slug) return null;
   return await fetchFromApi(`blog/read?slug=${slug}`);
+}
+
+// 🎯 Fetch Dynamic Page Builder by Slug from Backend
+export async function getWebsitePageBySlug(slug) {
+  if (!slug) return null;
+  const response = await fetchFromApi(`page/website-read?slug=${slug}`);
+  if (response && response.success && response.result) {
+    return response.result;
+  }
+  return response?.result || response || null;
 }
 
 // 🎯 Fetch Blogs from Backend

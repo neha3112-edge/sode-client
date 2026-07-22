@@ -1,15 +1,17 @@
 "use client";
-
 import { Container } from "@/components/ui/container";
 import React, { useState } from "react";
 import Image from "next/image";
+import { getAssetPath } from "@/lib/utils";
+import { Tooltip } from "antd";
+import { getWebsiteCoursesFilter, getUniversities } from "@/services/api";
 
 // 1. Search Bar Component (With smooth enter & exit top slide-down filter drawer)
 export function SearchBar() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isFilterClosing, setIsFilterClosing] = useState(false);
-  
+
   // Filter states
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedType, setSelectedType] = useState("all");
@@ -42,7 +44,7 @@ export function SearchBar() {
       if (selectedCategory !== "all") queryParams.push(`category=${selectedCategory}`);
       if (selectedType !== "all") queryParams.push(`type=${selectedType}`);
       if (selectedDuration !== "all") queryParams.push(`duration=${selectedDuration}`);
-      
+
       const queryString = queryParams.length > 0 ? `?${queryParams.join("&")}` : "";
       window.location.href = `/courses${queryString}`;
     }, 380);
@@ -56,7 +58,8 @@ export function SearchBar() {
 
   return (
     <>
-      <style dangerouslySetInnerHTML={{ __html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         @keyframes fadeIn {
           from { opacity: 0; backdrop-filter: blur(0px); }
           to { opacity: 1; backdrop-filter: blur(4px); }
@@ -216,11 +219,10 @@ export function SearchBar() {
                         key={cat.id}
                         type="button"
                         onClick={() => setSelectedCategory(cat.id)}
-                        className={`cursor-pointer text-xs font-semibold px-3.5 py-2 rounded-lg transition-all ${
-                          selectedCategory === cat.id
-                            ? "bg-[#EEC471] text-[#102441] font-bold"
-                            : "bg-white/5 border border-white/10 text-white/80 hover:bg-white/10"
-                        }`}
+                        className={`cursor-pointer text-xs font-semibold px-3.5 py-2 rounded-lg transition-all ${selectedCategory === cat.id
+                          ? "bg-[#EEC471] text-[#102441] font-bold"
+                          : "bg-white/5 border border-white/10 text-white/80 hover:bg-white/10"
+                          }`}
                       >
                         {cat.label}
                       </button>
@@ -242,11 +244,10 @@ export function SearchBar() {
                         key={t.id}
                         type="button"
                         onClick={() => setSelectedType(t.id)}
-                        className={`cursor-pointer text-xs font-semibold px-3.5 py-2 rounded-lg transition-all ${
-                          selectedType === t.id
-                            ? "bg-[#EEC471] text-[#102441] font-bold"
-                            : "bg-white/5 border border-white/10 text-white/80 hover:bg-white/10"
-                        }`}
+                        className={`cursor-pointer text-xs font-semibold px-3.5 py-2 rounded-lg transition-all ${selectedType === t.id
+                          ? "bg-[#EEC471] text-[#102441] font-bold"
+                          : "bg-white/5 border border-white/10 text-white/80 hover:bg-white/10"
+                          }`}
                       >
                         {t.label}
                       </button>
@@ -268,11 +269,10 @@ export function SearchBar() {
                         key={d.id}
                         type="button"
                         onClick={() => setSelectedDuration(d.id)}
-                        className={`cursor-pointer text-xs font-semibold px-3.5 py-2 rounded-lg transition-all ${
-                          selectedDuration === d.id
-                            ? "bg-[#EEC471] text-[#102441] font-bold"
-                            : "bg-white/5 border border-white/10 text-white/80 hover:bg-white/10"
-                        }`}
+                        className={`cursor-pointer text-xs font-semibold px-3.5 py-2 rounded-lg transition-all ${selectedDuration === d.id
+                          ? "bg-[#EEC471] text-[#102441] font-bold"
+                          : "bg-white/5 border border-white/10 text-white/80 hover:bg-white/10"
+                          }`}
                       >
                         {d.label}
                       </button>
@@ -401,33 +401,114 @@ export function LearningJourney() {
   );
 }
 
-// 3. Top IIMs & IITs Logos Section (IIM opens centered Modal, IIT opens full-width bottom Drawer)
-export function IimIitLogos() {
+// Helper component to render backend logo/icon or fallback code badge
+function PartnerLogoIcon({ partner, type }) {
+  const [imgError, setImgError] = useState(false);
+
+  let rawUrl = null;
+  if (partner) {
+    rawUrl = partner.logoUrl || partner.logoSrc || partner.logo || partner.imageSrc || partner.image;
+  }
+  const logoUrl = getAssetPath(rawUrl, null);
+
+  const isIim = type === "iim";
+  const textClass = isIim ? "text-[#102441] font-serif" : "text-blue-700 font-sans";
+
+  if (logoUrl && !imgError) {
+    return (
+      <img
+        src={logoUrl}
+        alt={partner.name || "Partner Logo"}
+        className="w-8 h-8 object-contain rounded-full"
+        onError={() => setImgError(true)}
+      />
+    );
+  }
+  return (
+    <span className={`text-xs font-bold ${textClass}`}>
+      {partner?.code || "UNI"}
+    </span>
+  );
+}
+
+// 3. Partner Logos Section (Rendered 100% dynamically for ALL Parent & Sub-Categories from backend API)
+export function IimIitLogos({ categories = [] }) {
   const [activePartner, setActivePartner] = useState(null);
   const [isPartnerClosing, setIsPartnerClosing] = useState(false);
   const [tempPartner, setTempPartner] = useState(null);
+  const [partnerModalData, setPartnerModalData] = useState({ courses: [], universities: [] });
+  const [isPartnerLoading, setIsPartnerLoading] = useState(false);
 
-  const iims = [
-    { name: "IIM Ahmedabad", code: "IIMA", badge: "Gold Class" },
-    { name: "IIM Bangalore", code: "IIMB", badge: "Digital Tech" },
-    { name: "IIM Calcutta", code: "IIMC", badge: "Finance Hub" },
-    { name: "IIM Lucknow", code: "IIML", badge: "Leadership" },
-    { name: "IIM Kozhikode", code: "IIMK", badge: "Innovation" },
-  ];
+  // In-page expand toggles per parent block (by parent._id or slug)
+  const [expandedBlocks, setExpandedBlocks] = useState({});
 
-  const iits = [
-    { name: "IIT Delhi", code: "IITD", badge: "ML & AI" },
-    { name: "IIT Bombay", code: "IITB", badge: "Advanced Tech" },
-    { name: "IIT Madras", code: "IITM", badge: "Research Hub" },
-    { name: "IIT Kanpur", code: "IITK", badge: "Cyber Sec" },
-    { name: "IIT Roorkee", code: "IITR", badge: "Data Analytics" },
-  ];
+  const toggleExpandBlock = (blockId) => {
+    setExpandedBlocks((prev) => ({
+      ...prev,
+      [blockId]: !prev[blockId],
+    }));
+  };
 
-  const handleOpenPartner = (partner, type) => {
+  // Helper to generate initials code (e.g. "IIM Ahmedabad" -> "IIMA", "IIT Delhi" -> "IITD")
+  const getCode = (name) => {
+    if (!name) return "UNI";
+    const clean = name.replace(/[^a-zA-Z\s]/g, "");
+    const parts = clean.split(/\s+/);
+    if (parts.length >= 2) {
+      const first = parts[0].toUpperCase();
+      const second = parts[1];
+      if (first === "IIM" || first === "IIT" || first === "MIT" || first === "LBS") {
+        return first + (second ? second[0].toUpperCase() : "");
+      }
+    }
+    return parts.map((p) => p[0]).join("").toUpperCase().substring(0, 4);
+  };
+
+  // Find ALL Parent Categories from API that have children linked to them
+  const parentBlocks = (categories || [])
+    .filter((c) => !c.parentId && c.slug !== "all")
+    .map((parent) => {
+      const children = (categories || [])
+        .filter((child) => child.parentId && String(child.parentId) === String(parent._id))
+        .map((child) => ({
+          ...child,
+          name: child.label || child.name,
+          code: getCode(child.label || child.name),
+          badge: child.title || "Executive Program",
+        }));
+
+      return {
+        ...parent,
+        title: parent.title || parent.label || parent.name,
+        children,
+      };
+    })
+    .filter((parent) => parent.children.length > 0);
+
+  const handleOpenPartner = async (partner, type) => {
     const partnerWithType = { ...partner, type };
     setActivePartner(partnerWithType);
     setTempPartner(partnerWithType);
     setIsPartnerClosing(false);
+    setIsPartnerLoading(true);
+    setPartnerModalData({ courses: [], universities: [] });
+
+    try {
+      const slug = partner.slug || partner.name;
+      const [coursesRes, unisRes] = await Promise.all([
+        getWebsiteCoursesFilter({ category: slug, limit: 10 }),
+        getUniversities({ category: slug, limit: 6 }),
+      ]);
+
+      setPartnerModalData({
+        courses: coursesRes?.programs || [],
+        universities: Array.isArray(unisRes) ? unisRes : [],
+      });
+    } catch (err) {
+      console.error("❌ Error loading partner details:", err);
+    } finally {
+      setIsPartnerLoading(false);
+    }
   };
 
   const handleClosePartner = () => {
@@ -439,394 +520,225 @@ export function IimIitLogos() {
     }, 380); // Matches the exit transition delay
   };
 
-  const partnerDetails = {
-    "IIMA": {
-      title: "Executive General Management Program (EGMP)",
-      duration: "12 Months",
-      eligibility: "Graduate with minimum 5 years work experience",
-      skills: "General Management, Corporate Strategy, Financial Analytics",
-      description: "Designed for mid to senior-level managers aiming to transition to general management roles. The curriculum covers strategic thinking, corporate finance, operational excellence, and organizational design.",
-      highlights: [
-        "Campus Immersion at IIM Ahmedabad",
-        "Official IIMA Alumni Association Status",
-        "Case-study pedagogy and strategic projects"
-      ]
-    },
-    "IIMB": {
-      title: "Advanced Program in Digital Transformation & AI Strategy",
-      duration: "6 Months",
-      eligibility: "Graduate with 3+ years experience in tech/management",
-      skills: "AI Implementation, Digital Innovation, Transformation Leadership",
-      description: "Equips leaders to lead digital change, drive artificial intelligence integration, and build competitive advantage in the modern digital era.",
-      highlights: [
-        "Generative AI & Tech strategy roadmap",
-        "Live sessions by IIMB core faculty",
-        "Alumni privileges of IIM Bangalore"
-      ]
-    },
-    "IIMC": {
-      title: "Executive Program in Growth Strategies & Corporate Finance",
-      duration: "12 Months",
-      eligibility: "CA, CS, ICWA or Graduate with minimum 3 years finance experience",
-      skills: "Growth Scaling, Merger & Acquisition, Corporate Treasury",
-      description: "Delivers deep expertise in corporate valuation, treasury management, capital structure optimization, and scaling business growth strategies.",
-      highlights: [
-        "Dual campus immersions at IIM Joka (Calcutta)",
-        "Distinguished financial management core faculty",
-        "Lifetime access to IIMC Alumni portal & directory"
-      ]
-    },
-    "IIML": {
-      title: "Executive Program in Strategic Management & Leadership",
-      duration: "9 Months",
-      eligibility: "Graduate with minimum 4 years corporate work experience",
-      skills: "Executive Leadership, Negotiation Strategy, Talent Development",
-      description: "Provides senior managers with the toolkit to negotiate high-stakes deals, run organizational scale, and align cross-functional teams.",
-      highlights: [
-        "3-day campus immersion at IIM Lucknow Noida campus",
-        "Practical leader workshops with peer mentoring groups",
-        "Alumni benefits of IIM Lucknow"
-      ]
-    },
-    "IIMK": {
-      title: "Executive Program in Business Management & Digital Innovation",
-      duration: "12 Months",
-      eligibility: "Graduate with minimum 2 years work experience",
-      skills: "Business Management, Digital Innovation, Marketing Management",
-      description: "Empowers managers to run core business units while integrating digital business models and automated operational channels.",
-      highlights: [
-        "Online interactive sessions by IIM Kozhikode faculty",
-        "Custom capstone project on digital business disruption",
-        "Official IIM Kozhikode Alumni Status"
-      ]
-    },
-    "IITD": {
-      title: "Executive Certification in Data Science & Machine Learning",
-      duration: "9 Months",
-      eligibility: "Working professionals with basic coding/math background",
-      skills: "Machine Learning, Python programming, Predictive Modeling",
-      description: "Focuses on advanced analytics, predictive modeling, machine learning, and statistical decision-making designed by DMS, IIT Delhi.",
-      highlights: [
-        "Python & R practical programming labs",
-        "IIT Delhi Alumni Association benefits",
-        "Dedicated 1:1 mentor support"
-      ]
-    },
-    "IITB": {
-      title: "Executive Certification in AI, Machine Learning & Cloud Computing",
-      duration: "10 Months",
-      eligibility: "Engineers, Developers, or Tech Leads with coding proficiency",
-      skills: "Generative AI, Deep Learning, Cloud Architecture (AWS/GCP)",
-      description: "Comprehensive practical specialization in neural networks, large language models, cloud deployments, and predictive AI pipelines.",
-      highlights: [
-        "Hands-on labs powered by IIT Bombay tech faculty",
-        "Certificate of completion from CEP, IIT Bombay",
-        "Dedicated placement support & corporate career drives"
-      ]
-    },
-    "IITM": {
-      title: "Executive Program in Data Science & Engineering Analytics",
-      duration: "12 Months",
-      eligibility: "B.Tech/B.Sc/BCA or Math graduates with coding interest",
-      skills: "Big Data Processing, SQL/NoSQL Databases, Cloud Analytics",
-      description: "Learn scaling databases, engineering large dataset pipelines, and applying advanced mathematical analytics to industry solutions.",
-      highlights: [
-        "Live classes from India's #1 Ranked Engineering Institute",
-        "Access to IIT Madras research startup incubator networks",
-        "Comprehensive hands-on case studies"
-      ]
-    },
-    "IITK": {
-      title: "Executive Program in Cybersecurity & Blockchain Technologies",
-      duration: "8 Months",
-      eligibility: "IT professionals, security specialists, or tech grads",
-      skills: "Ethical Hacking, Network Security, Smart Contract Audits",
-      description: "Designed by cybersecurity research cells of IIT Kanpur to provide state-of-the-art defenses, penetration testing, and secure system design.",
-      highlights: [
-        "IIT Kanpur Cybersecurity lab hands-on access",
-        "Certificate issued by C3i Hub, IIT Kanpur",
-        "Preparation for top global security certifications"
-      ]
-    },
-    "IITR": {
-      title: "Executive Program in Data Analytics & Applied Finance",
-      duration: "9 Months",
-      eligibility: "Finance professionals, analysts, or commerce graduates",
-      skills: "Financial Analytics, Quantitative Risk Modeling, Algorithmic Trading",
-      description: "Bridging the gap between engineering analytics and finance. Designed for analysts deploying algorithmic models or calculating portfolio risks.",
-      highlights: [
-        "IIT Roorkee campus visit immersion opportunity",
-        "Live sessions by Department of Management Studies, IITR",
-        "Placement assistance & resume reviews"
-      ]
-    }
-  };
-
   const partnerToRender = activePartner || tempPartner;
+
+  // Accent bar colors for different parent blocks (gold, blue, emerald, purple, dark navy)
+  const accentBarColors = ["#EEC471", "#2563eb", "#10b981", "#9333ea", "#102441"];
 
   return (
     <>
-      <section className="w-full bg-white py-12 md:py-16 border-b border-slate-100">
-        <Container className="space-y-12">
-          
-          {/* Top IIMs Block */}
-          <div className="space-y-6">
-            <div className="flex items-center justify-between px-4 max-w-5xl mx-auto">
-              <h3 className="text-lg md:text-xl font-extrabold text-[#102441] flex items-center gap-2">
-                <span className="w-1.5 h-6 bg-[#EEC471] rounded-full" />
-                Top IIM Certification Partners
-              </h3>
-              <button className="text-xs md:text-sm font-bold text-blue-600 hover:underline cursor-pointer">
-                View All &gt;
-              </button>
-            </div>
+      {parentBlocks.length > 0 && (
+        <section className="w-full bg-white py-12 md:py-16 border-b border-slate-100">
+          <Container className="space-y-12">
 
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 px-4 max-w-5xl mx-auto">
-              {iims.map((iim, idx) => (
-                <div
-                  key={idx}
-                  onClick={() => handleOpenPartner(iim, "iim")}
-                  className="bg-slate-50 border border-slate-100 p-4 rounded-xl flex flex-col items-center text-center shadow-2xs hover:shadow-xs hover:border-slate-200 transition-all duration-200 cursor-pointer active:scale-95"
-                >
-                  <div className="w-12 h-12 rounded-full bg-[#102441]/10 border border-[#102441]/20 flex items-center justify-center text-xs font-bold text-[#102441] mb-2 font-serif">
-                    {iim.code}
+            {parentBlocks.map((block, bIdx) => {
+              const blockId = String(block._id || block.slug);
+              const isExpanded = !!expandedBlocks[blockId];
+              const visibleChildren = isExpanded ? block.children : block.children.slice(0, 5);
+              const accentColor = accentBarColors[bIdx % accentBarColors.length];
+
+              return (
+                <div key={blockId} className="space-y-6">
+                  <div className="flex items-center justify-between px-4 max-w-5xl mx-auto gap-2">
+                    <div className="flex items-center gap-3 truncate max-w-[70%] sm:max-w-none">
+                      <span
+                        className="w-1.5 h-6 rounded-full inline-block shrink-0"
+                        style={{ backgroundColor: accentColor }}
+                      />
+                      <Tooltip title={block.title} placement="top">
+                        <h3 className="text-sm sm:text-base font-bold text-slate-800 tracking-tight truncate">
+                          {block.title}
+                        </h3>
+                      </Tooltip>
+                    </div>
+
+                    {block.children.length > 5 && (
+                      <button
+                        onClick={() => toggleExpandBlock(blockId)}
+                        className="text-[11px] sm:text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-colors cursor-pointer whitespace-nowrap bg-blue-50 px-2.5 py-1 rounded-full hover:bg-blue-100/70"
+                      >
+                        {isExpanded ? "Show Less" : "View All"}
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={2.5}
+                          stroke="currentColor"
+                          className={`w-3 h-3 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                        </svg>
+                      </button>
+                    )}
                   </div>
-                  <span className="text-xs font-bold text-slate-800 leading-tight block">
-                    {iim.name}
-                  </span>
-                  <span className="text-[9px] text-[#EEC471] bg-[#102441] px-2 py-0.5 rounded-sm font-semibold uppercase mt-1">
-                    {iim.badge}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
 
-          {/* Top IITs Block */}
-          <div className="space-y-6">
-            <div className="flex items-center justify-between px-4 max-w-5xl mx-auto">
-              <h3 className="text-lg md:text-xl font-extrabold text-[#102441] flex items-center gap-2">
-                <span className="w-1.5 h-6 bg-blue-600 rounded-full" />
-                Top IIT Certification Partners
-              </h3>
-              <button className="text-xs md:text-sm font-bold text-blue-600 hover:underline cursor-pointer">
-                View All &gt;
-              </button>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 px-4 max-w-5xl mx-auto">
-              {iits.map((iit, idx) => (
-                <div
-                  key={idx}
-                  onClick={() => handleOpenPartner(iit, "iit")}
-                  className="bg-slate-50 border border-slate-100 p-4 rounded-xl flex flex-col items-center text-center shadow-2xs hover:shadow-xs hover:border-slate-200 transition-all duration-200 cursor-pointer active:scale-95"
-                >
-                  <div className="w-12 h-12 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-xs font-bold text-blue-700 mb-2 font-sans">
-                    {iit.code}
+                  <div className="flex flex-nowrap overflow-x-auto no-scrollbar sm:grid sm:grid-cols-5 gap-3 sm:gap-4 px-4 max-w-5xl mx-auto pb-2 scroll-smooth">
+                    {visibleChildren.map((child, idx) => (
+                      <div
+                        key={child._id || idx}
+                        onClick={() => handleOpenPartner(child, block.slug)}
+                        className="w-[120px] sm:w-auto shrink-0 py-1 px-1 flex flex-col items-center text-center transition-all duration-200 cursor-pointer active:scale-95 group"
+                      >
+                        <div className="w-12 h-12 rounded-full bg-slate-100/80 flex items-center justify-center mb-2 overflow-hidden p-1 group-hover:scale-105 transition-transform">
+                          <PartnerLogoIcon partner={child} type={block.slug} />
+                        </div>
+                        <Tooltip title={child.name} placement="top">
+                          <span className="text-xs md:text-sm font-bold text-slate-900 leading-tight block group-hover:text-blue-600 transition-colors truncate max-w-full">
+                            {child.name}
+                          </span>
+                        </Tooltip>
+                        <Tooltip title={child.badge} placement="bottom">
+                          <span className="text-[10px] md:text-xs text-slate-500 font-medium mt-1 truncate max-w-full block">
+                            {child.badge}
+                          </span>
+                        </Tooltip>
+                      </div>
+                    ))}
                   </div>
-                  <span className="text-xs font-bold text-slate-800 leading-tight block">
-                    {iit.name}
-                  </span>
-                  <span className="text-[9px] text-blue-600 bg-blue-50 px-2 py-0.5 rounded-sm font-semibold uppercase mt-1">
-                    {iit.badge}
-                  </span>
                 </div>
-              ))}
-            </div>
-          </div>
+              );
+            })}
 
-        </Container>
-      </section>
+          </Container>
+        </section>
+      )}
 
-      {/* ── CONDITIONAL POPUP LAYOUT (With smooth enter & exit animations) ── */}
+      {/* ── CENTERED POPUP MODAL FOR PARTNERS (CLEAN CIRCULAR LOGO + TITLE ONLY) ── */}
       {partnerToRender !== null && (() => {
-        const details = partnerDetails[partnerToRender.code];
-        const isIim = partnerToRender.type === "iim";
+        const isIim = partnerToRender.type === "iim" || (partnerToRender.slug || "").includes("iim");
 
-        if (isIim) {
-          // Centered Modal (IIM)
-          return (
-            <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
-              <div
-                onClick={handleClosePartner}
-                className={`absolute inset-0 bg-slate-950/70 ${isPartnerClosing ? "animate-fade-out" : "animate-fade-in"}`}
-              />
-              <div className={`relative w-full max-w-7xl bg-[#102441] border border-white/10 text-white rounded-2xl shadow-2xl p-6 md:p-8 z-10 max-h-[85vh] overflow-y-auto text-left ${isPartnerClosing ? "animate-custom-scale-down-exit" : "animate-custom-scale-up"}`}>
-                <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold text-[#EEC471] font-serif border border-[#EEC471]/35">
-                      {partnerToRender.code}
-                    </div>
-                    <div>
-                      <h3 className="text-sm md:text-base font-bold text-white leading-tight">
-                        {partnerToRender.name}
-                      </h3>
-                      <span className="text-[9px] text-[#EEC471] bg-white/5 px-2 py-0.5 rounded-sm font-semibold uppercase mt-0.5 inline-block">
-                        {partnerToRender.badge}
-                      </span>
-                    </div>
-                  </div>
-                  <button
-                    onClick={handleClosePartner}
-                    className="text-white/60 hover:text-white cursor-pointer focus:outline-none transition-colors p-1.5 rounded-full hover:bg-white/5"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
+        const accentText = isIim ? "text-[#EEC471]" : "text-blue-400";
+        const accentBorder = isIim ? "border-[#EEC471]/35" : "border-blue-400/35";
 
-                {details && (
-                  <div className="space-y-4">
-                    <div>
-                      <span className="text-[#EEC471] text-[10px] font-bold uppercase tracking-wider block mb-1">Featured Program:</span>
-                      <h4 className="text-base font-extrabold text-white leading-snug">
-                        {details.title}
-                      </h4>
-                      <span className="mt-2 inline-flex items-center gap-1.5 bg-white/5 border border-white/10 px-2 py-0.5 rounded-md text-[11px] text-white/90">
-                        ⏱️ Duration: <span className="font-bold text-white">{details.duration}</span>
-                      </span>
-                    </div>
+        const showHeaderBadge = partnerToRender.badge &&
+          partnerToRender.badge.toLowerCase() !== (partnerToRender.name || "").toLowerCase();
 
-                    <div className="space-y-1">
-                      <span className="text-white/40 text-[10px] font-bold uppercase tracking-wider block">Description:</span>
-                      <p className="text-xs md:text-sm text-white/85 leading-relaxed">
-                        {details.description}
-                      </p>
-                    </div>
+        // Build list of items to render
+        const displayItems = [];
 
-                    <div className="space-y-1">
-                      <span className="text-[#EEC471] text-[10px] font-bold uppercase tracking-wider block">🎯 Key Highlights:</span>
-                      <ul className="list-disc pl-5 text-xs text-white/75 space-y-1">
-                        {details.highlights.map((h, i) => (
-                          <li key={i}>{h}</li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                      <div className="bg-white/5 p-3 rounded-lg border border-white/5 text-[11px] space-y-0.5">
-                        <span className="font-bold text-white/60 block">🎓 Eligibility:</span>
-                        <span className="text-white/80">{details.eligibility}</span>
-                      </div>
-                      <div className="bg-white/5 p-3 rounded-lg border border-white/5 text-[11px] space-y-0.5">
-                        <span className="font-bold text-white/60 block">🛠️ Skills Acquired:</span>
-                        <span className="text-white/80">{details.skills}</span>
-                      </div>
-                    </div>
-
-                    <div className="pt-2">
-                      <button
-                        onClick={() => {
-                          handleClosePartner();
-                          setTimeout(() => {
-                            document.querySelector('button[class*="bg-linear-to-r"]')?.click();
-                          }, 350);
-                        }}
-                        className="w-full cursor-pointer bg-linear-to-r from-[#EEC471] via-[#F3CD73] to-[#FADA9A] text-[#102441] py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider shadow-md hover:scale-[1.01] transition-transform duration-150"
-                      >
-                        Download Syllabus & Apply
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          );
-        } else {
-          // Full-Width Bottom Sheet/Drawer (IIT)
-          return (
-            <div className="fixed inset-0 z-[9999] flex items-end justify-center">
-              <div
-                onClick={handleClosePartner}
-                className={`absolute inset-0 bg-slate-950/70 ${isPartnerClosing ? "animate-fade-out" : "animate-fade-in"}`}
-              />
-              <div className={`relative w-full bg-[#102441] border-t border-white/10 text-white rounded-t-3xl shadow-2xl p-6 pb-8 z-10 max-h-[85vh] overflow-y-auto text-left ${isPartnerClosing ? "animate-slide-down-exit" : "animate-slide-up"}`}>
-                
-                <div className="w-12 h-1 bg-white/20 rounded-full mx-auto -mt-2 mb-4" />
-
-                <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold text-blue-400 font-sans border border-blue-400/35">
-                      {partnerToRender.code}
-                    </div>
-                    <div>
-                      <h3 className="text-sm md:text-base font-bold text-white leading-tight">
-                        {partnerToRender.name}
-                      </h3>
-                      <span className="text-[9px] text-blue-400 bg-white/5 px-2 py-0.5 rounded-sm font-semibold uppercase mt-0.5 inline-block">
-                        {partnerToRender.badge}
-                      </span>
-                    </div>
-                  </div>
-                  <button
-                    onClick={handleClosePartner}
-                    className="text-white/60 hover:text-white cursor-pointer focus:outline-none transition-colors p-1.5 rounded-full hover:bg-white/5"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
-
-                {details && (
-                  <div className="space-y-4">
-                    <div>
-                      <span className="text-blue-400 text-[10px] font-bold uppercase tracking-wider block mb-1">Featured Program:</span>
-                      <h4 className="text-base font-extrabold text-white leading-snug">
-                        {details.title}
-                      </h4>
-                      <span className="mt-2 inline-flex items-center gap-1.5 bg-white/5 border border-white/10 px-2 py-0.5 rounded-md text-[11px] text-white/90">
-                        ⏱️ Duration: <span className="font-bold text-white">{details.duration}</span>
-                      </span>
-                    </div>
-
-                    <div className="space-y-1">
-                      <span className="text-white/40 text-[10px] font-bold uppercase tracking-wider block">Description:</span>
-                      <p className="text-xs md:text-sm text-white/85 leading-relaxed">
-                        {details.description}
-                      </p>
-                    </div>
-
-                    <div className="space-y-1">
-                      <span className="text-blue-400 text-[10px] font-bold uppercase tracking-wider block">🎯 Key Highlights:</span>
-                      <ul className="list-disc pl-5 text-xs text-white/75 space-y-1">
-                        {details.highlights.map((h, i) => (
-                          <li key={i}>{h}</li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                      <div className="bg-white/5 p-3 rounded-lg border border-white/5 text-[11px] space-y-0.5">
-                        <span className="font-bold text-white/60 block">🎓 Eligibility:</span>
-                        <span className="text-white/80">{details.eligibility}</span>
-                      </div>
-                      <div className="bg-white/5 p-3 rounded-lg border border-white/5 text-[11px] space-y-0.5">
-                        <span className="font-bold text-white/60 block">🛠️ Skills Acquired:</span>
-                        <span className="text-white/80">{details.skills}</span>
-                      </div>
-                    </div>
-
-                    <div className="pt-2">
-                      <button
-                        onClick={() => {
-                          handleClosePartner();
-                          setTimeout(() => {
-                            document.querySelector('button[class*="bg-linear-to-r"]')?.click();
-                          }, 350);
-                        }}
-                        className="w-full cursor-pointer bg-linear-to-r from-blue-500 via-blue-400 to-cyan-300 text-[#102441] py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider shadow-md hover:scale-[1.01] transition-transform duration-150"
-                      >
-                        Download Syllabus & Apply
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          );
+        if (partnerToRender.children && partnerToRender.children.length > 0) {
+          partnerToRender.children.forEach((child) => {
+            const uName = child.label || child.name || child.title;
+            const logo = getAssetPath(child.logoUrl || child.logoSrc || child.logo || child.image, "/assets/images/iim-logo.jpg");
+            displayItems.push({
+              id: child._id || child.slug,
+              name: uName,
+              logo: logo,
+              href: `/courses?category=${partnerToRender.slug}&search=${encodeURIComponent(uName)}`,
+            });
+          });
         }
+
+        if (partnerModalData.universities && partnerModalData.universities.length > 0) {
+          partnerModalData.universities.forEach((uni) => {
+            const uName = uni.university?.name || uni.name || "Partner University";
+            const exists = displayItems.some((it) => it.name.toLowerCase() === uName.toLowerCase());
+            if (!exists) {
+              const logo = getAssetPath(uni.university?.logoSrc?.url || uni.logoSrc?.url, "/assets/images/iim-logo.jpg");
+              displayItems.push({
+                id: uni._id,
+                name: uName,
+                logo: logo,
+                href: `/courses?category=${partnerToRender.slug}&university=${encodeURIComponent(uName)}`,
+              });
+            }
+          });
+        }
+
+        if (partnerModalData.courses && partnerModalData.courses.length > 0) {
+          partnerModalData.courses.forEach((p) => {
+            const mainName = p.university?.name || p.title;
+            const logo = getAssetPath(p.university?.logoSrc?.url || p.logoSrc?.url || p.image?.url, "/assets/images/iim-logo.jpg");
+            const exists = displayItems.some((it) => it.name.toLowerCase() === mainName.toLowerCase());
+            if (!exists) {
+              displayItems.push({
+                id: p._id || p.slug,
+                name: mainName,
+                logo: logo,
+                href: `/courses?category=${partnerToRender.slug}&search=${encodeURIComponent(p.title)}`,
+              });
+            }
+          });
+        }
+
+        const hasItems = displayItems.length > 0;
+
+        return (
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4">
+            <div
+              onClick={handleClosePartner}
+              className={`absolute inset-0 bg-slate-950/75 ${isPartnerClosing ? "animate-fade-out" : "animate-fade-in"}`}
+            />
+            <div className={`relative w-full max-w-2xl bg-[#102441] border border-white/10 text-white rounded-2xl shadow-2xl p-4 sm:p-6 z-10 max-h-[85vh] overflow-hidden text-left flex flex-col ${isPartnerClosing ? "animate-custom-scale-down-exit" : "animate-custom-scale-up"}`}>
+              {/* Modal Header */}
+              <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-4 shrink-0">
+                <div className="flex items-center gap-3">
+                  <div className={`w-11 h-11 rounded-full bg-white/10 flex items-center justify-center border ${accentBorder} overflow-hidden p-1 shrink-0`}>
+                    <PartnerLogoIcon partner={partnerToRender} type={partnerToRender.type} />
+                  </div>
+                  <div>
+                    <h3 className="text-base sm:text-lg font-bold text-white leading-tight">
+                      {partnerToRender.name}
+                    </h3>
+                    {showHeaderBadge && (
+                      <span className={`text-[10px] sm:text-xs ${accentText} font-semibold block mt-0.5`}>
+                        {partnerToRender.badge}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <button
+                  onClick={handleClosePartner}
+                  className="text-white/60 hover:text-white cursor-pointer focus:outline-none transition-colors p-1.5 rounded-full hover:bg-white/5"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Modal Body - Clean Grid of Circular Logo + Title Name Only */}
+              <div className="flex-1 overflow-y-auto pr-1">
+                {isPartnerLoading && !hasItems ? (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 p-4">
+                    {[1, 2, 3, 4, 5, 6].map((n) => (
+                      <div key={n} className="flex flex-col items-center text-center animate-pulse space-y-2">
+                        <div className="w-16 h-16 rounded-full bg-white/10 shrink-0" />
+                        <div className="h-3 bg-white/15 rounded w-3/4" />
+                      </div>
+                    ))}
+                  </div>
+                ) : hasItems ? (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-5 p-2 sm:p-4">
+                    {displayItems.map((item) => (
+                      <a
+                        key={item.id}
+                        href={item.href}
+                        className="bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 p-4 sm:p-5 rounded-2xl flex flex-col items-center text-center transition-all duration-200 group cursor-pointer shadow-xs hover:shadow-md active:scale-95"
+                      >
+                        {/* Circle Logo Avatar */}
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white p-3 flex items-center justify-center overflow-hidden mb-3 shadow-md group-hover:scale-105 transition-transform shrink-0">
+                          <img src={item.logo} alt={item.name} className="w-full h-full object-contain" />
+                        </div>
+
+                        {/* Title Name ONLY */}
+                        <Tooltip title={item.name} placement="top">
+                          <h5 className="text-xs sm:text-sm font-bold text-white group-hover:text-[#EEC471] transition-colors leading-tight text-center truncate max-w-full">
+                            {item.name}
+                          </h5>
+                        </Tooltip>
+                      </a>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="bg-white/5 border border-white/10 p-6 rounded-xl text-center text-xs text-white/70">
+                    🎓 No programs available right now for {partnerToRender.name}.
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        );
       })()}
     </>
   );
@@ -887,9 +799,8 @@ export function MobileBottomNav() {
       {navItems.map((item, idx) => (
         <button
           key={idx}
-          className={`flex flex-col items-center justify-center gap-0.5 cursor-pointer focus:outline-none transition-colors duration-150 ${
-            item.active ? "text-[#EEC471]" : "hover:text-white"
-          }`}
+          className={`flex flex-col items-center justify-center gap-0.5 cursor-pointer focus:outline-none transition-colors duration-150 ${item.active ? "text-[#EEC471]" : "hover:text-white"
+            }`}
           onClick={() => {
             if (item.label === "Home") window.scrollTo({ top: 0, behavior: "smooth" });
             else if (item.label === "Counselling") document.querySelector('button[class*="bg-linear-to-r"]')?.click();

@@ -26,9 +26,11 @@ export async function generateMetadata() {
   };
 }
 
-export default async function CoursesPage() {
+export default async function CoursesPage({ searchParams }) {
+  const params = (await searchParams) || {};
+
   const [initialCourses, initialUniversities] = await Promise.all([
-    getCourses(),
+    getCourses(params),
     getUniversities(),
   ]);
 

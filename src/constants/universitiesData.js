@@ -10,9 +10,17 @@ export const universities = [];
    NEXT.JS DYNAMIC DATA FETCHING WITH CACHE (ISR: 300s)
 ========================================================= */
 
-export async function getUniversitiesData() {
+export async function getUniversitiesData(params = {}) {
   try {
-    const res = await fetch(`${API_BASE_URL}universities/website-list`, {
+    const query = new URLSearchParams();
+    if (params.type) query.append("type", params.type);
+    if (params.limit) query.append("limit", params.limit);
+    if (params.page) query.append("page", params.page);
+
+    const queryString = query.toString();
+    const url = `${API_BASE_URL}universities/website-list${queryString ? `?${queryString}` : ""}`;
+
+    const res = await fetch(url, {
       next: {
         revalidate: 300, // Revalidate cache every 5 minutes (300 seconds)
       },

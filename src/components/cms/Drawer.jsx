@@ -91,6 +91,9 @@ export default function SidePanel({ config, topContent, bottomContent }) {
   if (entity === "universities" || entity === "university") {
     drawerWidth = 1350;
   }
+  if (entity === "page") {
+    drawerWidth = 1500;
+  }
   if (entity === "courses" || entity === "course" || entity === "partnercourses" || entity === "partnercourse") {
     drawerWidth = 850;
   }
