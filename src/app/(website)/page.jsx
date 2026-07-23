@@ -43,25 +43,38 @@ export async function generateMetadata() {
 }
 
 export default async function Home() {
-  const heroData = await getWebsiteHero("home");
-  const universities = await getUniversitiesData();
-  const coursesData = await getWebsiteCoursesFilter({ limit: 120 });
-  const categoryApiData = await getWebsiteCategories();
+  // Parallel Data Fetching via Promise.all (Eliminates SSR Waterfall Delays)
+  const [
+    heroData,
+    universities,
+    coursesData,
+    categoryApiData,
+    aboutData,
+    faqs,
+    testimonials,
+    footerData,
+    iimUniversities,
+    iitUniversities,
+  ] = await Promise.all([
+    getWebsiteHero("home"),
+    getUniversitiesData(),
+    getWebsiteCoursesFilter({ limit: 120 }),
+    getWebsiteCategories(),
+    getAboutData(),
+    getFaqData(),
+    getTestimonialsData(),
+    getFooterData(),
+    getUniversitiesData({ type: "iim", limit: 10, page: 1 }),
+    getUniversitiesData({ type: "iit", limit: 10, page: 1 }),
+  ]);
 
   const categories = (categoryApiData?.categories && categoryApiData.categories.length > 0)
     ? categoryApiData.categories
     : [];
 
   const programs = coursesData?.programs || [];
-
-  const { leftCards, rightCards } = await getAboutData();
-  const faqs = await getFaqData();
-  const testimonials = await getTestimonialsData();
-  const { universities: footerUniversities, programs: footerPrograms } =
-    await getFooterData();
-
-  const iimUniversities = await getUniversitiesData({ type: "iim", limit: 10, page: 1 });
-  const iitUniversities = await getUniversitiesData({ type: "iit", limit: 10, page: 1 });
+  const { leftCards, rightCards } = aboutData || {};
+  const { universities: footerUniversities, programs: footerPrograms } = footerData || {};
 
   return (
     <div className="flex flex-col min-h-screen bg-[#f8fafc] text-slate-900 font-sans selection:bg-blue-600 selection:text-white">
