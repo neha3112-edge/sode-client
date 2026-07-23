@@ -6,7 +6,8 @@ import { Testimonials } from "@/components/website/Testimonials";
 import { FAQ } from "@/components/website/FAQ";
 import { Footer } from "@/components/website/Footer";
 import FaqJsonLd from "@/components/common/FaqJsonLd";
-import { SearchBar, IimIitLogos, MobileBottomNav } from "@/components/website/MockupAdditions";
+import { SearchBar, IimIitLogos } from "@/components/website/MockupAdditions";
+import MobileBottomNav from "@/components/website/MobileBottomNav";
 
 import { getUniversitiesData } from "@/constants/universitiesData";
 import { getAboutData } from "@/constants/aboutData";

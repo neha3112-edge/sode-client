@@ -5,8 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { getAssetPath } from "@/lib/utils";
-import { Card, Modal, Tooltip } from "antd";
-import { getWebsiteCoursesFilter, getUniversities } from "@/services/api";
+import { Tooltip } from "antd";
 import {
   Carousel,
   CarouselContent,
@@ -16,7 +15,7 @@ import {
 } from "@/components/ui/carousel";
 
 // 1. Search Bar Component (With smooth enter & exit top slide-down filter drawer)
-export function SearchBar() {
+export function SearchBar({ categories = [] }) {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -26,6 +25,13 @@ export function SearchBar() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedType, setSelectedType] = useState("all");
   const [selectedDuration, setSelectedDuration] = useState("all");
+
+  const dynamicCategories = [
+    { id: "all", label: "All Categories" },
+    ...(categories || [])
+      .filter((c) => !c.parentId && (c.slug || "").toLowerCase() !== "all")
+      .map((c) => ({ id: c.slug || c._id, label: c.name || c.title || c.label })),
+  ];
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -218,13 +224,7 @@ export function SearchBar() {
                 <div className="space-y-2">
                   <span className="text-[#EEC471] text-xs font-bold uppercase tracking-wider block">Course Category:</span>
                   <div className="flex flex-wrap gap-2">
-                    {[
-                      { id: "all", label: "All Categories" },
-                      { id: "management", label: "Management & MBA" },
-                      { id: "data-science", label: "Data Science & AI" },
-                      { id: "technology", label: "Technology & Coding" },
-                      { id: "finance", label: "Finance & Commerce" },
-                    ].map((cat) => (
+                    {dynamicCategories.map((cat) => (
                       <button
                         key={cat.id}
                         type="button"
@@ -316,107 +316,6 @@ export function SearchBar() {
   );
 }
 
-// 2. Your Learning Journey Component (Rendered 100% dynamically via MinIO S3 media icons / API props)
-export function LearningJourney({ categories = [], steps = [] }) {
-  // Find Learning Journey Parent Category dynamically from CMS/DB
-  const journeyParent = (categories || []).find((c) => c.slug === "learning-journey");
-
-  // Find step children dynamically from categories prop
-  const stepsFromApi = (categories || []).filter(
-    (c) => journeyParent && String(c.parentId) === String(journeyParent._id)
-  ).sort((a, b) => (a.order || 0) - (b.order || 0));
-
-  const colors = [
-    "from-blue-500 to-indigo-600",
-    "from-emerald-500 to-teal-600",
-    "from-amber-500 to-orange-600",
-    "from-purple-500 to-pink-600",
-  ];
-
-  const defaultMinioSteps = [
-    {
-      number: "1",
-      title: "Explore",
-      description: "Discover programs that fit your career goals",
-      iconUrl: "http://172.236.183.64:9000/images/2026/07/23/469f571d39ddac029198cbf8f7678239.svg",
-      color: "from-blue-500 to-indigo-600",
-    },
-    {
-      number: "2",
-      title: "Learn",
-      description: "Join live classes & acquire modern skills",
-      iconUrl: "http://172.236.183.64:9000/images/2026/07/23/d50bb8f6303fc62bd45d385606b18ea7.svg",
-      color: "from-emerald-500 to-teal-600",
-    },
-    {
-      number: "3",
-      title: "Certify",
-      description: "Earn globally recognized certifications",
-      iconUrl: "http://172.236.183.64:9000/images/2026/07/23/2b3f5e6cbbf51a580da97fe905dedf82.svg",
-      color: "from-amber-500 to-orange-600",
-    },
-    {
-      number: "4",
-      title: "Succeed",
-      description: "Get placed & grow your career trajectory",
-      iconUrl: "http://172.236.183.64:9000/images/2026/07/23/aa1a6f63d0654b8e608dac489054713e.svg",
-      color: "from-purple-500 to-pink-600",
-    },
-  ];
-
-  const stepsToRender = steps.length > 0
-    ? steps
-    : stepsFromApi.length > 0
-      ? stepsFromApi.map((step, idx) => ({
-        number: String(step.order || idx + 1),
-        title: step.name || step.label,
-        description: step.title || step.description,
-        iconUrl: step.logoUrl || step.logoSrc || step.logo || step.imageSrc || step.image,
-        color: colors[idx % colors.length],
-      }))
-      : defaultMinioSteps;
-
-  return (
-    <section className="w-full bg-[#f8fafc] py-12 md:py-16 border-b border-slate-100">
-      <Container>
-        <div className="text-center max-w-2xl mx-auto mb-10 px-4">
-          <h2 className="text-2xl md:text-3xl font-extrabold text-[#102441]">
-            {journeyParent?.name || journeyParent?.title || "Your Learning Journey"}
-          </h2>
-          <p className="text-slate-500 text-sm mt-2">
-            {journeyParent?.description || "Step-by-step career acceleration designed for your dynamic upskilling needs"}
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 px-4 max-w-5xl mx-auto relative">
-          {stepsToRender.map((step, idx) => (
-            <div key={idx} className="relative flex flex-col items-center text-center bg-white p-6 rounded-2xl border border-slate-100 shadow-xs hover:shadow-md transition-all duration-300 group">
-              <span className={`absolute -top-3 left-6 w-7 h-7 rounded-full flex items-center justify-center text-white font-bold text-xs bg-linear-to-r ${step.color || colors[idx % colors.length]} shadow-xs`}>
-                {step.number || idx + 1}
-              </span>
-
-              <div className="w-12 h-12 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-700 group-hover:scale-105 transition-transform mb-4 mt-1 p-2.5 overflow-hidden">
-                <SmartLogoAvatar
-                  logoUrl={step.iconUrl || step.logoUrl || step.logo || step.icon}
-                  altName={step.title}
-                />
-              </div>
-
-              <h3 className="text-base font-bold text-[#102441] mb-1">
-                {step.title}
-              </h3>
-
-              <p className="text-xs text-slate-400 font-medium leading-relaxed">
-                {step.description}
-              </p>
-            </div>
-          ))}
-        </div>
-      </Container>
-    </section>
-  );
-}
-
 // Helper component to render circular avatar with image or gold wreath SVG fallback
 function SmartLogoAvatar({ logoUrl, altName }) {
   const [imgError, setImgError] = useState(false);
@@ -440,7 +339,7 @@ function SmartLogoAvatar({ logoUrl, altName }) {
   );
 }
 
-// Helper component to render backend logo/icon or fallback letter badge
+// Helper component to render backend logo/icon or fallback letter badge (Identical to CategoryIcon in Stats.jsx)
 function PartnerLogoIcon({ partner }) {
   const [imgError, setImgError] = useState(false);
 
@@ -453,14 +352,14 @@ function PartnerLogoIcon({ partner }) {
 
   if (logoUrl && !imgError) {
     return (
-      <div className="w-full h-full relative shrink-0">
+      <div className="w-5 h-5 sm:w-6 sm:h-6 relative shrink-0">
         <Image
           src={logoUrl}
           alt={partner?.name || "Partner Logo"}
           fill
-          sizes="32px"
+          sizes="24px"
           unoptimized
-          className="object-contain p-0.5"
+          className="object-contain"
           onError={() => setImgError(true)}
         />
       </div>
@@ -468,7 +367,7 @@ function PartnerLogoIcon({ partner }) {
   }
 
   return (
-    <div className="w-full h-full rounded-full bg-blue-50 text-blue-600 font-bold flex items-center justify-center text-xs">
+    <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-blue-50 text-blue-600 font-bold flex items-center justify-center text-[10px]">
       {(partner?.name || "P").charAt(0)}
     </div>
   );
@@ -481,17 +380,6 @@ export function IimIitLogos({ categories = [], programs = [] }) {
   const [isPartnerClosing, setIsPartnerClosing] = useState(false);
   const [tempPartner, setTempPartner] = useState(null);
   const [partnerModalData, setPartnerModalData] = useState({ courses: [], universities: [] });
-
-  // In-page expand toggles per parent block (by parent._id or slug)
-  const [expandedBlocks, setExpandedBlocks] = useState({});
-
-  const toggleExpandBlock = (blockId) => {
-    setExpandedBlocks((prev) => ({
-      ...prev,
-      [blockId]: !prev[blockId],
-    }));
-  };
-
   // Find Root Showcase Category dynamically from DB (root category without parentId where showInMockup === true)
   const topRoot = (categories || []).find((c) => !c.parentId && c.showInMockup === true);
   const mainTitle = topRoot?.name || topRoot?.title;
@@ -615,8 +503,7 @@ export function IimIitLogos({ categories = [], programs = [] }) {
     <>
       {parentBlocks.length > 0 && (
         <section className="w-full bg-white py-8 md:py-12 border-b border-slate-100">
-          <Container className="space-y-6">
-
+          <Container className="space-y-6 max-w-5xl">
             {/* ── STATE 1: INITIAL COLLAPSED CAROUSEL / SLIDER VIEW (SHADCN UI CAROUSEL) ── */}
             {!isMainExpanded ? (
               <div className="space-y-4">
@@ -652,8 +539,8 @@ export function IimIitLogos({ categories = [], programs = [] }) {
                   </button>
                 </div>
 
-                {/* Shadcn UI Carousel Track (Ultra Compact 5-Card Mobile / 10-Card Desktop Layout) */}
-                <div className="relative px-2 sm:px-8 py-1 max-w-6xl mx-auto">
+                {/* Shadcn UI Carousel Track (Identical Height/Width Matching Stats.jsx: 4-Card Mobile / 8-Card Desktop) */}
+                <div className="relative px-2 sm:px-8 py-1 max-w-5xl mx-auto">
                   <Carousel
                     setApi={setCarouselApi}
                     opts={{
@@ -666,17 +553,17 @@ export function IimIitLogos({ categories = [], programs = [] }) {
                       {allSubchildItems.map((child, idx) => (
                         <CarouselItem
                           key={`${child._id || child.slug}-${idx}`}
-                          className="pl-1.5 sm:pl-2.5 basis-1/4 min-[400px]:basis-1/5 sm:basis-1/6 md:basis-1/8 lg:basis-1/10"
+                          className="pl-1.5 sm:pl-2.5 basis-1/4 md:basis-1/8"
                         >
                           <div
                             onClick={() => handleOpenPartner(child, child.blockSlug)}
-                            className="w-full aspect-square bg-white hover:bg-slate-50 border border-slate-200/90 rounded-xl sm:rounded-2xl p-1 min-[360px]:p-1.5 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group shadow-2xs min-w-0 overflow-hidden"
+                            className="w-full aspect-square bg-white hover:bg-slate-50 border border-slate-200/90 rounded-xl sm:rounded-2xl p-1 min-[360px]:p-1.5 sm:p-2 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group shadow-2xs min-w-0 overflow-hidden"
                           >
-                            <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center mb-0.5 sm:mb-1 shrink-0 p-0.5 group-hover:scale-105 transition-transform">
+                            <div className="mb-0.5 sm:mb-1 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
                               <PartnerLogoIcon partner={child} />
                             </div>
                             <Tooltip title={child.name} placement="top">
-                              <h5 className="text-[8px] min-[360px]:text-[9px] sm:text-[10px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors leading-[1.12] text-center w-full tracking-tighter sm:tracking-tight px-0.5 line-clamp-2 break-words">
+                              <h5 className="text-[8px] min-[360px]:text-[9px] min-[400px]:text-[10px] sm:text-[11px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors leading-[1.15] text-center w-full tracking-tighter sm:tracking-tight px-0.5 line-clamp-2 break-words">
                                 {child.name}
                               </h5>
                             </Tooltip>
@@ -727,7 +614,7 @@ export function IimIitLogos({ categories = [], programs = [] }) {
                   return (
                     <div
                       key={block._id || block.slug}
-                      className="bg-white border border-slate-200/90 rounded-2xl p-3 sm:p-4 shadow-2xs hover:shadow-xs transition-all duration-200"
+                      className="bg-white border border-slate-200/90 rounded-2xl p-3 sm:p-4 shadow-2xs hover:shadow-xs transition-all duration-200 max-w-4xl mx-auto"
                     >
                       {/* Sub-Parent Title Header */}
                       <div className="flex items-center justify-between mb-3 gap-2">
@@ -744,19 +631,19 @@ export function IimIitLogos({ categories = [], programs = [] }) {
                         </div>
                       </div>
 
-                      {/* Sub-Parent Cards Grid (Ultra Compact 5-Card Mobile / 10-Card Desktop) */}
-                      <div className="grid grid-cols-4 min-[400px]:grid-cols-5 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-1.5 sm:gap-2">
+                      {/* Sub-Parent Cards Grid (Identical Height/Width Matching Stats.jsx: 4-Card Mobile / 8-Card Desktop) */}
+                      <div className="grid grid-cols-4 md:grid-cols-8 gap-1.5 sm:gap-2.5 items-stretch">
                         {block.children.map((child, idx) => (
                           <div
                             key={child._id || idx}
                             onClick={() => handleOpenPartner(child, block.slug)}
-                            className="w-full aspect-square bg-white hover:bg-slate-50 border border-slate-200/90 rounded-xl sm:rounded-2xl p-1 min-[360px]:p-1.5 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group shadow-2xs min-w-0 overflow-hidden"
+                            className="w-full aspect-square bg-white hover:bg-slate-50 border border-slate-200/90 rounded-xl sm:rounded-2xl p-1 min-[360px]:p-1.5 sm:p-2 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group shadow-2xs min-w-0 overflow-hidden"
                           >
-                            <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center mb-0.5 sm:mb-1 shrink-0 p-0.5 group-hover:scale-105 transition-transform">
+                            <div className="mb-0.5 sm:mb-1 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
                               <PartnerLogoIcon partner={child} />
                             </div>
                             <Tooltip title={child.name} placement="top">
-                              <h5 className="text-[8px] min-[360px]:text-[9px] sm:text-[10px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors leading-[1.12] text-center w-full tracking-tighter sm:tracking-tight px-0.5 line-clamp-2 break-words">
+                              <h5 className="text-[8px] min-[360px]:text-[9px] min-[400px]:text-[10px] sm:text-[11px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors leading-[1.15] text-center w-full tracking-tighter sm:tracking-tight px-0.5 line-clamp-2 break-words">
                                 {child.name}
                               </h5>
                             </Tooltip>
@@ -784,7 +671,7 @@ export function IimIitLogos({ categories = [], programs = [] }) {
 
           {/* Modal Container */}
           <div
-            className={`relative w-full max-w-4xl bg-[#0e213b] border border-[#1e385c] text-white rounded-[24px] shadow-2xl p-6 sm:p-7 z-10 max-h-[88vh] flex flex-col ${isPartnerClosing ? "animate-custom-scale-down-exit" : "animate-custom-scale-up"
+            className={`relative w-full max-w-4xl bg-[#0e213b] border border-[#1e385c] text-white rounded-3xl shadow-2xl p-6 sm:p-7 z-10 max-h-[88vh] flex flex-col ${isPartnerClosing ? "animate-custom-scale-down-exit" : "animate-custom-scale-up"
               }`}
           >
             {(() => {
@@ -878,7 +765,7 @@ export function IimIitLogos({ categories = [], programs = [] }) {
                   </div>
 
                   {/* Modal Body - Clean Grid of Circular Logo + Title Name Only */}
-                  <div className="flex-1 overflow-y-auto max-h-[64vh] overscroll-contain pr-1.5 space-y-6 [scrollbar-width:thin] [scrollbar-color:#213f68_transparent]">
+                  <div className="flex-1 overflow-y-auto max-h-[64vh] overscroll-contain pr-1.5 space-y-6 scrollbar-thin [scrollbar-color:#213f68_transparent]">
                     {isPartnerLoading && !hasItems ? (
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 p-2">
                         {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
@@ -925,79 +812,5 @@ export function IimIitLogos({ categories = [], programs = [] }) {
         </div>
       )}
     </>
-  );
-}
-
-// 4. Sticky Mobile Bottom Navigation Bar (Visible only on mobile screens)
-export function MobileBottomNav() {
-  const router = useRouter();
-  const navItems = [
-    {
-      label: "Home",
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-          <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
-        </svg>
-      ),
-      active: true,
-    },
-    {
-      label: "Programs",
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
-        </svg>
-      ),
-      active: false,
-    },
-    {
-      label: "Institutes",
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z" />
-        </svg>
-      ),
-      active: false,
-    },
-    {
-      label: "Counselling",
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z" />
-        </svg>
-      ),
-      active: false,
-    },
-    {
-      label: "Profile",
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-        </svg>
-      ),
-      active: false,
-    },
-  ];
-
-  return (
-    <div className="fixed bottom-0 left-0 right-0 z-[999] bg-[#102441] border-t border-white/10 flex items-center justify-around py-2.5 px-2 text-white/70 shadow-2xl lg:hidden">
-      {navItems.map((item, idx) => (
-        <button
-          key={idx}
-          className={`flex flex-col items-center justify-center gap-0.5 cursor-pointer focus:outline-none transition-colors duration-150 ${item.active ? "text-[#EEC471]" : "hover:text-white"
-            }`}
-          onClick={() => {
-            if (item.label === "Home") window.scrollTo({ top: 0, behavior: "smooth" });
-            else if (item.label === "Counselling") document.querySelector('button[class*="bg-linear-to-r"]')?.click();
-            else router.push(`/${item.label.toLowerCase()}`);
-          }}
-        >
-          {item.icon}
-          <span className="text-[9px] font-bold tracking-wide">
-            {item.label}
-          </span>
-        </button>
-      ))}
-    </div>
   );
 }

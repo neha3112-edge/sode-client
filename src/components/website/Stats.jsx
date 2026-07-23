@@ -1,8 +1,7 @@
-"use strict";
 "use client";
 
 import { Container } from "@/components/ui/container";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -78,7 +77,7 @@ export function Stats({ categories: initialCategories = [] }) {
   const [isModalClosing, setIsModalClosing] = useState(false);
   const [modalData, setModalData] = useState({ category: null, children: [], courses: [], universities: [] });
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (initialCategories && initialCategories.length > 0) {
       setCategoriesList(initialCategories);
     } else {
