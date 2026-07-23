@@ -766,16 +766,7 @@ export function IimIitLogos({ categories = [], programs = [] }) {
 
                   {/* Modal Body - Clean Grid of Circular Logo + Title Name Only */}
                   <div className="flex-1 overflow-y-auto max-h-[64vh] overscroll-contain pr-1.5 space-y-6 scrollbar-thin [scrollbar-color:#213f68_transparent]">
-                    {isPartnerLoading && !hasItems ? (
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 p-2">
-                        {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
-                          <div key={n} className="bg-[#162e4e] border border-[#213e66] p-4 rounded-2xl flex flex-col items-center text-center animate-pulse space-y-3">
-                            <div className="w-16 h-16 rounded-full bg-white/10 shrink-0" />
-                            <div className="h-3 bg-white/15 rounded w-3/4" />
-                          </div>
-                        ))}
-                      </div>
-                    ) : hasItems ? (
+                    {hasItems ? (
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 p-1">
                         {displayItems.map((item) => (
                           <Link

@@ -59,7 +59,7 @@ export default async function Home() {
   ] = await Promise.all([
     getWebsiteHero("home"),
     getUniversitiesData(),
-    getWebsiteCoursesFilter({ limit: 120 }),
+    getWebsiteCoursesFilter({ limit: 30 }),
     getWebsiteCategories(),
     getAboutData(),
     getFaqData(),
