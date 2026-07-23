@@ -1,13 +1,16 @@
 "use client";
 import { Container } from "@/components/ui/container";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { getAssetPath } from "@/lib/utils";
-import { Tooltip } from "antd";
+import { Card, Modal, Tooltip } from "antd";
 import { getWebsiteCoursesFilter, getUniversities } from "@/services/api";
 
 // 1. Search Bar Component (With smooth enter & exit top slide-down filter drawer)
 export function SearchBar() {
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isFilterClosing, setIsFilterClosing] = useState(false);
@@ -20,7 +23,7 @@ export function SearchBar() {
   const handleSearch = (e) => {
     e.preventDefault();
     if (!searchTerm.trim()) return;
-    window.location.href = `/courses?search=${encodeURIComponent(searchTerm)}`;
+    router.push(`/courses?search=${encodeURIComponent(searchTerm)}`);
   };
 
   const handleOpenFilters = () => {
@@ -46,7 +49,7 @@ export function SearchBar() {
       if (selectedDuration !== "all") queryParams.push(`duration=${selectedDuration}`);
 
       const queryString = queryParams.length > 0 ? `?${queryParams.join("&")}` : "";
-      window.location.href = `/courses${queryString}`;
+      router.push(`/courses${queryString}`);
     }, 380);
   };
 
@@ -401,6 +404,29 @@ export function LearningJourney() {
   );
 }
 
+// Helper component to render circular avatar with image or gold wreath SVG fallback
+function SmartLogoAvatar({ logoUrl, altName }) {
+  const [imgError, setImgError] = useState(false);
+  const iconUrl = getAssetPath(logoUrl, null);
+
+  if (iconUrl && !imgError) {
+    return (
+      <img
+        src={iconUrl}
+        alt={altName || "Logo"}
+        className="w-full h-full object-contain p-1"
+        onError={() => setImgError(true)}
+      />
+    );
+  }
+
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10 text-[#c59b43]">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.57 50.57 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.902 59.902 0 0 1 10.399 5.84a50.58 50.58 0 0 0-2.657.814m-15.482 0A50.697 50.697 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M12 13.489v3.692m-5.462-6.52c.074-.5.194-.997.358-1.487m10.208 1.487a12.096 12.096 0 0 1-.358-1.487" />
+    </svg>
+  );
+}
+
 // Helper component to render backend logo/icon or fallback code badge
 function PartnerLogoIcon({ partner, type }) {
   const [imgError, setImgError] = useState(false);
@@ -416,9 +442,12 @@ function PartnerLogoIcon({ partner, type }) {
 
   if (logoUrl && !imgError) {
     return (
-      <img
+      <Image
         src={logoUrl}
         alt={partner.name || "Partner Logo"}
+        width={32}
+        height={32}
+        unoptimized
         className="w-8 h-8 object-contain rounded-full"
         onError={() => setImgError(true)}
       />
@@ -432,7 +461,8 @@ function PartnerLogoIcon({ partner, type }) {
 }
 
 // 3. Partner Logos Section (Rendered 100% dynamically for ALL Parent & Sub-Categories from backend API)
-export function IimIitLogos({ categories = [] }) {
+export function IimIitLogos({ categories = [], programs = [] }) {
+  const router = useRouter();
   const [activePartner, setActivePartner] = useState(null);
   const [isPartnerClosing, setIsPartnerClosing] = useState(false);
   const [tempPartner, setTempPartner] = useState(null);
@@ -464,9 +494,15 @@ export function IimIitLogos({ categories = [] }) {
     return parts.map((p) => p[0]).join("").toUpperCase().substring(0, 4);
   };
 
-  // Find ALL Parent Categories from API that have children linked to them
+  // Find ALL Partner Showcase Parent Categories from API (e.g. Top IIM, Top IIT, Top Global B-Schools)
   const parentBlocks = (categories || [])
-    .filter((c) => !c.parentId && c.slug !== "all")
+    .filter((c) => {
+      if (c.parentId) return false;
+      const slug = (c.slug || "").toLowerCase();
+      if (slug === "all") return false;
+      // Only include Partner Showcase parent blocks (Top IIM, Top IIT, Top Global B-Schools, etc.)
+      return slug.includes("top-") || slug.includes("partner") || slug.includes("iim") || slug.includes("iit") || slug.includes("global");
+    })
     .map((parent) => {
       const children = (categories || [])
         .filter((child) => child.parentId && String(child.parentId) === String(parent._id))
@@ -485,30 +521,42 @@ export function IimIitLogos({ categories = [] }) {
     })
     .filter((parent) => parent.children.length > 0);
 
-  const handleOpenPartner = async (partner, type) => {
+  const handleOpenPartner = (partner, type) => {
     const partnerWithType = { ...partner, type };
     setActivePartner(partnerWithType);
     setTempPartner(partnerWithType);
     setIsPartnerClosing(false);
-    setIsPartnerLoading(true);
-    setPartnerModalData({ courses: [], universities: [] });
 
-    try {
-      const slug = partner.slug || partner.name;
-      const [coursesRes, unisRes] = await Promise.all([
-        getWebsiteCoursesFilter({ category: slug, limit: 10 }),
-        getUniversities({ category: slug, limit: 6 }),
-      ]);
+    // Derive subchildren directly from SSR categories prop (0 extra API calls)
+    const subchildren = (categories || []).filter(
+      (c) => c.parentId && String(c.parentId) === String(partner._id)
+    );
 
-      setPartnerModalData({
-        courses: coursesRes?.programs || [],
-        universities: Array.isArray(unisRes) ? unisRes : [],
-      });
-    } catch (err) {
-      console.error("❌ Error loading partner details:", err);
-    } finally {
-      setIsPartnerLoading(false);
-    }
+    // Filter courses for this partner instantly from SSR programs!
+    const partnerPrograms = (programs || []).filter((p) => {
+      if (!p) return false;
+      const uName = (p.university?.name || p.name || "").toLowerCase();
+      const pName = (partner.name || "").toLowerCase();
+      const uSlug = (p.university?.slug || "").toLowerCase();
+      const pSlug = (partner.slug || "").toLowerCase();
+
+      const nameMatch = uName && pName && (uName.includes(pName) || pName.includes(uName));
+      const slugMatch = uSlug && pSlug && (uSlug === pSlug);
+
+      const catMatch = p.category && (String(p.category) === String(partner._id) || String(p.category.slug || p.category) === String(partner.slug));
+      
+      const catsMatch = Array.isArray(p.categories) && p.categories.some(
+        (c) => String(c._id || c) === String(partner._id) || String(c.slug || c) === String(partner.slug)
+      );
+
+      return nameMatch || slugMatch || catMatch || catsMatch;
+    });
+
+    setPartnerModalData({
+      children: (partner.children && partner.children.length > 0) ? partner.children : subchildren,
+      courses: partnerPrograms,
+      universities: partner.universities || [],
+    });
   };
 
   const handleClosePartner = () => {
@@ -530,7 +578,6 @@ export function IimIitLogos({ categories = [] }) {
       {parentBlocks.length > 0 && (
         <section className="w-full bg-white py-12 md:py-16 border-b border-slate-100">
           <Container className="space-y-12">
-
             {parentBlocks.map((block, bIdx) => {
               const blockId = String(block._id || block.slug);
               const isExpanded = !!expandedBlocks[blockId];
@@ -538,15 +585,22 @@ export function IimIitLogos({ categories = [] }) {
               const accentColor = accentBarColors[bIdx % accentBarColors.length];
 
               return (
-                <div key={blockId} className="space-y-6">
-                  <div className="flex items-center justify-between px-4 max-w-5xl mx-auto gap-2">
+                <Card
+                  key={blockId}
+                  className="max-w-5xl mx-auto shadow-xs hover:shadow-md transition-all duration-200 rounded-2xl border border-slate-200/80 overflow-hidden bg-white mb-6"
+                  styles={{
+                    body: { padding: "1.25rem sm:1.5rem" },
+                  }}
+                >
+                  {/* Card Header */}
+                  <div className="flex items-center justify-between mb-5 gap-2">
                     <div className="flex items-center gap-3 truncate max-w-[70%] sm:max-w-none">
                       <span
                         className="w-1.5 h-6 rounded-full inline-block shrink-0"
                         style={{ backgroundColor: accentColor }}
                       />
                       <Tooltip title={block.title} placement="top">
-                        <h3 className="text-sm sm:text-base font-bold text-slate-800 tracking-tight truncate">
+                        <h3 className="text-base sm:text-lg font-bold text-slate-800 tracking-tight truncate">
                           {block.title}
                         </h3>
                       </Tooltip>
@@ -555,7 +609,7 @@ export function IimIitLogos({ categories = [] }) {
                     {block.children.length > 5 && (
                       <button
                         onClick={() => toggleExpandBlock(blockId)}
-                        className="text-[11px] sm:text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-colors cursor-pointer whitespace-nowrap bg-blue-50 px-2.5 py-1 rounded-full hover:bg-blue-100/70"
+                        className="text-[11px] sm:text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-colors cursor-pointer whitespace-nowrap bg-blue-50 px-3 py-1.5 rounded-full hover:bg-blue-100/70"
                       >
                         {isExpanded ? "Show Less" : "View All"}
                         <svg
@@ -572,30 +626,37 @@ export function IimIitLogos({ categories = [] }) {
                     )}
                   </div>
 
-                  <div className="flex flex-nowrap overflow-x-auto no-scrollbar sm:grid sm:grid-cols-5 gap-3 sm:gap-4 px-4 max-w-5xl mx-auto pb-2 scroll-smooth">
+                  {/* Card Items Grid */}
+                  <div className="flex flex-nowrap overflow-x-auto no-scrollbar sm:grid sm:grid-cols-5 gap-3 sm:gap-4 py-1.5 scroll-smooth">
                     {visibleChildren.map((child, idx) => (
-                      <div
+                      <Card
                         key={child._id || idx}
+                        hoverable
                         onClick={() => handleOpenPartner(child, block.slug)}
-                        className="w-[120px] sm:w-auto shrink-0 py-1 px-1 flex flex-col items-center text-center transition-all duration-200 cursor-pointer active:scale-95 group"
+                        className="w-[135px] sm:w-auto shrink-0 transition-all duration-200 cursor-pointer active:scale-95 text-center rounded-2xl border border-slate-200/80 shadow-2xs hover:shadow-md hover:border-blue-300 group"
+                        styles={{
+                          body: { padding: "1rem 0.65rem", display: "flex", flexDirection: "column", alignItems: "center" },
+                        }}
                       >
-                        <div className="w-12 h-12 rounded-full bg-slate-100/80 flex items-center justify-center mb-2 overflow-hidden p-1 group-hover:scale-105 transition-transform">
+                        <div className="w-14 h-14 rounded-full bg-slate-100/90 flex items-center justify-center mb-2.5 overflow-hidden p-1.5 shadow-2xs group-hover:scale-105 transition-transform mx-auto shrink-0">
                           <PartnerLogoIcon partner={child} type={block.slug} />
                         </div>
                         <Tooltip title={child.name} placement="top">
-                          <span className="text-xs md:text-sm font-bold text-slate-900 leading-tight block group-hover:text-blue-600 transition-colors truncate max-w-full">
+                          <span className="text-xs md:text-sm font-bold text-slate-800 leading-tight block group-hover:text-blue-600 transition-colors truncate max-w-full">
                             {child.name}
                           </span>
                         </Tooltip>
-                        <Tooltip title={child.badge} placement="bottom">
-                          <span className="text-[10px] md:text-xs text-slate-500 font-medium mt-1 truncate max-w-full block">
-                            {child.badge}
-                          </span>
-                        </Tooltip>
-                      </div>
+                        {child.badge && (
+                          <Tooltip title={child.badge} placement="bottom">
+                            <span className="text-[10px] md:text-xs text-slate-500 font-medium mt-1 truncate max-w-full block">
+                              {child.badge}
+                            </span>
+                          </Tooltip>
+                        )}
+                      </Card>
                     ))}
                   </div>
-                </div>
+                </Card>
               );
             })}
 
@@ -603,149 +664,165 @@ export function IimIitLogos({ categories = [] }) {
         </section>
       )}
 
-      {/* ── CENTERED POPUP MODAL FOR PARTNERS (CLEAN CIRCULAR LOGO + TITLE ONLY) ── */}
-      {partnerToRender !== null && (() => {
-        const isIim = partnerToRender.type === "iim" || (partnerToRender.slug || "").includes("iim");
+      {/* ── POPUP DIV OVERLAY MODAL FOR PARTNERS (DARK NAVY THEME) ── */}
+      {partnerToRender !== null && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6">
+          {/* Backdrop Blur Layer */}
+          <div
+            onClick={handleClosePartner}
+            className={`fixed inset-0 bg-slate-950/80 backdrop-blur-md ${isPartnerClosing ? "animate-fade-out" : "animate-fade-in"}`}
+          />
 
-        const accentText = isIim ? "text-[#EEC471]" : "text-blue-400";
-        const accentBorder = isIim ? "border-[#EEC471]/35" : "border-blue-400/35";
+          {/* Modal Container */}
+          <div
+            className={`relative w-full max-w-[680px] bg-[#0e213b] border border-[#1e385c] text-white rounded-[24px] shadow-2xl p-6 sm:p-7 z-10 max-h-[88vh] flex flex-col ${
+              isPartnerClosing ? "animate-custom-scale-down-exit" : "animate-custom-scale-up"
+            }`}
+          >
+            {(() => {
+              const isIim = partnerToRender.type === "iim" || (partnerToRender.slug || "").includes("iim");
 
-        const showHeaderBadge = partnerToRender.badge &&
-          partnerToRender.badge.toLowerCase() !== (partnerToRender.name || "").toLowerCase();
+              const accentText = isIim ? "text-[#EEC471]" : "text-blue-400";
+              const accentBorder = isIim ? "border-[#EEC471]/35" : "border-blue-400/35";
 
-        // Build list of items to render
-        const displayItems = [];
+              const showHeaderBadge = partnerToRender.badge &&
+                partnerToRender.badge.toLowerCase() !== (partnerToRender.name || "").toLowerCase();
 
-        if (partnerToRender.children && partnerToRender.children.length > 0) {
-          partnerToRender.children.forEach((child) => {
-            const uName = child.label || child.name || child.title;
-            const logo = getAssetPath(child.logoUrl || child.logoSrc || child.logo || child.image, "/assets/images/iim-logo.jpg");
-            displayItems.push({
-              id: child._id || child.slug,
-              name: uName,
-              logo: logo,
-              href: `/courses?category=${partnerToRender.slug}&search=${encodeURIComponent(uName)}`,
-            });
-          });
-        }
+              // Build list of items to render
+              const displayItems = [];
 
-        if (partnerModalData.universities && partnerModalData.universities.length > 0) {
-          partnerModalData.universities.forEach((uni) => {
-            const uName = uni.university?.name || uni.name || "Partner University";
-            const exists = displayItems.some((it) => it.name.toLowerCase() === uName.toLowerCase());
-            if (!exists) {
-              const logo = getAssetPath(uni.university?.logoSrc?.url || uni.logoSrc?.url, "/assets/images/iim-logo.jpg");
-              displayItems.push({
-                id: uni._id,
-                name: uName,
-                logo: logo,
-                href: `/courses?category=${partnerToRender.slug}&university=${encodeURIComponent(uName)}`,
-              });
-            }
-          });
-        }
+              if (partnerToRender.children && partnerToRender.children.length > 0) {
+                partnerToRender.children.forEach((child) => {
+                  const uName = child.label || child.name || child.title;
+                  const logo = child.logoUrl || child.logoSrc || child.logo || child.image;
+                  displayItems.push({
+                    id: child._id || child.slug,
+                    name: uName,
+                    logo: logo,
+                    href: `/courses?category=${partnerToRender.slug}&search=${encodeURIComponent(uName)}`,
+                  });
+                });
+              }
 
-        if (partnerModalData.courses && partnerModalData.courses.length > 0) {
-          partnerModalData.courses.forEach((p) => {
-            const mainName = p.university?.name || p.title;
-            const logo = getAssetPath(p.university?.logoSrc?.url || p.logoSrc?.url || p.image?.url, "/assets/images/iim-logo.jpg");
-            const exists = displayItems.some((it) => it.name.toLowerCase() === mainName.toLowerCase());
-            if (!exists) {
-              displayItems.push({
-                id: p._id || p.slug,
-                name: mainName,
-                logo: logo,
-                href: `/courses?category=${partnerToRender.slug}&search=${encodeURIComponent(p.title)}`,
-              });
-            }
-          });
-        }
+              if (partnerModalData.universities && partnerModalData.universities.length > 0) {
+                partnerModalData.universities.forEach((uni) => {
+                  const uName = uni.university?.name || uni.name || "Partner University";
+                  const exists = displayItems.some((it) => it.name.toLowerCase() === uName.toLowerCase());
+                  if (!exists) {
+                    const logo = uni.university?.logoSrc?.url || uni.logoSrc?.url || uni.logoUrl || uni.logo;
+                    displayItems.push({
+                      id: uni._id,
+                      name: uName,
+                      logo: logo,
+                      href: `/courses?category=${partnerToRender.slug}&university=${encodeURIComponent(uName)}`,
+                    });
+                  }
+                });
+              }
 
-        const hasItems = displayItems.length > 0;
+              if (partnerModalData.courses && partnerModalData.courses.length > 0) {
+                partnerModalData.courses.forEach((p) => {
+                  const mainName = p.title || p.name || p.university?.name;
+                  const logo = p.university?.logoSrc?.url || p.logoSrc?.url || p.image?.url;
+                  const exists = displayItems.some((it) => it.name.toLowerCase() === mainName.toLowerCase());
+                  if (!exists) {
+                    displayItems.push({
+                      id: p._id || p.slug,
+                      name: mainName,
+                      logo: logo,
+                      href: `/courses?category=${partnerToRender.slug}&search=${encodeURIComponent(p.title || p.name)}`,
+                    });
+                  }
+                });
+              }
 
-        return (
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4">
-            <div
-              onClick={handleClosePartner}
-              className={`absolute inset-0 bg-slate-950/75 ${isPartnerClosing ? "animate-fade-out" : "animate-fade-in"}`}
-            />
-            <div className={`relative w-full max-w-2xl bg-[#102441] border border-white/10 text-white rounded-2xl shadow-2xl p-4 sm:p-6 z-10 max-h-[85vh] overflow-hidden text-left flex flex-col ${isPartnerClosing ? "animate-custom-scale-down-exit" : "animate-custom-scale-up"}`}>
-              {/* Modal Header */}
-              <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-4 shrink-0">
-                <div className="flex items-center gap-3">
-                  <div className={`w-11 h-11 rounded-full bg-white/10 flex items-center justify-center border ${accentBorder} overflow-hidden p-1 shrink-0`}>
-                    <PartnerLogoIcon partner={partnerToRender} type={partnerToRender.type} />
+              const hasItems = displayItems.length > 0;
+
+              return (
+                <div className="flex flex-col text-left min-h-0 flex-1">
+                  {/* Modal Header */}
+                  <div className="flex items-center justify-between border-b border-[#1c365d] pb-4 mb-5 shrink-0 gap-3">
+                    <div className="flex items-center gap-3.5 min-w-0">
+                      <div className={`w-12 h-12 rounded-full bg-[#162e4d] flex items-center justify-center border ${accentBorder} overflow-hidden p-1 shrink-0 shadow-inner`}>
+                        <PartnerLogoIcon partner={partnerToRender} type={partnerToRender.type} />
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="text-lg sm:text-xl font-bold text-white leading-tight tracking-tight truncate">
+                          {partnerToRender.name}
+                        </h3>
+                        {showHeaderBadge && (
+                          <span className={`text-xs ${accentText} font-semibold block mt-0.5 truncate`}>
+                            {partnerToRender.badge}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={handleClosePartner}
+                      className="text-slate-400 hover:text-white transition-colors p-1.5 rounded-full hover:bg-white/10 cursor-pointer"
+                      aria-label="Close modal"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                      </svg>
+                    </button>
                   </div>
-                  <div>
-                    <h3 className="text-base sm:text-lg font-bold text-white leading-tight">
-                      {partnerToRender.name}
-                    </h3>
-                    {showHeaderBadge && (
-                      <span className={`text-[10px] sm:text-xs ${accentText} font-semibold block mt-0.5`}>
-                        {partnerToRender.badge}
-                      </span>
+
+                  {/* Modal Body - Clean Grid of Circular Logo + Title Name Only */}
+                  <div className="flex-1 overflow-y-auto max-h-[64vh] overscroll-contain pr-1.5 space-y-6 [scrollbar-width:thin] [scrollbar-color:#213f68_transparent]">
+                    {isPartnerLoading && !hasItems ? (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-5 p-2">
+                        {[1, 2, 3, 4, 5, 6].map((n) => (
+                          <div key={n} className="bg-[#162e4e] border border-[#213e66] p-5 rounded-2xl flex flex-col items-center text-center animate-pulse space-y-3">
+                            <div className="w-20 h-20 rounded-full bg-white/10 shrink-0" />
+                            <div className="h-3 bg-white/15 rounded w-3/4" />
+                          </div>
+                        ))}
+                      </div>
+                    ) : hasItems ? (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-5 p-1">
+                        {displayItems.map((item) => (
+                          <Link
+                            key={item.id}
+                            href={item.href}
+                            className="bg-[#162e4e] hover:bg-[#1a375d] border border-[#213e66] hover:border-[#EEC471]/50 p-5 rounded-2xl flex flex-col items-center text-center transition-all duration-200 group cursor-pointer shadow-sm hover:shadow-lg active:scale-95"
+                          >
+                            {/* Circle Logo Avatar */}
+                            <div className="w-20 h-20 sm:w-22 sm:h-22 rounded-full bg-white p-3 flex items-center justify-center overflow-hidden mb-3.5 shadow-md group-hover:scale-105 transition-transform shrink-0 relative">
+                              <SmartLogoAvatar logoUrl={item.logo} altName={item.name} />
+                            </div>
+
+                            {/* Title Name ONLY */}
+                            <Tooltip title={item.name} placement="top">
+                              <h5 className="text-xs sm:text-sm font-bold text-white group-hover:text-[#EEC471] transition-colors leading-tight text-center truncate max-w-full">
+                                {item.name}
+                              </h5>
+                            </Tooltip>
+                          </Link>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="bg-[#162e4e] border border-[#213e66] p-8 rounded-2xl text-center flex flex-col items-center justify-center space-y-3 my-4">
+                        <p className="text-xs sm:text-sm text-white/80 font-medium">
+                          🎓 No programs available right now for {partnerToRender.name}.
+                        </p>
+                      </div>
                     )}
                   </div>
                 </div>
-                <button
-                  onClick={handleClosePartner}
-                  className="text-white/60 hover:text-white cursor-pointer focus:outline-none transition-colors p-1.5 rounded-full hover:bg-white/5"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-
-              {/* Modal Body - Clean Grid of Circular Logo + Title Name Only */}
-              <div className="flex-1 overflow-y-auto pr-1">
-                {isPartnerLoading && !hasItems ? (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 p-4">
-                    {[1, 2, 3, 4, 5, 6].map((n) => (
-                      <div key={n} className="flex flex-col items-center text-center animate-pulse space-y-2">
-                        <div className="w-16 h-16 rounded-full bg-white/10 shrink-0" />
-                        <div className="h-3 bg-white/15 rounded w-3/4" />
-                      </div>
-                    ))}
-                  </div>
-                ) : hasItems ? (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-5 p-2 sm:p-4">
-                    {displayItems.map((item) => (
-                      <a
-                        key={item.id}
-                        href={item.href}
-                        className="bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 p-4 sm:p-5 rounded-2xl flex flex-col items-center text-center transition-all duration-200 group cursor-pointer shadow-xs hover:shadow-md active:scale-95"
-                      >
-                        {/* Circle Logo Avatar */}
-                        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white p-3 flex items-center justify-center overflow-hidden mb-3 shadow-md group-hover:scale-105 transition-transform shrink-0">
-                          <img src={item.logo} alt={item.name} className="w-full h-full object-contain" />
-                        </div>
-
-                        {/* Title Name ONLY */}
-                        <Tooltip title={item.name} placement="top">
-                          <h5 className="text-xs sm:text-sm font-bold text-white group-hover:text-[#EEC471] transition-colors leading-tight text-center truncate max-w-full">
-                            {item.name}
-                          </h5>
-                        </Tooltip>
-                      </a>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="bg-white/5 border border-white/10 p-6 rounded-xl text-center text-xs text-white/70">
-                    🎓 No programs available right now for {partnerToRender.name}.
-                  </div>
-                )}
-              </div>
-            </div>
+              );
+            })()}
           </div>
-        );
-      })()}
+        </div>
+      )}
     </>
   );
 }
 
 // 4. Sticky Mobile Bottom Navigation Bar (Visible only on mobile screens)
 export function MobileBottomNav() {
+  const router = useRouter();
   const navItems = [
     {
       label: "Home",
@@ -804,7 +881,7 @@ export function MobileBottomNav() {
           onClick={() => {
             if (item.label === "Home") window.scrollTo({ top: 0, behavior: "smooth" });
             else if (item.label === "Counselling") document.querySelector('button[class*="bg-linear-to-r"]')?.click();
-            else window.location.href = `/${item.label.toLowerCase()}`;
+            else router.push(`/${item.label.toLowerCase()}`);
           }}
         >
           {item.icon}

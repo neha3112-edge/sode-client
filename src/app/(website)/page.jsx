@@ -14,7 +14,7 @@ import { getFaqData } from "@/constants/faqData";
 import { getTestimonialsData } from "@/constants/testimonialsData";
 import { getFooterData } from "@/constants/footerData";
 import { getPageMetaData } from "@/constants/pageMetaData";
-import { getWebsiteHero, getCoursesWithTabs, getWebsiteCategories } from "@/services/api";
+import { getWebsiteHero, getWebsiteCoursesFilter, getWebsiteCategories } from "@/services/api";
 
 export const revalidate = 300; // Next.js ISR: Revalidate cache every 5 minutes
 
@@ -45,12 +45,12 @@ export async function generateMetadata() {
 export default async function Home() {
   const heroData = await getWebsiteHero("home");
   const universities = await getUniversitiesData();
-  const coursesData = await getCoursesWithTabs();
+  const coursesData = await getWebsiteCoursesFilter({ limit: 120 });
   const categoryApiData = await getWebsiteCategories();
 
   const categories = (categoryApiData?.categories && categoryApiData.categories.length > 0)
     ? categoryApiData.categories
-    : (coursesData?.tabs || []);
+    : [];
 
   const programs = coursesData?.programs || [];
 
@@ -72,7 +72,7 @@ export default async function Home() {
         <Hero initialHeroData={heroData} />
         <SearchBar categories={categories} />
         <Stats universities={universities} categories={categories} programs={programs} />
-        <IimIitLogos categories={categories} iims={iimUniversities} iits={iitUniversities} />
+        <IimIitLogos categories={categories} programs={programs} iims={iimUniversities} iits={iitUniversities} />
         <About initialLeftCards={leftCards} initialRightCards={rightCards} />
         <Testimonials initialTestimonials={testimonials} />
         <FAQ initialFaqs={faqs} />

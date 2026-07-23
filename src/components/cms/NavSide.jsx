@@ -58,7 +58,7 @@ export default function NavSide({
       onClose={collapsePanel}
       open={!isPanelClose}
       width={500}
-      destroyOnClose
+      destroyOnHidden
       styles={{
         body: {
           opacity: opacitySider,
