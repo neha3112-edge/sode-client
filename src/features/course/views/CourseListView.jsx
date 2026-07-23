@@ -24,6 +24,7 @@ import FormWrapper from "@/components/forms/FormWrapper";
 import { getAssetPath } from "@/lib/utils";
 import { getWebsiteCoursesFilter } from "@/services/api";
 import { useSearchParams } from "next/navigation";
+import Container from "@/components/ui/container";
 
 // Reusable Sidebar Filter Component defined OUTSIDE to maintain stable React DOM identity
 function FilterSidebarContent({
@@ -254,6 +255,10 @@ export default function CourseListView({ initialCourses = [], initialUniversitie
   const [selectedProgram, setSelectedProgram] = useState(null);
 
   const searchParams = useSearchParams();
+  const isInitialMount = React.useRef(true);
+
+  const selectedUnisKey = useMemo(() => selectedUniversities.join(","), [selectedUniversities]);
+  const selectedCoursesKey = useMemo(() => selectedCourses.join(","), [selectedCourses]);
 
   // Synchronize URL query parameters (category, search, university, etc.) into component filter state
   useEffect(() => {
@@ -262,28 +267,31 @@ export default function CourseListView({ initialCourses = [], initialUniversitie
     const q = searchParams.get("search");
     const uni = searchParams.get("university");
 
-    if (cat) {
+    if (cat && cat !== activeCategoryTab) {
       setActiveCategoryTab(cat);
     }
-    if (q) {
+    if (q && q !== appliedSearchTerm) {
       setSearchInputValue(q);
       setAppliedSearchTerm(q);
     }
     if (uni) {
-      setSelectedUniversities(uni.split(",").map((u) => u.trim()));
+      const parsed = uni.split(",").map((u) => u.trim());
+      if (parsed.join(",") !== selectedUnisKey) {
+        setSelectedUniversities(parsed);
+      }
     }
   }, [searchParams]);
 
-  // Synchronize initialList when props change
+  // Live Mongoose Backend Fetch Effect (Guarded against infinite loop and redundant initial fetch)
   useEffect(() => {
-    if (initialList && initialList.length > 0 && !appliedSearchTerm && activeCategoryTab === "all" && selectedCourses.length === 0 && selectedUniversities.length === 0) {
-      setProgramsList(initialList);
-      setTotalCount(initialList.length);
+    // Skip fetch on initial mount if SSR initialList is already loaded with default filters
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      if (!appliedSearchTerm && activeCategoryTab === "all" && !selectedCoursesKey && !selectedUnisKey && selectedDuration === "all" && sortBy === "featured") {
+        return;
+      }
     }
-  }, [initialList]);
 
-  // Live Mongoose Backend Fetch Effect
-  useEffect(() => {
     let isCancelled = false;
     setIsLoading(true);
 
@@ -311,7 +319,7 @@ export default function CourseListView({ initialCourses = [], initialUniversitie
     return () => {
       isCancelled = true;
     };
-  }, [appliedSearchTerm, activeCategoryTab, selectedCourses, selectedUniversities, selectedDuration, sortBy]);
+  }, [appliedSearchTerm, activeCategoryTab, selectedCoursesKey, selectedUnisKey, selectedDuration, sortBy]);
 
   // Category Tabs metadata
   const categoryTabs = useMemo(() => {
@@ -459,53 +467,13 @@ export default function CourseListView({ initialCourses = [], initialUniversitie
   };
 
   return (
-    <div className="bg-[#f8fafc] min-h-screen pt-32 pb-16 px-4 md:px-8 font-sans">
-      <div className="max-w-7xl mx-auto">
-
+    <div className="w-full bg-[#f8fafc] min-h-screen pt-28 sm:pt-24 lg:pt-24 pb-12 font-sans">
+      <Container>
         {/* Breadcrumb */}
         <Breadcrumb className="mb-4 text-xs font-semibold" items={[
           { title: <Link href="/">Home</Link> },
           { title: "Browse Courses" }
         ]} />
-
-        {/* Page Banner Title */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-800 px-3.5 py-1 rounded-full text-xs font-bold mb-3 shadow-xs">
-            <ThunderboltFilled className="text-amber-500" />
-            <span>100% Online &amp; UGC Approved Degree Programs</span>
-          </div>
-
-          <h1 className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-[#1C3569] leading-tight m-0">
-            Select Online Course &amp; Get Top Online &amp; Distance Universities
-          </h1>
-          <p className="text-slate-500 text-xs md:text-sm font-semibold mt-2 m-0 max-w-2xl mx-auto">
-            Compare fees, approvals, eligibility, and curriculum from top UGC &amp; WES recognized institutions
-          </p>
-        </div>
-
-        {/* Quick Category Tab Pills Bar */}
-        <div className="w-full flex overflow-x-auto no-scrollbar items-center justify-start md:justify-center gap-2 mb-8 px-2 py-1 scroll-smooth">
-          {categoryTabs.map((tab) => {
-            const isActive = activeCategoryTab === tab.slug;
-            return (
-              <button
-                key={tab.slug}
-                type="button"
-                onClick={() => setActiveCategoryTab(tab.slug)}
-                className={`px-4 py-2 rounded-full font-bold text-xs shrink-0 whitespace-nowrap transition-all duration-300 cursor-pointer border select-none flex items-center gap-2 ${isActive
-                  ? "bg-[#A66E38] text-white border-transparent shadow-[0_4px_12px_rgba(166,110,56,0.3)]"
-                  : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
-                  }`}
-              >
-                <span>{tab.label}</span>
-                <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${isActive ? "bg-white/20 text-white" : "bg-slate-100 text-slate-600"
-                  }`}>
-                  {tab.count}
-                </span>
-              </button>
-            );
-          })}
-        </div>
 
         {/* Mobile Filter Button Bar (< lg screens) */}
         <div className="lg:hidden flex items-center gap-2 mb-6 bg-white p-2.5 rounded-2xl border border-slate-200 shadow-xs">
@@ -544,180 +512,112 @@ export default function CourseListView({ initialCourses = [], initialUniversitie
           {/* Right Main Course Listing (lg:col-span-9) */}
           <div className="lg:col-span-9 space-y-6">
 
-            {/* Header Controls: Count Bar & Inline Active Filter Chips */}
-            <div className="bg-white p-4 rounded-2xl border border-slate-200/80 flex flex-wrap items-center justify-between gap-3 shadow-xs">
-              <div className="text-xs font-bold text-slate-700 flex items-center gap-2 shrink-0">
-                <BookOutlined className="text-[#1C3569]" />
-                <span>
-                  Showing <span className="text-[#A66E38] text-sm font-extrabold">{processedPrograms.length}</span> out of {totalCount} Programs
-                </span>
-                {isLoading && (
-                  <Spin indicator={<LoadingOutlined className="text-amber-600 text-sm ml-2" spin />} />
-                )}
-              </div>
-
-              {/* Active Filter Chips (Inline Flex) */}
-              {activeFilterCount > 0 && (
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  {appliedSearchTerm && (
-                    <Tag
-                      closable
-                      onClose={() => {
-                        setSearchInputValue("");
-                        setAppliedSearchTerm("");
-                      }}
-                      color="blue"
-                      className="rounded-lg text-[11px] font-semibold m-0"
-                    >
-                      Search: {appliedSearchTerm}
-                    </Tag>
-                  )}
-                  {activeCategoryTab !== "all" && (
-                    <Tag closable onClose={() => setActiveCategoryTab("all")} color="gold" className="rounded-lg text-[11px] font-semibold m-0">
-                      Category: {activeCategoryTab}
-                    </Tag>
-                  )}
-                  {selectedDuration !== "all" && (
-                    <Tag closable onClose={() => setSelectedDuration("all")} color="orange" className="rounded-lg text-[11px] font-semibold m-0">
-                      Duration: {selectedDuration}
-                    </Tag>
-                  )}
-                  {selectedCourses.map((c) => (
-                    <Tag key={c} closable onClose={() => setSelectedCourses(selectedCourses.filter(x => x !== c))} color="purple" className="rounded-lg text-[11px] font-semibold m-0">
-                      {c}
-                    </Tag>
-                  ))}
-                  {selectedUniversities.map((u) => (
-                    <Tag key={u} closable onClose={() => setSelectedUniversities(selectedUniversities.filter(x => x !== u))} color="cyan" className="rounded-lg text-[11px] font-semibold m-0">
-                      {u}
-                    </Tag>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={handleClearFilters}
-                    className="text-[11px] font-bold text-red-600 underline cursor-pointer ml-1"
-                  >
-                    Clear All
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Course Cards Vertical Stack */}
+            {/* Course Cards Grid: 2 Cards per row on Desktop (md:grid-cols-2), 1 Card on Mobile (grid-cols-1) */}
             {isLoading ? (
               <div className="bg-white rounded-3xl p-16 text-center border border-slate-200 shadow-xs flex flex-col items-center justify-center gap-3">
                 <Spin indicator={<LoadingOutlined className="text-4xl text-[#1C3569]" spin />} />
                 <p className="text-slate-600 font-bold text-sm m-0">Filtering Mongoose Database Courses...</p>
               </div>
             ) : processedPrograms.length > 0 ? (
-              processedPrograms.map((item, index) => {
-                const uniName = typeof item.university === "object" ? item.university?.name || "Partner University" : String(item.university || "Partner University");
-                const location = typeof item.university === "object" ? item.university?.location || "India / Global" : "Global";
-                const feeText = typeof item.fee === "object" ? item.fee?.title || `₹${item.fee?.amount || "Flexible"}` : (item.fee || "Flexible Fees");
-                const durationText = typeof item.duration === "object" ? item.duration?.title : (item.duration || "2 Years");
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 items-stretch">
+                {processedPrograms.map((item, index) => {
+                  const uniName = typeof item.university === "object" ? item.university?.name || "Partner University" : String(item.university || "Partner University");
+                  const rawLogo = typeof item.university === "object" ? (item.university?.logoSrc?.url || item.university?.logoUrl || item.logo) : item.logo;
+                  const logoUrl = getAssetPath(rawLogo, null);
+                  const providerName = item.provider || item.partner || (index % 2 === 0 ? "upGrad" : "TimesPro");
+                  const feeText = typeof item.fee === "object" ? item.fee?.title || `₹${item.fee?.amount || "1,20,000 INR"}` : (item.fee || "1,20,000 INR");
+                  const durationText = typeof item.duration === "object" ? item.duration?.title : (item.duration || "8 Months");
 
-                return (
-                  <div
-                    key={`${item.title}-${uniName}-${index}`}
-                    className="bg-white rounded-3xl border border-slate-200/80 shadow-[0_10px_30px_rgba(0,0,0,0.03)] hover:shadow-xl transition-all duration-300 overflow-hidden relative flex flex-col md:flex-row group"
-                  >
-                    {/* Top Ribbon Badge */}
-                    <div className="absolute top-0 right-0 bg-gradient-to-l from-amber-500 to-amber-600 text-white font-extrabold text-[10px] uppercase tracking-wider px-3.5 py-1 rounded-bl-xl shadow-xs z-10">
-                      UGC APPROVED • 100% ONLINE
-                    </div>
+                  const itemSlug = item.slug || item._id || (item.title ? item.title.toLowerCase().replace(/[^a-z0-9]+/g, "-") : "");
+                  const courseDetailHref = itemSlug ? `/courses/${itemSlug}` : "/courses";
 
-                    {/* Left Column: Image & University Logo */}
-                    <div className="md:w-[38%] relative h-48 sm:h-52 md:h-auto shrink-0 bg-slate-100 overflow-hidden">
-                      <Image
-                        src={getAssetPath(item.image)}
-                        alt={item.title}
-                        fill
-                        sizes="(max-width: 768px) 100vw, 400px"
-                        priority={index === 0}
-                        className="object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent md:hidden" />
-
-                      {/* University Logo Badge Overlay */}
-                      <div className="absolute bottom-3 left-3 bg-white/95 backdrop-blur-xs px-2.5 py-1 rounded-xl shadow-md border border-slate-100 flex items-center gap-2 max-w-[85%]">
-                        <div className="relative w-6 h-6 shrink-0">
-                          <Image
-                            src={getAssetPath(item.logo)}
-                            alt={uniName}
-                            fill
-                            className="object-contain"
-                          />
-                        </div>
-                        <span className="text-[11px] font-bold text-[#1C3569] truncate">{uniName}</span>
-                      </div>
-                    </div>
-
-                    {/* Right Column: Course Details */}
-                    <div className="p-5 md:p-6 md:w-[62%] flex flex-col justify-between space-y-4">
-                      <div>
-                        {/* Title */}
-                        <Link href={`/courses/${item.slug}`} className="group-hover:text-[#A66E38] transition-colors">
-                          <h3 className="text-base md:text-lg font-extrabold text-[#1C3569] leading-snug mb-2 pr-16">
-                            {uniName} {item.title}: Complete Guidebook
-                          </h3>
-                        </Link>
-
-                        {/* Specs Key-Value Grid */}
-                        <div className="grid grid-cols-2 gap-y-2 gap-x-4 border-t border-b border-slate-100 py-3 my-3 text-xs">
-                          <div>
-                            <span className="text-slate-400 font-semibold block text-[11px]">Course Fee :</span>
-                            <span className="font-extrabold text-slate-800 text-xs md:text-sm">{feeText}</span>
-                          </div>
-
-                          <div>
-                            <span className="text-slate-400 font-semibold block text-[11px]">Location :</span>
-                            <span className="font-bold text-slate-700 flex items-center gap-1">
-                              <EnvironmentFilled className="text-amber-600 text-xs" /> {location}
-                            </span>
-                          </div>
-
-                          <div>
-                            <span className="text-slate-400 font-semibold block text-[11px]">Approvals :</span>
-                            <span className="font-bold text-slate-700">UGC | NAAC A+ | AICTE</span>
-                          </div>
-
-                          <div>
-                            <span className="text-slate-400 font-semibold block text-[11px]">Duration :</span>
-                            <span className="font-bold text-slate-700">{durationText}</span>
-                          </div>
-                        </div>
-
-                        {/* Description */}
-                        {item.description && (
-                          <p className="text-slate-500 text-xs line-clamp-2 leading-relaxed m-0">
-                            {item.description}
-                          </p>
-                        )}
+                  return (
+                    <div
+                      key={`${item.title}-${uniName}-${index}`}
+                      className="bg-white rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-md transition-all duration-300 overflow-hidden relative flex flex-col justify-between group"
+                    >
+                      {/* Top Right Provider / Via Badge (Exact upGrad UI Corner Tab with Background & Matching Radius) */}
+                      <div className="absolute top-0 right-0 bg-[#FAF6EC] border-b border-l border-[#E0D5C1] rounded-tr-2xl rounded-bl-2xl px-3 py-1 text-xs font-medium text-gray-700 flex items-center gap-1.5 z-10 shadow-2xs">
+                        Via <span className="font-extrabold text-[#E52E2E] text-xs">{providerName}</span>
                       </div>
 
-                      {/* Action Buttons */}
-                      <div className="flex items-center gap-3 pt-2">
-                        <Link href={`/courses/${item.slug}`} className="flex-1">
-                          <Button
-                            type="primary"
-                            className="w-full bg-[#059669] hover:!bg-[#047857] text-white font-bold h-10 rounded-xl border-none cursor-pointer text-xs flex items-center justify-center gap-1.5 shadow-xs"
-                          >
-                            Know More <RightOutlined className="text-[10px]" />
-                          </Button>
-                        </Link>
+                      {/* Main Card Body (Left Circular Logo | Vertical Line | Right Details) */}
+                      <div className="p-4 pt-8 flex items-center gap-3.5 relative min-h-[145px]">
+                        {/* Left Column: Circular Logo & University Name */}
+                        <div className="flex flex-col items-center justify-center shrink-0 w-24 sm:w-28 text-center">
+                          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border border-slate-200/80 bg-white p-1.5 shadow-xs flex items-center justify-center overflow-hidden mb-1.5 relative shrink-0 group-hover:scale-105 transition-transform">
+                            {logoUrl ? (
+                              <img
+                                src={logoUrl}
+                                alt={uniName}
+                                className="w-full h-full object-contain p-0.5"
+                                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                              />
+                            ) : (
+                              <div className="w-full h-full rounded-full bg-blue-50 text-blue-600 font-bold flex items-center justify-center text-xs uppercase">
+                                {uniName.charAt(0)}
+                              </div>
+                            )}
+                          </div>
+                          <span className="text-[11px] sm:text-xs font-bold text-slate-800 leading-tight text-center max-w-full line-clamp-2">
+                            {uniName}
+                          </span>
+                        </div>
 
-                        <Button
-                          type="primary"
+                        {/* Thin Vertical Line Separator */}
+                        <div className="w-[1px] bg-slate-200/80 self-stretch my-1 shrink-0" />
+
+                        {/* Right Column: Title, Duration & Fees */}
+                        <div className="flex-1 flex flex-col justify-center space-y-1.5 min-w-0 pr-1">
+                          {/* Course Title */}
+                          <Link href={courseDetailHref} className="group-hover:text-blue-600 transition-colors">
+                            <h3 className="text-sm sm:text-base font-extrabold text-[#1A237E] leading-snug line-clamp-2 m-0 tracking-tight">
+                              {item.title}
+                            </h3>
+                          </Link>
+
+                          {/* Duration */}
+                          <div className="text-xs font-medium text-slate-600 flex items-center gap-1.5 mt-0.5">
+                            <ClockCircleFilled className="text-slate-400 text-xs" />
+                            <span>{durationText}</span>
+                          </div>
+
+                          {/* Fees (Bright Pink Text matching reference mockup) */}
+                          <div className="text-xs sm:text-sm font-extrabold text-[#E91E63] mt-1 tracking-tight">
+                            Fees : {feeText.includes("₹") || feeText.includes("INR") ? feeText : `₹${feeText}`}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Bottom Cream Action Links Bar (Matching Reference Mockup) */}
+                      <div className="bg-[#FAF6EC] border-t border-[#F0E6D2] px-3.5 py-2.5 flex items-center justify-between text-xs font-bold text-slate-700">
+                        <button
+                          type="button"
                           onClick={() => handleGetBrochure(item)}
-                          className="flex-1 bg-[#1D4ED8] hover:!bg-[#1E40AF] text-white font-bold h-10 rounded-xl border-none cursor-pointer text-xs flex items-center justify-center gap-1.5 shadow-xs"
+                          className="hover:text-blue-600 cursor-pointer transition-colors flex items-center gap-1 text-slate-700"
                         >
-                          Get Brochure <DownloadOutlined />
-                        </Button>
+                          + Compare
+                        </button>
+
+                        <Link
+                          href={courseDetailHref}
+                          className="hover:text-blue-600 cursor-pointer transition-colors text-slate-700 font-bold"
+                        >
+                          Explore More
+                        </Link>
+
+                        <button
+                          type="button"
+                          onClick={() => { setSelectedProgram(item); setActiveModal("apply"); }}
+                          className="text-[#15803D] hover:text-green-700 font-extrabold cursor-pointer transition-colors flex items-center gap-0.5"
+                        >
+                          Apply Now <RightOutlined className="text-[10px]" />
+                        </button>
                       </div>
                     </div>
-                  </div>
-                );
-              })
+                  );
+                })}
+              </div>
             ) : (
               <div className="bg-white rounded-3xl p-12 text-center border border-slate-200 shadow-xs">
                 <p className="text-slate-700 font-extrabold text-base m-0">No matching courses found in database for your active filters.</p>
@@ -729,33 +629,33 @@ export default function CourseListView({ initialCourses = [], initialUniversitie
             )}
           </div>
         </div>
-      </div>
 
-      {/* Mobile Antd Filter Drawer */}
-      <Drawer
-        title={<span className="font-bold text-[#1C3569] text-base">Filter Options</span>}
-        placement="left"
-        onClose={() => setIsMobileDrawerOpen(false)}
-        open={isMobileDrawerOpen}
-        className="lg:hidden"
-        style={{ width: "85%", maxWidth: 340 }}
-      >
-        <FilterSidebarContent {...filterSidebarProps} />
-      </Drawer>
+        {/* Mobile Antd Filter Drawer */}
+        <Drawer
+          title={<span className="font-bold text-[#1C3569] text-base">Filter Options</span>}
+          placement="left"
+          onClose={() => setIsMobileDrawerOpen(false)}
+          open={isMobileDrawerOpen}
+          className="lg:hidden"
+          style={{ width: "85%", maxWidth: 340 }}
+        >
+          <FilterSidebarContent {...filterSidebarProps} />
+        </Drawer>
 
-      {/* Enquiry Form Modal */}
-      {selectedProgram && (
-        <FormWrapper
-          isModal
-          isOpen={!!activeModal}
-          title={activeModal === "brochure" ? "Download Course Brochure" : "Apply / Book 1:1 Counselling"}
-          subtitle={activeModal === "brochure" ? "Enter your details to download brochure PDF" : "Get expert guidance from senior counselors"}
-          onClose={() => { setActiveModal(null); setSelectedProgram(null); }}
-          isBrochureForm={activeModal === "brochure"}
-          brochureUrl={activeModal === "brochure" ? getAssetPath(selectedProgram.brochureUrl) : ""}
-          defaultCourse={selectedProgram.title}
-        />
-      )}
+        {/* Enquiry Form Modal */}
+        {selectedProgram && (
+          <FormWrapper
+            isModal
+            isOpen={!!activeModal}
+            title={activeModal === "brochure" ? "Download Course Brochure" : "Apply / Book 1:1 Counselling"}
+            subtitle={activeModal === "brochure" ? "Enter your details to download brochure PDF" : "Get expert guidance from senior counselors"}
+            onClose={() => { setActiveModal(null); setSelectedProgram(null); }}
+            isBrochureForm={activeModal === "brochure"}
+            brochureUrl={activeModal === "brochure" ? getAssetPath(selectedProgram.brochureUrl) : ""}
+            defaultCourse={selectedProgram.title}
+          />
+        )}
+      </Container>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { Header } from "@/components/website/Header";
 import { Footer } from "@/components/website/Footer";
 import CourseListView from "@/features/course/views/CourseListView";
@@ -38,7 +38,13 @@ export default async function CoursesPage({ searchParams }) {
     <div className="flex flex-col min-h-screen">
       <Header />
       <main className="flex-grow">
-        <CourseListView initialCourses={initialCourses} initialUniversities={initialUniversities} />
+        <Suspense fallback={
+          <div className="min-h-[60vh] flex items-center justify-center">
+            <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+          </div>
+        }>
+          <CourseListView initialCourses={initialCourses} initialUniversities={initialUniversities} />
+        </Suspense>
       </main>
       <Footer />
     </div>

@@ -489,7 +489,7 @@ export default function FormWrapper({
         open={isOpen}
         onCancel={onClose}
         footer={null}
-        destroyOnClose
+        destroyOnHidden
         centered
         width={440}
         closeIcon={null}
