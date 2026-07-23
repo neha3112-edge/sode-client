@@ -27,30 +27,39 @@ export function getAssetPath(path = "", fallback = DEFAULT_SVG_LOGO) {
   targetPath = targetPath.trim();
   if (!targetPath) return fallback;
 
-  // 1. Convert MinIO internal URLs to same-domain proxy path (/media/...)
-  if (targetPath.startsWith("http://172.236.183.64:9000/")) {
-    return targetPath.replace("http://172.236.183.64:9000/", "/media/");
+  // 1. Convert MinIO internal IP/port URLs to same-domain relative proxy path (/media/...)
+  if (targetPath.includes(":9000/")) {
+    const relativeMedia = targetPath.substring(targetPath.indexOf(":9000/") + 6);
+    return `/media/${relativeMedia}`;
   }
 
-  // 2. Any other external http/https URL → pass through as-is
-  if (targetPath.startsWith("http://") || targetPath.startsWith("https://")) return targetPath;
+  if (targetPath.includes("172.236.183.64:9000")) {
+    return targetPath.replace(/https?:\/\/172\.236\.183\.64:9000\/?/gi, "/media/");
+  }
 
-  // 3. Data URIs → pass through as-is
+  // 2. Data URIs → pass through as-is
   if (targetPath.startsWith("data:image")) return targetPath;
 
-  // 4. Local asset path string → look up in mediaMap and convert to MinIO proxy
+  // 3. Local asset path string → look up in mediaMap and convert to MinIO proxy
   const lookup = targetPath.toLowerCase();
   if (mediaMap[targetPath]) {
     const minioUrl = mediaMap[targetPath];
-    return minioUrl.replace("http://172.236.183.64:9000/", "/media/");
+    return minioUrl.replace(/https?:\/\/172\.236\.183\.64:9000\/?/gi, "/media/");
   }
   if (mediaMap[lookup]) {
     const minioUrl = mediaMap[lookup];
-    return minioUrl.replace("http://172.236.183.64:9000/", "/media/");
+    return minioUrl.replace(/https?:\/\/172\.236\.183\.64:9000\/?/gi, "/media/");
   }
 
-  // 5. If path starts with /media/, return as-is
-  if (targetPath.startsWith("/media/")) return targetPath;
+  // 4. Relative paths or /media/ paths -> return as-is
+  if (targetPath.startsWith("/media/") || targetPath.startsWith("/")) return targetPath;
+
+  // 5. Convert any insecure http:// to https:// to prevent Mixed Content security blocking
+  if (targetPath.startsWith("http://")) {
+    return targetPath.replace(/^http:\/\//i, "https://");
+  }
+
+  if (targetPath.startsWith("https://")) return targetPath;
 
   // 6. Safe fallback for unmapped static strings
   return fallback;

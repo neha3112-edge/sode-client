@@ -43,13 +43,12 @@ export async function getSiteSettingData() {
           Array.isArray(item.googleAdsIds) && item.googleAdsIds.length > 0
             ? item.googleAdsIds
             : DEFAULT_SITE_SETTING.googleAdsIds,
-        faviconIco: item.faviconIco || DEFAULT_SITE_SETTING.faviconIco,
-        faviconSvg: item.faviconSvg || DEFAULT_SITE_SETTING.faviconSvg,
-        favicon96: item.favicon96 || DEFAULT_SITE_SETTING.favicon96,
-        appleTouchIcon:
-          item.appleTouchIcon || DEFAULT_SITE_SETTING.appleTouchIcon,
-        webmanifest: item.webmanifest || DEFAULT_SITE_SETTING.webmanifest,
-        ogImage: item.ogImage || DEFAULT_SITE_SETTING.ogImage,
+        faviconIco: item.faviconIco ? getAssetPath(item.faviconIco) : DEFAULT_SITE_SETTING.faviconIco,
+        faviconSvg: item.faviconSvg ? getAssetPath(item.faviconSvg) : DEFAULT_SITE_SETTING.faviconSvg,
+        favicon96: item.favicon96 ? getAssetPath(item.favicon96) : DEFAULT_SITE_SETTING.favicon96,
+        appleTouchIcon: item.appleTouchIcon ? getAssetPath(item.appleTouchIcon) : DEFAULT_SITE_SETTING.appleTouchIcon,
+        webmanifest: item.webmanifest ? getAssetPath(item.webmanifest) : DEFAULT_SITE_SETTING.webmanifest,
+        ogImage: item.ogImage ? getAssetPath(item.ogImage) : DEFAULT_SITE_SETTING.ogImage,
         showGlobalCta:
           typeof item.showGlobalCta === "boolean"
             ? item.showGlobalCta
