@@ -77,6 +77,12 @@ export default function FormWrapper({
 
   const [loading, setLoading] = useState(false);
   const [closing, setClosing] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
 
   /* =======================================================
      NORMALIZE COURSE OPTIONS
@@ -410,7 +416,7 @@ export default function FormWrapper({
               size="large"
               placeholder="Select Course"
               disabled={loading}
-              getPopupContainer={() => document.body}
+              getPopupContainer={(triggerNode) => triggerNode?.parentElement || document.body}
               styles={{ popup: { root: { zIndex: 100000 } } }}
               className="rounded-lg h-11 text-sm w-full"
               options={finalCourseOptions.map((opt) => ({
@@ -440,7 +446,7 @@ export default function FormWrapper({
             size="large"
             placeholder="Select Your State"
             disabled={loading}
-            getPopupContainer={() => document.body}
+            getPopupContainer={(triggerNode) => triggerNode?.parentElement || document.body}
             styles={{ popup: { root: { zIndex: 100000 } } }}
             className="rounded-lg h-11 text-sm w-full"
             options={STATE_OPTIONS.map((st) => ({
@@ -476,12 +482,14 @@ export default function FormWrapper({
   ======================================================== */
 
   if (isModal) {
+    if (!mounted || !isOpen) return null;
+
     return (
       <Modal
         open={isOpen}
         onCancel={onClose}
         footer={null}
-        destroyOnHidden
+        destroyOnClose
         centered
         width={440}
         closeIcon={null}

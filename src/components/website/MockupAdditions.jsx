@@ -352,7 +352,7 @@ function PartnerLogoIcon({ partner }) {
 
   if (logoUrl && !imgError) {
     return (
-      <div className="w-5 h-5 sm:w-6 sm:h-6 relative shrink-0">
+      <div className="w-12 h-12 sm:w-16 sm:h-16 relative shrink-0 rounded-full">
         <Image
           src={logoUrl}
           alt={partner?.name || "Partner Logo"}
