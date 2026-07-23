@@ -95,6 +95,10 @@ export default function HeaderForm({ isUpdateForm = false }) {
             <Form.Item
               name="parentId"
               label="Parent Menu"
+              getValueFromEvent={(val) => (typeof val === "object" ? val?._id || val : val)}
+              getValueProps={(val) => ({
+                value: typeof val === "object" ? val?._id || val : val,
+              })}
               tooltip="Select parent item to make this a dropdown child link"
             >
               <Select
@@ -152,7 +156,14 @@ export default function HeaderForm({ isUpdateForm = false }) {
       <Card title="2. Backend Model Linkage (Course / University)" size="small" variant="borderless" className="bg-slate-50/50">
         <Row gutter={16}>
           <Col span={12}>
-            <Form.Item name="relatedCourse" label="Link to Database Course">
+            <Form.Item
+              name="relatedCourse"
+              label="Link to Database Course"
+              getValueFromEvent={(val) => (typeof val === "object" ? val?._id || val : val)}
+              getValueProps={(val) => ({
+                value: typeof val === "object" ? val?._id || val : val,
+              })}
+            >
               <Select
                 placeholder="Select Course (Auto-fills Logo & Link)"
                 allowClear
@@ -172,7 +183,14 @@ export default function HeaderForm({ isUpdateForm = false }) {
           </Col>
 
           <Col span={12}>
-            <Form.Item name="relatedUniversity" label="Link to Database University">
+            <Form.Item
+              name="relatedUniversity"
+              label="Link to Database University"
+              getValueFromEvent={(val) => (typeof val === "object" ? val?._id || val : val)}
+              getValueProps={(val) => ({
+                value: typeof val === "object" ? val?._id || val : val,
+              })}
+            >
               <Select
                 placeholder="Select University (Auto-fills Logo & Link)"
                 allowClear
@@ -197,7 +215,14 @@ export default function HeaderForm({ isUpdateForm = false }) {
       <Card title="3. Media Database Asset (ObjectId) & Logo Mode" size="small" variant="borderless" className="bg-slate-50/50">
         <Row gutter={16}>
           <Col span={12}>
-            <Form.Item name="mediaId" label="Link to Media Asset (ObjectId Ref)">
+            <Form.Item
+              name="mediaId"
+              label="Link to Media Asset (ObjectId Ref)"
+              getValueFromEvent={(val) => (typeof val === "object" ? val?._id || val : val)}
+              getValueProps={(val) => ({
+                value: typeof val === "object" ? val?._id || val : val,
+              })}
+            >
               <Select
                 placeholder="Pick image from Media Collection"
                 allowClear
@@ -223,7 +248,14 @@ export default function HeaderForm({ isUpdateForm = false }) {
           </Col>
 
           <Col span={12}>
-            <Form.Item name="logoSrc" label="Logo Asset (ObjectId Ref)">
+            <Form.Item
+              name="logoSrc"
+              label="Logo Asset (ObjectId Ref)"
+              getValueFromEvent={(val) => (typeof val === "object" ? val?._id || val : val)}
+              getValueProps={(val) => ({
+                value: typeof val === "object" ? val?._id || val : val,
+              })}
+            >
               <Select
                 placeholder="Select Media ObjectId for Logo"
                 allowClear

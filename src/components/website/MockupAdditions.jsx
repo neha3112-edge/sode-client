@@ -7,6 +7,13 @@ import { useRouter } from "next/navigation";
 import { getAssetPath } from "@/lib/utils";
 import { Card, Modal, Tooltip } from "antd";
 import { getWebsiteCoursesFilter, getUniversities } from "@/services/api";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+} from "@/components/ui/carousel";
 
 // 1. Search Bar Component (With smooth enter & exit top slide-down filter drawer)
 export function SearchBar() {
@@ -309,76 +316,90 @@ export function SearchBar() {
   );
 }
 
-// 2. Your Learning Journey Component
-export function LearningJourney() {
-  const steps = [
+// 2. Your Learning Journey Component (Rendered 100% dynamically via MinIO S3 media icons / API props)
+export function LearningJourney({ categories = [], steps = [] }) {
+  // Find Learning Journey Parent Category dynamically from CMS/DB
+  const journeyParent = (categories || []).find((c) => c.slug === "learning-journey");
+
+  // Find step children dynamically from categories prop
+  const stepsFromApi = (categories || []).filter(
+    (c) => journeyParent && String(c.parentId) === String(journeyParent._id)
+  ).sort((a, b) => (a.order || 0) - (b.order || 0));
+
+  const colors = [
+    "from-blue-500 to-indigo-600",
+    "from-emerald-500 to-teal-600",
+    "from-amber-500 to-orange-600",
+    "from-purple-500 to-pink-600",
+  ];
+
+  const defaultMinioSteps = [
     {
       number: "1",
       title: "Explore",
       description: "Discover programs that fit your career goals",
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.637 10.637z" />
-        </svg>
-      ),
+      iconUrl: "http://172.236.183.64:9000/images/2026/07/23/469f571d39ddac029198cbf8f7678239.svg",
       color: "from-blue-500 to-indigo-600",
     },
     {
       number: "2",
       title: "Learn",
       description: "Join live classes & acquire modern skills",
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.57 50.57 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.902 59.902 0 0 1 10.399 5.84a50.58 50.58 0 0 0-2.657.814m-15.482 0A50.697 50.697 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M12 13.489v3.692m-5.462-6.52c.074-.5.194-.997.358-1.487m10.208 1.487a12.096 12.096 0 0 1-.358-1.487" />
-        </svg>
-      ),
+      iconUrl: "http://172.236.183.64:9000/images/2026/07/23/d50bb8f6303fc62bd45d385606b18ea7.svg",
       color: "from-emerald-500 to-teal-600",
     },
     {
       number: "3",
       title: "Certify",
       description: "Earn globally recognized certifications",
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 3.068 1.593 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
-        </svg>
-      ),
+      iconUrl: "http://172.236.183.64:9000/images/2026/07/23/2b3f5e6cbbf51a580da97fe905dedf82.svg",
       color: "from-amber-500 to-orange-600",
     },
     {
       number: "4",
       title: "Succeed",
       description: "Get placed & grow your career trajectory",
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.61 3.89a14.98 14.98 0 00-6.16 12.12A14.98 14.98 0 009.61 19.89l3.52-3.52" />
-        </svg>
-      ),
+      iconUrl: "http://172.236.183.64:9000/images/2026/07/23/aa1a6f63d0654b8e608dac489054713e.svg",
       color: "from-purple-500 to-pink-600",
     },
   ];
+
+  const stepsToRender = steps.length > 0
+    ? steps
+    : stepsFromApi.length > 0
+      ? stepsFromApi.map((step, idx) => ({
+        number: String(step.order || idx + 1),
+        title: step.name || step.label,
+        description: step.title || step.description,
+        iconUrl: step.logoUrl || step.logoSrc || step.logo || step.imageSrc || step.image,
+        color: colors[idx % colors.length],
+      }))
+      : defaultMinioSteps;
 
   return (
     <section className="w-full bg-[#f8fafc] py-12 md:py-16 border-b border-slate-100">
       <Container>
         <div className="text-center max-w-2xl mx-auto mb-10 px-4">
           <h2 className="text-2xl md:text-3xl font-extrabold text-[#102441]">
-            Your Learning Journey
+            {journeyParent?.name || journeyParent?.title || "Your Learning Journey"}
           </h2>
           <p className="text-slate-500 text-sm mt-2">
-            Step-by-step career acceleration designed for your dynamic upskilling needs
+            {journeyParent?.description || "Step-by-step career acceleration designed for your dynamic upskilling needs"}
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 px-4 max-w-5xl mx-auto relative">
-          {steps.map((step, idx) => (
+          {stepsToRender.map((step, idx) => (
             <div key={idx} className="relative flex flex-col items-center text-center bg-white p-6 rounded-2xl border border-slate-100 shadow-xs hover:shadow-md transition-all duration-300 group">
-              <span className={`absolute -top-3 left-6 w-7 h-7 rounded-full flex items-center justify-center text-white font-bold text-xs bg-linear-to-r ${step.color} shadow-xs`}>
-                {step.number}
+              <span className={`absolute -top-3 left-6 w-7 h-7 rounded-full flex items-center justify-center text-white font-bold text-xs bg-linear-to-r ${step.color || colors[idx % colors.length]} shadow-xs`}>
+                {step.number || idx + 1}
               </span>
 
-              <div className="w-12 h-12 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-700 group-hover:scale-105 transition-transform mb-4 mt-1">
-                {step.icon}
+              <div className="w-12 h-12 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-700 group-hover:scale-105 transition-transform mb-4 mt-1 p-2.5 overflow-hidden">
+                <SmartLogoAvatar
+                  logoUrl={step.iconUrl || step.logoUrl || step.logo || step.icon}
+                  altName={step.title}
+                />
               </div>
 
               <h3 className="text-base font-bold text-[#102441] mb-1">
@@ -388,14 +409,6 @@ export function LearningJourney() {
               <p className="text-xs text-slate-400 font-medium leading-relaxed">
                 {step.description}
               </p>
-
-              {idx < 3 && (
-                <div className="hidden md:block absolute top-1/2 -translate-y-1/2 -right-4 translate-x-1/2 z-10 text-slate-300">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-                  </svg>
-                </div>
-              )}
             </div>
           ))}
         </div>
@@ -421,53 +434,53 @@ function SmartLogoAvatar({ logoUrl, altName }) {
   }
 
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10 text-[#c59b43]">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.57 50.57 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.902 59.902 0 0 1 10.399 5.84a50.58 50.58 0 0 0-2.657.814m-15.482 0A50.697 50.697 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M12 13.489v3.692m-5.462-6.52c.074-.5.194-.997.358-1.487m10.208 1.487a12.096 12.096 0 0 1-.358-1.487" />
-    </svg>
+    <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-xs uppercase">
+      {(altName || "U").charAt(0)}
+    </div>
   );
 }
 
-// Helper component to render backend logo/icon or fallback code badge
-function PartnerLogoIcon({ partner, type }) {
+// Helper component to render backend logo/icon or fallback letter badge
+function PartnerLogoIcon({ partner }) {
   const [imgError, setImgError] = useState(false);
 
   let rawUrl = null;
   if (partner) {
     rawUrl = partner.logoUrl || partner.logoSrc || partner.logo || partner.imageSrc || partner.image;
+    if (typeof rawUrl === "object" && rawUrl?.url) rawUrl = rawUrl.url;
   }
   const logoUrl = getAssetPath(rawUrl, null);
 
-  const isIim = type === "iim";
-  const textClass = isIim ? "text-[#102441] font-serif" : "text-blue-700 font-sans";
-
   if (logoUrl && !imgError) {
     return (
-      <Image
-        src={logoUrl}
-        alt={partner.name || "Partner Logo"}
-        width={32}
-        height={32}
-        unoptimized
-        className="w-8 h-8 object-contain rounded-full"
-        onError={() => setImgError(true)}
-      />
+      <div className="w-full h-full relative shrink-0">
+        <Image
+          src={logoUrl}
+          alt={partner?.name || "Partner Logo"}
+          fill
+          sizes="32px"
+          unoptimized
+          className="object-contain p-0.5"
+          onError={() => setImgError(true)}
+        />
+      </div>
     );
   }
+
   return (
-    <span className={`text-xs font-bold ${textClass}`}>
-      {partner?.code || "UNI"}
-    </span>
+    <div className="w-full h-full rounded-full bg-blue-50 text-blue-600 font-bold flex items-center justify-center text-xs">
+      {(partner?.name || "P").charAt(0)}
+    </div>
   );
 }
 
-// 3. Partner Logos Section (Rendered 100% dynamically for ALL Parent & Sub-Categories from backend API)
+// 3. Partner Logos Section (Rendered 100% dynamically from backend API)
 export function IimIitLogos({ categories = [], programs = [] }) {
   const router = useRouter();
   const [activePartner, setActivePartner] = useState(null);
   const [isPartnerClosing, setIsPartnerClosing] = useState(false);
   const [tempPartner, setTempPartner] = useState(null);
   const [partnerModalData, setPartnerModalData] = useState({ courses: [], universities: [] });
-  const [isPartnerLoading, setIsPartnerLoading] = useState(false);
 
   // In-page expand toggles per parent block (by parent._id or slug)
   const [expandedBlocks, setExpandedBlocks] = useState({});
@@ -479,47 +492,34 @@ export function IimIitLogos({ categories = [], programs = [] }) {
     }));
   };
 
-  // Helper to generate initials code (e.g. "IIM Ahmedabad" -> "IIMA", "IIT Delhi" -> "IITD")
-  const getCode = (name) => {
-    if (!name) return "UNI";
-    const clean = name.replace(/[^a-zA-Z\s]/g, "");
-    const parts = clean.split(/\s+/);
-    if (parts.length >= 2) {
-      const first = parts[0].toUpperCase();
-      const second = parts[1];
-      if (first === "IIM" || first === "IIT" || first === "MIT" || first === "LBS") {
-        return first + (second ? second[0].toUpperCase() : "");
-      }
-    }
-    return parts.map((p) => p[0]).join("").toUpperCase().substring(0, 4);
-  };
+  // Find Root Showcase Category dynamically from DB (root category without parentId where showInMockup === true)
+  const topRoot = (categories || []).find((c) => !c.parentId && c.showInMockup === true);
+  const mainTitle = topRoot?.name || topRoot?.title;
+  const mainDescription = topRoot?.description;
 
-  // Find ALL Partner Showcase Parent Categories from API (e.g. Top IIM, Top IIT, Top Global B-Schools)
+  // Find ALL Sub-Parent Showcase Categories dynamically via parentId relation (c.parentId === topRoot._id)
   const parentBlocks = (categories || [])
     .filter((c) => {
-      if (c.parentId) return false;
-      const slug = (c.slug || "").toLowerCase();
-      if (slug === "all") return false;
-      // Only include Partner Showcase parent blocks (Top IIM, Top IIT, Top Global B-Schools, etc.)
-      return slug.includes("top-") || slug.includes("partner") || slug.includes("iim") || slug.includes("iit") || slug.includes("global");
+      if (!topRoot) return c.showInMockup === true && Boolean(c.parentId);
+      return String(c.parentId) === String(topRoot._id);
     })
     .map((parent) => {
       const children = (categories || [])
         .filter((child) => child.parentId && String(child.parentId) === String(parent._id))
         .map((child) => ({
           ...child,
-          name: child.label || child.name,
-          code: getCode(child.label || child.name),
-          badge: child.title || "Executive Program",
+          name: child.name || child.label,
+          code: child.code || child.shortCode || null,
+          badge: child.badge || child.title || null,
         }));
 
       return {
         ...parent,
-        title: parent.title || parent.label || parent.name,
+        title: parent.title || parent.name || parent.label,
         children,
       };
     })
-    .filter((parent) => parent.children.length > 0);
+    .filter((parent) => parent.children && parent.children.length > 0);
 
   const handleOpenPartner = (partner, type) => {
     const partnerWithType = { ...partner, type };
@@ -544,7 +544,7 @@ export function IimIitLogos({ categories = [], programs = [] }) {
       const slugMatch = uSlug && pSlug && (uSlug === pSlug);
 
       const catMatch = p.category && (String(p.category) === String(partner._id) || String(p.category.slug || p.category) === String(partner.slug));
-      
+
       const catsMatch = Array.isArray(p.categories) && p.categories.some(
         (c) => String(c._id || c) === String(partner._id) || String(c.slug || c) === String(partner.slug)
       );
@@ -570,95 +570,204 @@ export function IimIitLogos({ categories = [], programs = [] }) {
 
   const partnerToRender = activePartner || tempPartner;
 
-  // Accent bar colors for different parent blocks (gold, blue, emerald, purple, dark navy)
   const accentBarColors = ["#EEC471", "#2563eb", "#10b981", "#9333ea", "#102441"];
+  const [isMainExpanded, setIsMainExpanded] = useState(false);
+  const [carouselApi, setCarouselApi] = useState(null);
+
+  const allSubchildItems = parentBlocks.flatMap((block) =>
+    block.children.map((child) => ({ ...child, blockSlug: block.slug }))
+  );
+
+  useEffect(() => {
+    if (!carouselApi) return;
+    let timerId = null;
+    let intervalId = null;
+
+    // Defer auto-scroll until browser main thread is idle (PageSpeed & Lighthouse 100/100 friendly)
+    const startAutoScroll = () => {
+      intervalId = setInterval(() => {
+        if (!carouselApi) return;
+        if (carouselApi.canScrollNext()) {
+          carouselApi.scrollNext();
+        } else {
+          carouselApi.scrollTo(0);
+        }
+      }, 3500);
+    };
+
+    if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+      timerId = window.requestIdleCallback(startAutoScroll, { timeout: 4000 });
+    } else {
+      timerId = setTimeout(startAutoScroll, 4000);
+    }
+
+    return () => {
+      if (typeof window !== "undefined" && "cancelIdleCallback" in window && timerId) {
+        window.cancelIdleCallback(timerId);
+      } else {
+        clearTimeout(timerId);
+      }
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [carouselApi]);
 
   return (
     <>
       {parentBlocks.length > 0 && (
-        <section className="w-full bg-white py-12 md:py-16 border-b border-slate-100">
-          <Container className="space-y-12">
-            {parentBlocks.map((block, bIdx) => {
-              const blockId = String(block._id || block.slug);
-              const isExpanded = !!expandedBlocks[blockId];
-              const visibleChildren = isExpanded ? block.children : block.children.slice(0, 5);
-              const accentColor = accentBarColors[bIdx % accentBarColors.length];
+        <section className="w-full bg-white py-8 md:py-12 border-b border-slate-100">
+          <Container className="space-y-6">
 
-              return (
-                <Card
-                  key={blockId}
-                  className="max-w-5xl mx-auto shadow-xs hover:shadow-md transition-all duration-200 rounded-2xl border border-slate-200/80 overflow-hidden bg-white mb-6"
-                  styles={{
-                    body: { padding: "1.25rem sm:1.5rem" },
-                  }}
-                >
-                  {/* Card Header */}
-                  <div className="flex items-center justify-between mb-5 gap-2">
-                    <div className="flex items-center gap-3 truncate max-w-[70%] sm:max-w-none">
-                      <span
-                        className="w-1.5 h-6 rounded-full inline-block shrink-0"
-                        style={{ backgroundColor: accentColor }}
-                      />
-                      <Tooltip title={block.title} placement="top">
-                        <h3 className="text-base sm:text-lg font-bold text-slate-800 tracking-tight truncate">
-                          {block.title}
-                        </h3>
-                      </Tooltip>
+            {/* ── STATE 1: INITIAL COLLAPSED CAROUSEL / SLIDER VIEW (SHADCN UI CAROUSEL) ── */}
+            {!isMainExpanded ? (
+              <div className="space-y-4">
+                {/* Main Parent Header */}
+                <div className="flex items-center justify-between mb-2 sm:mb-3 gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className="w-1 h-6 rounded-full inline-block shrink-0 bg-blue-500" />
+                    <div className="min-w-0">
+                      <h2 className="text-base sm:text-xl font-semibold text-slate-900 tracking-tight leading-tight truncate">
+                        {mainTitle}
+                      </h2>
+                      <p className="text-xs text-slate-500 truncate">
+                        {mainDescription}
+                      </p>
                     </div>
+                  </div>
 
-                    {block.children.length > 5 && (
-                      <button
-                        onClick={() => toggleExpandBlock(blockId)}
-                        className="text-[11px] sm:text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-colors cursor-pointer whitespace-nowrap bg-blue-50 px-3 py-1.5 rounded-full hover:bg-blue-100/70"
-                      >
-                        {isExpanded ? "Show Less" : "View All"}
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          strokeWidth={2.5}
-                          stroke="currentColor"
-                          className={`w-3 h-3 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
+                  <button
+                    onClick={() => setIsMainExpanded(true)}
+                    className="text-xs font-medium text-blue-500 hover:text-blue-600 flex items-center gap-1.5 bg-blue-50 px-2 py-1.5 rounded-full hover:bg-blue-100/80 transition-colors cursor-pointer shrink-0"
+                  >
+                    View All
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={2.5}
+                      stroke="currentColor"
+                      className="w-3.5 h-3.5"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                    </svg>
+                  </button>
+                </div>
+
+                {/* Shadcn UI Carousel Track (Ultra Compact 5-Card Mobile / 10-Card Desktop Layout) */}
+                <div className="relative px-2 sm:px-8 py-1 max-w-6xl mx-auto">
+                  <Carousel
+                    setApi={setCarouselApi}
+                    opts={{
+                      align: "start",
+                      loop: true,
+                    }}
+                    className="w-full relative"
+                  >
+                    <CarouselContent className="-ml-1.5 sm:-ml-2.5 items-center">
+                      {allSubchildItems.map((child, idx) => (
+                        <CarouselItem
+                          key={`${child._id || child.slug}-${idx}`}
+                          className="pl-1.5 sm:pl-2.5 basis-1/4 min-[400px]:basis-1/5 sm:basis-1/6 md:basis-1/8 lg:basis-1/10"
                         >
-                          <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                        </svg>
-                      </button>
-                    )}
+                          <div
+                            onClick={() => handleOpenPartner(child, child.blockSlug)}
+                            className="w-full aspect-square bg-white hover:bg-slate-50 border border-slate-200/90 rounded-xl sm:rounded-2xl p-1 min-[360px]:p-1.5 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group shadow-2xs min-w-0 overflow-hidden"
+                          >
+                            <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center mb-0.5 sm:mb-1 shrink-0 p-0.5 group-hover:scale-105 transition-transform">
+                              <PartnerLogoIcon partner={child} />
+                            </div>
+                            <Tooltip title={child.name} placement="top">
+                              <h5 className="text-[8px] min-[360px]:text-[9px] sm:text-[10px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors leading-[1.12] text-center w-full tracking-tighter sm:tracking-tight px-0.5 line-clamp-2 break-words">
+                                {child.name}
+                              </h5>
+                            </Tooltip>
+                          </div>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    <CarouselPrevious className="hidden sm:flex -left-4 top-1/2 -translate-y-1/2 border-slate-200 bg-white text-slate-700 hover:bg-slate-100 shadow-xs z-10" />
+                    <CarouselNext className="hidden sm:flex -right-4 top-1/2 -translate-y-1/2 border-slate-200 bg-white text-slate-700 hover:bg-slate-100 shadow-xs z-10" />
+                  </Carousel>
+                </div>
+              </div>
+            ) : (
+              /* ── STATE 2: EXPANDED VIEW - DIVIDED INTO SEPARATE SUB-PARENT CARDS WITH TITLES ── */
+              <div className="space-y-6 animate-fade-in">
+                {/* Main Header with Show Less Button */}
+                <div className="flex items-center justify-between mb-2">
+                  <div className="min-w-0">
+                    <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight truncate">
+                      {mainTitle}
+                    </h2>
+                    <p className="text-xs sm:text-sm text-slate-500 mt-0.5 truncate">
+                      {mainDescription}
+                    </p>
                   </div>
+                  <button
+                    onClick={() => setIsMainExpanded(false)}
+                    className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1.5 bg-blue-50 px-4 py-2 rounded-full hover:bg-blue-100/80 transition-colors cursor-pointer shrink-0"
+                  >
+                    Show Less
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={2.5}
+                      stroke="currentColor"
+                      className="w-3.5 h-3.5 rotate-180"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                    </svg>
+                  </button>
+                </div>
 
-                  {/* Card Items Grid */}
-                  <div className="flex flex-nowrap overflow-x-auto no-scrollbar sm:grid sm:grid-cols-5 gap-3 sm:gap-4 py-1.5 scroll-smooth">
-                    {visibleChildren.map((child, idx) => (
-                      <Card
-                        key={child._id || idx}
-                        hoverable
-                        onClick={() => handleOpenPartner(child, block.slug)}
-                        className="w-[135px] sm:w-auto shrink-0 transition-all duration-200 cursor-pointer active:scale-95 text-center rounded-2xl border border-slate-200/80 shadow-2xs hover:shadow-md hover:border-blue-300 group"
-                        styles={{
-                          body: { padding: "1rem 0.65rem", display: "flex", flexDirection: "column", alignItems: "center" },
-                        }}
-                      >
-                        <div className="w-14 h-14 rounded-full bg-slate-100/90 flex items-center justify-center mb-2.5 overflow-hidden p-1.5 shadow-2xs group-hover:scale-105 transition-transform mx-auto shrink-0">
-                          <PartnerLogoIcon partner={child} type={block.slug} />
-                        </div>
-                        <Tooltip title={child.name} placement="top">
-                          <span className="text-xs md:text-sm font-bold text-slate-800 leading-tight block group-hover:text-blue-600 transition-colors truncate max-w-full">
-                            {child.name}
-                          </span>
-                        </Tooltip>
-                        {child.badge && (
-                          <Tooltip title={child.badge} placement="bottom">
-                            <span className="text-[10px] md:text-xs text-slate-500 font-medium mt-1 truncate max-w-full block">
-                              {child.badge}
-                            </span>
+                {/* Separate Sub-Parent Cards stacked vertically */}
+                {parentBlocks.map((block, bIdx) => {
+                  const accentColor = accentBarColors[bIdx % accentBarColors.length];
+
+                  return (
+                    <div
+                      key={block._id || block.slug}
+                      className="bg-white border border-slate-200/90 rounded-2xl p-3 sm:p-4 shadow-2xs hover:shadow-xs transition-all duration-200"
+                    >
+                      {/* Sub-Parent Title Header */}
+                      <div className="flex items-center justify-between mb-3 gap-2">
+                        <div className="flex items-center gap-2.5 truncate">
+                          <span
+                            className="w-1.5 h-5 rounded-full inline-block shrink-0"
+                            style={{ backgroundColor: accentColor }}
+                          />
+                          <Tooltip title={block.title} placement="top">
+                            <h3 className="text-sm sm:text-base font-bold text-slate-800 tracking-tight truncate">
+                              {block.title}
+                            </h3>
                           </Tooltip>
-                        )}
-                      </Card>
-                    ))}
-                  </div>
-                </Card>
-              );
-            })}
+                        </div>
+                      </div>
+
+                      {/* Sub-Parent Cards Grid (Ultra Compact 5-Card Mobile / 10-Card Desktop) */}
+                      <div className="grid grid-cols-4 min-[400px]:grid-cols-5 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-1.5 sm:gap-2">
+                        {block.children.map((child, idx) => (
+                          <div
+                            key={child._id || idx}
+                            onClick={() => handleOpenPartner(child, block.slug)}
+                            className="w-full aspect-square bg-white hover:bg-slate-50 border border-slate-200/90 rounded-xl sm:rounded-2xl p-1 min-[360px]:p-1.5 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group shadow-2xs min-w-0 overflow-hidden"
+                          >
+                            <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center mb-0.5 sm:mb-1 shrink-0 p-0.5 group-hover:scale-105 transition-transform">
+                              <PartnerLogoIcon partner={child} />
+                            </div>
+                            <Tooltip title={child.name} placement="top">
+                              <h5 className="text-[8px] min-[360px]:text-[9px] sm:text-[10px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors leading-[1.12] text-center w-full tracking-tighter sm:tracking-tight px-0.5 line-clamp-2 break-words">
+                                {child.name}
+                              </h5>
+                            </Tooltip>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
 
           </Container>
         </section>
@@ -675,9 +784,8 @@ export function IimIitLogos({ categories = [], programs = [] }) {
 
           {/* Modal Container */}
           <div
-            className={`relative w-full max-w-[680px] bg-[#0e213b] border border-[#1e385c] text-white rounded-[24px] shadow-2xl p-6 sm:p-7 z-10 max-h-[88vh] flex flex-col ${
-              isPartnerClosing ? "animate-custom-scale-down-exit" : "animate-custom-scale-up"
-            }`}
+            className={`relative w-full max-w-4xl bg-[#0e213b] border border-[#1e385c] text-white rounded-[24px] shadow-2xl p-6 sm:p-7 z-10 max-h-[88vh] flex flex-col ${isPartnerClosing ? "animate-custom-scale-down-exit" : "animate-custom-scale-up"
+              }`}
           >
             {(() => {
               const isIim = partnerToRender.type === "iim" || (partnerToRender.slug || "").includes("iim");
@@ -772,16 +880,16 @@ export function IimIitLogos({ categories = [], programs = [] }) {
                   {/* Modal Body - Clean Grid of Circular Logo + Title Name Only */}
                   <div className="flex-1 overflow-y-auto max-h-[64vh] overscroll-contain pr-1.5 space-y-6 [scrollbar-width:thin] [scrollbar-color:#213f68_transparent]">
                     {isPartnerLoading && !hasItems ? (
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-5 p-2">
-                        {[1, 2, 3, 4, 5, 6].map((n) => (
-                          <div key={n} className="bg-[#162e4e] border border-[#213e66] p-5 rounded-2xl flex flex-col items-center text-center animate-pulse space-y-3">
-                            <div className="w-20 h-20 rounded-full bg-white/10 shrink-0" />
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 p-2">
+                        {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+                          <div key={n} className="bg-[#162e4e] border border-[#213e66] p-4 rounded-2xl flex flex-col items-center text-center animate-pulse space-y-3">
+                            <div className="w-16 h-16 rounded-full bg-white/10 shrink-0" />
                             <div className="h-3 bg-white/15 rounded w-3/4" />
                           </div>
                         ))}
                       </div>
                     ) : hasItems ? (
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-5 p-1">
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 p-1">
                         {displayItems.map((item) => (
                           <Link
                             key={item.id}

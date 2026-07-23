@@ -59,7 +59,14 @@ export default function CategoryForm({ isUpdateForm = false }) {
         </Col>
 
         <Col span={12}>
-          <Form.Item name="parentId" label="Parent Category (Optional)">
+          <Form.Item
+            name="parentId"
+            label="Parent Category (Optional)"
+            getValueFromEvent={(val) => (typeof val === "object" ? val?._id || val : val)}
+            getValueProps={(val) => ({
+              value: typeof val === "object" ? val?._id || val : val,
+            })}
+          >
             <Select
               placeholder="None (Root Category)"
               loading={isParentsLoading}
