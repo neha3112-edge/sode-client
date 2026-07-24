@@ -8,7 +8,7 @@ export function Header({ siteLogo }) {
   const logoPath = getAssetPath(siteLogo || "/assets/images/new_sode_tm_logo.png");
 
   return (
-    <header className="w-full bg-white border-b border-slate-100">
+    <section className="w-full bg-white border-b border-slate-100">
       <Container className="flex items-center justify-between h-14 sm:h-16">
         {/* 1. LOGO ON THE LEFT */}
         <Link href="/" className="flex items-center py-1">
@@ -24,7 +24,7 @@ export function Header({ siteLogo }) {
           </div>
         </Link>
       </Container>
-    </header>
+    </section>
   );
 }
 

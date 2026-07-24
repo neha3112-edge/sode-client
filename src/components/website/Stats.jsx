@@ -62,28 +62,30 @@ function formatTwoLineText(name) {
   );
 }
 
-// Helper component to render circular avatar with image fallback inside modal
+// Helper component to render logo image with fallback inside modal
 function SmartLogoAvatar({ logoUrl, altName }) {
   const [imgError, setImgError] = useState(false);
   const iconUrl = getAssetPath(logoUrl, null);
 
   if (iconUrl && !imgError) {
     return (
-      <Image
-        src={iconUrl}
-        alt={altName || "Logo"}
-        width={32}
-        height={32}
-        unoptimized
-        className="w-6 h-6 sm:w-7 sm:h-7 object-contain"
-        onError={() => setImgError(true)}
-      />
+      <div className="w-8 h-8 min-[360px]:w-9 min-[360px]:h-9 sm:w-11 sm:h-11 md:w-12 md:h-12 relative shrink-0">
+        <Image
+          src={iconUrl}
+          alt={altName || "Logo"}
+          fill
+          sizes="48px"
+          unoptimized
+          className="object-contain"
+          onError={() => setImgError(true)}
+        />
+      </div>
     );
   }
 
   return (
-    <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-xs uppercase">
-      {(altName || "U").charAt(0)}
+    <div className="w-8 h-8 min-[360px]:w-9 sm:w-10 md:w-11 rounded-full bg-blue-50 text-blue-600 font-bold flex items-center justify-center text-xs sm:text-sm">
+      {(altName || "C").charAt(0)}
     </div>
   );
 }
@@ -321,7 +323,7 @@ export function Stats({ categories: initialCategories = [] }) {
                                   onClick={() => handleCardClick(child)}
                                   className="bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl p-1.5 min-[360px]:p-2 sm:p-2.5 aspect-square flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group min-w-0 shadow-2xs"
                                 >
-                                  <div className="mb-0.5 sm:mb-1 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
+                                  <div className="mb-1 sm:mb-1.5 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0 h-10 sm:h-12 w-full">
                                     <SmartLogoAvatar
                                       logoUrl={child.logoUrl || child.logoSrc || child.logo || child.imageSrc || child.image}
                                       altName={childName}

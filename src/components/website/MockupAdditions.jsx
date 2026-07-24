@@ -323,12 +323,17 @@ function SmartLogoAvatar({ logoUrl, altName }) {
 
   if (iconUrl && !imgError) {
     return (
-      <img
-        src={iconUrl}
-        alt={altName || "Logo"}
-        className="w-full h-full object-contain p-1"
-        onError={() => setImgError(true)}
-      />
+      <div className="w-full h-full relative shrink-0">
+        <Image
+          src={iconUrl}
+          alt={altName || "Logo"}
+          fill
+          sizes="96px"
+          unoptimized
+          className="object-contain p-1"
+          onError={() => setImgError(true)}
+        />
+      </div>
     );
   }
 
