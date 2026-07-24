@@ -90,11 +90,21 @@ export default function DataTable({ config, extra = [] }) {
     refetch,
   } = useGetDynamicListQuery(queryArgs, { skip: !isMounted });
 
-  const dataSource = apiResponse?.items || [];
-  const pagination = apiResponse?.pagination || {
-    current: 1,
-    pageSize: 10,
-    total: 0,
+  const dataSource =
+    apiResponse?.result || apiResponse?.items || apiResponse?.data || [];
+  const pagination = {
+    current:
+      apiResponse?.pagination?.currentPage ||
+      apiResponse?.pagination?.current ||
+      1,
+    pageSize:
+      apiResponse?.pagination?.items ||
+      apiResponse?.pagination?.pageSize ||
+      10,
+    total:
+      apiResponse?.pagination?.totalCount ||
+      apiResponse?.pagination?.total ||
+      0,
   };
 
   const handelDataTableLoad = useCallback((paginationData) => {

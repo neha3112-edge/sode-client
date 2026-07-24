@@ -2,11 +2,10 @@ import React, { Suspense } from "react";
 import { Header } from "@/components/website/Header";
 import { Footer } from "@/components/website/Footer";
 import CourseListView from "@/features/course/views/CourseListView";
-import { getCourses, getUniversities } from "@/services/api";
+import { getWebsiteCoursesFilter, getUniversities } from "@/services/api";
 import { getPageMetaData } from "@/constants/pageMetaData";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+export const revalidate = 300; // Next.js ISR: Revalidate static HTML cache every 5 minutes
 
 export async function generateMetadata() {
   const pageMeta = await getPageMetaData("/courses");
@@ -29,8 +28,16 @@ export async function generateMetadata() {
 export default async function CoursesPage({ searchParams }) {
   const params = (await searchParams) || {};
 
+  // SSR / ISR Server Data Fetching (Parallel Promise.all for zero-delay hydration)
   const [initialCourses, initialUniversities] = await Promise.all([
-    getCourses(params),
+    getWebsiteCoursesFilter({
+      category: params.category || "all",
+      search: params.q || params.search || "",
+      university: params.university || params.uni || "",
+      course: params.course || "",
+      duration: params.duration || "",
+      sort: params.sort || "featured",
+    }),
     getUniversities(),
   ]);
 
