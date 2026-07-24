@@ -19,6 +19,7 @@ export function Header({ siteLogo }) {
               fill
               sizes="160px"
               priority
+              fetchPriority="high"
               className="object-contain object-left cursor-pointer"
             />
           </div>

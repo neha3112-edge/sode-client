@@ -24,6 +24,10 @@ export default function RootLayout({ children }) {
       suppressHydrationWarning
       className={`${montserrat.variable} font-sans h-full antialiased`}
     >
+      <head>
+        <link rel="preconnect" href="https://sode.api.mysode.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://sode.api.mysode.com" />
+      </head>
       <body className={`${montserrat.className} min-h-full flex flex-col`} suppressHydrationWarning>
         <StoreProvider>
           <CompareProvider>

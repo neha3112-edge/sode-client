@@ -8,7 +8,6 @@ import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import FormWrapper from "@/components/forms/FormWrapper";
 import { getAssetPath } from "@/lib/utils";
-import { getWebsiteHero } from "@/services/api";
 import { useGetDynamicOptionsQuery } from "@/store/redux/dynamic/action";
 import {
   Carousel,
@@ -22,17 +21,8 @@ export function Hero({ initialHeroData = null }) {
   const [downloadOpen, setDownloadOpen] = useState(false);
   const [api, setApi] = useState(null);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
-  const [liveHeroData, setLiveHeroData] = useState(initialHeroData);
 
-  // Sync initialHeroData and fetch fresh backend data on client mount
-  useEffect(() => {
-    setLiveHeroData(initialHeroData);
-    getWebsiteHero("home").then((data) => {
-      if (data) setLiveHeroData(data);
-    });
-  }, [initialHeroData]);
-
-  const heroData = liveHeroData || initialHeroData;
+  const heroData = initialHeroData;
 
   // Carousel settings & flags
   const carouselSettings = heroData?.carouselSettings || {};
@@ -138,6 +128,7 @@ export function Hero({ initialHeroData = null }) {
               alt="Hero background"
               fill
               priority
+              fetchPriority="high"
               sizes="100vw"
               className="object-cover object-center"
             />
@@ -227,6 +218,7 @@ export function Hero({ initialHeroData = null }) {
                 alt={slideTitle || "Hero slide background"}
                 fill
                 priority={idx === 0}
+                fetchPriority={idx === 0 ? "high" : "auto"}
                 sizes="100vw"
                 className="object-cover object-center"
               />
