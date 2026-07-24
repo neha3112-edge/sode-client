@@ -547,11 +547,12 @@ export default function CourseListView({ initialCourses = [], initialUniversitie
                         <div className="flex flex-col items-center justify-center shrink-0 w-24 sm:w-28 text-center">
                           <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border border-slate-200/80 bg-white p-1.5 shadow-xs flex items-center justify-center overflow-hidden mb-1.5 relative shrink-0 group-hover:scale-105 transition-transform">
                             {logoUrl ? (
-                              <img
+                              <Image
                                 src={logoUrl}
                                 alt={uniName}
-                                className="w-full h-full object-contain p-0.5"
-                                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                                fill
+                                sizes="(max-width: 640px) 56px, 64px"
+                                className="object-contain p-1 rounded-full"
                               />
                             ) : (
                               <div className="w-full h-full rounded-full bg-blue-50 text-blue-600 font-bold flex items-center justify-center text-xs uppercase">

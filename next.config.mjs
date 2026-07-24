@@ -4,6 +4,7 @@ const MINIO_PUBLIC_URL = process.env.NEXT_PUBLIC_MINIO_URL || "http://172.236.18
 const nextConfig = {
   reactStrictMode: true,
   compress: true,
+  allowedDevOrigins: ["192.168.1.68", "localhost", "127.0.0.1"],
 
   images: {
     formats: ["image/avif", "image/webp"],

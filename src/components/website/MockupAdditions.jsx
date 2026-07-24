@@ -563,7 +563,7 @@ export function IimIitLogos({ categories = [], programs = [] }) {
                               <PartnerLogoIcon partner={child} />
                             </div>
                             <Tooltip title={child.name} placement="top">
-                              <h5 className="text-[8px] min-[360px]:text-[9px] min-[400px]:text-[10px] sm:text-[11px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors leading-[1.15] text-center w-full tracking-tighter sm:tracking-tight px-0.5 line-clamp-2 break-words">
+                              <h5 className="text-[11px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors leading-[1.15] text-center w-full tracking-tighter sm:tracking-tight px-0.5 line-clamp-2 break-words">
                                 {child.name}
                               </h5>
                             </Tooltip>
@@ -643,7 +643,7 @@ export function IimIitLogos({ categories = [], programs = [] }) {
                               <PartnerLogoIcon partner={child} />
                             </div>
                             <Tooltip title={child.name} placement="top">
-                              <h5 className="text-[8px] min-[360px]:text-[9px] min-[400px]:text-[10px] sm:text-[11px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors leading-[1.15] text-center w-full tracking-tighter sm:tracking-tight px-0.5 line-clamp-2 break-words">
+                              <h5 className="text-[11px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors leading-[1.15] text-center w-full tracking-tighter sm:tracking-tight px-0.5 line-clamp-2 break-words">
                                 {child.name}
                               </h5>
                             </Tooltip>

@@ -182,7 +182,7 @@ export function Stats({ categories: initialCategories = [] }) {
                   <div className="mb-0.5 sm:mb-1 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
                     <CategoryIcon cat={item} />
                   </div>
-                  <h5 className="text-[8px] min-[360px]:text-[9px] min-[400px]:text-[10px] sm:text-[11px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors leading-[1.15] text-center w-full tracking-tighter sm:tracking-tight px-0.5 line-clamp-2 break-words">
+                  <h5 className="text-[11px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors leading-[1.15] text-center w-full tracking-tighter sm:tracking-tight px-0.5 line-clamp-2 break-words">
                     {item.name || item.label}
                   </h5>
                 </div>
@@ -273,7 +273,7 @@ export function Stats({ categories: initialCategories = [] }) {
                                     />
                                   </div>
                                   <Tooltip title={childName} placement="top">
-                                    <h5 className="text-[9.5px] min-[360px]:text-[10.5px] sm:text-xs font-semibold text-slate-800 group-hover:text-blue-600 transition-colors leading-[1.12] text-center w-full tracking-tighter sm:tracking-tight px-0.5 break-normal line-clamp-2">
+                                    <h5 className="text-[11px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors leading-[1.12] text-center w-full tracking-tighter sm:tracking-tight px-0.5 break-normal line-clamp-2">
                                       {childName}
                                     </h5>
                                   </Tooltip>
