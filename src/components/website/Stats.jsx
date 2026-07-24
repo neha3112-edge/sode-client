@@ -112,6 +112,22 @@ export function Stats({ categories: initialCategories = [] }) {
     .filter((cat) => !cat.parentId && (cat.slug || "").toLowerCase() !== "all" && cat.showInStats !== false)
     .sort((a, b) => (a.order || 0) - (b.order || 0));
 
+  // Dynamically extract "Browse By Category" pills directly from SSR categoriesList prop
+  const browseParentDoc = (categoriesList || []).find(
+    (c) => (c.slug || "").toLowerCase() === "browse-by-category"
+  );
+
+  const browseByPills = browseParentDoc
+    ? (categoriesList || [])
+      .filter((c) => c.parentId && String(c.parentId) === String(browseParentDoc._id))
+      .map((item) => ({
+        _id: item._id,
+        name: item.name,
+        slug: item.slug,
+        search: item.name === "HR" ? "Human Resource" : item.name,
+      }))
+    : [];
+
   const parentCategory = activeCategory?.parent
     ? activeCategory.parent
     : activeCategory?.parentId
@@ -206,6 +222,26 @@ export function Stats({ categories: initialCategories = [] }) {
                 </div>
               ))}
             </div>
+
+            {/* ── BROWSE BY CATEGORY PILLS SECTION (DYNAMIC FROM BACKEND SEED DB) ── */}
+            {browseByPills.length > 0 && (
+              <div className="max-w-4xl mx-auto mt-5 pt-4 border-t border-slate-200/80 text-left">
+                <h4 className="text-sm sm:text-base font-bold text-slate-800 tracking-tight mb-3">
+                  Browse By Category
+                </h4>
+                <div className="grid grid-cols-4 sm:flex sm:flex-wrap gap-1.5 sm:gap-2.5">
+                  {browseByPills.map((pill) => (
+                    <button
+                      key={pill._id || pill.slug || pill.name}
+                      onClick={() => router.push(`/courses?search=${encodeURIComponent(pill.search || pill.name)}`)}
+                      className="w-full sm:w-auto px-1 sm:px-3.5 py-1.5 bg-white hover:bg-slate-50 border border-slate-300/90 rounded-lg text-[10px] min-[360px]:text-[11px] sm:text-xs font-semibold text-slate-700 hover:text-blue-600 hover:border-blue-300 transition-all cursor-pointer shadow-2xs hover:shadow-xs text-center truncate min-w-0"
+                    >
+                      {pill.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </Container>
         </section>
       )}
