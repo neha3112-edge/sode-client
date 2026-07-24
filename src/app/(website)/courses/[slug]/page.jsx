@@ -2,14 +2,14 @@ import React from "react";
 import { Header } from "@/components/website/Header";
 import { Footer } from "@/components/website/Footer";
 import CourseDetailView from "@/features/course/views/CourseDetailView";
-import { getCourseBySlug, getWebsiteCourseRead } from "@/services/api";
+import { getWebsiteCourseRead } from "@/services/api";
 
 export const revalidate = 300; // Next.js ISR: Revalidate static HTML cache every 5 minutes
 
 // Dynamic SEO Metadata Generation
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  const courseData = await getWebsiteCourseRead(slug).catch(() => getCourseBySlug(slug));
+  const courseData = await getWebsiteCourseRead(slug);
   const course = courseData?.program || courseData;
   
   const title = course?.title || "Course Details";
@@ -28,7 +28,7 @@ export async function generateMetadata({ params }) {
 
 export default async function CourseDetailPage({ params }) {
   const { slug } = await params;
-  const courseData = await getWebsiteCourseRead(slug).catch(() => getCourseBySlug(slug));
+  const courseData = await getWebsiteCourseRead(slug);
   const course = courseData?.program || courseData;
   
   return (

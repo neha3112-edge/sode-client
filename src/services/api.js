@@ -8,7 +8,7 @@ import { API_BASE_URL } from "@/config";
 async function fetchFromApi(endpoint, options = {}) {
   try {
     const res = await fetch(`${API_BASE_URL}${endpoint}`, {
-      cache: "no-store",
+      next: { revalidate: 300 },
       ...options,
     });
 
@@ -164,6 +164,8 @@ export async function getCourseBySlug(slug) {
   if (!slug) return null;
   return await fetchFromApi(`partnercourse/website-read?slug=${slug}`);
 }
+
+export const getWebsiteCourseRead = getCourseBySlug;
 
 // 🎯 Fetch Partner Universities from Backend
 export async function getUniversities(params = {}) {
