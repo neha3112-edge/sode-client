@@ -1,14 +1,12 @@
-"use client";
+"use strict";
 
 import Image from "next/image";
-import { useEffect, useState, useCallback } from "react";
+import { useState } from "react";
 
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import FormWrapper from "@/components/forms/FormWrapper";
 import { getAssetPath } from "@/lib/utils";
-import { useGetDynamicOptionsQuery } from "@/store/redux/dynamic/action";
 import {
   Carousel,
   CarouselContent,
@@ -19,83 +17,25 @@ import {
 
 export function Hero({ initialHeroData = null }) {
   const [downloadOpen, setDownloadOpen] = useState(false);
-  const [api, setApi] = useState(null);
-  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
   const heroData = initialHeroData;
 
-  // Carousel settings & flags
+  // Carousel settings & flags from SSR initialHeroData
   const carouselSettings = heroData?.carouselSettings || {};
-  const isAutoplay = carouselSettings.autoplay !== false;
-  const autoplaySpeed = carouselSettings.autoplaySpeed || 5000;
   const showArrows = carouselSettings.showArrows !== false;
-  const showDots = carouselSettings.showDots !== false;
 
   // Form visibility flags from Mongoose Schema (showForm: "both" | "desktop" | "mobile" | "none")
   const showFormSetting = heroData?.showForm || "both";
   const showOnDesktop = showFormSetting === "both" || showFormSetting === "desktop";
-  const showOnMobile = showFormSetting === "both" || showFormSetting === "mobile";
-
-  // Fetch dynamic categories for tags
-  const { data: categoryOptions = [] } = useGetDynamicOptionsQuery({
-    entity: "category",
-    endPoint: "options",
-  });
-
-  const displayCategories =
-    Array.isArray(categoryOptions) && categoryOptions.length > 0
-      ? categoryOptions.filter((c) => c.slug !== "master")
-      : [
-        { name: "Doctorate" },
-        { name: "Certifications" },
-        { name: "Executive Programs" },
-        { name: "Banking" },
-        { name: "Finance" },
-        { name: "Leadership" },
-      ];
 
   const openCounsellingForm = () => setDownloadOpen(true);
   const closeCounsellingForm = () => setDownloadOpen(false);
-
-  // Modal Escape key listener
-  useEffect(() => {
-    if (!downloadOpen) return;
-    const handleEscapeKey = (e) => {
-      if (e.key === "Escape") closeCounsellingForm();
-    };
-    window.addEventListener("keydown", handleEscapeKey);
-    return () => window.removeEventListener("keydown", handleEscapeKey);
-  }, [downloadOpen]);
 
   // Carousel check
   const isCarousel =
     heroData?.isCarousel &&
     Array.isArray(heroData?.slides) &&
     heroData.slides.length > 0;
-
-  // Track active slide index for dots pagination
-  useEffect(() => {
-    if (!api) return;
-    setCurrentSlideIndex(api.selectedScrollSnap());
-    const onSelect = () => {
-      setCurrentSlideIndex(api.selectedScrollSnap());
-    };
-    api.on("select", onSelect);
-    return () => {
-      api.off("select", onSelect);
-    };
-  }, [api]);
-
-  // Autoplay handler based on carouselSettings
-  useEffect(() => {
-    if (!api || !isCarousel || !isAutoplay) return;
-
-    const interval = setInterval(() => {
-      api.scrollNext();
-    }, autoplaySpeed);
-
-    return () => clearInterval(interval);
-  }, [api, isCarousel, isAutoplay, autoplaySpeed]);
 
   const resolveImage = (mediaObj, fallbackPath) => {
     const rawUrl = typeof mediaObj === "object" ? mediaObj?.url : mediaObj;
@@ -113,7 +53,6 @@ export function Hero({ initialHeroData = null }) {
   const primaryCtaText =
     heroData?.primaryCtaText || "Book 1:1 Personalised Counselling";
   const bgImageUrl = resolveImage(heroData?.bgImage, "/assets/images/desktop_banner.jpg");
-  const mobileImageUrl = resolveImage(heroData?.mobileImage || heroData?.image, "/assets/images/mobile-banner-img.png");
 
   // Single Banner Helper
   const renderSingleBanner = () => {
@@ -134,14 +73,13 @@ export function Hero({ initialHeroData = null }) {
             />
           </div>
 
-          {/* Mobile Background Image (Dome cropped on right) */}
+          {/* Mobile Background Image */}
           <div className="absolute right-0 bottom-0 top-0 w-[46%] overflow-hidden rounded-r-3xl z-0 lg:hidden block">
             <img
               src={bgImageUrl}
               alt="Campus Dome"
               className="w-full h-full object-cover object-left-center scale-[1.25] translate-x-2"
             />
-            {/* Fade overlay between text and image */}
             <div className="absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-[#102441] to-transparent z-10" />
           </div>
 
@@ -198,7 +136,7 @@ export function Hero({ initialHeroData = null }) {
     );
   };
 
-  // Carousel Slide Helper
+  // Carousel Slide Helper using Shadcn UI CarouselItem
   const renderSlideItem = (slide, idx) => {
     const slideBg = resolveImage(slide?.bgImage, "/assets/images/desktop_banner.jpg");
     const slideBadge = slide?.badge || badgeText;
@@ -224,14 +162,13 @@ export function Hero({ initialHeroData = null }) {
               />
             </div>
 
-            {/* Mobile Background Image (Dome cropped on right) */}
+            {/* Mobile Background Image */}
             <div className="absolute right-0 bottom-0 top-0 w-[46%] overflow-hidden rounded-r-3xl z-0 lg:hidden block">
               <img
                 src={slideBg}
                 alt="Campus Dome"
                 className="w-full h-full object-cover object-left-center scale-[1.25] translate-x-2"
               />
-              {/* Fade overlay between text and image */}
               <div className="absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-[#102441] to-transparent z-10" />
             </div>
 
@@ -294,7 +231,8 @@ export function Hero({ initialHeroData = null }) {
       <section id="hero-section" className="relative w-full overflow-hidden">
         {isCarousel ? (
           <div className="relative w-full">
-            <Carousel setApi={setApi} opts={{ loop: true }} className="w-full">
+            {/* 🎯 SHADCN UI CAROUSEL WITH ZERO useEffect */}
+            <Carousel opts={{ loop: true }} className="w-full">
               <CarouselContent className="-ml-0">
                 {heroData.slides.map((slide, idx) =>
                   renderSlideItem(slide, idx)
@@ -307,22 +245,6 @@ export function Hero({ initialHeroData = null }) {
                 </>
               )}
             </Carousel>
-            {showDots && heroData.slides.length > 1 && (
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
-                {heroData.slides.map((_, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    aria-label={`Go to slide ${i + 1}`}
-                    onClick={() => api?.scrollTo(i)}
-                    className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${currentSlideIndex === i
-                      ? "w-8 bg-[#EEC471]"
-                      : "w-2.5 bg-white/50 hover:bg-white/80"
-                      }`}
-                  />
-                ))}
-              </div>
-            )}
           </div>
         ) : (
           renderSingleBanner()
