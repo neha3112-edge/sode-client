@@ -229,12 +229,13 @@ export function Stats({ categories: initialCategories = [] }) {
                 <h4 className="text-sm sm:text-base font-bold text-slate-800 tracking-tight mb-3">
                   Browse By Category
                 </h4>
-                <div className="grid grid-cols-4 sm:flex sm:flex-wrap gap-1.5 sm:gap-2.5">
+                <div className="flex flex-wrap gap-2 sm:gap-2.5" suppressHydrationWarning>
                   {browseByPills.map((pill) => (
                     <button
                       key={pill._id || pill.slug || pill.name}
                       onClick={() => router.push(`/courses?search=${encodeURIComponent(pill.search || pill.name)}`)}
-                      className="w-full sm:w-auto px-1 sm:px-3.5 py-1.5 bg-white hover:bg-slate-50 border border-slate-300/90 rounded-lg text-[10px] min-[360px]:text-[11px] sm:text-xs font-semibold text-slate-700 hover:text-blue-600 hover:border-blue-300 transition-all cursor-pointer shadow-2xs hover:shadow-xs text-center truncate min-w-0"
+                      className="px-2.5 sm:px-3.5 py-1.5 bg-white hover:bg-slate-50 border border-slate-300/90 rounded-lg text-[11px] sm:text-xs font-semibold text-slate-700 hover:text-blue-600 hover:border-blue-300 transition-all cursor-pointer shadow-2xs hover:shadow-xs whitespace-nowrap"
+                      suppressHydrationWarning
                     >
                       {pill.name}
                     </button>

@@ -82,7 +82,7 @@ export default async function Home() {
       <FaqJsonLd faqs={faqs} />
       <Header />
 
-      <main className="flex w-full flex-1 flex-col md:mt-10 pb-16 lg:pb-0">
+      <main className="flex w-full flex-1 flex-col pb-16 lg:pb-0">
         <Hero initialHeroData={heroData} />
         <SearchBar categories={categories} />
         <Stats universities={universities} categories={categories} programs={programs} />

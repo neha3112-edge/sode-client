@@ -129,7 +129,7 @@ export function Hero({ initialHeroData = null }) {
   const renderSingleBanner = () => {
     const slideSecondaryCta = "Talk to an Expert";
     return (
-      <div className="px-4 py-2 lg:p-0">
+      <div className="px-4 pb-2 pt-0 lg:p-0">
         <div className="relative w-full overflow-hidden bg-[#102441] rounded-3xl lg:rounded-none border border-white/5 lg:border-0 h-[280px] lg:h-[480px] flex items-center">
           {/* Desktop Background Image */}
           <div className="absolute inset-0 z-0 hidden lg:block">
@@ -218,7 +218,7 @@ export function Hero({ initialHeroData = null }) {
 
     return (
       <CarouselItem key={slide._id || idx} className="p-0">
-        <div className="px-4 py-2 lg:p-0">
+        <div className="px-4 pb-2 pt-0 lg:p-0">
           <div className="relative w-full overflow-hidden bg-[#102441] rounded-3xl lg:rounded-none border border-white/5 lg:border-0 h-[280px] lg:h-[480px] flex items-center">
             {/* Desktop Background Image */}
             <div className="absolute inset-0 z-0 hidden lg:block">
