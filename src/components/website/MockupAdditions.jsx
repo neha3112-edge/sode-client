@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { getAssetPath } from "@/lib/utils";
 import { Tooltip } from "antd";
+import { X } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
@@ -447,20 +448,29 @@ export function IimIitLogos({ categories = [], programs = [] }) {
     const partnerPrograms = (programs || []).filter((p) => {
       if (!p) return false;
       const uName = (p.university?.name || p.name || "").toLowerCase();
-      const pName = (partner.name || "").toLowerCase();
+      const pName = (partner.name || partner.label || "").toLowerCase();
       const uSlug = (p.university?.slug || "").toLowerCase();
       const pSlug = (partner.slug || "").toLowerCase();
+      const pTitle = (p.title || "").toLowerCase();
 
       const nameMatch = uName && pName && (uName.includes(pName) || pName.includes(uName));
-      const slugMatch = uSlug && pSlug && (uSlug === pSlug);
+      const titleMatch = pTitle && pName && pTitle.includes(pName);
+      const slugMatch = uSlug && pSlug && (uSlug === pSlug || uSlug.includes(pSlug) || pSlug.includes(uSlug));
 
-      const catMatch = p.category && (String(p.category) === String(partner._id) || String(p.category.slug || p.category) === String(partner.slug));
+      const catMatch =
+        p.category &&
+        (String(p.category._id || p.category) === String(partner._id) ||
+          String(p.category.slug || p.category) === String(partner.slug));
 
-      const catsMatch = Array.isArray(p.categories) && p.categories.some(
-        (c) => String(c._id || c) === String(partner._id) || String(c.slug || c) === String(partner.slug)
-      );
+      const catsMatch =
+        Array.isArray(p.categories) &&
+        p.categories.some(
+          (c) =>
+            String(c._id || c) === String(partner._id) ||
+            String(c.slug || c) === String(partner.slug)
+        );
 
-      return nameMatch || slugMatch || catMatch || catsMatch;
+      return nameMatch || titleMatch || slugMatch || catMatch || catsMatch;
     });
 
     setPartnerModalData({
@@ -683,26 +693,21 @@ export function IimIitLogos({ categories = [], programs = [] }) {
         </section>
       )}
 
-      {/* ── POPUP DIV OVERLAY MODAL FOR PARTNERS (DARK NAVY THEME) ── */}
+      {/* ── POPUP DIV OVERLAY MODAL FOR PARTNERS (CLEAN LIGHT WHITE THEME - 3 CARDS PER ROW MATCHING STATS) ── */}
       {partnerToRender !== null && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6">
+        <div className="fixed inset-0 z-9999 flex items-center justify-center p-4 sm:p-6">
           {/* Backdrop Blur Layer */}
           <div
             onClick={handleClosePartner}
-            className={`fixed inset-0 bg-slate-950/80 backdrop-blur-md ${isPartnerClosing ? "animate-fade-out" : "animate-fade-in"}`}
+            className={`fixed inset-0 bg-slate-900/60 backdrop-blur-sm ${isPartnerClosing ? "animate-fade-out" : "animate-fade-in"}`}
           />
 
           {/* Modal Container */}
           <div
-            className={`relative w-full max-w-4xl bg-[#0e213b] border border-[#1e385c] text-white rounded-3xl shadow-2xl p-6 sm:p-7 z-10 max-h-[88vh] flex flex-col ${isPartnerClosing ? "animate-custom-scale-down-exit" : "animate-custom-scale-up"
+            className={`relative w-full max-w-md bg-white border border-slate-200/90 text-slate-900 rounded-2xl shadow-2xl p-2 sm:p-3 z-10 max-h-[88vh] flex flex-col ${isPartnerClosing ? "animate-custom-scale-down-exit" : "animate-custom-scale-up"
               }`}
           >
             {(() => {
-              const isIim = partnerToRender.type === "iim" || (partnerToRender.slug || "").includes("iim");
-
-              const accentText = isIim ? "text-[#EEC471]" : "text-blue-400";
-              const accentBorder = isIim ? "border-[#EEC471]/35" : "border-blue-400/35";
-
               const showHeaderBadge = partnerToRender.badge &&
                 partnerToRender.badge.toLowerCase() !== (partnerToRender.name || "").toLowerCase();
 
@@ -759,17 +764,17 @@ export function IimIitLogos({ categories = [], programs = [] }) {
               return (
                 <div className="flex flex-col text-left min-h-0 flex-1">
                   {/* Modal Header */}
-                  <div className="flex items-center justify-between border-b border-[#1c365d] pb-4 mb-5 shrink-0 gap-3">
-                    <div className="flex items-center gap-3.5 min-w-0">
-                      <div className={`w-12 h-12 rounded-full bg-[#162e4d] flex items-center justify-center border ${accentBorder} overflow-hidden p-1 shrink-0 shadow-inner`}>
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-2 mb-2 shrink-0 gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-center shrink-0 p-1.5 shadow-xs">
                         <PartnerLogoIcon partner={partnerToRender} type={partnerToRender.type} />
                       </div>
                       <div className="min-w-0">
-                        <h3 className="text-lg sm:text-xl font-bold text-white leading-tight tracking-tight truncate">
+                        <h3 className="text-base sm:text-lg font-semibold text-gray-900 leading-tight tracking-tight truncate">
                           {partnerToRender.name}
                         </h3>
                         {showHeaderBadge && (
-                          <span className={`text-xs ${accentText} font-semibold block mt-0.5 truncate`}>
+                          <span className="text-xs text-slate-500 block mt-0.5 truncate">
                             {partnerToRender.badge}
                           </span>
                         )}
@@ -778,42 +783,40 @@ export function IimIitLogos({ categories = [], programs = [] }) {
 
                     <button
                       onClick={handleClosePartner}
-                      className="text-slate-400 hover:text-white transition-colors p-1.5 rounded-full hover:bg-white/10 cursor-pointer"
+                      className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-900 transition-colors flex items-center justify-center cursor-pointer"
                       aria-label="Close modal"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-                      </svg>
+                      <X className="w-4 h-4" />
                     </button>
                   </div>
 
-                  {/* Modal Body - Clean Grid of Circular Logo + Title Name Only */}
-                  <div className="flex-1 overflow-y-auto max-h-[64vh] overscroll-contain pr-1.5 space-y-6 scrollbar-thin [scrollbar-color:#213f68_transparent]">
+                  {/* Modal Body - 3 Cards per Row Grid Layout (Matching Stats Modal) */}
+                  <div className="flex-1 overflow-y-auto max-h-[64vh] overscroll-contain pr-1 space-y-6 scrollbar-thin [scrollbar-color:#cbd5e1_transparent]">
                     {hasItems ? (
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 p-1">
+                      <div className="grid grid-cols-3 gap-2 sm:gap-3.5 p-0.5">
                         {displayItems.map((item) => (
                           <Link
                             key={item.id}
                             href={item.href}
-                            className="bg-[#162e4e] hover:bg-[#1a375d] border border-[#213e66] hover:border-[#EEC471]/50 p-5 rounded-2xl flex flex-col items-center text-center transition-all duration-200 group cursor-pointer shadow-sm hover:shadow-lg active:scale-95"
+                            className="bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl p-1.5 min-[360px]:p-2 sm:p-2.5 aspect-square flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group min-w-0 shadow-2xs"
                           >
-                            {/* Circle Logo Avatar */}
-                            <div className="w-20 h-20 sm:w-22 sm:h-22 rounded-full bg-white p-3 flex items-center justify-center overflow-hidden mb-3.5 shadow-md group-hover:scale-105 transition-transform shrink-0 relative">
+                            {/* Logo Avatar */}
+                            <div className="mb-1 sm:mb-1.5 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0 h-10 sm:h-12 w-full">
                               <SmartLogoAvatar logoUrl={item.logo} altName={item.name} />
                             </div>
 
-                            {/* Title Name ONLY */}
+                            {/* Title Name formatted in 2 stacked lines */}
                             <Tooltip title={item.name} placement="top">
-                              <h5 className="text-xs sm:text-sm font-bold text-white group-hover:text-[#EEC471] transition-colors leading-tight text-center truncate max-w-full">
-                                {item.name}
+                              <h5 className="text-[9.5px] min-[360px]:text-[10px] sm:text-[11px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors text-center w-full tracking-tight px-0.5 min-w-0">
+                                {formatTwoLineText(item.name)}
                               </h5>
                             </Tooltip>
                           </Link>
                         ))}
                       </div>
                     ) : (
-                      <div className="bg-[#162e4e] border border-[#213e66] p-8 rounded-2xl text-center flex flex-col items-center justify-center space-y-3 my-4">
-                        <p className="text-xs sm:text-sm text-white/80 font-medium">
+                      <div className="bg-slate-50 border border-slate-200/80 p-6 rounded-2xl text-center flex flex-col items-center justify-center space-y-2 my-3">
+                        <p className="text-xs sm:text-sm text-slate-600 font-medium">
                           🎓 No programs available right now for {partnerToRender.name}.
                         </p>
                       </div>

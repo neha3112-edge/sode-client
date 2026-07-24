@@ -524,7 +524,7 @@ export default function CourseListView({ initialCourses = [], initialUniversitie
                   const uniName = typeof item.university === "object" ? item.university?.name || "Partner University" : String(item.university || "Partner University");
                   const rawLogo = typeof item.university === "object" ? (item.university?.logoSrc?.url || item.university?.logoUrl || item.logo) : item.logo;
                   const logoUrl = getAssetPath(rawLogo, null);
-                  const providerName = item.provider || item.partner || (index % 2 === 0 ? "upGrad" : "TimesPro");
+                  const providerName = item.provider || item.partner || (typeof item.university === "object" ? item.university?.name : item.university) || "Online Partner";
                   const feeText = typeof item.fee === "object" ? item.fee?.title || `₹${item.fee?.amount || "1,20,000 INR"}` : (item.fee || "1,20,000 INR");
                   const durationText = typeof item.duration === "object" ? item.duration?.title : (item.duration || "8 Months");
 
@@ -545,14 +545,15 @@ export default function CourseListView({ initialCourses = [], initialUniversitie
                       <div className="p-4 pt-8 flex items-center gap-3.5 relative min-h-[145px]">
                         {/* Left Column: Circular Logo & University Name */}
                         <div className="flex flex-col items-center justify-center shrink-0 w-24 sm:w-28 text-center">
-                          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border border-slate-200/80 bg-white p-1.5 shadow-xs flex items-center justify-center overflow-hidden mb-1.5 relative shrink-0 group-hover:scale-105 transition-transform">
+                          <div className="w-12 h-12 min-[360px]:w-14 min-[360px]:h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center overflow-hidden mb-1.5 relative shrink-0 group-hover:scale-105 transition-transform">
                             {logoUrl ? (
                               <Image
                                 src={logoUrl}
                                 alt={uniName}
                                 fill
-                                sizes="(max-width: 640px) 56px, 64px"
-                                className="object-contain p-1 rounded-full"
+                                sizes="64px"
+                                unoptimized
+                                className="object-contain p-1"
                               />
                             ) : (
                               <div className="w-full h-full rounded-full bg-blue-50 text-blue-600 font-bold flex items-center justify-center text-xs uppercase">

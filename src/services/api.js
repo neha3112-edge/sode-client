@@ -107,7 +107,7 @@ export async function getWebsiteCoursesFilter(params = {}) {
     if (params.page) query.append("page", params.page);
 
     const queryString = query.toString();
-    const url = `courses/website-list${queryString ? `?${queryString}` : ""}`;
+    const url = `partnercourse/website-list${queryString ? `?${queryString}` : ""}`;
 
     const data = await fetchFromApi(url);
     if (data && data.programs) {
@@ -126,7 +126,7 @@ export async function getWebsiteCoursesFilter(params = {}) {
 // 🎯 Fetch Courses with Tabs from Backend (to get categories)
 export async function getCoursesWithTabs() {
   try {
-    const data = await fetchFromApi("courses/website-list");
+    const data = await fetchFromApi("partnercourse/website-list");
     if (data && Array.isArray(data.tabs)) {
       const fixedTabs = data.tabs.map((tab) => ({
         ...tab,
@@ -162,7 +162,7 @@ export async function getCourses(params = {}) {
 // 🎯 Fetch Course by Slug from Backend
 export async function getCourseBySlug(slug) {
   if (!slug) return null;
-  return await fetchFromApi(`courses/website-read?slug=${slug}`);
+  return await fetchFromApi(`partnercourse/website-read?slug=${slug}`);
 }
 
 // 🎯 Fetch Partner Universities from Backend
