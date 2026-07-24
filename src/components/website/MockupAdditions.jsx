@@ -352,12 +352,12 @@ function PartnerLogoIcon({ partner }) {
 
   if (logoUrl && !imgError) {
     return (
-      <div className="w-12 h-12 sm:w-16 sm:h-16 relative shrink-0 rounded-full">
+      <div className="w-8 h-8 min-[360px]:w-9 min-[360px]:h-9 sm:w-11 sm:h-11 md:w-12 md:h-12 relative shrink-0">
         <Image
           src={logoUrl}
           alt={partner?.name || "Partner Logo"}
           fill
-          sizes="24px"
+          sizes="48px"
           unoptimized
           className="object-contain"
           onError={() => setImgError(true)}
@@ -367,9 +367,27 @@ function PartnerLogoIcon({ partner }) {
   }
 
   return (
-    <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-blue-50 text-blue-600 font-bold flex items-center justify-center text-[10px]">
+    <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-blue-50 text-blue-600 font-bold flex items-center justify-center text-[10px] sm:text-xs">
       {(partner?.name || "P").charAt(0)}
     </div>
+  );
+}
+
+// Helper function to format multi-word card titles into 2 stacked lines (uppr / neeche)
+function formatTwoLineText(name) {
+  if (!name || typeof name !== "string") return name;
+  const words = name.trim().split(/\s+/);
+  if (words.length <= 1) return name;
+
+  const mid = Math.ceil(words.length / 2);
+  const line1 = words.slice(0, mid).join(" ");
+  const line2 = words.slice(mid).join(" ");
+
+  return (
+    <span className="flex flex-col items-center justify-center leading-tight">
+      <span className="block truncate max-w-full">{line1}</span>
+      <span className="block truncate max-w-full mt-0.5">{line2}</span>
+    </span>
   );
 }
 
@@ -557,14 +575,14 @@ export function IimIitLogos({ categories = [], programs = [] }) {
                         >
                           <div
                             onClick={() => handleOpenPartner(child, child.blockSlug)}
-                            className="w-full aspect-square bg-white hover:bg-slate-50 border border-slate-200/90 rounded-xl sm:rounded-2xl p-1 min-[360px]:p-1.5 sm:p-2 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group shadow-2xs min-w-0 overflow-hidden"
+                            className="w-full aspect-square bg-white hover:bg-slate-50 border border-slate-200/90 rounded-xl sm:rounded-2xl p-1.5 min-[360px]:p-2 sm:p-2.5 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group shadow-2xs min-w-0"
                           >
                             <div className="mb-0.5 sm:mb-1 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
                               <PartnerLogoIcon partner={child} />
                             </div>
                             <Tooltip title={child.name} placement="top">
-                              <h5 className="text-[11px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors leading-[1.15] text-center w-full tracking-tighter sm:tracking-tight px-0.5 line-clamp-2 break-words">
-                                {child.name}
+                              <h5 className="text-[9.5px] min-[360px]:text-[10px] sm:text-[11px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors text-center w-full tracking-tight px-0.5 min-w-0">
+                                {formatTwoLineText(child.name)}
                               </h5>
                             </Tooltip>
                           </div>
@@ -637,14 +655,14 @@ export function IimIitLogos({ categories = [], programs = [] }) {
                           <div
                             key={child._id || idx}
                             onClick={() => handleOpenPartner(child, block.slug)}
-                            className="w-full aspect-square bg-white hover:bg-slate-50 border border-slate-200/90 rounded-xl sm:rounded-2xl p-1 min-[360px]:p-1.5 sm:p-2 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group shadow-2xs min-w-0 overflow-hidden"
+                            className="w-full aspect-square bg-white hover:bg-slate-50 border border-slate-200/90 rounded-xl sm:rounded-2xl p-1.5 min-[360px]:p-2 sm:p-2.5 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group shadow-2xs min-w-0"
                           >
                             <div className="mb-0.5 sm:mb-1 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
                               <PartnerLogoIcon partner={child} />
                             </div>
                             <Tooltip title={child.name} placement="top">
-                              <h5 className="text-[11px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors leading-[1.15] text-center w-full tracking-tighter sm:tracking-tight px-0.5 line-clamp-2 break-words">
-                                {child.name}
+                              <h5 className="text-[9.5px] min-[360px]:text-[10px] sm:text-[11px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors text-center w-full tracking-tight px-0.5 min-w-0">
+                                {formatTwoLineText(child.name)}
                               </h5>
                             </Tooltip>
                           </div>

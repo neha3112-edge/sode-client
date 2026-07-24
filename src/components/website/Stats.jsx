@@ -44,6 +44,24 @@ function CategoryIcon({ cat }) {
   );
 }
 
+// Helper function to format multi-word card titles into 2 stacked lines (uppr / neeche)
+function formatTwoLineText(name) {
+  if (!name || typeof name !== "string") return name;
+  const words = name.trim().split(/\s+/);
+  if (words.length <= 1) return name;
+
+  const mid = Math.ceil(words.length / 2);
+  const line1 = words.slice(0, mid).join(" ");
+  const line2 = words.slice(mid).join(" ");
+
+  return (
+    <span className="flex flex-col items-center justify-center leading-tight">
+      <span className="block truncate max-w-full">{line1}</span>
+      <span className="block truncate max-w-full mt-0.5">{line2}</span>
+    </span>
+  );
+}
+
 // Helper component to render circular avatar with image fallback inside modal
 function SmartLogoAvatar({ logoUrl, altName }) {
   const [imgError, setImgError] = useState(false);
@@ -177,13 +195,13 @@ export function Stats({ categories: initialCategories = [] }) {
                 <div
                   key={item._id || item.slug}
                   onClick={() => handleCardClick(item)}
-                  className="bg-white hover:bg-gray-50 border border-gray-200 rounded-xl sm:rounded-2xl p-1 min-[360px]:p-1.5 sm:p-2 aspect-square flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group min-w-0 overflow-hidden shadow-2xs w-full"
+                  className="bg-white hover:bg-gray-50 border border-gray-200 rounded-xl sm:rounded-2xl p-1.5 min-[360px]:p-2 sm:p-2.5 aspect-square flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group min-w-0 shadow-2xs w-full"
                 >
                   <div className="mb-0.5 sm:mb-1 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
                     <CategoryIcon cat={item} />
                   </div>
-                  <h5 className="text-[11px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors leading-[1.15] text-center w-full tracking-tighter sm:tracking-tight px-0.5 line-clamp-2 break-words">
-                    {item.name || item.label}
+                  <h5 className="text-[9.5px] min-[360px]:text-[10px] sm:text-[11px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors text-center w-full tracking-tight px-0.5 min-w-0">
+                    {formatTwoLineText(item.name || item.label)}
                   </h5>
                 </div>
               ))}
@@ -264,17 +282,17 @@ export function Stats({ categories: initialCategories = [] }) {
                                 <div
                                   key={child._id || child.slug}
                                   onClick={() => handleCardClick(child)}
-                                  className="bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl p-1.5 sm:p-2 aspect-square flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group min-w-0 overflow-hidden shadow-2xs"
+                                  className="bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl p-1.5 min-[360px]:p-2 sm:p-2.5 aspect-square flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group min-w-0 shadow-2xs"
                                 >
-                                  <div className="mb-1 sm:mb-1.5 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
+                                  <div className="mb-0.5 sm:mb-1 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
                                     <SmartLogoAvatar
                                       logoUrl={child.logoUrl || child.logoSrc || child.logo || child.imageSrc || child.image}
                                       altName={childName}
                                     />
                                   </div>
                                   <Tooltip title={childName} placement="top">
-                                    <h5 className="text-[11px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors leading-[1.12] text-center w-full tracking-tighter sm:tracking-tight px-0.5 break-normal line-clamp-2">
-                                      {childName}
+                                    <h5 className="text-[9.5px] min-[360px]:text-[10px] sm:text-[11px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors text-center w-full tracking-tight px-0.5 min-w-0">
+                                      {formatTwoLineText(childName)}
                                     </h5>
                                   </Tooltip>
                                 </div>
@@ -299,14 +317,14 @@ export function Stats({ categories: initialCategories = [] }) {
                                   key={uni._id}
                                   href={`/courses?category=${activeCategory.slug}&university=${encodeURIComponent(uniName)}`}
                                   onClick={handleCloseModal}
-                                  className="bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl p-1.5 sm:p-2 aspect-square flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group min-w-0 overflow-hidden shadow-2xs"
+                                  className="bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl p-1.5 min-[360px]:p-2 sm:p-2.5 aspect-square flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group min-w-0 shadow-2xs"
                                 >
-                                  <div className="mb-1 sm:mb-1.5 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
+                                  <div className="mb-0.5 sm:mb-1 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
                                     <SmartLogoAvatar logoUrl={rawLogo} altName={uniName} />
                                   </div>
                                   <Tooltip title={uniName} placement="top">
-                                    <h5 className="text-[9.5px] min-[360px]:text-[10.5px] sm:text-xs font-semibold text-slate-800 group-hover:text-blue-600 transition-colors leading-[1.12] text-center w-full tracking-tighter sm:tracking-tight px-0.5 break-normal line-clamp-2">
-                                      {uniName}
+                                    <h5 className="text-[9.5px] min-[360px]:text-[10px] sm:text-[11px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors text-center w-full tracking-tight px-0.5 min-w-0">
+                                      {formatTwoLineText(uniName)}
                                     </h5>
                                   </Tooltip>
                                 </Link>
@@ -331,14 +349,14 @@ export function Stats({ categories: initialCategories = [] }) {
                                   key={program._id || program.slug}
                                   href={`/courses?category=${activeCategory.slug}&search=${encodeURIComponent(program.title)}`}
                                   onClick={handleCloseModal}
-                                  className="bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl p-1.5 sm:p-2 aspect-square flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group min-w-0 overflow-hidden shadow-2xs"
+                                  className="bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl p-1.5 min-[360px]:p-2 sm:p-2.5 aspect-square flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group min-w-0 shadow-2xs"
                                 >
-                                  <div className="mb-1 sm:mb-1.5 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
+                                  <div className="mb-0.5 sm:mb-1 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
                                     <SmartLogoAvatar logoUrl={rawLogo} altName={courseTitle} />
                                   </div>
                                   <Tooltip title={courseTitle} placement="top">
-                                    <h5 className="text-[9.5px] min-[360px]:text-[10.5px] sm:text-xs font-semibold text-slate-800 group-hover:text-blue-600 transition-colors leading-[1.12] text-center w-full tracking-tighter sm:tracking-tight px-0.5 break-normal line-clamp-2">
-                                      {courseTitle}
+                                    <h5 className="text-[9.5px] min-[360px]:text-[10px] sm:text-[11px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors text-center w-full tracking-tight px-0.5 min-w-0">
+                                      {formatTwoLineText(courseTitle)}
                                     </h5>
                                   </Tooltip>
                                 </Link>
