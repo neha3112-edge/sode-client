@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import Autoplay from "embla-carousel-autoplay";
 
 import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
@@ -20,9 +21,12 @@ export function Hero({ initialHeroData = null }) {
 
   const heroData = initialHeroData;
 
-  // Carousel settings & flags from SSR initialHeroData
+  // Carousel settings & flags strictly mapped from SSR initialHeroData
   const carouselSettings = heroData?.carouselSettings || {};
-  const showArrows = carouselSettings.showArrows !== false;
+  const isAutoplay = Boolean(carouselSettings.autoplay);
+  const autoplaySpeed = Number(carouselSettings.autoplaySpeed) || 5000;
+  const showArrows = Boolean(carouselSettings.showArrows);
+  const showDots = Boolean(carouselSettings.showDots);
 
   // Form visibility flags from Mongoose Schema (showForm: "both" | "desktop" | "mobile" | "none")
   const showFormSetting = heroData?.showForm || "both";
@@ -231,8 +235,21 @@ export function Hero({ initialHeroData = null }) {
       <section id="hero-section" className="relative w-full overflow-hidden">
         {isCarousel ? (
           <div className="relative w-full">
-            {/* 🎯 SHADCN UI CAROUSEL WITH ZERO useEffect */}
-            <Carousel opts={{ loop: true }} className="w-full">
+            {/* 🎯 NATIVE SHADCN UI CAROUSEL WITH EMBLA AUTOPLAY PLUGIN (ZERO useEffect) */}
+            <Carousel
+              opts={{ loop: true }}
+              plugins={
+                isAutoplay
+                  ? [
+                      Autoplay({
+                        delay: autoplaySpeed,
+                        stopOnInteraction: false,
+                      }),
+                    ]
+                  : []
+              }
+              className="w-full"
+            >
               <CarouselContent className="-ml-0">
                 {heroData.slides.map((slide, idx) =>
                   renderSlideItem(slide, idx)
