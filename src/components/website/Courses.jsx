@@ -3,11 +3,10 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Modal } from "antd";
+import { Modal, Card } from "antd";
 
-import { Container } from "@/components/ui/container";
-import { Card } from "@/components/ui/card";
-import FormWrapper from "@/components/forms/FormWrapper";
+import { Container } from "@/components/common/Container";
+import { useFormModal } from "@/context/FormModalContext";
 import { getAssetPath } from "@/lib/utils";
 import { tabs as defaultTabs, programs as defaultPrograms } from "@/constants/coursesData";
 
@@ -20,9 +19,7 @@ export function Courses({
   initialPrograms = defaultPrograms,
 }) {
   const [activeTab, setActiveTab] = useState("all");
-
-  const [activeModal, setActiveModal] = useState(null);
-  const [selectedProgram, setSelectedProgram] = useState(null);
+  const { openFormModal } = useFormModal();
 
   // Mobile Category Modal State
   const [mobileCategoryModal, setMobileCategoryModal] = useState({
@@ -40,59 +37,41 @@ export function Courses({
       : programsList.filter((program) => {
           const cat = program?.category;
           if (!cat) return false;
-
-          const target = String(activeTab).toLowerCase().trim();
-
-          if (typeof cat === "object" && cat !== null) {
-            const catSlug = String(cat.slug || "").toLowerCase().trim();
-            const catName = String(cat.name || "").toLowerCase().trim();
-            const catId = String(cat._id || "").trim();
-
+          if (typeof cat === "string") {
             return (
-              catSlug === target ||
-              catName === target ||
-              catId === target ||
-              (target === "certification" && catSlug.includes("certif")) ||
-              (target === "certifications" && catSlug.includes("certif")) ||
-              (target === "executive" && catSlug.includes("execut")) ||
-              (target === "executive programs" && catSlug.includes("execut")) ||
-              (target === "master" && catSlug.includes("master")) ||
-              (target === "doctorate" && catSlug.includes("doctor"))
+              cat === activeTab ||
+              cat.toLowerCase() === activeTab.toLowerCase()
             );
           }
-
-          const catStr = String(cat).toLowerCase().trim();
-          return catStr === target || catStr.includes(target);
+          return (
+            cat.slug === activeTab ||
+            cat._id === activeTab ||
+            cat.id === activeTab
+          );
         });
 
   /* =========================================================
-     TAB CLICK HANDLER (Mobile Modal vs Desktop Filter)
+     TAB CHANGE HANDLER
   ========================================================= */
 
   const handleTabClick = (tab) => {
-    const tabKey = tab.slug || tab.id || tab._id;
+    const tabKey = tab.slug || tab.id || tab._id || "all";
     setActiveTab(tabKey);
-
-    // If on mobile screen (< 768px width), open Antd Modal with category courses
-    if (typeof window !== "undefined" && window.innerWidth < 768) {
-      setMobileCategoryModal({
-        open: true,
-        tab: tabKey,
-        label: tab.label || "Category Programs",
-      });
-    }
   };
 
   /* =========================================================
-     GET BROCHURE
+     DOWNLOAD BROCHURE
   ========================================================= */
 
   const handleGetBrochure = (program) => {
     sessionStorage.setItem("brochureUrl", getAssetPath(program.brochureUrl));
-
-    setSelectedProgram(program);
     setMobileCategoryModal({ open: false, tab: null, label: "" });
-    setActiveModal("brochure");
+    openFormModal({
+      title: "Download Brochure",
+      subtitle: "Enter your details to download the brochure",
+      isBrochureForm: true,
+      brochureUrl: getAssetPath(program.brochureUrl),
+    });
   };
 
   /* =========================================================
@@ -100,18 +79,12 @@ export function Courses({
   ========================================================= */
 
   const handleApplyNow = (program) => {
-    setSelectedProgram(program);
     setMobileCategoryModal({ open: false, tab: null, label: "" });
-    setActiveModal("apply");
-  };
-
-  /* =========================================================
-     CLOSE ENQUIRY MODAL
-  ========================================================= */
-
-  const closeModal = () => {
-    setActiveModal(null);
-    setSelectedProgram(null);
+    openFormModal({
+      title: "Get 1 to 1 Expert Guidance",
+      subtitle: "Start your application journey today",
+      submitButtonText: "Submit Application",
+    });
   };
 
   return (
@@ -388,30 +361,6 @@ export function Courses({
         </div>
       </Modal>
 
-      {/* Enquiry Form Wrapper Modal */}
-      {selectedProgram && (
-        <FormWrapper
-          isModal
-          isOpen={!!activeModal}
-          title={
-            activeModal === "brochure"
-              ? "Download Brochure"
-              : "Get 1 to 1 Expert Guidance"
-          }
-          subtitle={
-            activeModal === "brochure"
-              ? "Enter your details to download the brochure"
-              : "Start your application journey today"
-          }
-          onClose={closeModal}
-          isBrochureForm={activeModal === "brochure"}
-          brochureUrl={
-            activeModal === "brochure"
-              ? getAssetPath(selectedProgram.brochureUrl)
-              : ""
-          }
-        />
-      )}
     </section>
   );
 }

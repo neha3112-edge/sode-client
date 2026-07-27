@@ -15,7 +15,16 @@ import { getFaqData } from "@/constants/faqData";
 import { getTestimonialsData } from "@/constants/testimonialsData";
 import { getFooterData } from "@/constants/footerData";
 import { getPageMetaData } from "@/constants/pageMetaData";
-import { getWebsiteHero, getWebsiteCoursesFilter, getWebsiteCategories } from "@/services/api";
+import {
+  getWebsiteHero,
+  getWebsiteCoursesFilter,
+  getWebsiteCategories,
+  getWebsiteCategoryOptions,
+  getWebsiteUniversityOptions,
+  getWebsiteSubcourseOptions,
+  getWebsiteDurationOptions,
+  getWebsiteFeeOptions,
+} from "@/services/api";
 
 export const revalidate = 300; // Next.js ISR: Revalidate cache every 5 minutes
 
@@ -56,6 +65,11 @@ export default async function Home() {
     footerData,
     iimUniversities,
     iitUniversities,
+    categoryOptions,
+    universityOptions,
+    subcourseOptions,
+    durationOptions,
+    feeOptions,
   ] = await Promise.all([
     getWebsiteHero("home"),
     getUniversitiesData(),
@@ -67,6 +81,11 @@ export default async function Home() {
     getFooterData(),
     getUniversitiesData({ type: "iim", limit: 10, page: 1 }),
     getUniversitiesData({ type: "iit", limit: 10, page: 1 }),
+    getWebsiteCategoryOptions(),
+    getWebsiteUniversityOptions(),
+    getWebsiteSubcourseOptions(),
+    getWebsiteDurationOptions(),
+    getWebsiteFeeOptions(),
   ]);
 
   const categories = (categoryApiData?.categories && categoryApiData.categories.length > 0)
@@ -84,7 +103,13 @@ export default async function Home() {
 
       <main className="flex w-full flex-1 flex-col pb-16 lg:pb-0">
         <Hero initialHeroData={heroData} />
-        <SearchBar categories={categories} />
+        <SearchBar
+          categories={categoryOptions.length ? categoryOptions : categories}
+          universities={universityOptions}
+          subcourses={subcourseOptions}
+          durations={durationOptions}
+          fees={feeOptions}
+        />
         <Stats universities={universities} categories={categories} programs={programs} />
         <IimIitLogos categories={categories} programs={programs} iims={iimUniversities} iits={iitUniversities} />
         <About initialLeftCards={leftCards} initialRightCards={rightCards} />

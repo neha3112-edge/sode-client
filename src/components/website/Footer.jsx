@@ -6,7 +6,8 @@ import Link from "next/link";
 import DisclaimerContent from "@/components/common/legal/DisclaimerContent";
 import PrivacyContent from "@/components/common/legal/PrivacyContent";
 import TermsContent from "@/components/common/legal/TermsContent";
-import FormWrapper from "@/components/forms/FormWrapper";
+import { useContext } from "react";
+import { FormModalContext } from "@/context/FormModalContext";
 import { getAssetPath } from "@/lib/utils";
 
 import {
@@ -20,16 +21,17 @@ export function Footer({
 }) {
   const UNIVERSITIES = initialUniversities || defaultUniversities;
   const PROGRAMS = initialPrograms || defaultPrograms;
+  const formModalCtx = useContext(FormModalContext);
+  const openFormModal = formModalCtx?.openFormModal ?? (() => {});
 
-  const [expertOpen, setExpertOpen] = useState(false);
   const [activeDialog, setActiveDialog] = useState(null);
 
   const openExpertForm = () => {
-    setExpertOpen(true);
-  };
-
-  const closeExpertForm = () => {
-    setExpertOpen(false);
+    openFormModal({
+      title: "Talk to Experts",
+      subtitle: "Select your course and our academic experts will assist you",
+      submitButtonText: "Talk to Experts",
+    });
   };
 
   const closeLegalDialog = () => {
@@ -419,15 +421,6 @@ export function Footer({
             </div>
           </div>
         )}
-
-        {/* Form Modal for Talk to Experts */}
-        <FormWrapper
-          isModal
-          isOpen={expertOpen}
-          onClose={closeExpertForm}
-          title="Talk to Experts"
-          subtitle="Select your course and our academic experts will assist you"
-        />
       </footer>
     </>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { Container } from "@/components/ui/container";
+import { Container } from "@/components/common/Container";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -90,7 +90,7 @@ function SmartLogoAvatar({ logoUrl, altName }) {
   );
 }
 
-export function Stats({ categories: initialCategories = [] }) {
+export function Stats({ categories: initialCategories = [], programs = [] }) {
   const router = useRouter();
   const [categoriesList, setCategoriesList] = useState(initialCategories);
   const [activeCategory, setActiveCategory] = useState(null);
@@ -110,8 +110,13 @@ export function Stats({ categories: initialCategories = [] }) {
   }, [initialCategories]);
 
   // Filter root categories dynamically from Backend API (showInStats !== false)
+  // parentId is now an array — root = empty array []
   const rootCategories = (categoriesList || [])
-    .filter((cat) => !cat.parentId && (cat.slug || "").toLowerCase() !== "all" && cat.showInStats !== false)
+    .filter((cat) => {
+      const pid = cat.parentId;
+      const isRoot = !pid || (Array.isArray(pid) ? pid.length === 0 : !pid);
+      return isRoot && (cat.slug || "").toLowerCase() !== "all" && cat.showInStats !== false;
+    })
     .sort((a, b) => (a.order || 0) - (b.order || 0));
 
   // Dynamically extract "Browse By Category" pills directly from SSR categoriesList prop
@@ -121,7 +126,13 @@ export function Stats({ categories: initialCategories = [] }) {
 
   const browseByPills = browseParentDoc
     ? (categoriesList || [])
-      .filter((c) => c.parentId && String(c.parentId) === String(browseParentDoc._id))
+      .filter((c) => {
+        const pid = c.parentId;
+        if (!pid) return false;
+        const parentIdStr = String(browseParentDoc._id);
+        if (Array.isArray(pid)) return pid.some((p) => String(p) === parentIdStr || (p?._id && String(p._id) === parentIdStr));
+        return String(pid) === parentIdStr || (pid?._id && String(pid._id) === parentIdStr);
+      })
       .map((item) => ({
         _id: item._id,
         name: item.name,
@@ -137,20 +148,23 @@ export function Stats({ categories: initialCategories = [] }) {
       : null;
 
   const handleCardClick = (cat) => {
-    const subchildren = (categoriesList || []).filter(
-      (c) => c.parentId && String(c.parentId) === String(cat._id)
-    );
+    // Find subcategories where parentId array contains cat._id
+    const catIdStr = String(cat._id);
+    const subchildren = (categoriesList || []).filter((c) => {
+      const pid = c.parentId;
+      if (!pid) return false;
+      if (Array.isArray(pid)) return pid.some((p) => String(p) === catIdStr || (p?._id && String(p._id) === catIdStr));
+      return String(pid) === catIdStr;
+    });
 
     const hasSubchildren = (cat.children && cat.children.length > 0) || subchildren.length > 0;
 
-    if (hasSubchildren || !activeCategory) {
+    if (hasSubchildren) {
       setActiveCategory(cat);
       setIsModalClosing(false);
       setModalData({
         category: cat,
         children: (cat.children && cat.children.length > 0) ? cat.children : subchildren,
-        courses: cat.courses || [],
-        universities: cat.universities || [],
       });
     } else {
       if (activeCategory) handleCloseModal();
@@ -164,6 +178,20 @@ export function Stats({ categories: initialCategories = [] }) {
       setActiveCategory(null);
       setIsModalClosing(false);
     }, 380);
+  };
+
+  const handleChildClick = (child) => {
+    const parentSlug = activeCategory ? (activeCategory.slug || activeCategory._id) : "";
+    let childSlug = child.slug || child.name || child.label;
+    if (parentSlug && childSlug.startsWith(`${parentSlug}-`)) {
+      childSlug = childSlug.slice(parentSlug.length + 1);
+    }
+    handleCloseModal();
+    if (parentSlug) {
+      router.push(`/courses?category=${encodeURIComponent(parentSlug)}&subcategory=${encodeURIComponent(childSlug)}`);
+    } else {
+      router.push(`/courses?category=${encodeURIComponent(childSlug)}`);
+    }
   };
 
   return (
@@ -218,9 +246,11 @@ export function Stats({ categories: initialCategories = [] }) {
                   <div className="mb-0.5 sm:mb-1 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
                     <CategoryIcon cat={item} />
                   </div>
-                  <h5 className="text-[9.5px] min-[360px]:text-[10px] sm:text-[11px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors text-center w-full tracking-tight px-0.5 min-w-0">
-                    {formatTwoLineText(item.name || item.label)}
-                  </h5>
+                  <Tooltip title={item.label || item.name} placement="top">
+                    <h5 className="text-[10px] min-[360px]:text-[11px] sm:text-xs font-semibold text-gray-800 group-hover:text-blue-600 transition-colors text-center w-full tracking-tight px-0.5 min-w-0">
+                      {formatTwoLineText(item.label || item.name)}
+                    </h5>
+                  </Tooltip>
                 </div>
               ))}
             </div>
@@ -311,7 +341,7 @@ export function Stats({ categories: initialCategories = [] }) {
                     (modalData.universities && modalData.universities.length > 0) ||
                     (modalData.courses && modalData.courses.length > 0)) ? (
                     <div className="space-y-6 p-0.5">
-                      {/* 1. SUBCATEGORIES SECTION */}
+                      {/* SUBCATEGORIES SECTION */}
                       {modalData.children && modalData.children.length > 0 && (
                         <div>
                           <div className="grid grid-cols-3 gap-2 sm:gap-3.5">
@@ -320,7 +350,7 @@ export function Stats({ categories: initialCategories = [] }) {
                               return (
                                 <div
                                   key={child._id || child.slug}
-                                  onClick={() => handleCardClick(child)}
+                                  onClick={() => handleChildClick(child)}
                                   className="bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl p-1.5 min-[360px]:p-2 sm:p-2.5 aspect-square flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group min-w-0 shadow-2xs"
                                 >
                                   <div className="mb-1 sm:mb-1.5 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0 h-10 sm:h-12 w-full">
@@ -340,76 +370,12 @@ export function Stats({ categories: initialCategories = [] }) {
                           </div>
                         </div>
                       )}
-
-                      {/* 2. UNIVERSITIES SECTION */}
-                      {modalData.universities && modalData.universities.length > 0 && (
-                        <div>
-                          <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3.5 block">
-                            Partner Universities
-                          </h4>
-                          <div className="grid grid-cols-3 gap-2 sm:gap-3.5">
-                            {modalData.universities.map((uni) => {
-                              const uniName = uni.university?.name || uni.name || "Partner University";
-                              const rawLogo = uni.university?.logoSrc?.url || uni.logoSrc?.url || uni.logoUrl || uni.logo;
-                              return (
-                                <Link
-                                  key={uni._id}
-                                  href={`/courses?category=${activeCategory.slug}&university=${encodeURIComponent(uniName)}`}
-                                  onClick={handleCloseModal}
-                                  className="bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl p-1.5 min-[360px]:p-2 sm:p-2.5 aspect-square flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group min-w-0 shadow-2xs"
-                                >
-                                  <div className="mb-0.5 sm:mb-1 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
-                                    <SmartLogoAvatar logoUrl={rawLogo} altName={uniName} />
-                                  </div>
-                                  <Tooltip title={uniName} placement="top">
-                                    <h5 className="text-[9.5px] min-[360px]:text-[10px] sm:text-[11px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors text-center w-full tracking-tight px-0.5 min-w-0">
-                                      {formatTwoLineText(uniName)}
-                                    </h5>
-                                  </Tooltip>
-                                </Link>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* 3. COURSES SECTION */}
-                      {modalData.courses && modalData.courses.length > 0 && (
-                        <div>
-                          <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3.5 block">
-                            Available Programs
-                          </h4>
-                          <div className="grid grid-cols-3 gap-2 sm:gap-3.5">
-                            {modalData.courses.map((program) => {
-                              const courseTitle = program.title || program.name || "Program";
-                              const rawLogo = program.university?.logoSrc?.url || program.logoSrc?.url || program.image?.url;
-                              return (
-                                <Link
-                                  key={program._id || program.slug}
-                                  href={`/courses?category=${activeCategory.slug}&search=${encodeURIComponent(program.title)}`}
-                                  onClick={handleCloseModal}
-                                  className="bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl p-1.5 min-[360px]:p-2 sm:p-2.5 aspect-square flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group min-w-0 shadow-2xs"
-                                >
-                                  <div className="mb-0.5 sm:mb-1 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
-                                    <SmartLogoAvatar logoUrl={rawLogo} altName={courseTitle} />
-                                  </div>
-                                  <Tooltip title={courseTitle} placement="top">
-                                    <h5 className="text-[9.5px] min-[360px]:text-[10px] sm:text-[11px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors text-center w-full tracking-tight px-0.5 min-w-0">
-                                      {formatTwoLineText(courseTitle)}
-                                    </h5>
-                                  </Tooltip>
-                                </Link>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
                     </div>
                   ) : (
                     /* EMPTY STATE */
                     <div className="bg-slate-50 border border-slate-200/80 p-8 rounded-2xl text-center flex flex-col items-center justify-center space-y-3 my-4">
                       <p className="text-xs sm:text-sm text-slate-600 font-medium">
-                        🎓 No subcategories or courses found for {activeCategory.name || activeCategory.label}.
+                        🎓 No subcategories found for {activeCategory.name || activeCategory.label}.
                       </p>
                       <Link
                         href={`/courses?category=${activeCategory.slug || ""}`}

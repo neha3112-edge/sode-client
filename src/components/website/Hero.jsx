@@ -2,22 +2,14 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import Autoplay from "embla-carousel-autoplay";
+import { Card, Carousel } from "antd";
 
-import { Card } from "@/components/ui/card";
-import { Container } from "@/components/ui/container";
-import FormWrapper from "@/components/forms/FormWrapper";
+import { Container } from "@/components/common/Container";
+import { useFormModal } from "@/context/FormModalContext";
 import { getAssetPath } from "@/lib/utils";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
 
 export function Hero({ initialHeroData = null }) {
-  const [downloadOpen, setDownloadOpen] = useState(false);
+  const { openFormModal } = useFormModal();
 
   const heroData = initialHeroData;
 
@@ -32,8 +24,13 @@ export function Hero({ initialHeroData = null }) {
   const showFormSetting = heroData?.showForm || "both";
   const showOnDesktop = showFormSetting === "both" || showFormSetting === "desktop";
 
-  const openCounsellingForm = () => setDownloadOpen(true);
-  const closeCounsellingForm = () => setDownloadOpen(false);
+  const openCounsellingForm = () => {
+    openFormModal({
+      title: "Book 1:1 Personalised Counselling",
+      subtitle: "Select your course and our academic experts will assist you",
+      submitButtonText: "Book Counselling",
+    });
+  };
 
   // Carousel check
   const isCarousel =
@@ -63,7 +60,7 @@ export function Hero({ initialHeroData = null }) {
     const slideSecondaryCta = "Talk to an Expert";
     return (
       <div className="px-4 pb-2 pt-0 lg:p-0">
-        <div className="relative w-full overflow-hidden bg-[#102441] rounded-3xl lg:rounded-none border border-white/5 lg:border-0 h-[280px] lg:h-[480px] flex items-center">
+        <div className="relative w-full overflow-hidden bg-[#102441] rounded-3xl lg:rounded-none border border-white/5 lg:border-0 h-70 lg:h-120 flex items-center">
           {/* Desktop Background Image */}
           <div className="absolute inset-0 z-0 hidden lg:block">
             <Image
@@ -84,7 +81,7 @@ export function Hero({ initialHeroData = null }) {
               alt="Campus Dome"
               className="w-full h-full object-cover object-left-center scale-[1.25] translate-x-2"
             />
-            <div className="absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-[#102441] to-transparent z-10" />
+            <div className="absolute inset-y-0 left-0 w-8 bg-linear-to-r from-[#102441] to-transparent z-10" />
           </div>
 
           <Container className="relative z-10 w-full px-4 py-6 lg:px-0 lg:py-16">
@@ -95,11 +92,11 @@ export function Hero({ initialHeroData = null }) {
                   {badgeText.replace(/^#1\s*/i, "")}
                 </p>
 
-                <h1 className="text-sm sm:text-base md:text-lg lg:text-3xl font-extrabold leading-tight text-white max-w-[240px] sm:max-w-none">
+                <h1 className="text-sm sm:text-base md:text-lg lg:text-3xl font-extrabold leading-tight text-white max-w-60 sm:max-w-none">
                   {titleText}
                 </h1>
 
-                <p className="text-[10px] lg:text-sm font-medium text-white/85 max-w-[200px] sm:max-w-md line-clamp-2 lg:line-clamp-none">
+                <p className="text-[10px] lg:text-sm font-medium text-white/85 max-w-50 sm:max-w-md line-clamp-2 lg:line-clamp-none">
                   {subtitleText}
                 </p>
 
@@ -140,7 +137,7 @@ export function Hero({ initialHeroData = null }) {
     );
   };
 
-  // Carousel Slide Helper using Shadcn UI CarouselItem
+  // Carousel Slide Helper using standard div wrapper for Antd Carousel
   const renderSlideItem = (slide, idx) => {
     const slideBg = resolveImage(slide?.bgImage, "/assets/images/desktop_banner.jpg");
     const slideBadge = slide?.badge || badgeText;
@@ -150,9 +147,9 @@ export function Hero({ initialHeroData = null }) {
     const slideSecondaryCta = slide?.secondaryCtaText || "Talk to an Expert";
 
     return (
-      <CarouselItem key={slide._id || idx} className="p-0">
+      <div key={slide._id || idx} className="p-0">
         <div className="px-4 pb-2 pt-0 lg:p-0">
-          <div className="relative w-full overflow-hidden bg-[#102441] rounded-3xl lg:rounded-none border border-white/5 lg:border-0 h-[280px] lg:h-[480px] flex items-center">
+          <div className="relative w-full overflow-hidden bg-[#102441] rounded-3xl lg:rounded-none border border-white/5 lg:border-0 h-70 lg:h-120 flex items-center">
             {/* Desktop Background Image */}
             <div className="absolute inset-0 z-0 hidden lg:block">
               <Image
@@ -173,7 +170,7 @@ export function Hero({ initialHeroData = null }) {
                 alt="Campus Dome"
                 className="w-full h-full object-cover object-left-center scale-[1.25] translate-x-2"
               />
-              <div className="absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-[#102441] to-transparent z-10" />
+              <div className="absolute inset-y-0 left-0 w-8 bg-linear-to-r from-[#102441] to-transparent z-10" />
             </div>
 
             <Container className="relative z-10 w-full px-4 py-6 lg:px-0 lg:py-16">
@@ -184,11 +181,11 @@ export function Hero({ initialHeroData = null }) {
                     {slideBadge.replace(/^#1\s*/i, "")}
                   </p>
 
-                  <h1 className="text-sm sm:text-base md:text-lg lg:text-3xl font-extrabold leading-tight text-white max-w-[240px] sm:max-w-none">
+                  <h1 className="text-sm sm:text-base md:text-lg lg:text-3xl font-extrabold leading-tight text-white max-w-60 sm:max-w-none">
                     {slideTitle}
                   </h1>
 
-                  <p className="text-[10px] lg:text-sm font-medium text-white/85 max-w-[200px] sm:max-w-md line-clamp-2 lg:line-clamp-none">
+                  <p className="text-[10px] lg:text-sm font-medium text-white/85 max-w-50 sm:max-w-md line-clamp-2 lg:line-clamp-none">
                     {slideDesc}
                   </p>
 
@@ -226,40 +223,23 @@ export function Hero({ initialHeroData = null }) {
             </Container>
           </div>
         </div>
-      </CarouselItem>
+      </div>
     );
   };
 
   return (
-    <>
-      <section id="hero-section" className="relative w-full overflow-hidden">
+    <section id="hero-section" className="relative w-full overflow-hidden">
         {isCarousel ? (
           <div className="relative w-full">
-            {/* 🎯 NATIVE SHADCN UI CAROUSEL WITH EMBLA AUTOPLAY PLUGIN (ZERO useEffect) */}
             <Carousel
-              opts={{ loop: true }}
-              plugins={
-                isAutoplay
-                  ? [
-                      Autoplay({
-                        delay: autoplaySpeed,
-                        stopOnInteraction: false,
-                      }),
-                    ]
-                  : []
-              }
+              autoplay={isAutoplay}
+              autoplaySpeed={autoplaySpeed}
+              arrows={showArrows}
+              dots={showDots}
               className="w-full"
             >
-              <CarouselContent className="-ml-0">
-                {heroData.slides.map((slide, idx) =>
-                  renderSlideItem(slide, idx)
-                )}
-              </CarouselContent>
-              {showArrows && (
-                <>
-                  <CarouselPrevious className="left-4 border-white/30 bg-black/40 text-white hover:bg-black/60 hidden lg:flex" />
-                  <CarouselNext className="right-4 border-white/30 bg-black/40 text-white hover:bg-black/60 hidden lg:flex" />
-                </>
+              {heroData.slides.map((slide, idx) =>
+                renderSlideItem(slide, idx)
               )}
             </Carousel>
           </div>
@@ -267,13 +247,6 @@ export function Hero({ initialHeroData = null }) {
           renderSingleBanner()
         )}
       </section>
-
-      <FormWrapper
-        isModal
-        isOpen={downloadOpen}
-        onClose={closeCounsellingForm}
-      />
-    </>
   );
 }
 

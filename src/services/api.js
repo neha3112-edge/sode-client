@@ -95,6 +95,8 @@ export async function getWebsiteCoursesFilter(params = {}) {
     const query = new URLSearchParams();
     if (params.search) query.append("search", params.search);
     if (params.category && params.category !== "all") query.append("category", params.category);
+    if (params.subcategory && params.subcategory !== "all") query.append("subcategory", params.subcategory);
+    if (params.subcourse && params.subcourse !== "all") query.append("subcourse", params.subcourse);
     if (Array.isArray(params.university) && params.university.length > 0) {
       query.append("university", params.university.join(","));
     }
@@ -111,15 +113,23 @@ export async function getWebsiteCoursesFilter(params = {}) {
 
     const data = await fetchFromApi(url);
     if (data && data.programs) {
-      return data;
+      return {
+        programs: data.programs,
+        total: data.total ?? data.programs.length,
+        totalPages: data.totalPages ?? 1,
+        page: data.page ?? 1,
+        limit: data.limit ?? 0,
+        hasNextPage: data.hasNextPage ?? false,
+        hasPrevPage: data.hasPrevPage ?? false,
+      };
     }
     if (Array.isArray(data)) {
-      return { tabs: [], programs: data, total: data.length };
+      return { programs: data, total: data.length, totalPages: 1, page: 1, limit: 0 };
     }
-    return { tabs: [], programs: [], total: 0 };
+    return { programs: [], total: 0, totalPages: 1, page: 1, limit: 0 };
   } catch (error) {
     console.error("❌ Error fetching website courses filter:", error);
-    return { tabs: [], programs: [], total: 0 };
+    return { programs: [], total: 0, totalPages: 1, page: 1, limit: 0 };
   }
 }
 
@@ -279,5 +289,36 @@ export async function getWebsitePageBySlug(slug) {
 // 🎯 Fetch Blogs from Backend
 export async function getBlogs() {
   const data = await fetchFromApi("blog/list");
+  return Array.isArray(data) ? data : [];
+}
+
+// 🎯 Public Website Filter Options APIs
+export async function getWebsiteCourseOptions() {
+  const data = await fetchFromApi("courses/website-options");
+  return Array.isArray(data) ? data : [];
+}
+
+export async function getWebsiteSubcourseOptions() {
+  const data = await fetchFromApi("subcourses/website-options");
+  return Array.isArray(data) ? data : [];
+}
+
+export async function getWebsiteUniversityOptions() {
+  const data = await fetchFromApi("partneruniversities/website-options");
+  return Array.isArray(data) ? data : [];
+}
+
+export async function getWebsiteFeeOptions() {
+  const data = await fetchFromApi("fees/website-options");
+  return Array.isArray(data) ? data : [];
+}
+
+export async function getWebsiteDurationOptions() {
+  const data = await fetchFromApi("durations/website-options");
+  return Array.isArray(data) ? data : [];
+}
+
+export async function getWebsiteCategoryOptions() {
+  const data = await fetchFromApi("categories/website-options");
   return Array.isArray(data) ? data : [];
 }

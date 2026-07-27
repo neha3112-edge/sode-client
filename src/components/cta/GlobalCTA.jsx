@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
+import { usePathname } from "next/navigation";
 import BottomCTA from "./BottomCTA";
 import FloatingButton from "./FloatingButton";
-import FormWrapper from "@/components/forms/FormWrapper";
+import { useFormModal } from "@/context/FormModalContext";
 import { getAssetPath } from "@/lib/utils";
 
 export default function GlobalCTA({
@@ -25,11 +26,34 @@ export default function GlobalCTA({
   dynamicCourseBrochures = true,
   ...formProps
 }) {
-  const [applyOpen, setApplyOpen] = useState(false);
-  const [brochureOpen, setBrochureOpen] = useState(false);
+  const pathname = usePathname();
+  const { openFormModal } = useFormModal();
 
-  const closeApplyForm = () => setApplyOpen(false);
-  const closeBrochureForm = () => setBrochureOpen(false);
+  const handleApplyClick = () => {
+    openFormModal({
+      title: applyFormTitle,
+      subtitle: applyFormSubtitle,
+      formNameOverride: applyFormName,
+      submitButtonText: applyButtonText,
+      ...formProps,
+    });
+  };
+
+  const handleBrochureClick = () => {
+    openFormModal({
+      title: brochureFormTitle,
+      subtitle: brochureFormSubtitle,
+      formNameOverride: brochureFormName,
+      isBrochureForm: true,
+      brochureUrl: brochureUrl,
+      dynamicCourseBrochures: dynamicCourseBrochures,
+      ...formProps,
+    });
+  };
+
+  if (pathname?.startsWith("/admin-dashboard") || pathname?.startsWith("/login")) {
+    return null;
+  }
 
   return (
     <>
@@ -41,42 +65,14 @@ export default function GlobalCTA({
       {/* Mobile Sticky Bottom Bar */}
       <div className="lg:hidden">
         <BottomCTA
-          onApply={() => setApplyOpen(true)}
-          onBrochure={
-            showBrochureFormOnClick ? () => setBrochureOpen(true) : undefined
-          }
+          onApply={handleApplyClick}
+          onBrochure={showBrochureFormOnClick ? handleBrochureClick : undefined}
           whatsappPhone={whatsappPhone}
           whatsappMessage={whatsappMessage}
           brochureButtonText={brochureButtonText}
           applyButtonText={applyButtonText}
         />
       </div>
-
-      {/* Mobile Bottom Apply Modal */}
-      <FormWrapper
-        isModal
-        isOpen={applyOpen}
-        onClose={closeApplyForm}
-        title={applyFormTitle}
-        subtitle={applyFormSubtitle}
-        formNameOverride={applyFormName}
-        submitButtonText={applyButtonText}
-        {...formProps}
-      />
-
-      {/* Mobile Bottom Brochure Modal */}
-      <FormWrapper
-        isModal
-        isOpen={brochureOpen}
-        onClose={closeBrochureForm}
-        title={brochureFormTitle}
-        subtitle={brochureFormSubtitle}
-        formNameOverride={brochureFormName}
-        isBrochureForm
-        brochureUrl={brochureUrl}
-        dynamicCourseBrochures={dynamicCourseBrochures}
-        {...formProps}
-      />
     </>
   );
 }

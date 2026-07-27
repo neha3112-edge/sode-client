@@ -1,22 +1,22 @@
 "use client";
-import { Container } from "@/components/ui/container";
+import { Container } from "@/components/common/Container";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { getAssetPath } from "@/lib/utils";
-import { Tooltip } from "antd";
+import { Tooltip, Carousel, Select, Drawer, Button } from "antd";
 import { X } from "lucide-react";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselPrevious,
-  CarouselNext,
-} from "@/components/ui/carousel";
+
 
 // 1. Search Bar Component (With smooth enter & exit top slide-down filter drawer)
-export function SearchBar({ categories = [] }) {
+export function SearchBar({
+  categories = [],
+  universities = [],
+  subcourses = [],
+  durations = [],
+  fees = [],
+}) {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -24,15 +24,93 @@ export function SearchBar({ categories = [] }) {
 
   // Filter states
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedSubcourse, setSelectedSubcourse] = useState("all");
   const [selectedType, setSelectedType] = useState("all");
   const [selectedDuration, setSelectedDuration] = useState("all");
+  const [selectedFee, setSelectedFee] = useState("all");
 
-  const dynamicCategories = [
+  const excludedKeywords = [
+    "all",
+    "browse",
+    "journey",
+    "top institutes",
+    "showcase",
+    "university",
+    "school",
+    "institute",
+    "college",
+    "esgci",
+    "edgewood",
+    "liverpool",
+    "paris",
+    "rushford",
+  ];
+
+  // Helper to deduplicate items by label
+  const deduplicate = (items) => {
+    const seen = new Set();
+    return (items || []).filter((item) => {
+      if (!item || !item.label) return false;
+      const key = item.label.trim().toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  };
+
+  const dynamicCategories = deduplicate([
     { id: "all", label: "All Categories" },
     ...(categories || [])
-      .filter((c) => !c.parentId && (c.slug || "").toLowerCase() !== "all")
-      .map((c) => ({ id: c.slug || c._id, label: c.name || c.title || c.label })),
-  ];
+      .map((c) => {
+        const cLabel = c.label || c.name || c.title || "";
+        const formatted = cLabel ? cLabel.charAt(0).toUpperCase() + cLabel.slice(1) : "";
+        return { id: (c.slug || c._id || c.name || "").toLowerCase(), label: formatted };
+      })
+      .filter((c) => c.label && c.label.trim() !== ""),
+  ]);
+
+  const dynamicSubcourses = deduplicate([
+    { id: "all", label: "All Specializations" },
+    ...(subcourses || [])
+      .map((sc) => {
+        const scLabel = sc.label || sc.title || sc.name || "";
+        return { id: sc.slug || sc._id, label: scLabel };
+      })
+      .filter((sc) => sc.label && sc.label.trim() !== ""),
+  ]);
+
+  const dynamicPartners = deduplicate([
+    { id: "all", label: "All Partners" },
+    ...(universities || [])
+      .map((u) => {
+        const uLabel = u.label || u.name || u.title || u.fullname || (typeof u.university === "object" ? u.university?.name || u.university?.title : "") || "";
+        return { id: u.slug || u._id, label: uLabel };
+      })
+      .filter((u) => u.label && u.label.trim() !== ""),
+  ]);
+
+  const dynamicDurations = deduplicate([
+    { id: "all", label: "All Durations" },
+    ...(durations || [])
+      .map((d) => {
+        const dLabel = d.label || d.title || d.name || (d.months ? `${d.months} Months` : "");
+        return { id: d.slug || d._id, label: dLabel };
+      })
+      .filter((d) => d.label && d.label.trim() !== ""),
+  ]);
+
+  const dynamicFees = deduplicate([
+    { id: "all", label: "All Budgets" },
+    ...(fees || [])
+      .map((f) => {
+        let fLabel = f.label || f.title || f.name || "";
+        if (!fLabel && (f.minAmount || f.maxAmount)) {
+          fLabel = f.minAmount && f.maxAmount ? `₹${f.minAmount.toLocaleString()} - ₹${f.maxAmount.toLocaleString()}` : `₹${(f.minAmount || f.maxAmount).toLocaleString()}`;
+        }
+        return { id: f.slug || f._id, label: fLabel };
+      })
+      .filter((f) => f.label && f.label.trim() !== ""),
+  ]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -42,35 +120,32 @@ export function SearchBar({ categories = [] }) {
 
   const handleOpenFilters = () => {
     setIsFilterOpen(true);
-    setIsFilterClosing(false);
   };
 
   const handleCloseFilters = () => {
-    setIsFilterClosing(true);
-    setTimeout(() => {
-      setIsFilterOpen(false);
-      setIsFilterClosing(false);
-    }, 350); // Matches slideUpExit animation duration
+    setIsFilterOpen(false);
   };
 
   const handleApplyFilters = () => {
-    handleCloseFilters();
-    setTimeout(() => {
-      let queryParams = [];
-      if (searchTerm.trim()) queryParams.push(`search=${encodeURIComponent(searchTerm)}`);
-      if (selectedCategory !== "all") queryParams.push(`category=${selectedCategory}`);
-      if (selectedType !== "all") queryParams.push(`type=${selectedType}`);
-      if (selectedDuration !== "all") queryParams.push(`duration=${selectedDuration}`);
+    setIsFilterOpen(false);
+    let queryParams = [];
+    if (searchTerm.trim()) queryParams.push(`search=${encodeURIComponent(searchTerm)}`);
+    if (selectedCategory !== "all") queryParams.push(`category=${selectedCategory}`);
+    if (selectedSubcourse !== "all") queryParams.push(`subcourse=${selectedSubcourse}`);
+    if (selectedType !== "all") queryParams.push(`university=${selectedType}`);
+    if (selectedDuration !== "all") queryParams.push(`duration=${selectedDuration}`);
+    if (selectedFee !== "all") queryParams.push(`fee=${selectedFee}`);
 
-      const queryString = queryParams.length > 0 ? `?${queryParams.join("&")}` : "";
-      router.push(`/courses${queryString}`);
-    }, 380);
+    const queryString = queryParams.length > 0 ? `?${queryParams.join("&")}` : "";
+    router.push(`/courses${queryString}`);
   };
 
   const handleResetFilters = () => {
     setSelectedCategory("all");
+    setSelectedSubcourse("all");
     setSelectedType("all");
     setSelectedDuration("all");
+    setSelectedFee("all");
   };
 
   return (
@@ -189,130 +264,134 @@ export function SearchBar({ categories = [] }) {
         </Container>
       </div>
 
-      {/* ── TOP SLIDE-DOWN DRAWER FOR FILTERS ── */}
-      {isFilterOpen && (
-        <div className="fixed inset-0 z-[9999] flex items-start justify-center">
-          {/* Backdrop Blur Layer */}
-          <div
-            onClick={handleCloseFilters}
-            className={`absolute inset-0 bg-slate-950/70 ${isFilterClosing ? "animate-fade-out" : "animate-fade-in"}`}
-          />
+      {/* ── TOP SLIDE-DOWN DRAWER FOR FILTERS (ANT DESIGN DRAWER) ── */}
+      <Drawer
+        title={
+          <div>
+            <h3 className="text-lg font-bold text-[#1d3557]">Filter Programs</h3>
+            <p className="text-xs text-gray-500 font-medium">
+              Narrow down programs matching your interests
+            </p>
+          </div>
+        }
+        placement="top"
+        onClose={handleCloseFilters}
+        open={isFilterOpen}
+        size="default"
+        styles={{
+          header: { borderBottom: "1px solid #f0f0f0", padding: "16px 24px" },
+          body: { padding: "20px 24px" },
+        }}
+      >
+        <div className="max-w-7xl mx-auto">
+          {/* Filter Options (Antd Select Dropdowns Grid) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6">
+            {/* 1. Category */}
+            <div className="space-y-1.5">
+              <label className="text-slate-700 text-xs font-medium uppercase tracking-wider block">
+                Course Category
+              </label>
+              <Select
+                value={selectedCategory}
+                onChange={(value) => setSelectedCategory(value)}
+                className="w-full font-medium"
+                size="middle"
+                options={dynamicCategories.map((cat) => ({
+                  value: cat.id,
+                  label: cat.label,
+                }))}
+              />
+            </div>
 
-          {/* Drawer Body (Slides down from top) */}
-          <div className={`relative w-full bg-[#102441] border-b border-white/10 text-white rounded-b-3xl shadow-2xl p-6 md:p-8 z-10 max-h-[85vh] overflow-y-auto text-left ${isFilterClosing ? "animate-slide-up-exit" : "animate-slide-down"}`}>
-            <Container className="max-w-2xl">
-              {/* Header */}
-              <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
-                <div>
-                  <h3 className="text-lg font-bold text-white tracking-wide">
-                    Filter Programs
-                  </h3>
-                  <p className="text-[11px] text-white/50 mt-0.5">Narrow down programs matching your interests</p>
-                </div>
-                <button
-                  onClick={handleCloseFilters}
-                  className="text-white/60 hover:text-white cursor-pointer focus:outline-none transition-colors p-1.5 rounded-full hover:bg-white/5"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-                  </svg>
-                </button>
+            {/* 2. Specialization / Subcourse */}
+            {dynamicSubcourses.length > 0 && (
+              <div className="space-y-1.5">
+                <label className="text-slate-700 text-xs font-medium uppercase tracking-wider block">
+                  Specialization / Subcourse
+                </label>
+                <Select
+                  value={selectedSubcourse}
+                  onChange={(value) => setSelectedSubcourse(value)}
+                  className="w-full font-medium"
+                  size="middle"
+                  options={dynamicSubcourses.map((sc) => ({
+                    value: sc.id,
+                    label: sc.label,
+                  }))}
+                />
               </div>
+            )}
 
-              {/* Filter Options */}
-              <div className="space-y-6">
-                {/* 1. Category */}
-                <div className="space-y-2">
-                  <span className="text-[#EEC471] text-xs font-bold uppercase tracking-wider block">Course Category:</span>
-                  <div className="flex flex-wrap gap-2">
-                    {dynamicCategories.map((cat) => (
-                      <button
-                        key={cat.id}
-                        type="button"
-                        onClick={() => setSelectedCategory(cat.id)}
-                        className={`cursor-pointer text-xs font-semibold px-3.5 py-2 rounded-lg transition-all ${selectedCategory === cat.id
-                          ? "bg-[#EEC471] text-[#102441] font-bold"
-                          : "bg-white/5 border border-white/10 text-white/80 hover:bg-white/10"
-                          }`}
-                      >
-                        {cat.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+            {/* 3. Institute / Partner */}
+            <div className="space-y-1.5">
+              <label className="text-slate-700 text-xs font-medium uppercase tracking-wider block">
+                Institute / Partner
+              </label>
+              <Select
+                value={selectedType}
+                onChange={(value) => setSelectedType(value)}
+                className="w-full font-medium"
+                size="middle"
+                options={dynamicPartners.map((t) => ({
+                  value: t.id,
+                  label: t.label,
+                }))}
+              />
+            </div>
 
-                {/* 2. Partner Type */}
-                <div className="space-y-2">
-                  <span className="text-[#EEC471] text-xs font-bold uppercase tracking-wider block">Institute Type:</span>
-                  <div className="flex flex-wrap gap-2">
-                    {[
-                      { id: "all", label: "All Partners" },
-                      { id: "iims", label: "Indian Institutes of Management (IIMs)" },
-                      { id: "iits", label: "Indian Institutes of Technology (IITs)" },
-                      { id: "global", label: "Global B-Schools" },
-                    ].map((t) => (
-                      <button
-                        key={t.id}
-                        type="button"
-                        onClick={() => setSelectedType(t.id)}
-                        className={`cursor-pointer text-xs font-semibold px-3.5 py-2 rounded-lg transition-all ${selectedType === t.id
-                          ? "bg-[#EEC471] text-[#102441] font-bold"
-                          : "bg-white/5 border border-white/10 text-white/80 hover:bg-white/10"
-                          }`}
-                      >
-                        {t.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+            {/* 4. Program Duration */}
+            <div className="space-y-1.5">
+              <label className="text-slate-700 text-xs font-medium uppercase tracking-wider block">
+                Program Duration
+              </label>
+              <Select
+                value={selectedDuration}
+                onChange={(value) => setSelectedDuration(value)}
+                className="w-full font-medium"
+                size="middle"
+                options={dynamicDurations.map((d) => ({
+                  value: d.id,
+                  label: d.label,
+                }))}
+              />
+            </div>
 
-                {/* 3. Duration */}
-                <div className="space-y-2">
-                  <span className="text-[#EEC471] text-xs font-bold uppercase tracking-wider block">Program Duration:</span>
-                  <div className="flex flex-wrap gap-2">
-                    {[
-                      { id: "all", label: "All Durations" },
-                      { id: "short", label: "Short Term (< 6 Months)" },
-                      { id: "medium", label: "Medium Term (6 - 12 Months)" },
-                      { id: "long", label: "Long Term (12+ Months)" },
-                    ].map((d) => (
-                      <button
-                        key={d.id}
-                        type="button"
-                        onClick={() => setSelectedDuration(d.id)}
-                        className={`cursor-pointer text-xs font-semibold px-3.5 py-2 rounded-lg transition-all ${selectedDuration === d.id
-                          ? "bg-[#EEC471] text-[#102441] font-bold"
-                          : "bg-white/5 border border-white/10 text-white/80 hover:bg-white/10"
-                          }`}
-                      >
-                        {d.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+            {/* 5. Fee Range / Budget */}
+            {dynamicFees.length > 0 && (
+              <div className="space-y-1.5">
+                <label className="text-slate-700 text-xs font-medium uppercase tracking-wider block">
+                  Fee Range / Budget
+                </label>
+                <Select
+                  value={selectedFee}
+                  onChange={(value) => setSelectedFee(value)}
+                  className="w-full font-medium"
+                  size="middle"
+                  options={dynamicFees.map((f) => ({
+                    value: f.id,
+                    label: f.label,
+                  }))}
+                />
               </div>
+            )}
+          </div>
 
-              {/* Action Buttons */}
-              <div className="flex items-center justify-end gap-3 border-t border-white/10 pt-6 mt-8">
-                <button
-                  type="button"
-                  onClick={handleResetFilters}
-                  className="cursor-pointer text-xs font-bold text-white/60 hover:text-white border border-white/10 bg-transparent px-5 py-2.5 rounded-xl hover:bg-white/5 transition-colors"
-                >
-                  Reset Filters
-                </button>
-                <button
-                  type="button"
-                  onClick={handleApplyFilters}
-                  className="cursor-pointer text-xs font-bold bg-[#EEC471] text-[#102441] px-6 py-2.5 rounded-xl hover:scale-[1.01] transition-transform shadow-md"
-                >
-                  Apply Filters
-                </button>
-              </div>
-            </Container>
+          {/* Action Buttons */}
+          <div className="flex items-center justify-end gap-3 border-t border-slate-100 pt-4">
+            <Button size="middle" onClick={handleResetFilters} className="font-medium">
+              Reset Filters
+            </Button>
+            <Button
+              type="primary"
+              size="middle"
+              onClick={handleApplyFilters}
+              className="bg-[#1d3557] hover:bg-[#152a47] font-medium"
+            >
+              Apply Filters
+            </Button>
           </div>
         </div>
-      )}
+      </Drawer>
     </>
   );
 }
@@ -405,19 +484,34 @@ export function IimIitLogos({ categories = [], programs = [] }) {
   const [tempPartner, setTempPartner] = useState(null);
   const [partnerModalData, setPartnerModalData] = useState({ courses: [], universities: [] });
   // Find Root Showcase Category dynamically from DB (root category without parentId where showInMockup === true)
-  const topRoot = (categories || []).find((c) => !c.parentId && c.showInMockup === true);
+  // parentId is now an array — root = empty array []
+  const topRoot = (categories || []).find((c) => {
+    const pid = c.parentId;
+    const isRoot = !pid || (Array.isArray(pid) ? pid.length === 0 : !pid);
+    return isRoot && c.showInMockup === true;
+  });
   const mainTitle = topRoot?.name || topRoot?.title;
   const mainDescription = topRoot?.description;
 
   // Find ALL Sub-Parent Showcase Categories dynamically via parentId relation (c.parentId === topRoot._id)
   const parentBlocks = (categories || [])
     .filter((c) => {
-      if (!topRoot) return c.showInMockup === true && Boolean(c.parentId);
-      return String(c.parentId) === String(topRoot._id);
+      const pid = c.parentId;
+      const hasParent = pid && (Array.isArray(pid) ? pid.length > 0 : true);
+      if (!topRoot) return c.showInMockup === true && hasParent;
+      const topRootStr = String(topRoot._id);
+      if (Array.isArray(pid)) return pid.some((p) => String(p) === topRootStr || (p?._id && String(p._id) === topRootStr));
+      return String(pid) === topRootStr;
     })
     .map((parent) => {
+      const parentIdStr = String(parent._id);
       const children = (categories || [])
-        .filter((child) => child.parentId && String(child.parentId) === String(parent._id))
+        .filter((child) => {
+          const pid = child.parentId;
+          if (!pid) return false;
+          if (Array.isArray(pid)) return pid.some((p) => String(p) === parentIdStr || (p?._id && String(p._id) === parentIdStr));
+          return String(pid) === parentIdStr;
+        })
         .map((child) => ({
           ...child,
           name: child.name || child.label,
@@ -440,9 +534,13 @@ export function IimIitLogos({ categories = [], programs = [] }) {
     setIsPartnerClosing(false);
 
     // Derive subchildren directly from SSR categories prop (0 extra API calls)
-    const subchildren = (categories || []).filter(
-      (c) => c.parentId && String(c.parentId) === String(partner._id)
-    );
+    const partnerIdStr = String(partner._id);
+    const subchildren = (categories || []).filter((c) => {
+      const pid = c.parentId;
+      if (!pid) return false;
+      if (Array.isArray(pid)) return pid.some((p) => String(p) === partnerIdStr || (p?._id && String(p._id) === partnerIdStr));
+      return String(pid) === partnerIdStr;
+    });
 
     // Filter courses for this partner instantly from SSR programs!
     const partnerPrograms = (programs || []).filter((p) => {
@@ -572,40 +670,37 @@ export function IimIitLogos({ categories = [], programs = [] }) {
                   </button>
                 </div>
 
-                {/* Shadcn UI Carousel Track (Identical Height/Width Matching Stats.jsx: 4-Card Mobile / 8-Card Desktop) */}
+                {/* Antd Carousel Track */}
                 <div className="relative px-2 sm:px-8 py-1 max-w-5xl mx-auto">
                   <Carousel
-                    setApi={setCarouselApi}
-                    opts={{
-                      align: "start",
-                      loop: true,
-                    }}
+                    autoplay
+                    dots={false}
+                    slidesToShow={8}
+                    slidesToScroll={1}
+                    responsive={[
+                      { breakpoint: 1024, settings: { slidesToShow: 6 } },
+                      { breakpoint: 768, settings: { slidesToShow: 4 } },
+                      { breakpoint: 480, settings: { slidesToShow: 4 } },
+                    ]}
                     className="w-full relative"
                   >
-                    <CarouselContent className="-ml-1.5 sm:-ml-2.5 items-center">
-                      {allSubchildItems.map((child, idx) => (
-                        <CarouselItem
-                          key={`${child._id || child.slug}-${idx}`}
-                          className="pl-1.5 sm:pl-2.5 basis-1/4 md:basis-1/8"
+                    {allSubchildItems.map((child, idx) => (
+                      <div key={`${child._id || child.slug}-${idx}`} className="px-1">
+                        <div
+                          onClick={() => handleOpenPartner(child, child.blockSlug)}
+                          className="w-full aspect-square bg-white hover:bg-slate-50 border border-slate-200/90 rounded-xl sm:rounded-2xl p-1.5 min-[360px]:p-2 sm:p-2.5 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group shadow-2xs min-w-0"
                         >
-                          <div
-                            onClick={() => handleOpenPartner(child, child.blockSlug)}
-                            className="w-full aspect-square bg-white hover:bg-slate-50 border border-slate-200/90 rounded-xl sm:rounded-2xl p-1.5 min-[360px]:p-2 sm:p-2.5 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group shadow-2xs min-w-0"
-                          >
-                            <div className="mb-0.5 sm:mb-1 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
-                              <PartnerLogoIcon partner={child} />
-                            </div>
-                            <Tooltip title={child.name} placement="top">
-                              <h5 className="text-[9.5px] min-[360px]:text-[10px] sm:text-[11px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors text-center w-full tracking-tight px-0.5 min-w-0">
-                                {formatTwoLineText(child.name)}
-                              </h5>
-                            </Tooltip>
+                          <div className="mb-0.5 sm:mb-1 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
+                            <PartnerLogoIcon partner={child} />
                           </div>
-                        </CarouselItem>
-                      ))}
-                    </CarouselContent>
-                    <CarouselPrevious className="hidden sm:flex -left-4 top-1/2 -translate-y-1/2 border-slate-200 bg-white text-slate-700 hover:bg-slate-100 shadow-xs z-10" />
-                    <CarouselNext className="hidden sm:flex -right-4 top-1/2 -translate-y-1/2 border-slate-200 bg-white text-slate-700 hover:bg-slate-100 shadow-xs z-10" />
+                          <Tooltip title={child.name} placement="top">
+                            <h5 className="text-[9.5px] min-[360px]:text-[10px] sm:text-[11px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors text-center w-full tracking-tight px-0.5 min-w-0">
+                              {formatTwoLineText(child.name)}
+                            </h5>
+                          </Tooltip>
+                        </div>
+                      </div>
+                    ))}
                   </Carousel>
                 </div>
               </div>

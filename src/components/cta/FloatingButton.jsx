@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import Image from "next/image";
 import confetti from "canvas-confetti";
-import FormWrapper from "@/components/forms/FormWrapper";
+import { useFormModal } from "@/context/FormModalContext";
 import { getAssetPath } from "@/lib/utils";
 
 export default function FloatingButton({
@@ -16,7 +16,7 @@ export default function FloatingButton({
   showConfettiOnAutoOpen = true,
   ...formProps
 }) {
-  const [isOpen, setIsOpen] = useState(false);
+  const { openFormModal } = useFormModal();
 
   /* =========================================================
      CONFETTI ANIMATION TRIGGER
@@ -53,6 +53,20 @@ export default function FloatingButton({
     }
   };
 
+  const handleOpenForm = () => {
+    openFormModal({
+      title,
+      subtitle,
+      formNameOverride,
+      submitButtonText,
+      onSuccess: triggerConfetti,
+      ...formProps,
+    });
+  };
+
+  const openFormRef = useRef(handleOpenForm);
+  openFormRef.current = handleOpenForm;
+
   /* =========================================================
      AUTO-OPEN ON 45% SCROLL (ONCE PER SESSION)
   ========================================================= */
@@ -75,7 +89,9 @@ export default function FloatingButton({
 
       if (currentScrollPercent >= autoOpenAtScrollPercent) {
         sessionStorage.setItem(autoOpenSessionKey, "true");
-        setIsOpen(true);
+        if (openFormRef.current) {
+          openFormRef.current();
+        }
         if (showConfettiOnAutoOpen) {
           triggerConfetti();
         }
@@ -95,53 +111,37 @@ export default function FloatingButton({
 
   const handleManualClick = () => {
     triggerConfetti();
-    setIsOpen(true);
+    handleOpenForm();
   };
 
   return (
-    <>
-      {/* Floating Gift Scholarship Button */}
-      <button
-        type="button"
-        onClick={handleManualClick}
-        aria-label="Get scholarship coupon code"
-        title="Get Scholarship Coupon Code"
-        className="
-          relative
-          flex h-14 w-14 shrink-0
-          cursor-pointer items-center justify-center
-          rounded-full bg-white
-          shadow-md
-          transition-all duration-300
-          hover:scale-110
-          hover:shadow-lg
-          focus:outline-none
-          focus:ring-4
-          focus:ring-[#1C3569]/20
-        "
-      >
-        <Image
-          src={getAssetPath("/assets/images/unnamed (1).gif")}
-          alt="Get scholarship coupon code"
-          width={48}
-          height={48}
-          unoptimized
-          className="h-12 w-12 rounded-full object-contain"
-        />
-      </button>
-
-      {/* Form Modal */}
-      <FormWrapper
-        isModal
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-        onSuccess={triggerConfetti}
-        title={title}
-        subtitle={subtitle}
-        formNameOverride={formNameOverride}
-        submitButtonText={submitButtonText}
-        {...formProps}
+    <button
+      type="button"
+      onClick={handleManualClick}
+      aria-label="Get scholarship coupon code"
+      title="Get Scholarship Coupon Code"
+      className="
+        relative
+        flex h-14 w-14 shrink-0
+        cursor-pointer items-center justify-center
+        rounded-full bg-white
+        shadow-md
+        transition-all duration-300
+        hover:scale-110
+        hover:shadow-lg
+        focus:outline-none
+        focus:ring-4
+        focus:ring-[#1C3569]/20
+      "
+    >
+      <Image
+        src={getAssetPath("/assets/images/unnamed (1).gif")}
+        alt="Get scholarship coupon code"
+        width={48}
+        height={48}
+        unoptimized
+        className="h-12 w-12 rounded-full object-contain"
       />
-    </>
+    </button>
   );
 }

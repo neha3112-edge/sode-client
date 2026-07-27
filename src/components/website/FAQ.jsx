@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Container } from "@/components/ui/container";
+import { Container } from "@/components/common/Container";
 export function FAQ({ initialFaqs = [] }) {
   const faqsList = Array.isArray(initialFaqs) ? initialFaqs : [];
   const [openIdx, setOpenIdx] = useState(null);

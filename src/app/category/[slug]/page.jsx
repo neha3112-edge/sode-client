@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { Header } from "@/components/website/Header";
 import { Footer } from "@/components/website/Footer";
 import { MobileBottomNav } from "@/components/website/MockupAdditions";
-import { Container } from "@/components/ui/container";
+import { Container } from "@/components/common/Container";
 import { getWebsiteCategoryBySlug, getWebsiteCoursesFilter } from "@/services/api";
 import Image from "next/image";
 

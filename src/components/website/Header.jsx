@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Container } from "@/components/ui/container";
+import { Container } from "@/components/common/Container";
 import { getAssetPath } from "@/lib/utils";
 
 export function Header({ siteLogo }) {

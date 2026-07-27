@@ -11,7 +11,7 @@ export async function generateMetadata({ params }) {
   const { slug } = await params;
   const courseData = await getWebsiteCourseRead(slug);
   const course = courseData?.program || courseData;
-  
+
   const title = course?.title || "Course Details";
   const desc = course?.description?.substring(0, 160) || `Learn more about ${title} distance program eligibility, duration, and fees.`;
 
@@ -30,11 +30,11 @@ export default async function CourseDetailPage({ params }) {
   const { slug } = await params;
   const courseData = await getWebsiteCourseRead(slug);
   const course = courseData?.program || courseData;
-  
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <main className="flex-grow">
+      <main className="grow">
         <CourseDetailView slug={slug} initialCourse={course} />
       </main>
       <Footer />

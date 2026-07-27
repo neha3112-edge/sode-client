@@ -1,4 +1,4 @@
-import { message } from "antd";
+import { messageService } from "@/services/request/messageService";
 
 const successHandler = (
   response,
@@ -12,7 +12,7 @@ const successHandler = (
   if (data?.success === true) {
     const successText = data?.message || "Request completed successfully.";
     if (options.notifyOnSuccess) {
-      message.success({
+      messageService.message.success({
         content: successText,
         duration: 5,
       });
@@ -22,7 +22,7 @@ const successHandler = (
 
   const errorText = data?.message || "An error occurred.";
   if (options.notifyOnFailed) {
-    message.error({
+    messageService.message.error({
       content: errorText,
       duration: 5,
     });

@@ -21,19 +21,16 @@ import {
 import { useCompare } from "@/context/CompareContext";
 import { getWebsiteUniversitiesCompare, getUniversities } from "@/services/api";
 import { getAssetPath } from "@/lib/utils";
-import FormWrapper from "@/components/forms/FormWrapper";
+import { useFormModal } from "@/context/FormModalContext";
 
 export default function UniversityCompareView() {
   const { compareList, addToCompare, removeFromCompare, clearCompare, compareVersion } = useCompare();
+  const { openFormModal } = useFormModal();
 
   const [compareData, setCompareData] = useState([]);
   const [allUniversities, setAllUniversities] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [highlightDifferences, setHighlightDifferences] = useState(false);
-
-  // Form Modal State
-  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
-  const [selectedProgramTitle, setSelectedProgramTitle] = useState("University Comparison Inquiry");
 
   // Fetch all universities for the dropdown selection
   useEffect(() => {
@@ -248,8 +245,14 @@ export default function UniversityCompareView() {
                           <Button
                             type="primary"
                             size="small"
-                            onClick={() => handleOpenCounseling(uni.name)}
-                            className="bg-[#059669] hover:!bg-[#047857] text-white font-bold text-xs rounded-xl h-8 w-full mt-2 border-none cursor-pointer"
+                            onClick={() =>
+                              openFormModal({
+                                title: "Request Expert Counseling",
+                                subtitle: "Talk to senior university advisors for 1:1 guidance",
+                                defaultCourse: uni.name || "University Comparison Inquiry",
+                              })
+                            }
+                            className="bg-[#1C3569] text-white font-bold rounded-lg text-xs"
                           >
                             Request Advice
                           </Button>
@@ -440,16 +443,6 @@ export default function UniversityCompareView() {
           </div>
         )}
       </div>
-
-      {/* Counseling Form Modal */}
-      <FormWrapper
-        isModal
-        isOpen={isFormModalOpen}
-        title="Request Expert Counseling"
-        subtitle="Talk to senior university advisors for 1:1 guidance"
-        onClose={() => setIsFormModalOpen(false)}
-        defaultCourse={selectedProgramTitle}
-      />
     </div>
   );
 }

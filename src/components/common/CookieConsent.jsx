@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { Cookie, ShieldCheck, X } from "lucide-react";
 import Link from "next/link";
 
 export default function CookieConsent() {
+  const pathname = usePathname();
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -31,6 +33,10 @@ export default function CookieConsent() {
     document.cookie = "sode_cookie_consent=essential; max-age=31536000; path=/; SameSite=Lax";
     setIsVisible(false);
   };
+
+  if (pathname?.startsWith("/admin-dashboard") || pathname?.startsWith("/login")) {
+    return null;
+  }
 
   if (!isVisible) return null;
 
