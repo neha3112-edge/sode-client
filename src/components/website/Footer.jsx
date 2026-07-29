@@ -262,7 +262,7 @@ export function Footer({
                     <li key={university}>
                       <a
                         href="#prestigious-institutions"
-                        className="transition-colors hover:text-gray-950"
+                        className="text-gray-700 hover:text-gray-950 transition-colors"
                       >
                         {university}
                       </a>
@@ -284,7 +284,7 @@ export function Footer({
                     <li key={program}>
                       <a
                         href="#premium-programs"
-                        className="transition-colors hover:text-gray-950"
+                        className="text-gray-700 hover:text-gray-950 transition-colors"
                       >
                         {program}
                       </a>
@@ -305,7 +305,7 @@ export function Footer({
                   <li>
                     <a
                       href="#why-choose"
-                      className="transition-colors hover:text-gray-950"
+                      className="text-gray-700 hover:text-gray-950 transition-colors"
                     >
                       About Us
                     </a>
@@ -315,7 +315,7 @@ export function Footer({
                     <button
                       type="button"
                       onClick={openExpertForm}
-                      className="cursor-pointer text-left transition-colors hover:text-gray-950"
+                      className="cursor-pointer text-left text-gray-700 hover:text-gray-950 transition-colors"
                     >
                       Contact Us
                     </button>
@@ -325,7 +325,7 @@ export function Footer({
                     <button
                       type="button"
                       onClick={openExpertForm}
-                      className="cursor-pointer text-left transition-colors hover:text-gray-950"
+                      className="cursor-pointer text-left text-gray-700 hover:text-gray-950 transition-colors"
                     >
                       Book Free Counseling
                     </button>
@@ -334,7 +334,7 @@ export function Footer({
                   <li>
                     <a
                       href="#alumni-voices"
-                      className="transition-colors hover:text-gray-950"
+                      className="text-gray-700 hover:text-gray-950 transition-colors"
                     >
                       Alumni Voices
                     </a>
@@ -343,7 +343,7 @@ export function Footer({
                   <li>
                     <a
                       href="#faqs"
-                      className="transition-colors hover:text-gray-950"
+                      className="text-gray-700 hover:text-gray-950 transition-colors"
                     >
                       FAQs
                     </a>
@@ -365,7 +365,7 @@ export function Footer({
                 <button
                   type="button"
                   onClick={() => setActiveDialog("disclaimer")}
-                  className="cursor-pointer transition-colors hover:text-gray-950"
+                  className="cursor-pointer text-gray-700 hover:text-gray-950 transition-colors"
                 >
                   Disclaimer
                 </button>
@@ -375,7 +375,7 @@ export function Footer({
                 <button
                   type="button"
                   onClick={() => setActiveDialog("privacy")}
-                  className="cursor-pointer transition-colors hover:text-gray-950"
+                  className="cursor-pointer text-gray-700 hover:text-gray-950 transition-colors"
                 >
                   Privacy
                 </button>
@@ -385,7 +385,7 @@ export function Footer({
                 <button
                   type="button"
                   onClick={() => setActiveDialog("terms")}
-                  className="cursor-pointer transition-colors hover:text-gray-950"
+                  className="cursor-pointer text-gray-700 hover:text-gray-950 transition-colors"
                 >
                   Terms &amp; Condition
                 </button>
