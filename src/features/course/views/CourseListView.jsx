@@ -91,7 +91,6 @@ function FilterSidebarContent({
           value={activeCategoryTab ? activeCategoryTab.toLowerCase() : "all"}
           onChange={(val) => {
             setActiveCategoryTab(val);
-            setActiveSubcategory("");
           }}
           className="w-full font-semibold rounded-xl"
           size="middle"
@@ -386,7 +385,7 @@ export default function CourseListView({
       { label: "Management", value: "management" },
       { label: "AI Courses", value: "ai-courses" },
       { label: "Machine Learning", value: "machine-learning" },
-      { label: "HR", value: "human-resource" },
+      { label: "HR", value: "hr" },
       { label: "Banking", value: "banking" },
       { label: "Finance", value: "finance" },
       { label: "Leadership", value: "leadership" },

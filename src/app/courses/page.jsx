@@ -11,7 +11,8 @@ import {
 } from "@/services/api";
 import { getPageMetaData } from "@/constants/pageMetaData";
 
-export const revalidate = 300; // Next.js ISR: Revalidate static HTML cache every 5 minutes
+export const revalidate = 0;
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata() {
   const pageMeta = await getPageMetaData("/courses");

@@ -261,16 +261,22 @@ export function Stats({ categories: initialCategories = [], programs = [] }) {
                   Browse By Category
                 </h4>
                 <div className="flex flex-wrap gap-2 sm:gap-2.5" suppressHydrationWarning>
-                  {browseByPills.map((pill) => (
-                    <button
-                      key={pill._id || pill.slug || pill.name}
-                      onClick={() => router.push(`/courses?search=${encodeURIComponent(pill.search || pill.name)}`)}
-                      className="px-2.5 sm:px-3.5 py-1.5 bg-white hover:bg-slate-50 border border-slate-300/90 rounded-lg text-[11px] sm:text-xs font-semibold text-slate-700 hover:text-blue-600 hover:border-blue-300 transition-all cursor-pointer shadow-2xs hover:shadow-xs whitespace-nowrap"
-                      suppressHydrationWarning
-                    >
-                      {pill.name}
-                    </button>
-                  ))}
+                    {browseByPills.map((pill) => {
+                      let subSlug = pill.slug || pill.name || "";
+                      if (subSlug.startsWith("browse-")) subSlug = subSlug.slice(7);
+                      return (
+                        <button
+                          key={pill._id || pill.slug || pill.name}
+                          onClick={() => {
+                            router.push(`/courses?subcategory=${encodeURIComponent(subSlug)}`);
+                          }}
+                          className="px-2.5 sm:px-3.5 py-1.5 bg-white hover:bg-slate-50 border border-slate-300/90 rounded-lg text-[11px] sm:text-xs font-semibold text-slate-700 hover:text-blue-600 hover:border-blue-300 transition-all cursor-pointer shadow-2xs hover:shadow-xs whitespace-nowrap"
+                          suppressHydrationWarning
+                        >
+                          {pill.name}
+                        </button>
+                      );
+                    })}
                 </div>
               </div>
             )}
