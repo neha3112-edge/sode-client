@@ -19,7 +19,6 @@ import {
 } from "@ant-design/icons";
 
 import { useCompare } from "@/context/CompareContext";
-import { getWebsiteUniversitiesCompare, getUniversities } from "@/services/api";
 import { getAssetPath } from "@/lib/utils";
 import { useFormModal } from "@/context/FormModalContext";
 
@@ -34,8 +33,10 @@ export default function UniversityCompareView() {
 
   // Fetch all universities for the dropdown selection
   useEffect(() => {
-    getUniversities()
-      .then((data) => {
+    fetch("/api/website/universities")
+      .then((res) => res.json())
+      .then((json) => {
+        const data = json?.result ?? json;
         if (Array.isArray(data)) setAllUniversities(data);
       })
       .catch((err) => console.error("Error fetching universities list:", err));
@@ -50,10 +51,12 @@ export default function UniversityCompareView() {
     }
 
     setIsLoading(true);
-    const slugs = list.map((item) => item.slug);
+    const slugs = list.map((item) => item.slug).join(",");
 
-    getWebsiteUniversitiesCompare(slugs)
-      .then((data) => {
+    fetch(`/api/website/universities/compare?slugs=${encodeURIComponent(slugs)}`)
+      .then((res) => res.json())
+      .then((json) => {
+        const data = json?.result ?? json;
         setCompareData(Array.isArray(data) ? data : []);
       })
       .catch((err) => console.error("Error fetching comparison data from backend:", err))

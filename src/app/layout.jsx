@@ -12,6 +12,8 @@ import CookieConsent from "@/components/common/CookieConsent";
 import { getPageMetaData } from "@/constants/pageMetaData";
 import { getSiteSettingData } from "@/constants/siteSettingData";
 
+import SWRProvider from "@/components/providers/SWRProvider";
+
 import { FormModalProvider } from "@/context/FormModalContext";
 import AntdMessageBridge from "@/components/layout/AntdMessageBridge";
 
@@ -153,15 +155,17 @@ export default async function RootLayout({ children }) {
           <App>
             <AntdMessageBridge />
             <StoreProvider>
-              <FormModalProvider>
-                <CompareProvider>
-                  <JsonLd />
-                  {children}
-                  {siteSetting.showGlobalCta !== false && <GlobalCTA />}
-                  <CookieConsent />
-                  <CompareDrawerWidget />
-                </CompareProvider>
-              </FormModalProvider>
+              <SWRProvider>
+                <FormModalProvider>
+                  <CompareProvider>
+                    <JsonLd />
+                    {children}
+                    {siteSetting.showGlobalCta !== false && <GlobalCTA />}
+                    <CookieConsent />
+                    <CompareDrawerWidget />
+                  </CompareProvider>
+                </FormModalProvider>
+              </SWRProvider>
             </StoreProvider>
           </App>
           </ConfigProvider>

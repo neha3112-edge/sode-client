@@ -16,10 +16,22 @@ export default function Index() {
         },
         {
             title: "Tenant (Company)",
-            dataIndex: ["tenantId", "name"], // Mongoose populate की हुई Object से नाम निकालने के लिए
+            dataIndex: "tenantId",
             key: "tenantId",
-            render: (tenantName, record) => {
-                return tenantName || record?.tenantId?.name || <Tag color="red">No Tenant Assigned</Tag>;
+            render: (tenantId) => {
+                if (!tenantId || (Array.isArray(tenantId) && tenantId.length === 0)) {
+                    return <Tag color="red">No Tenant Assigned</Tag>;
+                }
+                const tenants = Array.isArray(tenantId) ? tenantId : [tenantId];
+                return (
+                    <>
+                        {tenants.map((t) => (
+                            <Tag key={t?._id || t} color="blue">
+                                {t?.name || String(t)}
+                            </Tag>
+                        ))}
+                    </>
+                );
             },
         },
         {

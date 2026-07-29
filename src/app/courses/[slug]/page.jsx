@@ -4,7 +4,8 @@ import { Footer } from "@/components/website/Footer";
 import CourseDetailView from "@/features/course/views/CourseDetailView";
 import { getWebsiteCourseRead } from "@/services/api";
 
-export const revalidate = 300; // Next.js ISR: Revalidate static HTML cache every 5 minutes
+export const revalidate = 0;
+export const dynamic = "force-dynamic";
 
 // Dynamic SEO Metadata Generation
 export async function generateMetadata({ params }) {
@@ -12,7 +13,14 @@ export async function generateMetadata({ params }) {
   const courseData = await getWebsiteCourseRead(slug);
   const course = courseData?.program || courseData;
 
-  const title = course?.title || "Course Details";
+  // Use subcourse title for SEO when navigated via subcourse slug
+  let title = course?.title || "Course Details";
+  if (course?.activeSubcourseSlug && Array.isArray(course?.universityOfferings)) {
+    const slugify = (text) => text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+    const offering = course.universityOfferings[course.activeOfferingIdx || 0];
+    const matchedSub = offering?.subcourses?.find(s => slugify(s.title || "") === course.activeSubcourseSlug);
+    if (matchedSub?.title) title = matchedSub.title;
+  }
   const desc = course?.description?.substring(0, 160) || `Learn more about ${title} distance program eligibility, duration, and fees.`;
 
   return {

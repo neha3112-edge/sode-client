@@ -1,8 +1,8 @@
-import { message } from "antd";
+import { messageService } from "@/services/request/messageService";
 
 const errorHandler = (error) => {
   const showError = (content) => {
-    message.error({
+    messageService.message.error({
       content,
       duration: 5,
     });

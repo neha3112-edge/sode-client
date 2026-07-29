@@ -16,9 +16,22 @@ export default function UniversityCmsIndex() {
       key: "name",
       render: (text, record) => (
         <div>
-          <div className="font-bold text-slate-800 text-sm">{text}</div>
+          <div className="font-bold text-slate-800 text-sm">
+            {text} {record.shortName && <span className="text-xs text-blue-600">({record.shortName})</span>}
+          </div>
           <div className="text-xs text-slate-400 font-mono">/{record.slug}</div>
         </div>
+      ),
+    },
+    {
+      title: "Featured",
+      dataIndex: "featured",
+      key: "featured",
+      width: 100,
+      render: (featured) => (
+        <Tag color={featured ? "gold" : "default"}>
+          {featured ? "Featured" : "Standard"}
+        </Tag>
       ),
     },
     {

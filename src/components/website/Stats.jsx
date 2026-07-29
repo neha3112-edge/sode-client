@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { getAssetPath } from "@/lib/utils";
 import { Tooltip } from "antd";
 import { ArrowLeft, X } from "lucide-react";
-import { getWebsiteCategories } from "@/services/api";
+
 
 // Category Icon Component - Renders MinIO Media Asset image/SVG from backend using Next.js Image
 function CategoryIcon({ cat }) {
@@ -92,22 +92,11 @@ function SmartLogoAvatar({ logoUrl, altName }) {
 
 export function Stats({ categories: initialCategories = [], programs = [] }) {
   const router = useRouter();
-  const [categoriesList, setCategoriesList] = useState(initialCategories);
+  const categoriesList = initialCategories;
   const [activeCategory, setActiveCategory] = useState(null);
   const [isModalClosing, setIsModalClosing] = useState(false);
   const [modalData, setModalData] = useState({ category: null, children: [], courses: [], universities: [] });
 
-  useEffect(() => {
-    if (initialCategories && initialCategories.length > 0) {
-      setCategoriesList(initialCategories);
-    } else {
-      getWebsiteCategories().then((res) => {
-        if (res && res.categories && res.categories.length > 0) {
-          setCategoriesList(res.categories);
-        }
-      });
-    }
-  }, [initialCategories]);
 
   // Filter root categories dynamically from Backend API (showInStats !== false)
   // parentId is now an array — root = empty array []
@@ -168,7 +157,11 @@ export function Stats({ categories: initialCategories = [], programs = [] }) {
       });
     } else {
       if (activeCategory) handleCloseModal();
-      router.push(`/courses?category=${encodeURIComponent(cat.slug || cat.name || cat.label)}`);
+      let catSlug = cat.slug || cat.name || cat.label;
+      if (catSlug.startsWith("browse-")) {
+        catSlug = catSlug.slice(7);
+      }
+      router.push(`/courses?category=${encodeURIComponent(catSlug)}`);
     }
   };
 
@@ -181,8 +174,14 @@ export function Stats({ categories: initialCategories = [], programs = [] }) {
   };
 
   const handleChildClick = (child) => {
-    const parentSlug = activeCategory ? (activeCategory.slug || activeCategory._id) : "";
+    let parentSlug = activeCategory ? (activeCategory.slug || activeCategory._id) : "";
+    if (parentSlug.startsWith("browse-")) {
+      parentSlug = parentSlug.slice(7);
+    }
     let childSlug = child.slug || child.name || child.label;
+    if (childSlug.startsWith("browse-")) {
+      childSlug = childSlug.slice(7);
+    }
     if (parentSlug && childSlug.startsWith(`${parentSlug}-`)) {
       childSlug = childSlug.slice(parentSlug.length + 1);
     }
@@ -378,7 +377,7 @@ export function Stats({ categories: initialCategories = [], programs = [] }) {
                         🎓 No subcategories found for {activeCategory.name || activeCategory.label}.
                       </p>
                       <Link
-                        href={`/courses?category=${activeCategory.slug || ""}`}
+                        href={`/courses?category=${(activeCategory.slug || "").replace(/^browse-/, "")}`}
                         onClick={handleCloseModal}
                         className="inline-flex items-center gap-2 bg-blue-600 text-white font-semibold px-5 py-2.5 rounded-xl text-xs hover:bg-blue-700 transition-all shadow-sm"
                       >

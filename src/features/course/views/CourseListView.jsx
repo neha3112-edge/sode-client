@@ -17,146 +17,227 @@ import {
 } from "@ant-design/icons";
 
 import { FormModalContext } from "@/context/FormModalContext";
+import { useCompare } from "@/context/CompareContext";
 import { getAssetPath } from "@/lib/utils";
-import { getWebsiteCoursesFilter } from "@/services/api";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
 import WebsiteLayout from "@/components/layout/WebsiteLayout";
 
-// Reusable Sidebar Filter Component defined OUTSIDE to maintain stable React DOM identity
+// Reusable Sidebar Filter Component matching Image 2 UI mockup
 function FilterSidebarContent({
   activeFilterCount,
   handleClearFilters,
-  searchInputValue,
-  setSearchInputValue,
-  setAppliedSearchTerm,
   activeCategoryTab,
   setActiveCategoryTab,
-  categoryTabs = [],
-  durationOptions = [],
-  sortBy,
-  setSortBy,
+  categorySelectOptions = [],
+  subcategoryList = [],
+  durationList = [],
+  feeList = [],
   selectedDuration,
   setSelectedDuration,
-  openFormModal,
+  selectedFee,
+  setSelectedFee,
+  selectedUniversities,
+  setSelectedUniversities,
+  universityOptions = [],
+  activeSubcategory,
+  setActiveSubcategory,
+  setCurrentPage,
 }) {
+  const handleCategoryPillClick = (val) => {
+    if (activeSubcategory === val) {
+      setActiveSubcategory("");
+    } else {
+      setActiveSubcategory(val);
+    }
+  };
+
+  const isCategoryPillActive = (val) => {
+    return activeSubcategory === val;
+  };
+
+  const handleDurationPillClick = (val) => {
+    if (selectedDuration === val) {
+      setSelectedDuration("all");
+    } else {
+      setSelectedDuration(val);
+    }
+  };
+
   return (
     <div className="space-y-5 text-slate-800">
       {/* Sidebar Header */}
       <div className="flex items-center justify-between pb-3 border-b border-slate-100">
         <h3 className="font-extrabold text-base text-[#1C3569] m-0 flex items-center gap-2">
-          <FilterOutlined className="text-amber-600" /> Filter Options
+          <FilterOutlined className="text-[#1C3569]" /> Filter
         </h3>
         {activeFilterCount > 0 && (
           <button
             type="button"
             onClick={handleClearFilters}
-            className="text-xs font-bold text-red-600 hover:text-red-700 cursor-pointer flex items-center gap-1 bg-red-50 px-2 py-1 rounded-md"
+            className="text-xs font-bold text-red-600 hover:text-red-700 cursor-pointer flex items-center gap-1 bg-red-50 px-2 py-1 rounded-md border-none"
           >
             <ReloadOutlined className="text-[10px]" /> Reset
           </button>
         )}
       </div>
 
-      {/* 1. Global Live Search Box */}
-      <div>
-        <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">
-          Live Search Mongoose DB
-        </label>
-        <Input.Search
-          placeholder="e.g. MCA, MBA, DBA..."
-          allowClear
-          enterButton={<span className="font-medium text-xs">Search</span>}
-          size="middle"
-          value={searchInputValue}
-          onChange={(e) => {
-            setSearchInputValue(e.target.value);
-            if (!e.target.value) setAppliedSearchTerm("");
-          }}
-          onSearch={(value) => setAppliedSearchTerm(value)}
-          className="rounded-xl border-slate-200"
-        />
-      </div>
-
-      {/* 2. Course Category (Antd Select) */}
-      <div>
-        <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5 flex items-center gap-1">
-          <BookOutlined className="text-amber-600" /> Course Category
+      {/* 1. Course (Antd Select Dropdown) */}
+      <div className="space-y-1.5">
+        <label className="block text-xs font-bold text-slate-700">
+          Course
         </label>
         <Select
           value={activeCategoryTab ? activeCategoryTab.toLowerCase() : "all"}
-          onChange={(val) => setActiveCategoryTab(val)}
+          onChange={(val) => {
+            setActiveCategoryTab(val);
+            setActiveSubcategory("");
+          }}
           className="w-full font-semibold rounded-xl"
           size="middle"
-          options={categoryTabs.map((cat) => ({
-            value: cat.slug,
-            label: cat.label,
-          }))}
+          options={categorySelectOptions}
         />
       </div>
 
-      {/* 4. Sort Results By (Antd Select) */}
-      <div>
-        <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5 flex items-center gap-1">
-          <SortAscendingOutlined className="text-amber-600" /> Sort Results By
+      {/* 2. Category Tags using Antd CheckableTag */}
+      <div className="space-y-2">
+        <label className="block text-xs font-bold text-slate-700">
+          Category
+        </label>
+        <div className="flex flex-wrap gap-1.5">
+          {subcategoryList.map((pill) => {
+            const active = isCategoryPillActive(pill.value);
+            return (
+              <Tag.CheckableTag
+                key={pill.value}
+                checked={active}
+                onChange={() => handleCategoryPillClick(pill.value)}
+                className={`px-2.5 py-1 text-xs font-semibold rounded-full border transition-all duration-200 cursor-pointer ${active
+                  ? "!bg-[#1C3569] !text-white border-[#1C3569]"
+                  : "bg-white text-slate-500 border-slate-200 hover:border-[#1C3569] hover:text-[#1C3569]"
+                  }`}
+              >
+                {pill.label}
+              </Tag.CheckableTag>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 3. Duration Tags using Antd CheckableTag */}
+      <div className="space-y-2">
+        <label className="block text-xs font-bold text-slate-700">
+          Duration
+        </label>
+        <div className="flex flex-wrap gap-1.5">
+          {durationList.map((pill) => {
+            const active = selectedDuration === pill.value;
+            return (
+              <Tag.CheckableTag
+                key={pill.value}
+                checked={active}
+                onChange={() => handleDurationPillClick(pill.value)}
+                className={`px-2.5 py-1 text-xs font-semibold rounded-full border transition-all duration-200 cursor-pointer ${active
+                  ? "!bg-[#1C3569] !text-white border-[#1C3569]"
+                  : "bg-white text-slate-500 border-slate-200 hover:border-[#1C3569] hover:text-[#1C3569]"
+                  }`}
+              >
+                {pill.label}
+              </Tag.CheckableTag>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 4. Fees Range Tags using Antd CheckableTag */}
+      <div className="space-y-2">
+        <label className="block text-xs font-bold text-slate-700">
+          Fees Range
+        </label>
+        <div className="flex flex-wrap gap-1.5">
+          {feeList.map((pill) => {
+            const active = selectedFee === pill.value;
+            return (
+              <Tag.CheckableTag
+                key={pill.value}
+                checked={active}
+                onChange={() => setSelectedFee(pill.value)}
+                className={`px-2.5 py-1 text-xs font-semibold rounded-full border transition-all duration-200 cursor-pointer ${active
+                  ? "!bg-[#1C3569] !text-white border-[#1C3569]"
+                  : "bg-white text-slate-500 border-slate-200 hover:border-[#1C3569] hover:text-[#1C3569]"
+                  }`}
+              >
+                {pill.label}
+              </Tag.CheckableTag>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 5. Institute Dropdown (Antd Select) */}
+      <div className="space-y-1.5">
+        <label className="block text-xs font-bold text-slate-700">
+          Institute
         </label>
         <Select
-          value={sortBy}
-          onChange={(val) => setSortBy(val)}
-          className="w-full font-semibold rounded-xl"
-          size="middle"
-          options={[
-            { value: "featured", label: "Featured First" },
-            { value: "title-asc", label: "Title: A to Z" },
-            { value: "title-desc", label: "Title: Z to A" },
-          ]}
-        />
-      </div>
-
-      {/* 5. Program Duration (Antd Select) */}
-      <div>
-        <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5 flex items-center gap-1">
-          <ClockCircleFilled className="text-amber-600" /> Program Duration
-        </label>
-        <Select
-          value={selectedDuration}
-          onChange={(val) => setSelectedDuration(val)}
-          className="w-full font-semibold rounded-xl"
-          size="middle"
-          options={durationOptions.map((d) => ({
-            value: d.slug || "all",
-            label: d.label,
-          }))}
-        />
-      </div>
-
-      {/* Student Assistance Counselor Box */}
-      <div className="bg-gradient-to-br from-[#1C3569] to-[#0d1d3d] text-white p-4 rounded-2xl space-y-2 text-center shadow-md">
-        <span className="text-amber-400 font-bold text-xs uppercase tracking-wider block">🎓 Need Expert Advice?</span>
-        <p className="text-xs text-slate-200 font-medium m-0 leading-snug">
-          Confused about course selection or university approvals? Talk to senior advisors for free!
-        </p>
-        <Button
-          type="primary"
-          onClick={() => {
-            if (openFormModal) {
-              openFormModal({
-                title: "Request Free Counseling",
-                subtitle: "Talk to senior advisors for free!",
-                submitButtonText: "Submit Request",
-              });
+          value={selectedUniversities[0] || "all"}
+          onChange={(val) => {
+            if (val === "all") {
+              setSelectedUniversities([]);
+            } else {
+              setSelectedUniversities([val]);
             }
           }}
-          className="w-full bg-[#FFC107] hover:!bg-[#e5ac00] text-black font-bold text-xs h-9 rounded-xl border-none cursor-pointer mt-1"
+          className="w-full font-semibold rounded-xl"
+          size="middle"
+          options={universityOptions}
+        />
+      </div>
+
+      {/* Apply Filter Button & Reset */}
+      <div className="pt-4 space-y-2.5">
+        <Button
+          type="primary"
+          onClick={() => setCurrentPage(1)}
+          className="w-full bg-[#1C3569] hover:!bg-[#0d1d3d] text-white font-bold h-10 rounded-xl cursor-pointer border-none"
         >
-          <PhoneFilled /> Request Free Counseling
+          Apply Filter
         </Button>
+        <button
+          type="button"
+          onClick={handleClearFilters}
+          className="w-full text-center text-xs font-bold text-slate-500 hover:text-slate-700 cursor-pointer flex items-center justify-center gap-1 py-1 border-none bg-transparent"
+        >
+          <ReloadOutlined className="text-[10px]" /> Reset Filter
+        </button>
       </div>
     </div>
   );
 }
 
-export default function CourseListView({ initialCourses = [], initialUniversities = [] }) {
+// Dynamic Accreditation display helper based on University name
+const getAccreditation = (uniName) => {
+  const name = String(uniName || "").toLowerCase();
+  if (name.includes("iim") || name.includes("iit") || name.includes("iiit") || name.includes("indian institute")) {
+    return "AICTE NAAC A+, UGC";
+  }
+  if (name.includes("edgewood") || name.includes("golden gate")) {
+    return "WASC, DEAC, CHEA Approved";
+  }
+  if (name.includes("esgci") || name.includes("paris") || name.includes("geneva") || name.includes("rushford") || name.includes("liverpool")) {
+    return "AACSB, EFMD, AMBA Member / State Accredited";
+  }
+  return "UGC, DEB, NAAC A+ Approved";
+};
+
+export default function CourseListView({
+  initialCourses = [],
+  initialCategories = [],
+  initialCategoryTree = [],
+  initialUniversities = [],
+  initialDurations = [],
+  initialFees = [],
+}) {
   const initialList = useMemo(() => {
     if (Array.isArray(initialCourses)) return initialCourses;
     if (initialCourses && Array.isArray(initialCourses.programs)) return initialCourses.programs;
@@ -174,6 +255,31 @@ export default function CourseListView({ initialCourses = [], initialUniversitie
   const ITEMS_PER_PAGE = 12;
   const [isLoading, setIsLoading] = useState(false);
 
+  // Dynamic Options States initialized directly from Server-Side ISR Props
+  const [dbCategories, setDbCategories] = useState(initialCategories);
+  const [dbCategoryTree, setDbCategoryTree] = useState(initialCategoryTree);
+  const [dbDurations, setDbDurations] = useState(initialDurations);
+  const [dbFees, setDbFees] = useState(initialFees);
+  const [dbUniversities, setDbUniversities] = useState(initialUniversities);
+
+  useEffect(() => {
+    if (Array.isArray(initialCategories) && initialCategories.length > 0) {
+      setDbCategories(initialCategories);
+    }
+    if (Array.isArray(initialCategoryTree) && initialCategoryTree.length > 0) {
+      setDbCategoryTree(initialCategoryTree);
+    }
+    if (Array.isArray(initialDurations) && initialDurations.length > 0) {
+      setDbDurations(initialDurations);
+    }
+    if (Array.isArray(initialFees) && initialFees.length > 0) {
+      setDbFees(initialFees);
+    }
+    if (Array.isArray(initialUniversities) && initialUniversities.length > 0) {
+      setDbUniversities(initialUniversities);
+    }
+  }, [initialCategories, initialCategoryTree, initialDurations, initialFees, initialUniversities]);
+
   // Search States
   const [searchInputValue, setSearchInputValue] = useState("");
   const [appliedSearchTerm, setAppliedSearchTerm] = useState("");
@@ -182,17 +288,22 @@ export default function CourseListView({ initialCourses = [], initialUniversitie
   const [activeSubcategory, setActiveSubcategory] = useState("");
   const [selectedUniversities, setSelectedUniversities] = useState([]);
   const [selectedDuration, setSelectedDuration] = useState("all");
+  const [selectedFee, setSelectedFee] = useState("all");
   const [sortBy, setSortBy] = useState("featured");
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
   const formModalCtx = useContext(FormModalContext);
-  const openFormModal = formModalCtx?.openFormModal ?? (() => {});
+  const openFormModal = formModalCtx?.openFormModal ?? (() => { });
+
+  const { toggleCompare, isInCompare, setIsCompareDrawerOpen } = useCompare();
 
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const isInitialMount = React.useRef(true);
 
   const selectedUnisKey = useMemo(() => selectedUniversities.join(","), [selectedUniversities]);
 
-  // Synchronize URL query parameters (category, search, university, etc.) into component filter state
+  // Synchronize URL query parameters
   useEffect(() => {
     if (!searchParams) return;
     const cat = searchParams.get("category");
@@ -218,10 +329,8 @@ export default function CourseListView({ initialCourses = [], initialUniversitie
     }
   }, [searchParams]);
 
-  // Live Mongoose Backend Fetch Effect (Guarded against infinite loop and redundant initial fetch)
-  // Live Mongoose Backend Fetch Effect (Only fires when user changes filters after initial mount)
+  // Live interactive filter effect — fetches from Next.js API Route /api/website/courses
   useEffect(() => {
-    // Skip fetch on initial mount because SSR initialCourses is ALREADY loaded with active searchParams!
     if (isInitialMount.current) {
       isInitialMount.current = false;
       return;
@@ -230,139 +339,128 @@ export default function CourseListView({ initialCourses = [], initialUniversitie
     let isCancelled = false;
     setIsLoading(true);
 
-    getWebsiteCoursesFilter({
-      search: appliedSearchTerm,
-      category: activeCategoryTab,
-      subcategory: activeSubcategory,
-      university: selectedUniversities,
-      duration: selectedDuration,
-      sort: sortBy,
-      page: currentPage,
-      limit: ITEMS_PER_PAGE,
-    })
-      .then((data) => {
-        if (!isCancelled && data && Array.isArray(data.programs)) {
-          setProgramsList(data.programs);
-          setTotalCount(typeof data.total === "number" ? data.total : data.programs.length);
-          setTotalPages(typeof data.totalPages === "number" ? data.totalPages : Math.ceil((data.total || data.programs.length) / ITEMS_PER_PAGE));
-        }
+    const q = new URLSearchParams();
+    if (appliedSearchTerm) q.set("search", appliedSearchTerm);
+    if (activeCategoryTab && activeCategoryTab !== "all") q.set("category", activeCategoryTab);
+    if (activeSubcategory) q.set("subcategory", activeSubcategory);
+    if (selectedUniversities.length > 0) q.set("university", selectedUniversities.join(","));
+    if (selectedDuration && selectedDuration !== "all") q.set("duration", selectedDuration);
+    if (selectedFee && selectedFee !== "all") q.set("fee", selectedFee);
+    if (sortBy) q.set("sort", sortBy);
+    q.set("page", String(currentPage));
+    q.set("limit", String(ITEMS_PER_PAGE));
+
+    fetch(`/api/website/courses?${q.toString()}`)
+      .then((res) => res.json())
+      .then((json) => {
+        if (isCancelled) return;
+        const data = json?.result ?? json;
+        const progs = Array.isArray(data?.programs) ? data.programs : (Array.isArray(data) ? data : []);
+        setProgramsList(progs);
+        setTotalCount(typeof data?.total === "number" ? data.total : progs.length);
+        setTotalPages(typeof data?.totalPages === "number" ? data.totalPages : Math.ceil((data?.total || progs.length) / ITEMS_PER_PAGE));
       })
-      .catch((err) => {
-        console.error("Backend filter fetch error:", err);
-      })
-      .finally(() => {
-        if (!isCancelled) setIsLoading(false);
-      });
+      .catch((err) => console.error("[CourseListView] filter error:", err))
+      .finally(() => { if (!isCancelled) setIsLoading(false); });
 
-    return () => {
-      isCancelled = true;
-    };
-  }, [appliedSearchTerm, activeCategoryTab, activeSubcategory, selectedUnisKey, selectedDuration, sortBy, currentPage]);
+    return () => { isCancelled = true; };
+  }, [appliedSearchTerm, activeCategoryTab, activeSubcategory, selectedUnisKey, selectedDuration, selectedFee, sortBy, currentPage]);
 
-  // Category Select Options - Master list + dynamic categories from ISR initialCourses / initialList
-  const categoryTabs = useMemo(() => {
-    const map = new Map();
-    map.set("all", { label: "All Categories", slug: "all" });
-
-    const masterCategories = [
-      { slug: "doctorate", label: "Doctorate" },
-      { slug: "master", label: "Master" },
-      { slug: "bachelor", label: "Bachelor" },
-      { slug: "certification", label: "Certification" },
-      { slug: "diploma", label: "Diploma" },
-      { slug: "management", label: "Management" },
+  // 🎯 Course Filter Options (Select Dropdown) - Exact list from reference image
+  const categorySelectOptions = useMemo(() => {
+    return [
+      { value: "all", label: "All Categories" },
+      { value: "doctorate", label: "Doctorate" },
+      { value: "master", label: "Master" },
+      { value: "bachelor", label: "Bachelor" },
+      { value: "certification", label: "Certification" },
+      { value: "diploma", label: "Diploma" },
+      { value: "management", label: "Management" },
+      { value: "dual-master-doctorate", label: "Master+Doctorate (Dual)" },
     ];
+  }, []);
 
-    masterCategories.forEach((cat) => {
-      map.set(cat.slug, { label: cat.label, slug: cat.slug });
-    });
+  // 🎯 Category Filter Tag Pills - Exact list from reference image
+  const subcategoryList = useMemo(() => {
+    return [
+      { label: "Management", value: "management" },
+      { label: "AI Courses", value: "ai-courses" },
+      { label: "Machine Learning", value: "machine-learning" },
+      { label: "HR", value: "human-resource" },
+      { label: "Banking", value: "banking" },
+      { label: "Finance", value: "finance" },
+      { label: "Leadership", value: "leadership" },
+      { label: "Data Science", value: "data-science" },
+    ];
+  }, []);
 
-    const serverCategories = initialCourses?.categories || initialCourses?.tabs || [];
-    if (Array.isArray(serverCategories)) {
-      serverCategories.forEach((cat) => {
-        const slug = cat.slug || cat._id || cat.name?.toLowerCase();
-        const label = cat.name || cat.title || cat.label || slug;
-        if (slug && slug !== "all") {
-          const formatted = String(label).charAt(0).toUpperCase() + String(label).slice(1);
-          map.set(slug.toLowerCase(), { label: formatted, slug: slug.toLowerCase() });
-        }
-      });
-    }
+  // 🎯 Duration Filter Pills - Clean range keys supported by backend filter
+  const durationList = useMemo(() => {
+    return [
+      { label: "06 Month", value: "06-month" },
+      { label: "06-12 Months", value: "06-12-months" },
+      { label: "12-36 Months", value: "12-36-months" },
+    ];
+  }, []);
 
-    initialList.forEach((p) => {
-      const catObj = p?.category;
-      let label = "";
-      let slug = "";
+  // 🎯 Fee Range Filter Pills - Clean range keys supported by backend filter
+  const feeList = useMemo(() => {
+    return [
+      { label: "All", value: "all" },
+      { label: "0-1 Lakh", value: "0-1-lakh" },
+      { label: "1-2 Lakh", value: "1-2-lakh" },
+      { label: "2-5 Lakh", value: "2-5-lakh" },
+      { label: "5-10 Lakh", value: "5-10-lakh" },
+      { label: "Above 10 Lakh", value: "above-10-lakh" },
+    ];
+  }, []);
 
-      if (typeof catObj === "object" && catObj !== null) {
-        label = catObj.name || catObj.title || "";
-        slug = catObj.slug || label.toLowerCase();
-      } else if (typeof catObj === "string" && catObj.trim().length > 0) {
-        label = catObj;
-        slug = catObj.toLowerCase();
-      }
-
-      if (slug && slug !== "all" && !map.has(slug.toLowerCase())) {
-        const formatted = String(label || slug).charAt(0).toUpperCase() + String(label || slug).slice(1);
-        map.set(slug.toLowerCase(), { label: formatted, slug: slug.toLowerCase() });
-      }
-    });
-
-    return Array.from(map.values());
-  }, [initialCourses, initialList]);
-
-
-
-  // Program Duration Select Options derived dynamically from ISR initialCourses & initialList
-  const durationOptions = useMemo(() => {
+  // Institute Dropdown Options
+  const universityOptions = useMemo(() => {
     const map = new Map();
-    map.set("all", { label: "All Durations", slug: "all" });
+    map.set("all", { value: "all", label: "All Institutes" });
 
-    const serverDurations = initialCourses?.durations || [];
-    if (Array.isArray(serverDurations)) {
-      serverDurations.forEach((d) => {
-        const slug = d.slug || d._id || (d.months ? `${d.months}-months` : d.name?.toLowerCase());
-        const label = d.name || d.title || d.label || (d.months ? `${d.months} Months` : slug);
-        if (slug) {
-          map.set(slug.toLowerCase(), { label: String(label), slug: slug.toLowerCase() });
+    dbUniversities.forEach((uni) => {
+      const name = uni.label || uni.name || uni.title || "";
+      const slug = uni.value || uni.slug || uni._id || "";
+      if (name && slug) {
+        map.set(String(slug), { value: String(slug), label: name });
+      }
+    });
+
+    if (Array.isArray(initialUniversities)) {
+      initialUniversities.forEach((uni) => {
+        const name = uni.name || uni.title || "";
+        const slug = uni.slug || uni._id || "";
+        if (name && slug) {
+          map.set(String(slug), { value: String(slug), label: name });
         }
       });
     }
 
     initialList.forEach((p) => {
-      const durObj = p?.duration;
-      let label = "";
-      let slug = "";
-
-      if (typeof durObj === "object" && durObj !== null) {
-        label = durObj.name || durObj.title || (durObj.months ? `${durObj.months} Months` : "");
-        slug = durObj.slug || (durObj.months ? `${durObj.months}-months` : label.toLowerCase());
-      } else if (typeof durObj === "string" && durObj.trim().length > 0) {
-        label = durObj;
-        slug = durObj.toLowerCase();
-      } else if (p?.durationMonths || p?.durationYears) {
-        const yrs = p.durationYears || (p.durationMonths ? Math.round(p.durationMonths / 12) : 0);
-        if (yrs > 0) {
-          slug = `${yrs}-year`;
-          label = `${yrs} ${yrs === 1 ? "Year" : "Years"}`;
+      const uni = p?.university;
+      if (uni && typeof uni === "object") {
+        const name = uni.name || uni.title || "";
+        const slug = uni.slug || uni._id || "";
+        if (name && slug) {
+          map.set(String(slug), { value: String(slug), label: name });
         }
-      }
-
-      if (slug && !map.has(slug.toLowerCase())) {
-        map.set(slug.toLowerCase(), { label: label || slug, slug: slug.toLowerCase() });
+      } else if (uni && typeof uni === "string" && uni.trim()) {
+        const clean = uni.trim();
+        map.set(clean.toLowerCase(), { value: clean.toLowerCase(), label: clean });
       }
     });
 
-    if (map.size === 1) {
-      map.set("1-year", { label: "1 Year", slug: "1-year" });
-      map.set("2-year", { label: "2 Years", slug: "2-year" });
-      map.set("3-year", { label: "3 Years", slug: "3-year" });
+    if (map.size <= 1) {
+      map.set("iim-nagpur", { value: "iim-nagpur", label: "IIM Nagpur" });
+      map.set("edgewood-university", { value: "edgewood-university", label: "Edgewood University" });
+      map.set("esgci-paris", { value: "esgci-paris", label: "ESGCI Paris" });
+      map.set("rushford-business-school", { value: "rushford-business-school", label: "Rushford Business School" });
     }
 
     return Array.from(map.values());
-  }, [initialCourses, initialList]);
-
-
+  }, [dbUniversities, initialUniversities, initialList]);
 
   // Filter & Sort Active Programs Result
   const processedPrograms = useMemo(() => {
@@ -389,7 +487,7 @@ export default function CourseListView({ initialCourses = [], initialUniversitie
     return result;
   }, [programsList, selectedDuration, sortBy]);
 
-  // Clear All Filters — also reset to page 1
+  // Clear All Filters — reset state & remove query parameters from URL address bar
   const handleClearFilters = () => {
     setSearchInputValue("");
     setAppliedSearchTerm("");
@@ -397,8 +495,16 @@ export default function CourseListView({ initialCourses = [], initialUniversitie
     setActiveSubcategory("");
     setSelectedUniversities([]);
     setSelectedDuration("all");
+    setSelectedFee("all");
     setSortBy("featured");
     setCurrentPage(1);
+
+    if (router && pathname) {
+      router.replace(pathname, { scroll: false });
+    }
+    if (typeof window !== "undefined") {
+      window.history.replaceState(null, "", window.location.pathname);
+    }
   };
 
   // When filters change, reset to page 1
@@ -407,7 +513,7 @@ export default function CourseListView({ initialCourses = [], initialUniversitie
     setCurrentPage(1);
   };
 
-  const activeFilterCount = (activeCategoryTab !== "all" ? 1 : 0) + selectedUniversities.length + (selectedDuration !== "all" ? 1 : 0) + (appliedSearchTerm ? 1 : 0);
+  const activeFilterCount = (activeCategoryTab !== "all" ? 1 : 0) + selectedUniversities.length + (selectedDuration !== "all" ? 1 : 0) + (selectedFee !== "all" ? 1 : 0) + (appliedSearchTerm ? 1 : 0);
 
   const handleGetBrochure = (program) => {
     if (program?.brochureUrl) {
@@ -424,18 +530,22 @@ export default function CourseListView({ initialCourses = [], initialUniversitie
   const filterSidebarProps = {
     activeFilterCount,
     handleClearFilters,
-    searchInputValue,
-    setSearchInputValue,
-    setAppliedSearchTerm,
     activeCategoryTab,
     setActiveCategoryTab,
-    categoryTabs,
-    durationOptions,
-    sortBy,
-    setSortBy,
+    categorySelectOptions,
+    subcategoryList,
+    durationList,
+    feeList,
     selectedDuration,
     setSelectedDuration,
-    openFormModal,
+    selectedFee,
+    setSelectedFee,
+    selectedUniversities,
+    setSelectedUniversities,
+    universityOptions,
+    activeSubcategory,
+    setActiveSubcategory,
+    setCurrentPage,
   };
 
   return (
@@ -484,7 +594,7 @@ export default function CourseListView({ initialCourses = [], initialUniversitie
         <div className="lg:col-span-9 space-y-6">
 
           {/* Active Filters Header Bar */}
-          <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3">
+          <div className="hidden md:flex bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="bg-[#1C3569] text-white text-xs font-bold px-3 py-1 rounded-full shadow-2xs">
                 {totalCount} Courses Found
@@ -541,136 +651,398 @@ export default function CourseListView({ initialCourses = [], initialUniversitie
             )}
           </div>
 
-          {/* Course Cards Grid */}
+          {/* Course Cards Stack (Single Column as in Image 1 & Image 2) */}
           {isLoading ? (
             <div className="bg-white rounded-3xl p-16 text-center border border-slate-200 shadow-xs flex flex-col items-center justify-center gap-3">
               <Spin indicator={<LoadingOutlined className="text-4xl text-[#1C3569]" spin />} />
-              <p className="text-slate-600 font-bold text-sm m-0">Filtering Mongoose Database Courses...</p>
+              <span className="text-slate-500 font-semibold text-xs animate-pulse">Filtering programs...</span>
             </div>
           ) : processedPrograms.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 items-stretch">
-              {processedPrograms.map((item, index) => {
-                const uniName = typeof item.university === "object" ? item.university?.name || "Partner University" : String(item.university || "Partner University");
-                const rawLogo = typeof item.university === "object" ? (item.university?.logoSrc?.url || item.university?.logoUrl || item.logo) : item.logo;
-                const logoUrl = getAssetPath(rawLogo, null);
-                const providerName = (typeof item.tenant === "object" ? item.tenant?.name : null) || item.tenant || item.provider || item.partner || (typeof item.university === "object" ? item.university?.name : item.university) || "upGrad";
-                const feeText = typeof item.fee === "object" ? item.fee?.title || `₹${item.fee?.amount || "1,20,000 INR"}` : (item.fee || "1,20,000 INR");
-                const durationText = typeof item.duration === "object" ? item.duration?.title : (item.duration || "8 Months");
+            <div className="space-y-4">
+              {(() => {
+                const displayList = [];
+                processedPrograms.forEach((program) => {
+                  if (program.university) {
+                    displayList.push(program);
+                  } else {
+                    const offerings = Array.isArray(program.universityOfferings) ? program.universityOfferings : [];
+                    if (offerings.length > 0) {
+                      offerings.forEach((offering, oIdx) => {
+                        const subItems = Array.isArray(offering?.subcourses) && offering.subcourses.length > 0
+                          ? offering.subcourses
+                          : (Array.isArray(offering?.subcourseOfferings) && offering.subcourseOfferings.length > 0
+                            ? offering.subcourseOfferings
+                            : null);
 
-                const itemSlug = item.slug || item._id || (item.title ? item.title.toLowerCase().replace(/[^a-z0-9]+/g, "-") : "");
-                const courseDetailHref = itemSlug ? `/courses/${itemSlug}` : "/courses";
-
-                return (
-                  <div
-                    key={`${item.title}-${uniName}-${index}`}
-                    className="bg-white rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-md transition-all duration-300 overflow-hidden relative flex flex-col justify-between group"
-                  >
-                    {/* Top Right Provider / Via Badge (Exact upGrad UI Corner Tab with Background & Matching Radius) */}
-                    <div className="absolute top-0 right-0 bg-[#FAF6EC] border-b border-l border-[#E0D5C1] rounded-tr-2xl rounded-bl-2xl px-3 py-1 text-xs font-medium text-gray-700 flex items-center gap-1.5 z-10 shadow-2xs">
-                      Via <span className="font-extrabold text-[#E52E2E] text-xs">{providerName}</span>
-                    </div>
-
-                    {/* Main Card Body (Left Circular Logo | Vertical Line | Right Details) */}
-                    <div className="p-4 pt-8 flex items-center gap-3.5 relative min-h-[145px]">
-                      {/* Left Column: Circular Logo & University Name */}
-                      <div className="flex flex-col items-center justify-center shrink-0 w-24 sm:w-28 text-center">
-                        <div className="w-12 h-12 min-[360px]:w-14 min-[360px]:h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center overflow-hidden mb-1.5 relative shrink-0 group-hover:scale-105 transition-transform">
-                          {logoUrl ? (
-                            <Image
-                              src={logoUrl}
-                              alt={uniName}
-                              fill
-                              sizes="64px"
-                              unoptimized
-                              className="object-contain p-1"
-                            />
-                          ) : (
-                            <div className="w-full h-full rounded-full bg-blue-50 text-blue-600 font-bold flex items-center justify-center text-xs uppercase">
-                              {uniName.charAt(0)}
-                            </div>
-                          )}
-                        </div>
-                        <span className="text-[11px] sm:text-xs font-bold text-slate-800 leading-tight text-center max-w-full line-clamp-2">
-                          {uniName}
-                        </span>
-                      </div>
-
-                      {/* Thin Vertical Line Separator */}
-                      <div className="w-[1px] bg-slate-200/80 self-stretch my-1 shrink-0" />
-
-                      {/* Right Column: Title, Duration & Fees */}
-                      <div className="flex-1 flex flex-col justify-center space-y-1.5 min-w-0 pr-1">
-                        {/* Course Title */}
-                        <Link href={courseDetailHref} className="group-hover:text-blue-600 transition-colors">
-                          <h3 className="text-sm sm:text-base font-extrabold text-[#1A237E] leading-snug line-clamp-2 m-0 tracking-tight">
-                            {item.title}
-                          </h3>
-                        </Link>
-
-                        {/* Duration */}
-                        <div className="text-xs font-medium text-slate-600 flex items-center gap-1.5 mt-0.5">
-                          <ClockCircleFilled className="text-slate-400 text-xs" />
-                          <span>{durationText}</span>
-                        </div>
-
-                        {/* Fees (Bright Pink Text matching reference mockup) */}
-                        <div className="text-xs sm:text-sm font-extrabold text-[#E91E63] mt-1 tracking-tight">
-                          Fees : {feeText.includes("₹") || feeText.includes("INR") ? feeText : `₹${feeText}`}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Bottom Cream Action Links Bar (Matching Reference Mockup) */}
-                    <div className="bg-[#FAF6EC] border-t border-[#F0E6D2] px-3.5 py-2.5 flex items-center justify-between text-xs font-bold text-slate-700">
-                      <button
-                        type="button"
-                        onClick={() => handleGetBrochure(item)}
-                        className="hover:text-blue-600 cursor-pointer transition-colors flex items-center gap-1 text-slate-700"
-                      >
-                        + Compare
-                      </button>
-
-                      <Link
-                        href={courseDetailHref}
-                        className="hover:text-blue-600 cursor-pointer transition-colors text-slate-700 font-bold"
-                      >
-                        Explore More
-                      </Link>
-
-                      <button
-                        type="button"
-                        onClick={() => {
-                          openFormModal({
-                            title: "Apply / Book 1:1 Counselling",
-                            subtitle: "Get expert guidance from senior counselors",
-                            defaultCourse: item.title,
-                            formNameOverride: `CourseListPage_${item.slug}`,
-                            submitButtonText: "Submit Application",
+                        if (subItems) {
+                          subItems.forEach((subOff, sIdx) => {
+                            displayList.push({
+                              ...program,
+                              _uniqueKey: `${program._id || program.slug}-offering-${oIdx}-suboff-${sIdx}`,
+                              activeOffering: offering,
+                              activeSubOffering: subOff,
+                              activeSubcourse: subOff.subcourse || subOff,
+                            });
                           });
-                        }}
-                        className="text-[#15803D] hover:text-green-700 font-extrabold cursor-pointer transition-colors flex items-center gap-0.5"
-                      >
-                        Apply Now <RightOutlined className="text-[10px]" />
-                      </button>
+                        } else {
+                          const rawSub = offering?.subcourse || offering?.subcourses || program?.subcourses || program?.subcourse || [];
+                          const subcourses = Array.isArray(rawSub) ? rawSub : (rawSub ? [rawSub] : []);
+
+                          if (subcourses.length > 0) {
+                            subcourses.forEach((sub, sIdx) => {
+                              displayList.push({
+                                ...program,
+                                _uniqueKey: `${program._id || program.slug}-offering-${oIdx}-sub-${sIdx}`,
+                                activeOffering: offering,
+                                activeSubOffering: null,
+                                activeSubcourse: sub,
+                              });
+                            });
+                          } else {
+                            displayList.push({
+                              ...program,
+                              _uniqueKey: `${program._id || program.slug}-offering-${oIdx}`,
+                              activeOffering: offering,
+                              activeSubOffering: null,
+                              activeSubcourse: null,
+                            });
+                          }
+                        }
+                      });
+                    } else {
+                      const rawSub = program?.subcourses || program?.subcourse || [];
+                      const subcourses = Array.isArray(rawSub) ? rawSub : (rawSub ? [rawSub] : []);
+                      if (subcourses.length > 0) {
+                        subcourses.forEach((sub, sIdx) => {
+                          displayList.push({
+                            ...program,
+                            _uniqueKey: `${program._id || program.slug}-sub-${sIdx}`,
+                            activeOffering: null,
+                            activeSubcourse: sub,
+                          });
+                        });
+                      } else {
+                        displayList.push(program);
+                      }
+                    }
+                  }
+                });
+
+                return displayList.map((item, index) => {
+                  const offering = item.activeOffering || null;
+                  const subcourseObj = item.activeSubcourse || null;
+
+                  const uniObj =
+                    item.university ||
+                    offering?.university ||
+                    (Array.isArray(item.university) && item.university.length > 0
+                      ? item.university[0]
+                      : typeof item.university === "object" && item.university !== null
+                        ? item.university
+                        : null);
+
+                  const uniName = uniObj?.name || (typeof item.university === "string" ? item.university : "Partner University");
+
+                  let subcourseName = "";
+                  if (item.subcourse) {
+                    subcourseName = item.subcourse.title || item.subcourse.name || "";
+                  } else {
+                    const subcourseItem = Array.isArray(subcourseObj) ? subcourseObj[0] : subcourseObj;
+                    let rawSubName = "";
+                    if (typeof subcourseItem === "object" && subcourseItem !== null) {
+                      rawSubName = subcourseItem?.title || subcourseItem?.name || subcourseItem?.label || subcourseItem?.slug || "";
+                    } else if (typeof subcourseItem === "string") {
+                      rawSubName = subcourseItem;
+                    }
+
+                    subcourseName = rawSubName && rawSubName === rawSubName.toLowerCase()
+                      ? rawSubName.split(/[-_\s]+/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")
+                      : rawSubName;
+                  }
+
+                  const rawCourseTitle = item.title || "Course";
+                  let cardTitle = rawCourseTitle;
+                  if (uniName && !cardTitle.toLowerCase().includes(uniName.toLowerCase())) {
+                    cardTitle = `${uniName} - ${cardTitle}`;
+                  }
+
+                  let shouldAppendSubcourse = false;
+                  if (subcourseName && !item.university) {
+                    if (!cardTitle.toLowerCase().includes(subcourseName.toLowerCase())) {
+                      shouldAppendSubcourse = true;
+                    }
+                  }
+
+                  if (shouldAppendSubcourse) {
+                    cardTitle = `${cardTitle} - ${subcourseName}`;
+                  }
+
+                  const rawLogo =
+                    uniObj?.logoSrc?.url ||
+                    uniObj?.logoSrc ||
+                    uniObj?.logoUrl ||
+                    (typeof item.logo === "object" ? item.logo?.url : item.logo);
+                  const logoUrl = getAssetPath(rawLogo, null);
+
+                  const workspaceObj =
+                    Array.isArray(uniObj?.workspaceId) && uniObj.workspaceId.length > 0
+                      ? uniObj.workspaceId[0]
+                      : typeof uniObj?.workspaceId === "object" && uniObj?.workspaceId !== null
+                        ? uniObj.workspaceId
+                        : null;
+
+                  const providerName =
+                    (typeof offering?.workspace === "object" ? offering?.workspace?.name : null) ||
+                    workspaceObj?.name ||
+                    (typeof item.tenant === "object" ? item.tenant?.name : null) ||
+                    item.tenant ||
+                    item.provider ||
+                    item.partner ||
+                    "upGrad";
+
+                  const durationText =
+                    offering?.duration?.title ||
+                    (typeof item.duration === "object" ? item.duration?.title : item.duration) ||
+                    item.durationText ||
+                    (item.durationMonths ? `${item.durationMonths} Month` : "Flexible");
+
+                  const rawFee = item.fees || item.fee;
+                  const feeText =
+                    offering?.fee?.title ||
+                    (offering?.fee?.amount ? `₹${Number(offering.fee.amount).toLocaleString("en-IN")}` : null) ||
+                    (typeof rawFee === "object" && rawFee
+                      ? (rawFee.title || (rawFee.amount ? `₹${Number(rawFee.amount).toLocaleString("en-IN")}` : "Contact for Fee"))
+                      : (rawFee || "Contact for Fee"));
+
+                  // Use subcourse title slug when a subcourse is active, so the detail page shows correct subcourse content
+                  const activeSubTitle = subcourseObj?.title || subcourseObj?.name || "";
+                  const parentTitle = item.title || "";
+                  const subcourseSlug = activeSubTitle && activeSubTitle.trim().toLowerCase() !== parentTitle.trim().toLowerCase()
+                    ? activeSubTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")
+                    : null;
+                  const itemSlug = subcourseSlug || item.slug || item._id || (item.title ? item.title.toLowerCase().replace(/[^a-z0-9]+/g, "-") : "");
+                  const courseDetailHref = itemSlug ? `/courses/${itemSlug}` : "/courses";
+
+                  return (
+                    <div
+                      key={item._uniqueKey || `${item.title}-${uniName}-${index}`}
+                      className="bg-white rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-md transition-all duration-300 overflow-hidden relative group p-4 sm:p-5"
+                    >
+                      {/* Top Right Provider / Via Badge (Exact upGrad / TimesPRO Corner Tab with Cream Background) */}
+                      <div className="absolute top-0 right-0 bg-[#FAF6EC] border-b border-l border-[#E0D5C1] rounded-tr-2xl rounded-bl-2xl px-3 py-1 text-xs font-medium text-gray-700 flex items-center gap-1.5 z-10 shadow-2xs">
+                        Via <span className="font-extrabold text-[#E52E2E] text-xs">{providerName}</span>
+                      </div>
+
+                      {/* 🖥️ Desktop View (Image 1): Row Layout for sm screens and above */}
+                      <div className="hidden sm:flex gap-5 items-start pt-1">
+                        {/* Left University Logo Box */}
+                        <div className="w-28 sm:w-32 border border-slate-200/90 rounded-xl p-3 bg-white shrink-0 flex flex-col items-center justify-center text-center shadow-xs">
+                          <div className="relative w-16 h-16 sm:w-20 sm:h-20 shrink-0">
+                            {logoUrl ? (
+                              <Image
+                                src={logoUrl}
+                                alt={uniName}
+                                fill
+                                sizes="80px"
+                                unoptimized
+                                className="object-contain"
+                              />
+                            ) : (
+                              <div className="w-full h-full rounded-full bg-blue-50 text-blue-600 font-bold flex items-center justify-center text-sm uppercase">
+                                {uniName.charAt(0)}
+                              </div>
+                            )}
+                          </div>
+                          <span className="text-xs font-bold text-slate-800 mt-2 line-clamp-2 w-full text-center leading-tight">
+                            {uniName}
+                          </span>
+                        </div>
+
+                        {/* Right Column: Title, Subcourse Badge, Metadata & Action Buttons */}
+                        <div className="flex-1 min-w-0 space-y-3 pt-1">
+                          {/* Course Title & Subcourse */}
+                          <Link href={courseDetailHref} className="hover:text-blue-600 transition-colors block">
+                            <h3 className="text-base sm:text-lg font-bold text-[#0B2545] leading-snug line-clamp-2 m-0 tracking-tight">
+                              {cardTitle}
+                            </h3>
+                          </Link>
+
+                          {/* Inline Metadata Row: Fees | Duration | Accredited */}
+                          <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 text-xs font-medium text-slate-500">
+                            <div>
+                              Fees : <span className="text-[#D81B60] font-bold">{feeText.includes("₹") || feeText.includes("INR") ? feeText : `${feeText} INR`}</span>
+                            </div>
+                            <div>
+                              Duration : <span className="text-[#D81B60] font-bold">{durationText}</span>
+                            </div>
+                            <div>
+                              Accredited : <span className="text-[#D81B60] font-bold">{getAccreditation(uniName)}</span>
+                            </div>
+                          </div>
+
+                          {/* Action Buttons Row */}
+                          <div className="flex flex-wrap items-center gap-3 pt-1">
+                            <Link
+                              href={courseDetailHref}
+                              className="bg-[#0B2545] hover:bg-[#061830] text-[#FFFFFF] border-none rounded-lg text-xs font-medium h-9 px-5 cursor-pointer flex items-center justify-center text-center transition-colors no-underline"
+                            >
+                              View More
+                            </Link>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                openFormModal({
+                                  title: "Apply / Book 1:1 Counselling",
+                                  subtitle: "Get expert guidance from senior counselors",
+                                  defaultCourse: item.title,
+                                  formNameOverride: `CourseListPage_${item.slug}`,
+                                  submitButtonText: "Submit Application",
+                                });
+                              }}
+                              className="bg-[#009F93] hover:bg-[#008278] text-white border-none rounded-lg text-xs font-medium h-9 px-5 cursor-pointer flex items-center justify-center text-center transition-colors"
+                            >
+                              Apply Now
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const targetUni = uniObj || (typeof item.university === "object" ? item.university : null);
+                                if (targetUni) {
+                                  toggleCompare(targetUni);
+                                  setIsCompareDrawerOpen(true);
+                                }
+                              }}
+                              className={`font-medium rounded-lg text-xs h-9 px-4 cursor-pointer flex items-center justify-center gap-1 transition-colors border ${isInCompare(uniObj?.slug || item.university?.slug)
+                                ? "bg-teal-50 text-[#009F93] border-[#009F93]"
+                                : "bg-white text-[#009F93] border-[#009F93] hover:bg-teal-50"
+                                }`}
+                            >
+                              {isInCompare(uniObj?.slug || item.university?.slug) ? "✓ Added" : "+ Add to Compare"}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* 📱 Mobile View (Image 2): Compact Layout for screens < sm */}
+                      <div className="flex sm:hidden flex-col gap-3 pt-1">
+                        {/* Top Row: Left Logo Box | Right Title & Metadata */}
+                        <div className="flex gap-3 items-start">
+                          {/* Left Logo Box */}
+                          <div className="w-18 h-18 border border-slate-200/90 rounded-xl p-1.5 bg-white shrink-0 flex flex-col items-center justify-center text-center shadow-xs">
+                            <div className="relative w-10 h-10 shrink-0">
+                              {logoUrl ? (
+                                <Image
+                                  src={logoUrl}
+                                  alt={uniName}
+                                  fill
+                                  sizes="40px"
+                                  unoptimized
+                                  className="object-contain"
+                                />
+                              ) : (
+                                <div className="w-full h-full rounded-full bg-blue-50 text-blue-600 font-bold flex items-center justify-center text-xs uppercase">
+                                  {uniName.charAt(0)}
+                                </div>
+                              )}
+                            </div>
+                            <span className="text-[9px] font-bold text-slate-800 line-clamp-1 w-full text-center leading-none mt-1">
+                              {uniName}
+                            </span>
+                          </div>
+
+                          {/* Right Column: Title & Fees/Duration */}
+                          <div className="flex-1 min-w-0 space-y-2">
+                            <Link href={courseDetailHref} className="hover:text-blue-600 transition-colors block pr-12 pt-2">
+                              <h3 className="text-xs font-bold text-[#0B2545] leading-snug line-clamp-2 m-0">
+                                {cardTitle}
+                              </h3>
+                            </Link>
+                            <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[11px] font-medium text-slate-500">
+                              <div>
+                                Fees : <span className="text-[#D81B60] font-bold">{feeText.includes("₹") || feeText.includes("INR") ? feeText : `${feeText} INR`}</span>
+                              </div>
+                              <div>
+                                Duration : <span className="text-[#D81B60] font-bold">{durationText}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Bottom Row: 3 Buttons Row */}
+                        <div className="grid grid-cols-3 gap-1.5 pt-3 border-t border-slate-200">
+                          <Link
+                            href={courseDetailHref}
+                            className="bg-[#0B2545] text-white font-thin text-[11px] h-8 rounded-lg flex items-center justify-center text-center transition-colors no-underline"
+                          >
+                            View More
+                          </Link>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              openFormModal({
+                                title: "Apply / Book 1:1 Counselling",
+                                subtitle: "Get expert guidance from senior counselors",
+                                defaultCourse: item.title,
+                                formNameOverride: `CourseListPage_${item.slug}`,
+                                submitButtonText: "Submit Application",
+                              });
+                            }}
+                            className="bg-[#009F93] text-white font-thin text-[11px] h-8 rounded-lg flex items-center justify-center text-center transition-colors border-none"
+                          >
+                            Apply Now
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const targetUni = uniObj || (typeof item.university === "object" ? item.university : null);
+                              if (targetUni) {
+                                toggleCompare(targetUni);
+                                setIsCompareDrawerOpen(true);
+                              }
+                            }}
+                            className={`font-thin text-[10px] h-8 rounded-lg flex items-center justify-center text-center transition-colors border ${isInCompare(uniObj?.slug || item.university?.slug)
+                              ? "bg-teal-50 text-[#009F93] border-[#009F93]"
+                              : "bg-white text-[#009F93] border-[#009F93]"
+                              }`}
+                          >
+                            {isInCompare(uniObj?.slug || item.university?.slug) ? "✓ Added" : "+ Add to Compare"}
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                });
+              })()}
             </div>
           ) : (
-            <div className="bg-white rounded-3xl p-12 text-center border border-slate-200 shadow-xs">
-              <p className="text-slate-700 font-extrabold text-base m-0">No matching courses found in database for your active filters.</p>
-              <p className="text-slate-400 text-xs mt-1">Try resetting your search query or university checkboxes.</p>
-              <Button onClick={handleClearFilters} className="mt-4 font-bold rounded-xl bg-[#1C3569] text-[#A66E38] border-none h-10 px-6">
-                Reset All Filters
-              </Button>
+            <div className="bg-white rounded-3xl p-16 text-center border border-slate-200 shadow-xs flex flex-col items-center justify-center gap-3">
+              <span className="text-slate-400 font-bold text-base">No programs found matching filters.</span>
+              <button
+                type="button"
+                onClick={handleClearFilters}
+                className="text-xs font-bold text-blue-600 hover:text-blue-700 bg-blue-50 px-3 py-1.5 rounded-xl border-none cursor-pointer mt-1"
+              >
+                Clear Filters
+              </button>
             </div>
           )}
 
           {/* Ant Design Pagination */}
           {!isLoading && totalPages > 1 && (
-            <div className="flex flex-col items-center gap-2 pt-6">
+            <div className="flex flex-col items-center justify-center w-full pt-6">
               <style>{`
+                .course-pagination {
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  flex-wrap: wrap;
+                  gap: 4px;
+                  max-width: 100%;
+                }
                 .course-pagination .ant-pagination-item {
                   border-radius: 10px;
                   border: 1.5px solid #e2e8f0;
@@ -733,14 +1105,36 @@ export default function CourseListView({ initialCourses = [], initialUniversitie
                   margin-right: 8px;
                   line-height: 36px;
                 }
+                @media (max-width: 640px) {
+                  .course-pagination .ant-pagination-total-text {
+                    display: none;
+                  }
+                  .course-pagination .ant-pagination-item {
+                    min-width: 30px;
+                    height: 30px;
+                    line-height: 28px;
+                    font-size: 12px;
+                    margin-inline-end: 3px !important;
+                  }
+                  .course-pagination .ant-pagination-prev .ant-pagination-item-link,
+                  .course-pagination .ant-pagination-next .ant-pagination-item-link {
+                    height: 30px;
+                    width: 30px;
+                    font-size: 12px;
+                  }
+                }
               `}</style>
               <Pagination
                 current={currentPage}
                 total={totalCount}
                 pageSize={ITEMS_PER_PAGE}
-                onChange={(page) => setCurrentPage(page)}
+                onChange={(page) => {
+                  setCurrentPage(page);
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
                 showTotal={(total, range) => `${range[0]}–${range[1]} of ${total} courses`}
                 showSizeChanger={false}
+                showLessItems={true}
                 className="course-pagination"
               />
             </div>

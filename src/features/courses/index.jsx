@@ -9,13 +9,6 @@ import { Tag, Switch } from "antd";
 export default function CoursesCmsIndex() {
   const entity = "course";
 
-  const categoryColors = {
-    doctorate: "purple",
-    certification: "blue",
-    executive: "gold",
-    master: "green",
-  };
-
   const dataTableColumns = [
     {
       title: "Active",
@@ -25,53 +18,74 @@ export default function CoursesCmsIndex() {
       render: (value) => <Switch checked={value} disabled size="small" />,
     },
     {
-      title: "Master Course Title",
+      title: "Course Title",
       dataIndex: "title",
       key: "title",
       render: (text, record) => (
         <div>
           <div className="font-bold text-slate-800 text-sm">{text}</div>
-          <div className="text-xs text-slate-400 font-mono">{record.slug}</div>
+          <div className="text-xs text-slate-400 font-mono">/{record.slug}</div>
         </div>
       ),
     },
     {
-      title: "Category",
-      dataIndex: "category",
-      key: "category",
-      render: (category) => {
-        const catName = typeof category === "object" ? category?.name : category;
-        const catSlug = typeof category === "object" ? category?.slug : category;
-        return (
-          <Tag color={categoryColors[catSlug] || "blue"} className="capitalize font-semibold">
-            {catName || "N/A"}
-          </Tag>
-        );
+      title: "Universities & Offerings",
+      dataIndex: "universityOfferings",
+      key: "universityOfferings",
+      render: (offerings) => {
+        if (Array.isArray(offerings) && offerings.length > 0) {
+          return (
+            <div className="flex flex-wrap gap-1.5 max-w-md">
+              {offerings.map((off, idx) => {
+                const uName =
+                  typeof off.university === "object"
+                    ? off.university?.name || "University"
+                    : "University";
+                const feeVal =
+                  typeof off.fee === "object"
+                    ? off.fee?.amount
+                      ? `₹${Number(off.fee.amount).toLocaleString("en-IN")}`
+                      : off.fee?.title
+                    : off.fee;
+                const durVal =
+                  typeof off.duration === "object"
+                    ? off.duration?.title
+                    : off.duration;
+
+                return (
+                  <Tag key={idx} color="blue" className="font-semibold text-xs py-0.5">
+                    {uName}
+                    {feeVal ? ` — ${feeVal}` : ""}
+                    {durVal ? ` (${durVal})` : ""}
+                  </Tag>
+                );
+              })}
+            </div>
+          );
+        }
+
+        return <span className="text-slate-400 text-xs">No Universities Added</span>;
       },
-    },
-    {
-      title: "Description",
-      dataIndex: "description",
-      key: "description",
-      ellipsis: true,
-      render: (text) => <span className="text-xs text-slate-600 font-medium">{text || "N/A"}</span>,
     },
     {
       title: "Featured",
       dataIndex: "featured",
       key: "featured",
-      render: (featured) => (
+      width: 100,
+      render: (featured) =>
         featured ? (
-          <Tag color="volcano" className="font-bold">Featured</Tag>
+          <Tag color="volcano" className="font-bold">
+            Featured
+          </Tag>
         ) : (
           <Tag color="default">Standard</Tag>
-        )
-      ),
+        ),
     },
     {
       title: "Created At",
       dataIndex: "createdAt",
       key: "createdAt",
+      width: 110,
       render: (date) => (date ? moment(date).format("DD-MM-YYYY") : "-"),
     },
   ];
@@ -79,12 +93,12 @@ export default function CoursesCmsIndex() {
   const readColumns = [...dataTableColumns];
 
   const labels = {
-    PANEL_TITLE: "Master Courses CMS Management",
-    DATATABLE_TITLE: "Master Courses List",
-    ADD_NEW_ENTITY: "Add Master Course",
-    ENTITY_NAME: "Master Course",
-    CREATE_ENTITY: "Save Master Course",
-    UPDATE_ENTITY: "Update Master Course",
+    PANEL_TITLE: "Course Management",
+    DATATABLE_TITLE: "Courses List",
+    ADD_NEW_ENTITY: "Add Course",
+    ENTITY_NAME: "Course",
+    CREATE_ENTITY: "Save Course",
+    UPDATE_ENTITY: "Update Course",
   };
 
   const config = {

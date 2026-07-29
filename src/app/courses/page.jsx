@@ -2,7 +2,13 @@ import React, { Suspense } from "react";
 import { Header } from "@/components/website/Header";
 import { Footer } from "@/components/website/Footer";
 import CourseListView from "@/features/course/views/CourseListView";
-import { getWebsiteCoursesFilter, getUniversities } from "@/services/api";
+import {
+  getWebsiteCoursesFilter,
+  getWebsiteCategories,
+  getWebsiteDurationOptions,
+  getWebsiteFeeOptions,
+  getWebsiteUniversityOptions,
+} from "@/services/api";
 import { getPageMetaData } from "@/constants/pageMetaData";
 
 export const revalidate = 300; // Next.js ISR: Revalidate static HTML cache every 5 minutes
@@ -28,19 +34,31 @@ export async function generateMetadata() {
 export default async function CoursesPage({ searchParams }) {
   const params = (await searchParams) || {};
 
-  // SSR / ISR Server Data Fetching (Single partnercourse API call)
-  const initialCourses = await getWebsiteCoursesFilter({
-    category: params.category || "all",
-    subcategory: params.subcategory || params.subcourse || "",
-    subcourse: params.subcourse || params.subcategory || "",
-    search: params.q || params.search || "",
-    university: params.university || params.uni || "",
-    course: params.course || "",
-    duration: params.duration || "",
-    sort: params.sort || "featured",
-    page: parseInt(params.page, 10) || 1,
-    limit: 12,
-  });
+  // Server-Side ISR Parallel Data Fetching
+  const [
+    initialCourses,
+    categoriesData,
+    universitiesData,
+    durationsData,
+    feesData,
+  ] = await Promise.all([
+    getWebsiteCoursesFilter({
+      category: params.category || "all",
+      subcategory: params.subcategory || params.subcourse || "",
+      subcourse: params.subcourse || params.subcategory || "",
+      search: params.q || params.search || "",
+      university: params.university || params.uni || "",
+      course: params.course || "",
+      duration: params.duration || "",
+      sort: params.sort || "featured",
+      page: parseInt(params.page, 10) || 1,
+      limit: 12,
+    }),
+    getWebsiteCategories(),
+    getWebsiteUniversityOptions(),
+    getWebsiteDurationOptions(),
+    getWebsiteFeeOptions(),
+  ]);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -51,7 +69,14 @@ export default async function CoursesPage({ searchParams }) {
             <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
           </div>
         }>
-          <CourseListView initialCourses={initialCourses} />
+          <CourseListView
+            initialCourses={initialCourses}
+            initialCategories={categoriesData?.categories || []}
+            initialCategoryTree={categoriesData?.tree || []}
+            initialUniversities={universitiesData || []}
+            initialDurations={durationsData || []}
+            initialFees={feesData || []}
+          />
         </Suspense>
       </main>
       <Footer />

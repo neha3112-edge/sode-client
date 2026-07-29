@@ -29,8 +29,19 @@ const axiosBaseQuery =
 
       return { data: response.data };
     } catch (axiosError) {
-      const errorParsed = errorHandler(axiosError);
-      return { error: errorParsed };
+      // Show toast notification via errorHandler
+      errorHandler(axiosError);
+      // Return RTK Query-compatible error format (status + data)
+      return {
+        error: {
+          status: axiosError?.response?.status || "FETCH_ERROR",
+          data:
+            axiosError?.response?.data || {
+              success: false,
+              message: axiosError?.message || "Network error",
+            },
+        },
+      };
     }
   };
 

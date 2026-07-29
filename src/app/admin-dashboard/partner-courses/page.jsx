@@ -1,7 +1,14 @@
 "use client";
 
-import PartnerCoursesCmsIndex from "@/features/partnercourses";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function AdminPartnerCoursesPage() {
-  return <PartnerCoursesCmsIndex />;
+  const router = useRouter();
+
+  useEffect(() => {
+    router.replace("/admin-dashboard/courses");
+  }, [router]);
+
+  return null;
 }

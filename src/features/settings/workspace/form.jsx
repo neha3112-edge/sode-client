@@ -28,8 +28,9 @@ export default function WorkspaceForm({ isUpdateForm = false }) {
                         rules={[{ required: true, message: "Please select a tenant" }]}
                     >
                         <Select
-                            placeholder="Select Tenant"
+                            placeholder="Select one or more Tenants"
                             loading={loadingTenants}
+                            mode="multiple"
                             showSearch
                             allowClear
                             optionFilterProp="label"

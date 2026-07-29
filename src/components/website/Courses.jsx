@@ -134,62 +134,117 @@ export function Courses({
           key={activeTab}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto animate-fade-in"
         >
-          {filteredPrograms.map((item, index) => (
-            <Card
-              key={`${item.title}-${item.university}-${index}`}
-              className="bg-white rounded-3xl shadow-[0_15px_35px_rgba(0,0,0,0.02)] border border-gray-100 flex flex-col transform transition duration-300 hover:-translate-y-1.5 hover:shadow-xl overflow-hidden animate-fade-in"
-            >
-              {/* Card Image */}
+          {(() => {
+            const displayList = [];
+            filteredPrograms.forEach((program) => {
+              const offerings = Array.isArray(program.universityOfferings) ? program.universityOfferings : [];
+              if (offerings.length > 0) {
+                offerings.forEach((offering, oIdx) => {
+                  displayList.push({
+                    ...program,
+                    _uniqueKey: `${program._id || program.slug}-offering-${oIdx}`,
+                    activeOffering: offering,
+                  });
+                });
+              } else {
+                displayList.push(program);
+              }
+            });
 
-              <Link href={`/courses/${item.slug}`} className="relative w-full h-40 shrink-0 block group">
-                <Image
-                  src={getAssetPath(item.image)}
-                  alt={item.title}
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  priority={index === 0}
-                  loading={index === 0 ? "eager" : "lazy"}
-                  className="object-cover rounded-3xl group-hover:scale-105 transition-transform duration-300"
-                />
-              </Link>
+            return displayList.map((item, index) => {
+              const offering = item.activeOffering || null;
 
-              <div className="pt-0 pb-6 px-6 flex flex-col grow text-left relative">
-                {/* Institution Logo overlay */}
+              const uniObj =
+                offering?.university ||
+                (Array.isArray(item.university) && item.university.length > 0
+                  ? item.university[0]
+                  : typeof item.university === "object" && item.university !== null
+                  ? item.university
+                  : null);
 
-                <div className="mb-5 -mt-7.5 rounded-[10px] shadow-[0_2px_8px_rgba(0,0,0,0.15)] w-[55%] p-2 bg-white relative z-10 flex items-center justify-center h-18 border border-slate-100">
-                  <div className="relative w-full h-15">
-                    <Image
-                      src={getAssetPath(item.logo)}
-                      alt={typeof item.university === "object" ? item.university?.name || "University" : String(item.university || "University")}
-                      fill
-                      sizes="200px"
-                      className="object-contain"
-                    />
-                  </div>
-                </div>
+              const uniName = uniObj?.name || (typeof item.university === "string" ? item.university : "University");
 
-                {/* Course Title */}
+              const rawLogo =
+                uniObj?.logoSrc?.url ||
+                uniObj?.logoSrc ||
+                uniObj?.logoUrl ||
+                (typeof item.logo === "object" ? item.logo?.url : item.logo);
 
-                <Link href={`/courses/${item.slug}`} className="hover:text-[#A66E38] transition-colors">
-                  <h3 className="text-[14px] font-bold text-[#1d3557] leading-snug mb-3">
-                    {item.title}
-                  </h3>
+              const durationTitle =
+                offering?.duration?.title ||
+                (typeof item.duration === "object" ? item.duration?.title : item.duration) ||
+                "Flexible Duration";
+
+              const eligibilityTitle =
+                offering?.eligibility?.title ||
+                (typeof item.eligibility === "object" ? item.eligibility?.title : item.eligibility) ||
+                "Graduation / Bachelor's Degree";
+
+              const feeTitle =
+                offering?.fee?.title ||
+                (offering?.fee?.amount ? `₹${Number(offering.fee.amount).toLocaleString("en-IN")}` : null) ||
+                (typeof item.fee === "object" ? item.fee?.title || (item.fee?.amount ? `₹${Number(item.fee.amount).toLocaleString("en-IN")}` : null) : item.fee);
+
+              const cardTitle = item.title.toLowerCase().includes(uniName.toLowerCase())
+                ? item.title
+                : `${uniName} - ${item.title}`;
+
+              return (
+                <Card
+                  key={item._uniqueKey || `${item.title}-${uniName}-${index}`}
+                  className="bg-white rounded-3xl shadow-[0_15px_35px_rgba(0,0,0,0.02)] border border-gray-100 flex flex-col transform transition duration-300 hover:-translate-y-1.5 hover:shadow-xl overflow-hidden animate-fade-in"
+                >
+                {/* Card Image */}
+
+                <Link href={`/courses/${item.slug}`} className="relative w-full h-40 shrink-0 block group">
+                  <Image
+                    src={getAssetPath(item.image)}
+                    alt={cardTitle}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    priority={index === 0}
+                    loading={index === 0 ? "eager" : "lazy"}
+                    className="object-cover rounded-3xl group-hover:scale-105 transition-transform duration-300"
+                  />
                 </Link>
 
-                {/* University Name */}
+                <div className="pt-0 pb-6 px-6 flex flex-col grow text-left relative">
+                  {/* Institution Logo overlay */}
 
-                <div className="flex items-center gap-2 text-[#A66E38] text-[13px] font-bold mb-4 select-none">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 640 640"
-                    aria-hidden="true"
-                    className="h-4 w-4 shrink-0 fill-current"
-                  >
-                    <path d="M335.9 84.2C326.1 78.6 314 78.6 304.1 84.2L80.1 212.2C67.5 219.4 61.3 234.2 65 248.2C68.7 262.2 81.5 272 96 272H128V480L76.8 518.4C68.7 524.4 64 533.9 64 544C64 561.7 78.3 576 96 576H544C561.7 576 576 561.7 576 544C576 533.9 571.3 524.4 563.2 518.4L512 480V272H544C558.5 272 571.2 262.2 574.9 248.2C578.6 234.2 572.4 219.4 559.8 212.2L335.9 84.2ZM464 272V480H400V272H464ZM352 272V480H288V272H352ZM240 272V480H176V272H240ZM320 160C337.7 160 352 174.3 352 192C352 209.7 337.7 224 320 224C302.3 224 288 209.7 288 192C288 174.3 302.3 160 320 160Z" />
-                  </svg>
+                  <div className="mb-5 -mt-7.5 rounded-[10px] shadow-[0_2px_8px_rgba(0,0,0,0.15)] w-[55%] p-2 bg-white relative z-10 flex items-center justify-center h-18 border border-slate-100">
+                    <div className="relative w-full h-15">
+                      <Image
+                        src={getAssetPath(rawLogo)}
+                        alt={uniName}
+                        fill
+                        sizes="200px"
+                        className="object-contain"
+                      />
+                    </div>
+                  </div>
 
-                  <span>{typeof item.university === "object" ? item.university?.name : item.university}</span>
-                </div>
+                  {/* Course Title */}
+
+                  <Link href={`/courses/${item.slug}`} className="hover:text-[#A66E38] transition-colors">
+                    <h3 className="text-[14px] font-bold text-[#1d3557] leading-snug mb-3">
+                      {cardTitle}
+                    </h3>
+                  </Link>
+
+                  {/* University Name */}
+
+                  <div className="flex items-center gap-2 text-[#A66E38] text-[13px] font-bold mb-4 select-none">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 640 640"
+                      aria-hidden="true"
+                      className="h-4 w-4 shrink-0 fill-current"
+                    >
+                      <path d="M335.9 84.2C326.1 78.6 314 78.6 304.1 84.2L80.1 212.2C67.5 219.4 61.3 234.2 65 248.2C68.7 262.2 81.5 272 96 272H128V480L76.8 518.4C68.7 524.4 64 533.9 64 544C64 561.7 78.3 576 96 576H544C561.7 576 576 561.7 576 544C576 533.9 571.3 524.4 563.2 518.4L512 480V272H544C558.5 272 571.2 262.2 574.9 248.2C578.6 234.2 572.4 219.4 559.8 212.2L335.9 84.2ZM464 272V480H400V272H464ZM352 272V480H288V272H352ZM240 272V480H176V272H240ZM320 160C337.7 160 352 174.3 352 192C352 209.7 337.7 224 320 224C302.3 224 288 209.7 288 192C288 174.3 302.3 160 320 160Z" />
+                    </svg>
+
+                    <span>{uniName}</span>
+                  </div>
 
                 {/* Description */}
 
@@ -210,7 +265,7 @@ export function Courses({
                     </span>
 
                     <span className="text-[#1C293F] font-bold ml-1">
-                      {typeof item.duration === "object" ? item.duration?.title : item.duration}
+                      {durationTitle}
                     </span>
                   </div>
 
@@ -220,11 +275,11 @@ export function Courses({
                     </span>
 
                     <span className="text-gray-500 font-medium shrink-0">
-                      Eligibility :
+                      {feeTitle ? "Fee Starting :" : "Eligibility :"}
                     </span>
 
-                    <span className="text-[#1C293F] font-bold ml-1">
-                      {typeof item.eligibility === "object" ? item.eligibility?.title : item.eligibility}
+                    <span className={`font-bold ml-1 ${feeTitle ? "text-emerald-700 font-extrabold" : "text-[#1C293F]"}`}>
+                      {feeTitle || eligibilityTitle}
                     </span>
                   </div>
                 </div>
@@ -276,9 +331,11 @@ export function Courses({
                     </svg>
                   </button>
                 </div>
-              </div>
-            </Card>
-          ))}
+                </div>
+              </Card>
+            );
+          });
+        })()}
         </div>
       </Container>
 
@@ -299,35 +356,54 @@ export function Courses({
       >
         <div className="space-y-4">
           {filteredPrograms.length > 0 ? (
-            filteredPrograms.map((item, index) => (
-              <div
-                key={`modal-${item.title}-${index}`}
-                className="bg-slate-50 rounded-2xl p-4 border border-gray-200 flex flex-col gap-3 hover:border-amber-500 transition-colors"
-              >
-                <Link
-                  href={`/courses/${item.slug}`}
-                  onClick={() => setMobileCategoryModal({ open: false, tab: null, label: "" })}
-                  className="flex items-center justify-between gap-3 group"
+            filteredPrograms.map((item, index) => {
+              const offerings = Array.isArray(item.universityOfferings) ? item.universityOfferings : [];
+              const firstOffering = offerings[0] || null;
+              const uniObj =
+                firstOffering?.university ||
+                (Array.isArray(item.university) && item.university.length > 0
+                  ? item.university[0]
+                  : typeof item.university === "object"
+                  ? item.university
+                  : null);
+              const uniName =
+                offerings.length > 1
+                  ? `${uniObj?.name || "Partner University"} (+${offerings.length - 1} Universities)`
+                  : uniObj?.name || (typeof item.university === "string" ? item.university : "University");
+              const rawLogo =
+                uniObj?.logoSrc?.url ||
+                uniObj?.logoSrc ||
+                (typeof item.logo === "object" ? item.logo?.url : item.logo);
+
+              return (
+                <div
+                  key={`modal-${item.title}-${index}`}
+                  className="bg-slate-50 rounded-2xl p-4 border border-gray-200 flex flex-col gap-3 hover:border-amber-500 transition-colors"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="relative w-12 h-12 shrink-0 rounded-xl overflow-hidden bg-white border border-gray-200 p-1">
-                      <Image
-                        src={getAssetPath(item.logo)}
-                        alt={typeof item.university === "object" ? item.university?.name || "University" : String(item.university || "University")}
-                        fill
-                        className="object-contain"
-                      />
+                  <Link
+                    href={`/courses/${item.slug}`}
+                    onClick={() => setMobileCategoryModal({ open: false, tab: null, label: "" })}
+                    className="flex items-center justify-between gap-3 group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="relative w-12 h-12 shrink-0 rounded-xl overflow-hidden bg-white border border-gray-200 p-1">
+                        <Image
+                          src={getAssetPath(rawLogo)}
+                          alt={uniName}
+                          fill
+                          className="object-contain"
+                        />
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-bold text-[#1d3557] group-hover:text-[#A66E38] leading-snug transition-colors">
+                          {item.title}
+                        </h4>
+                        <p className="text-xs font-semibold text-[#A66E38]">
+                          {uniName}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="text-sm font-bold text-[#1d3557] group-hover:text-[#A66E38] leading-snug transition-colors">
-                        {item.title}
-                      </h4>
-                      <p className="text-xs font-semibold text-[#A66E38]">
-                        {typeof item.university === "object" ? item.university?.name : item.university}
-                      </p>
-                    </div>
-                  </div>
-                </Link>
+                  </Link>
 
                 {item.description && (
                   <p className="text-xs text-gray-600 line-clamp-2">
@@ -350,9 +426,10 @@ export function Courses({
                   >
                     Apply Now
                   </button>
+                  </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           ) : (
             <div className="text-center py-8 text-gray-500 font-medium text-sm">
               No programs found in this category.

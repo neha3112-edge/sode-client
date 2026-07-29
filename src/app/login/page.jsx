@@ -38,12 +38,8 @@ export default function LoginPage() {
   }, [isSuccess, router]);
 
   const handleLogin = async (values) => {
-    try {
-      // 🎯 FIXED: अब Antd Form सीधे 'username' कैप्चर करता है और पेलोड में पास करता है
-      await triggerLogin({ loginData: values }).unwrap();
-    } catch (error) {
-      console.error("Login component submission error:", error);
-    }
+    await triggerLogin({ loginData: values }).unwrap();
+
   };
 
   return (

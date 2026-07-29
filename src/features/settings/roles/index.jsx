@@ -56,8 +56,8 @@ export default function Index() {
 
     {
       title: "Actions",
-      dataIndex: "actions",
-      key: "actions",
+      dataIndex: "action",
+      key: "action",
       render: (actions) => (
         <Space>
           {(actions || []).map((action, index) => (
@@ -67,6 +67,17 @@ export default function Index() {
           ))}
         </Space>
       ),
+    },
+    {
+      title: "Workspace Overrides",
+      dataIndex: "workspacePermissions",
+      key: "workspacePermissions",
+      render: (perms) =>
+        perms && perms.length > 0 ? (
+          <Tag color="purple">{perms.length} workspace(s)</Tag>
+        ) : (
+          <Tag color="default">Global only</Tag>
+        ),
     },
     {
       title: "Created At",
