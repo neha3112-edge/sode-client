@@ -3,7 +3,8 @@
  */
 import { NextResponse } from "next/server";
 
-const isRemote = process.env.NEXT_PUBLIC_DEV_REMOTE === "remote";
+const isProduction = process.env.NODE_ENV === "production";
+const isRemote = isProduction || process.env.NEXT_PUBLIC_DEV_REMOTE === "remote";
 
 export const BACKEND_ORIGIN = isRemote
   ? (process.env.NEXT_PUBLIC_REMOTE_BACKEND_SERVER || "https://sode.api.mysode.com")
