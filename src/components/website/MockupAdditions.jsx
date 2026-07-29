@@ -813,11 +813,12 @@ export function IimIitLogos({ categories = [], programs = [] }) {
                 partnerToRender.children.forEach((child) => {
                   const uName = child.label || child.name || child.title;
                   const logo = child.logoUrl || child.logoSrc || child.logo || child.image;
+                  const uSlug = child.slug || uName;
                   displayItems.push({
                     id: child._id || child.slug,
                     name: uName,
                     logo: logo,
-                    href: `/courses?category=${partnerToRender.slug}&search=${encodeURIComponent(uName)}`,
+                    href: `/courses?university=${encodeURIComponent(uSlug)}`,
                   });
                 });
               }
@@ -825,6 +826,7 @@ export function IimIitLogos({ categories = [], programs = [] }) {
               if (partnerModalData.universities && partnerModalData.universities.length > 0) {
                 partnerModalData.universities.forEach((uni) => {
                   const uName = uni.university?.name || uni.name || "Partner University";
+                  const uSlug = uni.university?.slug || uni.slug || uName;
                   const exists = displayItems.some((it) => it.name.toLowerCase() === uName.toLowerCase());
                   if (!exists) {
                     const logo = uni.university?.logoSrc?.url || uni.logoSrc?.url || uni.logoUrl || uni.logo;
@@ -832,7 +834,7 @@ export function IimIitLogos({ categories = [], programs = [] }) {
                       id: uni._id,
                       name: uName,
                       logo: logo,
-                      href: `/courses?category=${partnerToRender.slug}&university=${encodeURIComponent(uName)}`,
+                      href: `/courses?university=${encodeURIComponent(uSlug)}`,
                     });
                   }
                 });
@@ -848,7 +850,7 @@ export function IimIitLogos({ categories = [], programs = [] }) {
                       id: p._id || p.slug,
                       name: mainName,
                       logo: logo,
-                      href: `/courses?category=${partnerToRender.slug}&search=${encodeURIComponent(p.title || p.name)}`,
+                      href: p.slug ? `/courses/${p.slug}` : `/courses?course=${encodeURIComponent(p.title || p.name)}`,
                     });
                   }
                 });

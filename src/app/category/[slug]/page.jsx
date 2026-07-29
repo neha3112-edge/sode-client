@@ -144,7 +144,7 @@ export default async function CategoryDetailPage({ params }) {
 
                       <div className="pt-4 mt-6 border-t border-slate-100 flex items-center justify-between">
                         <a
-                          href={`/courses?search=${encodeURIComponent(program.title)}`}
+                          href={program.slug ? `/courses/${program.slug}` : `/courses?course=${encodeURIComponent(program.title)}`}
                           className="w-full text-center bg-[#102441] text-white font-bold text-xs py-2.5 rounded-xl hover:bg-[#163056] transition-colors"
                         >
                           View Program Details & Apply

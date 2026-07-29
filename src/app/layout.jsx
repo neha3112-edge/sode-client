@@ -16,6 +16,7 @@ import SWRProvider from "@/components/providers/SWRProvider";
 
 import { FormModalProvider } from "@/context/FormModalContext";
 import AntdMessageBridge from "@/components/layout/AntdMessageBridge";
+import { MobileBottomNav } from "@/components/website/MobileBottomNav";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -163,6 +164,7 @@ export default async function RootLayout({ children }) {
                     {siteSetting.showGlobalCta !== false && <GlobalCTA />}
                     <CookieConsent />
                     <CompareDrawerWidget />
+                    <MobileBottomNav />
                   </CompareProvider>
                 </FormModalProvider>
               </SWRProvider>
