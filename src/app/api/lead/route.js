@@ -197,26 +197,23 @@ export async function POST(req) {
     |--------------------------------------------------------------------------
     */
 
-    const backendEndpoint = `${API_BASE_URL}apiconfig/execute`;
+    const backendEndpoint = `${API_BASE_URL}apiconfig/trigger`;
 
     const backendResponse = await fetch(backendEndpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        key: "crm_lead_api",
-        payload: finalPayload,
-      }),
+      body: JSON.stringify({ event: "lead_submission", payload: finalPayload }),
       cache: "no-store",
     });
 
     if (!backendResponse.ok) {
       const errorText = await backendResponse.text();
-      console.error("Backend ApiConfig Execution Error:", errorText);
-      throw new Error(`Backend error: ${backendResponse.status}`);
+      console.error(`Backend ApiConfig Trigger Error:`, errorText);
+      throw new Error(`Failed to trigger APIs: ${backendResponse.status}`);
     }
 
-    const backendResult = await backendResponse.json();
-    console.log("Lead successfully executed via backend apiConfig:", backendResult);
+    const results = await backendResponse.json();
+    console.log("Lead execution results:", results);
 
     /*
     |--------------------------------------------------------------------------
