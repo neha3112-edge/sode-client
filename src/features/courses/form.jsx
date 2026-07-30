@@ -79,7 +79,7 @@ function OfferingHeader({ fieldName, universityOptions, onRemove }) {
 /**
  * Advanced Sections for Subcourse
  */
-function AdvancedSubcourseSections({ namePrefix, restField }) {
+function AdvancedSubcourseSections({ uniFieldIndex, namePrefix, restField, mediaOptions, loadingMedia, singleObjEvent, singleObjProp }) {
   const getPath = (field) => [namePrefix, ...field];
   const { TextArea } = Input;
 
@@ -101,6 +101,64 @@ function AdvancedSubcourseSections({ namePrefix, restField }) {
           <Form.Item {...restField} name={getPath(["whyChooseDescription"])} label="Why Choose Description">
             <TextArea rows={3} placeholder="Why choose description..." />
           </Form.Item>
+
+          <Divider plain className="my-2">Course Snapshot</Divider>
+          <Form.List name={getPath(["courseSnapshotBottom"])}>
+            {(fields, { add, remove }) => (
+              <div className="space-y-2">
+                {fields.map((field) => (
+                  <div key={field.key} className="flex gap-2">
+                    <Form.Item {...(({ key, ...rest }) => rest)(field)} name={[field.name, "iconType"]} initialValue="lucide" noStyle>
+                      <Select placeholder="Type" className="w-[15%]" options={[{label:"Lucide",value:"lucide"},{label:"Media",value:"media"}]} />
+                    </Form.Item>
+                    
+                    <Form.Item noStyle shouldUpdate>
+                      {({ getFieldValue }) => {
+                        const path = ["universityOfferings", uniFieldIndex, "subcourses", namePrefix, "courseSnapshotBottom", field.name, "iconType"];
+                        const iconType = getFieldValue(path) || "lucide";
+                        
+                        if (iconType === "media") {
+                          return (
+                            <Form.Item
+                              {...(({ key, ...rest }) => rest)(field)}
+                              name={[field.name, "iconMedia"]}
+                              noStyle
+                              getValueFromEvent={singleObjEvent}
+                              getValueProps={singleObjProp}
+                            >
+                              <Select
+                                placeholder="Media SVG..."
+                                loading={loadingMedia}
+                                allowClear
+                                showSearch
+                                optionFilterProp="label"
+                                options={mediaOptions}
+                                className="w-[15%]"
+                              />
+                            </Form.Item>
+                          );
+                        }
+                        
+                        return (
+                          <Form.Item {...(({ key, ...rest }) => rest)(field)} name={[field.name, "iconLucide"]} noStyle>
+                            <Input placeholder="Lucide (e.g. Clock)" className="w-[15%]" />
+                          </Form.Item>
+                        );
+                      }}
+                    </Form.Item>
+                    <Form.Item {...(({ key, ...rest }) => rest)(field)} name={[field.name, "label"]} noStyle>
+                      <Input placeholder="Label (e.g. Duration)" className="w-[30%]" />
+                    </Form.Item>
+                    <Form.Item {...(({ key, ...rest }) => rest)(field)} name={[field.name, "value"]} noStyle>
+                      <Input placeholder="Value (e.g. 6 Months)" className="w-[30%]" />
+                    </Form.Item>
+                    <Button danger icon={<DeleteOutlined />} onClick={() => remove(field.name)} />
+                  </div>
+                ))}
+                <Button type="dashed" onClick={() => add()} block size="small">+ Add Snapshot Item</Button>
+              </div>
+            )}
+          </Form.List>
         </div>
       ),
     },
@@ -146,6 +204,26 @@ function AdvancedSubcourseSections({ namePrefix, restField }) {
                   </div>
                 ))}
                 <Button type="dashed" onClick={() => add()} block size="small">+ Add Module</Button>
+              </div>
+            )}
+          </Form.List>
+
+          <Divider plain className="my-2">Detailed Modules</Divider>
+          <Form.List name={getPath(["modules"])}>
+            {(fields, { add, remove }) => (
+              <div className="space-y-4">
+                {fields.map((field) => (
+                  <div key={field.key} className="border border-slate-200 p-3 rounded-md space-y-2 relative bg-slate-50">
+                    <Button danger icon={<DeleteOutlined />} size="small" className="absolute top-2 right-2" onClick={() => remove(field.name)} />
+                    <Form.Item {...(({ key, ...rest }) => rest)(field)} name={[field.name, "title"]} label="Module Title" className="mb-0 pr-8">
+                      <Input placeholder="e.g. Module 1: Introduction" />
+                    </Form.Item>
+                    <Form.Item {...(({ key, ...rest }) => rest)(field)} name={[field.name, "description"]} label="Description" className="mb-0">
+                      <TextArea rows={2} placeholder="Module content..." />
+                    </Form.Item>
+                  </div>
+                ))}
+                <Button type="dashed" onClick={() => add()} block size="small">+ Add Detailed Module</Button>
               </div>
             )}
           </Form.List>
@@ -199,6 +277,22 @@ function AdvancedSubcourseSections({ namePrefix, restField }) {
           </Form.Item>
           <Form.Item {...restField} name={getPath(["instituteSection", "certificateDescription"])} label="Certificate Description">
             <TextArea rows={2} placeholder="Description..." />
+          </Form.Item>
+          <Form.Item
+            {...restField}
+            name={getPath(["instituteSection", "certificateImage"])}
+            label="Certificate Image"
+            getValueFromEvent={singleObjEvent}
+            getValueProps={singleObjProp}
+          >
+            <Select
+              placeholder="Select Certificate Image..."
+              loading={loadingMedia}
+              allowClear
+              showSearch
+              optionFilterProp="label"
+              options={mediaOptions}
+            />
           </Form.Item>
           
           <Divider plain className="my-2">Why It Matters</Divider>
@@ -325,6 +419,47 @@ function AdvancedSubcourseSections({ namePrefix, restField }) {
                   </div>
                 ))}
                 <Button type="dashed" onClick={() => add()} block size="small">+ Add FAQ</Button>
+              </div>
+            )}
+          </Form.List>
+        </div>
+      ),
+    },
+    {
+      key: "admission",
+      label: "8. Target Audience & Admission",
+      children: (
+        <div className="space-y-4">
+          <Divider plain className="my-2">Who Can Apply?</Divider>
+          <Form.List name={getPath(["whoCanApply"])}>
+            {(fields, { add, remove }) => (
+              <div className="space-y-2">
+                {fields.map((field) => (
+                  <div key={field.key} className="flex gap-2">
+                    <Form.Item {...(({ key, ...rest }) => rest)(field)} noStyle>
+                      <Input placeholder="e.g. Working Professionals with 2+ years of experience" />
+                    </Form.Item>
+                    <Button danger icon={<DeleteOutlined />} onClick={() => remove(field.name)} />
+                  </div>
+                ))}
+                <Button type="dashed" onClick={() => add()} block size="small">+ Add Criteria</Button>
+              </div>
+            )}
+          </Form.List>
+
+          <Divider plain className="my-2">Admission Process</Divider>
+          <Form.List name={getPath(["admissionProcess"])}>
+            {(fields, { add, remove }) => (
+              <div className="space-y-2">
+                {fields.map((field) => (
+                  <div key={field.key} className="flex gap-2">
+                    <Form.Item {...(({ key, ...rest }) => rest)(field)} noStyle>
+                      <Input placeholder="e.g. Step 1: Submit Application Form" />
+                    </Form.Item>
+                    <Button danger icon={<DeleteOutlined />} onClick={() => remove(field.name)} />
+                  </div>
+                ))}
+                <Button type="dashed" onClick={() => add()} block size="small">+ Add Step</Button>
               </div>
             )}
           </Form.List>
@@ -787,8 +922,13 @@ export default function CourseForm({ isUpdateForm = false, form: propForm }) {
                                     
                                     {/* Advanced Sections */}
                                     <AdvancedSubcourseSections 
+                                      uniFieldIndex={field.name}
                                       namePrefix={subField.name} 
                                       restField={restSubField} 
+                                      mediaOptions={mediaOptions}
+                                      loadingMedia={loadingMedia}
+                                      singleObjEvent={singleObjEvent}
+                                      singleObjProp={singleObjProp}
                                     />
                                   </div>
                                 ),
