@@ -23,7 +23,7 @@ function CategoryIcon({ cat }) {
 
   if (iconUrl && !imgError) {
     return (
-      <div className="w-5 h-5 sm:w-6 sm:h-6 relative shrink-0">
+      <div className="w-8 h-8 sm:w-10 sm:h-10 relative shrink-0">
         <Image
           src={iconUrl}
           alt={cat.name || cat.label || "Category"}
@@ -230,12 +230,12 @@ export function Stats({ categories: initialCategories = [], programs = [] }) {
         }
       ` }} />
 
-      {/* ── STATS CARDS SECTION (MOBILE: 4 CARDS/ROW | DESKTOP: 8 CARDS IN 1 SINGLE ROW) ── */}
+      {/* ── STATS CARDS SECTION (MOBILE: 4 CARDS/ROW | DESKTOP: ALL CARDS IN 1 SINGLE ROW) ── */}
       {rootCategories.length > 0 && (
         <section className="py-3 bg-white relative overflow-hidden" suppressHydrationWarning>
           <Container>
-            {/* Grid: 4 columns on mobile, 8 columns in 1 single row on desktop (Ultra Compact) */}
-            <div className="grid grid-cols-4 md:grid-cols-8 gap-1.5 sm:gap-2.5 max-w-4xl mx-auto items-stretch" suppressHydrationWarning>
+            {/* Grid: 4 columns on mobile, 5 on sm, 9 columns in 1 single row on desktop */}
+            <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-9 gap-1.5 sm:gap-2.5 max-w-6xl mx-auto items-stretch" suppressHydrationWarning>
               {rootCategories.map((item) => (
                 <div
                   key={item._id || item.slug}
@@ -256,27 +256,27 @@ export function Stats({ categories: initialCategories = [], programs = [] }) {
 
             {/* ── BROWSE BY CATEGORY PILLS SECTION (DYNAMIC FROM BACKEND SEED DB) ── */}
             {browseByPills.length > 0 && (
-              <div className="max-w-4xl mx-auto mt-5 pt-4 border-t border-slate-200/80 text-left">
+              <div className="max-w-6xl mx-auto mt-5 pt-4 border-t border-slate-200/80 text-left">
                 <h4 className="text-sm sm:text-base font-bold text-slate-800 tracking-tight mb-3">
                   Browse By Category
                 </h4>
                 <div className="flex flex-wrap gap-2 sm:gap-2.5" suppressHydrationWarning>
-                    {browseByPills.map((pill) => {
-                      let subSlug = pill.slug || pill.name || "";
-                      if (subSlug.startsWith("browse-")) subSlug = subSlug.slice(7);
-                      return (
-                        <button
-                          key={pill._id || pill.slug || pill.name}
-                          onClick={() => {
-                            router.push(`/courses?subcategory=${encodeURIComponent(subSlug)}`);
-                          }}
-                          className="px-2.5 sm:px-3.5 py-1.5 bg-white hover:bg-slate-50 border border-slate-300/90 rounded-lg text-[11px] sm:text-xs font-semibold text-slate-700 hover:text-blue-600 hover:border-blue-300 transition-all cursor-pointer shadow-2xs hover:shadow-xs whitespace-nowrap"
-                          suppressHydrationWarning
-                        >
-                          {pill.name}
-                        </button>
-                      );
-                    })}
+                  {browseByPills.map((pill) => {
+                    let subSlug = pill.slug || pill.name || "";
+                    if (subSlug.startsWith("browse-")) subSlug = subSlug.slice(7);
+                    return (
+                      <button
+                        key={pill._id || pill.slug || pill.name}
+                        onClick={() => {
+                          router.push(`/courses?subcategory=${encodeURIComponent(subSlug)}`);
+                        }}
+                        className="px-2.5 sm:px-3.5 py-1.5 bg-white hover:bg-slate-50 border border-slate-300/90 rounded-lg text-[11px] sm:text-xs font-semibold text-slate-700 hover:text-blue-600 hover:border-blue-300 transition-all cursor-pointer shadow-2xs hover:shadow-xs whitespace-nowrap"
+                        suppressHydrationWarning
+                      >
+                        {pill.name}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Card, Carousel } from "antd";
 
 import { Container } from "@/components/common/Container";
+import FormWrapper from "@/components/forms/FormWrapper";
 import { useFormModal } from "@/context/FormModalContext";
 import { getAssetPath } from "@/lib/utils";
 
@@ -23,6 +24,7 @@ export function Hero({ initialHeroData = null }) {
   // Form visibility flags from Mongoose Schema (showForm: "both" | "desktop" | "mobile" | "none")
   const showFormSetting = heroData?.showForm || "both";
   const showOnDesktop = showFormSetting === "both" || showFormSetting === "desktop";
+  const showOnMobile = showFormSetting === "both" || showFormSetting === "mobile";
 
   const openCounsellingForm = () => {
     openFormModal({
@@ -58,11 +60,12 @@ export function Hero({ initialHeroData = null }) {
   // Single Banner Helper
   const renderSingleBanner = () => {
     const slideSecondaryCta = "Talk to an Expert";
+
     return (
-      <div className="px-4 pb-2 pt-0 lg:p-0">
-        <div className="relative w-full overflow-hidden bg-[#102441] rounded-3xl lg:rounded-none border border-white/5 lg:border-0 h-70 lg:h-120 flex items-center">
-          {/* Desktop Background Image */}
-          <div className="absolute inset-0 z-0 hidden lg:block">
+      <div className="w-full">
+        {/* ── DESKTOP HERO VIEW (lg and up) ── */}
+        <div className="hidden lg:flex relative w-full overflow-hidden bg-[#0C2340] h-130 items-center">
+          <div className="absolute inset-0 z-0">
             <Image
               src={bgImageUrl}
               alt="Hero background"
@@ -74,42 +77,45 @@ export function Hero({ initialHeroData = null }) {
             />
           </div>
 
-          {/* Mobile Background Image */}
-          <div className="absolute right-0 bottom-0 top-0 w-[46%] overflow-hidden rounded-r-3xl z-0 lg:hidden block">
-            <img
-              src={bgImageUrl}
-              alt="Campus Dome"
-              className="w-full h-full object-cover object-left-center scale-[1.25] translate-x-2"
-            />
-            <div className="absolute inset-y-0 left-0 w-8 bg-linear-to-r from-[#102441] to-transparent z-10" />
-          </div>
-
-          <Container className="relative z-10 w-full px-4 py-6 lg:px-0 lg:py-16">
-            <div className="flex w-full flex-col lg:grid lg:grid-cols-2 lg:gap-12">
-              <div className="flex w-[60%] lg:w-full flex-col text-left text-white z-10 relative space-y-2 lg:space-y-6">
-                <p className="text-[10px] lg:text-base font-serif font-semibold italic text-[#dbeafe] lg:mb-3">
-                  <span className="text-xs lg:text-3xl font-medium text-[#f7ebc7] font-sans">#1</span>{" "}
+          <Container className="relative z-10 w-full px-0 py-16">
+            <div className="grid grid-cols-2 gap-12 items-center w-full">
+              <div className="flex flex-col text-left text-white z-10 relative space-y-6">
+                <p className="text-base font-serif font-semibold italic text-[#dbeafe] mb-1">
+                  <span className="text-3xl font-medium text-[#f7ebc7] font-sans">#1</span>{" "}
                   {badgeText.replace(/^#1\s*/i, "")}
                 </p>
 
-                <h1 className="text-sm sm:text-base md:text-lg lg:text-3xl font-extrabold leading-tight text-white max-w-60 sm:max-w-none">
+                <h1 className="text-3xl lg:text-4xl font-extrabold leading-tight text-white">
                   {titleText}
                 </h1>
 
-                <p className="text-[10px] lg:text-sm font-medium text-white/85 max-w-50 sm:max-w-md line-clamp-2 lg:line-clamp-none">
+                <p className="text-sm font-medium text-white/85 max-w-md">
                   {subtitleText}
                 </p>
 
-                <div className="flex gap-2 pt-2 lg:pt-4">
+                <div className="flex flex-col space-y-3">
+                  <div className="flex flex-wrap gap-3">
+                    <span className="rounded-md border border-white/30 bg-white/5 px-4 py-2 text-sm font-semibold">Doctorate</span>
+                    <span className="rounded-md border border-white/30 bg-white/5 px-4 py-2 text-sm font-semibold">Certification</span>
+                    <span className="rounded-md border border-white/30 bg-white/5 px-4 py-2 text-sm font-semibold">Executive Programs</span>
+                  </div>
+                  <div className="flex flex-wrap gap-3">
+                    <span className="rounded-md border border-white/30 bg-white/5 px-4 py-2 text-sm font-semibold">Banking</span>
+                    <span className="rounded-md border border-white/30 bg-white/5 px-4 py-2 text-sm font-semibold">Finance</span>
+                    <span className="rounded-md border border-white/30 bg-white/5 px-4 py-2 text-sm font-semibold">Leadership</span>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 pt-2">
                   <button
                     onClick={openCounsellingForm}
-                    className="cursor-pointer rounded-lg lg:rounded-md bg-linear-to-r from-[#EEC471] via-[#F3CD73] to-[#FADA9A] px-2.5 sm:px-4 lg:px-8 py-1.5 lg:py-2 text-[10px] lg:text-base font-bold text-[#102441] shadow-lg hover:scale-[1.02] transition-transform duration-200"
+                    className="cursor-pointer rounded-md bg-gradient-to-r from-[#EEC471] via-[#F3CD73] to-[#FADA9A] px-8 py-2.5 text-base font-bold text-[#102441] shadow-lg hover:scale-[1.02] transition-transform duration-200"
                   >
                     {primaryCtaText === "Book 1:1 Personalised Counselling" ? "Explore Programs" : primaryCtaText}
                   </button>
                   <button
                     onClick={openCounsellingForm}
-                    className="cursor-pointer rounded-lg lg:rounded-md border border-white/40 bg-white/10 px-2.5 sm:px-4 lg:px-6 py-1.5 lg:py-2 text-[10px] lg:text-base font-bold text-white shadow-md backdrop-blur-xs hover:bg-white/20 transition-all duration-200"
+                    className="cursor-pointer rounded-md border border-white/40 bg-white/10 px-6 py-2.5 text-base font-bold text-white shadow-md backdrop-blur-xs hover:bg-white/20 transition-all duration-200"
                   >
                     {slideSecondaryCta}
                   </button>
@@ -118,13 +124,14 @@ export function Hero({ initialHeroData = null }) {
 
               {/* Desktop Right Column: Application Form */}
               {showOnDesktop && (
-                <div className="hidden lg:flex w-full justify-end px-4">
+                <div className="flex w-full justify-end px-4">
                   <div className="w-full max-w-md">
                     <Card className="overflow-hidden rounded-2xl border-0 bg-white p-6 text-black shadow-2xl">
                       <FormWrapper
                         title="Apply Now"
                         subtitle="Select your course and start your application journey"
                         submitButtonText="Apply Now"
+                        formNameOverride="DesktopHero_ApplyNow"
                       />
                     </Card>
                   </div>
@@ -132,6 +139,48 @@ export function Hero({ initialHeroData = null }) {
               )}
             </div>
           </Container>
+        </div>
+
+        {/* ── MOBILE HERO VIEW (< lg) ── */}
+        <div className="lg:hidden w-full bg-[#0C2340]">
+          {/* Top Banner Box */}
+          <div className="pt-8 pb-0 text-center flex flex-col items-center relative overflow-hidden">
+            <p className="text-md sm:text-sm font-serif italic text-[#dbeafe] mb-2.5 font-medium">
+              <span className="font-sans font-bold text-[#f7ebc7] not-italic text-sm">#1</span>{" "}
+              {badgeText.replace(/^#1\s*/i, "")}
+            </p>
+
+            <h1 className="text-xl sm:text-2xl font-extrabold text-white leading-tight sm:max-w-md mx-2 mb-3">
+              {titleText}
+            </h1>
+
+            <p className="text-xs sm:text-sm text-slate-200/90 font-medium max-w-xs sm:max-w-md mx-auto leading-relaxed">
+              {subtitleText}
+            </p>
+
+            {/* Model / Person Image */}
+            <div className="w-full relative flex justify-center items-end -mt-[80px]">
+              <img
+                src={resolveImage(heroData?.mobileBgImage || heroData?.mobileImage, "/media/images/2026/07/20/893bee8f8373a9101bcdb9a52bfbe001.png")}
+                alt={titleText}
+                className="w-full h-auto max-h-[500px] object-contain object-bottom"
+              />
+            </div>
+          </div>
+
+          {/* Mobile Apply Form Card */}
+          {showOnMobile && (
+            <div className="px-4 bg-[#0C2340] pb-10 -mt-[10px]">
+              <div className="max-w-md mx-auto bg-white rounded-3xl p-5 sm:p-6 shadow-xl border border-slate-200/80">
+                <FormWrapper
+                  title="Apply Now"
+                  subtitle="Select your course and start your application journey"
+                  submitButtonText="Apply Now"
+                  formNameOverride="MobileHero_ApplyNow"
+                />
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -147,81 +196,108 @@ export function Hero({ initialHeroData = null }) {
     const slideSecondaryCta = slide?.secondaryCtaText || "Talk to an Expert";
 
     return (
-      <div key={slide._id || idx} className="p-0">
-        <div className="px-4 pb-2 pt-0 lg:p-0">
-          <div className="relative w-full overflow-hidden bg-[#102441] rounded-3xl lg:rounded-none border border-white/5 lg:border-0 h-70 lg:h-120 flex items-center">
-            {/* Desktop Background Image */}
-            <div className="absolute inset-0 z-0 hidden lg:block">
-              <Image
-                src={slideBg}
-                alt={slideTitle || "Hero slide background"}
-                fill
-                priority={idx === 0}
-                fetchPriority={idx === 0 ? "high" : "auto"}
-                sizes="100vw"
-                className="object-cover object-center"
-              />
-            </div>
+      <div key={slide._id || idx} className="w-full">
+        {/* ── DESKTOP HERO SLIDE (lg and up) ── */}
+        <div className="hidden lg:flex relative w-full overflow-hidden bg-[#0C2340] h-120 items-center">
+          <div className="absolute inset-0 z-0">
+            <Image
+              src={slideBg}
+              alt={slideTitle || "Hero slide background"}
+              fill
+              priority={idx === 0}
+              fetchPriority={idx === 0 ? "high" : "auto"}
+              sizes="100vw"
+              className="object-cover object-center"
+            />
+          </div>
 
-            {/* Mobile Background Image */}
-            <div className="absolute right-0 bottom-0 top-0 w-[46%] overflow-hidden rounded-r-3xl z-0 lg:hidden block">
-              <img
-                src={slideBg}
-                alt="Campus Dome"
-                className="w-full h-full object-cover object-left-center scale-[1.25] translate-x-2"
-              />
-              <div className="absolute inset-y-0 left-0 w-8 bg-linear-to-r from-[#102441] to-transparent z-10" />
-            </div>
+          <Container className="relative z-10 w-full px-0 py-16">
+            <div className="grid grid-cols-2 gap-12 items-center w-full">
+              <div className="flex flex-col text-left text-white z-10 relative space-y-6">
+                <p className="text-base font-serif font-semibold italic text-[#dbeafe] mb-1">
+                  <span className="text-3xl font-medium text-[#f7ebc7] font-sans">#1</span>{" "}
+                  {slideBadge.replace(/^#1\s*/i, "")}
+                </p>
 
-            <Container className="relative z-10 w-full px-4 py-6 lg:px-0 lg:py-16">
-              <div className="flex w-full flex-col lg:grid lg:grid-cols-2 lg:gap-12">
-                <div className="flex w-[60%] lg:w-full flex-col text-left text-white z-10 relative space-y-2 lg:space-y-6">
-                  <p className="text-[10px] lg:text-base font-serif font-semibold italic text-[#dbeafe] lg:mb-3">
-                    <span className="text-xs lg:text-3xl font-medium text-[#f7ebc7] font-sans">#1</span>{" "}
-                    {slideBadge.replace(/^#1\s*/i, "")}
-                  </p>
+                <h1 className="text-3xl lg:text-4xl font-extrabold leading-tight text-white">
+                  {slideTitle}
+                </h1>
 
-                  <h1 className="text-sm sm:text-base md:text-lg lg:text-3xl font-extrabold leading-tight text-white max-w-60 sm:max-w-none">
-                    {slideTitle}
-                  </h1>
+                <p className="text-sm font-medium text-white/85 max-w-md">
+                  {slideDesc}
+                </p>
 
-                  <p className="text-[10px] lg:text-sm font-medium text-white/85 max-w-50 sm:max-w-md line-clamp-2 lg:line-clamp-none">
-                    {slideDesc}
-                  </p>
+                <div className="flex gap-3 pt-2">
+                  <button
+                    onClick={openCounsellingForm}
+                    className="cursor-pointer rounded-md bg-gradient-to-r from-[#EEC471] via-[#F3CD73] to-[#FADA9A] px-8 py-2.5 text-base font-bold text-[#102441] shadow-lg hover:scale-[1.02] transition-transform duration-200"
+                  >
+                    {slideCta === "Book 1:1 Personalised Counselling" ? "Explore Programs" : slideCta}
+                  </button>
+                  <button
+                    onClick={openCounsellingForm}
+                    className="cursor-pointer rounded-md border border-white/40 bg-white/10 px-6 py-2.5 text-base font-bold text-white shadow-md backdrop-blur-xs hover:bg-white/20 transition-all duration-200"
+                  >
+                    {slideSecondaryCta}
+                  </button>
+                </div>
+              </div>
 
-                  <div className="flex gap-2 pt-2 lg:pt-4">
-                    <button
-                      onClick={openCounsellingForm}
-                      className="cursor-pointer rounded-lg lg:rounded-md bg-linear-to-r from-[#EEC471] via-[#F3CD73] to-[#FADA9A] px-2.5 sm:px-4 lg:px-8 py-1.5 lg:py-2 text-[10px] lg:text-base font-bold text-[#102441] shadow-lg hover:scale-[1.02] transition-transform duration-200"
-                    >
-                      {slideCta === "Book 1:1 Personalised Counselling" ? "Explore Programs" : slideCta}
-                    </button>
-                    <button
-                      onClick={openCounsellingForm}
-                      className="cursor-pointer rounded-lg lg:rounded-md border border-white/40 bg-white/10 px-2.5 sm:px-4 lg:px-6 py-1.5 lg:py-2 text-[10px] lg:text-base font-bold text-white shadow-md backdrop-blur-xs hover:bg-white/20 transition-all duration-200"
-                    >
-                      {slideSecondaryCta}
-                    </button>
+              {showOnDesktop && (
+                <div className="flex w-full justify-end px-4">
+                  <div className="w-full max-w-md">
+                    <Card className="overflow-hidden rounded-2xl border-0 bg-white p-6 text-black shadow-2xl">
+                      <FormWrapper
+                        title="Apply Now"
+                        subtitle="Select your course and start your application journey"
+                        submitButtonText="Apply Now"
+                        formNameOverride="DesktopHero_ApplyNow"
+                      />
+                    </Card>
                   </div>
                 </div>
+              )}
+            </div>
+          </Container>
+        </div>
 
-                {/* Desktop Right Column: Application Form */}
-                {showOnDesktop && (
-                  <div className="hidden lg:flex w-full justify-end px-4">
-                    <div className="w-full max-w-md">
-                      <Card className="overflow-hidden rounded-2xl border-0 bg-white p-6 text-black shadow-2xl">
-                        <FormWrapper
-                          title="Apply Now"
-                          subtitle="Select your course and start your application journey"
-                          submitButtonText="Apply Now"
-                        />
-                      </Card>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </Container>
+        {/* ── MOBILE HERO SLIDE (< lg) ── */}
+        <div className="lg:hidden w-full bg-[#0C2340]">
+          <div className="pt-8 pb-0 text-center flex flex-col items-center relative overflow-hidden">
+            <p className="text-xs sm:text-sm font-serif italic text-[#dbeafe] mb-2.5 font-medium">
+              <span className="font-sans font-bold text-[#f7ebc7] not-italic text-sm">#1</span>{" "}
+              {slideBadge.replace(/^#1\s*/i, "")}
+            </p>
+
+            <h1 className="text-xl sm:text-2xl font-extrabold text-white leading-tight max-w-xs sm:max-w-md mx-auto mb-3">
+              {slideTitle}
+            </h1>
+
+            <p className="text-xs sm:text-sm text-slate-200/90 font-medium max-w-xs sm:max-w-md mx-auto leading-relaxed">
+              {slideDesc}
+            </p>
+
+            <div className="w-full relative flex justify-center items-end">
+              <img
+                src={resolveImage(slide?.mobileBgImage || slide?.mobileImage, "/media/images/2026/07/20/893bee8f8373a9101bcdb9a52bfbe001.png")}
+                alt={slideTitle}
+                className="w-full h-auto max-h-[320px] object-contain object-bottom"
+              />
+            </div>
           </div>
+
+          {showOnMobile && idx === 0 && (
+            <div className="px-4 py-6 bg-[#0C2340]">
+              <div className="max-w-md mx-auto bg-white rounded-3xl p-5 sm:p-6 shadow-xl border border-slate-200/80">
+                <FormWrapper
+                  title="Apply Now"
+                  subtitle="Select your course and start your application journey"
+                  submitButtonText="Apply Now"
+                  formNameOverride="MobileHero_ApplyNow"
+                />
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -229,24 +305,24 @@ export function Hero({ initialHeroData = null }) {
 
   return (
     <section id="hero-section" className="relative w-full overflow-hidden">
-        {isCarousel ? (
-          <div className="relative w-full">
-            <Carousel
-              autoplay={isAutoplay}
-              autoplaySpeed={autoplaySpeed}
-              arrows={showArrows}
-              dots={showDots}
-              className="w-full"
-            >
-              {heroData.slides.map((slide, idx) =>
-                renderSlideItem(slide, idx)
-              )}
-            </Carousel>
-          </div>
-        ) : (
-          renderSingleBanner()
-        )}
-      </section>
+      {isCarousel ? (
+        <div className="relative w-full">
+          <Carousel
+            autoplay={isAutoplay}
+            autoplaySpeed={autoplaySpeed}
+            arrows={showArrows}
+            dots={showDots}
+            className="w-full"
+          >
+            {heroData.slides.map((slide, idx) =>
+              renderSlideItem(slide, idx)
+            )}
+          </Carousel>
+        </div>
+      ) : (
+        renderSingleBanner()
+      )}
+    </section>
   );
 }
 

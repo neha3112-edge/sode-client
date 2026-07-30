@@ -10,12 +10,328 @@ import {
   CheckCircleFilled,
   BookFilled,
   DollarOutlined,
+  LaptopOutlined,
+  SafetyCertificateOutlined,
+  UserOutlined,
+  BookOutlined,
+  CreditCardOutlined,
+  TeamOutlined,
+  ApartmentOutlined,
+  RightOutlined,
+  RocketOutlined,
+  BulbOutlined,
+  ReadOutlined,
+  VideoCameraOutlined,
+  TrophyOutlined,
+  StarFilled,
+  PlusOutlined,
+  MinusOutlined,
+  QuestionCircleOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
 import Image from "next/image";
 import FormWrapper from "@/components/forms/FormWrapper";
 import { getAssetPath } from "@/lib/utils";
 import { useFormModal } from "@/context/FormModalContext";
+
+/* ─────────────────────────────────────────────────────────────
+   BANNER_IMAGES — JSON config for right-side hero card images.
+   Key  : course slug (string)
+   Value: absolute URL or path to the banner image
+   Use  : Add/update entries here to change banner per course.
+   "default" is used when no slug match is found.
+───────────────────────────────────────────────────────────── */
+const BANNER_IMAGES = {
+  // Example entries — replace slugs and URLs as needed:
+  // "executive-development-programme-in-human-resource-management": "/assets/images/banners/hrm-banner.webp",
+  // "post-graduate-diploma-in-management": "/assets/images/banners/pgdm-banner.webp",
+
+  // ── Default fallback image (shown when no slug matches) ──
+  default: "/media/images/2026/07/28/01abe8d532ba5872f3a6cdab896b9ccd.png",
+};
+
+/* ─────────────────────────────────────────────────────────────
+   COURSE_CONTENT — Static JSON for all page content sections.
+   Key  : course slug (string)
+   Each entry has: overviewTitle, overviewDescription, courseSnapshot,
+                   whyChooseTitle, whyChooseDescription, keyHighlights,
+                   whoCanApply, admissionProcess, courseSnapshotBottom
+   "default" is used when no slug match is found.
+───────────────────────────────────────────────────────────── */
+const COURSE_CONTENT = {
+  "executive-development-programme-in-human-resource-management": {
+    overviewTitle: "Build Future-Ready HR Leadership Skills with IIM Kozhikode",
+    overviewDescription:
+      "Transform your HR career with the IIM Kozhikode HR Analytics Course, designed to help professionals master people analytics, workforce planning, and strategic HR decision-making. Learn through live online sessions, industry case studies, and practical projects while earning a prestigious certificate from IIM Kozhikode.",
+    courseSnapshot: [
+      { icon: BankOutlined, label: "Institute", value: "IIM Kozhikode" },
+      { icon: ApartmentOutlined, label: "Programme", value: "Professional Certificate Programme" },
+      { icon: ClockCircleFilled, label: "Duration", value: "6 Months" },
+      { icon: LaptopOutlined, label: "Learning Mode", value: "Live Online" },
+      { icon: SafetyCertificateOutlined, label: "Certificate from IIM Kozhikode", value: null },
+      { icon: CreditCardOutlined, label: "EMI Options Available", value: null },
+      { icon: TeamOutlined, label: "Expert Faculty", value: null },
+      { icon: BookOutlined, label: "Industry-Relevant Curriculum", value: null },
+    ],
+    whyChooseTitle: "Why Choose the IIM Kozhikode HR Analytics Course?",
+    whyChooseDescription:
+      "The IIM Kozhikode HR Analytics Course is designed for professionals who want to combine HR expertise with data-driven decision-making. The programme equips learners with practical knowledge of HR analytics, workforce planning, talent management, and business strategy through live classes, real-world case studies, and hands-on learning. Whether you're looking to advance in HR or transition into analytics-focused roles, this programme helps you build industry-relevant skills that organizations value.",
+    keyHighlights: [
+      "Learn from IIM Kozhikode's industry-focused curriculum",
+      "Live online sessions with experienced faculty",
+      "Real-world HR case studies and practical assignments",
+      "Hands-on capstone project",
+      "Flexible learning for working professionals",
+      "Prestigious IIM Kozhikode certificate",
+      "Practical HR analytics and people analytics skills",
+      "Career-focused learning approach",
+    ],
+    whoCanApply: [
+      "Working HR professionals seeking career advancement",
+      "Graduates aspiring to enter HR domain",
+      "Business managers handling people functions",
+      "Entrepreneurs managing workforce decisions",
+    ],
+    admissionProcess: [
+      "Fill online application form",
+      "Speak with academic counsellor",
+      "Submit documents & pay fee",
+      "Get admission confirmation",
+    ],
+    courseSnapshotBottom: [
+      { label: "Duration", value: "6 Months" },
+      { label: "Mode", value: "Live Online" },
+      { label: "Learning Format", value: "Interactive Sessions" },
+      { label: "Projects", value: "Capstone Project" },
+      { label: "Certificate", value: "IIM Kozhikode" },
+      { label: "EMI", value: "Available" },
+    ],
+    skillsSection: {
+      title: "Skills You'll Learn & Curriculum",
+      description: "The curriculum is carefully designed to help learners understand modern HR practices while building analytical capabilities. Covering everything from HR fundamentals to workforce analytics and business insights, the programme combines theory with practical applications so learners can confidently solve real workplace challenges.",
+      skillsGain: [
+        "HR Analytics",
+        "People Analytics",
+        "Workforce Planning",
+        "HR Metrics & KPIs",
+        "Talent Acquisition Analytics",
+        "Employee Performance Analytics",
+        "Strategic HR Management",
+        "HR Dashboards",
+        "Business Decision-Making",
+        "Leadership & Organizational Effectiveness",
+      ],
+      curriculumOverview: [
+        "Module 1 – HR Management Fundamentals",
+        "Module 2 – Introduction to HR Analytics",
+        "Module 3 – Workforce Planning & Talent Analytics",
+        "Module 4 – Performance & Compensation Analytics",
+        "Module 5 – Employee Engagement & Retention",
+        "Module 6 – HR Dashboards & Business Insights",
+        "Module 7 – Capstone Project",
+      ],
+    },
+    learningExperience: {
+      title: "An Interactive & Flexible Learning Experience",
+      description: "Learn from anywhere without interrupting your professional commitments. The programme combines live faculty sessions with recorded lectures, industry projects, and collaborative learning to provide a practical and engaging educational experience.",
+      learningFeatures: [
+        "Live Online Interactive Classes",
+        "Recorded Sessions for Revision",
+        "Industry Case Studies",
+        "Practical Assignments",
+        "Capstone Project",
+        "Peer Learning Opportunities",
+        "Faculty Guidance",
+        "Dedicated Student Support",
+        "Flexible Weekend Learning",
+      ],
+    },
+    instituteSection: {
+      title: "Learn from One of India's Premier Management Institutes",
+      description: "IIM Kozhikode is recognized for academic excellence, innovative management education, and industry-oriented programmes. This programme reflects the institute's commitment to preparing professionals with future-ready business and leadership skills.",
+      certificateTitle: "Earn a Prestigious Certificate",
+      certificateDescription: "Upon successful completion, participants receive a Professional Certificate in HR Management & Analytics from IIM Kozhikode, adding credibility to their professional profile and demonstrating expertise in modern HR practices.",
+      certificateImage: "/media/images/2026/07/30/1a4f40f078b735f63422aad57d0c3ca3.webp",
+      whyItMatters: [],
+    },
+    careerSection: {
+      title: "Advance Your Career with In-Demand HR Analytics Skills",
+      description: "Organizations are increasingly seeking HR professionals who can use data to improve workforce performance and business outcomes. This programme prepares learners with practical HR analytics knowledge that can support career growth across multiple industries and organizational functions.",
+      careerOpportunities: [
+        "HR Analyst",
+        "People Analytics Specialist",
+        "HR Business Partner",
+        "Talent Acquisition Manager",
+        "Workforce Planning Analyst",
+        "Learning & Development Manager",
+        "HR Operations Manager",
+        "HR Manager",
+      ],
+      industriesHiring: [
+        "Information Technology",
+        "Consulting",
+        "BFSI",
+        "Healthcare",
+        "Manufacturing",
+        "Retail",
+        "E-commerce",
+        "Startups",
+      ],
+    },
+    feeSection: {
+      title: "Flexible Fee & Payment Options",
+      description: "Invest in your professional growth with flexible payment plans that make quality education more accessible. Learners can explore EMI options and available financial assistance while receiving guidance from programme advisors throughout the enrollment process.",
+      financialSupport: [
+        "Affordable EMI Options",
+        "Flexible Payment Plans",
+        "Scholarship Support (If Applicable)",
+        "Corporate Sponsorship Assistance",
+        "Dedicated Admission Guidance",
+      ],
+      footerNote: "Need help with fees? Speak with our admission counsellors for the latest fee structure, scholarships, and EMI options.",
+    },
+    faqSection: {
+      title: "Frequently Asked Questions (FAQs)",
+      faqs: [
+        {
+          question: "1. Who is eligible for this programme?",
+          answer: "The programme is designed for working professionals who want to build expertise in HR Management and HR Analytics. Applicants should have a Bachelor's degree with at least 2 years of work experience, or a Master's degree. Admission is based on the application review and the programme's selection criteria.",
+        },
+        {
+          question: "2. Is the course fully online?",
+          answer: "Yes. The programme is delivered in a fully online learning format, making it convenient for working professionals. It includes self-paced learning, interactive live sessions, industry-led discussions, case studies, projects, and doubt-resolution sessions that can be accessed remotely.",
+        },
+        {
+          question: "3. Will I receive a certificate from IIM Kozhikode?",
+          answer: "Yes. Upon successfully completing the programme and meeting all academic requirements, learners receive a Professional Certificate Programme in HR Management and Analytics from IIM Kozhikode. The programme also includes additional industry-recognized certifications, where applicable.",
+        },
+        {
+          question: "4. What is the duration of the programme?",
+          answer: "The programme is 6 months long and is structured for working professionals. Learners are generally expected to dedicate 6–8 hours per week to lectures, assignments, projects, and live sessions.",
+        },
+        {
+          question: "5. Are live classes recorded?",
+          answer: "Yes. Live sessions are conducted by faculty and industry experts, and recordings are generally made available so learners can revisit the content or catch up on missed sessions at their convenience.",
+        },
+        {
+          question: "6. Is EMI available?",
+          answer: "Yes. The programme offers No Cost EMI and flexible financing options through leading banking partners, making it easier for learners to pay the programme fee in affordable monthly installments, subject to eligibility and bank terms.",
+        },
+        {
+          question: "7. How do I apply?",
+          answer: "You can apply online by submitting the application form. The admissions team reviews your educational background and work experience. If shortlisted, you will receive an offer letter, after which you can confirm your admission by paying the seat-blocking amount and completing the enrollment process.",
+        },
+        {
+          question: "8. Will I receive career guidance?",
+          answer: "Yes. The programme provides comprehensive career support, including 1:1 career coaching, AI-powered profile building, interview preparation, career readiness modules, networking opportunities, mock interviews, and post-programme career support to help learners advance their careers.",
+        },
+      ],
+    },
+  },
+
+  // ── Add more course slugs below ──
+
+  default: {
+    overviewTitle: "",
+    overviewDescription: "",
+    courseSnapshot: [],
+    whyChooseTitle: "",
+    whyChooseDescription: "",
+    keyHighlights: [],
+    whoCanApply: [],
+    admissionProcess: [],
+    courseSnapshotBottom: [],
+    skillsSection: { title: "", description: "", skillsGain: [], curriculumOverview: [] },
+    learningExperience: { title: "", description: "", learningFeatures: [] },
+    instituteSection: { title: "", description: "", certificateTitle: "", certificateDescription: "", certificateImage: "", whyItMatters: [] },
+    careerSection: { title: "", description: "", careerOpportunities: [], industriesHiring: [] },
+    feeSection: { title: "", description: "", financialSupport: [], footerNote: "" },
+    faqSection: { title: "", faqs: [] },
+  },
+};
+
+/* ─────────────────────────────────────────────────────────────
+   FAQItem: controlled accordion item with smooth max-height animation
+───────────────────────────────────────────────────────────── */
+function FAQItem({ question, answer, isOpen, onToggle }) {
+  const contentRef = React.useRef(null);
+
+  return (
+    <div
+      className={`border rounded-2xl overflow-hidden transition-all duration-300 ${isOpen ? "border-[#0C3058] shadow-md" : "border-slate-200 bg-white hover:border-slate-300"
+        }`}
+      style={{ background: isOpen ? "linear-gradient(135deg,#EFF6FF 0%,#F0F9FF 100%)" : "#ffffff" }}
+    >
+      {/* ── Header button ── */}
+      <button
+        onClick={onToggle}
+        className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left cursor-pointer bg-transparent border-none outline-none"
+      >
+        <span className={`text-sm font-bold leading-snug transition-colors duration-200 ${isOpen ? "text-[#0C3058]" : "text-slate-800"
+          }`}>
+          {question}
+        </span>
+        <span
+          className={`flex items-center justify-center w-7 h-7 rounded-full shrink-0 transition-all duration-300 ${isOpen ? "bg-[#0C3058] text-white rotate-0" : "bg-slate-100 text-slate-500"
+            }`}
+          style={{ transform: isOpen ? "rotate(0deg)" : "rotate(0deg)" }}
+        >
+          {isOpen
+            ? <MinusOutlined className="text-xs" style={{ transition: "transform 0.3s" }} />
+            : <PlusOutlined className="text-xs" style={{ transition: "transform 0.3s" }} />}
+        </span>
+      </button>
+
+      {/* ── Animated content panel ── */}
+      <div
+        ref={contentRef}
+        style={{
+          maxHeight: isOpen ? (contentRef.current ? contentRef.current.scrollHeight + "px" : "500px") : "0px",
+          overflow: "hidden",
+          transition: "max-height 0.35s cubic-bezier(0.4,0,0.2,1)",
+        }}
+      >
+        <div className="px-5 pb-5 pt-1">
+          <div className="h-px bg-[#0C3058]/10 mb-3" />
+          <p className="text-sm text-slate-600 font-normal leading-relaxed m-0">
+            {answer}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────
+   FAQAccordion: manages accordion state — only 1 item open at a time
+───────────────────────────────────────────────────────────── */
+function FAQAccordion({ faqs, title }) {
+  const [activeFaqIdx, setActiveFaqIdx] = useState(null);
+  const toggle = (idx) => setActiveFaqIdx(prev => prev === idx ? null : idx);
+  return (
+    <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
+      <div>
+        <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
+          <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#FFF8E1] shrink-0">
+            <QuestionCircleOutlined className="text-[#F59E0B] text-base" />
+          </span>
+          {title || "Frequently Asked Questions"}
+        </h2>
+      </div>
+      <div className="space-y-3">
+        {faqs.map((faq, idx) => (
+          <FAQItem
+            key={idx}
+            question={faq.question}
+            answer={faq.answer}
+            isOpen={activeFaqIdx === idx}
+            onToggle={() => toggle(idx)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 /* ─────────────────────────────────────────────────────────────
    SpecializationCard: collapsible card per specialization
@@ -186,31 +502,46 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
 
   const domainName = heroSubTitle || course.title || "Management";
 
-  const overviewText = heroSub?.content || heroSub?.description || course.description || "";
-
-  const highlightsList = (heroSub && Array.isArray(heroSub.keyHighlights) && heroSub.keyHighlights.length > 0)
-    ? heroSub.keyHighlights
-    : ((heroSub && Array.isArray(heroSub.modules) && heroSub.modules.length > 0) ? heroSub.modules : []);
-
-  const whoCanApplyList = (heroSub && Array.isArray(heroSub.whoCanApply) && heroSub.whoCanApply.length > 0)
-    ? heroSub.whoCanApply
-    : [];
-
-  const admissionProcessList = (heroSub && Array.isArray(heroSub.admissionProcess) && heroSub.admissionProcess.length > 0)
-    ? heroSub.admissionProcess
-    : [];
+  // ── Static content from COURSE_CONTENT JSON (keyed by course slug) ──
+  const staticContent = COURSE_CONTENT[course.slug] || COURSE_CONTENT["default"];
+  const overviewText = staticContent.overviewDescription || heroSub?.content || heroSub?.description || course.description || "";
+  const overviewTitle = staticContent.overviewTitle || "Course Overview";
+  const courseSnapshot = staticContent.courseSnapshot || [];
+  const whyChooseTitle = staticContent.whyChooseTitle || "Why Choose This Course?";
+  const whyChooseDescription = staticContent.whyChooseDescription || "";
+  const highlightsList = staticContent.keyHighlights.length > 0
+    ? staticContent.keyHighlights
+    : ((heroSub && Array.isArray(heroSub.keyHighlights) && heroSub.keyHighlights.length > 0)
+      ? heroSub.keyHighlights
+      : ((heroSub && Array.isArray(heroSub.modules) && heroSub.modules.length > 0) ? heroSub.modules : []));
+  const whoCanApplyList = staticContent.whoCanApply.length > 0
+    ? staticContent.whoCanApply
+    : ((heroSub && Array.isArray(heroSub.whoCanApply) && heroSub.whoCanApply.length > 0) ? heroSub.whoCanApply : []);
+  const admissionProcessList = staticContent.admissionProcess.length > 0
+    ? staticContent.admissionProcess
+    : ((heroSub && Array.isArray(heroSub.admissionProcess) && heroSub.admissionProcess.length > 0) ? heroSub.admissionProcess : []);
+  const courseSnapshotBottom = staticContent.courseSnapshotBottom || [];
+  const skillsSection = staticContent.skillsSection || { title: "", description: "", skillsGain: [], curriculumOverview: [] };
+  const learningExperience = staticContent.learningExperience || { title: "", description: "", learningFeatures: [] };
+  const instituteSection = staticContent.instituteSection || { title: "", description: "", certificateTitle: "", certificateDescription: "", certificateImage: "", whyItMatters: [] };
+  const careerSection = staticContent.careerSection || { title: "", description: "", careerOpportunities: [], industriesHiring: [] };
+  const feeSection = staticContent.feeSection || { title: "", description: "", financialSupport: [], footerNote: "" };
+  const faqSection = staticContent.faqSection || { title: "", faqs: [] };
 
   const rawLogo = uniObj?.logoSrc?.url || uniObj?.logoSrc;
   const logoUrl = getAssetPath(rawLogo, null);
+
+  // ── Banner image: first look up BANNER_IMAGES JSON by slug, then fallback chain ──
+  const bannerFromJson = BANNER_IMAGES[course.slug] || BANNER_IMAGES["default"];
   const rawImage = uniObj?.imageSrc?.url || uniObj?.imageSrc || (typeof course.image === "object" ? course.image?.url : course.image);
-  const imageUrl = getAssetPath(rawImage, "/assets/images/Blue banner man image.webp");
+  const imageUrl = getAssetPath(rawImage, null) || bannerFromJson;
 
   return (
     <div className="bg-[#F4F6F9] min-h-screen py-8 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="max-w-7xl mx-auto space-y-6">
 
         {/* ── Breadcrumb + Back Button ── */}
-        <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="hidden md:flex flex-wrap items-center justify-between gap-4">
           <Breadcrumb
             className="text-xs sm:text-sm font-semibold text-slate-500"
             items={[
@@ -234,11 +565,11 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
         </div>
 
         {/* ── Hero Banner (Matching Reference PDF UI) ── */}
-        <div className="bg-gradient-to-r from-[#0F3759] via-[#103D6D] to-[#154E8A] rounded-3xl overflow-hidden shadow-xl text-white relative p-6 sm:p-8 lg:p-10">
+        <div className="bg-gradient-to-r from-[#0F3759] via-[#103D6D] to-[#154E8A] rounded-3xl overflow-hidden shadow-xl text-white relative">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
 
             {/* Left Content Area */}
-            <div className="lg:col-span-7 space-y-5">
+            <div className="lg:col-span-7 space-y-5 p-6 pb-0 lg:pl-10 lg:py-10">
               <span className="bg-[#FAF0CA] text-[#0C3058] font-extrabold text-xs uppercase px-4 py-1.5 rounded-full inline-block tracking-wider shadow-2xs">
                 {categoryName}
               </span>
@@ -247,7 +578,7 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
                 {displayHeroTitle}
               </h1>
 
-              <div className="flex flex-wrap items-center gap-5 text-xs sm:text-sm font-semibold text-slate-200 pt-1">
+              <div className="flex flex-wrap items-center gap-5 text-xs sm:text-sm font-semibold text-slate-200 pt-4">
                 <span className="flex items-center gap-1.5">
                   <ClockCircleFilled className="text-[#FFC107] text-base" /> Duration: <strong className="text-white">{primaryDuration}</strong>
                 </span>
@@ -256,7 +587,7 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
                 </span>
               </div>
 
-              <div className="flex flex-wrap items-center gap-4 pt-3">
+              <div className="flex items-center gap-4 pt-2">
                 <Button
                   type="primary"
                   size="large"
@@ -268,9 +599,9 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
                       submitButtonText: "Download Brochure",
                     });
                   }}
-                  className="bg-[#00B4D8] hover:bg-[#0096C7] text-white border-none font-bold text-sm px-6 h-11 rounded-xl shadow-md cursor-pointer flex items-center gap-1"
+                  className="bg-[#00B4D8] hover:bg-[#0096C7] text-white border-none font-bold text-sm px-4 rounded-xl shadow-md cursor-pointer flex items-center gap-1"
                 >
-                  Download Brochure ↓
+                  Get Brochure ↓
                 </Button>
                 <Button
                   size="large"
@@ -282,34 +613,25 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
                       submitButtonText: "Request Counseling",
                     });
                   }}
-                  className="bg-transparent hover:bg-white/10 text-white border-2 border-white/80 font-bold text-sm px-6 h-11 rounded-xl cursor-pointer"
+                  className="bg-transparent hover:bg-white/10 text-white border-2 border-white/80 font-bold text-sm px-4 rounded-xl cursor-pointer"
                 >
-                  Get 100% FREE Counseling
+                  Get Counseling
                 </Button>
               </div>
             </div>
 
             {/* Right Card Area (Matching Reference PDF Hero Graphic Card) */}
             <div className="lg:col-span-5 flex justify-center lg:justify-end">
-              <div className="bg-white rounded-2xl p-4 shadow-2xl max-w-sm w-full border border-white/20 text-slate-800 group overflow-hidden">
-                <div className="relative w-full h-64 rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center">
-                  {imageUrl ? (
-                    <Image src={imageUrl} alt={uniName} fill unoptimized className="object-cover group-hover:scale-105 transition-transform duration-500" />
-                  ) : logoUrl ? (
-                    <div className="flex flex-col items-center justify-center p-6 text-center space-y-3">
-                      <img src={logoUrl} alt={uniName} className="max-h-24 max-w-full object-contain" />
-                      <h3 className="font-extrabold text-slate-800 text-base m-0">{uniName}</h3>
-                    </div>
-                  ) : (
-                    <div className="text-center p-6">
-                      <BankOutlined className="text-5xl text-slate-400 mb-2" />
-                      <h3 className="font-extrabold text-slate-800 text-lg m-0">{uniName}</h3>
-                    </div>
-                  )}
-                </div>
-                <div className="pt-3 text-center">
-                  <span className="text-xs font-extrabold text-[#0C3058] uppercase tracking-wider block">{uniName}</span>
-                  <span className="text-[11px] text-slate-500 font-semibold block mt-0.5">Official Academic Partner</span>
+              <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full text-slate-800 group overflow-hidden">
+                {/* Banner image sourced from BANNER_IMAGES JSON (top of file) */}
+                <div className="relative w-full h-100 rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center">
+                  <Image
+                    src={imageUrl}
+                    alt={uniName}
+                    fill
+                    unoptimized
+                    className="object-cover"
+                  />
                 </div>
               </div>
             </div>
@@ -326,60 +648,331 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
             {/* 1. Course Overview Card */}
             <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
               <div>
-                <h2 className="text-xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3">
-                  Course Overview
+                {/* overviewTitle from COURSE_CONTENT JSON */}
+                <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
+                  <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#EBF4FF] shrink-0">
+                    <RocketOutlined className="text-[#0C3058] text-base" />
+                  </span>
+                  {overviewTitle || "Course Overview"}
                 </h2>
                 <p className="text-slate-600 leading-relaxed text-sm sm:text-base mt-4 m-0 font-medium">
                   {overviewText}
                 </p>
               </div>
 
-              <div className="pt-2">
-                <h3 className="text-base sm:text-lg font-bold text-[#0C3058] mb-3">Key Highlights</h3>
-                <ul className="space-y-2.5 text-slate-700 text-sm font-medium pl-5 list-disc marker:text-[#00B4D8]">
-                  {highlightsList.map((mod, idx) => (
-                    <li key={idx} className="leading-snug">
-                      <strong className="text-slate-900">{typeof mod === "object" ? mod.title : mod}</strong>
-                      {typeof mod === "object" && mod.description ? ` — ${mod.description}` : ""}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            {/* 2. Eligibility & Admission Process Card (Matching PDF Image 3) */}
-            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
-              <div>
-                <h2 className="text-xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3">
-                  Eligibility &amp; Admission Process
-                </h2>
-                <p className="text-slate-600 leading-relaxed text-sm sm:text-base mt-4 m-0 font-medium">
-                  The programme is designed for graduates and working professionals who want to develop expertise in {domainName}. Whether you're beginning your career journey or aiming for leadership roles, this programme provides the right blend of management concepts and practical skills. The admission process is simple, with dedicated counsellors available to guide you at every step.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                {/* Who Can Apply? Sub-Card */}
-                <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3">
-                  <h3 className="text-base font-extrabold text-[#0C3058] m-0">Who Can Apply?</h3>
-                  <ul className="space-y-2 text-xs sm:text-sm font-medium text-slate-700 list-disc pl-4 marker:text-[#00B4D8]">
-                    {whoCanApplyList.map((item, idx) => (
-                      <li key={idx}>{item}</li>
+              {/* Course Snapshot — from COURSE_CONTENT JSON */}
+              {courseSnapshot.length > 0 && (
+                <div className="pt-2">
+                  <h3 className="text-base sm:text-lg font-bold text-[#0C3058] mb-3">Course Snapshot</h3>
+                  <ul className="space-y-2 text-slate-700 text-sm font-medium">
+                    {courseSnapshot.map((item, idx) => (
+                      <li key={idx} className="flex items-center gap-2.5 leading-snug">
+                        <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-[#EBF4FF] shrink-0">
+                          <item.icon className="text-[#0C3058] text-sm" />
+                        </span>
+                        <span>
+                          {item.value
+                            ? <><strong className="text-slate-900">{item.label}:</strong> {item.value}</>
+                            : <strong className="text-slate-900">{item.label}</strong>
+                          }
+                        </span>
+                      </li>
                     ))}
                   </ul>
                 </div>
-
-                {/* Admission Process Sub-Card */}
-                <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3">
-                  <h3 className="text-base font-extrabold text-[#0C3058] m-0">Admission Process</h3>
-                  <ol className="space-y-2 text-xs sm:text-sm font-medium text-slate-700 list-decimal pl-4">
-                    {admissionProcessList.map((step, idx) => (
-                      <li key={idx}>{step}</li>
-                    ))}
-                  </ol>
-                </div>
-              </div>
+              )}
             </div>
+
+            {/* 1b. Why Choose + Key Highlights + Course Snapshot — 2-column grid layout */}
+            {(whyChooseTitle || whyChooseDescription || highlightsList.length > 0) && (
+              <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
+                {/* Section heading + description */}
+                <div>
+                  <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
+                    <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#FFF8E1] shrink-0">
+                      <BulbOutlined className="text-[#F59E0B] text-base" />
+                    </span>
+                    {whyChooseTitle}
+                  </h2>
+                  {whyChooseDescription && (
+                    <p className="text-slate-600 leading-relaxed text-sm sm:text-base mt-4 m-0 font-medium">
+                      {whyChooseDescription}
+                    </p>
+                  )}
+                </div>
+
+                {/* 2-column grid: Key Highlights (left) + Course Snapshot (right) */}
+                {(highlightsList.length > 0 || courseSnapshotBottom.length > 0) && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+
+                    {/* LEFT BOX — Key Highlights with circle checkboxes */}
+                    {highlightsList.length > 0 && (
+                      <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3">
+                        <h3 className="text-base font-extrabold text-[#0C3058] m-0">Key Highlights</h3>
+                        <ul className="space-y-2.5 pt-3">
+                          {highlightsList.map((mod, idx) => (
+                            <li key={idx} className="flex items-start gap-2.5 text-sm text-slate-700 font-light leading-snug">
+                              <CheckCircleFilled className="text-[#22b425] text-base mt-0.5 shrink-0" />
+                              <span>
+                                <strong className="text-slate-900">{typeof mod === "object" ? mod.title : mod}</strong>
+                                {typeof mod === "object" && mod.description ? ` — ${mod.description}` : ""}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {/* RIGHT BOX — Course Snapshot with right arrows */}
+                    {courseSnapshotBottom.length > 0 && (
+                      <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3">
+                        <h3 className="text-base font-extrabold text-[#0C3058] m-0">Course Snapshot</h3>
+                        <ul className="space-y-2.5 pt-3">
+                          {courseSnapshotBottom.map((item, idx) => (
+                            <li key={idx} className="flex items-center gap-2.5 text-sm text-slate-700 font-medium leading-snug">
+                              <RightOutlined className="text-[#22b425] text-xs shrink-0" />
+                              <span>
+                                <strong className="text-slate-700 font-bold">{item.label}{" "}:</strong>{" "}
+                                <span className="font-light">{item.value}</span>
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ── REMOVE: Eligibility & Admission Process card removed per user request ── */}
+
+            {/* 3. Skills You'll Learn & Curriculum Card */}
+            {skillsSection.title && (
+              <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
+                <div>
+                  <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
+                    <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#E8F5E9] shrink-0">
+                      <ReadOutlined className="text-[#22b425] text-base" />
+                    </span>
+                    {skillsSection.title}
+                  </h2>
+                  {skillsSection.description && (
+                    <p className="text-slate-600 leading-relaxed text-sm sm:text-base mt-4 m-0 font-medium">
+                      {skillsSection.description}
+                    </p>
+                  )}
+                </div>
+
+                {(skillsSection.skillsGain.length > 0 || skillsSection.curriculumOverview.length > 0) && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                    {/* LEFT: Skills You'll Gain */}
+                    {skillsSection.skillsGain.length > 0 && (
+                      <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3">
+                        <h3 className="text-base font-extrabold text-[#0C3058] m-0">Skills You'll Gain</h3>
+                        <ul className="space-y-2.5 pt-3">
+                          {skillsSection.skillsGain.map((skill, idx) => (
+                            <li key={idx} className="flex items-start gap-2.5 text-sm text-slate-700 font-light leading-snug">
+                              <CheckCircleFilled className="text-[#22b425] text-base mt-0.5 shrink-0" />
+                              <strong className="text-slate-900">{skill}</strong>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {/* RIGHT: Curriculum Overview */}
+                    {skillsSection.curriculumOverview.length > 0 && (
+                      <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3">
+                        <h3 className="text-base font-extrabold text-[#0C3058] m-0">Curriculum Overview</h3>
+                        <ul className="space-y-2.5 pt-3">
+                          {skillsSection.curriculumOverview.map((item, idx) => (
+                            <li key={idx} className="flex items-center gap-2.5 text-sm text-slate-700 font-medium leading-snug">
+                              <RightOutlined className="text-[#22b425] text-xs shrink-0" />
+                              <span className="font-light text-slate-700">{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* 4. Learning Experience Card */}
+            {learningExperience.title && (
+              <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
+                <div>
+                  <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
+                    <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#EDE7F6] shrink-0">
+                      <VideoCameraOutlined className="text-[#7B1FA2] text-base" />
+                    </span>
+                    {learningExperience.title}
+                  </h2>
+                  {learningExperience.description && (
+                    <p className="text-slate-600 leading-relaxed text-sm sm:text-base mt-4 m-0 font-medium">
+                      {learningExperience.description}
+                    </p>
+                  )}
+                </div>
+
+                {learningExperience.learningFeatures.length > 0 && (
+                  <div className="pt-2">
+                    <h3 className="text-base font-extrabold text-[#0C3058] m-0 mb-3">Learning Features</h3>
+                    <div className="pb-5">
+                      <ul className="space-y-2.5">
+                        {learningExperience.learningFeatures.map((feature, idx) => (
+                          <li key={idx} className="flex items-start gap-2.5 text-sm text-slate-700 font-light leading-snug">
+                            <CheckCircleFilled className="text-[#22b425] text-base mt-0.5 shrink-0" />
+                            <strong className="text-slate-900">{feature}</strong>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* 5. Institute & Certificate Card */}
+            {instituteSection.title && (
+              <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
+                <div>
+                  <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
+                    <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#EBF4FF] shrink-0">
+                      <BankOutlined className="text-[#0C3058] text-base" />
+                    </span>
+                    {instituteSection.title}
+                  </h2>
+                  {instituteSection.description && (
+                    <p className="text-slate-600 leading-relaxed text-sm sm:text-base mt-4 m-0 font-medium">
+                      {instituteSection.description}
+                    </p>
+                  )}
+                </div>
+
+                {(instituteSection.certificateTitle || instituteSection.certificateImage || instituteSection.whyItMatters.length > 0) && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2 items-center">
+                    {/* LEFT: Earn a Certificate description */}
+                    {instituteSection.certificateTitle && (
+                      <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3 h-full flex flex-col justify-center">
+                        <h3 className="text-base font-extrabold text-[#0C3058] m-0 flex items-center gap-2">
+                          {/* <StarFilled className="text-[#F59E0B] text-sm" /> */}
+                          {instituteSection.certificateTitle}
+                        </h3>
+                        {instituteSection.certificateDescription && (
+                          <p className="text-sm text-slate-600 font-light leading-relaxed mt-2">
+                            {instituteSection.certificateDescription}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                    {/* RIGHT: Certificate Image replacing Why It Matters */}
+                    <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-3 flex items-center justify-center overflow-hidden h-full">
+                      <img
+                        src={instituteSection.certificateImage || "/media/images/2026/07/30/1a4f40f078b735f63422aad57d0c3ca3.webp"}
+                        alt="Certificate Preview"
+                        className="w-full h-auto object-contain rounded-xl max-h-[240px] shadow-xs"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* 6. Career Section Card */}
+            {careerSection.title && (
+              <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
+                <div>
+                  <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
+                    <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#FFF3E0] shrink-0">
+                      <TrophyOutlined className="text-[#F59E0B] text-base" />
+                    </span>
+                    {careerSection.title}
+                  </h2>
+                  {careerSection.description && (
+                    <p className="text-slate-600 leading-relaxed text-sm sm:text-base mt-4 m-0 font-medium">
+                      {careerSection.description}
+                    </p>
+                  )}
+                </div>
+
+                {(careerSection.careerOpportunities.length > 0 || careerSection.industriesHiring.length > 0) && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                    {/* LEFT: Career Opportunities */}
+                    {careerSection.careerOpportunities.length > 0 && (
+                      <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3">
+                        <h3 className="text-base font-extrabold text-[#0C3058] m-0">Career Opportunities</h3>
+                        <ul className="space-y-2.5 pt-3">
+                          {careerSection.careerOpportunities.map((opp, idx) => (
+                            <li key={idx} className="flex items-start gap-2.5 text-sm text-slate-700 font-light leading-snug">
+                              <CheckCircleFilled className="text-[#22b425] text-base mt-0.5 shrink-0" />
+                              <strong className="text-slate-900">{opp}</strong>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {/* RIGHT: Industries Hiring */}
+                    {careerSection.industriesHiring.length > 0 && (
+                      <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3">
+                        <h3 className="text-base font-extrabold text-[#0C3058] m-0">Industries Hiring</h3>
+                        <ul className="space-y-2.5 pt-3">
+                          {careerSection.industriesHiring.map((ind, idx) => (
+                            <li key={idx} className="flex items-center gap-2.5 text-sm text-slate-700 font-medium leading-snug">
+                              <RightOutlined className="text-[#22b425] text-xs shrink-0" />
+                              <span className="font-light text-slate-700">{ind}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* 7. Flexible Fee & Payment Options Card */}
+            {feeSection.title && (
+              <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
+                <div>
+                  <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
+                    <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#E3F2FD] shrink-0">
+                      <CreditCardOutlined className="text-[#1565C0] text-base" />
+                    </span>
+                    {feeSection.title}
+                  </h2>
+                  {feeSection.description && (
+                    <p className="text-slate-600 leading-relaxed text-sm sm:text-base mt-4 m-0 font-medium">
+                      {feeSection.description}
+                    </p>
+                  )}
+                </div>
+
+                {feeSection.financialSupport.length > 0 && (
+                  <div className="pt-2">
+                    <h3 className="text-base font-extrabold text-[#0C3058] m-0 mb-3">Financial Support</h3>
+                    <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5">
+                      <ul className="space-y-2.5">
+                        {feeSection.financialSupport.map((item, idx) => (
+                          <li key={idx} className="flex items-start gap-2.5 text-sm text-slate-700 font-light leading-snug">
+                            <CheckCircleFilled className="text-[#22b425] text-base mt-0.5 shrink-0" />
+                            <strong className="text-slate-900">{item}</strong>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                )}
+
+                {feeSection.footerNote && (
+                  <p className="text-sm text-slate-700 font-semibold m-0">
+                    {feeSection.footerNote}
+                  </p>
+                )}
+              </div>
+            )}
 
             {/* 3. University Offerings & Specializations or Course Curriculum */}
             {(() => {
@@ -559,6 +1152,11 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
 
               return null;
             })()}
+
+            {/* 8. FAQ Section Card */}
+            {faqSection.faqs.length > 0 && (
+              <FAQAccordion faqs={faqSection.faqs} title={faqSection.title} />
+            )}
 
           </div>
 
