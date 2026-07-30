@@ -14,7 +14,8 @@ import {
   PhoneFilled,
   ClockCircleFilled,
   SortAscendingOutlined,
-  LoadingOutlined
+  LoadingOutlined,
+  ArrowLeftOutlined
 } from "@ant-design/icons";
 
 const SliderFilterIcon = (props) => (
@@ -620,11 +621,20 @@ export default function CourseListView({
 
   return (
     <WebsiteLayout py="py-4 sm:py-6" bg="#f8fafc">
-      {/* Breadcrumb */}
-      <Breadcrumb className="mb-3 text-xs font-semibold" items={[
-        { title: <Link href="/">Home</Link> },
-        { title: "Browse Courses" }
-      ]} />
+      {/* Breadcrumb + Back Button */}
+      <div className="flex items-center justify-between mb-3 gap-4">
+        <Breadcrumb className="text-xs font-semibold" items={[
+          { title: <Link href="/">Home</Link> },
+          { title: "Browse Courses" }
+        ]} />
+        <Button
+          icon={<ArrowLeftOutlined />}
+          onClick={() => router.push("/")}
+          className="bg-white border-slate-300 rounded-lg text-xs font-bold text-slate-700 shadow-2xs hover:bg-slate-50"
+        >
+          Back to Home
+        </Button>
+      </div>
 
       {/* Mobile Filter & Select Bar (< lg screens) */}
       <div className="lg:hidden flex items-center gap-2 mb-6 bg-white p-2.5 rounded-2xl border border-slate-200 shadow-xs">

@@ -153,23 +153,23 @@ export default async function RootLayout({ children }) {
               },
             }}
           >
-          <App>
-            <AntdMessageBridge />
-            <StoreProvider>
-              <SWRProvider>
-                <FormModalProvider>
-                  <CompareProvider>
-                    <JsonLd />
-                    {children}
-                    {siteSetting.showGlobalCta !== false && <GlobalCTA />}
-                    <CookieConsent />
-                    <CompareDrawerWidget />
-                    <MobileBottomNav />
-                  </CompareProvider>
-                </FormModalProvider>
-              </SWRProvider>
-            </StoreProvider>
-          </App>
+            <App>
+              <AntdMessageBridge />
+              <StoreProvider>
+                <SWRProvider>
+                  <FormModalProvider>
+                    <CompareProvider>
+                      <JsonLd />
+                      {children}
+                      {siteSetting.showGlobalCta !== false && <GlobalCTA />}
+                      <CookieConsent />
+                      <CompareDrawerWidget />
+                      <MobileBottomNav />
+                    </CompareProvider>
+                  </FormModalProvider>
+                </SWRProvider>
+              </StoreProvider>
+            </App>
           </ConfigProvider>
         </AntdRegistry>
 
