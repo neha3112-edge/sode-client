@@ -24,10 +24,7 @@ export default function CrudModule({
   updateForm,
   withUpload = false,
   updatePasswordForm,
-  // ⚡ नोट: जिन फ़ॉर्म्स की अभी ज़रूरत नहीं थी उन्हें साफ़ रखा गया है
 }) {
-  // ⚡ FIXED: Redux का useDispatch और resetAction पूरी तरह हटा दिया गया है।
-
   return (
     <CrudLayout
       config={config}

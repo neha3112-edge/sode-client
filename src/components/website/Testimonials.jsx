@@ -98,7 +98,7 @@ export function Testimonials({ initialTestimonials = defaultTestimonials }) {
 
             return (
               <div key={idx} className="px-2.5 pb-10 pt-1">
-                <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 shadow-2xs hover:shadow-md transition-all duration-300 flex flex-col justify-between h-full min-h-[340px]">
+                <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 shadow-2xs hover:shadow-md transition-all duration-300 flex flex-col justify-between h-full min-h-[410px]">
                   {/* Top: Stars & Quote */}
                   <div>
                     {/* 5-Star Rating */}

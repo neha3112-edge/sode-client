@@ -106,6 +106,7 @@ function FilterSidebarContent({
           Course
         </label>
         <Select
+          showSearch
           value={activeCategoryTab ? activeCategoryTab.toLowerCase() : "all"}
           onChange={(val) => {
             setActiveCategoryTab(val);
@@ -113,6 +114,10 @@ function FilterSidebarContent({
           className="w-full font-semibold rounded-xl"
           size="middle"
           options={categorySelectOptions}
+          optionFilterProp="label"
+          filterOption={(input, option) =>
+            (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+          }
         />
       </div>
 
@@ -197,6 +202,7 @@ function FilterSidebarContent({
           Institute
         </label>
         <Select
+          showSearch
           value={selectedUniversities[0] || "all"}
           onChange={(val) => {
             if (val === "all") {
@@ -208,6 +214,10 @@ function FilterSidebarContent({
           className="w-full font-semibold rounded-xl"
           size="middle"
           options={universityOptions}
+          optionFilterProp="label"
+          filterOption={(input, option) =>
+            (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+          }
         />
       </div>
 
@@ -620,6 +630,7 @@ export default function CourseListView({
       <div className="lg:hidden flex items-center gap-2 mb-6 bg-white p-2.5 rounded-2xl border border-slate-200 shadow-xs">
         <div className="flex-1 grid grid-cols-2 gap-2 min-w-0">
           <Select
+            showSearch
             value={activeCategoryTab}
             onChange={(val) => {
               setActiveCategoryTab(val);
@@ -629,8 +640,13 @@ export default function CourseListView({
             className="w-full text-xs font-semibold"
             placeholder="Degree / Category"
             size="middle"
+            optionFilterProp="label"
+            filterOption={(input, option) =>
+              (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+            }
           />
           <Select
+            showSearch
             value={selectedUniversities[0] || "all"}
             onChange={(val) => {
               if (val === "all") setSelectedUniversities([]);
@@ -641,6 +657,10 @@ export default function CourseListView({
             className="w-full text-xs font-semibold"
             placeholder="Institute"
             size="middle"
+            optionFilterProp="label"
+            filterOption={(input, option) =>
+              (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+            }
           />
         </div>
         <Button

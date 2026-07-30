@@ -103,7 +103,7 @@ export function About({
               {leftCards.map((card, idx) => (
                 <div
                   key={idx}
-                  className={`flex md:flex-row-reverse items-center bg-white rounded-[10px] p-3.5 shadow-xl text-[#102441] hover:scale-[1.02] transition-all duration-200 ${card.css}`}
+                  className={`flex md:flex-row-reverse md:gap-2 items-center bg-white rounded-[10px] p-3.5 shadow-xl text-[#102441] hover:scale-[1.02] transition-all duration-200 ${card.css}`}
                 >
                   <div className="rounded-lg flex items-center justify-center shrink-0 relative">
                     <Image
@@ -115,7 +115,7 @@ export function About({
                     />
                   </div>
 
-                  <div className="flex flex-col text-left leading-tight ml-2 flex-wrap">
+                  <div className="flex flex-col text-left md:text-right leading-tight ml-2 flex-wrap">
                     <h4 className="font-bold text-sm">{card.title}</h4>
 
                     <p className="text-gray-500 text-[11px] font-medium">
@@ -176,7 +176,7 @@ export function About({
           <div className="mt-2 md:mt-5 text-center">
             <Button
               onClick={onClick}
-              className="bg-linear-to-r from-[#EEC471] via-[#F3CD73] to-[#FADA9A] text-[#102441] rounded-md px-8 py-5 text-base font-bold shadow-lg transition-all transform hover:scale-[1.02] cursor-pointer duration-200"
+              className="bg-linear-to-r from-[#EEC471] via-[#F3CD73] to-[#FADA9A] text-[#102441] text-sm rounded-md px-4 py-5 border-none text-base font-bold shadow-lg transition-all transform hover:scale-[1.02] cursor-pointer duration-200"
             >
               Book 1:1 Personalised Counselling
             </Button>

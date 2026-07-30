@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import dayjs from "dayjs";
 import { Form } from "antd";
 import { useSelector } from "react-redux";
 import { useCrudContext } from "@/context/crud";
@@ -20,64 +21,125 @@ export default function UpdateForm({
 
   const [updateDynamic] = useUpdateDynamicMutation();
 
-  // Helper to sanitize populated objects vs sub-document arrays for Ant Design Forms
-  const sanitizeFormValue = (val) => {
-    if (Array.isArray(val)) {
-      return val.map((item) => {
-        if (item && typeof item === "object" && item !== null) {
-          // If item is a sub-document object (e.g. slides, faqs, options), retain object & sanitize nested fields
-          const keys = Object.keys(item);
-          const isSubDocument =
-            keys.length > 2 ||
-            keys.some((k) =>
-              [
-                "title",
-                "subtitle",
-                "badge",
-                "label",
-                "description",
-                "primaryCtaText",
-                "secondaryCtaText",
-                "question",
-                "answer",
-              ].includes(k)
-            );
-
-          if (isSubDocument) {
-            const cleanSubDoc = { ...item };
-            Object.keys(cleanSubDoc).forEach((subKey) => {
-              cleanSubDoc[subKey] = sanitizeFormValue(cleanSubDoc[subKey]);
-            });
-            return cleanSubDoc;
-          }
-
-          // If it's a simple populated reference object (e.g. {_id, name, url}), return string _id
-          if (item._id) return String(item._id);
-        }
-        return item;
-      });
-    } else if (val && typeof val === "object" && val !== null) {
-      if (val._id) return String(val._id);
-    }
-    return val;
-  };
-
-  useEffect(() => {
-    if (current) {
-      const formData = { ...current };
-
-      Object.keys(formData).forEach((key) => {
-        formData[key] = sanitizeFormValue(formData[key]);
-      });
-
-      form.setFieldsValue(formData);
-    }
-  }, [current, form]);
-
   const onSubmit = async (fieldsValue) => {
+    let transformedValues = {
+      ...fieldsValue,
+    };
+
     if (fieldsValue?.file && withUpload) {
-      fieldsValue.file =
-        fieldsValue.file[0]?.originFileObj || fieldsValue.file;
+      if (Array.isArray(fieldsValue.file) && fieldsValue.file.length > 0) {
+        transformedValues.file =
+          fieldsValue.file[0]?.originFileObj || fieldsValue.file[0];
+      } else {
+        transformedValues.file = fieldsValue.file;
+      }
+    }
+
+    // 🎯 Iterate over form values so items can be added/removed, but merge with existing data to prevent data loss
+    if (entity === "course" || entity === "courses") {
+      const currentOfferings = Array.isArray(current?.universityOfferings)
+        ? current.universityOfferings
+        : [];
+      const formOfferings = Array.isArray(fieldsValue?.universityOfferings)
+        ? fieldsValue.universityOfferings
+        : [];
+
+      transformedValues = {
+        ...current,
+        ...fieldsValue,
+        categories: (fieldsValue?.categories || current?.categories || []).map(
+          (c) => (typeof c === "object" ? c?._id || String(c) : String(c))
+        ),
+        universityOfferings: formOfferings.map((formOff, oIdx) => {
+          const existingOff = formOff?._id 
+            ? currentOfferings.find(o => o._id === formOff._id) 
+            : currentOfferings[oIdx] || {};
+            
+          const { _id: offId, ...cleanExistingOff } = existingOff || {};
+
+          const existingSubcourses = Array.isArray(existingOff?.subcourses)
+            ? existingOff.subcourses
+            : [];
+          const formSubcourses = Array.isArray(formOff?.subcourses)
+            ? formOff.subcourses
+            : [];
+
+          return {
+            ...cleanExistingOff,
+            ...formOff,
+            university:
+              formOff?.university?._id ||
+              formOff?.university ||
+              existingOff?.university?._id ||
+              existingOff?.university ||
+              null,
+            workspace:
+              formOff?.workspace?._id ||
+              formOff?.workspace ||
+              existingOff?.workspace?._id ||
+              existingOff?.workspace ||
+              null,
+            fee:
+              formOff?.fee?._id ||
+              formOff?.fee ||
+              existingOff?.fee?._id ||
+              existingOff?.fee ||
+              null,
+            duration:
+              formOff?.duration?._id ||
+              formOff?.duration ||
+              existingOff?.duration?._id ||
+              existingOff?.duration ||
+              null,
+            eligibility:
+              formOff?.eligibility?._id ||
+              formOff?.eligibility ||
+              existingOff?.eligibility?._id ||
+              existingOff?.eligibility ||
+              null,
+            category: Array.isArray(formOff?.category)
+              ? formOff.category.map((c) => (typeof c === "object" ? c?._id || String(c) : String(c)))
+              : Array.isArray(existingOff?.category)
+                ? existingOff.category.map((c) => (typeof c === "object" ? c?._id || String(c) : String(c)))
+                : [],
+            subcourses: formSubcourses.map((formSub, sIdx) => {
+              const existingSub = formSub?._id 
+                ? existingSubcourses.find(s => s._id === formSub._id) 
+                : existingSubcourses[sIdx] || {};
+              const { _id: subId, ...cleanExistingSub } = existingSub || {};
+
+              return {
+                ...cleanExistingSub,
+                ...formSub,
+                subcourse:
+                  formSub?.subcourse?._id ||
+                  formSub?.subcourse ||
+                  existingSub?.subcourse?._id ||
+                  existingSub?.subcourse ||
+                  null,
+                fee:
+                  formSub?.fee?._id ||
+                  formSub?.fee ||
+                  existingSub?.fee?._id ||
+                  existingSub?.fee ||
+                  null,
+                duration:
+                  formSub?.duration?._id ||
+                  formSub?.duration ||
+                  existingSub?.duration?._id ||
+                  existingSub?.duration ||
+                  null,
+                category:
+                  formSub?.category?._id ||
+                  formSub?.category ||
+                  existingSub?.category?._id ||
+                  existingSub?.category ||
+                  null,
+              };
+            }),
+          };
+        }),
+      };
     }
 
     const id = current?._id || current?.id;
@@ -88,12 +150,7 @@ export default function UpdateForm({
 
     // Clean payload by removing immutable database fields (_id, createdAt, updatedAt, __v)
     const { _id, id: fieldId, createdAt, updatedAt, __v, ...cleanFields } =
-      fieldsValue || {};
-
-    // Sanitize nested populated objects
-    Object.keys(cleanFields).forEach((key) => {
-      cleanFields[key] = sanitizeFormValue(cleanFields[key]);
-    });
+      transformedValues || {};
 
     try {
       const response = await updateDynamic({
@@ -101,6 +158,7 @@ export default function UpdateForm({
         endPoint,
         id,
         jsonData: cleanFields,
+        withUpload,
       }).unwrap();
 
       if (response && response.success !== false) {
@@ -109,9 +167,35 @@ export default function UpdateForm({
         form.resetFields();
       }
     } catch (error) {
-      console.error("Update operation failed:", error?.message || error);
+      console.error("Update operation failed:", error);
     }
   };
+
+  useEffect(() => {
+    if (current) {
+      const newValues = {
+        ...current,
+      };
+
+      const formatDateFields = [
+        "birthday",
+        "date",
+        "expiredDate",
+        "created",
+        "updated",
+      ];
+      formatDateFields.forEach((field) => {
+        if (newValues[field]) {
+          newValues[field] = dayjs(newValues[field]).format(
+            "YYYY-MM-DDTHH:mm:ss.SSSZ"
+          );
+        }
+      });
+
+      form.resetFields();
+      form.setFieldsValue(newValues);
+    }
+  }, [current, form]);
 
   return (
     <Form id="cms-drawer-form" form={form} layout="vertical" onFinish={onSubmit}>

@@ -7,8 +7,11 @@ import {
   DeleteOutlined,
   RedoOutlined,
   KeyOutlined,
+  PlusOutlined,
+  AppstoreOutlined,
+  UnorderedListOutlined,
 } from "@ant-design/icons";
-import { Table, Button, Input, Space, Tooltip } from "antd";
+import { Table, Button, Input, Space, Tooltip, Segmented, Pagination } from "antd";
 import useLanguage from "@/components/common/locale/userLanguage";
 import { dataForTable } from "@/components/common/locale/dataStructure";
 import { useGetDynamicListQuery } from "@/store/redux/dynamic/action";
@@ -36,7 +39,8 @@ function AddNewItem({ config }) {
     <Button
       onClick={handelClick}
       type="primary"
-      className="cursor-pointer font-semibold rounded-lg shadow-sm"
+      icon={<PlusOutlined />}
+      className="cursor-pointer font-semibold rounded-xl shadow-xs bg-[#4945ff] hover:!bg-[#3733dc] border-none text-white h-9 px-4 flex items-center gap-1.5"
     >
       {ADD_NEW_ENTITY}
     </Button>
@@ -50,8 +54,9 @@ export default function DataTable({ config, extra = [] }) {
   let { entity, dataTableColumns, DATATABLE_TITLE, fields, searchConfig } =
     config;
 
-  const [pageOptions, setPageOptions] = useState({ page: 1, items: 10 });
+  const [pageOptions, setPageOptions] = useState({ page: 1, items: config.defaultPageSize || 10 });
   const [searchQuery, setSearchQuery] = useState("");
+  const [viewMode, setViewMode] = useState(config.defaultViewMode || "table");
 
   const { crudContextAction, dispatch: contextDispatch } = useCrudContext();
   const { panel, collapsedBox, modal, readBox, editBox, advancedBox } =
@@ -172,7 +177,7 @@ export default function DataTable({ config, extra = [] }) {
       title: "Actions",
       key: "action",
       fixed: "right",
-      width: 150, // पर्याप्त स्पेस ताकि आइकन्स रैप न हों
+      width: 150,
       render: (_, record) => (
         <div className="flex items-center">
           {/* SHOW BUTTON */}
@@ -196,16 +201,18 @@ export default function DataTable({ config, extra = [] }) {
           </Tooltip>
 
           {/* UPDATE PASSWORD BUTTON */}
-          <Tooltip title={translate("Update Password")}>
-            <Button
-              type="text"
-              shape="circle"
-              icon={<KeyOutlined className="text-gray-600 text-base" />}
-              onClick={() => handleUpdatePassword(record)}
-            />
-          </Tooltip>
+          {config.hasPassword && (
+            <Tooltip title={translate("Update Password")}>
+              <Button
+                type="text"
+                shape="circle"
+                icon={<KeyOutlined className="text-gray-600 text-base" />}
+                onClick={() => handleUpdatePassword(record)}
+              />
+            </Tooltip>
+          )}
 
-          {/* EXTRA BUTTONS (IF PROVIDED) */}
+          {/* EXTRA BUTTONS */}
           {extra.map((item, idx) => {
             if (item.type === "divider") return null;
             return (
@@ -240,9 +247,9 @@ export default function DataTable({ config, extra = [] }) {
   }
 
   return (
-    <div>
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 mb-4 select-none">
-        <div className="flex items-center">
+    <div className="space-y-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 select-none">
+        <div className="flex items-center gap-3">
           <Button
             shape="circle"
             type="text"
@@ -250,12 +257,15 @@ export default function DataTable({ config, extra = [] }) {
             onClick={() => window.history.back()}
             className="hover:bg-gray-100 flex items-center justify-center cursor-pointer"
           />
-          <div className="font-medium text-gray-700 tracking-wide text-lg m-0">
+          <div className="font-semibold text-slate-800 tracking-tight text-xl m-0 flex items-center gap-2">
             {DATATABLE_TITLE}
+            <span className="text-xs font-semibold text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-full border border-slate-200">
+              {pagination.total} entries
+            </span>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Input.Search
             key="searchFilterDataTable"
             onSearch={handleSearch}
@@ -263,6 +273,16 @@ export default function DataTable({ config, extra = [] }) {
             allowClear
             className="w-64"
           />
+          {config.enableGridView && (
+            <Segmented
+              value={viewMode}
+              onChange={setViewMode}
+              options={[
+                { value: "grid", icon: <AppstoreOutlined /> },
+                { value: "table", icon: <UnorderedListOutlined /> },
+              ]}
+            />
+          )}
           <Button
             onClick={() => refetch()}
             key="btn-refresh-table"
@@ -275,17 +295,49 @@ export default function DataTable({ config, extra = [] }) {
           <AddNewItem key="btn-add-new-item" config={config} />
         </div>
       </div>
-      <Table
-        columns={finalColumns}
-        rowKey={(item) => item._id || item.id}
-        dataSource={dataSource}
-        pagination={pagination}
-        loading={listIsLoading}
-        onChange={handelDataTableLoad}
-        scroll={{ x: true }}
-        size="small"
-        className="truncate bg-white border border-gray-200 rounded-2xl shadow"
-      />
+
+      {viewMode === "grid" && config.gridItemRender ? (
+        <div className="space-y-4">
+          <div
+            className={
+              config.gridClass ||
+              "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+            }
+          >
+            {dataSource.map((record) =>
+              config.gridItemRender(record, {
+                handleRead,
+                handleEdit,
+                handleDelete,
+              })
+            )}
+          </div>
+          {pagination.total > pagination.pageSize && (
+            <div className="flex justify-end pt-2">
+              <Pagination
+                current={pagination.current}
+                pageSize={pagination.pageSize}
+                total={pagination.total}
+                onChange={(page, pageSize) =>
+                  handelDataTableLoad({ current: page, pageSize })
+                }
+              />
+            </div>
+          )}
+        </div>
+      ) : (
+        <Table
+          columns={finalColumns}
+          rowKey={(item) => item._id || item.id}
+          dataSource={dataSource}
+          pagination={pagination}
+          loading={listIsLoading}
+          onChange={handelDataTableLoad}
+          scroll={{ x: true }}
+          size="small"
+          className="truncate bg-white border border-gray-200 rounded-2xl shadow"
+        />
+      )}
     </div>
   );
 }

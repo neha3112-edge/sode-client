@@ -304,7 +304,7 @@ export async function getWebsiteSubcourseOptions() {
 }
 
 export async function getWebsiteUniversityOptions() {
-  const data = await fetchFromApi("partneruniversities/website-options");
+  const data = await fetchFromApi("university/website-options");
   return Array.isArray(data) ? data : [];
 }
 

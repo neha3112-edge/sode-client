@@ -234,8 +234,8 @@ export function Stats({ categories: initialCategories = [], programs = [] }) {
       {rootCategories.length > 0 && (
         <section className="py-3 bg-white relative overflow-hidden" suppressHydrationWarning>
           <Container>
-            {/* Grid: 4 columns on mobile, 5 on sm, 9 columns in 1 single row on desktop */}
-            <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-9 gap-1.5 sm:gap-2.5 max-w-6xl mx-auto items-stretch" suppressHydrationWarning>
+            {/* Grid: 4 columns on mobile, auto-fit on desktop for dynamic width */}
+            <div className="grid grid-cols-4 md:grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-1.5 sm:gap-2.5 w-full mx-auto md:px-8 items-stretch" suppressHydrationWarning>
               {rootCategories.map((item) => (
                 <div
                   key={item._id || item.slug}
@@ -281,122 +281,125 @@ export function Stats({ categories: initialCategories = [], programs = [] }) {
               </div>
             )}
           </Container>
-        </section>
-      )}
+        </section >
+      )
+      }
 
       {/* ── POPUP DIV OVERLAY MODAL FOR SELECTED CATEGORY (CLEAN LIGHT WHITE THEME - 3 CARDS PER ROW) ── */}
-      {activeCategory !== null && (
-        <div className="fixed inset-0 z-9999 flex items-center justify-center p-4 sm:p-6">
-          {/* Backdrop Blur Layer */}
-          <div
-            onClick={handleCloseModal}
-            className={`fixed inset-0 bg-slate-900/60 backdrop-blur-sm ${isModalClosing ? "animate-fade-out" : "animate-fade-in"}`}
-          />
+      {
+        activeCategory !== null && (
+          <div className="fixed inset-0 z-9999 flex items-center justify-center p-4 sm:p-6">
+            {/* Backdrop Blur Layer */}
+            <div
+              onClick={handleCloseModal}
+              className={`fixed inset-0 bg-slate-900/60 backdrop-blur-sm ${isModalClosing ? "animate-fade-out" : "animate-fade-in"}`}
+            />
 
-          {/* Modal Container (Compact Light White - 3-Card Grid Layout) */}
-          <div
-            className={`relative w-full max-w-md bg-white border border-slate-200/90 text-slate-900 rounded-2xl shadow-2xl p-2 sm:p-3 z-10 max-h-[88vh] flex flex-col ${isModalClosing ? "animate-custom-scale-down-exit" : "animate-custom-scale-up"
-              }`}
-          >
-            {activeCategory && (
-              <div className="flex flex-col text-left min-h-0 flex-1">
-                {/* Modal Header */}
-                <div className="flex items-center justify-between border-b border-slate-100 pb-2 mb-2 shrink-0 gap-3">
-                  <div className="flex items-center gap-3 min-w-0">
-                    {parentCategory && (
-                      <button
-                        onClick={() => handleCardClick(parentCategory)}
-                        className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-colors cursor-pointer shrink-0"
-                        title={`Back to ${parentCategory.name}`}
-                      >
-                        <ArrowLeft className="w-4 h-4" />
-                      </button>
-                    )}
-                    <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-center shrink-0 p-1.5 shadow-xs">
-                      <CategoryIcon cat={activeCategory} />
-                    </div>
-                    <div className="min-w-0">
-                      <h3 className="text-base sm:text-lg font-semibold text-gray-900 leading-tight tracking-tight truncate">
-                        {activeCategory.label || activeCategory.name}
-                      </h3>
-                      {activeCategory.title && activeCategory.title.toLowerCase() !== (activeCategory.label || activeCategory.name || "").toLowerCase() ? (
-                        <span className="text-xs text-gray-600 font-medium block mt-0.5 truncate">
-                          {activeCategory.title}
-                        </span>
-                      ) : (
-                        <span className="text-xs text-slate-500 block mt-0.5 truncate">
-                          Online Programs & Degrees
-                        </span>
+            {/* Modal Container (Compact Light White - 3-Card Grid Layout) */}
+            <div
+              className={`relative w-full max-w-md bg-white border border-slate-200/90 text-slate-900 rounded-2xl shadow-2xl p-2 sm:p-3 z-10 max-h-[88vh] flex flex-col ${isModalClosing ? "animate-custom-scale-down-exit" : "animate-custom-scale-up"
+                }`}
+            >
+              {activeCategory && (
+                <div className="flex flex-col text-left min-h-0 flex-1">
+                  {/* Modal Header */}
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-2 mb-2 shrink-0 gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      {parentCategory && (
+                        <button
+                          onClick={() => handleCardClick(parentCategory)}
+                          className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                          title={`Back to ${parentCategory.name}`}
+                        >
+                          <ArrowLeft className="w-4 h-4" />
+                        </button>
                       )}
+                      <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-center shrink-0 p-1.5 shadow-xs">
+                        <CategoryIcon cat={activeCategory} />
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="text-base sm:text-lg font-semibold text-gray-900 leading-tight tracking-tight truncate">
+                          {activeCategory.label || activeCategory.name}
+                        </h3>
+                        {activeCategory.title && activeCategory.title.toLowerCase() !== (activeCategory.label || activeCategory.name || "").toLowerCase() ? (
+                          <span className="text-xs text-gray-600 font-medium block mt-0.5 truncate">
+                            {activeCategory.title}
+                          </span>
+                        ) : (
+                          <span className="text-xs text-slate-500 block mt-0.5 truncate">
+                            Online Programs & Degrees
+                          </span>
+                        )}
+                      </div>
                     </div>
+
+                    <button
+                      onClick={handleCloseModal}
+                      className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-900 transition-colors flex items-center justify-center cursor-pointer"
+                      aria-label="Close modal"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
                   </div>
 
-                  <button
-                    onClick={handleCloseModal}
-                    className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-900 transition-colors flex items-center justify-center cursor-pointer"
-                    aria-label="Close modal"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-
-                {/* Modal Body - 3 Cards per Row Grid Layout */}
-                <div className="flex-1 overflow-y-auto max-h-[64vh] overscroll-contain pr-1 space-y-6 scrollbar-thin [scrollbar-color:#cbd5e1_transparent]">
-                  {((modalData.children && modalData.children.length > 0) ||
-                    (modalData.universities && modalData.universities.length > 0) ||
-                    (modalData.courses && modalData.courses.length > 0)) ? (
-                    <div className="space-y-6 p-0.5">
-                      {/* SUBCATEGORIES SECTION */}
-                      {modalData.children && modalData.children.length > 0 && (
-                        <div>
-                          <div className="grid grid-cols-3 gap-2 sm:gap-3.5">
-                            {modalData.children.map((child) => {
-                              const childName = child.name || child.label;
-                              return (
-                                <div
-                                  key={child._id || child.slug}
-                                  onClick={() => handleChildClick(child)}
-                                  className="bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl p-1.5 min-[360px]:p-2 sm:p-2.5 aspect-square flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group min-w-0 shadow-2xs"
-                                >
-                                  <div className="mb-1 sm:mb-1.5 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0 h-10 sm:h-12 w-full">
-                                    <SmartLogoAvatar
-                                      logoUrl={child.logoUrl || child.logoSrc || child.logo || child.imageSrc || child.image}
-                                      altName={childName}
-                                    />
+                  {/* Modal Body - 3 Cards per Row Grid Layout */}
+                  <div className="flex-1 overflow-y-auto max-h-[64vh] overscroll-contain pr-1 space-y-6 scrollbar-thin [scrollbar-color:#cbd5e1_transparent]">
+                    {((modalData.children && modalData.children.length > 0) ||
+                      (modalData.universities && modalData.universities.length > 0) ||
+                      (modalData.courses && modalData.courses.length > 0)) ? (
+                      <div className="space-y-6 p-0.5">
+                        {/* SUBCATEGORIES SECTION */}
+                        {modalData.children && modalData.children.length > 0 && (
+                          <div>
+                            <div className="grid grid-cols-3 gap-2 sm:gap-3.5">
+                              {modalData.children.map((child) => {
+                                const childName = child.name || child.label;
+                                return (
+                                  <div
+                                    key={child._id || child.slug}
+                                    onClick={() => handleChildClick(child)}
+                                    className="bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl p-1.5 min-[360px]:p-2 sm:p-2.5 aspect-square flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group min-w-0 shadow-2xs"
+                                  >
+                                    <div className="mb-1 sm:mb-1.5 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0 h-10 sm:h-12 w-full">
+                                      <SmartLogoAvatar
+                                        logoUrl={child.logoUrl || child.logoSrc || child.logo || child.imageSrc || child.image}
+                                        altName={childName}
+                                      />
+                                    </div>
+                                    <Tooltip title={childName} placement="top">
+                                      <h5 className="text-[9.5px] min-[360px]:text-[10px] sm:text-[11px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors text-center w-full tracking-tight px-0.5 min-w-0">
+                                        {formatTwoLineText(childName)}
+                                      </h5>
+                                    </Tooltip>
                                   </div>
-                                  <Tooltip title={childName} placement="top">
-                                    <h5 className="text-[9.5px] min-[360px]:text-[10px] sm:text-[11px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors text-center w-full tracking-tight px-0.5 min-w-0">
-                                      {formatTwoLineText(childName)}
-                                    </h5>
-                                  </Tooltip>
-                                </div>
-                              );
-                            })}
+                                );
+                              })}
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    /* EMPTY STATE */
-                    <div className="bg-slate-50 border border-slate-200/80 p-8 rounded-2xl text-center flex flex-col items-center justify-center space-y-3 my-4">
-                      <p className="text-xs sm:text-sm text-slate-600 font-medium">
-                        🎓 No subcategories found for {activeCategory.name || activeCategory.label}.
-                      </p>
-                      <Link
-                        href={`/courses?category=${(activeCategory.slug || "").replace(/^browse-/, "")}`}
-                        onClick={handleCloseModal}
-                        className="inline-flex items-center gap-2 bg-blue-600 text-white font-semibold px-5 py-2.5 rounded-xl text-xs hover:bg-blue-700 transition-all shadow-sm"
-                      >
-                        Browse All Courses &rarr;
-                      </Link>
-                    </div>
-                  )}
+                        )}
+                      </div>
+                    ) : (
+                      /* EMPTY STATE */
+                      <div className="bg-slate-50 border border-slate-200/80 p-8 rounded-2xl text-center flex flex-col items-center justify-center space-y-3 my-4">
+                        <p className="text-xs sm:text-sm text-slate-600 font-medium">
+                          🎓 No subcategories found for {activeCategory.name || activeCategory.label}.
+                        </p>
+                        <Link
+                          href={`/courses?category=${(activeCategory.slug || "").replace(/^browse-/, "")}`}
+                          onClick={handleCloseModal}
+                          className="inline-flex items-center gap-2 bg-blue-600 text-white font-semibold px-5 py-2.5 rounded-xl text-xs hover:bg-blue-700 transition-all shadow-sm"
+                        >
+                          Browse All Courses &rarr;
+                        </Link>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )
+      }
     </>
   );
 }

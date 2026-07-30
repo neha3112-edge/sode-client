@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import DefaultLayout from "../default";
 import SidePanel from "@/components/cms/Drawer";
+import ModalPanel from "@/components/cms/ModalPanel";
 import { Layout, Grid } from "antd";
 import { useCrudContext } from "@/context/crud";
 const { Content } = Layout;
@@ -40,16 +41,25 @@ export default function CrudLayout({
   fixHeaderPanel,
 }) {
   const screens = useBreakpoint();
+  const isModalMode = config?.openMode === "modal" || config?.isModal === true;
 
   return (
     <>
       <DefaultLayout>
-        <SidePanel
-          config={config}
-          topContent={sidePanelTopContent}
-          bottomContent={sidePanelBottomContent}
-          fixHeaderPanel={fixHeaderPanel}
-        />
+        {isModalMode ? (
+          <ModalPanel
+            config={config}
+            topContent={sidePanelTopContent}
+            bottomContent={sidePanelBottomContent}
+          />
+        ) : (
+          <SidePanel
+            config={config}
+            topContent={sidePanelTopContent}
+            bottomContent={sidePanelBottomContent}
+            fixHeaderPanel={fixHeaderPanel}
+          />
+        )}
         <div>
           <ContentBox>{children}</ContentBox>
         </div>

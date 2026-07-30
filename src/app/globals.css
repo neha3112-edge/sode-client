@@ -66,3 +66,39 @@ body {
   scrollbar-width: thin;
   scrollbar-color: #cbd5e1 #f1f5f9;
 }
+
+/* =========================================================
+   CMS ADMIN AREA MONTSERRAT TYPOGRAPHY & CLARITY
+========================================================= */
+.admin-layout,
+.ant-layout,
+.ant-table-wrapper,
+.ant-menu,
+.ant-modal,
+.ant-drawer,
+.ant-btn,
+.ant-input,
+.ant-select {
+  font-family: var(--font-montserrat), "Montserrat", sans-serif !important;
+}
+
+.ant-table-thead > tr > th {
+  font-weight: 600 !important;
+  color: #334155 !important;
+  letter-spacing: -0.01em;
+}
+
+.ant-table-tbody > tr > td {
+  font-weight: 500 !important;
+  color: #1e293b !important;
+  font-size: 13px !important;
+}
+
+.ant-menu-item,
+.ant-menu-submenu-title {
+  font-weight: 500 !important;
+}
+
+.ant-menu-item-selected {
+  font-weight: 600 !important;
+}
