@@ -234,8 +234,8 @@ export function Stats({ categories: initialCategories = [], programs = [] }) {
       {rootCategories.length > 0 && (
         <section className="py-3 bg-white relative overflow-hidden" suppressHydrationWarning>
           <Container>
-            {/* Grid: 4 columns on mobile, 8 columns in 1 single row on desktop (Ultra Compact) */}
-            <div className="grid grid-cols-4 md:grid-cols-8 gap-1.5 sm:gap-2.5 max-w-4xl mx-auto items-stretch" suppressHydrationWarning>
+            {/* Grid: 4 columns on mobile, auto-fit on desktop for dynamic width */}
+            <div className="grid grid-cols-4 md:grid-cols-[repeat(auto-fit,minmax(110px,1fr))] gap-1.5 sm:gap-2.5 w-full mx-auto items-stretch" suppressHydrationWarning>
               {rootCategories.map((item) => (
                 <div
                   key={item._id || item.slug}
