@@ -34,9 +34,15 @@ const request = {
         Object.entries(jsonData).forEach(([key, val]) => {
           if (val !== undefined && val !== null) {
             if (Array.isArray(val)) {
-              val.forEach((v) => fd.append(key, v));
+              val.forEach((v) => {
+                if (v !== undefined && v !== null) {
+                  const item = v?.originFileObj || v;
+                  fd.append(key, item);
+                }
+              });
             } else {
-              fd.append(key, val);
+              const item = val?.originFileObj || val;
+              fd.append(key, item);
             }
           }
         });
@@ -204,9 +210,15 @@ const request = {
         Object.entries(jsonData).forEach(([key, val]) => {
           if (val !== undefined && val !== null) {
             if (Array.isArray(val)) {
-              val.forEach((v) => fd.append(key, v));
+              val.forEach((v) => {
+                if (v !== undefined && v !== null) {
+                  const item = v?.originFileObj || v;
+                  fd.append(key, item);
+                }
+              });
             } else {
-              fd.append(key, val);
+              const item = val?.originFileObj || val;
+              fd.append(key, item);
             }
           }
         });

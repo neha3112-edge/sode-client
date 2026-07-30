@@ -4,19 +4,134 @@ import React from "react";
 import CrudModule from "@/module/crud";
 import moment from "moment";
 import MediaForm from "./form";
-import { Tag, Button, message, Image } from "antd";
-import { CopyOutlined } from "@ant-design/icons";
+import { Tag, Button, Image, Tooltip, Typography } from "antd";
+import {
+  EditOutlined,
+  DeleteOutlined,
+  FilePdfOutlined,
+  FileUnknownOutlined,
+} from "@ant-design/icons";
 import { getAssetPath } from "@/lib/utils";
+
+const { Text } = Typography;
+
+/**
+ * Strapi-Style Asset Card Component used by DataTable Grid View
+ */
+function MediaAssetCard({ record, onRead, onEdit, onDelete }) {
+  const isImage =
+    record.mimeType?.startsWith("image/") ||
+    record.url?.match(/\.(jpg|jpeg|png|gif|webp|svg|ico)$/i);
+  const isPdf =
+    record.mimeType === "application/pdf" || record.url?.endsWith(".pdf");
+
+  const assetUrl = getAssetPath(record.url);
+  const ext = record.url ? record.url.split(".").pop().toUpperCase() : "FILE";
+
+  return (
+    <div className="group bg-white rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col relative">
+      {/* File Extension Badge */}
+      <div className="absolute top-2.5 left-2.5 z-10">
+        <Tag
+          color={isImage ? "blue" : isPdf ? "magenta" : "purple"}
+          className="font-semibold text-[10px] uppercase px-2 py-0.5 rounded-full border-none shadow-2xs"
+        >
+          {ext}
+        </Tag>
+      </div>
+
+      {/* Asset Preview Box */}
+      <div className="h-36 w-full bg-slate-50 flex items-center justify-center relative overflow-hidden border-b border-slate-100 p-2">
+        {isImage ? (
+          <Image
+            src={assetUrl}
+            alt={record.alt || record.name}
+            className="object-contain max-h-32 max-w-full rounded"
+            preview={false}
+            fallback="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
+          />
+        ) : isPdf ? (
+          <div className="flex flex-col items-center justify-center text-red-500 gap-1.5">
+            <FilePdfOutlined className="text-4xl" />
+            <span className="text-[11px] font-medium uppercase tracking-wider text-slate-500">
+              PDF Document
+            </span>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center text-indigo-500 gap-1.5">
+            <FileUnknownOutlined className="text-4xl" />
+            <span className="text-[11px] font-medium uppercase tracking-wider text-slate-500">
+              {record.bucket || "Asset"}
+            </span>
+          </div>
+        )}
+
+        {/* Hover Quick Action Buttons */}
+        <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-2 p-2">
+          {/* Ant Design Built-in Copyable Text */}
+          <Text
+            copyable={{
+              text: assetUrl,
+              tooltips: ["Copy Public URL", "Copied!"],
+            }}
+            className="[&_.ant-typography-copy]:text-white [&_.ant-typography-copy]:text-lg [&_.ant-typography-copy]:bg-white/20 [&_.ant-typography-copy]:p-2 [&_.ant-typography-copy]:rounded-full hover:[&_.ant-typography-copy]:bg-white/40"
+          />
+
+          <Tooltip title="Edit Metadata">
+            <Button
+              shape="circle"
+              size="middle"
+              icon={<EditOutlined className="text-white text-base" />}
+              onClick={() => onEdit(record)}
+              className="bg-white/20 hover:!bg-white/40 border-none backdrop-blur-md"
+            />
+          </Tooltip>
+
+          <Tooltip title="Delete Asset">
+            <Button
+              shape="circle"
+              size="middle"
+              icon={<DeleteOutlined className="text-red-400 text-base" />}
+              onClick={() => onDelete(record)}
+              className="bg-white/20 hover:!bg-red-500/80 border-none backdrop-blur-md"
+            />
+          </Tooltip>
+        </div>
+      </div>
+
+      {/* Card Info Footer */}
+      <div className="p-3 flex-1 flex flex-col justify-between space-y-1.5">
+        <div>
+          <h4
+            className="text-xs font-semibold text-slate-700 truncate m-0 tracking-tight"
+            title={record.name}
+          >
+            {record.name || "Untitled Asset"}
+          </h4>
+          {record.alt && (
+            <p className="text-[11px] text-slate-400 truncate m-0">
+              Alt: {record.alt}
+            </p>
+          )}
+        </div>
+
+        <div className="flex items-center justify-between text-[11px] font-medium text-slate-400 pt-1 border-t border-slate-100">
+          <span>
+            {record.size
+              ? record.size < 1024 * 1024
+                ? `${(record.size / 1024).toFixed(1)} KB`
+                : `${(record.size / (1024 * 1024)).toFixed(1)} MB`
+              : "0 KB"}
+          </span>
+          <span>{record.createdAt ? moment(record.createdAt).format("DD MMM YYYY") : "-"}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function MediaCmsIndex() {
   const entity = "media";
-
-  const copyUrl = (url) => {
-    if (!url) return;
-    const proxyUrl = getAssetPath(url);
-    navigator.clipboard.writeText(proxyUrl);
-    message.success("URL copied!");
-  };
 
   const dataTableColumns = [
     {
@@ -79,20 +194,12 @@ export default function MediaCmsIndex() {
       render: (url) => {
         const proxyUrl = getAssetPath(url);
         return (
-          <div className="flex items-center gap-2 max-w-sm">
-            <span
-              className="text-xs font-mono text-blue-600 truncate flex-1"
-              title={proxyUrl}
-            >
-              {proxyUrl}
-            </span>
-            <Button
-              size="small"
-              icon={<CopyOutlined />}
-              onClick={() => copyUrl(url)}
-              title="Copy URL"
-            />
-          </div>
+          <Text
+            copyable={{ text: proxyUrl, tooltips: ["Copy Public URL", "Copied!"] }}
+            className="text-xs font-mono text-blue-600 max-w-sm truncate"
+          >
+            {proxyUrl}
+          </Text>
         );
       },
     },
@@ -117,8 +224,6 @@ export default function MediaCmsIndex() {
     },
   ];
 
-  const readColumns = [...dataTableColumns];
-
   const labels = {
     PANEL_TITLE: "MinIO Media Library",
     DATATABLE_TITLE: "Uploaded Assets & Images",
@@ -131,9 +236,23 @@ export default function MediaCmsIndex() {
   const config = {
     entity,
     ...labels,
-    createEndPoint: "upload",   // POST media/upload (multipart)
+    openMode: "modal", // ⚡ Global Modal Mode: opens form in centered ModalPanel instead of SidePanel drawer!
+    modalWidth: 620,
+    createEndPoint: "upload",
     dataTableColumns,
-    readColumns,
+    readColumns: dataTableColumns,
+    enableGridView: true,
+    defaultViewMode: "grid",
+    defaultPageSize: 18,
+    gridItemRender: (record, { handleRead, handleEdit, handleDelete }) => (
+      <MediaAssetCard
+        key={record._id}
+        record={record}
+        onRead={handleRead}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
+    ),
   };
 
   return (

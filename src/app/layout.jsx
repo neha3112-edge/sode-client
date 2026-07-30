@@ -21,7 +21,7 @@ import { MobileBottomNav } from "@/components/website/MobileBottomNav";
 const montserrat = Montserrat({
   subsets: ["latin"],
   variable: "--font-montserrat",
-  weight: ["500", "600", "700", "800"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
