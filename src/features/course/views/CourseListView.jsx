@@ -761,9 +761,6 @@ export default function CourseListView({
 
                   const rawCourseTitle = item.title || "Course";
                   let cardTitle = rawCourseTitle;
-                  if (uniName && !cardTitle.toLowerCase().includes(uniName.toLowerCase())) {
-                    cardTitle = `${uniName} - ${cardTitle}`;
-                  }
 
                   let shouldAppendSubcourse = false;
                   if (subcourseName && !item.university) {

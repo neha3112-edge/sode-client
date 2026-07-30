@@ -185,9 +185,7 @@ export function Courses({
                 (offering?.fee?.amount ? `₹${Number(offering.fee.amount).toLocaleString("en-IN")}` : null) ||
                 (typeof item.fee === "object" ? item.fee?.title || (item.fee?.amount ? `₹${Number(item.fee.amount).toLocaleString("en-IN")}` : null) : item.fee);
 
-              const cardTitle = item.title.toLowerCase().includes(uniName.toLowerCase())
-                ? item.title
-                : `${uniName} - ${item.title}`;
+              const cardTitle = item.title;
 
               return (
                 <Card

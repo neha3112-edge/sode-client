@@ -236,17 +236,17 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
         {/* ── Hero Banner (Matching Reference PDF UI) ── */}
         <div className="bg-gradient-to-r from-[#0F3759] via-[#103D6D] to-[#154E8A] rounded-3xl overflow-hidden shadow-xl text-white relative p-6 sm:p-8 lg:p-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            
+
             {/* Left Content Area */}
             <div className="lg:col-span-7 space-y-5">
               <span className="bg-[#FAF0CA] text-[#0C3058] font-extrabold text-xs uppercase px-4 py-1.5 rounded-full inline-block tracking-wider shadow-2xs">
                 {categoryName}
               </span>
-              
+
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white leading-tight tracking-tight m-0">
                 {displayHeroTitle}
               </h1>
-              
+
               <div className="flex flex-wrap items-center gap-5 text-xs sm:text-sm font-semibold text-slate-200 pt-1">
                 <span className="flex items-center gap-1.5">
                   <ClockCircleFilled className="text-[#FFC107] text-base" /> Duration: <strong className="text-white">{primaryDuration}</strong>
@@ -255,7 +255,7 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
                   <ClockCircleFilled className="text-[#FFC107] text-base" /> Admission Deadline: <strong className="text-white">31-Jul-26</strong>
                 </span>
               </div>
-              
+
               <div className="flex flex-wrap items-center gap-4 pt-3">
                 <Button
                   type="primary"
@@ -474,7 +474,7 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
                       const fee = off.fee;
                       const dur = off.duration;
                       const eligibility = off.eligibility;
-                      
+
                       // Filter specializations list if activeSubcourseSlug is present
                       const rawSubcoursesList = Array.isArray(off.subcourses) && off.subcourses.length > 0 ? off.subcourses : [];
                       const subList = rawSubcoursesList.filter(sub => {

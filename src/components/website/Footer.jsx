@@ -22,7 +22,7 @@ export function Footer({
   const UNIVERSITIES = initialUniversities || defaultUniversities;
   const PROGRAMS = initialPrograms || defaultPrograms;
   const formModalCtx = useContext(FormModalContext);
-  const openFormModal = formModalCtx?.openFormModal ?? (() => {});
+  const openFormModal = formModalCtx?.openFormModal ?? (() => { });
 
   const [activeDialog, setActiveDialog] = useState(null);
 
