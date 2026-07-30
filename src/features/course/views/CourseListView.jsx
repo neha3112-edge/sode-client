@@ -7,6 +7,7 @@ import { Input, Button, Drawer, Tag, Breadcrumb, Spin, Select, Pagination } from
 import {
   SearchOutlined,
   FilterOutlined,
+  ControlOutlined,
   RightOutlined,
   ReloadOutlined,
   BookOutlined,
@@ -15,6 +16,19 @@ import {
   SortAscendingOutlined,
   LoadingOutlined
 } from "@ant-design/icons";
+
+const SliderFilterIcon = (props) => (
+  <span className="anticon inline-flex items-center justify-center">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <line x1="3" y1="6" x2="21" y2="6" />
+      <line x1="3" y1="12" x2="21" y2="12" />
+      <line x1="3" y1="18" x2="21" y2="18" />
+      <circle cx="8" cy="6" r="2.5" fill="currentColor" />
+      <circle cx="16" cy="12" r="2.5" fill="currentColor" />
+      <circle cx="10" cy="18" r="2.5" fill="currentColor" />
+    </svg>
+  </span>
+);
 
 import { FormModalContext } from "@/context/FormModalContext";
 import { useCompare } from "@/context/CompareContext";
@@ -25,6 +39,8 @@ import WebsiteLayout from "@/components/layout/WebsiteLayout";
 
 // Reusable Sidebar Filter Component matching Image 2 UI mockup
 function FilterSidebarContent({
+  hideHeader = false,
+  onApplyFilter,
   activeFilterCount,
   handleClearFilters,
   activeCategoryTab,
@@ -67,20 +83,22 @@ function FilterSidebarContent({
   return (
     <div className="space-y-5 text-slate-800">
       {/* Sidebar Header */}
-      <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-        <h3 className="font-extrabold text-base text-[#1C3569] m-0 flex items-center gap-2">
-          <FilterOutlined className="text-[#1C3569]" /> Filter
-        </h3>
-        {activeFilterCount > 0 && (
-          <button
-            type="button"
-            onClick={handleClearFilters}
-            className="text-xs font-bold text-red-600 hover:text-red-700 cursor-pointer flex items-center gap-1 bg-red-50 px-2 py-1 rounded-md border-none"
-          >
-            <ReloadOutlined className="text-[10px]" /> Reset
-          </button>
-        )}
-      </div>
+      {!hideHeader && (
+        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+          <h3 className="font-extrabold text-base text-[#1C3569] m-0 flex items-center gap-2">
+            <SliderFilterIcon className="text-[#1C3569]" /> Filter
+          </h3>
+          {activeFilterCount > 0 && (
+            <button
+              type="button"
+              onClick={handleClearFilters}
+              className="text-xs font-bold text-red-600 hover:text-red-700 cursor-pointer flex items-center gap-1 bg-red-50 px-2 py-1 rounded-md border-none"
+            >
+              <ReloadOutlined className="text-[10px]" /> Reset
+            </button>
+          )}
+        </div>
+      )}
 
       {/* 1. Course (Antd Select Dropdown) */}
       <div className="space-y-1.5">
@@ -197,7 +215,7 @@ function FilterSidebarContent({
       <div className="pt-4 space-y-2.5">
         <Button
           type="primary"
-          onClick={() => setCurrentPage(1)}
+          onClick={onApplyFilter}
           className="w-full bg-[#1C3569] hover:!bg-[#0d1d3d] text-white font-bold h-10 rounded-xl cursor-pointer border-none"
         >
           Apply Filter
@@ -526,25 +544,68 @@ export default function CourseListView({
     });
   };
 
-  const filterSidebarProps = {
+  // Desktop & Mobile Draft Filter States
+  const [draftCategoryTab, setDraftCategoryTab] = useState(activeCategoryTab);
+  const [draftSubcategory, setDraftSubcategory] = useState(activeSubcategory);
+  const [draftUniversities, setDraftUniversities] = useState(selectedUniversities);
+  const [draftDuration, setDraftDuration] = useState(selectedDuration);
+  const [draftFee, setDraftFee] = useState(selectedFee);
+
+  const handleOpenMobileDrawer = () => {
+    setDraftCategoryTab(activeCategoryTab);
+    setDraftSubcategory(activeSubcategory);
+    setDraftUniversities(selectedUniversities);
+    setDraftDuration(selectedDuration);
+    setDraftFee(selectedFee);
+    setIsMobileDrawerOpen(true);
+  };
+
+  const handleApplyFilters = () => {
+    setActiveCategoryTab(draftCategoryTab);
+    setActiveSubcategory(draftSubcategory);
+    setSelectedUniversities(draftUniversities);
+    setSelectedDuration(draftDuration);
+    setSelectedFee(draftFee);
+    setCurrentPage(1);
+    setIsMobileDrawerOpen(false);
+  };
+
+  const handleClearMobileDraftFilters = () => {
+    setDraftCategoryTab("all");
+    setDraftSubcategory("");
+    setDraftUniversities([]);
+    setDraftDuration("all");
+    setDraftFee("all");
+  };
+
+  const desktopFilterSidebarProps = {
     activeFilterCount,
-    handleClearFilters,
-    activeCategoryTab,
-    setActiveCategoryTab,
+    handleClearFilters: () => {
+      handleClearMobileDraftFilters();
+      handleClearFilters();
+    },
+    onApplyFilter: handleApplyFilters,
+    activeCategoryTab: draftCategoryTab,
+    setActiveCategoryTab: setDraftCategoryTab,
+    activeSubcategory: draftSubcategory,
+    setActiveSubcategory: setDraftSubcategory,
+    selectedUniversities: draftUniversities,
+    setSelectedUniversities: setDraftUniversities,
+    selectedDuration: draftDuration,
+    setSelectedDuration: setDraftDuration,
+    selectedFee: draftFee,
+    setSelectedFee: setDraftFee,
     categorySelectOptions,
     subcategoryList,
     durationList,
     feeList,
-    selectedDuration,
-    setSelectedDuration,
-    selectedFee,
-    setSelectedFee,
-    selectedUniversities,
-    setSelectedUniversities,
     universityOptions,
-    activeSubcategory,
-    setActiveSubcategory,
     setCurrentPage,
+  };
+
+  const mobileFilterSidebarProps = {
+    ...desktopFilterSidebarProps,
+    onApplyFilter: handleApplyFilters,
   };
 
   return (
@@ -555,29 +616,40 @@ export default function CourseListView({
         { title: "Browse Courses" }
       ]} />
 
-      {/* Mobile Filter Button Bar (< lg screens) */}
+      {/* Mobile Filter & Select Bar (< lg screens) */}
       <div className="lg:hidden flex items-center gap-2 mb-6 bg-white p-2.5 rounded-2xl border border-slate-200 shadow-xs">
-        <div className="flex-1 min-w-0">
-          <Input.Search
-            placeholder="Search course or university..."
-            allowClear
-            enterButton={<SearchOutlined className="text-white" />}
-            value={searchInputValue}
-            onChange={(e) => {
-              setSearchInputValue(e.target.value);
-              if (!e.target.value) setAppliedSearchTerm("");
+        <div className="flex-1 grid grid-cols-2 gap-2 min-w-0">
+          <Select
+            value={activeCategoryTab}
+            onChange={(val) => {
+              setActiveCategoryTab(val);
+              setCurrentPage(1);
             }}
-            onSearch={(value) => setAppliedSearchTerm(value)}
-            className="w-full"
+            options={categorySelectOptions}
+            className="w-full text-xs font-semibold"
+            placeholder="Degree / Category"
+            size="middle"
+          />
+          <Select
+            value={selectedUniversities[0] || "all"}
+            onChange={(val) => {
+              if (val === "all") setSelectedUniversities([]);
+              else setSelectedUniversities([val]);
+              setCurrentPage(1);
+            }}
+            options={universityOptions}
+            className="w-full text-xs font-semibold"
+            placeholder="Institute"
+            size="middle"
           />
         </div>
         <Button
           type="primary"
-          icon={<FilterOutlined />}
-          onClick={() => setIsMobileDrawerOpen(true)}
+          icon={<SliderFilterIcon />}
+          onClick={handleOpenMobileDrawer}
           className="bg-[#1C3569] hover:!bg-[#0d1d3d] font-bold h-8 rounded-lg cursor-pointer shrink-0 text-xs px-3 border-none flex items-center gap-1"
         >
-          Filter {activeFilterCount > 0 && `(${activeFilterCount})`}
+          {activeFilterCount > 0 ? `(${activeFilterCount})` : ""}
         </Button>
       </div>
 
@@ -586,7 +658,7 @@ export default function CourseListView({
 
         {/* Left Sidebar Filters (Desktop lg:col-span-3) */}
         <div className="hidden lg:block lg:col-span-3 bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs sticky top-6">
-          <FilterSidebarContent {...filterSidebarProps} />
+          <FilterSidebarContent {...desktopFilterSidebarProps} />
         </div>
 
         {/* Right Main Course Listing (lg:col-span-9) */}
@@ -1138,16 +1210,44 @@ export default function CourseListView({
         </div>
       </div>
 
-      {/* Mobile Antd Filter Drawer */}
+      {/* Mobile Antd Filter Drawer (Opens from Top) */}
       <Drawer
-        title={<span className="font-bold text-[#1C3569] text-base">Filter Options</span>}
-        placement="left"
+        title={
+          <div className="flex items-center justify-between">
+            <span className="font-bold text-[#1C3569] text-base">Filter Options</span>
+            <button
+              type="button"
+              onClick={handleClearMobileDraftFilters}
+              className="text-xs font-semibold text-red-600 hover:text-red-700 bg-red-50 px-2.5 py-1 rounded-lg border-none cursor-pointer"
+            >
+              Reset All
+            </button>
+          </div>
+        }
+        placement="top"
         onClose={() => setIsMobileDrawerOpen(false)}
         open={isMobileDrawerOpen}
         className="lg:hidden"
-        style={{ width: "85%", maxWidth: 340 }}
+        style={{ height: "85vh", borderBottomLeftRadius: 24, borderBottomRightRadius: 24 }}
+        footer={
+          <div className="flex items-center gap-3 p-2 bg-white">
+            <Button
+              onClick={() => setIsMobileDrawerOpen(false)}
+              className="flex-1 font-bold h-10 rounded-xl"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="primary"
+              onClick={handleApplyFilters}
+              className="flex-1 font-bold h-10 rounded-xl bg-[#1C3569] hover:!bg-[#0d1d3d] border-none"
+            >
+              Apply Filters
+            </Button>
+          </div>
+        }
       >
-        <FilterSidebarContent {...filterSidebarProps} />
+        <FilterSidebarContent {...mobileFilterSidebarProps} hideHeader={true} />
       </Drawer>
     </WebsiteLayout>
   );
