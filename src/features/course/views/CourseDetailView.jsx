@@ -207,8 +207,8 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
 
   if (!course) {
     return (
-      <NotFoundPage 
-        title="Course Not Found" 
+      <NotFoundPage
+        title="Course Not Found"
         message="We couldn't find the course you're looking for. It might have been moved, renamed, or is currently unavailable."
         buttonText="Explore All Courses"
         redirectUrl="/courses"
@@ -260,27 +260,27 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
   // ── Dynamic content from CMS (heroSub) with fallbacks ──
   const overviewTitle = heroSub?.overviewTitle || "Course Overview";
   const overviewText = heroSub?.overviewDescription || heroSub?.content || heroSub?.description || course.description || "";
-  
+
   const courseSnapshot = [];
   if (uniName) courseSnapshot.push({ icon: BankOutlined, label: "Institute", value: uniName });
   if (heroSub?.title) courseSnapshot.push({ icon: ApartmentOutlined, label: "Programme", value: heroSub.title });
   if (primaryDuration) courseSnapshot.push({ icon: ClockCircleFilled, label: "Duration", value: primaryDuration });
-  
+
   const whyChooseTitle = heroSub?.whyChooseTitle || "Why Choose This Course?";
   const whyChooseDescription = heroSub?.whyChooseDescription || "";
-  
-  const highlightsList = Array.isArray(heroSub?.keyHighlights) && heroSub.keyHighlights.length > 0 
-    ? heroSub.keyHighlights 
+
+  const highlightsList = Array.isArray(heroSub?.keyHighlights) && heroSub.keyHighlights.length > 0
+    ? heroSub.keyHighlights
     : ((heroSub && Array.isArray(heroSub.modules) && heroSub.modules.length > 0) ? heroSub.modules : []);
-    
+
   const whoCanApplyList = Array.isArray(heroSub?.whoCanApply) && heroSub.whoCanApply.length > 0 ? heroSub.whoCanApply : [];
-  
+
   const admissionProcessList = Array.isArray(heroSub?.admissionProcess) && heroSub.admissionProcess.length > 0 ? heroSub.admissionProcess : [];
-  
-  const courseSnapshotBottom = Array.isArray(heroSub?.courseSnapshotBottom) && heroSub.courseSnapshotBottom.length > 0 
-    ? heroSub.courseSnapshotBottom 
+
+  const courseSnapshotBottom = Array.isArray(heroSub?.courseSnapshotBottom) && heroSub.courseSnapshotBottom.length > 0
+    ? heroSub.courseSnapshotBottom
     : [];
-    
+
   const skillsSection = heroSub?.skillsSection || { title: "", description: "", skillsGain: [], curriculumOverview: [] };
   const learningExperience = heroSub?.learningExperience || { title: "", description: "", learningFeatures: [] };
   const instituteSection = heroSub?.instituteSection || { title: "", description: "", certificateTitle: "", certificateDescription: "", certificateImage: "", whyItMatters: [] };
@@ -756,6 +756,6 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
 
         </div>
       </div>
-    </div>
+    </div >
   );
 }

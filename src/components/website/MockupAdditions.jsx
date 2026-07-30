@@ -592,6 +592,29 @@ export function IimIitLogos({ categories = [], programs = [] }) {
   const accentBarColors = ["#EEC471", "#2563eb", "#10b981", "#9333ea", "#102441"];
   const [isMainExpanded, setIsMainExpanded] = useState(false);
   const [carouselApi, setCarouselApi] = useState(null);
+  const [slidesToShowCount, setSlidesToShowCount] = useState(9);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (typeof window === "undefined") return;
+      const w = window.innerWidth;
+      if (w < 640) {
+        setSlidesToShowCount(4);
+      } else if (w < 768) {
+        setSlidesToShowCount(5);
+      } else if (w < 1024) {
+        setSlidesToShowCount(6);
+      } else if (w < 1280) {
+        setSlidesToShowCount(8);
+      } else {
+        setSlidesToShowCount(9);
+      }
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const allSubchildItems = parentBlocks.flatMap((block) =>
     block.children.map((child) => ({ ...child, blockSlug: block.slug }))
@@ -634,12 +657,12 @@ export function IimIitLogos({ categories = [], programs = [] }) {
     <>
       {parentBlocks.length > 0 && (
         <section className="w-full bg-white py-8 md:py-12 border-b border-slate-100">
-          <Container className="space-y-6 max-w-5xl">
+          <Container className="space-y-6 max-w-6xl">
             {/* ── STATE 1: INITIAL COLLAPSED CAROUSEL / SLIDER VIEW (SHADCN UI CAROUSEL) ── */}
             {!isMainExpanded ? (
               <div className="space-y-4">
                 {/* Main Parent Header */}
-                <div className="flex items-center justify-between mb-2 sm:mb-3 gap-3">
+                <div className="flex items-center justify-between mb-2 sm:mb-3 gap-3 max-w-6xl mx-auto">
                   <div className="flex items-center gap-3 min-w-0">
                     <span className="w-1 h-6 rounded-full inline-block shrink-0 bg-blue-500" />
                     <div className="min-w-0">
@@ -671,18 +694,17 @@ export function IimIitLogos({ categories = [], programs = [] }) {
                 </div>
 
                 {/* Antd Carousel Track */}
-                <div className="relative px-2 sm:px-8 py-1 max-w-5xl mx-auto">
+                <div className="relative px-0 sm:px-2 py-1 max-w-6xl mx-auto">
                   <Carousel
+                    key={slidesToShowCount}
                     autoplay
                     dots={false}
-                    slidesToShow={8}
+                    draggable={true}
+                    touchMove={true}
+                    swipeToSlide={true}
+                    slidesToShow={slidesToShowCount}
                     slidesToScroll={1}
-                    responsive={[
-                      { breakpoint: 1024, settings: { slidesToShow: 6 } },
-                      { breakpoint: 768, settings: { slidesToShow: 4 } },
-                      { breakpoint: 480, settings: { slidesToShow: 4 } },
-                    ]}
-                    className="w-full relative"
+                    className="w-full relative cursor-grab active:cursor-grabbing"
                   >
                     {allSubchildItems.map((child, idx) => (
                       <div key={`${child._id || child.slug}-${idx}`} className="px-1">
@@ -708,7 +730,7 @@ export function IimIitLogos({ categories = [], programs = [] }) {
               /* ── STATE 2: EXPANDED VIEW - DIVIDED INTO SEPARATE SUB-PARENT CARDS WITH TITLES ── */
               <div className="space-y-6 animate-fade-in">
                 {/* Main Header with Show Less Button */}
-                <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center justify-between mb-2 max-w-6xl mx-auto">
                   <div className="min-w-0">
                     <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight truncate">
                       {mainTitle}
@@ -742,7 +764,7 @@ export function IimIitLogos({ categories = [], programs = [] }) {
                   return (
                     <div
                       key={block._id || block.slug}
-                      className="bg-white border border-slate-200/90 rounded-2xl p-3 sm:p-4 shadow-2xs hover:shadow-xs transition-all duration-200 max-w-4xl mx-auto"
+                      className="bg-white border border-slate-200/90 rounded-2xl p-3 sm:p-4 shadow-2xs hover:shadow-xs transition-all duration-200 max-w-6xl mx-auto"
                     >
                       {/* Sub-Parent Title Header */}
                       <div className="flex items-center justify-between mb-3 gap-2">
@@ -759,8 +781,8 @@ export function IimIitLogos({ categories = [], programs = [] }) {
                         </div>
                       </div>
 
-                      {/* Sub-Parent Cards Grid (Identical Height/Width Matching Stats.jsx: 4-Card Mobile / 8-Card Desktop) */}
-                      <div className="grid grid-cols-4 md:grid-cols-8 gap-1.5 sm:gap-2.5 items-stretch">
+                      {/* Sub-Parent Cards Grid (Identical Height/Width Matching Stats.jsx: 4-Card Mobile / 9-Card Desktop) */}
+                      <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-9 gap-1.5 sm:gap-2.5 items-stretch">
                         {block.children.map((child, idx) => (
                           <div
                             key={child._id || idx}

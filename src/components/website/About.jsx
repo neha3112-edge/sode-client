@@ -43,7 +43,7 @@ export function About({
             About <span className="text-[#f7ebc7]">SODE</span>
           </h2>
 
-          <div className="space-y-4 text-sm text-gray-300 font-medium leading-relaxed">
+          <div className="space-y-4 text-[11px] text-gray-300 font-medium leading-relaxed">
             <p>
               SODE (School of Online &amp; Distance Education) is India&apos;s
               top educational platform, transforming the way learners engage
@@ -96,14 +96,14 @@ export function About({
 
           {/* Desktop Layout (lg and up) */}
 
-          <div className="flex flex-col lg:grid lg:grid-cols-[1fr_280px_1fr] gap-6 md:gap-2 items-center w-full px-4">
+          <div className="flex flex-col lg:grid lg:grid-cols-[1fr_280px_1fr] gap-6 md:gap-2 items-center max-w-7xl px-4">
             {/* Left Column */}
 
             <div className="flex flex-col items-start space-y-6 order-1 lg:order-1">
               {leftCards.map((card, idx) => (
                 <div
                   key={idx}
-                  className={`flex md:flex-row-reverse items-center bg-white rounded-[10px] p-3.5 shadow-xl text-[#102441] hover:scale-[1.02] transition-all duration-200 ${card.css}`}
+                  className={`flex md:flex-row-reverse md:gap-2 items-center bg-white rounded-[10px] p-3.5 shadow-xl text-[#102441] hover:scale-[1.02] transition-all duration-200 ${card.css}`}
                 >
                   <div className="rounded-lg flex items-center justify-center shrink-0 relative">
                     <Image
@@ -115,10 +115,10 @@ export function About({
                     />
                   </div>
 
-                  <div className="flex flex-col text-left leading-tight ml-2">
-                    <h4 className="font-bold text-sm whitespace-nowrap">{card.title}</h4>
+                  <div className="flex flex-col text-left md:text-right leading-tight ml-2 flex-wrap">
+                    <h4 className="font-bold text-sm">{card.title}</h4>
 
-                    <p className="text-gray-500 text-[11px] font-medium whitespace-nowrap">
+                    <p className="text-gray-500 text-[11px] font-medium">
                       {card.desc}
                     </p>
                   </div>
@@ -160,9 +160,9 @@ export function About({
                   </div>
 
                   <div className="flex flex-col text-left leading-tight ml-2">
-                    <h4 className="font-bold text-sm whitespace-nowrap">{card.title}</h4>
+                    <h4 className="font-bold text-sm">{card.title}</h4>
 
-                    <p className="text-gray-500 text-[11px] font-medium whitespace-nowrap">
+                    <p className="text-gray-500 text-[11px] font-medium">
                       {card.desc}
                     </p>
                   </div>
@@ -176,7 +176,7 @@ export function About({
           <div className="mt-2 md:mt-5 text-center">
             <Button
               onClick={onClick}
-              className="bg-linear-to-r from-[#EEC471] via-[#F3CD73] to-[#FADA9A] text-[#102441] rounded-md px-8 py-5 text-base font-bold shadow-lg transition-all transform hover:scale-[1.02] cursor-pointer duration-200"
+              className="bg-linear-to-r from-[#EEC471] via-[#F3CD73] to-[#FADA9A] text-[#102441] text-sm rounded-md px-4 py-5 border-none text-base font-bold shadow-lg transition-all transform hover:scale-[1.02] cursor-pointer duration-200"
             >
               Book 1:1 Personalised Counselling
             </Button>

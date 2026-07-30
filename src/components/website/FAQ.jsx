@@ -1,7 +1,72 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Container } from "@/components/common/Container";
+import { PlusOutlined, MinusOutlined } from "@ant-design/icons";
+
+function FAQAccordionItem({ question, answer, isOpen, onToggle }) {
+  const contentRef = useRef(null);
+
+  return (
+    <div
+      className={`border rounded-2xl overflow-hidden transition-all duration-300 ${isOpen
+        ? "border-[#0C3058] shadow-md"
+        : "border-slate-200 bg-white hover:border-slate-300"
+        }`}
+      style={{
+        background: isOpen
+          ? "linear-gradient(135deg,#EFF6FF 0%,#F0F9FF 100%)"
+          : "#ffffff",
+      }}
+    >
+      {/* Header Button */}
+      <button
+        type="button"
+        onClick={onToggle}
+        className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left cursor-pointer bg-transparent border-none outline-none"
+      >
+        <span
+          className={`text-sm sm:text-base font-bold leading-snug transition-colors duration-200 ${isOpen ? "text-[#0C3058]" : "text-slate-800"
+            }`}
+        >
+          {question}
+        </span>
+        <span
+          className={`flex items-center justify-center w-7 h-7 rounded-full shrink-0 transition-all duration-300 ${isOpen ? "bg-[#0C3058] text-white" : "bg-slate-100 text-slate-500"
+            }`}
+        >
+          {isOpen ? (
+            <MinusOutlined className="text-xs transition-transform duration-300" />
+          ) : (
+            <PlusOutlined className="text-xs transition-transform duration-300" />
+          )}
+        </span>
+      </button>
+
+      {/* Animated Content Panel */}
+      <div
+        ref={contentRef}
+        style={{
+          maxHeight: isOpen
+            ? contentRef.current
+              ? contentRef.current.scrollHeight + "px"
+              : "500px"
+            : "0px",
+          overflow: "hidden",
+          transition: "max-height 0.35s cubic-bezier(0.4,0,0.2,1)",
+        }}
+      >
+        <div className="px-5 pb-5 pt-1">
+          <div className="h-px bg-[#0C3058]/10 mb-3" />
+          <p className="text-sm text-slate-600 font-normal leading-relaxed m-0">
+            {answer}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function FAQ({ initialFaqs = [] }) {
   const faqsList = Array.isArray(initialFaqs) ? initialFaqs : [];
   const [openIdx, setOpenIdx] = useState(null);
@@ -13,83 +78,35 @@ export function FAQ({ initialFaqs = [] }) {
   return (
     <section
       id="faqs"
-      className="py-16 scroll-mt-10 md:py-24 bg-white overflow-hidden"
+      className="py-14 sm:py-18 scroll-mt-10 bg-white overflow-hidden"
     >
       <Container className="max-w-7xl">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
-          {/* Left Column: Heading and description */}
-          <div className="lg:col-span-5 flex flex-col items-start">
-            <h2 className="text-5xl md:text-[64px] font-extrabold text-[#1d3557] tracking-tight leading-none">
-              FAQs
-            </h2>
-            <h3 className="text-xl md:text-[22px] font-bold text-[#1d3557] mt-4 leading-tight">
-              Frequently Asked Question
-            </h3>
-            <p className="text-gray-500 font-medium mt-3 text-sm md:text-[14px] leading-relaxed max-w-sm">
-              Still deciding? Book a no-pressure call and we&apos;ll map the
-              right path with you.
-            </p>
-          </div>
+        <div className="flex flex-col items-center text-center pb-10">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#0C3058] leading-tight tracking-tight">
+            Frequently Asked Questions
+          </h2>
+          <p className="text-slate-500 font-medium mt-2.5 text-sm sm:text-base leading-relaxed">
+            Still deciding? Book a no-pressure call and we&apos;ll map the right path with you.
+          </p>
+        </div>
 
-          {/* Right Column: Accordion list */}
-          <div className="lg:col-span-7 flex flex-col space-y-4">
-            {faqsList.map((item, idx) => {
-              const isOpen = openIdx === idx;
-              return (
-                <div
-                  key={idx}
-                  className="border border-slate-200 rounded-2xl overflow-hidden transition-all duration-200"
-                >
-                  <button
-                    type="button"
-                    onClick={() => toggle(idx)}
-                    className="w-full flex items-center justify-between p-5 md:p-6 text-left bg-white hover:bg-slate-50 transition-colors cursor-pointer gap-4"
-                  >
-                    <span className="font-bold text-[#1d3557] text-sm md:text-base leading-snug">
-                      {item.q}
-                    </span>
-                    <div className="shrink-0 text-slate-400">
-                      {isOpen ? (
-                        <svg
-                          className="w-5 h-5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          strokeWidth="2.5"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M20 12H4"
-                          />
-                        </svg>
-                      ) : (
-                        <svg
-                          className="w-5 h-5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          strokeWidth="2.5"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M12 4v16m8-8H4"
-                          />
-                        </svg>
-                      )}
-                    </div>
-                  </button>
+        {/* Accordion list */}
+        <div className="space-y-3.5 max-w-7xl mx-auto">
+          {faqsList.map((item, idx) => {
+            const rawQ = item.q || item.question || "";
+            const hasNumber = /^\d+[\.\)]\s*/.test(rawQ);
+            const questionText = hasNumber ? rawQ : `${idx + 1}. ${rawQ}`;
 
-                  {isOpen && (
-                    <div className="px-5 pb-6 md:px-6 md:pb-6 text-gray-600 text-xs md:text-sm leading-relaxed border-t border-slate-100 pt-4 bg-slate-50/50">
-                      {item.a}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+            return (
+              <FAQAccordionItem
+                key={idx}
+                question={questionText}
+                answer={item.a || item.answer}
+                isOpen={openIdx === idx}
+                onToggle={() => toggle(idx)}
+              />
+            );
+          })}
         </div>
       </Container>
     </section>
