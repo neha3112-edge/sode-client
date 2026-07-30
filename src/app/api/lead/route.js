@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { API_BASE_URL } from "@/config/api";
 
 /*
 |--------------------------------------------------------------------------
@@ -174,182 +175,48 @@ export async function POST(req) {
     const finalPayload = {
       full_name: String(name).trim(),
       name: String(name).trim(),
-
       email: email ? String(email).trim() : "",
-
       phone: cleanPhone,
-
       course: course || "",
-
       state: state || "",
-
       form_name: form_name || "Default Form",
-
       source: source || "SODE",
-
       sub_source: sub_source || "",
-
       utm_source: finalUtmSource,
-
       utm_medium: finalUtmMedium,
-
       utm_term: finalUtmTerm,
-
       utm_campaign: finalUtmCampaign,
-
       utm_content: finalUtmContent,
-
       page_url: page_url || "Unknown",
-
       ip_address: userIp,
     };
 
-    const secondaryCrmUrl = process.env.SECONDARY_CRM_URL;
-    const secondaryCrmApiKey = process.env.SECONDARY_CRM_API_KEY;
-    const gallaboxWebhookUrl = process.env.GALLABOX_WEBHOOK_URL;
-    const brevoApiKey = process.env.BREVO_API_KEY;
-    const brevoListId = Number(process.env.BREVO_LIST_ID) || 217;
-
-    const shouldSubmitToGoogleSheets =
-      finalPayload.source === "IIITB LP" ||
-      finalPayload.form_name.includes("IIITB") ||
-      finalPayload.form_name.includes("Coupon Form") ||
-      finalPayload.form_name.includes("Compare University Form");
-
     /*
     |--------------------------------------------------------------------------
-    | Fire all external API calls in PARALLEL (Promise.allSettled)
-    | Sequential calls would take ~4s total; parallel takes ~1s
+    | Send to backend ApiConfig Executor
     |--------------------------------------------------------------------------
     */
 
-    const tasks = [];
+    const backendEndpoint = `${API_BASE_URL}apiconfig/execute`;
 
-    /* 1. Secondary CRM */
-    if (secondaryCrmUrl && secondaryCrmApiKey) {
-      tasks.push(
-        fetch(secondaryCrmUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-api-key": secondaryCrmApiKey,
-          },
-          body: JSON.stringify(finalPayload),
-          cache: "no-store",
-        })
-          .then(async (res) => {
-            const text = await res.text();
-            console.log("Secondary CRM Response:", text);
-          })
-          .catch((err) =>
-            console.error("Failed to send lead to Secondary CRM:", err)
-          )
-      );
-    } else {
-      console.warn("SECONDARY_CRM_URL or SECONDARY_CRM_API_KEY missing");
+    const backendResponse = await fetch(backendEndpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        key: "crm_lead_api",
+        payload: finalPayload,
+      }),
+      cache: "no-store",
+    });
+
+    if (!backendResponse.ok) {
+      const errorText = await backendResponse.text();
+      console.error("Backend ApiConfig Execution Error:", errorText);
+      throw new Error(`Backend error: ${backendResponse.status}`);
     }
 
-    /* 2. Gallabox */
-    if (gallaboxWebhookUrl && gallaboxWebhookUrl !== "your_gallabox_webhook_url_here") {
-      tasks.push(
-        fetch(gallaboxWebhookUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: String(name).trim(),
-            phone: phoneWithPlus,
-            email: email || "",
-            course: course || "MBA",
-            state: state || "",
-            source: source || "SODE",
-            tags: ["Success"],
-            utm_source: finalUtmSource,
-            utm_medium: finalUtmMedium,
-            utm_campaign: finalUtmCampaign,
-            utm_term: finalUtmTerm,
-            utm_content: finalUtmContent,
-          }),
-          cache: "no-store",
-        })
-          .then(async (res) => {
-            if (!res.ok) {
-              console.error("Gallabox Webhook error:", await res.text());
-            } else {
-              console.log("Lead successfully submitted to Gallabox");
-            }
-          })
-          .catch((err) =>
-            console.error("Failed to send lead to Gallabox:", err)
-          )
-      );
-    }
-
-    /* 3. Brevo */
-    if (brevoApiKey && brevoApiKey !== "your_brevo_api_key_here") {
-      tasks.push(
-        fetch("https://api.brevo.com/v3/contacts", {
-          method: "POST",
-          headers: {
-            "api-key": brevoApiKey,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: email || undefined,
-            listIds: [brevoListId],
-            attributes: {
-              FULLNAME: String(name).trim(),
-              SMS: phoneWithPlus,
-              MOBILE: phoneWithPlus,
-              COURSES: course || "MBA",
-              STATES: state || "",
-              UTM_SOURCE: finalUtmSource,
-              UTM_CAMPAIGN: finalUtmCampaign,
-              UTM_MEDIUM: finalUtmMedium,
-              UTM_TERM: finalUtmTerm,
-              SOURCE: source || "SODE",
-            },
-            updateEnabled: true,
-          }),
-          cache: "no-store",
-        })
-          .then(async (res) => {
-            if (!res.ok) {
-              console.error("Brevo API error:", await res.text());
-            } else {
-              console.log("Lead successfully submitted to Brevo");
-            }
-          })
-          .catch((err) => console.error("Failed to send lead to Brevo:", err))
-      );
-    }
-
-    /* 4. Google Sheets (conditional) */
-    if (shouldSubmitToGoogleSheets) {
-      tasks.push(
-        fetch(
-          "https://script.google.com/macros/s/AKfycbwCXWFhWQAxt0tR-JOK-6cGBK4MjkiDGSYsxUlcVWjlpJeqJKv5V6a0fm7i9EZFeTV7hw/exec",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(finalPayload),
-            cache: "no-store",
-          }
-        )
-          .then(async (res) => {
-            if (!res.ok) {
-              console.error("Google Sheets error:", await res.text());
-            } else {
-              console.log("Lead successfully submitted to Google Sheets");
-            }
-          })
-          .catch((err) =>
-            console.error("Failed to send lead to Google Sheets:", err)
-          )
-      );
-    }
-
-    /* Wait for all tasks — any failure is logged but won't block response */
-    await Promise.allSettled(tasks);
+    const backendResult = await backendResponse.json();
+    console.log("Lead successfully executed via backend apiConfig:", backendResult);
 
     /*
     |--------------------------------------------------------------------------

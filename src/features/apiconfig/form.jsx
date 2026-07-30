@@ -1,10 +1,20 @@
 "use strict";
 
 import React from "react";
-import { Form, Input, InputNumber, Select, Switch, Row, Col, Card, Button } from "antd";
+import { Form, Input, InputNumber, Select, Switch, Row, Col, Card, Button, AutoComplete } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 
 export default function ApiConfigForm({ isUpdateForm = false }) {
+  const form = Form.useFormInstance();
+  const availableVars = Form.useWatch("availableVariables", form) || [];
+  
+  const variableOptions = availableVars
+    .filter(v => v && v.key)
+    .map(v => ({
+      value: v.key,
+      label: v.description ? `${v.key} (${v.description})` : v.key
+    }));
+
   return (
     <div className="space-y-4">
       {/* 1️⃣ Basic Configuration */}
@@ -101,7 +111,13 @@ export default function ApiConfigForm({ isUpdateForm = false }) {
           </Col>
           <Col span={16}>
             <Form.Item name="apiKey" label="x-api-key / Authorization Value">
-              <Input.Password placeholder="e.g. a04b4291461f8b060559dfc965864c2c259..." />
+              <Input.Password 
+                autoComplete="new-password" 
+                data-lpignore="true" 
+                data-1p-ignore="true"
+                data-form-type="other"
+                placeholder="e.g. a04b4291461f8b060559dfc965864c2c259..." 
+              />
             </Form.Item>
           </Col>
         </Row>
@@ -179,7 +195,14 @@ export default function ApiConfigForm({ isUpdateForm = false }) {
                   </Col>
                   <Col span={12}>
                     <Form.Item {...restField} name={[name, "value"]} className="m-0">
-                      <Input placeholder="Parameter Value (e.g. abhishekte, SODE, Organic, Telangana)" />
+                      <AutoComplete
+                        options={variableOptions}
+                        placeholder="Value (e.g. {{full_name}}, {{email}} or static)"
+                        filterOption={(inputValue, option) =>
+                          option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1 ||
+                          (option.label && option.label.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1)
+                        }
+                      />
                     </Form.Item>
                   </Col>
                   <Col span={2}>
@@ -201,6 +224,61 @@ export default function ApiConfigForm({ isUpdateForm = false }) {
                   className="border-green-400 text-green-700 hover:text-green-800 font-semibold"
                 >
                   + Add Body Parameter
+                </Button>
+              </Form.Item>
+            </>
+          )}
+        </Form.List>
+      </Card>
+
+      {/* 3.5️⃣ Available Dynamic Variables (Documentation for Admin) */}
+      <Card title="Available Dynamic Variables" size="small" className="bg-slate-50 border-slate-200 mt-4">
+        <label className="block text-xs font-bold text-slate-600 mb-2">
+          Define variables that can be used in Headers or Body Parameters (+ Add Variable):
+        </label>
+        <p className="text-xs text-slate-500 mb-3">
+          Document the payload keys that this API Config expects (e.g. <code>{`{{full_name}}`}</code>, <code>{`{{email}}`}</code>) so the admin knows what to use in the values above.
+        </p>
+
+        <Form.List name="availableVariables">
+          {(fields, { add, remove }) => (
+            <>
+              {fields.map(({ key, name, ...restField }) => (
+                <Row key={key} gutter={12} className="mb-2 items-center">
+                  <Col span={10}>
+                    <Form.Item
+                      {...restField}
+                      name={[name, "key"]}
+                      className="m-0"
+                      rules={[{ required: true, message: "Variable key required" }]}
+                    >
+                      <Input placeholder="Variable Key (e.g. {{email}})" />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item {...restField} name={[name, "description"]} className="m-0">
+                      <Input placeholder="Description (e.g. Lead's email address)" />
+                    </Form.Item>
+                  </Col>
+                  <Col span={2}>
+                    <Button
+                      type="text"
+                      danger
+                      icon={<DeleteOutlined />}
+                      onClick={() => remove(name)}
+                    />
+                  </Col>
+                </Row>
+              ))}
+              <Form.Item className="m-0 mt-2">
+                <Button
+                  type="dashed"
+                  onClick={() => add()}
+                  block
+                  icon={<PlusOutlined />}
+                  className="border-purple-400 text-purple-700 hover:text-purple-800 font-semibold"
+                >
+                  + Add Available Variable
                 </Button>
               </Form.Item>
             </>
