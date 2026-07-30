@@ -77,6 +77,276 @@ function OfferingHeader({ fieldName, universityOptions, onRemove }) {
 }
 
 /**
+ * Advanced Sections for Subcourse
+ */
+function AdvancedSubcourseSections({ namePrefix, restField }) {
+  const getPath = (field) => [namePrefix, ...field];
+  const { TextArea } = Input;
+
+  const advancedItems = [
+    {
+      key: "overview",
+      label: "1. Overview & Why Choose",
+      children: (
+        <div className="space-y-4">
+          <Form.Item {...restField} name={getPath(["overviewTitle"])} label="Overview Title">
+            <Input placeholder="e.g. Build Future-Ready HR Skills" />
+          </Form.Item>
+          <Form.Item {...restField} name={getPath(["overviewDescription"])} label="Overview Description">
+            <TextArea rows={3} placeholder="Course overview text..." />
+          </Form.Item>
+          <Form.Item {...restField} name={getPath(["whyChooseTitle"])} label="Why Choose Title">
+            <Input placeholder="e.g. Why Choose IIM Kozhikode?" />
+          </Form.Item>
+          <Form.Item {...restField} name={getPath(["whyChooseDescription"])} label="Why Choose Description">
+            <TextArea rows={3} placeholder="Why choose description..." />
+          </Form.Item>
+        </div>
+      ),
+    },
+    {
+      key: "skills",
+      label: "2. Skills & Curriculum",
+      children: (
+        <div className="space-y-4">
+          <Form.Item {...restField} name={getPath(["skillsSection", "title"])} label="Section Title">
+            <Input placeholder="e.g. Skills You'll Learn & Curriculum" />
+          </Form.Item>
+          <Form.Item {...restField} name={getPath(["skillsSection", "description"])} label="Section Description">
+            <TextArea rows={2} placeholder="Description for skills section..." />
+          </Form.Item>
+          
+          <Divider plain className="my-2">Skills You'll Gain</Divider>
+          <Form.List name={getPath(["skillsSection", "skillsGain"])}>
+            {(fields, { add, remove }) => (
+              <div className="space-y-2">
+                {fields.map((field) => (
+                  <div key={field.key} className="flex gap-2">
+                    <Form.Item {...(({ key, ...rest }) => rest)(field)} noStyle>
+                      <Input placeholder="e.g. HR Analytics" />
+                    </Form.Item>
+                    <Button danger icon={<DeleteOutlined />} onClick={() => remove(field.name)} />
+                  </div>
+                ))}
+                <Button type="dashed" onClick={() => add()} block size="small">+ Add Skill</Button>
+              </div>
+            )}
+          </Form.List>
+
+          <Divider plain className="my-2">Curriculum Overview</Divider>
+          <Form.List name={getPath(["skillsSection", "curriculumOverview"])}>
+            {(fields, { add, remove }) => (
+              <div className="space-y-2">
+                {fields.map((field) => (
+                  <div key={field.key} className="flex gap-2">
+                    <Form.Item {...(({ key, ...rest }) => rest)(field)} noStyle>
+                      <Input placeholder="e.g. Module 1: Introduction" />
+                    </Form.Item>
+                    <Button danger icon={<DeleteOutlined />} onClick={() => remove(field.name)} />
+                  </div>
+                ))}
+                <Button type="dashed" onClick={() => add()} block size="small">+ Add Module</Button>
+              </div>
+            )}
+          </Form.List>
+        </div>
+      ),
+    },
+    {
+      key: "learning",
+      label: "3. Learning Experience",
+      children: (
+        <div className="space-y-4">
+          <Form.Item {...restField} name={getPath(["learningExperience", "title"])} label="Section Title">
+            <Input placeholder="e.g. Interactive & Flexible Learning" />
+          </Form.Item>
+          <Form.Item {...restField} name={getPath(["learningExperience", "description"])} label="Section Description">
+            <TextArea rows={2} placeholder="Description..." />
+          </Form.Item>
+          
+          <Divider plain className="my-2">Learning Features</Divider>
+          <Form.List name={getPath(["learningExperience", "learningFeatures"])}>
+            {(fields, { add, remove }) => (
+              <div className="space-y-2">
+                {fields.map((field) => (
+                  <div key={field.key} className="flex gap-2">
+                    <Form.Item {...(({ key, ...rest }) => rest)(field)} noStyle>
+                      <Input placeholder="e.g. Live Online Interactive Classes" />
+                    </Form.Item>
+                    <Button danger icon={<DeleteOutlined />} onClick={() => remove(field.name)} />
+                  </div>
+                ))}
+                <Button type="dashed" onClick={() => add()} block size="small">+ Add Feature</Button>
+              </div>
+            )}
+          </Form.List>
+        </div>
+      ),
+    },
+    {
+      key: "institute",
+      label: "4. Institute & Certificate",
+      children: (
+        <div className="space-y-4">
+          <Form.Item {...restField} name={getPath(["instituteSection", "title"])} label="Section Title">
+            <Input placeholder="e.g. Learn from Premier Institute" />
+          </Form.Item>
+          <Form.Item {...restField} name={getPath(["instituteSection", "description"])} label="Section Description">
+            <TextArea rows={2} placeholder="Description..." />
+          </Form.Item>
+          <Form.Item {...restField} name={getPath(["instituteSection", "certificateTitle"])} label="Certificate Title">
+            <Input placeholder="e.g. Earn a Prestigious Certificate" />
+          </Form.Item>
+          <Form.Item {...restField} name={getPath(["instituteSection", "certificateDescription"])} label="Certificate Description">
+            <TextArea rows={2} placeholder="Description..." />
+          </Form.Item>
+          
+          <Divider plain className="my-2">Why It Matters</Divider>
+          <Form.List name={getPath(["instituteSection", "whyItMatters"])}>
+            {(fields, { add, remove }) => (
+              <div className="space-y-2">
+                {fields.map((field) => (
+                  <div key={field.key} className="flex gap-2">
+                    <Form.Item {...(({ key, ...rest }) => rest)(field)} noStyle>
+                      <Input placeholder="e.g. Recognized by Employers" />
+                    </Form.Item>
+                    <Button danger icon={<DeleteOutlined />} onClick={() => remove(field.name)} />
+                  </div>
+                ))}
+                <Button type="dashed" onClick={() => add()} block size="small">+ Add Reason</Button>
+              </div>
+            )}
+          </Form.List>
+        </div>
+      ),
+    },
+    {
+      key: "career",
+      label: "5. Career Opportunities",
+      children: (
+        <div className="space-y-4">
+          <Form.Item {...restField} name={getPath(["careerSection", "title"])} label="Section Title">
+            <Input placeholder="e.g. Advance Your Career" />
+          </Form.Item>
+          <Form.Item {...restField} name={getPath(["careerSection", "description"])} label="Section Description">
+            <TextArea rows={2} placeholder="Description..." />
+          </Form.Item>
+          
+          <Divider plain className="my-2">Job Roles</Divider>
+          <Form.List name={getPath(["careerSection", "careerOpportunities"])}>
+            {(fields, { add, remove }) => (
+              <div className="space-y-2">
+                {fields.map((field) => (
+                  <div key={field.key} className="flex gap-2">
+                    <Form.Item {...(({ key, ...rest }) => rest)(field)} noStyle>
+                      <Input placeholder="e.g. HR Analyst" />
+                    </Form.Item>
+                    <Button danger icon={<DeleteOutlined />} onClick={() => remove(field.name)} />
+                  </div>
+                ))}
+                <Button type="dashed" onClick={() => add()} block size="small">+ Add Role</Button>
+              </div>
+            )}
+          </Form.List>
+          
+          <Divider plain className="my-2">Industries Hiring</Divider>
+          <Form.List name={getPath(["careerSection", "industriesHiring"])}>
+            {(fields, { add, remove }) => (
+              <div className="space-y-2">
+                {fields.map((field) => (
+                  <div key={field.key} className="flex gap-2">
+                    <Form.Item {...(({ key, ...rest }) => rest)(field)} noStyle>
+                      <Input placeholder="e.g. Information Technology" />
+                    </Form.Item>
+                    <Button danger icon={<DeleteOutlined />} onClick={() => remove(field.name)} />
+                  </div>
+                ))}
+                <Button type="dashed" onClick={() => add()} block size="small">+ Add Industry</Button>
+              </div>
+            )}
+          </Form.List>
+        </div>
+      ),
+    },
+    {
+      key: "fee",
+      label: "6. Fee & Finance Options",
+      children: (
+        <div className="space-y-4">
+          <Form.Item {...restField} name={getPath(["feeSection", "title"])} label="Section Title">
+            <Input placeholder="e.g. Flexible Fee Options" />
+          </Form.Item>
+          <Form.Item {...restField} name={getPath(["feeSection", "description"])} label="Section Description">
+            <TextArea rows={2} placeholder="Description..." />
+          </Form.Item>
+          <Form.Item {...restField} name={getPath(["feeSection", "footerNote"])} label="Footer Note">
+            <Input placeholder="e.g. Need help with fees? Speak with counsellors..." />
+          </Form.Item>
+          
+          <Divider plain className="my-2">Financial Support Options</Divider>
+          <Form.List name={getPath(["feeSection", "financialSupport"])}>
+            {(fields, { add, remove }) => (
+              <div className="space-y-2">
+                {fields.map((field) => (
+                  <div key={field.key} className="flex gap-2">
+                    <Form.Item {...(({ key, ...rest }) => rest)(field)} noStyle>
+                      <Input placeholder="e.g. Affordable EMI Options" />
+                    </Form.Item>
+                    <Button danger icon={<DeleteOutlined />} onClick={() => remove(field.name)} />
+                  </div>
+                ))}
+                <Button type="dashed" onClick={() => add()} block size="small">+ Add Option</Button>
+              </div>
+            )}
+          </Form.List>
+        </div>
+      ),
+    },
+    {
+      key: "faq",
+      label: "7. FAQs",
+      children: (
+        <div className="space-y-4">
+          <Form.Item {...restField} name={getPath(["faqSection", "title"])} label="Section Title">
+            <Input placeholder="e.g. Frequently Asked Questions" />
+          </Form.Item>
+          <Form.List name={getPath(["faqSection", "faqs"])}>
+            {(fields, { add, remove }) => (
+              <div className="space-y-4">
+                {fields.map((field) => (
+                  <div key={field.key} className="border border-slate-200 p-3 rounded-md space-y-2 relative">
+                    <Button danger icon={<DeleteOutlined />} size="small" className="absolute top-2 right-2" onClick={() => remove(field.name)} />
+                    <Form.Item {...(({ key, ...rest }) => rest)(field)} name={[field.name, "question"]} label="Question" className="mb-0 pr-8">
+                      <Input placeholder="e.g. Who is eligible?" />
+                    </Form.Item>
+                    <Form.Item {...(({ key, ...rest }) => rest)(field)} name={[field.name, "answer"]} label="Answer" className="mb-0">
+                      <TextArea rows={2} placeholder="Answer text..." />
+                    </Form.Item>
+                  </div>
+                ))}
+                <Button type="dashed" onClick={() => add()} block size="small">+ Add FAQ</Button>
+              </div>
+            )}
+          </Form.List>
+        </div>
+      ),
+    },
+  ];
+
+  return (
+    <div className="mt-4 border-t border-slate-100 pt-3">
+      <h4 className="text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">Dynamic Page Sections</h4>
+      <Collapse
+        accordion
+        items={advancedItems}
+        size="small"
+        className="bg-white"
+      />
+    </div>
+  );
+}
+
+/**
  * Live Specialization Accordion Header
  */
 function SpecializationHeader({ fieldName, subcourseOptions, parentFieldName, onRemove }) {
@@ -514,6 +784,12 @@ export default function CourseForm({ isUpdateForm = false, form: propForm }) {
                                     >
                                       <Input placeholder="Short tagline for specialization..." />
                                     </Form.Item>
+                                    
+                                    {/* Advanced Sections */}
+                                    <AdvancedSubcourseSections 
+                                      namePrefix={subField.name} 
+                                      restField={restSubField} 
+                                    />
                                   </div>
                                 ),
                               };

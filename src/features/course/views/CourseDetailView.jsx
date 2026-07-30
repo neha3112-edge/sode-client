@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Button, Breadcrumb, Spin } from "antd";
 import {
@@ -31,224 +31,16 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import FormWrapper from "@/components/forms/FormWrapper";
+import NotFoundPage from "@/components/website/NotFoundPage";
 import { getAssetPath } from "@/lib/utils";
 import { useFormModal } from "@/context/FormModalContext";
 
-/* ─────────────────────────────────────────────────────────────
-   BANNER_IMAGES — JSON config for right-side hero card images.
-   Key  : course slug (string)
-   Value: absolute URL or path to the banner image
-   Use  : Add/update entries here to change banner per course.
-   "default" is used when no slug match is found.
-───────────────────────────────────────────────────────────── */
-const BANNER_IMAGES = {
-  // Example entries — replace slugs and URLs as needed:
-  // "executive-development-programme-in-human-resource-management": "/assets/images/banners/hrm-banner.webp",
-  // "post-graduate-diploma-in-management": "/assets/images/banners/pgdm-banner.webp",
 
-  // ── Default fallback image (shown when no slug matches) ──
-  default: "/media/images/2026/07/28/01abe8d532ba5872f3a6cdab896b9ccd.png",
-};
 
 /* ─────────────────────────────────────────────────────────────
-   COURSE_CONTENT — Static JSON for all page content sections.
-   Key  : course slug (string)
-   Each entry has: overviewTitle, overviewDescription, courseSnapshot,
-                   whyChooseTitle, whyChooseDescription, keyHighlights,
-                   whoCanApply, admissionProcess, courseSnapshotBottom
-   "default" is used when no slug match is found.
+   Course content is now loaded dynamically from the CMS via SSR.
 ───────────────────────────────────────────────────────────── */
-const COURSE_CONTENT = {
-  "executive-development-programme-in-human-resource-management": {
-    overviewTitle: "Build Future-Ready HR Leadership Skills with IIM Kozhikode",
-    overviewDescription:
-      "Transform your HR career with the IIM Kozhikode HR Analytics Course, designed to help professionals master people analytics, workforce planning, and strategic HR decision-making. Learn through live online sessions, industry case studies, and practical projects while earning a prestigious certificate from IIM Kozhikode.",
-    courseSnapshot: [
-      { icon: BankOutlined, label: "Institute", value: "IIM Kozhikode" },
-      { icon: ApartmentOutlined, label: "Programme", value: "Professional Certificate Programme" },
-      { icon: ClockCircleFilled, label: "Duration", value: "6 Months" },
-      { icon: LaptopOutlined, label: "Learning Mode", value: "Live Online" },
-      { icon: SafetyCertificateOutlined, label: "Certificate from IIM Kozhikode", value: null },
-      { icon: CreditCardOutlined, label: "EMI Options Available", value: null },
-      { icon: TeamOutlined, label: "Expert Faculty", value: null },
-      { icon: BookOutlined, label: "Industry-Relevant Curriculum", value: null },
-    ],
-    whyChooseTitle: "Why Choose the IIM Kozhikode HR Analytics Course?",
-    whyChooseDescription:
-      "The IIM Kozhikode HR Analytics Course is designed for professionals who want to combine HR expertise with data-driven decision-making. The programme equips learners with practical knowledge of HR analytics, workforce planning, talent management, and business strategy through live classes, real-world case studies, and hands-on learning. Whether you're looking to advance in HR or transition into analytics-focused roles, this programme helps you build industry-relevant skills that organizations value.",
-    keyHighlights: [
-      "Learn from IIM Kozhikode's industry-focused curriculum",
-      "Live online sessions with experienced faculty",
-      "Real-world HR case studies and practical assignments",
-      "Hands-on capstone project",
-      "Flexible learning for working professionals",
-      "Prestigious IIM Kozhikode certificate",
-      "Practical HR analytics and people analytics skills",
-      "Career-focused learning approach",
-    ],
-    whoCanApply: [
-      "Working HR professionals seeking career advancement",
-      "Graduates aspiring to enter HR domain",
-      "Business managers handling people functions",
-      "Entrepreneurs managing workforce decisions",
-    ],
-    admissionProcess: [
-      "Fill online application form",
-      "Speak with academic counsellor",
-      "Submit documents & pay fee",
-      "Get admission confirmation",
-    ],
-    courseSnapshotBottom: [
-      { label: "Duration", value: "6 Months" },
-      { label: "Mode", value: "Live Online" },
-      { label: "Learning Format", value: "Interactive Sessions" },
-      { label: "Projects", value: "Capstone Project" },
-      { label: "Certificate", value: "IIM Kozhikode" },
-      { label: "EMI", value: "Available" },
-    ],
-    skillsSection: {
-      title: "Skills You'll Learn & Curriculum",
-      description: "The curriculum is carefully designed to help learners understand modern HR practices while building analytical capabilities. Covering everything from HR fundamentals to workforce analytics and business insights, the programme combines theory with practical applications so learners can confidently solve real workplace challenges.",
-      skillsGain: [
-        "HR Analytics",
-        "People Analytics",
-        "Workforce Planning",
-        "HR Metrics & KPIs",
-        "Talent Acquisition Analytics",
-        "Employee Performance Analytics",
-        "Strategic HR Management",
-        "HR Dashboards",
-        "Business Decision-Making",
-        "Leadership & Organizational Effectiveness",
-      ],
-      curriculumOverview: [
-        "Module 1 – HR Management Fundamentals",
-        "Module 2 – Introduction to HR Analytics",
-        "Module 3 – Workforce Planning & Talent Analytics",
-        "Module 4 – Performance & Compensation Analytics",
-        "Module 5 – Employee Engagement & Retention",
-        "Module 6 – HR Dashboards & Business Insights",
-        "Module 7 – Capstone Project",
-      ],
-    },
-    learningExperience: {
-      title: "An Interactive & Flexible Learning Experience",
-      description: "Learn from anywhere without interrupting your professional commitments. The programme combines live faculty sessions with recorded lectures, industry projects, and collaborative learning to provide a practical and engaging educational experience.",
-      learningFeatures: [
-        "Live Online Interactive Classes",
-        "Recorded Sessions for Revision",
-        "Industry Case Studies",
-        "Practical Assignments",
-        "Capstone Project",
-        "Peer Learning Opportunities",
-        "Faculty Guidance",
-        "Dedicated Student Support",
-        "Flexible Weekend Learning",
-      ],
-    },
-    instituteSection: {
-      title: "Learn from One of India's Premier Management Institutes",
-      description: "IIM Kozhikode is recognized for academic excellence, innovative management education, and industry-oriented programmes. This programme reflects the institute's commitment to preparing professionals with future-ready business and leadership skills.",
-      certificateTitle: "Earn a Prestigious Certificate",
-      certificateDescription: "Upon successful completion, participants receive a Professional Certificate in HR Management & Analytics from IIM Kozhikode, adding credibility to their professional profile and demonstrating expertise in modern HR practices.",
-      certificateImage: "/media/images/2026/07/30/1a4f40f078b735f63422aad57d0c3ca3.webp",
-      whyItMatters: [],
-    },
-    careerSection: {
-      title: "Advance Your Career with In-Demand HR Analytics Skills",
-      description: "Organizations are increasingly seeking HR professionals who can use data to improve workforce performance and business outcomes. This programme prepares learners with practical HR analytics knowledge that can support career growth across multiple industries and organizational functions.",
-      careerOpportunities: [
-        "HR Analyst",
-        "People Analytics Specialist",
-        "HR Business Partner",
-        "Talent Acquisition Manager",
-        "Workforce Planning Analyst",
-        "Learning & Development Manager",
-        "HR Operations Manager",
-        "HR Manager",
-      ],
-      industriesHiring: [
-        "Information Technology",
-        "Consulting",
-        "BFSI",
-        "Healthcare",
-        "Manufacturing",
-        "Retail",
-        "E-commerce",
-        "Startups",
-      ],
-    },
-    feeSection: {
-      title: "Flexible Fee & Payment Options",
-      description: "Invest in your professional growth with flexible payment plans that make quality education more accessible. Learners can explore EMI options and available financial assistance while receiving guidance from programme advisors throughout the enrollment process.",
-      financialSupport: [
-        "Affordable EMI Options",
-        "Flexible Payment Plans",
-        "Scholarship Support (If Applicable)",
-        "Corporate Sponsorship Assistance",
-        "Dedicated Admission Guidance",
-      ],
-      footerNote: "Need help with fees? Speak with our admission counsellors for the latest fee structure, scholarships, and EMI options.",
-    },
-    faqSection: {
-      title: "Frequently Asked Questions (FAQs)",
-      faqs: [
-        {
-          question: "1. Who is eligible for this programme?",
-          answer: "The programme is designed for working professionals who want to build expertise in HR Management and HR Analytics. Applicants should have a Bachelor's degree with at least 2 years of work experience, or a Master's degree. Admission is based on the application review and the programme's selection criteria.",
-        },
-        {
-          question: "2. Is the course fully online?",
-          answer: "Yes. The programme is delivered in a fully online learning format, making it convenient for working professionals. It includes self-paced learning, interactive live sessions, industry-led discussions, case studies, projects, and doubt-resolution sessions that can be accessed remotely.",
-        },
-        {
-          question: "3. Will I receive a certificate from IIM Kozhikode?",
-          answer: "Yes. Upon successfully completing the programme and meeting all academic requirements, learners receive a Professional Certificate Programme in HR Management and Analytics from IIM Kozhikode. The programme also includes additional industry-recognized certifications, where applicable.",
-        },
-        {
-          question: "4. What is the duration of the programme?",
-          answer: "The programme is 6 months long and is structured for working professionals. Learners are generally expected to dedicate 6–8 hours per week to lectures, assignments, projects, and live sessions.",
-        },
-        {
-          question: "5. Are live classes recorded?",
-          answer: "Yes. Live sessions are conducted by faculty and industry experts, and recordings are generally made available so learners can revisit the content or catch up on missed sessions at their convenience.",
-        },
-        {
-          question: "6. Is EMI available?",
-          answer: "Yes. The programme offers No Cost EMI and flexible financing options through leading banking partners, making it easier for learners to pay the programme fee in affordable monthly installments, subject to eligibility and bank terms.",
-        },
-        {
-          question: "7. How do I apply?",
-          answer: "You can apply online by submitting the application form. The admissions team reviews your educational background and work experience. If shortlisted, you will receive an offer letter, after which you can confirm your admission by paying the seat-blocking amount and completing the enrollment process.",
-        },
-        {
-          question: "8. Will I receive career guidance?",
-          answer: "Yes. The programme provides comprehensive career support, including 1:1 career coaching, AI-powered profile building, interview preparation, career readiness modules, networking opportunities, mock interviews, and post-programme career support to help learners advance their careers.",
-        },
-      ],
-    },
-  },
 
-  // ── Add more course slugs below ──
-
-  default: {
-    overviewTitle: "",
-    overviewDescription: "",
-    courseSnapshot: [],
-    whyChooseTitle: "",
-    whyChooseDescription: "",
-    keyHighlights: [],
-    whoCanApply: [],
-    admissionProcess: [],
-    courseSnapshotBottom: [],
-    skillsSection: { title: "", description: "", skillsGain: [], curriculumOverview: [] },
-    learningExperience: { title: "", description: "", learningFeatures: [] },
-    instituteSection: { title: "", description: "", certificateTitle: "", certificateDescription: "", certificateImage: "", whyItMatters: [] },
-    careerSection: { title: "", description: "", careerOpportunities: [], industriesHiring: [] },
-    feeSection: { title: "", description: "", financialSupport: [], footerNote: "" },
-    faqSection: { title: "", faqs: [] },
-  },
-};
 
 /* ─────────────────────────────────────────────────────────────
    FAQItem: controlled accordion item with smooth max-height animation
@@ -410,54 +202,17 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
   const slug = propSlug || params?.slug;
   const { openFormModal } = useFormModal();
 
-  const [course, setCourse] = useState(initialCourse || null);
-  const [loading, setLoading] = useState(!initialCourse);
-  const [activeUniIdx, setActiveUniIdx] = useState(initialCourse && typeof initialCourse.activeOfferingIdx === "number" ? initialCourse.activeOfferingIdx : 0);
-
-  useEffect(() => {
-    if (initialCourse) {
-      setCourse(initialCourse);
-      setLoading(false);
-      if (typeof initialCourse.activeOfferingIdx === "number") {
-        setActiveUniIdx(initialCourse.activeOfferingIdx);
-      } else {
-        setActiveUniIdx(0);
-      }
-    }
-  }, [initialCourse]);
-
-  useEffect(() => {
-    if (!initialCourse && slug) {
-      setLoading(true);
-      fetch(`/api/website/courses/${encodeURIComponent(slug)}`)
-        .then((res) => res.json())
-        .then((json) => {
-          const data = json?.result ?? json;
-          setCourse(data);
-          if (data && typeof data.activeOfferingIdx === "number") {
-            setActiveUniIdx(data.activeOfferingIdx);
-          }
-        })
-        .catch((err) => console.error("Error loading course:", err))
-        .finally(() => setLoading(false));
-    }
-  }, [slug, initialCourse]);
-
-  if (loading) {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center bg-slate-50">
-        <Spin size="large" tip="Loading course details..." />
-      </div>
-    );
-  }
+  const course = initialCourse;
+  const [activeUniIdx, setActiveUniIdx] = useState(course && typeof course.activeOfferingIdx === "number" ? course.activeOfferingIdx : 0);
 
   if (!course) {
     return (
-      <div className="min-h-[50vh] flex flex-col items-center justify-center gap-4 text-center p-8 bg-slate-50">
-        <h2 className="text-2xl font-bold text-slate-800">Course Not Found</h2>
-        <p className="text-slate-500">The requested course could not be retrieved.</p>
-        <Button icon={<ArrowLeftOutlined />} onClick={() => router.push("/courses")}>Return to Courses</Button>
-      </div>
+      <NotFoundPage 
+        title="Course Not Found" 
+        message="We couldn't find the course you're looking for. It might have been moved, renamed, or is currently unavailable."
+        buttonText="Explore All Courses"
+        redirectUrl="/courses"
+      />
     );
   }
 
@@ -502,39 +257,43 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
 
   const domainName = heroSubTitle || course.title || "Management";
 
-  // ── Static content from COURSE_CONTENT JSON (keyed by course slug) ──
-  const staticContent = COURSE_CONTENT[course.slug] || COURSE_CONTENT["default"];
-  const overviewText = staticContent.overviewDescription || heroSub?.content || heroSub?.description || course.description || "";
-  const overviewTitle = staticContent.overviewTitle || "Course Overview";
-  const courseSnapshot = staticContent.courseSnapshot || [];
-  const whyChooseTitle = staticContent.whyChooseTitle || "Why Choose This Course?";
-  const whyChooseDescription = staticContent.whyChooseDescription || "";
-  const highlightsList = staticContent.keyHighlights.length > 0
-    ? staticContent.keyHighlights
-    : ((heroSub && Array.isArray(heroSub.keyHighlights) && heroSub.keyHighlights.length > 0)
-      ? heroSub.keyHighlights
-      : ((heroSub && Array.isArray(heroSub.modules) && heroSub.modules.length > 0) ? heroSub.modules : []));
-  const whoCanApplyList = staticContent.whoCanApply.length > 0
-    ? staticContent.whoCanApply
-    : ((heroSub && Array.isArray(heroSub.whoCanApply) && heroSub.whoCanApply.length > 0) ? heroSub.whoCanApply : []);
-  const admissionProcessList = staticContent.admissionProcess.length > 0
-    ? staticContent.admissionProcess
-    : ((heroSub && Array.isArray(heroSub.admissionProcess) && heroSub.admissionProcess.length > 0) ? heroSub.admissionProcess : []);
-  const courseSnapshotBottom = staticContent.courseSnapshotBottom || [];
-  const skillsSection = staticContent.skillsSection || { title: "", description: "", skillsGain: [], curriculumOverview: [] };
-  const learningExperience = staticContent.learningExperience || { title: "", description: "", learningFeatures: [] };
-  const instituteSection = staticContent.instituteSection || { title: "", description: "", certificateTitle: "", certificateDescription: "", certificateImage: "", whyItMatters: [] };
-  const careerSection = staticContent.careerSection || { title: "", description: "", careerOpportunities: [], industriesHiring: [] };
-  const feeSection = staticContent.feeSection || { title: "", description: "", financialSupport: [], footerNote: "" };
-  const faqSection = staticContent.faqSection || { title: "", faqs: [] };
+  // ── Dynamic content from CMS (heroSub) with fallbacks ──
+  const overviewTitle = heroSub?.overviewTitle || "Course Overview";
+  const overviewText = heroSub?.overviewDescription || heroSub?.content || heroSub?.description || course.description || "";
+  
+  const courseSnapshot = [];
+  if (uniName) courseSnapshot.push({ icon: BankOutlined, label: "Institute", value: uniName });
+  if (heroSub?.title) courseSnapshot.push({ icon: ApartmentOutlined, label: "Programme", value: heroSub.title });
+  if (primaryDuration) courseSnapshot.push({ icon: ClockCircleFilled, label: "Duration", value: primaryDuration });
+  
+  const whyChooseTitle = heroSub?.whyChooseTitle || "Why Choose This Course?";
+  const whyChooseDescription = heroSub?.whyChooseDescription || "";
+  
+  const highlightsList = Array.isArray(heroSub?.keyHighlights) && heroSub.keyHighlights.length > 0 
+    ? heroSub.keyHighlights 
+    : ((heroSub && Array.isArray(heroSub.modules) && heroSub.modules.length > 0) ? heroSub.modules : []);
+    
+  const whoCanApplyList = Array.isArray(heroSub?.whoCanApply) && heroSub.whoCanApply.length > 0 ? heroSub.whoCanApply : [];
+  
+  const admissionProcessList = Array.isArray(heroSub?.admissionProcess) && heroSub.admissionProcess.length > 0 ? heroSub.admissionProcess : [];
+  
+  const courseSnapshotBottom = Array.isArray(heroSub?.courseSnapshotBottom) && heroSub.courseSnapshotBottom.length > 0 
+    ? heroSub.courseSnapshotBottom 
+    : [];
+    
+  const skillsSection = heroSub?.skillsSection || { title: "", description: "", skillsGain: [], curriculumOverview: [] };
+  const learningExperience = heroSub?.learningExperience || { title: "", description: "", learningFeatures: [] };
+  const instituteSection = heroSub?.instituteSection || { title: "", description: "", certificateTitle: "", certificateDescription: "", certificateImage: "", whyItMatters: [] };
+  const careerSection = heroSub?.careerSection || { title: "", description: "", careerOpportunities: [], industriesHiring: [] };
+  const feeSection = heroSub?.feeSection || { title: "", description: "", financialSupport: [], footerNote: "" };
+  const faqSection = heroSub?.faqSection || { title: "", faqs: [] };
 
   const rawLogo = uniObj?.logoSrc?.url || uniObj?.logoSrc;
   const logoUrl = getAssetPath(rawLogo, null);
 
-  // ── Banner image: first look up BANNER_IMAGES JSON by slug, then fallback chain ──
-  const bannerFromJson = BANNER_IMAGES[course.slug] || BANNER_IMAGES["default"];
+  // ── Banner image: sourced from university image or course image ──
   const rawImage = uniObj?.imageSrc?.url || uniObj?.imageSrc || (typeof course.image === "object" ? course.image?.url : course.image);
-  const imageUrl = getAssetPath(rawImage, null) || bannerFromJson;
+  const imageUrl = getAssetPath(rawImage, "/media/images/2026/07/28/01abe8d532ba5872f3a6cdab896b9ccd.png");
 
   return (
     <div className="bg-[#F4F6F9] min-h-screen py-8 px-4 sm:px-6 lg:px-8 font-sans">
@@ -974,184 +733,7 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
               </div>
             )}
 
-            {/* 3. University Offerings & Specializations or Course Curriculum */}
-            {(() => {
-              let isSingleOfferingDuplicate =
-                offerings.length === 1 &&
-                (() => {
-                  const off = offerings[0];
-                  const subList = Array.isArray(off?.subcourses) ? off.subcourses : [];
-                  return (
-                    subList.length === 1 &&
-                    (subList[0].title || subList[0].name || subList[0].subcourse?.title || "")
-                      .trim()
-                      .toLowerCase() === (course.title || "").trim().toLowerCase()
-                  );
-                })();
 
-              if (isSingleOfferingDuplicate) {
-                const singleSub = offerings[0].subcourses[0];
-                const subModules = Array.isArray(singleSub?.modules) ? singleSub.modules : [];
-                if (subModules.length > 0) {
-                  return (
-                    <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
-                      <div>
-                        <h2 className="text-xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2">
-                          <BookFilled className="text-[#00B4D8]" />
-                          Course Curriculum
-                        </h2>
-                      </div>
-                      <div className="space-y-2.5">
-                        {subModules.map((mod, mIdx) => (
-                          <div key={mIdx} className="flex items-start gap-3 py-2.5 border-b border-slate-100 last:border-0 font-medium">
-                            <span className="w-6 h-6 rounded-full bg-[#0C3058] text-white text-[10px] font-extrabold flex items-center justify-center shrink-0 mt-0.5">
-                              {mIdx + 1}
-                            </span>
-                            <div>
-                              <p className="text-xs font-extrabold text-slate-800 m-0">{mod.title}</p>
-                              {mod.description && (
-                                <p className="text-[11px] text-slate-500 m-0 mt-0.5 font-normal leading-relaxed">{mod.description}</p>
-                              )}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  );
-                } else {
-                  return null;
-                }
-              }
-
-              if (offerings.length > 0) {
-                return (
-                  <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden">
-                    {/* Section header */}
-                    <div className="p-6 sm:p-8 border-b border-slate-200">
-                      <h2 className="text-xl sm:text-2xl font-extrabold text-[#0C3058] m-0">
-                        University Offerings &amp; Specializations
-                      </h2>
-                      <p className="text-slate-500 text-sm mt-1 m-0">Select a university partner to explore specializations</p>
-                    </div>
-
-                    {/* University Tab Switcher */}
-                    {offerings.length > 1 && (
-                      <div className="flex gap-2 overflow-x-auto px-6 sm:px-8 pt-5 pb-0">
-                        {offerings.map((off, idx) => {
-                          const tabUni = off.university || {};
-                          const tabLogo = getAssetPath(tabUni?.logoSrc?.url || tabUni?.logoSrc, null);
-                          return (
-                            <button
-                              key={idx}
-                              onClick={() => setActiveUniIdx(idx)}
-                              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-xs font-bold whitespace-nowrap transition-all duration-200 shrink-0 cursor-pointer
-                                ${activeUniIdx === idx
-                                  ? "bg-[#0C3058] text-white border-[#0C3058] shadow-md"
-                                  : "bg-white text-slate-600 border-slate-200 hover:border-[#0C3058] hover:text-[#0C3058]"
-                                }`}
-                            >
-                              {tabLogo && <img src={tabLogo} alt={tabUni.name} className="w-5 h-5 object-contain rounded shrink-0" />}
-                              {tabUni.name || `Option ${idx + 1}`}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    )}
-
-                    {/* Active University Detail */}
-                    {(() => {
-                      const off = offerings[activeUniIdx] || offerings[0];
-                      if (!off) return null;
-                      const uni = off.university || {};
-                      const uniLogo = getAssetPath(uni?.logoSrc?.url || uni?.logoSrc, null);
-                      const fee = off.fee;
-                      const dur = off.duration;
-                      const eligibility = off.eligibility;
-
-                      // Filter specializations list if activeSubcourseSlug is present
-                      const rawSubcoursesList = Array.isArray(off.subcourses) && off.subcourses.length > 0 ? off.subcourses : [];
-                      const subList = rawSubcoursesList.filter(sub => {
-                        if (!course.activeSubcourseSlug) return true;
-                        const sTitle = sub.title || sub.name || sub.subcourse?.title || "";
-                        return slugify(sTitle) === course.activeSubcourseSlug;
-                      });
-
-                      const feeTitle = fee?.title || (fee?.amount ? `₹${Number(fee.amount).toLocaleString("en-IN")}` : null);
-
-                      return (
-                        <div className="p-6 sm:p-8 space-y-6">
-                          {/* University Header */}
-                          <div className="flex items-center justify-between gap-4 flex-wrap bg-slate-50 border border-slate-200 rounded-2xl p-4">
-                            <div className="flex items-center gap-3">
-                              {uniLogo ? (
-                                <img src={uniLogo} alt={uni.name} className="w-14 h-14 object-contain rounded-xl border bg-white p-1.5 shrink-0 shadow-sm" />
-                              ) : (
-                                <div className="w-14 h-14 rounded-xl border bg-slate-100 flex items-center justify-center shrink-0">
-                                  <BankOutlined className="text-2xl text-slate-400" />
-                                </div>
-                              )}
-                              <div>
-                                <h3 className="font-extrabold text-slate-800 text-lg m-0">{uni.name || "University"}</h3>
-                                <div className="flex flex-wrap items-center gap-3 mt-1">
-                                  {dur?.title && (
-                                    <span className="flex items-center gap-1 text-xs font-semibold text-slate-500">
-                                      <ClockCircleFilled className="text-[#FFC107] text-base" /> {dur.title}
-                                    </span>
-                                  )}
-                                  {eligibility?.title && (
-                                    <span className="flex items-center gap-1 text-xs font-semibold text-slate-500">
-                                      <CheckCircleFilled className="text-emerald-500" /> {eligibility.title}
-                                    </span>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                            {feeTitle && (
-                              <div className="text-right shrink-0">
-                                <span className="text-[10px] font-bold text-slate-400 block uppercase tracking-wider">Total Fee</span>
-                                <span className="text-2xl font-extrabold text-[#D81B60]">{feeTitle}</span>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Specialization Cards */}
-                          {subList.length > 0 && (
-                            <div className="space-y-4">
-                              <h4 className="text-sm font-extrabold text-[#0C3058] uppercase tracking-wider flex items-center gap-2 m-0">
-                                <BookFilled className="text-[#00B4D8]" />
-                                Specializations ({subList.length})
-                              </h4>
-
-                              <div className="space-y-4">
-                                {subList.map((sub, sIdx) => {
-                                  if (typeof sub !== "object" || !sub) return null;
-                                  const sTitle = sub.title || sub.name || sub.subcourse?.title || "";
-                                  if (!sTitle) return null;
-                                  return (
-                                    <SpecializationCard
-                                      key={sIdx}
-                                      title={sTitle}
-                                      tagline={sub.shortDescription || ""}
-                                      content={sub.content || sub.description || ""}
-                                      fee={sub.fee?.title || (sub.fee?.amount ? `₹${Number(sub.fee.amount).toLocaleString("en-IN")}` : null)}
-                                      duration={sub.duration?.title || null}
-                                      eligibility={sub.eligibility?.title || null}
-                                      modules={Array.isArray(sub.modules) ? sub.modules : []}
-                                    />
-                                  );
-                                })}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })()}
-                  </div>
-                );
-              }
-
-              return null;
-            })()}
 
             {/* 8. FAQ Section Card */}
             {faqSection.faqs.length > 0 && (
