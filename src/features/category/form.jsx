@@ -1,221 +1,284 @@
 "use client";
 
-import React from "react";
-import { Form, Input, Select, Switch, InputNumber, Row, Col } from "antd";
+import React, { useMemo } from "react";
+import { Form, Input, Select, Switch, InputNumber, Row, Col, Card } from "antd";
 import { useGetDynamicOptionsQuery } from "@/store/redux/dynamic/action";
 
 export default function CategoryForm({ isUpdateForm = false }) {
-  const { data: parentOptions = [], isLoading: isParentsLoading } =
+  const { data: parentData = [], isLoading: isParentsLoading } =
     useGetDynamicOptionsQuery({
       entity: "category",
       endPoint: "options",
     });
 
-  const { data: mediaOptions = [], isLoading: isMediaLoading } =
+  const { data: mediaData = [], isLoading: isMediaLoading } =
     useGetDynamicOptionsQuery({
       entity: "media",
       endPoint: "options",
     });
 
+  const parentOptions = useMemo(() => {
+    const list = Array.isArray(parentData)
+      ? parentData
+      : Array.isArray(parentData?.result)
+      ? parentData.result
+      : [];
+    return list.map((item) => ({
+      label: item.name || item.title || item.label || item._id,
+      value: String(item._id || item.value || item.id),
+    }));
+  }, [parentData]);
+
+  const mediaOptions = useMemo(() => {
+    const list = Array.isArray(mediaData)
+      ? mediaData
+      : Array.isArray(mediaData?.result)
+      ? mediaData.result
+      : [];
+    return list.map((item) => ({
+      label: item.title || item.name || item.fileName || item.label || item._id,
+      value: String(item._id || item.value || item.id),
+    }));
+  }, [mediaData]);
+
+  const singleObjProp = (val) => {
+    if (val === undefined || val === null || val === "") return { value: undefined };
+    if (typeof val === "object" && val !== null) {
+      const resolved = val._id || val.id || val.value || val;
+      return { value: resolved ? String(resolved) : undefined };
+    }
+    return { value: String(val) };
+  };
+
+  const singleObjEvent = (val) => {
+    if (val === undefined || val === null || val === "") return undefined;
+    if (typeof val === "object" && val !== null) {
+      const resolved = val._id || val.id || val.value || val;
+      return resolved ? String(resolved) : undefined;
+    }
+    return String(val);
+  };
+
+  const multiObjProp = (val) => ({
+    value: Array.isArray(val)
+      ? val.map((v) =>
+          typeof v === "object" && v !== null
+            ? String(v._id || v.id || v.value || v)
+            : String(v)
+        )
+      : val
+      ? [typeof val === "object" ? String(val._id || val.id || val) : String(val)]
+      : [],
+  });
+
+  const multiObjEvent = (val) =>
+    Array.isArray(val)
+      ? val.map((v) =>
+          typeof v === "object" && v !== null
+            ? String(v._id || v.id || v.value || v)
+            : String(v)
+        )
+      : val;
+
   return (
-    <>
-      <Row gutter={16}>
-        <Col span={12}>
-          <Form.Item
-            name="name"
-            label="Category Name"
-            rules={[{ required: true, message: "Please enter category name" }]}
-          >
-            <Input placeholder="e.g. Doctorate, Executive, IT & Data" />
-          </Form.Item>
-        </Col>
-
-        <Col span={12}>
-          <Form.Item
-            name="slug"
-            label="URL Slug"
-            rules={[{ required: true, message: "Please enter URL slug" }]}
-          >
-            <Input placeholder="e.g. doctorate, executive, it-data" />
-          </Form.Item>
-        </Col>
-      </Row>
-
-      <Row gutter={16}>
-        <Col span={12}>
-          <Form.Item
-            name="type"
-            label="Category Type / Scope"
-            initialValue="course"
-            rules={[{ required: true, message: "Please select category type" }]}
-          >
-            <Select placeholder="Select type">
-              <Select.Option value="course">Course</Select.Option>
-              <Select.Option value="subcourse">Subcourse</Select.Option>
-              <Select.Option value="university">University</Select.Option>
-              <Select.Option value="general">General</Select.Option>
-            </Select>
-          </Form.Item>
-        </Col>
-
-        <Col span={12}>
-          <Form.Item
-            name="parentId"
-            label="Parent Category (Optional)"
-            getValueFromEvent={(val) => (typeof val === "object" ? val?._id || val : val)}
-            getValueProps={(val) => ({
-              value: typeof val === "object" ? val?._id || val : val,
-            })}
-          >
-            <Select
-              placeholder="None (Root Category)"
-              loading={isParentsLoading}
-              allowClear
-              showSearch
-              optionFilterProp="children"
+    <div className="space-y-4 pt-1">
+      {/* Basic Identification Card */}
+      <Card size="small" className="rounded-xl border border-slate-200">
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item
+              name="name"
+              label="Category Name"
+              rules={[{ required: true, message: "Please enter category name" }]}
             >
-              {Array.isArray(parentOptions) &&
-                parentOptions.map((cat) => (
-                  <Select.Option key={cat._id} value={cat._id}>
-                    {cat.name || cat.label}
-                  </Select.Option>
-                ))}
-            </Select>
-          </Form.Item>
-        </Col>
-      </Row>
+              <Input placeholder="e.g. Science, Doctorate, Executive" className="rounded-lg" />
+            </Form.Item>
+          </Col>
 
-      <Form.Item name="description" label="Description">
-        <Input.TextArea rows={3} placeholder="Category summary or notes..." />
-      </Form.Item>
-
-      <Form.Item name="title" label="Title (SEO / Custom Display)">
-        <Input placeholder="e.g. Online Doctoral Programs (DBA)" />
-      </Form.Item>
-
-      <Row gutter={16}>
-        <Col span={12}>
-          <Form.Item name="icon" label="Icon Name or Class">
-            <Input placeholder="e.g. GraduationCap, BookOpen, FaUserGraduate" />
-          </Form.Item>
-        </Col>
-
-        <Col span={12}>
-          <Form.Item name="image" label="Category Image / Banner Path">
-            <Input placeholder="e.g. /assets/images/categories/doctorate.png" />
-          </Form.Item>
-        </Col>
-      </Row>
-
-      <Row gutter={16}>
-        <Col span={8}>
-          <Form.Item
-            name="logo"
-            label="Logo Media Asset"
-            getValueFromEvent={(val) => (typeof val === "object" ? val?._id || val : val)}
-            getValueProps={(val) => ({
-              value: typeof val === "object" ? val?._id || val : val,
-            })}
-          >
-            <Select
-              placeholder="Select from Media Library"
-              loading={isMediaLoading}
-              allowClear
-              showSearch
-              optionFilterProp="children"
+          <Col span={12}>
+            <Form.Item
+              name="slug"
+              label="URL Slug"
+              rules={[{ required: true, message: "Please enter URL slug" }]}
             >
-              {Array.isArray(mediaOptions) &&
-                mediaOptions.map((media) => (
-                  <Select.Option key={media._id} value={media._id}>
-                    {media.name || media.fileName || media.label}
-                  </Select.Option>
-                ))}
-            </Select>
-          </Form.Item>
-        </Col>
+              <Input placeholder="e.g. science, doctorate, executive" className="rounded-lg" />
+            </Form.Item>
+          </Col>
+        </Row>
 
-        <Col span={8}>
-          <Form.Item
-            name="logoSrc"
-            label="LogoSrc Media Asset"
-            getValueFromEvent={(val) => (typeof val === "object" ? val?._id || val : val)}
-            getValueProps={(val) => ({
-              value: typeof val === "object" ? val?._id || val : val,
-            })}
-          >
-            <Select
-              placeholder="Select from Media Library"
-              loading={isMediaLoading}
-              allowClear
-              showSearch
-              optionFilterProp="children"
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item
+              name="type"
+              label="Category Type / Scope"
+              initialValue="course"
+              rules={[{ required: true, message: "Please select category type" }]}
             >
-              {Array.isArray(mediaOptions) &&
-                mediaOptions.map((media) => (
-                  <Select.Option key={media._id} value={media._id}>
-                    {media.name || media.fileName || media.label}
-                  </Select.Option>
-                ))}
-            </Select>
-          </Form.Item>
-        </Col>
+              <Select
+                placeholder="Select type"
+                className="rounded-lg"
+                options={[
+                  { label: "Course", value: "course" },
+                  { label: "Subcourse", value: "subcourse" },
+                  { label: "University", value: "university" },
+                  { label: "General", value: "general" },
+                ]}
+              />
+            </Form.Item>
+          </Col>
 
-        <Col span={8}>
-          <Form.Item
-            name="imageSrc"
-            label="ImageSrc Media Asset"
-            getValueFromEvent={(val) => (typeof val === "object" ? val?._id || val : val)}
-            getValueProps={(val) => ({
-              value: typeof val === "object" ? val?._id || val : val,
-            })}
-          >
-            <Select
-              placeholder="Select from Media Library"
-              loading={isMediaLoading}
-              allowClear
-              showSearch
-              optionFilterProp="children"
+          <Col span={12}>
+            <Form.Item
+              name="parentId"
+              label="Parent Categories (Hierarchy)"
+              getValueFromEvent={multiObjEvent}
+              getValueProps={multiObjProp}
             >
-              {Array.isArray(mediaOptions) &&
-                mediaOptions.map((media) => (
-                  <Select.Option key={media._id} value={media._id}>
-                    {media.name || media.fileName || media.label}
-                  </Select.Option>
-                ))}
-            </Select>
-          </Form.Item>
-        </Col>
-      </Row>
+              <Select
+                mode="multiple"
+                placeholder="Select Parent Categories..."
+                loading={isParentsLoading}
+                allowClear
+                showSearch
+                optionFilterProp="label"
+                options={parentOptions}
+                className="rounded-lg"
+              />
+            </Form.Item>
+          </Col>
+        </Row>
 
-      <Row gutter={16} align="middle">
-        <Col span={8}>
-          <Form.Item name="order" label="Sort Order" initialValue={0}>
-            <InputNumber min={0} className="w-full" />
-          </Form.Item>
-        </Col>
+        <Form.Item name="title" label="Custom Display Title (SEO)">
+          <Input placeholder="e.g. Master of Science Programs & Degrees" className="rounded-lg" />
+        </Form.Item>
 
-        <Col span={8}>
-          <Form.Item
-            name="featured"
-            label="Featured"
-            valuePropName="checked"
-            initialValue={false}
-          >
-            <Switch />
-          </Form.Item>
-        </Col>
+        <Form.Item name="description" label="Description / Summary" className="mb-0">
+          <Input.TextArea rows={3} placeholder="Category description..." className="rounded-lg" />
+        </Form.Item>
+      </Card>
 
-        <Col span={8}>
-          <Form.Item
-            name="enabled"
-            label="Active"
-            valuePropName="checked"
-            initialValue={true}
-          >
-            <Switch />
-          </Form.Item>
-        </Col>
-      </Row>
-    </>
+      {/* Media & Icons Card */}
+      <Card size="small" title="Media & Styling Assets" className="rounded-xl border border-slate-200">
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item name="icon" label="Icon Identifier / Class">
+              <Input placeholder="e.g. GraduationCap, BookOpen, FaUserGraduate" className="rounded-lg" />
+            </Form.Item>
+          </Col>
+
+          <Col span={12}>
+            <Form.Item name="image" label="Image / Banner Path (URL)">
+              <Input placeholder="e.g. /assets/images/categories/science.png" className="rounded-lg" />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Row gutter={16}>
+          <Col span={8}>
+            <Form.Item
+              name="logo"
+              label="Logo Media Asset"
+              getValueFromEvent={singleObjEvent}
+              getValueProps={singleObjProp}
+            >
+              <Select
+                placeholder="Select Logo..."
+                loading={isMediaLoading}
+                allowClear
+                showSearch
+                optionFilterProp="label"
+                options={mediaOptions}
+                className="rounded-lg"
+              />
+            </Form.Item>
+          </Col>
+
+          <Col span={8}>
+            <Form.Item
+              name="logoSrc"
+              label="LogoSrc Media Asset"
+              getValueFromEvent={singleObjEvent}
+              getValueProps={singleObjProp}
+            >
+              <Select
+                placeholder="Select LogoSrc..."
+                loading={isMediaLoading}
+                allowClear
+                showSearch
+                optionFilterProp="label"
+                options={mediaOptions}
+                className="rounded-lg"
+              />
+            </Form.Item>
+          </Col>
+
+          <Col span={8}>
+            <Form.Item
+              name="imageSrc"
+              label="ImageSrc Media Asset"
+              getValueFromEvent={singleObjEvent}
+              getValueProps={singleObjProp}
+            >
+              <Select
+                placeholder="Select ImageSrc..."
+                loading={isMediaLoading}
+                allowClear
+                showSearch
+                optionFilterProp="label"
+                options={mediaOptions}
+                className="rounded-lg"
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+      </Card>
+
+      {/* Status & Display Preferences Card */}
+      <Card size="small" title="Visibility & Status Flags" className="rounded-xl border border-slate-200">
+        <Row gutter={16} align="middle">
+          <Col span={6}>
+            <Form.Item name="order" label="Sort Order" initialValue={0} className="mb-0">
+              <InputNumber min={0} className="w-full rounded-lg" placeholder="0" />
+            </Form.Item>
+          </Col>
+
+          <Col span={6}>
+            <Form.Item
+              name="featured"
+              label="Featured"
+              valuePropName="checked"
+              initialValue={false}
+              className="mb-0"
+            >
+              <Switch />
+            </Form.Item>
+          </Col>
+
+          <Col span={6}>
+            <Form.Item
+              name="showInStats"
+              label="Show in Stats"
+              valuePropName="checked"
+              initialValue={true}
+              className="mb-0"
+            >
+              <Switch />
+            </Form.Item>
+          </Col>
+
+          <Col span={6}>
+            <Form.Item
+              name="enabled"
+              label="Active Status"
+              valuePropName="checked"
+              initialValue={true}
+              className="mb-0"
+            >
+              <Switch />
+            </Form.Item>
+          </Col>
+        </Row>
+      </Card>
+    </div>
   );
 }
