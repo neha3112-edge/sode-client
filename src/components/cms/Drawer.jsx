@@ -115,14 +115,22 @@ export default function SidePanel({ config, topContent, bottomContent }) {
     drawerWidth = 650;
   }
 
+  let drawerPlacement = "right";
+  let drawerSize = drawerWidth;
+
+  if (entity === "courses" || entity === "course") {
+    drawerPlacement = "top";
+    drawerSize = "92vh";
+  }
+
   return (
     <Drawer
       title={titleContent}
-      placement="right"
+      placement={drawerPlacement}
+      size={drawerSize}
       closable={false}
       onClose={collapsePanel}
       open={!isPanelClose}
-      size={drawerWidth}
       footer={footerContent}
       destroyOnHidden
       styles={{

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import {
   Form,
   Input,
@@ -14,6 +14,7 @@ import {
   Collapse,
   Card,
   Tag,
+  Tabs,
 } from "antd";
 import {
   PlusOutlined,
@@ -32,8 +33,9 @@ import { useGetDynamicOptionsQuery } from "@/store/redux/dynamic/action";
 /**
  * Live University Offering Accordion Header with Dynamic Title & Badge Summary
  */
-function OfferingHeader({ fieldName, universityOptions, onRemove }) {
-  const offeringVal = Form.useWatch(["universityOfferings", fieldName]);
+const OfferingHeader = React.memo(function OfferingHeader({ fieldName, universityOptions, onRemove }) {
+  const form = Form.useFormInstance();
+  const offeringVal = Form.useWatch(["universityOfferings", fieldName], form);
 
   const uId =
     typeof offeringVal?.university === "object"
@@ -41,7 +43,11 @@ function OfferingHeader({ fieldName, universityOptions, onRemove }) {
       : offeringVal?.university;
 
   const uObj = universityOptions.find((opt) => opt.value === String(uId));
-  const uName = uObj?.label || `University Offering #${fieldName + 1}`;
+  const uName =
+    (typeof offeringVal?.university === "object" ? offeringVal?.university?.name : null) ||
+    uObj?.label ||
+    (uId ? String(uId) : null) ||
+    `University Offering #${fieldName + 1}`;
 
   const subCount = Array.isArray(offeringVal?.subcourses)
     ? offeringVal.subcourses.length
@@ -74,7 +80,7 @@ function OfferingHeader({ fieldName, universityOptions, onRemove }) {
       </Button>
     </div>
   );
-}
+});
 
 /**
  * Advanced Sections for Subcourse
@@ -471,11 +477,10 @@ function AdvancedSubcourseSections({ uniFieldIndex, namePrefix, restField, media
   return (
     <div className="mt-4 border-t border-slate-100 pt-3">
       <h4 className="text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">Dynamic Page Sections</h4>
-      <Collapse
-        accordion
+      <Tabs
         items={advancedItems}
         size="small"
-        className="bg-white"
+        className="bg-white p-2 rounded-xl border border-slate-200/80 shadow-2xs"
       />
     </div>
   );
@@ -484,13 +489,17 @@ function AdvancedSubcourseSections({ uniFieldIndex, namePrefix, restField, media
 /**
  * Live Specialization Accordion Header
  */
-function SpecializationHeader({ fieldName, subcourseOptions, parentFieldName, onRemove }) {
-  const subVal = Form.useWatch([
-    "universityOfferings",
-    parentFieldName,
-    "subcourses",
-    fieldName,
-  ]);
+const SpecializationHeader = React.memo(function SpecializationHeader({
+  fieldName,
+  subcourseOptions,
+  parentFieldName,
+  onRemove,
+}) {
+  const form = Form.useFormInstance();
+  const subVal = Form.useWatch(
+    ["universityOfferings", parentFieldName, "subcourses", fieldName],
+    form
+  );
 
   const customTitle = subVal?.title;
   const subId =
@@ -499,7 +508,13 @@ function SpecializationHeader({ fieldName, subcourseOptions, parentFieldName, on
       : subVal?.subcourse;
 
   const subObj = subcourseOptions.find((opt) => opt.value === String(subId));
-  const titleText = customTitle || subObj?.label || `Specialization #${fieldName + 1}`;
+  const subName =
+    typeof subVal?.subcourse === "object"
+      ? subVal?.subcourse?.title || subVal?.subcourse?.name
+      : null;
+
+  const titleText =
+    customTitle || subName || subObj?.label || `Specialization #${fieldName + 1}`;
 
   return (
     <div className="flex items-center justify-between w-full select-none pr-2">
@@ -521,7 +536,7 @@ function SpecializationHeader({ fieldName, subcourseOptions, parentFieldName, on
       </Button>
     </div>
   );
-}
+});
 
 /**
  * CourseForm — WordPress / Strapi Style 2-Column Content Manager Form
@@ -561,7 +576,7 @@ export default function CourseForm({ isUpdateForm = false, form: propForm }) {
     useGetDynamicOptionsQuery({ entity: "workspace" });
 
   // ── Helper to format options arrays ───────────────────────────────────────
-  const formatOptions = (data) => {
+  const formatOptions = useCallback((data) => {
     const list = Array.isArray(data)
       ? data
       : Array.isArray(data?.result)
@@ -571,435 +586,587 @@ export default function CourseForm({ isUpdateForm = false, form: propForm }) {
       label: item.title || item.name || item.fileName || item.label || item._id,
       value: String(item._id || item.value || item.id),
     }));
-  };
+  }, []);
 
-  const categoryOptions = formatOptions(categoryData);
-  const subcourseOptions = formatOptions(subcourseData);
-  const universityOptions = formatOptions(universityData);
-  const durationOptions = formatOptions(durationData);
-  const eligibilityOptions = formatOptions(eligibilityData);
-  const feeOptions = formatOptions(feeData);
-  const mediaOptions = formatOptions(mediaData);
-  const workspaceOptions = formatOptions(workspaceData);
+  const categoryOptions = useMemo(() => formatOptions(categoryData), [categoryData, formatOptions]);
+  const subcourseOptions = useMemo(() => formatOptions(subcourseData), [subcourseData, formatOptions]);
+  const universityOptions = useMemo(() => formatOptions(universityData), [universityData, formatOptions]);
+  const durationOptions = useMemo(() => formatOptions(durationData), [durationData, formatOptions]);
+  const eligibilityOptions = useMemo(() => formatOptions(eligibilityData), [eligibilityData, formatOptions]);
+  const feeOptions = useMemo(() => formatOptions(feeData), [feeData, formatOptions]);
+  const mediaOptions = useMemo(() => formatOptions(mediaData), [mediaData, formatOptions]);
+  const workspaceOptions = useMemo(() => formatOptions(workspaceData), [workspaceData, formatOptions]);
 
   // ── Handlers for ObjectId value props/events ──────────────────────────────
-  const singleObjProp = (val) => {
+  const singleObjProp = useCallback((val) => {
     if (val === undefined || val === null || val === "") return { value: undefined };
     if (typeof val === "object" && val !== null) {
       const resolved = val._id || val.id || val.value || val;
       return { value: resolved ? String(resolved) : undefined };
     }
     return { value: String(val) };
-  };
+  }, []);
 
-  const singleObjEvent = (val) => {
+  const singleObjEvent = useCallback((val) => {
     if (val === undefined || val === null || val === "") return undefined;
     if (typeof val === "object" && val !== null) {
       const resolved = val._id || val.id || val.value || val;
       return resolved ? String(resolved) : undefined;
     }
     return String(val);
-  };
+  }, []);
 
-  const multiObjProp = (val) => ({
-    value: Array.isArray(val)
-      ? val.map((v) =>
-          typeof v === "object" && v !== null
-            ? String(v._id || v.id || v.value || v)
-            : String(v)
-        )
-      : val
-        ? [typeof val === "object" ? String(val._id || val.id || val) : String(val)]
-        : [],
-  });
+  const multiObjProp = useCallback(
+    (val) => ({
+      value: Array.isArray(val)
+        ? val.map((v) =>
+            typeof v === "object" && v !== null
+              ? String(v._id || v.id || v.value || v)
+              : String(v)
+          )
+        : val
+          ? [typeof val === "object" ? String(val._id || val.id || val) : String(val)]
+          : [],
+    }),
+    []
+  );
 
-  const multiObjEvent = (val) =>
-    Array.isArray(val)
-      ? val.map((v) =>
-          typeof v === "object" && v !== null
-            ? String(v._id || v.id || v.value || v)
-            : String(v)
-        )
-      : val;
+  const multiObjEvent = useCallback(
+    (val) =>
+      Array.isArray(val)
+        ? val.map((v) =>
+            typeof v === "object" && v !== null
+              ? String(v._id || v.id || v.value || v)
+              : String(v)
+          )
+        : val,
+    []
+  );
 
   return (
     <div className="space-y-6 pt-1">
-      {/* ── WordPress / Strapi Style 2-Column Grid Layout ─────────────────── */}
-      <Row gutter={[20, 20]}>
-        {/* 👈 LEFT MAIN CONTENT COLUMN (70% Width) */}
-        <Col xs={24} lg={16} xl={17} className="space-y-5">
-          {/* Card 1: Title & Slug */}
+      {/* ── TOP METADATA ROW: 4 CARDS IN A SINGLE HORIZONTAL GRID ─────────────── */}
+      <Row gutter={[16, 16]}>
+        {/* CARD 1: COURSE IDENTIFICATION */}
+        <Col xs={24} sm={12} lg={6}>
           <Card
             title={
-              <span className="flex items-center gap-2 font-bold text-slate-800 text-sm">
+              <span className="flex items-center gap-2 font-bold text-slate-800 text-xs uppercase tracking-wider">
                 <BookOutlined className="text-indigo-600" /> Course Identification
               </span>
             }
-            className="rounded-2xl border border-slate-200/90 shadow-2xs"
+            className="rounded-2xl border border-slate-200/90 shadow-2xs h-full flex flex-col justify-between"
           >
-            <Row gutter={16}>
-              <Col span={14}>
-                <Form.Item
-                  name="title"
-                  label="Course Title"
-                  rules={[{ required: true, message: "Please enter course title" }]}
-                >
-                  <Input placeholder="e.g. Master of Science in Data Science" size="large" className="rounded-xl font-semibold" />
-                </Form.Item>
-              </Col>
-              <Col span={10}>
-                <Form.Item
-                  name="slug"
-                  label="URL Slug"
-                  rules={[{ required: true, message: "Please enter URL slug" }]}
-                >
-                  <Input prefix={<span className="text-slate-400 font-mono text-xs">/</span>} placeholder="master-of-science-in-data-science" size="large" className="rounded-xl font-mono text-xs" />
-                </Form.Item>
-              </Col>
-            </Row>
+            <div className="space-y-3">
+              <Form.Item
+                name="title"
+                label="Course Title"
+                rules={[{ required: true, message: "Please enter course title" }]}
+                className="mb-2"
+              >
+                <Input placeholder="e.g. Master of Science in Data Science" className="rounded-xl font-semibold" />
+              </Form.Item>
 
-            <Form.Item name="description" label="Course Overview & Description" className="mb-0">
-              <Input.TextArea rows={3} placeholder="Write a comprehensive overview of this academic course program..." className="rounded-xl" />
+              <Form.Item
+                name="slug"
+                label="URL Slug"
+                rules={[{ required: true, message: "Please enter URL slug" }]}
+                className="mb-2"
+              >
+                <Input prefix={<span className="text-slate-400 font-mono text-xs">/</span>} placeholder="master-of-science-in-data-science" className="rounded-xl font-mono text-xs" />
+              </Form.Item>
+
+              <Form.Item name="description" label="Course Overview & Description" className="mb-0">
+                <Input.TextArea rows={2} placeholder="Write program overview..." className="rounded-xl text-xs" />
+              </Form.Item>
+            </div>
+          </Card>
+        </Col>
+
+        {/* CARD 2: CATEGORIES & TAXONOMY */}
+        <Col xs={24} sm={12} lg={6}>
+          <Card
+            title={
+              <span className="flex items-center gap-2 font-bold text-slate-800 text-xs uppercase tracking-wider">
+                <GlobalOutlined className="text-blue-500" /> Categories & Taxonomy
+              </span>
+            }
+            className="rounded-2xl border border-slate-200/90 shadow-2xs h-full flex flex-col justify-between"
+          >
+            <Form.Item
+              name="categories"
+              label="Main Program Categories"
+              getValueFromEvent={multiObjEvent}
+              getValueProps={multiObjProp}
+              className="mb-0"
+            >
+              <Select
+                mode="multiple"
+                placeholder="Select Categories..."
+                loading={loadingCategories}
+                allowClear
+                showSearch
+                optionFilterProp="label"
+                options={categoryOptions}
+                className="w-full rounded-xl"
+              />
             </Form.Item>
           </Card>
+        </Col>
 
-          {/* Card 2: University Offerings & Specializations (Accordion Mode) */}
+        {/* CARD 3: MEDIA & ATTACHMENTS */}
+        <Col xs={24} sm={12} lg={6}>
+          <Card
+            title={
+              <span className="flex items-center gap-2 font-bold text-slate-800 text-xs uppercase tracking-wider">
+                <FileImageOutlined className="text-purple-500" /> Media & Attachments
+              </span>
+            }
+            className="rounded-2xl border border-slate-200/90 shadow-2xs h-full flex flex-col justify-between"
+          >
+            <div className="space-y-2">
+              <Form.Item
+                name="logo"
+                label="Logo Asset"
+                getValueFromEvent={singleObjEvent}
+                getValueProps={singleObjProp}
+                className="mb-1"
+              >
+                <Select
+                  placeholder="Select Logo..."
+                  loading={loadingMedia}
+                  allowClear
+                  showSearch
+                  optionFilterProp="label"
+                  options={mediaOptions}
+                  className="rounded-xl"
+                  size="small"
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="image"
+                label="Banner Image"
+                getValueFromEvent={singleObjEvent}
+                getValueProps={singleObjProp}
+                className="mb-1"
+              >
+                <Select
+                  placeholder="Select Banner Image..."
+                  loading={loadingMedia}
+                  allowClear
+                  showSearch
+                  optionFilterProp="label"
+                  options={mediaOptions}
+                  className="rounded-xl"
+                  size="small"
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="brochureUrl"
+                label="Brochure PDF"
+                getValueFromEvent={singleObjEvent}
+                getValueProps={singleObjProp}
+                className="mb-0"
+              >
+                <Select
+                  placeholder="Select Brochure PDF..."
+                  loading={loadingMedia}
+                  allowClear
+                  showSearch
+                  optionFilterProp="label"
+                  options={mediaOptions}
+                  className="rounded-xl"
+                  size="small"
+                />
+              </Form.Item>
+            </div>
+          </Card>
+        </Col>
+
+        {/* CARD 4: STATUS & VISIBILITY */}
+        <Col xs={24} sm={12} lg={6}>
+          <Card
+            title={
+              <span className="flex items-center gap-2 font-bold text-slate-800 text-xs uppercase tracking-wider">
+                <CheckCircleOutlined className="text-emerald-500" /> Status & Visibility
+              </span>
+            }
+            className="rounded-2xl border border-slate-200/90 shadow-2xs h-full flex flex-col justify-between"
+          >
+            <div className="space-y-3">
+              <Form.Item
+                name="enabled"
+                label="Active Status"
+                valuePropName="checked"
+                initialValue={true}
+                className="mb-0"
+              >
+                <div className="flex items-center justify-between w-full">
+                  <span className="text-xs text-slate-500 font-medium">Enable on Website</span>
+                  <Switch />
+                </div>
+              </Form.Item>
+
+              <Form.Item
+                name="featured"
+                label="Featured Badge"
+                valuePropName="checked"
+                initialValue={false}
+                className="mb-0"
+              >
+                <div className="flex items-center justify-between w-full">
+                  <span className="text-xs text-slate-500 font-medium flex items-center gap-1">
+                    <StarFilled className="text-amber-500" /> Show in Featured
+                  </span>
+                  <Switch />
+                </div>
+              </Form.Item>
+
+              <Form.Item name="order" label="Sort Order" initialValue={0} className="mb-0">
+                <InputNumber min={0} className="w-full rounded-xl" placeholder="0" size="small" />
+              </Form.Item>
+            </div>
+          </Card>
+        </Col>
+      </Row>
+
+      {/* ── BOTTOM SECTION: FULL WIDTH UNIVERSITY OFFERINGS & PROGRAM HIGHLIGHTS ── */}
+      <Row gutter={[16, 16]}>
+        <Col span={24} className="space-y-5">
+          {/* Card 5: University Offerings & Specializations */}
           <Card
             title={
               <div className="flex items-center justify-between w-full flex-wrap gap-2">
                 <span className="flex items-center gap-2 font-bold text-slate-800 text-sm">
                   <BankOutlined className="text-blue-600" /> University Offerings & Fees
                 </span>
-                <span className="text-xs text-slate-400 font-medium">Accordion Mode (1 University expanded at a time)</span>
+                <span className="text-xs text-slate-400 font-medium">All Offerings & Specializations Open</span>
               </div>
             }
             className="rounded-2xl border border-slate-200/90 shadow-2xs"
           >
             <Form.List name="universityOfferings">
-              {(fields, { add, remove }) => {
-                const offeringItems = fields.map((field) => {
-                  const { key, ...restField } = field;
+              {(fields, { add, remove }) => (
+                <div className="space-y-6">
+                  {fields.length > 0 ? (
+                    fields.map((field) => {
+                      const { key, ...restField } = field;
 
-                  return {
-                    key: String(field.name),
-                    label: (
-                      <OfferingHeader
-                        fieldName={field.name}
-                        universityOptions={universityOptions}
-                        onRemove={remove}
-                      />
-                    ),
-                    children: (
-                      <div className="space-y-4 p-1">
-                        <Row gutter={12}>
-                          <Col span={12}>
-                            <Form.Item
-                              {...restField}
-                              name={[field.name, "university"]}
-                              label="University"
-                              rules={[{ required: true, message: "Select university" }]}
-                              getValueFromEvent={singleObjEvent}
-                              getValueProps={singleObjProp}
-                            >
-                              <Select
-                                placeholder="Select University (e.g. IIIT Bangalore)"
-                                loading={loadingUniversities}
-                                allowClear
-                                showSearch
-                                optionFilterProp="label"
-                                options={universityOptions}
-                                className="rounded-xl"
-                              />
+                      return (
+                        <Card
+                          key={String(field.name)}
+                          size="small"
+                          className="bg-slate-50/80 border border-slate-200/90 rounded-2xl shadow-xs overflow-hidden"
+                          title={
+                            <OfferingHeader
+                              fieldName={field.name}
+                              universityOptions={universityOptions}
+                              onRemove={remove}
+                            />
+                          }
+                        >
+                          <div className="space-y-4 p-1">
+                            <Form.Item {...restField} name={[field.name, "_id"]} hidden>
+                              <Input />
                             </Form.Item>
-                          </Col>
-                          <Col span={12}>
-                            <Form.Item
-                              {...restField}
-                              name={[field.name, "workspace"]}
-                              label="Partner / Provider Workspace"
-                              getValueFromEvent={singleObjEvent}
-                              getValueProps={singleObjProp}
-                            >
-                              <Select
-                                placeholder="Select Partner Workspace (e.g. upGrad)"
-                                loading={loadingWorkspaces}
-                                allowClear
-                                showSearch
-                                optionFilterProp="label"
-                                options={workspaceOptions}
-                                className="rounded-xl"
-                              />
-                            </Form.Item>
-                          </Col>
-                        </Row>
-
-                        <Row gutter={12}>
-                          <Col span={8}>
-                            <Form.Item
-                              {...restField}
-                              name={[field.name, "fee"]}
-                              label="Fee Structure"
-                              getValueFromEvent={singleObjEvent}
-                              getValueProps={singleObjProp}
-                            >
-                              <Select
-                                placeholder="Select Fee"
-                                loading={loadingFee}
-                                allowClear
-                                showSearch
-                                optionFilterProp="label"
-                                options={feeOptions}
-                                className="rounded-xl"
-                              />
-                            </Form.Item>
-                          </Col>
-                          <Col span={8}>
-                            <Form.Item
-                              {...restField}
-                              name={[field.name, "duration"]}
-                              label="Duration"
-                              getValueFromEvent={singleObjEvent}
-                              getValueProps={singleObjProp}
-                            >
-                              <Select
-                                placeholder="Select Duration"
-                                loading={loadingDurations}
-                                allowClear
-                                showSearch
-                                optionFilterProp="label"
-                                options={durationOptions}
-                                className="rounded-xl"
-                              />
-                            </Form.Item>
-                          </Col>
-                          <Col span={8}>
-                            <Form.Item
-                              {...restField}
-                              name={[field.name, "eligibility"]}
-                              label="Eligibility Criteria"
-                              getValueFromEvent={singleObjEvent}
-                              getValueProps={singleObjProp}
-                            >
-                              <Select
-                                placeholder="Select Eligibility"
-                                loading={loadingEligibility}
-                                allowClear
-                                showSearch
-                                optionFilterProp="label"
-                                options={eligibilityOptions}
-                                className="rounded-xl"
-                              />
-                            </Form.Item>
-                          </Col>
-                        </Row>
-
-                        {/* Specializations Accordion list under this University */}
-                        <Divider titlePlacement="left" plain className="!text-teal-700 !font-bold !text-xs">
-                          🎓 Specializations under this University
-                        </Divider>
-
-                        <Form.List name={[field.name, "subcourses"]}>
-                          {(subFields, { add: addSub, remove: removeSub }) => {
-                            const subCollapseItems = subFields.map((subField) => {
-                              const { key: subKey, ...restSubField } = subField;
-
-                              return {
-                                key: String(subField.name),
-                                label: (
-                                  <SpecializationHeader
-                                    fieldName={subField.name}
-                                    subcourseOptions={subcourseOptions}
-                                    parentFieldName={field.name}
-                                    onRemove={removeSub}
-                                  />
-                                ),
-                                children: (
-                                  <div className="space-y-3 pt-2">
-                                    <Row gutter={12}>
-                                      <Col span={12}>
-                                        <Form.Item
-                                          {...restSubField}
-                                          name={[subField.name, "subcourse"]}
-                                          label="Subcourse Ref"
-                                          getValueFromEvent={singleObjEvent}
-                                          getValueProps={singleObjProp}
-                                        >
-                                          <Select
-                                            placeholder="Select Subcourse"
-                                            loading={loadingSubcourses}
-                                            allowClear
-                                            showSearch
-                                            optionFilterProp="label"
-                                            options={subcourseOptions}
-                                            onChange={(selectedVal) => {
-                                              if (selectedVal) {
-                                                const opt = subcourseOptions.find(
-                                                  (o) => o.value === String(selectedVal)
-                                                );
-                                                if (opt?.label && form) {
-                                                  const currentTitle = form.getFieldValue([
-                                                    "universityOfferings",
-                                                    field.name,
-                                                    "subcourses",
-                                                    subField.name,
-                                                    "title",
-                                                  ]);
-                                                  if (!currentTitle) {
-                                                    form.setFieldValue(
-                                                      [
-                                                        "universityOfferings",
-                                                        field.name,
-                                                        "subcourses",
-                                                        subField.name,
-                                                        "title",
-                                                      ],
-                                                      opt.label
-                                                    );
-                                                  }
-                                                }
-                                              }
-                                            }}
-                                          />
-                                        </Form.Item>
-                                      </Col>
-                                      <Col span={12}>
-                                        <Form.Item
-                                          {...restSubField}
-                                          name={[subField.name, "title"]}
-                                          label="Display Title"
-                                        >
-                                          <Input placeholder="e.g. Data Analytics Specialization" />
-                                        </Form.Item>
-                                      </Col>
-                                    </Row>
-
-                                    <Row gutter={12}>
-                                      <Col span={12}>
-                                        <Form.Item
-                                          {...restSubField}
-                                          name={[subField.name, "fee"]}
-                                          label="Subcourse Fee"
-                                          getValueFromEvent={singleObjEvent}
-                                          getValueProps={singleObjProp}
-                                        >
-                                          <Select
-                                            placeholder="Select Fee"
-                                            loading={loadingFee}
-                                            allowClear
-                                            showSearch
-                                            optionFilterProp="label"
-                                            options={feeOptions}
-                                          />
-                                        </Form.Item>
-                                      </Col>
-                                      <Col span={12}>
-                                        <Form.Item
-                                          {...restSubField}
-                                          name={[subField.name, "duration"]}
-                                          label="Subcourse Duration"
-                                          getValueFromEvent={singleObjEvent}
-                                          getValueProps={singleObjProp}
-                                        >
-                                          <Select
-                                            placeholder="Select Duration"
-                                            loading={loadingDurations}
-                                            allowClear
-                                            showSearch
-                                            optionFilterProp="label"
-                                            options={durationOptions}
-                                          />
-                                        </Form.Item>
-                                      </Col>
-                                    </Row>
-
-                                    <Form.Item
-                                      {...restSubField}
-                                      name={[subField.name, "shortDescription"]}
-                                      label="Short Tagline"
-                                    >
-                                      <Input placeholder="Short tagline for specialization..." />
-                                    </Form.Item>
-                                    
-                                    {/* Advanced Sections */}
-                                    <AdvancedSubcourseSections 
-                                      uniFieldIndex={field.name}
-                                      namePrefix={subField.name} 
-                                      restField={restSubField} 
-                                      mediaOptions={mediaOptions}
-                                      loadingMedia={loadingMedia}
-                                      singleObjEvent={singleObjEvent}
-                                      singleObjProp={singleObjProp}
-                                    />
-                                  </div>
-                                ),
-                              };
-                            });
-
-                            return (
-                              <div className="space-y-2">
-                                {subFields.length > 0 ? (
-                                  <Collapse
-                                    accordion={true}
-                                    defaultActiveKey={['0']}
-                                    bordered={true}
-                                    className="bg-white border border-slate-200 rounded-lg overflow-hidden"
-                                    items={subCollapseItems}
-                                  />
-                                ) : (
-                                  <div className="text-center py-3 bg-slate-50 border border-dashed border-slate-200 rounded-lg text-xs text-slate-400 font-medium">
-                                    No specializations added yet.
-                                  </div>
-                                )}
-                                <Button
-                                  type="dashed"
-                                  onClick={() => addSub()}
-                                  block
-                                  icon={<PlusOutlined />}
-                                  size="small"
-                                  className="text-xs"
+                            <Row gutter={12}>
+                              <Col span={12}>
+                                <Form.Item
+                                  {...restField}
+                                  name={[field.name, "university"]}
+                                  label="University"
+                                  rules={[{ required: true, message: "Select university" }]}
+                                  getValueFromEvent={singleObjEvent}
+                                  getValueProps={singleObjProp}
                                 >
-                                  + Add Specialization
-                                </Button>
-                              </div>
-                            );
-                          }}
-                        </Form.List>
-                      </div>
-                    ),
-                  };
-                });
+                                  <Select
+                                    placeholder="Select University (e.g. IIIT Bangalore)"
+                                    loading={loadingUniversities}
+                                    allowClear
+                                    showSearch
+                                    optionFilterProp="label"
+                                    options={universityOptions}
+                                    className="rounded-xl"
+                                  />
+                                </Form.Item>
+                              </Col>
+                              <Col span={12}>
+                                <Form.Item
+                                  {...restField}
+                                  name={[field.name, "workspace"]}
+                                  label="Partner / Provider Workspace"
+                                  getValueFromEvent={singleObjEvent}
+                                  getValueProps={singleObjProp}
+                                >
+                                  <Select
+                                    placeholder="Select Partner Workspace (e.g. upGrad)"
+                                    loading={loadingWorkspaces}
+                                    allowClear
+                                    showSearch
+                                    optionFilterProp="label"
+                                    options={workspaceOptions}
+                                    className="rounded-xl"
+                                  />
+                                </Form.Item>
+                              </Col>
+                            </Row>
 
-                return (
-                  <div className="space-y-4">
-                    {fields.length > 0 ? (
-                      <Collapse
-                        accordion={true}
-                        defaultActiveKey={['0']}
-                        bordered={true}
-                        className="bg-slate-50/70 border border-slate-200 rounded-xl overflow-hidden"
-                        items={offeringItems}
-                      />
-                    ) : (
-                      <div className="text-center py-8 bg-slate-50 border border-dashed border-slate-200 rounded-2xl text-xs text-slate-400 font-semibold">
-                        No university offerings added. Click button below to add.
-                      </div>
-                    )}
-                    <Button
-                      type="dashed"
-                      onClick={() => add()}
-                      block
-                      icon={<PlusOutlined />}
-                      className="py-2 font-semibold text-indigo-600 border-indigo-200 hover:border-indigo-400 rounded-xl"
-                    >
-                      + Add University Offering
-                    </Button>
-                  </div>
-                );
-              }}
+                            <Row gutter={12}>
+                              <Col span={8}>
+                                <Form.Item
+                                  {...restField}
+                                  name={[field.name, "fee"]}
+                                  label="Offering Fee Structure"
+                                  getValueFromEvent={singleObjEvent}
+                                  getValueProps={singleObjProp}
+                                >
+                                  <Select
+                                    placeholder="Select Default Fee"
+                                    loading={loadingFee}
+                                    allowClear
+                                    showSearch
+                                    optionFilterProp="label"
+                                    options={feeOptions}
+                                    className="rounded-xl"
+                                  />
+                                </Form.Item>
+                              </Col>
+                              <Col span={8}>
+                                <Form.Item
+                                  {...restField}
+                                  name={[field.name, "duration"]}
+                                  label="Offering Duration"
+                                  getValueFromEvent={singleObjEvent}
+                                  getValueProps={singleObjProp}
+                                >
+                                  <Select
+                                    placeholder="Select Duration"
+                                    loading={loadingDurations}
+                                    allowClear
+                                    showSearch
+                                    optionFilterProp="label"
+                                    options={durationOptions}
+                                    className="rounded-xl"
+                                  />
+                                </Form.Item>
+                              </Col>
+                              <Col span={8}>
+                                <Form.Item
+                                  {...restField}
+                                  name={[field.name, "eligibility"]}
+                                  label="Eligibility Criteria"
+                                  getValueFromEvent={singleObjEvent}
+                                  getValueProps={singleObjProp}
+                                >
+                                  <Select
+                                    placeholder="Select Eligibility"
+                                    loading={loadingEligibility}
+                                    allowClear
+                                    showSearch
+                                    optionFilterProp="label"
+                                    options={eligibilityOptions}
+                                    className="rounded-xl"
+                                  />
+                                </Form.Item>
+                              </Col>
+                            </Row>
+
+                            {/* Specializations Cards List under this University */}
+                            <Divider titlePlacement="left" plain className="!text-teal-700 !font-bold !text-xs">
+                              🎓 Specializations under this University
+                            </Divider>
+
+                            <Form.List name={[field.name, "subcourses"]}>
+                              {(subFields, { add: addSub, remove: removeSub }) => (
+                                <div className="space-y-4">
+                                  {subFields.length > 0 ? (
+                                    <Row gutter={[16, 16]}>
+                                      {subFields.map((subField) => {
+                                        const { key: subKey, ...restSubField } = subField;
+
+                                        return (
+                                          <Col xs={24} sm={12} md={8} xl={6} key={String(subField.name)}>
+                                            <Card
+                                              size="small"
+                                              className="bg-white border border-slate-200 rounded-xl shadow-2xs hover:shadow-xs transition-shadow h-full flex flex-col justify-between"
+                                              title={
+                                                <SpecializationHeader
+                                                  fieldName={subField.name}
+                                                  subcourseOptions={subcourseOptions}
+                                                  parentFieldName={field.name}
+                                                  onRemove={removeSub}
+                                                />
+                                              }
+                                            >
+                                              <div className="space-y-3 pt-2">
+                                                <Form.Item {...restSubField} name={[subField.name, "_id"]} hidden>
+                                                  <Input />
+                                                </Form.Item>
+                                                <Row gutter={12}>
+                                                  <Col span={12}>
+                                                    <Form.Item
+                                                      {...restSubField}
+                                                      name={[subField.name, "subcourse"]}
+                                                      label="Subcourse Ref"
+                                                      getValueFromEvent={singleObjEvent}
+                                                      getValueProps={singleObjProp}
+                                                    >
+                                                      <Select
+                                                        placeholder="Select Subcourse"
+                                                        loading={loadingSubcourses}
+                                                        allowClear
+                                                        showSearch
+                                                        optionFilterProp="label"
+                                                        options={subcourseOptions}
+                                                        onChange={(selectedVal) => {
+                                                          if (selectedVal) {
+                                                            const opt = subcourseOptions.find(
+                                                              (o) => o.value === String(selectedVal)
+                                                            );
+                                                            if (opt?.label && form) {
+                                                              const currentTitle = form.getFieldValue([
+                                                                "universityOfferings",
+                                                                field.name,
+                                                                "subcourses",
+                                                                subField.name,
+                                                                "title",
+                                                              ]);
+                                                              if (!currentTitle) {
+                                                                form.setFieldValue(
+                                                                  [
+                                                                    "universityOfferings",
+                                                                    field.name,
+                                                                    "subcourses",
+                                                                    subField.name,
+                                                                    "title",
+                                                                  ],
+                                                                  opt.label
+                                                                );
+                                                              }
+                                                            }
+                                                          }
+                                                        }}
+                                                      />
+                                                    </Form.Item>
+                                                  </Col>
+                                                  <Col span={12}>
+                                                    <Form.Item
+                                                      {...restSubField}
+                                                      name={[subField.name, "title"]}
+                                                      label="Display Title"
+                                                    >
+                                                      <Input placeholder="e.g. Data Analytics Specialization" />
+                                                    </Form.Item>
+                                                  </Col>
+                                                </Row>
+
+                                                <Row gutter={12}>
+                                                  <Col span={12}>
+                                                    <Form.Item
+                                                      {...restSubField}
+                                                      name={[subField.name, "fee"]}
+                                                      label="Subcourse Fee"
+                                                      getValueFromEvent={singleObjEvent}
+                                                      getValueProps={singleObjProp}
+                                                    >
+                                                      <Select
+                                                        placeholder="Select Fee"
+                                                        loading={loadingFee}
+                                                        allowClear
+                                                        showSearch
+                                                        optionFilterProp="label"
+                                                        options={feeOptions}
+                                                      />
+                                                    </Form.Item>
+                                                  </Col>
+                                                  <Col span={12}>
+                                                    <Form.Item
+                                                      {...restSubField}
+                                                      name={[subField.name, "duration"]}
+                                                      label="Subcourse Duration"
+                                                      getValueFromEvent={singleObjEvent}
+                                                      getValueProps={singleObjProp}
+                                                    >
+                                                      <Select
+                                                        placeholder="Select Duration"
+                                                        loading={loadingDurations}
+                                                        allowClear
+                                                        showSearch
+                                                        optionFilterProp="label"
+                                                        options={durationOptions}
+                                                      />
+                                                    </Form.Item>
+                                                  </Col>
+                                                </Row>
+
+                                                <Form.Item
+                                                  {...restSubField}
+                                                  name={[subField.name, "shortDescription"]}
+                                                  label="Short Tagline"
+                                                >
+                                                  <Input placeholder="Short tagline for specialization..." />
+                                                </Form.Item>
+                                                
+                                                {/* Advanced Sections */}
+                                                <AdvancedSubcourseSections 
+                                                  uniFieldIndex={field.name}
+                                                  namePrefix={subField.name} 
+                                                  restField={restSubField} 
+                                                  mediaOptions={mediaOptions}
+                                                  loadingMedia={loadingMedia}
+                                                  singleObjEvent={singleObjEvent}
+                                                  singleObjProp={singleObjProp}
+                                                />
+                                              </div>
+                                            </Card>
+                                          </Col>
+                                        );
+                                      })}
+                                    </Row>
+                                  ) : (
+                                    <div className="text-center py-3 bg-slate-50 border border-dashed border-slate-200 rounded-lg text-xs text-slate-400 font-medium">
+                                      No specializations added yet.
+                                    </div>
+                                  )}
+                                  <Button
+                                    type="dashed"
+                                    onClick={() => addSub()}
+                                    block
+                                    icon={<PlusOutlined />}
+                                    size="small"
+                                    className="text-xs font-medium text-teal-700 border-teal-200 hover:border-teal-400"
+                                  >
+                                    + Add Specialization
+                                  </Button>
+                                </div>
+                              )}
+                            </Form.List>
+                          </div>
+                        </Card>
+                      );
+                    })
+                  ) : (
+                    <div className="text-center py-8 bg-slate-50 border border-dashed border-slate-200 rounded-2xl text-xs text-slate-400 font-semibold">
+                      No university offerings added. Click button below to add.
+                    </div>
+                  )}
+                  <Button
+                    type="dashed"
+                    onClick={() => add()}
+                    block
+                    icon={<PlusOutlined />}
+                    className="py-2 font-semibold text-indigo-600 border-indigo-200 hover:border-indigo-400 rounded-xl"
+                  >
+                    + Add University Offering
+                  </Button>
+                </div>
+              )}
             </Form.List>
           </Card>
 
-          {/* Card 3: Key Highlights & Admission Process */}
+          {/* Card 6: Key Highlights & Admission Process */}
           <Card
             title={
               <span className="flex items-center gap-2 font-bold text-slate-800 text-sm">
@@ -1096,148 +1263,6 @@ export default function CourseForm({ isUpdateForm = false, form: propForm }) {
                   )}
                 </Form.List>
               </div>
-            </div>
-          </Card>
-        </Col>
-
-        {/* 👉 RIGHT SIDEBAR COLUMN (30% Width) — WordPress / Strapi Meta Box Style */}
-        <Col xs={24} lg={8} xl={7} className="space-y-5">
-          {/* Status & Publish Box */}
-          <Card
-            title={
-              <span className="flex items-center gap-2 font-bold text-slate-800 text-xs uppercase tracking-wider">
-                <CheckCircleOutlined className="text-emerald-500" /> Status & Visibility
-              </span>
-            }
-            className="rounded-2xl border border-slate-200/90 shadow-2xs"
-          >
-            <div className="space-y-4">
-              <Form.Item
-                name="enabled"
-                label="Active Status"
-                valuePropName="checked"
-                initialValue={true}
-                className="mb-0"
-              >
-                <div className="flex items-center justify-between w-full">
-                  <span className="text-xs text-slate-500 font-medium">Enable on Website</span>
-                  <Switch />
-                </div>
-              </Form.Item>
-
-              <Form.Item
-                name="featured"
-                label="Featured Badge"
-                valuePropName="checked"
-                initialValue={false}
-                className="mb-0"
-              >
-                <div className="flex items-center justify-between w-full">
-                  <span className="text-xs text-slate-500 font-medium flex items-center gap-1">
-                    <StarFilled className="text-amber-500" /> Show in Featured
-                  </span>
-                  <Switch />
-                </div>
-              </Form.Item>
-
-              <Form.Item name="order" label="Sort Order" initialValue={0} className="mb-0">
-                <InputNumber min={0} className="w-full rounded-xl" placeholder="0" />
-              </Form.Item>
-            </div>
-          </Card>
-
-          {/* Categories Taxonomy Box */}
-          <Card
-            title={
-              <span className="flex items-center gap-2 font-bold text-slate-800 text-xs uppercase tracking-wider">
-                <GlobalOutlined className="text-blue-500" /> Categories & Taxonomy
-              </span>
-            }
-            className="rounded-2xl border border-slate-200/90 shadow-2xs"
-          >
-            <Form.Item
-              name="categories"
-              label="Main Program Categories"
-              getValueFromEvent={multiObjEvent}
-              getValueProps={multiObjProp}
-              className="mb-0"
-            >
-              <Select
-                mode="multiple"
-                placeholder="Select Categories..."
-                loading={loadingCategories}
-                allowClear
-                showSearch
-                optionFilterProp="label"
-                options={categoryOptions}
-                className="w-full rounded-xl"
-              />
-            </Form.Item>
-          </Card>
-
-          {/* Media & Assets Box */}
-          <Card
-            title={
-              <span className="flex items-center gap-2 font-bold text-slate-800 text-xs uppercase tracking-wider">
-                <FileImageOutlined className="text-purple-500" /> Media & Attachments
-              </span>
-            }
-            className="rounded-2xl border border-slate-200/90 shadow-2xs"
-          >
-            <div className="space-y-3">
-              <Form.Item
-                name="logo"
-                label="Logo Asset"
-                getValueFromEvent={singleObjEvent}
-                getValueProps={singleObjProp}
-                className="mb-0"
-              >
-                <Select
-                  placeholder="Select Logo..."
-                  loading={loadingMedia}
-                  allowClear
-                  showSearch
-                  optionFilterProp="label"
-                  options={mediaOptions}
-                  className="rounded-xl"
-                />
-              </Form.Item>
-
-              <Form.Item
-                name="image"
-                label="Banner Image"
-                getValueFromEvent={singleObjEvent}
-                getValueProps={singleObjProp}
-                className="mb-0"
-              >
-                <Select
-                  placeholder="Select Banner Image..."
-                  loading={loadingMedia}
-                  allowClear
-                  showSearch
-                  optionFilterProp="label"
-                  options={mediaOptions}
-                  className="rounded-xl"
-                />
-              </Form.Item>
-
-              <Form.Item
-                name="brochureUrl"
-                label="Brochure PDF"
-                getValueFromEvent={singleObjEvent}
-                getValueProps={singleObjProp}
-                className="mb-0"
-              >
-                <Select
-                  placeholder="Select Brochure PDF..."
-                  loading={loadingMedia}
-                  allowClear
-                  showSearch
-                  optionFilterProp="label"
-                  options={mediaOptions}
-                  className="rounded-xl"
-                />
-              </Form.Item>
             </div>
           </Card>
         </Col>

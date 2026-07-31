@@ -212,6 +212,7 @@ export const dynamicApi = createApi({
         return response;
       },
       providesTags: ["DynamicList"],
+      keepUnusedDataFor: 300,
     }),
 
     createDynamic: builder.mutation({
