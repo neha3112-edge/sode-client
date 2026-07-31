@@ -262,9 +262,31 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
   const overviewText = heroSub?.overviewDescription || heroSub?.content || heroSub?.description || course.description || "";
 
   const courseSnapshot = [];
-  if (uniName) courseSnapshot.push({ icon: BankOutlined, label: "Institute", value: uniName });
-  if (heroSub?.title) courseSnapshot.push({ icon: ApartmentOutlined, label: "Programme", value: heroSub.title });
-  if (primaryDuration) courseSnapshot.push({ icon: ClockCircleFilled, label: "Duration", value: primaryDuration });
+  if (Array.isArray(heroSub?.overviewSnapshot) && heroSub.overviewSnapshot.length > 0) {
+    const iconMap = {
+      bank: BankOutlined,
+      apartment: ApartmentOutlined,
+      clock: ClockCircleFilled,
+      laptop: LaptopOutlined,
+      certificate: SafetyCertificateOutlined,
+      card: CreditCardOutlined,
+      user: UserOutlined,
+      read: ReadOutlined,
+    };
+    heroSub.overviewSnapshot.forEach((item) => {
+      const IconComp = iconMap[item.icon] || CheckCircleFilled;
+      courseSnapshot.push({ icon: IconComp, label: item.label, value: item.value || "" });
+    });
+  } else {
+    if (uniName) courseSnapshot.push({ icon: BankOutlined, label: "Institute", value: uniName });
+    if (heroSub?.title || cleanTitle) courseSnapshot.push({ icon: ApartmentOutlined, label: "Programme", value: heroSub?.title || cleanTitle });
+    if (primaryDuration) courseSnapshot.push({ icon: ClockCircleFilled, label: "Duration", value: primaryDuration });
+    courseSnapshot.push({ icon: LaptopOutlined, label: "Learning Mode", value: "Live Online" });
+    courseSnapshot.push({ icon: SafetyCertificateOutlined, label: uniName ? `Certificate from ${uniName}` : "Certificate Included", value: "" });
+    courseSnapshot.push({ icon: CreditCardOutlined, label: "EMI Options Available", value: "" });
+    courseSnapshot.push({ icon: UserOutlined, label: "Expert Faculty", value: "" });
+    courseSnapshot.push({ icon: ReadOutlined, label: "Industry-Relevant Curriculum", value: "" });
+  }
 
   const whyChooseTitle = heroSub?.whyChooseTitle || "Why Choose This Course?";
   const whyChooseDescription = heroSub?.whyChooseDescription || "";
@@ -281,12 +303,16 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
     ? heroSub.courseSnapshotBottom
     : [];
 
-  const skillsSection = heroSub?.skillsSection || { title: "", description: "", skillsGain: [], curriculumOverview: [] };
-  const learningExperience = heroSub?.learningExperience || { title: "", description: "", learningFeatures: [] };
-  const instituteSection = heroSub?.instituteSection || { title: "", description: "", certificateTitle: "", certificateDescription: "", certificateImage: "", whyItMatters: [] };
-  const careerSection = heroSub?.careerSection || { title: "", description: "", careerOpportunities: [], industriesHiring: [] };
-  const feeSection = heroSub?.feeSection || { title: "", description: "", financialSupport: [], footerNote: "" };
-  const faqSection = heroSub?.faqSection || { title: "", faqs: [] };
+  const modulesList = Array.isArray(heroSub?.modules) && heroSub.modules.length > 0
+    ? heroSub.modules
+    : (Array.isArray(course.modules) ? course.modules : []);
+
+  const skillsSection = heroSub?.skillsSection || null;
+  const learningExperience = heroSub?.learningExperience || null;
+  const instituteSection = heroSub?.instituteSection || null;
+  const careerSection = heroSub?.careerSection || null;
+  const feeSection = heroSub?.feeSection || null;
+  const faqSection = heroSub?.faqSection || null;
 
   const rawLogo = uniObj?.logoSrc?.url || uniObj?.logoSrc;
   const logoUrl = getAssetPath(rawLogo, null);
@@ -505,17 +531,64 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
               </div>
             )}
 
-            {/* ── REMOVE: Eligibility & Admission Process card removed per user request ── */}
+            {/* 2. Eligibility & Admission Process Card */}
+            {(whoCanApplyList.length > 0 || admissionProcessList.length > 0) && (
+              <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
+                <div>
+                  <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
+                    <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#EBF4FF] shrink-0">
+                      <UserOutlined className="text-[#0C3058] text-base" />
+                    </span>
+                    Eligibility & Admission Process
+                  </h2>
+                  <p className="text-slate-600 leading-relaxed text-sm sm:text-base mt-4 m-0 font-medium">
+                    The programme is designed for graduates and working professionals who want to develop expertise in this field.
+                  </p>
+                </div>
 
-            {/* 3. Skills You'll Learn & Curriculum Card */}
-            {skillsSection.title && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                  {/* LEFT: Who Can Apply? */}
+                  {whoCanApplyList.length > 0 && (
+                    <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3">
+                      <h3 className="text-base font-extrabold text-[#0C3058] m-0">Who Can Apply?</h3>
+                      <ul className="space-y-2.5 pt-3">
+                        {whoCanApplyList.map((item, idx) => (
+                          <li key={idx} className="flex items-start gap-2.5 text-sm text-slate-700 font-light leading-snug">
+                            <CheckCircleFilled className="text-[#22b425] text-base mt-0.5 shrink-0" />
+                            <strong className="text-slate-900">{typeof item === "object" ? (item.title || item.name) : item}</strong>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* RIGHT: Admission Process */}
+                  {admissionProcessList.length > 0 && (
+                    <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3">
+                      <h3 className="text-base font-extrabold text-[#0C3058] m-0">Admission Process</h3>
+                      <ol className="space-y-3 pt-3 list-none p-0 m-0">
+                        {admissionProcessList.map((step, idx) => (
+                          <li key={idx} className="flex items-center gap-3 text-sm text-slate-700 font-medium leading-snug">
+                            <span className="w-6 h-6 rounded-full bg-[#0C3058] text-white text-xs font-bold flex items-center justify-center shrink-0">
+                              {idx + 1}
+                            </span>
+                            <span className="font-semibold text-slate-800">{typeof step === "object" ? (step.title || step.name) : step}</span>
+                          </li>
+                        ))}
+                      </ol>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+            {skillsSection && (skillsSection.title || skillsSection.skillsGain?.length > 0 || skillsSection.curriculumOverview?.length > 0) && (
               <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
                 <div>
                   <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
                     <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#E8F5E9] shrink-0">
                       <ReadOutlined className="text-[#22b425] text-base" />
                     </span>
-                    {skillsSection.title}
+                    {skillsSection.title || "Skills You'll Learn & Curriculum"}
                   </h2>
                   {skillsSection.description && (
                     <p className="text-slate-600 leading-relaxed text-sm sm:text-base mt-4 m-0 font-medium">
@@ -524,10 +597,10 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
                   )}
                 </div>
 
-                {(skillsSection.skillsGain.length > 0 || skillsSection.curriculumOverview.length > 0) && (
+                {((skillsSection.skillsGain && skillsSection.skillsGain.length > 0) || (skillsSection.curriculumOverview && skillsSection.curriculumOverview.length > 0)) && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                     {/* LEFT: Skills You'll Gain */}
-                    {skillsSection.skillsGain.length > 0 && (
+                    {skillsSection.skillsGain && skillsSection.skillsGain.length > 0 && (
                       <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3">
                         <h3 className="text-base font-extrabold text-[#0C3058] m-0">Skills You'll Gain</h3>
                         <ul className="space-y-2.5 pt-3">
@@ -541,14 +614,14 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
                       </div>
                     )}
                     {/* RIGHT: Curriculum Overview */}
-                    {skillsSection.curriculumOverview.length > 0 && (
+                    {skillsSection.curriculumOverview && skillsSection.curriculumOverview.length > 0 && (
                       <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3">
                         <h3 className="text-base font-extrabold text-[#0C3058] m-0">Curriculum Overview</h3>
                         <ul className="space-y-2.5 pt-3">
                           {skillsSection.curriculumOverview.map((item, idx) => (
                             <li key={idx} className="flex items-center gap-2.5 text-sm text-slate-700 font-medium leading-snug">
                               <RightOutlined className="text-[#22b425] text-xs shrink-0" />
-                              <span className="font-light text-slate-700">{item}</span>
+                              <span className="font-light text-slate-700">{typeof item === "object" ? (item.title || item.name) : item}</span>
                             </li>
                           ))}
                         </ul>
@@ -560,14 +633,14 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
             )}
 
             {/* 4. Learning Experience Card */}
-            {learningExperience.title && (
+            {learningExperience && (learningExperience.title || learningExperience.learningFeatures?.length > 0) && (
               <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
                 <div>
                   <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
                     <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#EDE7F6] shrink-0">
                       <VideoCameraOutlined className="text-[#7B1FA2] text-base" />
                     </span>
-                    {learningExperience.title}
+                    {learningExperience.title || "An Interactive & Flexible Learning Experience"}
                   </h2>
                   {learningExperience.description && (
                     <p className="text-slate-600 leading-relaxed text-sm sm:text-base mt-4 m-0 font-medium">
@@ -576,7 +649,7 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
                   )}
                 </div>
 
-                {learningExperience.learningFeatures.length > 0 && (
+                {learningExperience.learningFeatures && learningExperience.learningFeatures.length > 0 && (
                   <div className="pt-2">
                     <h3 className="text-base font-extrabold text-[#0C3058] m-0 mb-3">Learning Features</h3>
                     <div className="pb-5">
@@ -595,14 +668,14 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
             )}
 
             {/* 5. Institute & Certificate Card */}
-            {instituteSection.title && (
+            {instituteSection && (instituteSection.title || instituteSection.certificateTitle || instituteSection.whyItMatters?.length > 0) && (
               <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
                 <div>
                   <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
                     <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#EBF4FF] shrink-0">
                       <BankOutlined className="text-[#0C3058] text-base" />
                     </span>
-                    {instituteSection.title}
+                    {instituteSection.title || `Learn from One of India's Premier Management Institutes`}
                   </h2>
                   {instituteSection.description && (
                     <p className="text-slate-600 leading-relaxed text-sm sm:text-base mt-4 m-0 font-medium">
@@ -611,13 +684,12 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
                   )}
                 </div>
 
-                {(instituteSection.certificateTitle || instituteSection.certificateImage || instituteSection.whyItMatters.length > 0) && (
+                {(instituteSection.certificateTitle || instituteSection.certificateImage || (instituteSection.whyItMatters && instituteSection.whyItMatters.length > 0)) && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2 items-center">
                     {/* LEFT: Earn a Certificate description */}
                     {instituteSection.certificateTitle && (
                       <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3 h-full flex flex-col justify-center">
                         <h3 className="text-base font-extrabold text-[#0C3058] m-0 flex items-center gap-2">
-                          {/* <StarFilled className="text-[#F59E0B] text-sm" /> */}
                           {instituteSection.certificateTitle}
                         </h3>
                         {instituteSection.certificateDescription && (
@@ -627,7 +699,7 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
                         )}
                       </div>
                     )}
-                    {/* RIGHT: Certificate Image replacing Why It Matters */}
+                    {/* RIGHT: Certificate Image */}
                     <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-3 flex items-center justify-center overflow-hidden h-full">
                       <img
                         src={instituteSection.certificateImage || "/media/images/2026/07/30/1a4f40f078b735f63422aad57d0c3ca3.webp"}
@@ -641,14 +713,14 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
             )}
 
             {/* 6. Career Section Card */}
-            {careerSection.title && (
+            {careerSection && (careerSection.title || careerSection.careerOpportunities?.length > 0 || careerSection.industriesHiring?.length > 0) && (
               <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
                 <div>
                   <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
                     <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#FFF3E0] shrink-0">
                       <TrophyOutlined className="text-[#F59E0B] text-base" />
                     </span>
-                    {careerSection.title}
+                    {careerSection.title || "Advance Your Career with In-Demand Skills"}
                   </h2>
                   {careerSection.description && (
                     <p className="text-slate-600 leading-relaxed text-sm sm:text-base mt-4 m-0 font-medium">
@@ -657,10 +729,10 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
                   )}
                 </div>
 
-                {(careerSection.careerOpportunities.length > 0 || careerSection.industriesHiring.length > 0) && (
+                {((careerSection.careerOpportunities && careerSection.careerOpportunities.length > 0) || (careerSection.industriesHiring && careerSection.industriesHiring.length > 0)) && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                     {/* LEFT: Career Opportunities */}
-                    {careerSection.careerOpportunities.length > 0 && (
+                    {careerSection.careerOpportunities && careerSection.careerOpportunities.length > 0 && (
                       <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3">
                         <h3 className="text-base font-extrabold text-[#0C3058] m-0">Career Opportunities</h3>
                         <ul className="space-y-2.5 pt-3">
@@ -674,7 +746,7 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
                       </div>
                     )}
                     {/* RIGHT: Industries Hiring */}
-                    {careerSection.industriesHiring.length > 0 && (
+                    {careerSection.industriesHiring && careerSection.industriesHiring.length > 0 && (
                       <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3">
                         <h3 className="text-base font-extrabold text-[#0C3058] m-0">Industries Hiring</h3>
                         <ul className="space-y-2.5 pt-3">
@@ -693,14 +765,14 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
             )}
 
             {/* 7. Flexible Fee & Payment Options Card */}
-            {feeSection.title && (
+            {feeSection && (feeSection.title || feeSection.financialSupport?.length > 0) && (
               <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
                 <div>
                   <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
                     <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#E3F2FD] shrink-0">
                       <CreditCardOutlined className="text-[#1565C0] text-base" />
                     </span>
-                    {feeSection.title}
+                    {feeSection.title || "Flexible Fee & Payment Options"}
                   </h2>
                   {feeSection.description && (
                     <p className="text-slate-600 leading-relaxed text-sm sm:text-base mt-4 m-0 font-medium">
@@ -709,7 +781,7 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
                   )}
                 </div>
 
-                {feeSection.financialSupport.length > 0 && (
+                {feeSection.financialSupport && feeSection.financialSupport.length > 0 && (
                   <div className="pt-2">
                     <h3 className="text-base font-extrabold text-[#0C3058] m-0 mb-3">Financial Support</h3>
                     <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5">
@@ -733,10 +805,8 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
               </div>
             )}
 
-
-
             {/* 8. FAQ Section Card */}
-            {faqSection.faqs.length > 0 && (
+            {faqSection && faqSection.faqs && faqSection.faqs.length > 0 && (
               <FAQAccordion faqs={faqSection.faqs} title={faqSection.title} />
             )}
 

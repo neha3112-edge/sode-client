@@ -533,11 +533,8 @@ export function IimIitLogos({ categories = [], programs = [] }) {
     setTempPartner(partnerWithType);
     setIsPartnerClosing(false);
 
-    const partnerIdStr = String(partner._id || "");
-    const partnerSlugStr = String(partner.slug || partner.name || "").toLowerCase();
-    const partnerNameStr = String(partner.name || partner.label || "").toLowerCase();
-
-    // 1. Derive subchildren categories directly if any
+    // Derive subchildren directly from SSR categories prop (0 extra API calls)
+    const partnerIdStr = String(partner._id);
     const subchildren = (categories || []).filter((c) => {
       const pid = c.parentId;
       if (!pid) return false;
@@ -545,77 +542,33 @@ export function IimIitLogos({ categories = [], programs = [] }) {
       return String(pid) === partnerIdStr;
     });
 
-    // 2. Extract all course programs and subcourses offered by this university from SSR programs!
-    const partnerPrograms = [];
+    // Filter courses for this partner instantly from SSR programs!
+    const partnerPrograms = (programs || []).filter((p) => {
+      if (!p) return false;
+      const uName = (p.university?.name || p.name || "").toLowerCase();
+      const pName = (partner.name || partner.label || "").toLowerCase();
+      const uSlug = (p.university?.slug || "").toLowerCase();
+      const pSlug = (partner.slug || "").toLowerCase();
+      const pTitle = (p.title || "").toLowerCase();
 
-    (programs || []).forEach((p) => {
-      if (!p) return;
+      const nameMatch = uName && pName && (uName.includes(pName) || pName.includes(uName));
+      const titleMatch = pTitle && pName && pTitle.includes(pName);
+      const slugMatch = uSlug && pSlug && (uSlug === pSlug || uSlug.includes(pSlug) || pSlug.includes(uSlug));
 
-      const offerings = Array.isArray(p.universityOfferings) ? p.universityOfferings : [];
-      
-      let matchedInOffering = false;
+      const catMatch =
+        p.category &&
+        (String(p.category._id || p.category) === String(partner._id) ||
+          String(p.category.slug || p.category) === String(partner.slug));
 
-      offerings.forEach((offering) => {
-        const u = offering.university;
-        if (!u) return;
+      const catsMatch =
+        Array.isArray(p.categories) &&
+        p.categories.some(
+          (c) =>
+            String(c._id || c) === String(partner._id) ||
+            String(c.slug || c) === String(partner.slug)
+        );
 
-        const uId = String(u._id || u);
-        const uSlug = String(u.slug || "").toLowerCase();
-        const uName = String(u.name || "").toLowerCase();
-
-        const isMatch =
-          (partnerIdStr && uId === partnerIdStr) ||
-          (partnerSlugStr && uSlug === partnerSlugStr) ||
-          (partnerNameStr && uName && (uName.includes(partnerNameStr) || partnerNameStr.includes(uName)));
-
-        if (isMatch) {
-          matchedInOffering = true;
-          if (Array.isArray(offering.subcourses) && offering.subcourses.length > 0) {
-            offering.subcourses.forEach((sub) => {
-              const subTitle = sub.title || sub.subcourse?.title || p.title;
-              const subSlug = sub.subcourse?.slug || sub.slug || p.slug;
-              partnerPrograms.push({
-                _id: sub._id || sub.subcourse?._id || subSlug,
-                title: subTitle,
-                name: subTitle,
-                slug: subSlug,
-                university: u,
-                image: p.image || p.logo,
-              });
-            });
-          } else {
-            partnerPrograms.push({
-              _id: p._id || p.slug,
-              title: p.title,
-              name: p.title,
-              slug: p.slug,
-              university: u,
-              image: p.image || p.logo,
-            });
-          }
-        }
-      });
-
-      if (!matchedInOffering) {
-        // Fallback root check
-        const uName = (p.university?.name || p.name || "").toLowerCase();
-        const uSlug = (p.university?.slug || "").toLowerCase();
-        const pTitle = (p.title || "").toLowerCase();
-
-        const nameMatch = uName && partnerNameStr && (uName.includes(partnerNameStr) || partnerNameStr.includes(uName));
-        const slugMatch = uSlug && partnerSlugStr && (uSlug === partnerSlugStr || uSlug.includes(partnerSlugStr) || partnerSlugStr.includes(uSlug));
-
-        if (nameMatch || slugMatch) {
-          partnerPrograms.push({
-            _id: p._id || p.slug,
-            title: p.title,
-            name: p.title,
-            slug: p.slug,
-            university: p.university,
-            image: p.image || p.logo,
-          });
-        }
-      }
+      return nameMatch || titleMatch || slugMatch || catMatch || catsMatch;
     });
 
     setPartnerModalData({
@@ -915,13 +868,11 @@ export function IimIitLogos({ categories = [], programs = [] }) {
                   const logo = p.university?.logoSrc?.url || p.logoSrc?.url || p.image?.url;
                   const exists = displayItems.some((it) => it.name.toLowerCase() === mainName.toLowerCase());
                   if (!exists) {
-                    const catSlug = partnerToRender.type || "all";
-                    const uniSlug = partnerToRender.slug || p.slug;
                     displayItems.push({
                       id: p._id || p.slug,
                       name: mainName,
                       logo: logo,
-                      href: `/courses?category=${encodeURIComponent(catSlug)}&subcategory=${encodeURIComponent(uniSlug)}`,
+                      href: p.slug ? `/courses/${p.slug}` : `/courses?course=${encodeURIComponent(p.title || p.name)}`,
                     });
                   }
                 });

@@ -448,43 +448,27 @@ export default function CourseListView({
     const map = new Map();
     map.set("all", { value: "all", label: "All Institutes" });
 
-    dbUniversities.forEach((uni) => {
-      const name = uni.label || uni.name || uni.title || "";
-      const slug = uni.value || uni.slug || uni._id || "";
+    const addUni = (uni) => {
+      if (!uni) return;
+      const name = typeof uni === "string" ? uni.trim() : (uni.label || uni.name || uni.title || "");
+      const slug = typeof uni === "string"
+        ? uni.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-")
+        : (uni.slug || (typeof uni.value === "string" && uni.value.includes("-") ? uni.value : "") || uni.slug || uni._id || uni.value || "");
+      
       if (name && slug) {
-        map.set(String(slug), { value: String(slug), label: name });
-      }
-    });
-
-    if (Array.isArray(initialUniversities)) {
-      initialUniversities.forEach((uni) => {
-        const name = uni.name || uni.title || "";
-        const slug = uni.slug || uni._id || "";
-        if (name && slug) {
-          map.set(String(slug), { value: String(slug), label: name });
+        const key = name.trim().toLowerCase();
+        const existing = map.get(key);
+        // Replace if key doesn't exist OR if previous value was an ObjectId and new slug is clean text
+        if (!existing || (existing.value && existing.value.length > 20 && String(slug).includes("-"))) {
+          map.set(key, { value: String(slug), label: name });
         }
-      });
-    }
-
-    initialList.forEach((p) => {
-      const uni = p?.university;
-      if (uni && typeof uni === "object") {
-        const name = uni.name || uni.title || "";
-        const slug = uni.slug || uni._id || "";
-        if (name && slug) {
-          map.set(String(slug), { value: String(slug), label: name });
-        }
-      } else if (uni && typeof uni === "string" && uni.trim()) {
-        const clean = uni.trim();
-        map.set(clean.toLowerCase(), { value: clean.toLowerCase(), label: clean });
       }
-    });
+    };
 
-    if (map.size <= 1) {
-      map.set("iim-nagpur", { value: "iim-nagpur", label: "IIM Nagpur" });
-      map.set("edgewood-university", { value: "edgewood-university", label: "Edgewood University" });
-      map.set("esgci-paris", { value: "esgci-paris", label: "ESGCI Paris" });
-      map.set("rushford-business-school", { value: "rushford-business-school", label: "Rushford Business School" });
+    if (Array.isArray(dbUniversities)) dbUniversities.forEach(addUni);
+    if (Array.isArray(initialUniversities)) initialUniversities.forEach(addUni);
+    if (Array.isArray(initialList)) {
+      initialList.forEach((p) => addUni(p?.university));
     }
 
     return Array.from(map.values());
