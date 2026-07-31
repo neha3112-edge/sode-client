@@ -158,9 +158,6 @@ export function Stats({ categories: initialCategories = [], programs = [] }) {
     } else {
       if (activeCategory) handleCloseModal();
       let catSlug = cat.slug || cat.name || cat.label;
-      if (catSlug.startsWith("browse-")) {
-        catSlug = catSlug.slice(7);
-      }
       router.push(`/courses?category=${encodeURIComponent(catSlug)}`);
     }
   };
@@ -175,16 +172,7 @@ export function Stats({ categories: initialCategories = [], programs = [] }) {
 
   const handleChildClick = (child) => {
     let parentSlug = activeCategory ? (activeCategory.slug || activeCategory._id) : "";
-    if (parentSlug.startsWith("browse-")) {
-      parentSlug = parentSlug.slice(7);
-    }
     let childSlug = child.slug || child.name || child.label;
-    if (childSlug.startsWith("browse-")) {
-      childSlug = childSlug.slice(7);
-    }
-    if (parentSlug && childSlug.startsWith(`${parentSlug}-`)) {
-      childSlug = childSlug.slice(parentSlug.length + 1);
-    }
     handleCloseModal();
     if (parentSlug) {
       router.push(`/courses?category=${encodeURIComponent(parentSlug)}&subcategory=${encodeURIComponent(childSlug)}`);
@@ -262,8 +250,7 @@ export function Stats({ categories: initialCategories = [], programs = [] }) {
                 </h4>
                 <div className="flex flex-wrap gap-2 sm:gap-2.5" suppressHydrationWarning>
                   {browseByPills.map((pill) => {
-                    let subSlug = pill.slug || pill.name || "";
-                    if (subSlug.startsWith("browse-")) subSlug = subSlug.slice(7);
+                    let subSlug = pill.slug || pill.name || pill.label;
                     return (
                       <button
                         key={pill._id || pill.slug || pill.name}
@@ -385,7 +372,7 @@ export function Stats({ categories: initialCategories = [], programs = [] }) {
                           🎓 No subcategories found for {activeCategory.name || activeCategory.label}.
                         </p>
                         <Link
-                          href={`/courses?category=${(activeCategory.slug || "").replace(/^browse-/, "")}`}
+                          href={`/courses?category=${activeCategory.slug || ""}`}
                           onClick={handleCloseModal}
                           className="inline-flex items-center gap-2 bg-blue-600 text-white font-semibold px-5 py-2.5 rounded-xl text-xs hover:bg-blue-700 transition-all shadow-sm"
                         >

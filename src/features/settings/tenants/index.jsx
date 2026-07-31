@@ -4,6 +4,7 @@ import moment from "moment";
 import TenantForm from "./form";
 import { Switch, Avatar, Typography } from "antd";
 import { BankOutlined } from "@ant-design/icons";
+import { getAssetPath } from "@/lib/utils";
 
 const { Text } = Typography;
 
@@ -16,14 +17,22 @@ export default function Index() {
             dataIndex: "logo",
             key: "logo",
             width: 60,
-            render: (logo, record) => (
-                <Avatar
-                    src={logo}
-                    icon={!logo && <BankOutlined />}
-                    shape="square"
-                    className="bg-gray-100 text-gray-600"
-                />
-            ),
+            render: (logo, record) => {
+                let logoUrl = null;
+                if (logo && typeof logo === "object" && logo.url) {
+                    logoUrl = getAssetPath(logo.url);
+                } else if (typeof logo === "string") {
+                    logoUrl = logo.startsWith("http") ? logo : getAssetPath(logo);
+                }
+                return (
+                    <Avatar
+                        src={logoUrl}
+                        icon={!logoUrl && <BankOutlined />}
+                        shape="square"
+                        className="bg-gray-100 text-gray-600"
+                    />
+                );
+            },
         },
         {
             title: "Company Name",
@@ -43,7 +52,9 @@ export default function Index() {
             dataIndex: "city",
             key: "location",
             render: (city, record) => {
-                const locationParts = [city, record.state].filter(Boolean);
+                const cityName = city && typeof city === "object" ? city.name : city;
+                const stateName = record.state && typeof record.state === "object" ? record.state.name : record.state;
+                const locationParts = [cityName, stateName].filter(Boolean);
                 return locationParts.length > 0 ? locationParts.join(", ") : "-";
             }
         },
