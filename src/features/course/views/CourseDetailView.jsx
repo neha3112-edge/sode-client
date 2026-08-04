@@ -262,31 +262,9 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
   const overviewText = heroSub?.overviewDescription || heroSub?.content || heroSub?.description || course.description || "";
 
   const courseSnapshot = [];
-  if (Array.isArray(heroSub?.overviewSnapshot) && heroSub.overviewSnapshot.length > 0) {
-    const iconMap = {
-      bank: BankOutlined,
-      apartment: ApartmentOutlined,
-      clock: ClockCircleFilled,
-      laptop: LaptopOutlined,
-      certificate: SafetyCertificateOutlined,
-      card: CreditCardOutlined,
-      user: UserOutlined,
-      read: ReadOutlined,
-    };
-    heroSub.overviewSnapshot.forEach((item) => {
-      const IconComp = iconMap[item.icon] || CheckCircleFilled;
-      courseSnapshot.push({ icon: IconComp, label: item.label, value: item.value || "" });
-    });
-  } else {
-    if (uniName) courseSnapshot.push({ icon: BankOutlined, label: "Institute", value: uniName });
-    if (heroSub?.title || cleanTitle) courseSnapshot.push({ icon: ApartmentOutlined, label: "Programme", value: heroSub?.title || cleanTitle });
-    if (primaryDuration) courseSnapshot.push({ icon: ClockCircleFilled, label: "Duration", value: primaryDuration });
-    courseSnapshot.push({ icon: LaptopOutlined, label: "Learning Mode", value: "Live Online" });
-    courseSnapshot.push({ icon: SafetyCertificateOutlined, label: uniName ? `Certificate from ${uniName}` : "Certificate Included", value: "" });
-    courseSnapshot.push({ icon: CreditCardOutlined, label: "EMI Options Available", value: "" });
-    courseSnapshot.push({ icon: UserOutlined, label: "Expert Faculty", value: "" });
-    courseSnapshot.push({ icon: ReadOutlined, label: "Industry-Relevant Curriculum", value: "" });
-  }
+  if (uniName) courseSnapshot.push({ icon: BankOutlined, label: "Institute", value: uniName });
+  if (heroSub?.title) courseSnapshot.push({ icon: ApartmentOutlined, label: "Programme", value: heroSub.title });
+  if (primaryDuration) courseSnapshot.push({ icon: ClockCircleFilled, label: "Duration", value: primaryDuration });
 
   const whyChooseTitle = heroSub?.whyChooseTitle || "Why Choose This Course?";
   const whyChooseDescription = heroSub?.whyChooseDescription || "";
@@ -350,7 +328,7 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
         </div>
 
         {/* ── Hero Banner (Matching Reference PDF UI) ── */}
-        <div className="bg-gradient-to-r from-[#0F3759] via-[#103D6D] to-[#154E8A] rounded-3xl overflow-hidden shadow-xl text-white relative">
+        <div className="bg-linear-to-r from-[#0F3759] via-[#103D6D] to-[#154E8A] rounded-3xl overflow-hidden shadow-xl text-white relative">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
 
             {/* Left Content Area */}
@@ -704,7 +682,7 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
                       <img
                         src={instituteSection.certificateImage || "/media/images/2026/07/30/1a4f40f078b735f63422aad57d0c3ca3.webp"}
                         alt="Certificate Preview"
-                        className="w-full h-auto object-contain rounded-xl max-h-[240px] shadow-xs"
+                        className="w-full h-auto object-contain rounded-xl max-h-60 shadow-xs"
                       />
                     </div>
                   </div>
