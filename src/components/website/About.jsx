@@ -31,7 +31,7 @@ export function About({
   return (
     <section
       id="about"
-      className="scroll-mt-10 py-16 bg-[#1d3557] text-white overflow-hidden w-full relative z-10 border-t border-white/5"
+      className="scroll-mt-10 py-6 bg-[#1d3557] text-white overflow-hidden w-full relative z-10 border-t border-white/5"
     >
       <Container>
         {/* ========================================================================= */}
@@ -39,11 +39,11 @@ export function About({
         {/* ========================================================================= */}
 
         <div className="flex flex-col items-center text-center mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-6 uppercase tracking-wide">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4 uppercase tracking-wide">
             About <span className="text-[#f7ebc7]">SODE</span>
           </h2>
 
-          <div className="space-y-4 text-[11px] text-gray-300 font-medium leading-relaxed">
+          <div className="space-y-3 text-sm text-gray-300 font-medium leading-normal">
             <p>
               SODE (School of Online &amp; Distance Education) is India&apos;s
               top educational platform, transforming the way learners engage
@@ -85,10 +85,10 @@ export function About({
         {/* Why Trust SODE Sub-section */}
         {/* ========================================================================= */}
 
-        <div className="flex flex-col items-center mt-16 md:mt-20">
+        <div className="flex flex-col items-center mt-8 md:mt-10">
           <h2
             id="why-choose"
-            className="text-3xl md:text-4xl font-extrabold text-white text-center mb-12 px-4 leading-tight"
+            className="text-3xl md:text-4xl font-extrabold text-white text-center mb-6 md:mb-8 px-4 leading-tight"
           >
             Why do Thousands of Learners Trust{" "}
             <span className="text-[#f7ebc7]">SODE?</span>
@@ -99,7 +99,7 @@ export function About({
           <div className="flex flex-col lg:grid lg:grid-cols-[1fr_280px_1fr] gap-6 md:gap-2 items-center max-w-7xl px-4">
             {/* Left Column */}
 
-            <div className="flex flex-col items-start space-y-6 order-1 lg:order-1">
+            <div className="flex flex-col items-start space-y-4 order-1 lg:order-1">
               {leftCards.map((card, idx) => (
                 <div
                   key={idx}
@@ -143,7 +143,7 @@ export function About({
 
             {/* Right Column */}
 
-            <div className="flex flex-col items-end space-y-6 order-2 lg:order-3">
+            <div className="flex flex-col items-end space-y-4 order-2 lg:order-3">
               {rightCards.map((card, idx) => (
                 <div
                   key={idx}
@@ -173,7 +173,7 @@ export function About({
 
           {/* CTA Button */}
 
-          <div className="mt-2 md:mt-5 text-center">
+          <div className="mt-4 md:mt-6 text-center">
             <Button
               onClick={onClick}
               className="bg-linear-to-r from-[#EEC471] via-[#F3CD73] to-[#FADA9A] text-[#102441] text-sm rounded-md px-4 py-5 border-none text-base font-bold shadow-lg transition-all transform hover:scale-[1.02] cursor-pointer duration-200"
