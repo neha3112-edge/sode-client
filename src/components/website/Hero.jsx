@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { Card, Carousel } from "antd";
+import { Button, Card, Carousel } from "antd";
 
 import { Container } from "@/components/common/Container";
 import FormWrapper from "@/components/forms/FormWrapper";
@@ -64,7 +64,7 @@ export function Hero({ initialHeroData = null }) {
     return (
       <div className="w-full">
         {/* ── DESKTOP HERO VIEW (lg and up) ── */}
-        <div className="hidden lg:flex relative w-full overflow-hidden bg-[#0C2340] h-130 items-center">
+        <div className="flex relative w-full overflow-hidden bg-[#0C2340] md:h-80 items-center">
           <div className="absolute inset-0 z-0">
             <Image
               src={bgImageUrl}
@@ -77,48 +77,29 @@ export function Hero({ initialHeroData = null }) {
             />
           </div>
 
-          <Container className="relative z-10 w-full px-0 py-16">
-            <div className="grid grid-cols-2 gap-12 items-center w-full">
-              <div className="flex flex-col text-left text-white z-10 relative space-y-6">
-                <p className="text-base font-serif font-semibold italic text-[#dbeafe] mb-1">
-                  <span className="text-3xl font-medium text-[#f7ebc7] font-sans">#1</span>{" "}
+          <Container className="relative z-10 w-full px-0 py-6 lg:py-16">
+            <div className="grid md:grid-cols-2 gap-12 items-center w-full">
+              <div className="flex flex-col text-left text-white z-10 relative space-y-2 md:space-y-3">
+                <p className="text-[10px] md:text-sm font-serif font-semibold italic text-[#dbeafe] mb-1 w-full">
+                  <span className="text-xs md:text-lg font-medium text-[#f7ebc7] font-sans">#1</span>{" "}
                   {badgeText.replace(/^#1\s*/i, "")}
                 </p>
 
-                <h1 className="text-3xl lg:text-4xl font-extrabold leading-tight text-white">
+                <h1 className="text-md lg:text-3xl leading-tight font-bold text-white w-[60%] md:w-full pt-2 md:pt-0">
                   {titleText}
                 </h1>
 
-                <p className="text-sm font-medium text-white/85 max-w-md">
+                <p className=" hidden md:block text-xs font-medium text-white/85 max-w-md w-[50%] md:w-full">
                   {subtitleText}
                 </p>
 
-                <div className="flex flex-col space-y-3">
-                  <div className="flex flex-wrap gap-3">
-                    <span className="rounded-md border border-white/30 bg-white/5 px-4 py-2 text-sm font-semibold">Doctorate</span>
-                    <span className="rounded-md border border-white/30 bg-white/5 px-4 py-2 text-sm font-semibold">Certification</span>
-                    <span className="rounded-md border border-white/30 bg-white/5 px-4 py-2 text-sm font-semibold">Executive Programs</span>
-                  </div>
-                  <div className="flex flex-wrap gap-3">
-                    <span className="rounded-md border border-white/30 bg-white/5 px-4 py-2 text-sm font-semibold">Banking</span>
-                    <span className="rounded-md border border-white/30 bg-white/5 px-4 py-2 text-sm font-semibold">Finance</span>
-                    <span className="rounded-md border border-white/30 bg-white/5 px-4 py-2 text-sm font-semibold">Leadership</span>
-                  </div>
-                </div>
-
                 <div className="flex gap-3 pt-2">
-                  <button
+                  <Button
                     onClick={openCounsellingForm}
-                    className="cursor-pointer rounded-md bg-gradient-to-r from-[#EEC471] via-[#F3CD73] to-[#FADA9A] px-8 py-2.5 text-base font-bold text-[#102441] shadow-lg hover:scale-[1.02] transition-transform duration-200"
+                    className="cursor-pointer rounded-md bg-gradient-to-r from-[#EEC471] via-[#F3CD73] to-[#FADA9A] text-sm border-none font-semibold text-[#102441] shadow-lg hover:scale-[1.02] transition-transform duration-200"
                   >
-                    {primaryCtaText === "Book 1:1 Personalised Counselling" ? "Explore Programs" : primaryCtaText}
-                  </button>
-                  <button
-                    onClick={openCounsellingForm}
-                    className="cursor-pointer rounded-md border border-white/40 bg-white/10 px-6 py-2.5 text-base font-bold text-white shadow-md backdrop-blur-xs hover:bg-white/20 transition-all duration-200"
-                  >
-                    {slideSecondaryCta}
-                  </button>
+                    {primaryCtaText === "Book 1:1 Personalised Counselling" ? "Get 1:1 Counselling" : primaryCtaText}
+                  </Button>
                 </div>
               </div>
 
@@ -139,48 +120,6 @@ export function Hero({ initialHeroData = null }) {
               )}
             </div>
           </Container>
-        </div>
-
-        {/* ── MOBILE HERO VIEW (< lg) ── */}
-        <div className="lg:hidden w-full bg-[#0C2340]">
-          {/* Top Banner Box */}
-          <div className="pt-8 pb-0 text-center flex flex-col items-center relative overflow-hidden">
-            <p className="text-md sm:text-sm font-serif italic text-[#dbeafe] mb-2.5 font-medium">
-              <span className="font-sans font-bold text-[#f7ebc7] not-italic text-sm">#1</span>{" "}
-              {badgeText.replace(/^#1\s*/i, "")}
-            </p>
-
-            <h1 className="text-xl sm:text-2xl font-extrabold text-white leading-tight sm:max-w-md mx-2 mb-3">
-              {titleText}
-            </h1>
-
-            <p className="text-xs sm:text-sm text-slate-200/90 font-medium max-w-xs sm:max-w-md mx-auto leading-relaxed">
-              {subtitleText}
-            </p>
-
-            {/* Model / Person Image */}
-            <div className="w-full relative flex justify-center items-end -mt-[80px]">
-              <img
-                src={resolveImage(heroData?.mobileBgImage || heroData?.mobileImage, "/media/images/2026/07/20/893bee8f8373a9101bcdb9a52bfbe001.png")}
-                alt={titleText}
-                className="w-full h-auto max-h-[500px] object-contain object-bottom"
-              />
-            </div>
-          </div>
-
-          {/* Mobile Apply Form Card */}
-          {showOnMobile && (
-            <div className="px-4 bg-[#0C2340] pb-10 -mt-[10px]">
-              <div className="max-w-md mx-auto bg-white rounded-3xl p-5 sm:p-6 shadow-xl border border-slate-200/80">
-                <FormWrapper
-                  title="Apply Now"
-                  subtitle="Select your course and start your application journey"
-                  submitButtonText="Apply Now"
-                  formNameOverride="MobileHero_ApplyNow"
-                />
-              </div>
-            </div>
-          )}
         </div>
       </div>
     );
