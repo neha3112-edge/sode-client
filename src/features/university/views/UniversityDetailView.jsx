@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { Breadcrumb, Button, Tooltip, Carousel, Modal } from "antd";
@@ -346,6 +346,7 @@ const SINGLE_UNIVERSITY_DATA = {
         role: "HR Professional",
         rating: 5,
         course: "HR Management & Analytics",
+        avatar: "/media/images/2026/07/30/15126164a42947040644b380a66f9994.png",
       },
       {
         id: 2,
@@ -354,6 +355,7 @@ const SINGLE_UNIVERSITY_DATA = {
         role: "Senior Business Manager",
         rating: 5,
         course: "AI for Business Professionals",
+        avatar: "/media/images/2026/07/30/15126164a42947040644b380a66f9994.png",
       },
       {
         id: 3,
@@ -362,6 +364,7 @@ const SINGLE_UNIVERSITY_DATA = {
         role: "Working Professional",
         rating: 5,
         course: "Executive Leadership (SMP)",
+        avatar: "/media/images/2026/07/30/15126164a42947040644b380a66f9994.png",
       },
       {
         id: 4,
@@ -370,6 +373,7 @@ const SINGLE_UNIVERSITY_DATA = {
         role: "Product Manager",
         rating: 5,
         course: "FinTech & Digital Banking",
+        avatar: "/media/images/2026/07/30/15126164a42947040644b380a66f9994.png",
       },
       {
         id: 5,
@@ -378,6 +382,7 @@ const SINGLE_UNIVERSITY_DATA = {
         role: "Operations Lead",
         rating: 5,
         course: "HR Management & Analytics",
+        avatar: "/media/images/2026/07/30/15126164a42947040644b380a66f9994.png",
       },
     ],
   },
@@ -546,6 +551,19 @@ function PartnerLogoIcon({ partner }) {
   );
 }
 
+const NAV_SECTIONS = [
+  { id: "section-about", label: "About" },
+  { id: "section-features", label: "Key Features" },
+  { id: "section-approvals", label: "Approvals" },
+  { id: "section-courses", label: "Courses" },
+  { id: "section-admission", label: "Admission Process" },
+  { id: "section-learning-methodology", label: "Methodology" },
+  { id: "section-certificate", label: "Certificate" },
+  { id: "section-reviews", label: "Reviews" },
+  { id: "section-explore", label: "Other IIMs" },
+  { id: "section-faqs", label: "FAQs" },
+];
+
 export default function UniversityDetailView({ slug: propSlug }) {
   const params = useParams();
   const router = useRouter();
@@ -564,8 +582,122 @@ export default function UniversityDetailView({ slug: propSlug }) {
   const [openFaqIndex, setOpenFaqIndex] = useState(0);
   const [isCertificateModalOpen, setIsCertificateModalOpen] = useState(false);
 
+  // Active section for ScrollSpy & Sticky Tab Navigation
+  const [activeSection, setActiveSection] = useState("section-about");
+  const [showTopBar, setShowTopBar] = useState(false);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const navContainerRef = useRef(null);
+  const tabRefs = useRef({});
+  const isManualScrollingRef = useRef(false);
+  const scrollTimeoutRef = useRef(null);
+
   const toggleFaq = (index) => {
     setOpenFaqIndex((prev) => (prev === index ? null : index));
+  };
+
+  const checkNavScroll = useCallback(() => {
+    const el = navContainerRef.current;
+    if (el) {
+      const scrollLeft = Math.ceil(el.scrollLeft);
+      const clientWidth = el.clientWidth;
+      const scrollWidth = el.scrollWidth;
+
+      setCanScrollLeft(scrollLeft > 3);
+      setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 3);
+    }
+  }, []);
+
+  useEffect(() => {
+    checkNavScroll();
+    const el = navContainerRef.current;
+    if (el) {
+      el.addEventListener("scroll", checkNavScroll, { passive: true });
+      window.addEventListener("resize", checkNavScroll);
+      return () => {
+        el.removeEventListener("scroll", checkNavScroll);
+        window.removeEventListener("resize", checkNavScroll);
+      };
+    }
+  }, [showTopBar, checkNavScroll]);
+
+  const scrollNavTabs = (direction) => {
+    const el = navContainerRef.current;
+    if (el) {
+      const scrollAmount = direction === "left" ? -220 : 220;
+      el.scrollBy({ left: scrollAmount, behavior: "smooth" });
+      setTimeout(checkNavScroll, 50);
+      setTimeout(checkNavScroll, 200);
+      setTimeout(checkNavScroll, 400);
+    }
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+
+      // Show top bar only after scrolling past hero banner (~320px)
+      if (scrollPosition > 320) {
+        setShowTopBar(true);
+      } else {
+        setShowTopBar(false);
+      }
+
+      // Only update activeSection via ScrollSpy if user is manually scrolling
+      if (!isManualScrollingRef.current) {
+        const offset = 120;
+        const sectionElements = NAV_SECTIONS.map((sec) =>
+          document.getElementById(sec.id)
+        ).filter(Boolean);
+
+        let currentSection = NAV_SECTIONS[0].id;
+        for (let i = 0; i < sectionElements.length; i++) {
+          const el = sectionElements[i];
+          const rect = el.getBoundingClientRect();
+          if (rect.top <= offset) {
+            currentSection = el.id;
+          }
+        }
+        setActiveSection(currentSection);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const activeTabEl = tabRefs.current[activeSection];
+    if (activeTabEl && navContainerRef.current) {
+      activeTabEl.scrollIntoView({
+        behavior: "smooth",
+        inline: "center",
+        block: "nearest",
+      });
+      setTimeout(checkNavScroll, 350);
+    }
+  }, [activeSection]);
+
+  const scrollToSection = (id) => {
+    const el = document.getElementById(id);
+    if (el) {
+      // Instantly switch active blue line to clicked tab!
+      setActiveSection(id);
+      isManualScrollingRef.current = true;
+
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+
+      const yOffset = -70;
+      const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: "smooth" });
+
+      scrollTimeoutRef.current = setTimeout(() => {
+        isManualScrollingRef.current = false;
+      }, 700);
+    }
   };
 
   useEffect(() => {
@@ -636,7 +768,7 @@ export default function UniversityDetailView({ slug: propSlug }) {
       <div className="max-w-7xl mx-auto space-y-6 md:space-y-8">
 
         {/* Navigation & Header Controls */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="hidden md:flex sm:flex-row sm:items-center justify-between gap-4">
           <Breadcrumb
             items={[
               { title: <Link href="/" className="text-slate-600 hover:text-blue-600">Home</Link> },
@@ -644,7 +776,7 @@ export default function UniversityDetailView({ slug: propSlug }) {
               { title: <span className="font-semibold text-slate-900">{data.banner.name}</span> },
             ]}
           />
-          <div className="flex items-center gap-2.5">
+          <div className="inline-flex items-center gap-2.5">
             <Button
               type={isInCompare(slug) ? "default" : "dashed"}
               onClick={() => toggleCompare({ ...data.banner, slug })}
@@ -760,9 +892,70 @@ export default function UniversityDetailView({ slug: propSlug }) {
         </div>
 
         {/* ========================================================= */}
+        {/* ANIMATED FIXED TOP BAR (HIDDEN INITIALLY, SLIDES DOWN ON SCROLL) */}
+        {/* ========================================================= */}
+        <div
+          className={`fixed top-0 left-0 right-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-md transition-all duration-300 transform ${showTopBar
+            ? "translate-y-0 opacity-100 pointer-events-auto"
+            : "-translate-y-full opacity-0 pointer-events-none"
+            }`}
+        >
+          <div className="w-full max-w-7xl mx-auto px-2 sm:px-6 relative">
+            {/* Left Scroll Arrow (Visible if content is scrolled right) */}
+            {canScrollLeft && (
+              <button
+                onClick={() => scrollNavTabs("left")}
+                aria-label="Scroll Tabs Left"
+                className="absolute left-1 sm:left-2 top-1/2 -translate-y-1/2 z-10 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white text-[#0c3058] shadow-md border border-slate-200 flex items-center justify-center hover:bg-blue-50 transition-all cursor-pointer"
+              >
+                <ChevronLeft className="w-4 h-4 stroke-[2.5]" />
+              </button>
+            )}
+
+            {/* Right Scroll Arrow (Visible if content available to scroll on right) */}
+            {canScrollRight && (
+              <button
+                onClick={() => scrollNavTabs("right")}
+                aria-label="Scroll Tabs Right"
+                className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 z-10 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white text-[#0c3058] shadow-md border border-slate-200 flex items-center justify-center hover:bg-blue-50 transition-all cursor-pointer"
+              >
+                <ChevronRight className="w-4 h-4 stroke-[2.5]" />
+              </button>
+            )}
+
+            <div
+              ref={navContainerRef}
+              className="flex items-center gap-1 sm:gap-3 overflow-x-auto scrollbar-none scroll-smooth whitespace-nowrap py-0.5 px-2"
+            >
+              {NAV_SECTIONS.map((sec) => {
+                const isActive = activeSection === sec.id;
+
+                return (
+                  <button
+                    key={sec.id}
+                    ref={(el) => (tabRefs.current[sec.id] = el)}
+                    onClick={() => scrollToSection(sec.id)}
+                    className={`relative px-3.5 sm:px-5 py-3 sm:py-3.5 text-xs sm:text-sm font-extrabold transition-colors duration-200 cursor-pointer shrink-0 border-none bg-transparent select-none ${isActive
+                      ? "text-[#0c3058]"
+                      : "text-slate-600 hover:text-slate-900"
+                      }`}
+                  >
+                    <span>{sec.label}</span>
+                    {/* Active Underline Line Indicator */}
+                    {isActive && (
+                      <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#0c3058] rounded-t-full transition-all duration-300" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* ========================================================= */}
         {/* SECTION 2: ABOUT IIM KOZHIKODE CARD                        */}
         {/* ========================================================= */}
-        <div className="bg-white rounded-3xl border border-slate-200/80 p-6 md:p-8 shadow-sm space-y-6">
+        <div id="section-about" className="bg-white rounded-3xl border border-slate-200/80 p-6 md:p-8 shadow-sm space-y-6">
           {/* Header */}
           <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
             <div className="w-9 h-9 rounded-xl bg-blue-50 text-[#0c3058] flex items-center justify-center shrink-0">
@@ -783,7 +976,7 @@ export default function UniversityDetailView({ slug: propSlug }) {
           </div>
 
           {/* Why Choose Sub-Section */}
-          <div className="pt-4 border-t border-slate-100 space-y-4">
+          <div id="section-why-choose" className="pt-4 border-t border-slate-100 space-y-4">
             <h3 className="text-base md:text-lg font-bold text-[#0c3058]">
               {data.aboutSection.whyChooseTitle}
             </h3>
@@ -806,7 +999,7 @@ export default function UniversityDetailView({ slug: propSlug }) {
         {/* ========================================================= */}
         {/* SECTION 3: UNIVERSITY HIGHLIGHTS TABLE CARD               */}
         {/* ========================================================= */}
-        <div className="bg-white rounded-3xl border border-slate-200/80 p-6 md:p-8 shadow-sm space-y-6">
+        <div id="section-features" className="bg-white rounded-3xl border border-slate-200/80 p-6 md:p-8 shadow-sm space-y-6">
           {/* Header */}
           <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
             <div className="w-9 h-9 rounded-xl bg-blue-50 text-[#0c3058] flex items-center justify-center shrink-0">
@@ -854,7 +1047,7 @@ export default function UniversityDetailView({ slug: propSlug }) {
         {/* ========================================================= */}
         {/* SECTION 4: APPROVALS & ACCREDITATIONS CARD                */}
         {/* ========================================================= */}
-        <div className="bg-white rounded-3xl border border-slate-200/80 p-6 md:p-8 shadow-sm space-y-6">
+        <div id="section-approvals" className="bg-white rounded-3xl border border-slate-200/80 p-6 md:p-8 shadow-sm space-y-6">
           {/* Header */}
           <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
             <div className="w-9 h-9 rounded-xl bg-blue-50 text-[#0c3058] flex items-center justify-center shrink-0">
@@ -890,7 +1083,7 @@ export default function UniversityDetailView({ slug: propSlug }) {
         {/* ========================================================= */}
         {/* SECTION 5: COURSES OFFERED CARD & SLIDER                  */}
         {/* ========================================================= */}
-        <div className="bg-white rounded-3xl border border-slate-200/80 p-6 md:p-8 shadow-sm space-y-6">
+        <div id="section-courses" className="bg-white rounded-3xl border border-slate-200/80 p-6 md:p-8 shadow-sm space-y-6">
           {/* Section Header */}
           <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
             <div className="w-9 h-9 rounded-xl bg-blue-50 text-[#0c3058] flex items-center justify-center shrink-0">
@@ -1008,7 +1201,7 @@ export default function UniversityDetailView({ slug: propSlug }) {
         {/* ========================================================= */}
         {/* SECTION 6: ADMISSION PROCESS (6 Steps in Single Row Grid) */}
         {/* ========================================================= */}
-        <div className="bg-white rounded-3xl border border-slate-200/80 p-6 md:p-8 shadow-sm space-y-6">
+        <div id="section-admission" className="bg-white rounded-3xl border border-slate-200/80 p-6 md:p-8 shadow-sm space-y-6">
           {/* Section Header */}
           <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
             <div className="w-9 h-9 rounded-xl bg-blue-50 text-[#0c3058] flex items-center justify-center shrink-0">
@@ -1060,7 +1253,7 @@ export default function UniversityDetailView({ slug: propSlug }) {
         {/* ========================================================= */}
         {/* SECTION 7: LEARNING METHODOLOGY CARD                      */}
         {/* ========================================================= */}
-        <div className="bg-white rounded-3xl border border-slate-200/80 p-6 md:p-8 shadow-sm space-y-6">
+        <div id="section-learning-methodology" className="bg-white rounded-3xl border border-slate-200/80 p-6 md:p-8 shadow-sm space-y-6">
           {/* Section Header */}
           <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
             <div className="w-9 h-9 rounded-xl bg-blue-50 text-[#0c3058] flex items-center justify-center shrink-0">
@@ -1111,7 +1304,7 @@ export default function UniversityDetailView({ slug: propSlug }) {
         {/* ========================================================= */}
         {/* SECTION 8: EXECUTIVE EDUCATION CERTIFICATE CARD           */}
         {/* ========================================================= */}
-        <div className="bg-white rounded-3xl border border-slate-200/80 p-6 md:p-8 shadow-sm space-y-6">
+        <div id="section-certificate" className="bg-white rounded-3xl border border-slate-200/80 p-6 md:p-8 shadow-sm space-y-6">
           {/* Section Header */}
           <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
             <div className="w-9 h-9 rounded-xl bg-blue-50 text-[#0c3058] flex items-center justify-center shrink-0">
@@ -1182,7 +1375,7 @@ export default function UniversityDetailView({ slug: propSlug }) {
         {/* ========================================================= */}
         {/* SECTION 9: STUDENT REVIEWS & TESTIMONIALS CARD            */}
         {/* ========================================================= */}
-        <div className="bg-white rounded-3xl border border-slate-200/80 p-6 md:p-8 shadow-sm space-y-6">
+        <div id="section-reviews" className="bg-white rounded-3xl border border-slate-200/80 p-6 md:p-8 shadow-sm space-y-6">
           {/* Section Header */}
           <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
             <div className="w-9 h-9 rounded-xl bg-blue-50 text-[#0c3058] flex items-center justify-center shrink-0">
@@ -1264,15 +1457,24 @@ export default function UniversityDetailView({ slug: propSlug }) {
                       </p>
                     </div>
 
-                    {/* Author & Role Footer */}
-                    <div className="pt-3 border-t border-slate-200/60 flex flex-col md:flex-row items-left md:items-center justify-between">
-                      <div>
-                        <h4 className="font-extrabold text-sm text-[#0c3058] m-0">
-                          {review.author}
-                        </h4>
-                        <span className="text-xs text-slate-500 font-medium block">
-                          — {review.role}
-                        </span>
+                    {/* Author & Role Footer with User Avatar */}
+                    <div className="pt-3 border-t border-slate-200/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <div className="relative w-10 h-10 sm:w-11 sm:h-11 rounded-full overflow-hidden shrink-0 border-2 border-white shadow-xs bg-slate-100">
+                          <img
+                            src={getAssetPath(review.avatar || review.avatarUrl || "/media/images/2026/07/30/15126164a42947040644b380a66f9994.png")}
+                            alt={review.author}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div>
+                          <h4 className="font-extrabold text-sm text-[#0c3058] m-0">
+                            {review.author}
+                          </h4>
+                          <span className="text-xs text-slate-500 font-medium block">
+                            — {review.role}
+                          </span>
+                        </div>
                       </div>
                       <span className="text-[11px] font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-lg w-fit">
                         {review.course}
@@ -1288,7 +1490,7 @@ export default function UniversityDetailView({ slug: propSlug }) {
         {/* ========================================================= */}
         {/* SECTION 10: EXPLORE OTHER TOP IIM/IIT INSTITUTIONS CARD    */}
         {/* ========================================================= */}
-        <div className="bg-white rounded-3xl border border-slate-200/80 p-6 md:p-8 shadow-sm space-y-6">
+        <div id="section-explore" className="bg-white rounded-3xl border border-slate-200/80 p-6 md:p-8 shadow-sm space-y-6">
           {/* Section Header */}
           <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
             <div className="w-9 h-9 rounded-xl bg-blue-50 text-[#0c3058] flex items-center justify-center shrink-0">
@@ -1345,7 +1547,7 @@ export default function UniversityDetailView({ slug: propSlug }) {
         {/* ========================================================= */}
         {/* SECTION 11: FREQUENTLY ASKED QUESTIONS (FAQ CARD)         */}
         {/* ========================================================= */}
-        <div className="bg-white rounded-3xl border border-slate-200/80 p-6 md:p-8 shadow-sm space-y-6">
+        <div id="section-faqs" className="bg-white rounded-3xl border border-slate-200/80 p-6 md:p-8 shadow-sm space-y-6">
           {/* Section Header */}
           <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
             <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
