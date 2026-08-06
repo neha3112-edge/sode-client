@@ -44,7 +44,7 @@ function UniversityCard({ uni }) {
   const [imgErr, setImgErr] = useState(false);
 
   const name = uni?.name || "University";
-  const slug = uni?.slug || "";
+  const slug = uni?.slug || "iim-indore";
   const location = uni?.location || "";
   const type = uni?.type || "";
   const rating = typeof uni?.rating === "number" ? uni.rating : 4.8;
@@ -182,8 +182,8 @@ function UniversityCard({ uni }) {
             icon={<SwapOutlined className={inCompare ? "text-amber-600" : ""} />}
             onClick={() => toggleCompare(uni)}
             className={`font-semibold rounded-lg h-8 px-2.5 text-xs cursor-pointer ${inCompare
-                ? "border-amber-500 bg-amber-50 text-amber-700"
-                : "border-slate-300 text-slate-600"
+              ? "border-amber-500 bg-amber-50 text-amber-700"
+              : "border-slate-300 text-slate-600"
               }`}
           >
             {inCompare ? "✓ Comparing" : "+ Compare"}
@@ -271,8 +271,8 @@ export default function UniversityListView({ initialUniversities }) {
                 key={filter}
                 onClick={() => setActiveFilter(filter)}
                 className={`rounded-full px-5 h-9 font-semibold text-sm cursor-pointer transition-all ${activeFilter === filter
-                    ? "bg-[#1C3569] text-white border-none shadow-sm hover:bg-[#1C3569]! hover:text-white!"
-                    : "border-slate-200 text-slate-600 hover:border-[#1C3569]! hover:text-[#1C3569]!"
+                  ? "bg-[#1C3569] text-white border-none shadow-sm hover:bg-[#1C3569]! hover:text-white!"
+                  : "border-slate-200 text-slate-600 hover:border-[#1C3569]! hover:text-[#1C3569]!"
                   }`}
               >
                 {filter}
