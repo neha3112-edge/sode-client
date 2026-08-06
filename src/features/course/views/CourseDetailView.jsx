@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { Button, Breadcrumb, Spin } from "antd";
 import {
@@ -34,6 +35,18 @@ import FormWrapper from "@/components/forms/FormWrapper";
 import NotFoundPage from "@/components/website/NotFoundPage";
 import { getAssetPath } from "@/lib/utils";
 import { useFormModal } from "@/context/FormModalContext";
+
+const COURSE_NAV_SECTIONS = [
+  { id: "section-overview", label: "Overview" },
+  { id: "section-why-choose", label: "Why Choose" },
+  { id: "section-admission", label: "Admission Process" },
+  { id: "section-curriculum", label: "Curriculum" },
+  { id: "section-experience", label: "Learning Experience" },
+  { id: "section-certificate", label: "Certificate" },
+  { id: "section-career", label: "Career Growth" },
+  { id: "section-fees", label: "Fee Details" },
+  { id: "section-faqs", label: "FAQs" },
+];
 
 
 
@@ -101,7 +114,7 @@ function FAQAccordion({ faqs, title }) {
   const [activeFaqIdx, setActiveFaqIdx] = useState(null);
   const toggle = (idx) => setActiveFaqIdx(prev => prev === idx ? null : idx);
   return (
-    <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
+    <div id="section-faqs" className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
       <div>
         <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
           <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#FFF8E1] shrink-0">
@@ -295,6 +308,118 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
   const rawLogo = uniObj?.logoSrc?.url || uniObj?.logoSrc;
   const logoUrl = getAssetPath(rawLogo, null);
 
+  // Active section for ScrollSpy & Sticky Tab Navigation
+  const [activeSection, setActiveSection] = useState("section-overview");
+  const [showTopBar, setShowTopBar] = useState(false);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const navContainerRef = useRef(null);
+  const tabRefs = useRef({});
+  const isManualScrollingRef = useRef(false);
+  const scrollTimeoutRef = useRef(null);
+
+  const checkNavScroll = useCallback(() => {
+    const el = navContainerRef.current;
+    if (el) {
+      const scrollLeft = Math.ceil(el.scrollLeft);
+      const clientWidth = el.clientWidth;
+      const scrollWidth = el.scrollWidth;
+
+      setCanScrollLeft(scrollLeft > 3);
+      setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 3);
+    }
+  }, []);
+
+  useEffect(() => {
+    checkNavScroll();
+    const el = navContainerRef.current;
+    if (el) {
+      el.addEventListener("scroll", checkNavScroll, { passive: true });
+      window.addEventListener("resize", checkNavScroll);
+      return () => {
+        el.removeEventListener("scroll", checkNavScroll);
+        window.removeEventListener("resize", checkNavScroll);
+      };
+    }
+  }, [showTopBar, checkNavScroll]);
+
+  const scrollNavTabs = (direction) => {
+    const el = navContainerRef.current;
+    if (el) {
+      const scrollAmount = direction === "left" ? -220 : 220;
+      el.scrollBy({ left: scrollAmount, behavior: "smooth" });
+      setTimeout(checkNavScroll, 50);
+      setTimeout(checkNavScroll, 200);
+      setTimeout(checkNavScroll, 400);
+    }
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+
+      // Show top bar only after scrolling past hero banner (~320px)
+      if (scrollPosition > 320) {
+        setShowTopBar(true);
+      } else {
+        setShowTopBar(false);
+      }
+
+      if (!isManualScrollingRef.current) {
+        const offset = 120;
+        const sectionElements = COURSE_NAV_SECTIONS.map((sec) =>
+          document.getElementById(sec.id)
+        ).filter(Boolean);
+
+        let currentSection = COURSE_NAV_SECTIONS[0].id;
+        for (let i = 0; i < sectionElements.length; i++) {
+          const el = sectionElements[i];
+          const rect = el.getBoundingClientRect();
+          if (rect.top <= offset) {
+            currentSection = el.id;
+          }
+        }
+        setActiveSection(currentSection);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const activeTabEl = tabRefs.current[activeSection];
+    if (activeTabEl && navContainerRef.current) {
+      activeTabEl.scrollIntoView({
+        behavior: "smooth",
+        inline: "center",
+        block: "nearest",
+      });
+      setTimeout(checkNavScroll, 350);
+    }
+  }, [activeSection, checkNavScroll]);
+
+  const scrollToSection = (id) => {
+    const el = document.getElementById(id);
+    if (el) {
+      setActiveSection(id);
+      isManualScrollingRef.current = true;
+
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+
+      const yOffset = -70;
+      const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: "smooth" });
+
+      scrollTimeoutRef.current = setTimeout(() => {
+        isManualScrollingRef.current = false;
+      }, 700);
+    }
+  };
+
   // ── Banner image: sourced from university image or course image ──
   const rawImage = uniObj?.imageSrc?.url || uniObj?.imageSrc || (typeof course.image === "object" ? course.image?.url : course.image);
   const imageUrl = getAssetPath(rawImage, "/media/images/2026/07/28/01abe8d532ba5872f3a6cdab896b9ccd.png");
@@ -398,7 +523,69 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
 
+        {/* ========================================================= */}
+        {/* ANIMATED FIXED TOP BAR (HIDDEN INITIALLY, SLIDES DOWN ON SCROLL) */}
+        {/* ========================================================= */}
+        <div
+          className={`fixed top-0 left-0 right-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-md transition-all duration-300 transform ${
+            showTopBar
+              ? "translate-y-0 opacity-100 pointer-events-auto"
+              : "-translate-y-full opacity-0 pointer-events-none"
+          }`}
+        >
+          <div className="w-full max-w-7xl mx-auto px-2 sm:px-6 relative">
+            {/* Left Scroll Arrow (Visible if content is scrolled right) */}
+            {canScrollLeft && (
+              <button
+                onClick={() => scrollNavTabs("left")}
+                aria-label="Scroll Tabs Left"
+                className="absolute left-1 sm:left-2 top-1/2 -translate-y-1/2 z-10 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white text-[#0c3058] shadow-md border border-slate-200 flex items-center justify-center hover:bg-blue-50 transition-all cursor-pointer"
+              >
+                <ChevronLeft className="w-4 h-4 stroke-[2.5]" />
+              </button>
+            )}
+
+            {/* Right Scroll Arrow (Visible if content available to scroll on right) */}
+            {canScrollRight && (
+              <button
+                onClick={() => scrollNavTabs("right")}
+                aria-label="Scroll Tabs Right"
+                className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 z-10 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white text-[#0c3058] shadow-md border border-slate-200 flex items-center justify-center hover:bg-blue-50 transition-all cursor-pointer"
+              >
+                <ChevronRight className="w-4 h-4 stroke-[2.5]" />
+              </button>
+            )}
+
+            <div
+              ref={navContainerRef}
+              className="flex items-center gap-1 sm:gap-3 overflow-x-auto scrollbar-none scroll-smooth whitespace-nowrap py-0.5 px-2"
+            >
+              {COURSE_NAV_SECTIONS.map((sec) => {
+                const isActive = activeSection === sec.id;
+
+                return (
+                  <button
+                    key={sec.id}
+                    ref={(el) => (tabRefs.current[sec.id] = el)}
+                    onClick={() => scrollToSection(sec.id)}
+                    className={`relative px-3.5 sm:px-5 py-3 sm:py-3.5 text-xs sm:text-sm font-extrabold transition-colors duration-200 cursor-pointer shrink-0 border-none bg-transparent select-none ${
+                      isActive
+                        ? "text-[#0c3058]"
+                        : "text-slate-600 hover:text-slate-900"
+                    }`}
+                  >
+                    <span>{sec.label}</span>
+                    {/* Active Underline Line Indicator */}
+                    {isActive && (
+                      <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#0c3058] rounded-t-full transition-all duration-300" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
 
@@ -409,7 +596,7 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
           <div className="lg:col-span-8 space-y-6">
 
             {/* 1. Course Overview Card */}
-            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
+            <div id="section-overview" className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
               <div>
                 {/* overviewTitle from COURSE_CONTENT JSON */}
                 <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
@@ -448,7 +635,7 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
 
             {/* 1b. Why Choose + Key Highlights + Course Snapshot — 2-column grid layout */}
             {(whyChooseTitle || whyChooseDescription || highlightsList.length > 0) && (
-              <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
+              <div id="section-why-choose" className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
                 {/* Section heading + description */}
                 <div>
                   <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
@@ -511,7 +698,7 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
 
             {/* 2. Eligibility & Admission Process Card */}
             {(whoCanApplyList.length > 0 || admissionProcessList.length > 0) && (
-              <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
+              <div id="section-admission" className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
                 <div>
                   <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
                     <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#EBF4FF] shrink-0">
@@ -560,7 +747,7 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
               </div>
             )}
             {skillsSection && (skillsSection.title || skillsSection.skillsGain?.length > 0 || skillsSection.curriculumOverview?.length > 0) && (
-              <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
+              <div id="section-curriculum" className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
                 <div>
                   <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
                     <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#E8F5E9] shrink-0">
@@ -612,7 +799,7 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
 
             {/* 4. Learning Experience Card */}
             {learningExperience && (learningExperience.title || learningExperience.learningFeatures?.length > 0) && (
-              <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
+              <div id="section-experience" className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
                 <div>
                   <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
                     <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#EDE7F6] shrink-0">
@@ -647,7 +834,7 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
 
             {/* 5. Institute & Certificate Card */}
             {instituteSection && (instituteSection.title || instituteSection.certificateTitle || instituteSection.whyItMatters?.length > 0) && (
-              <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
+              <div id="section-certificate" className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
                 <div>
                   <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
                     <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#EBF4FF] shrink-0">
@@ -692,7 +879,7 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
 
             {/* 6. Career Section Card */}
             {careerSection && (careerSection.title || careerSection.careerOpportunities?.length > 0 || careerSection.industriesHiring?.length > 0) && (
-              <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
+              <div id="section-career" className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
                 <div>
                   <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
                     <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#FFF3E0] shrink-0">
@@ -744,7 +931,7 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
 
             {/* 7. Flexible Fee & Payment Options Card */}
             {feeSection && (feeSection.title || feeSection.financialSupport?.length > 0) && (
-              <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
+              <div id="section-fees" className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
                 <div>
                   <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
                     <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#E3F2FD] shrink-0">
@@ -804,6 +991,6 @@ export default function CourseDetailView({ slug: propSlug, initialCourse }) {
 
         </div>
       </div>
-    </div >
+    </div>
   );
 }
