@@ -84,7 +84,7 @@ function UniversityCard({ uni }) {
               src={imageSrc}
               alt={imgAlt}
               fill
-              unoptimized
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               loading="eager"
               priority
               className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -116,7 +116,7 @@ function UniversityCard({ uni }) {
                 src={logoUrl}
                 alt={logoAlt}
                 fill
-                unoptimized
+                sizes="56px"
                 className="object-contain"
                 onError={() => setLogoErr(true)}
               />

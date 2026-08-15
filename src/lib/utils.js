@@ -33,22 +33,16 @@ export function getAssetPath(path = "", fallback = DEFAULT_SVG_LOGO) {
     return `/media/${relativeMedia}`;
   }
 
-  if (targetPath.includes("172.236.183.64:9000")) {
-    return targetPath.replace(/https?:\/\/172\.236\.183\.64:9000\/?/gi, "/media/");
-  }
-
   // 2. Data URIs → pass through as-is
   if (targetPath.startsWith("data:image")) return targetPath;
 
-  // 3. Local asset path string → look up in mediaMap and convert to MinIO proxy
+  // 3. Local asset path string → look up in mediaMap
   const lookup = targetPath.toLowerCase();
   if (mediaMap[targetPath]) {
-    const minioUrl = mediaMap[targetPath];
-    return minioUrl.replace(/https?:\/\/172\.236\.183\.64:9000\/?/gi, "/media/");
+    return mediaMap[targetPath];
   }
   if (mediaMap[lookup]) {
-    const minioUrl = mediaMap[lookup];
-    return minioUrl.replace(/https?:\/\/172\.236\.183\.64:9000\/?/gi, "/media/");
+    return mediaMap[lookup];
   }
 
   // 4. Relative paths or /media/ paths -> return as-is

@@ -27,8 +27,7 @@ function CategoryIcon({ cat }) {
           src={iconUrl}
           alt={cat.name || cat.label || "Category"}
           fill
-          sizes="28px"
-          unoptimized
+          sizes="48px"
           className="object-contain"
           onError={() => setImgError(true)}
         />
@@ -58,8 +57,7 @@ function CourseIcon({ course }) {
           src={iconUrl}
           alt={course?.name || "Course"}
           fill
-          sizes="28px"
-          unoptimized
+          sizes="48px"
           className="object-contain"
           onError={() => setImgError(true)}
         />
@@ -94,8 +92,7 @@ function PartnerLogoIcon({ partner }) {
           src={logoUrl}
           alt={partner?.name || "Partner Logo"}
           fill
-          sizes="28px"
-          unoptimized
+          sizes="48px"
           className="object-contain"
           onError={() => setImgError(true)}
         />

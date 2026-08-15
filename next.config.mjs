@@ -1,5 +1,5 @@
 /** @type {import('next').NextConfig} */
-const MINIO_PUBLIC_URL = process.env.NEXT_PUBLIC_MINIO_URL || "http://172.236.183.64:9000";
+const MINIO_PUBLIC_URL = process.env.NEXT_PUBLIC_MINIO_URL || "https://new.crm.api.mysode.com/minio";
 
 const nextConfig = {
   reactStrictMode: true,
@@ -23,12 +23,9 @@ const nextConfig = {
       },
       {
         protocol: "http",
-        hostname: "172.236.183.64",
-        port: "9000",
-        pathname: "/**",
+        hostname: "localhost",
       },
     ],
-    // Proxy path se same-domain pe serve hoti hain so no CORS issue
     unoptimized: true,
   },
 
