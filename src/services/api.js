@@ -345,10 +345,27 @@ export async function getWebsiteHero(page = "home") {
 }
 
 
-// 🎯 Fetch Blog by Slug from Backend
+// 🎯 Fetch Blog Page Details by Slug from Backend
 export async function getBlogBySlug(slug) {
   if (!slug) return null;
-  return await fetchFromApi(`blog/read?slug=${slug}`);
+  const cleanSlug = encodeURIComponent(slug.trim());
+  const isClient = typeof window !== "undefined";
+
+  if (isClient) {
+    try {
+      const res = await fetch(`/api/website/blogs/${cleanSlug}`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json && json.success && json.result) {
+          return json.result;
+        }
+      }
+    } catch (e) {
+      console.warn("Client proxy fetch failed, falling back to direct API", e);
+    }
+  }
+
+  return await fetchFromApi(`blogpages/v1/list/${cleanSlug}`);
 }
 
 // 🎯 Fetch Dynamic Page Builder by Slug from Backend

@@ -1,88 +1,40 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { Card, Tag, Button, Row, Col, Breadcrumb, Input, Form, Skeleton } from "antd";
-import { ArrowLeftOutlined, CalendarOutlined } from "@ant-design/icons";
 import Link from "next/link";
+import Image from "next/image";
+import { useParams, useRouter } from "next/navigation";
+import { Breadcrumb, Button, Tag, Skeleton, Collapse } from "antd";
+import {
+  CalendarOutlined,
+  ClockCircleOutlined,
+  CheckCircleFilled,
+  QuestionCircleOutlined,
+  UserOutlined,
+  UnorderedListOutlined,
+  ReadOutlined,
+} from "@ant-design/icons";
+import { ArrowLeft } from "lucide-react";
 import { getBlogBySlug } from "@/services/api";
-
-const STATIC_BLOG_DETAILS = {
-  "understanding-ugc-deb-approvals": {
-    title: "Understanding UGC-DEB Approvals for Distance Degrees",
-    category: "Accreditation",
-    date: "June 15, 2026",
-    content: `When exploring online and distance education options in India, the term **UGC-DEB approved** is the single most critical factor to verify. 
-
-UGC (University Grants Commission) is the apex body overseeing higher education, and the DEB (Distance Education Bureau) is its dedicated wing regulating distance and online learning.
-
-### Why is UGC-DEB Approval Important?
-
-1. **Government Recognition:** Degree certificates from unapproved universities are not valid for government job applications or public sector exams.
-2. **Equivalence:** A distance degree is only considered equivalent to a regular day degree if it has UGC-DEB authorization.
-3. **Foreign Evaluation:** If you plan to work or study abroad, agencies like WES evaluate degrees based on the UGC approval status of the granting university.
-
-### How to Verify a University's Status
-
-- Visit the official UGC-DEB website portal.
-- Check the list of recognized institutions for the specific academic year.
-- Note that approvals are granted on a year-to-year or program-to-program basis, so ensure your specific course (e.g. MBA or MCA) is listed for the current session.
-`
-  },
-  "is-online-dba-worth-it": {
-    title: "Is an Online DBA Worth It for Senior Professionals?",
-    category: "Career Guidance",
-    date: "May 28, 2026",
-    content: `The Doctor of Business Administration (DBA) is a professional doctorate designed for corporate leaders, consultants, and entrepreneurs. Unlike a traditional PhD, which is highly academic and focuses on creating new theories, a DBA focuses on applying existing research and methods directly to complex business problems.
-
-### Key Benefits of a DBA:
-
-- **Executive Branding:** Using the "Doctor" title is highly prestigious in corporate boardrooms and consulting firms.
-- **Applied Insights:** Apply advanced methodologies directly to your company's operational problems.
-- **Career Growth:** Many senior executive roles prefer professionals with research-driven doctoral qualifications.
-
-For senior managers who cannot afford to leave their full-time corporate roles, a 100% online DBA program offers the perfect balance.
-`
-  },
-  "balancing-distance-studies-and-work": {
-    title: "Tips for Balancing Distance Studies and a Full-Time Job",
-    category: "Student Tips",
-    date: "April 10, 2026",
-    content: `Balancing a demanding 9-to-5 job with online or distance learning requires structured planning and daily discipline.
-
-### Top Strategies:
-- **Dedicated Daily Study Slots**: Commit 1 to 2 uninterrupted hours every morning or evening.
-- **Weekend Milestone Blocks**: Use weekends for assignments, case studies, and webinar lectures.
-- **Leverage Mobile LMS**: Download lectures to watch during commutes.`,
-  },
-};
+import { getAssetPath } from "@/lib/utils";
 
 export default function BlogDetailPage() {
   const router = useRouter();
   const params = useParams();
   const slug = params?.slug;
 
-  const [blog, setBlog] = useState(() => {
-    if (slug && STATIC_BLOG_DETAILS && STATIC_BLOG_DETAILS[slug]) {
-      return STATIC_BLOG_DETAILS[slug];
-    }
-    return {
-      title: "Blog Post",
-      category: "Education",
-      date: "2026",
-      content: "Loading content...",
-    };
-  });
+  const [pageData, setPageData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let isMounted = true;
     if (slug) {
+      setLoading(true);
       getBlogBySlug(slug)
         .then((res) => {
           if (!isMounted) return;
-          if (res && res.title) {
-            setBlog(res);
+          if (res) {
+            setPageData(res);
           }
         })
         .catch((err) => console.error("Error loading blog details:", err))
@@ -97,117 +49,259 @@ export default function BlogDetailPage() {
     };
   }, [slug]);
 
+  const blog = pageData?.blogId || {};
+  const headline = pageData?.headline || blog.title || "Blog Post";
+  const subHeadline = pageData?.subHeadline || blog.excerpt || "";
+  const categoryName = blog.category?.name || "Education";
+  const bannerSrc = getAssetPath(pageData?.bannerImage || blog.coverImage);
+  const authorName = pageData?.author?.fullname || blog.author?.fullname || "Editorial Team";
+  const readTime = blog.readTime || "5 min read";
+  const highlights = pageData?.highlights || [];
+  const stats = pageData?.stats || [];
+  const faqs = pageData?.faqs || [];
+  const relatedBlogs = pageData?.relatedBlogs || [];
+
   return (
-    <div className="bg-[#f8fafc] py-8 sm:py-12 px-4 md:px-8 font-sans">
-      <div className="max-w-6xl mx-auto">
-        {/* Navigation & Breadcrumb */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-          <Breadcrumb
-            items={[
-              { title: <Link href="/">Home</Link> },
-              { title: <Link href="/blog">Blog</Link> },
-              { title: blog.title },
-            ]}
-          />
+    <div className="bg-[#f8fafc] min-h-screen py-6 sm:py-8 px-4 sm:px-6 lg:px-8 font-sans">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* 🧭 Top Breadcrumb Bar */}
+        <div className="flex items-center justify-between gap-3 bg-white p-3.5 sm:p-4 px-4 sm:px-6 rounded-2xl border border-slate-200/80 shadow-xs">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => router.back()}
+              type="button"
+              className="p-1 rounded-full text-slate-600 hover:text-slate-900 transition-colors border-none bg-transparent cursor-pointer flex items-center justify-center -ml-1"
+              aria-label="Go back"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <Breadcrumb
+              items={[
+                { title: <Link href="/" className="text-slate-500 hover:text-slate-800 font-medium">Home</Link> },
+                { title: <Link href="/blog" className="text-slate-500 hover:text-slate-800 font-medium">Blog</Link> },
+                { title: <span className="font-semibold text-slate-800">{categoryName}</span> },
+              ]}
+            />
+          </div>
           <Button
-            icon={<ArrowLeftOutlined />}
+            type="text"
             onClick={() => router.push("/blog")}
-            className="w-fit flex items-center font-semibold rounded-lg h-9 text-slate-600 cursor-pointer"
+            className="hidden sm:flex items-center font-semibold text-slate-600 hover:text-[#046bd2] p-0 h-auto cursor-pointer"
           >
-            Back to Blog
+            All Blogs
           </Button>
         </div>
 
-        {/* Shimmer Skeleton Loading vs Content */}
         {loading ? (
-          <Row gutter={[32, 32]}>
-            <Col xs={24} lg={16}>
-              <Card className="rounded-2xl border border-slate-100 shadow-none p-6 md:p-8 bg-white" variant="borderless">
-                <Skeleton.Input active size="small" style={{ width: 100, height: 22, borderRadius: 12, marginBottom: 16 }} />
-                <Skeleton active paragraph={{ rows: 6, width: ["100%", "90%", "95%", "85%", "100%", "70%"] }} />
-                <div className="my-6">
-                  <Skeleton active paragraph={{ rows: 4, width: ["100%", "95%", "85%", "60%"] }} />
-                </div>
-              </Card>
-            </Col>
-            <Col xs={24} lg={8}>
-              <Card className="rounded-2xl border border-slate-100 p-6 bg-white shadow-none">
-                <Skeleton active paragraph={{ rows: 4, width: ["100%", "100%", "100%", "100%"] }} />
-              </Card>
-            </Col>
-          </Row>
+          <div className="bg-white p-6 md:p-10 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+            <Skeleton.Input active size="small" style={{ width: 140, height: 24, marginBottom: 12 }} />
+            <Skeleton active paragraph={{ rows: 2 }} />
+            <Skeleton.Image active style={{ width: "100%", height: 380, borderRadius: 16 }} />
+            <Skeleton active paragraph={{ rows: 10 }} />
+          </div>
         ) : (
-          <Row gutter={[32, 32]}>
-            {/* Article Content */}
-            <Col xs={24} lg={16}>
-              <Card className="rounded-2xl border border-slate-100 shadow-sm p-6 md:p-8 bg-white" variant="borderless">
-                <div className="flex items-center gap-3 mb-4">
-                  <Tag color="orange" className="font-semibold text-xs border-none rounded px-2.5 py-0.5 m-0">
-                    {blog.category?.name || blog.category || "Article"}
-                  </Tag>
-                  <span className="text-slate-400 text-xs font-semibold flex items-center gap-1">
-                    <CalendarOutlined /> {blog.date || "Recent"}
+          <article className="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-6 md:p-10 space-y-7">
+            {/* Article Header */}
+            <div className="space-y-3.5 pb-6 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <span className="inline-block bg-[#046bd2]/10 text-[#046bd2] font-bold text-xs px-3 py-1 rounded-md">
+                  {categoryName}
+                </span>
+              </div>
+
+              <h1 className="text-2xl sm:text-3xl md:text-[34px] font-extrabold text-slate-900 leading-tight m-0">
+                {headline}
+              </h1>
+
+              <div className="flex flex-wrap items-center gap-y-2 gap-x-6 text-xs sm:text-sm text-slate-500 font-medium pt-1">
+                <span className="flex items-center gap-1.5 text-slate-700 font-semibold">
+                  <UserOutlined className="text-[#046bd2]" /> {authorName}
+                </span>
+                {blog.publishedAt && (
+                  <span className="flex items-center gap-1.5">
+                    <CalendarOutlined /> {new Date(blog.publishedAt).toLocaleDateString("en-IN", { month: "short", day: "numeric", year: "numeric" })}
                   </span>
+                )}
+                <span className="flex items-center gap-1.5">
+                  <ClockCircleOutlined /> {readTime}
+                </span>
+              </div>
+            </div>
+
+            {/* Cover Banner Image */}
+            {bannerSrc && (
+              <div className="relative w-full h-64 sm:h-80 md:h-105 lg:h-120 rounded-2xl overflow-hidden bg-slate-100 border border-slate-100">
+                <Image
+                  src={bannerSrc}
+                  alt={headline}
+                  fill
+                  priority
+                  loading="eager"
+                  fetchPriority="high"
+                  className="object-cover"
+                  sizes="(max-width: 1280px) 100vw, 1280px"
+                />
+              </div>
+            )}
+
+            {/* Sub-Headline / Lead Paragraph */}
+            {subHeadline && (
+              <p className="text-base sm:text-lg text-slate-700 leading-relaxed font-normal bg-slate-50 p-4 sm:p-5 rounded-2xl border-l-4 border-[#046bd2] m-0">
+                {subHeadline}
+              </p>
+            )}
+
+            {/* 📑 Table of Contents (TOC) Box */}
+            <div className="bg-[#f8fafc] border border-slate-200 rounded-2xl p-5 my-6">
+              <div className="flex items-center gap-2 font-bold text-slate-900 text-base mb-3">
+                <UnorderedListOutlined className="text-[#046bd2]" /> Table of Contents
+              </div>
+              <ul className="space-y-2.5 text-sm text-[#046bd2] list-none p-0 m-0 pl-1">
+                {highlights.length > 0 && (
+                  <li>
+                    <a href="#highlights" className="hover:underline flex items-center gap-1.5 text-slate-700 hover:text-[#046bd2] font-medium">
+                      <span className="text-[#046bd2] font-semibold">•</span> Key Highlights & Features
+                    </a>
+                  </li>
+                )}
+                {stats.length > 0 && (
+                  <li>
+                    <a href="#fast-facts" className="hover:underline flex items-center gap-1.5 text-slate-700 hover:text-[#046bd2] font-medium">
+                      <span className="text-[#046bd2] font-semibold">•</span> Fast Facts & Key Metrics
+                    </a>
+                  </li>
+                )}
+                {faqs.length > 0 && (
+                  <li>
+                    <a href="#faqs" className="hover:underline flex items-center gap-1.5 text-slate-700 hover:text-[#046bd2] font-medium">
+                      <span className="text-[#046bd2] font-semibold">•</span> Frequently Asked Questions (FAQs)
+                    </a>
+                  </li>
+                )}
+                {relatedBlogs.length > 0 && (
+                  <li>
+                    <a href="#related" className="hover:underline flex items-center gap-1.5 text-slate-700 hover:text-[#046bd2] font-medium">
+                      <span className="text-[#046bd2] font-semibold">•</span> Related Blog Posts
+                    </a>
+                  </li>
+                )}
+              </ul>
+            </div>
+
+            {/* 📌 Key Highlights Section */}
+            {highlights.length > 0 && (
+              <section id="highlights" className="pt-2">
+                <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
+                  <ReadOutlined className="text-[#046bd2]" />
+                  Key Highlights & Takeaways
+                </h2>
+                <div className="space-y-3">
+                  {highlights.map((item, index) => (
+                    <div key={index} className="flex items-start gap-3.5 p-4 rounded-xl bg-slate-50 border border-slate-100">
+                      <CheckCircleFilled className="text-emerald-600 text-base shrink-0 mt-0.5" />
+                      <div className="text-sm sm:text-base text-slate-700 leading-relaxed font-medium">
+                        {item}
+                      </div>
+                    </div>
+                  ))}
                 </div>
+              </section>
+            )}
 
-                <h1 className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-slate-800 m-0 mb-6 leading-tight">
-                  {blog.title}
-                </h1>
+            {/* 📊 Fast Facts Table & Metrics */}
+            {stats.length > 0 && (
+              <section id="fast-facts" className="pt-4">
+                <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100">
+                  Fast Facts & Course Overview
+                </h2>
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse border border-slate-200 rounded-xl overflow-hidden text-left text-sm sm:text-base">
+                    <thead className="bg-[#f1f5f9]">
+                      <tr>
+                        <th className="border border-slate-200 p-3.5 font-bold text-slate-900">Feature / Parameter</th>
+                        <th className="border border-slate-200 p-3.5 font-bold text-[#046bd2]">Details</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {stats.map((st, i) => (
+                        <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-slate-50/70"}>
+                          <td className="border border-slate-200 p-3.5 font-semibold text-slate-700">{st.label}</td>
+                          <td className="border border-slate-200 p-3.5 font-bold text-slate-900">{st.value}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            )}
 
-                <div className="h-px bg-slate-100 my-6" />
+            {/* ❓ FAQs Accordion */}
+            {faqs.length > 0 && (
+              <section id="faqs" className="pt-4">
+                <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
+                  <QuestionCircleOutlined className="text-amber-500" />
+                  Frequently Asked Questions (FAQs)
+                </h2>
+                <Collapse
+                  accordion
+                  bordered
+                  className="bg-white rounded-xl border border-slate-200"
+                  items={faqs.map((faq, i) => ({
+                    key: String(i),
+                    label: <span className="font-bold text-slate-800 text-sm sm:text-[15px]">{faq.question}</span>,
+                    children: <div className="text-sm text-slate-600 leading-relaxed">{faq.answer}</div>,
+                    className: "border-b border-slate-200 last:border-b-0",
+                  }))}
+                />
+              </section>
+            )}
 
-                {/* Text content formatted as paragraphs */}
-                <div className="prose max-w-none text-slate-600 text-sm md:text-base leading-relaxed space-y-6">
-                  {(blog.content || "").split("\n\n").map((para, i) => {
-                    if (para.startsWith("###")) {
-                      return <h3 key={i} className="text-xl font-bold text-slate-800 mt-6 mb-2">{para.replace("### ", "")}</h3>;
-                    }
-                    if (para.startsWith("-")) {
-                      return (
-                        <ul key={i} className="list-disc pl-5 space-y-2">
-                          {para.split("\n").map((li, j) => (
-                            <li key={j}>{li.replace("- ", "")}</li>
-                          ))}
-                        </ul>
-                      );
-                    }
-                    return <p key={i} className="m-0">{para}</p>;
+            {/* 👤 Author Bio Box */}
+            <div className="p-5 sm:p-6 rounded-2xl bg-slate-50 border border-slate-200 flex items-center gap-4 mt-8">
+              <div className="w-12 h-12 rounded-full bg-[#046bd2] text-white flex items-center justify-center text-xl font-bold shrink-0">
+                <UserOutlined />
+              </div>
+              <div>
+                <h4 className="font-bold text-slate-900 text-base m-0 mb-1">{authorName}</h4>
+                <p className="text-xs sm:text-sm text-slate-500 m-0 leading-normal">
+                  Higher Education Research & Admissions Team at SODE. Providing verified guidance on UGC-DEB approved university admissions.
+                </p>
+              </div>
+            </div>
+
+            {/* 🔗 Related Blogs Section */}
+            {relatedBlogs.length > 0 && (
+              <section id="related" className="pt-6 border-t border-slate-100">
+                <h2 className="text-xl font-bold text-slate-900 mb-4">
+                  Related Articles & Guides
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {relatedBlogs.map((rel) => {
+                    const relImg = getAssetPath(rel.coverImage);
+                    return (
+                      <Link
+                        key={rel._id}
+                        href={`/blog/${rel.slug}`}
+                        className="group block bg-slate-50 rounded-xl border border-slate-200 p-3.5 hover:border-[#046bd2] transition-colors no-underline"
+                      >
+                        {relImg && (
+                          <div className="relative w-full h-36 rounded-lg overflow-hidden mb-2.5 bg-slate-200">
+                            <Image src={relImg} alt={rel.title} fill className="object-cover group-hover:scale-105 transition-transform duration-200" />
+                          </div>
+                        )}
+                        <Tag color="blue" className="rounded text-[10px] font-bold mb-1 border-none">
+                          {rel.category?.name || "Education"}
+                        </Tag>
+                        <h4 className="text-sm font-bold text-slate-900 line-clamp-2 group-hover:text-[#046bd2] transition-colors m-0">
+                          {rel.title}
+                        </h4>
+                      </Link>
+                    );
                   })}
                 </div>
-              </Card>
-            </Col>
-
-            {/* Sidebar */}
-            <Col xs={24} lg={8}>
-              <Card
-                className="sticky top-6 rounded-2xl border border-slate-100 shadow-lg p-6 bg-white"
-                title={<span className="text-base font-bold text-[#1C3569] m-0 block">Get Career Counseling</span>}
-                variant="borderless"
-              >
-                <p className="text-xs text-slate-400 m-0 mb-4 leading-normal">
-                  Our academic counselors are available to answer your questions and help you choose the right course.
-                </p>
-
-                <Form layout="vertical" className="space-y-4" onSubmitCapture={(e) => e.preventDefault()}>
-                  <Form.Item label="Full Name" required className="m-0">
-                    <Input placeholder="Enter your name" className="h-10 rounded-lg border-slate-200" />
-                  </Form.Item>
-
-                  <Form.Item label="Mobile Number" required className="m-0">
-                    <Input placeholder="Enter 10-digit number" className="h-10 rounded-lg border-slate-200" />
-                  </Form.Item>
-
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    className="w-full bg-[#1C3569] hover:bg-[#122449]! border-none text-white font-bold h-11 rounded-xl cursor-pointer mt-4"
-                  >
-                    Request Callback
-                  </Button>
-                </Form>
-              </Card>
-            </Col>
-          </Row>
+              </section>
+            )}
+          </article>
         )}
       </div>
     </div>
