@@ -43,7 +43,15 @@ function UniversityCard({ uni }) {
   if (!uni) return null;
 
   const name = uni?.name || "University";
-  const slug = uni?.slug || uni?._id || "";
+  const slug =
+    uni?.slug ||
+    (uni?.name
+      ? uni.name
+          .toLowerCase()
+          .replace(/[^\w\s-]/g, "")
+          .replace(/[\s_-]+/g, "-")
+          .replace(/^-+|-+$/g, "")
+      : uni?._id || "");
   const type = uni?.type || uni?.category?.name || (uni?.isTop ? "Top" : (uni?.isFeatured ? "Featured" : ""));
   const location = uni?.location || [uni?.city?.name, uni?.state?.name, uni?.country?.name].filter(Boolean).join(", ") || "";
 
@@ -131,7 +139,7 @@ function UniversityCard({ uni }) {
 
       {/* Name / Location */}
       <div className="pt-8 px-4 pb-3">
-        <Link href={`/courses?university=${encodeURIComponent(slug)}`} className="hover:text-blue-600 transition-colors block">
+        <Link href={`/universities/${slug}`} className="hover:text-blue-600 transition-colors block">
           <h3 className="text-base font-bold text-slate-800 m-0 leading-snug line-clamp-1">
             {name}
           </h3>
@@ -214,7 +222,7 @@ function UniversityCard({ uni }) {
             {inCompare ? "✓ Comparing" : "+ Compare"}
           </Button>
 
-          <Link href={`/courses?university=${encodeURIComponent(slug)}`}>
+          <Link href={`/universities/${slug}`}>
             <Button
               size="small"
               type="primary"

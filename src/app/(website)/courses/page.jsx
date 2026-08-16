@@ -400,7 +400,18 @@ function CoursesContent() {
           feeText = fees.name.includes("₹") ? fees.name : `₹${fees.name}`;
         }
 
-        const itemSlug = subcourse.slug || course.slug || course._id || item._id;
+        const slugify = (text) =>
+          (text || "")
+            .toString()
+            .toLowerCase()
+            .trim()
+            .replace(/[\s_]+/g, "-")
+            .replace(/[^\w-]+/g, "")
+            .replace(/--+/g, "-")
+            .replace(/^-+|-+$/g, "");
+
+        const parts = [uniName, courseName, subcourseName].filter(Boolean);
+        let itemSlug = slugify(parts.join("-")) || subcourse.slug || course.slug || item.slug || item._id;
         const courseDetailHref = itemSlug ? `/courses/${encodeURIComponent(itemSlug)}` : "/courses";
 
         list.push({
@@ -872,7 +883,21 @@ function CoursesContent() {
                   const providerName = item.providerName || "upGrad";
                   const durationText = item.durationText || "Flexible";
                   const feeText = item.feeText || "Contact for Fee";
-                  const courseDetailHref = item.courseDetailHref || `/courses/${encodeURIComponent(item.slug || item._id || "")}`;
+                  const slugify = (text) =>
+                    (text || "")
+                      .toString()
+                      .toLowerCase()
+                      .trim()
+                      .replace(/[\s_]+/g, "-")
+                      .replace(/[^\w-]+/g, "")
+                      .replace(/--+/g, "-")
+                      .replace(/^-+|-+$/g, "");
+
+                  const fallbackSlug = (item.slug && !/^[0-9a-fA-F]{24}$/.test(item.slug))
+                    ? item.slug
+                    : slugify(`${uniName}-${cardTitle}`);
+
+                  const courseDetailHref = item.courseDetailHref || `/courses/${encodeURIComponent(fallbackSlug || item._id || "")}`;
                   const accreditation = item.accreditation || getAccreditation(uniName);
 
                   return (

@@ -36,17 +36,7 @@ import { getAssetPath } from "@/lib/utils";
 import { useFormModal } from "@/context";
 import { getWebsiteCourseRead } from "@/services/api";
 
-const COURSE_NAV_SECTIONS = [
-  { id: "section-overview", label: "Overview" },
-  { id: "section-[#333]", label: "Why Choose" },
-  { id: "section-admission", label: "Admission Process" },
-  { id: "section-curriculum", label: "Curriculum" },
-  { id: "section-experience", label: "Learning Experience" },
-  { id: "section-certificate", label: "Certificate" },
-  { id: "section-career", label: "Career Growth" },
-  { id: "section-fees", label: "Fee Details" },
-  { id: "section-faqs", label: "FAQs" },
-];
+
 
 function FAQItem({ question, answer, isOpen, onToggle }) {
   const contentRef = React.useRef(null);
@@ -192,31 +182,56 @@ export default function CourseDetailPage() {
     ? heroSub.duration.title
     : (activeOffering?.duration?.title || "6 Months");
 
-  const overviewTitle = heroSub?.overviewTitle || "Course Overview";
-  const overviewText = heroSub?.overviewDescription || heroSub?.content || heroSub?.description || course?.description || "";
+  const overviewTitle = course?.overviewSection?.title || heroSub?.overviewTitle || "Course Overview";
+  const overviewText = course?.overviewSection?.description || heroSub?.overviewDescription || heroSub?.content || heroSub?.description || course?.description || "";
 
-  const courseSnapshot = [];
-  if (uniName) courseSnapshot.push({ icon: BankOutlined, label: "Institute", value: uniName });
-  if (heroSub?.title) courseSnapshot.push({ icon: ApartmentOutlined, label: "Programme", value: heroSub.title });
-  if (primaryDuration) courseSnapshot.push({ icon: ClockCircleFilled, label: "Duration", value: primaryDuration });
+  const courseSnapshot = Array.isArray(course?.overviewSection?.courseSnapshot) && course.overviewSection.courseSnapshot.length > 0
+    ? course.overviewSection.courseSnapshot
+    : [
+      ...(uniName ? [{ label: "Institute", value: uniName }] : []),
+      ...(heroSub?.title ? [{ label: "Programme", value: heroSub.title }] : []),
+      ...(primaryDuration ? [{ label: "Duration", value: primaryDuration }] : []),
+    ];
 
-  const whyChooseTitle = heroSub?.whyChooseTitle || "Why Choose This Course?";
-  const whyChooseDescription = heroSub?.whyChooseDescription || "";
+  const whyChooseTitle = course?.whyChooseSection?.title || heroSub?.whyChooseTitle || "Why Choose This Course?";
+  const whyChooseDescription = course?.whyChooseSection?.description || heroSub?.whyChooseDescription || "";
 
-  const highlightsList = Array.isArray(heroSub?.keyHighlights) && heroSub.keyHighlights.length > 0
-    ? heroSub.keyHighlights
-    : ((heroSub && Array.isArray(heroSub.modules) && heroSub.modules.length > 0) ? heroSub.modules : []);
+  const highlightsList = Array.isArray(course?.whyChooseSection?.keyHighlights) && course.whyChooseSection.keyHighlights.length > 0
+    ? course.whyChooseSection.keyHighlights
+    : (Array.isArray(heroSub?.keyHighlights) && heroSub.keyHighlights.length > 0
+      ? heroSub.keyHighlights
+      : ((heroSub && Array.isArray(heroSub.modules) && heroSub.modules.length > 0) ? heroSub.modules : []));
 
-  const whoCanApplyList = Array.isArray(heroSub?.whoCanApply) && heroSub.whoCanApply.length > 0 ? heroSub.whoCanApply : [];
-  const admissionProcessList = Array.isArray(heroSub?.admissionProcess) && heroSub.admissionProcess.length > 0 ? heroSub.admissionProcess : [];
-  const courseSnapshotBottom = Array.isArray(heroSub?.courseSnapshotBottom) && heroSub.courseSnapshotBottom.length > 0 ? heroSub.courseSnapshotBottom : [];
+  const whoCanApplyList = Array.isArray(course?.admissionSection?.whoCanApply) && course.admissionSection.whoCanApply.length > 0
+    ? course.admissionSection.whoCanApply
+    : (Array.isArray(heroSub?.whoCanApply) && heroSub.whoCanApply.length > 0 ? heroSub.whoCanApply : []);
 
-  const skillsSection = heroSub?.skillsSection || null;
-  const learningExperience = heroSub?.learningExperience || null;
-  const instituteSection = heroSub?.instituteSection || null;
-  const careerSection = heroSub?.careerSection || null;
-  const feeSection = heroSub?.feeSection || null;
-  const faqSection = heroSub?.faqSection || null;
+  const admissionProcessList = Array.isArray(course?.admissionSection?.admissionProcess) && course.admissionSection.admissionProcess.length > 0
+    ? course.admissionSection.admissionProcess
+    : (Array.isArray(heroSub?.admissionProcess) && heroSub.admissionProcess.length > 0 ? heroSub.admissionProcess : []);
+
+  const courseSnapshotBottom = Array.isArray(course?.whyChooseSection?.courseSnapshotBottom) && course.whyChooseSection.courseSnapshotBottom.length > 0
+    ? course.whyChooseSection.courseSnapshotBottom
+    : (Array.isArray(heroSub?.courseSnapshotBottom) && heroSub.courseSnapshotBottom.length > 0 ? heroSub.courseSnapshotBottom : []);
+
+  const skillsSection = course?.skillsSection || heroSub?.skillsSection || null;
+  const learningExperience = course?.learningExperience || heroSub?.learningExperience || null;
+  const instituteSection = course?.instituteSection || heroSub?.instituteSection || null;
+  const careerSection = course?.careerSection || heroSub?.careerSection || null;
+  const feeSection = course?.feeSection || heroSub?.feeSection || null;
+  const faqSection = course?.faqSection || heroSub?.faqSection || null;
+
+  const dynamicNavSections = [
+    ...(overviewTitle || overviewText ? [{ id: "section-overview", label: "Overview" }] : []),
+    ...(whyChooseTitle || whyChooseDescription || highlightsList.length > 0 ? [{ id: "section-why-choose", label: "Why Choose" }] : []),
+    ...(whoCanApplyList.length > 0 || admissionProcessList.length > 0 ? [{ id: "section-admission", label: "Admission" }] : []),
+    ...(skillsSection && (skillsSection.title || skillsSection.skillsGain?.length > 0 || skillsSection.curriculumOverview?.length > 0) ? [{ id: "section-curriculum", label: "Curriculum" }] : []),
+    ...(learningExperience && (learningExperience.title || learningExperience.learningFeatures?.length > 0) ? [{ id: "section-experience", label: "Experience" }] : []),
+    ...(instituteSection && (instituteSection.title || instituteSection.certificateTitle || instituteSection.whyItMatters?.length > 0) ? [{ id: "section-certificate", label: "Certificate" }] : []),
+    ...(careerSection && (careerSection.title || careerSection.careerOpportunities?.length > 0 || careerSection.industriesHiring?.length > 0) ? [{ id: "section-career", label: "Career" }] : []),
+    ...(feeSection && (feeSection.title || feeSection.financialSupport?.length > 0) ? [{ id: "section-fees", label: "Fee Details" }] : []),
+    ...(faqSection && faqSection.faqs && faqSection.faqs.length > 0 ? [{ id: "section-faqs", label: "FAQs" }] : []),
+  ];
 
   const [activeSection, setActiveSection] = useState("section-overview");
   const [showTopBar, setShowTopBar] = useState(false);
@@ -234,13 +249,13 @@ export default function CourseDetailPage() {
         setShowTopBar(false);
       }
 
-      if (!isManualScrollingRef.current) {
+      if (!isManualScrollingRef.current && dynamicNavSections.length > 0) {
         const offset = 120;
-        const sectionElements = COURSE_NAV_SECTIONS.map((sec) =>
+        const sectionElements = dynamicNavSections.map((sec) =>
           document.getElementById(sec.id)
         ).filter(Boolean);
 
-        let currentSection = COURSE_NAV_SECTIONS[0].id;
+        let currentSection = dynamicNavSections[0]?.id || "";
         for (let i = 0; i < sectionElements.length; i++) {
           const el = sectionElements[i];
           const rect = el.getBoundingClientRect();
@@ -248,13 +263,15 @@ export default function CourseDetailPage() {
             currentSection = el.id;
           }
         }
-        setActiveSection(currentSection);
+        if (currentSection) {
+          setActiveSection(currentSection);
+        }
       }
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [dynamicNavSections]);
 
   const scrollToSection = (id) => {
     const el = document.getElementById(id);
@@ -287,8 +304,26 @@ export default function CourseDetailPage() {
     );
   }
 
-  const rawImage = uniObj?.imageSrc?.url || uniObj?.imageSrc || (typeof course?.image === "object" ? course?.image?.url : course?.image);
-  const imageUrl = getAssetPath(rawImage, "/media/images/2026/07/28/01abe8d532ba5872f3a6cdab896b9ccd.png");
+  const uniLogoUrl = uniObj?.logo?.url || uniObj?.logo
+    ? getAssetPath(uniObj.logo?.url || uniObj.logo)
+    : null;
+
+  const rawImage =
+    course?.heroMedia?.url ||
+    course?.heroMedia ||
+    uniObj?.bannerImg?.url ||
+    uniObj?.bannerImg ||
+    uniObj?.imageSrc?.url ||
+    uniObj?.imageSrc ||
+    (typeof course?.image === "object" ? course?.image?.url : course?.image);
+
+  const imageUrl = rawImage ? getAssetPath(rawImage) : "";
+
+  const rawCertImage =
+    instituteSection?.certificateImage?.url ||
+    instituteSection?.certificateImage;
+
+  const certificateImageUrl = rawCertImage ? getAssetPath(rawCertImage) : "";
 
   return (
     <div className="bg-[#F4F6F9] min-h-screen py-8 px-4 sm:px-6 lg:px-8 font-sans">
@@ -324,512 +359,533 @@ export default function CourseDetailPage() {
         ) : (
           <>
 
-          {/* Breadcrumb + Back Button */}
-          <div className="hidden md:flex flex-wrap items-center justify-between gap-4">
-            <Breadcrumb
-              className="text-xs sm:text-sm font-semibold text-slate-500"
-              items={[
-                { title: <Link href="/" className="hover:text-blue-600">Home</Link> },
-                { title: <Link href="/courses" className="hover:text-blue-600">Courses</Link> },
-                ...(course?.activeSubcourseSlug && heroSubTitle ? [
-                  { title: <Link href={`/courses/${course?.slug || ''}`} className="hover:text-blue-600">{cleanTitle}</Link> },
-                  { title: <span className="text-slate-800 font-bold">{heroSubTitle}</span> },
-                ] : [
-                  { title: <span className="text-slate-800 font-bold">{cleanTitle}</span> },
-                ]),
-              ]}
-            />
-            <Button
-              icon={<ArrowLeftOutlined />}
-              onClick={() => router.push("/courses")}
-              className="bg-white border-slate-300 rounded-lg text-xs font-bold text-slate-700 shadow-2xs hover:bg-slate-50"
-            >
-              Back to Courses
-            </Button>
-          </div>
-
-          {/* Hero Banner */}
-          <div className="bg-linear-to-r from-[#0F3759] via-[#103D6D] to-[#154E8A] rounded-3xl overflow-hidden shadow-xl text-white relative">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-              <div className="lg:col-span-7 space-y-5 p-6 pb-0 lg:pl-10 lg:py-10">
-                <span className="bg-[#FAF0CA] text-[#0C3058] font-extrabold text-xs uppercase px-4 py-1.5 rounded-full inline-block tracking-wider shadow-2xs">
-                  {categoryName}
-                </span>
-
-                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white leading-tight tracking-tight m-0">
-                  {displayHeroTitle}
-                </h1>
-
-                <div className="flex flex-wrap items-center gap-5 text-xs sm:text-sm font-semibold text-slate-200 pt-4">
-                  <span className="flex items-center gap-1.5">
-                    <ClockCircleFilled className="text-[#FFC107] text-base" /> Duration: <strong className="text-white">{primaryDuration}</strong>
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <ClockCircleFilled className="text-[#FFC107] text-base" /> Admission Deadline: <strong className="text-white">31-Jul-26</strong>
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-4 pt-2">
-                  <Button
-                    type="primary"
-                    size="large"
-                    onClick={() => {
-                      openFormModal && openFormModal({
-                        title: `Download Brochure - ${cleanTitle}`,
-                        subtitle: "Fill details to receive instant access to brochure",
-                        defaultCourse: displayHeroTitle,
-                        submitButtonText: "Download Brochure",
-                      });
-                    }}
-                    className="bg-[#00B4D8] hover:bg-[#0096C7] text-white border-none font-bold text-sm px-4 rounded-xl shadow-md cursor-pointer flex items-center gap-1"
-                  >
-                    Get Brochure ↓
-                  </Button>
-                  <Button
-                    size="large"
-                    onClick={() => {
-                      openFormModal && openFormModal({
-                        title: "Get 100% FREE Counseling",
-                        subtitle: "Speak directly with our senior academic counselors",
-                        defaultCourse: displayHeroTitle,
-                        submitButtonText: "Request Counseling",
-                      });
-                    }}
-                    className="bg-transparent hover:bg-white/10 text-white border-2 border-white/80 font-bold text-sm px-4 rounded-xl cursor-pointer"
-                  >
-                    Get Counseling
-                  </Button>
-                </div>
-              </div>
-
-              <div className="lg:col-span-5 flex justify-center lg:justify-end">
-                <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full text-slate-800 group overflow-hidden">
-                  <div className="relative w-full h-100 rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center">
-                    <Image
-                      src={imageUrl}
-                      alt={uniName}
-                      fill
-                      unoptimized
-                      className="object-cover"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Fixed Top Bar (Ant Design Tabs) */}
-          <div
-            className={`fixed top-0 left-0 right-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm transition-all duration-300 transform ${showTopBar
-              ? "translate-y-0 opacity-100 pointer-events-auto"
-              : "-translate-y-full opacity-0 pointer-events-none"
-              }`}
-          >
-            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6">
-              <Tabs
-                activeKey={activeSection}
-                onChange={(key) => scrollToSection(key)}
-                tabBarGutter={24}
-                className="[&_.ant-tabs-nav]:mb-0 [&_.ant-tabs-tab-btn]:font-medium [&_.ant-tabs-tab-btn]:text-sm [&_.ant-tabs-tab-btn]:text-slate-700 [&_.ant-tabs-tab-btn]:hover:text-[#0c3058] [&_.ant-tabs-tab-active_.ant-tabs-tab-btn]:text-[#0c3058]! [&_.ant-tabs-ink-bar]:bg-[#0c3058]! [&_.ant-tabs-ink-bar]:h-0.75 [&_.ant-tabs-nav-wrap]:py-1.5"
-                items={COURSE_NAV_SECTIONS.map((sec) => ({
-                  key: sec.id,
-                  label: sec.label,
-                }))}
+            {/* Breadcrumb + Back Button */}
+            <div className="hidden md:flex flex-wrap items-center justify-between gap-4">
+              <Breadcrumb
+                className="text-xs sm:text-sm font-semibold text-slate-500"
+                items={[
+                  { title: <Link href="/" className="hover:text-blue-600">Home</Link> },
+                  { title: <Link href="/courses" className="hover:text-blue-600">Courses</Link> },
+                  ...(course?.activeSubcourseSlug && heroSubTitle ? [
+                    { title: <Link href={`/courses/${course?.slug || ''}`} className="hover:text-blue-600">{cleanTitle}</Link> },
+                    { title: <span className="text-slate-800 font-bold">{heroSubTitle}</span> },
+                  ] : [
+                    { title: <span className="text-slate-800 font-bold">{cleanTitle}</span> },
+                  ]),
+                ]}
               />
+              <Button
+                icon={<ArrowLeftOutlined />}
+                onClick={() => router.push("/courses")}
+                className="bg-white border-slate-300 rounded-lg text-xs font-bold text-slate-700 shadow-2xs hover:bg-slate-50"
+              >
+                Back to Courses
+              </Button>
             </div>
-          </div>
 
-          {/* Main Grid Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-4">
+            {/* Hero Banner */}
+            <div className="bg-linear-to-r from-[#0F3759] via-[#103D6D] to-[#154E8A] rounded-3xl overflow-hidden shadow-xl text-white relative">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                <div className="lg:col-span-7 space-y-5 p-6 pb-0 lg:pl-10 lg:py-10">
+                  <span className="bg-[#FAF0CA] text-[#0C3058] font-extrabold text-xs uppercase px-4 py-1.5 rounded-full inline-block tracking-wider shadow-2xs">
+                    {categoryName}
+                  </span>
 
-            {/* Left Main Content Column */}
-            <div className="lg:col-span-8 space-y-6">
+                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white leading-tight tracking-tight m-0">
+                    {displayHeroTitle}
+                  </h1>
 
-              {/* Overview */}
-              <div id="section-overview" className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
-                <div>
-                  <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
-                    <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#EBF4FF] shrink-0">
-                      <RocketOutlined className="text-[#0C3058] text-base" />
+                  <div className="flex flex-wrap items-center gap-5 text-xs sm:text-sm font-semibold text-slate-200 pt-4">
+                    <span className="flex items-center gap-1.5">
+                      <ClockCircleFilled className="text-[#FFC107] text-base" /> Duration: <strong className="text-white">{primaryDuration}</strong>
                     </span>
-                    {overviewTitle || "Course Overview"}
-                  </h2>
-                  <p className="text-slate-600 leading-relaxed text-sm sm:text-base mt-4 m-0 font-medium">
-                    {overviewText}
-                  </p>
+                    <span className="flex items-center gap-1.5">
+                      <ClockCircleFilled className="text-[#FFC107] text-base" /> Admission Deadline: <strong className="text-white">{course?.admissionDeadline || "31-Jul-2026"}</strong>
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-4 pt-2">
+                    <Button
+                      type="primary"
+                      size="large"
+                      onClick={() => {
+                        openFormModal && openFormModal({
+                          title: `Download Brochure - ${cleanTitle}`,
+                          subtitle: "Fill details to receive instant access to brochure",
+                          defaultCourse: displayHeroTitle,
+                          submitButtonText: "Download Brochure",
+                        });
+                      }}
+                      className="bg-[#00B4D8] hover:bg-[#0096C7] text-white border-none font-bold text-sm px-4 rounded-xl shadow-md cursor-pointer flex items-center gap-1"
+                    >
+                      Get Brochure ↓
+                    </Button>
+                    <Button
+                      size="large"
+                      onClick={() => {
+                        openFormModal && openFormModal({
+                          title: "Get 100% FREE Counseling",
+                          subtitle: "Speak directly with our senior academic counselors",
+                          defaultCourse: displayHeroTitle,
+                          submitButtonText: "Request Counseling",
+                        });
+                      }}
+                      className="bg-transparent hover:bg-white/10 text-white border-2 border-white/80 font-bold text-sm px-4 rounded-xl cursor-pointer"
+                    >
+                      Get Counseling
+                    </Button>
+                  </div>
                 </div>
 
-                {courseSnapshot.length > 0 && (
-                  <div className="pt-2">
-                    <h3 className="text-base sm:text-lg font-bold text-[#0C3058] mb-3">Course Snapshot</h3>
-                    <ul className="space-y-2 text-slate-700 text-sm font-medium">
-                      {courseSnapshot.map((item, idx) => (
-                        <li key={idx} className="flex items-center gap-2.5 leading-snug">
-                          <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-[#EBF4FF] shrink-0">
-                            <item.icon className="text-[#0C3058] text-sm" />
-                          </span>
-                          <span>
-                            {item.value
-                              ? <><strong className="text-slate-900">{item.label}:</strong> {item.value}</>
-                              : <strong className="text-slate-900">{item.label}</strong>
-                            }
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
+                <div className="lg:col-span-5 flex justify-center lg:justify-end">
+                  <div className="relative w-full max-w-sm h-88 rounded-3xl overflow-hidden shadow-2xl group flex items-center justify-center">
+                    {imageUrl && (
+                      <Image
+                        src={imageUrl}
+                        alt={uniName}
+                        fill
+                        unoptimized
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    )}
+                    {uniLogoUrl && (
+                      <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-md rounded-2xl px-3.5 py-2 shadow-lg flex items-center gap-2.5 max-w-[85%]">
+                        <div className="relative w-10 h-7 shrink-0 flex items-center justify-center">
+                          <Image
+                            src={uniLogoUrl}
+                            alt={uniName}
+                            fill
+                            unoptimized
+                            className="object-contain"
+                          />
+                        </div>
+                        <div className="min-w-0 pr-1">
+                          <p className="text-xs font-bold text-slate-800 truncate m-0 leading-tight">
+                            {uniName}
+                          </p>
+                          <p className="text-[10px] font-medium text-slate-500 m-0 leading-none">
+                            Accredited Partner
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                )}
+                </div>
               </div>
-
-              {/* Why Choose */}
-              {(whyChooseTitle || whyChooseDescription || highlightsList.length > 0) && (
-                <div id="section-why-choose" className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
-                  <div>
-                    <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
-                      <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#FFF8E1] shrink-0">
-                        <BulbOutlined className="text-[#F59E0B] text-base" />
-                      </span>
-                      {whyChooseTitle}
-                    </h2>
-                    {whyChooseDescription && (
-                      <p className="text-slate-600 leading-relaxed text-sm sm:text-base mt-4 m-0 font-medium">
-                        {whyChooseDescription}
-                      </p>
-                    )}
-                  </div>
-
-                  {(highlightsList.length > 0 || courseSnapshotBottom.length > 0) && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                      {highlightsList.length > 0 && (
-                        <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3">
-                          <h3 className="text-base font-extrabold text-[#0C3058] m-0">Key Highlights</h3>
-                          <ul className="space-y-2.5 pt-3">
-                            {highlightsList.map((mod, idx) => (
-                              <li key={idx} className="flex items-start gap-2.5 text-sm text-slate-700 font-light leading-snug">
-                                <CheckCircleFilled className="text-[#22b425] text-base mt-0.5 shrink-0" />
-                                <span>
-                                  <strong className="text-slate-900">{typeof mod === "object" ? mod.title : mod}</strong>
-                                  {typeof mod === "object" && mod.description ? ` — ${mod.description}` : ""}
-                                </span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-
-                      {courseSnapshotBottom.length > 0 && (
-                        <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3">
-                          <h3 className="text-base font-extrabold text-[#0C3058] m-0">Course Snapshot</h3>
-                          <ul className="space-y-2.5 pt-3">
-                            {courseSnapshotBottom.map((item, idx) => (
-                              <li key={idx} className="flex items-center gap-2.5 text-sm text-slate-700 font-medium leading-snug">
-                                <RightOutlined className="text-[#22b425] text-xs shrink-0" />
-                                <span>
-                                  <strong className="text-slate-700 font-bold">{item.label}{" "}:</strong>{" "}
-                                  <span className="font-light">{item.value}</span>
-                                </span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Admission */}
-              {(whoCanApplyList.length > 0 || admissionProcessList.length > 0) && (
-                <div id="section-admission" className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
-                  <div>
-                    <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
-                      <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#EBF4FF] shrink-0">
-                        <UserOutlined className="text-[#0C3058] text-base" />
-                      </span>
-                      Eligibility & Admission Process
-                    </h2>
-                    <p className="text-slate-600 leading-relaxed text-sm sm:text-base mt-4 m-0 font-medium">
-                      The programme is designed for graduates and working professionals who want to develop expertise in this field.
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                    {whoCanApplyList.length > 0 && (
-                      <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3">
-                        <h3 className="text-base font-extrabold text-[#0C3058] m-0">Who Can Apply?</h3>
-                        <ul className="space-y-2.5 pt-3">
-                          {whoCanApplyList.map((item, idx) => (
-                            <li key={idx} className="flex items-start gap-2.5 text-sm text-slate-700 font-light leading-snug">
-                              <CheckCircleFilled className="text-[#22b425] text-base mt-0.5 shrink-0" />
-                              <strong className="text-slate-900">{typeof item === "object" ? (item.title || item.name) : item}</strong>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-
-                    {admissionProcessList.length > 0 && (
-                      <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3">
-                        <h3 className="text-base font-extrabold text-[#0C3058] m-0">Admission Process</h3>
-                        <ol className="space-y-3 pt-3 list-none p-0 m-0">
-                          {admissionProcessList.map((step, idx) => (
-                            <li key={idx} className="flex items-center gap-3 text-sm text-slate-700 font-medium leading-snug">
-                              <span className="w-6 h-6 rounded-full bg-[#0C3058] text-white text-xs font-bold flex items-center justify-center shrink-0">
-                                {idx + 1}
-                              </span>
-                              <span className="font-semibold text-slate-800">{typeof step === "object" ? (step.title || step.name) : step}</span>
-                            </li>
-                          ))}
-                        </ol>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Curriculum */}
-              {skillsSection && (skillsSection.title || skillsSection.skillsGain?.length > 0 || skillsSection.curriculumOverview?.length > 0) && (
-                <div id="section-curriculum" className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
-                  <div>
-                    <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
-                      <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#E8F5E9] shrink-0">
-                        <ReadOutlined className="text-[#22b425] text-base" />
-                      </span>
-                      {skillsSection.title || "Skills You'll Learn & Curriculum"}
-                    </h2>
-                    {skillsSection.description && (
-                      <p className="text-slate-600 leading-relaxed text-sm sm:text-base mt-4 m-0 font-medium">
-                        {skillsSection.description}
-                      </p>
-                    )}
-                  </div>
-
-                  {((skillsSection.skillsGain && skillsSection.skillsGain.length > 0) || (skillsSection.curriculumOverview && skillsSection.curriculumOverview.length > 0)) && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                      {skillsSection.skillsGain && skillsSection.skillsGain.length > 0 && (
-                        <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3">
-                          <h3 className="text-base font-extrabold text-[#0C3058] m-0">Skills You&apos;ll Gain</h3>
-                          <ul className="space-y-2.5 pt-3">
-                            {skillsSection.skillsGain.map((skill, idx) => (
-                              <li key={idx} className="flex items-start gap-2.5 text-sm text-slate-700 font-light leading-snug">
-                                <CheckCircleFilled className="text-[#22b425] text-base mt-0.5 shrink-0" />
-                                <strong className="text-slate-900">{skill}</strong>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                      {skillsSection.curriculumOverview && skillsSection.curriculumOverview.length > 0 && (
-                        <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3">
-                          <h3 className="text-base font-extrabold text-[#0C3058] m-0">Curriculum Overview</h3>
-                          <ul className="space-y-2.5 pt-3">
-                            {skillsSection.curriculumOverview.map((item, idx) => (
-                              <li key={idx} className="flex items-center gap-2.5 text-sm text-slate-700 font-medium leading-snug">
-                                <RightOutlined className="text-[#22b425] text-xs shrink-0" />
-                                <span className="font-light text-slate-700">{typeof item === "object" ? (item.title || item.name) : item}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Experience */}
-              {learningExperience && (learningExperience.title || learningExperience.learningFeatures?.length > 0) && (
-                <div id="section-experience" className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
-                  <div>
-                    <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
-                      <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#EDE7F6] shrink-0">
-                        <VideoCameraOutlined className="text-[#7B1FA2] text-base" />
-                      </span>
-                      {learningExperience.title || "An Interactive & Flexible Learning Experience"}
-                    </h2>
-                    {learningExperience.description && (
-                      <p className="text-slate-600 leading-relaxed text-sm sm:text-base mt-4 m-0 font-medium">
-                        {learningExperience.description}
-                      </p>
-                    )}
-                  </div>
-
-                  {learningExperience.learningFeatures && learningExperience.learningFeatures.length > 0 && (
-                    <div className="pt-2">
-                      <h3 className="text-base font-extrabold text-[#0C3058] m-0 mb-3">Learning Features</h3>
-                      <div className="pb-5">
-                        <ul className="space-y-2.5">
-                          {learningExperience.learningFeatures.map((feature, idx) => (
-                            <li key={idx} className="flex items-start gap-2.5 text-sm text-slate-700 font-light leading-snug">
-                              <CheckCircleFilled className="text-[#22b425] text-base mt-0.5 shrink-0" />
-                              <strong className="text-slate-900">{feature}</strong>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Certificate */}
-              {instituteSection && (instituteSection.title || instituteSection.certificateTitle || instituteSection.whyItMatters?.length > 0) && (
-                <div id="section-certificate" className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
-                  <div>
-                    <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
-                      <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#EBF4FF] shrink-0">
-                        <BankOutlined className="text-[#0C3058] text-base" />
-                      </span>
-                      {instituteSection.title || `Learn from One of India's Premier Management Institutes`}
-                    </h2>
-                    {instituteSection.description && (
-                      <p className="text-slate-600 leading-relaxed text-sm sm:text-base mt-4 m-0 font-medium">
-                        {instituteSection.description}
-                      </p>
-                    )}
-                  </div>
-
-                  {(instituteSection.certificateTitle || instituteSection.certificateImage || (instituteSection.whyItMatters && instituteSection.whyItMatters.length > 0)) && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2 items-center">
-                      {instituteSection.certificateTitle && (
-                        <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3 h-full flex flex-col justify-center">
-                          <h3 className="text-base font-extrabold text-[#0C3058] m-0 flex items-center gap-2">
-                            {instituteSection.certificateTitle}
-                          </h3>
-                          {instituteSection.certificateDescription && (
-                            <p className="text-sm text-slate-600 font-light leading-relaxed mt-2">
-                              {instituteSection.certificateDescription}
-                            </p>
-                          )}
-                        </div>
-                      )}
-                      <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-3 flex items-center justify-center overflow-hidden h-full">
-                        <Image
-                          src={instituteSection.certificateImage || "/media/images/2026/07/30/1a4f40f078b735f63422aad57d0c3ca3.webp"}
-                          alt="Certificate Preview"
-                          width={400}
-                          height={260}
-                          unoptimized
-                          className="w-full h-auto object-contain rounded-xl max-h-60 shadow-xs"
-                          style={{ width: "auto", height: "auto" }}
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Career */}
-              {careerSection && (careerSection.title || careerSection.careerOpportunities?.length > 0 || careerSection.industriesHiring?.length > 0) && (
-                <div id="section-career" className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
-                  <div>
-                    <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
-                      <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#FFF3E0] shrink-0">
-                        <TrophyOutlined className="text-[#F59E0B] text-base" />
-                      </span>
-                      {careerSection.title || "Advance Your Career with In-Demand Skills"}
-                    </h2>
-                    {careerSection.description && (
-                      <p className="text-slate-600 leading-relaxed text-sm sm:text-base mt-4 m-0 font-medium">
-                        {careerSection.description}
-                      </p>
-                    )}
-                  </div>
-
-                  {((careerSection.careerOpportunities && careerSection.careerOpportunities.length > 0) || (careerSection.industriesHiring && careerSection.industriesHiring.length > 0)) && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                      {careerSection.careerOpportunities && careerSection.careerOpportunities.length > 0 && (
-                        <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3">
-                          <h3 className="text-base font-extrabold text-[#0C3058] m-0">Career Opportunities</h3>
-                          <ul className="space-y-2.5 pt-3">
-                            {careerSection.careerOpportunities.map((opp, idx) => (
-                              <li key={idx} className="flex items-start gap-2.5 text-sm text-slate-700 font-light leading-snug">
-                                <CheckCircleFilled className="text-[#22b425] text-base mt-0.5 shrink-0" />
-                                <strong className="text-slate-900">{opp}</strong>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                      {careerSection.industriesHiring && careerSection.industriesHiring.length > 0 && (
-                        <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3">
-                          <h3 className="text-base font-extrabold text-[#0C3058] m-0">Industries Hiring</h3>
-                          <ul className="space-y-2.5 pt-3">
-                            {careerSection.industriesHiring.map((ind, idx) => (
-                              <li key={idx} className="flex items-center gap-2.5 text-sm text-slate-700 font-medium leading-snug">
-                                <RightOutlined className="text-[#22b425] text-xs shrink-0" />
-                                <span className="font-light text-slate-700">{ind}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Fees */}
-              {feeSection && (feeSection.title || feeSection.financialSupport?.length > 0) && (
-                <div id="section-fees" className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
-                  <div>
-                    <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
-                      <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#E3F2FD] shrink-0">
-                        <CreditCardOutlined className="text-[#1565C0] text-base" />
-                      </span>
-                      {feeSection.title || "Flexible Fee & Payment Options"}
-                    </h2>
-                    {feeSection.description && (
-                      <p className="text-slate-600 leading-relaxed text-sm sm:text-base mt-4 m-0 font-medium">
-                        {feeSection.description}
-                      </p>
-                    )}
-                  </div>
-
-                  {feeSection.financialSupport && feeSection.financialSupport.length > 0 && (
-                    <div className="pt-2">
-                      <h3 className="text-base font-extrabold text-[#0C3058] m-0 mb-3">Financial Support</h3>
-                      <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5">
-                        <ul className="space-y-2.5">
-                          {feeSection.financialSupport.map((item, idx) => (
-                            <li key={idx} className="flex items-start gap-2.5 text-sm text-slate-700 font-light leading-snug">
-                              <CheckCircleFilled className="text-[#22b425] text-base mt-0.5 shrink-0" />
-                              <strong className="text-slate-900">{item}</strong>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  )}
-
-                  {feeSection.footerNote && (
-                    <p className="text-sm text-slate-700 font-semibold m-0">
-                      {feeSection.footerNote}
-                    </p>
-                  )}
-                </div>
-              )}
-
-              {/* FAQs */}
-              {faqSection && faqSection.faqs && faqSection.faqs.length > 0 && (
-                <FAQAccordion faqs={faqSection.faqs} title={faqSection.title} />
-              )}
-
             </div>
 
-            {/* Right Sidebar Column */}
-            <div className="lg:col-span-4">
-              <div className="sticky top-6 bg-white rounded-3xl p-6 border border-slate-200/90 shadow-md">
-                <FormWrapper
-                  title="Enquire Now"
-                  subtitle="Academic Experts will assist you!"
-                  defaultCourse={displayHeroTitle}
-                  formNameOverride={`CourseDetailPage_${course?.slug || ''}`}
+            {/* Fixed Top Bar (Ant Design Tabs) */}
+            <div
+              className={`fixed top-0 left-0 right-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm transition-all duration-300 transform ${showTopBar
+                ? "translate-y-0 opacity-100 pointer-events-auto"
+                : "-translate-y-full opacity-0 pointer-events-none"
+                }`}
+            >
+              <div className="w-full max-w-7xl mx-auto px-4 sm:px-6">
+                <Tabs
+                  activeKey={activeSection}
+                  onChange={(key) => scrollToSection(key)}
+                  tabBarGutter={24}
+                  className="[&_.ant-tabs-nav]:mb-0 [&_.ant-tabs-tab-btn]:font-medium [&_.ant-tabs-tab-btn]:text-sm [&_.ant-tabs-tab-btn]:text-slate-700 [&_.ant-tabs-tab-btn]:hover:text-[#0c3058] [&_.ant-tabs-tab-active_.ant-tabs-tab-btn]:text-[#0c3058]! [&_.ant-tabs-ink-bar]:bg-[#0c3058]! [&_.ant-tabs-ink-bar]:h-0.75 [&_.ant-tabs-nav-wrap]:py-1.5"
+                  items={dynamicNavSections.map((sec) => ({
+                    key: sec.id,
+                    label: sec.label,
+                  }))}
                 />
               </div>
             </div>
 
-          </div>
+            {/* Main Grid Layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-4">
+
+              {/* Left Main Content Column */}
+              <div className="lg:col-span-8 space-y-6">
+
+                {/* Overview */}
+                <div id="section-overview" className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
+                  <div>
+                    <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
+                      <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#EBF4FF] shrink-0">
+                        <RocketOutlined className="text-[#0C3058] text-base" />
+                      </span>
+                      {overviewTitle || "Course Overview"}
+                    </h2>
+                    <p className="text-slate-600 leading-relaxed text-sm sm:text-base mt-4 m-0 font-medium">
+                      {overviewText}
+                    </p>
+                  </div>
+
+                  {courseSnapshot.length > 0 && (
+                    <div className="pt-2">
+                      <h3 className="text-base sm:text-lg font-bold text-[#0C3058] mb-3">Course Snapshot</h3>
+                      <ul className="space-y-2 text-slate-700 text-sm font-medium">
+                        {courseSnapshot.map((item, idx) => (
+                          <li key={idx} className="flex items-center gap-2.5 leading-snug">
+                            <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-[#EBF4FF] shrink-0">
+                              {item.icon ? <item.icon className="text-[#0C3058] text-sm" /> : <RightOutlined className="text-[#0C3058] text-xs" />}
+                            </span>
+                            <span>
+                              {item.value
+                                ? <><strong className="text-slate-900">{item.label}:</strong> {item.value}</>
+                                : <strong className="text-slate-900">{item.label}</strong>
+                              }
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+
+                {/* Why Choose */}
+                {(whyChooseTitle || whyChooseDescription || highlightsList.length > 0) && (
+                  <div id="section-why-choose" className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
+                    <div>
+                      <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
+                        <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#FFF8E1] shrink-0">
+                          <BulbOutlined className="text-[#F59E0B] text-base" />
+                        </span>
+                        {whyChooseTitle}
+                      </h2>
+                      {whyChooseDescription && (
+                        <p className="text-slate-600 leading-relaxed text-sm sm:text-base mt-4 m-0 font-medium">
+                          {whyChooseDescription}
+                        </p>
+                      )}
+                    </div>
+
+                    {(highlightsList.length > 0 || courseSnapshotBottom.length > 0) && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                        {highlightsList.length > 0 && (
+                          <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3">
+                            <h3 className="text-base font-extrabold text-[#0C3058] m-0">Key Highlights</h3>
+                            <ul className="space-y-2.5 pt-3">
+                              {highlightsList.map((mod, idx) => (
+                                <li key={idx} className="flex items-start gap-2.5 text-sm text-slate-700 font-light leading-snug">
+                                  <CheckCircleFilled className="text-[#22b425] text-base mt-0.5 shrink-0" />
+                                  <span>
+                                    <strong className="text-slate-900">{typeof mod === "object" ? mod.title : mod}</strong>
+                                    {typeof mod === "object" && mod.description ? ` — ${mod.description}` : ""}
+                                  </span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        {courseSnapshotBottom.length > 0 && (
+                          <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3">
+                            <h3 className="text-base font-extrabold text-[#0C3058] m-0">Course Snapshot</h3>
+                            <ul className="space-y-2.5 pt-3">
+                              {courseSnapshotBottom.map((item, idx) => (
+                                <li key={idx} className="flex items-center gap-2.5 text-sm text-slate-700 font-medium leading-snug">
+                                  <RightOutlined className="text-[#22b425] text-xs shrink-0" />
+                                  <span>
+                                    <strong className="text-slate-700 font-bold">{item.label}{" "}:</strong>{" "}
+                                    <span className="font-light">{item.value}</span>
+                                  </span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Admission */}
+                {(whoCanApplyList.length > 0 || admissionProcessList.length > 0) && (
+                  <div id="section-admission" className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
+                    <div>
+                      <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
+                        <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#EBF4FF] shrink-0">
+                          <UserOutlined className="text-[#0C3058] text-base" />
+                        </span>
+                        Eligibility & Admission Process
+                      </h2>
+                      <p className="text-slate-600 leading-relaxed text-sm sm:text-base mt-4 m-0 font-medium">
+                        The programme is designed for graduates and working professionals who want to develop expertise in this field.
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                      {whoCanApplyList.length > 0 && (
+                        <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3">
+                          <h3 className="text-base font-extrabold text-[#0C3058] m-0">Who Can Apply?</h3>
+                          <ul className="space-y-2.5 pt-3">
+                            {whoCanApplyList.map((item, idx) => (
+                              <li key={idx} className="flex items-start gap-2.5 text-sm text-slate-700 font-light leading-snug">
+                                <CheckCircleFilled className="text-[#22b425] text-base mt-0.5 shrink-0" />
+                                <strong className="text-slate-900">{typeof item === "object" ? (item.title || item.name) : item}</strong>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {admissionProcessList.length > 0 && (
+                        <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3">
+                          <h3 className="text-base font-extrabold text-[#0C3058] m-0">Admission Process</h3>
+                          <ol className="space-y-3 pt-3 list-none p-0 m-0">
+                            {admissionProcessList.map((step, idx) => (
+                              <li key={idx} className="flex items-center gap-3 text-sm text-slate-700 font-medium leading-snug">
+                                <span className="w-6 h-6 rounded-full bg-[#0C3058] text-white text-xs font-bold flex items-center justify-center shrink-0">
+                                  {idx + 1}
+                                </span>
+                                <span className="font-semibold text-slate-800">{typeof step === "object" ? (step.title || step.name) : step}</span>
+                              </li>
+                            ))}
+                          </ol>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Curriculum */}
+                {skillsSection && (skillsSection.title || skillsSection.skillsGain?.length > 0 || skillsSection.curriculumOverview?.length > 0) && (
+                  <div id="section-curriculum" className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
+                    <div>
+                      <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
+                        <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#E8F5E9] shrink-0">
+                          <ReadOutlined className="text-[#22b425] text-base" />
+                        </span>
+                        {skillsSection.title || "Skills You'll Learn & Curriculum"}
+                      </h2>
+                      {skillsSection.description && (
+                        <p className="text-slate-600 leading-relaxed text-sm sm:text-base mt-4 m-0 font-medium">
+                          {skillsSection.description}
+                        </p>
+                      )}
+                    </div>
+
+                    {((skillsSection.skillsGain && skillsSection.skillsGain.length > 0) || (skillsSection.curriculumOverview && skillsSection.curriculumOverview.length > 0)) && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                        {skillsSection.skillsGain && skillsSection.skillsGain.length > 0 && (
+                          <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3">
+                            <h3 className="text-base font-extrabold text-[#0C3058] m-0">Skills You&apos;ll Gain</h3>
+                            <ul className="space-y-2.5 pt-3">
+                              {skillsSection.skillsGain.map((skill, idx) => (
+                                <li key={idx} className="flex items-start gap-2.5 text-sm text-slate-700 font-light leading-snug">
+                                  <CheckCircleFilled className="text-[#22b425] text-base mt-0.5 shrink-0" />
+                                  <strong className="text-slate-900">{skill}</strong>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                        {skillsSection.curriculumOverview && skillsSection.curriculumOverview.length > 0 && (
+                          <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3">
+                            <h3 className="text-base font-extrabold text-[#0C3058] m-0">Curriculum Overview</h3>
+                            <ul className="space-y-2.5 pt-3">
+                              {skillsSection.curriculumOverview.map((item, idx) => (
+                                <li key={idx} className="flex items-center gap-2.5 text-sm text-slate-700 font-medium leading-snug">
+                                  <RightOutlined className="text-[#22b425] text-xs shrink-0" />
+                                  <span className="font-light text-slate-700">{typeof item === "object" ? (item.title || item.name) : item}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Experience */}
+                {learningExperience && (learningExperience.title || learningExperience.learningFeatures?.length > 0) && (
+                  <div id="section-experience" className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
+                    <div>
+                      <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
+                        <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#EDE7F6] shrink-0">
+                          <VideoCameraOutlined className="text-[#7B1FA2] text-base" />
+                        </span>
+                        {learningExperience.title || "An Interactive & Flexible Learning Experience"}
+                      </h2>
+                      {learningExperience.description && (
+                        <p className="text-slate-600 leading-relaxed text-sm sm:text-base mt-4 m-0 font-medium">
+                          {learningExperience.description}
+                        </p>
+                      )}
+                    </div>
+
+                    {learningExperience.learningFeatures && learningExperience.learningFeatures.length > 0 && (
+                      <div className="pt-2">
+                        <h3 className="text-base font-extrabold text-[#0C3058] m-0 mb-3">Learning Features</h3>
+                        <div className="pb-5">
+                          <ul className="space-y-2.5">
+                            {learningExperience.learningFeatures.map((feature, idx) => (
+                              <li key={idx} className="flex items-start gap-2.5 text-sm text-slate-700 font-light leading-snug">
+                                <CheckCircleFilled className="text-[#22b425] text-base mt-0.5 shrink-0" />
+                                <strong className="text-slate-900">{feature}</strong>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Certificate */}
+                {instituteSection && (instituteSection.title || instituteSection.certificateTitle || instituteSection.whyItMatters?.length > 0) && (
+                  <div id="section-certificate" className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
+                    <div>
+                      <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
+                        <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#EBF4FF] shrink-0">
+                          <BankOutlined className="text-[#0C3058] text-base" />
+                        </span>
+                        {instituteSection.title || `Learn from One of India's Premier Management Institutes`}
+                      </h2>
+                      {instituteSection.description && (
+                        <p className="text-slate-600 leading-relaxed text-sm sm:text-base mt-4 m-0 font-medium">
+                          {instituteSection.description}
+                        </p>
+                      )}
+                    </div>
+
+                    {(instituteSection.certificateTitle || instituteSection.certificateImage || (instituteSection.whyItMatters && instituteSection.whyItMatters.length > 0)) && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2 items-center">
+                        {instituteSection.certificateTitle && (
+                          <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3 h-full flex flex-col justify-center">
+                            <h3 className="text-base font-extrabold text-[#0C3058] m-0 flex items-center gap-2">
+                              {instituteSection.certificateTitle}
+                            </h3>
+                            {instituteSection.certificateDescription && (
+                              <p className="text-sm text-slate-600 font-light leading-relaxed mt-2">
+                                {instituteSection.certificateDescription}
+                              </p>
+                            )}
+                          </div>
+                        )}
+                        <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 flex items-center justify-center overflow-hidden h-full shadow-xs">
+                          <Image
+                            src={certificateImageUrl}
+                            alt="Certificate Preview"
+                            width={480}
+                            height={300}
+                            unoptimized
+                            className="w-full h-auto object-contain rounded-xl max-h-72 shadow-sm transition-transform duration-300 hover:scale-102"
+                            style={{ width: "auto", height: "auto" }}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Career */}
+                {careerSection && (careerSection.title || careerSection.careerOpportunities?.length > 0 || careerSection.industriesHiring?.length > 0) && (
+                  <div id="section-career" className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
+                    <div>
+                      <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
+                        <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#FFF3E0] shrink-0">
+                          <TrophyOutlined className="text-[#F59E0B] text-base" />
+                        </span>
+                        {careerSection.title || "Advance Your Career with In-Demand Skills"}
+                      </h2>
+                      {careerSection.description && (
+                        <p className="text-slate-600 leading-relaxed text-sm sm:text-base mt-4 m-0 font-medium">
+                          {careerSection.description}
+                        </p>
+                      )}
+                    </div>
+
+                    {((careerSection.careerOpportunities && careerSection.careerOpportunities.length > 0) || (careerSection.industriesHiring && careerSection.industriesHiring.length > 0)) && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                        {careerSection.careerOpportunities && careerSection.careerOpportunities.length > 0 && (
+                          <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3">
+                            <h3 className="text-base font-extrabold text-[#0C3058] m-0">Career Opportunities</h3>
+                            <ul className="space-y-2.5 pt-3">
+                              {careerSection.careerOpportunities.map((opp, idx) => (
+                                <li key={idx} className="flex items-start gap-2.5 text-sm text-slate-700 font-light leading-snug">
+                                  <CheckCircleFilled className="text-[#22b425] text-base mt-0.5 shrink-0" />
+                                  <strong className="text-slate-900">{opp}</strong>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                        {careerSection.industriesHiring && careerSection.industriesHiring.length > 0 && (
+                          <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3">
+                            <h3 className="text-base font-extrabold text-[#0C3058] m-0">Industries Hiring</h3>
+                            <ul className="space-y-2.5 pt-3">
+                              {careerSection.industriesHiring.map((ind, idx) => (
+                                <li key={idx} className="flex items-center gap-2.5 text-sm text-slate-700 font-medium leading-snug">
+                                  <RightOutlined className="text-[#22b425] text-xs shrink-0" />
+                                  <span className="font-light text-slate-700">{ind}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Fees */}
+                {feeSection && (feeSection.title || feeSection.financialSupport?.length > 0) && (
+                  <div id="section-fees" className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
+                    <div>
+                      <h2 className="text-0.5xl sm:text-2xl font-extrabold text-[#0C3058] m-0 border-b border-slate-200 pb-3 flex items-center gap-2.5">
+                        <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#E3F2FD] shrink-0">
+                          <CreditCardOutlined className="text-[#1565C0] text-base" />
+                        </span>
+                        {feeSection.title || "Flexible Fee & Payment Options"}
+                      </h2>
+                      {feeSection.description && (
+                        <p className="text-slate-600 leading-relaxed text-sm sm:text-base mt-4 m-0 font-medium">
+                          {feeSection.description}
+                        </p>
+                      )}
+                    </div>
+
+                    {feeSection.financialSupport && feeSection.financialSupport.length > 0 && (
+                      <div className="pt-2">
+                        <h3 className="text-base font-extrabold text-[#0C3058] m-0 mb-3">Financial Support</h3>
+                        <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5">
+                          <ul className="space-y-2.5">
+                            {feeSection.financialSupport.map((item, idx) => (
+                              <li key={idx} className="flex items-start gap-2.5 text-sm text-slate-700 font-light leading-snug">
+                                <CheckCircleFilled className="text-[#22b425] text-base mt-0.5 shrink-0" />
+                                <strong className="text-slate-900">{item}</strong>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    )}
+
+                    {feeSection.footerNote && (
+                      <p className="text-sm text-slate-700 font-semibold m-0">
+                        {feeSection.footerNote}
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {/* FAQs */}
+                {faqSection && faqSection.faqs && faqSection.faqs.length > 0 && (
+                  <FAQAccordion faqs={faqSection.faqs} title={faqSection.title} />
+                )}
+
+              </div>
+
+              {/* Right Sidebar Column */}
+              <div className="lg:col-span-4">
+                <div className="sticky top-6 bg-white rounded-3xl p-6 border border-slate-200/90 shadow-md">
+                  <FormWrapper
+                    title="Enquire Now"
+                    subtitle="Academic Experts will assist you!"
+                    defaultCourse={displayHeroTitle}
+                    formNameOverride={`CourseDetailPage_${course?.slug || ''}`}
+                  />
+                </div>
+              </div>
+
+            </div>
           </>
         )}
       </div>

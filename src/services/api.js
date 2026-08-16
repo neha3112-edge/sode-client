@@ -8,7 +8,7 @@ import { API_BASE_URL } from "@/config";
 async function fetchFromApi(endpoint, options = {}) {
   try {
     const res = await fetch(`${API_BASE_URL}${endpoint}`, {
-      next: { revalidate: 300 },
+      cache: "no-store",
       ...options,
     });
 
@@ -16,7 +16,7 @@ async function fetchFromApi(endpoint, options = {}) {
 
     const data = await res.json();
     if (data && data.success) {
-      return data.result ?? null;
+      return data.result ?? data;
     }
     return null;
   } catch (error) {
@@ -191,9 +191,60 @@ export async function getCourses(params = {}) {
   return [];
 }
 
-// 🎯 Fetch Course by Slug from Backend UniversityOfferings
+// 🎯 Fetch Course by Slug from Backend UniversityOfferings & UniversityOfferingPage
 export async function getCourseBySlug(slug) {
   if (!slug) return null;
+  const cleanSlug = encodeURIComponent(slug.trim());
+
+  // 1️⃣ First try to fetch from UniversityOfferingPage by slug or id
+  try {
+    const pageRes = await universalFetch(
+      `university-offering-pages/v1/list/${cleanSlug}`,
+      `/api/website/university-offering-pages/${cleanSlug}`,
+      { cache: "no-store" }
+    );
+    if (pageRes && (pageRes.success || pageRes.result || pageRes.offeringId)) {
+      const page = pageRes.result || pageRes;
+      const off = page.offeringId || {};
+      const uni = off.universityId || {};
+      const course = off.courseId || {};
+      const sub = off.subCourseId || {};
+
+      return {
+        _id: page._id,
+        slug: page.slug,
+        isOfferingPage: true,
+        offeringPage: page,
+        title: course.title || course.name || page.slug,
+        description: page.overviewSection?.description || course.description || "",
+        categories: course.categories || [],
+        universityOfferings: [
+          {
+            _id: off._id,
+            university: uni,
+            subcourses: sub._id ? [sub] : [],
+            duration: off.duration,
+            fees: off.fees,
+            fee: off.fees,
+          },
+        ],
+        heroMedia: page.heroMedia,
+        brochurePdf: page.brochurePdf,
+        admissionDeadline: page.admissionDeadline,
+        overviewSection: page.overviewSection,
+        whyChooseSection: page.whyChooseSection,
+        admissionSection: page.admissionSection,
+        skillsSection: page.skillsSection,
+        learningExperience: page.learningExperience,
+        instituteSection: page.instituteSection,
+        careerSection: page.careerSection,
+        feeSection: page.feeSection,
+        faqSection: page.faqSection,
+      };
+    }
+  } catch (e) {
+    console.warn("Offering page check skipped, falling back to offering list:", e);
+  }
 
   const isObjectId = /^[0-9a-fA-F]{24}$/.test(slug);
   if (isObjectId) {
@@ -202,7 +253,8 @@ export async function getCourseBySlug(slug) {
   }
 
   // Query offerings matching this course slug or keyword
-  const offeringData = await fetchFromApi(`university-offerings/v1/list?q=${encodeURIComponent(slug)}&items=50`);
+  const cleanQ = slug.replace(/[-_]+/g, ' ');
+  const offeringData = await fetchFromApi(`university-offerings/v1/list?q=${encodeURIComponent(cleanQ)}&items=50`);
   if (offeringData && Array.isArray(offeringData.result) && offeringData.result.length > 0) {
     const offerings = offeringData.result;
     const firstOffering = offerings[0];
@@ -378,6 +430,13 @@ export async function getWebsitePageBySlug(slug) {
   return response?.result || response || null;
 }
 
+// 🎯 Fetch University Offering Landing Page Details by Slug
+export async function getUniversityOfferingPageBySlug(slug) {
+  if (!slug) return null;
+  const cleanSlug = encodeURIComponent(slug.trim());
+  return await fetchFromApi(`university-offering-pages/v1/list/${cleanSlug}`);
+}
+
 // 🎯 Fetch Blogs from Backend Public API (/api/blogs/v1/list)
 export async function getWebsiteBlogs(params = {}) {
   try {
@@ -441,3 +500,23 @@ export async function getWebsiteCategoryOptions() {
   const data = await fetchFromApi("categories/website-options");
   return Array.isArray(data) ? data : [];
 }
+
+// 🏛️ Public University Landing Page API
+export async function getUniversityPageBySlug(slug) {
+  try {
+    const raw = await universalFetch(
+      `universities/v1/list/${slug}`,
+      `/api/website/universities/${slug}`,
+      { cache: "no-store" }
+    );
+
+    if (raw && raw.success && raw.result) {
+      return raw.result;
+    }
+    return null;
+  } catch (error) {
+    console.error(`❌ Error fetching university page for ${slug}:`, error);
+    return null;
+  }
+}
+
