@@ -4,11 +4,11 @@
 import { NextResponse } from "next/server";
 
 const isProduction = process.env.NODE_ENV === "production";
-const isRemote = process.env.NEXT_PUBLIC_DEV_REMOTE === "remote";
+const isRemote = process.env.NEXT_PUBLIC_DEV_REMOTE === "remote" || isProduction;
 
 export const BACKEND_ORIGIN = isRemote
-  ? (process.env.NEXT_PUBLIC_REMOTE_BACKEND_SERVER || "https://new.crm.api.mysode.com")
-  : "http://localhost:3000";
+  ? (process.env.NEXT_PUBLIC_REMOTE_BACKEND_SERVER || process.env.API_URL || "https://new.crm.api.mysode.com")
+  : (process.env.NEXT_PUBLIC_LOCAL_BACKEND_SERVER || "http://localhost:3000");
 
 export const BACKEND_API = `${BACKEND_ORIGIN}/api`;
 
