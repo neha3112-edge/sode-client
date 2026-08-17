@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -28,7 +28,7 @@ import { useCompare, useAppDrawer } from "@/context";
 import { getUniversityOptions, getCourseOptions, getWebsiteUniversitiesCompare } from "@/services/api";
 import { getAssetPath } from "@/lib/utils";
 
-export default function ComparePage() {
+function CompareContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { compareList, removeFromCompare, clearCompare, addToCompare } = useCompare();
@@ -892,5 +892,21 @@ export default function ComparePage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function ComparePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="bg-[#f8fafc] min-h-screen py-10 px-4 flex justify-center">
+          <div className="max-w-[1440px] w-full bg-white p-6 rounded-2xl border border-slate-200">
+            <Skeleton active paragraph={{ rows: 12 }} />
+          </div>
+        </div>
+      }
+    >
+      <CompareContent />
+    </Suspense>
   );
 }
