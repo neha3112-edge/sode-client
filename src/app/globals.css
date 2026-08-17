@@ -131,6 +131,46 @@ body {
   border-bottom: none !important;
 }
 
+/* =========================================================
+   DEGREE4U STYLE MARQUEE ANIMATIONS
+========================================================= */
+@keyframes marqueeScrollLTR {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marqueeScrollRTL {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.marquee-ltr {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: marqueeScrollLTR 70s linear infinite;
+}
+
+.marquee-rtl {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: marqueeScrollRTL 70s linear infinite;
+}
+
+.marquee-ltr:hover,
+.marquee-rtl:hover {
+  animation-play-state: paused;
+}
+
 .comparison-matrix-table .ant-table-tbody > tr:hover > td {
   background-color: #f8fafc !important;
 }
@@ -157,4 +197,23 @@ body {
   font-size: 0 !important;
   line-height: 0 !important;
   visibility: collapse !important;
+}
+
+/* Slot Docking & Fly Animation */
+@keyframes slotDockBounce {
+  0% {
+    transform: scale(0.92);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.04);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.slot-dock-enter {
+  animation: slotDockBounce 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }

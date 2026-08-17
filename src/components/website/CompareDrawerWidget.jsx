@@ -24,7 +24,7 @@ export default function CompareDrawerWidget() {
         <div className="flex items-center gap-2 shrink-0 border-r border-slate-100 pr-3">
           <div className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" />
           <span className="font-extrabold text-xs text-[#1C3569] uppercase tracking-wider">
-            Comparing ({compareList.length}/4)
+            Comparing ({compareList.length}/3)
           </span>
         </div>
 
@@ -127,7 +127,7 @@ export default function CompareDrawerWidget() {
               })}
             </div>
             <span className="text-xs font-extrabold text-[#1C3569]">
-              {compareList.length} / 4 Selected
+              {compareList.length} / 3 Selected
             </span>
           </div>
 

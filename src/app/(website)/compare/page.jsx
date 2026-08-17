@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, Suspense } from "react";
+import React, { useState, useEffect, useMemo, useRef, Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -10,6 +10,7 @@ import {
   CheckCircleFilled,
   DeleteOutlined,
   CloseOutlined,
+  PhoneOutlined,
   BankOutlined,
   SafetyCertificateOutlined,
   ClockCircleOutlined,
@@ -25,7 +26,12 @@ import {
 } from "@ant-design/icons";
 
 import { useCompare, useAppDrawer } from "@/context";
-import { getUniversityOptions, getCourseOptions, getWebsiteUniversitiesCompare } from "@/services/api";
+import {
+  getUniversityOptions,
+  getCourseOptions,
+  getModeOptions,
+  getWebsiteUniversitiesCompare,
+} from "@/services/api";
 import { getAssetPath } from "@/lib/utils";
 
 function CompareContent() {
@@ -42,11 +48,14 @@ function CompareContent() {
 
   const [allUniversities, setAllUniversities] = useState([]);
   const [allCourses, setAllCourses] = useState([]);
+  const [allModes, setAllModes] = useState([]);
   const [comparedData, setComparedData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [selectedCourses, setSelectedCourses] = useState([]);
+  const [selectedMode, setSelectedMode] = useState("all");
+  const [flyingLogo, setFlyingLogo] = useState(null);
 
-  // 1. Fetch all universities and courses for dropdown selectors
+  // 1. Fetch all universities, courses, and modes for dropdown selectors
   useEffect(() => {
     let isMounted = true;
 
@@ -66,19 +75,27 @@ function CompareContent() {
       })
       .catch((err) => console.error("Error fetching course options:", err));
 
+    getModeOptions()
+      .then((res) => {
+        if (!isMounted) return;
+        const mList = Array.isArray(res) ? res : res?.result || [];
+        setAllModes(mList);
+      })
+      .catch((err) => console.error("Error fetching mode options:", err));
+
     return () => {
       isMounted = false;
     };
   }, []);
 
-  // 2. Determine which identifiers to compare (supports both universities & course offerings)
+  // 2. Determine which identifiers to compare (prioritizing clean readable slugs)
   const currentIdentifiers = useMemo(() => {
+    if (compareList && compareList.length > 0) {
+      return compareList.map((item) => item.slug || item._id || item.id).filter(Boolean);
+    }
     const urlIds = searchParams.get("universityid") || searchParams.get("ids") || searchParams.get("universities");
     if (urlIds) {
       return urlIds.split(",").map((s) => s.trim()).filter(Boolean);
-    }
-    if (compareList && compareList.length > 0) {
-      return compareList.map((item) => item._id || item.id || item.slug).filter(Boolean);
     }
     return [];
   }, [searchParams, compareList]);
@@ -131,44 +148,143 @@ function CompareContent() {
     }
   }, [compareList, allCourses]);
 
-  // 3. Fetch live comparison data from backend API
-  useEffect(() => {
-    let isMounted = true;
-    if (currentIdentifiers.length === 0) {
-      setComparedData([]);
-      setLoading(false);
-      return;
-    }
-
+  // 3. Fetch live comparison data from backend API ONLY when "Compare Now" is clicked
+  const handleCompareNow = async () => {
+    if (currentIdentifiers.length === 0) return;
     setLoading(true);
-    getWebsiteUniversitiesCompare(currentIdentifiers)
+    try {
+      const res = await getWebsiteUniversitiesCompare(currentIdentifiers);
+      const data = Array.isArray(res) ? res : res?.result || [];
+      setComparedData(data);
+
+      // Update URL query parameters with clean university slugs
+      const slugsToUse = (compareList && compareList.length > 0)
+        ? compareList.map((u) => u.slug || u._id || u.id).filter(Boolean)
+        : currentIdentifiers;
+
+      const newParams = new URLSearchParams(searchParams.toString());
+      newParams.set("universityid", slugsToUse.join(","));
+      router.replace(`?${newParams.toString()}`, { scroll: false });
+
+      // Smooth scroll to the comparison matrix section
+      setTimeout(() => {
+        const el = document.getElementById("comparison-matrix-section");
+        if (el) el.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    } catch (err) {
+      console.error("❌ Failed to load live comparison data:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const initialFetchDoneRef = useRef(false);
+
+  // Initial fetch ONLY on page mount if URL already contains query parameters
+  useEffect(() => {
+    if (initialFetchDoneRef.current) return;
+    const urlIds = searchParams.get("universityid") || searchParams.get("ids") || searchParams.get("universities");
+    if (!urlIds) return;
+    const ids = urlIds.split(",").map((s) => s.trim()).filter(Boolean);
+    if (ids.length === 0) return;
+
+    initialFetchDoneRef.current = true;
+    setLoading(true);
+    getWebsiteUniversitiesCompare(ids)
       .then((res) => {
-        if (!isMounted) return;
-        setComparedData(res || []);
+        const data = Array.isArray(res) ? res : res?.result || [];
+        setComparedData(data);
       })
-      .catch((err) => {
-        console.error("❌ Failed to load live comparison data:", err);
-      })
-      .finally(() => {
-        if (isMounted) setLoading(false);
-      });
+      .catch((err) => console.error("❌ Failed to load comparison data on mount:", err))
+      .finally(() => setLoading(false));
+  }, [searchParams]);
 
-    return () => {
-      isMounted = false;
-    };
-  }, [currentIdentifiers]);
+  // Available universities (excluding currently selected ones & filtered by selectedMode)
+  const availableUniversities = useMemo(() => {
+    const selectedKeys = new Set([
+      ...(compareList || []).map((u) => String(u._id || u.id || u.slug || "").toLowerCase()),
+      ...(comparedData || []).map((u) => String(u._id || u.slug || "").toLowerCase()),
+    ]);
+    return (allUniversities || []).filter((u) => {
+      const isSelected = selectedKeys.has(String(u._id || u.slug || "").toLowerCase());
+      if (isSelected) return false;
+      if (selectedMode && selectedMode !== "all") {
+        const uMode = u.mode || u.education_mode || [];
+        const modeArr = Array.isArray(uMode) ? uMode : [uMode];
+        const hasMode = modeArr.some(
+          (m) =>
+            typeof m === "string" &&
+            (m.toLowerCase() === selectedMode.toLowerCase() ||
+              m.toLowerCase().includes(selectedMode.toLowerCase()))
+        );
+        if (modeArr.length > 0 && !hasMode) {
+          return false;
+        }
+      }
+      return true;
+    });
+  }, [allUniversities, compareList, comparedData, selectedMode]);
 
-  // Dropdown selector options for universities only
-  const selectOptions = useMemo(() => {
-    if (!Array.isArray(allUniversities)) return [];
-    return allUniversities
-      .filter((u) => u && u.name)
-      .map((u) => ({
+  // Rich Select Options with Logos for the in-slot university picker
+  const universitySelectOptions = useMemo(() => {
+    return availableUniversities.map((u) => {
+      const rawLogo =
+        (typeof u.logoSrc === "object" ? u.logoSrc?.url : u.logoSrc) ||
+        (typeof u.logo === "object" ? u.logo?.url : u.logo) ||
+        u.logoUrl ||
+        null;
+
+      return {
         value: String(u._id || u.slug),
-        label: u.name,
+        label: (
+          <div className="flex items-center gap-2.5 py-1">
+            <div className="relative w-7 h-7 rounded-lg border border-slate-200 bg-white p-0.5 shrink-0 flex items-center justify-center overflow-hidden">
+              {rawLogo ? (
+                <Image
+                  src={getAssetPath(rawLogo)}
+                  alt={u.name || "Logo"}
+                  fill
+                  unoptimized
+                  className="object-contain p-0.5"
+                />
+              ) : (
+                <span className="text-[10px] font-extrabold text-[#1C3569]">
+                  {u.name ? u.name.charAt(0) : "U"}
+                </span>
+              )}
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="text-xs font-bold text-slate-800 truncate leading-tight">
+                {u.name}
+              </div>
+              {u.location && (
+                <div className="text-[10px] text-slate-400 font-medium truncate">
+                  {u.location}
+                </div>
+              )}
+            </div>
+          </div>
+        ),
+        searchValue: `${u.name} ${u.location || ""}`,
         itemObj: u,
+      };
+    });
+  }, [availableUniversities]);
+
+  // Dynamic Dropdown options for Modes from ModeInfo API (No hardcoding)
+  const modeSelectOptions = useMemo(() => {
+    const list = (allModes || [])
+      .filter((m) => m && m.name)
+      .map((m) => ({
+        value: m.name,
+        label: `${m.name}`,
       }));
-  }, [allUniversities]);
+
+    return [
+      { value: "all", label: "All Modes" },
+      ...list,
+    ];
+  }, [allModes]);
 
   // Dropdown selector options for all master courses
   const courseSelectOptions = useMemo(() => {
@@ -179,7 +295,6 @@ function CompareContent() {
         label: c.name,
       }));
 
-    // Also include any extra course names present in compared universities
     const existing = new Set(list.map((item) => item.value.toLowerCase()));
     (availableCourses || []).forEach((c) => {
       if (c && !existing.has(c.toLowerCase())) {
@@ -194,60 +309,136 @@ function CompareContent() {
     ];
   }, [allCourses, availableCourses]);
 
-  const handleUniversityMultiChange = (selectedValues) => {
-    if (!Array.isArray(selectedValues) || selectedValues.length === 0) {
-      clearCompare();
+  // Marquee Row 1 & 2 Universities (Selected universities DISAPPEAR from here, and REAPPEAR when removed)
+  const marqueeRow1 = useMemo(() => {
+    if (!availableUniversities || availableUniversities.length === 0) return [];
+    const half = Math.ceil(availableUniversities.length / 2);
+    const slice = availableUniversities.slice(0, half);
+    return [...slice, ...slice, ...slice, ...slice];
+  }, [availableUniversities]);
+
+  const marqueeRow2 = useMemo(() => {
+    if (!availableUniversities || availableUniversities.length === 0) return [];
+    const half = Math.ceil(availableUniversities.length / 2);
+    const slice = availableUniversities.slice(half);
+    return [...slice, ...slice, ...slice, ...slice];
+  }, [availableUniversities]);
+
+  // Smooth "Fly-to-Slot" animation when a university is picked (Always flies from Top Marquee section)
+  const triggerFlyAnimation = (uni, originElement, specificSlotIdx) => {
+    if (!uni) return;
+    const uniId = String(uni._id || uni.slug || uni.id);
+    const activeList = compareList && compareList.length > 0 ? compareList : comparedData;
+    const isAlreadyIn = activeList.some(
+      (u) => String(u._id || u.id || u.slug) === uniId || u.slug === uni.slug
+    );
+
+    if (isAlreadyIn) {
+      removeFromCompare(uni.slug || uni._id || uni.id);
       return;
     }
 
-    if (selectedValues.length > 4) {
-      selectedValues = selectedValues.slice(0, 4);
+    if (activeList.length >= 3) {
+      return;
     }
 
-    const updated = [];
-    selectedValues.forEach((val) => {
-      const existing = compareList.find((item) => {
-        const uni = item.university || item.uniObj || item.programObj?.university;
-        const uniId = typeof uni === "object" ? String(uni?._id || uni?.slug || "") : "";
-        const keys = [
-          item.slug,
-          item.id,
-          item._id,
-          item.uniSlug,
-          uniId,
-        ].filter(Boolean);
-        return keys.some((k) => String(k).toLowerCase() === String(val).toLowerCase());
-      });
+    const targetIdx =
+      specificSlotIdx !== undefined && specificSlotIdx !== null
+        ? specificSlotIdx
+        : activeList.length;
+    const targetSlotEl =
+      typeof document !== "undefined"
+        ? document.getElementById(`uni-slot-${targetIdx}`)
+        : null;
 
-      if (existing) {
-        updated.push(existing);
-      } else {
-        const targetUni = (allUniversities || []).find(
-          (u) => String(u._id) === String(val) || u.slug === val
+    if (targetSlotEl) {
+      let originRect = null;
+      if (originElement) {
+        originRect = originElement.getBoundingClientRect();
+      } else if (typeof document !== "undefined") {
+        // Find all clone instances of this university in the scrolling marquee
+        const allClones = Array.from(
+          document.querySelectorAll(`[data-uni-id="${uniId}"]`)
         );
-        if (targetUni) {
-          const rawLogo =
-            (typeof targetUni.logoSrc === "object" ? targetUni.logoSrc?.url : targetUni.logoSrc) ||
-            (typeof targetUni.logo === "object" ? targetUni.logo?.url : targetUni.logo) ||
-            null;
-          updated.push({
-            _id: String(targetUni._id),
-            id: String(targetUni._id),
-            slug: targetUni.slug || String(targetUni._id),
-            title: targetUni.name,
-            name: targetUni.name,
-            uniName: targetUni.name,
-            uniSlug: targetUni.slug || "",
-            university: targetUni,
-            logoSrc: rawLogo,
-            logoUrl: rawLogo,
-            logo: rawLogo,
-          });
+        // Find the specific clone currently visible inside the viewport
+        const visibleClone =
+          allClones.find((el) => {
+            const r = el.getBoundingClientRect();
+            return r.left >= -50 && r.right <= window.innerWidth + 50;
+          }) ||
+          allClones.find((el) => {
+            const r = el.getBoundingClientRect();
+            return r.right > 0 && r.left < window.innerWidth;
+          }) ||
+          allClones[0];
+
+        if (visibleClone) {
+          originRect = visibleClone.getBoundingClientRect();
+        } else {
+          const heroMarquee = document.getElementById("marquee-hero-section");
+          const heroRect = heroMarquee
+            ? heroMarquee.getBoundingClientRect()
+            : { top: 60, left: 0, width: window.innerWidth, height: 180 };
+          originRect = {
+            top: Math.max(heroRect.top + 30, 60),
+            left: window.innerWidth / 2 - 70,
+            width: 140,
+            height: 55,
+          };
         }
       }
-    });
 
-    updateCompareList(updated);
+      const targetRect = targetSlotEl.getBoundingClientRect();
+      const startPos = originRect || {
+        top: 80,
+        left: typeof window !== "undefined" ? window.innerWidth / 2 - 60 : 200,
+        width: 120,
+        height: 50,
+      };
+
+      const rawLogo =
+        (typeof uni.logoSrc === "object" ? uni.logoSrc?.url : uni.logoSrc) ||
+        (typeof uni.logo === "object" ? uni.logo?.url : uni.logo) ||
+        uni.logoUrl ||
+        null;
+
+      setFlyingLogo({
+        logo: rawLogo,
+        name: uni.name || uni.title,
+        start: {
+          top: startPos.top,
+          left: startPos.left,
+          width: startPos.width || 120,
+          height: startPos.height || 50,
+        },
+        target: {
+          top: targetRect.top + 16,
+          left: targetRect.left + targetRect.width / 2 - 30,
+          width: 60,
+          height: 60,
+        },
+        isAnimating: false,
+      });
+
+      addToCompare(uni);
+
+      // Trigger flight animation on next animation frame
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setFlyingLogo((prev) => (prev ? { ...prev, isAnimating: true } : null));
+        });
+      });
+
+      setTimeout(() => {
+        setFlyingLogo(null);
+      }, 700);
+    } else {
+      addToCompare(uni);
+    }
+  };
+
+  const handleLogoClick = (uni, e) => {
+    triggerFlyAnimation(uni, e?.currentTarget);
   };
 
   // Ant Design Table Columns Definition
@@ -759,10 +950,58 @@ function CompareContent() {
         featureTitle: "Accreditations & Approvals",
         renderCell: (uni) => {
           const approvals = Array.isArray(uni.approvals) ? uni.approvals : [];
-          if (approvals.length === 0) return <span className="text-slate-400">-</span>;
+          const naac = uni.naac_rating || uni.naac;
+          const nirf = uni.nirf_rank || uni.nirf;
+          const naacLogo = uni.naac_rating_logo;
+          const nirfLogo = uni.nirf_rank_logo;
+
+          if (approvals.length === 0 && !naac && !nirf && !naacLogo && !nirfLogo) {
+            return <span className="text-slate-400">-</span>;
+          }
 
           return (
-            <div className="grid grid-cols-3 gap-1.5 max-w-[280px] mx-auto">
+            <div className="flex flex-wrap items-center justify-center gap-1.5 w-full py-1">
+              {/* NAAC Rating Logo or Badge */}
+              {naacLogo ? (
+                <div
+                  title={`NAAC ${typeof naac === "object" ? naac.grade || naac.name : naac || "Rating"}`}
+                  className="relative w-12 h-7 sm:w-16 sm:h-9 bg-white rounded-lg border border-slate-200 flex items-center justify-center hover:border-blue-400 transition-all duration-200 hover:scale-105 overflow-hidden p-0.5 shrink-0 shadow-2xs"
+                >
+                  <Image
+                    src={getAssetPath(naacLogo)}
+                    alt="NAAC"
+                    fill
+                    unoptimized
+                    className="object-contain p-0.5"
+                  />
+                </div>
+              ) : naac ? (
+                <Tag color="gold" className="font-bold text-[10px] m-0">
+                  NAAC {typeof naac === "object" ? naac.grade || naac.name : naac}
+                </Tag>
+              ) : null}
+
+              {/* NIRF Ranking Logo or Badge */}
+              {nirfLogo ? (
+                <div
+                  title={`NIRF ${typeof nirf === "object" ? nirf.rank || nirf.name : nirf || "Ranking"}`}
+                  className="relative w-12 h-7 sm:w-16 sm:h-9 bg-white rounded-lg border border-slate-200 flex items-center justify-center hover:border-blue-400 transition-all duration-200 hover:scale-105 overflow-hidden p-0.5 shrink-0 shadow-2xs"
+                >
+                  <Image
+                    src={getAssetPath(nirfLogo)}
+                    alt="NIRF"
+                    fill
+                    unoptimized
+                    className="object-contain p-0.5"
+                  />
+                </div>
+              ) : nirf ? (
+                <Tag color="blue" className="font-bold text-[10px] m-0">
+                  NIRF {typeof nirf === "object" ? nirf.rank || nirf.name : nirf}
+                </Tag>
+              ) : null}
+
+              {/* Approval Logos (AICTE, UGC, AIU, DEB, etc.) */}
               {approvals.map((a, i) => {
                 const aName = typeof a === "object" ? a.name || a.code || a.title : a;
                 const rawLogo = typeof a === "object" ? a.logo : null;
@@ -773,25 +1012,27 @@ function CompareContent() {
                     <div
                       key={i}
                       title={aName}
-                      className="w-full h-10 px-1.5 py-1 bg-white rounded-lg border border-slate-200 flex items-center justify-center hover:border-blue-400 transition-all duration-200 hover:scale-105"
+                      className="relative w-12 h-7 sm:w-16 sm:h-9 bg-white rounded-lg border border-slate-200 flex items-center justify-center hover:border-blue-400 transition-all duration-200 hover:scale-105 overflow-hidden p-0.5 shrink-0 shadow-2xs"
                     >
-                      <img
+                      <Image
                         src={logoUrl}
                         alt={aName}
-                        className="max-h-7 max-w-full w-auto h-auto object-contain"
+                        fill
+                        unoptimized
+                        className="object-contain p-0.5"
                       />
                     </div>
                   );
                 }
 
                 return (
-                  <div
+                  <Tag
                     key={i}
-                    title={aName}
-                    className="w-full h-10 px-1.5 bg-blue-50/90 rounded-lg border border-blue-200 text-blue-800 font-bold text-[10px] flex items-center justify-center hover:bg-blue-100 transition-all text-center"
+                    color="blue"
+                    className="font-bold text-[10px] m-0"
                   >
                     {aName}
-                  </div>
+                  </Tag>
                 );
               })}
             </div>
@@ -947,7 +1188,7 @@ function CompareContent() {
             <div className="flex flex-wrap items-center justify-center gap-1 max-w-[280px] mx-auto">
               {partners.map((p, pIdx) => (
                 <Tag key={pIdx} color="geekblue" className="font-bold text-[10px] m-0">
-                  {p}
+                  {typeof p === "object" ? p.name || p.title : p}
                 </Tag>
               ))}
             </div>
@@ -961,7 +1202,7 @@ function CompareContent() {
         icon: <CheckCircleFilled className="text-blue-600" />,
         featureTitle: "Actions & Next Steps",
         renderCell: (uni) => (
-          <div className="flex items-center justify-center space-x-2">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-1.5 w-full max-w-[240px] mx-auto px-1">
             <Button
               type="primary"
               onClick={() => {
@@ -971,14 +1212,14 @@ function CompareContent() {
                   defaultCourse: selectedCourses.length > 0 ? selectedCourses.join(", ") : uni.name,
                 });
               }}
-              className="bg-[#009F93] hover:bg-[#008278] border-none font-medium text-xs rounded-2xl cursor-pointer"
+              className="bg-[#009F93] hover:bg-[#008278] border-none font-bold text-[11px] sm:text-xs rounded-xl h-7 sm:h-8 px-2.5 w-full sm:w-auto cursor-pointer"
             >
               Apply Now
             </Button>
 
             {uni.slug && (
-              <Link href={`/universities/${uni.slug}`}>
-                <Button className="bg-[#1C3569] text-white hover:bg-[#122449] border-none font-medium text-xs rounded-2xl cursor-pointer">
+              <Link href={`/universities/${uni.slug}`} className="w-full sm:w-auto">
+                <Button className="bg-[#1C3569] text-white hover:bg-[#122449] border-none font-bold text-[11px] sm:text-xs rounded-xl h-7 sm:h-8 px-2.5 w-full cursor-pointer">
                   View Details
                 </Button>
               </Link>
@@ -992,28 +1233,93 @@ function CompareContent() {
   }, [comparedData, selectedCourses, openFormModal]);
 
   return (
-    <div className="bg-[#f8fafc] min-h-screen py-6 px-3 sm:px-5 md:px-6 font-sans text-slate-800">
-      <div className="max-w-[1440px] mx-auto space-y-4">
-        {/* Controls & Search Bar */}
-        <div className="bg-white p-4 rounded-2xl border border-slate-200/80 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-            <Select
-              mode="multiple"
-              maxCount={4}
-              maxTagCount="responsive"
-              showSearch
-              allowClear
-              placeholder="Search universities to compare (up to 4)..."
-              className="w-full sm:w-80 min-w-[240px]"
-              options={selectOptions}
-              onChange={handleUniversityMultiChange}
-              value={comparedData.map((u) => String(u._id || u.slug))}
-              optionFilterProp="label"
-              filterOption={(input, option) =>
-                (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-              }
-            />
+    <div className="bg-[#f4f7f9] min-h-screen font-sans text-slate-800">
+      {/* ── HERO SECTION WITH DEGREE4U MARQUEE (Selected universities disappear from here, reappear on remove) ── */}
+      <div id="marquee-hero-section" className="bg-gradient-to-r from-[#1155cc] via-[#1b6ef3] to-[#1a8fff] pt-8 pb-36 md:pb-44 overflow-hidden relative">
+        {/* Row 1: Right → Left */}
+        <div
+          className="overflow-hidden w-full relative py-2"
+          style={{
+            WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%)",
+            maskImage: "linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%)",
+          }}
+        >
+          <div className="marquee-ltr flex items-center gap-4">
+            {marqueeRow1.map((uni, idx) => (
+              <div
+                key={`row1-${uni._id || uni.slug || idx}-${idx}`}
+                data-uni-id={String(uni._id || uni.slug)}
+                onClick={(e) => handleLogoClick(uni, e)}
+                className="flex items-center justify-center bg-white rounded-xl border border-white/80 p-3 h-16 min-w-[170px] max-w-[220px] shrink-0 cursor-pointer transition-all hover:-translate-y-0.5 hover:border-blue-300"
+                title={`${uni.name} (Click to add to comparison)`}
+              >
+                {uni.logo ? (
+                  <div className="relative w-36 h-12">
+                    <Image
+                      src={getAssetPath(uni.logo)}
+                      alt={uni.name || "University Logo"}
+                      fill
+                      unoptimized
+                      className="object-contain"
+                    />
+                  </div>
+                ) : (
+                  <span className="font-bold text-xs text-[#1C3569] text-center line-clamp-1">
+                    {uni.name}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
 
+        {/* Row 2: Left → Right */}
+        <div
+          className="overflow-hidden w-full relative py-2 mt-2"
+          style={{
+            WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%)",
+            maskImage: "linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%)",
+          }}
+        >
+          <div className="marquee-rtl flex items-center gap-4">
+            {marqueeRow2.map((uni, idx) => (
+              <div
+                key={`row2-${uni._id || uni.slug || idx}-${idx}`}
+                data-uni-id={String(uni._id || uni.slug)}
+                onClick={(e) => handleLogoClick(uni, e)}
+                className="flex items-center justify-center bg-white rounded-xl border border-white/80 p-3 h-16 min-w-[170px] max-w-[220px] shrink-0 cursor-pointer transition-all hover:-translate-y-0.5 hover:border-blue-300"
+                title={`${uni.name} (Click to add to comparison)`}
+              >
+                {uni.logo ? (
+                  <div className="relative w-36 h-12">
+                    <Image
+                      src={getAssetPath(uni.logo)}
+                      alt={uni.name || "University Logo"}
+                      fill
+                      unoptimized
+                      className="object-contain"
+                    />
+                  </div>
+                ) : (
+                  <span className="font-bold text-xs text-[#1C3569] text-center line-clamp-1">
+                    {uni.name}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── MAIN SELECTOR CARD (OVERLAYS HERO) ── */}
+      <div className="-mt-28 md:-mt-32 max-w-5xl mx-auto px-4 relative z-20 mb-10">
+        <div className="bg-white rounded-3xl border border-slate-200/90 p-6 md:p-8 text-center">
+          <h1 className="text-2xl md:text-3xl font-extrabold text-[#0b5edd] m-0 mb-6">
+            Compare Universities <span className="text-slate-800 font-bold">&amp; Choose Best Fit For you</span>
+          </h1>
+
+          {/* Course Controls Row */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
             <Select
               mode="multiple"
               maxTagCount="responsive"
@@ -1021,37 +1327,171 @@ function CompareContent() {
               allowClear
               value={selectedCourses}
               onChange={(vals) => setSelectedCourses(vals || [])}
-              placeholder="Select Courses to compare..."
-              className="w-full sm:w-72 font-semibold min-w-[200px]"
+              placeholder="Select Course to Compare (e.g. MBA, BBA, MCA)"
+              className="w-full sm:w-80 text-left font-medium"
               options={courseSelectOptions.filter((opt) => opt.value !== "all")}
               optionFilterProp="label"
               filterOption={(input, option) =>
                 (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
               }
             />
+
+            <Select
+              value={selectedMode}
+              onChange={setSelectedMode}
+              className="w-full sm:w-56 text-left font-medium"
+              options={modeSelectOptions}
+            />
           </div>
 
-          <div className="flex items-center gap-2.5 shrink-0 w-full sm:w-auto justify-end">
-            {comparedData.length > 0 && (
+          {/* University Slots Grid (3 slots with In-Slot Select Dropdown + Logos) */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
+            {[0, 1, 2].map((slotIdx) => {
+              const currentSlots = (compareList && compareList.length > 0) ? compareList : comparedData;
+              const uni = currentSlots[slotIdx];
+              if (uni) {
+                const isOffering = uni.isCourseOffering || uni.type === "course_offering";
+                const displayTitle = isOffering ? uni.title : uni.name;
+                const displaySubTitle = isOffering ? (uni.uniName || uni.name) : null;
+                const rawLogo =
+                  (typeof uni.logoSrc === "object" ? uni.logoSrc?.url : uni.logoSrc) ||
+                  (typeof uni.logo === "object" ? uni.logo?.url : uni.logo) ||
+                  uni.logoUrl ||
+                  null;
+                const locStr =
+                  uni.location ||
+                  [uni.city?.name || uni.city, uni.state?.name || uni.state].filter(Boolean).join(", ");
+                return (
+                  <div
+                    key={slotIdx}
+                    id={`uni-slot-${slotIdx}`}
+                    className="bg-white rounded-2xl border-2 border-blue-500 p-4 flex flex-col items-center justify-center relative min-h-35 group transition-all slot-dock-enter"
+                  >
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeFromCompare(uni.slug || uni._id || uni.id);
+                        setComparedData((prev) =>
+                          prev.filter(
+                            (u) =>
+                              String(u._id || u.slug || "").toLowerCase() !==
+                              String(uni._id || uni.slug || uni.id || "").toLowerCase()
+                          )
+                        );
+                      }}
+                      className="absolute top-2 right-2 w-6 h-6 rounded-full bg-slate-100 hover:bg-red-500 text-slate-500 hover:text-white flex items-center justify-center transition-colors cursor-pointer border-none z-10"
+                      title="Remove university"
+                    >
+                      <CloseOutlined className="text-[10px]" />
+                    </button>
+
+                    <div className="relative w-14 h-14 rounded-xl border border-slate-100 bg-white p-1.5 flex items-center justify-center mb-2 overflow-hidden">
+                      {rawLogo ? (
+                        <Image
+                          src={getAssetPath(rawLogo)}
+                          alt={displayTitle || "Logo"}
+                          fill
+                          unoptimized
+                          className="object-contain p-1"
+                        />
+                      ) : (
+                        <span className="text-lg font-black text-[#1C3569]">
+                          {displayTitle ? displayTitle.charAt(0) : "U"}
+                        </span>
+                      )}
+                    </div>
+
+                    <h4 className="text-xs font-bold text-[#1C3569] m-0 line-clamp-1">
+                      {displayTitle}
+                    </h4>
+                    {displaySubTitle && (
+                      <p className="text-[10px] font-semibold text-teal-700 m-0 line-clamp-1">
+                        {displaySubTitle}
+                      </p>
+                    )}
+                    {locStr && (
+                      <span className="text-[9px] bg-slate-100 text-slate-500 font-semibold px-2 py-0.5 rounded-full mt-1.5 line-clamp-1">
+                        {locStr}
+                      </span>
+                    )}
+                  </div>
+                );
+              }
+
+              return (
+                <div
+                  key={slotIdx}
+                  id={`uni-slot-${slotIdx}`}
+                  className="border-2 border-dashed border-slate-300 rounded-2xl p-4 flex flex-col items-center justify-center text-slate-400 bg-slate-50/60 transition-all min-h-[140px] gap-2"
+                >
+                  <div className="w-9 h-9 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-base">
+                    +
+                  </div>
+                  <Select
+                    showSearch
+                    placeholder="+ Select University"
+                    value={null}
+                    onChange={(val, option) => {
+                      if (option?.itemObj) {
+                        triggerFlyAnimation(option.itemObj, null, slotIdx);
+                      }
+                    }}
+                    className="w-full max-w-52.5 text-left font-semibold"
+                    options={universitySelectOptions}
+                    optionFilterProp="searchValue"
+                    filterOption={(input, option) =>
+                      (option?.searchValue ?? "")
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
+                    styles={{
+                      popup: {
+                        root: {
+                          maxHeight: 340,
+                          overflowY: "auto",
+                          borderRadius: 16,
+                          padding: 4,
+                        },
+                      },
+                    }}
+                  />
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-wrap items-center justify-center gap-3 mt-4">
+            <Button
+              type="primary"
+              disabled={currentIdentifiers.length === 0 || loading}
+              loading={loading}
+              onClick={handleCompareNow}
+              className="bg-[#10b981] hover:bg-[#059669] text-white font-bold rounded-xl transition-all inline-flex items-center gap-1.5 cursor-pointer border-none h-10 px-5"
+            >
+              Compare Now
+              <ArrowLeftOutlined className="rotate-180 text-xs" />
+            </Button>
+
+            {(currentIdentifiers.length > 0 || comparedData.length > 0) && (
               <Button
                 danger
                 icon={<DeleteOutlined />}
-                onClick={clearCompare}
-                className="font-bold rounded-xl h-9 text-xs cursor-pointer"
+                onClick={() => {
+                  clearCompare();
+                  setComparedData([]);
+                }}
+                className="font-bold rounded-xl cursor-pointer h-10 px-4"
               >
-                Clear All ({comparedData.length})
+                Clear All ({currentIdentifiers.length || comparedData.length})
               </Button>
             )}
-            <Button
-              icon={<ArrowLeftOutlined />}
-              onClick={() => router.push("/universities")}
-              className="font-bold rounded-xl h-9 text-xs border-slate-300 text-slate-700 cursor-pointer"
-            >
-              Browse Universities
-            </Button>
           </div>
         </div>
+      </div>
 
+      {/* ── COMPARISON MATRIX SECTION (Real 22 Features Table Layout) ── */}
+      <div id="comparison-matrix-section" className="max-w-[1440px] mx-auto px-3 sm:px-5 md:px-6 py-6 space-y-4">
         {/* Comparison Table / Skeleton */}
         {loading ? (
           <div className="bg-white rounded-3xl border border-slate-200/80 p-8">
@@ -1073,16 +1513,113 @@ function CompareContent() {
           </div>
         ) : comparedData.length > 0 ? (
           <div>
-            <Table
-              columns={tableColumns}
-              dataSource={tableDataSource}
-              pagination={false}
-              bordered
-              size="small"
-              scroll={{ x: "max-content" }}
-              rowKey="key"
-              className="comparison-matrix-table w-full"
-            />
+            {/* ── DESKTOP VIEW (Ant Design Full Matrix Table) ── */}
+            <div className="hidden md:block">
+              <Table
+                columns={tableColumns}
+                dataSource={tableDataSource}
+                pagination={false}
+                bordered
+                size="small"
+                scroll={{ x: "max-content" }}
+                rowKey="key"
+                className="comparison-matrix-table w-full"
+              />
+            </div>
+
+            {/* ── MOBILE VIEW (Exact Degree4u Mobile Sectional UI) ── */}
+            <div className="block md:hidden bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs">
+              {/* Sticky / Top University Info Row */}
+              <div
+                className={`grid ${comparedData.length === 1
+                  ? "grid-cols-1"
+                  : comparedData.length === 2
+                    ? "grid-cols-2"
+                    : comparedData.length === 3
+                      ? "grid-cols-3"
+                      : "grid-cols-4"
+                  } divide-x divide-slate-200 bg-white border-b border-slate-200`}
+              >
+                {comparedData.map((uni, idx) => {
+                  const isOffering = uni.isCourseOffering || uni.type === "course_offering";
+                  const displayTitle = isOffering ? uni.title : uni.name;
+                  const displaySubTitle = isOffering ? (uni.uniName || uni.name) : null;
+                  return (
+                    <div
+                      key={idx}
+                      className="p-3 flex flex-col items-center text-center relative group min-h-[120px] justify-between"
+                    >
+                      <button
+                        onClick={() => removeFromCompare(uni.slug || uni._id)}
+                        className="absolute top-1 right-1 w-5 h-5 rounded-full bg-slate-100 hover:bg-red-500 text-slate-500 hover:text-white flex items-center justify-center transition-colors cursor-pointer border-none z-10"
+                        title="Remove"
+                      >
+                        <CloseOutlined className="text-[8px]" />
+                      </button>
+
+                      <div className="w-11 h-11 rounded-xl border border-slate-200 bg-white p-1 flex items-center justify-center relative mb-1 shrink-0">
+                        {uni.logo ? (
+                          <Image
+                            src={getAssetPath(uni.logo)}
+                            alt={displayTitle || "Logo"}
+                            fill
+                            unoptimized
+                            className="object-contain p-0.5"
+                          />
+                        ) : (
+                          <span className="text-sm font-black text-[#1C3569]">
+                            {displayTitle ? displayTitle.charAt(0) : "U"}
+                          </span>
+                        )}
+                      </div>
+
+                      <h4 className="text-[11px] font-bold text-[#1C3569] m-0 line-clamp-2 leading-tight">
+                        {displayTitle}
+                      </h4>
+                      {displaySubTitle && (
+                        <p className="text-[9px] font-semibold text-teal-700 m-0 line-clamp-1 mt-0.5">
+                          {displaySubTitle}
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Feature Sections (Centered Blue Header Bar + Side-by-Side Values) */}
+              <div className="divide-y divide-slate-100">
+                {tableDataSource.map((row) => (
+                  <div key={row.key} className="w-full">
+                    {/* Section Header: Blue bar with centered icon + uppercase title */}
+                    <div className="bg-[#f0f5ff] py-2 px-3 text-center border-t border-b border-slate-200/90 flex items-center justify-center gap-1.5 text-blue-600 font-extrabold text-[11px] tracking-wider uppercase">
+                      <span className="text-blue-600 shrink-0">{row.icon}</span>
+                      <span>{row.featureTitle}</span>
+                    </div>
+
+                    {/* Section Values Grid: Side-by-side columns with vertical divider */}
+                    <div
+                      className={`grid ${comparedData.length === 1
+                        ? "grid-cols-1"
+                        : comparedData.length === 2
+                          ? "grid-cols-2"
+                          : comparedData.length === 3
+                            ? "grid-cols-3"
+                            : "grid-cols-4"
+                        } divide-x divide-slate-200 bg-white text-center text-xs font-bold text-slate-800`}
+                    >
+                      {comparedData.map((uni, idx) => (
+                        <div
+                          key={idx}
+                          className="p-2.5 flex items-center justify-center min-h-[48px] overflow-hidden"
+                        >
+                          {row.renderCell ? row.renderCell(uni, idx) : "-"}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         ) : (
           <div className="bg-white p-12 text-center rounded-3xl border border-slate-200/80 flex flex-col items-center justify-center space-y-4">
@@ -1091,21 +1628,92 @@ function CompareContent() {
                 <div className="space-y-1">
                   <p className="text-base font-bold text-slate-700 m-0">No Universities Selected</p>
                   <p className="text-xs text-slate-500 m-0">
-                    Add universities from the search bar above or browse all universities to start comparing.
+                    Click on any university logo in the scrolling banner above or select from the dropdown to start comparing.
                   </p>
                 </div>
               }
             />
-            <Button
-              type="primary"
-              onClick={() => router.push("/universities")}
-              className="bg-[#1C3569] hover:bg-[#122449] border-none font-bold text-xs rounded-xl h-10 px-6 cursor-pointer"
-            >
-              Browse All Universities
-            </Button>
           </div>
         )}
       </div>
+
+      {/* ── CTA COUNSELING SECTION ── */}
+      <div className="max-w-5xl mx-auto my-12 px-4">
+        <div className="bg-gradient-to-br from-[#1C3569] via-[#1155cc] to-[#1a8fff] text-white rounded-3xl p-8 md:p-12 text-center relative overflow-hidden">
+          <div className="relative z-10 space-y-3">
+            <h2 className="text-2xl md:text-3xl font-extrabold m-0 text-white italic">
+              Still Have Confusion?
+            </h2>
+            <p className="text-sm md:text-base text-blue-100 max-w-xl mx-auto m-0 italic font-medium">
+              You Need A Career Expert Who Will Guide You to choose Best fit for you
+            </p>
+            <div className="pt-4">
+              <Button
+                type="primary"
+                size="large"
+                onClick={() => {
+                  openFormModal({
+                    title: "Book 1:1 Free Counseling",
+                    subtitle: "Speak with an academic expert to choose the best university for your career",
+                    defaultCourse: selectedCourses.length > 0 ? selectedCourses.join(", ") : "General Counseling",
+                  });
+                }}
+                className="bg-white text-[#0b5edd] hover:bg-slate-100 font-extrabold text-sm md:text-base px-8 h-12 rounded-full border-none cursor-pointer inline-flex items-center gap-2"
+              >
+                <span className="w-7 h-7 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
+                  <PhoneOutlined className="rotate-90" />
+                </span>
+                Book 1:1 Free Counseling
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── FLYING LOGO ANIMATION OVERLAY ── */}
+      {flyingLogo && (
+        <div
+          style={{
+            position: "fixed",
+            zIndex: 99999,
+            pointerEvents: "none",
+            top: flyingLogo.isAnimating
+              ? flyingLogo.target.top
+              : flyingLogo.start.top,
+            left: flyingLogo.isAnimating
+              ? flyingLogo.target.left
+              : flyingLogo.start.left,
+            width: flyingLogo.isAnimating
+              ? flyingLogo.target.width
+              : flyingLogo.start.width,
+            height: flyingLogo.isAnimating
+              ? flyingLogo.target.height
+              : flyingLogo.start.height,
+            opacity: flyingLogo.isAnimating ? 1 : 0.95,
+            transform: flyingLogo.isAnimating
+              ? "scale(1) rotate(0deg)"
+              : "scale(1.08) rotate(-3deg)",
+            transition: "all 0.65s cubic-bezier(0.16, 1, 0.3, 1)",
+          }}
+          className="rounded-2xl border-2 border-blue-500 bg-white p-2 flex items-center justify-center shadow-2xl backdrop-blur-md"
+        >
+          {flyingLogo.logo ? (
+            <div className="relative w-full h-full">
+              <Image
+                src={getAssetPath(flyingLogo.logo)}
+                alt={flyingLogo.name || "Flying Logo"}
+                fill
+                unoptimized
+                className="object-contain p-1"
+              />
+            </div>
+          ) : (
+            <span className="text-base font-black text-[#1C3569]">
+              {flyingLogo.name ? flyingLogo.name.charAt(0) : "U"}
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -1114,10 +1722,8 @@ export default function ComparePage() {
   return (
     <Suspense
       fallback={
-        <div className="bg-[#f8fafc] min-h-screen py-10 px-4 flex justify-center">
-          <div className="max-w-[1440px] w-full bg-white p-6 rounded-2xl border border-slate-200">
-            <Skeleton active paragraph={{ rows: 12 }} />
-          </div>
+        <div className="min-h-screen bg-[#f4f7f9] flex items-center justify-center p-8">
+          <Skeleton active paragraph={{ rows: 8 }} />
         </div>
       }
     >

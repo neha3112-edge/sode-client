@@ -36,6 +36,19 @@ const messageService = {
   get modal() {
     return this._modal;
   },
+
+  info(content, duration, onClose) {
+    return this.message.info(content, duration, onClose);
+  },
+  success(content, duration, onClose) {
+    return this.message.success(content, duration, onClose);
+  },
+  warning(content, duration, onClose) {
+    return this.message.warning(content, duration, onClose);
+  },
+  error(content, duration, onClose) {
+    return this.message.error(content, duration, onClose);
+  },
 };
 
 export { messageService };

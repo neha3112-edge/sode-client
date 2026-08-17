@@ -329,6 +329,25 @@ export async function getCourseOptions(params = {}) {
   }
 }
 
+export async function getModeOptions(params = {}) {
+  try {
+    const query = new URLSearchParams();
+    if (params.search || params.q) query.append("search", params.search || params.q);
+    if (params.refresh) query.append("refresh", "true");
+
+    const queryString = query.toString();
+    const endpoint = `modeinfo/v1/options${queryString ? `?${queryString}` : ""}`;
+    const clientProxyUrl = `/api/website/modeinfo/options${queryString ? `?${queryString}` : ""}`;
+
+    const json = await universalFetch(endpoint, clientProxyUrl, { next: { revalidate: 300 } });
+    const list = Array.isArray(json?.result) ? json.result : (Array.isArray(json) ? json : []);
+    return list;
+  } catch (error) {
+    console.error("❌ Error fetching mode options:", error);
+    return [];
+  }
+}
+
 export async function getUniversities(params = {}) {
   const query = new URLSearchParams();
   if (params.type) query.append("type", params.type);

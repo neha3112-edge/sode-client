@@ -92,8 +92,7 @@ export function CompareProvider({ children }) {
       return;
     }
 
-    if (compareList.length >= 4) {
-      messageService.message.warning("You can compare up to 4 items at a time!");
+    if (compareList.length >= 3) {
       return;
     }
 
