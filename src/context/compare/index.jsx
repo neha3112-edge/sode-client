@@ -28,9 +28,25 @@ export function CompareProvider({ children }) {
   const [isCompareDrawerOpen, setIsCompareDrawerOpen] = useState(false);
 
   const rawSaved = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+
   const compareList = useMemo(() => {
     try {
-      return JSON.parse(rawSaved);
+      const parsed = JSON.parse(rawSaved);
+      if (!Array.isArray(parsed)) return [];
+      return parsed.map((item) => {
+        const logoStr =
+          (typeof item.logo === "object" ? item.logo?.url : item.logo) ||
+          (typeof item.logoSrc === "object" ? item.logoSrc?.url : item.logoSrc) ||
+          (typeof item.logoUrl === "object" ? item.logoUrl?.url : item.logoUrl) ||
+          item.logoUrl ||
+          null;
+        return {
+          ...item,
+          logo: logoStr,
+          logoSrc: logoStr,
+          logoUrl: logoStr,
+        };
+      });
     } catch (e) {
       return [];
     }
@@ -75,11 +91,13 @@ export function CompareProvider({ children }) {
     const uniSlug = typeof uniObj === "object" ? (uniObj?.slug || item.uniSlug) : (item.uniSlug || "");
 
     const rawLogo =
-      uniObj?.logoSrc?.url ||
-      uniObj?.logoSrc ||
-      uniObj?.logoUrl ||
+      (typeof item.logoSrc === "object" ? item.logoSrc?.url : item.logoSrc) ||
+      (typeof item.logo === "object" ? item.logo?.url : item.logo) ||
       item.logoUrl ||
-      item.logo;
+      (typeof uniObj?.logoSrc === "object" ? uniObj.logoSrc?.url : uniObj?.logoSrc) ||
+      (typeof uniObj?.logo === "object" ? uniObj.logo?.url : uniObj?.logo) ||
+      uniObj?.logoUrl ||
+      null;
 
     const newItem = {
       _id: String(id),
@@ -91,6 +109,7 @@ export function CompareProvider({ children }) {
       uniSlug: uniSlug,
       logoSrc: rawLogo,
       logoUrl: rawLogo,
+      logo: rawLogo,
       universityType: uniObj?.universityType || uniObj?.type || item.universityType || "Private",
       locationStr: uniObj?.locationStr || uniObj?.location || item.locationStr || "India",
       establishedYearStr: uniObj?.establishedYearStr || item.establishedYearStr || "2009",
@@ -114,7 +133,6 @@ export function CompareProvider({ children }) {
 
     const updated = [...compareList, newItem];
     updateCompareList(updated);
-    messageService.message.success(`Added "${newItem.title}" to compare!`);
   };
 
   const removeFromCompare = (identifier) => {

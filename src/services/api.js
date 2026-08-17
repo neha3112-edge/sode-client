@@ -288,6 +288,47 @@ export async function getCourseBySlug(slug) {
 
 export const getWebsiteCourseRead = getCourseBySlug;
 
+export async function getUniversityOptions(params = {}) {
+  try {
+    const query = new URLSearchParams();
+    if (params.search || params.q) query.append("search", params.search || params.q);
+    if (params.refresh) query.append("refresh", "true");
+
+    const queryString = query.toString();
+    const endpoint = `universities/v1/options${queryString ? `?${queryString}` : ""}`;
+    const clientProxyUrl = `/api/website/universities/options${queryString ? `?${queryString}` : ""}`;
+
+    const json = await universalFetch(endpoint, clientProxyUrl, { next: { revalidate: 300 } });
+    const list = Array.isArray(json?.result) ? json.result : (Array.isArray(json) ? json : []);
+    return list.map((uni) => ({
+      ...uni,
+      logoSrc: fixMediaUrl(uni?.logoSrc || uni?.logo),
+    }));
+  } catch (error) {
+    console.error("❌ Error fetching university options:", error);
+    return [];
+  }
+}
+
+export async function getCourseOptions(params = {}) {
+  try {
+    const query = new URLSearchParams();
+    if (params.search || params.q) query.append("search", params.search || params.q);
+    if (params.refresh) query.append("refresh", "true");
+
+    const queryString = query.toString();
+    const endpoint = `courses/v1/options${queryString ? `?${queryString}` : ""}`;
+    const clientProxyUrl = `/api/website/courses/options${queryString ? `?${queryString}` : ""}`;
+
+    const json = await universalFetch(endpoint, clientProxyUrl, { next: { revalidate: 300 } });
+    const list = Array.isArray(json?.result) ? json.result : (Array.isArray(json) ? json : []);
+    return list;
+  } catch (error) {
+    console.error("❌ Error fetching course options:", error);
+    return [];
+  }
+}
+
 export async function getUniversities(params = {}) {
   const query = new URLSearchParams();
   if (params.type) query.append("type", params.type);
@@ -351,12 +392,16 @@ function fixMediaUrl(media) {
 
 
 // 🎯 Fetch Universities for Comparison from Backend
-export async function getWebsiteUniversitiesCompare(slugs = []) {
+export async function getWebsiteUniversitiesCompare(identifiers = []) {
   try {
-    if (!slugs || (Array.isArray(slugs) && slugs.length === 0)) return [];
-    const slugStr = Array.isArray(slugs) ? slugs.join(",") : slugs;
-    const data = await fetchFromApi(`university/compare?slugs=${slugStr}`);
-    return Array.isArray(data) ? data : [];
+    if (!identifiers || (Array.isArray(identifiers) && identifiers.length === 0)) return [];
+    const idStr = Array.isArray(identifiers) ? identifiers.join(",") : identifiers;
+    const data = await universalFetch(
+      `universities/v1/compare?universityid=${encodeURIComponent(idStr)}`,
+      `/api/website/universities/compare?universityid=${encodeURIComponent(idStr)}`
+    );
+    const resultList = data?.result || (Array.isArray(data) ? data : []);
+    return Array.isArray(resultList) ? resultList : [];
   } catch (error) {
     console.error("❌ Compare fetch error:", error);
     return [];

@@ -124,13 +124,15 @@ export function useUniversityBySlug(slug, fallbackData = null) {
 }
 
 /** Hook to fetch comparison data for multiple universities */
-export function useUniversitiesCompare(slugs = []) {
-  const slugStr = Array.isArray(slugs) ? slugs.join(",") : slugs;
-  const url = slugStr ? `/api/website/universities/compare?slugs=${encodeURIComponent(slugStr)}` : null;
+export function useUniversitiesCompare(identifiers = []) {
+  const idStr = Array.isArray(identifiers) ? identifiers.join(",") : identifiers;
+  const url = idStr ? `/api/website/universities/compare?universityid=${encodeURIComponent(idStr)}` : null;
 
   const { data, error, isLoading, mutate } = useSWR(url, defaultFetcher);
+  const resultList = data?.result || (Array.isArray(data) ? data : []);
+
   return {
-    compareData: Array.isArray(data) ? data : [],
+    compareData: Array.isArray(resultList) ? resultList : [],
     isLoading,
     isError: !!error,
     error,

@@ -1,9 +1,9 @@
 import { proxyBackendGet } from "@/lib/backendProxy";
 
-/** GET /api/website/universities/compare?slugs=slug1,slug2
- *  → backend: partneruniversities/compare?slugs=<slugs>
+/** GET /api/website/universities/compare?universityid=id1,id2
+ *  → backend: universities/v1/compare?universityid=<ids>
  */
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
-  return proxyBackendGet("university/compare", searchParams, { cache: "no-store" });
+  return proxyBackendGet("universities/v1/compare", searchParams, { cache: "no-store" });
 }

@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { Button } from "antd";
 import { CloseOutlined, RightOutlined } from "@ant-design/icons";
 import { useCompare } from "@/context";
@@ -16,8 +17,7 @@ export default function CompareDrawerWidget() {
   }
 
   return (
-    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-4xl bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-2xl rounded-2xl p-3 transition-all animate-in fade-in slide-in-from-bottom-5 duration-300">
-      
+    <div className="fixed bottom-20 sm:bottom-4 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-4xl bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-2xl rounded-2xl p-3 transition-all animate-in fade-in slide-in-from-bottom-5 duration-300">
       {/* 🖥️ DESKTOP LAYOUT: Single Clean Flex Row */}
       <div className="hidden sm:flex items-center justify-between gap-3 w-full">
         {/* Left: Heading & Count */}
