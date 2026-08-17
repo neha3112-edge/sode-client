@@ -66,7 +66,18 @@ export function CompareProvider({ children }) {
     if (!identifier) return false;
     const target = String(identifier).toLowerCase().trim();
     return compareList.some((item) => {
-      const keys = [item.slug, item.id, item._id, item.title, item.name, item.uniSlug].filter(Boolean);
+      const uni = item.university || item.uniObj || item.programObj?.university;
+      const uniId = typeof uni === "object" ? String(uni?._id || uni?.slug || "") : "";
+      const keys = [
+        item.slug,
+        item.id,
+        item._id,
+        item.title,
+        item.name,
+        item.uniSlug,
+        item.uniName,
+        uniId,
+      ].filter(Boolean);
       return keys.some((k) => String(k).toLowerCase().trim() === target);
     });
   };
@@ -86,7 +97,7 @@ export function CompareProvider({ children }) {
       return;
     }
 
-    const uniObj = item.university || item;
+    const uniObj = item.university || item.uniObj || item;
     const uniName = typeof uniObj === "object" ? (uniObj?.name || item.uniName) : (item.uniName || "University");
     const uniSlug = typeof uniObj === "object" ? (uniObj?.slug || item.uniSlug) : (item.uniSlug || "");
 
@@ -107,6 +118,7 @@ export function CompareProvider({ children }) {
       name: item.name || item.title || uniName,
       uniName: uniName,
       uniSlug: uniSlug,
+      university: uniObj,
       logoSrc: rawLogo,
       logoUrl: rawLogo,
       logo: rawLogo,
@@ -139,7 +151,18 @@ export function CompareProvider({ children }) {
     if (!identifier) return;
     const target = String(identifier).toLowerCase().trim();
     const updated = compareList.filter((item) => {
-      const keys = [item.slug, item.id, item._id, item.title, item.name, item.uniSlug].filter(Boolean);
+      const uni = item.university || item.uniObj || item.programObj?.university;
+      const uniId = typeof uni === "object" ? String(uni?._id || uni?.slug || "") : "";
+      const keys = [
+        item.slug,
+        item.id,
+        item._id,
+        item.title,
+        item.name,
+        item.uniSlug,
+        item.uniName,
+        uniId,
+      ].filter(Boolean);
       return !keys.some((k) => String(k).toLowerCase().trim() === target);
     });
     updateCompareList(updated);
@@ -174,6 +197,7 @@ export function CompareProvider({ children }) {
         removeFromCompare,
         toggleCompare,
         clearCompare,
+        updateCompareList,
         isCompareDrawerOpen,
         setIsCompareDrawerOpen,
         compareVersion,
