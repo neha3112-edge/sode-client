@@ -72,10 +72,10 @@ function UniversityCard({ uni }) {
   const featuredCourse = uni?.featuredCourse || coursesList[0]?.name || coursesList[0]?.title || "";
   const extraCount = Math.max(0, (coursesList.length || uni?.coursesCount || 0) - 1);
 
-  const logoUrl = !logoErr ? resolveMediaUrl(uni?.logoSrc || uni?.logo) : null;
-  const imageSrc = !imgErr ? resolveMediaUrl(uni?.imageSrc || uni?.bannerImg || uni?.image) : null;
-  const logoAlt = uni?.logoSrc?.name || uni?.logo?.name || name;
-  const imgAlt = uni?.imageSrc?.name || uni?.bannerImg?.name || name;
+  const logoUrl = !logoErr ? resolveMediaUrl(uni?.image || uni?.logoSrc || uni?.logo) : null;
+  const imageSrc = !imgErr ? resolveMediaUrl(uni?.bannerImg || uni?.imageSrc || uni?.image) : null;
+  const logoAlt = uni?.image?.name || uni?.logoSrc?.name || uni?.logo?.name || name;
+  const imgAlt = uni?.bannerImg?.name || uni?.imageSrc?.name || name;
 
   const avatarBg = getAvatarColor(name);
   const inCompare = isInCompare(slug);
@@ -84,7 +84,7 @@ function UniversityCard({ uni }) {
     <div className="bg-white border border-slate-200/90 rounded-2xl flex flex-col h-full overflow-hidden group">
 
       {/* Campus Banner + Logo overlay */}
-      <div className="relative h-28 shrink-0">
+      <div className="relative h-32 shrink-0">
         {/* Banner image wrapper */}
         <div className="absolute inset-0 overflow-hidden">
           {imageSrc ? (
@@ -113,9 +113,9 @@ function UniversityCard({ uni }) {
           </span>
         )}
 
-        {/* Floating Logo (outside overflow-hidden) */}
+        {/* Floating Wide Logo Badge (touching edges completely) */}
         <div
-          className="absolute -bottom-6 left-4 w-14 h-14 rounded-xl border-2 border-white bg-white flex items-center justify-center overflow-hidden z-20 p-1"
+          className="absolute -bottom-4 left-3.5 h-11 w-32 max-w-[150px] rounded-lg border border-slate-200/90 bg-white shadow-sm flex items-center justify-center overflow-hidden z-20 p-0"
           style={{ backgroundColor: logoUrl ? "#fff" : avatarBg }}
         >
           {logoUrl ? (
@@ -124,21 +124,21 @@ function UniversityCard({ uni }) {
                 src={logoUrl}
                 alt={logoAlt}
                 fill
-                sizes="56px"
+                sizes="130px"
                 className="object-contain"
                 onError={() => setLogoErr(true)}
               />
             </div>
           ) : (
-            <span className="text-white text-xl font-extrabold select-none">
-              {name.charAt(0).toUpperCase()}
+            <span className="text-white text-xs font-bold truncate select-none px-1">
+              {name}
             </span>
           )}
         </div>
       </div>
 
       {/* Name / Location */}
-      <div className="pt-8 px-4 pb-3">
+      <div className="pt-5 px-4 pb-3">
         <Link href={`/universities/${slug}`} className="hover:text-blue-600 transition-colors block">
           <h3 className="text-base font-bold text-slate-800 m-0 leading-snug line-clamp-1">
             {name}

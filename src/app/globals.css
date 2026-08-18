@@ -19,9 +19,26 @@
 *::after,
 html,
 body,
-h1, h2, h3, h4, h5, h6,
-p, span, a, button, input, select, textarea,
-table, thead, tbody, tfoot, tr, th, td,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+a,
+button,
+input,
+select,
+textarea,
+table,
+thead,
+tbody,
+tfoot,
+tr,
+th,
+td,
 .ant-btn,
 .ant-input,
 .ant-select,
@@ -102,7 +119,7 @@ body {
   width: 100% !important;
 }
 
-.comparison-matrix-table .ant-table-thead > tr > th {
+.comparison-matrix-table .ant-table-thead>tr>th {
   background: #f8fafc !important;
   font-family: var(--font-montserrat), "Montserrat", sans-serif !important;
   padding: 12px 8px !important;
@@ -110,11 +127,11 @@ body {
   border-right: 1px solid #e2e8f0 !important;
 }
 
-.comparison-matrix-table .ant-table-thead > tr > th:last-child {
+.comparison-matrix-table .ant-table-thead>tr>th:last-child {
   border-right: none !important;
 }
 
-.comparison-matrix-table .ant-table-tbody > tr > td {
+.comparison-matrix-table .ant-table-tbody>tr>td {
   padding: 10px 8px !important;
   font-family: var(--font-montserrat), "Montserrat", sans-serif !important;
   font-size: 11px !important;
@@ -123,11 +140,11 @@ body {
   background: #ffffff;
 }
 
-.comparison-matrix-table .ant-table-tbody > tr > td:last-child {
+.comparison-matrix-table .ant-table-tbody>tr>td:last-child {
   border-right: none !important;
 }
 
-.comparison-matrix-table .ant-table-tbody > tr:last-child > td {
+.comparison-matrix-table .ant-table-tbody>tr:last-child>td {
   border-bottom: none !important;
 }
 
@@ -138,6 +155,7 @@ body {
   0% {
     transform: translateX(0);
   }
+
   100% {
     transform: translateX(-50%);
   }
@@ -147,6 +165,7 @@ body {
   0% {
     transform: translateX(-50%);
   }
+
   100% {
     transform: translateX(0);
   }
@@ -156,14 +175,14 @@ body {
   display: flex;
   width: max-content;
   will-change: transform;
-  animation: marqueeScrollLTR 70s linear infinite;
+  animation: marqueeScrollLTR 125s linear infinite;
 }
 
 .marquee-rtl {
   display: flex;
   width: max-content;
   will-change: transform;
-  animation: marqueeScrollRTL 70s linear infinite;
+  animation: marqueeScrollRTL 125s linear infinite;
 }
 
 .marquee-ltr:hover,
@@ -171,7 +190,7 @@ body {
   animation-play-state: paused;
 }
 
-.comparison-matrix-table .ant-table-tbody > tr:hover > td {
+.comparison-matrix-table .ant-table-tbody>tr:hover>td {
   background-color: #f8fafc !important;
 }
 
@@ -188,9 +207,9 @@ body {
 
 /* Hide Ant Design measuring row so it doesn't create an empty blank row */
 .ant-table-measure-row,
-.ant-table-measure-row > td,
+.ant-table-measure-row>td,
 .comparison-matrix-table .ant-table-measure-row,
-.comparison-matrix-table .ant-table-measure-row > td {
+.comparison-matrix-table .ant-table-measure-row>td {
   padding: 0 !important;
   border: 0 !important;
   height: 0 !important;
@@ -205,9 +224,11 @@ body {
     transform: scale(0.92);
     opacity: 0.7;
   }
+
   50% {
     transform: scale(1.04);
   }
+
   100% {
     transform: scale(1);
     opacity: 1;

@@ -378,6 +378,39 @@ export function Category({ categories = [], universities = [], programs = [] }) 
     return Array.from(map.values());
   };
 
+  const getItemSlug = (item) => {
+    if (!item) return "";
+    if (item.slug && String(item.slug).trim() && !/^[0-9a-fA-F]{24}$/.test(String(item.slug))) {
+      return String(item.slug).trim();
+    }
+    const idStr = String(item._id || item.id || item);
+    const foundCat = (categoriesList || []).find((c) => String(c._id) === idStr);
+    if (foundCat && foundCat.slug && !/^[0-9a-fA-F]{24}$/.test(String(foundCat.slug))) {
+      return String(foundCat.slug).trim();
+    }
+    const foundUni = (universities || []).find((u) => String(u._id) === idStr);
+    if (foundUni && foundUni.slug && !/^[0-9a-fA-F]{24}$/.test(String(foundUni.slug))) {
+      return String(foundUni.slug).trim();
+    }
+    const foundProg = (programs || []).find((p) => String(p._id) === idStr);
+    if (foundProg && foundProg.slug && !/^[0-9a-fA-F]{24}$/.test(String(foundProg.slug))) {
+      return String(foundProg.slug).trim();
+    }
+
+    // Fallback: generate clean slug from name/title/label
+    const name = item.name || item.title || item.label || foundCat?.name || foundUni?.name || foundProg?.name;
+    if (name) {
+      return String(name)
+        .toLowerCase()
+        .trim()
+        .replace(/[\s_]+/g, "-")
+        .replace(/[^\w-]+/g, "")
+        .replace(/--+/g, "-")
+        .replace(/^-+|-+$/g, "");
+    }
+    return idStr;
+  };
+
   const handleCardClick = (cat) => {
     if (!cat) return;
     const catIdStr = String(cat._id || cat.slug);
@@ -393,8 +426,17 @@ export function Category({ categories = [], universities = [], programs = [] }) 
 
     const childrenList = deduplicateItems(rawChildren);
 
+    // Filter universities belonging to this category
     const catUniversities = deduplicateItems(
-      (cat.universities && cat.universities.length > 0) ? cat.universities : []
+      (cat.universities && cat.universities.length > 0)
+        ? cat.universities
+        : (universities || []).filter((u) => {
+          if (!u.category) return false;
+          if (Array.isArray(u.category)) {
+            return u.category.some((cId) => String(cId?._id || cId) === catIdStr);
+          }
+          return String(u.category?._id || u.category) === catIdStr;
+        })
     );
 
     // 1. Direct courses attached to category or university (from backend API)
@@ -422,13 +464,13 @@ export function Category({ categories = [], universities = [], programs = [] }) 
       if (activeCategory) {
         setActiveCategory(null);
       }
-      const targetSlug = cat.slug || cat._id;
+      const targetSlug = getItemSlug(cat);
       if (cat.targetType === "COURSE") {
-        router.push(`/courses/${encodeURIComponent(targetSlug)}`);
+        router.push(`/courses?course=${encodeURIComponent(targetSlug)}`);
       } else if (cat.targetType === "UNIVERSITY") {
-        router.push(`/universities/${encodeURIComponent(targetSlug)}`);
+        router.push(`/courses?university=${encodeURIComponent(targetSlug)}`);
       } else {
-        router.push(`/category/${encodeURIComponent(targetSlug)}`);
+        router.push(`/courses?category=${encodeURIComponent(targetSlug)}`);
       }
       return;
     }
@@ -462,10 +504,15 @@ export function Category({ categories = [], universities = [], programs = [] }) 
       return;
     }
 
-    // Leaf subcategory: close modal and navigate directly to category page
+    // Leaf subcategory: close modal and navigate to courses page filtered by category & subcategory (using clean slugs)
+    const parentCatSlug = getItemSlug(activeCategory);
+    const subCatSlug = getItemSlug(child);
     handleCloseModal();
-    const targetSlug = child.slug || child._id;
-    router.push(`/category/${encodeURIComponent(targetSlug)}`);
+    if (parentCatSlug) {
+      router.push(`/courses?category=${encodeURIComponent(parentCatSlug)}&subcategory=${encodeURIComponent(subCatSlug)}`);
+    } else {
+      router.push(`/courses?subcategory=${encodeURIComponent(subCatSlug)}`);
+    }
   };
 
   return (
@@ -621,7 +668,7 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                           <div
                             key={child._id || idx}
                             onClick={() => {
-                              router.push(`/courses/${encodeURIComponent(child.slug || child._id)}`);
+                              router.push(`/courses?course=${encodeURIComponent(getItemSlug(child))}`);
                             }}
                             className="w-full aspect-square bg-white hover:bg-slate-50 border border-slate-200/90 rounded-xl sm:rounded-2xl p-1.5 min-[360px]:p-2 sm:p-2.5 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group shadow-2xs min-w-0"
                           >
@@ -752,11 +799,15 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                       <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-3">
                         {modalData.universities.map((uni, idx) => {
                           const name = uni.name || uni.title;
-                          const slug = uni.slug || uni._id;
+                          const uniSlug = getItemSlug(uni);
+                          const parentSlug = getItemSlug(activeCategory);
+                          const queryUrl = parentSlug
+                            ? `/courses?university=${encodeURIComponent(uniSlug)}&category=${encodeURIComponent(parentSlug)}`
+                            : `/courses?university=${encodeURIComponent(uniSlug)}`;
                           return (
                             <Link
-                              key={`${uni._id || slug || idx}-${idx}`}
-                              href={`/universities/${encodeURIComponent(slug)}`}
+                              key={`${uni._id || uniSlug || idx}-${idx}`}
+                              href={queryUrl}
                               onClick={handleCloseModal}
                               className="bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl p-1.5 min-[360px]:p-2 sm:p-2.5 aspect-square flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group min-w-0 shadow-2xs"
                             >
@@ -777,11 +828,15 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                       <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-3">
                         {modalData.courses.map((course, idx) => {
                           const name = course.name || course.title;
-                          const slug = course.slug || course._id;
+                          const courseSlug = getItemSlug(course);
+                          const parentSlug = getItemSlug(activeCategory);
+                          const queryUrl = parentSlug
+                            ? `/courses?course=${encodeURIComponent(courseSlug)}&university=${encodeURIComponent(parentSlug)}`
+                            : `/courses?course=${encodeURIComponent(courseSlug)}`;
                           return (
                             <Link
-                              key={`${course._id || slug || idx}-${course.courseId || ''}-${idx}`}
-                              href={`/courses/${encodeURIComponent(slug)}`}
+                              key={`${course._id || courseSlug || idx}-${course.courseId || ''}-${idx}`}
+                              href={queryUrl}
                               onClick={handleCloseModal}
                               className="bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl p-1.5 min-[360px]:p-2 sm:p-2.5 aspect-square flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group min-w-0 shadow-2xs"
                             >

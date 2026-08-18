@@ -58,11 +58,6 @@ export default async function Home() {
     footerData,
     iimUniversities,
     iitUniversities,
-    categoryOptions,
-    universityOptions,
-    subcourseOptions,
-    durationOptions,
-    feeOptions,
   ] = await Promise.all([
     getWebsiteHero("home"),
     getUniversitiesData(),
@@ -74,11 +69,6 @@ export default async function Home() {
     getFooterData(),
     getUniversitiesData({ type: "iim", limit: 10, page: 1 }),
     getUniversitiesData({ type: "iit", limit: 10, page: 1 }),
-    getWebsiteCategoryOptions(),
-    getWebsiteUniversityOptions(),
-    getWebsiteSubcourseOptions(),
-    getWebsiteDurationOptions(),
-    getWebsiteFeeOptions(),
   ]);
 
   const categories = Array.isArray(categoryApiData?.result)

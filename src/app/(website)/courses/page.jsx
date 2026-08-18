@@ -53,7 +53,10 @@ function FilterSidebarContent({
   handleClearFilters,
   activeCategoryTab,
   setActiveCategoryTab,
+  selectedCourse = "",
+  setSelectedCourse = () => { },
   categorySelectOptions = [],
+  primaryCategoryList = [],
   subcategoryList = [],
   durationList = [],
   feeList = [],
@@ -69,27 +72,69 @@ function FilterSidebarContent({
   setCurrentPage,
   isLoadingData = false,
 }) {
-  const handleCategoryPillClick = (val) => {
-    if (isCategoryPillActive(val)) {
-      setActiveSubcategory("");
-    } else {
-      setActiveSubcategory(val);
+  const isCategoryActive = (val) => {
+    if (!activeCategoryTab || activeCategoryTab === "all") return false;
+    const v = String(val).toLowerCase().replace(/[^a-z0-9]/g, "");
+    if (Array.isArray(activeCategoryTab)) {
+      return activeCategoryTab.some((c) => String(c).toLowerCase().replace(/[^a-z0-9]/g, "") === v);
     }
+    const a = String(activeCategoryTab).toLowerCase().replace(/[^a-z0-9]/g, "");
+    return a === v;
   };
 
-  const isCategoryPillActive = (val) => {
+  const isSubcategoryActive = (val) => {
     if (!activeSubcategory) return false;
-    const a = String(activeSubcategory).toLowerCase().replace(/[^a-z0-9]/g, "");
-    const v = String(val).toLowerCase().replace(/[^a-z0-9]/g, "");
-    return a === v || a.includes(v) || v.includes(a);
+    const target = String(val).toLowerCase();
+    if (Array.isArray(activeSubcategory)) {
+      return activeSubcategory.some((s) => String(s).toLowerCase() === target);
+    }
+    return String(activeSubcategory).toLowerCase() === target;
+  };
+
+  const isDurationActive = (val) => {
+    if (!selectedDuration || selectedDuration === "all") return false;
+    const target = String(val).toLowerCase();
+    if (Array.isArray(selectedDuration)) {
+      return selectedDuration.some((d) => String(d).toLowerCase() === target);
+    }
+    return String(selectedDuration).toLowerCase() === target;
+  };
+
+  const handleCategoryPillClick = (val) => {
+    if (isCategoryActive(val)) {
+      setActiveCategoryTab("all");
+    } else {
+      setActiveCategoryTab(val);
+    }
+    setActiveSubcategory([]);
+  };
+
+  const handleSubcategoryPillClick = (val) => {
+    let current = Array.isArray(activeSubcategory)
+      ? [...activeSubcategory]
+      : (activeSubcategory ? [activeSubcategory] : []);
+
+    const exists = current.some((s) => String(s).toLowerCase() === String(val).toLowerCase());
+    if (exists) {
+      current = current.filter((s) => String(s).toLowerCase() !== String(val).toLowerCase());
+    } else {
+      current.push(val);
+    }
+    setActiveSubcategory(current);
   };
 
   const handleDurationPillClick = (val) => {
-    if (selectedDuration === val) {
-      setSelectedDuration("all");
+    let current = Array.isArray(selectedDuration)
+      ? [...selectedDuration]
+      : (selectedDuration && selectedDuration !== "all" ? [selectedDuration] : []);
+
+    const exists = current.some((d) => String(d).toLowerCase() === String(val).toLowerCase());
+    if (exists) {
+      current = current.filter((d) => String(d).toLowerCase() !== String(val).toLowerCase());
     } else {
-      setSelectedDuration(val);
+      current.push(val);
     }
+    setSelectedDuration(current.length > 0 ? current : "all");
   };
 
   return (
@@ -111,126 +156,133 @@ function FilterSidebarContent({
         </div>
       )}
 
-        {/* 1. Course Select */}
-        <div className="space-y-1.5">
-          <label className="block text-xs font-bold text-slate-700">Course</label>
-          <Select
-            showSearch
-            value={activeCategoryTab ? activeCategoryTab.toLowerCase() : "all"}
-            onChange={(val) => {
-              setActiveCategoryTab(val);
-              setCurrentPage(1);
-            }}
-            className="w-full font-semibold rounded-xl"
-            size="middle"
-            options={categorySelectOptions}
-            optionFilterProp="label"
-            filterOption={(input, option) =>
-              (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-            }
-          />
-        </div>
+      {/* 1. Category Select (Multi-Select) */}
+      <div className="space-y-1.5">
+        <label className="block text-xs font-bold text-slate-700">Category</label>
+        <Select
+          mode="multiple"
+          maxTagCount="responsive"
+          showSearch
+          placeholder="All Categories"
+          value={Array.isArray(activeCategoryTab) ? activeCategoryTab.filter((c) => c && c !== "all") : (activeCategoryTab && activeCategoryTab !== "all" ? [activeCategoryTab] : [])}
+          onChange={(val) => {
+            const next = Array.isArray(val) ? (val.length > 0 ? val : "all") : (val ? [val] : "all");
+            setActiveCategoryTab(next);
+            setCurrentPage(1);
+          }}
+          className="w-full font-semibold rounded-xl"
 
-        {/* 2. Category CheckableTags */}
+          options={categorySelectOptions.filter((c) => c.value !== "all").map((c) => ({ value: c.value, label: c.label }))}
+          optionFilterProp="label"
+          filterOption={(input, option) =>
+            (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+          }
+        />
+      </div>
+
+      {/* 2. Subcategory CheckableTags (Multi-Select) */}
+      {subcategoryList && subcategoryList.length > 0 && (
         <div className="space-y-2">
-          <label className="block text-xs font-bold text-slate-700">Category</label>
-          <div className="flex flex-wrap gap-1.5">
+          <label className="block text-xs font-bold text-slate-700">Subcategory</label>
+          <div className="grid grid-cols-2 gap-1.5">
             {subcategoryList.map((pill) => {
-              const active = isCategoryPillActive(pill.value);
+              const active = isSubcategoryActive(pill.value) || isSubcategoryActive(pill.slug) || isSubcategoryActive(pill.id);
               return (
                 <Tag.CheckableTag
                   key={pill.value}
                   checked={active}
                   onChange={() => {
-                    handleCategoryPillClick(pill.value);
+                    handleSubcategoryPillClick(pill.value);
                     setCurrentPage(1);
                   }}
-                  className={`px-2.5 py-1 text-xs font-semibold rounded-full border transition-all duration-200 cursor-pointer ${active
-                      ? "bg-[#1C3569]! text-white! border-[#1C3569]"
-                      : "bg-white text-slate-500 border-slate-200 hover:border-[#1C3569] hover:text-[#1C3569]"
+                  className={`w-full text-center px-1.5 py-1.5 text-[11px] font-semibold rounded-xl border transition-all duration-200 cursor-pointer flex items-center justify-center m-0 text-balance leading-tight ${active
+                    ? "bg-[#1C3569]! text-white! border-[#1C3569]"
+                    : "bg-white text-slate-600 border-slate-200 hover:border-[#1C3569] hover:text-[#1C3569]"
                     }`}
                 >
-                  {pill.label}
+                  <span title={pill.label} className="line-clamp-2">{pill.label}</span>
                 </Tag.CheckableTag>
               );
             })}
           </div>
         </div>
+      )}
 
-        {/* 3. Duration Filter */}
-        <div className="space-y-2">
-          <label className="block text-xs font-bold text-slate-700">Duration</label>
-          <div className="flex flex-wrap gap-1.5">
-            {durationList.map((pill) => {
-              const active = selectedDuration === pill.value;
-              return (
-                <Tag.CheckableTag
-                  key={pill.value}
-                  checked={active}
-                  onChange={() => {
-                    handleDurationPillClick(pill.value);
-                    setCurrentPage(1);
-                  }}
-                  className={`px-2.5 py-1 text-xs font-semibold rounded-full border transition-all duration-200 cursor-pointer ${active
-                      ? "bg-[#1C3569]! text-white! border-[#1C3569]"
-                      : "bg-white text-slate-500 border-slate-200 hover:border-[#1C3569] hover:text-[#1C3569]"
-                    }`}
-                >
-                  {pill.label}
-                </Tag.CheckableTag>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* 4. Fee Range */}
-        <div className="space-y-1.5">
-          <label className="block text-xs font-bold text-slate-700">Fee Range</label>
-          <Select
-            value={selectedFee}
-            onChange={(val) => {
-              setSelectedFee(val);
-              setCurrentPage(1);
-            }}
-            className="w-full font-semibold rounded-xl"
-            size="middle"
-            options={feeList.map((f) => ({ value: f.value, label: f.label }))}
-          />
-        </div>
-
-        {/* 5. Institute Dropdown */}
-        <div className="space-y-1.5">
-          <label className="block text-xs font-bold text-slate-700">Institute</label>
-          <Select
-            showSearch
-            value={selectedUniversities[0] || "all"}
-            onChange={(val) => {
-              if (val === "all") setSelectedUniversities([]);
-              else setSelectedUniversities([val]);
-              setCurrentPage(1);
-            }}
-            className="w-full font-semibold rounded-xl"
-            size="middle"
-            options={universityOptions}
-            optionFilterProp="label"
-            filterOption={(input, option) =>
-              (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-            }
-          />
-        </div>
-
-        <div className="pt-4">
-          <Button
-            type="primary"
-            onClick={onApplyFilter}
-            className="w-full bg-[#1C3569] hover:bg-[#0d1d3d]! text-white font-bold h-10 rounded-xl cursor-pointer border-none"
-          >
-            Apply Filter
-          </Button>
+      {/* 3. Duration Filter (Multi-Select) */}
+      <div className="space-y-2">
+        <label className="block text-xs font-bold text-slate-700">Duration</label>
+        <div className="grid grid-cols-2 gap-1.5">
+          {durationList.map((pill) => {
+            const active = isDurationActive(pill.value);
+            return (
+              <Tag.CheckableTag
+                key={pill.value}
+                checked={active}
+                onChange={() => {
+                  handleDurationPillClick(pill.value);
+                  setCurrentPage(1);
+                }}
+                className={`w-full text-center px-1.5 py-1.5 text-[11px] font-semibold rounded-xl border transition-all duration-200 cursor-pointer flex items-center justify-center m-0 ${active
+                  ? "bg-[#1C3569]! text-white! border-[#1C3569]"
+                  : "bg-white text-slate-600 border-slate-200 hover:border-[#1C3569] hover:text-[#1C3569]"
+                  }`}
+              >
+                {pill.label}
+              </Tag.CheckableTag>
+            );
+          })}
         </div>
       </div>
-    );
-  };
+
+      {/* 4. Fee Range (Multi-Select) */}
+      <div className="space-y-1.5">
+        <label className="block text-xs font-bold text-slate-700">Fee Range</label>
+        <Select
+          mode="multiple"
+          maxTagCount="responsive"
+          showSearch
+          placeholder="All Fee Ranges"
+          value={Array.isArray(selectedFee) ? selectedFee.filter((f) => f && f !== "all") : (selectedFee && selectedFee !== "all" ? [selectedFee] : [])}
+          onChange={(val) => {
+            const next = Array.isArray(val) ? (val.length > 0 ? val : "all") : (val ? [val] : "all");
+            setSelectedFee(next);
+            setCurrentPage(1);
+          }}
+          className="w-full font-semibold rounded-xl"
+
+          options={feeList.filter((f) => f.value !== "all").map((f) => ({ value: f.value, label: f.label }))}
+          optionFilterProp="label"
+          filterOption={(input, option) =>
+            (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+          }
+        />
+      </div>
+
+      {/* 5. Institute Dropdown (Multi-Select) */}
+      <div className="space-y-1.5">
+        <label className="block text-xs font-bold text-slate-700">Institute</label>
+        <Select
+          mode="multiple"
+          maxTagCount="responsive"
+          showSearch
+          placeholder="All Institutes"
+          value={selectedUniversities.filter((u) => u && u !== "all")}
+          onChange={(val) => {
+            setSelectedUniversities(Array.isArray(val) ? val : (val ? [val] : []));
+            setCurrentPage(1);
+          }}
+          className="w-full font-semibold rounded-xl"
+
+          options={universityOptions.filter((u) => u.value !== "all").map((u) => ({ value: u.value, label: u.label }))}
+          optionFilterProp="label"
+          filterOption={(input, option) =>
+            (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+          }
+        />
+      </div>
+    </div>
+  );
+};
 
 const getAccreditation = (uniName) => {
   const name = String(uniName || "").toLowerCase();
@@ -258,7 +310,9 @@ function CoursesContent() {
 
   const searchParams = useSearchParams();
   const initialCat = searchParams?.get("category") || "all";
-  const initialSubcat = searchParams?.get("subcategory") || searchParams?.get("subcourse") || "";
+  const initialSubcat = searchParams?.get("subcategory") || searchParams?.get("subCategory") || searchParams?.get("subcourse") || "";
+  const initialSubcatArr = initialSubcat ? initialSubcat.split(",").map((s) => s.trim()) : [];
+  const initialCourse = searchParams?.get("course") || searchParams?.get("courseId") || "";
   const initialQuery = searchParams?.get("search") || "";
   const initialUnis = searchParams?.get("university") ? searchParams.get("university").split(",").map((u) => u.trim()) : [];
 
@@ -266,7 +320,8 @@ function CoursesContent() {
   const [appliedSearchTerm, setAppliedSearchTerm] = useState(initialQuery);
 
   const [activeCategoryTab, setActiveCategoryTab] = useState(initialCat);
-  const [activeSubcategory, setActiveSubcategory] = useState(initialSubcat);
+  const [activeSubcategory, setActiveSubcategory] = useState(initialSubcatArr);
+  const [selectedCourse, setSelectedCourse] = useState(initialCourse);
   const [selectedUniversities, setSelectedUniversities] = useState(initialUnis);
   const [selectedDuration, setSelectedDuration] = useState("all");
   const [selectedFee, setSelectedFee] = useState("all");
@@ -302,17 +357,88 @@ function CoursesContent() {
   }, []);
 
   useEffect(() => {
+    const cat = searchParams?.get("category");
+    const subcat = searchParams?.get("subcategory") || searchParams?.get("subCategory") || searchParams?.get("subcourse");
+    const crs = searchParams?.get("course") || searchParams?.get("courseId");
+    const q = searchParams?.get("search") || searchParams?.get("q");
+    const uni = searchParams?.get("university") || searchParams?.get("universityId");
+
+    if (cat !== null && cat !== undefined) {
+      setActiveCategoryTab(cat || "all");
+    }
+    if (subcat !== null && subcat !== undefined) {
+      setActiveSubcategory(subcat ? subcat.split(",").map((s) => s.trim()) : []);
+    }
+    if (crs !== null && crs !== undefined) {
+      setSelectedCourse(crs || "");
+    }
+    if (q !== null && q !== undefined) {
+      setSearchInputValue(q);
+      setAppliedSearchTerm(q);
+    }
+    if (uni) {
+      setSelectedUniversities(uni.split(",").map((u) => u.trim()));
+    }
+    setCurrentPage(1);
+  }, [searchParams]);
+
+  useEffect(() => {
     let isMounted = true;
     setIsLoadingData(true);
+
+    const resolveToId = (val, list = []) => {
+      if (!val || val === "all") return "";
+      if (/^[0-9a-fA-F]{24}$/.test(String(val))) return String(val);
+      const targetStr = String(val).trim().toLowerCase();
+      const found = (list || []).find((item) => {
+        if (!item) return false;
+        const s = String(item.slug || "").trim().toLowerCase();
+        const v = String(item.value || "").trim().toLowerCase();
+        const n = String(item.name || item.title || item.label || "").trim().toLowerCase();
+        return s === targetStr || v === targetStr || n === targetStr;
+      });
+      return found?._id || found?.id || (found?.value && /^[0-9a-fA-F]{24}$/.test(found.value) ? found.value : "");
+    };
+
+    const allFlatCategories = [
+      ...(initialCategories || []),
+      ...(initialCategories || []).flatMap((c) => c.children || []),
+      ...(initialCategories || []).flatMap((c) => c.courses || []),
+      ...(initialCategories || []).flatMap((c) => c.universities || []),
+      ...categorySelectOptions,
+      ...subcategoryList,
+    ];
+
+    const allFlatUniversities = [
+      ...(initialUniversities || []),
+      ...universityOptions,
+      ...(initialList || []).map((p) => p.uniObj).filter(Boolean),
+    ];
+
+    const resolvedCategoryIds = Array.isArray(activeCategoryTab)
+      ? activeCategoryTab.map((c) => resolveToId(c, allFlatCategories)).filter(Boolean)
+      : (resolveToId(activeCategoryTab, allFlatCategories) ? [resolveToId(activeCategoryTab, allFlatCategories)] : []);
+    const resolvedSubcategoryIds = Array.isArray(activeSubcategory)
+      ? activeSubcategory.map((s) => resolveToId(s, allFlatCategories)).filter(Boolean)
+      : (resolveToId(activeSubcategory, allFlatCategories) ? [resolveToId(activeSubcategory, allFlatCategories)] : []);
+    const resolvedCourseId = resolveToId(selectedCourse, allFlatCategories);
+    const resolvedUniversityIds = (selectedUniversities || []).map((u) => resolveToId(u, allFlatUniversities)).filter(Boolean);
+    const resolvedDuration = Array.isArray(selectedDuration)
+      ? selectedDuration.filter((d) => d && d !== "all")
+      : (selectedDuration && selectedDuration !== "all" ? selectedDuration : "all");
+    const resolvedFee = Array.isArray(selectedFee)
+      ? selectedFee.filter((f) => f && f !== "all")
+      : (selectedFee && selectedFee !== "all" ? selectedFee : "all");
 
     getWebsiteCoursesFilter({
       page: currentPage,
       limit: ITEMS_PER_PAGE,
-      category: activeCategoryTab,
-      subcategory: activeSubcategory,
-      university: selectedUniversities,
-      duration: selectedDuration,
-      fee: selectedFee,
+      category: resolvedCategoryIds,
+      subcategory: resolvedSubcategoryIds,
+      course: resolvedCourseId,
+      university: resolvedUniversityIds,
+      duration: resolvedDuration,
+      fee: resolvedFee,
       search: appliedSearchTerm,
       sort: sortBy,
     })
@@ -334,11 +460,14 @@ function CoursesContent() {
     currentPage,
     activeCategoryTab,
     activeSubcategory,
+    selectedCourse,
     selectedUniversities,
     selectedDuration,
     selectedFee,
     appliedSearchTerm,
     sortBy,
+    initialCategories,
+    initialUniversities,
   ]);
 
   const initialList = useMemo(() => {
@@ -491,32 +620,166 @@ function CoursesContent() {
   const totalCount = coursesData.total ?? processedPrograms.length;
   const totalPages = coursesData.totalPages ?? (Math.ceil(totalCount / ITEMS_PER_PAGE) || 1);
 
-  const categorySelectOptions = useMemo(() => [
-    { value: "all", label: "All Categories" },
-    { value: "doctorate", label: "Doctorate" },
-    { value: "master", label: "Master" },
-    { value: "bachelor", label: "Bachelor" },
-    { value: "certification", label: "Certification" },
-    { value: "diploma", label: "Diploma" },
-    { value: "management", label: "Management" },
-    { value: "dual-master-doctorate", label: "Master+Doctorate (Dual)" },
-  ], []);
+  const categorySelectOptions = useMemo(() => {
+    const map = new Map();
+    map.set("all", { value: "all", slug: "all", label: "All Categories" });
 
-  const subcategoryList = useMemo(() => [
-    { label: "Management", value: "management" },
-    { label: "AI Courses", value: "ai-courses" },
-    { label: "Machine Learning", value: "machine-learning" },
-    { label: "HR", value: "hr" },
-    { label: "Banking", value: "banking" },
-    { label: "Finance", value: "finance" },
-    { label: "Leadership", value: "leadership" },
-    { label: "Data Science", value: "data-science" },
-  ], []);
+    // 1. Program Levels
+    const programLevels = [
+      { slug: "doctorate", label: "Doctorate" },
+      { slug: "master", label: "Master" },
+      { slug: "bachelor", label: "Bachelor" },
+      { slug: "certification", label: "Certification" },
+      { slug: "diploma", label: "Diploma" },
+      { slug: "management", label: "Management" },
+      { slug: "dual-master-doctorate", label: "Master+Doctorate (Dual)" },
+    ];
+    programLevels.forEach((pl) => {
+      map.set(pl.slug, { value: pl.slug, slug: pl.slug, label: pl.label });
+    });
+
+    // 2. DB Categories
+    const addCat = (item) => {
+      if (!item) return;
+      const name = item.name || item.title || item.label;
+      const slug = item.slug || String(item._id || "");
+      const id = String(item._id || "");
+      if (name && (slug || id)) {
+        const key = slug || id;
+        if (!map.has(key)) {
+          map.set(key, { value: slug || id, slug: slug || id, id, label: name });
+        }
+      }
+    };
+
+    if (Array.isArray(initialCategories)) initialCategories.forEach(addCat);
+
+    return Array.from(map.values());
+  }, [initialCategories]);
+
+  const primaryCategoryList = useMemo(() => {
+    const map = new Map();
+    const addCat = (c) => {
+      if (!c) return;
+      const label = c.name || c.title || c.label;
+      const slug = c.slug || String(c._id || "");
+      const id = String(c._id || "");
+      if (label && (slug || id)) {
+        const key = slug || id;
+        if (!map.has(key)) {
+          map.set(key, { label, value: slug || id, slug: slug || id, id, children: c.children || [] });
+        }
+      }
+    };
+
+    if (Array.isArray(initialCategories)) {
+      initialCategories.forEach((c) => {
+        // Only include top-level parent categories
+        if (!c.parentId || (Array.isArray(c.parentId) && c.parentId.length === 0)) {
+          addCat(c);
+        }
+      });
+    }
+
+    if (map.size === 0) {
+      const defaultCats = [
+        { label: "Management", value: "management", slug: "management" },
+        { label: "AI Courses", value: "ai-courses", slug: "ai-courses" },
+        { label: "Banking & Finance", value: "banking-finance", slug: "banking-finance" },
+        { label: "Data Science", value: "data-science", slug: "data-science" },
+        { label: "Cyber Security", value: "cyber-security", slug: "cyber-security" },
+        { label: "Cloud Computing", value: "cloud-computing", slug: "cloud-computing" },
+        { label: "Arts & Humanities", value: "arts-humanities", slug: "arts-humanities" },
+      ];
+      defaultCats.forEach((d) => map.set(d.value, d));
+    }
+
+    return Array.from(map.values());
+  }, [initialCategories]);
+
+  const subcategoryList = useMemo(() => {
+    const map = new Map();
+    const addSub = (item) => {
+      if (!item) return;
+      const label = item.name || item.title || item.label;
+      const slug = item.slug || String(item._id || "");
+      const id = String(item._id || "");
+      if (label && (slug || id)) {
+        const key = slug || id;
+        if (!map.has(key)) {
+          map.set(key, { label, value: slug || id, slug: slug || id, id });
+        }
+      }
+    };
+
+    // 🎯 Case 1: Category Selected -> Show its available subcategories (Max 10)
+    const selectedCats = Array.isArray(activeCategoryTab)
+      ? activeCategoryTab.filter((c) => c && c !== "all")
+      : (activeCategoryTab && activeCategoryTab !== "all" ? [activeCategoryTab] : []);
+
+    if (selectedCats.length > 0) {
+      selectedCats.forEach((catVal) => {
+        const target = String(catVal).toLowerCase();
+        const foundParent = (initialCategories || []).find(
+          (c) =>
+            (c.slug && c.slug.toLowerCase() === target) ||
+            String(c._id) === catVal ||
+            (c.name && c.name.toLowerCase() === target)
+        );
+        if (foundParent && Array.isArray(foundParent.children) && foundParent.children.length > 0) {
+          foundParent.children.forEach(addSub);
+        }
+      });
+
+      // Also gather subcourses from active offerings
+      if (Array.isArray(initialList)) {
+        initialList.forEach((p) => {
+          if (p?.subCourseId) addSub(p.subCourseId);
+          if (p?.subcourseObj) addSub(p.subcourseObj);
+        });
+      }
+
+      return Array.from(map.values()).slice(0, 10);
+    }
+
+    // 🎯 Case 2: No Category Selected -> Show default 8 top subcategories
+    if (Array.isArray(initialCategories)) {
+      initialCategories.forEach((c) => {
+        if (Array.isArray(c.children) && c.children.length > 0) {
+          c.children.forEach(addSub);
+        }
+      });
+    }
+
+    if (Array.isArray(initialList)) {
+      initialList.forEach((p) => {
+        if (p?.subCourseId) addSub(p.subCourseId);
+        if (p?.subcourseObj) addSub(p.subcourseObj);
+      });
+    }
+
+    if (map.size === 0) {
+      const defaultSubs = [
+        { label: "AI & Machine Learning", value: "ai-machine-learning", slug: "ai-machine-learning" },
+        { label: "Data Science & Analytics", value: "data-science-analytics", slug: "data-science-analytics" },
+        { label: "Leadership & Management", value: "leadership-management", slug: "leadership-management" },
+        { label: "Banking & Finance", value: "banking-finance", slug: "banking-finance" },
+        { label: "Sales & Marketing", value: "sales-marketing", slug: "sales-marketing" },
+        { label: "HR", value: "hr", slug: "hr" },
+        { label: "Cyber Security", value: "cyber-security", slug: "cyber-security" },
+        { label: "Cloud Computing", value: "cloud-computing", slug: "cloud-computing" },
+      ];
+      defaultSubs.forEach((s) => map.set(s.value, s));
+    }
+
+    return Array.from(map.values()).slice(0, 8);
+  }, [initialCategories, initialList, activeCategoryTab]);
 
   const durationList = useMemo(() => [
-    { label: "06 Month", value: "06-month" },
+    { label: "0-6 Months", value: "06-month" },
     { label: "06-12 Months", value: "06-12-months" },
-    { label: "12-36 Months", value: "12-36-months" },
+    { label: "12-24 Months", value: "12-24-months" },
+    { label: "24-36+ Months", value: "24-36-months" },
   ], []);
 
   const feeList = useMemo(() => [
@@ -530,20 +793,18 @@ function CoursesContent() {
 
   const universityOptions = useMemo(() => {
     const map = new Map();
-    map.set("all", { value: "all", label: "All Institutes" });
+    map.set("all", { value: "all", slug: "all", label: "All Institutes" });
 
     const addUni = (uni) => {
       if (!uni) return;
-      const name = typeof uni === "string" ? uni.trim() : (uni.label || uni.name || uni.title || "");
-      const slug = typeof uni === "string"
-        ? uni.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-")
-        : (uni.slug || (typeof uni.value === "string" && uni.value.includes("-") ? uni.value : "") || uni.slug || uni._id || uni.value || "");
+      const name = uni.name || uni.title || uni.label || "";
+      const slug = uni.slug || (typeof uni.value === "string" && uni.value.includes("-") ? uni.value : "") || "";
+      const id = String(uni._id || (typeof uni.value === "string" && /^[0-9a-fA-F]{24}$/.test(uni.value) ? uni.value : ""));
 
-      if (name && slug) {
-        const key = name.trim().toLowerCase();
-        const existing = map.get(key);
-        if (!existing || (existing.value && existing.value.length > 20 && String(slug).includes("-"))) {
-          map.set(key, { value: String(slug), label: name });
+      if (name && (slug || id)) {
+        const key = slug || id;
+        if (!map.has(key)) {
+          map.set(key, { value: slug || id, slug: slug || id, id, label: name });
         }
       }
     };
@@ -552,6 +813,7 @@ function CoursesContent() {
     if (Array.isArray(initialList)) {
       initialList.forEach((p) => {
         if (p?.universityId) addUni(p.universityId);
+        if (p?.uniObj) addUni(p.uniObj);
         if (p?.university) addUni(p.university);
         if (Array.isArray(p?.universityOfferings)) {
           p.universityOfferings.forEach((off) => addUni(off?.university));
@@ -563,6 +825,7 @@ function CoursesContent() {
   }, [initialUniversities, initialList]);
 
   const [draftCategoryTab, setDraftCategoryTab] = useState(activeCategoryTab);
+  const [draftCourse, setDraftCourse] = useState(selectedCourse);
   const [draftSubcategory, setDraftSubcategory] = useState(activeSubcategory);
   const [draftUniversities, setDraftUniversities] = useState(selectedUniversities);
   const [draftDuration, setDraftDuration] = useState(selectedDuration);
@@ -572,13 +835,15 @@ function CoursesContent() {
     setSearchInputValue("");
     setAppliedSearchTerm("");
     setActiveCategoryTab("all");
-    setActiveSubcategory("");
+    setSelectedCourse("");
+    setActiveSubcategory([]);
     setSelectedUniversities([]);
     setSelectedDuration("all");
     setSelectedFee("all");
 
     setDraftCategoryTab("all");
-    setDraftSubcategory("");
+    setDraftCourse("");
+    setDraftSubcategory([]);
     setDraftUniversities([]);
     setDraftDuration("all");
     setDraftFee("all");
@@ -596,6 +861,7 @@ function CoursesContent() {
 
   const handleOpenMobileDrawer = () => {
     setDraftCategoryTab(activeCategoryTab);
+    setDraftCourse(selectedCourse);
     setDraftSubcategory(activeSubcategory);
     setDraftUniversities(selectedUniversities);
     setDraftDuration(selectedDuration);
@@ -605,6 +871,7 @@ function CoursesContent() {
 
   const handleApplyFilters = () => {
     setActiveCategoryTab(draftCategoryTab);
+    setSelectedCourse(draftCourse);
     setActiveSubcategory(draftSubcategory);
     setSelectedUniversities(draftUniversities);
     setSelectedDuration(draftDuration);
@@ -615,18 +882,36 @@ function CoursesContent() {
 
   const handleClearMobileDraftFilters = () => {
     setDraftCategoryTab("all");
-    setDraftSubcategory("");
+    setDraftCourse("");
+    setDraftSubcategory([]);
     setDraftUniversities([]);
     setDraftDuration("all");
     setDraftFee("all");
   };
 
+  const catCount = Array.isArray(activeCategoryTab)
+    ? activeCategoryTab.filter((c) => c && c !== "all").length
+    : (activeCategoryTab && activeCategoryTab !== "all" ? 1 : 0);
+
+  const subcatCount = Array.isArray(activeSubcategory)
+    ? activeSubcategory.filter((s) => s && s !== "all").length
+    : (activeSubcategory && activeSubcategory !== "all" ? 1 : 0);
+
+  const durCount = Array.isArray(selectedDuration)
+    ? selectedDuration.filter((d) => d && d !== "all").length
+    : (selectedDuration && selectedDuration !== "all" ? 1 : 0);
+
+  const feeCount = Array.isArray(selectedFee)
+    ? selectedFee.filter((f) => f && f !== "all").length
+    : (selectedFee && selectedFee !== "all" ? 1 : 0);
+
   const activeFilterCount =
-    (activeCategoryTab !== "all" ? 1 : 0) +
-    (activeSubcategory ? 1 : 0) +
+    catCount +
+    (selectedCourse ? 1 : 0) +
+    subcatCount +
     selectedUniversities.length +
-    (selectedDuration !== "all" ? 1 : 0) +
-    (selectedFee !== "all" ? 1 : 0) +
+    durCount +
+    feeCount +
     (appliedSearchTerm ? 1 : 0);
 
   const desktopFilterSidebarProps = {
@@ -636,6 +921,11 @@ function CoursesContent() {
     activeCategoryTab,
     setActiveCategoryTab: (val) => {
       setActiveCategoryTab(val);
+      setCurrentPage(1);
+    },
+    selectedCourse,
+    setSelectedCourse: (val) => {
+      setSelectedCourse(val);
       setCurrentPage(1);
     },
     activeSubcategory,
@@ -659,6 +949,7 @@ function CoursesContent() {
       setCurrentPage(1);
     },
     categorySelectOptions,
+    primaryCategoryList,
     subcategoryList,
     durationList,
     feeList,
@@ -671,6 +962,8 @@ function CoursesContent() {
     ...desktopFilterSidebarProps,
     activeCategoryTab: draftCategoryTab,
     setActiveCategoryTab: setDraftCategoryTab,
+    selectedCourse: draftCourse,
+    setSelectedCourse: setDraftCourse,
     activeSubcategory: draftSubcategory,
     setActiveSubcategory: setDraftSubcategory,
     selectedUniversities: draftUniversities,
@@ -717,8 +1010,8 @@ function CoursesContent() {
             }}
             options={categorySelectOptions}
             className="w-full text-xs font-semibold"
-            placeholder="Degree / Category"
-            size="middle"
+            placeholder="Category"
+
             optionFilterProp="label"
             filterOption={(input, option) =>
               (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
@@ -735,7 +1028,6 @@ function CoursesContent() {
             options={universityOptions}
             className="w-full text-xs font-semibold"
             placeholder="Institute"
-            size="middle"
             optionFilterProp="label"
             filterOption={(input, option) =>
               (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
@@ -770,52 +1062,180 @@ function CoursesContent() {
 
               {activeFilterCount > 0 && (
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  {activeCategoryTab !== "all" && (
+                  {/* Category Tags */}
+                  {(Array.isArray(activeCategoryTab) ? activeCategoryTab.filter((c) => c && c !== "all") : (activeCategoryTab && activeCategoryTab !== "all" ? [activeCategoryTab] : [])).map((catItem) => (
                     <Tag
+                      key={catItem}
                       closable
-                      onClose={() => setActiveCategoryTab("all")}
+                      onClose={() => {
+                        if (Array.isArray(activeCategoryTab)) {
+                          const next = activeCategoryTab.filter((c) => c !== catItem);
+                          setActiveCategoryTab(next.length > 0 ? next : "all");
+                        } else {
+                          setActiveCategoryTab("all");
+                        }
+                      }}
                       className="bg-blue-50 text-blue-700 border-blue-200 rounded-lg text-xs font-medium px-2 py-0.5"
                     >
-                      Degree: {categorySelectOptions.find((c) => c.value === activeCategoryTab)?.label || activeCategoryTab}
-                    </Tag>
-                  )}
-                  {activeSubcategory && (
-                    <Tag
-                      closable
-                      onClose={() => setActiveSubcategory("")}
-                      className="bg-blue-50 text-blue-700 border-blue-200 rounded-lg text-xs font-medium px-2 py-0.5"
-                    >
-                      Category: {subcategoryList.find((c) => c.value === activeSubcategory)?.label || activeSubcategory}
-                    </Tag>
-                  )}
-                  {selectedUniversities.map((uni) => (
-                    <Tag
-                      key={uni}
-                      closable
-                      onClose={() => setSelectedUniversities(selectedUniversities.filter((u) => u !== uni))}
-                      className="bg-emerald-50 text-emerald-700 border-emerald-200 rounded-lg text-xs font-medium px-2 py-0.5"
-                    >
-                      {universityOptions.find((u) => u.value === uni)?.label || uni}
+                      Category: {(() => {
+                        const target = catItem;
+                        const found = categorySelectOptions.find(
+                          (c) =>
+                            c.value === target ||
+                            c.slug === target ||
+                            c.id === target ||
+                            (c.label && c.label.toLowerCase() === String(target).toLowerCase())
+                        );
+                        if (found) return found.label;
+
+                        const foundCat = (initialCategories || []).find(
+                          (c) => String(c._id) === String(target) || c.slug === target
+                        );
+                        if (foundCat) return foundCat.name || foundCat.label || foundCat.title;
+
+                        return target;
+                      })()}
                     </Tag>
                   ))}
-                  {selectedDuration !== "all" && (
+
+                  {/* Course Tag */}
+                  {selectedCourse && (
                     <Tag
                       closable
-                      onClose={() => setSelectedDuration("all")}
+                      onClose={() => setSelectedCourse("")}
+                      className="bg-indigo-50 text-indigo-700 border-indigo-200 rounded-lg text-xs font-medium px-2 py-0.5"
+                    >
+                      Course: {(() => {
+                        const target = selectedCourse;
+                        const foundInPrograms = (processedPrograms || []).find(
+                          (p) => String(p.courseObj?._id) === String(target) || p.courseObj?.slug === target
+                        );
+                        if (foundInPrograms) return foundInPrograms.courseObj?.name || foundInPrograms.title;
+                        return target;
+                      })()}
+                    </Tag>
+                  )}
+
+                  {/* Subcategory Tags */}
+                  {(Array.isArray(activeSubcategory) ? activeSubcategory.filter((s) => s && s !== "all") : (activeSubcategory && activeSubcategory !== "all" ? [activeSubcategory] : [])).map((subItem) => (
+                    <Tag
+                      key={subItem}
+                      closable
+                      onClose={() => {
+                        if (Array.isArray(activeSubcategory)) {
+                          setActiveSubcategory(activeSubcategory.filter((s) => s !== subItem));
+                        } else {
+                          setActiveSubcategory([]);
+                        }
+                      }}
+                      className="bg-blue-50 text-blue-700 border-blue-200 rounded-lg text-xs font-medium px-2 py-0.5"
+                    >
+                      Subcategory: {(() => {
+                        const target = subItem;
+                        const foundInList = subcategoryList.find(
+                          (c) =>
+                            c.value === target ||
+                            c.slug === target ||
+                            c.id === target ||
+                            (c.label && c.label.toLowerCase() === String(target).toLowerCase())
+                        );
+                        if (foundInList) return foundInList.label;
+
+                        const foundCat = (initialCategories || []).find(
+                          (c) => String(c._id) === String(target) || c.slug === target
+                        );
+                        if (foundCat) return foundCat.name || foundCat.label || foundCat.title;
+
+                        const foundInPrograms = (processedPrograms || []).find(
+                          (p) =>
+                            String(p.subcourseObj?._id) === String(target) ||
+                            p.subcourseObj?.slug === target ||
+                            String(p.subCourseId?._id) === String(target) ||
+                            String(p.subCourseId) === String(target) ||
+                            String(p.courseObj?._id) === String(target) ||
+                            p.courseObj?.slug === target
+                        );
+                        if (foundInPrograms) return foundInPrograms.subcourseObj?.name || foundInPrograms.subcourseName || foundInPrograms.title;
+
+                        return target;
+                      })()}
+                    </Tag>
+                  ))}
+
+                  {/* Institute Tags */}
+                  {selectedUniversities.map((uni) => {
+                    const uniLabel = (() => {
+                      const found = universityOptions.find(
+                        (u) =>
+                          u.value === uni ||
+                          u.slug === uni ||
+                          u.id === uni ||
+                          (u.label && u.label.toLowerCase() === String(uni).toLowerCase())
+                      );
+                      if (found) return found.label;
+
+                      const foundUni = (initialUniversities || []).find(
+                        (u) => String(u._id) === String(uni) || u.slug === uni
+                      );
+                      if (foundUni) return foundUni.name || foundUni.title;
+
+                      const foundInList = (processedPrograms || []).find(
+                        (p) => String(p.uniObj?._id) === String(uni) || p.uniObj?.slug === uni
+                      );
+                      if (foundInList) return foundInList.uniObj?.name || foundInList.uniName;
+
+                      return uni;
+                    })();
+
+                    return (
+                      <Tag
+                        key={uni}
+                        closable
+                        onClose={() => setSelectedUniversities(selectedUniversities.filter((u) => u !== uni))}
+                        className="bg-emerald-50 text-emerald-700 border-emerald-200 rounded-lg text-xs font-medium px-2 py-0.5"
+                      >
+                        {uniLabel}
+                      </Tag>
+                    );
+                  })}
+
+                  {/* Duration Tags */}
+                  {(Array.isArray(selectedDuration) ? selectedDuration.filter((d) => d && d !== "all") : (selectedDuration !== "all" && selectedDuration ? [selectedDuration] : [])).map((durItem) => (
+                    <Tag
+                      key={durItem}
+                      closable
+                      onClose={() => {
+                        if (Array.isArray(selectedDuration)) {
+                          const next = selectedDuration.filter((d) => d !== durItem);
+                          setSelectedDuration(next.length > 0 ? next : "all");
+                        } else {
+                          setSelectedDuration("all");
+                        }
+                      }}
                       className="bg-purple-50 text-purple-700 border-purple-200 rounded-lg text-xs font-medium px-2 py-0.5"
                     >
-                      Duration: {durationList.find((d) => d.value === selectedDuration)?.label || selectedDuration}
+                      Duration: {durationList.find((d) => d.value === durItem)?.label || durItem}
                     </Tag>
-                  )}
-                  {selectedFee !== "all" && (
+                  ))}
+
+                  {/* Fee Range Tags */}
+                  {(Array.isArray(selectedFee) ? selectedFee.filter((f) => f && f !== "all") : (selectedFee !== "all" && selectedFee ? [selectedFee] : [])).map((feeItem) => (
                     <Tag
+                      key={feeItem}
                       closable
-                      onClose={() => setSelectedFee("all")}
+                      onClose={() => {
+                        if (Array.isArray(selectedFee)) {
+                          const next = selectedFee.filter((f) => f !== feeItem);
+                          setSelectedFee(next.length > 0 ? next : "all");
+                        } else {
+                          setSelectedFee("all");
+                        }
+                      }}
                       className="bg-amber-50 text-amber-700 border-amber-200 rounded-lg text-xs font-medium px-2 py-0.5"
                     >
-                      Fee: {feeList.find((f) => f.value === selectedFee)?.label || selectedFee}
+                      Fee: {feeList.find((f) => f.value === feeItem)?.label || feeItem}
                     </Tag>
-                  )}
+                  ))}
                   {appliedSearchTerm && (
                     <Tag
                       closable
@@ -995,8 +1415,8 @@ function CoursesContent() {
                                 setIsCompareDrawerOpen(true);
                               }}
                               className={`font-medium rounded-lg text-xs h-9 px-4 cursor-pointer flex items-center justify-center gap-1 transition-colors border ${isInCompare(item._id || item.slug || cardTitle)
-                                  ? "bg-teal-50 text-[#009F93] border-[#009F93]"
-                                  : "bg-white text-[#009F93] border-[#009F93] hover:bg-teal-50"
+                                ? "bg-teal-50 text-[#009F93] border-[#009F93]"
+                                : "bg-white text-[#009F93] border-[#009F93] hover:bg-teal-50"
                                 }`}
                             >
                               {isInCompare(item._id || item.slug || cardTitle) ? "✓ Added" : "+ Add to Compare"}
@@ -1089,8 +1509,8 @@ function CoursesContent() {
                               setIsCompareDrawerOpen(true);
                             }}
                             className={`rounded-lg text-[11px] h-8 flex items-center justify-center transition-colors border ${isInCompare(item._id || item.slug || cardTitle)
-                                ? "bg-teal-50 text-[#009F93] border-[#009F93] font-bold"
-                                : "bg-white text-[#009F93] border-[#009F93] font-thin"
+                              ? "bg-teal-50 text-[#009F93] border-[#009F93] font-bold"
+                              : "bg-white text-[#009F93] border-[#009F93] font-thin"
                               }`}
                           >
                             {isInCompare(item._id || item.slug || cardTitle) ? "✓ Added" : "+ Compare"}
@@ -1160,23 +1580,42 @@ function CoursesContent() {
             )}
           </div>
         }
-        placement="top"
+        placement="bottom"
         onClose={() => setIsMobileDrawerOpen(false)}
         open={isMobileDrawerOpen}
         className="lg:hidden"
-        style={{ height: "85vh", borderBottomLeftRadius: 24, borderBottomRightRadius: 24 }}
+        styles={{
+          wrapper: {
+            height: "85vh",
+          },
+          section: {
+            height: "85vh",
+            borderTopLeftRadius: 24,
+            borderTopRightRadius: 24,
+            overflow: "hidden",
+            willChange: "transform",
+          },
+          body: {
+            padding: "16px 20px 24px",
+            WebkitOverflowScrolling: "touch",
+          },
+          footer: {
+            padding: "12px 16px",
+            borderTop: "1px solid #f1f5f9",
+          },
+        }}
         footer={
-          <div className="flex items-center gap-3 p-2 bg-white">
+          <div className="flex items-center gap-3 bg-white">
             <Button
               onClick={() => setIsMobileDrawerOpen(false)}
-              className="flex-1 font-bold h-10 rounded-xl"
+              className="flex-1 font-bold h-11 rounded-xl text-slate-600"
             >
               Cancel
             </Button>
             <Button
               type="primary"
               onClick={handleApplyFilters}
-              className="flex-1 font-bold h-10 rounded-xl bg-[#1C3569] hover:bg-[#0d1d3d]! border-none"
+              className="flex-1 font-bold h-11 rounded-xl bg-[#1C3569] hover:bg-[#0d1d3d]! border-none text-white shadow-sm"
             >
               Apply Filters
             </Button>

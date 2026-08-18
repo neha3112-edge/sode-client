@@ -164,7 +164,9 @@ export default function UniversityDetailPage() {
 
   const uni = (data && typeof data.universityId === "object" ? data.universityId : data) || {};
   const uniName = getSafeText(uni.name || data?.tagline, "University");
-  const uniLogoUrl = uni.logo?.url || uni.logo ? getAssetPath(uni.logo?.url || uni.logo) : null;
+  const uniLogoUrl = uni.image?.url || uni.image || uni.logo?.url || uni.logo
+    ? getAssetPath(uni.image?.url || uni.image || uni.logo?.url || uni.logo)
+    : null;
   const heroBannerUrl = data?.heroMedia?.url || data?.heroMedia || uni.bannerImg?.url || uni.bannerImg || uni.image?.url || uni.image
     ? getAssetPath(data?.heroMedia?.url || data?.heroMedia || uni.bannerImg?.url || uni.bannerImg || uni.image?.url || uni.image)
     : "";
