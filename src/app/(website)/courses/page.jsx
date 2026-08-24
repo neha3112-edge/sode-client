@@ -3,78 +3,50 @@
 import React, { useState, useEffect, useMemo, Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
-import { Input, Button, Drawer, Tag, Breadcrumb, Select, Pagination, Skeleton } from "antd";
 import {
-  SearchOutlined,
-  FilterOutlined,
-  ControlOutlined,
-  RightOutlined,
-  ReloadOutlined,
-  BookOutlined,
-  PhoneFilled,
-  ClockCircleFilled,
-  SortAscendingOutlined,
-  LoadingOutlined,
-  ArrowLeftOutlined
-} from "@ant-design/icons";
+  BookOpen,
+  Clock,
+  RotateCcw,
+  SlidersHorizontal,
+  ChevronUp,
+  ChevronDown,
+  Landmark,
+  Plus,
+  Check,
+  Search,
+  ArrowLeft,
+} from "lucide-react";
+import { Select, Drawer, Pagination, Skeleton } from "antd";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-
 import { useFormModal } from "@/hooks/useFormModal";
 import { useCompare } from "@/hooks/useCompare";
 import { getAssetPath } from "@/lib/utils";
 import WebsiteLayout from "@/components/layout/WebsiteLayout";
 import { request } from "@/services/request";
 
-const SliderFilterIcon = (props) => (
-  <span className="anticon inline-flex items-center justify-center">
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-      <line x1="3" y1="6" x2="21" y2="6" />
-      <line x1="3" y1="12" x2="21" y2="12" />
-      <line x1="3" y1="18" x2="21" y2="18" />
-      <circle cx="8" cy="6" r="2.5" fill="currentColor" />
-      <circle cx="16" cy="12" r="2.5" fill="currentColor" />
-      <circle cx="10" cy="18" r="2.5" fill="currentColor" />
-    </svg>
-  </span>
-);
-
-// Reusable Sidebar Filter Component
+// Sidebar Filter Component matching exact mockup design
 function FilterSidebarContent({
   hideHeader = false,
-  onApplyFilter,
   activeFilterCount,
   handleClearFilters,
   activeCategoryTab,
   setActiveCategoryTab,
-  selectedCourse = "",
-  setSelectedCourse = () => { },
-  categorySelectOptions = [],
-  primaryCategoryList = [],
-  subcategoryList = [],
-  durationList = [],
-  feeList = [],
   selectedDuration,
   setSelectedDuration,
+  activeSubcategory,
+  setActiveSubcategory,
   selectedFee,
   setSelectedFee,
   selectedUniversities,
   setSelectedUniversities,
+  categorySelectOptions = [],
+  subcategoryList = [],
+  durationList = [],
+  feeList = [],
   universityOptions = [],
-  activeSubcategory,
-  setActiveSubcategory,
   setCurrentPage,
-  isLoadingData = false,
 }) {
-  const isCategoryActive = (val) => {
-    if (!activeCategoryTab || activeCategoryTab === "all") return false;
-    const v = String(val).toLowerCase().replace(/[^a-z0-9]/g, "");
-    if (Array.isArray(activeCategoryTab)) {
-      return activeCategoryTab.some((c) => String(c).toLowerCase().replace(/[^a-z0-9]/g, "") === v);
-    }
-    const a = String(activeCategoryTab).toLowerCase().replace(/[^a-z0-9]/g, "");
-    return a === v;
-  };
+  const [showAllSubcategories, setShowAllSubcategories] = useState(true);
 
   const isSubcategoryActive = (val) => {
     if (!activeSubcategory) return false;
@@ -85,28 +57,12 @@ function FilterSidebarContent({
     return String(activeSubcategory).toLowerCase() === target;
   };
 
-  const isDurationActive = (val) => {
-    if (!selectedDuration || selectedDuration === "all") return false;
-    const target = String(val).toLowerCase();
-    if (Array.isArray(selectedDuration)) {
-      return selectedDuration.some((d) => String(d).toLowerCase() === target);
-    }
-    return String(selectedDuration).toLowerCase() === target;
-  };
-
-  const handleCategoryPillClick = (val) => {
-    if (isCategoryActive(val)) {
-      setActiveCategoryTab("all");
-    } else {
-      setActiveCategoryTab(val);
-    }
-    setActiveSubcategory([]);
-  };
-
   const handleSubcategoryPillClick = (val) => {
     let current = Array.isArray(activeSubcategory)
       ? [...activeSubcategory]
-      : (activeSubcategory ? [activeSubcategory] : []);
+      : activeSubcategory
+        ? [activeSubcategory]
+        : [];
 
     const exists = current.some((s) => String(s).toLowerCase() === String(val).toLowerCase());
     if (exists) {
@@ -115,136 +71,152 @@ function FilterSidebarContent({
       current.push(val);
     }
     setActiveSubcategory(current);
+    setCurrentPage(1);
   };
 
-  const handleDurationPillClick = (val) => {
-    let current = Array.isArray(selectedDuration)
-      ? [...selectedDuration]
-      : (selectedDuration && selectedDuration !== "all" ? [selectedDuration] : []);
-
-    const exists = current.some((d) => String(d).toLowerCase() === String(val).toLowerCase());
-    if (exists) {
-      current = current.filter((d) => String(d).toLowerCase() !== String(val).toLowerCase());
-    } else {
-      current.push(val);
-    }
-    setSelectedDuration(current.length > 0 ? current : "all");
-  };
+  const displayedSubcategories = showAllSubcategories
+    ? subcategoryList
+    : subcategoryList.slice(0, 8);
 
   return (
-    <div className="space-y-5 text-slate-800">
+    <div className="space-y-5 text-gray-700">
+      {/* Header */}
       {!hideHeader && (
-        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-          <h3 className="font-extrabold text-base text-[#1C3569] m-0 flex items-center gap-2">
-            <SliderFilterIcon className="text-[#1C3569]" /> Filter
-          </h3>
-          {activeFilterCount > 0 && (
-            <button
-              type="button"
-              onClick={handleClearFilters}
-              className="text-xs font-bold text-rose-600 hover:text-rose-700 hover:underline cursor-pointer bg-transparent border-none p-0"
-            >
-              Reset All
-            </button>
-          )}
+        <div className="flex items-center justify-between border-b border-b-gray-200 ">
+          <div className="flex items-center gap-1">
+            <SlidersHorizontal className="w-4 h-4 text-gray-900" />
+            <h3 className="font-semibold text-base text-gray-900 m-0">Filter</h3>
+          </div>
+          <button
+            type="button"
+            onClick={handleClearFilters}
+            className="text-xs font-semibold text-red-500 hover:text-red-600 cursor-pointer bg-transparent border-none p-0 flex items-center gap-1 transition-colors"
+          >
+            <RotateCcw className="w-3 h-3" />
+            <span>Reset Filter</span>
+          </button>
         </div>
       )}
 
-      {/* 1. Category Select (Multi-Select) */}
-      <div className="space-y-1.5">
-        <label className="block text-xs font-bold text-slate-700">Category</label>
-        <Select
-          mode="multiple"
-          maxTagCount="responsive"
-          showSearch
-          placeholder="All Categories"
-          value={Array.isArray(activeCategoryTab) ? activeCategoryTab.filter((c) => c && c !== "all") : (activeCategoryTab && activeCategoryTab !== "all" ? [activeCategoryTab] : [])}
-          onChange={(val) => {
-            const next = Array.isArray(val) ? (val.length > 0 ? val : "all") : (val ? [val] : "all");
-            setActiveCategoryTab(next);
-            setCurrentPage(1);
-          }}
-          className="w-full font-semibold rounded-xl"
+      {/* Row 1: Course & Duration 2-Column Selects */}
+      <div className="grid grid-cols-2 gap-3">
+        {/* Course / Program Level Select */}
+        <div className="space-y-1.5">
+          <label className="flex items-center gap-1 text-xs font-semibold text-gray-700">
+            <BookOpen className="w-3 h-3 text-gray-700" />
+            <span>Course</span>
+          </label>
+          <Select
+            showSearch
+            placeholder="Course"
+            value={
+              Array.isArray(activeCategoryTab)
+                ? activeCategoryTab[0] || "all"
+                : activeCategoryTab || "all"
+            }
+            onChange={(val) => {
+              setActiveCategoryTab(val === "all" ? "all" : val);
+              setCurrentPage(1);
+            }}
+            className="w-full text-xs font-semibold rounded-lg"
+            options={categorySelectOptions}
+            optionFilterProp="label"
+            filterOption={(input, option) =>
+              (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+            }
+          />
+        </div>
 
-          options={categorySelectOptions.filter((c) => c.value !== "all").map((c) => ({ value: c.value, label: c.label }))}
-          optionFilterProp="label"
-          filterOption={(input, option) =>
-            (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-          }
-        />
+        {/* Duration Select */}
+        <div className="space-y-1.5">
+          <label className="flex items-center gap-1 text-xs font-bold text-gray-700">
+            <Clock className="w-3 h-3 text-gray-700" />
+            <span>Duration</span>
+          </label>
+          <Select
+            showSearch
+            placeholder="Duration"
+            value={
+              Array.isArray(selectedDuration)
+                ? selectedDuration[0] || "all"
+                : selectedDuration || "all"
+            }
+            onChange={(val) => {
+              setSelectedDuration(val === "all" ? "all" : val);
+              setCurrentPage(1);
+            }}
+            className="w-full text-xs font-semibold rounded-lg"
+            options={durationList}
+            optionFilterProp="label"
+            filterOption={(input, option) =>
+              (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+            }
+          />
+        </div>
       </div>
 
-      {/* 2. Subcategory CheckableTags (Multi-Select) */}
-      {subcategoryList && subcategoryList.length > 0 && (
-        <div className="space-y-2">
-          <label className="block text-xs font-bold text-slate-700">Subcategory</label>
-          <div className="grid grid-cols-2 gap-1.5">
-            {subcategoryList.map((pill) => {
-              const active = isSubcategoryActive(pill.value) || isSubcategoryActive(pill.slug) || isSubcategoryActive(pill.id);
-              return (
-                <Tag.CheckableTag
-                  key={pill.value}
-                  checked={active}
-                  onChange={() => {
-                    handleSubcategoryPillClick(pill.value);
-                    setCurrentPage(1);
-                  }}
-                  className={`w-full text-center px-1.5 py-1.5 text-[11px] font-semibold rounded-xl border transition-all duration-200 cursor-pointer flex items-center justify-center m-0 text-balance leading-tight ${active
-                    ? "bg-[#1C3569]! text-white! border-[#1C3569]"
-                    : "bg-white text-slate-600 border-slate-200 hover:border-[#1C3569] hover:text-[#1C3569]"
-                    }`}
-                >
-                  <span title={pill.label} className="line-clamp-2">{pill.label}</span>
-                </Tag.CheckableTag>
-              );
-            })}
-          </div>
+      {/* Section 2: Sub Category Section */}
+      <div className="space-y-3 pt-1">
+        <div className="flex items-center justify-between border-b border-gray-200 pb-2">
+          <span className="text-xs font-bold text-gray-900">Sub Category</span>
+          <button
+            type="button"
+            onClick={() => setShowAllSubcategories(!showAllSubcategories)}
+            className="text-[11px] font-semibold text-gray-500 hover:text-gray-900 flex items-center gap-0.5 cursor-pointer bg-transparent border-none p-0"
+          >
+            <span>{showAllSubcategories ? "Show Less" : "Show All"}</span>
+            {showAllSubcategories ? (
+              <ChevronUp className="w-3 h-3" />
+            ) : (
+              <ChevronDown className="w-3 h-3" />
+            )}
+          </button>
         </div>
-      )}
 
-      {/* 3. Duration Filter (Multi-Select) */}
-      <div className="space-y-2">
-        <label className="block text-xs font-bold text-slate-700">Duration</label>
-        <div className="grid grid-cols-2 gap-1.5">
-          {durationList.map((pill) => {
-            const active = isDurationActive(pill.value);
+        {/* Subcategory Pills */}
+        <div className="flex flex-wrap gap-1.5">
+          {displayedSubcategories.map((pill) => {
+            const active =
+              isSubcategoryActive(pill.value) ||
+              isSubcategoryActive(pill.slug) ||
+              isSubcategoryActive(pill.id);
             return (
-              <Tag.CheckableTag
-                key={pill.value}
-                checked={active}
-                onChange={() => {
-                  handleDurationPillClick(pill.value);
-                  setCurrentPage(1);
-                }}
-                className={`w-full text-center px-1.5 py-1.5 text-[11px] font-semibold rounded-xl border transition-all duration-200 cursor-pointer flex items-center justify-center m-0 ${active
-                  ? "bg-[#1C3569]! text-white! border-[#1C3569]"
-                  : "bg-white text-slate-600 border-slate-200 hover:border-[#1C3569] hover:text-[#1C3569]"
+              <button
+                key={pill.value || pill.slug}
+                type="button"
+                onClick={() => handleSubcategoryPillClick(pill.value || pill.slug)}
+                className={`px-3 py-1.5 text-[11px] font-medium rounded-full border transition-all cursor-pointer text-center select-none ${active
+                  ? "bg-[#0a2540] text-white border-[#0a2540]"
+                  : "bg-white text-gray-700 border-gray-200 hover:border-gray-300 hover:bg-gray-50"
                   }`}
               >
                 {pill.label}
-              </Tag.CheckableTag>
+              </button>
             );
           })}
         </div>
       </div>
 
-      {/* 4. Fee Range (Multi-Select) */}
-      <div className="space-y-1.5">
-        <label className="block text-xs font-bold text-slate-700">Fee Range</label>
+      {/* Section 3: Fees Range Dropdown */}
+      <div className="space-y-1.5 pt-1">
+        <label className="flex items-center gap-1.5 text-xs font-bold text-gray-700">
+          <span className="font-bold text-xs text-gray-700">₹</span>
+          <span>Fees Range</span>
+        </label>
         <Select
-          mode="multiple"
-          maxTagCount="responsive"
           showSearch
-          placeholder="All Fee Ranges"
-          value={Array.isArray(selectedFee) ? selectedFee.filter((f) => f && f !== "all") : (selectedFee && selectedFee !== "all" ? [selectedFee] : [])}
+          placeholder="Select Fee Range"
+          value={
+            Array.isArray(selectedFee)
+              ? selectedFee[0] || "all"
+              : selectedFee || "all"
+          }
           onChange={(val) => {
-            const next = Array.isArray(val) ? (val.length > 0 ? val : "all") : (val ? [val] : "all");
-            setSelectedFee(next);
+            setSelectedFee(val === "all" ? "all" : val);
             setCurrentPage(1);
           }}
-          className="w-full font-semibold rounded-xl"
-
-          options={feeList.filter((f) => f.value !== "all").map((f) => ({ value: f.value, label: f.label }))}
+          className="w-full text-xs font-semibold rounded-lg"
+          options={feeList}
           optionFilterProp="label"
           filterOption={(input, option) =>
             (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
@@ -252,22 +224,27 @@ function FilterSidebarContent({
         />
       </div>
 
-      {/* 5. Institute Dropdown (Multi-Select) */}
-      <div className="space-y-1.5">
-        <label className="block text-xs font-bold text-slate-700">Institute</label>
+      {/* Section 4: Institute Dropdown */}
+      <div className="space-y-1.5 pt-1">
+        <label className="flex items-center gap-1.5 text-xs font-bold text-gray-700">
+          <Landmark className="w-3.5 h-3.5 text-gray-700" />
+          <span>Institute</span>
+        </label>
         <Select
-          mode="multiple"
-          maxTagCount="responsive"
           showSearch
-          placeholder="All Institutes"
-          value={selectedUniversities.filter((u) => u && u !== "all")}
+          placeholder="All Institute"
+          value={
+            selectedUniversities && selectedUniversities.length > 0
+              ? selectedUniversities[0]
+              : "all"
+          }
           onChange={(val) => {
-            setSelectedUniversities(Array.isArray(val) ? val : (val ? [val] : []));
+            if (val === "all") setSelectedUniversities([]);
+            else setSelectedUniversities([val]);
             setCurrentPage(1);
           }}
-          className="w-full font-semibold rounded-xl"
-
-          options={universityOptions.filter((u) => u.value !== "all").map((u) => ({ value: u.value, label: u.label }))}
+          className="w-full text-xs font-semibold rounded-lg"
+          options={universityOptions}
           optionFilterProp="label"
           filterOption={(input, option) =>
             (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
@@ -276,26 +253,11 @@ function FilterSidebarContent({
       </div>
     </div>
   );
-};
-
-const getAccreditation = (uniName) => {
-  const name = String(uniName || "").toLowerCase();
-  if (name.includes("iim") || name.includes("iit") || name.includes("iiit") || name.includes("indian institute")) {
-    return "AICTE NAAC A+, UGC";
-  }
-  if (name.includes("edgewood") || name.includes("golden gate")) {
-    return "WASC, DEAC, CHEA Approved";
-  }
-  if (name.includes("esgci") || name.includes("paris") || name.includes("geneva") || name.includes("rushford") || name.includes("liverpool")) {
-    return "AACSB, EFMD, AMBA Member / State Accredited";
-  }
-  return "UGC, DEB, NAAC A+ Approved";
-};
+}
 
 function CoursesContent() {
   const [coursesData, setCoursesData] = useState({ programs: [], total: 0, totalPages: 1, page: 1 });
   const [initialCategories, setInitialCategories] = useState([]);
-  const [initialCategoryTree, setInitialCategoryTree] = useState([]);
   const [initialUniversities, setInitialUniversities] = useState([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
 
@@ -310,16 +272,13 @@ function CoursesContent() {
   const initialQuery = searchParams?.get("search") || "";
   const initialUnis = searchParams?.get("university") ? searchParams.get("university").split(",").map((u) => u.trim()) : [];
 
-  const [searchInputValue, setSearchInputValue] = useState(initialQuery);
   const [appliedSearchTerm, setAppliedSearchTerm] = useState(initialQuery);
-
   const [activeCategoryTab, setActiveCategoryTab] = useState(initialCat);
   const [activeSubcategory, setActiveSubcategory] = useState(initialSubcatArr);
   const [selectedCourse, setSelectedCourse] = useState(initialCourse);
   const [selectedUniversities, setSelectedUniversities] = useState(initialUnis);
   const [selectedDuration, setSelectedDuration] = useState("all");
   const [selectedFee, setSelectedFee] = useState("all");
-  const [sortBy, setSortBy] = useState("featured");
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
 
   const { openFormModal } = useFormModal();
@@ -338,7 +297,6 @@ function CoursesContent() {
       .then(([categoriesRes, unisRes]) => {
         if (!isMounted) return;
         setInitialCategories(categoriesRes?.categories || categoriesRes?.result || []);
-        setInitialCategoryTree(categoriesRes?.tree || []);
         setInitialUniversities(unisRes?.result || unisRes || []);
       })
       .catch((err) => {
@@ -367,7 +325,6 @@ function CoursesContent() {
       setSelectedCourse(crs || "");
     }
     if (q !== null && q !== undefined) {
-      setSearchInputValue(q);
       setAppliedSearchTerm(q);
     }
     if (uni) {
@@ -399,14 +356,10 @@ function CoursesContent() {
       ...(initialCategories || []).flatMap((c) => c.children || []),
       ...(initialCategories || []).flatMap((c) => c.courses || []),
       ...(initialCategories || []).flatMap((c) => c.universities || []),
-      ...categorySelectOptions,
-      ...subcategoryList,
     ];
 
     const allFlatUniversities = [
       ...(initialUniversities || []),
-      ...universityOptions,
-      ...(initialList || []).map((p) => p.uniObj).filter(Boolean),
     ];
 
     const resolvedCategoryIds = Array.isArray(activeCategoryTab)
@@ -437,7 +390,6 @@ function CoursesContent() {
         duration: resolvedDuration,
         fee: resolvedFee,
         search: appliedSearchTerm,
-        sort: sortBy,
       },
       revalidate: 300,
     })
@@ -470,7 +422,6 @@ function CoursesContent() {
     selectedDuration,
     selectedFee,
     appliedSearchTerm,
-    sortBy,
     initialCategories,
     initialUniversities,
   ]);
@@ -485,7 +436,6 @@ function CoursesContent() {
     (initialList || []).forEach((item, index) => {
       if (!item) return;
 
-      // Check if item is a direct UniversityOffering document
       const isOffering = Boolean(item.universityId || item.courseId);
 
       if (isOffering) {
@@ -518,20 +468,20 @@ function CoursesContent() {
 
         const providerName = partner?.name || "upGrad";
 
-        let durationText = "Flexible";
+        let durationText = "8 Months";
         if (duration.months) {
           durationText = `${duration.months} Months`;
         } else if (duration.name) {
           durationText = duration.name;
         } else if (item.durationMonths) {
-          durationText = `${item.durationMonths} Month`;
+          durationText = `${item.durationMonths} Months`;
         }
 
-        let feeText = "Contact for Fee";
+        let feeText = "₹ 1,20,000 INR";
         if (fees.amount) {
-          feeText = `₹${Number(fees.amount).toLocaleString("en-IN")}`;
+          feeText = `₹ ${Number(fees.amount).toLocaleString("en-IN")} INR`;
         } else if (fees.name) {
-          feeText = fees.name.includes("₹") ? fees.name : `₹${fees.name}`;
+          feeText = fees.name.includes("₹") ? fees.name : `₹ ${fees.name} INR`;
         }
 
         const slugify = (text) =>
@@ -562,65 +512,17 @@ function CoursesContent() {
           durationText,
           feeText,
           courseDetailHref,
-          accreditation: Array.isArray(uni.approvals) && uni.approvals.length > 0
-            ? uni.approvals.map((a) => (typeof a === "object" ? a.name || a.code : a)).filter(Boolean).join(", ")
-            : getAccreditation(uniName),
         });
-      } else if (item.university) {
+      } else {
         list.push({
           ...item,
           _uniqueKey: item._id || item.slug || String(Math.random()),
         });
-      } else {
-        const offerings = Array.isArray(item.universityOfferings) ? item.universityOfferings : [];
-        if (offerings.length > 0) {
-          offerings.forEach((offering, oIdx) => {
-            const subItems = Array.isArray(offering?.subcourses) && offering.subcourses.length > 0
-              ? offering.subcourses
-              : (Array.isArray(offering?.subcourseOfferings) && offering.subcourseOfferings.length > 0
-                ? offering.subcourseOfferings
-                : null);
-
-            if (subItems) {
-              subItems.forEach((subOff, sIdx) => {
-                list.push({
-                  ...item,
-                  _uniqueKey: `${item._id || item.slug}-offering-${oIdx}-suboff-${sIdx}`,
-                  activeOffering: offering,
-                  activeSubOffering: subOff,
-                  activeSubcourse: subOff.subcourse || subOff,
-                });
-              });
-            } else {
-              list.push({
-                ...item,
-                _uniqueKey: `${item._id || item.slug}-offering-${oIdx}`,
-                activeOffering: offering,
-                activeSubOffering: null,
-                activeSubcourse: null,
-              });
-            }
-          });
-        } else {
-          list.push({
-            ...item,
-            _uniqueKey: item._id || item.slug || String(Math.random()),
-            activeOffering: null,
-            activeSubOffering: null,
-            activeSubcourse: null,
-          });
-        }
       }
     });
 
-    if (sortBy === "title-asc") {
-      list.sort((a, b) => (a.title || a.cardTitle || "").localeCompare(b.title || b.cardTitle || ""));
-    } else if (sortBy === "title-desc") {
-      list.sort((a, b) => (b.title || b.cardTitle || "").localeCompare(a.title || a.cardTitle || ""));
-    }
-
     return list;
-  }, [initialList, sortBy]);
+  }, [initialList]);
 
   const totalCount = coursesData.total ?? processedPrograms.length;
   const totalPages = coursesData.totalPages ?? (Math.ceil(totalCount / ITEMS_PER_PAGE) || 1);
@@ -629,75 +531,14 @@ function CoursesContent() {
     const map = new Map();
     map.set("all", { value: "all", slug: "all", label: "All Categories" });
 
-    // 1. Program Levels
-    const programLevels = [
-      { slug: "doctorate", label: "Doctorate" },
-      { slug: "master", label: "Master" },
-      { slug: "bachelor", label: "Bachelor" },
-      { slug: "certification", label: "Certification" },
-      { slug: "diploma", label: "Diploma" },
-      { slug: "management", label: "Management" },
-      { slug: "dual-master-doctorate", label: "Master+Doctorate (Dual)" },
-    ];
-    programLevels.forEach((pl) => {
-      map.set(pl.slug, { value: pl.slug, slug: pl.slug, label: pl.label });
-    });
-
-    // 2. DB Categories
-    const addCat = (item) => {
-      if (!item) return;
-      const name = item.name || item.title || item.label;
-      const slug = item.slug || String(item._id || "");
-      const id = String(item._id || "");
-      if (name && (slug || id)) {
-        const key = slug || id;
-        if (!map.has(key)) {
-          map.set(key, { value: slug || id, slug: slug || id, id, label: name });
-        }
-      }
-    };
-
-    if (Array.isArray(initialCategories)) initialCategories.forEach(addCat);
-
-    return Array.from(map.values());
-  }, [initialCategories]);
-
-  const primaryCategoryList = useMemo(() => {
-    const map = new Map();
-    const addCat = (c) => {
+    (initialCategories || []).forEach((c) => {
       if (!c) return;
-      const label = c.name || c.title || c.label;
+      const name = c.name || c.title || c.label;
       const slug = c.slug || String(c._id || "");
-      const id = String(c._id || "");
-      if (label && (slug || id)) {
-        const key = slug || id;
-        if (!map.has(key)) {
-          map.set(key, { label, value: slug || id, slug: slug || id, id, children: c.children || [] });
-        }
+      if (name && slug && !map.has(slug)) {
+        map.set(slug, { value: slug, slug, label: name });
       }
-    };
-
-    if (Array.isArray(initialCategories)) {
-      initialCategories.forEach((c) => {
-        // Only include top-level parent categories
-        if (!c.parentId || (Array.isArray(c.parentId) && c.parentId.length === 0)) {
-          addCat(c);
-        }
-      });
-    }
-
-    if (map.size === 0) {
-      const defaultCats = [
-        { label: "Management", value: "management", slug: "management" },
-        { label: "AI Courses", value: "ai-courses", slug: "ai-courses" },
-        { label: "Banking & Finance", value: "banking-finance", slug: "banking-finance" },
-        { label: "Data Science", value: "data-science", slug: "data-science" },
-        { label: "Cyber Security", value: "cyber-security", slug: "cyber-security" },
-        { label: "Cloud Computing", value: "cloud-computing", slug: "cloud-computing" },
-        { label: "Arts & Humanities", value: "arts-humanities", slug: "arts-humanities" },
-      ];
-      defaultCats.forEach((d) => map.set(d.value, d));
-    }
+    });
 
     return Array.from(map.values());
   }, [initialCategories]);
@@ -717,88 +558,52 @@ function CoursesContent() {
       }
     };
 
-    // 🎯 Case 1: Category Selected -> Show its available subcategories (Max 10)
-    const selectedCats = Array.isArray(activeCategoryTab)
-      ? activeCategoryTab.filter((c) => c && c !== "all")
-      : (activeCategoryTab && activeCategoryTab !== "all" ? [activeCategoryTab] : []);
-
-    if (selectedCats.length > 0) {
-      selectedCats.forEach((catVal) => {
-        const target = String(catVal).toLowerCase();
-        const foundParent = (initialCategories || []).find(
-          (c) =>
-            (c.slug && c.slug.toLowerCase() === target) ||
-            String(c._id) === catVal ||
-            (c.name && c.name.toLowerCase() === target)
-        );
-        if (foundParent && Array.isArray(foundParent.children) && foundParent.children.length > 0) {
-          foundParent.children.forEach(addSub);
-        }
-      });
-
-      // Also gather subcourses from active offerings
-      if (Array.isArray(initialList)) {
-        initialList.forEach((p) => {
-          if (p?.subCourseId) addSub(p.subCourseId);
-          if (p?.subcourseObj) addSub(p.subcourseObj);
-        });
+    // If a parent category is selected, extract its children
+    const selectedCat = Array.isArray(activeCategoryTab) ? activeCategoryTab[0] : activeCategoryTab;
+    if (selectedCat && selectedCat !== "all") {
+      const target = String(selectedCat).toLowerCase();
+      const foundParent = (initialCategories || []).find(
+        (c) =>
+          (c.slug && c.slug.toLowerCase() === target) ||
+          String(c._id) === selectedCat ||
+          (c.name && c.name.toLowerCase() === target)
+      );
+      if (foundParent && Array.isArray(foundParent.children)) {
+        foundParent.children.forEach(addSub);
       }
-
-      return Array.from(map.values()).slice(0, 10);
-    }
-
-    // 🎯 Case 2: No Category Selected -> Show default 8 top subcategories
-    if (Array.isArray(initialCategories)) {
-      initialCategories.forEach((c) => {
-        if (Array.isArray(c.children) && c.children.length > 0) {
+    } else {
+      // Otherwise list all subcategories / children present in backend categories
+      (initialCategories || []).forEach((c) => {
+        if (Array.isArray(c?.children)) {
           c.children.forEach(addSub);
         }
       });
     }
 
-    if (Array.isArray(initialList)) {
-      initialList.forEach((p) => {
-        if (p?.subCourseId) addSub(p.subCourseId);
-        if (p?.subcourseObj) addSub(p.subcourseObj);
-      });
-    }
-
-    if (map.size === 0) {
-      const defaultSubs = [
-        { label: "AI & Machine Learning", value: "ai-machine-learning", slug: "ai-machine-learning" },
-        { label: "Data Science & Analytics", value: "data-science-analytics", slug: "data-science-analytics" },
-        { label: "Leadership & Management", value: "leadership-management", slug: "leadership-management" },
-        { label: "Banking & Finance", value: "banking-finance", slug: "banking-finance" },
-        { label: "Sales & Marketing", value: "sales-marketing", slug: "sales-marketing" },
-        { label: "HR", value: "hr", slug: "hr" },
-        { label: "Cyber Security", value: "cyber-security", slug: "cyber-security" },
-        { label: "Cloud Computing", value: "cloud-computing", slug: "cloud-computing" },
-      ];
-      defaultSubs.forEach((s) => map.set(s.value, s));
-    }
-
-    return Array.from(map.values()).slice(0, 8);
-  }, [initialCategories, initialList, activeCategoryTab]);
+    return Array.from(map.values());
+  }, [initialCategories, activeCategoryTab]);
 
   const durationList = useMemo(() => [
-    { label: "0-6 Months", value: "06-month" },
-    { label: "06-12 Months", value: "06-12-months" },
-    { label: "12-24 Months", value: "12-24-months" },
-    { label: "24-36+ Months", value: "24-36-months" },
+    { label: "All Durations", value: "all" },
+    { label: "0 - 6 Months", value: "0-6-months" },
+    { label: "6 - 12 Months", value: "6-12-months" },
+    { label: "1 - 2 Years", value: "1-2-years" },
+    { label: "2 - 3 Years", value: "2-3-years" },
+    { label: "3+ Years", value: "3-plus-years" },
   ], []);
 
   const feeList = useMemo(() => [
-    { label: "All", value: "all" },
-    { label: "0-1 Lakh", value: "0-1-lakh" },
-    { label: "1-2 Lakh", value: "1-2-lakh" },
-    { label: "2-5 Lakh", value: "2-5-lakh" },
-    { label: "5-10 Lakh", value: "5-10-lakh" },
-    { label: "Above 10 Lakh", value: "above-10-lakh" },
+    { label: "All Fee Ranges", value: "all" },
+    { label: "0 to 1 Lac", value: "0-1-lakh" },
+    { label: "1 to 1.5 Lac", value: "1-1.5-lakh" },
+    { label: "1.5 to 3 Lac", value: "1.5-3-lac" },
+    { label: "3 to 5 Lac", value: "3-5-lac" },
+    { label: "Above 5 Lac", value: "above-5-lac" },
   ], []);
 
   const universityOptions = useMemo(() => {
     const map = new Map();
-    map.set("all", { value: "all", slug: "all", label: "All Institutes" });
+    map.set("all", { value: "all", slug: "all", label: "All Institute" });
 
     const addUni = (uni) => {
       if (!uni) return;
@@ -815,29 +620,11 @@ function CoursesContent() {
     };
 
     if (Array.isArray(initialUniversities)) initialUniversities.forEach(addUni);
-    if (Array.isArray(initialList)) {
-      initialList.forEach((p) => {
-        if (p?.universityId) addUni(p.universityId);
-        if (p?.uniObj) addUni(p.uniObj);
-        if (p?.university) addUni(p.university);
-        if (Array.isArray(p?.universityOfferings)) {
-          p.universityOfferings.forEach((off) => addUni(off?.university));
-        }
-      });
-    }
 
     return Array.from(map.values());
-  }, [initialUniversities, initialList]);
-
-  const [draftCategoryTab, setDraftCategoryTab] = useState(activeCategoryTab);
-  const [draftCourse, setDraftCourse] = useState(selectedCourse);
-  const [draftSubcategory, setDraftSubcategory] = useState(activeSubcategory);
-  const [draftUniversities, setDraftUniversities] = useState(selectedUniversities);
-  const [draftDuration, setDraftDuration] = useState(selectedDuration);
-  const [draftFee, setDraftFee] = useState(selectedFee);
+  }, [initialUniversities]);
 
   const handleClearFilters = () => {
-    setSearchInputValue("");
     setAppliedSearchTerm("");
     setActiveCategoryTab("all");
     setSelectedCourse("");
@@ -845,653 +632,218 @@ function CoursesContent() {
     setSelectedUniversities([]);
     setSelectedDuration("all");
     setSelectedFee("all");
-
-    setDraftCategoryTab("all");
-    setDraftCourse("");
-    setDraftSubcategory([]);
-    setDraftUniversities([]);
-    setDraftDuration("all");
-    setDraftFee("all");
-
-    setSortBy("featured");
     setCurrentPage(1);
 
     if (router && pathname) {
       router.replace(pathname, { scroll: false });
     }
-    if (typeof window !== "undefined") {
-      window.history.replaceState(null, "", window.location.pathname);
-    }
   };
-
-  const handleOpenMobileDrawer = () => {
-    setDraftCategoryTab(activeCategoryTab);
-    setDraftCourse(selectedCourse);
-    setDraftSubcategory(activeSubcategory);
-    setDraftUniversities(selectedUniversities);
-    setDraftDuration(selectedDuration);
-    setDraftFee(selectedFee);
-    setIsMobileDrawerOpen(true);
-  };
-
-  const handleApplyFilters = () => {
-    setActiveCategoryTab(draftCategoryTab);
-    setSelectedCourse(draftCourse);
-    setActiveSubcategory(draftSubcategory);
-    setSelectedUniversities(draftUniversities);
-    setSelectedDuration(draftDuration);
-    setSelectedFee(draftFee);
-    setCurrentPage(1);
-    setIsMobileDrawerOpen(false);
-  };
-
-  const handleClearMobileDraftFilters = () => {
-    setDraftCategoryTab("all");
-    setDraftCourse("");
-    setDraftSubcategory([]);
-    setDraftUniversities([]);
-    setDraftDuration("all");
-    setDraftFee("all");
-  };
-
-  const catCount = Array.isArray(activeCategoryTab)
-    ? activeCategoryTab.filter((c) => c && c !== "all").length
-    : (activeCategoryTab && activeCategoryTab !== "all" ? 1 : 0);
-
-  const subcatCount = Array.isArray(activeSubcategory)
-    ? activeSubcategory.filter((s) => s && s !== "all").length
-    : (activeSubcategory && activeSubcategory !== "all" ? 1 : 0);
-
-  const durCount = Array.isArray(selectedDuration)
-    ? selectedDuration.filter((d) => d && d !== "all").length
-    : (selectedDuration && selectedDuration !== "all" ? 1 : 0);
-
-  const feeCount = Array.isArray(selectedFee)
-    ? selectedFee.filter((f) => f && f !== "all").length
-    : (selectedFee && selectedFee !== "all" ? 1 : 0);
 
   const activeFilterCount =
-    catCount +
-    (selectedCourse ? 1 : 0) +
-    subcatCount +
-    selectedUniversities.length +
-    durCount +
-    feeCount +
-    (appliedSearchTerm ? 1 : 0);
+    (activeCategoryTab && activeCategoryTab !== "all" ? 1 : 0) +
+    (activeSubcategory && activeSubcategory.length > 0 ? activeSubcategory.length : 0) +
+    (selectedUniversities && selectedUniversities.length > 0 ? 1 : 0) +
+    (selectedDuration && selectedDuration !== "all" ? 1 : 0) +
+    (selectedFee && selectedFee !== "all" ? 1 : 0);
 
-  const desktopFilterSidebarProps = {
+  const filterProps = {
     activeFilterCount,
     handleClearFilters,
-    onApplyFilter: () => { },
     activeCategoryTab,
-    setActiveCategoryTab: (val) => {
-      setActiveCategoryTab(val);
-      setCurrentPage(1);
-    },
-    selectedCourse,
-    setSelectedCourse: (val) => {
-      setSelectedCourse(val);
-      setCurrentPage(1);
-    },
-    activeSubcategory,
-    setActiveSubcategory: (val) => {
-      setActiveSubcategory(val);
-      setCurrentPage(1);
-    },
-    selectedUniversities,
-    setSelectedUniversities: (val) => {
-      setSelectedUniversities(val);
-      setCurrentPage(1);
-    },
+    setActiveCategoryTab,
     selectedDuration,
-    setSelectedDuration: (val) => {
-      setSelectedDuration(val);
-      setCurrentPage(1);
-    },
+    setSelectedDuration,
+    activeSubcategory,
+    setActiveSubcategory,
     selectedFee,
-    setSelectedFee: (val) => {
-      setSelectedFee(val);
-      setCurrentPage(1);
-    },
+    setSelectedFee,
+    selectedUniversities,
+    setSelectedUniversities,
     categorySelectOptions,
-    primaryCategoryList,
     subcategoryList,
     durationList,
     feeList,
     universityOptions,
     setCurrentPage,
-    isLoadingData,
-  };
-
-  const mobileFilterSidebarProps = {
-    ...desktopFilterSidebarProps,
-    activeCategoryTab: draftCategoryTab,
-    setActiveCategoryTab: setDraftCategoryTab,
-    selectedCourse: draftCourse,
-    setSelectedCourse: setDraftCourse,
-    activeSubcategory: draftSubcategory,
-    setActiveSubcategory: setDraftSubcategory,
-    selectedUniversities: draftUniversities,
-    setSelectedUniversities: setDraftUniversities,
-    selectedDuration: draftDuration,
-    setSelectedDuration: setDraftDuration,
-    selectedFee: draftFee,
-    setSelectedFee: setDraftFee,
-    onApplyFilter: handleApplyFilters,
-    handleClearFilters: () => {
-      handleClearMobileDraftFilters();
-      handleClearFilters();
-    },
   };
 
   return (
-    <WebsiteLayout py="py-4 sm:py-6" bg="#f8fafc">
-      {/* Back Button + Breadcrumb */}
-      <div className="flex items-center gap-2.5 mb-4">
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="inline-flex items-center justify-center text-slate-500 hover:text-[#1C3569] transition-colors cursor-pointer p-0 shrink-0 -translate-y-[1.5px]"
-          title="Go Back"
-          aria-label="Go Back"
-        >
-          <ArrowLeft className="w-4 h-4 stroke-[2.2]" />
-        </button>
-        <Breadcrumb className="text-xs font-semibold leading-none" items={[
-          { title: <Link href="/">Home</Link> },
-          { title: "Browse Courses" }
-        ]} />
-      </div>
-
-      {/* Mobile Filter Bar */}
-      <div className="lg:hidden flex items-center gap-2 mb-6 bg-white p-2.5 rounded-2xl border border-slate-200 shadow-xs">
+    <WebsiteLayout py="py-4 sm:py-6" bg="#F1F4F9">
+      {/* Top Mobile Filter Bar (Visible only on mobile screen) */}
+      <div className="lg:hidden flex items-center gap-2 mb-4 bg-white p-2.5 rounded-2xl border border-gray-200">
         <div className="flex-1 grid grid-cols-2 gap-2 min-w-0">
           <Select
             showSearch
-            value={activeCategoryTab}
+            value={
+              Array.isArray(activeCategoryTab)
+                ? activeCategoryTab[0] || "all"
+                : activeCategoryTab || "all"
+            }
             onChange={(val) => {
               setActiveCategoryTab(val);
               setCurrentPage(1);
             }}
             options={categorySelectOptions}
             className="w-full text-xs font-semibold"
-            placeholder="Category"
-
+            placeholder="Course"
             optionFilterProp="label"
-            filterOption={(input, option) =>
-              (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-            }
           />
           <Select
             showSearch
-            value={selectedUniversities[0] || "all"}
+            value={
+              Array.isArray(activeSubcategory) && activeSubcategory.length > 0
+                ? activeSubcategory[0]
+                : "all"
+            }
             onChange={(val) => {
-              if (val === "all") setSelectedUniversities([]);
-              else setSelectedUniversities([val]);
+              setActiveSubcategory(val === "all" ? [] : [val]);
               setCurrentPage(1);
             }}
-            options={universityOptions}
+            options={[
+              { label: "All Subcategory", value: "all" },
+              ...subcategoryList.map((s) => ({ label: s.label, value: s.value || s.slug })),
+            ]}
             className="w-full text-xs font-semibold"
-            placeholder="Institute"
+            placeholder="Subcategory"
             optionFilterProp="label"
-            filterOption={(input, option) =>
-              (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-            }
           />
         </div>
-        <Button
-          type="primary"
-          icon={<SliderFilterIcon />}
-          onClick={handleOpenMobileDrawer}
-          className="bg-[#1C3569] hover:bg-[#0d1d3d]! font-bold h-8 rounded-lg cursor-pointer shrink-0 text-xs px-3 border-none flex items-center gap-1"
+        <button
+          type="button"
+          onClick={() => setIsMobileDrawerOpen(true)}
+          className="bg-[#0a2540] hover:bg-[#06182c] text-white p-2 rounded-xl flex items-center justify-center shrink-0 cursor-pointer border-none"
+          aria-label="Open Filters"
         >
-          {activeFilterCount > 0 ? `(${activeFilterCount})` : ""}
-        </Button>
+          <SlidersHorizontal className="w-4 h-4" />
+        </button>
       </div>
 
-      {/* Main Grid */}
+      {/* Main Content Grid: Left Filter Sidebar + Right Cards Area */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left Sidebar (Desktop) */}
-        <div className="hidden lg:block lg:col-span-3 bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs sticky top-6">
-          <FilterSidebarContent {...desktopFilterSidebarProps} />
+        {/* ── LEFT FILTER SIDEBAR (DESKTOP) ── */}
+        <div className="hidden lg:block lg:col-span-4 xl:col-span-3 bg-white p-5 rounded-2xl border border-gray-200 sticky top-6">
+          <FilterSidebarContent {...filterProps} />
         </div>
 
-        {/* Right Main Course Listing */}
-        <div className="lg:col-span-9 space-y-6">
-          {/* Active Filters Bar */}
-          <div className="hidden md:flex bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="bg-[#1C3569] text-white text-xs font-bold px-3 py-1 rounded-full shadow-2xs">
-                {totalCount} Courses Found
-              </span>
-
-              {activeFilterCount > 0 && (
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  {/* Category Tags */}
-                  {(Array.isArray(activeCategoryTab) ? activeCategoryTab.filter((c) => c && c !== "all") : (activeCategoryTab && activeCategoryTab !== "all" ? [activeCategoryTab] : [])).map((catItem) => (
-                    <Tag
-                      key={catItem}
-                      closable
-                      onClose={() => {
-                        if (Array.isArray(activeCategoryTab)) {
-                          const next = activeCategoryTab.filter((c) => c !== catItem);
-                          setActiveCategoryTab(next.length > 0 ? next : "all");
-                        } else {
-                          setActiveCategoryTab("all");
-                        }
-                      }}
-                      className="bg-blue-50 text-blue-700 border-blue-200 rounded-lg text-xs font-medium px-2 py-0.5"
-                    >
-                      Category: {(() => {
-                        const target = catItem;
-                        const found = categorySelectOptions.find(
-                          (c) =>
-                            c.value === target ||
-                            c.slug === target ||
-                            c.id === target ||
-                            (c.label && c.label.toLowerCase() === String(target).toLowerCase())
-                        );
-                        if (found) return found.label;
-
-                        const foundCat = (initialCategories || []).find(
-                          (c) => String(c._id) === String(target) || c.slug === target
-                        );
-                        if (foundCat) return foundCat.name || foundCat.label || foundCat.title;
-
-                        return target;
-                      })()}
-                    </Tag>
-                  ))}
-
-                  {/* Course Tag */}
-                  {selectedCourse && (
-                    <Tag
-                      closable
-                      onClose={() => setSelectedCourse("")}
-                      className="bg-indigo-50 text-indigo-700 border-indigo-200 rounded-lg text-xs font-medium px-2 py-0.5"
-                    >
-                      Course: {(() => {
-                        const target = selectedCourse;
-                        const foundInPrograms = (processedPrograms || []).find(
-                          (p) => String(p.courseObj?._id) === String(target) || p.courseObj?.slug === target
-                        );
-                        if (foundInPrograms) return foundInPrograms.courseObj?.name || foundInPrograms.title;
-                        return target;
-                      })()}
-                    </Tag>
-                  )}
-
-                  {/* Subcategory Tags */}
-                  {(Array.isArray(activeSubcategory) ? activeSubcategory.filter((s) => s && s !== "all") : (activeSubcategory && activeSubcategory !== "all" ? [activeSubcategory] : [])).map((subItem) => (
-                    <Tag
-                      key={subItem}
-                      closable
-                      onClose={() => {
-                        if (Array.isArray(activeSubcategory)) {
-                          setActiveSubcategory(activeSubcategory.filter((s) => s !== subItem));
-                        } else {
-                          setActiveSubcategory([]);
-                        }
-                      }}
-                      className="bg-blue-50 text-blue-700 border-blue-200 rounded-lg text-xs font-medium px-2 py-0.5"
-                    >
-                      Subcategory: {(() => {
-                        const target = subItem;
-                        const foundInList = subcategoryList.find(
-                          (c) =>
-                            c.value === target ||
-                            c.slug === target ||
-                            c.id === target ||
-                            (c.label && c.label.toLowerCase() === String(target).toLowerCase())
-                        );
-                        if (foundInList) return foundInList.label;
-
-                        const foundCat = (initialCategories || []).find(
-                          (c) => String(c._id) === String(target) || c.slug === target
-                        );
-                        if (foundCat) return foundCat.name || foundCat.label || foundCat.title;
-
-                        const foundInPrograms = (processedPrograms || []).find(
-                          (p) =>
-                            String(p.subcourseObj?._id) === String(target) ||
-                            p.subcourseObj?.slug === target ||
-                            String(p.subCourseId?._id) === String(target) ||
-                            String(p.subCourseId) === String(target) ||
-                            String(p.courseObj?._id) === String(target) ||
-                            p.courseObj?.slug === target
-                        );
-                        if (foundInPrograms) return foundInPrograms.subcourseObj?.name || foundInPrograms.subcourseName || foundInPrograms.title;
-
-                        return target;
-                      })()}
-                    </Tag>
-                  ))}
-
-                  {/* Institute Tags */}
-                  {selectedUniversities.map((uni) => {
-                    const uniLabel = (() => {
-                      const found = universityOptions.find(
-                        (u) =>
-                          u.value === uni ||
-                          u.slug === uni ||
-                          u.id === uni ||
-                          (u.label && u.label.toLowerCase() === String(uni).toLowerCase())
-                      );
-                      if (found) return found.label;
-
-                      const foundUni = (initialUniversities || []).find(
-                        (u) => String(u._id) === String(uni) || u.slug === uni
-                      );
-                      if (foundUni) return foundUni.name || foundUni.title;
-
-                      const foundInList = (processedPrograms || []).find(
-                        (p) => String(p.uniObj?._id) === String(uni) || p.uniObj?.slug === uni
-                      );
-                      if (foundInList) return foundInList.uniObj?.name || foundInList.uniName;
-
-                      return uni;
-                    })();
-
-                    return (
-                      <Tag
-                        key={uni}
-                        closable
-                        onClose={() => setSelectedUniversities(selectedUniversities.filter((u) => u !== uni))}
-                        className="bg-emerald-50 text-emerald-700 border-emerald-200 rounded-lg text-xs font-medium px-2 py-0.5"
-                      >
-                        {uniLabel}
-                      </Tag>
-                    );
-                  })}
-
-                  {/* Duration Tags */}
-                  {(Array.isArray(selectedDuration) ? selectedDuration.filter((d) => d && d !== "all") : (selectedDuration !== "all" && selectedDuration ? [selectedDuration] : [])).map((durItem) => (
-                    <Tag
-                      key={durItem}
-                      closable
-                      onClose={() => {
-                        if (Array.isArray(selectedDuration)) {
-                          const next = selectedDuration.filter((d) => d !== durItem);
-                          setSelectedDuration(next.length > 0 ? next : "all");
-                        } else {
-                          setSelectedDuration("all");
-                        }
-                      }}
-                      className="bg-purple-50 text-purple-700 border-purple-200 rounded-lg text-xs font-medium px-2 py-0.5"
-                    >
-                      Duration: {durationList.find((d) => d.value === durItem)?.label || durItem}
-                    </Tag>
-                  ))}
-
-                  {/* Fee Range Tags */}
-                  {(Array.isArray(selectedFee) ? selectedFee.filter((f) => f && f !== "all") : (selectedFee !== "all" && selectedFee ? [selectedFee] : [])).map((feeItem) => (
-                    <Tag
-                      key={feeItem}
-                      closable
-                      onClose={() => {
-                        if (Array.isArray(selectedFee)) {
-                          const next = selectedFee.filter((f) => f !== feeItem);
-                          setSelectedFee(next.length > 0 ? next : "all");
-                        } else {
-                          setSelectedFee("all");
-                        }
-                      }}
-                      className="bg-amber-50 text-amber-700 border-amber-200 rounded-lg text-xs font-medium px-2 py-0.5"
-                    >
-                      Fee: {feeList.find((f) => f.value === feeItem)?.label || feeItem}
-                    </Tag>
-                  ))}
-                  {appliedSearchTerm && (
-                    <Tag
-                      closable
-                      onClose={() => {
-                        setSearchInputValue("");
-                        setAppliedSearchTerm("");
-                      }}
-                      className="bg-slate-100 text-slate-700 border-slate-300 rounded-lg text-xs font-medium px-2 py-0.5"
-                    >
-                      Search: &ldquo;{appliedSearchTerm}&rdquo;
-                    </Tag>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Clear All Filters Button */}
-            {activeFilterCount > 0 && (
-              <button
-                type="button"
-                onClick={handleClearFilters}
-                className="text-xs font-bold text-rose-600 hover:text-rose-700 hover:underline cursor-pointer bg-transparent border-none p-0 flex items-center gap-1"
-              >
-                <ReloadOutlined className="text-[10px]" /> Clear All
-              </button>
-            )}
-          </div>
-
-          {/* Course Cards / Skeleton Shimmer */}
+        {/* ── RIGHT COURSE CARDS LISTING ── */}
+        <div className="lg:col-span-8 xl:col-span-9 space-y-4">
           {isLoadingData ? (
             <div className="space-y-4">
-              {[1, 2, 3, 4, 5].map((i) => (
+              {[1, 2, 3].map((i) => (
                 <div
                   key={i}
-                  className="bg-white rounded-2xl border border-slate-200/90 p-4 sm:p-5 flex flex-col sm:flex-row gap-5 items-start shadow-2xs"
+                  className="bg-white rounded-2xl border border-gray-200 p-6 flex flex-col sm:flex-row gap-6"
                 >
-                  <div className="w-28 sm:w-32 border border-slate-100 rounded-xl p-3 bg-slate-50/50 shrink-0 flex flex-col items-center justify-center">
-                    <Skeleton.Avatar active size={64} shape="square" style={{ borderRadius: 12 }} />
-                    <Skeleton.Input active size="small" style={{ width: 70, height: 12, marginTop: 8 }} />
+                  <div className="w-32 flex flex-col items-center justify-center shrink-0">
+                    <Skeleton.Avatar active size={72} shape="circle" />
+                    <Skeleton.Input active size="small" style={{ width: 80, height: 14, marginTop: 8 }} />
                   </div>
-                  <div className="flex-1 space-y-3 w-full">
-                    <Skeleton.Input active size="small" style={{ width: "65%", height: 20 }} />
-                    <div className="flex flex-wrap gap-4">
-                      <Skeleton.Input active size="small" style={{ width: 100, height: 14 }} />
-                      <Skeleton.Input active size="small" style={{ width: 100, height: 14 }} />
-                      <Skeleton.Input active size="small" style={{ width: 120, height: 14 }} />
-                    </div>
-                    <div className="flex gap-3 pt-1">
+                  <div className="flex-1 space-y-3">
+                    <Skeleton.Input active size="small" style={{ width: "80%", height: 22 }} />
+                    <Skeleton.Input active size="small" style={{ width: "40%", height: 16 }} />
+                    <div className="flex gap-3 pt-2">
                       <Skeleton.Button active size="small" style={{ width: 100, height: 36, borderRadius: 8 }} />
-                      <Skeleton.Button active size="small" style={{ width: 140, height: 36, borderRadius: 8 }} />
+                      <Skeleton.Button active size="small" style={{ width: 100, height: 36, borderRadius: 8 }} />
                     </div>
                   </div>
                 </div>
               ))}
             </div>
           ) : processedPrograms.length > 0 ? (
-            <div className="space-y-4">
-              {(() => {
-                const paginatedItems = processedPrograms;
+            <div className="space-y-3">
+              {processedPrograms.map((item, index) => {
+                const uniName = item.uniName || "Institute";
+                const cardTitle = item.cardTitle || item.title || "Course Program";
+                const logoUrl = item.logoUrl;
+                const providerName = item.providerName || "upGrad";
+                const durationText = item.durationText || "8 Months";
+                const feeText = item.feeText || "₹ 1,20,000 INR";
+                const courseDetailHref = item.courseDetailHref || `/courses`;
 
-                return paginatedItems.map((item, index) => {
-                  const uniName = item.uniName || item.university?.name || (typeof item.university === "string" ? item.university : "Partner University");
-                  const cardTitle = item.cardTitle || item.title || item.name || "Course";
-                  const logoUrl = item.logoUrl || getAssetPath(item.logoSrc || item.logo?.url || item.logo, null);
-                  const providerName = item.providerName || "upGrad";
-                  const durationText = item.durationText || "Flexible";
-                  const feeText = item.feeText || "Contact for Fee";
-                  const slugify = (text) =>
-                    (text || "")
-                      .toString()
-                      .toLowerCase()
-                      .trim()
-                      .replace(/[\s_]+/g, "-")
-                      .replace(/[^\w-]+/g, "")
-                      .replace(/--+/g, "-")
-                      .replace(/^-+|-+$/g, "");
-
-                  const fallbackSlug = (item.slug && !/^[0-9a-fA-F]{24}$/.test(item.slug))
-                    ? item.slug
-                    : slugify(`${uniName}-${cardTitle}`);
-
-                  const courseDetailHref = item.courseDetailHref || `/courses/${encodeURIComponent(fallbackSlug || item._id || "")}`;
-                  const accreditation = item.accreditation || getAccreditation(uniName);
-
-                  return (
-                    <div
-                      key={item._uniqueKey || `${item.title}-${uniName}-${index}`}
-                      className="bg-white rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-md transition-all duration-300 overflow-hidden relative group p-4 sm:p-5"
-                    >
-                      {/* Top Right Provider Badge */}
-                      <div className="absolute top-0 right-0 bg-[#FAF6EC] border-b border-l border-[#E0D5C1] rounded-tr-2xl rounded-bl-2xl px-3 py-1 text-xs font-medium text-gray-700 flex items-center gap-1.5 z-10 shadow-2xs">
-                        Via <span className="font-extrabold text-[#E52E2E] text-xs">{providerName}</span>
+                return (
+                  <div
+                    key={item._uniqueKey || `${cardTitle}-${index}`}
+                    className="bg-white rounded-2xl border border-gray-200 p-3.5 sm:p-4 sm:px-5 hover:border-gray-300 transition-all relative overflow-hidden group"
+                  >
+                    {/* Desktop Card Layout */}
+                    <div className="hidden sm:flex items-center gap-5">
+                      {/* Left: University Logo + Name */}
+                      <div className="w-28 sm:w-32 flex flex-col items-center justify-center text-center pr-4 border-r border-gray-200 shrink-0">
+                        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full p-1.5 flex items-center justify-center bg-white relative mb-1.5">
+                          {logoUrl ? (
+                            <Image
+                              src={logoUrl}
+                              alt={uniName}
+                              fill
+                              sizes="64px"
+                              className="object-contain p-1"
+                            />
+                          ) : (
+                            <div className="w-full h-full rounded-full bg-blue-50 text-blue-600 font-bold flex items-center justify-center text-xs uppercase">
+                              {uniName.charAt(0)}
+                            </div>
+                          )}
+                        </div>
+                        <span className="text-xs font-bold text-[#0a2540] line-clamp-2 leading-tight">
+                          {uniName}
+                        </span>
                       </div>
 
-                      {/* Desktop View */}
-                      <div className="hidden sm:flex gap-5 items-start pt-1">
-                        <div className="w-28 sm:w-32 border border-slate-200/90 rounded-xl p-3 bg-white shrink-0 flex flex-col items-center justify-center text-center shadow-xs">
-                          <div className="relative w-16 h-16 sm:w-20 sm:h-20 shrink-0">
-                            {logoUrl ? (
-                              <Image
-                                src={logoUrl}
-                                alt={uniName}
-                                fill
-                                sizes="80px"
-                                unoptimized
-                                className="object-contain"
-                              />
-                            ) : (
-                              <div className="w-full h-full rounded-full bg-blue-50 text-blue-600 font-bold flex items-center justify-center text-sm uppercase">
-                                {uniName.charAt(0)}
-                              </div>
-                            )}
-                          </div>
-                          <span className="text-xs font-bold text-slate-800 mt-2 line-clamp-2 w-full text-center leading-tight">
-                            {uniName}
+                      {/* Right: Details & Actions */}
+                      <div className="flex-1 min-w-0 space-y-2.5">
+                        {/* Top Row: Provider Badge */}
+                        <div className="flex items-center justify-end -mb-1">
+                          <span className="bg-[#FFF0F3] border border-[#FFE4E6] text-gray-700 text-[10px] font-medium px-2 py-0.5 rounded-full inline-flex items-center gap-1">
+                            Via{" "}
+                            <span className="font-bold text-[#E52E2E]">
+                              {providerName}
+                            </span>
                           </span>
                         </div>
 
-                        <div className="flex-1 min-w-0 space-y-3 pt-1">
-                          <Link href={courseDetailHref} className="hover:text-blue-600 transition-colors block">
-                            <h3 className="text-base sm:text-lg font-bold text-[#0B2545] leading-snug line-clamp-2 m-0 tracking-tight">
-                              {cardTitle}
-                            </h3>
-                          </Link>
+                        {/* Title */}
+                        <Link
+                          href={courseDetailHref}
+                          className="hover:text-blue-600 transition-colors block text-left no-underline"
+                        >
+                          <h3 className="text-sm sm:text-base font-bold text-gray-900 leading-snug line-clamp-2 m-0">
+                            {cardTitle}
+                          </h3>
+                        </Link>
 
-                          <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 text-xs font-medium text-slate-500">
-                            <div>
-                              Fees : <span className="text-[#D81B60] font-bold">{feeText.includes("₹") || feeText.includes("INR") ? feeText : `${feeText} INR`}</span>
-                            </div>
-                            <div>
-                              Duration : <span className="text-[#D81B60] font-bold">{durationText}</span>
-                            </div>
-                            <div>
-                              Accredited : <span className="text-[#D81B60] font-bold">{accreditation}</span>
-                            </div>
+                        {/* Fee & Duration Row */}
+                        <div className="flex items-center gap-5 text-xs font-semibold text-gray-700">
+                          <div className="flex items-center gap-1.5 text-gray-800">
+                            <span className="text-gray-700 font-bold">₹</span>
+                            <span>{feeText.replace(/^₹\s*/, "")}</span>
                           </div>
-
-                          <div className="flex flex-wrap items-center gap-3 pt-1">
-                            <Link
-                              href={courseDetailHref}
-                              className="bg-[#0B2545] hover:bg-[#061830] text-[#FFFFFF] border-none rounded-lg text-xs font-medium h-9 px-5 cursor-pointer flex items-center justify-center text-center transition-colors no-underline"
-                            >
-                              View More
-                            </Link>
-
-                            <button
-                              type="button"
-                              onClick={() => {
-                                openFormModal({
-                                  title: "Apply / Book 1:1 Counselling",
-                                  subtitle: "Get expert guidance from senior counselors",
-                                  defaultCourse: item.title,
-                                  formNameOverride: `CourseListPage_${item.slug}`,
-                                  submitButtonText: "Submit Application",
-                                });
-                              }}
-                              className="bg-[#009F93] hover:bg-[#008278] text-white border-none rounded-lg text-xs font-medium h-9 px-5 cursor-pointer flex items-center justify-center text-center transition-colors"
-                            >
-                              Apply Now
-                            </button>
-
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const targetItem = {
-                                  _id: item._id || item.slug,
-                                  slug: item.slug || item._id,
-                                  title: cardTitle,
-                                  uniName: uniName,
-                                  uniSlug: item.uniObj?.slug || item.university?.slug || "",
-                                  logoUrl: logoUrl,
-                                  feeText: feeText,
-                                  durationText: durationText,
-                                  university: item.uniObj || item.university,
-                                };
-                                toggleCompare(targetItem);
-                                setIsCompareDrawerOpen(true);
-                              }}
-                              className={`font-medium rounded-lg text-xs h-9 px-4 cursor-pointer flex items-center justify-center gap-1 transition-colors border ${isInCompare(item._id || item.slug || cardTitle)
-                                ? "bg-teal-50 text-[#009F93] border-[#009F93]"
-                                : "bg-white text-[#009F93] border-[#009F93] hover:bg-teal-50"
-                                }`}
-                            >
-                              {isInCompare(item._id || item.slug || cardTitle) ? "✓ Added" : "+ Add to Compare"}
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Mobile View */}
-                      <div className="flex sm:hidden flex-col gap-3 pt-1">
-                        <div className="flex gap-3 items-start">
-                          <div className="w-18 h-18 border border-slate-200/90 rounded-xl p-1.5 bg-white shrink-0 flex flex-col items-center justify-center text-center shadow-xs">
-                            <div className="relative w-10 h-10 shrink-0">
-                              {logoUrl ? (
-                                <Image
-                                  src={logoUrl}
-                                  alt={uniName}
-                                  fill
-                                  sizes="40px"
-                                  unoptimized
-                                  className="object-contain"
-                                />
-                              ) : (
-                                <div className="w-full h-full rounded-full bg-blue-50 text-blue-600 font-bold flex items-center justify-center text-xs uppercase">
-                                  {uniName.charAt(0)}
-                                </div>
-                              )}
-                            </div>
-                            <span className="text-[9px] font-bold text-slate-800 line-clamp-1 w-full text-center leading-none mt-1">
-                              {uniName}
-                            </span>
-                          </div>
-
-                          <div className="flex-1 min-w-0 space-y-2">
-                            <Link href={courseDetailHref} className="hover:text-blue-600 transition-colors block pr-12 pt-2">
-                              <h3 className="text-xs font-bold text-[#0B2545] leading-snug line-clamp-2 m-0">
-                                {cardTitle}
-                              </h3>
-                            </Link>
-                            <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[11px] font-medium text-slate-500">
-                              <div>
-                                Fees : <span className="text-[#D81B60] font-bold">{feeText.includes("₹") || feeText.includes("INR") ? feeText : `${feeText} INR`}</span>
-                              </div>
-                              <div>
-                                Duration : <span className="text-[#D81B60] font-bold">{durationText}</span>
-                              </div>
-                            </div>
+                          <div className="flex items-center gap-1.5 text-gray-600">
+                            <Clock className="w-3.5 h-3.5 text-gray-500" />
+                            <span>{durationText}</span>
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-3 gap-1.5 pt-3 border-t border-slate-200">
+                        {/* Actions Row: Know More | Apply Now | + Add to Compare */}
+                        <div className="flex items-center gap-2.5 pt-0.5">
                           <Link
                             href={courseDetailHref}
-                            className="bg-[#0B2545] text-white font-thin text-[11px] h-8 rounded-lg flex items-center justify-center text-center transition-colors no-underline"
+                            className="bg-[#0a2540] hover:bg-[#06182c] text-white text-xs font-semibold px-4 py-1.5 rounded-lg transition-colors inline-flex items-center justify-center no-underline"
                           >
-                            View More
+                            Know More
                           </Link>
 
                           <button
                             type="button"
                             onClick={() => {
                               openFormModal({
-                                title: "Apply / Book 1:1 Counselling",
-                                subtitle: "Get expert guidance from senior counselors",
-                                defaultCourse: item.title,
-                                formNameOverride: `CourseListPage_${item.slug}`,
-                                submitButtonText: "Submit Application",
+                                title: "Apply for Course",
+                                subtitle: cardTitle,
+                                defaultCourse: cardTitle,
+                                formNameOverride: `CourseCard_${item.slug || uniName}`,
+                                submitButtonText: "Apply Now",
                               });
                             }}
-                            className="bg-[#009F93] text-white font-thin text-[11px] h-8 rounded-lg flex items-center justify-center text-center transition-colors border-none"
+                            className="bg-[#F4D068] hover:bg-[#ebc557] text-gray-900 text-xs font-bold px-4 py-1.5 rounded-lg transition-colors border-none cursor-pointer inline-flex items-center justify-center"
                           >
                             Apply Now
                           </button>
@@ -1504,45 +856,145 @@ function CoursesContent() {
                                 slug: item.slug || item._id,
                                 title: cardTitle,
                                 uniName: uniName,
-                                uniSlug: item.uniObj?.slug || item.university?.slug || "",
                                 logoUrl: logoUrl,
                                 feeText: feeText,
                                 durationText: durationText,
-                                university: item.uniObj || item.university,
                               };
                               toggleCompare(targetItem);
                               setIsCompareDrawerOpen(true);
                             }}
-                            className={`rounded-lg text-[11px] h-8 flex items-center justify-center transition-colors border ${isInCompare(item._id || item.slug || cardTitle)
-                              ? "bg-teal-50 text-[#009F93] border-[#009F93] font-bold"
-                              : "bg-white text-[#009F93] border-[#009F93] font-thin"
-                              }`}
+                            className="text-xs font-semibold text-gray-800 hover:text-blue-600 flex items-center gap-1 cursor-pointer bg-transparent border-none p-0 transition-colors ml-2"
                           >
-                            {isInCompare(item._id || item.slug || cardTitle) ? "✓ Added" : "+ Compare"}
+                            {isInCompare(item._id || item.slug || cardTitle) ? (
+                              <>
+                                <Check className="w-3.5 h-3.5 text-teal-600" />
+                                <span className="text-teal-600">Added</span>
+                              </>
+                            ) : (
+                              <>
+                                <Plus className="w-3.5 h-3.5 text-gray-800" />
+                                <span>Add to Compare</span>
+                              </>
+                            )}
                           </button>
                         </div>
                       </div>
                     </div>
-                  );
-                });
-              })()}
+
+                    {/* Mobile Card Layout */}
+                    <div className="flex sm:hidden flex-col gap-2.5">
+                      {/* Mobile Top Row: Uni Logo + Uni Name & Provider Badge */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="w-9 h-9 rounded-full border border-gray-200 p-1 flex items-center justify-center bg-white relative shrink-0">
+                            {logoUrl ? (
+                              <Image
+                                src={logoUrl}
+                                alt={uniName}
+                                fill
+                                sizes="36px"
+                                className="object-contain p-0.5"
+                              />
+                            ) : (
+                              <span className="text-xs font-bold text-blue-600">
+                                {uniName.charAt(0)}
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-xs font-bold text-[#0a2540]">
+                            {uniName}
+                          </span>
+                        </div>
+
+                        <span className="bg-[#FFF0F3] border border-[#FFE4E6] text-gray-700 text-[10px] font-medium px-2 py-0.5 rounded-full">
+                          Via <span className="font-bold text-[#E52E2E]">{providerName}</span>
+                        </span>
+                      </div>
+
+                      {/* Title */}
+                      <Link href={courseDetailHref} className="no-underline block">
+                        <h3 className="text-xs sm:text-sm font-bold text-gray-900 leading-snug line-clamp-2 m-0">
+                          {cardTitle}
+                        </h3>
+                      </Link>
+
+                      {/* Fee & Duration */}
+                      <div className="flex items-center gap-4 text-xs font-semibold text-gray-700">
+                        <div className="flex items-center gap-1 text-gray-800">
+                          <span>₹</span>
+                          <span>{feeText.replace(/^₹\s*/, "")}</span>
+                        </div>
+                        <div className="flex items-center gap-1 text-gray-600">
+                          <Clock className="w-3 h-3 text-gray-500" />
+                          <span>{durationText}</span>
+                        </div>
+                      </div>
+
+                      {/* Mobile Action Buttons */}
+                      <div className="flex items-center gap-2 pt-2 border-t border-gray-200">
+                        <Link
+                          href={courseDetailHref}
+                          className="flex-1 bg-[#0a2540] text-white text-[11px] font-semibold py-1.5 rounded-lg text-center no-underline"
+                        >
+                          Know More
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            openFormModal({
+                              title: "Apply for Course",
+                              subtitle: cardTitle,
+                              defaultCourse: cardTitle,
+                              formNameOverride: `CourseCard_${item.slug || uniName}`,
+                              submitButtonText: "Apply Now",
+                            });
+                          }}
+                          className="flex-1 bg-[#F4D068] text-gray-900 text-[11px] font-bold py-1.5 rounded-lg border-none cursor-pointer"
+                        >
+                          Apply Now
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const targetItem = {
+                              _id: item._id || item.slug,
+                              slug: item.slug || item._id,
+                              title: cardTitle,
+                              uniName: uniName,
+                              logoUrl: logoUrl,
+                              feeText: feeText,
+                              durationText: durationText,
+                            };
+                            toggleCompare(targetItem);
+                            setIsCompareDrawerOpen(true);
+                          }}
+                          className="px-2 py-1.5 text-[11px] font-bold text-gray-700 flex items-center justify-center gap-0.5 cursor-pointer bg-transparent border border-gray-200 rounded-lg"
+                        >
+                          <Plus className="w-3 h-3" />
+                          <span>Compare</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           ) : (
-            <div className="bg-white rounded-3xl p-12 text-center border border-slate-200 shadow-xs space-y-4">
-              <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto text-2xl">
-                <SearchOutlined />
+            <div className="bg-white rounded-2xl p-10 text-center border border-gray-200 space-y-4">
+              <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto text-xl">
+                <Search className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-bold text-slate-800 m-0">No Programs Found</h3>
-              <p className="text-sm text-slate-500 max-w-md mx-auto m-0">
-                We couldn&apos;t find any programs matching your selected criteria. Try adjusting your filters or search terms.
+              <h3 className="text-lg font-bold text-gray-900 m-0">No Programs Found</h3>
+              <p className="text-xs text-gray-500 max-w-sm mx-auto m-0">
+                We couldn&apos;t find any programs matching your selected criteria. Try adjusting your filters.
               </p>
-              <Button
-                type="primary"
+              <button
+                type="button"
                 onClick={handleClearFilters}
-                className="bg-[#1C3569] font-bold h-10 px-6 rounded-xl border-none cursor-pointer"
+                className="bg-[#0a2540] hover:bg-[#06182c] text-white font-bold text-xs py-2 px-5 rounded-lg border-none cursor-pointer"
               >
                 Reset All Filters
-              </Button>
+              </button>
             </div>
           )}
 
@@ -1570,19 +1022,18 @@ function CoursesContent() {
       {/* Mobile Drawer Filter */}
       <Drawer
         title={
-          <div className="flex items-center justify-between w-full pr-6">
-            <h3 className="font-extrabold text-base text-[#1C3569] m-0 flex items-center gap-2">
-              <SliderFilterIcon className="text-[#1C3569]" /> All Filters
-            </h3>
-            {activeFilterCount > 0 && (
-              <button
-                type="button"
-                onClick={handleClearMobileDraftFilters}
-                className="text-xs font-bold text-rose-600 hover:text-rose-700 hover:underline cursor-pointer bg-transparent border-none p-0"
-              >
-                Reset
-              </button>
-            )}
+          <div className="flex items-center justify-between w-full pr-4">
+            <div className="flex items-center gap-2">
+              <SlidersHorizontal className="w-4 h-4 text-gray-900" />
+              <h3 className="font-bold text-base text-gray-900 m-0">Filters</h3>
+            </div>
+            <button
+              type="button"
+              onClick={handleClearFilters}
+              className="text-xs font-bold text-red-500 cursor-pointer bg-transparent border-none p-0"
+            >
+              Reset
+            </button>
           </div>
         }
         placement="bottom"
@@ -1590,44 +1041,17 @@ function CoursesContent() {
         open={isMobileDrawerOpen}
         className="lg:hidden"
         styles={{
-          wrapper: {
-            height: "85vh",
-          },
+          wrapper: { height: "85vh" },
           section: {
             height: "85vh",
-            borderTopLeftRadius: 24,
-            borderTopRightRadius: 24,
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
             overflow: "hidden",
-            willChange: "transform",
           },
-          body: {
-            padding: "16px 20px 24px",
-            WebkitOverflowScrolling: "touch",
-          },
-          footer: {
-            padding: "12px 16px",
-            borderTop: "1px solid #f1f5f9",
-          },
+          body: { padding: "16px 20px 24px" },
         }}
-        footer={
-          <div className="flex items-center gap-3 bg-white">
-            <Button
-              onClick={() => setIsMobileDrawerOpen(false)}
-              className="flex-1 font-bold h-11 rounded-xl text-slate-600"
-            >
-              Cancel
-            </Button>
-            <Button
-              type="primary"
-              onClick={handleApplyFilters}
-              className="flex-1 font-bold h-11 rounded-xl bg-[#1C3569] hover:bg-[#0d1d3d]! border-none text-white shadow-sm"
-            >
-              Apply Filters
-            </Button>
-          </div>
-        }
       >
-        <FilterSidebarContent hideHeader {...mobileFilterSidebarProps} />
+        <FilterSidebarContent hideHeader {...filterProps} />
       </Drawer>
     </WebsiteLayout>
   );
@@ -1637,23 +1061,19 @@ export default function CoursesPage() {
   return (
     <Suspense
       fallback={
-        <WebsiteLayout activeTab="courses" title="Loading Courses | SODE">
+        <WebsiteLayout activeTab="courses" title="Loading Courses | SODE" bg="#F1F4F9">
           <div className="py-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="bg-white rounded-2xl border border-slate-200/80 p-5 flex flex-col gap-3">
+                <div key={i} className="bg-white rounded-2xl border border-gray-200 p-5 flex flex-col gap-3">
                   <div className="flex items-center gap-3">
-                    <Skeleton.Avatar active size="large" shape="square" style={{ borderRadius: 8 }} />
+                    <Skeleton.Avatar active size="large" shape="circle" />
                     <div className="flex-1">
                       <Skeleton.Input active size="small" style={{ width: "80%", height: 18 }} />
                       <Skeleton.Input active size="small" style={{ width: "45%", height: 14, marginTop: 4 }} />
                     </div>
                   </div>
-                  <Skeleton active paragraph={{ rows: 3, width: ["100%", "90%", "70%"] }} />
-                  <div className="pt-3 border-t border-slate-100 flex justify-between items-center mt-auto">
-                    <Skeleton.Input active size="small" style={{ width: 80, height: 16 }} />
-                    <Skeleton.Button active size="small" style={{ width: 75, height: 28, borderRadius: 8 }} />
-                  </div>
+                  <Skeleton active paragraph={{ rows: 2 }} />
                 </div>
               ))}
             </div>
