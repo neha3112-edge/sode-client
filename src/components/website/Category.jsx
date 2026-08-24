@@ -12,20 +12,14 @@ import { Carousel, Modal } from "antd";
 // Category Icon Component - Renders MinIO Media Asset image/SVG from backend using Next.js Image
 function CategoryIcon({ cat }) {
   const [imgError, setImgError] = useState(false);
-
-  let rawUrl = null;
-  if (cat) {
-    rawUrl = cat.logoUrl || cat.logoSrc || cat.logo || cat.imageSrc || cat.image;
-    if (typeof rawUrl === "object" && rawUrl?.url) rawUrl = rawUrl.url;
-  }
-  const iconUrl = getAssetPath(rawUrl, null);
+  const iconUrl = getAssetPath(cat?.logo, null);
 
   if (iconUrl && !imgError) {
     return (
       <div className="w-7 h-7 min-[360px]:w-8 min-[360px]:h-8 sm:w-10 sm:h-10 md:w-11 md:h-11 relative shrink-0">
         <Image
           src={iconUrl}
-          alt={cat.name || cat.label}
+          alt={cat?.name}
           fill
           sizes="48px"
           className="object-contain"
@@ -36,26 +30,23 @@ function CategoryIcon({ cat }) {
   }
 
   return (
-    <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-blue-50 text-blue-600 font-semibold flex items-center justify-center text-[10px] sm:text-xs">
-      {(cat?.name || "C").charAt(0)}
+    <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-blue-50 text-blue-500 font-semibold flex items-center justify-center text-[10px] sm:text-xs">
+      {cat?.name?.charAt(0)}
     </div>
   );
 }
 
-// Course Icon Component - Renders logo/image or circular blue badge with course code/initials matching design
+// Course Icon Component - Renders logo/image or circular badge with initial
 function CourseIcon({ course }) {
   const [imgError, setImgError] = useState(false);
-
-  let rawUrl = course?.logoUrl || course?.logoSrc || course?.logo || course?.image;
-  if (typeof rawUrl === "object" && rawUrl?.url) rawUrl = rawUrl.url;
-  const iconUrl = getAssetPath(rawUrl, null);
+  const iconUrl = getAssetPath(course?.logo, null);
 
   if (iconUrl && !imgError) {
     return (
       <div className="w-7 h-7 min-[360px]:w-8 min-[360px]:h-8 sm:w-10 sm:h-10 md:w-11 md:h-11 relative shrink-0">
         <Image
           src={iconUrl}
-          alt={course?.name || "Course"}
+          alt={course?.name}
           fill
           sizes="48px"
           className="object-contain"
@@ -65,32 +56,24 @@ function CourseIcon({ course }) {
     );
   }
 
-  // Circular Badge matching screenshot 2 (ring with centered course code/initials)
-  const code = (course?.name || "CRS").trim();
   return (
-    <div className="w-7 h-7 min-[360px]:w-8 min-[360px]:h-8 sm:w-10 sm:h-10 rounded-full border-2 border-slate-700/80 text-slate-800 font-bold flex items-center justify-center text-[9px] min-[360px]:text-[10px] sm:text-xs bg-white group-hover:border-blue-600 group-hover:text-blue-600 transition-colors shrink-0">
-      {code.length > 4 ? code.slice(0, 3) : code}
+    <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-blue-50 text-blue-500 font-semibold flex items-center justify-center text-[10px] sm:text-xs">
+      {course?.name?.charAt(0)}
     </div>
   );
 }
 
-// Helper component to render backend logo/icon or fallback letter badge (Identical to MockupAdditions.jsx)
+// Helper component to render backend logo/icon or fallback letter badge
 function PartnerLogoIcon({ partner }) {
   const [imgError, setImgError] = useState(false);
-
-  let rawUrl = null;
-  if (partner) {
-    rawUrl = partner.logoUrl || partner.logoSrc || partner.logo || partner.imageSrc || partner.image;
-    if (typeof rawUrl === "object" && rawUrl?.url) rawUrl = rawUrl.url;
-  }
-  const logoUrl = getAssetPath(rawUrl, null);
+  const logoUrl = getAssetPath(partner?.logo, null);
 
   if (logoUrl && !imgError) {
     return (
       <div className="w-7 h-7 min-[360px]:w-8 min-[360px]:h-8 sm:w-10 sm:h-10 md:w-11 md:h-11 relative shrink-0">
         <Image
           src={logoUrl}
-          alt={partner?.name || "Partner Logo"}
+          alt={partner?.name}
           fill
           sizes="48px"
           className="object-contain"
@@ -101,39 +84,9 @@ function PartnerLogoIcon({ partner }) {
   }
 
   return (
-    <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-blue-50 text-blue-600 font-bold flex items-center justify-center text-[10px] sm:text-xs">
-      {(partner?.name || "U").charAt(0)}
+    <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-blue-50 text-blue-500 font-semibold flex items-center justify-center text-[10px] sm:text-xs">
+      {partner?.name?.charAt(0)}
     </div>
-  );
-}
-
-// Helper to format text strictly into max 2 balanced lines without mid-word breaks
-function formatTwoLineText(text = "") {
-  if (!text) return "";
-  const cleaned = text.trim();
-  const words = cleaned.split(/\s+/);
-  if (words.length === 1) {
-    return <span className="block text-center w-full leading-tight font-semibold">{cleaned}</span>;
-  }
-
-  if (words.length === 2) {
-    return (
-      <span className="flex flex-col items-center justify-center leading-tight text-center w-full">
-        <span className="block text-center w-full font-semibold">{words[0]}</span>
-        <span className="block text-center w-full font-semibold mt-0.5">{words[1]}</span>
-      </span>
-    );
-  }
-
-  const mid = Math.ceil(words.length / 2);
-  const line1 = words.slice(0, mid).join(" ");
-  const line2 = words.slice(mid).join(" ");
-
-  return (
-    <span className="flex flex-col items-center justify-center leading-tight text-center w-full">
-      <span className="block text-center w-full truncate font-semibold">{line1}</span>
-      <span className="block text-center w-full truncate font-semibold mt-0.5">{line2}</span>
-    </span>
   );
 }
 
@@ -146,8 +99,7 @@ function UniversityCarouselBlock({
   handleSlideClick,
 }) {
   return (
-    <div className="relative px-0 sm:px-1 py-0.5 max-w-6xl mx-auto">
-      {/* Ant Design Carousel with built-in arrows */}
+    <div className="relative max-w-6xl mx-auto">
       <Carousel
         arrows={true}
         key={slidesToShowCount}
@@ -167,15 +119,15 @@ function UniversityCarouselBlock({
               onPointerDown={handleSlidePointerDown}
               onPointerUp={(e) => handleSlidePointerUp(e, child)}
               onClick={(e) => handleSlideClick(e, child)}
-              className="w-full aspect-square bg-white hover:bg-slate-50 border border-slate-200/90 rounded-xl sm:rounded-2xl p-1.5 min-[360px]:p-2 sm:p-2.5 flex flex-col items-center justify-center text-center cursor-pointer select-none transition-all duration-200 hover:shadow hover:-translate-y-0.5 group shadow min-w-0"
+              className="w-full aspect-square bg-white hover:bg-gray-50 border border-gray-200 rounded-xl sm:rounded-xl p-1 min-[360px]:p-1.5 sm:p-2 flex flex-col items-center justify-center text-center cursor-pointer select-none transition-colors duration-200 group min-w-0"
             >
-              <div className="mb-0.5 sm:mb-1 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
+              <div className="group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
                 <PartnerLogoIcon partner={child} />
               </div>
               <div className="h-6 min-[360px]:h-7 sm:h-8 flex items-center justify-center w-full min-w-0">
-                <h5 className="text-[9.5px] min-[360px]:text-[10px] sm:text-[11px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors text-center w-full tracking-tight px-0.5 min-w-0 leading-tight line-clamp-2">
-                  {formatTwoLineText(child.name)}
-                </h5>
+                <span className="line-clamp-2 text-center leading-tight font-medium text-[9.5px] min-[360px]:text-[10px] sm:text-xs text-gray-700 group-hover:text-blue-500 transition-colors w-full px-0.5">
+                  {child.name}
+                </span>
               </div>
             </div>
           </div>
@@ -189,10 +141,8 @@ export function Category({ categories = [], universities = [], programs = [] }) 
   const router = useRouter();
   const [activeCategory, setActiveCategory] = useState(null);
   const [modalData, setModalData] = useState({ category: null, children: [], universities: [], courses: [] });
-
   const [visibleCoursesCount, setVisibleCoursesCount] = useState(8);
   const [slidesToShowCount, setSlidesToShowCount] = useState(4);
-  const accentBarColors = ["#EEC471", "#2563eb", "#10b981", "#9333ea", "#102441"];
 
   const pointerStartRef = useRef({ x: 0, y: 0, time: 0 });
   const hasTriggeredRef = useRef(false);
@@ -285,29 +235,14 @@ export function Category({ categories = [], universities = [], programs = [] }) 
     }
   });
 
-  // Derive parent blocks dynamically for all featured categories (TRENDING_COURSES, TOP_INDIAN_UNIV, TOP_IIT_IIM, TOP_GLOBAL_UNIV)
+  // Derive parent blocks dynamically from backend categories
   const featuredMap = new Map();
 
-  (categoriesList || []).forEach((c) => {
-    const fType = c.featuredType;
-    if (!fType || fType === "NONE") return;
+  categoriesList.forEach((c) => {
+    if (!c || !c.featuredType || c.featuredType === "NONE") return;
 
-    let blockTitle = c.name;
-    let blockKey = c._id || c.slug;
-
-    if (fType === "TRENDING_COURSES") {
-      blockTitle = c.name || "Top Courses";
-      blockKey = "TRENDING_COURSES";
-    } else if (fType === "TOP_INDIAN_UNIV") {
-      blockTitle = "Top Indian Universities";
-      blockKey = "TOP_INDIAN_UNIV";
-    } else if (fType === "TOP_IIT_IIM") {
-      blockTitle = "Top IITs & IIMs";
-      blockKey = "TOP_IIT_IIM";
-    } else if (fType === "TOP_GLOBAL_UNIV") {
-      blockTitle = "Top Global Universities";
-      blockKey = "TOP_GLOBAL_UNIV";
-    }
+    const blockKey = String(c._id || c.slug);
+    const blockTitle = c.name || c.title;
 
     if (!featuredMap.has(blockKey)) {
       featuredMap.set(blockKey, {
@@ -315,18 +250,10 @@ export function Category({ categories = [], universities = [], programs = [] }) 
         slug: c.slug,
         title: blockTitle,
         displayOrder: c.displayOrder || 0,
-        featuredType: fType,
-        isCourseBlock: fType === "TRENDING_COURSES" || c.targetType === "COURSE" || c.slug === "top-courses",
+        featuredType: c.featuredType,
+        isCourseBlock: Boolean(c.courses && c.courses.length > 0),
         children: [],
       });
-    } else {
-      const existing = featuredMap.get(blockKey);
-      if (c.displayOrder && c.displayOrder < existing.displayOrder) {
-        existing.displayOrder = c.displayOrder;
-      }
-      if (fType === "TRENDING_COURSES") {
-        existing.isCourseBlock = true;
-      }
     }
 
     const currentBlock = featuredMap.get(blockKey);
@@ -338,7 +265,7 @@ export function Category({ categories = [], universities = [], programs = [] }) 
       if (!currentBlock.children.some((child) => String(child._id || child.slug) === uKey)) {
         currentBlock.children.push({
           ...u,
-          logo: u.logoUrl || u.logoSrc || u.logo,
+          logo: u.logo,
         });
       }
     });
@@ -397,7 +324,6 @@ export function Category({ categories = [], universities = [], programs = [] }) 
       return String(foundProg.slug).trim();
     }
 
-    // Fallback: generate clean slug from name/title/label
     const name = item.name || item.title || item.label || foundCat?.name || foundUni?.name || foundProg?.name;
     if (name) {
       return String(name)
@@ -439,7 +365,7 @@ export function Category({ categories = [], universities = [], programs = [] }) 
         })
     );
 
-    // 1. Direct courses attached to category or university (from backend API)
+    // Direct courses attached to category or university
     let directCourses = (cat.courses && cat.courses.length > 0) ? cat.courses : [];
 
     // Fallback: If clicked card has no courses directly on it, search in categoriesList
@@ -458,8 +384,7 @@ export function Category({ categories = [], universities = [], programs = [] }) 
 
     const catCourses = deduplicateItems(directCourses);
 
-    // If the clicked card is a leaf (has NO children, NO universities, and NO courses),
-    // navigate directly to its page instead of opening an empty popup
+    // If the clicked card is a leaf, navigate directly to its page instead of opening an empty popup
     if (childrenList.length === 0 && catUniversities.length === 0 && catCourses.length === 0) {
       if (activeCategory) {
         setActiveCategory(null);
@@ -504,7 +429,7 @@ export function Category({ categories = [], universities = [], programs = [] }) 
       return;
     }
 
-    // Leaf subcategory: close modal and navigate to courses page filtered by category & subcategory (using clean slugs)
+    // Leaf subcategory: close modal and navigate to courses page filtered by category & subcategory
     const parentCatSlug = getItemSlug(activeCategory);
     const subCatSlug = getItemSlug(child);
     handleCloseModal();
@@ -522,7 +447,7 @@ export function Category({ categories = [], universities = [], programs = [] }) 
         __html: `
         .ant-carousel .slick-prev,
         .ant-carousel .slick-next {
-          color: #64748b !important;
+          color: #6b7280 !important;
           z-index: 20;
           width: 24px !important;
           height: 24px !important;
@@ -536,7 +461,7 @@ export function Category({ categories = [], universities = [], programs = [] }) 
         }
         .ant-carousel .slick-prev:hover,
         .ant-carousel .slick-next:hover {
-          color: #2563eb !important;
+          color: #3b82f6 !important;
           background: transparent !important;
           border: none !important;
           box-shadow: none !important;
@@ -549,19 +474,19 @@ export function Category({ categories = [], universities = [], programs = [] }) 
         }
         .ant-carousel .slick-prev::before,
         .ant-carousel .slick-next::before {
-          color: #64748b !important;
+          color: #6b7280 !important;
           font-size: 16px !important;
           opacity: 0.75 !important;
           transition: all 0.2s;
         }
         .ant-carousel .slick-prev:hover::before,
         .ant-carousel .slick-next:hover::before {
-          color: #2563eb !important;
+          color: #3b82f6 !important;
           opacity: 1 !important;
         }
       ` }} />
 
-      {/* ── TOP STATS CARDS SECTION (EXACT ORIGINAL SODE/CLIENT ASPECT-SQUARE CSS) ── */}
+      {/* ── TOP STATS CARDS SECTION ── */}
       {rootCategories.length > 0 && (
         <section className="py-3 bg-white relative overflow-hidden" suppressHydrationWarning>
           <Container>
@@ -571,15 +496,15 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                 <div
                   key={item._id || item.slug}
                   onClick={() => handleCardClick(item)}
-                  className="bg-white hover:bg-gray-50 border border-gray-200 rounded-xl sm:rounded-2xl p-1 min-[360px]:p-1.5 sm:p-2.5 aspect-square flex flex-col items-center justify-center text-center cursor-pointer select-none transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group min-w-0 shadow-2xs w-full"
+                  className="bg-white hover:bg-gray-50 border border-gray-200 rounded-xl sm:rounded-xl p-1 min-[360px]:p-1.5 sm:p-2.5 aspect-square flex flex-col items-center justify-center text-center cursor-pointer select-none transition-colors duration-200 group min-w-0 w-full"
                 >
                   <div className="mb-0.5 sm:mb-1 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
                     <CategoryIcon cat={item} />
                   </div>
                   <div className="h-6 min-[360px]:h-7 sm:h-8 flex items-center justify-center w-full min-w-0 px-0.5">
-                    <h5 className="text-[10px] min-[360px]:text-[11px] sm:text-xs font-semibold text-slate-900 group-hover:text-blue-600 transition-colors text-center w-full tracking-normal min-w-0 leading-tight antialiased">
-                      {formatTwoLineText(item.label || item.name)}
-                    </h5>
+                    <span className="line-clamp-2 text-center leading-tight font-semibold text-[10px] min-[360px]:text-[11px] sm:text-xs text-gray-700 group-hover:text-blue-500 transition-colors w-full px-0.5">
+                      {item.label || item.name}
+                    </span>
                   </div>
                 </div>
               ))}
@@ -594,27 +519,24 @@ export function Category({ categories = [], universities = [], programs = [] }) 
           <Container>
             <div className="max-w-6xl mx-auto space-y-6 text-left">
               {parentBlocks.map((block, bIdx) => {
-                const accentColor = accentBarColors[bIdx % accentBarColors.length];
-
                 return (
                   <div
                     key={block._id || block.slug || bIdx}
-                    className="bg-white border border-slate-200/90 rounded-2xl p-3 sm:p-4 shadow-2xs hover:shadow-xs transition-all duration-200 max-w-6xl mx-auto"
+                    className="bg-white border border-gray-200 rounded-2xl p-3 sm:p-4 transition-colors duration-200 max-w-6xl mx-auto"
                   >
                     {/* Section Title Header with Colored Accent Bar */}
                     <div className="flex items-center justify-between mb-3 gap-2">
                       <div className="flex items-center gap-2.5 truncate">
                         <span
-                          className="w-1.5 h-5 rounded-full inline-block shrink-0"
-                          style={{ backgroundColor: accentColor }}
+                          className="w-1.5 h-5 rounded-full inline-block shrink-0 bg-blue-500"
                         />
-                        <h3 className="text-sm sm:text-base font-bold text-slate-800 tracking-tight truncate">
+                        <h3 className="text-sm sm:text-base font-bold text-gray-900 tracking-tight truncate">
                           {block.title}
                         </h3>
                       </div>
 
                       {/* Show More / Show Less buttons */}
-                      {(block.isCourseBlock || block.slug === "top-courses" || block.featuredType === "TRENDING_COURSES") &&
+                      {block.isCourseBlock &&
                         block.children &&
                         block.children.length > 8 && (
                           <div className="flex items-center gap-3 shrink-0">
@@ -622,7 +544,7 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                               <button
                                 type="button"
                                 onClick={() => setVisibleCoursesCount(8)}
-                                className="text-xs font-semibold text-slate-500 hover:text-slate-700 flex items-center gap-1 transition-colors group cursor-pointer bg-transparent border-0 p-0"
+                                className="text-xs font-semibold text-gray-500 hover:text-gray-700 flex items-center gap-1 transition-colors group cursor-pointer bg-transparent border-0 p-0"
                               >
                                 <span>Show Less</span>
                                 <svg
@@ -642,7 +564,7 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                               <button
                                 type="button"
                                 onClick={() => setVisibleCoursesCount((prev) => prev + 8)}
-                                className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-colors group cursor-pointer bg-transparent border-0 p-0"
+                                className="text-xs font-semibold text-blue-500 hover:text-blue-600 flex items-center gap-1 transition-colors group cursor-pointer bg-transparent border-0 p-0"
                               >
                                 <span>Show More</span>
                                 <svg
@@ -662,7 +584,7 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                     </div>
 
                     {/* Content: 4-Column Grid for Courses vs. Carousel for Universities */}
-                    {block.isCourseBlock || block.slug === "top-courses" || block.featuredType === "TRENDING_COURSES" ? (
+                    {block.isCourseBlock ? (
                       <div className="grid grid-cols-4 md:grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-1.5 sm:gap-2.5 w-full mx-auto items-stretch">
                         {block.children.slice(0, visibleCoursesCount).map((child, idx) => (
                           <div
@@ -670,15 +592,15 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                             onClick={() => {
                               router.push(`/courses?course=${encodeURIComponent(getItemSlug(child))}`);
                             }}
-                            className="w-full aspect-square bg-white hover:bg-slate-50 border border-slate-200/90 rounded-xl sm:rounded-2xl p-1.5 min-[360px]:p-2 sm:p-2.5 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group shadow-2xs min-w-0"
+                            className="w-full aspect-square bg-white hover:bg-gray-50 border border-gray-200 rounded-xl sm:rounded-2xl p-1.5 min-[360px]:p-2 sm:p-2.5 flex flex-col items-center justify-center text-center cursor-pointer transition-colors duration-200 group min-w-0"
                           >
                             <div className="mb-0.5 sm:mb-1 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
                               <CourseIcon course={child} />
                             </div>
                             <div className="h-6 min-[360px]:h-7 sm:h-8 flex items-center justify-center w-full min-w-0">
-                              <h5 className="text-[10px] min-[360px]:text-[11px] sm:text-xs font-semibold text-slate-800 group-hover:text-blue-600 transition-colors text-center w-full tracking-tight px-0.5 min-w-0 leading-tight uppercase">
-                                {formatTwoLineText(child.name)}
-                              </h5>
+                              <span className="line-clamp-2 text-center leading-tight uppercase font-semibold text-[10px] min-[360px]:text-[11px] sm:text-xs text-gray-700 group-hover:text-blue-500 transition-colors w-full px-0.5">
+                                {child.name}
+                              </span>
                             </div>
                           </div>
                         ))}
@@ -710,13 +632,14 @@ export function Category({ categories = [], universities = [], programs = [] }) 
         mask={{ closable: false }}
         keyboard={false}
         destroyOnHidden
-        width={620}
+        width={650}
         styles={{
           content: {
             padding: "16px",
             borderRadius: "20px",
-            border: "1px solid #e2e8f0",
-            boxShadow: "0 25px 50px -12px rgba(15, 23, 42, 0.25)",
+            border: "1px solid #e5e7eb",
+            backgroundColor: "#ffffff",
+            boxShadow: "none",
           },
           body: {
             padding: 0,
@@ -724,33 +647,33 @@ export function Category({ categories = [], universities = [], programs = [] }) 
         }}
       >
         {activeCategory && (
-          <div className="flex flex-col text-left min-h-0">
+          <div className="flex flex-col text-left min-h-0 bg-white">
             {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 mb-2.5 shrink-0 gap-3">
+            <div className="flex items-center justify-between border-b border-gray-100 pb-2.5 mb-2.5 shrink-0 gap-3">
               <div className="flex items-center gap-3 min-w-0">
                 {parentCategory && (
                   <button
                     type="button"
                     onClick={() => handleCardClick(parentCategory)}
-                    className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-colors cursor-pointer shrink-0 border-0"
+                    className="w-8 h-8 text-gray-700 flex items-center justify-center transition-colors cursor-pointer shrink-0 border-0"
                     title={`Back to ${parentCategory.name}`}
                   >
                     <ArrowLeft className="w-4 h-4" />
                   </button>
                 )}
-                <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-center shrink-0 p-1.5 shadow-xs">
+                <div className="w-10 h-10 flex items-center justify-center shrink-0 p-1.5">
                   <CategoryIcon cat={activeCategory} />
                 </div>
                 <div className="min-w-0">
-                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 leading-tight tracking-tight truncate">
+                  <h3 className="text-base sm:text-lg font-medium text-gray-900 leading-tight tracking-tight truncate">
                     {activeCategory.label || activeCategory.name}
                   </h3>
                   {activeCategory.title && activeCategory.title.toLowerCase() !== (activeCategory.label || activeCategory.name || "").toLowerCase() ? (
-                    <span className="text-xs text-gray-600 font-medium block mt-0.5 truncate">
+                    <span className="text-xs text-gray-500 font-normal block mt-0.5 truncate">
                       {activeCategory.title}
                     </span>
                   ) : (
-                    <span className="text-xs text-slate-500 block mt-0.5 truncate">
+                    <span className="text-xs text-gray-500 block mt-0.5 truncate">
                       Online Programs & Degrees
                     </span>
                   )}
@@ -760,20 +683,20 @@ export function Category({ categories = [], universities = [], programs = [] }) 
               <button
                 type="button"
                 onClick={handleCloseModal}
-                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-900 transition-colors flex items-center justify-center cursor-pointer border-0"
+                className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-900 transition-colors flex items-center justify-center cursor-pointer border-0"
                 aria-label="Close modal"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            {/* Modal Body - 3 Cards Mobile / 5 Cards Desktop Grid Layout */}
-            <div className="flex-1 overflow-y-auto max-h-[64vh] overscroll-contain pr-1 space-y-4 scrollbar-thin [scrollbar-color:#cbd5e1_transparent]">
+            {/* Modal Body */}
+            <div className="flex-1 overflow-y-auto max-h-[64vh] overscroll-contain pr-1 space-y-4 scrollbar-thin [scrollbar-color:#d1d5db_transparent]">
               {((modalData.children && modalData.children.length > 0) ||
                 (modalData.universities && modalData.universities.length > 0) ||
                 (modalData.courses && modalData.courses.length > 0)) ? (
                 <div className="space-y-4 p-0.5">
-                  {/* Priority 1: If category has SUBCATEGORIES (children), show ONLY subcategories */}
+                  {/* Priority 1: Subcategories */}
                   {modalData.children && modalData.children.length > 0 ? (
                     <div>
                       <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-3">
@@ -781,20 +704,20 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                           <div
                             key={`${child._id || child.slug || idx}-${idx}`}
                             onClick={() => handleSubcategoryClick(child)}
-                            className="bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl p-1.5 min-[360px]:p-2 sm:p-2.5 aspect-square flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group min-w-0 shadow-2xs"
+                            className="bg-white hover:bg-gray-50 border border-gray-200 rounded-2xl p-1.5 min-[360px]:p-2 sm:p-2.5 aspect-square flex flex-col items-center justify-center text-center cursor-pointer transition-colors duration-200 group min-w-0"
                           >
                             <div className="mb-1 sm:mb-1.5 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
                               <CategoryIcon cat={child} />
                             </div>
-                            <h5 className="text-[9.5px] min-[360px]:text-[10px] sm:text-[11px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors text-center w-full tracking-tight px-0.5 min-w-0">
-                              {formatTwoLineText(child.name)}
-                            </h5>
+                            <span className="line-clamp-2 text-center leading-tight font-semibold text-[9.5px] min-[360px]:text-[10px] sm:text-[11px] text-gray-700 group-hover:text-blue-500 transition-colors w-full px-0.5">
+                              {child.name}
+                            </span>
                           </div>
                         ))}
                       </div>
                     </div>
                   ) : modalData.universities && modalData.universities.length > 0 ? (
-                    /* Priority 2: UNIVERSITIES SECTION */
+                    /* Priority 2: Universities */
                     <div>
                       <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-3">
                         {modalData.universities.map((uni, idx) => {
@@ -809,21 +732,21 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                               key={`${uni._id || uniSlug || idx}-${idx}`}
                               href={queryUrl}
                               onClick={handleCloseModal}
-                              className="bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl p-1.5 min-[360px]:p-2 sm:p-2.5 aspect-square flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group min-w-0 shadow-2xs"
+                              className="bg-white hover:bg-gray-50 border border-gray-200 rounded-2xl p-1.5 min-[360px]:p-2 sm:p-2.5 aspect-square flex flex-col items-center justify-center text-center cursor-pointer transition-colors duration-200 group min-w-0"
                             >
                               <div className="mb-1 sm:mb-1.5 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0 h-10 sm:h-12 w-full">
                                 <PartnerLogoIcon partner={uni} />
                               </div>
-                              <h5 className="text-[9.5px] min-[360px]:text-[10px] sm:text-[11px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors text-center w-full tracking-tight px-0.5 min-w-0">
-                                {formatTwoLineText(name)}
-                              </h5>
+                              <span className="line-clamp-2 text-center leading-tight font-semibold text-[9.5px] min-[360px]:text-[10px] sm:text-[11px] text-gray-700 group-hover:text-blue-500 transition-colors w-full px-0.5">
+                                {name}
+                              </span>
                             </Link>
                           );
                         })}
                       </div>
                     </div>
                   ) : modalData.courses && modalData.courses.length > 0 ? (
-                    /* Priority 3: COURSES SECTION */
+                    /* Priority 3: Courses */
                     <div>
                       <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-3">
                         {modalData.courses.map((course, idx) => {
@@ -838,14 +761,14 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                               key={`${course._id || courseSlug || idx}-${course.courseId || ''}-${idx}`}
                               href={queryUrl}
                               onClick={handleCloseModal}
-                              className="bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl p-1.5 min-[360px]:p-2 sm:p-2.5 aspect-square flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group min-w-0 shadow-2xs"
+                              className="bg-white hover:bg-gray-50 border border-gray-200 rounded-2xl p-1.5 min-[360px]:p-2 sm:p-2.5 aspect-square flex flex-col items-center justify-center text-center cursor-pointer transition-colors duration-200 group min-w-0"
                             >
                               <div className="mb-1 sm:mb-1.5 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
                                 <CourseIcon course={course} />
                               </div>
-                              <h5 className="text-[9.5px] min-[360px]:text-[10px] sm:text-[11px] font-medium text-slate-800 group-hover:text-blue-600 transition-colors text-center w-full tracking-tight px-0.5 min-w-0 uppercase">
-                                {formatTwoLineText(name)}
-                              </h5>
+                              <span className="line-clamp-2 text-center leading-tight uppercase font-medium text-[9.5px] min-[360px]:text-[10px] sm:text-[11px] text-gray-700 group-hover:text-blue-500 transition-colors w-full px-0.5">
+                                {name}
+                              </span>
                             </Link>
                           );
                         })}
@@ -854,8 +777,8 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                   ) : null}
                 </div>
               ) : (
-                <div className="bg-slate-50 border border-slate-200/80 p-6 rounded-2xl text-center flex flex-col items-center justify-center space-y-2 my-3">
-                  <p className="text-xs sm:text-sm text-slate-600 font-medium">
+                <div className="bg-gray-50 border border-gray-200 p-6 rounded-2xl text-center flex flex-col items-center justify-center space-y-2 my-3">
+                  <p className="text-xs sm:text-sm text-gray-600 font-medium">
                     🎓 No subcategories or programs available right now for {activeCategory.name}.
                   </p>
                 </div>
@@ -867,3 +790,5 @@ export function Category({ categories = [], universities = [], programs = [] }) 
     </>
   );
 }
+
+export default Category;
