@@ -6,8 +6,7 @@ import Link from "next/link";
 import DisclaimerContent from "@/components/common/legal/DisclaimerContent";
 import PrivacyContent from "@/components/common/legal/PrivacyContent";
 import TermsContent from "@/components/common/legal/TermsContent";
-import { useContext } from "react";
-import { FormModalContext } from "@/context";
+import { useFormModal } from "@/hooks/useFormModal";
 import { getAssetPath } from "@/lib/utils";
 
 import {
@@ -21,8 +20,7 @@ export function Footer({
 }) {
   const UNIVERSITIES = initialUniversities || defaultUniversities;
   const PROGRAMS = initialPrograms || defaultPrograms;
-  const formModalCtx = useContext(FormModalContext);
-  const openFormModal = formModalCtx?.openFormModal ?? (() => { });
+  const { openFormModal } = useFormModal();
 
   const [activeDialog, setActiveDialog] = useState(null);
 

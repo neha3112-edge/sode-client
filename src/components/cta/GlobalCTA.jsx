@@ -4,7 +4,7 @@ import React from "react";
 import { usePathname } from "next/navigation";
 import BottomCTA from "./BottomCTA";
 import FloatingButton from "./FloatingButton";
-import { useFormModal } from "@/context";
+import { useFormModal } from "@/hooks/useFormModal";
 import { getAssetPath } from "@/lib/utils";
 
 export default function GlobalCTA({

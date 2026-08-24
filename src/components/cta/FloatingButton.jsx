@@ -3,7 +3,7 @@
 import React, { useEffect, useRef } from "react";
 import Image from "next/image";
 import confetti from "canvas-confetti";
-import { useFormModal } from "@/context";
+import { useFormModal } from "@/hooks/useFormModal";
 import { getAssetPath } from "@/lib/utils";
 
 export default function FloatingButton({

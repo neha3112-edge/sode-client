@@ -6,7 +6,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Button } from "antd";
 import { CloseOutlined, RightOutlined } from "@ant-design/icons";
-import { useCompare } from "@/context";
+import { useCompare } from "@/hooks/useCompare";
 import { getAssetPath } from "@/lib/utils";
 
 export default function CompareDrawerWidget() {

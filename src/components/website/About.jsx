@@ -4,7 +4,7 @@ import Image from "next/image";
 
 import { Button } from "antd";
 import { Container } from "@/components/common/Container";
-import { useFormModal } from "@/context";
+import { useFormModal } from "@/hooks/useFormModal";
 import { getAssetPath } from "@/lib/utils";
 import {
   leftCards as defaultLeftCards,
@@ -178,7 +178,7 @@ export function About({
           <div className="mt-4 md:mt-6 text-center">
             <Button
               onClick={onClick}
-              className="bg-linear-to-r from-[#EEC471] via-[#F3CD73] to-[#FADA9A] text-[#102441] text-sm rounded-md px-4 py-5 border-none text-base font-bold shadow-lg transition-all transform hover:scale-[1.02] cursor-pointer duration-200"
+              className="bg-linear-to-r from-[#EEC471] via-[#F3CD73] to-[#FADA9A] text-[#102441] text-sm rounded-md px-4 py-5 border-none font-bold shadow-lg transition-all transform hover:scale-[1.02] cursor-pointer duration-200"
             >
               Book 1:1 Personalised Counselling
             </Button>

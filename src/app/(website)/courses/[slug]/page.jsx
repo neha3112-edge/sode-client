@@ -33,8 +33,8 @@ import Link from "next/link";
 import FormWrapper from "@/components/forms/FormWrapper";
 import NotFoundPage from "@/components/website/NotFoundPage";
 import { getAssetPath } from "@/lib/utils";
-import { useFormModal } from "@/context";
-import { getWebsiteCourseRead } from "@/services/api";
+import { useFormModal } from "@/hooks/useFormModal";
+import { request } from "@/services/request";
 
 
 
@@ -126,13 +126,58 @@ export default function CourseDetailPage() {
     let isMounted = true;
     if (slug) {
       setLoading(true);
-      getWebsiteCourseRead(slug)
+      const isObjectId = /^[0-9a-fA-F]{24}$/.test(slug);
+      const entity = isObjectId ? "university-offerings" : "university-offering-pages";
+      const endPoint = isObjectId ? "v1/details" : "v1/list";
+
+      request.dynamicRead({ entity, endPoint, id: encodeURIComponent(slug), revalidate: 900 })
         .then((res) => {
           if (!isMounted) return;
-          const data = res?.result || res?.program || res;
-          setCourse(data || null);
-          if (data && typeof data.activeOfferingIdx === "number") {
-            setActiveUniIdx(data.activeOfferingIdx);
+          const pageRes = res?.result || res;
+          if (pageRes && (pageRes.offeringId || pageRes.isOfferingPage)) {
+            const off = pageRes.offeringId || {};
+            const uni = off.universityId || {};
+            const courseObj = off.courseId || {};
+            const sub = off.subCourseId || {};
+
+            const normalizedData = {
+              _id: pageRes._id,
+              slug: pageRes.slug,
+              isOfferingPage: true,
+              offeringPage: pageRes,
+              title: courseObj.title || courseObj.name || pageRes.slug,
+              description: pageRes.overviewSection?.description || courseObj.description || "",
+              categories: courseObj.categories || [],
+              universityOfferings: [
+                {
+                  _id: off._id,
+                  university: uni,
+                  subcourses: sub._id ? [sub] : [],
+                  duration: off.duration,
+                  fees: off.fees,
+                  fee: off.fees,
+                },
+              ],
+              heroMedia: pageRes.heroMedia,
+              brochurePdf: pageRes.brochurePdf,
+              admissionDeadline: pageRes.admissionDeadline,
+              overviewSection: pageRes.overviewSection,
+              whyChooseSection: pageRes.whyChooseSection,
+              admissionSection: pageRes.admissionSection,
+              skillsSection: pageRes.skillsSection,
+              learningExperience: pageRes.learningExperience,
+              instituteSection: pageRes.instituteSection,
+              careerSection: pageRes.careerSection,
+              feeSection: pageRes.feeSection,
+              faqSection: pageRes.faqSection,
+            };
+            setCourse(normalizedData);
+          } else {
+            const data = pageRes?.program || pageRes;
+            setCourse(data || null);
+            if (data && typeof data.activeOfferingIdx === "number") {
+              setActiveUniIdx(data.activeOfferingIdx);
+            }
           }
         })
         .catch((err) => {

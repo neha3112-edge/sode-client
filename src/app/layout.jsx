@@ -1,22 +1,36 @@
-import { Montserrat } from "next/font/google";
+import { Roboto } from "next/font/google";
 import "./globals.css";
 import AppProviders from "@/components/providers/AppProviders";
 
-const montserrat = Montserrat({
+const roboto = Roboto({
   subsets: ["latin"],
-  variable: "--font-montserrat",
-  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-roboto",
+  weight: ["300", "400", "500", "700", "900"],
   display: "swap",
 });
+
+export const metadata = {
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
+  manifest: "/site.webmanifest",
+};
 
 export default function RootLayout({ children }) {
   return (
     <html
       lang="en-IN"
       suppressHydrationWarning
-      className={`${montserrat.variable} font-sans h-full antialiased`}
+      className={`${roboto.variable} font-sans h-full antialiased`}
     >
-      <body className={`${montserrat.className} min-h-full flex flex-col`} suppressHydrationWarning>
+      <body className={`${roboto.className} min-h-full flex flex-col`} suppressHydrationWarning>
         <AppProviders>
           {children}
         </AppProviders>

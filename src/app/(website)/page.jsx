@@ -1,25 +1,14 @@
 import { Hero } from "@/components/website/Hero";
 import { Category } from "@/components/website/Category";
-import { SearchBar } from "@/components/website/SearchBar";
-
 import { getUniversitiesData } from "@/constants/universitiesData";
 import { getAboutData } from "@/constants/aboutData";
 import { getFaqData } from "@/constants/faqData";
 import { getTestimonialsData } from "@/constants/testimonialsData";
 import { getFooterData } from "@/constants/footerData";
 import { getPageMetaData } from "@/constants/pageMetaData";
-import {
-  getWebsiteHero,
-  getWebsiteCoursesFilter,
-  getWebsiteCategories,
-  getWebsiteCategoryOptions,
-  getWebsiteUniversityOptions,
-  getWebsiteSubcourseOptions,
-  getWebsiteDurationOptions,
-  getWebsiteFeeOptions,
-} from "@/services/api";
+import { request } from "@/services/request";
 
-export const revalidate = 300; // Next.js ISR: Revalidate cache every 5 minutes
+export const revalidate = 300;
 
 export async function generateMetadata() {
   const pageMeta = await getPageMetaData("/");
@@ -48,7 +37,7 @@ export async function generateMetadata() {
 export default async function Home() {
   // Parallel Data Fetching via Promise.all (Eliminates SSR Waterfall Delays)
   const [
-    heroData,
+    heroRes,
     universities,
     coursesData,
     categoryApiData,
@@ -59,10 +48,10 @@ export default async function Home() {
     iimUniversities,
     iitUniversities,
   ] = await Promise.all([
-    getWebsiteHero("home"),
+    request.dynamicRead({ entity: "hero", endPoint: "website-read", options: { page: "home" }, revalidate: 900 }),
     getUniversitiesData(),
-    getWebsiteCoursesFilter({ limit: 30 }),
-    getWebsiteCategories(),
+    request.dynamicList({ entity: "university-offerings", endPoint: "v1/list", options: { items: 30 }, revalidate: 300 }),
+    request.dynamicList({ entity: "category", endPoint: "v1/list", revalidate: 900 }),
     getAboutData(),
     getFaqData(),
     getTestimonialsData(),
@@ -70,6 +59,9 @@ export default async function Home() {
     getUniversitiesData({ type: "iim", limit: 10, page: 1 }),
     getUniversitiesData({ type: "iit", limit: 10, page: 1 }),
   ]);
+
+  const heroData = heroRes?.result || heroRes;
+  const programs = coursesData?.result || coursesData?.programs || [];
 
   const categories = Array.isArray(categoryApiData?.result)
     ? categoryApiData.result
@@ -79,7 +71,6 @@ export default async function Home() {
         ? categoryApiData
         : [];
 
-  const programs = coursesData?.programs || [];
   const { leftCards, rightCards } = aboutData || {};
 
   return (

@@ -25,7 +25,7 @@ function CategoryIcon({ cat }) {
       <div className="w-7 h-7 min-[360px]:w-8 min-[360px]:h-8 sm:w-10 sm:h-10 md:w-11 md:h-11 relative shrink-0">
         <Image
           src={iconUrl}
-          alt={cat.name || cat.label || "Category"}
+          alt={cat.name || cat.label}
           fill
           sizes="48px"
           className="object-contain"
@@ -36,7 +36,7 @@ function CategoryIcon({ cat }) {
   }
 
   return (
-    <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-blue-50 text-blue-600 font-bold flex items-center justify-center text-[10px] sm:text-xs">
+    <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-blue-50 text-blue-600 font-semibold flex items-center justify-center text-[10px] sm:text-xs">
       {(cat?.name || "C").charAt(0)}
     </div>
   );

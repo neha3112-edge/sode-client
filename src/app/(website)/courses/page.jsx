@@ -20,17 +20,11 @@ import {
 } from "@ant-design/icons";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
-import { useFormModal, useCompare } from "@/context";
+import { useFormModal } from "@/hooks/useFormModal";
+import { useCompare } from "@/hooks/useCompare";
 import { getAssetPath } from "@/lib/utils";
 import WebsiteLayout from "@/components/layout/WebsiteLayout";
-import {
-  getWebsiteCoursesFilter,
-  getWebsiteCategories,
-  getUniversities,
-  getWebsiteDurationOptions,
-  getWebsiteFeeOptions,
-  getWebsiteUniversityOptions,
-} from "@/services/api";
+import { request } from "@/services/request";
 
 const SliderFilterIcon = (props) => (
   <span className="anticon inline-flex items-center justify-center">
@@ -338,8 +332,8 @@ function CoursesContent() {
     let isMounted = true;
 
     Promise.all([
-      getWebsiteCategories(),
-      getUniversities({ limit: 100 }),
+      request.dynamicList({ entity: "category", endPoint: "v1/list", revalidate: 900 }),
+      request.dynamicList({ entity: "universities", endPoint: "v1/list", options: { items: 100 }, revalidate: 300 }),
     ])
       .then(([categoriesRes, unisRes]) => {
         if (!isMounted) return;
@@ -430,21 +424,32 @@ function CoursesContent() {
       ? selectedFee.filter((f) => f && f !== "all")
       : (selectedFee && selectedFee !== "all" ? selectedFee : "all");
 
-    getWebsiteCoursesFilter({
-      page: currentPage,
-      limit: ITEMS_PER_PAGE,
-      category: resolvedCategoryIds,
-      subcategory: resolvedSubcategoryIds,
-      course: resolvedCourseId,
-      university: resolvedUniversityIds,
-      duration: resolvedDuration,
-      fee: resolvedFee,
-      search: appliedSearchTerm,
-      sort: sortBy,
+    request.dynamicList({
+      entity: "university-offerings",
+      endPoint: "v1/list",
+      options: {
+        page: currentPage,
+        items: ITEMS_PER_PAGE,
+        category: resolvedCategoryIds,
+        subcategory: resolvedSubcategoryIds,
+        course: resolvedCourseId,
+        university: resolvedUniversityIds,
+        duration: resolvedDuration,
+        fee: resolvedFee,
+        search: appliedSearchTerm,
+        sort: sortBy,
+      },
+      revalidate: 300,
     })
       .then((res) => {
         if (!isMounted) return;
-        setCoursesData(res || { programs: [], total: 0, totalPages: 1, page: 1 });
+        const programs = res?.result || res?.programs || [];
+        setCoursesData({
+          programs,
+          total: res?.pagination?.total ?? programs.length,
+          totalPages: res?.pagination?.pages ?? 1,
+          page: res?.pagination?.page ?? 1,
+        });
       })
       .catch((err) => {
         console.error("Error fetching website university offerings filter:", err);

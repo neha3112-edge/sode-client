@@ -16,7 +16,7 @@ import Image from "next/image";
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-import { getWebsiteBlogs } from "@/services/api";
+import { request } from "@/services/request";
 import { getAssetPath } from "@/lib/utils";
 import WebsiteLayout from "@/components/layout/WebsiteLayout";
 
@@ -191,12 +191,13 @@ export default function BlogPage() {
     let isMounted = true;
     setLoading(true);
 
-    getWebsiteBlogs({ page: currentPage, items: pageSize })
+    request.dynamicList({ entity: "blogs", endPoint: "v1/list", options: { page: currentPage, items: pageSize } })
       .then((res) => {
         if (!isMounted) return;
-        if (res && Array.isArray(res.blogs)) {
-          setBlogs(res.blogs);
-          setTotalCount(res.pagination?.count || res.blogs.length);
+        const list = res?.result || res?.blogs || (Array.isArray(res) ? res : []);
+        if (Array.isArray(list)) {
+          setBlogs(list);
+          setTotalCount(res?.pagination?.count || res?.pagination?.total || list.length);
         } else {
           setBlogs([]);
           setTotalCount(0);

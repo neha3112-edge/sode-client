@@ -26,14 +26,9 @@ import {
   ThunderboltOutlined,
 } from "@ant-design/icons";
 
-import { useCompare, useAppDrawer } from "@/context";
-import {
-  getUniversityOptions,
-  getCourseOptions,
-  getModeOptions,
-  getWebsiteUniversitiesCompare,
-  getUniversityRecommendations,
-} from "@/services/api";
+import { useCompare } from "@/hooks/useCompare";
+import { useFormModal as useAppDrawer } from "@/hooks/useFormModal";
+import { request } from "@/services/request";
 import { getAssetPath } from "@/lib/utils";
 
 function MarqueeLogoItem({ uni, onClick }) {
@@ -98,26 +93,26 @@ function CompareContent() {
   useEffect(() => {
     let isMounted = true;
 
-    getUniversityOptions()
+    request.dynamicOptions({ entity: "universities", endPoint: "v1/options" })
       .then((res) => {
         if (!isMounted) return;
-        const uList = Array.isArray(res) ? res : res?.result || [];
+        const uList = Array.isArray(res?.result) ? res.result : Array.isArray(res) ? res : [];
         setAllUniversities(uList);
       })
       .catch((err) => console.error("Error fetching university options:", err));
 
-    getCourseOptions()
+    request.dynamicOptions({ entity: "courses", endPoint: "v1/options" })
       .then((res) => {
         if (!isMounted) return;
-        const cList = Array.isArray(res) ? res : res?.result || [];
+        const cList = Array.isArray(res?.result) ? res.result : Array.isArray(res) ? res : [];
         setAllCourses(cList);
       })
       .catch((err) => console.error("Error fetching course options:", err));
 
-    getModeOptions()
+    request.dynamicOptions({ entity: "modeinfo", endPoint: "v1/options" })
       .then((res) => {
         if (!isMounted) return;
-        const mList = Array.isArray(res) ? res : res?.result || [];
+        const mList = Array.isArray(res?.result) ? res.result : Array.isArray(res) ? res : [];
         setAllModes(mList);
       })
       .catch((err) => console.error("Error fetching mode options:", err));
@@ -192,8 +187,12 @@ function CompareContent() {
     if (currentIdentifiers.length === 0) return;
     setLoading(true);
     try {
-      const res = await getWebsiteUniversitiesCompare(currentIdentifiers);
-      const data = Array.isArray(res) ? res : res?.result || [];
+      const res = await request.dynamicRead({
+        entity: "universities",
+        endPoint: "v1/compare",
+        options: { universityid: currentIdentifiers.join(",") },
+      });
+      const data = Array.isArray(res?.result) ? res.result : Array.isArray(res) ? res : [];
       const recs = res?.recommendations || [];
       setComparedData(data);
       if (recs.length > 0) {
@@ -233,9 +232,13 @@ function CompareContent() {
 
     initialFetchDoneRef.current = true;
     setLoading(true);
-    getWebsiteUniversitiesCompare(ids)
+    request.dynamicRead({
+      entity: "universities",
+      endPoint: "v1/compare",
+      options: { universityid: ids.join(",") },
+    })
       .then((res) => {
-        const data = Array.isArray(res) ? res : res?.result || [];
+        const data = Array.isArray(res?.result) ? res.result : Array.isArray(res) ? res : [];
         const recs = res?.recommendations || [];
         setComparedData(data);
         if (recs.length > 0) {
@@ -321,12 +324,16 @@ function CompareContent() {
 
     let isMounted = true;
     setRecLoading(true);
-    getUniversityRecommendations(baseKey)
+    request.dynamicRead({
+      entity: "universities",
+      endPoint: "v1/compare",
+      options: { universityid: baseKey },
+    })
       .then((res) => {
         if (!isMounted) return;
-        setRecommendations(res.recommendations || []);
-        if (res.baseUniversity) {
-          setBaseUniversityObj(res.baseUniversity);
+        setRecommendations(res?.recommendations || []);
+        if (res?.result?.[0]) {
+          setBaseUniversityObj(res.result[0]);
         }
       })
       .catch((err) => console.error("❌ Failed to fetch smart recommendations:", err))
@@ -366,8 +373,12 @@ function CompareContent() {
 
     setLoading(true);
     try {
-      const res = await getWebsiteUniversitiesCompare(combinedSlugs);
-      const data = Array.isArray(res) ? res : res?.result || [];
+      const res = await request.dynamicRead({
+        entity: "universities",
+        endPoint: "v1/compare",
+        options: { universityid: combinedSlugs.join(",") },
+      });
+      const data = Array.isArray(res?.result) ? res.result : Array.isArray(res) ? res : [];
       setComparedData(data);
 
       const newParams = new URLSearchParams(searchParams.toString());
@@ -385,15 +396,48 @@ function CompareContent() {
     }
   };
 
-  // Available universities (excluding currently selected ones & filtered by selectedMode)
+  // Available universities (excluding currently selected ones & filtered by selectedCourses & selectedMode)
   const availableUniversities = useMemo(() => {
     const selectedKeys = new Set([
       ...(compareList || []).map((u) => String(u._id || u.id || u.slug || "").toLowerCase()),
       ...(comparedData || []).map((u) => String(u._id || u.slug || "").toLowerCase()),
     ]);
+
+    // 1. Determine allowed university IDs from selectedCourses
+    let allowedUniversityIds = null;
+    if (selectedCourses && selectedCourses.length > 0) {
+      const activeCoursesLower = selectedCourses
+        .filter((c) => c && c !== "all")
+        .map((c) => String(c).toLowerCase().trim());
+
+      if (activeCoursesLower.length > 0) {
+        const idSet = new Set();
+        (allCourses || []).forEach((c) => {
+          const cName = String(c.name || c.title || "").toLowerCase().trim();
+          if (
+            activeCoursesLower.includes(cName) ||
+            activeCoursesLower.some((sel) => cName.includes(sel) || sel.includes(cName))
+          ) {
+            (c.universityIds || []).forEach((uId) => idSet.add(String(uId)));
+          }
+        });
+        allowedUniversityIds = idSet;
+      }
+    }
+
     return (allUniversities || []).filter((u) => {
       const isSelected = selectedKeys.has(String(u._id || u.slug || "").toLowerCase());
       if (isSelected) return false;
+
+      // Filter by Course if a course is actively selected
+      if (allowedUniversityIds && allowedUniversityIds.size > 0) {
+        const uId = String(u._id || u.id || "");
+        if (!allowedUniversityIds.has(uId)) {
+          return false;
+        }
+      }
+
+      // Filter by Mode if selected
       if (selectedMode && selectedMode !== "all") {
         const uMode = u.mode || u.education_mode || [];
         const modeArr = Array.isArray(uMode) ? uMode : [uMode];
@@ -409,7 +453,7 @@ function CompareContent() {
       }
       return true;
     });
-  }, [allUniversities, compareList, comparedData, selectedMode]);
+  }, [allUniversities, allCourses, compareList, comparedData, selectedCourses, selectedMode]);
 
   // Rich Select Options with Logos for the in-slot university picker
   const universitySelectOptions = useMemo(() => {

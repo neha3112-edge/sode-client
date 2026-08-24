@@ -15,8 +15,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 
-import { useCompare } from "@/context";
-import { getUniversities } from "@/services/api";
+import { useCompare } from "@/hooks/useCompare";
+import { request } from "@/services/request";
 import { getAssetPath } from "@/lib/utils";
 import WebsiteLayout from "@/components/layout/WebsiteLayout";
 
@@ -47,10 +47,10 @@ function UniversityCard({ uni }) {
     uni?.slug ||
     (uni?.name
       ? uni.name
-          .toLowerCase()
-          .replace(/[^\w\s-]/g, "")
-          .replace(/[\s_-]+/g, "-")
-          .replace(/^-+|-+$/g, "")
+        .toLowerCase()
+        .replace(/[^\w\s-]/g, "")
+        .replace(/[\s_-]+/g, "-")
+        .replace(/^-+|-+$/g, "")
       : uni?._id || "");
   const type = uni?.type || uni?.category?.name || (uni?.isTop ? "Top" : (uni?.isFeatured ? "Featured" : ""));
   const location = uni?.location || [uni?.city?.name, uni?.state?.name, uni?.country?.name].filter(Boolean).join(", ") || "";
@@ -249,7 +249,7 @@ export default function UniversitiesPage() {
 
   useEffect(() => {
     let isMounted = true;
-    getUniversities({ limit: 500 })
+    request.dynamicList({ entity: "universities", endPoint: "v1/list", options: { items: 500 } })
       .then((res) => {
         if (!isMounted) return;
         const data = Array.isArray(res?.result) ? res.result : (Array.isArray(res) ? res : []);
@@ -297,39 +297,39 @@ export default function UniversitiesPage() {
     setCurrentPage(1);
   };
 
-function UniversitySkeletonCard() {
-  return (
-    <div className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden flex flex-col h-full shadow-none">
-      {/* Shimmer Banner */}
-      <div className="h-32 sm:h-36 bg-slate-200/80 animate-pulse relative" />
+  function UniversitySkeletonCard() {
+    return (
+      <div className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden flex flex-col h-full shadow-none">
+        {/* Shimmer Banner */}
+        <div className="h-32 sm:h-36 bg-slate-200/80 animate-pulse relative" />
 
-      {/* Content */}
-      <div className="p-4 sm:p-5 flex flex-col flex-1 gap-3">
-        {/* Header: Logo + Name */}
-        <div className="flex items-center gap-3">
-          <Skeleton.Avatar active size="large" shape="square" style={{ borderRadius: 8 }} />
-          <div className="flex-1">
-            <Skeleton.Input active size="small" style={{ width: "80%", height: 18 }} />
-            <Skeleton.Input active size="small" style={{ width: "50%", height: 14, marginTop: 4 }} />
+        {/* Content */}
+        <div className="p-4 sm:p-5 flex flex-col flex-1 gap-3">
+          {/* Header: Logo + Name */}
+          <div className="flex items-center gap-3">
+            <Skeleton.Avatar active size="large" shape="square" style={{ borderRadius: 8 }} />
+            <div className="flex-1">
+              <Skeleton.Input active size="small" style={{ width: "80%", height: 18 }} />
+              <Skeleton.Input active size="small" style={{ width: "50%", height: 14, marginTop: 4 }} />
+            </div>
+          </div>
+
+          {/* Badges / Approvals */}
+          <div className="flex gap-1.5 mt-2">
+            <Skeleton.Button active size="small" style={{ width: 60, height: 20, borderRadius: 12 }} />
+            <Skeleton.Button active size="small" style={{ width: 75, height: 20, borderRadius: 12 }} />
+            <Skeleton.Button active size="small" style={{ width: 65, height: 20, borderRadius: 12 }} />
+          </div>
+
+          {/* Footer CTA */}
+          <div className="pt-3 border-t border-slate-100 flex justify-between items-center mt-auto">
+            <Skeleton.Input active size="small" style={{ width: 90, height: 16 }} />
+            <Skeleton.Button active size="small" style={{ width: 80, height: 28, borderRadius: 8 }} />
           </div>
         </div>
-
-        {/* Badges / Approvals */}
-        <div className="flex gap-1.5 mt-2">
-          <Skeleton.Button active size="small" style={{ width: 60, height: 20, borderRadius: 12 }} />
-          <Skeleton.Button active size="small" style={{ width: 75, height: 20, borderRadius: 12 }} />
-          <Skeleton.Button active size="small" style={{ width: 65, height: 20, borderRadius: 12 }} />
-        </div>
-
-        {/* Footer CTA */}
-        <div className="pt-3 border-t border-slate-100 flex justify-between items-center mt-auto">
-          <Skeleton.Input active size="small" style={{ width: 90, height: 16 }} />
-          <Skeleton.Button active size="small" style={{ width: 80, height: 28, borderRadius: 8 }} />
-        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
   return (
     <WebsiteLayout py="py-4 sm:py-6" bg="#f8fafc">

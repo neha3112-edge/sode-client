@@ -1,14 +1,13 @@
 "use client";
 
-import React, { useContext } from "react";
+import React from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { FormModalContext } from "@/context";
+import { useFormModal } from "@/hooks/useFormModal";
 
 export function MobileBottomNav() {
   const pathname = usePathname() || "";
-  const formModalCtx = useContext(FormModalContext);
-  const openFormModal = formModalCtx?.openFormModal ?? (() => { });
+  const { openFormModal } = useFormModal();
 
   const navItems = [
     {

@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Container } from "@/components/common/Container";
-import { getWebsiteCategoryBySlug, getWebsiteCoursesFilter } from "@/services/api";
+import { request } from "@/services/request";
 import Image from "next/image";
 
 export const revalidate = 60; // Next.js ISR: Revalidate cache every 60 seconds
@@ -10,7 +10,13 @@ export const revalidate = 60; // Next.js ISR: Revalidate cache every 60 seconds
 // Dynamic Metadata for Category Page
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  const { category } = await getWebsiteCategoryBySlug(slug);
+  const catRes = await request.dynamicRead({
+    entity: "category",
+    endPoint: "website-read",
+    options: { slug },
+    revalidate: 900,
+  });
+  const category = catRes?.result?.category || catRes?.category;
 
   if (!category) {
     return {
@@ -26,15 +32,28 @@ export async function generateMetadata({ params }) {
 
 export default async function CategoryDetailPage({ params }) {
   const { slug } = await params;
-  const { category, children } = await getWebsiteCategoryBySlug(slug);
+  const catRes = await request.dynamicRead({
+    entity: "category",
+    endPoint: "website-read",
+    options: { slug },
+    revalidate: 900,
+  });
+
+  const category = catRes?.result?.category || catRes?.category;
+  const children = catRes?.result?.children || catRes?.children || [];
 
   if (!category) {
     notFound();
   }
 
   // Fetch courses under this category
-  const coursesData = await getWebsiteCoursesFilter({ category: slug, limit: 20 });
-  const programs = coursesData?.programs || [];
+  const coursesRes = await request.dynamicList({
+    entity: "university-offerings",
+    endPoint: "v1/list",
+    options: { category: slug, items: 20 },
+    revalidate: 300,
+  });
+  const programs = coursesRes?.result || coursesRes?.programs || [];
 
   return (
     <div className="flex flex-col min-h-screen bg-[#f8fafc] text-slate-900 font-sans selection:bg-blue-600 selection:text-white">

@@ -1,4 +1,4 @@
-import { getCourses, getUniversities, getBlogs } from "@/services/api";
+import { request } from "@/services/request";
 
 export default async function sitemap() {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://mysode.com";
@@ -24,33 +24,46 @@ export default async function sitemap() {
   let blogs = [];
 
   try {
-    const coursesRes = await getCourses({ limit: 1000 });
-    courses = Array.isArray(coursesRes)
+    const coursesRes = await request.dynamicList({
+      entity: "university-offerings",
+      endPoint: "v1/list",
+      options: { items: 1000 },
+      revalidate: 3600,
+    });
+    courses = Array.isArray(coursesRes?.result)
+      ? coursesRes.result
+      : Array.isArray(coursesRes)
       ? coursesRes
-      : Array.isArray(coursesRes?.programs)
-      ? coursesRes.programs
       : [];
   } catch (err) {
     console.error("Error fetching courses for sitemap:", err);
   }
 
   try {
-    const uniRes = await getUniversities({ limit: 1000 });
-    universities = Array.isArray(uniRes)
-      ? uniRes
-      : Array.isArray(uniRes?.result)
+    const uniRes = await request.dynamicList({
+      entity: "universities",
+      endPoint: "v1/list",
+      options: { items: 1000 },
+      revalidate: 3600,
+    });
+    universities = Array.isArray(uniRes?.result)
       ? uniRes.result
-      : Array.isArray(uniRes?.universities)
-      ? uniRes.universities
+      : Array.isArray(uniRes)
+      ? uniRes
       : [];
   } catch (err) {
     console.error("Error fetching universities for sitemap:", err);
   }
 
   try {
-    const blogRes = await getBlogs();
-    blogs = Array.isArray(blogRes)
-      ? blogRes
+    const blogRes = await request.dynamicList({
+      entity: "blogs",
+      endPoint: "v1/list",
+      options: { items: 1000 },
+      revalidate: 3600,
+    });
+    blogs = Array.isArray(blogRes?.result)
+      ? blogRes.result
       : Array.isArray(blogRes?.blogs)
       ? blogRes.blogs
       : [];

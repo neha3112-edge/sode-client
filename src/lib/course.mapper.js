@@ -16,11 +16,9 @@ const getId = (value) => {
 export function normalizeCourseForForm(course = {}) {
     return {
         ...course,
-
         logo: course.logo,
         image: course.image,
         brochureUrl: course.brochureUrl,
-
         categories: course.categories || [],
 
         universityOfferings: (course.universityOfferings || []).map((offering) => ({

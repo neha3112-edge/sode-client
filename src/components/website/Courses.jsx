@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Modal, Card } from "antd";
 
 import { Container } from "@/components/common/Container";
-import { useFormModal } from "@/context";
+import { useFormModal } from "@/hooks/useFormModal";
 import { getAssetPath } from "@/lib/utils";
 import { tabs as defaultTabs, programs as defaultPrograms } from "@/constants/coursesData";
 

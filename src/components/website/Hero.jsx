@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Carousel } from "antd";
 
-import { useFormModal } from "@/context";
+import { useFormModal } from "@/hooks/useFormModal";
 import { getAssetPath } from "@/lib/utils";
 
 export function Hero({ initialHeroData = null }) {

@@ -5,7 +5,7 @@ import Image from "next/image";
 
 import { Container } from "@/components/common/Container";
 import { Carousel } from "antd";
-import { useFormModal } from "@/context";
+import { useFormModal } from "@/hooks/useFormModal";
 import { getAssetPath } from "@/lib/utils";
 import { universities as defaultUniversities } from "@/constants/universitiesData";
 

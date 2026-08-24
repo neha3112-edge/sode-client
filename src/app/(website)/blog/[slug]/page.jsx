@@ -15,7 +15,7 @@ import {
   ReadOutlined,
 } from "@ant-design/icons";
 import { ArrowLeft } from "lucide-react";
-import { getBlogBySlug } from "@/services/api";
+import { request } from "@/services/request";
 import { getAssetPath } from "@/lib/utils";
 
 export default function BlogDetailPage() {
@@ -30,11 +30,12 @@ export default function BlogDetailPage() {
     let isMounted = true;
     if (slug) {
       setLoading(true);
-      getBlogBySlug(slug)
+      request.dynamicRead({ entity: "blogpages", endPoint: "v1/list", id: slug })
         .then((res) => {
           if (!isMounted) return;
-          if (res) {
-            setPageData(res);
+          const data = res?.result ?? res;
+          if (data) {
+            setPageData(data);
           }
         })
         .catch((err) => console.error("Error loading blog details:", err))

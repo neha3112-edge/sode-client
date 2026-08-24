@@ -42,8 +42,8 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { getAssetPath } from "@/lib/utils";
-import { useFormModal } from "@/context";
-import { getUniversityPageBySlug } from "@/services/api";
+import { useFormModal } from "@/hooks/useFormModal";
+import { request } from "@/services/request";
 
 const ICONS = {
   MapPin,
@@ -118,13 +118,14 @@ export default function UniversityDetailPage() {
     let isMounted = true;
     if (slug) {
       setLoading(true);
-      getUniversityPageBySlug(slug)
+      request.dynamicRead({ entity: "universities", endPoint: "v1/list", id: slug, revalidate: 900 })
         .then((res) => {
           if (!isMounted) return;
-          if (res) {
-            setUniversityData(res);
-            if (res.slug && res.slug !== slug && typeof window !== "undefined") {
-              window.history.replaceState(null, "", `/universities/${res.slug}`);
+          const data = res?.result || res;
+          if (data) {
+            setUniversityData(data);
+            if (data.slug && data.slug !== slug && typeof window !== "undefined") {
+              window.history.replaceState(null, "", `/universities/${data.slug}`);
             }
           } else {
             setUniversityData(null);
@@ -184,27 +185,27 @@ export default function UniversityDetailPage() {
 
   const naacText =
     data?.naac_rating?.grade ||
-    data?.naac_rating?.name ||
-    uni?.naac_rating?.grade ||
-    uni?.naac_rating?.name
+      data?.naac_rating?.name ||
+      uni?.naac_rating?.grade ||
+      uni?.naac_rating?.name
       ? `NAAC ${data?.naac_rating?.grade || data?.naac_rating?.name || uni?.naac_rating?.grade || uni?.naac_rating?.name}`
       : "";
 
   const nirfText = data?.nirf_rank?.rank
     ? `NIRF Rank #${data.nirf_rank.rank}`
     : uni?.nirf_rank?.rank
-    ? `NIRF Rank #${uni.nirf_rank.rank}`
-    : uni?.nirf_rank?.title
-    ? `NIRF: ${uni.nirf_rank.title}`
-    : "";
+      ? `NIRF Rank #${uni.nirf_rank.rank}`
+      : uni?.nirf_rank?.title
+        ? `NIRF: ${uni.nirf_rank.title}`
+        : "";
 
   const rankingText = [naacText, nirfText].filter(Boolean).join(" • ");
 
   const establishedText = getSafeText(
     data?.established_year?.year ||
-      data?.established_year ||
-      uni?.established_year?.year ||
-      uni?.established_year,
+    data?.established_year ||
+    uni?.established_year?.year ||
+    uni?.established_year,
     ""
   );
 
@@ -220,16 +221,16 @@ export default function UniversityDetailPage() {
   const rawApprovals = Array.isArray(data?.approvalsSection?.approvals) && data.approvalsSection.approvals.length > 0
     ? data.approvalsSection.approvals
     : Array.isArray(uni?.approvals) && uni.approvals.length > 0
-    ? uni.approvals
-    : [];
+      ? uni.approvals
+      : [];
 
   const displayApprovalsList = rawAccreditations.length > 0
     ? rawAccreditations
     : rawApprovals.map((a) => ({
-        title: typeof a === "object" ? a.name || a.title || a.code || "Approval" : a,
-        description: typeof a === "object" ? a.description || a.title || a.name || "" : "",
-        logo: typeof a === "object" ? a.logo : null,
-      }));
+      title: typeof a === "object" ? a.name || a.title || a.code || "Approval" : a,
+      description: typeof a === "object" ? a.description || a.title || a.name || "" : "",
+      logo: typeof a === "object" ? a.logo : null,
+    }));
 
   // Dynamic offerings list (actual courses linked to this university)
   const offeringsList = Array.isArray(data?.offerings) && data.offerings.length > 0
@@ -247,15 +248,15 @@ export default function UniversityDetailPage() {
   const dynamicFacts = Array.isArray(data?.factsheetSection?.facts) && data.factsheetSection.facts.length > 0
     ? data.factsheetSection.facts
     : [
-        { label: "University Name", value: uniName },
-        ...(locationText ? [{ label: "Location", value: locationText }] : []),
-        ...(establishedText ? [{ label: "Established Year", value: establishedText }] : []),
-        ...(naacText ? [{ label: "NAAC Accreditation", value: naacText }] : []),
-        ...(nirfText ? [{ label: "NIRF Ranking", value: nirfText }] : []),
-        ...(displayApprovalsList.length > 0 ? [{ label: "Recognitions & Approvals", value: displayApprovalsList.map(a => a.title).join(", ") }] : []),
-        ...(offeringsList.length > 0 ? [{ label: "Total Programmes", value: `${offeringsList.length}+ Degree & Diploma Programmes` }] : []),
-        ...(modesText ? [{ label: "Mode of Learning", value: modesText }] : []),
-      ];
+      { label: "University Name", value: uniName },
+      ...(locationText ? [{ label: "Location", value: locationText }] : []),
+      ...(establishedText ? [{ label: "Established Year", value: establishedText }] : []),
+      ...(naacText ? [{ label: "NAAC Accreditation", value: naacText }] : []),
+      ...(nirfText ? [{ label: "NIRF Ranking", value: nirfText }] : []),
+      ...(displayApprovalsList.length > 0 ? [{ label: "Recognitions & Approvals", value: displayApprovalsList.map(a => a.title).join(", ") }] : []),
+      ...(offeringsList.length > 0 ? [{ label: "Total Programmes", value: `${offeringsList.length}+ Degree & Diploma Programmes` }] : []),
+      ...(modesText ? [{ label: "Mode of Learning", value: modesText }] : []),
+    ];
 
   // Dynamic Navigation Sections
   const dynamicNavSections = [
@@ -508,8 +509,8 @@ export default function UniversityDetailPage() {
             {/* FIXED TOP STICKY BAR (Ant Design Tabs) */}
             <div
               className={`fixed top-0 left-0 right-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm transition-all duration-300 transform ${showTopBar
-                  ? "translate-y-0 opacity-100 pointer-events-auto"
-                  : "-translate-y-full opacity-0 pointer-events-none"
+                ? "translate-y-0 opacity-100 pointer-events-auto"
+                : "-translate-y-full opacity-0 pointer-events-none"
                 }`}
             >
               <div className="w-full max-w-7xl mx-auto px-4 sm:px-6">
@@ -1099,8 +1100,8 @@ export default function UniversityDetailPage() {
                       <div
                         key={idx}
                         className={`border rounded-2xl overflow-hidden transition-all duration-300 ${isOpen
-                            ? "border-[#0C3058] shadow-sm bg-blue-50/40"
-                            : "border-slate-200 bg-white hover:border-slate-300"
+                          ? "border-[#0C3058] shadow-sm bg-blue-50/40"
+                          : "border-slate-200 bg-white hover:border-slate-300"
                           }`}
                       >
                         <button

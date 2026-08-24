@@ -2,7 +2,6 @@ import React from "react";
 import { Header } from "@/components/website/Header";
 import { Footer } from "@/components/website/Footer";
 import MobileBottomNav from "@/components/website/MobileBottomNav";
-import GlobalCTA from "@/components/cta/GlobalCTA";
 
 export default function WebsiteLayout({ children }) {
   return (
