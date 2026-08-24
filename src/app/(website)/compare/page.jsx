@@ -1747,7 +1747,7 @@ function CompareContent() {
               </div>
             </div>
           ) : (
-            /* ── 4 DISCOVERY HELPER CARDS (Dynamic from DB with Fallback) ── */
+            /* ── 4 DISCOVERY HELPER CARDS (100% Dynamic from DB via showOnCompare) ── */
             <div className="mt-4 mb-2">
               {dbCompareCategories && dbCompareCategories.length > 0 ? (
                 <div className="grid grid-cols-2 gap-3.5 sm:gap-5 text-center">
@@ -1756,7 +1756,7 @@ function CompareContent() {
                     const borderColors = ["#DCE7F9", "#FDE8B5", "#FCDADA", "#D0F4E2"];
                     const cardBg = bgColors[idx % bgColors.length];
                     const cardBorder = borderColors[idx % borderColors.length];
-                    const rawLogo = cat.logo?.url || cat.logo?.path || (typeof cat.logo === 'string' ? cat.logo : null);
+                    const rawLogo = cat.logo?.url || cat.logo?.path || (typeof cat.logo === "string" ? cat.logo : null);
 
                     return (
                       <div
@@ -1805,73 +1805,7 @@ function CompareContent() {
                     );
                   })}
                 </div>
-              ) : (
-                <div className="grid grid-cols-2 gap-3.5 sm:gap-5 text-center">
-                  {/* 1. Trending Universities */}
-                  <div
-                    onClick={() => setIsTrendingModalOpen(true)}
-                    className="bg-[#F6F9FF] border border-[#DCE7F9] rounded-2xl sm:rounded-3xl p-4 sm:p-6 text-center flex flex-col items-center justify-center cursor-pointer transition-all hover:border-blue-400 hover:scale-[1.01] min-h-[160px] sm:min-h-[190px]"
-                  >
-                    <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-2xl bg-blue-50/80 border border-blue-100 flex items-center justify-center text-xl mb-2.5">
-                      📈
-                    </div>
-                    <h4 className="text-xs sm:text-sm font-bold text-[#0C3058] tracking-wider uppercase m-0 leading-tight">
-                      TRENDING<br />UNIVERSITIES
-                    </h4>
-                    <p className="text-[10px] sm:text-xs text-gray-400 font-normal m-0 mt-1.5 leading-snug max-w-[180px]">
-                      Compare with popular and in-demand universities.
-                    </p>
-                  </div>
-
-                  {/* 2. Recommended Universities */}
-                  <div
-                    onClick={() => setIsRecommendedModalOpen(true)}
-                    className="bg-[#FFFDF5] border border-[#FDE8B5] rounded-2xl sm:rounded-3xl p-4 sm:p-6 text-center flex flex-col items-center justify-center cursor-pointer transition-all hover:border-amber-400 hover:scale-[1.01] min-h-[160px] sm:min-h-[190px]"
-                  >
-                    <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-2xl bg-amber-50/80 border border-amber-100 flex items-center justify-center text-xl mb-2.5">
-                      ⭐
-                    </div>
-                    <h4 className="text-xs sm:text-sm font-bold text-[#0C3058] tracking-wider uppercase m-0 leading-tight">
-                      RECOMMENDED<br />UNIVERSITIES
-                    </h4>
-                    <p className="text-[10px] sm:text-xs text-gray-400 font-normal m-0 mt-1.5 leading-snug max-w-[180px]">
-                      Compare with popular and in-demand universities.
-                    </p>
-                  </div>
-
-                  {/* 3. State Wise Universities */}
-                  <div
-                    onClick={() => setIsStateModalOpen(true)}
-                    className="bg-[#FFF8F8] border border-[#FCDADA] rounded-2xl sm:rounded-3xl p-4 sm:p-6 text-center flex flex-col items-center justify-center cursor-pointer transition-all hover:border-rose-400 hover:scale-[1.01] min-h-[160px] sm:min-h-[190px]"
-                  >
-                    <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-2xl bg-rose-50/80 border border-rose-100 flex items-center justify-center text-xl mb-2.5">
-                      📍
-                    </div>
-                    <h4 className="text-xs sm:text-sm font-bold text-[#0C3058] tracking-wider uppercase m-0 leading-tight">
-                      STATE WISE<br />UNIVERSITIES
-                    </h4>
-                    <p className="text-[10px] sm:text-xs text-gray-400 font-normal m-0 mt-1.5 leading-snug max-w-[180px]">
-                      Compare with popular and in-demand universities.
-                    </p>
-                  </div>
-
-                  {/* 4. Accreditation Wise Universities */}
-                  <div
-                    onClick={() => setIsAccreditationModalOpen(true)}
-                    className="bg-[#F4FDF8] border border-[#D0F4E2] rounded-2xl sm:rounded-3xl p-4 sm:p-6 text-center flex flex-col items-center justify-center cursor-pointer transition-all hover:border-emerald-400 hover:scale-[1.01] min-h-[160px] sm:min-h-[190px]"
-                  >
-                    <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-2xl bg-emerald-50/80 border border-emerald-100 flex items-center justify-center text-xl mb-2.5">
-                      🎖️
-                    </div>
-                    <h4 className="text-xs sm:text-sm font-bold text-[#0C3058] tracking-wider uppercase m-0 leading-tight">
-                      ACCREDITATION<br />WISE UNIVERSITIES
-                    </h4>
-                    <p className="text-[10px] sm:text-xs text-gray-400 font-normal m-0 mt-1.5 leading-snug max-w-[180px]">
-                      Compare with popular and in-demand universities.
-                    </p>
-                  </div>
-                </div>
-              )}
+              ) : null}
 
               {/* Bottom Separator & Button: Show Me All Universities to Compare */}
               <div className="w-full h-px bg-gray-100 mt-6 mb-4" />
@@ -2152,11 +2086,10 @@ function CompareContent() {
                     <div
                       key={uni._id || uni.id}
                       onClick={() => handleToggleUniversityFromModal(uni)}
-                      className={`bg-white border rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-between cursor-pointer transition-all hover:scale-[1.02] text-center min-h-[125px] sm:min-h-[135px] shadow-2xs hover:shadow-md ${
-                        isAdded
+                      className={`bg-white border rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-between cursor-pointer transition-all hover:scale-[1.02] text-center min-h-[125px] sm:min-h-[135px] shadow-2xs hover:shadow-md ${isAdded
                           ? "border-blue-400 bg-blue-50/20 ring-1 ring-blue-300"
                           : "border-gray-200/90 hover:border-blue-400"
-                      }`}
+                        }`}
                     >
                       <div className="w-full h-14 sm:h-16 flex items-center justify-center relative px-2 mb-1.5">
                         {rawLogo ? (
@@ -2280,11 +2213,10 @@ function CompareContent() {
                     <div
                       key={uni._id || uni.id}
                       onClick={() => handleToggleUniversityFromModal(uni)}
-                      className={`bg-white border rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-between cursor-pointer transition-all hover:scale-[1.02] text-center min-h-[125px] sm:min-h-[135px] shadow-2xs hover:shadow-md ${
-                        isAdded
+                      className={`bg-white border rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-between cursor-pointer transition-all hover:scale-[1.02] text-center min-h-[125px] sm:min-h-[135px] shadow-2xs hover:shadow-md ${isAdded
                           ? "border-blue-400 bg-blue-50/20 ring-1 ring-blue-300"
                           : "border-gray-200/90 hover:border-blue-400"
-                      }`}
+                        }`}
                     >
                       <div className="w-full h-14 sm:h-16 flex items-center justify-center relative px-2 mb-1.5">
                         {rawLogo ? (
@@ -2438,11 +2370,10 @@ function CompareContent() {
                       <div
                         key={uni._id || uni.id}
                         onClick={() => handleToggleUniversityFromModal(uni)}
-                        className={`bg-white border rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-between cursor-pointer transition-all hover:scale-[1.02] text-center min-h-[125px] sm:min-h-[135px] shadow-2xs hover:shadow-md ${
-                          isAdded
+                        className={`bg-white border rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-between cursor-pointer transition-all hover:scale-[1.02] text-center min-h-[125px] sm:min-h-[135px] shadow-2xs hover:shadow-md ${isAdded
                             ? "border-blue-400 bg-blue-50/20 ring-1 ring-blue-300"
                             : "border-gray-200/90 hover:border-blue-400"
-                        }`}
+                          }`}
                       >
                         <div className="w-full h-14 sm:h-16 flex items-center justify-center relative px-2 mb-1.5">
                           {rawLogo ? (
@@ -2641,11 +2572,10 @@ function CompareContent() {
                       <div
                         key={uni._id || uni.id}
                         onClick={() => handleToggleUniversityFromModal(uni)}
-                        className={`bg-white border rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-between cursor-pointer transition-all hover:scale-[1.02] text-center min-h-[125px] sm:min-h-[135px] shadow-2xs hover:shadow-md ${
-                          isAdded
+                        className={`bg-white border rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-between cursor-pointer transition-all hover:scale-[1.02] text-center min-h-[125px] sm:min-h-[135px] shadow-2xs hover:shadow-md ${isAdded
                             ? "border-blue-400 bg-blue-50/20 ring-1 ring-blue-300"
                             : "border-gray-200/90 hover:border-blue-400"
-                        }`}
+                          }`}
                       >
                         <div className="w-full h-14 sm:h-16 flex items-center justify-center relative px-2 mb-1.5">
                           {rawLogo ? (
@@ -2816,11 +2746,10 @@ function CompareContent() {
                     <div
                       key={uni._id || uni.id}
                       onClick={() => handleToggleUniversityFromModal(uni)}
-                      className={`bg-white border rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-between cursor-pointer transition-all hover:scale-[1.02] text-center min-h-[125px] sm:min-h-[135px] shadow-2xs hover:shadow-md ${
-                        isAdded
+                      className={`bg-white border rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-between cursor-pointer transition-all hover:scale-[1.02] text-center min-h-[125px] sm:min-h-[135px] shadow-2xs hover:shadow-md ${isAdded
                           ? "border-blue-400 bg-blue-50/20 ring-1 ring-blue-300"
                           : "border-gray-200/90 hover:border-blue-400"
-                      }`}
+                        }`}
                     >
                       <div className="w-full h-14 sm:h-16 flex items-center justify-center relative px-2 mb-1.5">
                         {rawLogo ? (
