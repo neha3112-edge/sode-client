@@ -3,10 +3,7 @@
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import Script from "next/script";
-import Lottie from "lottie-react";
-import { Headphones, Home, Mail } from "lucide-react";
-
-import successAnimation from "@/../public/assets/animations/check.json";
+import { Headphones, Home, Mail, CheckCircle2 } from "lucide-react";
 import { getAssetPath } from "@/lib/utils";
 
 /* =========================================================
@@ -176,13 +173,8 @@ export default function ThankYouClient({
             ================================================== */}
 
             <div className="mb-8 flex flex-col items-center">
-              <div className="mb-4 h-32 w-32 md:h-40 md:w-40">
-                <Lottie
-                  animationData={successAnimation}
-                  loop={false}
-                  autoplay
-                  className="h-full w-full"
-                />
+              <div className="mb-4 h-24 w-24 sm:h-28 sm:w-28 rounded-full bg-emerald-50 border-4 border-emerald-100 flex items-center justify-center shadow-lg shadow-emerald-500/10 animate-bounce">
+                <CheckCircle2 className="h-14 w-14 sm:h-16 sm:w-16 text-emerald-500" strokeWidth={2.5} />
               </div>
 
               <p className="mb-2 text-xs font-bold tracking-widest text-[#8B7500]">

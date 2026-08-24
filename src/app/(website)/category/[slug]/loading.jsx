@@ -6,7 +6,7 @@ import { Skeleton } from "antd";
 
 export default function CategoryLoading() {
   return (
-    <div className="flex flex-col min-h-screen bg-[#f8fafc] text-slate-900 font-sans">
+    <div className="flex flex-col min-h-screen bg-gray-200 text-slate-900 font-sans">
       <main className="flex-1">
         {/* ── HERO BANNER SKELETON ── */}
         <section className="bg-linear-to-b from-[#102441] to-[#0a1424] text-white py-14 md:py-20 px-4 text-center relative overflow-hidden border-b border-slate-800">
