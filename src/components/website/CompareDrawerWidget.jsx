@@ -10,7 +10,13 @@ import { useCompare } from "@/hooks/useCompare";
 import { getAssetPath } from "@/lib/utils";
 
 export default function CompareDrawerWidget() {
+  const pathname = usePathname();
   const { compareList, removeFromCompare, clearCompare, triggerExecuteCompare } = useCompare();
+
+  // Do not show the floating widget on the dedicated compare page
+  if (pathname === "/compare" || pathname?.startsWith("/compare/")) {
+    return null;
+  }
 
   if (!compareList || compareList.length === 0) {
     return null;

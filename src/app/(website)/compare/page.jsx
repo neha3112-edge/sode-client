@@ -23,46 +23,13 @@ import {
   LaptopOutlined,
   VideoCameraOutlined,
   CreditCardOutlined,
-  ThunderboltOutlined,
+  RightOutlined,
 } from "@ant-design/icons";
 
 import { useCompare } from "@/hooks/useCompare";
 import { useFormModal as useAppDrawer } from "@/hooks/useFormModal";
 import { request } from "@/services/request";
 import { getAssetPath } from "@/lib/utils";
-
-function MarqueeLogoItem({ uni, onClick }) {
-  const [imgErr, setImgErr] = useState(false);
-  const rawPath = uni?.logoSrc || uni?.image || uni?.logo;
-  const assetUrl = !imgErr && rawPath ? getAssetPath(rawPath, null) : null;
-  const hasValidImage = Boolean(assetUrl && !assetUrl.startsWith("data:image"));
-
-  return (
-    <div
-      data-uni-id={String(uni?._id || uni?.slug)}
-      onClick={onClick}
-      className="flex items-center justify-center bg-white rounded-xl border border-white/80 px-2 py-1 h-15 min-w-40 max-w-50 shrink-0 cursor-pointer transition-all hover:-translate-y-0.5 hover:border-blue-300 shadow-sm"
-      title={`${uni?.name || "University"} (Click to add to comparison)`}
-    >
-      {hasValidImage ? (
-        <div className="relative w-full h-full min-h-12 flex items-center justify-center">
-          <Image
-            src={assetUrl}
-            alt={uni?.name || "University Logo"}
-            fill
-            unoptimized
-            className="object-contain"
-            onError={() => setImgErr(true)}
-          />
-        </div>
-      ) : (
-        <span className="font-bold text-xs text-[#1C3569] text-center line-clamp-2 px-1 select-none">
-          {uni?.name || "University"}
-        </span>
-      )}
-    </div>
-  );
-}
 
 function CompareContent() {
   const router = useRouter();
@@ -72,7 +39,6 @@ function CompareContent() {
     removeFromCompare,
     clearCompare,
     addToCompare,
-    updateCompareList,
   } = useCompare();
   const { openFormModal } = useAppDrawer();
 
@@ -81,9 +47,6 @@ function CompareContent() {
   const [allModes, setAllModes] = useState([]);
   const [comparedData, setComparedData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [recommendations, setRecommendations] = useState([]);
-  const [recLoading, setRecLoading] = useState(false);
-  const [isRecModalOpen, setIsRecModalOpen] = useState(false);
   const [baseUniversityObj, setBaseUniversityObj] = useState(null);
   const [selectedCourses, setSelectedCourses] = useState([]);
   const [selectedMode, setSelectedMode] = useState("all");
@@ -117,12 +80,285 @@ function CompareContent() {
       })
       .catch((err) => console.error("Error fetching mode options:", err));
 
+    // Fetch dynamic categories configured with showOnCompare in CRM
+    request.dynamicList({ entity: "category", endPoint: "v1/list" })
+      .then((res) => {
+        if (!isMounted) return;
+        const list = Array.isArray(res?.data) ? res.data : Array.isArray(res?.result) ? res.result : [];
+        const compareCats = list.filter((c) => c.showOnCompare);
+        if (compareCats.length > 0) {
+          setDbCompareCategories(compareCats);
+        }
+      })
+      .catch((err) => console.log("Category list fetch:", err));
+
+    // Fetch all states for State Wise selection
+    request.dynamicOptions({ entity: "states", endPoint: "v1/options" })
+      .then((res) => {
+        if (!isMounted) return;
+        const sList = Array.isArray(res?.result) ? res.result : Array.isArray(res) ? res : [];
+        if (sList.length > 0) {
+          setAllStates(sList);
+        }
+      })
+      .catch((err) => console.log("States options fetch:", err));
+
+    // Fetch dynamic approvals / accreditations
+    request.dynamicOptions({ entity: "approvals", endPoint: "v1/options" })
+      .then((res) => {
+        if (!isMounted) return;
+        const aList = Array.isArray(res?.result) ? res.result : Array.isArray(res) ? res : [];
+        if (aList.length > 0) setAllApprovals(aList);
+      })
+      .catch((err) => console.log("Approvals options fetch:", err));
+
     return () => {
       isMounted = false;
     };
   }, []);
 
-  // 2. Determine which identifiers to compare (prioritizing clean readable slugs)
+  const [dbCompareCategories, setDbCompareCategories] = useState([]);
+  const [allStates, setAllStates] = useState([]);
+  const [allApprovals, setAllApprovals] = useState([]);
+  const [isTrendingModalOpen, setIsTrendingModalOpen] = useState(false);
+  const [isRecommendedModalOpen, setIsRecommendedModalOpen] = useState(false);
+  const [isStateModalOpen, setIsStateModalOpen] = useState(false);
+  const [isAccreditationModalOpen, setIsAccreditationModalOpen] = useState(false);
+  const [isAllUniversitiesModalOpen, setIsAllUniversitiesModalOpen] = useState(false);
+  const [selectedStateObj, setSelectedStateObj] = useState(null);
+  const [selectedAccreditationObj, setSelectedAccreditationObj] = useState(null);
+  const [allUnisSearchText, setAllUnisSearchText] = useState("");
+
+  // All Universities with showInModal !== false (filtered by search if any)
+  const modalUniversitiesList = useMemo(() => {
+    const valid = (allUniversities || []).filter((u) => u.showInModal !== false && u.removed !== true);
+    if (!allUnisSearchText.trim()) return valid;
+    const q = allUnisSearchText.toLowerCase().trim();
+    return valid.filter((u) => {
+      const name = (u.name || "").toLowerCase();
+      const code = (u.code || "").toLowerCase();
+      const city = (u.city?.name || u.city || "").toString().toLowerCase();
+      const state = (u.state?.name || u.state || "").toString().toLowerCase();
+      return name.includes(q) || code.includes(q) || city.includes(q) || state.includes(q);
+    });
+  }, [allUniversities, allUnisSearchText]);
+
+  // Universities of the selected state inside State Modal
+  const stateUniversitiesList = useMemo(() => {
+    if (!selectedStateObj) return [];
+    const stId = (selectedStateObj._id || "").toString();
+    const stName = (selectedStateObj.name || "").toString().toLowerCase().trim();
+    const stCode = (selectedStateObj.code || "").toString().toLowerCase().trim();
+
+    return (allUniversities || []).filter((u) => {
+      if (u.removed === true || u.showInModal === false) return false;
+      const uStateId = (u.state?._id || (typeof u.state === "string" ? u.state : "")).toString();
+      const uStateName = (u.state?.name || (typeof u.state === "string" ? u.state : "")).toString().toLowerCase().trim();
+      const uStateCode = (u.state?.code || "").toString().toLowerCase().trim();
+
+      return (
+        (stId && uStateId === stId) ||
+        (stName && (uStateName === stName || uStateName.includes(stName))) ||
+        (stCode && (uStateCode === stCode || uStateName.includes(stCode)))
+      );
+    });
+  }, [selectedStateObj, allUniversities]);
+
+  // Universities of the selected accreditation inside Accreditation Modal
+  const accreditationUniversitiesList = useMemo(() => {
+    if (!selectedAccreditationObj) return [];
+    const q = (selectedAccreditationObj.code || selectedAccreditationObj.name || "").toString().toLowerCase().trim();
+    const accId = (selectedAccreditationObj._id || selectedAccreditationObj.id || "").toString();
+
+    return (allUniversities || []).filter((u) => {
+      if (u.removed === true || u.showInModal === false) return false;
+
+      // 1. Check approvals array (by ID, code, or name)
+      const approvals = Array.isArray(u.approvals) ? u.approvals : [];
+      const hasApproval = approvals.some((a) => {
+        if (!a) return false;
+        if (typeof a === "object") {
+          const aId = (a._id || a.id || "").toString();
+          const aCode = (a.code || "").toString().toLowerCase().trim();
+          const aName = (a.name || a.title || "").toString().toLowerCase().trim();
+          return (accId && aId === accId) || (q && (aCode.includes(q) || aName.includes(q) || q.includes(aCode)));
+        }
+        const str = String(a).toLowerCase().trim();
+        return (accId && str === accId) || (q && str.includes(q));
+      });
+
+      // 2. Check NAAC rating if approval is NAAC
+      const naac = (u.naac_rating?.grade || u.naac_rating?.name || "").toString().toLowerCase();
+      const isNaacMatch = q.includes("naac") && Boolean(naac && naac !== "na" && naac !== "none");
+
+      // 3. Check NIRF rank if approval is NIRF
+      const nirf = (u.nirf_rank?.rank || u.nirf_rank?.name || "").toString().toLowerCase();
+      const isNirfMatch = q.includes("nirf") && Boolean(nirf && nirf !== "na" && nirf !== "none");
+
+      return hasApproval || isNaacMatch || isNirfMatch;
+    });
+  }, [selectedAccreditationObj, allUniversities]);
+
+  // 1. Dynamic Trending Universities List from DB
+  const trendingUniversitiesList = useMemo(() => {
+    const list = (allUniversities || []).filter((u) => {
+      const uCats = Array.isArray(u.category) ? u.category : [u.category].filter(Boolean);
+      const isTrendingCat = uCats.some((c) => {
+        const cSlug = typeof c === "object" ? c?.slug || "" : c.toString();
+        const cName = typeof c === "object" ? c?.name || "" : "";
+        return cSlug.includes("trending") || cName.toLowerCase().includes("trending");
+      });
+      return isTrendingCat || u.isTrending || u.isTop || u.isPopular;
+    });
+    return list.length > 0 ? list : (allUniversities || []).slice(0, 16);
+  }, [allUniversities]);
+
+  // 2. Dynamic Recommended Universities List from DB
+  const recommendedUniversitiesList = useMemo(() => {
+    const list = (allUniversities || []).filter((u) => {
+      const uCats = Array.isArray(u.category) ? u.category : [u.category].filter(Boolean);
+      const isRecCat = uCats.some((c) => {
+        const cSlug = typeof c === "object" ? c?.slug || "" : c.toString();
+        const cName = typeof c === "object" ? c?.name || "" : "";
+        return cSlug.includes("recommend") || cName.toLowerCase().includes("recommend");
+      });
+      return isRecCat || u.isFeatured || u.isRecommended;
+    });
+    return list.length > 0 ? list : (allUniversities || []).slice(3, 19);
+  }, [allUniversities]);
+
+  // 3. Dynamic Accreditation & Approvals List from DB (Strictly the 6 target items)
+  const dynamicAccreditationList = useMemo(() => {
+    const targetCatId = "6a8c7bb3ff17d3e593bd59fe";
+    const allowedCodes = ["WES", "AICTE", "NAAC", "UGC", "NIRF", "AACSB"];
+
+    const filtered = (allApprovals || []).filter((a) => {
+      const catId = typeof a.category === "object" ? a.category?._id || a.category?.id : a.category;
+      const catSlug = typeof a.category === "object" ? a.category?.slug || "" : "";
+      const isTargetCat = (catId && catId.toString() === targetCatId) || catSlug.includes("accredit");
+      const isAllowedCode = allowedCodes.some((code) => {
+        const aCode = (a.code || "").toUpperCase();
+        const aName = (a.name || "").toUpperCase();
+        return aCode === code || aName.startsWith(code) || aName.includes(code);
+      });
+      return isTargetCat || isAllowedCode;
+    });
+
+    const orderMap = { WES: 0, AICTE: 1, NAAC: 2, UGC: 3, NIRF: 4, AACSB: 5 };
+    const sorted = [...filtered].sort((a, b) => {
+      const getRank = (item) => {
+        const code = (item.code || "").toUpperCase();
+        const name = (item.name || "").toUpperCase();
+        for (const [k, v] of Object.entries(orderMap)) {
+          if (code === k || name.includes(k)) return v;
+        }
+        return 99;
+      };
+      return getRank(a) - getRank(b);
+    });
+
+    return sorted.slice(0, 6);
+  }, [allApprovals]);
+
+  // Helper to check if a university is already added to comparison
+  const isUniAdded = (uni) => {
+    if (!uni) return false;
+    const targetKeys = [uni._id, uni.id, uni.slug, uni.name]
+      .filter(Boolean)
+      .map((k) => String(k).toLowerCase().trim());
+    const pool = [...(compareList || []), ...(comparedData || [])];
+    return pool.some((u) => {
+      const uKeys = [u._id, u.id, u.slug, u.name]
+        .filter(Boolean)
+        .map((k) => String(k).toLowerCase().trim());
+      return targetKeys.some((tk) => uKeys.includes(tk));
+    });
+  };
+
+  // Handle toggle add/remove university from modal
+  const handleToggleUniversityFromModal = (uni) => {
+    if (isUniAdded(uni)) {
+      handleRemoveUniversity(uni.slug || uni._id || uni.id);
+    } else {
+      addToCompare(uni);
+    }
+  };
+
+  // Compute states with university counts and clean human-readable names
+  const computedStatesList = useMemo(() => {
+    const stateMap = new Map();
+    const idToStateMap = new Map();
+
+    // 1. Build lookup from database states
+    (allStates || []).forEach((s) => {
+      const id = (s._id || s.value || "").toString();
+      const rawName = (s.name || s.label || s.title || "").toString().trim();
+      const isHex = /^[0-9a-fA-F]{24}$/.test(rawName);
+      const cleanName = isHex ? "" : rawName;
+
+      if (id && cleanName) {
+        idToStateMap.set(id, { _id: id, name: cleanName, code: s.code || "", logo: s.logo });
+        stateMap.set(cleanName.toLowerCase(), {
+          _id: id,
+          name: cleanName,
+          code: s.code || "",
+          logo: s.logo,
+          count: 0,
+        });
+      }
+    });
+
+    // 2. Count universities per state using ID lookup and clean name mapping
+    (allUniversities || []).forEach((u) => {
+      let stateName = "";
+      let stateId = "";
+      let stateCode = "";
+
+      if (u.state && typeof u.state === "object") {
+        stateName = u.state.name || "";
+        stateId = u.state._id || "";
+        stateCode = u.state.code || "";
+      } else if (typeof u.state === "string") {
+        if (/^[0-9a-fA-F]{24}$/.test(u.state)) {
+          const matched = idToStateMap.get(u.state);
+          if (matched) {
+            stateName = matched.name;
+            stateId = matched._id;
+            stateCode = matched.code;
+          }
+        } else {
+          stateName = u.state;
+        }
+      }
+
+      if (!stateName && u.billing_address?.state) {
+        stateName = u.billing_address.state;
+      }
+
+      // Ignore raw 24-char hex ObjectIDs
+      if (/^[0-9a-fA-F]{24}$/.test(stateName)) {
+        stateName = "";
+      }
+
+      if (stateName && stateName.trim().length > 1) {
+        const key = stateName.toLowerCase().trim();
+        if (!stateMap.has(key)) {
+          stateMap.set(key, {
+            _id: stateId || key,
+            name: stateName.trim(),
+            code: stateCode || "",
+            count: 0,
+          });
+        }
+        stateMap.get(key).count += 1;
+      }
+    });
+
+    const list = Array.from(stateMap.values());
+    return list.sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+  }, [allStates, allUniversities]);
+
+  // Determine which identifiers to compare (prioritizing clean readable slugs)
   const currentIdentifiers = useMemo(() => {
     if (compareList && compareList.length > 0) {
       return compareList.map((item) => item.slug || item._id || item.id).filter(Boolean);
@@ -193,11 +429,7 @@ function CompareContent() {
         options: { universityid: currentIdentifiers.join(",") },
       });
       const data = Array.isArray(res?.result) ? res.result : Array.isArray(res) ? res : [];
-      const recs = res?.recommendations || [];
       setComparedData(data);
-      if (recs.length > 0) {
-        setRecommendations(recs);
-      }
 
       // Update URL query parameters with clean university slugs
       const slugsToUse = (compareList && compareList.length > 0)
@@ -239,11 +471,7 @@ function CompareContent() {
     })
       .then((res) => {
         const data = Array.isArray(res?.result) ? res.result : Array.isArray(res) ? res : [];
-        const recs = res?.recommendations || [];
         setComparedData(data);
-        if (recs.length > 0) {
-          setRecommendations(recs);
-        }
       })
       .catch((err) => console.error("❌ Failed to load comparison data on mount:", err))
       .finally(() => setLoading(false));
@@ -288,7 +516,6 @@ function CompareContent() {
   const handleClearAll = () => {
     clearCompare();
     setComparedData([]);
-    setRecommendations([]);
     setBaseUniversityObj(null);
 
     if (typeof window !== "undefined") {
@@ -301,100 +528,12 @@ function CompareContent() {
     }
   };
 
-  // Determine Primary / Base University for AI recommendations (ONLY when actively selected in slots/compare)
+  // Determine Primary / Base University for modal labels
   const activeBaseUniversity = useMemo(() => {
     if (compareList && compareList.length > 0) return compareList[0];
     if (comparedData && comparedData.length > 0) return comparedData[0];
     return null;
   }, [compareList, comparedData]);
-
-  // Fetch Smart Recommendations when Base University changes
-  useEffect(() => {
-    if (!activeBaseUniversity) {
-      setRecommendations([]);
-      setBaseUniversityObj(null);
-      return;
-    }
-
-    const baseKey = typeof activeBaseUniversity === "object"
-      ? activeBaseUniversity.slug || activeBaseUniversity._id || activeBaseUniversity.id
-      : activeBaseUniversity;
-
-    if (!baseKey) return;
-
-    let isMounted = true;
-    setRecLoading(true);
-    request.dynamicRead({
-      entity: "universities",
-      endPoint: "v1/compare",
-      options: { universityid: baseKey },
-    })
-      .then((res) => {
-        if (!isMounted) return;
-        setRecommendations(res?.recommendations || []);
-        if (res?.result?.[0]) {
-          setBaseUniversityObj(res.result[0]);
-        }
-      })
-      .catch((err) => console.error("❌ Failed to fetch smart recommendations:", err))
-      .finally(() => {
-        if (isMounted) setRecLoading(false);
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, [activeBaseUniversity]);
-
-  // Available AI Recommendations (excluding universities already in slots/compare)
-  const availableRecommendations = useMemo(() => {
-    const selectedKeys = new Set([
-      ...(compareList || []).map((u) => String(u._id || u.id || u.slug || "").toLowerCase()),
-      ...(comparedData || []).map((u) => String(u._id || u.slug || "").toLowerCase()),
-    ]);
-    return (recommendations || []).filter(
-      (r) => !selectedKeys.has(String(r._id || r.slug || "").toLowerCase())
-    );
-  }, [recommendations, compareList, comparedData]);
-
-  // 1-Click Auto Compare Top Recommended Alternatives
-  const handleAutoCompareTopAlternatives = async () => {
-    if (availableRecommendations.length === 0) return;
-    const currentCount = compareList?.length || 0;
-    const needed = Math.max(3 - currentCount, 1);
-    const toAdd = availableRecommendations.slice(0, needed);
-
-    toAdd.forEach((item) => addToCompare(item));
-
-    const combinedSlugs = [
-      ...currentIdentifiers,
-      ...toAdd.map((u) => u.slug || u._id),
-    ].slice(0, 3);
-
-    setLoading(true);
-    try {
-      const res = await request.dynamicRead({
-        entity: "universities",
-        endPoint: "v1/compare",
-        options: { universityid: combinedSlugs.join(",") },
-      });
-      const data = Array.isArray(res?.result) ? res.result : Array.isArray(res) ? res : [];
-      setComparedData(data);
-
-      const newParams = new URLSearchParams(searchParams.toString());
-      newParams.set("universityid", combinedSlugs.join(","));
-      router.replace(`?${newParams.toString()}`, { scroll: false });
-
-      setTimeout(() => {
-        const el = document.getElementById("comparison-matrix-section");
-        if (el) el.scrollIntoView({ behavior: "smooth" });
-      }, 100);
-    } catch (err) {
-      console.error("❌ Auto compare error:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Available universities (excluding currently selected ones & filtered by selectedCourses & selectedMode)
   const availableUniversities = useMemo(() => {
@@ -469,7 +608,7 @@ function CompareContent() {
         value: String(u._id || u.slug),
         label: (
           <div className="flex items-center gap-2.5 py-1">
-            <div className="relative w-7 h-7 rounded-lg border border-slate-200 bg-white p-0.5 shrink-0 flex items-center justify-center overflow-hidden">
+            <div className="relative w-7 h-7 rounded-lg border border-gray-200 bg-white p-0.5 shrink-0 flex items-center justify-center overflow-hidden">
               {rawLogo ? (
                 <Image
                   src={getAssetPath(rawLogo)}
@@ -479,13 +618,13 @@ function CompareContent() {
                   className="object-contain p-0.5"
                 />
               ) : (
-                <span className="text-[10px] font-extrabold text-[#1C3569]">
+                <span className="text-[10px] font-semibold text-[#0C3058]">
                   {u.name ? u.name.charAt(0) : "U"}
                 </span>
               )}
             </div>
             <div className="min-w-0 flex-1">
-              <div className="text-xs font-bold text-slate-800 truncate leading-tight">
+              <div className="text-xs font-semibold text-gray-800 truncate leading-tight">
                 {u.name}
               </div>
               {u.location && (
@@ -708,7 +847,7 @@ function CompareContent() {
               <CloseOutlined className="text-[9px]" />
             </button>
 
-            <div className="w-12 h-12 rounded-xl border border-slate-200 bg-white p-1.5 flex items-center justify-center relative shadow-xs">
+            <div className="w-12 h-12 rounded-xl border border-gray-200 bg-white p-1.5 flex items-center justify-center relative">
               {uni.logo ? (
                 <Image
                   src={getAssetPath(uni.logo)}
@@ -718,18 +857,18 @@ function CompareContent() {
                   className="object-contain p-0.5"
                 />
               ) : (
-                <span className="text-base font-black text-[#1C3569]">
+                <span className="text-base font-semibold text-[#0C3058]">
                   {displayTitle ? displayTitle.charAt(0) : "U"}
                 </span>
               )}
             </div>
 
             <div className="space-y-0.5 max-w-[200px]">
-              <h3 className="text-xs font-bold text-[#1C3569] m-0 line-clamp-2 leading-tight">
+              <h3 className="text-xs font-semibold text-[#0C3058] m-0 line-clamp-2 leading-tight">
                 {displayTitle}
               </h3>
               {displaySubTitle && (
-                <p className="text-[11px] font-semibold text-teal-700 m-0 line-clamp-1">
+                <p className="text-[11px] font-medium text-teal-700 m-0 line-clamp-1">
                   {displaySubTitle}
                 </p>
               )}
@@ -1397,14 +1536,14 @@ function CompareContent() {
                   defaultCourse: selectedCourses.length > 0 ? selectedCourses.join(", ") : uni.name,
                 });
               }}
-              className="bg-[#009F93] hover:bg-[#008278] border-none font-bold text-[11px] sm:text-xs rounded-xl h-7 sm:h-8 px-2.5 w-full sm:w-auto cursor-pointer"
+              className="bg-[#00B4D8] hover:bg-[#0096C7] border-none font-semibold text-[11px] sm:text-xs rounded-xl h-7 sm:h-8 px-2.5 w-full sm:w-auto cursor-pointer"
             >
               Apply Now
             </Button>
 
             {uni.slug && (
               <Link href={`/universities/${uni.slug}`} className="w-full sm:w-auto">
-                <Button className="bg-[#1C3569] text-white hover:bg-[#122449] border-none font-bold text-[11px] sm:text-xs rounded-xl h-7 sm:h-8 px-2.5 w-full cursor-pointer">
+                <Button className="bg-[#0C3058] text-white hover:bg-[#0a2540] border-none font-semibold text-[11px] sm:text-xs rounded-xl h-7 sm:h-8 px-2.5 w-full cursor-pointer">
                   View Details
                 </Button>
               </Link>
@@ -1418,232 +1557,339 @@ function CompareContent() {
   }, [comparedData, selectedCourses, openFormModal]);
 
   return (
-    <div className="bg-[#f4f7f9] min-h-screen font-sans text-slate-800">
-      {/* ── HERO SECTION WITH DEGREE4U MARQUEE ── */}
-      <div id="marquee-hero-section" className="bg-gradient-to-r from-[#1155cc] via-[#1b6ef3] to-[#1a8fff] pt-8 pb-36 md:pb-44 overflow-hidden relative">
-        <div
-          className="overflow-hidden w-full relative py-2"
-          style={{
-            WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%)",
-            maskImage: "linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%)",
-          }}
-        >
-          <div className="marquee-ltr flex items-center gap-4">
-            {marqueeRow1.map((uni, idx) => (
-              <MarqueeLogoItem
-                key={`row1-${uni._id || uni.slug || idx}-${idx}`}
-                uni={uni}
-                onClick={(e) => handleLogoClick(uni, e)}
-              />
-            ))}
-          </div>
-        </div>
+    <div className="bg-[#F1F4F9] min-h-screen font-sans text-gray-800">
+      {/* ── HERO BANNER HEADER ── */}
+      <div className="bg-[#0F3759] pt-8 pb-14 sm:pb-20 overflow-hidden relative border-b border-gray-200 text-center text-white rounded-b-3xl">
+        <div className="max-w-2xl mx-auto px-4 space-y-4 relative z-10">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold m-0 tracking-tight leading-tight">
+            <span className="text-[#FFD166]">Compare Universities &amp;</span>{" "}
+            <span className="text-white">Choose Best For You!</span>
+          </h1>
 
-        <div
-          className="overflow-hidden w-full relative py-2 mt-2"
-          style={{
-            WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%)",
-            maskImage: "linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%)",
-          }}
-        >
-          <div className="marquee-rtl flex items-center gap-4">
-            {marqueeRow2.map((uni, idx) => (
-              <MarqueeLogoItem
-                key={`row2-${uni._id || uni.slug || idx}-${idx}`}
-                uni={uni}
-                onClick={(e) => handleLogoClick(uni, e)}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ── MAIN SELECTOR CARD ── */}
-      <div className="-mt-28 md:-mt-32 max-w-5xl mx-auto px-4 relative z-20 mb-10">
-        <div className="bg-white rounded-3xl border border-slate-200/90 p-6 md:p-8 text-center relative shadow-sm">
-          {/* Header Row with Title and AI Recommendations Button */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
-            <div className="text-center sm:text-left flex-1">
-              <h1 className="text-2xl md:text-3xl font-extrabold text-[#0b5edd] m-0">
-                Compare Universities <span className="text-slate-800 font-bold">&amp; Choose Best Fit For you</span>
-              </h1>
-            </div>
-
-            {activeBaseUniversity && availableRecommendations.length > 0 && (
-              <Button
-                type="primary"
-                icon={<ThunderboltOutlined className="text-amber-300" />}
-                onClick={() => setIsRecModalOpen(true)}
-                className="bg-gradient-to-r from-blue-600 via-indigo-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 text-white font-extrabold text-xs rounded-2xl shadow-sm border-none inline-flex items-center gap-1.5 h-9 px-4 cursor-pointer shrink-0 transition-all hover:scale-105"
-              >
-                <span>AI Recommendations</span>
-                <span className="bg-white/20 px-1.5 py-0.5 rounded-full text-[10px] font-black">
-                  {availableRecommendations.length}
-                </span>
-              </Button>
-            )}
-          </div>
-
-          {/* Course Controls Row */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
+          {/* Course Selector Dropdown inside Hero */}
+          <div className="max-w-lg mx-auto pt-1">
             <Select
               mode="multiple"
               maxTagCount="responsive"
               showSearch
+              size="large"
               allowClear
               value={selectedCourses}
               onChange={(vals) => setSelectedCourses(vals || [])}
-              placeholder="Select Course to Compare (e.g. MBA, BBA, MCA)"
-              className="w-full sm:w-80 text-left font-medium"
+              placeholder="Select Course to Compare.... MBA, MCA..."
+              className="w-full rounded-2xl text-left font-normal text-balance text-gray-500 bg-white"
               options={courseSelectOptions.filter((opt) => opt.value !== "all")}
               optionFilterProp="label"
               filterOption={(input, option) =>
                 (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
               }
             />
+          </div>
+        </div>
+      </div>
 
-            <Select
-              value={selectedMode}
-              onChange={setSelectedMode}
-              className="w-full sm:w-56 text-left font-medium"
-              options={modeSelectOptions}
-            />
+      {/* ── MAIN SELECTOR CARD ── */}
+      <div className="-mt-8 sm:-mt-10 max-w-5xl mx-auto px-3 sm:px-4 relative z-20 mb-8">
+        <div className="bg-white rounded-2xl sm:rounded-3xl border border-gray-200 p-3.5 sm:p-5 md:p-6 text-center relative">
+          <div className="relative mb-3 sm:mb-4">
+            <p className="text-[11px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider m-0 text-center">
+              CHOOSE WHAT YOU WANT TO COMPARE
+            </p>
           </div>
 
-          {/* University Slots Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
-            {[0, 1, 2].map((slotIdx) => {
-              const currentSlots = (compareList && compareList.length > 0) ? compareList : comparedData;
-              const uni = currentSlots[slotIdx];
-              if (uni) {
-                const isOffering = uni.isCourseOffering || uni.type === "course_offering";
-                const displayTitle = isOffering ? uni.title : uni.name;
-                const displaySubTitle = isOffering ? (uni.uniName || uni.name) : null;
-                const rawLogo =
-                  (typeof uni.logoSrc === "object" ? uni.logoSrc?.url : uni.logoSrc) ||
-                  (typeof uni.image === "object" ? uni.image?.url : uni.image) ||
-                  (typeof uni.logo === "object" ? uni.logo?.url : uni.logo) ||
-                  uni.logoUrl ||
-                  null;
-                const locStr =
-                  uni.location ||
-                  [uni.city?.name || uni.city, uni.state?.name || uni.state].filter(Boolean).join(", ");
-                return (
-                  <div
-                    key={slotIdx}
-                    id={`uni-slot-${slotIdx}`}
-                    className="bg-white rounded-2xl border border-gray-200 p-4 flex flex-col items-center justify-center relative min-h-35 group transition-all slot-dock-enter"
-                  >
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleRemoveUniversity(uni.slug || uni._id || uni.id);
-                      }}
-                      className="absolute top-2 right-2 w-6 h-6 rounded-full bg-slate-100 hover:bg-red-500 text-slate-500 hover:text-white flex items-center justify-center transition-colors cursor-pointer border-none z-10"
-                      title="Remove university"
-                    >
-                      <CloseOutlined className="text-[10px]" />
-                    </button>
-
-                    <div className="relative w-32 h-12 rounded-lg border border-slate-200/80 bg-white p-1 flex items-center justify-center mb-2 overflow-hidden">
-                      {rawLogo ? (
-                        <Image
-                          src={getAssetPath(rawLogo)}
-                          alt={displayTitle || "Logo"}
-                          fill
-                          unoptimized
-                          className="object-contain"
-                        />
-                      ) : (
-                        <span className="text-sm font-bold text-[#1C3569]">
-                          {displayTitle}
-                        </span>
-                      )}
-                    </div>
-
-                    <h4 className="text-xs font-bold text-[#1C3569] m-0 line-clamp-1">
-                      {displayTitle}
-                    </h4>
-                    {displaySubTitle && (
-                      <p className="text-[10px] font-semibold text-teal-700 m-0 line-clamp-1">
-                        {displaySubTitle}
-                      </p>
-                    )}
-                    {locStr && (
-                      <span className="text-[9px] bg-slate-100 text-slate-500 font-semibold px-2 py-0.5 rounded-full mt-1.5 line-clamp-1">
-                        {locStr}
-                      </span>
-                    )}
-                  </div>
-                );
-              }
-
-              return (
-                <div
-                  key={slotIdx}
-                  id={`uni-slot-${slotIdx}`}
-                  className="border-2 border-dashed border-slate-300 rounded-2xl p-4 flex flex-col items-center justify-center text-slate-400 bg-slate-50/60 transition-all min-h-[140px] gap-2"
-                >
-                  <div className="w-9 h-9 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-base">
-                    +
-                  </div>
-                  <Select
-                    showSearch
-                    placeholder="+ Select University"
-                    value={null}
-                    onChange={(val, option) => {
-                      if (option?.itemObj) {
-                        triggerFlyAnimation(option.itemObj, null, slotIdx);
+          {/* If universities are selected, show active comparison slots & action buttons */}
+          {(currentIdentifiers.length > 0 || comparedData.length > 0) ? (
+            <div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
+                {[0, 1, 2].map((slotIdx) => {
+                  const currentSlots = (compareList && compareList.length > 0) ? compareList : comparedData;
+                  const uni = currentSlots[slotIdx];
+                  if (uni) {
+                    const isOffering = uni.isCourseOffering || uni.type === "course_offering";
+                    const displayTitle = isOffering ? uni.title : uni.name;
+                    const displaySubTitle = isOffering ? (uni.uniName || uni.name) : null;
+                    const rawLogo =
+                      (typeof uni.logoSrc === "object" ? uni.logoSrc?.url : uni.logoSrc) ||
+                      (typeof uni.image === "object" ? uni.image?.url : uni.image) ||
+                      (typeof uni.logo === "object" ? uni.logo?.url : uni.logo) ||
+                      uni.logoUrl ||
+                      null;
+                    const getCleanVal = (val) => {
+                      if (!val) return "";
+                      if (typeof val === "object") return val.name || val.title || val.label || "";
+                      const s = String(val).trim();
+                      if (/^[0-9a-fA-F]{24}$/.test(s)) {
+                        const found = (allStates || []).find((st) => String(st._id || st.value) === s);
+                        return found ? (found.name || found.label || found.title || "") : "";
                       }
-                    }}
-                    className="w-full max-w-52.5 text-left font-semibold"
-                    options={universitySelectOptions}
-                    optionFilterProp="searchValue"
-                    filterOption={(input, option) =>
-                      (option?.searchValue ?? "")
-                        .toLowerCase()
-                        .includes(input.toLowerCase())
-                    }
-                    styles={{
-                      popup: {
-                        root: {
-                          maxHeight: 340,
-                          overflowY: "auto",
-                          borderRadius: 16,
-                          padding: 4,
-                        },
-                      },
-                    }}
-                  />
+                      return s;
+                    };
+
+                    const resolvedCity = getCleanVal(uni.city);
+                    const resolvedState = getCleanVal(uni.state);
+                    const locStr =
+                      (typeof uni.location === "string" && !/^[0-9a-fA-F]{24}$/.test(uni.location))
+                        ? uni.location
+                        : [resolvedCity, resolvedState].filter(Boolean).join(", ");
+                    return (
+                      <div
+                        key={slotIdx}
+                        id={`uni-slot-${slotIdx}`}
+                        className="bg-white rounded-2xl border border-gray-200 p-4 flex flex-col items-center justify-center relative min-h-35 group transition-all slot-dock-enter"
+                      >
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRemoveUniversity(uni.slug || uni._id || uni.id);
+                          }}
+                          className="absolute top-2 right-2 w-6 h-6 rounded-full bg-slate-100 hover:bg-red-500 text-slate-500 hover:text-white flex items-center justify-center transition-colors cursor-pointer border-none z-10"
+                          title="Remove university"
+                        >
+                          <CloseOutlined className="text-[10px]" />
+                        </button>
+
+                        <div className="relative w-32 h-12 rounded-lg border border-gray-200 bg-white p-1 flex items-center justify-center mb-2 overflow-hidden">
+                          {rawLogo ? (
+                            <Image
+                              src={getAssetPath(rawLogo)}
+                              alt={displayTitle || "Logo"}
+                              fill
+                              unoptimized
+                              className="object-contain"
+                            />
+                          ) : (
+                            <span className="text-sm font-semibold text-[#0C3058]">
+                              {displayTitle}
+                            </span>
+                          )}
+                        </div>
+
+                        <h4 className="text-xs font-semibold text-[#0C3058] m-0 line-clamp-1">
+                          {displayTitle}
+                        </h4>
+                        {displaySubTitle && (
+                          <p className="text-[10px] font-medium text-teal-700 m-0 line-clamp-1">
+                            {displaySubTitle}
+                          </p>
+                        )}
+                        {locStr && (
+                          <span className="text-[9px] bg-slate-100 text-slate-500 font-medium px-2 py-0.5 rounded-full mt-1.5 line-clamp-1">
+                            {locStr}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div
+                      key={slotIdx}
+                      id={`uni-slot-${slotIdx}`}
+                      className="border-2 border-dashed border-blue-200/90 rounded-2xl p-4 flex flex-col items-center justify-center text-gray-400 bg-white transition-all min-h-[140px] gap-2.5"
+                    >
+                      <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-base">
+                        +
+                      </div>
+                      <Select
+                        showSearch
+                        placeholder="Select University"
+                        value={null}
+                        onChange={(val, option) => {
+                          if (option?.itemObj) {
+                            triggerFlyAnimation(option.itemObj, null, slotIdx);
+                          }
+                        }}
+                        className="w-full max-w-[200px] text-left font-medium [&_.ant-select-selector]:rounded-xl! [&_.ant-select-selector]:border-gray-200!"
+                        options={universitySelectOptions}
+                        optionFilterProp="searchValue"
+                        filterOption={(input, option) =>
+                          (option?.searchValue ?? "")
+                            .toLowerCase()
+                            .includes(input.toLowerCase())
+                        }
+                        styles={{
+                          popup: {
+                            root: {
+                              maxHeight: 340,
+                              overflowY: "auto",
+                              borderRadius: 16,
+                              padding: 4,
+                            },
+                          },
+                        }}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-wrap items-center justify-center gap-3 mt-4">
+                <Button
+                  type="primary"
+                  disabled={currentIdentifiers.length === 0 || loading}
+                  loading={loading}
+                  onClick={handleCompareNow}
+                  className="bg-[#00B4D8] hover:bg-[#0096C7] text-white font-semibold rounded-xl transition-all inline-flex items-center gap-1.5 cursor-pointer border-none h-10 px-5"
+                >
+                  Compare Now
+                  <ArrowLeftOutlined className="rotate-180 text-xs" />
+                </Button>
+
+                <Button
+                  danger
+                  icon={<DeleteOutlined />}
+                  onClick={handleClearAll}
+                  className="font-semibold rounded-xl cursor-pointer h-10 px-4"
+                >
+                  Clear All ({currentIdentifiers.length || comparedData.length})
+                </Button>
+              </div>
+            </div>
+          ) : (
+            /* ── 4 DISCOVERY HELPER CARDS (Dynamic from DB with Fallback) ── */
+            <div className="mt-4 mb-2">
+              {dbCompareCategories && dbCompareCategories.length > 0 ? (
+                <div className="grid grid-cols-2 gap-3.5 sm:gap-5 text-center">
+                  {dbCompareCategories.slice(0, 4).map((cat, idx) => {
+                    const bgColors = ["#F6F9FF", "#FFFDF5", "#FFF8F8", "#F4FDF8"];
+                    const borderColors = ["#DCE7F9", "#FDE8B5", "#FCDADA", "#D0F4E2"];
+                    const cardBg = bgColors[idx % bgColors.length];
+                    const cardBorder = borderColors[idx % borderColors.length];
+                    const rawLogo = cat.logo?.url || cat.logo?.path || (typeof cat.logo === 'string' ? cat.logo : null);
+
+                    return (
+                      <div
+                        key={cat._id || idx}
+                        onClick={() => {
+                          const catName = (cat.name || "").toLowerCase();
+                          const catSlug = (cat.slug || "").toLowerCase();
+
+                          if (catSlug.includes("state") || catName.includes("state")) {
+                            setIsStateModalOpen(true);
+                          } else if (catSlug.includes("recommend") || catName.includes("recommend")) {
+                            setIsRecommendedModalOpen(true);
+                          } else if (catSlug.includes("accredit") || catName.includes("accredit")) {
+                            setIsAccreditationModalOpen(true);
+                          } else {
+                            setIsTrendingModalOpen(true);
+                          }
+                        }}
+                        style={{ backgroundColor: cardBg, borderColor: cardBorder }}
+                        className="border rounded-2xl sm:rounded-3xl p-4 sm:p-6 text-center flex flex-col items-center justify-center cursor-pointer transition-all hover:border-blue-400 hover:scale-[1.01] min-h-[160px] sm:min-h-[190px]"
+                      >
+                        <div className="mb-2.5 flex items-center justify-center">
+                          {rawLogo ? (
+                            <div className="relative w-11 h-11 sm:w-13 sm:h-13">
+                              <Image
+                                src={getAssetPath(rawLogo)}
+                                alt={cat.name || "Category Logo"}
+                                fill
+                                unoptimized
+                                className="object-contain"
+                              />
+                            </div>
+                          ) : (
+                            <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-2xl bg-white/80 border border-gray-200 flex items-center justify-center font-bold text-[#0C3058] text-base">
+                              {(cat.name || "C")[0]}
+                            </div>
+                          )}
+                        </div>
+                        <h4 className="text-xs sm:text-sm font-bold text-[#0C3058] tracking-wider uppercase m-0 leading-tight">
+                          {cat.name}
+                        </h4>
+                        <p className="text-[10px] sm:text-xs text-gray-400 font-normal m-0 mt-1.5 leading-snug max-w-[180px]">
+                          {cat.description || "Compare with popular and in-demand universities."}
+                        </p>
+                      </div>
+                    );
+                  })}
                 </div>
-              );
-            })}
-          </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-3.5 sm:gap-5 text-center">
+                  {/* 1. Trending Universities */}
+                  <div
+                    onClick={() => setIsTrendingModalOpen(true)}
+                    className="bg-[#F6F9FF] border border-[#DCE7F9] rounded-2xl sm:rounded-3xl p-4 sm:p-6 text-center flex flex-col items-center justify-center cursor-pointer transition-all hover:border-blue-400 hover:scale-[1.01] min-h-[160px] sm:min-h-[190px]"
+                  >
+                    <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-2xl bg-blue-50/80 border border-blue-100 flex items-center justify-center text-xl mb-2.5">
+                      📈
+                    </div>
+                    <h4 className="text-xs sm:text-sm font-bold text-[#0C3058] tracking-wider uppercase m-0 leading-tight">
+                      TRENDING<br />UNIVERSITIES
+                    </h4>
+                    <p className="text-[10px] sm:text-xs text-gray-400 font-normal m-0 mt-1.5 leading-snug max-w-[180px]">
+                      Compare with popular and in-demand universities.
+                    </p>
+                  </div>
 
-          {/* Action Buttons */}
-          <div className="flex flex-wrap items-center justify-center gap-3 mt-4">
-            <Button
-              type="primary"
-              disabled={currentIdentifiers.length === 0 || loading}
-              loading={loading}
-              onClick={handleCompareNow}
-              className="bg-[#10b981] hover:bg-[#059669] text-white font-bold rounded-xl transition-all inline-flex items-center gap-1.5 cursor-pointer border-none h-10 px-5"
-            >
-              Compare Now
-              <ArrowLeftOutlined className="rotate-180 text-xs" />
-            </Button>
+                  {/* 2. Recommended Universities */}
+                  <div
+                    onClick={() => setIsRecommendedModalOpen(true)}
+                    className="bg-[#FFFDF5] border border-[#FDE8B5] rounded-2xl sm:rounded-3xl p-4 sm:p-6 text-center flex flex-col items-center justify-center cursor-pointer transition-all hover:border-amber-400 hover:scale-[1.01] min-h-[160px] sm:min-h-[190px]"
+                  >
+                    <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-2xl bg-amber-50/80 border border-amber-100 flex items-center justify-center text-xl mb-2.5">
+                      ⭐
+                    </div>
+                    <h4 className="text-xs sm:text-sm font-bold text-[#0C3058] tracking-wider uppercase m-0 leading-tight">
+                      RECOMMENDED<br />UNIVERSITIES
+                    </h4>
+                    <p className="text-[10px] sm:text-xs text-gray-400 font-normal m-0 mt-1.5 leading-snug max-w-[180px]">
+                      Compare with popular and in-demand universities.
+                    </p>
+                  </div>
 
-            {(currentIdentifiers.length > 0 || comparedData.length > 0) && (
-              <Button
-                danger
-                icon={<DeleteOutlined />}
-                onClick={handleClearAll}
-                className="font-bold rounded-xl cursor-pointer h-10 px-4"
-              >
-                Clear All ({currentIdentifiers.length || comparedData.length})
-              </Button>
-            )}
-          </div>
+                  {/* 3. State Wise Universities */}
+                  <div
+                    onClick={() => setIsStateModalOpen(true)}
+                    className="bg-[#FFF8F8] border border-[#FCDADA] rounded-2xl sm:rounded-3xl p-4 sm:p-6 text-center flex flex-col items-center justify-center cursor-pointer transition-all hover:border-rose-400 hover:scale-[1.01] min-h-[160px] sm:min-h-[190px]"
+                  >
+                    <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-2xl bg-rose-50/80 border border-rose-100 flex items-center justify-center text-xl mb-2.5">
+                      📍
+                    </div>
+                    <h4 className="text-xs sm:text-sm font-bold text-[#0C3058] tracking-wider uppercase m-0 leading-tight">
+                      STATE WISE<br />UNIVERSITIES
+                    </h4>
+                    <p className="text-[10px] sm:text-xs text-gray-400 font-normal m-0 mt-1.5 leading-snug max-w-[180px]">
+                      Compare with popular and in-demand universities.
+                    </p>
+                  </div>
+
+                  {/* 4. Accreditation Wise Universities */}
+                  <div
+                    onClick={() => setIsAccreditationModalOpen(true)}
+                    className="bg-[#F4FDF8] border border-[#D0F4E2] rounded-2xl sm:rounded-3xl p-4 sm:p-6 text-center flex flex-col items-center justify-center cursor-pointer transition-all hover:border-emerald-400 hover:scale-[1.01] min-h-[160px] sm:min-h-[190px]"
+                  >
+                    <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-2xl bg-emerald-50/80 border border-emerald-100 flex items-center justify-center text-xl mb-2.5">
+                      🎖️
+                    </div>
+                    <h4 className="text-xs sm:text-sm font-bold text-[#0C3058] tracking-wider uppercase m-0 leading-tight">
+                      ACCREDITATION<br />WISE UNIVERSITIES
+                    </h4>
+                    <p className="text-[10px] sm:text-xs text-gray-400 font-normal m-0 mt-1.5 leading-snug max-w-[180px]">
+                      Compare with popular and in-demand universities.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Bottom Separator & Button: Show Me All Universities to Compare */}
+              <div className="w-full h-px bg-gray-100 mt-6 mb-4" />
+              <div className="text-center">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAllUnisSearchText("");
+                    setIsAllUniversitiesModalOpen(true);
+                  }}
+                  className="inline-flex items-center gap-1.5 text-sm sm:text-base font-normal text-gray-600 hover:text-[#00B4D8] transition-colors cursor-pointer bg-transparent border-none"
+                >
+                  <span>Show Me <strong className="text-[#0C3058] font-bold">All Universities</strong> to Compare</span>
+                  <RightOutlined className="text-xs font-bold text-[#0C3058]" />
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -1789,12 +2035,12 @@ function CompareContent() {
 
       {/* ── CTA COUNSELING SECTION ── */}
       <div className="max-w-5xl mx-auto my-12 px-4">
-        <div className="bg-gradient-to-br from-[#1C3569] via-[#1155cc] to-[#1a8fff] text-white rounded-3xl p-8 md:p-12 text-center relative overflow-hidden">
+        <div className="bg-linear-to-r from-[#0F3759] via-[#103D6D] to-[#154E8A] text-white rounded-2xl sm:rounded-3xl p-8 md:p-12 text-center relative overflow-hidden border border-gray-200">
           <div className="relative z-10 space-y-3">
-            <h2 className="text-2xl md:text-3xl font-extrabold m-0 text-white italic">
+            <h2 className="text-2xl md:text-3xl font-semibold m-0 text-white">
               Still Have Confusion?
             </h2>
-            <p className="text-sm md:text-base text-blue-100 max-w-xl mx-auto m-0 italic font-medium">
+            <p className="text-sm md:text-base text-blue-100 max-w-xl mx-auto m-0 font-normal">
               You Need A Career Expert Who Will Guide You to choose Best fit for you
             </p>
             <div className="pt-4">
@@ -1808,10 +2054,10 @@ function CompareContent() {
                     defaultCourse: selectedCourses.length > 0 ? selectedCourses.join(", ") : "General Counseling",
                   });
                 }}
-                className="bg-white text-[#0b5edd] hover:bg-slate-100 font-extrabold text-sm md:text-base px-8 h-12 rounded-full border-none cursor-pointer inline-flex items-center gap-2"
+                className="bg-[#00B4D8] hover:bg-[#0096C7] text-white font-semibold text-sm md:text-base px-8 h-11 rounded-xl border-none cursor-pointer inline-flex items-center gap-2"
               >
-                <span className="w-7 h-7 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
-                  <PhoneOutlined className="rotate-90" />
+                <span className="w-6 h-6 rounded-full bg-white/20 text-white flex items-center justify-center">
+                  <PhoneOutlined className="rotate-90 text-xs" />
                 </span>
                 Book 1:1 Free Counseling
               </Button>
@@ -1820,173 +2066,797 @@ function CompareContent() {
         </div>
       </div>
 
-      {/* ── 🧠 SMART AI RECOMMENDATIONS FULL MODAL (Interactive & Smooth Scroll) ── */}
+      {/* ── 📈 1. TRENDING UNIVERSITIES SELECTION MODAL ── */}
       <Modal
-        open={isRecModalOpen}
-        onCancel={() => setIsRecModalOpen(false)}
-        footer={null}
-        width={850}
+        open={isTrendingModalOpen}
+        onCancel={() => setIsTrendingModalOpen(false)}
+        width={620}
         closable={false}
-        mask={{ closable: false }}
-        keyboard={false}
-        title={
-          <>
-            {/* 100% Flush Header */}
-            <div className="bg-linear-to-r from-[#1C3569] via-[#1155cc] to-[#1a8fff] text-white p-5 sm:p-6 relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <span className="w-8 h-8 rounded-xl bg-amber-400 text-slate-900 flex items-center justify-center font-black text-base shadow-xs shrink-0">
-                    ⚡
-                  </span>
-                  <h3 className="text-base sm:text-lg font-black text-white m-0 leading-snug">
-                    AI Recommended Comparisons for {baseUniversityObj?.name || activeBaseUniversity?.name || "Selected University"}
-                  </h3>
-                </div>
-                <p className="text-xs text-blue-100 font-medium m-0 pl-10">
-                  Calculated dynamically from program offerings, NAAC accreditations, and fee ROI tiers
-                </p>
-              </div>
-
-              <div className="flex items-center gap-3 shrink-0">
-                {(compareList?.length || 0) < 3 && availableRecommendations.length > 0 && (
-                  <Button
-                    type="primary"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleAutoCompareTopAlternatives();
-                      setIsRecModalOpen(false);
-                    }}
-                    loading={loading}
-                    className="bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs rounded-xl shadow-md border-none inline-flex items-center gap-1.5 h-8.5 px-3.5 cursor-pointer"
-                  >
-                    ⚡ Auto-Compare Top 3
-                  </Button>
-                )}
-
-                <button
-                  onClick={() => setIsRecModalOpen(false)}
-                  className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center cursor-pointer border-none transition-all text-sm font-bold shadow-xs"
-                  title="Close"
-                >
-                  ✕
-                </button>
-              </div>
+        centered
+        styles={{
+          content: {
+            padding: 0,
+            borderRadius: 24,
+            overflow: "hidden",
+          },
+          body: {
+            padding: 0,
+            backgroundColor: "#FFFFFF",
+          },
+          footer: {
+            margin: 0,
+            padding: 0,
+            borderTop: "1px solid #F1F5F9",
+            backgroundColor: "#F8FAFC",
+          },
+        }}
+        footer={
+          <div className="px-5 py-3 bg-slate-50 flex items-center justify-between gap-3 w-full">
+            <div className="text-xs text-gray-500 font-medium text-left">
+              <span className="font-bold text-[#0C3058]">{currentIdentifiers.length}</span> {(currentIdentifiers.length === 1 ? "university" : "universities")} selected
             </div>
-          </>
+            <button
+              type="button"
+              disabled={currentIdentifiers.length === 0}
+              onClick={() => {
+                setIsTrendingModalOpen(false);
+                handleCompareNow();
+              }}
+              className="bg-[#00B4D8] hover:bg-[#0096C7] disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs sm:text-sm font-semibold rounded-xl px-5 py-2.5 transition-all inline-flex items-center gap-1.5 cursor-pointer border-none shadow-sm hover:shadow-md ml-auto"
+            >
+              <span>Compare Now</span>
+              <ArrowLeftOutlined className="rotate-180 text-xs" />
+            </button>
+          </div>
+        }
+        title={
+          <div className="pt-5 pb-3 px-5 text-center relative border-b border-gray-100 bg-white">
+            <button
+              onClick={() => setIsTrendingModalOpen(false)}
+              className="absolute right-4 top-4 w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center cursor-pointer border-none transition-all text-xs font-semibold"
+              title="Close"
+            >
+              ✕
+            </button>
+            <p className="text-[10px] sm:text-[11px] font-semibold text-gray-500 uppercase tracking-widest m-0">
+              COMPARE {baseUniversityObj?.name ? `${baseUniversityObj.name.toUpperCase()} WITH` : activeBaseUniversity?.name ? `${activeBaseUniversity.name.toUpperCase()} WITH` : "TOP UNIVERSITIES WITH"}
+            </p>
+            <h3 className="text-sm sm:text-base font-bold text-[#0C3058] uppercase tracking-wide m-0 mt-0.5">
+              TRENDING UNIVERSITIES
+            </h3>
+            <div className="flex items-center justify-center gap-2.5 mt-2.5">
+              <div className="h-px bg-gray-200 flex-1 max-w-[50px]" />
+              <span className="text-[9px] sm:text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
+                SELECT TRENDING UNIVERSITY TO COMPARE
+              </span>
+              <div className="h-px bg-gray-200 flex-1 max-w-[50px]" />
+            </div>
+          </div>
         }
       >
-        {availableRecommendations.length === 0 ? (
-          <div className="py-12 text-center">
-            <Empty description="No additional recommendations found for this university" />
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {availableRecommendations.map((recUni, rIdx) => {
-              const rawRecLogo =
-                (typeof recUni.logo === "object" ? recUni.logo?.url : recUni.logo) ||
-                recUni.logoUrl ||
-                null;
-              return (
-                <div
-                  key={rIdx}
-                  className="bg-white rounded-2xl border border-slate-200/90 hover:border-blue-400 p-4 flex flex-col justify-between transition-all duration-200 hover:shadow-md group"
-                >
-                  {/* Top Header */}
-                  <div className="flex items-start justify-between gap-3 mb-3">
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className="relative w-12 h-12 rounded-xl border border-slate-100 bg-white p-1.5 shrink-0 flex items-center justify-center overflow-hidden shadow-2xs">
-                        {rawRecLogo ? (
+        <div className="bg-[#FFFFFF]">
+          <div
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+            className="max-h-[60vh] overflow-y-auto p-4 sm:p-5 scrollbar-none [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+          >
+            {trendingUniversitiesList.length === 0 ? (
+              <div className="py-10 text-center bg-white rounded-2xl border border-dashed border-gray-200 p-6">
+                <p className="text-gray-500 font-medium m-0">No trending universities available</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-3.5 p-1">
+                {trendingUniversitiesList.map((uni) => {
+                  const rawLogo = uni.logo?.url || uni.logo?.path || (typeof uni.logo === "string" ? uni.logo : null);
+                  const isAdded = isUniAdded(uni);
+                  return (
+                    <div
+                      key={uni._id || uni.id}
+                      onClick={() => handleToggleUniversityFromModal(uni)}
+                      className={`bg-white border rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-between cursor-pointer transition-all hover:scale-[1.02] text-center min-h-[125px] sm:min-h-[135px] shadow-2xs hover:shadow-md ${
+                        isAdded
+                          ? "border-blue-400 bg-blue-50/20 ring-1 ring-blue-300"
+                          : "border-gray-200/90 hover:border-blue-400"
+                      }`}
+                    >
+                      <div className="w-full h-14 sm:h-16 flex items-center justify-center relative px-2 mb-1.5">
+                        {rawLogo ? (
                           <Image
-                            src={getAssetPath(rawRecLogo)}
-                            alt={recUni.name || "Logo"}
+                            src={getAssetPath(rawLogo)}
+                            alt={uni.name}
                             fill
                             unoptimized
-                            className="object-contain p-0.5"
+                            className="object-contain"
                           />
                         ) : (
-                          <span className="text-sm font-black text-[#1C3569]">
-                            {recUni.name ? recUni.name.charAt(0) : "U"}
+                          <span className="text-xs sm:text-sm font-bold text-[#0C3058] line-clamp-2">
+                            {uni.name}
                           </span>
                         )}
                       </div>
-                      <div className="min-w-0">
-                        <h4 className="text-sm font-bold text-slate-800 m-0 line-clamp-1 group-hover:text-blue-600 transition-colors">
-                          {recUni.name}
-                        </h4>
-                        {recUni.location && (
-                          <p className="text-[11px] text-slate-400 font-medium m-0 line-clamp-1">
-                            {recUni.location}
-                          </p>
+
+                      <div className="w-full pt-2 border-t border-gray-100/90 flex items-center justify-center">
+                        {isAdded ? (
+                          <span className="text-xs sm:text-[13px] font-bold text-[#00B4D8] inline-flex items-center gap-1">
+                            Added <span className="text-[11px]">✅</span>
+                          </span>
+                        ) : (
+                          <span className="text-xs sm:text-[13px] font-semibold text-[#00B4D8] hover:text-[#0096C7] inline-flex items-center gap-1">
+                            + Add to Compare
+                          </span>
                         )}
                       </div>
                     </div>
-
-                    <Tag
-                      color={
-                        recUni.tierType === "direct_rival"
-                          ? "cyan"
-                          : recUni.tierType === "value_upgrade"
-                            ? "purple"
-                            : "gold"
-                      }
-                      className="rounded-full font-extrabold text-[10px] shrink-0 m-0 border-none px-2.5 py-0.5"
-                    >
-                      {recUni.highlightBadge}
-                    </Tag>
-                  </div>
-
-                  {/* Reason Badges */}
-                  <div className="space-y-1.5 mb-3 bg-slate-50/80 rounded-xl p-2.5">
-                    {(recUni.matchReasons || []).map((reason, reasonIdx) => (
-                      <div key={reasonIdx} className="flex items-center gap-2 text-xs text-slate-600 font-medium">
-                        <span className="text-emerald-500 font-bold shrink-0 text-[10px]">✓</span>
-                        <span className="line-clamp-1">{reason}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Common Programs */}
-                  {recUni.commonCourses && recUni.commonCourses.length > 0 && (
-                    <div className="flex flex-wrap items-center gap-1 mb-3">
-                      <span className="text-[10px] text-slate-400 font-semibold mr-1">Shared Programs:</span>
-                      {recUni.commonCourses.slice(0, 4).map((prog, pIdx) => (
-                        <span key={pIdx} className="text-[10px] bg-blue-50 text-blue-700 font-semibold px-2 py-0.5 rounded-md">
-                          {prog}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Footer Actions */}
-                  <div className="flex items-center justify-between pt-3 border-t border-slate-100">
-                    <div>
-                      <span className="text-[10px] text-slate-400 block font-medium">Fee Approx</span>
-                      <span className="text-xs font-black text-slate-800">
-                        {recUni.avgFeePerSemester ? `${recUni.avgFeePerSemester}` : "Affordable Fees"}
-                      </span>
-                    </div>
-
-                    <Button
-                      type="primary"
-                      onClick={() => {
-                        triggerFlyAnimation(recUni);
-                        setIsRecModalOpen(false);
-                      }}
-                      className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl border-none cursor-pointer h-8 px-4 inline-flex items-center gap-1"
-                    >
-                      + Add to Compare
-                    </Button>
-                  </div>
-                </div>
-              );
-            })}
+                  );
+                })}
+              </div>
+            )}
           </div>
-        )}
-
-
+        </div>
       </Modal>
 
-      {/* ── FLYING LOGO ANIMATION OVERLAY ── */}
+      {/* ── 🌟 2. RECOMMENDED UNIVERSITIES SELECTION MODAL ── */}
+      <Modal
+        open={isRecommendedModalOpen}
+        onCancel={() => setIsRecommendedModalOpen(false)}
+        width={620}
+        closable={false}
+        centered
+        styles={{
+          content: {
+            padding: 0,
+            borderRadius: 24,
+            overflow: "hidden",
+          },
+          body: {
+            padding: 0,
+            backgroundColor: "#FFFFFF",
+          },
+          footer: {
+            margin: 0,
+            padding: 0,
+            borderTop: "1px solid #F1F5F9",
+            backgroundColor: "#F8FAFC",
+          },
+        }}
+        footer={
+          <div className="px-5 py-3 bg-slate-50 flex items-center justify-between gap-3 w-full">
+            <div className="text-xs text-gray-500 font-medium text-left">
+              <span className="font-bold text-[#0C3058]">{currentIdentifiers.length}</span> {(currentIdentifiers.length === 1 ? "university" : "universities")} selected
+            </div>
+            <button
+              type="button"
+              disabled={currentIdentifiers.length === 0}
+              onClick={() => {
+                setIsRecommendedModalOpen(false);
+                handleCompareNow();
+              }}
+              className="bg-[#00B4D8] hover:bg-[#0096C7] disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs sm:text-sm font-semibold rounded-xl px-5 py-2.5 transition-all inline-flex items-center gap-1.5 cursor-pointer border-none shadow-sm hover:shadow-md ml-auto"
+            >
+              <span>Compare Now</span>
+              <ArrowLeftOutlined className="rotate-180 text-xs" />
+            </button>
+          </div>
+        }
+        title={
+          <div className="pt-5 pb-3 px-5 text-center relative border-b border-gray-100 bg-white">
+            <button
+              onClick={() => setIsRecommendedModalOpen(false)}
+              className="absolute right-4 top-4 w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center cursor-pointer border-none transition-all text-xs font-semibold"
+              title="Close"
+            >
+              ✕
+            </button>
+            <p className="text-[10px] sm:text-[11px] font-semibold text-gray-500 uppercase tracking-widest m-0">
+              COMPARE {baseUniversityObj?.name ? `${baseUniversityObj.name.toUpperCase()} WITH` : activeBaseUniversity?.name ? `${activeBaseUniversity.name.toUpperCase()} WITH` : "TOP UNIVERSITIES WITH"}
+            </p>
+            <h3 className="text-sm sm:text-base font-bold text-[#0C3058] uppercase tracking-wide m-0 mt-0.5">
+              RECOMMENDED UNIVERSITIES
+            </h3>
+            <div className="flex items-center justify-center gap-2.5 mt-2.5">
+              <div className="h-px bg-gray-200 flex-1 max-w-[50px]" />
+              <span className="text-[9px] sm:text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
+                SELECT RECOMMENDED UNIVERSITY TO COMPARE
+              </span>
+              <div className="h-px bg-gray-200 flex-1 max-w-[50px]" />
+            </div>
+          </div>
+        }
+      >
+        <div className="bg-[#FFFFFF]">
+          <div
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+            className="max-h-[60vh] overflow-y-auto p-4 sm:p-5 scrollbar-none [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+          >
+            {recommendedUniversitiesList.length === 0 ? (
+              <div className="py-10 text-center bg-white rounded-2xl border border-dashed border-gray-200 p-6">
+                <p className="text-gray-500 font-medium m-0">No recommended universities available</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-3.5 p-1">
+                {recommendedUniversitiesList.map((uni) => {
+                  const rawLogo = uni.logo?.url || uni.logo?.path || (typeof uni.logo === "string" ? uni.logo : null);
+                  const isAdded = isUniAdded(uni);
+                  return (
+                    <div
+                      key={uni._id || uni.id}
+                      onClick={() => handleToggleUniversityFromModal(uni)}
+                      className={`bg-white border rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-between cursor-pointer transition-all hover:scale-[1.02] text-center min-h-[125px] sm:min-h-[135px] shadow-2xs hover:shadow-md ${
+                        isAdded
+                          ? "border-blue-400 bg-blue-50/20 ring-1 ring-blue-300"
+                          : "border-gray-200/90 hover:border-blue-400"
+                      }`}
+                    >
+                      <div className="w-full h-14 sm:h-16 flex items-center justify-center relative px-2 mb-1.5">
+                        {rawLogo ? (
+                          <Image
+                            src={getAssetPath(rawLogo)}
+                            alt={uni.name}
+                            fill
+                            unoptimized
+                            className="object-contain"
+                          />
+                        ) : (
+                          <span className="text-xs sm:text-sm font-bold text-[#0C3058] line-clamp-2">
+                            {uni.name}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="w-full pt-2 border-t border-gray-100/90 flex items-center justify-center">
+                        {isAdded ? (
+                          <span className="text-xs sm:text-[13px] font-bold text-[#00B4D8] inline-flex items-center gap-1">
+                            Added <span className="text-[11px]">✅</span>
+                          </span>
+                        ) : (
+                          <span className="text-xs sm:text-[13px] font-semibold text-[#00B4D8] hover:text-[#0096C7] inline-flex items-center gap-1">
+                            + Add to Compare
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      </Modal>
+
+      {/* ── 📍 3. STATE WISE UNIVERSITIES SELECTION MODAL ── */}
+      <Modal
+        open={isStateModalOpen}
+        onCancel={() => {
+          setIsStateModalOpen(false);
+          setSelectedStateObj(null);
+        }}
+        width={620}
+        closable={false}
+        centered
+        styles={{
+          content: {
+            padding: 0,
+            borderRadius: 24,
+            overflow: "hidden",
+          },
+          body: {
+            padding: 0,
+            backgroundColor: "#FFFFFF",
+          },
+          footer: {
+            margin: 0,
+            padding: 0,
+            borderTop: "1px solid #F1F5F9",
+            backgroundColor: "#F8FAFC",
+          },
+        }}
+        footer={
+          selectedStateObj ? (
+            <div className="px-5 py-3 bg-slate-50 flex items-center justify-between gap-3 w-full">
+              <div className="text-xs text-gray-500 font-medium text-left">
+                <span className="font-bold text-[#0C3058]">{currentIdentifiers.length}</span> {(currentIdentifiers.length === 1 ? "university" : "universities")} selected
+              </div>
+              <button
+                type="button"
+                disabled={currentIdentifiers.length === 0}
+                onClick={() => {
+                  setIsStateModalOpen(false);
+                  setSelectedStateObj(null);
+                  handleCompareNow();
+                }}
+                className="bg-[#00B4D8] hover:bg-[#0096C7] disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs sm:text-sm font-semibold rounded-xl px-5 py-2.5 transition-all inline-flex items-center gap-1.5 cursor-pointer border-none shadow-sm hover:shadow-md ml-auto"
+              >
+                <span>Compare Now</span>
+                <ArrowLeftOutlined className="rotate-180 text-xs" />
+              </button>
+            </div>
+          ) : null
+        }
+        title={
+          <div className="pt-5 pb-3 px-5 text-center relative border-b border-gray-100 bg-white">
+            {selectedStateObj && (
+              <button
+                onClick={() => setSelectedStateObj(null)}
+                className="absolute left-4 top-4 px-2.5 py-1 rounded-full bg-slate-100 hover:bg-slate-200 text-[#0C3058] flex items-center gap-1 cursor-pointer border-none transition-all text-xs font-semibold"
+                title="Back to States"
+              >
+                <span>←</span>
+                <span className="hidden sm:inline">Back</span>
+              </button>
+            )}
+            <button
+              onClick={() => {
+                setIsStateModalOpen(false);
+                setSelectedStateObj(null);
+              }}
+              className="absolute right-4 top-4 w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center cursor-pointer border-none transition-all text-xs font-semibold"
+              title="Close"
+            >
+              ✕
+            </button>
+            <p className="text-[10px] sm:text-[11px] font-semibold text-gray-500 uppercase tracking-widest m-0">
+              COMPARE {baseUniversityObj?.name ? `${baseUniversityObj.name.toUpperCase()} WITH` : activeBaseUniversity?.name ? `${activeBaseUniversity.name.toUpperCase()} WITH` : "TOP UNIVERSITIES WITH"}
+            </p>
+            <h3 className="text-sm sm:text-base font-bold text-[#0C3058] uppercase tracking-wide m-0 mt-0.5">
+              {selectedStateObj ? `${selectedStateObj.name.toUpperCase()} UNIVERSITIES` : "STATEWISE UNIVERSITIES"}
+            </h3>
+            <div className="flex items-center justify-center gap-2.5 mt-2.5">
+              <div className="h-px bg-gray-200 flex-1 max-w-[50px]" />
+              <span className="text-[9px] sm:text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
+                {selectedStateObj ? `SELECT UNIVERSITIES IN ${selectedStateObj.name.toUpperCase()}` : "SELECT STATE TO COMPARE"}
+              </span>
+              <div className="h-px bg-gray-200 flex-1 max-w-[50px]" />
+            </div>
+          </div>
+        }
+      >
+        <div className="bg-[#FFFFFF]">
+          {selectedStateObj ? (
+            /* ── Step 2: Universities of Selected State (2 cols mobile, 3 cols desktop) ── */
+            <div
+              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+              className="max-h-[60vh] overflow-y-auto p-4 sm:p-5 scrollbar-none [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+            >
+              {stateUniversitiesList.length === 0 ? (
+                <div className="py-10 text-center bg-white rounded-2xl border border-dashed border-gray-200 p-6">
+                  <p className="text-gray-500 font-medium m-0 text-xs">
+                    No universities found in {selectedStateObj.name}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedStateObj(null)}
+                    className="mt-3 text-xs font-semibold text-[#00B4D8] hover:underline bg-transparent border-none cursor-pointer"
+                  >
+                    ← Choose another state
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-3.5 p-1">
+                  {stateUniversitiesList.map((uni) => {
+                    const rawLogo = uni.logo?.url || uni.logo?.path || (typeof uni.logo === "string" ? uni.logo : null);
+                    const isAdded = isUniAdded(uni);
+                    return (
+                      <div
+                        key={uni._id || uni.id}
+                        onClick={() => handleToggleUniversityFromModal(uni)}
+                        className={`bg-white border rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-between cursor-pointer transition-all hover:scale-[1.02] text-center min-h-[125px] sm:min-h-[135px] shadow-2xs hover:shadow-md ${
+                          isAdded
+                            ? "border-blue-400 bg-blue-50/20 ring-1 ring-blue-300"
+                            : "border-gray-200/90 hover:border-blue-400"
+                        }`}
+                      >
+                        <div className="w-full h-14 sm:h-16 flex items-center justify-center relative px-2 mb-1.5">
+                          {rawLogo ? (
+                            <Image
+                              src={getAssetPath(rawLogo)}
+                              alt={uni.name}
+                              fill
+                              unoptimized
+                              className="object-contain"
+                            />
+                          ) : (
+                            <span className="text-xs sm:text-sm font-bold text-[#0C3058] line-clamp-2">
+                              {uni.name}
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="w-full pt-2 border-t border-gray-100/90 flex items-center justify-center">
+                          {isAdded ? (
+                            <span className="text-xs sm:text-[13px] font-bold text-[#00B4D8] inline-flex items-center gap-1">
+                              Added <span className="text-[11px]">✅</span>
+                            </span>
+                          ) : (
+                            <span className="text-xs sm:text-[13px] font-semibold text-[#00B4D8] hover:text-[#0096C7] inline-flex items-center gap-1">
+                              + Add to Compare
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          ) : (
+            /* ── Step 1: All States Grid (3 cols mobile, 4 cols desktop) ── */
+            <div
+              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+              className="max-h-[60vh] overflow-y-auto p-4 sm:p-5 scrollbar-none [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+            >
+              {computedStatesList.length === 0 ? (
+                <div className="py-10 text-center bg-white rounded-2xl border border-dashed border-gray-200 p-6">
+                  <p className="text-gray-500 font-medium m-0">No states available</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5 sm:gap-3 p-1">
+                  {computedStatesList.map((st) => {
+                    const rawLogo = st.logo?.url || st.logo?.path || (typeof st.logo === "string" ? st.logo : null);
+                    return (
+                      <div
+                        key={st._id}
+                        onClick={() => setSelectedStateObj(st)}
+                        className="bg-white hover:bg-slate-50/80 border border-gray-200/90 hover:border-blue-400 rounded-xl sm:rounded-2xl p-2 sm:p-2.5 flex flex-col items-center justify-center cursor-pointer transition-all hover:scale-[1.03] text-center aspect-square group shadow-2xs hover:shadow-md"
+                      >
+                        <div className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center mb-1 shrink-0">
+                          {rawLogo ? (
+                            <div className="relative w-full h-full">
+                              <Image
+                                src={getAssetPath(rawLogo)}
+                                alt={st.name}
+                                fill
+                                unoptimized
+                                className="object-contain"
+                              />
+                            </div>
+                          ) : (
+                            <span className="text-lg">🏛️</span>
+                          )}
+                        </div>
+                        <h4 className="text-[10px] sm:text-[11px] font-semibold text-[#0C3058] m-0 line-clamp-2 group-hover:text-blue-600 transition-colors leading-tight">
+                          {st.name}
+                        </h4>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </Modal>
+
+      {/* ── 🎖️ 4. ACCREDITATION WISE UNIVERSITIES SELECTION MODAL ── */}
+      <Modal
+        open={isAccreditationModalOpen}
+        onCancel={() => {
+          setIsAccreditationModalOpen(false);
+          setSelectedAccreditationObj(null);
+        }}
+        width={620}
+        closable={false}
+        centered
+        styles={{
+          content: {
+            padding: 0,
+            borderRadius: 24,
+            overflow: "hidden",
+          },
+          body: {
+            padding: 0,
+            backgroundColor: "#FFFFFF",
+          },
+          footer: {
+            margin: 0,
+            padding: 0,
+            borderTop: "1px solid #F1F5F9",
+            backgroundColor: "#F8FAFC",
+          },
+        }}
+        footer={
+          selectedAccreditationObj ? (
+            <div className="px-5 py-3 bg-slate-50 flex items-center justify-between gap-3 w-full">
+              <div className="text-xs text-gray-500 font-medium text-left">
+                <span className="font-bold text-[#0C3058]">{currentIdentifiers.length}</span> {(currentIdentifiers.length === 1 ? "university" : "universities")} selected
+              </div>
+              <button
+                type="button"
+                disabled={currentIdentifiers.length === 0}
+                onClick={() => {
+                  setIsAccreditationModalOpen(false);
+                  setSelectedAccreditationObj(null);
+                  handleCompareNow();
+                }}
+                className="bg-[#00B4D8] hover:bg-[#0096C7] disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs sm:text-sm font-semibold rounded-xl px-5 py-2.5 transition-all inline-flex items-center gap-1.5 cursor-pointer border-none shadow-sm hover:shadow-md ml-auto"
+              >
+                <span>Compare Now</span>
+                <ArrowLeftOutlined className="rotate-180 text-xs" />
+              </button>
+            </div>
+          ) : null
+        }
+        title={
+          <div className="pt-5 pb-3 px-5 text-center relative border-b border-gray-100 bg-white">
+            {selectedAccreditationObj && (
+              <button
+                onClick={() => setSelectedAccreditationObj(null)}
+                className="absolute left-4 top-4 px-2.5 py-1 rounded-full bg-slate-100 hover:bg-slate-200 text-[#0C3058] flex items-center gap-1 cursor-pointer border-none transition-all text-xs font-semibold"
+                title="Back to Accreditations"
+              >
+                <span>←</span>
+                <span className="hidden sm:inline">Back</span>
+              </button>
+            )}
+            <button
+              onClick={() => {
+                setIsAccreditationModalOpen(false);
+                setSelectedAccreditationObj(null);
+              }}
+              className="absolute right-4 top-4 w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center cursor-pointer border-none transition-all text-xs font-semibold"
+              title="Close"
+            >
+              ✕
+            </button>
+            <p className="text-[10px] sm:text-[11px] font-semibold text-gray-500 uppercase tracking-widest m-0">
+              COMPARE {baseUniversityObj?.name ? `${baseUniversityObj.name.toUpperCase()} WITH` : activeBaseUniversity?.name ? `${activeBaseUniversity.name.toUpperCase()} WITH` : "TOP UNIVERSITIES WITH"}
+            </p>
+            <h3 className="text-sm sm:text-base font-bold text-[#0C3058] uppercase tracking-wide m-0 mt-0.5">
+              {selectedAccreditationObj ? `${selectedAccreditationObj.name.toUpperCase()}` : "ACCREDITATION WISE UNIVERSITIES"}
+            </h3>
+            <div className="flex items-center justify-center gap-2.5 mt-2.5">
+              <div className="h-px bg-gray-200 flex-1 max-w-[50px]" />
+              <span className="text-[9px] sm:text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
+                {selectedAccreditationObj ? `SELECT UNIVERSITIES WITH ${selectedAccreditationObj.name.toUpperCase()}` : "SELECT ACCREDITATION TO COMPARE"}
+              </span>
+              <div className="h-px bg-gray-200 flex-1 max-w-[50px]" />
+            </div>
+          </div>
+        }
+      >
+        <div className="bg-[#FFFFFF]">
+          {selectedAccreditationObj ? (
+            /* ── Step 2: Universities of Selected Accreditation (2 cols mobile, 3 cols desktop) ── */
+            <div
+              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+              className="max-h-[60vh] overflow-y-auto p-4 sm:p-5 scrollbar-none [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+            >
+              {accreditationUniversitiesList.length === 0 ? (
+                <div className="py-10 text-center bg-white rounded-2xl border border-dashed border-gray-200 p-6">
+                  <p className="text-gray-500 font-medium m-0 text-xs">
+                    No universities found with {selectedAccreditationObj.name}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedAccreditationObj(null)}
+                    className="mt-3 text-xs font-semibold text-[#00B4D8] hover:underline bg-transparent border-none cursor-pointer"
+                  >
+                    ← Choose another accreditation
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-3.5 p-1">
+                  {accreditationUniversitiesList.map((uni) => {
+                    const rawLogo = uni.logo?.url || uni.logo?.path || (typeof uni.logo === "string" ? uni.logo : null);
+                    const isAdded = isUniAdded(uni);
+                    return (
+                      <div
+                        key={uni._id || uni.id}
+                        onClick={() => handleToggleUniversityFromModal(uni)}
+                        className={`bg-white border rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-between cursor-pointer transition-all hover:scale-[1.02] text-center min-h-[125px] sm:min-h-[135px] shadow-2xs hover:shadow-md ${
+                          isAdded
+                            ? "border-blue-400 bg-blue-50/20 ring-1 ring-blue-300"
+                            : "border-gray-200/90 hover:border-blue-400"
+                        }`}
+                      >
+                        <div className="w-full h-14 sm:h-16 flex items-center justify-center relative px-2 mb-1.5">
+                          {rawLogo ? (
+                            <Image
+                              src={getAssetPath(rawLogo)}
+                              alt={uni.name}
+                              fill
+                              unoptimized
+                              className="object-contain"
+                            />
+                          ) : (
+                            <span className="text-xs sm:text-sm font-bold text-[#0C3058] line-clamp-2">
+                              {uni.name}
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="w-full pt-2 border-t border-gray-100/90 flex items-center justify-center">
+                          {isAdded ? (
+                            <span className="text-xs sm:text-[13px] font-bold text-[#00B4D8] inline-flex items-center gap-1">
+                              Added <span className="text-[11px]">✅</span>
+                            </span>
+                          ) : (
+                            <span className="text-xs sm:text-[13px] font-semibold text-[#00B4D8] hover:text-[#0096C7] inline-flex items-center gap-1">
+                              + Add to Compare
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          ) : (
+            /* ── Step 1: 6 Accreditation Approvals Grid (2 cols mobile, 3 cols desktop) ── */
+            <div
+              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+              className="max-h-[60vh] overflow-y-auto p-4 sm:p-5 scrollbar-none [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+            >
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-3.5 p-1">
+                {dynamicAccreditationList.map((acc) => {
+                  const rawLogo = acc.logo?.url || acc.logo?.path || (typeof acc.logo === "string" ? acc.logo : null);
+                  return (
+                    <div
+                      key={acc._id || acc.id}
+                      onClick={() => setSelectedAccreditationObj(acc)}
+                      className="bg-white hover:bg-slate-50/80 border border-gray-200/90 hover:border-blue-400 rounded-2xl p-3.5 sm:p-4 flex flex-col items-center justify-center cursor-pointer transition-all hover:scale-[1.03] text-center aspect-[1/1.05] group shadow-2xs hover:shadow-md"
+                    >
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center mb-2.5 shrink-0">
+                        {rawLogo ? (
+                          <div className="relative w-full h-full">
+                            <Image
+                              src={getAssetPath(rawLogo)}
+                              alt={acc.name}
+                              fill
+                              unoptimized
+                              className="object-contain"
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-12 h-12 rounded-xl bg-slate-50 border border-gray-100 flex items-center justify-center text-2xl">
+                            {acc.icon || "🎖️"}
+                          </div>
+                        )}
+                      </div>
+                      <h4 className="text-xs sm:text-[13px] font-semibold text-[#0C3058] m-0 line-clamp-2 group-hover:text-blue-600 transition-colors leading-tight">
+                        {acc.name}
+                      </h4>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+      </Modal>
+
+      {/* ── 🏫 5. ALL UNIVERSITIES SELECTION MODAL (showInModal: true) ── */}
+      <Modal
+        open={isAllUniversitiesModalOpen}
+        onCancel={() => {
+          setIsAllUniversitiesModalOpen(false);
+          setAllUnisSearchText("");
+        }}
+        width={620}
+        closable={false}
+        centered
+        styles={{
+          content: {
+            padding: 0,
+            borderRadius: 24,
+            overflow: "hidden",
+          },
+          body: {
+            padding: 0,
+            backgroundColor: "#FFFFFF",
+          },
+          footer: {
+            margin: 0,
+            padding: 0,
+            borderTop: "1px solid #F1F5F9",
+            backgroundColor: "#F8FAFC",
+          },
+        }}
+        footer={
+          <div className="px-5 py-3 bg-slate-50 flex items-center justify-between gap-3 w-full">
+            <div className="text-xs text-gray-500 font-medium text-left">
+              <span className="font-bold text-[#0C3058]">{currentIdentifiers.length}</span> {(currentIdentifiers.length === 1 ? "university" : "universities")} selected
+            </div>
+            <button
+              type="button"
+              disabled={currentIdentifiers.length === 0}
+              onClick={() => {
+                setIsAllUniversitiesModalOpen(false);
+                handleCompareNow();
+              }}
+              className="bg-[#00B4D8] hover:bg-[#0096C7] disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs sm:text-sm font-semibold rounded-xl px-5 py-2.5 transition-all inline-flex items-center gap-1.5 cursor-pointer border-none shadow-sm hover:shadow-md ml-auto"
+            >
+              <span>Compare Now</span>
+              <ArrowLeftOutlined className="rotate-180 text-xs" />
+            </button>
+          </div>
+        }
+        title={
+          <div className="pt-5 pb-3 px-5 text-center relative border-b border-gray-100 bg-white">
+            <button
+              onClick={() => {
+                setIsAllUniversitiesModalOpen(false);
+                setAllUnisSearchText("");
+              }}
+              className="absolute right-4 top-4 w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center cursor-pointer border-none transition-all text-xs font-semibold"
+              title="Close"
+            >
+              ✕
+            </button>
+            <p className="text-[10px] sm:text-[11px] font-semibold text-gray-500 uppercase tracking-widest m-0">
+              COMPARE {baseUniversityObj?.name ? `${baseUniversityObj.name.toUpperCase()} WITH` : activeBaseUniversity?.name ? `${activeBaseUniversity.name.toUpperCase()} WITH` : "TOP UNIVERSITIES WITH"}
+            </p>
+            <h3 className="text-sm sm:text-base font-bold text-[#0C3058] uppercase tracking-wide m-0 mt-0.5">
+              ALL UNIVERSITIES ({modalUniversitiesList.length})
+            </h3>
+            <div className="flex items-center justify-center gap-2.5 mt-2.5">
+              <div className="h-px bg-gray-200 flex-1 max-w-[50px]" />
+              <span className="text-[9px] sm:text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
+                SELECT ANY UNIVERSITY TO COMPARE
+              </span>
+              <div className="h-px bg-gray-200 flex-1 max-w-[50px]" />
+            </div>
+          </div>
+        }
+      >
+        <div className="bg-[#FFFFFF]">
+          <div
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+            className="max-h-[60vh] overflow-y-auto p-4 sm:p-5 scrollbar-none [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+          >
+            {modalUniversitiesList.length === 0 ? (
+              <div className="py-10 text-center bg-white rounded-2xl border border-dashed border-gray-200 p-6">
+                <p className="text-gray-500 font-medium m-0 text-xs">No universities found</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-3.5 p-1">
+                {modalUniversitiesList.map((uni) => {
+                  const rawLogo = uni.logo?.url || uni.logo?.path || (typeof uni.logo === "string" ? uni.logo : null);
+                  const isAdded = isUniAdded(uni);
+                  return (
+                    <div
+                      key={uni._id || uni.id}
+                      onClick={() => handleToggleUniversityFromModal(uni)}
+                      className={`bg-white border rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-between cursor-pointer transition-all hover:scale-[1.02] text-center min-h-[125px] sm:min-h-[135px] shadow-2xs hover:shadow-md ${
+                        isAdded
+                          ? "border-blue-400 bg-blue-50/20 ring-1 ring-blue-300"
+                          : "border-gray-200/90 hover:border-blue-400"
+                      }`}
+                    >
+                      <div className="w-full h-14 sm:h-16 flex items-center justify-center relative px-2 mb-1.5">
+                        {rawLogo ? (
+                          <Image
+                            src={getAssetPath(rawLogo)}
+                            alt={uni.name}
+                            fill
+                            unoptimized
+                            className="object-contain"
+                          />
+                        ) : (
+                          <span className="text-xs sm:text-sm font-bold text-[#0C3058] line-clamp-2">
+                            {uni.name}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="w-full pt-2 border-t border-gray-100/90 flex items-center justify-center">
+                        {isAdded ? (
+                          <span className="text-xs sm:text-[13px] font-bold text-[#00B4D8] inline-flex items-center gap-1">
+                            Added <span className="text-[11px]">✅</span>
+                          </span>
+                        ) : (
+                          <span className="text-xs sm:text-[13px] font-semibold text-[#00B4D8] hover:text-[#0096C7] inline-flex items-center gap-1">
+                            + Add to Compare
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      </Modal>
       {flyingLogo && (
         <div
           style={{
