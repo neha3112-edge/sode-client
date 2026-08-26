@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Carousel } from "antd";
+import { Container } from "@/components/common/Container";
 import { useFormModal } from "@/hooks/useFormModal";
 
 export function Hero({ initialHeroData = null }) {
@@ -103,8 +104,8 @@ export function Hero({ initialHeroData = null }) {
           </div>
         )}
 
-        {/* 2. FOREGROUND TEXT CONTENT (Aligned over left space) */}
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full z-10">
+        {/* 2. FOREGROUND TEXT CONTENT (Aligned with unified Container) */}
+        <Container className="relative z-10">
           <div className="max-w-md sm:max-w-lg lg:max-w-xl flex flex-col items-start space-y-2.5 sm:space-y-3 lg:space-y-3.5">
             
             {/* Top Badge */}
@@ -186,7 +187,7 @@ export function Hero({ initialHeroData = null }) {
             </div>
 
           </div>
-        </div>
+        </Container>
       </div>
     );
   };
