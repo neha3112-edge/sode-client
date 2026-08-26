@@ -82,22 +82,11 @@ export default function AutoEngineToolModal() {
         const nodes = flowData.nodes || [];
         const edges = flowData.edges || [];
 
-        // Determine First Step Node based on mode or category router
-        let startNode = null;
-
-        if (mergedAnswers.tool_mode) {
-          const isUni = mergedAnswers.tool_mode.toLowerCase().includes("uni");
-          startNode = isUni
-            ? nodes.find((n) => n.id === "node_u_step1_persona" || n.data?.storeVariable === "persona")
-            : nodes.find((n) => n.id === "node_c_step1_stream" || n.data?.storeVariable === "current_stream");
-        }
-
-        if (!startNode) {
-          startNode =
-            nodes.find((n) => n.id === "node_tool_category" || n.type === "check_category") ||
-            nodes.find((n) => n.type !== "start") ||
-            nodes[0];
-        }
+        // Determine First Step Node
+        const startNode =
+          nodes.find((n) => n.id === "node_step1_persona") ||
+          nodes.find((n) => n.type !== "start") ||
+          nodes[0];
 
         setCurrentNodeId(startNode?.id || null);
         setLoading(false);
