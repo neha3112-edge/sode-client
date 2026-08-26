@@ -48,20 +48,23 @@ export function Hero({ initialHeroData = null }) {
     // Pure Dynamic Categories from CRM Reference (ref: Category)
     const categoryItems = Array.isArray(data?.categories)
       ? data.categories
-          .filter(Boolean)
-          .map((c) => ({
-            _id: c?._id || c,
-            name: c?.name || (typeof c === "string" ? c : ""),
-            url: `/${c?.slug || (c?.name ? c.name.toLowerCase().replace(/\s+/g, "-") : "")}`,
-          }))
-          .filter((item) => Boolean(item.name))
+        .filter(Boolean)
+        .map((c) => ({
+          _id: c?._id || c,
+          name: c?.name || (typeof c === "string" ? c : ""),
+          url: `/${c?.slug || (c?.name ? c.name.toLowerCase().replace(/\s+/g, "-") : "")}`,
+        }))
+        .filter((item) => Boolean(item.name))
       : [];
 
-    // Purely dynamic Background Banner Image from DB / API
-    const bgBannerUrl =
+    // Purely dynamic Background Banner Images from DB / API
+    const desktopBannerUrl =
       getMediaUrl(data?.banner_image) ||
       getMediaUrl(data?.background_image) ||
       getMediaUrl(data?.bgImage);
+
+    const mobileBannerUrl =
+      getMediaUrl(data?.banner_image_mobile) || desktopBannerUrl;
 
     const primaryBtn = data?.primary_button;
     const secondaryBtn = data?.secondary_button;
@@ -85,29 +88,45 @@ export function Hero({ initialHeroData = null }) {
       <div
         key={data?._id || index}
         style={{ backgroundColor: bgColor }}
-        className="relative w-full overflow-hidden h-64 min-[420px]:h-72 sm:h-80 md:h-[340px] lg:h-[360px] flex items-center"
+        className="relative w-full overflow-hidden h-64 min-[420px]:h-72 sm:h-80 md:h-85 lg:h-90 flex items-center"
       >
-        {/* 1. DYNAMIC BACKGROUND BANNER IMAGE (PURELY FROM API) */}
-        {bgBannerUrl && (
+        {/* 1. DYNAMIC BACKGROUND BANNER IMAGES (RESPONSIVE DESKTOP & MOBILE) */}
+        {desktopBannerUrl && (
           <div className="absolute inset-0 w-full h-full select-none pointer-events-none">
-            <Image
-              src={bgBannerUrl}
-              alt={title || "Hero banner"}
-              fill
-              priority={index === 0}
-              fetchPriority={index === 0 ? "high" : "auto"}
-              sizes="100vw"
-              className="object-cover object-right md:object-center"
-            />
-            {/* Subtle mobile readability gradient */}
-            <div className="absolute inset-0 bg-gradient-to-r from-[#14233c]/95 via-[#14233c]/75 to-transparent md:from-transparent md:via-transparent" />
+            {/* Desktop Banner Image (Visible on md screens and up) */}
+            <div className={`relative w-full h-full ${mobileBannerUrl && mobileBannerUrl !== desktopBannerUrl ? "hidden md:block" : "block"}`}>
+              <Image
+                src={desktopBannerUrl}
+                alt={title || "Hero banner"}
+                fill
+                priority={index === 0}
+                fetchPriority={index === 0 ? "high" : "auto"}
+                sizes="100vw"
+                className="object-cover object-right md:object-center"
+              />
+            </div>
+
+            {/* Mobile Banner Image (Visible on mobile screens below md) */}
+            {mobileBannerUrl && mobileBannerUrl !== desktopBannerUrl && (
+              <div className="block md:hidden relative w-full h-full">
+                <Image
+                  src={mobileBannerUrl}
+                  alt={title || "Hero mobile banner"}
+                  fill
+                  priority={index === 0}
+                  fetchPriority={index === 0 ? "high" : "auto"}
+                  sizes="100vw"
+                  className="object-cover object-center"
+                />
+              </div>
+            )}
           </div>
         )}
 
         {/* 2. FOREGROUND TEXT CONTENT (Aligned with unified Container) */}
         <Container className="relative z-10">
           <div className="max-w-md sm:max-w-lg lg:max-w-xl flex flex-col items-start space-y-2.5 sm:space-y-3 lg:space-y-3.5">
-            
+
             {/* Top Badge */}
             {badgeText && (
               <div className="inline-flex items-center gap-1.5 text-white font-serif text-xs sm:text-sm tracking-wide drop-shadow-sm">

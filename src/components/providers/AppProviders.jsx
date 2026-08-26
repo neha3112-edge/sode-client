@@ -7,6 +7,8 @@ import { App, ConfigProvider } from "antd";
 import SWRProvider from "@/components/providers/SWRProvider";
 import CompareDrawerWidget from "@/components/website/CompareDrawerWidget";
 import JsonLd from "@/components/common/JsonLd";
+import { ToolWizardProvider } from "@/components/tool/ToolWizardContext";
+import AutoEngineToolModal from "@/components/tool/AutoEngineToolModal";
 
 /**
  * AppProviders - Consolidated System Wrapper for SODE Application
@@ -24,9 +26,12 @@ export default function AppProviders({ children }) {
       >
         <App>
           <SWRProvider>
-            <JsonLd />
-            {children}
-            <CompareDrawerWidget />
+            <ToolWizardProvider>
+              <JsonLd />
+              {children}
+              <CompareDrawerWidget />
+              <AutoEngineToolModal />
+            </ToolWizardProvider>
           </SWRProvider>
         </App>
       </ConfigProvider>

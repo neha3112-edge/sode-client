@@ -21,6 +21,25 @@ async function fetchFromApi(path, options = {}, revalidate = 900) {
   }
 }
 
+async function postToApi(path, body = {}, options = {}) {
+  try {
+    const base = API_BASE_URL.replace(/\/+$/, "");
+    const url = `${base}/${path}`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...options.headers,
+      },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (error) {
+    return null;
+  }
+}
+
 export const request = {
   dynamicRead: ({ entity, endPoint = "", id = "", slug = "", options = {}, revalidate = 900 }) =>
     fetchFromApi([entity, endPoint, id || slug].filter(Boolean).join("/"), options, revalidate),
@@ -30,10 +49,14 @@ export const request = {
 
   dynamicOptions: ({ entity, endPoint = "v1/options", options = {}, revalidate = 900 }) =>
     fetchFromApi([entity, endPoint].filter(Boolean).join("/"), options, revalidate),
+
+  dynamicPost: ({ entity, endPoint = "", body = {}, options = {} }) =>
+    postToApi([entity, endPoint].filter(Boolean).join("/"), body, options),
 };
 
 export const dynamicRead = request.dynamicRead;
 export const dynamicList = request.dynamicList;
 export const dynamicOptions = request.dynamicOptions;
+export const dynamicPost = request.dynamicPost;
 
 export default request;

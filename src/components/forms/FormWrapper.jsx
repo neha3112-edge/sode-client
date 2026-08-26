@@ -263,9 +263,11 @@ export default function FormWrapper({
       setClosing(true);
 
       window.setTimeout(() => {
-        onSuccess?.();
+        onSuccess?.(payload);
         onClose?.();
-        router.push(redirectUrl);
+        if (redirectUrl && redirectUrl !== "") {
+          router.push(redirectUrl);
+        }
       }, 300);
     } catch (error) {
       console.error("Form submit error:", error);

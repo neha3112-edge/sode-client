@@ -5,8 +5,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { Container } from "@/components/common/Container";
 import { getAssetPath } from "@/lib/utils";
+import { useToolWizard } from "@/components/tool/ToolWizardContext";
 
 export function Header({ initialHeaderData = null, siteLogo = null }) {
+  const { openTool } = useToolWizard();
   const headerData = initialHeaderData?.result || initialHeaderData || {};
 
   const resolveImageUrl = (mediaObj, fallback = "/assets/images/new_sode_tm_logo.png") => {
@@ -128,7 +130,71 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
             </div>
           </Link>
 
-          {/* 2. CENTER & RIGHT NAVIGATION BUTTON PILLS & LINKS */}
+          {/* 2. MOBILE BUTTONS (SUGGEST UNIVERSITY / COURSE) */}
+          <div className="flex lg:hidden items-center gap-1.5 sm:gap-2">
+            {allNavElements
+              .filter((el) => el.type === "featured_button")
+              .map((el) => {
+                const btn = el.data;
+                const iconUrl =
+                  btn.icon?.url ||
+                  (typeof btn.icon === "string" && btn.icon.startsWith("http")
+                    ? btn.icon
+                    : null);
+                const variantClasses = getButtonVariantClasses(
+                  btn.variant || "outline",
+                  btn.text,
+                  el.index
+                );
+                const isDarkBg =
+                  variantClasses.includes("bg-[#1e2f4d]") ||
+                  variantClasses.includes("bg-slate-900");
+
+                const isToolButton =
+                  (btn.text &&
+                    (btn.text.toLowerCase().includes("suggest") ||
+                      btn.text.toLowerCase().includes("advisor"))) ||
+                  (btn.url && btn.url.includes("suggest")) ||
+                  btn.category?.slug?.includes("suggest");
+
+                const handleButtonClick = (e) => {
+                  if (isToolButton) {
+                    e.preventDefault();
+                    const mode = btn.text?.toLowerCase().includes("course")
+                      ? "Suggest Course"
+                      : "Suggest University";
+                    openTool("suggest-me-a-university", { tool_mode: mode });
+                  }
+                };
+
+                return (
+                  <Link
+                    key={`mobile_${el.id}`}
+                    href={btn?.url || "#"}
+                    onClick={handleButtonClick}
+                    className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-lg font-bold text-xs sm:text-sm transition-all duration-200 cursor-pointer shadow-xs whitespace-nowrap ${variantClasses}`}
+                  >
+                    {iconUrl && (
+                      <span className="relative w-3.5 h-3.5 flex items-center justify-center shrink-0">
+                        <Image
+                          src={iconUrl}
+                          alt={btn.text || "Icon"}
+                          width={14}
+                          height={14}
+                          className={`object-contain ${
+                            isDarkBg ? "brightness-0 invert" : "brightness-0"
+                          }`}
+                          unoptimized
+                        />
+                      </span>
+                    )}
+                    <span>{btn?.text}</span>
+                  </Link>
+                );
+              })}
+          </div>
+
+          {/* 3. DESKTOP NAVIGATION BUTTON PILLS & LINKS */}
           <nav className="hidden lg:flex items-center gap-3 xl:gap-4">
             {allNavElements.map((el) => {
               if (el.type === "featured_button") {
@@ -137,11 +203,27 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                 const variantClasses = getButtonVariantClasses(btn.variant || "outline", btn.text, el.index);
                 const isDarkBg = variantClasses.includes("bg-[#1e2f4d]") || variantClasses.includes("bg-slate-900");
 
+                const isToolButton =
+                  (btn.text && (btn.text.toLowerCase().includes("suggest") || btn.text.toLowerCase().includes("advisor"))) ||
+                  (btn.url && btn.url.includes("suggest")) ||
+                  btn.category?.slug?.includes("suggest");
+
+                const handleButtonClick = (e) => {
+                  if (isToolButton) {
+                    e.preventDefault();
+                    const mode = btn.text?.toLowerCase().includes("course")
+                      ? "Suggest Course"
+                      : "Suggest University";
+                    openTool("suggest-me-a-university", { tool_mode: mode });
+                  }
+                };
+
                 return (
                   <Link
                     key={el.id}
                     href={btn?.url || "#"}
-                    className={`inline-flex items-center gap-2 px-4.5 py-2 rounded-xl font-bold text-sm hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 ${variantClasses}`}
+                    onClick={handleButtonClick}
+                    className={`inline-flex items-center gap-2 px-4.5 py-2 rounded-xl font-bold text-sm hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer ${variantClasses}`}
                   >
                     {iconUrl && (
                       <span className="relative w-4 h-4 flex items-center justify-center shrink-0">

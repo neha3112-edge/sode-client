@@ -17,10 +17,17 @@ import {
 export function Footer({
   initialUniversities = defaultUniversities,
   initialPrograms = defaultPrograms,
+  initialHeaderData = null,
 }) {
   const UNIVERSITIES = initialUniversities || defaultUniversities;
   const PROGRAMS = initialPrograms || defaultPrograms;
   const { openFormModal } = useFormModal();
+
+  const headerData = initialHeaderData?.result || initialHeaderData || {};
+  const footerLogoUrl =
+    headerData?.logo_dark?.url ||
+    headerData?.logo?.url ||
+    "https://new.crm.api.mysode.com/minio/images/2026/08/26/eead3d99495d3d4cb48cca6822ba874a.webp";
 
   const [activeDialog, setActiveDialog] = useState(null);
 
@@ -74,14 +81,14 @@ export function Footer({
                   />
                 </svg>
 
-                <span>Talk to Experts</span>
+                <span>Book Free Consultation</span>
               </button>
             </div>
           </div>
         </section>
 
         {/* =====================================================
-            MAIN FOOTER SECTION
+            MAIN FOOTER LINKS SECTION
         ====================================================== */}
         <section className="border-t border-[#A66E38]/20 bg-linear-to-r from-[#EEC471] to-[#F1E2A3] pb-8 pt-12 text-gray-800 md:pt-16">
           <div className="mx-auto w-full max-w-7xl px-5 sm:px-8">
@@ -90,9 +97,9 @@ export function Footer({
                   COLUMN 1: LOGO, ADDRESS, SOCIALS AND MAP
               ================================================== */}
               <div className="flex flex-col items-start md:col-span-2 lg:col-span-4">
-                <div className="relative mb-5 h-20 w-50 md:w-57.5">
+                <div className="relative mb-5 h-16 w-48 md:w-56">
                   <Image
-                    src={getAssetPath("/assets/images/sode_footer_logo.png")}
+                    src={footerLogoUrl}
                     alt="School of Online and Distance Education"
                     fill
                     sizes="230px"
