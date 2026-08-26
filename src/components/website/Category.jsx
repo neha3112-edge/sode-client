@@ -98,6 +98,32 @@ function UniversityCarouselBlock({
   handleSlidePointerUp,
   handleSlideClick,
 }) {
+  const isFew = block.children && block.children.length <= 6;
+
+  if (isFew) {
+    return (
+      <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 sm:gap-3 w-full max-w-6xl mx-auto">
+        {block.children.map((child, idx) => (
+          <div key={child._id || idx} className="w-full">
+            <div
+              onClick={(e) => handleSlideClick(e, child)}
+              className="w-full aspect-square bg-white hover:bg-gray-50 border border-gray-200 rounded-xl p-2 sm:p-2.5 flex flex-col items-center justify-center text-center cursor-pointer select-none transition-all duration-200 hover:shadow-xs group min-w-0"
+            >
+              <div className="group-hover:scale-105 transition-transform flex items-center justify-center shrink-0 mb-1">
+                <PartnerLogoIcon partner={child} />
+              </div>
+              <div className="h-6 min-[360px]:h-7 sm:h-8 flex items-center justify-center w-full min-w-0">
+                <span className="line-clamp-2 text-center leading-tight font-medium text-[10px] min-[360px]:text-[11px] sm:text-xs text-gray-700 group-hover:text-blue-500 transition-colors w-full px-0.5">
+                  {child.name}
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="relative max-w-6xl mx-auto">
       <Carousel
@@ -148,14 +174,14 @@ export function Category({ categories = [], universities = [], programs = [] }) 
   const hasTriggeredRef = useRef(false);
 
   const handleSlidePointerDown = (e) => {
-    pointerStartRef.current = { x: e.clientX, y: e.clientY, time: Date.now() };
+    pointerStartRef.current = { x: e.clientX, y: e.clientY, time: e.timeStamp || 0 };
     hasTriggeredRef.current = false;
   };
 
   const handleSlidePointerUp = (e, child) => {
     const diffX = Math.abs(e.clientX - pointerStartRef.current.x);
     const diffY = Math.abs(e.clientY - pointerStartRef.current.y);
-    const duration = Date.now() - pointerStartRef.current.time;
+    const duration = (e.timeStamp || 0) - pointerStartRef.current.time;
     if (diffX < 12 && diffY < 12 && duration < 600) {
       hasTriggeredRef.current = true;
       handleCardClick(child);
@@ -257,6 +283,31 @@ export function Category({ categories = [], universities = [], programs = [] }) 
     }
 
     const currentBlock = featuredMap.get(blockKey);
+
+    // Add subcategories attached to this category (from c.children AND parentId filter)
+    const directChildren = Array.isArray(c.children) ? c.children : [];
+    const parentIdChildren = categoriesList.filter((child) => {
+      if (!child || !child.parentId) return false;
+      if (Array.isArray(child.parentId)) {
+        return child.parentId.some((p) => String(p?._id || p?.name || p) === String(c._id) || String(p?._id || p?.name || p) === String(c.name));
+      }
+      return String(child.parentId?._id || child.parentId?.name || child.parentId) === String(c._id);
+    });
+
+    const allChildCats = [...directChildren, ...parentIdChildren];
+
+    allChildCats.forEach((child) => {
+      if (!child) return;
+      const childKey = String(child._id || child.slug || child.name);
+      if (!currentBlock.children.some((ch) => String(ch._id || ch.slug || ch.name) === childKey)) {
+        currentBlock.children.push({
+          ...child,
+          isCategory: true,
+          itemType: "category",
+          logo: child.logo,
+        });
+      }
+    });
 
     // Add universities attached to this category
     const catUnis = c.universities || [];
