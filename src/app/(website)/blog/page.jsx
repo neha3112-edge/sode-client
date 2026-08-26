@@ -182,16 +182,46 @@ function BlogCard({ blog }) {
 export default function BlogPage() {
   const router = useRouter();
   const [blogs, setBlogs] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const pageSize = 12;
 
+  // Load blog categories
+  useEffect(() => {
+    request.dynamicList({ entity: "category", endPoint: "v1/list", options: { items: 50 } })
+      .then((res) => {
+        const list = res?.result || (Array.isArray(res) ? res : []);
+        if (Array.isArray(list)) {
+          // Filter categories relevant to blogs
+          const blogCats = list.filter((c) => 
+            c.name.includes("Online") || 
+            c.name.includes("UGC") || 
+            c.name.includes("Distance") || 
+            c.name.includes("Career") || 
+            c.name.includes("Reviews") || 
+            c.name.includes("Management") ||
+            c.slug?.includes("blog") ||
+            c.slug?.includes("online")
+          );
+          setCategories(blogCats.length > 0 ? blogCats : list.slice(0, 8));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   useEffect(() => {
     let isMounted = true;
     setLoading(true);
 
-    request.dynamicList({ entity: "blogs", endPoint: "v1/list", options: { page: currentPage, items: pageSize } })
+    const queryOptions = { page: currentPage, items: pageSize };
+    if (selectedCategory && selectedCategory !== "all") {
+      queryOptions.category = selectedCategory;
+    }
+
+    request.dynamicList({ entity: "blogs", endPoint: "v1/list", options: queryOptions })
       .then((res) => {
         if (!isMounted) return;
         const list = res?.result || res?.blogs || (Array.isArray(res) ? res : []);
@@ -214,13 +244,13 @@ export default function BlogPage() {
     return () => {
       isMounted = false;
     };
-  }, [currentPage]);
+  }, [currentPage, selectedCategory]);
 
   return (
     <WebsiteLayout py="py-4 sm:py-6" bg="#f8fafc">
       <div className="w-full">
         {/* Top Header & Breadcrumb Bar */}
-        <div className="flex items-center justify-between gap-3 mb-4">
+        <div className="flex items-center justify-between gap-3 mb-3">
           <div className="flex items-center gap-2">
             <button
               onClick={() => router.back()}
@@ -237,6 +267,35 @@ export default function BlogPage() {
               ]}
             />
           </div>
+        </div>
+
+        {/* 🏷️ Horizontal Category Filter Pills */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-4 scrollbar-none">
+          <button
+            type="button"
+            onClick={() => { setSelectedCategory("all"); setCurrentPage(1); }}
+            className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all border cursor-pointer ${
+              selectedCategory === "all"
+                ? "bg-blue-600 text-white border-blue-600 shadow-xs"
+                : "bg-white text-slate-600 border-slate-200 hover:border-blue-300 hover:text-blue-600"
+            }`}
+          >
+            All Articles
+          </button>
+          {categories.map((cat) => (
+            <button
+              key={cat._id}
+              type="button"
+              onClick={() => { setSelectedCategory(cat._id); setCurrentPage(1); }}
+              className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all border cursor-pointer ${
+                selectedCategory === cat._id
+                  ? "bg-blue-600 text-white border-blue-600 shadow-xs"
+                  : "bg-white text-slate-600 border-slate-200 hover:border-blue-300 hover:text-blue-600"
+              }`}
+            >
+              {cat.name}
+            </button>
+          ))}
         </div>
 
         {/* 🌟 Shimmer / Skeleton Loading State vs Real Cards */}

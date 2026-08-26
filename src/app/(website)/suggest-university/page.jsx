@@ -13,7 +13,7 @@ export default function SuggestUniversityPage() {
   }, [openTool]);
 
   return (
-    <div className="min-h-[70vh] py-16 bg-gradient-to-b from-slate-50 to-white flex items-center justify-center">
+    <div className="min-h-[70vh] py-16 bg-linear-to-b from-slate-50 to-white flex items-center justify-center">
       <Container>
         <div className="max-w-xl mx-auto text-center space-y-6">
           <div className="w-16 h-16 rounded-2xl bg-amber-400 text-slate-950 mx-auto flex items-center justify-center font-bold shadow-lg shadow-amber-400/30">

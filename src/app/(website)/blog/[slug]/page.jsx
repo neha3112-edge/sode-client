@@ -30,7 +30,7 @@ export default function BlogDetailPage() {
     let isMounted = true;
     if (slug) {
       setLoading(true);
-      request.dynamicRead({ entity: "blogpages", endPoint: "v1/list", id: slug })
+      request.dynamicRead({ entity: "blogs", endPoint: "v1/list", id: slug })
         .then((res) => {
           if (!isMounted) return;
           const data = res?.result ?? res;
