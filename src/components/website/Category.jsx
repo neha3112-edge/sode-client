@@ -407,40 +407,8 @@ export function Category({ categories = [], universities = [], programs = [] }) 
 
     const childrenList = deduplicateItems(rawChildren);
 
-    // Filter universities belonging to this category
-    const catUniversities = deduplicateItems(
-      (cat.universities && cat.universities.length > 0)
-        ? cat.universities
-        : (universities || []).filter((u) => {
-          if (!u.category) return false;
-          if (Array.isArray(u.category)) {
-            return u.category.some((cId) => String(cId?._id || cId) === catIdStr);
-          }
-          return String(u.category?._id || u.category) === catIdStr;
-        })
-    );
-
-    // Direct courses attached to category or university
-    let directCourses = (cat.courses && cat.courses.length > 0) ? cat.courses : [];
-
-    // Fallback: If clicked card has no courses directly on it, search in categoriesList
-    if (directCourses.length === 0) {
-      const fullItem = (categoriesList || []).flatMap((c) => [
-        c,
-        ...(c.universities || []),
-        ...(c.children || []),
-      ]).find(
-        (item) => String(item._id) === catIdStr || (item.slug && String(item.slug) === catIdStr)
-      );
-      if (fullItem && fullItem.courses && fullItem.courses.length > 0) {
-        directCourses = fullItem.courses;
-      }
-    }
-
-    const catCourses = deduplicateItems(directCourses);
-
-    // If the clicked card is a leaf, navigate directly to its page instead of opening an empty popup
-    if (childrenList.length === 0 && catUniversities.length === 0 && catCourses.length === 0) {
+    // If no subcategories exist, navigate directly to courses listing page
+    if (childrenList.length === 0) {
       if (activeCategory) {
         setActiveCategory(null);
       }
@@ -458,8 +426,6 @@ export function Category({ categories = [], universities = [], programs = [] }) 
     setModalData({
       category: cat,
       children: childrenList,
-      universities: catUniversities,
-      courses: catCourses,
     });
     setActiveCategory(cat);
   };
@@ -925,80 +891,23 @@ export function Category({ categories = [], universities = [], programs = [] }) 
               </button>
             </div>
 
-            {/* Modal Body: Render Child Categories, Universities, and Courses */}
+            {/* Modal Body: Render Child Categories Only */}
             <div className="py-4 space-y-4 max-h-[70vh] overflow-y-auto">
-              {/* 1. Sub-categories */}
+              {/* Sub-categories Grid */}
               {modalData.children && modalData.children.length > 0 && (
-                <div>
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">
-                    Categories
-                  </h4>
-                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                    {modalData.children.map((child) => (
-                      <div
-                        key={child._id || child.slug}
-                        onClick={() => handleCardClick(child)}
-                        className="bg-gray-50 hover:bg-blue-50 border border-gray-100 rounded-xl p-2 flex flex-col items-center justify-center text-center cursor-pointer transition-colors group"
-                      >
-                        <CategoryIcon cat={child} />
-                        <span className="text-[11px] font-medium text-gray-700 group-hover:text-blue-600 mt-1 line-clamp-2">
-                          {child.name}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* 2. Universities */}
-              {modalData.universities && modalData.universities.length > 0 && (
-                <div>
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">
-                    Universities
-                  </h4>
-                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                    {modalData.universities.map((uni) => (
-                      <div
-                        key={uni._id || uni.slug}
-                        onClick={() => {
-                          handleCloseModal();
-                          router.push(`/courses?university=${encodeURIComponent(getItemSlug(uni))}`);
-                        }}
-                        className="bg-gray-50 hover:bg-blue-50 border border-gray-100 rounded-xl p-2 flex flex-col items-center justify-center text-center cursor-pointer transition-colors group"
-                      >
-                        <PartnerLogoIcon partner={uni} />
-                        <span className="text-[11px] font-medium text-gray-700 group-hover:text-blue-600 mt-1 line-clamp-2">
-                          {uni.name}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* 3. Courses */}
-              {modalData.courses && modalData.courses.length > 0 && (
-                <div>
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">
-                    Programs & Degrees
-                  </h4>
-                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                    {modalData.courses.map((crs) => (
-                      <div
-                        key={crs._id || crs.slug}
-                        onClick={() => {
-                          handleCloseModal();
-                          router.push(`/courses?course=${encodeURIComponent(getItemSlug(crs))}`);
-                        }}
-                        className="bg-gray-50 hover:bg-blue-50 border border-gray-100 rounded-xl p-2 flex flex-col items-center justify-center text-center cursor-pointer transition-colors group"
-                      >
-                        <CourseIcon course={crs} />
-                        <span className="text-[11px] font-medium text-gray-700 group-hover:text-blue-600 mt-1 line-clamp-2">
-                          {crs.name}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                  {modalData.children.map((child) => (
+                    <div
+                      key={child._id || child.slug}
+                      onClick={() => handleCardClick(child)}
+                      className="bg-gray-50 hover:bg-blue-50 border border-gray-100 rounded-xl p-2.5 flex flex-col items-center justify-center text-center cursor-pointer transition-colors group"
+                    >
+                      <CategoryIcon cat={child} />
+                      <span className="text-xs font-medium text-gray-700 group-hover:text-blue-600 mt-1.5 line-clamp-2">
+                        {child.name || child.label}
+                      </span>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
