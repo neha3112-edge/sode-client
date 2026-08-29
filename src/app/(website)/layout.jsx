@@ -4,12 +4,14 @@ import { Footer } from "@/components/website/Footer";
 import MobileBottomNav from "@/components/website/MobileBottomNav";
 import { request } from "@/services/request";
 
+export const revalidate = 300;
+
 export default async function WebsiteLayout({ children }) {
   const headerRes = await request.dynamicRead({
     entity: "header",
     endPoint: "public/by-slug",
     slug: "global",
-    revalidate: 0,
+    revalidate: 300,
   });
 
   const headerData = headerRes?.result || headerRes;
