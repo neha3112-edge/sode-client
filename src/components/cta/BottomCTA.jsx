@@ -2,7 +2,7 @@
 
 import React from "react";
 import { ArrowRight, FileText } from "lucide-react";
-import { FaWhatsapp } from "react-icons/fa";
+import { WhatsAppOutlined } from "@ant-design/icons";
 
 export default function BottomCTA({
   onApply,
@@ -30,7 +30,7 @@ export default function BottomCTA({
         {onBrochure ? (
           <FileText size={18} aria-hidden="true" />
         ) : (
-          <FaWhatsapp size={18} aria-hidden="true" />
+          <WhatsAppOutlined className="text-lg" aria-hidden="true" />
         )}
         <span>{brochureButtonText}</span>
       </button>

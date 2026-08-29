@@ -2,8 +2,9 @@ import dayjs from "dayjs";
 import { Switch, Tag } from "antd";
 import { CloseOutlined, CheckOutlined } from "@ant-design/icons";
 import { countryList } from "./countryList";
-import { generate as uniqueId } from "shortid";
 import color from "./color";
+
+const uniqueId = () => Math.random().toString(36).substring(2, 9);
 
 export const dataForRead = ({ fields, translate }) => {
   let columns = [];
