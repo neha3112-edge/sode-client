@@ -723,7 +723,7 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                         alt="Scholarship Banner Background"
                         fill
                         unoptimized
-                        className="object-fill object-center -z-10 transition-transform duration-500"
+                        className="object-cover object-center -z-10 transition-transform duration-500"
                         priority
                       />
 

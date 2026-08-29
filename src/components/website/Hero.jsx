@@ -211,9 +211,10 @@ export function Hero({ initialHeroData = null }) {
                 alt={title || "Hero banner"}
                 fill
                 priority={index === 0}
+                loading={index === 0 ? "eager" : "lazy"}
                 fetchPriority={index === 0 ? "high" : "auto"}
                 sizes="100vw"
-                className="object-fit object-center"
+                className="object-cover object-center"
               />
             </div>
 
@@ -225,6 +226,7 @@ export function Hero({ initialHeroData = null }) {
                   alt={title || "Hero mobile banner"}
                   fill
                   priority={index === 0}
+                  loading={index === 0 ? "eager" : "lazy"}
                   fetchPriority={index === 0 ? "high" : "auto"}
                   sizes="100vw"
                   className="object-cover object-center"
