@@ -336,7 +336,40 @@ export function Hero({ initialHeroData = null }) {
   };
 
   return (
-    <section id="hero-section" className="relative w-full overflow-hidden">
+    <section
+      id="hero-section"
+      className="relative w-full overflow-hidden aspect-4/1 min-h-40 sm:min-h-50 md:min-h-60 lg:min-h-68 max-h-85 bg-[#072C50]"
+    >
+      <style dangerouslySetInnerHTML={{ __html: `
+        #hero-section {
+          contain: layout paint;
+        }
+        .hero-carousel,
+        .hero-carousel .slick-slider,
+        .hero-carousel .slick-list,
+        .hero-carousel .slick-track,
+        .hero-carousel .slick-slide > div {
+          height: 100% !important;
+          min-height: inherit !important;
+        }
+        .hero-carousel:not(.slick-initialized) {
+          display: block !important;
+          position: relative !important;
+          height: 100% !important;
+          overflow: hidden !important;
+        }
+        .hero-carousel:not(.slick-initialized) > div {
+          position: absolute !important;
+          inset: 0 !important;
+          width: 100% !important;
+          height: 100% !important;
+        }
+        .hero-carousel:not(.slick-initialized) > div:not(:first-child) {
+          display: none !important;
+          opacity: 0 !important;
+          visibility: hidden !important;
+        }
+      `}} />
       {isCarousel ? (
         <Carousel
           autoplay={isAutoplay}
@@ -344,7 +377,7 @@ export function Hero({ initialHeroData = null }) {
           dots={showDots}
           arrows={showArrows}
           effect="fade"
-          className="w-full hero-carousel"
+          className="w-full h-full hero-carousel"
         >
           {heroData.slides.map((slide, idx) => renderHeroContent(slide, true, idx))}
         </Carousel>

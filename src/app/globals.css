@@ -238,3 +238,67 @@ body {
 .slot-dock-enter {
   animation: slotDockBounce 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
+
+/* =========================================================
+   CAROUSEL & SLICK TRACK LAYOUT STABILIZATION (ZERO CLS)
+========================================================= */
+.ant-carousel {
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+  user-select: none;
+  touch-action: pan-y;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ant-carousel .slick-slider {
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+  touch-action: pan-y;
+}
+
+.ant-carousel .slick-list {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  transform: translate3d(0, 0, 0);
+}
+
+.ant-carousel .slick-track {
+  position: relative;
+  top: 0;
+  left: 0;
+  display: block;
+  transform: translate3d(0, 0, 0);
+}
+
+.ant-carousel .slick-track::before,
+.ant-carousel .slick-track::after {
+  display: table;
+  content: "";
+}
+
+.ant-carousel .slick-track::after {
+  clear: both;
+}
+
+.ant-carousel .slick-slide {
+  float: left;
+  height: 100%;
+  min-height: 1px;
+}
+
+/* Prevent uninitialized Slick jump and lock dimensions */
+.ant-carousel:not(.slick-initialized) .slick-track {
+  display: flex !important;
+  width: 100% !important;
+  overflow: hidden !important;
+}
+
+.ant-carousel:not(.slick-initialized) .slick-slide {
+  display: block !important;
+  flex-shrink: 0 !important;
+}

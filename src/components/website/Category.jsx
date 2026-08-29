@@ -92,10 +92,17 @@ function PartnerLogoIcon({ partner }) {
   );
 }
 
+const uniCarouselResponsive = [
+  { breakpoint: 1440, settings: { slidesToShow: 8, slidesToScroll: 1 } },
+  { breakpoint: 1280, settings: { slidesToShow: 7, slidesToScroll: 1 } },
+  { breakpoint: 1024, settings: { slidesToShow: 6, slidesToScroll: 1 } },
+  { breakpoint: 768, settings: { slidesToShow: 5, slidesToScroll: 1 } },
+  { breakpoint: 640, settings: { slidesToShow: 4, slidesToScroll: 1 } },
+];
+
 // Carousel Component for Universities using Ant Design built-in arrows
 function UniversityCarouselBlock({
   block,
-  slidesToShowCount,
   handleSlidePointerDown,
   handleSlidePointerUp,
   handleSlideClick,
@@ -127,18 +134,18 @@ function UniversityCarouselBlock({
   }
 
   return (
-    <div className="relative max-w-6xl mx-auto">
+    <div className="relative max-w-6xl mx-auto min-h-[90px] sm:min-h-[110px]">
       <Carousel
         arrows={true}
-        key={slidesToShowCount}
         autoplay={true}
         autoplaySpeed={4000}
         pauseOnHover={true}
         dots={false}
         draggable={false}
         touchMove={true}
-        slidesToShow={slidesToShowCount}
+        slidesToShow={8}
         slidesToScroll={1}
+        responsive={uniCarouselResponsive}
         className="w-full relative"
       >
         {block.children.map((child, idx) => (
@@ -172,7 +179,6 @@ export function Category({ categories = [], universities = [], programs = [] }) 
   const [activeCategory, setActiveCategory] = useState(null);
   const [modalData, setModalData] = useState({ category: null, children: [], universities: [], courses: [] });
   const [visibleCoursesCount, setVisibleCoursesCount] = useState(8);
-  const [slidesToShowCount, setSlidesToShowCount] = useState(4);
 
   const pointerStartRef = useRef({ x: 0, y: 0, time: 0 });
   const hasTriggeredRef = useRef(false);
@@ -201,28 +207,6 @@ export function Category({ categories = [], universities = [], programs = [] }) 
       hasTriggeredRef.current = false;
     }, 150);
   };
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (typeof window === "undefined") return;
-      const w = window.innerWidth;
-      if (w < 640) {
-        setSlidesToShowCount(4);
-      } else if (w < 768) {
-        setSlidesToShowCount(5);
-      } else if (w < 1024) {
-        setSlidesToShowCount(6);
-      } else if (w < 1280) {
-        setSlidesToShowCount(8);
-      } else {
-        setSlidesToShowCount(9);
-      }
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   const categoriesList = Array.isArray(categories?.result)
     ? categories.result
@@ -438,6 +422,17 @@ export function Category({ categories = [], universities = [], programs = [] }) 
     <>
       <style dangerouslySetInnerHTML={{
         __html: `
+        .ant-carousel .slick-slider {
+          min-height: 80px;
+        }
+        .ant-carousel:not(.slick-initialized) {
+          display: block !important;
+          overflow: hidden !important;
+          min-height: 80px;
+        }
+        .ant-carousel:not(.slick-initialized) > div:not(:first-child) {
+          display: none !important;
+        }
         .ant-carousel .slick-prev,
         .ant-carousel .slick-next {
           color: #6b7280 !important;
@@ -689,8 +684,8 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                         alt="Scholarship Banner Background"
                         fill
                         unoptimized
+                        loading="eager"
                         className="object-cover object-center -z-10 transition-transform duration-500"
-                        priority
                       />
 
                       {/* Left: UPTO in White, 20% in Gold, Scholarship in Pure Solid White */}
@@ -827,7 +822,6 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                   ) : (
                     <UniversityCarouselBlock
                       block={block}
-                      slidesToShowCount={slidesToShowCount}
                       handleSlidePointerDown={handleSlidePointerDown}
                       handleSlidePointerUp={handleSlidePointerUp}
                       handleSlideClick={handleSlideClick}

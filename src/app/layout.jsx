@@ -30,6 +30,10 @@ export default function RootLayout({ children }) {
       suppressHydrationWarning
       className={`${roboto.variable} font-sans h-full antialiased`}
     >
+      <head>
+        <link rel="preconnect" href="https://new.crm.api.mysode.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://new.crm.api.mysode.com" />
+      </head>
       <body className={`${roboto.className} min-h-full flex flex-col`} suppressHydrationWarning>
         <AppProviders>
           {children}
