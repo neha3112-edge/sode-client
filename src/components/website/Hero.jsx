@@ -198,8 +198,8 @@ export function Hero({ initialHeroData = null }) {
     return (
       <div
         key={data?._id || index}
-        style={{ backgroundColor: bgColor }}
-        className="relative w-full overflow-hidden aspect-4/1 min-h-40 sm:min-h-50 md:min-h-60 lg:min-h-68 max-h-85 flex items-center select-none"
+        style={{ backgroundColor: bgColor, aspectRatio: "4/1" }}
+        className="relative w-full overflow-hidden aspect-[4/1] min-h-[160px] sm:min-h-[200px] md:min-h-[240px] lg:min-h-[280px] max-h-[340px] flex items-center select-none"
       >
         {/* 1. 100% FULL-WIDTH BACKGROUND IMAGE (NO WHITE BORDER / ZERO CROPPING AT 4:1 RATIO) */}
         {desktopBannerUrl && (
@@ -338,7 +338,8 @@ export function Hero({ initialHeroData = null }) {
   return (
     <section
       id="hero-section"
-      className="relative w-full overflow-hidden aspect-4/1 min-h-40 sm:min-h-50 md:min-h-60 lg:min-h-68 max-h-85 bg-[#072C50]"
+      style={{ aspectRatio: "4/1" }}
+      className="relative w-full overflow-hidden aspect-[4/1] min-h-[160px] sm:min-h-[200px] md:min-h-[240px] lg:min-h-[280px] max-h-[340px] bg-[#072C50]"
     >
       <style dangerouslySetInnerHTML={{ __html: `
         #hero-section {
