@@ -3,6 +3,7 @@
 import React, { useSyncExternalStore } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { getAssetPath } from "@/lib/utils";
 
 // Helper function to parse raw CSS style strings into React style objects
 function parseStyleString(styleStr) {
@@ -16,7 +17,7 @@ function parseStyleString(styleStr) {
     const key = trimmed.substring(0, splitIndex).trim();
     const value = trimmed.substring(splitIndex + 1).trim();
     if (key && value) {
-      // Convert kebap-case key (e.g. background-color) to camelCase (e.g. backgroundColor)
+      // Convert kebab-case key (e.g. background-color) to camelCase (e.g. backgroundColor)
       const camelKey = key.replace(/-./g, (x) => x[1].toUpperCase());
       styleObj[camelKey] = value;
     }
@@ -26,7 +27,11 @@ function parseStyleString(styleStr) {
 
 export default function SafeHtmlRenderer({ html }) {
   const router = useRouter();
-  const mounted = useSyncExternalStore(() => () => {}, () => true, () => false);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
 
   if (!html) return null;
 
@@ -75,7 +80,8 @@ export default function SafeHtmlRenderer({ html }) {
         (opt) => opt.hasAttribute("selected")
       );
       if (selectedOption) {
-        attributes.defaultValue = selectedOption.getAttribute("value") || selectedOption.textContent;
+        attributes.defaultValue =
+          selectedOption.getAttribute("value") || selectedOption.textContent;
       }
     }
 
@@ -83,18 +89,32 @@ export default function SafeHtmlRenderer({ html }) {
       delete attributes.selected;
     }
 
-    const children = Array.from(node.childNodes).map((child, i) =>
+    const rawChildren = Array.from(node.childNodes).map((child, i) =>
       renderNode(child, `${keyIndex}-${i}`)
     );
+
+    // 🎯 Filter whitespace-only text nodes for table elements to prevent Next.js hydration errors
+    const tableElements = ["table", "thead", "tbody", "tfoot", "tr", "colgroup", "select"];
+    const children = rawChildren.filter((child) => {
+      if (child === null || child === undefined) return false;
+      if (tableElements.includes(tagName) && typeof child === "string" && !child.trim()) {
+        return false;
+      }
+      return true;
+    });
 
     const key = `node-${keyIndex}`;
 
     // 🎯 RENDER NATIVE <a> TAG (Interception is handled on the root wrapper via router)
     if (tagName === "a") {
       const { href, ...rest } = attributes;
-      const localPath = href && (href.startsWith("/") || href.startsWith("http://localhost:3000") || href.startsWith("https://sode.co.in"))
-        ? href.replace(/^https?:\/\/[^\/]+/, "")
-        : href;
+      const localPath =
+        href &&
+        (href.startsWith("/") ||
+          href.startsWith("http://localhost:3000") ||
+          href.startsWith("https://sode.co.in"))
+          ? href.replace(/^https?:\/\/[^\/]+/, "")
+          : href;
 
       return (
         <a key={key} href={localPath || "#"} {...rest}>
@@ -108,34 +128,39 @@ export default function SafeHtmlRenderer({ html }) {
       const { src, alt, width, height, style, ...rest } = attributes;
       if (!src) return null;
 
+      const finalSrc = getAssetPath(src);
       const w = parseInt(width, 10);
       const h = parseInt(height, 10);
 
-      // If dimensions are missing, use fill layout to prevent layout shifts
+      // If dimensions are missing, use <span> wrapper (NOT <div>) so it's 100% valid inside <p>
       if (isNaN(w) || isNaN(h)) {
         return (
-          <div key={key} className="relative w-full h-80 my-3 overflow-hidden rounded-lg" style={style}>
+          <span
+            key={key}
+            className="block relative w-full h-72 sm:h-96 my-4 overflow-hidden rounded-xl"
+            style={style}
+          >
             <Image
-              src={src}
-              alt={alt || "Optimized SODE image"}
+              src={finalSrc}
+              alt={alt || "Blog image"}
               fill
               sizes="(max-width: 768px) 100vw, 800px"
               className="object-cover"
               {...rest}
             />
-          </div>
+          </span>
         );
       }
 
       return (
         <Image
           key={key}
-          src={src}
-          alt={alt || "Optimized SODE image"}
+          src={finalSrc}
+          alt={alt || "Blog image"}
           width={w}
           height={h}
           style={{ maxWidth: "100%", height: "auto", ...style }}
-          className={attributes.className || "rounded-lg"}
+          className={attributes.className || "rounded-xl my-3"}
           {...rest}
         />
       );
@@ -150,9 +175,9 @@ export default function SafeHtmlRenderer({ html }) {
   };
 
   // Map parsed children of document body element
-  const rootElements = Array.from(doc.body.childNodes).map((node, i) =>
-    renderNode(node, i)
-  );
+  const rootElements = Array.from(doc.body.childNodes)
+    .map((node, i) => renderNode(node, i))
+    .filter((el) => el !== null && el !== undefined);
 
   // Client-side local link interception to bypass full page reloads and use Next.js single-page routing
   const handleContainerClick = (e) => {
@@ -168,10 +193,7 @@ export default function SafeHtmlRenderer({ html }) {
   };
 
   return (
-    <div 
-      onClick={handleContainerClick} 
-      className="w-full font-sans antialiased"
-    >
+    <div onClick={handleContainerClick} className="w-full font-sans antialiased">
       {rootElements}
     </div>
   );

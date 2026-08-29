@@ -8,6 +8,8 @@ import { useRouter } from "next/navigation";
 import { getAssetPath } from "@/lib/utils";
 import { ArrowLeft, X } from "lucide-react";
 import { Carousel, Modal } from "antd";
+import { useToolWizard } from "@/components/tool/ToolWizardContext";
+import { useFormModal } from "@/hooks/useFormModal";
 
 // Category Icon Component - Renders MinIO Media Asset image/SVG from backend using Next.js Image
 function CategoryIcon({ cat }) {
@@ -165,6 +167,8 @@ function UniversityCarouselBlock({
 
 export function Category({ categories = [], universities = [], programs = [] }) {
   const router = useRouter();
+  const { openTool } = useToolWizard();
+  const { openFormModal } = useFormModal();
   const [activeCategory, setActiveCategory] = useState(null);
   const [modalData, setModalData] = useState({ category: null, children: [], universities: [], courses: [] });
   const [visibleCoursesCount, setVisibleCoursesCount] = useState(8);
@@ -451,49 +455,21 @@ export function Category({ categories = [], universities = [], programs = [] }) 
       return;
     }
 
-    setActiveCategory(cat);
     setModalData({
       category: cat,
       children: childrenList,
       universities: catUniversities,
       courses: catCourses,
     });
+    setActiveCategory(cat);
   };
 
   const handleCloseModal = () => {
     setActiveCategory(null);
   };
 
-  const handleSubcategoryClick = (child) => {
-    const childIdStr = String(child._id || child.slug);
-    const rawSubChildren = (child.children && child.children.length > 0)
-      ? child.children
-      : (categoriesList || []).filter((c) => {
-        const pId = c.parentId;
-        if (!pId) return false;
-        if (Array.isArray(pId)) return pId.some((p) => String(p) === childIdStr || (p?._id && String(p._id) === childIdStr));
-        return String(pId) === childIdStr || (pId?._id && String(pId._id) === childIdStr);
-      });
-
-    if (rawSubChildren.length > 0) {
-      handleCardClick(child);
-      return;
-    }
-
-    // Leaf subcategory: close modal and navigate to courses page filtered by category & subcategory
-    const parentCatSlug = getItemSlug(activeCategory);
-    const subCatSlug = getItemSlug(child);
-    handleCloseModal();
-    if (parentCatSlug) {
-      router.push(`/courses?category=${encodeURIComponent(parentCatSlug)}&subcategory=${encodeURIComponent(subCatSlug)}`);
-    } else {
-      router.push(`/courses?subcategory=${encodeURIComponent(subCatSlug)}`);
-    }
-  };
-
   return (
     <>
-      {/* Ant Design Carousel Built-in Arrow Styles */}
       <style dangerouslySetInnerHTML={{
         __html: `
         .ant-carousel .slick-prev,
@@ -564,114 +540,335 @@ export function Category({ categories = [], universities = [], programs = [] }) 
         </section>
       )}
 
-      {/* ── FEATURED CAROUSELS (TOP COURSES, TOP INDIAN UNIV, TOP IITs & IIMs, TOP GLOBAL UNIV) ── */}
-      {parentBlocks.length > 0 && (
-        <section className="pb-6 bg-white relative overflow-hidden" suppressHydrationWarning>
-          <Container>
-            <div className="max-w-6xl mx-auto space-y-6 text-left">
-              {parentBlocks.map((block, bIdx) => {
-                return (
-                  <div
-                    key={block._id || block.slug || bIdx}
-                    className="bg-white border border-gray-200 rounded-2xl p-3 sm:p-4 transition-colors duration-200 max-w-6xl mx-auto"
-                  >
-                    {/* Section Title Header with Colored Accent Bar */}
-                    <div className="flex items-center justify-between mb-3 gap-2">
-                      <div className="flex items-center gap-2.5 truncate">
-                        <span
-                          className="w-1.5 h-5 rounded-full inline-block shrink-0 bg-blue-500"
-                        />
-                        <h3 className="text-sm sm:text-base font-bold text-gray-900 tracking-tight truncate">
-                          {block.title}
-                        </h3>
+      {/* ── FEATURED CAROUSELS & AI TOOLS SECTIONS (FULL-WIDTH SECTIONS) ── */}
+      {parentBlocks.length > 0 &&
+        parentBlocks.map((block, bIdx) => {
+          const isToolsBlock =
+            block.featuredType === "TOOLS" ||
+            (block.title && block.title.toLowerCase().includes("tool"));
+
+          // 🌟 DYNAMIC EXPLORE AI POWERED TOOLS & SCHOLARSHIP SECTION (GRAY BG EXTENDS EXACTLY TO HALF SCHOLARSHIP BANNER)
+          if (isToolsBlock) {
+            return (
+              <section
+                key={block._id || block.slug || bIdx}
+                className="w-full relative pt-12 pb-16 text-center"
+                suppressHydrationWarning
+              >
+                {/* 🎨 Dual-Layer Background: Balanced overlap across scholarship banner in #F1F5F9 & pure white #ffffff */}
+                <div className="absolute inset-x-0 top-0 h-[67%] w-full bg-[#F1F5F9] z-0 pointer-events-none" />
+                <div className="absolute inset-x-0 top-[67%] bottom-0 w-full bg-white z-0 pointer-events-none" />
+
+                <Container className="relative z-10">
+                  <div className="max-w-6xl mx-auto text-center">
+                    {/* Top Badge */}
+                    <div className="flex justify-center mb-3">
+                      <div className="inline-flex items-center gap-1.5 px-4 py-1 rounded-full bg-[#F5E5BA] text-[#8C6228] border border-[#E9D195] text-xs font-bold shadow-2xs">
+                        <span className="text-[#8C6228] text-sm font-extrabold">✦</span>
+                        <span className="tracking-wider uppercase text-[11px]">AI POWERED</span>
                       </div>
-
-                      {/* Show More / Show Less buttons */}
-                      {block.isCourseBlock &&
-                        block.children &&
-                        block.children.length > 8 && (
-                          <div className="flex items-center gap-3 shrink-0">
-                            {visibleCoursesCount > 8 && (
-                              <button
-                                type="button"
-                                onClick={() => setVisibleCoursesCount(8)}
-                                className="text-xs font-semibold text-gray-500 hover:text-gray-700 flex items-center gap-1 transition-colors group cursor-pointer bg-transparent border-0 p-0"
-                              >
-                                <span>Show Less</span>
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  strokeWidth={2.5}
-                                  stroke="currentColor"
-                                  className="w-3.5 h-3.5 group-hover:-translate-y-0.5 transition-transform"
-                                >
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" />
-                                </svg>
-                              </button>
-                            )}
-
-                            {visibleCoursesCount < block.children.length && (
-                              <button
-                                type="button"
-                                onClick={() => setVisibleCoursesCount((prev) => prev + 8)}
-                                className="text-xs font-semibold text-blue-500 hover:text-blue-600 flex items-center gap-1 transition-colors group cursor-pointer bg-transparent border-0 p-0"
-                              >
-                                <span>Show More</span>
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  strokeWidth={2.5}
-                                  stroke="currentColor"
-                                  className="w-3.5 h-3.5 group-hover:translate-y-0.5 transition-transform"
-                                >
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                                </svg>
-                              </button>
-                            )}
-                          </div>
-                        )}
                     </div>
 
-                    {/* Content: 4-Column Grid for Courses vs. Carousel for Universities */}
-                    {block.isCourseBlock ? (
-                      <div className="grid grid-cols-4 md:grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-1.5 sm:gap-2.5 w-full mx-auto items-stretch">
-                        {block.children.slice(0, visibleCoursesCount).map((child, idx) => (
+                    {/* Heading */}
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#0F172A] tracking-tight m-0 mb-1.5">
+                      Explore AI Powered Tools
+                    </h2>
+
+                    {/* Subtitle */}
+                    <p className="text-[#64748B] text-xs sm:text-sm md:text-base font-normal max-w-xl mx-auto m-0 mb-8">
+                      Make smarter education decisions with AI-powered tools
+                    </p>
+
+                    {/* 4 Cards Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 text-center">
+                      {block.children.map((child, cIdx) => {
+                        const cName = (child.name || child.title || "").toLowerCase();
+
+                        let sparkleColor = "text-[#00ACC1]";
+                        let iconCircleBg = "bg-[#E0F7FA] text-[#00838F]";
+                        let underlineClass = "border-[#00ACC1]";
+                        let btnText = "Suggest Me A University";
+                        let desc = "Find universities that match your goals, preferences, and career plans.";
+                        let clickHandler = () =>
+                          openTool("suggest-me-a-university", { tool_mode: "Suggest University" });
+                        let isLink = false;
+                        let linkUrl = "#";
+
+                        // Greek Temple / University Columns SVG
+                        let iconSvg = (
+                          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                          </svg>
+                        );
+
+                        if (cName.includes("eligib")) {
+                          sparkleColor = "text-[#AB47BC]";
+                          iconCircleBg = "bg-[#EDE7F6] text-[#6A1B9A]";
+                          underlineClass = "border-[#AB47BC]";
+                          btnText = "Check Eligibility";
+                          desc = "Instantly check which courses and universities you're eligible for.";
+                          clickHandler = () =>
+                            openTool("suggest-me-a-university", { tool_mode: "Check Eligibility" });
+                          // User Checklist Icon SVG
+                          iconSvg = (
+                            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                          );
+                        } else if (cName.includes("compar")) {
+                          sparkleColor = "text-[#1E88E5]";
+                          iconCircleBg = "bg-[#E3F2FD] text-[#1565C0]";
+                          underlineClass = "border-[#1E88E5]";
+                          btnText = "Compare University";
+                          desc = "Compare universities, courses, fees, and key benefits side by side.";
+                          isLink = true;
+                          linkUrl = "/compare";
+                          // Balance Scales SVG
+                          iconSvg = (
+                            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+                            </svg>
+                          );
+                        } else if (cName.includes("course")) {
+                          sparkleColor = "text-[#EC407A]";
+                          iconCircleBg = "bg-[#FCE4EC] text-[#C2185B]";
+                          underlineClass = "border-[#EC407A]";
+                          btnText = "Suggest Course";
+                          desc = "Compare universities, courses, fees, and key benefits side by side.";
+                          clickHandler = () =>
+                            openTool("suggest-me-a-university", { tool_mode: "Suggest Course" });
+                          // Open Book SVG
+                          iconSvg = (
+                            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                          );
+                        }
+
+                        return (
                           <div
-                            key={child._id || idx}
-                            onClick={() => {
-                              router.push(`/courses?course=${encodeURIComponent(getItemSlug(child))}`);
-                            }}
-                            className="w-full aspect-square bg-white hover:bg-gray-50 border border-gray-200 rounded-xl sm:rounded-2xl p-1.5 min-[360px]:p-2 sm:p-2.5 flex flex-col items-center justify-center text-center cursor-pointer transition-colors duration-200 group min-w-0"
+                            key={child._id || cIdx}
+                            className="relative bg-white rounded-2xl p-5 sm:p-6 shadow-sm hover:shadow-xl border border-slate-100/90 flex flex-col items-center text-center justify-between transition-all duration-300 hover:-translate-y-1 group"
                           >
-                            <div className="mb-0.5 sm:mb-1 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
-                              <CourseIcon course={child} />
+                            {/* Top Right Sparkle */}
+                            <span
+                              className={`absolute top-3.5 right-3.5 ${sparkleColor} font-black text-xs group-hover:rotate-12 transition-transform`}
+                            >
+                              ✦
+                            </span>
+
+                            {/* Icon Circle & Content */}
+                            <div className="flex flex-col items-center space-y-3 w-full">
+                              <div
+                                className={`w-14 h-14 rounded-full flex items-center justify-center ${iconCircleBg} shadow-2xs group-hover:scale-110 transition-transform`}
+                              >
+                                {iconSvg}
+                              </div>
+
+                              <h3 className="text-base font-bold text-[#0F172A] tracking-tight m-0 pt-0.5">
+                                <span className={`border-b-2 ${underlineClass} pb-0.5 inline-block`}>
+                                  {child.name}
+                                </span>
+                              </h3>
+
+                              <p className="text-[#64748B] text-xs sm:text-[12.5px] leading-relaxed font-normal m-0 line-clamp-3">
+                                {child.description || desc}
+                              </p>
                             </div>
-                            <div className="h-6 min-[360px]:h-7 sm:h-8 flex items-center justify-center w-full min-w-0">
-                              <span className="line-clamp-2 text-center leading-tight uppercase font-semibold text-[10px] min-[360px]:text-[11px] sm:text-xs text-gray-700 group-hover:text-blue-500 transition-colors w-full px-0.5">
-                                {child.name}
-                              </span>
+
+                            {/* Action Button */}
+                            <div className="w-full pt-5">
+                              {isLink ? (
+                                <Link
+                                  href={linkUrl}
+                                  className="w-full py-2.5 px-4 rounded-full bg-[#0B3B7E] hover:bg-[#072859] text-white font-bold text-xs shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                                >
+                                  <span>{btnText}</span>
+                                  <span className="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center text-[10px] group-hover:translate-x-0.5 transition-transform">
+                                    →
+                                  </span>
+                                </Link>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={clickHandler}
+                                  className="w-full py-2.5 px-4 rounded-full bg-[#0B3B7E] hover:bg-[#072859] text-white font-bold text-xs shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                                >
+                                  <span>{btnText}</span>
+                                  <span className="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center text-[10px] group-hover:translate-x-0.5 transition-transform">
+                                    →
+                                  </span>
+                                </button>
+                              )}
                             </div>
                           </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <UniversityCarouselBlock
-                        block={block}
-                        slidesToShowCount={slidesToShowCount}
-                        handleSlidePointerDown={handleSlidePointerDown}
-                        handleSlidePointerUp={handleSlidePointerUp}
-                        handleSlideClick={handleSlideClick}
+                        );
+                      })}
+                    </div>
+
+                    {/* ── SCHOLARSHIP BANNER (USING CLEAN HIGH-RES BACKGROUND GRAPHIC) ── */}
+                    <div
+                      onClick={() =>
+                        openFormModal({
+                          title: "Claim Up to 20% Scholarship",
+                          subtitle: "Fill the form below to get instant scholarship coupon code & fee concession",
+                          submitButtonText: "Get Scholarship Code",
+                        })
+                      }
+                      className="mt-12 relative w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl min-h-65 sm:min-h-[300px] md:min-h-[340px] flex flex-col md:flex-row items-center justify-between p-6 sm:p-10 lg:p-12 select-none text-left cursor-pointer group"
+                    >
+                      {/* Background Image with Gradient, Coins on Left & Center Student Model */}
+                      <Image
+                        src="/assets/images/scholarship_banner_bg.jpg"
+                        alt="Scholarship Banner Background"
+                        fill
+                        sizes="(max-width: 1200px) 100vw, 1200px"
+                        className="object-cover object-center -z-10 group-hover:scale-[1.01] transition-transform duration-500"
+                        priority
                       />
-                    )}
+
+                      {/* Left: UPTO in White, 20% in Gold, Scholarship in Pure Solid White */}
+                      <div className="flex flex-col items-center md:items-start text-center md:text-left shrink-0 z-10">
+                        <span className="text-white font-bold text-xs sm:text-sm md:text-base tracking-widest uppercase mb-0.5 drop-shadow-sm">
+                          UPTO
+                        </span>
+                        <div className="text-7xl sm:text-8xl lg:text-9xl font-black tracking-tighter leading-none text-[#F1D888] drop-shadow-md">
+                          20%
+                        </div>
+                        <span className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight uppercase mt-1 drop-shadow-md">
+                          Scholarship
+                        </span>
+                      </div>
+
+                      {/* Center Spacer to allow Girl Model in background to shine through */}
+                      <div className="w-20 md:w-32 lg:w-48 shrink-0 h-10 pointer-events-none" />
+
+                      {/* Right: Heading, Subtitle & Bright Cyan Button */}
+                      <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-3 sm:space-y-4 max-w-md lg:max-w-lg z-10">
+                        <h3 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white leading-tight m-0 drop-shadow-md">
+                          Get <span className="text-[#F1D888]">Scholarship</span> that Make Education Affordable
+                        </h3>
+                        <p className="text-slate-100 text-xs sm:text-sm md:text-base leading-relaxed font-medium m-0 drop-shadow-sm">
+                          Education should be accessible to all. Use our Scholarship Coupon Code and get up to 20% off on course fees.
+                        </p>
+                        <button
+                          type="button"
+                          className="mt-2 px-8 py-3.5 rounded-full bg-[#00AEEF] hover:bg-[#0098D4] text-white font-extrabold text-xs sm:text-sm md:text-base shadow-lg shadow-cyan-500/40 hover:scale-105 active:scale-95 transition-all flex items-center gap-2.5 cursor-pointer"
+                        >
+                          <span>Get Coupon Code</span>
+                          <span className="text-lg">🎁</span>
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                );
-              })}
-            </div>
-          </Container>
-        </section>
-      )}
+                </Container>
+              </section>
+            );
+          }
+
+          return (
+            <section
+              key={block._id || block.slug || bIdx}
+              className="py-3 bg-white relative overflow-hidden"
+              suppressHydrationWarning
+            >
+              <Container>
+                <div className="bg-white border border-gray-200 rounded-2xl p-3 sm:p-4 transition-colors duration-200 max-w-6xl mx-auto">
+                  {/* Section Title Header with Colored Accent Bar */}
+                  <div className="flex items-center justify-between mb-3 gap-2">
+                    <div className="flex items-center gap-2.5 truncate">
+                      <span
+                        className="w-1.5 h-5 rounded-full inline-block shrink-0 bg-blue-500"
+                      />
+                      <h3 className="text-sm sm:text-base font-bold text-gray-900 tracking-tight truncate">
+                        {block.title}
+                      </h3>
+                    </div>
+
+                    {/* Show More / Show Less buttons */}
+                    {block.isCourseBlock &&
+                      block.children &&
+                      block.children.length > 8 && (
+                        <div className="flex items-center gap-3 shrink-0">
+                          {visibleCoursesCount > 8 && (
+                            <button
+                              type="button"
+                              onClick={() => setVisibleCoursesCount(8)}
+                              className="text-xs font-semibold text-gray-500 hover:text-gray-700 flex items-center gap-1 transition-colors group cursor-pointer bg-transparent border-0 p-0"
+                            >
+                              <span>Show Less</span>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth={2.5}
+                                stroke="currentColor"
+                                className="w-3.5 h-3.5 group-hover:-translate-y-0.5 transition-transform"
+                              >
+                                <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" />
+                              </svg>
+                            </button>
+                          )}
+
+                          {visibleCoursesCount < block.children.length && (
+                            <button
+                              type="button"
+                              onClick={() => setVisibleCoursesCount((prev) => prev + 8)}
+                              className="text-xs font-semibold text-blue-500 hover:text-blue-600 flex items-center gap-1 transition-colors group cursor-pointer bg-transparent border-0 p-0"
+                            >
+                              <span>Show More</span>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth={2.5}
+                                stroke="currentColor"
+                                className="w-3.5 h-3.5 group-hover:translate-y-0.5 transition-transform"
+                              >
+                                <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                              </svg>
+                            </button>
+                          )}
+                        </div>
+                      )}
+                  </div>
+
+                  {/* Content: 4-Column Grid for Courses vs. Carousel for Universities */}
+                  {block.isCourseBlock ? (
+                    <div className="grid grid-cols-4 md:grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-1.5 sm:gap-2.5 w-full mx-auto items-stretch">
+                      {block.children.slice(0, visibleCoursesCount).map((child, idx) => (
+                        <div
+                          key={child._id || idx}
+                          onClick={() => {
+                            router.push(`/courses?course=${encodeURIComponent(getItemSlug(child))}`);
+                          }}
+                          className="w-full aspect-square bg-white hover:bg-gray-50 border border-gray-200 rounded-xl sm:rounded-2xl p-1.5 min-[360px]:p-2 sm:p-2.5 flex flex-col items-center justify-center text-center cursor-pointer transition-colors duration-200 group min-w-0"
+                        >
+                          <div className="mb-0.5 sm:mb-1 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
+                            <CourseIcon course={child} />
+                          </div>
+                          <div className="h-6 min-[360px]:h-7 sm:h-8 flex items-center justify-center w-full min-w-0">
+                            <span className="line-clamp-2 text-center leading-tight uppercase font-semibold text-[10px] min-[360px]:text-[11px] sm:text-xs text-gray-700 group-hover:text-blue-500 transition-colors w-full px-0.5">
+                              {child.name}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <UniversityCarouselBlock
+                      block={block}
+                      slidesToShowCount={slidesToShowCount}
+                      handleSlidePointerDown={handleSlidePointerDown}
+                      handleSlidePointerUp={handleSlidePointerUp}
+                      handleSlideClick={handleSlideClick}
+                    />
+                  )}
+                </div>
+              </Container>
+            </section>
+          );
+        })}
 
       {/* ── ANTD MODAL POPUP FOR SELECTED CATEGORY / UNIVERSITY ── */}
       <Modal
@@ -698,140 +895,107 @@ export function Category({ categories = [], universities = [], programs = [] }) 
         }}
       >
         {activeCategory && (
-          <div className="flex flex-col text-left min-h-0 bg-white">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-gray-100 pb-2.5 mb-2.5 shrink-0 gap-3">
-              <div className="flex items-center gap-3 min-w-0">
-                {parentCategory && (
-                  <button
-                    type="button"
-                    onClick={() => handleCardClick(parentCategory)}
-                    className="w-8 h-8 text-gray-700 flex items-center justify-center transition-colors cursor-pointer shrink-0 border-0"
-                    title={`Back to ${parentCategory.name}`}
-                  >
-                    <ArrowLeft className="w-4 h-4" />
-                  </button>
-                )}
-                <div className="w-10 h-10 flex items-center justify-center shrink-0 p-1.5">
+          <div className="relative text-left">
+            {/* Header with Back button and Close (X) */}
+            <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleCloseModal}
+                  className="p-1 rounded-full hover:bg-gray-100 text-gray-500 transition-colors"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
+                <div className="flex items-center gap-2">
                   <CategoryIcon cat={activeCategory} />
-                </div>
-                <div className="min-w-0">
-                  <h3 className="text-base sm:text-lg font-medium text-gray-900 leading-tight tracking-tight truncate">
-                    {activeCategory.label || activeCategory.name}
+                  <h3 className="text-base font-bold text-gray-900 m-0">
+                    {activeCategory.name || activeCategory.label}
                   </h3>
-                  {activeCategory.title && activeCategory.title.toLowerCase() !== (activeCategory.label || activeCategory.name || "").toLowerCase() ? (
-                    <span className="text-xs text-gray-500 font-normal block mt-0.5 truncate">
-                      {activeCategory.title}
-                    </span>
-                  ) : (
-                    <span className="text-xs text-gray-500 block mt-0.5 truncate">
-                      Online Programs & Degrees
-                    </span>
-                  )}
                 </div>
               </div>
-
               <button
                 type="button"
                 onClick={handleCloseModal}
-                className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-900 transition-colors flex items-center justify-center cursor-pointer border-0"
-                aria-label="Close modal"
+                className="p-1 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            {/* Modal Body */}
-            <div className="flex-1 overflow-y-auto max-h-[64vh] overscroll-contain pr-1 space-y-4 scrollbar-thin [scrollbar-color:#d1d5db_transparent]">
-              {((modalData.children && modalData.children.length > 0) ||
-                (modalData.universities && modalData.universities.length > 0) ||
-                (modalData.courses && modalData.courses.length > 0)) ? (
-                <div className="space-y-4 p-0.5">
-                  {/* Priority 1: Subcategories */}
-                  {modalData.children && modalData.children.length > 0 ? (
-                    <div>
-                      <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-3">
-                        {modalData.children.map((child, idx) => (
-                          <div
-                            key={`${child._id || child.slug || idx}-${idx}`}
-                            onClick={() => handleSubcategoryClick(child)}
-                            className="bg-white hover:bg-gray-50 border border-gray-200 rounded-2xl p-1.5 min-[360px]:p-2 sm:p-2.5 aspect-square flex flex-col items-center justify-center text-center cursor-pointer transition-colors duration-200 group min-w-0"
-                          >
-                            <div className="mb-1 sm:mb-1.5 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
-                              <CategoryIcon cat={child} />
-                            </div>
-                            <span className="line-clamp-2 text-center leading-tight font-semibold text-[9.5px] min-[360px]:text-[10px] sm:text-[11px] text-gray-700 group-hover:text-blue-500 transition-colors w-full px-0.5">
-                              {child.name}
-                            </span>
-                          </div>
-                        ))}
+            {/* Modal Body: Render Child Categories, Universities, and Courses */}
+            <div className="py-4 space-y-4 max-h-[70vh] overflow-y-auto">
+              {/* 1. Sub-categories */}
+              {modalData.children && modalData.children.length > 0 && (
+                <div>
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">
+                    Categories
+                  </h4>
+                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                    {modalData.children.map((child) => (
+                      <div
+                        key={child._id || child.slug}
+                        onClick={() => handleCardClick(child)}
+                        className="bg-gray-50 hover:bg-blue-50 border border-gray-100 rounded-xl p-2 flex flex-col items-center justify-center text-center cursor-pointer transition-colors group"
+                      >
+                        <CategoryIcon cat={child} />
+                        <span className="text-[11px] font-medium text-gray-700 group-hover:text-blue-600 mt-1 line-clamp-2">
+                          {child.name}
+                        </span>
                       </div>
-                    </div>
-                  ) : modalData.universities && modalData.universities.length > 0 ? (
-                    /* Priority 2: Universities */
-                    <div>
-                      <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-3">
-                        {modalData.universities.map((uni, idx) => {
-                          const name = uni.name || uni.title;
-                          const uniSlug = getItemSlug(uni);
-                          const parentSlug = getItemSlug(activeCategory);
-                          const queryUrl = parentSlug
-                            ? `/courses?university=${encodeURIComponent(uniSlug)}&category=${encodeURIComponent(parentSlug)}`
-                            : `/courses?university=${encodeURIComponent(uniSlug)}`;
-                          return (
-                            <Link
-                              key={`${uni._id || uniSlug || idx}-${idx}`}
-                              href={queryUrl}
-                              onClick={handleCloseModal}
-                              className="bg-white hover:bg-gray-50 border border-gray-200 rounded-2xl p-1.5 min-[360px]:p-2 sm:p-2.5 aspect-square flex flex-col items-center justify-center text-center cursor-pointer transition-colors duration-200 group min-w-0"
-                            >
-                              <div className="mb-1 sm:mb-1.5 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0 h-10 sm:h-12 w-full">
-                                <PartnerLogoIcon partner={uni} />
-                              </div>
-                              <span className="line-clamp-2 text-center leading-tight font-semibold text-[9.5px] min-[360px]:text-[10px] sm:text-[11px] text-gray-700 group-hover:text-blue-500 transition-colors w-full px-0.5">
-                                {name}
-                              </span>
-                            </Link>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  ) : modalData.courses && modalData.courses.length > 0 ? (
-                    /* Priority 3: Courses */
-                    <div>
-                      <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-3">
-                        {modalData.courses.map((course, idx) => {
-                          const name = course.name || course.title;
-                          const courseSlug = getItemSlug(course);
-                          const parentSlug = getItemSlug(activeCategory);
-                          const queryUrl = parentSlug
-                            ? `/courses?course=${encodeURIComponent(courseSlug)}&university=${encodeURIComponent(parentSlug)}`
-                            : `/courses?course=${encodeURIComponent(courseSlug)}`;
-                          return (
-                            <Link
-                              key={`${course._id || courseSlug || idx}-${course.courseId || ''}-${idx}`}
-                              href={queryUrl}
-                              onClick={handleCloseModal}
-                              className="bg-white hover:bg-gray-50 border border-gray-200 rounded-2xl p-1.5 min-[360px]:p-2 sm:p-2.5 aspect-square flex flex-col items-center justify-center text-center cursor-pointer transition-colors duration-200 group min-w-0"
-                            >
-                              <div className="mb-1 sm:mb-1.5 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
-                                <CourseIcon course={course} />
-                              </div>
-                              <span className="line-clamp-2 text-center leading-tight uppercase font-medium text-[9.5px] min-[360px]:text-[10px] sm:text-[11px] text-gray-700 group-hover:text-blue-500 transition-colors w-full px-0.5">
-                                {name}
-                              </span>
-                            </Link>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  ) : null}
+                    ))}
+                  </div>
                 </div>
-              ) : (
-                <div className="bg-gray-50 border border-gray-200 p-6 rounded-2xl text-center flex flex-col items-center justify-center space-y-2 my-3">
-                  <p className="text-xs sm:text-sm text-gray-600 font-medium">
-                    🎓 No subcategories or programs available right now for {activeCategory.name}.
-                  </p>
+              )}
+
+              {/* 2. Universities */}
+              {modalData.universities && modalData.universities.length > 0 && (
+                <div>
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">
+                    Universities
+                  </h4>
+                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                    {modalData.universities.map((uni) => (
+                      <div
+                        key={uni._id || uni.slug}
+                        onClick={() => {
+                          handleCloseModal();
+                          router.push(`/courses?university=${encodeURIComponent(getItemSlug(uni))}`);
+                        }}
+                        className="bg-gray-50 hover:bg-blue-50 border border-gray-100 rounded-xl p-2 flex flex-col items-center justify-center text-center cursor-pointer transition-colors group"
+                      >
+                        <PartnerLogoIcon partner={uni} />
+                        <span className="text-[11px] font-medium text-gray-700 group-hover:text-blue-600 mt-1 line-clamp-2">
+                          {uni.name}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* 3. Courses */}
+              {modalData.courses && modalData.courses.length > 0 && (
+                <div>
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">
+                    Programs & Degrees
+                  </h4>
+                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                    {modalData.courses.map((crs) => (
+                      <div
+                        key={crs._id || crs.slug}
+                        onClick={() => {
+                          handleCloseModal();
+                          router.push(`/courses?course=${encodeURIComponent(getItemSlug(crs))}`);
+                        }}
+                        className="bg-gray-50 hover:bg-blue-50 border border-gray-100 rounded-xl p-2 flex flex-col items-center justify-center text-center cursor-pointer transition-colors group"
+                      >
+                        <CourseIcon course={crs} />
+                        <span className="text-[11px] font-medium text-gray-700 group-hover:text-blue-600 mt-1 line-clamp-2">
+                          {crs.name}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>

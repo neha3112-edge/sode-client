@@ -1,72 +1,59 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Card, Tag, Row, Col, Breadcrumb, Button, Skeleton, Empty, Pagination } from "antd";
+import {
+  Card,
+  Tag,
+  Row,
+  Col,
+  Breadcrumb,
+  Button,
+  Skeleton,
+  Empty,
+  Pagination,
+  Input,
+} from "antd";
 import {
   CalendarOutlined,
   ArrowRightOutlined,
   EyeOutlined,
   LikeOutlined,
   ShareAltOutlined,
-  FireOutlined,
-  StarOutlined,
+  SearchOutlined,
+  BookOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
-
 import { request } from "@/services/request";
 import { getAssetPath } from "@/lib/utils";
 import WebsiteLayout from "@/components/layout/WebsiteLayout";
 
-function resolveMediaUrl(media) {
-  if (!media) return null;
-  if (typeof media === "string") return getAssetPath(media, null);
-  if (media.url) return getAssetPath(media.url, null);
-  if (media.path) return getAssetPath(media.path, null);
-  return null;
-}
-
-// 🌟 Instagram-style Shimmer / Skeleton Placeholder Card
+// 🌟 Skeleton Placeholder Card
 function BlogSkeletonCard() {
   return (
     <Card
-      className="border border-slate-200/80 rounded-xl sm:rounded-2xl h-full flex flex-col overflow-hidden bg-white shadow-none"
+      className="border border-slate-200/80 rounded-2xl h-full flex flex-col overflow-hidden bg-white shadow-none"
       styles={{
         body: { padding: 0, display: "flex", flexDirection: "column", flex: 1 },
       }}
     >
-      {/* 🖼️ Shimmer Banner Image */}
-      <div className="w-full h-36 sm:h-44 md:h-52 bg-slate-200/80 animate-pulse relative flex items-center justify-center">
-        <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
-          <div className="w-16 h-5 rounded-full bg-slate-300/80 animate-pulse" />
-          <div className="w-14 h-5 rounded-full bg-slate-300/80 animate-pulse" />
+      <div className="w-full h-44 sm:h-52 bg-slate-200/80 animate-pulse relative flex items-center justify-center">
+        <div className="absolute top-3 left-3 flex items-center gap-2">
+          <div className="w-20 h-6 rounded-full bg-slate-300 animate-pulse" />
         </div>
       </div>
-
-      {/* 📄 Shimmer Card Content Body */}
-      <div className="p-3.5 sm:p-4 md:p-5 flex flex-col flex-1 gap-2.5">
-        {/* Meta row: Date + Read time */}
-        <div className="flex justify-between items-center mb-1">
-          <Skeleton.Input active size="small" style={{ width: 85, height: 16, borderRadius: 4 }} />
-          <Skeleton.Input active size="small" style={{ width: 65, height: 16, borderRadius: 10 }} />
+      <div className="p-4 sm:p-5 flex flex-col flex-1 gap-3">
+        <div className="flex justify-between items-center">
+          <Skeleton.Input active size="small" style={{ width: 90, height: 16 }} />
+          <Skeleton.Input active size="small" style={{ width: 60, height: 16 }} />
         </div>
-
-        {/* Title Lines */}
-        <div className="my-1">
-          <Skeleton active paragraph={{ rows: 2, width: ["100%", "80%"] }} title={false} />
-        </div>
-
-        {/* Excerpt Lines */}
-        <div className="mb-2">
-          <Skeleton active paragraph={{ rows: 2, width: ["95%", "70%"] }} title={false} />
-        </div>
-
-        {/* Footer: Stats + CTA */}
-        <div className="pt-2.5 sm:pt-3 border-t border-slate-100 flex justify-between items-center mt-auto">
-          <Skeleton.Input active size="small" style={{ width: 110, height: 16, borderRadius: 4 }} />
-          <Skeleton.Input active size="small" style={{ width: 45, height: 16, borderRadius: 4 }} />
+        <Skeleton active paragraph={{ rows: 2, width: ["100%", "75%"] }} title={false} />
+        <Skeleton active paragraph={{ rows: 2, width: ["90%", "60%"] }} title={false} />
+        <div className="pt-3 border-t border-slate-100 flex justify-between items-center mt-auto">
+          <Skeleton.Input active size="small" style={{ width: 100, height: 16 }} />
+          <Skeleton.Input active size="small" style={{ width: 50, height: 16 }} />
         </div>
       </div>
     </Card>
@@ -75,8 +62,10 @@ function BlogSkeletonCard() {
 
 function BlogCard({ blog }) {
   const [imgErr, setImgErr] = useState(false);
-  const coverUrl = !imgErr ? resolveMediaUrl(blog.coverImage) : null;
-  const categoryName = blog.category?.name || (typeof blog.category === "string" ? blog.category : "Article");
+  const coverUrl = !imgErr ? getAssetPath(blog.coverImage) : null;
+  const categoryName =
+    blog.category?.name ||
+    (typeof blog.category === "string" ? blog.category : "Education");
 
   const formattedDate = blog.publishedAt
     ? new Date(blog.publishedAt).toLocaleDateString("en-IN", {
@@ -89,88 +78,72 @@ function BlogCard({ blog }) {
   return (
     <Card
       hoverable
-      className="border border-slate-200/80 rounded-xl sm:rounded-2xl transition-all duration-300 h-full flex flex-col overflow-hidden bg-white group hover:border-blue-400"
+      className="border border-slate-200/80 rounded-2xl transition-all duration-300 h-full flex flex-col overflow-hidden bg-white group hover:border-blue-400 hover:shadow-lg"
       styles={{
         body: { padding: 0, display: "flex", flexDirection: "column", flex: 1 },
       }}
     >
-      {/* 🖼️ Full-Bleed Cover Image Banner (Responsive Height: Mobile 144px, Tablet 180px, Desktop 208px) */}
-      <div className="w-full h-36 sm:h-44 md:h-52 overflow-hidden relative bg-slate-100 flex-shrink-0">
+      {/* 🖼️ Full-Bleed Cover Image Banner */}
+      <div className="w-full h-40 sm:h-48 md:h-52 overflow-hidden relative bg-slate-100 flex-shrink-0">
         {coverUrl ? (
           <Image
             src={coverUrl}
-            alt={blog.title || "Blog cover"}
+            alt={blog.title}
             fill
-            loading="eager"
-            priority
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="object-cover group-hover:scale-105 transition-transform duration-500"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             onError={() => setImgErr(true)}
           />
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 text-slate-400 p-3 text-center">
-            <span className="font-bold text-xs sm:text-sm text-slate-500 line-clamp-1">{categoryName}</span>
-            <span className="text-[11px] text-slate-400 mt-0.5">SODE Education Insights</span>
+          <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-blue-500 to-indigo-600 text-white p-4 text-center">
+            <BookOutlined className="text-3xl mb-1 opacity-80" />
+            <span className="text-xs font-bold uppercase tracking-wider line-clamp-1">
+              {categoryName}
+            </span>
           </div>
         )}
 
-        {/* Top Floating Badges */}
-        <div className="absolute top-2.5 left-2.5 flex items-center gap-1 flex-wrap z-10">
-          <Tag color="blue" className="font-semibold text-[11px] sm:text-xs border-none rounded-full px-2 sm:px-2.5 py-0.5 m-0 bg-blue-600/90 text-white backdrop-blur-sm shadow-sm">
+        <div className="absolute top-3 left-3 z-10">
+          <span className="bg-white/95 backdrop-blur-md text-[#046bd2] font-bold text-xs px-3 py-1 rounded-full shadow-sm border border-slate-100">
             {categoryName}
-          </Tag>
-          {blog.isTrending && (
-            <Tag color="volcano" icon={<FireOutlined />} className="font-semibold text-[10px] sm:text-xs border-none rounded-full px-2 py-0.5 m-0 shadow-sm">
-              Trending
-            </Tag>
-          )}
-          {blog.isTop && (
-            <Tag color="gold" icon={<StarOutlined />} className="font-semibold text-[10px] sm:text-xs border-none rounded-full px-2 py-0.5 m-0 shadow-sm">
-              Top Pick
-            </Tag>
-          )}
+          </span>
         </div>
       </div>
 
-      {/* 📄 Card Content Body with Responsive Inner Padding */}
-      <div className="p-3.5 sm:p-4 md:p-5 flex flex-col flex-1">
-        {/* 📅 Date & Read Time Meta */}
-        <div className="flex justify-between items-center text-[11px] sm:text-xs text-slate-400 mb-1.5 sm:mb-2.5 font-medium">
-          <span className="flex items-center gap-1">
-            <CalendarOutlined /> {formattedDate}
+      {/* 📝 Content Body */}
+      <div className="p-4 sm:p-5 flex flex-col flex-1">
+        {/* Meta Bar */}
+        <div className="flex items-center justify-between text-xs text-slate-500 mb-2.5 font-medium">
+          <span className="flex items-center gap-1.5 text-slate-500">
+            <CalendarOutlined className="text-slate-400" />
+            {formattedDate}
           </span>
-          <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-semibold">
+          <span className="text-slate-400 font-medium">
             {blog.readTime || "5 min read"}
           </span>
         </div>
 
-        {/* 🏷️ Title */}
-        <h3 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 m-0 mb-1.5 sm:mb-2 leading-snug line-clamp-2 group-hover:text-blue-600 transition-colors">
-          {blog.title}
-        </h3>
+        {/* Title */}
+        <Link href={`/blog/${blog.slug}`} className="hover:no-underline">
+          <h3 className="text-base sm:text-lg font-bold text-slate-900 m-0 mb-2 leading-snug line-clamp-2 group-hover:text-[#046bd2] transition-colors cursor-pointer">
+            {blog.title}
+          </h3>
+        </Link>
 
-        {/* 📄 Excerpt */}
-        <p className="text-slate-500 text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4 flex-grow line-clamp-2 sm:line-clamp-3">
+        {/* Excerpt */}
+        <p className="text-slate-500 text-xs sm:text-sm leading-relaxed mb-4 flex-grow line-clamp-2 sm:line-clamp-3">
           {blog.excerpt}
         </p>
 
-        {/* 📊 Footer Stats & Action CTA */}
-        <div className="pt-2.5 sm:pt-3 border-t border-slate-100 flex justify-between items-center mt-auto">
-          <div className="flex items-center gap-2 sm:gap-2.5 text-[11px] sm:text-xs text-slate-400">
-            <span className="flex items-center gap-1">
-              <EyeOutlined /> {blog.viewsCount || 0}
-            </span>
-            <span className="flex items-center gap-1 text-rose-500">
-              <LikeOutlined /> {blog.likesCount || 0}
-            </span>
-            <span className="flex items-center gap-1 text-blue-500">
-              <ShareAltOutlined /> {blog.sharesCount || 0}
-            </span>
-          </div>
+        {/* Footer Action CTA */}
+        <div className="pt-3 border-t border-slate-100 flex justify-between items-center mt-auto">
+          <span className="text-xs text-slate-400 font-medium">
+            By {blog.author?.fullname || "Distance Education"}
+          </span>
 
           <Link href={`/blog/${blog.slug}`} className="block">
-            <span className="text-blue-600 font-bold text-xs flex items-center gap-1 hover:text-blue-700 cursor-pointer group-hover:translate-x-0.5 transition-transform">
-              Read <ArrowRightOutlined className="text-[10px]" />
+            <span className="text-[#046bd2] font-bold text-xs flex items-center gap-1 hover:text-blue-700 cursor-pointer group-hover:translate-x-1 transition-transform">
+              Read More <ArrowRightOutlined className="text-[10px]" />
             </span>
           </Link>
         </div>
@@ -183,59 +156,64 @@ export default function BlogPage() {
   const router = useRouter();
   const [blogs, setBlogs] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [activeCategory, setActiveCategory] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const pageSize = 12;
 
-  // Load blog categories
+  // 1. Fetch Categories from CRM API
   useEffect(() => {
-    request.dynamicList({ entity: "category", endPoint: "v1/list", options: { items: 50 } })
+    request
+      .dynamicList({ entity: "category", endPoint: "v1/list", options: { items: 50 } })
       .then((res) => {
-        const list = res?.result || (Array.isArray(res) ? res : []);
-        if (Array.isArray(list)) {
-          // Filter categories relevant to blogs
-          const blogCats = list.filter((c) => 
-            c.name.includes("Online") || 
-            c.name.includes("UGC") || 
-            c.name.includes("Distance") || 
-            c.name.includes("Career") || 
-            c.name.includes("Reviews") || 
-            c.name.includes("Management") ||
-            c.slug?.includes("blog") ||
-            c.slug?.includes("online")
-          );
-          setCategories(blogCats.length > 0 ? blogCats : list.slice(0, 8));
+        const catList = res?.result || res?.categories || (Array.isArray(res) ? res : []);
+        if (Array.isArray(catList)) {
+          setCategories(catList);
         }
       })
       .catch(() => {});
   }, []);
 
+  // 2. Fetch Blogs from CRM API
   useEffect(() => {
     let isMounted = true;
     setLoading(true);
 
-    const queryOptions = { page: currentPage, items: pageSize };
-    if (selectedCategory && selectedCategory !== "all") {
-      queryOptions.category = selectedCategory;
+    const options = {
+      page: currentPage,
+      items: pageSize,
+    };
+
+    if (activeCategory !== "all") {
+      options.category = activeCategory;
+    }
+    if (searchQuery.trim()) {
+      options.q = searchQuery.trim();
     }
 
-    request.dynamicList({ entity: "blogs", endPoint: "v1/list", options: queryOptions })
+    request
+      .dynamicList({ entity: "blogs", endPoint: "v1/list", options })
       .then((res) => {
         if (!isMounted) return;
         const list = res?.result || res?.blogs || (Array.isArray(res) ? res : []);
+        const total = res?.pagination?.total || res?.total || (Array.isArray(list) ? list.length : 0);
+
         if (Array.isArray(list)) {
           setBlogs(list);
-          setTotalCount(res?.pagination?.count || res?.pagination?.total || list.length);
+          setTotalCount(total);
         } else {
           setBlogs([]);
           setTotalCount(0);
         }
       })
       .catch((err) => {
-        console.error("Failed to load website blogs:", err);
-        if (isMounted) setBlogs([]);
+        console.error("Failed to load blogs from CRM API:", err);
+        if (isMounted) {
+          setBlogs([]);
+          setTotalCount(0);
+        }
       })
       .finally(() => {
         if (isMounted) setLoading(false);
@@ -244,100 +222,60 @@ export default function BlogPage() {
     return () => {
       isMounted = false;
     };
-  }, [currentPage, selectedCategory]);
+  }, [currentPage, activeCategory, searchQuery]);
 
   return (
     <WebsiteLayout py="py-4 sm:py-6" bg="#f8fafc">
-      <div className="w-full">
-        {/* Top Header & Breadcrumb Bar */}
-        <div className="flex items-center justify-between gap-3 mb-3">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => router.back()}
-              type="button"
-              className="p-1 rounded-full text-slate-600 hover:text-slate-900 transition-colors border-none bg-transparent cursor-pointer flex items-center justify-center -ml-1"
-              aria-label="Go back"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </button>
-            <Breadcrumb
-              items={[
-                { title: <Link href="/" className="text-slate-500 hover:text-slate-800">Home</Link> },
-                { title: <span className="font-semibold text-slate-800">Blogs & Articles</span> },
-              ]}
-            />
-          </div>
+      <div className="max-w-7xl mx-auto space-y-6 px-3 sm:px-4 md:px-6">
+        {/* 🧭 Minimal Top Breadcrumb */}
+        <div className="flex items-center gap-2 text-xs sm:text-sm text-slate-500 font-medium py-1">
+          <Link href="/" className="text-slate-500 hover:text-[#046bd2] transition-colors">
+            Home
+          </Link>
+          <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+          <span className="text-slate-800 font-semibold">Latest Blogs & Articles</span>
         </div>
 
-        {/* 🏷️ Horizontal Category Filter Pills */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-4 scrollbar-none">
-          <button
-            type="button"
-            onClick={() => { setSelectedCategory("all"); setCurrentPage(1); }}
-            className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all border cursor-pointer ${
-              selectedCategory === "all"
-                ? "bg-blue-600 text-white border-blue-600 shadow-xs"
-                : "bg-white text-slate-600 border-slate-200 hover:border-blue-300 hover:text-blue-600"
-            }`}
-          >
-            All Articles
-          </button>
-          {categories.map((cat) => (
-            <button
-              key={cat._id}
-              type="button"
-              onClick={() => { setSelectedCategory(cat._id); setCurrentPage(1); }}
-              className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all border cursor-pointer ${
-                selectedCategory === cat._id
-                  ? "bg-blue-600 text-white border-blue-600 shadow-xs"
-                  : "bg-white text-slate-600 border-slate-200 hover:border-blue-300 hover:text-blue-600"
-              }`}
-            >
-              {cat.name}
-            </button>
-          ))}
-        </div>
 
-        {/* 🌟 Shimmer / Skeleton Loading State vs Real Cards */}
+
+        {/* 📰 Blog Grid Listing */}
         {loading ? (
           <Row gutter={[20, 20]}>
-            {Array.from({ length: 6 }).map((_, index) => (
-              <Col xs={24} sm={12} lg={8} key={`blog-skeleton-${index}`}>
+            {Array.from({ length: 6 }).map((_, idx) => (
+              <Col xs={24} sm={12} lg={8} key={idx}>
                 <BlogSkeletonCard />
               </Col>
             ))}
           </Row>
         ) : blogs.length === 0 ? (
-          <div className="bg-white rounded-2xl p-12 border border-slate-200 text-center my-8">
-            <Empty description="No blogs published yet. Please check back soon!" />
+          <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center my-6">
+            <Empty description="No blogs found in database." />
           </div>
         ) : (
-          <>
-            {/* Blog Cards Grid (Responsive: Desktop 3 cards, Tablet 2 cards, Mobile 1 card) */}
-            <Row gutter={[20, 20]}>
-              {blogs.map((blog) => (
-                <Col xs={24} sm={12} lg={8} key={blog._id || blog.slug}>
-                  <BlogCard blog={blog} />
-                </Col>
-              ))}
-            </Row>
+          <Row gutter={[20, 20]}>
+            {blogs.map((blog) => (
+              <Col xs={24} sm={12} lg={8} key={blog._id || blog.slug}>
+                <BlogCard blog={blog} />
+              </Col>
+            ))}
+          </Row>
+        )}
 
-            {/* Pagination */}
-            {totalCount > pageSize && (
-              <div className="flex justify-center mt-10">
-                <Pagination
-                  current={currentPage}
-                  total={totalCount}
-                  pageSize={pageSize}
-                  onChange={(page) => {
-                    setCurrentPage(page);
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                  }}
-                  showSizeChanger={false}
-                />
-              </div>
-            )}
-          </>
+        {/* 🧭 Responsive Pagination */}
+        {totalCount > pageSize && (
+          <div className="flex justify-center pt-6 pb-2">
+            <Pagination
+              current={currentPage}
+              pageSize={pageSize}
+              total={totalCount}
+              onChange={(page) => {
+                setCurrentPage(page);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              showSizeChanger={false}
+              className="ant-pagination-custom"
+            />
+          </div>
         )}
       </div>
     </WebsiteLayout>

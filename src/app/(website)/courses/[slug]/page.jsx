@@ -122,19 +122,20 @@ export default function CourseDetailPage() {
     if (slug) {
       setLoading(true);
       const isObjectId = /^[0-9a-fA-F]{24}$/.test(slug);
-      const entity = isObjectId ? "university-offerings" : "university-offering-pages";
-      const endPoint = isObjectId ? "v1/details" : "v1/list";
+      const entity = "university-offerings";
+      const endPoint = "v1/list";
 
       request
         .dynamicRead({ entity, endPoint, id: encodeURIComponent(slug), revalidate: 900 })
         .then((res) => {
           if (!isMounted) return;
           const pageRes = res?.result || res;
-          if (pageRes && (pageRes.offeringId || pageRes.isOfferingPage)) {
-            const off = pageRes.offeringId || {};
-            const uni = off.universityId || {};
-            const courseObj = off.courseId || {};
-            const sub = off.subCourseId || {};
+          if (pageRes && (pageRes.universityId || pageRes.courseId || pageRes.offeringId || pageRes.isOfferingPage || pageRes.overviewSection)) {
+            const uni = pageRes.universityId?.name ? pageRes.universityId : (pageRes.offeringId?.universityId || {});
+            const courseObj = pageRes.courseId?.name ? pageRes.courseId : (pageRes.offeringId?.courseId || {});
+            const sub = pageRes.subCourseId?.name ? pageRes.subCourseId : (pageRes.offeringId?.subCourseId || {});
+            const feesObj = pageRes.fees || pageRes.offeringId?.fees || null;
+            const durationObj = pageRes.duration || pageRes.offeringId?.duration || null;
 
             const normalizedData = {
               _id: pageRes._id,
@@ -143,15 +144,15 @@ export default function CourseDetailPage() {
               offeringPage: pageRes,
               title: courseObj.title || courseObj.name || pageRes.slug,
               description: pageRes.overviewSection?.description || courseObj.description || "",
-              categories: courseObj.categories || [],
+              categories: courseObj.categories || courseObj.category || [],
               universityOfferings: [
                 {
-                  _id: off._id,
+                  _id: pageRes._id,
                   university: uni,
                   subcourses: sub._id ? [sub] : [],
-                  duration: off.duration,
-                  fees: off.fees,
-                  fee: off.fees,
+                  duration: durationObj,
+                  fees: feesObj,
+                  fee: feesObj,
                 },
               ],
               heroMedia: pageRes.heroMedia,
@@ -435,8 +436,8 @@ export default function CourseDetailPage() {
                   <Skeleton active paragraph={{ rows: 2, width: ["90%", "60%"] }} title={false} />
                   <Skeleton active paragraph={{ rows: 2, width: ["100%", "80%"] }} title={false} />
                   <div className="flex gap-2.5 pt-1">
-                    <Skeleton.Button active size="default" style={{ width: 130, height: 38, borderRadius: 8 }} />
-                    <Skeleton.Button active size="default" style={{ width: 130, height: 38, borderRadius: 8 }} />
+                    <Skeleton.Button active size="medium" style={{ width: 130, height: 38, borderRadius: 8 }} />
+                    <Skeleton.Button active size="medium" style={{ width: 130, height: 38, borderRadius: 8 }} />
                   </div>
                 </div>
                 <div className="w-full md:w-72 h-48 bg-gray-200 rounded-xl animate-pulse" />

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Container } from "@/components/common/Container";
@@ -10,6 +10,8 @@ import { useToolWizard } from "@/components/tool/ToolWizardContext";
 export function Header({ initialHeaderData = null, siteLogo = null }) {
   const { openTool } = useToolWizard();
   const headerData = initialHeaderData?.result || initialHeaderData || {};
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState(null);
 
   const resolveImageUrl = (mediaObj, fallback = "/assets/images/new_sode_tm_logo.png") => {
     if (!mediaObj) return fallback;
@@ -20,7 +22,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
 
   const logoUrl = resolveImageUrl(headerData?.logo || siteLogo, "/assets/images/new_sode_tm_logo.png");
   const logoAlt = headerData?.logo_alt || "School of Online & Distance Education (SODE)";
-  const logoHeight = Number(headerData?.logo_height) || 60;
+  const logoHeight = Number(headerData?.logo_height) || 48;
 
   // 1. Featured Action Buttons (From DB / API)
   const rawFeaturedButtons = Array.isArray(headerData?.featured_buttons)
@@ -34,59 +36,14 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
     ? headerData.menu_items.filter((item) => item.enabled !== false)
     : [];
 
-  // Helper for Button Variant Classes (Solid Yellow BG & Solid Blue BG)
-  const getButtonVariantClasses = (variant = "outline", text = "", index = 0) => {
-    const l = (text || "").toLowerCase();
-
-    // 🟡 Solid Yellow / Gold Filled Background
-    if (variant === "gold" || variant === "yellow" || variant === "solid_yellow" || variant === "outline_yellow" || l.includes("suggest") || index === 0) {
-      return "bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold shadow-md shadow-amber-500/20 hover:shadow-amber-500/30 border border-amber-400";
-    }
-
-    // 🔵 Solid Deep SODE Navy Blue Filled Background (Matching the image)
-    if (variant === "blue" || variant === "navy" || variant === "solid_blue" || variant === "gradient" || variant === "outline_blue" || l.includes("compar") || index === 1) {
-      return "bg-[#1e2f4d] hover:bg-[#16243c] text-white font-bold shadow-md shadow-slate-900/15 border border-[#1e2f4d]";
-    }
-
-    if (variant === "solid") {
-      return "bg-slate-900 hover:bg-slate-800 text-white shadow-md shadow-slate-900/15 border border-slate-900";
-    }
-    if (variant === "ghost") {
-      return "bg-slate-100/70 hover:bg-slate-200/80 text-slate-800 border border-transparent";
-    }
-
-    return "bg-slate-50/90 hover:bg-white text-slate-800 hover:text-blue-600 border border-slate-200/90 hover:border-slate-300 shadow-xs hover:shadow-md";
+  const handleToolClick = (e) => {
+    e.preventDefault();
+    openTool("suggest-me-a-university", { tool_mode: "Suggest University" });
   };
 
-  // 🔀 Unified Navigation Array Sorted By Order Number
-  const allNavElements = [];
-
-  rawFeaturedButtons.forEach((btn, idx) => {
-    allNavElements.push({
-      type: "featured_button",
-      id: btn._id || `feat-btn-${idx}`,
-      order: btn.order !== undefined ? Number(btn.order) : idx,
-      data: btn,
-      index: idx,
-    });
-  });
-
-  rawMenuItems.forEach((item, idx) => {
-    allNavElements.push({
-      type: "menu_item",
-      id: item._id || `item-${idx}`,
-      order: item.order !== undefined ? Number(item.order) : idx + 10,
-      data: item,
-      index: idx,
-    });
-  });
-
-  allNavElements.sort((a, b) => a.order - b.order);
-
   const announcement = headerData?.announcement_bar;
-  const isSticky = false; // Non-sticky, scrolls with page
   const bgColor = headerData?.bg_color || "#ffffff";
-  const textColor = headerData?.text_color || "#1e293b";
+  const textColor = headerData?.text_color || "#072C50";
 
   return (
     <>
@@ -94,7 +51,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
       {announcement?.enabled && announcement?.text && (
         <div
           style={{ backgroundColor: announcement.bg_color || "#1e2f4d", color: announcement.text_color || "#ffffff" }}
-          className="w-full text-center py-2 px-4 text-xs sm:text-sm font-medium"
+          className="w-full text-center py-1.5 px-4 text-xs font-medium"
         >
           {announcement.url ? (
             <Link href={announcement.url} className="hover:underline">
@@ -109,20 +66,21 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
       {/* Main Navbar */}
       <header
         style={{ backgroundColor: bgColor }}
-        className="w-full border-b border-slate-100/80 z-40 relative"
+        className="w-full bg-white border-b border-slate-100 z-50 relative shadow-2xs"
       >
-        <Container className="flex items-center justify-between h-16">
+        <Container className="flex items-center justify-between h-11 sm:h-12 md:h-13">
+          
           {/* 1. BRAND LOGO ON THE LEFT */}
-          <Link href={headerData?.logo_url || "/"} className="flex items-center group">
+          <Link href={headerData?.logo_url || "/"} className="flex items-center group shrink-0">
             <div
-              style={{ height: `${Math.min(logoHeight || 50, 50)}px` }}
-              className="relative w-24 sm:w-28 md:w-32 flex items-center justify-start transition-transform group-hover:scale-105"
+              style={{ height: "46px" }}
+              className="relative w-32 sm:w-36 md:w-40 flex items-center justify-start transition-transform group-hover:scale-105"
             >
               <Image
                 src={logoUrl}
                 alt={logoAlt}
                 fill
-                sizes="(max-width: 768px) 140px, 180px"
+                sizes="(max-width: 768px) 150px, 200px"
                 priority
                 fetchPriority="high"
                 className="object-contain object-left cursor-pointer"
@@ -130,152 +88,185 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
             </div>
           </Link>
 
-          {/* 2. MOBILE BUTTONS (SUGGEST UNIVERSITY / COURSE) */}
-          <div className="flex lg:hidden items-center gap-1.5 sm:gap-2">
-            {allNavElements
-              .filter((el) => el.type === "featured_button")
-              .map((el) => {
-                const btn = el.data;
-                const iconUrl =
-                  btn.icon?.url ||
-                  (typeof btn.icon === "string" && btn.icon.startsWith("http")
-                    ? btn.icon
-                    : null);
-                const variantClasses = getButtonVariantClasses(
-                  btn.variant || "outline",
-                  btn.text,
-                  el.index
-                );
-                const isDarkBg =
-                  variantClasses.includes("bg-[#1e2f4d]") ||
-                  variantClasses.includes("bg-slate-900");
+          {/* 2. DESKTOP NAVIGATION MENU ITEMS */}
+          <nav className="hidden lg:flex items-center gap-4 xl:gap-5">
+            {rawMenuItems.map((item, idx) => {
+              const isAiTools =
+                item.is_highlighted ||
+                (item.label && item.label.toLowerCase().includes("ai tool")) ||
+                item.badge?.toLowerCase().includes("new");
 
-                const isToolButton =
-                  (btn.text &&
-                    (btn.text.toLowerCase().includes("suggest") ||
-                      btn.text.toLowerCase().includes("advisor"))) ||
-                  (btn.url && btn.url.includes("suggest")) ||
-                  btn.category?.slug?.includes("suggest");
-
-                const handleButtonClick = (e) => {
-                  if (isToolButton) {
-                    e.preventDefault();
-                    const mode = btn.text?.toLowerCase().includes("course")
-                      ? "Suggest Course"
-                      : "Suggest University";
-                    openTool("suggest-me-a-university", { tool_mode: mode });
-                  }
-                };
-
+              // Special Pill for AI Tools with "NEW" Badge
+              if (isAiTools) {
                 return (
-                  <Link
-                    key={`mobile_${el.id}`}
-                    href={btn?.url || "#"}
-                    onClick={handleButtonClick}
-                    className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-lg font-bold text-xs sm:text-sm transition-all duration-200 cursor-pointer shadow-xs whitespace-nowrap ${variantClasses}`}
+                  <button
+                    key={item._id || idx}
+                    type="button"
+                    onClick={handleToolClick}
+                    className="relative inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-sky-100/80 hover:bg-sky-200/80 text-[#0284c7] hover:text-[#0369a1] border border-sky-200/90 font-bold text-xs transition-all duration-200 cursor-pointer shadow-2xs group"
                   >
-                    {iconUrl && (
-                      <span className="relative w-3.5 h-3.5 flex items-center justify-center shrink-0">
-                        <Image
-                          src={iconUrl}
-                          alt={btn.text || "Icon"}
-                          width={14}
-                          height={14}
-                          className={`object-contain ${
-                            isDarkBg ? "brightness-0 invert" : "brightness-0"
-                          }`}
-                          unoptimized
-                        />
-                      </span>
-                    )}
-                    <span>{btn?.text}</span>
-                  </Link>
-                );
-              })}
-          </div>
-
-          {/* 3. DESKTOP NAVIGATION BUTTON PILLS & LINKS */}
-          <nav className="hidden lg:flex items-center gap-3 xl:gap-4">
-            {allNavElements.map((el) => {
-              if (el.type === "featured_button") {
-                const btn = el.data;
-                const iconUrl = btn.icon?.url || (typeof btn.icon === "string" && btn.icon.startsWith("http") ? btn.icon : null);
-                const variantClasses = getButtonVariantClasses(btn.variant || "outline", btn.text, el.index);
-                const isDarkBg = variantClasses.includes("bg-[#1e2f4d]") || variantClasses.includes("bg-slate-900");
-
-                const isToolButton =
-                  (btn.text && (btn.text.toLowerCase().includes("suggest") || btn.text.toLowerCase().includes("advisor"))) ||
-                  (btn.url && btn.url.includes("suggest")) ||
-                  btn.category?.slug?.includes("suggest");
-
-                const handleButtonClick = (e) => {
-                  if (isToolButton) {
-                    e.preventDefault();
-                    const mode = btn.text?.toLowerCase().includes("course")
-                      ? "Suggest Course"
-                      : "Suggest University";
-                    openTool("suggest-me-a-university", { tool_mode: mode });
-                  }
-                };
-
-                return (
-                  <Link
-                    key={el.id}
-                    href={btn?.url || "#"}
-                    onClick={handleButtonClick}
-                    className={`inline-flex items-center gap-2 px-4.5 py-2 rounded-xl font-bold text-sm hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer ${variantClasses}`}
-                  >
-                    {iconUrl && (
-                      <span className="relative w-4 h-4 flex items-center justify-center shrink-0">
-                        <Image
-                          src={iconUrl}
-                          alt={btn.text || "Icon"}
-                          width={16}
-                          height={16}
-                          className={`object-contain ${isDarkBg ? "brightness-0 invert" : "brightness-0"}`}
-                          unoptimized
-                        />
-                      </span>
-                    )}
-                    <span>{btn?.text}</span>
-                  </Link>
+                    <span className="text-sky-500 font-extrabold text-xs leading-none group-hover:rotate-12 transition-transform">✦</span>
+                    <span className="text-slate-800 font-semibold">{item.label || "AI Tools"}</span>
+                    {/* Floating NEW Badge */}
+                    <span className="absolute -top-1.5 -right-1 px-1 py-0.2 text-[8px] font-black uppercase tracking-wider rounded-full bg-linear-to-r from-amber-400 to-amber-500 text-slate-950 border border-white shadow-2xs leading-none">
+                      {item.badge || "NEW"}
+                    </span>
+                  </button>
                 );
               }
 
-              const item = el.data;
-              const iconUrl = item.icon?.url;
+              // Standard Menu Items (with Dropdown Support)
+              const hasDropdown = item.has_dropdown && Array.isArray(item.dropdown_items) && item.dropdown_items.length > 0;
+
+              return (
+                <div
+                  key={item._id || idx}
+                  className="relative group py-1"
+                  onMouseEnter={() => setActiveDropdown(item._id || idx)}
+                  onMouseLeave={() => setActiveDropdown(null)}
+                >
+                  <Link
+                    href={item.url || "#"}
+                    target={item.target || "_self"}
+                    style={{ color: textColor }}
+                    className="inline-flex items-center gap-1 text-xs sm:text-sm font-bold text-[#072C50] hover:text-[#996633] transition-colors py-0.5 cursor-pointer tracking-tight"
+                  >
+                    <span>{item.label}</span>
+                    {hasDropdown && (
+                      <svg
+                        className="w-3 h-3 text-slate-500 group-hover:text-[#996633] group-hover:rotate-180 transition-transform duration-200"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    )}
+                  </Link>
+
+                  {/* Dropdown Menu */}
+                  {hasDropdown && (
+                    <div className="absolute top-full left-0 w-60 bg-white rounded-xl shadow-xl border border-slate-100 py-1.5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-1 group-hover:translate-y-0 z-50">
+                      <div className="max-h-64 overflow-y-auto divide-y divide-slate-50">
+                        {item.dropdown_items.map((sub, sIdx) => (
+                          <Link
+                            key={sub._id || sIdx}
+                            href={sub.url || "#"}
+                            className="flex items-center justify-between px-3.5 py-2 hover:bg-amber-50/60 text-slate-800 hover:text-[#072C50] text-xs font-medium transition-colors"
+                          >
+                            <span>{sub.label}</span>
+                            {sub.badge && (
+                              <span className="px-1.5 py-0.5 text-[8px] font-bold rounded bg-amber-100 text-amber-900 border border-amber-200">
+                                {sub.badge}
+                              </span>
+                            )}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+
+            {/* 3. FEATURED CTA BUTTON (Compare Universities) */}
+            {rawFeaturedButtons.map((btn, idx) => {
+              const isCompare = btn.text && btn.text.toLowerCase().includes("compare");
 
               return (
                 <Link
-                  key={el.id}
-                  href={item.url || "#"}
-                  target={item.target || "_self"}
-                  style={{ color: textColor }}
-                  className="text-sm font-semibold hover:text-blue-600 transition-colors relative py-1 px-2 flex items-center gap-2"
+                  key={btn._id || idx}
+                  href={btn.url || "/compare"}
+                  style={{
+                    background: "linear-gradient(180deg, #F6DE95 0%, #EEC471 100%)",
+                    color: "#072C50",
+                  }}
+                  className="inline-flex items-center justify-center px-4 py-1.5 rounded-md font-bold text-xs sm:text-[13px] shadow-xs hover:shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap border border-[#EEC471]/60"
                 >
-                  {iconUrl && (
-                    <span className="relative w-4 h-4 flex items-center justify-center shrink-0">
-                      <Image
-                        src={iconUrl}
-                        alt={item.label || "Icon"}
-                        width={16}
-                        height={16}
-                        className="object-contain"
-                        unoptimized
-                      />
-                    </span>
-                  )}
-                  <span>{item.label}</span>
-                  {item.badge && (
-                    <span className="ml-1.5 px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-red-500 text-white leading-none">
-                      {item.badge}
-                    </span>
-                  )}
+                  {btn.text || "Compare Universities"}
                 </Link>
               );
             })}
           </nav>
+
+          {/* 4. MOBILE HAMBURGER & QUICK ACTIONS */}
+          <div className="flex lg:hidden items-center gap-2">
+            {/* Mobile AI Tools Pill */}
+            <button
+              type="button"
+              onClick={handleToolClick}
+              className="relative inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-sky-100/80 text-sky-800 border border-sky-200 text-xs font-bold shadow-2xs"
+            >
+              <span className="text-sky-500">✦</span>
+              <span>AI Tools</span>
+              <span className="absolute -top-1.5 -right-1 px-1 py-0.2 text-[8px] font-black uppercase rounded-full bg-amber-400 text-slate-950 border border-white">
+                NEW
+              </span>
+            </button>
+
+            {/* Mobile Compare Button */}
+            {rawFeaturedButtons[0] && (
+              <Link
+                href={rawFeaturedButtons[0]?.url || "/compare"}
+                style={{
+                  background: "linear-gradient(180deg, #F6DE95 0%, #EEC471 100%)",
+                  color: "#072C50",
+                }}
+                className="px-3 py-1.5 rounded-md font-bold text-xs shadow-xs border border-[#EEC471]/60"
+              >
+                {rawFeaturedButtons[0]?.text?.replace(/universities/i, "").trim() || "Compare"}
+              </Link>
+            )}
+
+            {/* Mobile Menu Toggle Button */}
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg cursor-pointer"
+              aria-label="Toggle menu"
+            >
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                {mobileMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
+          </div>
+
         </Container>
+
+        {/* MOBILE SLIDE-DOWN DRAWER */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden w-full bg-white border-t border-slate-100 px-4 py-4 space-y-3 shadow-lg">
+            {rawMenuItems.map((item, idx) => (
+              <div key={item._id || idx} className="space-y-1">
+                <Link
+                  href={item.url || "#"}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block font-bold text-sm text-[#072C50] py-1.5"
+                >
+                  {item.label}
+                </Link>
+                {item.has_dropdown && item.dropdown_items?.length > 0 && (
+                  <div className="pl-3 space-y-1 border-l-2 border-slate-200">
+                    {item.dropdown_items.map((sub, sIdx) => (
+                      <Link
+                        key={sub._id || sIdx}
+                        href={sub.url || "#"}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="block text-xs text-slate-600 hover:text-[#072C50] py-1"
+                      >
+                        {sub.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </header>
     </>
   );
