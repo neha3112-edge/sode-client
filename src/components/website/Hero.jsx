@@ -104,9 +104,8 @@ export function Hero({ initialHeroData = null }) {
     return (
       <h1
         style={{ color: titleColor }}
-        className={`text-base sm:text-xl md:text-2xl lg:text-[28px] font-extrabold leading-[1.18] tracking-tight m-0 ${
-          isLight ? "" : "text-white drop-shadow-sm"
-        }`}
+        className={`text-base sm:text-xl md:text-2xl lg:text-[28px] font-extrabold leading-[1.18] tracking-tight m-0 ${isLight ? "" : "text-white drop-shadow-sm"
+          }`}
       >
         {rawTitle}
       </h1>
@@ -132,11 +131,10 @@ export function Hero({ initialHeroData = null }) {
     // Standard Styled Badge (Rounded rectangle with star)
     return (
       <div
-        className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[11px] sm:text-xs font-semibold tracking-normal border shadow-2xs ${
-          isLight
+        className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[11px] sm:text-xs font-semibold tracking-normal border shadow-2xs ${isLight
             ? "bg-[#996633]/8 text-[#996633] border-[#996633]/30"
             : "bg-white/10 text-amber-200 border-white/20 backdrop-blur-md"
-        }`}
+          }`}
       >
         <span className="text-amber-500 font-bold text-xs leading-none">★</span>
         <span className="leading-tight">{badgeText.replace(/^[#★1\s*]+/i, "").trim() || badgeText}</span>
@@ -215,7 +213,7 @@ export function Hero({ initialHeroData = null }) {
                 priority={index === 0}
                 fetchPriority={index === 0 ? "high" : "auto"}
                 sizes="100vw"
-                className="object-cover object-center"
+                className="object-fit object-center"
               />
             </div>
 
@@ -239,7 +237,7 @@ export function Hero({ initialHeroData = null }) {
         {/* 2. FOREGROUND TEXT CONTENT & CTA (Pixel-Perfect Match to Reference Design) */}
         <Container className="relative z-10 w-full pointer-events-auto">
           <div className="w-full max-w-[50%] sm:max-w-[48%] md:max-w-[46%] lg:max-w-[44%] flex flex-col items-start space-y-1.5 sm:space-y-2 lg:space-y-2.5">
-            
+
             {/* Top Badge */}
             {renderSlideBadge(badgeText, isLight)}
 
@@ -263,11 +261,10 @@ export function Hero({ initialHeroData = null }) {
                   <Link
                     key={item._id || tIdx}
                     href={item.url || "#"}
-                    className={`px-2 py-0.5 rounded text-[10px] sm:text-xs font-medium transition-all shadow-2xs ${
-                      isLight
+                    className={`px-2 py-0.5 rounded text-[10px] sm:text-xs font-medium transition-all shadow-2xs ${isLight
                         ? "bg-white/90 text-[#072C50] border border-[#EEC471]/40 hover:border-[#EEC471] hover:bg-amber-50"
                         : "bg-white/10 text-white border border-white/20 hover:bg-white/20 backdrop-blur-md"
-                    }`}
+                      }`}
                   >
                     {item.name}
                   </Link>
@@ -309,22 +306,20 @@ export function Hero({ initialHeroData = null }) {
                   <button
                     type="button"
                     onClick={handleSecondaryClick}
-                    className={`hidden sm:inline-block px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-md font-semibold text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap ${
-                      isLight
+                    className={`hidden sm:inline-block px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-md font-semibold text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap ${isLight
                         ? "bg-[#072C50]/10 hover:bg-[#072C50]/15 border border-[#072C50]/20 text-[#072C50]"
                         : "bg-white/15 hover:bg-white/20 border border-white/25 text-white backdrop-blur-md"
-                    }`}
+                      }`}
                   >
                     {secondaryBtn.text}
                   </button>
                 ) : (
                   <Link
                     href={secondaryBtn?.url || "/courses"}
-                    className={`hidden sm:inline-block px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-md font-semibold text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap ${
-                      isLight
+                    className={`hidden sm:inline-block px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-md font-semibold text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap ${isLight
                         ? "bg-[#072C50]/10 hover:bg-[#072C50]/15 border border-[#072C50]/20 text-[#072C50]"
                         : "bg-white/15 hover:bg-white/20 border border-white/25 text-white backdrop-blur-md"
-                    }`}
+                      }`}
                   >
                     {secondaryBtn.text}
                   </Link>
