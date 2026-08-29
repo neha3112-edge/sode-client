@@ -683,7 +683,6 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                         src="/Scholarship Image.webp"
                         alt="Scholarship Banner Background"
                         fill
-                        unoptimized
                         loading="eager"
                         className="object-cover object-center -z-10 transition-transform duration-500"
                       />

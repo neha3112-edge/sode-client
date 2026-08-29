@@ -26,7 +26,6 @@ const nextConfig = {
         hostname: "localhost",
       },
     ],
-    unoptimized: true,
   },
 
   async rewrites() {
