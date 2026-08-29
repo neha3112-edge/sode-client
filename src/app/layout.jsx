@@ -1,6 +1,7 @@
 import { Roboto } from "next/font/google";
 import "./globals.css";
 import AppProviders from "@/components/providers/AppProviders";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -38,6 +39,7 @@ export default function RootLayout({ children }) {
         <AppProviders>
           {children}
         </AppProviders>
+        <SpeedInsights />
       </body>
     </html>
   );
