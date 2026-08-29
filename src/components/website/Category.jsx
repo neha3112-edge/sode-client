@@ -715,49 +715,52 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                           submitButtonText: "Get Scholarship Code",
                         })
                       }
-                      className="mt-12 relative w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl min-h-65 sm:min-h-[300px] md:min-h-[340px] flex flex-col md:flex-row items-center justify-between p-6 sm:p-10 lg:p-12 select-none text-left cursor-pointer group"
+                      className="mt-12 relative w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl min-h-[280px] sm:min-h-[320px] md:min-h-[350px] flex flex-col md:flex-row items-center justify-between p-6 sm:p-8 md:p-10 lg:px-12 lg:py-10 select-none text-left cursor-pointer group"
                     >
                       {/* Background Image with Gradient, Coins on Left & Center Student Model */}
                       <Image
-                        src="/assets/images/scholarship_banner_bg.jpg"
+                        src="/Scholarship Image.webp"
                         alt="Scholarship Banner Background"
                         fill
-                        sizes="(max-width: 1200px) 100vw, 1200px"
-                        className="object-cover object-center -z-10 group-hover:scale-[1.01] transition-transform duration-500"
+                        unoptimized
+                        className="object-fill object-center -z-10 transition-transform duration-500"
                         priority
                       />
 
                       {/* Left: UPTO in White, 20% in Gold, Scholarship in Pure Solid White */}
-                      <div className="flex flex-col items-center md:items-start text-center md:text-left shrink-0 z-10">
-                        <span className="text-white font-bold text-xs sm:text-sm md:text-base tracking-widest uppercase mb-0.5 drop-shadow-sm">
+                      <div className="flex flex-col items-center md:items-start text-center md:text-left shrink-0 z-10 pl-0 md:pl-2">
+                        <span className="text-white/90 font-medium text-xs sm:text-sm tracking-[0.2em] uppercase mb-1">
                           UPTO
                         </span>
-                        <div className="text-7xl sm:text-8xl lg:text-9xl font-black tracking-tighter leading-none text-[#F1D888] drop-shadow-md">
+                        <div className="text-7xl sm:text-8xl lg:text-9xl font-extrabold tracking-tight leading-none text-[#E8CA72]">
                           20%
                         </div>
-                        <span className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight uppercase mt-1 drop-shadow-md">
+                        <span className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight uppercase mt-1">
                           Scholarship
                         </span>
                       </div>
 
-                      {/* Center Spacer to allow Girl Model in background to shine through */}
-                      <div className="w-20 md:w-32 lg:w-48 shrink-0 h-10 pointer-events-none" />
+                      {/* Center Spacer to allow Student Model in background to shine through */}
+                      <div className="w-16 md:w-28 lg:w-40 shrink-0 h-8 pointer-events-none" />
 
                       {/* Right: Heading, Subtitle & Bright Cyan Button */}
-                      <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-3 sm:space-y-4 max-w-md lg:max-w-lg z-10">
-                        <h3 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white leading-tight m-0 drop-shadow-md">
-                          Get <span className="text-[#F1D888]">Scholarship</span> that Make Education Affordable
+                      <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-3 sm:space-y-3.5 max-w-md lg:max-w-lg z-10 pr-0 md:pr-2">
+                        <h3 className="text-2xl sm:text-3xl lg:text-[34px] font-bold text-white leading-snug tracking-tight m-0">
+                          Get <span className="text-[#E8CA72]">Scholarship</span> that <br className="hidden sm:inline" />
+                          Make Education Affordable
                         </h3>
-                        <p className="text-slate-100 text-xs sm:text-sm md:text-base leading-relaxed font-medium m-0 drop-shadow-sm">
+                        <p className="text-white/80 text-xs sm:text-[13px] leading-relaxed font-normal m-0 max-w-sm">
                           Education should be accessible to all. Use our Scholarship Coupon Code and get up to 20% off on course fees.
                         </p>
-                        <button
-                          type="button"
-                          className="mt-2 px-8 py-3.5 rounded-full bg-[#00AEEF] hover:bg-[#0098D4] text-white font-extrabold text-xs sm:text-sm md:text-base shadow-lg shadow-cyan-500/40 hover:scale-105 active:scale-95 transition-all flex items-center gap-2.5 cursor-pointer"
-                        >
-                          <span>Get Coupon Code</span>
-                          <span className="text-lg">🎁</span>
-                        </button>
+                        <div className="pt-1.5">
+                          <button
+                            type="button"
+                            className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-[#00A8EC] hover:bg-[#0098D6] text-white font-bold text-sm shadow-sm hover:shadow-md transition-all cursor-pointer"
+                          >
+                            <span>Get Coupon Code</span>
+                            <span className="text-base leading-none" aria-hidden="true">🎁</span>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
