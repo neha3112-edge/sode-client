@@ -35,29 +35,17 @@ export async function generateMetadata() {
 }
 
 export default async function Home() {
-  // Parallel Data Fetching via Promise.all (Eliminates SSR Waterfall Delays)
+  // Parallel High-Speed Data Fetching with ISR Caching
   const [
     heroRes,
     universities,
     coursesData,
     categoryApiData,
-    aboutData,
-    faqs,
-    testimonials,
-    footerData,
-    iimUniversities,
-    iitUniversities,
   ] = await Promise.all([
-    request.dynamicRead({ entity: "hero", endPoint: "public/by-slug", slug: "home", revalidate: 0 }),
+    request.dynamicRead({ entity: "hero", endPoint: "public/by-slug", slug: "home", revalidate: 300 }),
     getUniversitiesData(),
     request.dynamicList({ entity: "university-offerings", endPoint: "v1/list", options: { items: 30 }, revalidate: 300 }),
     request.dynamicList({ entity: "category", endPoint: "v1/list", revalidate: 900 }),
-    getAboutData(),
-    getFaqData(),
-    getTestimonialsData(),
-    getFooterData(),
-    getUniversitiesData({ type: "iim", limit: 10, page: 1 }),
-    getUniversitiesData({ type: "iit", limit: 10, page: 1 }),
   ]);
 
   const heroData = heroRes?.result || heroRes;
@@ -70,8 +58,6 @@ export default async function Home() {
       : Array.isArray(categoryApiData)
         ? categoryApiData
         : [];
-
-  const { leftCards, rightCards } = aboutData || {};
 
   return (
     <div className="flex flex-col min-h-screen bg-[#f8fafc] text-slate-900 font-sans selection:bg-blue-600 selection:text-white">
