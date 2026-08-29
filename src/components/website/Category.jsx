@@ -425,14 +425,6 @@ export function Category({ categories = [], universities = [], programs = [] }) 
         .ant-carousel .slick-slider {
           min-height: 80px;
         }
-        .ant-carousel:not(.slick-initialized) {
-          display: block !important;
-          overflow: hidden !important;
-          min-height: 80px;
-        }
-        .ant-carousel:not(.slick-initialized) > div:not(:first-child) {
-          display: none !important;
-        }
         .ant-carousel .slick-prev,
         .ant-carousel .slick-next {
           color: #6b7280 !important;
