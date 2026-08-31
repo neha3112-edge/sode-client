@@ -198,12 +198,12 @@ export function Hero({ initialHeroData = null }) {
     return (
       <div
         key={data?._id || index}
-        style={{ backgroundColor: bgColor, aspectRatio: "4/1" }}
-        className="relative w-full overflow-hidden aspect-[4/1] min-h-[160px] sm:min-h-[200px] md:min-h-[240px] lg:min-h-[280px] max-h-[340px] flex items-center select-none"
+        style={{ backgroundColor: bgColor }}
+        className="relative w-full overflow-hidden aspect-[1.9/1] sm:aspect-[3.2/1] md:aspect-[3.8/1] lg:aspect-[4/1] min-h-[200px] sm:min-h-[220px] md:min-h-[240px] lg:min-h-[280px] max-h-[340px] flex items-center select-none py-3.5 sm:py-0"
       >
-        {/* 1. 100% FULL-WIDTH BACKGROUND IMAGE (SEAMLESS FULL-BLEED ZERO WHITE EDGE) */}
+        {/* 1. 100% FULL-WIDTH BACKGROUND IMAGE (SEAMLESS FULL-BLEED ZERO WHITE EDGE & UNOPTIMIZED FOR MAXIMUM CRISP CLARITY) */}
         {desktopBannerUrl && (
-          <div className="absolute -inset-1 w-[calc(100%+8px)] h-[calc(100%+8px)] pointer-events-none select-none overflow-hidden">
+          <div className="absolute inset-0 w-full h-full pointer-events-none select-none overflow-hidden">
             {/* Desktop Background Banner Image */}
             <div className={`relative w-full h-full ${mobileBannerUrl && mobileBannerUrl !== desktopBannerUrl ? "hidden md:block" : "block"}`}>
               <Image
@@ -213,8 +213,9 @@ export function Hero({ initialHeroData = null }) {
                 priority={index === 0}
                 loading={index === 0 ? "eager" : "lazy"}
                 fetchPriority={index === 0 ? "high" : "auto"}
+                unoptimized
                 sizes="100vw"
-                className="object-cover object-center"
+                className="object-cover object-[78%_center] md:object-center"
               />
             </div>
 
@@ -228,8 +229,9 @@ export function Hero({ initialHeroData = null }) {
                   priority={index === 0}
                   loading={index === 0 ? "eager" : "lazy"}
                   fetchPriority={index === 0 ? "high" : "auto"}
+                  unoptimized
                   sizes="100vw"
-                  className="object-cover object-center"
+                  className="object-cover object-[75%_center] md:object-center"
                 />
               </div>
             )}
@@ -238,7 +240,7 @@ export function Hero({ initialHeroData = null }) {
 
         {/* 2. FOREGROUND TEXT CONTENT & CTA (Pixel-Perfect Match to Reference Design) */}
         <Container className="relative z-10 w-full pointer-events-auto">
-          <div className="w-full max-w-[50%] sm:max-w-[48%] md:max-w-[46%] lg:max-w-[44%] flex flex-col items-start space-y-1.5 sm:space-y-2 lg:space-y-2.5">
+          <div className="w-full max-w-[62%] sm:max-w-[50%] md:max-w-[46%] lg:max-w-[44%] flex flex-col items-start space-y-1 sm:space-y-1.5 md:space-y-2 lg:space-y-2.5">
 
             {/* Top Badge */}
             {renderSlideBadge(badgeText, isLight)}
@@ -250,7 +252,7 @@ export function Hero({ initialHeroData = null }) {
             {subtitle && (
               <p
                 style={{ color: isLight ? "#475569" : subtitleColor }}
-                className="text-xs sm:text-[13px] leading-relaxed font-normal line-clamp-2 max-w-sm sm:max-w-md lg:max-w-lg m-0"
+                className="text-[10px] sm:text-xs md:text-[13px] leading-tight sm:leading-relaxed font-normal line-clamp-2 max-w-sm sm:max-w-md lg:max-w-lg m-0"
               >
                 {subtitle}
               </p>
@@ -275,7 +277,7 @@ export function Hero({ initialHeroData = null }) {
             )}
 
             {/* Action Buttons: Soft Golden Gradient (#F6DE95 to #EEC471) with #072C50 Text */}
-            <div className="flex flex-wrap items-center gap-2.5 pt-0.5 sm:pt-1">
+            <div className="flex flex-wrap items-center gap-2 pt-0.5 sm:pt-1">
               {primaryBtn?.enabled !== false && primaryBtn?.text && (
                 primaryBtn?.is_modal ? (
                   <button
@@ -285,7 +287,7 @@ export function Hero({ initialHeroData = null }) {
                       background: "linear-gradient(180deg, #F6DE95 0%, #EEC471 100%)",
                       color: "#072C50",
                     }}
-                    className="px-4 py-1.5 sm:px-5 sm:py-2 rounded-md font-bold text-xs sm:text-sm shadow-sm shadow-amber-900/10 hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap border border-[#EEC471]/60"
+                    className="px-3 py-1 sm:px-4 sm:py-1.5 md:px-5 md:py-2 rounded-md font-bold text-[11px] sm:text-xs md:text-sm shadow-xs hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap border border-[#EEC471]/60"
                   >
                     {primaryBtn.text}
                   </button>
@@ -296,7 +298,7 @@ export function Hero({ initialHeroData = null }) {
                       background: "linear-gradient(180deg, #F6DE95 0%, #EEC471 100%)",
                       color: "#072C50",
                     }}
-                    className="px-4 py-1.5 sm:px-5 sm:py-2 rounded-md font-bold text-xs sm:text-sm shadow-sm shadow-amber-900/10 hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap border border-[#EEC471]/60"
+                    className="px-3 py-1 sm:px-4 sm:py-1.5 md:px-5 md:py-2 rounded-md font-bold text-[11px] sm:text-xs md:text-sm shadow-xs hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap border border-[#EEC471]/60"
                   >
                     {primaryBtn.text}
                   </Link>
@@ -308,7 +310,7 @@ export function Hero({ initialHeroData = null }) {
                   <button
                     type="button"
                     onClick={handleSecondaryClick}
-                    className={`hidden sm:inline-block px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-md font-semibold text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap ${isLight
+                    className={`hidden sm:inline-block px-3 py-1 sm:px-3.5 sm:py-1.5 md:px-4 md:py-2 rounded-md font-semibold text-[11px] sm:text-xs md:text-sm transition-all cursor-pointer whitespace-nowrap ${isLight
                       ? "bg-[#072C50]/10 hover:bg-[#072C50]/15 border border-[#072C50]/20 text-[#072C50]"
                       : "bg-white/15 hover:bg-white/20 border border-white/25 text-white backdrop-blur-md"
                       }`}
@@ -318,7 +320,7 @@ export function Hero({ initialHeroData = null }) {
                 ) : (
                   <Link
                     href={secondaryBtn?.url || "/courses"}
-                    className={`hidden sm:inline-block px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-md font-semibold text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap ${isLight
+                    className={`hidden sm:inline-block px-3 py-1 sm:px-3.5 sm:py-1.5 md:px-4 md:py-2 rounded-md font-semibold text-[11px] sm:text-xs md:text-sm transition-all cursor-pointer whitespace-nowrap ${isLight
                       ? "bg-[#072C50]/10 hover:bg-[#072C50]/15 border border-[#072C50]/20 text-[#072C50]"
                       : "bg-white/15 hover:bg-white/20 border border-white/25 text-white backdrop-blur-md"
                       }`}
@@ -338,8 +340,7 @@ export function Hero({ initialHeroData = null }) {
   return (
     <section
       id="hero-section"
-      style={{ aspectRatio: "4/1" }}
-      className="relative w-full overflow-hidden aspect-[4/1] min-h-[160px] sm:min-h-[200px] md:min-h-[240px] lg:min-h-[280px] max-h-[340px] bg-[#072C50]"
+      className="relative w-full overflow-hidden aspect-[1.9/1] sm:aspect-[3.2/1] md:aspect-[3.8/1] lg:aspect-[4/1] min-h-[200px] sm:min-h-[220px] md:min-h-[240px] lg:min-h-[280px] max-h-[340px] bg-[#072C50]"
     >
       <style dangerouslySetInnerHTML={{
         __html: `
@@ -353,6 +354,19 @@ export function Hero({ initialHeroData = null }) {
         .hero-carousel .slick-slide > div {
           height: 100% !important;
           min-height: inherit !important;
+        }
+        .hero-carousel .slick-dots {
+          bottom: 4px !important;
+          z-index: 20 !important;
+        }
+        @media (min-width: 640px) {
+          .hero-carousel .slick-dots {
+            bottom: 8px !important;
+          }
+        }
+        .hero-carousel .slick-dots li button {
+          height: 3px !important;
+          border-radius: 2px !important;
         }
         .hero-carousel:not(.slick-initialized) {
           display: block !important;

@@ -666,6 +666,7 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                         src="/Scholarship Image.webp"
                         alt="Scholarship Banner Background"
                         fill
+                        sizes="(max-width: 768px) 100vw, 1200px"
                         loading="eager"
                         className="object-cover object-center -z-10 transition-transform duration-500"
                       />
