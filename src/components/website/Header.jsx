@@ -273,13 +273,13 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
             return (
               <div
                 key={`megamenu-${menuId}`}
-                className="absolute top-[calc(100%+4px)] left-1/2 -translate-x-1/2 w-[94vw] max-w-5xl xl:max-w-6xl bg-white border border-slate-200/90 rounded-2xl shadow-2xl z-50 p-4 sm:p-5 animate-in fade-in slide-in-from-top-1 duration-200"
+                className="absolute top-[calc(100%+4px)] left-1/2 -translate-x-1/2 w-[94vw] max-w-5xl xl:max-w-6xl bg-white border border-slate-200/90 rounded-2xl shadow-2xl z-50 p-0 overflow-hidden animate-in fade-in slide-in-from-top-1 duration-200"
                 onMouseEnter={() => handleMouseEnter(menuId)}
                 onMouseLeave={handleMouseLeave}
               >
-                <div className="grid grid-cols-12 gap-5 min-h-[340px]">
-                  {/* Left Sidebar Category Tabs */}
-                  <div className="col-span-3 border-r border-slate-100 pr-3.5 space-y-1.5">
+                <div className="flex flex-col">
+                  {/* ── TOP FULL-FLUSH EDGE-TO-EDGE SEGMENTED HEADER TABS (COMPACT HEIGHT) ── */}
+                  <div className="w-full grid grid-flow-col auto-cols-fr bg-slate-50 border-b border-slate-200 divide-x divide-slate-200 rounded-t-2xl overflow-hidden">
                     {megaMenuGroups.map((group, gIdx) => {
                       const isActive = currentCatIdx === gIdx;
                       return (
@@ -288,44 +288,41 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                           type="button"
                           onClick={() => setActiveCategoryIndex((prev) => ({ ...prev, [menuId]: gIdx }))}
                           onMouseEnter={() => setActiveCategoryIndex((prev) => ({ ...prev, [menuId]: gIdx }))}
-                          className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-left text-xs sm:text-[13px] font-bold transition-all cursor-pointer ${
+                          className={`h-9 sm:h-9.5 md:h-10 flex items-center justify-center gap-1.5 px-2.5 sm:px-3 text-xs sm:text-[12.5px] font-bold transition-colors cursor-pointer select-none text-center ${
                             isActive
-                              ? "bg-[#0B3B7E] text-white shadow-none"
-                              : "text-[#072C50] hover:bg-slate-50 hover:text-blue-600"
+                              ? "bg-[#0B3B7E] text-white font-extrabold"
+                              : "text-[#072C50] bg-slate-50 hover:bg-slate-100/90 hover:text-blue-700"
                           }`}
                         >
-                          <div className="flex items-center gap-2">
-                            <span>{group.category?.name}</span>
-                            {group.category?.code && (
-                              <span className="px-1.5 py-0.2 rounded text-[9px] font-black bg-blue-100 text-blue-800">
-                                {group.category.code}
-                              </span>
-                            )}
-                          </div>
-                          {isActive && (
-                            <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
-                            </svg>
+                          <span className="truncate">{group.category?.name}</span>
+                          {group.category?.code && (
+                            <span
+                              className={`px-1.5 py-0.2 rounded text-[8.5px] font-black shrink-0 ${
+                                isActive ? "bg-white/20 text-white" : "bg-blue-100 text-blue-800"
+                              }`}
+                            >
+                              {group.category.code}
+                            </span>
                           )}
                         </button>
                       );
                     })}
                   </div>
 
-                  {/* Right Dynamic Items Grid */}
-                  <div className="col-span-9 pl-1">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-h-[420px] overflow-y-auto pr-1.5 scrollbar-thin [scrollbar-color:#cbd5e1_transparent]">
+                  {/* ── FULL-WIDTH DYNAMIC ITEMS GRID (WITH PADDING INSIDE) ── */}
+                  <div className="w-full p-3.5 sm:p-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 max-h-[390px] overflow-y-auto pr-1.5 scrollbar-thin [scrollbar-color:#cbd5e1_transparent]">
                       {currentItems.map((card, cIdx) => {
                         const logoUrl = card.logo?.url ? card.logo.url : resolveImageUrl(card.logo, null);
 
                         return (
                           <div
                             key={card._id || cIdx}
-                            className="bg-white border border-slate-200 hover:border-[#0B3B7E]/40 hover:shadow-md rounded-xl p-3 shadow-2xs transition-all duration-200 flex flex-col justify-between group"
+                            className="bg-white border border-slate-200 hover:border-[#0B3B7E]/40 hover:shadow-md rounded-xl p-3 shadow-none transition-all duration-200 flex flex-col justify-between group"
                           >
                             {/* Top Card Identity */}
                             <div className="flex items-start gap-2.5 mb-2.5">
-                              <div className="w-9 h-9 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 shadow-2xs overflow-hidden group-hover:scale-105 transition-transform p-1">
+                              <div className="w-9 h-9 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 overflow-hidden group-hover:scale-105 transition-transform p-1">
                                 {logoUrl ? (
                                   <Image
                                     src={logoUrl}
@@ -506,20 +503,20 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                           <button
                             type="button"
                             onClick={() => setMobileExpandedId(isExpanded ? null : menuId)}
-                            className={`w-full flex items-center justify-between p-3.5 font-bold text-sm text-[#072C50] transition-colors cursor-pointer ${
+                            className={`w-full flex items-center justify-between p-4 font-extrabold text-[15px] text-[#072C50] transition-colors cursor-pointer ${
                               isExpanded ? "bg-[#072C50] text-white" : "bg-slate-50/90 hover:bg-slate-100"
                             }`}
                           >
                             <span className="flex items-center gap-2">
                               <span>{item.label}</span>
                               {item.badge && (
-                                <span className="px-1.5 py-0.2 text-[8px] font-black rounded-full bg-amber-400 text-slate-950">
+                                <span className="px-2 py-0.5 text-[9px] font-black rounded-full bg-amber-400 text-slate-950">
                                   {item.badge}
                                 </span>
                               )}
                             </span>
                             <svg
-                              className={`w-4 h-4 transition-transform duration-200 ${
+                              className={`w-4.5 h-4.5 transition-transform duration-200 ${
                                 isExpanded ? "rotate-180 text-white" : "text-slate-500"
                               }`}
                               fill="none"
@@ -531,57 +528,57 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                           </button>
 
                           {isExpanded && (
-                            <div className="p-3 space-y-4 max-h-[60vh] overflow-y-auto divide-y divide-slate-100">
+                            <div className="p-3.5 space-y-4 max-h-[60vh] overflow-y-auto divide-y divide-slate-100">
                               {groups.map((grp, gIdx) => (
-                                <div key={grp.category?._id || gIdx} className="pt-3 first:pt-0 space-y-2">
+                                <div key={grp.category?._id || gIdx} className="pt-3.5 first:pt-0 space-y-2.5">
                                   <div className="flex items-center justify-between px-1">
-                                    <span className="text-xs font-black uppercase text-[#0B3B7E] tracking-wider">
+                                    <span className="text-[13px] font-black uppercase text-[#0B3B7E] tracking-wider">
                                       {grp.category?.name}
                                     </span>
-                                    <span className="text-[10px] font-bold text-slate-400">
+                                    <span className="text-[11px] font-bold text-slate-400">
                                       {grp.items?.length || 0} items
                                     </span>
                                   </div>
 
-                                  <div className="grid grid-cols-2 gap-2">
+                                  <div className="grid grid-cols-2 gap-2.5">
                                     {grp.items?.map((card, cIdx) => {
                                       const logoUrl = card.logo?.url ? card.logo.url : resolveImageUrl(card.logo, null);
 
                                       return (
                                         <div
                                           key={card._id || cIdx}
-                                          className="p-2.5 rounded-xl border border-slate-200/80 bg-white hover:border-[#0B3B7E]/40 flex flex-col justify-between gap-2 shadow-2xs transition-all"
+                                          className="p-2.5 rounded-xl border border-slate-200/90 bg-white hover:border-[#0B3B7E]/40 flex flex-col justify-between gap-2.5 shadow-none transition-all"
                                         >
                                           {/* Card Header (Icon + Name) */}
                                           <div className="flex items-start gap-2">
-                                            <div className="w-7 h-7 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 p-0.5">
+                                            <div className="w-8 h-8 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 p-1">
                                               {logoUrl ? (
                                                 <Image
                                                   src={logoUrl}
                                                   alt={card.name || "Logo"}
-                                                  width={20}
-                                                  height={20}
+                                                  width={24}
+                                                  height={24}
                                                   unoptimized
                                                   className="w-full h-full object-contain"
                                                 />
                                               ) : (
-                                                <span className="text-[10px] font-black text-[#072C50]">
+                                                <span className="text-xs font-black text-[#072C50]">
                                                   {(card.name || "P").charAt(0)}
                                                 </span>
                                               )}
                                             </div>
                                             <div className="min-w-0 flex-1">
-                                              <div className="text-[11px] font-bold text-[#072C50] leading-tight truncate">
+                                              <div className="text-[13px] font-bold text-[#072C50] leading-snug truncate">
                                                 {card.name}
                                               </div>
-                                              <div className="text-[9px] text-slate-500 leading-tight truncate mt-0.5">
+                                              <div className="text-[10.5px] text-slate-500 font-medium leading-snug truncate mt-0.5">
                                                 {card.description || card.location || grp.category?.name}
                                               </div>
                                             </div>
                                           </div>
 
-                                          {/* Card Actions (2 Compact Buttons) */}
-                                          <div className="grid grid-cols-2 gap-1 pt-1.5 border-t border-slate-100">
+                                          {/* Card Actions (2 Clear Action Buttons) */}
+                                          <div className="grid grid-cols-2 gap-1.5 pt-2 border-t border-slate-100">
                                             <button
                                               type="button"
                                               onClick={() => {
@@ -592,7 +589,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                                                 background: "linear-gradient(180deg, #F6DE95 0%, #EEC471 100%)",
                                                 color: "#072C50",
                                               }}
-                                              className="w-full py-1 px-1 rounded-md text-[9.5px] font-bold border border-[#EEC471]/60 text-center cursor-pointer truncate"
+                                              className="w-full py-1.5 px-1 rounded-md text-[11px] font-bold border border-[#EEC471]/60 text-center cursor-pointer truncate shadow-none"
                                             >
                                               Explore
                                             </button>
@@ -606,7 +603,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                                                     : `/universities?course=${encodeURIComponent(card.slug || card.name)}`
                                                 );
                                               }}
-                                              className="w-full py-1 px-1 rounded-md bg-[#072C50] text-white text-[9.5px] font-bold text-center cursor-pointer truncate"
+                                              className="w-full py-1.5 px-1 rounded-md bg-[#072C50] text-white text-[11px] font-bold text-center cursor-pointer truncate shadow-none"
                                             >
                                               {isUniversitiesMenu ? "Courses" : "Unis"}
                                             </button>
@@ -628,7 +625,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                         key={`mob-${menuId}`}
                         href={item.url || "#"}
                         onClick={() => setMobileMenuOpen(false)}
-                        className="block p-3.5 rounded-2xl border border-slate-200 font-bold text-sm text-[#072C50] hover:bg-slate-50 transition-colors"
+                        className="block p-4 rounded-2xl border border-slate-200 font-bold text-[15px] text-[#072C50] hover:bg-slate-50 transition-colors"
                       >
                         {item.label}
                       </Link>

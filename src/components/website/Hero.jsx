@@ -215,7 +215,7 @@ export function Hero({ initialHeroData = null }) {
                 fetchPriority={index === 0 ? "high" : "auto"}
                 unoptimized
                 sizes="100vw"
-                className="object-cover object-[78%_center] md:object-center"
+                className="object-cover object-center"
               />
             </div>
 
@@ -231,7 +231,7 @@ export function Hero({ initialHeroData = null }) {
                   fetchPriority={index === 0 ? "high" : "auto"}
                   unoptimized
                   sizes="100vw"
-                  className="object-cover object-[75%_center] md:object-center"
+                  className="object-cover object-center"
                 />
               </div>
             )}
