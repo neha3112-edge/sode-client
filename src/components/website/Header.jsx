@@ -109,9 +109,11 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                 src={logoUrl}
                 alt={logoAlt}
                 fill
-                sizes="(max-width: 768px) 180px, 240px"
                 priority
+                loading="eager"
                 fetchPriority="high"
+                unoptimized
+                sizes="(max-width: 768px) 180px, 240px"
                 className="object-contain object-left cursor-pointer"
               />
             </div>
@@ -207,16 +209,16 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
           </nav>
 
           {/* 4. MOBILE NAVBAR QUICK ACTIONS & HAMBURGER */}
-          <div className="flex lg:hidden items-center gap-1.5 sm:gap-2">
-            {/* Mobile AI Tools Pill */}
+          <div className="flex lg:hidden items-center gap-2 shrink-0">
+            {/* Mobile AI Tools Pill (Exact Original Floating Badge Style) */}
             <button
               type="button"
               onClick={handleToolClick}
-              className="relative inline-flex items-center gap-1 px-2 py-1 rounded-full bg-sky-50 text-[#0284c7] border border-sky-200 text-[11px] font-bold cursor-pointer shadow-none"
+              className="relative inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-sky-100/80 hover:bg-sky-200/80 text-[#0284c7] hover:text-[#0369a1] border border-sky-200/90 font-bold text-xs transition-all duration-200 cursor-pointer whitespace-nowrap shrink-0 shadow-none"
             >
-              <span className="text-sky-500 font-extrabold text-[10px]">✦</span>
-              <span>AI Tools</span>
-              <span className="px-1 py-0.2 text-[7.5px] font-black uppercase rounded-full bg-amber-400 text-slate-950">
+              <span className="text-sky-500 font-extrabold text-xs leading-none">✦</span>
+              <span className="text-slate-800 font-semibold">{rawMenuItems.find(m => (m.label || "").toLowerCase().includes("ai"))?.label || "AI Tools"}</span>
+              <span className="absolute -top-1.5 -right-1 px-1 py-0.2 text-[8px] font-black uppercase tracking-wider rounded-full bg-linear-to-r from-amber-400 to-amber-500 text-slate-950 border border-white leading-none">
                 NEW
               </span>
             </button>
@@ -229,7 +231,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                   background: "linear-gradient(180deg, #F6DE95 0%, #EEC471 100%)",
                   color: "#072C50",
                 }}
-                className="px-2.5 py-1 rounded-md font-bold text-[11px] border border-[#EEC471]/60 whitespace-nowrap shadow-none"
+                className="px-2.5 py-1 rounded-md font-bold text-xs border border-[#EEC471]/60 whitespace-nowrap shrink-0 shadow-none"
               >
                 {rawFeaturedButtons[0]?.text?.replace(/universities/i, "").trim() || "Compare"}
               </Link>
@@ -322,13 +324,13 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                           >
                             {/* Top Card Identity */}
                             <div className="flex items-start gap-2.5 mb-2.5">
-                              <div className="w-9 h-9 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 overflow-hidden group-hover:scale-105 transition-transform p-1">
+                              <div className="w-9 h-9 flex items-center justify-center shrink-0 overflow-hidden group-hover:scale-105 transition-transform">
                                 {logoUrl ? (
                                   <Image
                                     src={logoUrl}
                                     alt={card.name || "Logo"}
-                                    width={26}
-                                    height={26}
+                                    width={32}
+                                    height={32}
                                     unoptimized
                                     className="w-full h-full object-contain"
                                   />
@@ -551,13 +553,13 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                                         >
                                           {/* Card Header (Icon + Name) */}
                                           <div className="flex items-start gap-2">
-                                            <div className="w-8 h-8 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 p-1">
+                                            <div className="w-8 h-8 flex items-center justify-center shrink-0">
                                               {logoUrl ? (
                                                 <Image
                                                   src={logoUrl}
                                                   alt={card.name || "Logo"}
-                                                  width={24}
-                                                  height={24}
+                                                  width={28}
+                                                  height={28}
                                                   unoptimized
                                                   className="w-full h-full object-contain"
                                                 />

@@ -210,9 +210,9 @@ export function Hero({ initialHeroData = null }) {
                 src={desktopBannerUrl}
                 alt={title || "Hero banner"}
                 fill
-                priority={index === 0}
-                loading={index === 0 ? "eager" : "lazy"}
-                fetchPriority={index === 0 ? "high" : "auto"}
+                priority={true}
+                loading="eager"
+                fetchPriority="high"
                 unoptimized
                 sizes="100vw"
                 className="object-cover object-center"
@@ -226,9 +226,9 @@ export function Hero({ initialHeroData = null }) {
                   src={mobileBannerUrl}
                   alt={title || "Hero mobile banner"}
                   fill
-                  priority={index === 0}
-                  loading={index === 0 ? "eager" : "lazy"}
-                  fetchPriority={index === 0 ? "high" : "auto"}
+                  priority={true}
+                  loading="eager"
+                  fetchPriority="high"
                   unoptimized
                   sizes="100vw"
                   className="object-cover object-center"
