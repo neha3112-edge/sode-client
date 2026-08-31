@@ -34,6 +34,8 @@ export default function RootLayout({ children }) {
       <head>
         <link rel="preconnect" href="https://new.crm.api.mysode.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://new.crm.api.mysode.com" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body className={`${roboto.className} min-h-full flex flex-col`} suppressHydrationWarning>
         <AppProviders>

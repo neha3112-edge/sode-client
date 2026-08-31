@@ -3,6 +3,8 @@ const MINIO_PUBLIC_URL = process.env.NEXT_PUBLIC_MINIO_URL || "https://new.crm.a
 
 const nextConfig = {
   reactStrictMode: true,
+  compress: true,
+  poweredByHeader: false,
   allowedDevOrigins: [
     "192.168.1.63",
     "192.168.1.68",
