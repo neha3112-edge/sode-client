@@ -92,60 +92,107 @@ function PartnerLogoIcon({ partner }) {
   );
 }
 
-const uniCarouselResponsive = [
-  { breakpoint: 1440, settings: { slidesToShow: 8, slidesToScroll: 1 } },
-  { breakpoint: 1280, settings: { slidesToShow: 7, slidesToScroll: 1 } },
-  { breakpoint: 1024, settings: { slidesToShow: 6, slidesToScroll: 1 } },
-  { breakpoint: 768, settings: { slidesToShow: 5, slidesToScroll: 1 } },
-  { breakpoint: 640, settings: { slidesToShow: 4, slidesToScroll: 1 } },
-];
+function formatTwoLineText(text = "") {
+  if (!text) return "";
+  const cleaned = text.trim();
+
+  // Custom smart splits for common education domains & institutions
+  if (/^business\s*&\s*entrepr/i.test(cleaned)) {
+    return (
+      <span className="flex flex-col items-center justify-center leading-tight text-center w-full min-w-0">
+        <span className="block text-center w-full font-semibold truncate">Business &</span>
+        <span className="block text-center w-full font-semibold truncate text-[8.5px] min-[360px]:text-[9px] sm:text-[10px]">Entrepreneurship</span>
+      </span>
+    );
+  }
+  if (/^data science\s*&\s*analytics/i.test(cleaned)) {
+    return (
+      <span className="flex flex-col items-center justify-center leading-tight text-center w-full min-w-0">
+        <span className="block text-center w-full font-semibold truncate">Data Science &</span>
+        <span className="block text-center w-full font-semibold truncate">Analytics</span>
+      </span>
+    );
+  }
+  if (/^ai\s*&\s*machine learning/i.test(cleaned)) {
+    return (
+      <span className="flex flex-col items-center justify-center leading-tight text-center w-full min-w-0">
+        <span className="block text-center w-full font-semibold truncate">AI & Machine</span>
+        <span className="block text-center w-full font-semibold truncate">Learning</span>
+      </span>
+    );
+  }
+  if (/^energy\s*&\s*infrastructure/i.test(cleaned)) {
+    return (
+      <span className="flex flex-col items-center justify-center leading-tight text-center w-full min-w-0">
+        <span className="block text-center w-full font-semibold truncate">Energy &</span>
+        <span className="block text-center w-full font-semibold truncate text-[8.5px] min-[360px]:text-[9px] sm:text-[10px]">Infrastructure</span>
+      </span>
+    );
+  }
+  if (/^logistics\s*&\s*supply chain/i.test(cleaned)) {
+    return (
+      <span className="flex flex-col items-center justify-center leading-tight text-center w-full min-w-0">
+        <span className="block text-center w-full font-semibold truncate">Logistics &</span>
+        <span className="block text-center w-full font-semibold truncate">Supply Chain</span>
+      </span>
+    );
+  }
+  if (/^journalism\s*&\s*mass/i.test(cleaned)) {
+    return (
+      <span className="flex flex-col items-center justify-center leading-tight text-center w-full min-w-0">
+        <span className="block text-center w-full font-semibold truncate">Journalism &</span>
+        <span className="block text-center w-full font-semibold truncate text-[8.5px] min-[360px]:text-[9px] sm:text-[10px]">Mass Comm.</span>
+      </span>
+    );
+  }
+
+  const words = cleaned.split(/\s+/);
+  if (words.length === 1) {
+    return <span className="block text-center w-full leading-tight font-semibold truncate">{cleaned}</span>;
+  }
+
+  if (words.length === 2) {
+    return (
+      <span className="flex flex-col items-center justify-center leading-tight text-center w-full min-w-0">
+        <span className="block text-center w-full font-semibold truncate">{words[0]}</span>
+        <span className="block text-center w-full font-semibold truncate mt-0.5">{words[1]}</span>
+      </span>
+    );
+  }
+
+  const mid = Math.ceil(words.length / 2);
+  const line1 = words.slice(0, mid).join(" ");
+  const line2 = words.slice(mid).join(" ");
+
+  return (
+    <span className="flex flex-col items-center justify-center leading-tight text-center w-full min-w-0">
+      <span className="block text-center w-full font-semibold truncate">{line1}</span>
+      <span className="block text-center w-full font-semibold truncate mt-0.5">{line2}</span>
+    </span>
+  );
+}
 
 // Carousel Component for Universities using Ant Design built-in arrows
 function UniversityCarouselBlock({
   block,
+  slidesToShowCount,
   handleSlidePointerDown,
   handleSlidePointerUp,
   handleSlideClick,
 }) {
-  const isFew = block.children && block.children.length <= 6;
-
-  if (isFew) {
-    return (
-      <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 sm:gap-3 w-full max-w-6xl mx-auto">
-        {block.children.map((child, idx) => (
-          <div key={child._id || idx} className="w-full">
-            <div
-              onClick={(e) => handleSlideClick(e, child)}
-              className="w-full aspect-square bg-white hover:bg-gray-50 border border-gray-200 rounded-xl p-2 sm:p-2.5 flex flex-col items-center justify-center text-center cursor-pointer select-none transition-all duration-200 hover:shadow-xs group min-w-0"
-            >
-              <div className="group-hover:scale-105 transition-transform flex items-center justify-center shrink-0 mb-1">
-                <PartnerLogoIcon partner={child} />
-              </div>
-              <div className="h-6 min-[360px]:h-7 sm:h-8 flex items-center justify-center w-full min-w-0">
-                <span className="line-clamp-2 text-center leading-tight font-medium text-[10px] min-[360px]:text-[11px] sm:text-xs text-gray-700 group-hover:text-blue-500 transition-colors w-full px-0.5">
-                  {child.name}
-                </span>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  }
-
   return (
     <div className="relative max-w-6xl mx-auto min-h-[90px] sm:min-h-[110px]">
       <Carousel
         arrows={true}
+        key={slidesToShowCount}
         autoplay={true}
         autoplaySpeed={4000}
         pauseOnHover={true}
         dots={false}
         draggable={false}
         touchMove={true}
-        slidesToShow={8}
+        slidesToShow={slidesToShowCount}
         slidesToScroll={1}
-        responsive={uniCarouselResponsive}
         className="w-full relative"
       >
         {block.children.map((child, idx) => (
@@ -154,15 +201,15 @@ function UniversityCarouselBlock({
               onPointerDown={handleSlidePointerDown}
               onPointerUp={(e) => handleSlidePointerUp(e, child)}
               onClick={(e) => handleSlideClick(e, child)}
-              className="w-full aspect-square bg-white hover:bg-gray-50 border border-gray-200 rounded-xl sm:rounded-xl p-1 min-[360px]:p-1.5 sm:p-2 flex flex-col items-center justify-center text-center cursor-pointer select-none transition-colors duration-200 group min-w-0"
+              className="w-full aspect-square bg-white hover:bg-slate-50 border border-slate-200/90 rounded-xl sm:rounded-2xl p-1 min-[360px]:p-1.5 sm:p-2 flex flex-col items-center justify-center text-center cursor-pointer select-none transition-all duration-200 hover:shadow hover:-translate-y-0.5 group min-w-0"
             >
-              <div className="group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
+              <div className="mb-0.5 sm:mb-1 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
                 <PartnerLogoIcon partner={child} />
               </div>
               <div className="h-6 min-[360px]:h-7 sm:h-8 flex items-center justify-center w-full min-w-0">
-                <span className="line-clamp-2 text-center leading-tight font-medium text-[9.5px] min-[360px]:text-[10px] sm:text-xs text-gray-700 group-hover:text-blue-500 transition-colors w-full px-0.5">
-                  {child.name}
-                </span>
+                <h5 className="text-[9.5px] min-[360px]:text-[10px] sm:text-[11px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors text-center w-full tracking-tight px-0.5 min-w-0 leading-tight line-clamp-2">
+                  {formatTwoLineText(child.name)}
+                </h5>
               </div>
             </div>
           </div>
@@ -179,19 +226,20 @@ export function Category({ categories = [], universities = [], programs = [] }) 
   const [activeCategory, setActiveCategory] = useState(null);
   const [modalData, setModalData] = useState({ category: null, children: [], universities: [], courses: [] });
   const [visibleCoursesCount, setVisibleCoursesCount] = useState(8);
+  const [slidesToShowCount, setSlidesToShowCount] = useState(4);
 
   const pointerStartRef = useRef({ x: 0, y: 0, time: 0 });
   const hasTriggeredRef = useRef(false);
 
   const handleSlidePointerDown = (e) => {
-    pointerStartRef.current = { x: e.clientX, y: e.clientY, time: e.timeStamp || 0 };
+    pointerStartRef.current = { x: e.clientX, y: e.clientY, time: Date.now() };
     hasTriggeredRef.current = false;
   };
 
   const handleSlidePointerUp = (e, child) => {
     const diffX = Math.abs(e.clientX - pointerStartRef.current.x);
     const diffY = Math.abs(e.clientY - pointerStartRef.current.y);
-    const duration = (e.timeStamp || 0) - pointerStartRef.current.time;
+    const duration = Date.now() - pointerStartRef.current.time;
     if (diffX < 12 && diffY < 12 && duration < 600) {
       hasTriggeredRef.current = true;
       handleCardClick(child);
@@ -208,6 +256,28 @@ export function Category({ categories = [], universities = [], programs = [] }) 
     }, 150);
   };
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (typeof window === "undefined") return;
+      const w = window.innerWidth;
+      if (w < 640) {
+        setSlidesToShowCount(4);
+      } else if (w < 768) {
+        setSlidesToShowCount(5);
+      } else if (w < 1024) {
+        setSlidesToShowCount(6);
+      } else if (w < 1280) {
+        setSlidesToShowCount(8);
+      } else {
+        setSlidesToShowCount(9);
+      }
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const categoriesList = Array.isArray(categories?.result)
     ? categories.result
     : Array.isArray(categories?.categories)
@@ -216,202 +286,112 @@ export function Category({ categories = [], universities = [], programs = [] }) 
         ? categories
         : [];
 
-  // Filter root parent categories (showOnHome === true) - rendered ONLY in top row
-  const rootCategories = (categoriesList || [])
-    .filter((c) => c.showOnHome === true)
-    .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+  // Top Row Categories (showOnHome === true)
+  const rootCategories = Array.isArray(categories?.topCategories) && categories.topCategories.length > 0
+    ? categories.topCategories
+    : categoriesList
+        .filter((c) => c && c.showOnHome === true)
+        .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
 
-  // Extract all courses from rootCategories cat.courses (filtered by showOnWebsite: true)
-  const categoryCoursesList = (rootCategories || []).flatMap((cat) => cat.courses || []);
-  const rawCourses = categoryCoursesList.length > 0
-    ? categoryCoursesList
-    : (programs || []).filter((p) => p.showOnWebsite === true);
+  // Dynamic Section Blocks (Top Courses, Top IITs & IIMs, Domestic, Global, etc.)
+  const parentBlocks = Array.isArray(categories?.sections) && categories.sections.length > 0
+    ? categories.sections
+        .filter((s) => s.items && s.items.length > 0)
+        .map((s) => ({
+          _id: s._id,
+          slug: s.slug,
+          title: s.title,
+          displayOrder: s.displayOrder || 0,
+          featuredType: s.featuredType,
+          isCourseBlock: s.sectionType === "COURSES",
+          children: s.items,
+        }))
+    : categoriesList
+        .filter((c) => c && c.featuredType && c.featuredType !== "NONE")
+        .map((c) => {
+          const children = (c.universities && c.universities.length > 0)
+            ? c.universities
+            : (c.courses && c.courses.length > 0)
+              ? c.courses
+              : (c.children || []);
 
-  const allCategoryCourses = rawCourses.map((crs) => ({
-    _id: crs._id,
-    slug: crs.slug || crs._id,
-    name: crs.name,
-    label: crs.name,
-    itemType: "course",
-    isCourse: true,
-    logo: crs.logo || crs.universityIds?.[0]?.logo,
-  }));
-
-  // Deduplicate course cards by ID / slug
-  const topCourseChildren = [];
-  const seenCourseKeys = new Set();
-  allCategoryCourses.forEach((crs) => {
-    if (!crs || !crs.name) return;
-    const key = String(crs.slug || crs._id || crs.name).toLowerCase();
-    if (!seenCourseKeys.has(key)) {
-      seenCourseKeys.add(key);
-      topCourseChildren.push(crs);
-    }
-  });
-
-  // Derive parent blocks dynamically from backend categories
-  const featuredMap = new Map();
-
-  categoriesList.forEach((c) => {
-    if (!c || !c.featuredType || c.featuredType === "NONE") return;
-
-    const blockKey = String(c._id || c.slug);
-    const blockTitle = c.name || c.title;
-
-    if (!featuredMap.has(blockKey)) {
-      featuredMap.set(blockKey, {
-        _id: c._id,
-        slug: c.slug,
-        title: blockTitle,
-        displayOrder: c.displayOrder || 0,
-        featuredType: c.featuredType,
-        isCourseBlock: Boolean(c.courses && c.courses.length > 0),
-        children: [],
-      });
-    }
-
-    const currentBlock = featuredMap.get(blockKey);
-
-    // Add subcategories attached to this category (from c.children AND parentId filter)
-    const directChildren = Array.isArray(c.children) ? c.children : [];
-    const parentIdChildren = categoriesList.filter((child) => {
-      if (!child || !child.parentId) return false;
-      if (Array.isArray(child.parentId)) {
-        return child.parentId.some((p) => String(p?._id || p?.name || p) === String(c._id) || String(p?._id || p?.name || p) === String(c.name));
-      }
-      return String(child.parentId?._id || child.parentId?.name || child.parentId) === String(c._id);
-    });
-
-    const allChildCats = [...directChildren, ...parentIdChildren];
-
-    allChildCats.forEach((child) => {
-      if (!child) return;
-      const childKey = String(child._id || child.slug || child.name);
-      if (!currentBlock.children.some((ch) => String(ch._id || ch.slug || ch.name) === childKey)) {
-        currentBlock.children.push({
-          ...child,
-          isCategory: true,
-          itemType: "category",
-          logo: child.logo,
-        });
-      }
-    });
-
-    // Add universities attached to this category
-    const catUnis = c.universities || [];
-    catUnis.forEach((u) => {
-      const uKey = String(u._id || u.slug);
-      if (!currentBlock.children.some((child) => String(child._id || child.slug) === uKey)) {
-        currentBlock.children.push({
-          ...u,
-          logo: u.logo,
-        });
-      }
-    });
-
-    // Add courses attached to this category
-    const catCourses = c.courses || [];
-    catCourses.forEach((crs) => {
-      const crsKey = String(crs._id || crs.slug);
-      if (!currentBlock.children.some((child) => String(child._id || child.slug) === crsKey)) {
-        currentBlock.children.push({
-          ...crs,
-          logo: crs.logo || crs.universityIds?.[0]?.logo,
-        });
-      }
-    });
-  });
-
-  const parentBlocks = Array.from(featuredMap.values())
-    .filter((b) => b.children && b.children.length > 0)
-    .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
-
-  const parentCategory = activeCategory?.parent
-    ? activeCategory.parent
-    : activeCategory?.parentId
-      ? categoriesList.find((c) => String(c._id) === String(activeCategory.parentId))
-      : null;
-
-  const deduplicateItems = (items = []) => {
-    const map = new Map();
-    (items || []).forEach((item) => {
-      if (!item) return;
-      const key = String(item._id || item.slug || item.name);
-      if (!map.has(key)) {
-        map.set(key, item);
-      }
-    });
-    return Array.from(map.values());
-  };
+          return {
+            _id: c._id,
+            slug: c.slug,
+            title: c.name || c.title,
+            displayOrder: c.displayOrder || 0,
+            featuredType: c.featuredType,
+            isCourseBlock: Boolean(c.courses && c.courses.length > 0 && (!c.universities || c.universities.length === 0)),
+            children,
+          };
+        })
+        .filter((b) => b.children.length > 0)
+        .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
 
   const getItemSlug = (item) => {
     if (!item) return "";
-    if (item.slug && String(item.slug).trim() && !/^[0-9a-fA-F]{24}$/.test(String(item.slug))) {
-      return String(item.slug).trim();
-    }
-    const idStr = String(item._id || item.id || item);
-    const foundCat = (categoriesList || []).find((c) => String(c._id) === idStr);
-    if (foundCat && foundCat.slug && !/^[0-9a-fA-F]{24}$/.test(String(foundCat.slug))) {
-      return String(foundCat.slug).trim();
-    }
-    const foundUni = (universities || []).find((u) => String(u._id) === idStr);
-    if (foundUni && foundUni.slug && !/^[0-9a-fA-F]{24}$/.test(String(foundUni.slug))) {
-      return String(foundUni.slug).trim();
-    }
-    const foundProg = (programs || []).find((p) => String(p._id) === idStr);
-    if (foundProg && foundProg.slug && !/^[0-9a-fA-F]{24}$/.test(String(foundProg.slug))) {
-      return String(foundProg.slug).trim();
-    }
-
-    const name = item.name || item.title || item.label || foundCat?.name || foundUni?.name || foundProg?.name;
-    if (name) {
-      return String(name)
-        .toLowerCase()
-        .trim()
-        .replace(/[\s_]+/g, "-")
-        .replace(/[^\w-]+/g, "")
-        .replace(/--+/g, "-")
-        .replace(/^-+|-+$/g, "");
-    }
-    return idStr;
+    return item.slug || item._id || "";
   };
 
-  const handleCardClick = (cat) => {
-    if (!cat) return;
-    const catIdStr = String(cat._id || cat.slug);
+  const handleCardClick = (item) => {
+    if (!item) return;
 
-    const rawChildren = (cat.children && cat.children.length > 0)
-      ? cat.children
-      : (categoriesList || []).filter((c) => {
-        const pId = c.parentId;
-        if (!pId) return false;
-        if (Array.isArray(pId)) return pId.some((p) => String(p) === catIdStr || (p?._id && String(p._id) === catIdStr));
-        return String(pId) === catIdStr || (pId?._id && String(pId._id) === catIdStr);
+    // 1. If University Card (from Carousel) is clicked -> Open Modal with its Offered Courses
+    if (item.isUniversity === true || item.itemType === "university") {
+      setModalData({
+        category: item,
+        isUniversity: true,
+        isUniversitiesModal: false,
+        items: item.courses || [],
       });
-
-    const childrenList = deduplicateItems(rawChildren);
-
-    // If no subcategories exist, navigate directly to courses listing page
-    if (childrenList.length === 0) {
-      if (activeCategory) {
-        setActiveCategory(null);
-      }
-      const targetSlug = getItemSlug(cat);
-      if (cat.targetType === "COURSE") {
-        router.push(`/courses?course=${encodeURIComponent(targetSlug)}`);
-      } else if (cat.targetType === "UNIVERSITY") {
-        router.push(`/courses?university=${encodeURIComponent(targetSlug)}`);
-      } else {
-        router.push(`/courses?category=${encodeURIComponent(targetSlug)}`);
-      }
+      setActiveCategory(item);
       return;
     }
 
-    setModalData({
-      category: cat,
-      children: childrenList,
-    });
-    setActiveCategory(cat);
+    // 2. If Category has Sub-Categories (children or items)
+    const subItems = (item.children && item.children.length > 0)
+      ? item.children
+      : (item.items && item.items.length > 0)
+        ? item.items
+        : [];
+
+    if (subItems.length > 0) {
+      setModalData({
+        category: item,
+        isUniversity: false,
+        isUniversitiesModal: item.modalType === "UNIVERSITIES" || (item.universities && item.universities.length > 0),
+        items: subItems,
+      });
+      setActiveCategory(item);
+      return;
+    }
+
+    // 3. If Category has Universities
+    if (Array.isArray(item.universities) && item.universities.length > 0) {
+      setModalData({
+        category: item,
+        isUniversity: false,
+        isUniversitiesModal: true,
+        items: item.universities,
+      });
+      setActiveCategory(item);
+      return;
+    }
+
+    // 4. Fallback Direct Route Navigation
+    if (activeCategory) {
+      setActiveCategory(null);
+    }
+    if (item.targetUrl) {
+      router.push(item.targetUrl);
+    } else {
+      const targetSlug = getItemSlug(item);
+      if (item.itemType === "course" || item.targetType === "COURSE") {
+        router.push(`/courses?course=${encodeURIComponent(targetSlug)}`);
+      } else {
+        router.push(`/courses?category=${encodeURIComponent(targetSlug)}`);
+      }
+    }
   };
 
   const handleCloseModal = () => {
@@ -613,9 +593,20 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                             {/* Icon Circle & Content */}
                             <div className="flex flex-col items-center space-y-3 w-full">
                               <div
-                                className={`w-14 h-14 rounded-full flex items-center justify-center ${iconCircleBg} shadow-2xs group-hover:scale-110 transition-transform`}
+                                className="w-14 h-14 flex items-center justify-center group-hover:scale-110 transition-transform"
                               >
-                                {iconSvg}
+                                {child.logo?.url || (typeof child.logo === "string" && child.logo) ? (
+                                  <Image
+                                    src={child.logo?.url || child.logo}
+                                    alt={child.name || "Tool icon"}
+                                    width={48}
+                                    height={48}
+                                    unoptimized
+                                    className="w-12 h-12 sm:w-13 sm:h-13 object-contain"
+                                  />
+                                ) : (
+                                  iconSvg
+                                )}
                               </div>
 
                               <h3 className="text-base font-bold text-[#0F172A] tracking-tight m-0 pt-0.5">
@@ -813,6 +804,7 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                   ) : (
                     <UniversityCarouselBlock
                       block={block}
+                      slidesToShowCount={slidesToShowCount}
                       handleSlidePointerDown={handleSlidePointerDown}
                       handleSlidePointerUp={handleSlidePointerUp}
                       handleSlideClick={handleSlideClick}
@@ -834,14 +826,13 @@ export function Category({ categories = [], universities = [], programs = [] }) 
         mask={{ closable: false }}
         keyboard={false}
         destroyOnHidden
-        width={650}
+        width={620}
         styles={{
           content: {
             padding: "16px",
             borderRadius: "20px",
-            border: "1px solid #e5e7eb",
-            backgroundColor: "#ffffff",
-            boxShadow: "none",
+            border: "1px solid #e2e8f0",
+            boxShadow: "0 25px 50px -12px rgba(15, 23, 42, 0.25)",
           },
           body: {
             padding: 0,
@@ -849,50 +840,146 @@ export function Category({ categories = [], universities = [], programs = [] }) 
         }}
       >
         {activeCategory && (
-          <div className="relative text-left">
-            {/* Header with Back button and Close (X) */}
-            <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={handleCloseModal}
-                  className="p-1 rounded-full hover:bg-gray-100 text-gray-500 transition-colors"
-                >
-                  <ArrowLeft className="w-5 h-5" />
-                </button>
-                <div className="flex items-center gap-2">
-                  <CategoryIcon cat={activeCategory} />
-                  <h3 className="text-base font-bold text-gray-900 m-0">
-                    {activeCategory.name || activeCategory.label}
+          <div className="flex flex-col text-left min-h-0">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 mb-2.5 shrink-0 gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-10 h-10 flex items-center justify-center shrink-0">
+                  {modalData.isUniversity ? (
+                    <PartnerLogoIcon partner={activeCategory} />
+                  ) : (
+                    <CategoryIcon cat={activeCategory} />
+                  )}
+                </div>
+                <div className="min-w-0">
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 leading-tight tracking-tight truncate m-0">
+                    {activeCategory.label || activeCategory.name}
                   </h3>
+                  <span className="text-xs text-slate-500 block mt-0.5 truncate">
+                    {modalData.isUniversity
+                      ? "Programs & Degrees Offered"
+                      : (activeCategory.title || "Online Programs & Degrees")}
+                  </span>
                 </div>
               </div>
+
               <button
                 type="button"
                 onClick={handleCloseModal}
-                className="p-1 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-900 transition-colors flex items-center justify-center cursor-pointer border-0"
+                aria-label="Close modal"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            {/* Modal Body: Render Child Categories Only */}
-            <div className="py-4 space-y-4 max-h-[70vh] overflow-y-auto">
-              {/* Sub-categories Grid */}
-              {modalData.children && modalData.children.length > 0 && (
-                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                  {modalData.children.map((child) => (
-                    <div
-                      key={child._id || child.slug}
-                      onClick={() => handleCardClick(child)}
-                      className="bg-gray-50 hover:bg-blue-50 border border-gray-100 rounded-xl p-2.5 flex flex-col items-center justify-center text-center cursor-pointer transition-colors group"
-                    >
-                      <CategoryIcon cat={child} />
-                      <span className="text-xs font-medium text-gray-700 group-hover:text-blue-600 mt-1.5 line-clamp-2">
-                        {child.name || child.label}
-                      </span>
+            {/* Modal Body - 3 Cards Mobile / 5 Cards Desktop Grid Layout */}
+            <div className="flex-1 overflow-y-auto max-h-[64vh] overscroll-contain pr-1 space-y-4 scrollbar-thin [scrollbar-color:#cbd5e1_transparent]">
+              {/* 1. Category Sub-categories or Universities Grid */}
+              {!modalData.isUniversity && (
+                <div>
+                  {modalData.items && modalData.items.length > 0 ? (
+                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-3">
+                      {modalData.items.map((it, idx) => (
+                        <div
+                          key={`${it._id || it.slug || idx}-${idx}`}
+                          onClick={() => {
+                            handleCloseModal();
+                            if (it.targetUrl) {
+                              router.push(it.targetUrl);
+                            } else if (modalData.isUniversitiesModal) {
+                              router.push(`/courses?university=${encodeURIComponent(getItemSlug(it))}`);
+                            } else {
+                              router.push(`/courses?category=${encodeURIComponent(getItemSlug(it))}`);
+                            }
+                          }}
+                          className="bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl p-1.5 min-[360px]:p-2 aspect-square flex flex-col items-center justify-between text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group min-w-0 w-full shadow-2xs overflow-hidden"
+                        >
+                          <div className="flex-1 flex items-center justify-center w-full min-h-0 pt-0.5">
+                            <div className="group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
+                              {modalData.isUniversitiesModal ? (
+                                <PartnerLogoIcon partner={it} />
+                              ) : (
+                                <CategoryIcon cat={it} />
+                              )}
+                            </div>
+                          </div>
+                          <div className="h-7 min-[360px]:h-8 sm:h-8.5 flex items-center justify-center w-full min-w-0 px-0.5 pb-0.5 shrink-0">
+                            <h5 className="text-[9.5px] min-[360px]:text-[10px] sm:text-[10.5px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors text-center w-full tracking-tight min-w-0 m-0">
+                              {formatTwoLineText(it.name)}
+                            </h5>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  ) : (
+                    <div className="bg-slate-50 border border-slate-200/80 p-6 rounded-2xl text-center flex flex-col items-center justify-center space-y-2 my-3">
+                      <p className="text-xs sm:text-sm text-slate-600 font-medium">
+                        🎓 Explore courses and specializations in {activeCategory.name}.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          handleCloseModal();
+                          router.push(`/courses?category=${encodeURIComponent(getItemSlug(activeCategory))}`);
+                        }}
+                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+                      >
+                        Explore Category Courses
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* 2. University Offered Courses Grid (When University card was clicked) */}
+              {modalData.isUniversity && (
+                <div>
+                  {modalData.items && modalData.items.length > 0 ? (
+                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-3">
+                      {modalData.items.map((crs, idx) => (
+                        <div
+                          key={`${crs._id || crs.slug || idx}-${idx}`}
+                          onClick={() => {
+                            handleCloseModal();
+                            if (crs.targetUrl) {
+                              router.push(crs.targetUrl);
+                            } else {
+                              router.push(`/courses?university=${encodeURIComponent(getItemSlug(modalData.category))}&course=${encodeURIComponent(getItemSlug(crs))}`);
+                            }
+                          }}
+                          className="bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl p-1.5 min-[360px]:p-2 aspect-square flex flex-col items-center justify-between text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group min-w-0 w-full shadow-2xs overflow-hidden"
+                        >
+                          <div className="flex-1 flex items-center justify-center w-full min-h-0 pt-0.5">
+                            <div className="group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
+                              <CourseIcon course={crs} />
+                            </div>
+                          </div>
+                          <div className="h-7 min-[360px]:h-8 sm:h-8.5 flex items-center justify-center w-full min-w-0 px-0.5 pb-0.5 shrink-0">
+                            <h5 className="text-[9.5px] min-[360px]:text-[10px] sm:text-[10.5px] font-medium text-slate-800 group-hover:text-blue-600 transition-colors text-center w-full tracking-tight min-w-0 m-0 uppercase">
+                              {formatTwoLineText(crs.name)}
+                            </h5>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="bg-slate-50 border border-slate-200/80 p-6 rounded-2xl text-center flex flex-col items-center justify-center space-y-2 my-3">
+                      <p className="text-xs sm:text-sm text-slate-600 font-medium">
+                        🎓 Explore degree programs and courses offered by {modalData.category?.name}.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          handleCloseModal();
+                          router.push(`/courses?university=${encodeURIComponent(getItemSlug(modalData.category))}`);
+                        }}
+                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+                      >
+                        Explore University Courses
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

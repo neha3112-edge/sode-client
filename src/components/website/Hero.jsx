@@ -132,8 +132,8 @@ export function Hero({ initialHeroData = null }) {
     return (
       <div
         className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[11px] sm:text-xs font-semibold tracking-normal border shadow-2xs ${isLight
-            ? "bg-[#996633]/8 text-[#996633] border-[#996633]/30"
-            : "bg-white/10 text-amber-200 border-white/20 backdrop-blur-md"
+          ? "bg-[#996633]/8 text-[#996633] border-[#996633]/30"
+          : "bg-white/10 text-amber-200 border-white/20 backdrop-blur-md"
           }`}
       >
         <span className="text-amber-500 font-bold text-xs leading-none">★</span>
@@ -201,9 +201,9 @@ export function Hero({ initialHeroData = null }) {
         style={{ backgroundColor: bgColor, aspectRatio: "4/1" }}
         className="relative w-full overflow-hidden aspect-[4/1] min-h-[160px] sm:min-h-[200px] md:min-h-[240px] lg:min-h-[280px] max-h-[340px] flex items-center select-none"
       >
-        {/* 1. 100% FULL-WIDTH BACKGROUND IMAGE (NO WHITE BORDER / ZERO CROPPING AT 4:1 RATIO) */}
+        {/* 1. 100% FULL-WIDTH BACKGROUND IMAGE (SEAMLESS FULL-BLEED ZERO WHITE EDGE) */}
         {desktopBannerUrl && (
-          <div className="absolute inset-0 w-full h-full pointer-events-none select-none overflow-hidden">
+          <div className="absolute -inset-1 w-[calc(100%+8px)] h-[calc(100%+8px)] pointer-events-none select-none overflow-hidden">
             {/* Desktop Background Banner Image */}
             <div className={`relative w-full h-full ${mobileBannerUrl && mobileBannerUrl !== desktopBannerUrl ? "hidden md:block" : "block"}`}>
               <Image
@@ -264,8 +264,8 @@ export function Hero({ initialHeroData = null }) {
                     key={item._id || tIdx}
                     href={item.url || "#"}
                     className={`px-2 py-0.5 rounded text-[10px] sm:text-xs font-medium transition-all shadow-2xs ${isLight
-                        ? "bg-white/90 text-[#072C50] border border-[#EEC471]/40 hover:border-[#EEC471] hover:bg-amber-50"
-                        : "bg-white/10 text-white border border-white/20 hover:bg-white/20 backdrop-blur-md"
+                      ? "bg-white/90 text-[#072C50] border border-[#EEC471]/40 hover:border-[#EEC471] hover:bg-amber-50"
+                      : "bg-white/10 text-white border border-white/20 hover:bg-white/20 backdrop-blur-md"
                       }`}
                   >
                     {item.name}
@@ -309,8 +309,8 @@ export function Hero({ initialHeroData = null }) {
                     type="button"
                     onClick={handleSecondaryClick}
                     className={`hidden sm:inline-block px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-md font-semibold text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap ${isLight
-                        ? "bg-[#072C50]/10 hover:bg-[#072C50]/15 border border-[#072C50]/20 text-[#072C50]"
-                        : "bg-white/15 hover:bg-white/20 border border-white/25 text-white backdrop-blur-md"
+                      ? "bg-[#072C50]/10 hover:bg-[#072C50]/15 border border-[#072C50]/20 text-[#072C50]"
+                      : "bg-white/15 hover:bg-white/20 border border-white/25 text-white backdrop-blur-md"
                       }`}
                   >
                     {secondaryBtn.text}
@@ -319,8 +319,8 @@ export function Hero({ initialHeroData = null }) {
                   <Link
                     href={secondaryBtn?.url || "/courses"}
                     className={`hidden sm:inline-block px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-md font-semibold text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap ${isLight
-                        ? "bg-[#072C50]/10 hover:bg-[#072C50]/15 border border-[#072C50]/20 text-[#072C50]"
-                        : "bg-white/15 hover:bg-white/20 border border-white/25 text-white backdrop-blur-md"
+                      ? "bg-[#072C50]/10 hover:bg-[#072C50]/15 border border-[#072C50]/20 text-[#072C50]"
+                      : "bg-white/15 hover:bg-white/20 border border-white/25 text-white backdrop-blur-md"
                       }`}
                   >
                     {secondaryBtn.text}
@@ -341,7 +341,8 @@ export function Hero({ initialHeroData = null }) {
       style={{ aspectRatio: "4/1" }}
       className="relative w-full overflow-hidden aspect-[4/1] min-h-[160px] sm:min-h-[200px] md:min-h-[240px] lg:min-h-[280px] max-h-[340px] bg-[#072C50]"
     >
-      <style dangerouslySetInnerHTML={{ __html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         #hero-section {
           contain: layout paint;
         }
