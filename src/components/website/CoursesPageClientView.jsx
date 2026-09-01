@@ -360,7 +360,7 @@ function CoursesContent({
         const n = String(item.name || item.title || item.label || "").trim().toLowerCase();
         return s === targetStr || v === targetStr || n === targetStr;
       });
-      return found?._id || found?.id || (found?.value && /^[0-9a-fA-F]{24}$/.test(found.value) ? found.value : "");
+      return found?._id || found?.id || (found?.value && /^[0-9a-fA-F]{24}$/.test(found.value) ? found.value : val);
     };
 
     const allFlatCategories = [
@@ -403,7 +403,7 @@ function CoursesContent({
         fee: resolvedFee,
         search: appliedSearchTerm,
       },
-      revalidate: 300,
+      revalidate: 0,
     })
       .then((res) => {
         if (!isMounted) return;
@@ -479,20 +479,28 @@ function CoursesContent({
 
         const providerName = partner?.name || "upGrad";
 
-        let durationText = "8 Months";
-        if (duration.months) {
-          durationText = `${duration.months} Months`;
-        } else if (duration.name) {
+        let durationText = null;
+        if (typeof duration === "string" && duration.trim()) {
+          durationText = duration;
+        } else if (duration?.name) {
           durationText = duration.name;
+        } else if (duration?.months) {
+          durationText = `${duration.months} Months`;
+        } else if (item.duration) {
+          durationText = typeof item.duration === "string" ? item.duration : (item.duration.name || (item.duration.months ? `${item.duration.months} Months` : null));
         } else if (item.durationMonths) {
           durationText = `${item.durationMonths} Months`;
         }
 
-        let feeText = "₹ 1,20,000 INR";
-        if (fees.amount) {
+        let feeText = null;
+        if (fees?.amount) {
           feeText = `₹ ${Number(fees.amount).toLocaleString("en-IN")} INR`;
-        } else if (fees.name) {
-          feeText = fees.name.includes("₹") ? fees.name : `₹ ${fees.name} INR`;
+        } else if (fees?.name) {
+          feeText = fees.name.includes("₹") ? `${fees.name} INR` : `₹ ${fees.name} INR`;
+        } else if (item.fullFee) {
+          feeText = item.fullFee.includes("₹") ? `${item.fullFee} INR` : `₹ ${item.fullFee} INR`;
+        } else if (item.amount) {
+          feeText = `₹ ${Number(item.amount).toLocaleString("en-IN")} INR`;
         }
 
         const slugify = (text) =>
@@ -778,8 +786,8 @@ function CoursesContent({
                 const cardTitle = item.cardTitle || item.title || "Course Program";
                 const logoUrl = item.logoUrl;
                 const providerName = item.providerName || "upGrad";
-                const durationText = item.durationText || "8 Months";
-                const feeText = item.feeText || "₹ 1,20,000 INR";
+                const durationText = item.durationText || null;
+                const feeText = item.feeText || null;
                 const courseDetailHref = item.courseDetailHref || `/courses`;
 
                 return (
@@ -841,16 +849,22 @@ function CoursesContent({
                         </Link>
 
                         {/* Fee & Duration Row */}
-                        <div className="flex items-center gap-5 text-xs font-semibold text-gray-700">
-                          <div className="flex items-center gap-1.5 text-gray-800">
-                            <span className="text-gray-700 font-bold">₹</span>
-                            <span>{feeText.replace(/^₹\s*/, "")}</span>
+                        {(feeText || durationText) && (
+                          <div className="flex items-center gap-5 text-xs font-semibold text-gray-700">
+                            {feeText && (
+                              <div className="flex items-center gap-1.5 text-gray-800">
+                                <span className="text-gray-700 font-bold">₹</span>
+                                <span>{feeText.replace(/^₹\s*/, "")}</span>
+                              </div>
+                            )}
+                            {durationText && (
+                              <div className="flex items-center gap-1.5 text-gray-600">
+                                <Clock className="w-3.5 h-3.5 text-gray-500" />
+                                <span>{durationText}</span>
+                              </div>
+                            )}
                           </div>
-                          <div className="flex items-center gap-1.5 text-gray-600">
-                            <Clock className="w-3.5 h-3.5 text-gray-500" />
-                            <span>{durationText}</span>
-                          </div>
-                        </div>
+                        )}
 
                         {/* Actions Row: Specializations | Know More | Apply Now | + Add to Compare */}
                         <div className="flex items-center gap-2.5 pt-0.5">
@@ -966,16 +980,22 @@ function CoursesContent({
                       </Link>
 
                       {/* Fee & Duration */}
-                      <div className="flex items-center gap-4 text-xs font-semibold text-gray-700">
-                        <div className="flex items-center gap-1 text-gray-800">
-                          <span>₹</span>
-                          <span>{feeText.replace(/^₹\s*/, "")}</span>
+                      {(feeText || durationText) && (
+                        <div className="flex items-center gap-4 text-xs font-semibold text-gray-700">
+                          {feeText && (
+                            <div className="flex items-center gap-1 text-gray-800">
+                              <span>₹</span>
+                              <span>{feeText.replace(/^₹\s*/, "")}</span>
+                            </div>
+                          )}
+                          {durationText && (
+                            <div className="flex items-center gap-1 text-gray-600">
+                              <Clock className="w-3 h-3 text-gray-500" />
+                              <span>{durationText}</span>
+                            </div>
+                          )}
                         </div>
-                        <div className="flex items-center gap-1 text-gray-600">
-                          <Clock className="w-3 h-3 text-gray-500" />
-                          <span>{durationText}</span>
-                        </div>
-                      </div>
+                      )}
 
                       {/* Mobile Action Buttons - Single Row */}
                       <div className="pt-2.5 border-t border-gray-200 flex items-center gap-1.5 overflow-x-auto no-scrollbar">

@@ -171,8 +171,9 @@ export function Courses({
                 (typeof item.logo === "object" ? item.logo?.url : item.logo);
 
               const durationTitle =
-                offering?.duration?.title ||
-                (typeof item.duration === "object" ? item.duration?.title : item.duration) ||
+                (item.duration ? (typeof item.duration === "string" ? item.duration : (item.duration.name || `${item.duration.months} Months`)) : null) ||
+                (item.durationMonths ? `${item.durationMonths} Months` : null) ||
+                (typeof item.duration === "object" ? item.duration?.title : null) ||
                 "Flexible Duration";
 
               const eligibilityTitle =
@@ -181,9 +182,13 @@ export function Courses({
                 "Graduation / Bachelor's Degree";
 
               const feeTitle =
+                (item.fees?.name ? (item.fees.name.includes("₹") ? item.fees.name : `₹${item.fees.name}`) : null) ||
+                (item.fees?.amount ? `₹${Number(item.fees.amount).toLocaleString("en-IN")}` : null) ||
+                (item.fullFee ? (item.fullFee.includes("₹") ? item.fullFee : `₹${item.fullFee}`) : null) ||
+                (item.amount ? `₹${Number(item.amount).toLocaleString("en-IN")}` : null) ||
                 offering?.fee?.title ||
                 (offering?.fee?.amount ? `₹${Number(offering.fee.amount).toLocaleString("en-IN")}` : null) ||
-                (typeof item.fee === "object" ? item.fee?.title || (item.fee?.amount ? `₹${Number(item.fee.amount).toLocaleString("en-IN")}` : null) : item.fee);
+                (typeof item.fee === "object" ? item.fee?.title || (item.fee?.amount ? `₹${Number(item.fee.amount).toLocaleString("en-IN")}` : null) : (typeof item.fee === "string" ? item.fee : null));
 
               const cardTitle = item.title;
 

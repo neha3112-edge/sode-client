@@ -85,7 +85,7 @@ function processArticleContent(rawHtml, bannerUrl, relatedEntities = []) {
           const approvals = Array.isArray(uni.approvals)
             ? uni.approvals.map((a) => a.name || a.code || a).join(", ")
             : "UGC-DEB, AICTE";
-          const feeRange = uni.feesDisplay || uni.feeStructure || "₹1,20,000 - ₹2,50,000";
+          const feeRange = uni.feesDisplay || uni.feeStructure || (uni.offerings?.[0]?.fullFee ? `Starting from ₹${uni.offerings[0].fullFee}` : "Contact for Fee");
 
           return `
             <tr class="hover:bg-blue-50/40 border-b border-slate-100 transition-colors">

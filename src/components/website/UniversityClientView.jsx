@@ -740,11 +740,17 @@ export default function UniversityClientView({ initialData = null, slug = "" }) 
                       off.courseId?.image?.url ||
                       off.courseId?.image ||
                       heroBannerUrl;
-                    const durationStr = getSafeText(off.duration, "12 - 24 Months");
-                    const feeVal = off.fees?.fullFee || off.fees?.semesterFee;
-                    const feeStr = feeVal
-                      ? `₹${Number(feeVal).toLocaleString("en-IN")}`
-                      : "Flexible EMI Available";
+                    const durationStr = getSafeText(
+                      off.duration || (off.durationMonths ? `${off.durationMonths} Months` : null),
+                      "Flexible Duration"
+                    );
+                    const feeStr =
+                      (off.fees?.name ? (off.fees.name.includes("₹") ? off.fees.name : `₹${off.fees.name}`) : null) ||
+                      (off.fees?.amount ? `₹${Number(off.fees.amount).toLocaleString("en-IN")}` : null) ||
+                      (off.fullFee ? (off.fullFee.includes("₹") ? off.fullFee : `₹${off.fullFee}`) : null) ||
+                      (off.amount ? `₹${Number(off.amount).toLocaleString("en-IN")}` : null) ||
+                      (off.fees?.fullFee ? `₹${Number(off.fees.fullFee).toLocaleString("en-IN")}` : null) ||
+                      "Contact for Fee Structure";
                     const targetCourseSlug = getSafeText(off.slug, "");
 
                     return (

@@ -2,7 +2,8 @@ import React, { Suspense } from "react";
 import { request } from "@/services/request";
 import CoursesPageClientView from "@/components/website/CoursesPageClientView";
 
-export const revalidate = 900;
+export const revalidate = 0;
+export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Online Degree & Executive Courses | SODE",
@@ -21,28 +22,41 @@ export const metadata = {
   },
 };
 
-export default async function CoursesPage() {
+export default async function CoursesPage({ searchParams }) {
+  const resolvedSearchParams = searchParams ? await searchParams : {};
   let initialCategories = [];
   let initialUniversities = [];
   let initialCoursesData = { programs: [], total: 0, totalPages: 1, page: 1 };
+
+  const queryOptions = {
+    page: resolvedSearchParams.page || 1,
+    items: 10,
+    category: resolvedSearchParams.category || undefined,
+    subcategory: resolvedSearchParams.subcategory || resolvedSearchParams.subCategory || resolvedSearchParams.subcourse || undefined,
+    course: resolvedSearchParams.course || resolvedSearchParams.courseId || undefined,
+    university: resolvedSearchParams.university || resolvedSearchParams.universityId || undefined,
+    duration: resolvedSearchParams.duration || undefined,
+    fee: resolvedSearchParams.fee || undefined,
+    search: resolvedSearchParams.search || resolvedSearchParams.q || undefined,
+  };
 
   try {
     const [catRes, unisRes, coursesRes] = await Promise.all([
       request.dynamicList({
         entity: "category",
         endPoint: "v1/list",
-        revalidate: 900,
+        revalidate: 0,
       }),
       request.dynamicOptions({
         entity: "universities",
         endPoint: "v1/options",
-        revalidate: 900,
+        revalidate: 0,
       }),
       request.dynamicList({
         entity: "university-offerings",
         endPoint: "v1/list",
-        options: { page: 1, items: 10 },
-        revalidate: 900,
+        options: queryOptions,
+        revalidate: 0,
       }),
     ]);
 
