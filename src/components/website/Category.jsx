@@ -6,10 +6,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { getAssetPath } from "@/lib/utils";
-import { ArrowLeft, X, Search, GraduationCap, Building2, Sparkles, ArrowRight } from "lucide-react";
+import { ArrowLeft, X, Search, GraduationCap, Building2, Sparkles, ArrowRight, TrendingUp, Loader2, MapPin, Wallet, Clock } from "lucide-react";
 import { Carousel, Modal } from "antd";
 import { useToolWizard } from "@/components/tool/ToolWizardContext";
 import { useFormModal } from "@/hooks/useFormModal";
+import { API_BASE_URL } from "@/config";
 
 // Category Icon Component - Renders MinIO Media Asset image/SVG from backend using Next.js Image
 function CategoryIcon({ cat }) {
@@ -172,36 +173,109 @@ function formatTwoLineText(text = "") {
   );
 }
 
-// 🔍 Hero Floating Search Bar Component with Instant Autocomplete
+// 🔍 Hero Floating Universal Search Bar Component with Instant Autocomplete
 function HeroSearchBar({ allCourses = [], allUniversities = [], allCategories = [] }) {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [isFocused, setIsFocused] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [searchResults, setSearchResults] = useState({
+    courses: [],
+    universities: [],
+    specializations: [],
+  });
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+
   const searchContainerRef = useRef(null);
+  const cacheRef = useRef(new Map());
+  const debounceTimerRef = useRef(null);
 
-  const trimmed = searchTerm.trim().toLowerCase();
+  const trimmed = searchTerm.trim();
 
-  // Filter matching suggestions
-  const matchingCourses = (allCourses || [])
-    .filter((c) => c && c.name && c.name.toLowerCase().includes(trimmed))
-    .slice(0, 4);
+  // Debounced API Search
+  useEffect(() => {
+    if (!trimmed) {
+      setLoading(false);
+      setSearchResults({ courses: [], universities: [], specializations: [] });
+      return;
+    }
 
-  const matchingUnis = (allUniversities || [])
-    .filter((u) => u && u.name && u.name.toLowerCase().includes(trimmed))
-    .slice(0, 4);
+    const lowerQ = trimmed.toLowerCase();
+    if (cacheRef.current.has(lowerQ)) {
+      setSearchResults((prev) => ({ ...prev, ...cacheRef.current.get(lowerQ) }));
+      setLoading(false);
+      return;
+    }
 
-  const matchingSubcategories = (allCategories || [])
-    .flatMap((c) => c.children || [])
-    .filter((sc) => sc && sc.name && sc.name.toLowerCase().includes(trimmed))
-    .slice(0, 4);
+    setLoading(true);
+    if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
 
-  const totalMatches = matchingCourses.length + matchingUnis.length + matchingSubcategories.length;
+    debounceTimerRef.current = setTimeout(async () => {
+      try {
+        const base = API_BASE_URL.replace(/\/+$/, "");
+        const res = await fetch(`${base}/university-offerings/v1/search?q=${encodeURIComponent(trimmed)}&limit=6`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.result) {
+            const data = {
+              courses: json.result.courses || [],
+              universities: json.result.universities || [],
+              specializations: json.result.specializations || [],
+            };
+            cacheRef.current.set(lowerQ, data);
+            setSearchResults((prev) => ({ ...prev, ...data }));
+          }
+        }
+      } catch (err) {
+        // Fallback gracefully
+      } finally {
+        setLoading(false);
+      }
+    }, 200);
+
+    return () => {
+      if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+    };
+  }, [trimmed]);
+
+  // Flattened actionable list for keyboard navigation
+  const flatItems = useMemo(() => {
+    if (!trimmed) return [];
+    return [
+      ...(searchResults.courses || []).map((i) => ({ ...i, itemType: "course" })),
+      ...(searchResults.universities || []).map((i) => ({ ...i, itemType: "university" })),
+      ...(searchResults.specializations || []).map((i) => ({ ...i, itemType: "specialization" })),
+    ];
+  }, [trimmed, searchResults]);
+
+  const totalMatches = flatItems.length;
 
   const handleSearchSubmit = (e) => {
     if (e) e.preventDefault();
+    if (selectedIndex >= 0 && flatItems[selectedIndex]) {
+      const item = flatItems[selectedIndex];
+      setIsFocused(false);
+      router.push(item.href || `/courses?search=${encodeURIComponent(trimmed)}`);
+      return;
+    }
     if (!trimmed) return;
     setIsFocused(false);
     router.push(`/courses?search=${encodeURIComponent(trimmed)}`);
+  };
+
+  const handleKeyDown = (e) => {
+    if (!isFocused || totalMatches === 0) return;
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setSelectedIndex((prev) => (prev < totalMatches - 1 ? prev + 1 : 0));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setSelectedIndex((prev) => (prev > 0 ? prev - 1 : totalMatches - 1));
+    } else if (e.key === "Escape") {
+      setIsFocused(false);
+      setSelectedIndex(-1);
+    }
   };
 
   // Close dropdown on click outside
@@ -209,6 +283,7 @@ function HeroSearchBar({ allCourses = [], allUniversities = [], allCategories = 
     const handleClickOutside = (event) => {
       if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
         setIsFocused(false);
+        setSelectedIndex(-1);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -222,21 +297,29 @@ function HeroSearchBar({ allCourses = [], allUniversities = [], allCategories = 
           {/* Main Search Input Box */}
           <form
             onSubmit={handleSearchSubmit}
-            className={`relative flex items-center bg-white rounded-full border overflow-hidden transition-colors duration-200 h-10 sm:h-11 ${
+            className={`relative flex items-center bg-white rounded-full border overflow-hidden transition-all duration-200 h-10 sm:h-11 shadow-xs ${
               isFocused
-                ? "border-[#0B3B7E]"
+                ? "border-[#0B3B7E] ring-2 ring-[#0B3B7E]/10"
                 : "border-slate-300 hover:border-slate-400"
             }`}
           >
             <div className="pl-3.5 sm:pl-4 text-slate-400 flex items-center justify-center shrink-0">
-              <Search className="w-4 h-4 text-[#0B3B7E]" />
+              {loading ? (
+                <Loader2 className="w-4 h-4 text-[#0B3B7E] animate-spin" />
+              ) : (
+                <Search className="w-4 h-4 text-[#0B3B7E]" />
+              )}
             </div>
 
             <input
               type="text"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setSelectedIndex(-1);
+              }}
               onFocus={() => setIsFocused(true)}
+              onKeyDown={handleKeyDown}
               placeholder="Search 100+ Courses, Universities or Specializations..."
               className="w-full py-2 px-2.5 text-xs sm:text-[13px] text-slate-800 placeholder:text-slate-400 bg-transparent border-0 outline-none font-medium"
             />
@@ -244,7 +327,10 @@ function HeroSearchBar({ allCourses = [], allUniversities = [], allCategories = 
             {searchTerm && (
               <button
                 type="button"
-                onClick={() => setSearchTerm("")}
+                onClick={() => {
+                  setSearchTerm("");
+                  setSelectedIndex(-1);
+                }}
                 className="p-1 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 mr-2 transition-colors cursor-pointer border-0 bg-transparent"
               >
                 <X className="w-3.5 h-3.5" />
@@ -261,97 +347,169 @@ function HeroSearchBar({ allCourses = [], allUniversities = [], allCategories = 
           </form>
 
           {/* Autocomplete Results Dropdown */}
-          {isFocused && trimmed.length > 1 && (
-            <div className="absolute left-0 right-0 w-full mt-2 bg-white rounded-2xl border border-slate-200 shadow-xl z-50 overflow-hidden divide-y divide-slate-100 max-h-[380px] overflow-y-auto">
-              {totalMatches > 0 ? (
+          {isFocused && trimmed.length > 0 && (
+            <div className="absolute left-0 right-0 w-full mt-2 bg-white rounded-2xl border border-slate-200 shadow-xl z-50 overflow-hidden divide-y divide-slate-100 max-h-[420px] overflow-y-auto animate-in fade-in slide-in-from-top-1 duration-150">
+              {totalMatches > 0 && (
                 <>
-                  {matchingCourses.length > 0 && (
-                    <div className="p-3">
+                  {/* 🎓 Courses & Degrees */}
+                  {searchResults.courses?.length > 0 && (
+                    <div className="p-2.5 sm:p-3">
                       <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2 block mb-1.5">
                         🎓 Courses & Degrees
                       </span>
                       <div className="space-y-1">
-                        {matchingCourses.map((c) => (
+                        {searchResults.courses.map((c) => (
                           <div
                             key={c._id || c.slug}
                             onClick={() => {
                               setIsFocused(false);
-                              router.push(`/courses?course=${encodeURIComponent(c.slug || c.name.toLowerCase())}`);
+                              router.push(c.href);
                             }}
                             className="flex items-center justify-between p-2 rounded-xl hover:bg-blue-50/80 cursor-pointer transition-colors group"
                           >
-                            <div className="flex items-center gap-2.5">
-                              <GraduationCap className="w-4 h-4 text-blue-600 shrink-0" />
-                              <span className="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-blue-600">
-                                {c.name}
-                              </span>
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 font-bold flex items-center justify-center shrink-0 border border-blue-100/60 p-1 relative overflow-hidden">
+                                {c.logo ? (
+                                  <Image
+                                    src={getAssetPath(c.logo, null)}
+                                    alt={c.name}
+                                    fill
+                                    sizes="32px"
+                                    className="object-contain p-0.5"
+                                  />
+                                ) : (
+                                  <GraduationCap className="w-4 h-4 text-blue-600" />
+                                )}
+                              </div>
+                              <div className="min-w-0">
+                                <span className="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-blue-600 block truncate">
+                                  {c.name}
+                                </span>
+                                <div className="flex items-center gap-2 text-[10.5px] text-slate-500 mt-0.5">
+                                  {c.universitiesCount > 0 && (
+                                    <span>{c.universitiesCount} Universities</span>
+                                  )}
+                                  {c.startingFee && (
+                                    <span className="text-emerald-700 font-medium">Starts {c.startingFee}</span>
+                                  )}
+                                  {c.duration && <span>• {c.duration}</span>}
+                                </div>
+                              </div>
                             </div>
-                            <span className="text-[11px] text-blue-600 font-medium">Explore &rarr;</span>
+                            <span className="text-[11px] text-blue-600 font-medium shrink-0 ml-2">Explore &rarr;</span>
                           </div>
                         ))}
                       </div>
                     </div>
                   )}
 
-                  {matchingUnis.length > 0 && (
-                    <div className="p-3">
+                  {/* 🏛️ Universities */}
+                  {searchResults.universities?.length > 0 && (
+                    <div className="p-2.5 sm:p-3">
                       <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2 block mb-1.5">
                         🏛️ Universities
                       </span>
                       <div className="space-y-1">
-                        {matchingUnis.map((u) => (
+                        {searchResults.universities.map((u) => (
                           <div
                             key={u._id || u.slug}
                             onClick={() => {
                               setIsFocused(false);
-                              router.push(`/courses?university=${encodeURIComponent(u.slug || u.name.toLowerCase().replace(/\s+/g, '-'))}`);
+                              router.push(u.href);
                             }}
-                            className="flex items-center justify-between p-2 rounded-xl hover:bg-blue-50/80 cursor-pointer transition-colors group"
+                            className="flex items-center justify-between p-2 rounded-xl hover:bg-emerald-50/80 cursor-pointer transition-colors group"
                           >
-                            <div className="flex items-center gap-2.5">
-                              <Building2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                              <span className="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-emerald-700">
-                                {u.name}
-                              </span>
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <div className="w-8 h-8 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center shrink-0 relative overflow-hidden p-0.5">
+                                {u.logo ? (
+                                  <Image
+                                    src={getAssetPath(u.logo, null)}
+                                    alt={u.name}
+                                    fill
+                                    sizes="32px"
+                                    className="object-contain p-0.5"
+                                  />
+                                ) : (
+                                  <Building2 className="w-4 h-4 text-emerald-600" />
+                                )}
+                              </div>
+                              <div className="min-w-0">
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                  <span className="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-emerald-700 truncate">
+                                    {u.name}
+                                  </span>
+                                  {u.naacGrade && (
+                                    <span className="text-[9.5px] font-bold bg-amber-50 border border-amber-200 text-amber-800 px-1.5 py-0.2 rounded">
+                                      NAAC {u.naacGrade}
+                                    </span>
+                                  )}
+                                  {u.viaPartner && (
+                                    <span className="text-[9.5px] font-medium bg-[#FFF0F3] border border-[#FFE4E6] text-[#E52E2E] px-1.5 py-0.2 rounded">
+                                      Via {u.viaPartner}
+                                    </span>
+                                  )}
+                                </div>
+                                {(u.city || u.state) && (
+                                  <span className="text-[10.5px] text-slate-500 block truncate mt-0.5">
+                                    {[u.city, u.state].filter(Boolean).join(", ")}
+                                  </span>
+                                )}
+                              </div>
                             </div>
-                            <span className="text-[11px] text-emerald-600 font-medium">View Programs &rarr;</span>
+                            <span className="text-[11px] text-emerald-600 font-medium shrink-0 ml-2">View Programs &rarr;</span>
                           </div>
                         ))}
                       </div>
                     </div>
                   )}
 
-                  {matchingSubcategories.length > 0 && (
-                    <div className="p-3">
+                  {/* 🏷️ Specializations */}
+                  {searchResults.specializations?.length > 0 && (
+                    <div className="p-2.5 sm:p-3">
                       <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2 block mb-1.5">
                         🏷️ Specializations
                       </span>
                       <div className="space-y-1">
-                        {matchingSubcategories.map((sc) => (
+                        {searchResults.specializations.map((sc) => (
                           <div
                             key={sc._id || sc.slug}
                             onClick={() => {
                               setIsFocused(false);
-                              router.push(`/courses?subcategory=${encodeURIComponent(sc.slug || sc.name.toLowerCase().replace(/\s+/g, '-'))}`);
+                              router.push(sc.href);
                             }}
-                            className="flex items-center justify-between p-2 rounded-xl hover:bg-blue-50/80 cursor-pointer transition-colors group"
+                            className="flex items-center justify-between p-2 rounded-xl hover:bg-purple-50/80 cursor-pointer transition-colors group"
                           >
-                            <div className="flex items-center gap-2.5">
-                              <Sparkles className="w-4 h-4 text-purple-600 shrink-0" />
-                              <span className="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-purple-700">
-                                {sc.name}
-                              </span>
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 font-bold flex items-center justify-center shrink-0 border border-purple-100">
+                                <Sparkles className="w-4 h-4 text-purple-600" />
+                              </div>
+                              <div className="min-w-0">
+                                <span className="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-purple-700 block truncate">
+                                  {sc.name}
+                                </span>
+                                <div className="flex items-center gap-2 text-[10.5px] text-slate-500 mt-0.5">
+                                  {sc.courseName && (
+                                    <span className="font-medium text-slate-600">{sc.courseName}</span>
+                                  )}
+                                  {sc.startingFee && (
+                                    <span className="text-emerald-700 font-medium">• Starts {sc.startingFee}</span>
+                                  )}
+                                </div>
+                              </div>
                             </div>
-                            <span className="text-[11px] text-purple-600 font-medium">Explore &rarr;</span>
+                            <span className="text-[11px] text-purple-600 font-medium shrink-0 ml-2">Explore &rarr;</span>
                           </div>
                         ))}
                       </div>
                     </div>
                   )}
                 </>
-              ) : (
+              )}
+
+              {/* State 3: No matches found */}
+              {trimmed && !loading && totalMatches === 0 && (
                 <div className="p-6 text-center text-slate-500">
-                  <p className="text-xs sm:text-sm m-0">No matching courses or universities found for "{searchTerm}".</p>
+                  <p className="text-xs sm:text-sm m-0">No direct matches found for "{searchTerm}".</p>
                   <button
                     type="button"
                     onClick={handleSearchSubmit}
