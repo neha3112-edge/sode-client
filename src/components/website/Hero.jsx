@@ -392,8 +392,14 @@ export function Hero({ initialHeroData = null }) {
           autoplaySpeed={autoplayInterval}
           dots={showDots}
           arrows={showArrows}
-          effect="fade"
-          className="w-full h-full hero-carousel"
+          draggable={true}
+          swipe={true}
+          swipeToSlide={true}
+          infinite={true}
+          touchMove={true}
+          touchThreshold={10}
+          pauseOnHover={true}
+          className="w-full h-full hero-carousel cursor-grab active:cursor-grabbing"
         >
           {heroData.slides.map((slide, idx) => renderHeroContent(slide, true, idx))}
         </Carousel>

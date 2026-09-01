@@ -172,7 +172,7 @@ function formatTwoLineText(text = "") {
   );
 }
 
-// Carousel Component for Universities using Ant Design built-in arrows
+// Carousel Component for Universities using Ant Design built-in arrows + full drag/swipe support
 function UniversityCarouselBlock({
   block,
   slidesToShowCount,
@@ -189,11 +189,14 @@ function UniversityCarouselBlock({
         autoplaySpeed={4000}
         pauseOnHover={true}
         dots={false}
-        draggable={false}
+        draggable={true}
+        swipe={true}
+        swipeToSlide={true}
         touchMove={true}
+        touchThreshold={10}
         slidesToShow={slidesToShowCount}
         slidesToScroll={1}
-        className="w-full relative"
+        className="w-full relative cursor-grab active:cursor-grabbing"
       >
         {block.children.map((child, idx) => (
           <div key={child._id || idx} className="px-1 py-0.5">
@@ -732,76 +735,96 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                       </h3>
                     </div>
 
-                    {/* Show More / Show Less buttons */}
-                    {block.isCourseBlock &&
-                      block.children &&
-                      block.children.length > 8 && (
-                        <div className="flex items-center gap-3 shrink-0">
-                          {visibleCoursesCount > 8 && (
-                            <button
-                              type="button"
-                              onClick={() => setVisibleCoursesCount(8)}
-                              className="text-xs font-semibold text-gray-500 hover:text-gray-700 flex items-center gap-1 transition-colors group cursor-pointer bg-transparent border-0 p-0"
-                            >
-                              <span>Show Less</span>
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                strokeWidth={2.5}
-                                stroke="currentColor"
-                                className="w-3.5 h-3.5 group-hover:-translate-y-0.5 transition-transform"
-                              >
-                                <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" />
-                              </svg>
-                            </button>
-                          )}
-
-                          {visibleCoursesCount < block.children.length && (
-                            <button
-                              type="button"
-                              onClick={() => setVisibleCoursesCount((prev) => prev + 8)}
-                              className="text-xs font-semibold text-blue-500 hover:text-blue-600 flex items-center gap-1 transition-colors group cursor-pointer bg-transparent border-0 p-0"
-                            >
-                              <span>Show More</span>
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                strokeWidth={2.5}
-                                stroke="currentColor"
-                                className="w-3.5 h-3.5 group-hover:translate-y-0.5 transition-transform"
-                              >
-                                <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                              </svg>
-                            </button>
-                          )}
-                        </div>
-                      )}
+                    {!block.isCourseBlock && (
+                      <Link
+                        href={`/universities?category=${encodeURIComponent(block.title || block.name || block.slug || "")}`}
+                        className="text-xs font-bold text-[#0B3B7E] hover:text-blue-700 flex items-center gap-1 transition-colors group shrink-0"
+                      >
+                        <span>View More</span>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={2.5}
+                          stroke="currentColor"
+                          className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                        </svg>
+                      </Link>
+                    )}
                   </div>
 
                   {/* Content: 4-Column Grid for Courses vs. Carousel for Universities */}
                   {block.isCourseBlock ? (
-                    <div className="grid grid-cols-4 md:grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-1.5 sm:gap-2.5 w-full mx-auto items-stretch">
-                      {block.children.slice(0, visibleCoursesCount).map((child, idx) => (
-                        <div
-                          key={child._id || idx}
-                          onClick={() => {
-                            router.push(`/courses?course=${encodeURIComponent(getItemSlug(child))}`);
-                          }}
-                          className="w-full aspect-square bg-white hover:bg-gray-50 border border-gray-200 rounded-xl sm:rounded-2xl p-1.5 min-[360px]:p-2 sm:p-2.5 flex flex-col items-center justify-center text-center cursor-pointer transition-colors duration-200 group min-w-0"
-                        >
-                          <div className="mb-0.5 sm:mb-1 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
-                            <CourseIcon course={child} />
+                    <>
+                      <div className="grid grid-cols-4 md:grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-1.5 sm:gap-2.5 w-full mx-auto items-stretch">
+                        {block.children.slice(0, visibleCoursesCount).map((child, idx) => (
+                          <div
+                            key={child._id || idx}
+                            onClick={() => {
+                              router.push(`/courses?course=${encodeURIComponent(getItemSlug(child))}`);
+                            }}
+                            className="w-full aspect-square bg-white hover:bg-gray-50 border border-gray-200 rounded-xl sm:rounded-2xl p-1.5 min-[360px]:p-2 sm:p-2.5 flex flex-col items-center justify-center text-center cursor-pointer transition-colors duration-200 group min-w-0"
+                          >
+                            <div className="mb-0.5 sm:mb-1 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
+                              <CourseIcon course={child} />
+                            </div>
+                            <div className="h-6 min-[360px]:h-7 sm:h-8 flex items-center justify-center w-full min-w-0">
+                              <span className="line-clamp-2 text-center leading-tight uppercase font-semibold text-[10px] min-[360px]:text-[11px] sm:text-xs text-gray-700 group-hover:text-blue-500 transition-colors w-full px-0.5">
+                                {child.name}
+                              </span>
+                            </div>
                           </div>
-                          <div className="h-6 min-[360px]:h-7 sm:h-8 flex items-center justify-center w-full min-w-0">
-                            <span className="line-clamp-2 text-center leading-tight uppercase font-semibold text-[10px] min-[360px]:text-[11px] sm:text-xs text-gray-700 group-hover:text-blue-500 transition-colors w-full px-0.5">
-                              {child.name}
-                            </span>
-                          </div>
+                        ))}
+                      </div>
+
+                      {/* ── BOTTOM VIEW MORE / VIEW LESS ACTION BUTTON (PERFECT SMOOTH SCROLL) ── */}
+                      {block.children && block.children.length > 8 && (
+                        <div className="flex justify-center mt-2.5">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              const btnElement = e.currentTarget;
+                              const sectionElement = btnElement.closest("section");
+
+                              if (visibleCoursesCount >= block.children.length) {
+                                setVisibleCoursesCount(8);
+                                setTimeout(() => {
+                                  if (sectionElement) {
+                                    const yOffset = -70;
+                                    const y = sectionElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                                    window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+                                  }
+                                }, 60);
+                              } else {
+                                setVisibleCoursesCount((prev) => prev + 8);
+                                setTimeout(() => {
+                                  // Smoothly scroll down so the newly opened rows glide directly into the viewport
+                                  const scrollDelta = window.innerWidth < 768 ? 220 : 180;
+                                  window.scrollBy({ top: scrollDelta, behavior: "smooth" });
+                                }, 100);
+                              }
+                            }}
+                            className="inline-flex items-center justify-center gap-1.5 px-5 py-1.5 rounded-full text-xs font-bold text-[#0B3B7E] bg-blue-50/80 hover:bg-blue-100 border border-blue-200/80 transition-all cursor-pointer shadow-none group"
+                          >
+                            <span>{visibleCoursesCount >= block.children.length ? "View Less" : "View More"}</span>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth={2.5}
+                              stroke="currentColor"
+                              className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                                visibleCoursesCount >= block.children.length ? "rotate-180" : "group-hover:translate-y-0.5"
+                              }`}
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                            </svg>
+                          </button>
                         </div>
-                      ))}
-                    </div>
+                      )}
+                    </>
                   ) : (
                     <UniversityCarouselBlock
                       block={block}
@@ -886,12 +909,17 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                           key={`${it._id || it.slug || idx}-${idx}`}
                           onClick={() => {
                             handleCloseModal();
-                            if (it.targetUrl) {
+                            const parentCatSlug = getItemSlug(activeCategory);
+                            const itemSlug = getItemSlug(it);
+
+                            if (modalData.isUniversitiesModal) {
+                              router.push(`/courses?university=${encodeURIComponent(itemSlug)}`);
+                            } else if (parentCatSlug && parentCatSlug !== "all") {
+                              router.push(`/courses?category=${encodeURIComponent(parentCatSlug)}&subcategory=${encodeURIComponent(itemSlug)}`);
+                            } else if (it.targetUrl) {
                               router.push(it.targetUrl);
-                            } else if (modalData.isUniversitiesModal) {
-                              router.push(`/courses?university=${encodeURIComponent(getItemSlug(it))}`);
                             } else {
-                              router.push(`/courses?category=${encodeURIComponent(getItemSlug(it))}`);
+                              router.push(`/courses?subcategory=${encodeURIComponent(itemSlug)}`);
                             }
                           }}
                           className="bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl p-1.5 min-[360px]:p-2 aspect-square flex flex-col items-center justify-between text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group min-w-0 w-full shadow-2xs overflow-hidden"

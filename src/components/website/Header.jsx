@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useMemo } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -21,24 +21,25 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileExpandedId, setMobileExpandedId] = useState(null);
 
-  const menuTimeoutRef = useRef(null);
+  const headerRef = useRef(null);
 
-  const handleMouseEnter = (menuId) => {
-    if (menuTimeoutRef.current) clearTimeout(menuTimeoutRef.current);
-    setActiveMenuId(menuId);
-  };
-
-  const handleMouseLeave = () => {
-    menuTimeoutRef.current = setTimeout(() => {
-      setActiveMenuId(null);
-    }, 150);
-  };
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (headerRef.current && !headerRef.current.contains(event.target)) {
+        setActiveMenuId(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const resolveImageUrl = (mediaObj, fallback = "/assets/images/new_sode_tm_logo.png") => {
-    if (!mediaObj) return fallback;
+    if (!mediaObj) return getAssetPath(fallback);
     if (typeof mediaObj === "string") return mediaObj.startsWith("http") ? mediaObj : getAssetPath(mediaObj, fallback);
-    if (mediaObj.url) return mediaObj.url;
-    return fallback;
+    if (mediaObj.url) return mediaObj.url.startsWith("http") ? mediaObj.url : getAssetPath(mediaObj.url);
+    return getAssetPath(fallback);
   };
 
   const logoUrl = resolveImageUrl(headerData?.logo || siteLogo, "/assets/images/new_sode_tm_logo.png");
@@ -90,9 +91,9 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
 
       {/* Main Original Navbar UI */}
       <header
+        ref={headerRef}
         style={{ backgroundColor: bgColor }}
         className="w-full bg-white border-b border-slate-100 z-50 relative shadow-2xs select-none"
-        onMouseLeave={handleMouseLeave}
       >
         <Container className="flex items-center justify-between h-13 sm:h-14 md:h-15">
           {/* 1. BRAND LOGO ON THE LEFT (PROMINENT SIZING) */}
@@ -155,7 +156,6 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                   <div
                     key={menuId}
                     className="relative py-1 cursor-pointer"
-                    onMouseEnter={() => handleMouseEnter(menuId)}
                     onClick={() => setActiveMenuId(isOpen ? null : menuId)}
                   >
                     <div
@@ -276,8 +276,6 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
               <div
                 key={`megamenu-${menuId}`}
                 className="absolute top-[calc(100%+4px)] left-1/2 -translate-x-1/2 w-[94vw] max-w-5xl xl:max-w-6xl bg-white border border-slate-200/90 rounded-2xl shadow-2xl z-50 p-0 overflow-hidden animate-in fade-in slide-in-from-top-1 duration-200"
-                onMouseEnter={() => handleMouseEnter(menuId)}
-                onMouseLeave={handleMouseLeave}
               >
                 <div className="flex flex-col">
                   {/* ── TOP FULL-FLUSH EDGE-TO-EDGE SEGMENTED HEADER TABS (COMPACT HEIGHT) ── */}
@@ -289,7 +287,6 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                           key={group.category?._id || gIdx}
                           type="button"
                           onClick={() => setActiveCategoryIndex((prev) => ({ ...prev, [menuId]: gIdx }))}
-                          onMouseEnter={() => setActiveCategoryIndex((prev) => ({ ...prev, [menuId]: gIdx }))}
                           className={`h-9 sm:h-9.5 md:h-10 flex items-center justify-center gap-1.5 px-2.5 sm:px-3 text-xs sm:text-[12.5px] font-bold transition-colors cursor-pointer select-none text-center ${
                             isActive
                               ? "bg-[#0B3B7E] text-white font-extrabold"
@@ -359,7 +356,14 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                                 size="middle"
                                 onClick={() => {
                                   setActiveMenuId(null);
-                                  router.push(card.url || "/courses");
+                                  const parentCatSlug = currentGroup?.category?.slug || currentGroup?.category?._id;
+                                  const cardSlug = card.slug || card._id;
+                                  router.push(
+                                    card.url ||
+                                    (isUniversitiesMenu
+                                      ? `/courses?university=${encodeURIComponent(cardSlug)}`
+                                      : `/courses?category=${encodeURIComponent(parentCatSlug)}&subcategory=${encodeURIComponent(cardSlug)}`)
+                                  );
                                 }}
                                 style={{
                                   background: "linear-gradient(180deg, #F6DE95 0%, #EEC471 100%)",
@@ -412,8 +416,6 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
             <div
               key={`megamenu-flat-${menuId}`}
               className="absolute top-full left-0 w-64 bg-white rounded-xl shadow-xl border border-slate-100 py-1.5 z-50"
-              onMouseEnter={() => handleMouseEnter(menuId)}
-              onMouseLeave={handleMouseLeave}
             >
               <div className="max-h-64 overflow-y-auto divide-y divide-slate-50">
                 {item.dropdown_items?.map((sub, sIdx) => (

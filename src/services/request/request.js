@@ -13,7 +13,14 @@ async function fetchFromApi(path, options = {}, revalidate = 900) {
     const query = params.toString();
     const base = API_BASE_URL.replace(/\/+$/, "");
     const url = `${base}/${path}${query ? `?${query}` : ""}`;
-    const res = await fetch(url, { next: { revalidate } });
+    const tags = options?.tags || (typeof path === "string" ? [path.split("/")[0]] : []);
+    const fetchOptions = {
+      next: {
+        revalidate,
+        tags: Array.isArray(tags) ? tags : [tags],
+      },
+    };
+    const res = await fetch(url, fetchOptions);
     if (!res.ok) return null;
     return await res.json();
   } catch (error) {

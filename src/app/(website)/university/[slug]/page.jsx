@@ -1,3 +1,2 @@
-import UniversityDetailPage from "../../universities/[slug]/page";
-
-export default UniversityDetailPage;
+export const revalidate = 900;
+export { generateMetadata, default } from "../../universities/[slug]/page";
