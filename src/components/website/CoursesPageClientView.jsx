@@ -403,7 +403,7 @@ function CoursesContent({
         fee: resolvedFee,
         search: appliedSearchTerm,
       },
-      revalidate: 0,
+      revalidate: 300,
     })
       .then((res) => {
         if (!isMounted) return;
@@ -452,7 +452,7 @@ function CoursesContent({
         const uni = item.universityId || {};
         const course = item.courseId || {};
         const subcourse = item.subCourseId || {};
-        
+
         const uniName = uni.name || "Partner University";
         const courseName = course.name || "";
         const subcourseName = subcourse.name || "";
@@ -465,9 +465,9 @@ function CoursesContent({
 
         const fees = item.fees || {};
         const duration = item.duration || {};
-        const partner = Array.isArray(item.partner) && item.partner.length > 0
-          ? item.partner[0]
-          : (item.partner || null);
+        const partnerObj = uni.viaPartner || item.viaPartner || (Array.isArray(item.partner) && item.partner.length > 0 ? item.partner[0] : null);
+        const isPartnerActive = Boolean(partnerObj && partnerObj.name && (partnerObj.show === true || partnerObj.showOnWebsite === true));
+        const providerName = isPartnerActive ? partnerObj.name : null;
 
         const rawLogo =
           uni.logo?.url ||
@@ -476,8 +476,6 @@ function CoursesContent({
           uni.logoSrc ||
           uni.logo;
         const logoUrl = getAssetPath(rawLogo, null);
-
-        const providerName = partner?.name || "upGrad";
 
         let durationText = null;
         if (typeof duration === "string" && duration.trim()) {
@@ -785,7 +783,7 @@ function CoursesContent({
                 const uniName = item.uniName || "Institute";
                 const cardTitle = item.cardTitle || item.title || "Course Program";
                 const logoUrl = item.logoUrl;
-                const providerName = item.providerName || "upGrad";
+                const providerName = item.providerName || null;
                 const durationText = item.durationText || null;
                 const feeText = item.feeText || null;
                 const courseDetailHref = item.courseDetailHref || `/courses`;
@@ -795,6 +793,15 @@ function CoursesContent({
                     key={item._uniqueKey || `${cardTitle}-${index}`}
                     className="bg-white rounded-2xl border border-gray-200 p-2.5 sm:p-4 sm:px-5 hover:border-gray-300 transition-all relative overflow-hidden group"
                   >
+                    {/* Top Right Corner Pinned Provider Badge */}
+                    {Boolean(providerName) && (
+                      <div className="absolute top-0 right-0 z-10 pointer-events-none">
+                        <span className="bg-[#FFF0F3] border-b border-l border-[#FFE4E6] text-gray-700 text-[10px] sm:text-[11px] font-medium px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-bl-xl rounded-tr-2xl inline-flex items-center gap-1">
+                          Via <span className="font-bold text-[#E52E2E]">{providerName}</span>
+                        </span>
+                      </div>
+                    )}
+
                     {/* Desktop Card Layout */}
                     <div className="hidden sm:flex items-center gap-5">
                       {/* Left: University Logo + Name */}
@@ -823,15 +830,6 @@ function CoursesContent({
 
                       {/* Right: Details & Actions */}
                       <div className="flex-1 min-w-0 space-y-2.5">
-                        {/* Top Row: Provider Badge */}
-                        <div className="flex items-center justify-end -mb-1">
-                          <span className="bg-[#FFF0F3] border border-[#FFE4E6] text-gray-700 text-[10px] font-medium px-2 py-0.5 rounded-full inline-flex items-center gap-1">
-                            Via{" "}
-                            <span className="font-bold text-[#E52E2E]">
-                              {providerName}
-                            </span>
-                          </span>
-                        </div>
 
                         {/* Title & Full Display Name Underneath */}
                         <Link
@@ -961,10 +959,6 @@ function CoursesContent({
                             {uniName}
                           </span>
                         </div>
-
-                        <span className="bg-[#FFF0F3] border border-[#FFE4E6] text-gray-700 text-[10px] font-medium px-2 py-0.5 rounded-full">
-                          Via <span className="font-bold text-[#E52E2E]">{providerName}</span>
-                        </span>
                       </div>
 
                       {/* Title & Full Display Name Underneath */}
