@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { getAssetPath } from "@/lib/utils";
-import { ArrowLeft, X, Search, GraduationCap, Building2, Sparkles, ArrowRight, TrendingUp, Loader2, MapPin, Wallet, Clock } from "lucide-react";
+import { ArrowLeft, X, Search, GraduationCap, Building2, Sparkles, ArrowRight, TrendingUp, Loader2, MapPin, Wallet, Clock, FolderTree, Layers } from "lucide-react";
 import { Carousel, Modal } from "antd";
 import { useToolWizard } from "@/components/tool/ToolWizardContext";
 import { useFormModal } from "@/hooks/useFormModal";
@@ -183,6 +183,8 @@ function HeroSearchBar({ allCourses = [], allUniversities = [], allCategories = 
     courses: [],
     universities: [],
     specializations: [],
+    categories: [],
+    subcategories: [],
   });
   const [selectedIndex, setSelectedIndex] = useState(-1);
 
@@ -196,7 +198,7 @@ function HeroSearchBar({ allCourses = [], allUniversities = [], allCategories = 
   useEffect(() => {
     if (!trimmed) {
       setLoading(false);
-      setSearchResults({ courses: [], universities: [], specializations: [] });
+      setSearchResults({ courses: [], universities: [], specializations: [], categories: [], subcategories: [] });
       return;
     }
 
@@ -221,6 +223,8 @@ function HeroSearchBar({ allCourses = [], allUniversities = [], allCategories = 
               courses: json.result.courses || [],
               universities: json.result.universities || [],
               specializations: json.result.specializations || [],
+              categories: json.result.categories || [],
+              subcategories: json.result.subcategories || [],
             };
             cacheRef.current.set(lowerQ, data);
             setSearchResults((prev) => ({ ...prev, ...data }));
@@ -245,6 +249,8 @@ function HeroSearchBar({ allCourses = [], allUniversities = [], allCategories = 
       ...(searchResults.courses || []).map((i) => ({ ...i, itemType: "course" })),
       ...(searchResults.universities || []).map((i) => ({ ...i, itemType: "university" })),
       ...(searchResults.specializations || []).map((i) => ({ ...i, itemType: "specialization" })),
+      ...(searchResults.categories || []).map((i) => ({ ...i, itemType: "category" })),
+      ...(searchResults.subcategories || []).map((i) => ({ ...i, itemType: "subcategory" })),
     ];
   }, [trimmed, searchResults]);
 
@@ -498,6 +504,102 @@ function HeroSearchBar({ allCourses = [], allUniversities = [], allCategories = 
                               </div>
                             </div>
                             <span className="text-[11px] text-purple-600 font-medium shrink-0 ml-2">Explore &rarr;</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 📂 Categories & Domains */}
+                  {searchResults.categories?.length > 0 && (
+                    <div className="p-2.5 sm:p-3">
+                      <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2 block mb-1.5">
+                        📂 Categories & Domains
+                      </span>
+                      <div className="space-y-1">
+                        {searchResults.categories.map((cat) => (
+                          <div
+                            key={cat._id || cat.slug}
+                            onClick={() => {
+                              setIsFocused(false);
+                              router.push(cat.href);
+                            }}
+                            className="flex items-center justify-between p-2 rounded-xl hover:bg-amber-50/80 cursor-pointer transition-colors group"
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-700 font-bold flex items-center justify-center shrink-0 border border-amber-100 relative overflow-hidden p-0.5">
+                                {cat.logo ? (
+                                  <Image
+                                    src={getAssetPath(cat.logo, null)}
+                                    alt={cat.name}
+                                    fill
+                                    sizes="32px"
+                                    className="object-contain p-0.5"
+                                  />
+                                ) : (
+                                  <FolderTree className="w-4 h-4 text-amber-600" />
+                                )}
+                              </div>
+                              <div className="min-w-0">
+                                <span className="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-amber-800 block truncate">
+                                  {cat.name}
+                                </span>
+                                {cat.categoryType && cat.categoryType !== 'GENERAL' && (
+                                  <span className="text-[10px] text-amber-700 font-medium block mt-0.5">
+                                    {cat.categoryType.replace(/_/g, ' ')}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            <span className="text-[11px] text-amber-700 font-medium shrink-0 ml-2">Browse &rarr;</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 🔖 SubCategories */}
+                  {searchResults.subcategories?.length > 0 && (
+                    <div className="p-2.5 sm:p-3">
+                      <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2 block mb-1.5">
+                        🔖 SubCategories
+                      </span>
+                      <div className="space-y-1">
+                        {searchResults.subcategories.map((scat) => (
+                          <div
+                            key={scat._id || scat.slug}
+                            onClick={() => {
+                              setIsFocused(false);
+                              router.push(scat.href);
+                            }}
+                            className="flex items-center justify-between p-2 rounded-xl hover:bg-sky-50/80 cursor-pointer transition-colors group"
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <div className="w-8 h-8 rounded-lg bg-sky-50 text-sky-700 font-bold flex items-center justify-center shrink-0 border border-sky-100 relative overflow-hidden p-0.5">
+                                {scat.logo ? (
+                                  <Image
+                                    src={getAssetPath(scat.logo, null)}
+                                    alt={scat.name}
+                                    fill
+                                    sizes="32px"
+                                    className="object-contain p-0.5"
+                                  />
+                                ) : (
+                                  <Layers className="w-4 h-4 text-sky-600" />
+                                )}
+                              </div>
+                              <div className="min-w-0">
+                                <span className="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-sky-800 block truncate">
+                                  {scat.name}
+                                </span>
+                                {scat.parentName && (
+                                  <span className="text-[10px] text-slate-500 font-medium block mt-0.5">
+                                    in {scat.parentName}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            <span className="text-[11px] text-sky-700 font-medium shrink-0 ml-2">Explore &rarr;</span>
                           </div>
                         ))}
                       </div>
