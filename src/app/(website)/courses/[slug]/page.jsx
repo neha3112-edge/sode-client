@@ -7,58 +7,70 @@ export const revalidate = 900;
 
 function normalizeCourseData(pageRes) {
   if (!pageRes) return null;
-  if (
-    pageRes.universityId ||
-    pageRes.courseId ||
-    pageRes.offeringId ||
-    pageRes.isOfferingPage ||
-    pageRes.overviewSection
-  ) {
-    const uni = pageRes.universityId?.name
-      ? pageRes.universityId
-      : pageRes.offeringId?.universityId || {};
-    const courseObj = pageRes.courseId?.name
-      ? pageRes.courseId
-      : pageRes.offeringId?.courseId || {};
-    const sub = pageRes.subCourseId?.name
-      ? pageRes.subCourseId
-      : pageRes.offeringId?.subCourseId || {};
-    const feesObj = pageRes.fees || pageRes.offeringId?.fees || null;
-    const durationObj = pageRes.duration || pageRes.offeringId?.duration || null;
 
-    return {
-      _id: pageRes._id,
-      slug: pageRes.slug,
-      isOfferingPage: true,
-      offeringPage: pageRes,
-      title: courseObj.title || courseObj.name || pageRes.slug,
-      description: pageRes.overviewSection?.description || courseObj.description || "",
-      categories: courseObj.categories || courseObj.category || [],
-      universityOfferings: [
-        {
-          _id: pageRes._id,
-          university: uni,
-          subcourses: sub._id ? [sub] : [],
-          duration: durationObj,
-          fees: feesObj,
-          fee: feesObj,
-        },
-      ],
-      heroMedia: pageRes.heroMedia,
-      brochurePdf: pageRes.brochurePdf,
-      admissionDeadline: pageRes.admissionDeadline,
-      overviewSection: pageRes.overviewSection,
-      whyChooseSection: pageRes.whyChooseSection,
-      admissionSection: pageRes.admissionSection,
-      skillsSection: pageRes.skillsSection,
-      learningExperience: pageRes.learningExperience,
-      instituteSection: pageRes.instituteSection,
-      careerSection: pageRes.careerSection,
-      feeSection: pageRes.feeSection,
-      faqSection: pageRes.faqSection,
-    };
-  }
-  return pageRes?.program || pageRes;
+  const uniList = Array.isArray(pageRes.universityIds)
+    ? pageRes.universityIds
+    : pageRes.universityId
+      ? (Array.isArray(pageRes.universityId) ? pageRes.universityId : [pageRes.universityId])
+      : [];
+
+  const courseObj = pageRes.courseId?.name
+    ? pageRes.courseId
+    : pageRes.name
+      ? pageRes
+      : {};
+
+  const sub = pageRes.subCourseId?.name
+    ? pageRes.subCourseId
+    : pageRes.courseId
+      ? pageRes
+      : {};
+
+  const feesObj = pageRes.fees || null;
+  const durationObj = pageRes.duration || null;
+
+  const offerings = uniList.map((u, i) => ({
+    _id: `${pageRes._id}-${u._id || i}`,
+    university: u,
+    subcourses: sub._id || sub.name ? [sub] : [],
+    duration: durationObj,
+    fees: feesObj,
+    fee: feesObj,
+  }));
+
+  const mainTitle = pageRes.title || courseObj.name || pageRes.name || pageRes.slug;
+
+  return {
+    _id: pageRes._id,
+    slug: pageRes.slug || pageRes._id,
+    isOfferingPage: true,
+    offeringPage: pageRes,
+    title: mainTitle,
+    description: pageRes.overviewSection?.description || pageRes.description || courseObj.description || "",
+    categories: pageRes.categories || pageRes.category || courseObj.category || [],
+    universityOfferings: offerings.length > 0 ? offerings : [
+      {
+        _id: pageRes._id,
+        university: pageRes.universityId || {},
+        subcourses: sub._id ? [sub] : [],
+        duration: durationObj,
+        fees: feesObj,
+        fee: feesObj,
+      },
+    ],
+    heroMedia: pageRes.heroMedia || pageRes.logo,
+    brochurePdf: pageRes.brochurePdf,
+    admissionDeadline: pageRes.admissionDeadline,
+    overviewSection: pageRes.overviewSection,
+    whyChooseSection: pageRes.whyChooseSection,
+    admissionSection: pageRes.admissionSection,
+    skillsSection: pageRes.skillsSection,
+    learningExperience: pageRes.learningExperience,
+    instituteSection: pageRes.instituteSection,
+    careerSection: pageRes.careerSection,
+    feeSection: pageRes.feeSection,
+    faqSection: pageRes.faqSection,
+  };
 }
 
 const getCourseData = cache(async (slug) => {

@@ -293,46 +293,54 @@ export function Category({ categories = [], universities = [], programs = [] }) 
   const rootCategories = Array.isArray(categories?.topCategories) && categories.topCategories.length > 0
     ? categories.topCategories
     : categoriesList
-        .filter((c) => c && c.showOnHome === true)
-        .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+      .filter((c) => c && c.showOnHome === true)
+      .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
 
   // Dynamic Section Blocks (Top Courses, Top IITs & IIMs, Domestic, Global, etc.)
   const parentBlocks = Array.isArray(categories?.sections) && categories.sections.length > 0
     ? categories.sections
-        .filter((s) => s.items && s.items.length > 0)
-        .map((s) => ({
-          _id: s._id,
-          slug: s.slug,
-          title: s.title,
-          displayOrder: s.displayOrder || 0,
-          featuredType: s.featuredType,
-          isCourseBlock: s.sectionType === "COURSES",
-          children: s.items,
-        }))
+      .filter((s) => s.items && s.items.length > 0)
+      .map((s) => ({
+        _id: s._id,
+        slug: s.slug,
+        title: s.title,
+        displayOrder: s.displayOrder || 0,
+        featuredType: s.featuredType,
+        isCourseBlock: s.sectionType === "COURSES",
+        children: s.items,
+      }))
     : categoriesList
-        .filter((c) => c && c.featuredType && c.featuredType !== "NONE")
-        .map((c) => {
-          const children = (c.universities && c.universities.length > 0)
-            ? c.universities
-            : (c.courses && c.courses.length > 0)
-              ? c.courses
-              : (c.children || []);
+      .filter((c) => c && c.featuredType && c.featuredType !== "NONE")
+      .map((c) => {
+        const children = (c.universities && c.universities.length > 0)
+          ? c.universities
+          : (c.courses && c.courses.length > 0)
+            ? c.courses
+            : (c.children || []);
 
-          return {
-            _id: c._id,
-            slug: c.slug,
-            title: c.name || c.title,
-            displayOrder: c.displayOrder || 0,
-            featuredType: c.featuredType,
-            isCourseBlock: Boolean(c.courses && c.courses.length > 0 && (!c.universities || c.universities.length === 0)),
-            children,
-          };
-        })
-        .filter((b) => b.children.length > 0)
-        .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+        return {
+          _id: c._id,
+          slug: c.slug,
+          title: c.name || c.title,
+          displayOrder: c.displayOrder || 0,
+          featuredType: c.featuredType,
+          isCourseBlock: Boolean(c.courses && c.courses.length > 0 && (!c.universities || c.universities.length === 0)),
+          children,
+        };
+      })
+      .filter((b) => b.children.length > 0)
+      .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
 
   const getItemSlug = (item) => {
     if (!item) return "";
+    // If slug is a readable string and not a raw 24-character hex ObjectId
+    if (item.slug && !/^[0-9a-fA-F]{24}$/.test(String(item.slug))) {
+      return item.slug;
+    }
+    // Fallback to readable slugified name (e.g. "MBA" -> "mba", "IIM Lucknow" -> "iim-lucknow")
+    if (item.name) {
+      return item.name.toLowerCase().trim().replace(/[\s_]+/g, "-").replace(/[^\w-]+/g, "");
+    }
     return item.slug || item._id || "";
   };
 
@@ -815,9 +823,8 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                               viewBox="0 0 24 24"
                               strokeWidth={2.5}
                               stroke="currentColor"
-                              className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                                visibleCoursesCount >= block.children.length ? "rotate-180" : "group-hover:translate-y-0.5"
-                              }`}
+                              className={`w-3.5 h-3.5 transition-transform duration-200 ${visibleCoursesCount >= block.children.length ? "rotate-180" : "group-hover:translate-y-0.5"
+                                }`}
                             >
                               <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                             </svg>
@@ -971,11 +978,9 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                           key={`${crs._id || crs.slug || idx}-${idx}`}
                           onClick={() => {
                             handleCloseModal();
-                            if (crs.targetUrl) {
-                              router.push(crs.targetUrl);
-                            } else {
-                              router.push(`/courses?university=${encodeURIComponent(getItemSlug(modalData.category))}&course=${encodeURIComponent(getItemSlug(crs))}`);
-                            }
+                            const uniSlug = getItemSlug(modalData.category);
+                            const crsSlug = getItemSlug(crs);
+                            router.push(`/courses?university=${encodeURIComponent(uniSlug)}&course=${encodeURIComponent(crsSlug)}`);
                           }}
                           className="bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl p-1.5 min-[360px]:p-2 aspect-square flex flex-col items-center justify-between text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group min-w-0 w-full shadow-2xs overflow-hidden"
                         >

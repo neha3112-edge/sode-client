@@ -26,11 +26,12 @@ import { request } from "@/services/request";
 
 // Sidebar Filter Component matching exact mockup design
 function FilterSidebarContent({
-  hideHeader = false,
   activeFilterCount,
   handleClearFilters,
   activeCategoryTab,
   setActiveCategoryTab,
+  selectedCourse,
+  setSelectedCourse,
   selectedDuration,
   setSelectedDuration,
   activeSubcategory,
@@ -78,81 +79,58 @@ function FilterSidebarContent({
     ? subcategoryList
     : subcategoryList.slice(0, 8);
 
+  const currentCourseSelectValue =
+    selectedCourse && selectedCourse !== "all"
+      ? selectedCourse
+      : Array.isArray(activeCategoryTab)
+        ? activeCategoryTab[0] || "all"
+        : activeCategoryTab || "all";
+
   return (
-    <div className="space-y-5 text-gray-700">
-      {/* Header */}
-      {!hideHeader && (
-        <div className="flex items-center justify-between border-b border-b-gray-200 ">
-          <div className="flex items-center gap-1">
-            <SlidersHorizontal className="w-4 h-4 text-gray-900" />
-            <h3 className="font-semibold text-base text-gray-900 m-0">Filter</h3>
-          </div>
-          <button
-            type="button"
-            onClick={handleClearFilters}
-            className="text-xs font-semibold text-red-500 hover:text-red-600 cursor-pointer bg-transparent border-none p-0 flex items-center gap-1 transition-colors"
-          >
-            <RotateCcw className="w-3 h-3" />
-            <span>Reset Filter</span>
-          </button>
+    <div className="space-y-5">
+      {/* Header: Title + Clear Filters */}
+      <div className="flex items-center justify-between pb-3 border-b border-gray-200">
+        <div className="flex items-center gap-2">
+          <SlidersHorizontal className="w-4 h-4 text-gray-900" />
+          <span className="text-sm font-bold text-gray-900">Filter</span>
         </div>
-      )}
+        <button
+          type="button"
+          onClick={handleClearFilters}
+          className="text-xs font-semibold text-rose-500 hover:text-rose-600 flex items-center gap-1 cursor-pointer bg-transparent border-none p-0"
+        >
+          <RotateCcw className="w-3 h-3" />
+          <span>Reset Filter</span>
+        </button>
+      </div>
 
-      {/* Row 1: Course & Duration 2-Column Selects */}
-      <div className="grid grid-cols-2 gap-3">
-        {/* Course / Program Level Select */}
-        <div className="space-y-1.5">
-          <label className="flex items-center gap-1 text-xs font-semibold text-gray-700">
-            <BookOpen className="w-3 h-3 text-gray-700" />
-            <span>Course</span>
-          </label>
-          <Select
-            showSearch
-            placeholder="Course"
-            value={
-              Array.isArray(activeCategoryTab)
-                ? activeCategoryTab[0] || "all"
-                : activeCategoryTab || "all"
+      {/* Row 1: Course Select */}
+      <div className="space-y-1.5">
+        <label className="flex items-center gap-1 text-xs font-semibold text-gray-700">
+          <BookOpen className="w-3 h-3 text-gray-700" />
+          <span>Course</span>
+        </label>
+        <Select
+          showSearch
+          placeholder="Course"
+          value={currentCourseSelectValue}
+          onChange={(val) => {
+            if (val === "all") {
+              if (setSelectedCourse) setSelectedCourse("");
+              setActiveCategoryTab("all");
+            } else {
+              if (setSelectedCourse) setSelectedCourse(val);
+              setActiveCategoryTab(val);
             }
-            onChange={(val) => {
-              setActiveCategoryTab(val === "all" ? "all" : val);
-              setCurrentPage(1);
-            }}
-            className="w-full text-xs font-semibold rounded-lg"
-            options={categorySelectOptions}
-            optionFilterProp="label"
-            filterOption={(input, option) =>
-              (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-            }
-          />
-        </div>
-
-        {/* Duration Select */}
-        <div className="space-y-1.5">
-          <label className="flex items-center gap-1 text-xs font-bold text-gray-700">
-            <Clock className="w-3 h-3 text-gray-700" />
-            <span>Duration</span>
-          </label>
-          <Select
-            showSearch
-            placeholder="Duration"
-            value={
-              Array.isArray(selectedDuration)
-                ? selectedDuration[0] || "all"
-                : selectedDuration || "all"
-            }
-            onChange={(val) => {
-              setSelectedDuration(val === "all" ? "all" : val);
-              setCurrentPage(1);
-            }}
-            className="w-full text-xs font-semibold rounded-lg"
-            options={durationList}
-            optionFilterProp="label"
-            filterOption={(input, option) =>
-              (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-            }
-          />
-        </div>
+            setCurrentPage(1);
+          }}
+          className="w-full text-xs font-semibold rounded-lg"
+          options={categorySelectOptions}
+          optionFilterProp="label"
+          filterOption={(input, option) =>
+            (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+          }
+        />
       </div>
 
       {/* Section 2: Sub Category Section */}
@@ -195,33 +173,6 @@ function FilterSidebarContent({
             );
           })}
         </div>
-      </div>
-
-      {/* Section 3: Fees Range Dropdown */}
-      <div className="space-y-1.5 pt-1">
-        <label className="flex items-center gap-1.5 text-xs font-bold text-gray-700">
-          <span className="font-bold text-xs text-gray-700">₹</span>
-          <span>Fees Range</span>
-        </label>
-        <Select
-          showSearch
-          placeholder="Select Fee Range"
-          value={
-            Array.isArray(selectedFee)
-              ? selectedFee[0] || "all"
-              : selectedFee || "all"
-          }
-          onChange={(val) => {
-            setSelectedFee(val === "all" ? "all" : val);
-            setCurrentPage(1);
-          }}
-          className="w-full text-xs font-semibold rounded-lg"
-          options={feeList}
-          optionFilterProp="label"
-          filterOption={(input, option) =>
-            (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-          }
-        />
       </div>
 
       {/* Section 4: Institute Dropdown */}
@@ -471,11 +422,7 @@ function CoursesContent({
         const courseName = course.name || "";
         const subcourseName = subcourse.name || "";
 
-        let cardTitle = courseName;
-        if (subcourseName && !cardTitle.toLowerCase().includes(subcourseName.toLowerCase())) {
-          cardTitle = `${cardTitle} - ${subcourseName}`;
-        }
-        if (!cardTitle) cardTitle = item.title || item.name || "Course";
+        let cardTitle = item.title || courseName || item.name || "Course";
 
         const rawLogo =
           uni.logo?.url ||
@@ -550,12 +497,34 @@ function CoursesContent({
     const map = new Map();
     map.set("all", { value: "all", slug: "all", label: "All Categories" });
 
+    const slugify = (t) => (t || "").toLowerCase().trim().replace(/[\s_]+/g, "-").replace(/[^\w-]+/g, "");
+
     (initialCategories || []).forEach((c) => {
       if (!c) return;
       const name = c.name || c.title || c.label;
-      const slug = c.slug || String(c._id || "");
+      const slug = c.slug || slugify(name) || String(c._id || "");
       if (name && slug && !map.has(slug)) {
         map.set(slug, { value: slug, slug, label: name });
+      }
+
+      if (Array.isArray(c.courses)) {
+        c.courses.forEach((crs) => {
+          const crsName = crs.name || crs.title;
+          const crsSlug = crs.slug || slugify(crsName) || String(crs._id || "");
+          if (crsName && crsSlug && !map.has(crsSlug)) {
+            map.set(crsSlug, { value: crsSlug, slug: crsSlug, label: crsName });
+          }
+        });
+      }
+
+      if (Array.isArray(c.children)) {
+        c.children.forEach((ch) => {
+          const chName = ch.name || ch.title;
+          const chSlug = ch.slug || slugify(chName) || String(ch._id || "");
+          if (chName && chSlug && !map.has(chSlug)) {
+            map.set(chSlug, { value: chSlug, slug: chSlug, label: chName });
+          }
+        });
       }
     });
 
@@ -670,6 +639,8 @@ function CoursesContent({
     handleClearFilters,
     activeCategoryTab,
     setActiveCategoryTab,
+    selectedCourse,
+    setSelectedCourse,
     selectedDuration,
     setSelectedDuration,
     activeSubcategory,
@@ -694,12 +665,20 @@ function CoursesContent({
           <Select
             showSearch
             value={
-              Array.isArray(activeCategoryTab)
-                ? activeCategoryTab[0] || "all"
-                : activeCategoryTab || "all"
+              selectedCourse && selectedCourse !== "all"
+                ? selectedCourse
+                : Array.isArray(activeCategoryTab)
+                  ? activeCategoryTab[0] || "all"
+                  : activeCategoryTab || "all"
             }
             onChange={(val) => {
-              setActiveCategoryTab(val);
+              if (val === "all") {
+                setSelectedCourse("");
+                setActiveCategoryTab("all");
+              } else {
+                setSelectedCourse(val);
+                setActiveCategoryTab(val);
+              }
               setCurrentPage(1);
             }}
             options={categorySelectOptions}
@@ -810,18 +789,6 @@ function CoursesContent({
                           </h3>
                         </Link>
 
-                        {/* Fee & Duration Row */}
-                        <div className="flex items-center gap-5 text-xs font-semibold text-gray-700">
-                          <div className="flex items-center gap-1.5 text-gray-800">
-                            <span className="text-gray-700 font-bold">₹</span>
-                            <span>{feeText.replace(/^₹\s*/, "")}</span>
-                          </div>
-                          <div className="flex items-center gap-1.5 text-gray-600">
-                            <Clock className="w-3.5 h-3.5 text-gray-500" />
-                            <span>{durationText}</span>
-                          </div>
-                        </div>
-
                         {/* Actions Row: Know More | Apply Now | + Add to Compare */}
                         <div className="flex items-center gap-2.5 pt-0.5">
                           <Link
@@ -918,18 +885,6 @@ function CoursesContent({
                           {cardTitle}
                         </h3>
                       </Link>
-
-                      {/* Fee & Duration */}
-                      <div className="flex items-center gap-4 text-xs font-semibold text-gray-700">
-                        <div className="flex items-center gap-1 text-gray-800">
-                          <span>₹</span>
-                          <span>{feeText.replace(/^₹\s*/, "")}</span>
-                        </div>
-                        <div className="flex items-center gap-1 text-gray-600">
-                          <Clock className="w-3 h-3 text-gray-500" />
-                          <span>{durationText}</span>
-                        </div>
-                      </div>
 
                       {/* Mobile Action Buttons */}
                       <div className="flex items-center gap-2 pt-2 border-t border-gray-200">
