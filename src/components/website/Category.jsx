@@ -357,159 +357,6 @@ function HeroSearchBar({ allCourses = [], allUniversities = [], allCategories = 
             <div className="absolute left-0 right-0 w-full mt-2 bg-white rounded-2xl border border-slate-200 shadow-xl z-50 overflow-hidden divide-y divide-slate-100 max-h-[420px] overflow-y-auto animate-in fade-in slide-in-from-top-1 duration-150">
               {totalMatches > 0 && (
                 <>
-                  {/* 🎓 Courses & Degrees */}
-                  {searchResults.courses?.length > 0 && (
-                    <div className="p-2.5 sm:p-3">
-                      <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2 block mb-1.5">
-                        🎓 Courses & Degrees
-                      </span>
-                      <div className="space-y-1">
-                        {searchResults.courses.map((c) => (
-                          <div
-                            key={c._id || c.slug}
-                            onClick={() => {
-                              setIsFocused(false);
-                              router.push(c.href);
-                            }}
-                            className="flex items-center justify-between p-2 rounded-xl hover:bg-blue-50/80 cursor-pointer transition-colors group"
-                          >
-                            <div className="flex items-center gap-2.5 min-w-0">
-                              <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 font-bold flex items-center justify-center shrink-0 border border-blue-100/60 p-1 relative overflow-hidden">
-                                {c.logo ? (
-                                  <Image
-                                    src={getAssetPath(c.logo, null)}
-                                    alt={c.name}
-                                    fill
-                                    sizes="32px"
-                                    className="object-contain p-0.5"
-                                  />
-                                ) : (
-                                  <GraduationCap className="w-4 h-4 text-blue-600" />
-                                )}
-                              </div>
-                              <div className="min-w-0">
-                                <span className="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-blue-600 block truncate">
-                                  {c.name}
-                                </span>
-                                <div className="flex items-center gap-2 text-[10.5px] text-slate-500 mt-0.5">
-                                  {c.universitiesCount > 0 && (
-                                    <span>{c.universitiesCount} Universities</span>
-                                  )}
-                                  {c.startingFee && (
-                                    <span className="text-emerald-700 font-medium">Starts {c.startingFee}</span>
-                                  )}
-                                  {c.duration && <span>• {c.duration}</span>}
-                                </div>
-                              </div>
-                            </div>
-                            <span className="text-[11px] text-blue-600 font-medium shrink-0 ml-2">Explore &rarr;</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* 🏛️ Universities */}
-                  {searchResults.universities?.length > 0 && (
-                    <div className="p-2.5 sm:p-3">
-                      <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2 block mb-1.5">
-                        🏛️ Universities
-                      </span>
-                      <div className="space-y-1">
-                        {searchResults.universities.map((u) => (
-                          <div
-                            key={u._id || u.slug}
-                            onClick={() => {
-                              setIsFocused(false);
-                              router.push(u.href);
-                            }}
-                            className="flex items-center justify-between p-2 rounded-xl hover:bg-emerald-50/80 cursor-pointer transition-colors group"
-                          >
-                            <div className="flex items-center gap-2.5 min-w-0">
-                              <div className="w-8 h-8 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center shrink-0 relative overflow-hidden p-0.5">
-                                {u.logo ? (
-                                  <Image
-                                    src={getAssetPath(u.logo, null)}
-                                    alt={u.name}
-                                    fill
-                                    sizes="32px"
-                                    className="object-contain p-0.5"
-                                  />
-                                ) : (
-                                  <Building2 className="w-4 h-4 text-emerald-600" />
-                                )}
-                              </div>
-                              <div className="min-w-0">
-                                <div className="flex items-center gap-1.5 flex-wrap">
-                                  <span className="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-emerald-700 truncate">
-                                    {u.name}
-                                  </span>
-                                  {u.naacGrade && (
-                                    <span className="text-[9.5px] font-bold bg-amber-50 border border-amber-200 text-amber-800 px-1.5 py-0.2 rounded">
-                                      NAAC {u.naacGrade}
-                                    </span>
-                                  )}
-                                  {u.viaPartner && (
-                                    <span className="text-[9.5px] font-medium bg-[#FFF0F3] border border-[#FFE4E6] text-[#E52E2E] px-1.5 py-0.2 rounded">
-                                      Via {u.viaPartner}
-                                    </span>
-                                  )}
-                                </div>
-                                {(u.city || u.state) && (
-                                  <span className="text-[10.5px] text-slate-500 block truncate mt-0.5">
-                                    {[u.city, u.state].filter(Boolean).join(", ")}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                            <span className="text-[11px] text-emerald-600 font-medium shrink-0 ml-2">View Programs &rarr;</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* 🏷️ Specializations */}
-                  {searchResults.specializations?.length > 0 && (
-                    <div className="p-2.5 sm:p-3">
-                      <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2 block mb-1.5">
-                        🏷️ Specializations
-                      </span>
-                      <div className="space-y-1">
-                        {searchResults.specializations.map((sc) => (
-                          <div
-                            key={sc._id || sc.slug}
-                            onClick={() => {
-                              setIsFocused(false);
-                              router.push(sc.href);
-                            }}
-                            className="flex items-center justify-between p-2 rounded-xl hover:bg-purple-50/80 cursor-pointer transition-colors group"
-                          >
-                            <div className="flex items-center gap-2.5 min-w-0">
-                              <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 font-bold flex items-center justify-center shrink-0 border border-purple-100">
-                                <Sparkles className="w-4 h-4 text-purple-600" />
-                              </div>
-                              <div className="min-w-0">
-                                <span className="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-purple-700 block truncate">
-                                  {sc.name}
-                                </span>
-                                <div className="flex items-center gap-2 text-[10.5px] text-slate-500 mt-0.5">
-                                  {sc.courseName && (
-                                    <span className="font-medium text-slate-600">{sc.courseName}</span>
-                                  )}
-                                  {sc.startingFee && (
-                                    <span className="text-emerald-700 font-medium">• Starts {sc.startingFee}</span>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                            <span className="text-[11px] text-purple-600 font-medium shrink-0 ml-2">Explore &rarr;</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
                   {/* 📂 Categories & Domains */}
                   {searchResults.categories?.length > 0 && (
                     <div className="p-2.5 sm:p-3">
@@ -600,6 +447,159 @@ function HeroSearchBar({ allCourses = [], allUniversities = [], allCategories = 
                               </div>
                             </div>
                             <span className="text-[11px] text-sky-700 font-medium shrink-0 ml-2">Explore &rarr;</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 🎓 Courses & Degrees */}
+                  {searchResults.courses?.length > 0 && (
+                    <div className="p-2.5 sm:p-3">
+                      <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2 block mb-1.5">
+                        🎓 Courses & Degrees
+                      </span>
+                      <div className="space-y-1">
+                        {searchResults.courses.map((c) => (
+                          <div
+                            key={c._id || c.slug}
+                            onClick={() => {
+                              setIsFocused(false);
+                              router.push(c.href);
+                            }}
+                            className="flex items-center justify-between p-2 rounded-xl hover:bg-blue-50/80 cursor-pointer transition-colors group"
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 font-bold flex items-center justify-center shrink-0 border border-blue-100/60 p-1 relative overflow-hidden">
+                                {c.logo ? (
+                                  <Image
+                                    src={getAssetPath(c.logo, null)}
+                                    alt={c.name}
+                                    fill
+                                    sizes="32px"
+                                    className="object-contain p-0.5"
+                                  />
+                                ) : (
+                                  <GraduationCap className="w-4 h-4 text-blue-600" />
+                                )}
+                              </div>
+                              <div className="min-w-0">
+                                <span className="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-blue-600 block truncate">
+                                  {c.name}
+                                </span>
+                                <div className="flex items-center gap-2 text-[10.5px] text-slate-500 mt-0.5">
+                                  {c.universitiesCount > 0 && (
+                                    <span>{c.universitiesCount} Universities</span>
+                                  )}
+                                  {c.startingFee && (
+                                    <span className="text-emerald-700 font-medium">Starts {c.startingFee}</span>
+                                  )}
+                                  {c.duration && <span>• {c.duration}</span>}
+                                </div>
+                              </div>
+                            </div>
+                            <span className="text-[11px] text-blue-600 font-medium shrink-0 ml-2">Explore &rarr;</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 🏷️ Specializations */}
+                  {searchResults.specializations?.length > 0 && (
+                    <div className="p-2.5 sm:p-3">
+                      <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2 block mb-1.5">
+                        🏷️ Specializations
+                      </span>
+                      <div className="space-y-1">
+                        {searchResults.specializations.map((sc) => (
+                          <div
+                            key={sc._id || sc.slug}
+                            onClick={() => {
+                              setIsFocused(false);
+                              router.push(sc.href);
+                            }}
+                            className="flex items-center justify-between p-2 rounded-xl hover:bg-purple-50/80 cursor-pointer transition-colors group"
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 font-bold flex items-center justify-center shrink-0 border border-purple-100">
+                                <Sparkles className="w-4 h-4 text-purple-600" />
+                              </div>
+                              <div className="min-w-0">
+                                <span className="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-purple-700 block truncate">
+                                  {sc.name}
+                                </span>
+                                <div className="flex items-center gap-2 text-[10.5px] text-slate-500 mt-0.5">
+                                  {sc.courseName && (
+                                    <span className="font-medium text-slate-600">{sc.courseName}</span>
+                                  )}
+                                  {sc.startingFee && (
+                                    <span className="text-emerald-700 font-medium">• Starts {sc.startingFee}</span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                            <span className="text-[11px] text-purple-600 font-medium shrink-0 ml-2">Explore &rarr;</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 🏛️ Universities */}
+                  {searchResults.universities?.length > 0 && (
+                    <div className="p-2.5 sm:p-3">
+                      <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2 block mb-1.5">
+                        🏛️ Universities
+                      </span>
+                      <div className="space-y-1">
+                        {searchResults.universities.map((u) => (
+                          <div
+                            key={u._id || u.slug}
+                            onClick={() => {
+                              setIsFocused(false);
+                              router.push(u.href);
+                            }}
+                            className="flex items-center justify-between p-2 rounded-xl hover:bg-emerald-50/80 cursor-pointer transition-colors group"
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <div className="w-8 h-8 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center shrink-0 relative overflow-hidden p-0.5">
+                                {u.logo ? (
+                                  <Image
+                                    src={getAssetPath(u.logo, null)}
+                                    alt={u.name}
+                                    fill
+                                    sizes="32px"
+                                    className="object-contain p-0.5"
+                                  />
+                                ) : (
+                                  <Building2 className="w-4 h-4 text-emerald-600" />
+                                )}
+                              </div>
+                              <div className="min-w-0">
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                  <span className="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-emerald-700 truncate">
+                                    {u.name}
+                                  </span>
+                                  {u.naacGrade && (
+                                    <span className="text-[9.5px] font-bold bg-amber-50 border border-amber-200 text-amber-800 px-1.5 py-0.2 rounded">
+                                      NAAC {u.naacGrade}
+                                    </span>
+                                  )}
+                                  {u.viaPartner && (
+                                    <span className="text-[9.5px] font-medium bg-[#FFF0F3] border border-[#FFE4E6] text-[#E52E2E] px-1.5 py-0.2 rounded">
+                                      Via {u.viaPartner}
+                                    </span>
+                                  )}
+                                </div>
+                                {(u.city || u.state) && (
+                                  <span className="text-[10.5px] text-slate-500 block truncate mt-0.5">
+                                    {[u.city, u.state].filter(Boolean).join(", ")}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            <span className="text-[11px] text-emerald-600 font-medium shrink-0 ml-2">View Programs &rarr;</span>
                           </div>
                         ))}
                       </div>
