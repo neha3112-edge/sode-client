@@ -1,12 +1,12 @@
 "use client";
 
 import { Container } from "@/components/common/Container";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { getAssetPath } from "@/lib/utils";
-import { ArrowLeft, X } from "lucide-react";
+import { ArrowLeft, X, Search, GraduationCap, Building2, Sparkles, ArrowRight } from "lucide-react";
 import { Carousel, Modal } from "antd";
 import { useToolWizard } from "@/components/tool/ToolWizardContext";
 import { useFormModal } from "@/hooks/useFormModal";
@@ -59,7 +59,7 @@ function CourseIcon({ course }) {
   }
 
   return (
-    <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-blue-50 text-blue-500 font-semibold flex items-center justify-center text-[10px] sm:text-xs">
+    <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-blue-50/80 text-[#0B3B7E] font-semibold flex items-center justify-center text-[10px] sm:text-xs border border-blue-100">
       {course?.name?.charAt(0)}
     </div>
   );
@@ -169,6 +169,203 @@ function formatTwoLineText(text = "") {
       <span className="block text-center w-full font-semibold truncate">{line1}</span>
       <span className="block text-center w-full font-semibold truncate mt-0.5">{line2}</span>
     </span>
+  );
+}
+
+// 🔍 Hero Floating Search Bar Component with Instant Autocomplete
+function HeroSearchBar({ allCourses = [], allUniversities = [], allCategories = [] }) {
+  const router = useRouter();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isFocused, setIsFocused] = useState(false);
+  const searchContainerRef = useRef(null);
+
+  const trimmed = searchTerm.trim().toLowerCase();
+
+  // Filter matching suggestions
+  const matchingCourses = (allCourses || [])
+    .filter((c) => c && c.name && c.name.toLowerCase().includes(trimmed))
+    .slice(0, 4);
+
+  const matchingUnis = (allUniversities || [])
+    .filter((u) => u && u.name && u.name.toLowerCase().includes(trimmed))
+    .slice(0, 4);
+
+  const matchingSubcategories = (allCategories || [])
+    .flatMap((c) => c.children || [])
+    .filter((sc) => sc && sc.name && sc.name.toLowerCase().includes(trimmed))
+    .slice(0, 4);
+
+  const totalMatches = matchingCourses.length + matchingUnis.length + matchingSubcategories.length;
+
+  const handleSearchSubmit = (e) => {
+    if (e) e.preventDefault();
+    if (!trimmed) return;
+    setIsFocused(false);
+    router.push(`/courses?search=${encodeURIComponent(trimmed)}`);
+  };
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
+        setIsFocused(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  return (
+    <section className="pt-2 pb-1.5 bg-white relative" ref={searchContainerRef}>
+      <Container>
+        <div className="max-w-2xl mx-auto w-full relative">
+          {/* Main Search Input Box */}
+          <form
+            onSubmit={handleSearchSubmit}
+            className={`relative flex items-center bg-white rounded-full border overflow-hidden transition-colors duration-200 h-10 sm:h-11 ${
+              isFocused
+                ? "border-[#0B3B7E]"
+                : "border-slate-300 hover:border-slate-400"
+            }`}
+          >
+            <div className="pl-3.5 sm:pl-4 text-slate-400 flex items-center justify-center shrink-0">
+              <Search className="w-4 h-4 text-[#0B3B7E]" />
+            </div>
+
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onFocus={() => setIsFocused(true)}
+              placeholder="Search 100+ Courses, Universities or Specializations..."
+              className="w-full py-2 px-2.5 text-xs sm:text-[13px] text-slate-800 placeholder:text-slate-400 bg-transparent border-0 outline-none font-medium"
+            />
+
+            {searchTerm && (
+              <button
+                type="button"
+                onClick={() => setSearchTerm("")}
+                className="p-1 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 mr-2 transition-colors cursor-pointer border-0 bg-transparent"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+
+            <button
+              type="submit"
+              className="h-full px-5 sm:px-6 bg-[#0B3B7E] hover:bg-blue-900 text-white rounded-r-full text-xs sm:text-[13px] font-semibold tracking-wide transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer border-0 m-0"
+            >
+              <span>Search</span>
+              <ArrowRight className="w-3.5 h-3.5 hidden sm:inline-block" />
+            </button>
+          </form>
+
+          {/* Autocomplete Results Dropdown */}
+          {isFocused && trimmed.length > 1 && (
+            <div className="absolute left-0 right-0 w-full mt-2 bg-white rounded-2xl border border-slate-200 shadow-xl z-50 overflow-hidden divide-y divide-slate-100 max-h-[380px] overflow-y-auto">
+              {totalMatches > 0 ? (
+                <>
+                  {matchingCourses.length > 0 && (
+                    <div className="p-3">
+                      <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2 block mb-1.5">
+                        🎓 Courses & Degrees
+                      </span>
+                      <div className="space-y-1">
+                        {matchingCourses.map((c) => (
+                          <div
+                            key={c._id || c.slug}
+                            onClick={() => {
+                              setIsFocused(false);
+                              router.push(`/courses?course=${encodeURIComponent(c.slug || c.name.toLowerCase())}`);
+                            }}
+                            className="flex items-center justify-between p-2 rounded-xl hover:bg-blue-50/80 cursor-pointer transition-colors group"
+                          >
+                            <div className="flex items-center gap-2.5">
+                              <GraduationCap className="w-4 h-4 text-blue-600 shrink-0" />
+                              <span className="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-blue-600">
+                                {c.name}
+                              </span>
+                            </div>
+                            <span className="text-[11px] text-blue-600 font-medium">Explore &rarr;</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {matchingUnis.length > 0 && (
+                    <div className="p-3">
+                      <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2 block mb-1.5">
+                        🏛️ Universities
+                      </span>
+                      <div className="space-y-1">
+                        {matchingUnis.map((u) => (
+                          <div
+                            key={u._id || u.slug}
+                            onClick={() => {
+                              setIsFocused(false);
+                              router.push(`/courses?university=${encodeURIComponent(u.slug || u.name.toLowerCase().replace(/\s+/g, '-'))}`);
+                            }}
+                            className="flex items-center justify-between p-2 rounded-xl hover:bg-blue-50/80 cursor-pointer transition-colors group"
+                          >
+                            <div className="flex items-center gap-2.5">
+                              <Building2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                              <span className="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-emerald-700">
+                                {u.name}
+                              </span>
+                            </div>
+                            <span className="text-[11px] text-emerald-600 font-medium">View Programs &rarr;</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {matchingSubcategories.length > 0 && (
+                    <div className="p-3">
+                      <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2 block mb-1.5">
+                        🏷️ Specializations
+                      </span>
+                      <div className="space-y-1">
+                        {matchingSubcategories.map((sc) => (
+                          <div
+                            key={sc._id || sc.slug}
+                            onClick={() => {
+                              setIsFocused(false);
+                              router.push(`/courses?subcategory=${encodeURIComponent(sc.slug || sc.name.toLowerCase().replace(/\s+/g, '-'))}`);
+                            }}
+                            className="flex items-center justify-between p-2 rounded-xl hover:bg-blue-50/80 cursor-pointer transition-colors group"
+                          >
+                            <div className="flex items-center gap-2.5">
+                              <Sparkles className="w-4 h-4 text-purple-600 shrink-0" />
+                              <span className="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-purple-700">
+                                {sc.name}
+                              </span>
+                            </div>
+                            <span className="text-[11px] text-purple-600 font-medium">Explore &rarr;</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="p-6 text-center text-slate-500">
+                  <p className="text-xs sm:text-sm m-0">No matching courses or universities found for "{searchTerm}".</p>
+                  <button
+                    type="button"
+                    onClick={handleSearchSubmit}
+                    className="mt-2 text-xs font-semibold text-blue-600 hover:underline bg-transparent border-0 cursor-pointer"
+                  >
+                    Search across all listings &rarr;
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </Container>
+    </section>
   );
 }
 
@@ -331,6 +528,36 @@ export function Category({ categories = [], universities = [], programs = [] }) 
       .filter((b) => b.children.length > 0)
       .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
 
+  // Extract all distinct courses & universities for instant search autocomplete
+  const allCourses = useMemo(() => {
+    const courseMap = new Map();
+    (parentBlocks || []).forEach((b) => {
+      (b.children || []).forEach((c) => {
+        if (c && c.name && (b.isCourseBlock || c.isCourse) && !courseMap.has(c.name.toLowerCase())) {
+          courseMap.set(c.name.toLowerCase(), c);
+        }
+      });
+    });
+    return Array.from(courseMap.values());
+  }, [parentBlocks]);
+
+  const allUniversities = useMemo(() => {
+    const uniMap = new Map();
+    (universities || []).forEach((u) => {
+      if (u && u.name && !uniMap.has(u.name.toLowerCase())) {
+        uniMap.set(u.name.toLowerCase(), u);
+      }
+    });
+    (parentBlocks || []).forEach((b) => {
+      (b.children || []).forEach((u) => {
+        if (u && u.name && (!b.isCourseBlock || u.isUniversity) && !uniMap.has(u.name.toLowerCase())) {
+          uniMap.set(u.name.toLowerCase(), u);
+        }
+      });
+    });
+    return Array.from(uniMap.values());
+  }, [universities, parentBlocks]);
+
   const getItemSlug = (item) => {
     if (!item) return "";
     // If slug is a readable string and not a raw 24-character hex ObjectId
@@ -456,6 +683,13 @@ export function Category({ categories = [], universities = [], programs = [] }) 
           opacity: 1 !important;
         }
       ` }} />
+
+      {/* ── 🔍 HERO FLOATING SEARCH BAR (OPTION 2) ── */}
+      <HeroSearchBar
+        allCourses={allCourses}
+        allUniversities={allUniversities}
+        allCategories={categoriesList}
+      />
 
       {/* ── TOP STATS CARDS SECTION ── */}
       {rootCategories.length > 0 && (

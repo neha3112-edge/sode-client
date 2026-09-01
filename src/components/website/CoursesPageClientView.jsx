@@ -15,14 +15,53 @@ import {
   Check,
   Search,
   ArrowLeft,
+  X,
 } from "lucide-react";
-import { Select, Drawer, Pagination } from "antd";
+import { Select, Drawer, Pagination, Modal } from "antd";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useFormModal } from "@/hooks/useFormModal";
 import { useCompare } from "@/hooks/useCompare";
 import { getAssetPath } from "@/lib/utils";
 import WebsiteLayout from "@/components/layout/WebsiteLayout";
 import { request } from "@/services/request";
+
+const COURSE_FULL_NAMES = {
+  BA: "Bachelor of Arts",
+  BBA: "Bachelor of Business Administration",
+  BCA: "Bachelor of Computer Applications",
+  BCOM: "Bachelor of Commerce",
+  MA: "Master of Arts",
+  MBA: "Master of Business Administration",
+  MCA: "Master of Computer Applications",
+  MCOM: "Master of Commerce",
+  BSC: "Bachelor of Science",
+  MSC: "Master of Science",
+  BTECH: "Bachelor of Technology",
+  MTECH: "Master of Technology",
+  LLB: "Bachelor of Legislative Law",
+  LLM: "Master of Laws",
+  "B.ED": "Bachelor of Education",
+  "M.ED": "Master of Education",
+  BJMC: "Bachelor of Journalism and Mass Communication",
+  MJMC: "Master of Journalism and Mass Communication",
+  BLIS: "Bachelor of Library and Information Science",
+  MLIS: "Master of Library and Information Science",
+  MSW: "Master of Social Work",
+  BSW: "Bachelor of Social Work",
+  MMS: "Master of Management Studies",
+  DBA: "Doctor of Business Administration",
+  "MBA+DBA": "Dual Degree MBA and Doctor of Business Administration",
+  "MBA PLUS": "Executive MBA Plus Global Immersion",
+  "IIM HR": "Executive Post Graduate Certificate in Human Resource Management",
+  "IIM CRO": "Chief Risk Officer Leadership Programme",
+  HRM: "Human Resource Management Program",
+  CERTIFICATE: "Professional Certificate Programs",
+  DIPLOMA: "Diploma Courses",
+  "PG DIPLOMA": "Post Graduate Diploma Programs",
+  "PG PROGRAMS": "Post Graduate Executive Programs",
+  "10TH": "Secondary School Examination (10th Board)",
+  "12TH": "Senior Secondary Examination (12th Board)",
+};
 
 // Sidebar Filter Component matching exact mockup design
 function FilterSidebarContent({
@@ -234,6 +273,7 @@ function CoursesContent({
   const [selectedDuration, setSelectedDuration] = useState("all");
   const [selectedFee, setSelectedFee] = useState("all");
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
+  const [specializationModalData, setSpecializationModalData] = useState(null);
 
   const { openFormModal } = useFormModal();
   const { toggleCompare, isInCompare, setIsCompareDrawerOpen } = useCompare();
@@ -412,17 +452,22 @@ function CoursesContent({
         const uni = item.universityId || {};
         const course = item.courseId || {};
         const subcourse = item.subCourseId || {};
-        const fees = item.fees || {};
-        const duration = item.duration || {};
-        const partner = Array.isArray(item.partner) && item.partner.length > 0
-          ? item.partner[0]
-          : (item.partner || null);
-
+        
         const uniName = uni.name || "Partner University";
         const courseName = course.name || "";
         const subcourseName = subcourse.name || "";
 
         let cardTitle = item.title || courseName || item.name || "Course";
+
+        const courseNameKey = (courseName || cardTitle || "").toUpperCase().trim();
+        const fallbackFullName = COURSE_FULL_NAMES[courseNameKey] || "";
+        const displayName = item.displayName || course.displayName || course.displayNames?.[0]?.name || fallbackFullName;
+
+        const fees = item.fees || {};
+        const duration = item.duration || {};
+        const partner = Array.isArray(item.partner) && item.partner.length > 0
+          ? item.partner[0]
+          : (item.partner || null);
 
         const rawLogo =
           uni.logo?.url ||
@@ -469,6 +514,7 @@ function CoursesContent({
           _uniqueKey: item._id || `${courseName}-${uniName}-${index}`,
           title: cardTitle,
           cardTitle,
+          displayName,
           uniName,
           uniObj: uni,
           courseObj: course,
@@ -739,7 +785,7 @@ function CoursesContent({
                 return (
                   <div
                     key={item._uniqueKey || `${cardTitle}-${index}`}
-                    className="bg-white rounded-2xl border border-gray-200 p-3.5 sm:p-4 sm:px-5 hover:border-gray-300 transition-all relative overflow-hidden group"
+                    className="bg-white rounded-2xl border border-gray-200 p-2.5 sm:p-4 sm:px-5 hover:border-gray-300 transition-all relative overflow-hidden group"
                   >
                     {/* Desktop Card Layout */}
                     <div className="hidden sm:flex items-center gap-5">
@@ -779,18 +825,46 @@ function CoursesContent({
                           </span>
                         </div>
 
-                        {/* Title */}
+                        {/* Title & Full Display Name Underneath */}
                         <Link
                           href={courseDetailHref}
-                          className="hover:text-blue-600 transition-colors block text-left no-underline"
+                          className="hover:text-blue-600 transition-colors block text-left no-underline group"
                         >
-                          <h3 className="text-sm sm:text-base font-bold text-gray-900 leading-snug line-clamp-2 m-0">
+                          <h3 className="text-sm sm:text-base font-bold text-gray-900 leading-snug line-clamp-1 m-0">
                             {cardTitle}
                           </h3>
+                          {item.displayName && item.displayName.toLowerCase() !== cardTitle.toLowerCase() && (
+                            <span className="text-[11.5px] sm:text-xs font-normal text-gray-500 block leading-tight mt-0.5 tracking-tight">
+                              {item.displayName}
+                            </span>
+                          )}
                         </Link>
 
-                        {/* Actions Row: Know More | Apply Now | + Add to Compare */}
+                        {/* Fee & Duration Row */}
+                        <div className="flex items-center gap-5 text-xs font-semibold text-gray-700">
+                          <div className="flex items-center gap-1.5 text-gray-800">
+                            <span className="text-gray-700 font-bold">₹</span>
+                            <span>{feeText.replace(/^₹\s*/, "")}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5 text-gray-600">
+                            <Clock className="w-3.5 h-3.5 text-gray-500" />
+                            <span>{durationText}</span>
+                          </div>
+                        </div>
+
+                        {/* Actions Row: Specializations | Know More | Apply Now | + Add to Compare */}
                         <div className="flex items-center gap-2.5 pt-0.5">
+                          {Array.isArray(item.subcourses) && item.subcourses.length > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => setSpecializationModalData(item)}
+                              className="bg-blue-50 hover:bg-blue-100 text-[#0B3B7E] border border-blue-200 text-xs font-bold px-3.5 py-1.5 rounded-lg transition-colors inline-flex items-center gap-1.5 cursor-pointer"
+                            >
+                              <BookOpen className="w-3.5 h-3.5" />
+                              <span>Specializations ({item.specializationsCount || item.subcourses.length})</span>
+                            </button>
+                          )}
+
                           <Link
                             href={courseDetailHref}
                             className="bg-[#0a2540] hover:bg-[#06182c] text-white text-xs font-semibold px-4 py-1.5 rounded-lg transition-colors inline-flex items-center justify-center no-underline"
@@ -879,18 +953,44 @@ function CoursesContent({
                         </span>
                       </div>
 
-                      {/* Title */}
+                      {/* Title & Full Display Name Underneath */}
                       <Link href={courseDetailHref} className="no-underline block">
-                        <h3 className="text-xs sm:text-sm font-bold text-gray-900 leading-snug line-clamp-2 m-0">
+                        <h3 className="text-xs sm:text-sm font-bold text-gray-900 leading-snug line-clamp-1 m-0">
                           {cardTitle}
                         </h3>
+                        {item.displayName && item.displayName.toLowerCase() !== cardTitle.toLowerCase() && (
+                          <span className="text-[10px] sm:text-[11px] font-normal text-gray-500 block leading-tight mt-0.5 tracking-tight">
+                            {item.displayName}
+                          </span>
+                        )}
                       </Link>
 
-                      {/* Mobile Action Buttons */}
-                      <div className="flex items-center gap-2 pt-2 border-t border-gray-200">
+                      {/* Fee & Duration */}
+                      <div className="flex items-center gap-4 text-xs font-semibold text-gray-700">
+                        <div className="flex items-center gap-1 text-gray-800">
+                          <span>₹</span>
+                          <span>{feeText.replace(/^₹\s*/, "")}</span>
+                        </div>
+                        <div className="flex items-center gap-1 text-gray-600">
+                          <Clock className="w-3 h-3 text-gray-500" />
+                          <span>{durationText}</span>
+                        </div>
+                      </div>
+
+                      {/* Mobile Action Buttons - Single Row */}
+                      <div className="pt-2.5 border-t border-gray-200 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+                        {Array.isArray(item.subcourses) && item.subcourses.length > 0 && (
+                          <button
+                            type="button"
+                            onClick={() => setSpecializationModalData(item)}
+                            className="flex-1 min-w-max bg-blue-50 hover:bg-blue-100 text-[#0B3B7E] border border-blue-200 text-[11px] font-bold py-2 px-2.5 rounded-lg transition-colors flex items-center justify-center cursor-pointer whitespace-nowrap"
+                          >
+                            <span>Specializations ({item.specializationsCount || item.subcourses.length})</span>
+                          </button>
+                        )}
                         <Link
                           href={courseDetailHref}
-                          className="flex-1 bg-[#0a2540] text-white text-[11px] font-semibold py-1.5 rounded-lg text-center no-underline"
+                          className="flex-1 min-w-max bg-[#0a2540] text-white text-[11px] font-semibold py-2 px-2.5 rounded-lg text-center no-underline whitespace-nowrap flex items-center justify-center"
                         >
                           Know More
                         </Link>
@@ -905,7 +1005,7 @@ function CoursesContent({
                               submitButtonText: "Apply Now",
                             });
                           }}
-                          className="flex-1 bg-[#F4D068] text-gray-900 text-[11px] font-bold py-1.5 rounded-lg border-none cursor-pointer"
+                          className="flex-1 min-w-max bg-[#F4D068] text-gray-900 text-[11px] font-bold py-2 px-2.5 rounded-lg border-none cursor-pointer whitespace-nowrap flex items-center justify-center"
                         >
                           Apply Now
                         </button>
@@ -924,7 +1024,7 @@ function CoursesContent({
                             toggleCompare(targetItem);
                             setIsCompareDrawerOpen(true);
                           }}
-                          className="px-2 py-1.5 text-[11px] font-bold text-gray-700 flex items-center justify-center gap-0.5 cursor-pointer bg-transparent border border-gray-200 rounded-lg"
+                          className="min-w-max px-2.5 py-2 text-[11px] font-bold text-gray-700 flex items-center justify-center gap-1 cursor-pointer bg-transparent border border-gray-200 rounded-lg whitespace-nowrap shrink-0"
                         >
                           <Plus className="w-3 h-3" />
                           <span>Compare</span>
@@ -1009,6 +1109,98 @@ function CoursesContent({
       >
         <FilterSidebarContent hideHeader {...filterProps} />
       </Drawer>
+
+      {/* ── SPECIALIZATIONS MODAL ── */}
+      <Modal
+        open={Boolean(specializationModalData)}
+        onCancel={() => setSpecializationModalData(null)}
+        footer={null}
+        width={620}
+        centered
+        closable={false}
+        destroyOnHidden
+        styles={{
+          content: {
+            padding: "16px",
+            borderRadius: "20px",
+            border: "1px solid #e2e8f0",
+            boxShadow: "0 25px 50px -12px rgba(15, 23, 42, 0.25)",
+          },
+          body: {
+            padding: 0,
+          },
+        }}
+      >
+        {specializationModalData && (
+          <div className="flex flex-col text-left min-h-0">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 mb-2.5 shrink-0 gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                {specializationModalData.logoUrl ? (
+                  <div className="w-10 h-10 rounded-full border border-slate-200 p-1 flex items-center justify-center relative shrink-0 bg-white shadow-2xs">
+                    <Image
+                      src={specializationModalData.logoUrl}
+                      alt={specializationModalData.uniName}
+                      fill
+                      className="object-contain p-0.5"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-blue-50 text-[#0B3B7E] font-bold flex items-center justify-center text-xs shrink-0 border border-blue-100 uppercase">
+                    {specializationModalData.uniName?.charAt(0)}
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 leading-tight tracking-tight truncate m-0">
+                    {specializationModalData.title} Specializations ({specializationModalData.specializationsCount || specializationModalData.subcourses?.length || 0})
+                  </h3>
+                  <span className="text-xs text-slate-500 block mt-0.5 truncate">
+                    {specializationModalData.uniName}
+                  </span>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setSpecializationModalData(null)}
+                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-900 transition-colors flex items-center justify-center cursor-pointer border-0 shrink-0"
+                aria-label="Close modal"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Modal Body Grid - 3 Cards Mobile / 5 Cards Desktop Grid Layout */}
+            <div className="flex-1 overflow-y-auto max-h-[64vh] overscroll-contain pr-0.5 space-y-4 scrollbar-thin [scrollbar-color:#cbd5e1_transparent]">
+              <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-3">
+                {(specializationModalData.subcourses || []).map((sc, idx) => (
+                  <div
+                    key={sc._id || idx}
+                    onClick={() => {
+                      const uniSlug = specializationModalData.uniObj?.slug || specializationModalData.uniName?.toLowerCase().replace(/\s+/g, '-');
+                      const subSlug = sc.slug || sc.name?.toLowerCase().replace(/\s+/g, '-');
+                      setSpecializationModalData(null);
+                      router.push(`/courses?university=${encodeURIComponent(uniSlug)}&subcategory=${encodeURIComponent(subSlug)}`);
+                    }}
+                    className="bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl p-1.5 min-[360px]:p-2 aspect-square flex flex-col items-center justify-between text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group min-w-0 w-full shadow-2xs overflow-hidden"
+                  >
+                    <div className="flex-1 flex items-center justify-center w-full min-h-0 pt-0.5">
+                      <div className="w-8 h-8 rounded-xl bg-blue-50 text-[#0B3B7E] flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+                        <BookOpen className="w-4 h-4" />
+                      </div>
+                    </div>
+                    <div className="h-7 min-[360px]:h-8 sm:h-8.5 flex items-center justify-center w-full min-w-0 px-0.5 pb-0.5 shrink-0">
+                      <h5 className="text-[9.5px] min-[360px]:text-[10px] sm:text-[10.5px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors text-center w-full tracking-tight min-w-0 m-0 uppercase leading-tight line-clamp-2">
+                        {sc.name}
+                      </h5>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </Modal>
     </WebsiteLayout>
   );
 }
