@@ -685,7 +685,8 @@ export function Category({ categories = [], universities = [], programs = [] }) 
   const { openFormModal } = useFormModal();
   const [activeCategory, setActiveCategory] = useState(null);
   const [modalData, setModalData] = useState({ category: null, children: [], universities: [], courses: [] });
-  const [visibleCoursesCount, setVisibleCoursesCount] = useState(8);
+  const [visibleCounts, setVisibleCounts] = useState({});
+  const [expandedSections, setExpandedSections] = useState({});
   const [slidesToShowCount, setSlidesToShowCount] = useState(4);
 
   const pointerStartRef = useRef({ x: 0, y: 0, time: 0 });
@@ -1218,15 +1219,22 @@ export function Category({ categories = [], universities = [], programs = [] }) 
             );
           }
 
+          const blockKey = String(block._id || block.slug || bIdx);
+          const isCourse = Boolean(block.isCourseBlock);
+          const isExpanded = isCourse
+            ? (visibleCounts[blockKey] || 8) >= block.children.length
+            : Boolean(expandedSections[blockKey]);
+          const currentVisibleCount = isCourse ? (visibleCounts[blockKey] || 8) : block.children.length;
+
           return (
             <section
-              key={block._id || block.slug || bIdx}
+              key={blockKey}
               className="py-3 bg-white relative overflow-hidden"
               suppressHydrationWarning
             >
               <Container>
                 <div className="bg-white border border-gray-200 rounded-2xl p-3 sm:p-4 transition-colors duration-200 max-w-6xl mx-auto">
-                  {/* Section Title Header with Colored Accent Bar */}
+                  {/* Section Title Header with Colored Accent Bar & Right-aligned View More (ONLY for Universities) */}
                   <div className="flex items-center justify-between mb-3 gap-2">
                     <div className="flex items-center gap-2.5 truncate">
                       <span
@@ -1237,40 +1245,84 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                       </h3>
                     </div>
 
-                    {!block.isCourseBlock && (
-                      <Link
-                        href={`/universities?category=${encodeURIComponent(block.title || block.name || block.slug || "")}`}
-                        className="text-xs font-bold text-[#0B3B7E] hover:text-blue-700 flex items-center gap-1 transition-colors group shrink-0"
+                    {!isCourse && block.children && block.children.length > slidesToShowCount && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          const btnElement = e.currentTarget;
+                          const sectionElement = btnElement.closest("section");
+
+                          if (isExpanded) {
+                            setExpandedSections((prev) => ({ ...prev, [blockKey]: false }));
+                            setTimeout(() => {
+                              if (sectionElement) {
+                                const yOffset = -70;
+                                const y = sectionElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                                window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+                              }
+                            }, 60);
+                          } else {
+                            setExpandedSections((prev) => ({ ...prev, [blockKey]: true }));
+                            setTimeout(() => {
+                              const scrollDelta = window.innerWidth < 768 ? 220 : 180;
+                              window.scrollBy({ top: scrollDelta, behavior: "smooth" });
+                            }, 100);
+                          }
+                        }}
+                        className="text-xs font-bold text-[#0B3B7E] hover:text-blue-700 flex items-center gap-1 transition-colors group shrink-0 cursor-pointer"
                       >
-                        <span>View More</span>
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          strokeWidth={2.5}
-                          stroke="currentColor"
-                          className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                        </svg>
-                      </Link>
+                        <span>{isExpanded ? "View Less" : "View More"}</span>
+                        {isExpanded ? (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth={2.5}
+                            stroke="currentColor"
+                            className="w-3.5 h-3.5 shrink-0"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" />
+                          </svg>
+                        ) : (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth={2.5}
+                            stroke="currentColor"
+                            className="w-3.5 h-3.5 shrink-0 group-hover:translate-x-0.5 transition-transform"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                          </svg>
+                        )}
+                      </button>
                     )}
                   </div>
 
-                  {/* Content: 4-Column Grid for Courses vs. Carousel for Universities */}
-                  {block.isCourseBlock ? (
-                    <>
-                      <div className="grid grid-cols-4 md:grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-1.5 sm:gap-2.5 w-full mx-auto items-stretch">
-                        {block.children.slice(0, visibleCoursesCount).map((child, idx) => (
+                  {/* Content: Course Grid OR University (Carousel by default -> Grid on View More) */}
+                  {isCourse || isExpanded ? (
+                    <div className="grid grid-cols-4 md:grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-1.5 sm:gap-2.5 w-full mx-auto items-stretch animate-in fade-in duration-200">
+                      {block.children.slice(0, currentVisibleCount).map((child, idx) => {
+                        const isUni = !isCourse;
+
+                        return (
                           <div
                             key={child._id || idx}
                             onClick={() => {
-                              router.push(`/courses?course=${encodeURIComponent(getItemSlug(child))}`);
+                              if (isUni) {
+                                handleCardClick(child);
+                              } else {
+                                router.push(`/courses?course=${encodeURIComponent(getItemSlug(child))}`);
+                              }
                             }}
                             className="w-full aspect-square bg-white hover:bg-gray-50 border border-gray-200 rounded-xl sm:rounded-2xl p-1.5 min-[360px]:p-2 sm:p-2.5 flex flex-col items-center justify-center text-center cursor-pointer transition-colors duration-200 group min-w-0"
                           >
                             <div className="mb-0.5 sm:mb-1 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
-                              <CourseIcon course={child} />
+                              {isUni ? (
+                                <PartnerLogoIcon partner={child} />
+                              ) : (
+                                <CourseIcon course={child} />
+                              )}
                             </div>
                             <div className="h-6 min-[360px]:h-7 sm:h-8 flex items-center justify-center w-full min-w-0">
                               <span className="line-clamp-2 text-center leading-tight uppercase font-semibold text-[10px] min-[360px]:text-[11px] sm:text-xs text-gray-700 group-hover:text-blue-500 transition-colors w-full px-0.5">
@@ -1278,54 +1330,9 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                               </span>
                             </div>
                           </div>
-                        ))}
-                      </div>
-
-                      {/* ── BOTTOM VIEW MORE / VIEW LESS ACTION BUTTON (PERFECT SMOOTH SCROLL) ── */}
-                      {block.children && block.children.length > 8 && (
-                        <div className="flex justify-center mt-2.5">
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              const btnElement = e.currentTarget;
-                              const sectionElement = btnElement.closest("section");
-
-                              if (visibleCoursesCount >= block.children.length) {
-                                setVisibleCoursesCount(8);
-                                setTimeout(() => {
-                                  if (sectionElement) {
-                                    const yOffset = -70;
-                                    const y = sectionElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
-                                    window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
-                                  }
-                                }, 60);
-                              } else {
-                                setVisibleCoursesCount((prev) => prev + 8);
-                                setTimeout(() => {
-                                  // Smoothly scroll down so the newly opened rows glide directly into the viewport
-                                  const scrollDelta = window.innerWidth < 768 ? 220 : 180;
-                                  window.scrollBy({ top: scrollDelta, behavior: "smooth" });
-                                }, 100);
-                              }
-                            }}
-                            className="inline-flex items-center justify-center gap-1.5 px-5 py-1.5 rounded-full text-xs font-bold text-[#0B3B7E] bg-blue-50/80 hover:bg-blue-100 border border-blue-200/80 transition-all cursor-pointer shadow-none group"
-                          >
-                            <span>{visibleCoursesCount >= block.children.length ? "View Less" : "View More"}</span>
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              strokeWidth={2.5}
-                              stroke="currentColor"
-                              className={`w-3.5 h-3.5 transition-transform duration-200 ${visibleCoursesCount >= block.children.length ? "rotate-180" : "group-hover:translate-y-0.5"
-                                }`}
-                            >
-                              <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                            </svg>
-                          </button>
-                        </div>
-                      )}
-                    </>
+                        );
+                      })}
+                    </div>
                   ) : (
                     <UniversityCarouselBlock
                       block={block}
@@ -1334,6 +1341,51 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                       handleSlidePointerUp={handleSlidePointerUp}
                       handleSlideClick={handleSlideClick}
                     />
+                  )}
+
+                  {/* ── BOTTOM VIEW MORE / VIEW LESS ACTION BUTTON (ONLY FOR COURSES) ── */}
+                  {isCourse && block.children && block.children.length > 8 && (
+                    <div className="flex justify-center mt-2.5">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          const btnElement = e.currentTarget;
+                          const sectionElement = btnElement.closest("section");
+
+                          if (isExpanded) {
+                            setVisibleCounts((prev) => ({ ...prev, [blockKey]: 8 }));
+                            setTimeout(() => {
+                              if (sectionElement) {
+                                const yOffset = -70;
+                                const y = sectionElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                                window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+                              }
+                            }, 60);
+                          } else {
+                            setVisibleCounts((prev) => ({ ...prev, [blockKey]: (prev[blockKey] || 8) + 8 }));
+                            setTimeout(() => {
+                              const scrollDelta = window.innerWidth < 768 ? 220 : 180;
+                              window.scrollBy({ top: scrollDelta, behavior: "smooth" });
+                            }, 100);
+                          }
+                        }}
+                        className="inline-flex items-center justify-center gap-1.5 px-5 py-1.5 rounded-full text-xs font-bold text-[#0B3B7E] bg-blue-50/80 hover:bg-blue-100 border border-blue-200/80 transition-all cursor-pointer shadow-none group"
+                      >
+                        <span>{isExpanded ? "View Less" : "View More"}</span>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={2.5}
+                          stroke="currentColor"
+                          className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                            isExpanded ? "rotate-180" : "group-hover:translate-y-0.5"
+                          }`}
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                        </svg>
+                      </button>
+                    </div>
                   )}
                 </div>
               </Container>
