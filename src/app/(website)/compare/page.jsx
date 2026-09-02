@@ -1162,11 +1162,16 @@ function CompareContent() {
         icon: <BankOutlined className="text-blue-600" />,
         featureTitle: "Ownership Type",
         renderCell: (uni) => {
-          const val = uni.ownership_type || uni.institution_type;
-          return val ? (
-            <Tag className="bg-blue-50 border-blue-200 text-blue-800 font-bold px-2.5 py-0.5 rounded-full m-0">
-              {val}
-            </Tag>
+          const raw = uni.ownership_type || uni.institution_type;
+          const list = Array.isArray(raw) ? raw : raw ? [raw] : [];
+          return list.length > 0 ? (
+            <div className="flex flex-wrap items-center justify-center gap-1">
+              {list.map((item, idx) => (
+                <Tag key={idx} className="bg-blue-50 border-blue-200 text-blue-800 font-bold px-2 py-0.5 rounded-full m-0 text-xs">
+                  {item}
+                </Tag>
+              ))}
+            </div>
           ) : (
             <span className="text-slate-400">-</span>
           );
@@ -1289,7 +1294,21 @@ function CompareContent() {
         key: "exam_mode",
         icon: <LaptopOutlined className="text-blue-600" />,
         featureTitle: "Examination Mode",
-        renderCell: (uni) => <span className="text-slate-700 font-semibold">{uni.exam_mode || "-"}</span>,
+        renderCell: (uni) => {
+          const raw = uni.exam_mode;
+          const list = Array.isArray(raw) ? raw : raw ? [raw] : [];
+          return list.length > 0 ? (
+            <div className="flex flex-wrap items-center justify-center gap-1">
+              {list.map((item, idx) => (
+                <Tag key={idx} className="bg-slate-50 border-slate-200 text-slate-700 font-semibold px-2 py-0.5 rounded-full m-0 text-xs">
+                  {item}
+                </Tag>
+              ))}
+            </div>
+          ) : (
+            <span className="text-slate-400">-</span>
+          );
+        },
       },
       {
         key: "approvals",
