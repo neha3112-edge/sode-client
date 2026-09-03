@@ -517,7 +517,7 @@ function CoursesContent({
 
         list.push({
           ...item,
-          _uniqueKey: item._id || `${courseName}-${uniName}-${index}`,
+          _uniqueKey: `${item._id || item.slug || cardTitle || "program"}-${index}`,
           title: cardTitle,
           cardTitle,
           displayName,
@@ -534,7 +534,7 @@ function CoursesContent({
       } else {
         list.push({
           ...item,
-          _uniqueKey: item._id || item.slug || String(Math.random()),
+          _uniqueKey: `${item._id || item.slug || "custom"}-${index}`,
         });
       }
     });
