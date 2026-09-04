@@ -17,7 +17,7 @@ import {
   ArrowLeft,
   X,
 } from "lucide-react";
-import { Select, Drawer, Pagination, Modal } from "antd";
+import { Select, Drawer, Pagination, Modal, Slider, ConfigProvider } from "antd";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useFormModal } from "@/hooks/useFormModal";
 import { useCompare } from "@/hooks/useCompare";
@@ -25,52 +25,17 @@ import { getAssetPath } from "@/lib/utils";
 import WebsiteLayout from "@/components/layout/WebsiteLayout";
 import { request } from "@/services/request";
 
-const COURSE_FULL_NAMES = {
-  BA: "Bachelor of Arts",
-  BBA: "Bachelor of Business Administration",
-  BCA: "Bachelor of Computer Applications",
-  BCOM: "Bachelor of Commerce",
-  MA: "Master of Arts",
-  MBA: "Master of Business Administration",
-  MCA: "Master of Computer Applications",
-  MCOM: "Master of Commerce",
-  BSC: "Bachelor of Science",
-  MSC: "Master of Science",
-  BTECH: "Bachelor of Technology",
-  MTECH: "Master of Technology",
-  LLB: "Bachelor of Legislative Law",
-  LLM: "Master of Laws",
-  "B.ED": "Bachelor of Education",
-  "M.ED": "Master of Education",
-  BJMC: "Bachelor of Journalism and Mass Communication",
-  MJMC: "Master of Journalism and Mass Communication",
-  BLIS: "Bachelor of Library and Information Science",
-  MLIS: "Master of Library and Information Science",
-  MSW: "Master of Social Work",
-  BSW: "Bachelor of Social Work",
-  MMS: "Master of Management Studies",
-  DBA: "Doctor of Business Administration",
-  "MBA+DBA": "Dual Degree MBA and Doctor of Business Administration",
-  "MBA PLUS": "Executive MBA Plus Global Immersion",
-  "IIM HR": "Executive Post Graduate Certificate in Human Resource Management",
-  "IIM CRO": "Chief Risk Officer Leadership Programme",
-  HRM: "Human Resource Management Program",
-  CERTIFICATE: "Professional Certificate Programs",
-  DIPLOMA: "Diploma Courses",
-  "PG DIPLOMA": "Post Graduate Diploma Programs",
-  "PG PROGRAMS": "Post Graduate Executive Programs",
-  "10TH": "Secondary School Examination (10th Board)",
-  "12TH": "Senior Secondary Examination (12th Board)",
-};
-
 // Sidebar Filter Component matching exact mockup design
 function FilterSidebarContent({
+  hideHeader = false,
   activeFilterCount,
   handleClearFilters,
   activeCategoryTab,
   setActiveCategoryTab,
   selectedCourse,
   setSelectedCourse,
+  selectedSubCourse,
+  setSelectedSubCourse,
   selectedDuration,
   setSelectedDuration,
   activeSubcategory,
@@ -79,91 +44,61 @@ function FilterSidebarContent({
   setSelectedFee,
   selectedUniversities,
   setSelectedUniversities,
+  feeRange = [0, 1000000],
+  setFeeRange,
+  durationRange = [3, 48],
+  setDurationRange,
   categorySelectOptions = [],
-  subcategoryList = [],
-  durationList = [],
-  feeList = [],
+  subcategorySelectOptions = [],
+  courseSelectOptions = [],
+  subcourseSelectOptions = [],
   universityOptions = [],
   setCurrentPage,
 }) {
-  const [showAllSubcategories, setShowAllSubcategories] = useState(true);
-
-  const isSubcategoryActive = (val) => {
-    if (!activeSubcategory) return false;
-    const target = String(val).toLowerCase();
-    if (Array.isArray(activeSubcategory)) {
-      return activeSubcategory.some((s) => String(s).toLowerCase() === target);
-    }
-    return String(activeSubcategory).toLowerCase() === target;
-  };
-
-  const handleSubcategoryPillClick = (val) => {
-    let current = Array.isArray(activeSubcategory)
-      ? [...activeSubcategory]
-      : activeSubcategory
-        ? [activeSubcategory]
-        : [];
-
-    const exists = current.some((s) => String(s).toLowerCase() === String(val).toLowerCase());
-    if (exists) {
-      current = current.filter((s) => String(s).toLowerCase() !== String(val).toLowerCase());
-    } else {
-      current.push(val);
-    }
-    setActiveSubcategory(current);
-    setCurrentPage(1);
-  };
-
-  const displayedSubcategories = showAllSubcategories
-    ? subcategoryList
-    : subcategoryList.slice(0, 8);
-
-  const currentCourseSelectValue =
-    selectedCourse && selectedCourse !== "all"
-      ? selectedCourse
-      : Array.isArray(activeCategoryTab)
-        ? activeCategoryTab[0] || "all"
-        : activeCategoryTab || "all";
+  const currentCategoryValue =
+    Array.isArray(activeCategoryTab)
+      ? activeCategoryTab[0] || "all"
+      : activeCategoryTab || "all";
 
   return (
     <div className="space-y-5">
       {/* Header: Title + Clear Filters */}
-      <div className="flex items-center justify-between pb-3 border-b border-gray-200">
-        <div className="flex items-center gap-2">
-          <SlidersHorizontal className="w-4 h-4 text-gray-900" />
-          <span className="text-sm font-bold text-gray-900">Filter</span>
+      {!hideHeader && (
+        <div className="flex items-center justify-between pb-3 border-b border-gray-200">
+          <div className="flex items-center gap-2">
+            <SlidersHorizontal className="w-4 h-4 text-gray-900" />
+            <span className="text-sm font-bold text-gray-900">Filter</span>
+          </div>
+          <button
+            type="button"
+            onClick={handleClearFilters}
+            className="text-xs font-semibold text-rose-500 hover:text-rose-600 flex items-center gap-1 cursor-pointer bg-transparent border-none p-0"
+          >
+            <RotateCcw className="w-3 h-3" />
+            <span>Reset Filter</span>
+          </button>
         </div>
-        <button
-          type="button"
-          onClick={handleClearFilters}
-          className="text-xs font-semibold text-rose-500 hover:text-rose-600 flex items-center gap-1 cursor-pointer bg-transparent border-none p-0"
-        >
-          <RotateCcw className="w-3 h-3" />
-          <span>Reset Filter</span>
-        </button>
-      </div>
+      )}
 
-      {/* Row 1: Course Select */}
+      {/* Row 1: Category Select */}
       <div className="space-y-1.5">
         <label className="flex items-center gap-1 text-xs font-semibold text-gray-700">
           <BookOpen className="w-3 h-3 text-gray-700" />
-          <span>Course</span>
+          <span>Category</span>
         </label>
         <Select
           showSearch
-          placeholder="Course"
-          value={currentCourseSelectValue}
+          placeholder="All Categories"
+          value={currentCategoryValue}
           onChange={(val) => {
             if (val === "all") {
-              if (setSelectedCourse) setSelectedCourse("");
               setActiveCategoryTab("all");
             } else {
-              if (setSelectedCourse) setSelectedCourse(val);
               setActiveCategoryTab(val);
             }
-            setCurrentPage(1);
+            if (typeof setCurrentPage === "function") setCurrentPage(1);
           }}
-          className="w-full text-xs font-semibold rounded-lg"
+          className="w-full"
           options={categorySelectOptions}
           optionFilterProp="label"
           filterOption={(input, option) =>
@@ -172,49 +107,80 @@ function FilterSidebarContent({
         />
       </div>
 
-      {/* Section 2: Sub Category Section */}
-      <div className="space-y-3 pt-1">
-        <div className="flex items-center justify-between border-b border-gray-200 pb-2">
-          <span className="text-xs font-bold text-gray-900">Sub Category</span>
-          <button
-            type="button"
-            onClick={() => setShowAllSubcategories(!showAllSubcategories)}
-            className="text-[11px] font-semibold text-gray-500 hover:text-gray-900 flex items-center gap-0.5 cursor-pointer bg-transparent border-none p-0"
-          >
-            <span>{showAllSubcategories ? "Show Less" : "Show All"}</span>
-            {showAllSubcategories ? (
-              <ChevronUp className="w-3 h-3" />
-            ) : (
-              <ChevronDown className="w-3 h-3" />
-            )}
-          </button>
-        </div>
-
-        {/* Subcategory Pills */}
-        <div className="flex flex-wrap gap-1.5">
-          {displayedSubcategories.map((pill) => {
-            const active =
-              isSubcategoryActive(pill.value) ||
-              isSubcategoryActive(pill.slug) ||
-              isSubcategoryActive(pill.id);
-            return (
-              <button
-                key={pill.value || pill.slug}
-                type="button"
-                onClick={() => handleSubcategoryPillClick(pill.value || pill.slug)}
-                className={`px-3 py-1.5 text-[11px] font-medium rounded-full border transition-all cursor-pointer text-center select-none ${active
-                  ? "bg-[#0a2540] text-white border-[#0a2540]"
-                  : "bg-white text-gray-700 border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-                  }`}
-              >
-                {pill.label}
-              </button>
-            );
-          })}
-        </div>
+      {/* Row 2: Sub Category Select */}
+      <div className="space-y-1.5 pt-1">
+        <label className="flex items-center gap-1 text-xs font-semibold text-gray-700">
+          <BookOpen className="w-3 h-3 text-gray-700" />
+          <span>Sub Category</span>
+        </label>
+        <Select
+          showSearch
+          placeholder="All Sub Categories"
+          value={
+            Array.isArray(activeSubcategory) && activeSubcategory.length > 0
+              ? activeSubcategory[0]
+              : "all"
+          }
+          onChange={(val) => {
+            setActiveSubcategory(val === "all" ? [] : [val]);
+            if (typeof setCurrentPage === "function") setCurrentPage(1);
+          }}
+          className="w-full"
+          options={subcategorySelectOptions}
+          optionFilterProp="label"
+          filterOption={(input, option) =>
+            (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+          }
+        />
       </div>
 
-      {/* Section 4: Institute Dropdown */}
+      {/* Row 3: Course Select */}
+      <div className="space-y-1.5 pt-1">
+        <label className="flex items-center gap-1 text-xs font-semibold text-gray-700">
+          <BookOpen className="w-3 h-3 text-gray-700" />
+          <span>Course</span>
+        </label>
+        <Select
+          showSearch
+          placeholder="All Courses"
+          value={selectedCourse || "all"}
+          onChange={(val) => {
+            if (setSelectedCourse) setSelectedCourse(val === "all" ? "" : val);
+            if (typeof setCurrentPage === "function") setCurrentPage(1);
+          }}
+          className="w-full"
+          options={courseSelectOptions}
+          optionFilterProp="label"
+          filterOption={(input, option) =>
+            (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+          }
+        />
+      </div>
+
+      {/* Row 4: Sub Course / Specialization Select */}
+      <div className="space-y-1.5 pt-1">
+        <label className="flex items-center gap-1 text-xs font-semibold text-gray-700">
+          <BookOpen className="w-3 h-3 text-gray-700" />
+          <span>Sub Course</span>
+        </label>
+        <Select
+          showSearch
+          placeholder="All Sub Courses"
+          value={selectedSubCourse || "all"}
+          onChange={(val) => {
+            if (setSelectedSubCourse) setSelectedSubCourse(val === "all" ? "" : val);
+            if (typeof setCurrentPage === "function") setCurrentPage(1);
+          }}
+          className="w-full"
+          options={subcourseSelectOptions}
+          optionFilterProp="label"
+          filterOption={(input, option) =>
+            (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+          }
+        />
+      </div>
+
+      {/* Row 5: Institute Dropdown */}
       <div className="space-y-1.5 pt-1">
         <label className="flex items-center gap-1.5 text-xs font-bold text-gray-700">
           <Landmark className="w-3.5 h-3.5 text-gray-700" />
@@ -231,9 +197,9 @@ function FilterSidebarContent({
           onChange={(val) => {
             if (val === "all") setSelectedUniversities([]);
             else setSelectedUniversities([val]);
-            setCurrentPage(1);
+            if (typeof setCurrentPage === "function") setCurrentPage(1);
           }}
-          className="w-full text-xs font-semibold rounded-lg"
+          className="w-full"
           options={universityOptions}
           optionFilterProp="label"
           filterOption={(input, option) =>
@@ -241,6 +207,108 @@ function FilterSidebarContent({
           }
         />
       </div>
+
+      {/* Sliders Container wrapped in Website Dark Blue Theme */}
+      <ConfigProvider
+        theme={{
+          token: {
+            colorPrimary: "#0a2540",
+            colorPrimaryBorder: "#0a2540",
+            colorPrimaryHover: "#06182c",
+            colorPrimaryBorderHover: "#06182c",
+          },
+          components: {
+            Slider: {
+              trackBg: "#0a2540",
+              trackHoverBg: "#06182c",
+              handleColor: "#0a2540",
+              handleActiveColor: "#06182c",
+              dotBorderColor: "#0a2540",
+              handleActiveOutlineColor: "rgba(10, 37, 64, 0.2)",
+            },
+          },
+        }}
+      >
+        {/* Row 4: Fees Range Slider */}
+        <div className="space-y-2 pt-2 border-t border-gray-100">
+          <div className="flex items-center justify-between">
+            <label className="flex items-center gap-1.5 text-xs font-bold text-gray-700">
+              <span className="font-bold text-xs text-gray-700">₹</span>
+              <span>Fees Range</span>
+            </label>
+            <span className="text-[11px] font-bold text-[#0a2540] bg-[#0a2540]/10 px-2 py-0.5 rounded-md border border-[#0a2540]/20">
+              {feeRange[0] === 0 && feeRange[1] >= 1000000
+                ? "All Fees"
+                : `₹${(feeRange[0] / 1000).toFixed(0)}k - ₹${feeRange[1] >= 1000000 ? "10L+" : `${(feeRange[1] / 100000).toFixed(1)}L`}`}
+            </span>
+          </div>
+          <Slider
+            range
+            min={0}
+            max={1000000}
+            step={25000}
+            value={feeRange}
+            onChange={(val) => {
+              if (setFeeRange) setFeeRange(val);
+              if (typeof setCurrentPage === "function") setCurrentPage(1);
+            }}
+            tooltip={{
+              formatter: (val) => `₹ ${Number(val).toLocaleString("en-IN")}`,
+            }}
+            styles={{
+              track: { backgroundColor: "#0a2540" },
+              tracks: { backgroundColor: "#0a2540" },
+              handle: { borderColor: "#0a2540", backgroundColor: "#0a2540" },
+            }}
+            className="my-2"
+          />
+          <div className="flex justify-between text-[10px] font-medium text-gray-400">
+            <span>₹0</span>
+            <span>₹5L</span>
+            <span>₹10L+</span>
+          </div>
+        </div>
+
+        {/* Row 5: Duration Range Slider */}
+        <div className="space-y-2 pt-2 border-t border-gray-100">
+          <div className="flex items-center justify-between">
+            <label className="flex items-center gap-1.5 text-xs font-bold text-gray-700">
+              <Clock className="w-3.5 h-3.5 text-gray-700" />
+              <span>Duration</span>
+            </label>
+            <span className="text-[11px] font-bold text-[#0a2540] bg-[#0a2540]/10 px-2 py-0.5 rounded-md border border-[#0a2540]/20">
+              {durationRange[0] <= 3 && durationRange[1] >= 48
+                ? "All Durations"
+                : `${durationRange[0]} Mo - ${durationRange[1] >= 48 ? "48+ Mo" : `${durationRange[1]} Mo`}`}
+            </span>
+          </div>
+          <Slider
+            range
+            min={3}
+            max={48}
+            step={3}
+            value={durationRange}
+            onChange={(val) => {
+              if (setDurationRange) setDurationRange(val);
+              if (typeof setCurrentPage === "function") setCurrentPage(1);
+            }}
+            tooltip={{
+              formatter: (val) => `${val} Months`,
+            }}
+            styles={{
+              track: { backgroundColor: "#0a2540" },
+              tracks: { backgroundColor: "#0a2540" },
+              handle: { borderColor: "#0a2540", backgroundColor: "#0a2540" },
+            }}
+            className="my-2"
+          />
+          <div className="flex justify-between text-[10px] font-medium text-gray-400">
+            <span>3 Mos</span>
+            <span>24 Mos</span>
+            <span>48+ Mos</span>
+          </div>
+        </div>
+      </ConfigProvider>
     </div>
   );
 }
@@ -253,6 +321,8 @@ function CoursesContent({
   const [coursesData, setCoursesData] = useState(initialCoursesData);
   const [initialCategories, setInitialCategories] = useState(initialCategoriesProp);
   const [initialUniversities, setInitialUniversities] = useState(initialUniversitiesProp);
+  const [coursesOptionsList, setCoursesOptionsList] = useState([]);
+  const [subcoursesOptionsList, setSubcoursesOptionsList] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 10;
@@ -262,6 +332,7 @@ function CoursesContent({
   const initialSubcat = searchParams?.get("subcategory") || searchParams?.get("subCategory") || searchParams?.get("subcourse") || "";
   const initialSubcatArr = initialSubcat ? initialSubcat.split(",").map((s) => s.trim()) : [];
   const initialCourse = searchParams?.get("course") || searchParams?.get("courseId") || "";
+  const initialSubCourse = searchParams?.get("subCourse") || searchParams?.get("subcourseId") || "";
   const initialQuery = searchParams?.get("search") || "";
   const initialUnis = searchParams?.get("university") ? searchParams.get("university").split(",").map((u) => u.trim()) : [];
 
@@ -269,11 +340,57 @@ function CoursesContent({
   const [activeCategoryTab, setActiveCategoryTab] = useState(initialCat);
   const [activeSubcategory, setActiveSubcategory] = useState(initialSubcatArr);
   const [selectedCourse, setSelectedCourse] = useState(initialCourse);
+  const [selectedSubCourse, setSelectedSubCourse] = useState(initialSubCourse);
   const [selectedUniversities, setSelectedUniversities] = useState(initialUnis);
+  const [feeRange, setFeeRange] = useState([0, 1000000]);
+  const [durationRange, setDurationRange] = useState([3, 48]);
   const [selectedDuration, setSelectedDuration] = useState("all");
   const [selectedFee, setSelectedFee] = useState("all");
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
   const [specializationModalData, setSpecializationModalData] = useState(null);
+
+  // Mobile Filter Draft State
+  const [draftCategoryTab, setDraftCategoryTab] = useState(initialCat);
+  const [draftSubcategory, setDraftSubcategory] = useState(initialSubcatArr);
+  const [draftSelectedCourse, setDraftSelectedCourse] = useState(initialCourse);
+  const [draftSelectedSubCourse, setDraftSelectedSubCourse] = useState(initialSubCourse);
+  const [draftUniversities, setDraftUniversities] = useState(initialUnis);
+  const [draftFeeRange, setDraftFeeRange] = useState([0, 1000000]);
+  const [draftDurationRange, setDraftDurationRange] = useState([3, 48]);
+
+  useEffect(() => {
+    if (isMobileDrawerOpen) {
+      setDraftCategoryTab(activeCategoryTab);
+      setDraftSubcategory(activeSubcategory);
+      setDraftSelectedCourse(selectedCourse);
+      setDraftSelectedSubCourse(selectedSubCourse);
+      setDraftUniversities(selectedUniversities);
+      setDraftFeeRange(feeRange);
+      setDraftDurationRange(durationRange);
+    }
+  }, [isMobileDrawerOpen, activeCategoryTab, activeSubcategory, selectedCourse, selectedSubCourse, selectedUniversities, feeRange, durationRange]);
+
+  const handleApplyMobileFilters = () => {
+    setActiveCategoryTab(draftCategoryTab);
+    setActiveSubcategory(draftSubcategory);
+    setSelectedCourse(draftSelectedCourse);
+    setSelectedSubCourse(draftSelectedSubCourse);
+    setSelectedUniversities(draftUniversities);
+    setFeeRange(draftFeeRange);
+    setDurationRange(draftDurationRange);
+    setCurrentPage(1);
+    setIsMobileDrawerOpen(false);
+  };
+
+  const handleResetMobileFilters = () => {
+    setDraftCategoryTab("all");
+    setDraftSubcategory([]);
+    setDraftSelectedCourse("");
+    setDraftSelectedSubCourse("");
+    setDraftUniversities([]);
+    setDraftFeeRange([0, 1000000]);
+    setDraftDurationRange([3, 48]);
+  };
 
   const { openFormModal } = useFormModal();
   const { toggleCompare, isInCompare, setIsCompareDrawerOpen } = useCompare();
@@ -282,29 +399,28 @@ function CoursesContent({
   const pathname = usePathname();
 
   useEffect(() => {
-    if (
-      (!initialCategoriesProp || initialCategoriesProp.length === 0) ||
-      (!initialUniversitiesProp || initialUniversitiesProp.length === 0)
-    ) {
-      let isMounted = true;
-      Promise.all([
-        request.dynamicList({ entity: "category", endPoint: "v1/list", revalidate: 900 }),
-        request.dynamicList({ entity: "universities", endPoint: "v1/list", options: { items: 100 }, revalidate: 300 }),
-      ])
-        .then(([categoriesRes, unisRes]) => {
-          if (!isMounted) return;
-          setInitialCategories(categoriesRes?.categories || categoriesRes?.result || []);
-          setInitialUniversities(unisRes?.result || unisRes || []);
-        })
-        .catch((err) => {
-          console.error("Error loading initial filter options:", err);
-        });
+    let isMounted = true;
+    Promise.all([
+      request.dynamicList({ entity: "category", endPoint: "v1/list", revalidate: 900 }),
+      request.dynamicList({ entity: "universities", endPoint: "v1/list", options: { items: 100 }, revalidate: 300 }),
+      request.dynamicList({ entity: "courses", endPoint: "v1/options", revalidate: 300 }),
+      request.dynamicList({ entity: "subcourses", endPoint: "v1/options", revalidate: 300 }),
+    ])
+      .then(([categoriesRes, unisRes, coursesRes, subcoursesRes]) => {
+        if (!isMounted) return;
+        setInitialCategories(categoriesRes?.categories || categoriesRes?.result || []);
+        setInitialUniversities(unisRes?.result || unisRes || []);
+        setCoursesOptionsList(coursesRes?.result || coursesRes || []);
+        setSubcoursesOptionsList(subcoursesRes?.result || subcoursesRes || []);
+      })
+      .catch((err) => {
+        console.error("Error loading initial filter options:", err);
+      });
 
-      return () => {
-        isMounted = false;
-      };
-    }
-  }, [initialCategoriesProp, initialUniversitiesProp]);
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     const cat = searchParams?.get("category");
@@ -336,9 +452,12 @@ function CoursesContent({
       activeCategoryTab === "all" &&
       (!activeSubcategory || activeSubcategory.length === 0) &&
       !selectedCourse &&
+      !selectedSubCourse &&
       (!selectedUniversities || selectedUniversities.length === 0) &&
-      selectedDuration === "all" &&
-      selectedFee === "all" &&
+      feeRange[0] === 0 &&
+      feeRange[1] >= 1000000 &&
+      durationRange[0] <= 3 &&
+      durationRange[1] >= 48 &&
       !appliedSearchTerm &&
       currentPage === 1;
 
@@ -380,14 +499,9 @@ function CoursesContent({
     const resolvedSubcategoryIds = Array.isArray(activeSubcategory)
       ? activeSubcategory.map((s) => resolveToId(s, allFlatCategories)).filter(Boolean)
       : (resolveToId(activeSubcategory, allFlatCategories) ? [resolveToId(activeSubcategory, allFlatCategories)] : []);
-    const resolvedCourseId = resolveToId(selectedCourse, allFlatCategories);
+    const resolvedCourseId = resolveToId(selectedCourse, [...coursesOptionsList, ...allFlatCategories]);
+    const resolvedSubCourseId = resolveToId(selectedSubCourse, [...subcoursesOptionsList, ...allFlatCategories]);
     const resolvedUniversityIds = (selectedUniversities || []).map((u) => resolveToId(u, allFlatUniversities)).filter(Boolean);
-    const resolvedDuration = Array.isArray(selectedDuration)
-      ? selectedDuration.filter((d) => d && d !== "all")
-      : (selectedDuration && selectedDuration !== "all" ? selectedDuration : "all");
-    const resolvedFee = Array.isArray(selectedFee)
-      ? selectedFee.filter((f) => f && f !== "all")
-      : (selectedFee && selectedFee !== "all" ? selectedFee : "all");
 
     request.dynamicList({
       entity: "university-offerings",
@@ -398,9 +512,12 @@ function CoursesContent({
         category: resolvedCategoryIds,
         subcategory: resolvedSubcategoryIds,
         course: resolvedCourseId,
+        subcourse: resolvedSubCourseId,
         university: resolvedUniversityIds,
-        duration: resolvedDuration,
-        fee: resolvedFee,
+        minFee: feeRange[0] > 0 ? feeRange[0] : undefined,
+        maxFee: feeRange[1] < 1000000 ? feeRange[1] : undefined,
+        minDuration: durationRange[0] > 3 ? durationRange[0] : undefined,
+        maxDuration: durationRange[1] < 48 ? durationRange[1] : undefined,
         search: appliedSearchTerm,
       },
       revalidate: 300,
@@ -427,12 +544,15 @@ function CoursesContent({
     activeCategoryTab,
     activeSubcategory,
     selectedCourse,
+    selectedSubCourse,
     selectedUniversities,
-    selectedDuration,
-    selectedFee,
+    feeRange,
+    durationRange,
     appliedSearchTerm,
     initialCategories,
     initialUniversities,
+    coursesOptionsList,
+    subcoursesOptionsList,
     initialCoursesData,
   ]);
 
@@ -459,9 +579,7 @@ function CoursesContent({
 
         let cardTitle = item.title || courseName || item.name || "Course";
 
-        const courseNameKey = (courseName || cardTitle || "").toUpperCase().trim();
-        const fallbackFullName = COURSE_FULL_NAMES[courseNameKey] || "";
-        const displayName = item.displayName || course.displayName || course.displayNames?.[0]?.name || fallbackFullName;
+        const displayName = item.displayName || course.displayName || course.displayNames?.[0]?.name || "";
 
         const fees = item.fees || {};
         const duration = item.duration || {};
@@ -553,30 +671,12 @@ function CoursesContent({
 
     (initialCategories || []).forEach((c) => {
       if (!c) return;
+      // Exclude FEATURED_SECTION, keep only top categories
+      if (c.categoryType === "FEATURED_SECTION") return;
       const name = c.name || c.title || c.label;
       const slug = c.slug || slugify(name) || String(c._id || "");
       if (name && slug && !map.has(slug)) {
         map.set(slug, { value: slug, slug, label: name });
-      }
-
-      if (Array.isArray(c.courses)) {
-        c.courses.forEach((crs) => {
-          const crsName = crs.name || crs.title;
-          const crsSlug = crs.slug || slugify(crsName) || String(crs._id || "");
-          if (crsName && crsSlug && !map.has(crsSlug)) {
-            map.set(crsSlug, { value: crsSlug, slug: crsSlug, label: crsName });
-          }
-        });
-      }
-
-      if (Array.isArray(c.children)) {
-        c.children.forEach((ch) => {
-          const chName = ch.name || ch.title;
-          const chSlug = ch.slug || slugify(chName) || String(ch._id || "");
-          if (chName && chSlug && !map.has(chSlug)) {
-            map.set(chSlug, { value: chSlug, slug: chSlug, label: chName });
-          }
-        });
       }
     });
 
@@ -623,6 +723,21 @@ function CoursesContent({
     return Array.from(map.values());
   }, [initialCategories, activeCategoryTab]);
 
+  const subcategorySelectOptions = useMemo(() => {
+    const map = new Map();
+    map.set("all", { value: "all", slug: "all", label: "All Sub Categories" });
+
+    (subcategoryList || []).forEach((sub) => {
+      if (!sub) return;
+      const key = sub.value || sub.slug || sub.id;
+      if (key && !map.has(key)) {
+        map.set(key, { value: key, slug: sub.slug || key, label: sub.label });
+      }
+    });
+
+    return Array.from(map.values());
+  }, [subcategoryList]);
+
   const durationList = useMemo(() => [
     { label: "All Durations", value: "all" },
     { label: "0 - 6 Months", value: "0-6-months" },
@@ -664,14 +779,47 @@ function CoursesContent({
     return Array.from(map.values());
   }, [initialUniversities]);
 
+  const courseSelectOptions = useMemo(() => {
+    const list = [{ value: "all", label: "All Courses" }];
+    const seen = new Set();
+    (coursesOptionsList || []).forEach((c) => {
+      if (!c) return;
+      const val = c.slug || String(c._id || "");
+      const label = c.name || c.title || val;
+      if (val && !seen.has(val)) {
+        seen.add(val);
+        list.push({ value: val, label, id: String(c._id) });
+      }
+    });
+    return list;
+  }, [coursesOptionsList]);
+
+  const subcourseSelectOptions = useMemo(() => {
+    const list = [{ value: "all", label: "All Sub Courses" }];
+    const seen = new Set();
+    (subcoursesOptionsList || []).forEach((sc) => {
+      if (!sc) return;
+      const val = sc.slug || String(sc._id || "");
+      const label = sc.name || sc.title || val;
+      if (val && !seen.has(val)) {
+        seen.add(val);
+        list.push({ value: val, label, id: String(sc._id) });
+      }
+    });
+    return list;
+  }, [subcoursesOptionsList]);
+
   const handleClearFilters = () => {
     setAppliedSearchTerm("");
     setActiveCategoryTab("all");
     setSelectedCourse("");
+    setSelectedSubCourse("");
     setActiveSubcategory([]);
     setSelectedUniversities([]);
     setSelectedDuration("all");
     setSelectedFee("all");
+    setFeeRange([0, 1000000]);
+    setDurationRange([3, 48]);
     setCurrentPage(1);
 
     if (router && pathname) {
@@ -682,9 +830,11 @@ function CoursesContent({
   const activeFilterCount =
     (activeCategoryTab && activeCategoryTab !== "all" ? 1 : 0) +
     (activeSubcategory && activeSubcategory.length > 0 ? activeSubcategory.length : 0) +
+    (selectedCourse ? 1 : 0) +
+    (selectedSubCourse ? 1 : 0) +
     (selectedUniversities && selectedUniversities.length > 0 ? 1 : 0) +
-    (selectedDuration && selectedDuration !== "all" ? 1 : 0) +
-    (selectedFee && selectedFee !== "all" ? 1 : 0);
+    (feeRange[0] > 0 || feeRange[1] < 1000000 ? 1 : 0) +
+    (durationRange[0] > 3 || durationRange[1] < 48 ? 1 : 0);
 
   const filterProps = {
     activeFilterCount,
@@ -693,8 +843,12 @@ function CoursesContent({
     setActiveCategoryTab,
     selectedCourse,
     setSelectedCourse,
-    selectedDuration,
-    setSelectedDuration,
+    selectedSubCourse,
+    setSelectedSubCourse,
+    feeRange,
+    setFeeRange,
+    durationRange,
+    setDurationRange,
     activeSubcategory,
     setActiveSubcategory,
     selectedFee,
@@ -702,9 +856,9 @@ function CoursesContent({
     selectedUniversities,
     setSelectedUniversities,
     categorySelectOptions,
-    subcategoryList,
-    durationList,
-    feeList,
+    subcategorySelectOptions,
+    courseSelectOptions,
+    subcourseSelectOptions,
     universityOptions,
     setCurrentPage,
   };
@@ -734,8 +888,8 @@ function CoursesContent({
               setCurrentPage(1);
             }}
             options={categorySelectOptions}
-            className="w-full text-xs font-semibold"
-            placeholder="Course"
+            className="w-full"
+            placeholder="Category"
             optionFilterProp="label"
           />
           <Select
@@ -749,12 +903,9 @@ function CoursesContent({
               setActiveSubcategory(val === "all" ? [] : [val]);
               setCurrentPage(1);
             }}
-            options={[
-              { label: "All Subcategory", value: "all" },
-              ...subcategoryList.map((s) => ({ label: s.label, value: s.value || s.slug })),
-            ]}
-            className="w-full text-xs font-semibold"
-            placeholder="Subcategory"
+            options={subcategorySelectOptions}
+            className="w-full"
+            placeholder="Sub Category"
             optionFilterProp="label"
           />
         </div>
@@ -1099,8 +1250,8 @@ function CoursesContent({
             </div>
             <button
               type="button"
-              onClick={handleClearFilters}
-              className="text-xs font-bold text-red-500 cursor-pointer bg-transparent border-none p-0"
+              onClick={handleResetMobileFilters}
+              className="text-xs font-bold text-red-500 hover:text-red-600 cursor-pointer bg-transparent border-none p-0"
             >
               Reset
             </button>
@@ -1110,18 +1261,60 @@ function CoursesContent({
         onClose={() => setIsMobileDrawerOpen(false)}
         open={isMobileDrawerOpen}
         className="lg:hidden"
+        footer={
+          <div className="flex items-center gap-3 p-2 border-t border-gray-100">
+            <button
+              type="button"
+              onClick={() => setIsMobileDrawerOpen(false)}
+              className="flex-1 py-2.5 px-4 rounded-xl border border-gray-300 text-gray-700 font-semibold text-sm bg-white hover:bg-gray-50 cursor-pointer transition-colors"
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              onClick={handleApplyMobileFilters}
+              className="flex-1 py-2.5 px-4 rounded-xl bg-[#0a2540] hover:bg-[#06182c] text-white font-bold text-sm border-none cursor-pointer transition-colors shadow-sm"
+            >
+              Apply Filter
+            </button>
+          </div>
+        }
         styles={{
-          wrapper: { height: "85vh" },
+          wrapper: { height: "70vh" },
           section: {
-            height: "85vh",
+            height: "70vh",
             borderTopLeftRadius: 20,
             borderTopRightRadius: 20,
             overflow: "hidden",
           },
           body: { padding: "16px 20px 24px" },
+          footer: { padding: "8px 16px" },
         }}
       >
-        <FilterSidebarContent hideHeader {...filterProps} />
+        <FilterSidebarContent
+          hideHeader
+          activeCategoryTab={draftCategoryTab}
+          setActiveCategoryTab={setDraftCategoryTab}
+          activeSubcategory={draftSubcategory}
+          setActiveSubcategory={setDraftSubcategory}
+          selectedCourse={draftSelectedCourse}
+          setSelectedCourse={setDraftSelectedCourse}
+          selectedSubCourse={draftSelectedSubCourse}
+          setSelectedSubCourse={setDraftSelectedSubCourse}
+          selectedUniversities={draftUniversities}
+          setSelectedUniversities={setDraftUniversities}
+          feeRange={draftFeeRange}
+          setFeeRange={setDraftFeeRange}
+          durationRange={draftDurationRange}
+          setDurationRange={setDraftDurationRange}
+          categorySelectOptions={categorySelectOptions}
+          subcategorySelectOptions={subcategorySelectOptions}
+          courseSelectOptions={courseSelectOptions}
+          subcourseSelectOptions={subcourseSelectOptions}
+          universityOptions={universityOptions}
+          handleClearFilters={handleResetMobileFilters}
+          setCurrentPage={setCurrentPage}
+        />
       </Drawer>
 
       {/* ── SPECIALIZATIONS MODAL ── */}
