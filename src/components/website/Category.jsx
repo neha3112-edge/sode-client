@@ -633,10 +633,34 @@ function HeroSearchBar({ allCourses = [], allUniversities = [], allCategories = 
 function UniversityCarouselBlock({
   block,
   slidesToShowCount,
-  handleSlidePointerDown,
-  handleSlidePointerUp,
+  handleMouseDown,
   handleSlideClick,
 }) {
+  const isScrollable = block.children && block.children.length > slidesToShowCount;
+
+  if (!isScrollable) {
+    return (
+      <div className="grid grid-cols-4 md:grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-1.5 sm:gap-2.5 w-full mx-auto items-stretch">
+        {block.children.map((child, idx) => (
+          <div
+            key={child._id || idx}
+            onClick={() => handleSlideClick(null, child)}
+            className="w-full aspect-square bg-white hover:bg-slate-50 border border-slate-200/90 rounded-xl sm:rounded-2xl p-1 min-[360px]:p-1.5 sm:p-2 flex flex-col items-center justify-center text-center cursor-pointer select-none transition-all duration-200 hover:shadow hover:-translate-y-0.5 group min-w-0"
+          >
+            <div className="mb-0.5 sm:mb-1 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
+              <PartnerLogoIcon partner={child} />
+            </div>
+            <div className="h-6 min-[360px]:h-7 sm:h-8 flex items-center justify-center w-full min-w-0">
+              <h5 className="text-[9.5px] min-[360px]:text-[10px] sm:text-[11px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors text-center w-full tracking-tight px-0.5 min-w-0 leading-tight line-clamp-2">
+                {formatTwoLineText(child.name)}
+              </h5>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="relative max-w-6xl mx-auto min-h-[90px] sm:min-h-[110px]">
       <Carousel
@@ -653,13 +677,13 @@ function UniversityCarouselBlock({
         touchThreshold={10}
         slidesToShow={slidesToShowCount}
         slidesToScroll={1}
-        className="w-full relative cursor-grab active:cursor-grabbing"
+        className="w-full relative"
       >
         {block.children.map((child, idx) => (
           <div key={child._id || idx} className="px-1 py-0.5">
             <div
-              onPointerDown={handleSlidePointerDown}
-              onPointerUp={(e) => handleSlidePointerUp(e, child)}
+              onMouseDown={handleMouseDown}
+              onTouchStart={handleMouseDown}
               onClick={(e) => handleSlideClick(e, child)}
               className="w-full aspect-square bg-white hover:bg-slate-50 border border-slate-200/90 rounded-xl sm:rounded-2xl p-1 min-[360px]:p-1.5 sm:p-2 flex flex-col items-center justify-center text-center cursor-pointer select-none transition-all duration-200 hover:shadow hover:-translate-y-0.5 group min-w-0"
             >
@@ -689,32 +713,27 @@ export function Category({ categories = [], universities = [], programs = [] }) 
   const [expandedSections, setExpandedSections] = useState({});
   const [slidesToShowCount, setSlidesToShowCount] = useState(4);
 
-  const pointerStartRef = useRef({ x: 0, y: 0, time: 0 });
-  const hasTriggeredRef = useRef(false);
+  const pointerDownRef = useRef({ x: 0, y: 0, time: 0 });
 
-  const handleSlidePointerDown = (e) => {
-    pointerStartRef.current = { x: e.clientX, y: e.clientY, time: Date.now() };
-    hasTriggeredRef.current = false;
-  };
-
-  const handleSlidePointerUp = (e, child) => {
-    const diffX = Math.abs(e.clientX - pointerStartRef.current.x);
-    const diffY = Math.abs(e.clientY - pointerStartRef.current.y);
-    const duration = Date.now() - pointerStartRef.current.time;
-    if (diffX < 12 && diffY < 12 && duration < 600) {
-      hasTriggeredRef.current = true;
-      handleCardClick(child);
-    }
+  const handleMouseDown = (e) => {
+    const clientX = e?.touches ? e.touches[0]?.clientX : e?.clientX;
+    const clientY = e?.touches ? e.touches[0]?.clientY : e?.clientY;
+    pointerDownRef.current = { x: clientX || 0, y: clientY || 0, time: Date.now() };
   };
 
   const handleSlideClick = (e, child) => {
-    e.stopPropagation();
-    if (!hasTriggeredRef.current) {
-      handleCardClick(child);
+    if (e && pointerDownRef.current.time) {
+      const clientX = e?.touches ? e.touches[0]?.clientX : e?.clientX;
+      const clientY = e?.touches ? e.touches[0]?.clientY : e?.clientY;
+      if (clientX !== undefined && clientY !== undefined) {
+        const diffX = Math.abs(clientX - (pointerDownRef.current.x || 0));
+        const diffY = Math.abs(clientY - (pointerDownRef.current.y || 0));
+        if (diffX > 12 || diffY > 12) {
+          return;
+        }
+      }
     }
-    setTimeout(() => {
-      hasTriggeredRef.current = false;
-    }, 150);
+    handleCardClick(child);
   };
 
   useEffect(() => {
@@ -942,6 +961,15 @@ export function Category({ categories = [], universities = [], programs = [] }) 
         .ant-carousel .slick-next:hover::before {
           color: #3b82f6 !important;
           opacity: 1 !important;
+        }
+        .ant-carousel .slick-slide {
+          cursor: pointer !important;
+        }
+        .ant-carousel .slick-slide > div {
+          cursor: pointer !important;
+        }
+        .ant-carousel .slick-list {
+          overflow: hidden !important;
         }
       ` }} />
 
@@ -1337,8 +1365,7 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                     <UniversityCarouselBlock
                       block={block}
                       slidesToShowCount={slidesToShowCount}
-                      handleSlidePointerDown={handleSlidePointerDown}
-                      handleSlidePointerUp={handleSlidePointerUp}
+                      handleMouseDown={handleMouseDown}
                       handleSlideClick={handleSlideClick}
                     />
                   )}
@@ -1400,8 +1427,8 @@ export function Category({ categories = [], universities = [], programs = [] }) 
         footer={null}
         centered
         closable={false}
-        mask={{ closable: false }}
-        keyboard={false}
+        mask={{ closable: true }}
+        keyboard={true}
         destroyOnHidden
         width={620}
         styles={{
