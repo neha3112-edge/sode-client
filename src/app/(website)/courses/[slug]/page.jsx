@@ -77,7 +77,7 @@ const getCourseData = cache(async (slug) => {
   if (!slug) return null;
   try {
     const res = await request.dynamicRead({
-      entity: "university-offerings",
+      entity: "courses",
       endPoint: "v1/list",
       id: encodeURIComponent(slug),
       revalidate: 900,

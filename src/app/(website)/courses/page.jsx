@@ -53,7 +53,7 @@ export default async function CoursesPage({ searchParams }) {
         revalidate: 0,
       }),
       request.dynamicList({
-        entity: "university-offerings",
+        entity: "courses",
         endPoint: "v1/list",
         options: queryOptions,
         revalidate: 0,

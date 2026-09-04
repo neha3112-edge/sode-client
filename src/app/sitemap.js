@@ -25,7 +25,7 @@ export default async function sitemap() {
 
   try {
     const coursesRes = await request.dynamicList({
-      entity: "university-offerings",
+      entity: "courses",
       endPoint: "v1/list",
       options: { items: 1000 },
       revalidate: 3600,

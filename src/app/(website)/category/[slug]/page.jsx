@@ -45,7 +45,7 @@ export default async function CategoryDetailPage({ params }) {
 
   // Fetch courses under this category
   const coursesRes = await request.dynamicList({
-    entity: "university-offerings",
+    entity: "courses",
     endPoint: "v1/list",
     options: { category: slug, items: 20 },
     revalidate: 300,

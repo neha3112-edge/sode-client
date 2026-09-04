@@ -44,7 +44,7 @@ export default async function Home() {
   ] = await Promise.all([
     request.dynamicRead({ entity: "hero", endPoint: "public/by-slug", slug: "home", revalidate: 300 }),
     getUniversitiesData(),
-    request.dynamicList({ entity: "university-offerings", endPoint: "v1/list", options: { items: 30 }, revalidate: 300 }),
+    request.dynamicList({ entity: "courses", endPoint: "v1/list", options: { items: 30 }, revalidate: 300 }),
     request.dynamicList({ entity: "category", endPoint: "v1/list", revalidate: 900 }),
   ]);
 

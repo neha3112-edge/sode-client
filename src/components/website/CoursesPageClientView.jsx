@@ -504,7 +504,7 @@ function CoursesContent({
     const resolvedUniversityIds = (selectedUniversities || []).map((u) => resolveToId(u, allFlatUniversities)).filter(Boolean);
 
     request.dynamicList({
-      entity: "university-offerings",
+      entity: "courses",
       endPoint: "v1/list",
       options: {
         page: currentPage,
@@ -576,10 +576,12 @@ function CoursesContent({
         const uniName = uni.name || "Partner University";
         const courseName = course.name || "";
         const subcourseName = subcourse.name || "";
+        const fullDisplayName = item.displayName || course.displayName || course.displayNames?.[0]?.name || "";
+        const effectiveCourseName = (course.showDisplayName || item.showDisplayName) && fullDisplayName ? fullDisplayName : courseName;
 
-        let cardTitle = item.title || courseName || item.name || "Course";
+        let cardTitle = item.title || effectiveCourseName || item.name || "Course";
 
-        const displayName = item.displayName || course.displayName || course.displayNames?.[0]?.name || "";
+        const displayName = fullDisplayName;
 
         const fees = item.fees || {};
         const duration = item.duration || {};
@@ -785,7 +787,9 @@ function CoursesContent({
     (coursesOptionsList || []).forEach((c) => {
       if (!c) return;
       const val = c.slug || String(c._id || "");
-      const label = c.name || c.title || val;
+      const fullDisplay = c.displayNames?.[0]?.name || c.displayName;
+      const effectiveName = c.showDisplayName && fullDisplay ? fullDisplay : (c.name || c.title || val);
+      const label = effectiveName;
       if (val && !seen.has(val)) {
         seen.add(val);
         list.push({ value: val, label, id: String(c._id) });

@@ -215,7 +215,7 @@ function HeroSearchBar({ allCourses = [], allUniversities = [], allCategories = 
     debounceTimerRef.current = setTimeout(async () => {
       try {
         const base = API_BASE_URL.replace(/\/+$/, "");
-        const res = await fetch(`${base}/university-offerings/v1/search?q=${encodeURIComponent(trimmed)}&limit=6`);
+        const res = await fetch(`${base}/courses/v1/search?q=${encodeURIComponent(trimmed)}&limit=6`);
         if (res.ok) {
           const json = await res.json();
           if (json.success && json.result) {
@@ -880,11 +880,13 @@ export function Category({ categories = [], universities = [], programs = [] }) 
     if (activeCategory) {
       setActiveCategory(null);
     }
-    if (item.targetUrl) {
+    if (item.targetUrl && !/[0-9a-fA-F]{24}/.test(item.targetUrl)) {
       router.push(item.targetUrl);
     } else {
       const targetSlug = getItemSlug(item);
-      if (item.itemType === "course" || item.targetType === "COURSE") {
+      if (item.isUniversity === true || item.itemType === "university") {
+        router.push(`/courses?university=${encodeURIComponent(targetSlug)}`);
+      } else if (item.itemType === "course" || item.targetType === "COURSE") {
         router.push(`/courses?course=${encodeURIComponent(targetSlug)}`);
       } else {
         router.push(`/courses?category=${encodeURIComponent(targetSlug)}`);
@@ -1476,7 +1478,7 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                               router.push(`/courses?university=${encodeURIComponent(itemSlug)}`);
                             } else if (parentCatSlug && parentCatSlug !== "all") {
                               router.push(`/courses?category=${encodeURIComponent(parentCatSlug)}&subcategory=${encodeURIComponent(itemSlug)}`);
-                            } else if (it.targetUrl) {
+                            } else if (it.targetUrl && !/[0-9a-fA-F]{24}/.test(it.targetUrl)) {
                               router.push(it.targetUrl);
                             } else {
                               router.push(`/courses?subcategory=${encodeURIComponent(itemSlug)}`);
@@ -1531,11 +1533,12 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                           key={`${crs._id || crs.slug || idx}-${idx}`}
                           onClick={() => {
                             handleCloseModal();
-                            if (crs.targetUrl) {
-                              router.push(crs.targetUrl);
+                            const uniSlug = getItemSlug(modalData.category);
+                            const crsSlug = getItemSlug(crs);
+                            if (crs.isSubCourse || crs.itemType === "subcourse") {
+                              const parentSlug = crs.parentCourseSlug || getItemSlug({ name: crs.parentCourseName, slug: crs.parentCourseSlug }) || crsSlug;
+                              router.push(`/courses?university=${encodeURIComponent(uniSlug)}&course=${encodeURIComponent(parentSlug)}&subcourse=${encodeURIComponent(crsSlug)}`);
                             } else {
-                              const uniSlug = getItemSlug(modalData.category);
-                              const crsSlug = getItemSlug(crs);
                               router.push(`/courses?university=${encodeURIComponent(uniSlug)}&course=${encodeURIComponent(crsSlug)}`);
                             }
                           }}
