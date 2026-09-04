@@ -303,11 +303,10 @@ function HeroSearchBar({ allCourses = [], allUniversities = [], allCategories = 
           {/* Main Search Input Box */}
           <form
             onSubmit={handleSearchSubmit}
-            className={`relative flex items-center bg-white rounded-full border overflow-hidden transition-all duration-200 h-10 sm:h-11 shadow-xs ${
-              isFocused
-                ? "border-[#0B3B7E] ring-2 ring-[#0B3B7E]/10"
-                : "border-slate-300 hover:border-slate-400"
-            }`}
+            className={`relative flex items-center bg-white rounded-full border overflow-hidden transition-all duration-200 h-10 sm:h-11 shadow-xs ${isFocused
+              ? "border-[#0B3B7E] ring-2 ring-[#0B3B7E]/10"
+              : "border-slate-300 hover:border-slate-400"
+              }`}
           >
             <div className="pl-3.5 sm:pl-4 text-slate-400 flex items-center justify-center shrink-0">
               {loading ? (
@@ -633,36 +632,12 @@ function HeroSearchBar({ allCourses = [], allUniversities = [], allCategories = 
 function UniversityCarouselBlock({
   block,
   slidesToShowCount,
-  handleMouseDown,
+  handleSlidePointerDown,
+  handleSlidePointerMove,
   handleSlideClick,
 }) {
-  const isScrollable = block.children && block.children.length > slidesToShowCount;
-
-  if (!isScrollable) {
-    return (
-      <div className="grid grid-cols-4 md:grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-1.5 sm:gap-2.5 w-full mx-auto items-stretch">
-        {block.children.map((child, idx) => (
-          <div
-            key={child._id || idx}
-            onClick={() => handleSlideClick(null, child)}
-            className="w-full aspect-square bg-white hover:bg-slate-50 border border-slate-200/90 rounded-xl sm:rounded-2xl p-1 min-[360px]:p-1.5 sm:p-2 flex flex-col items-center justify-center text-center cursor-pointer select-none transition-all duration-200 hover:shadow hover:-translate-y-0.5 group min-w-0"
-          >
-            <div className="mb-0.5 sm:mb-1 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
-              <PartnerLogoIcon partner={child} />
-            </div>
-            <div className="h-6 min-[360px]:h-7 sm:h-8 flex items-center justify-center w-full min-w-0">
-              <h5 className="text-[9.5px] min-[360px]:text-[10px] sm:text-[11px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors text-center w-full tracking-tight px-0.5 min-w-0 leading-tight line-clamp-2">
-                {formatTwoLineText(child.name)}
-              </h5>
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  }
-
   return (
-    <div className="relative max-w-6xl mx-auto min-h-[90px] sm:min-h-[110px]">
+    <div className="relative max-w-6xl mx-auto min-h-22.5 sm:min-h-27.5">
       <Carousel
         arrows={true}
         key={slidesToShowCount}
@@ -682,8 +657,8 @@ function UniversityCarouselBlock({
         {block.children.map((child, idx) => (
           <div key={child._id || idx} className="px-1 py-0.5">
             <div
-              onMouseDown={handleMouseDown}
-              onTouchStart={handleMouseDown}
+              onPointerDown={handleSlidePointerDown}
+              onPointerMove={handleSlidePointerMove}
               onClick={(e) => handleSlideClick(e, child)}
               className="w-full aspect-square bg-white hover:bg-slate-50 border border-slate-200/90 rounded-xl sm:rounded-2xl p-1 min-[360px]:p-1.5 sm:p-2 flex flex-col items-center justify-center text-center cursor-pointer select-none transition-all duration-200 hover:shadow hover:-translate-y-0.5 group min-w-0"
             >
@@ -713,25 +688,30 @@ export function Category({ categories = [], universities = [], programs = [] }) 
   const [expandedSections, setExpandedSections] = useState({});
   const [slidesToShowCount, setSlidesToShowCount] = useState(4);
 
-  const pointerDownRef = useRef({ x: 0, y: 0, time: 0 });
+  const isDraggingRef = useRef(false);
+  const pointerStartPosRef = useRef({ x: 0, y: 0 });
 
-  const handleMouseDown = (e) => {
-    const clientX = e?.touches ? e.touches[0]?.clientX : e?.clientX;
-    const clientY = e?.touches ? e.touches[0]?.clientY : e?.clientY;
-    pointerDownRef.current = { x: clientX || 0, y: clientY || 0, time: Date.now() };
+  const handleSlidePointerDown = (e) => {
+    isDraggingRef.current = false;
+    pointerStartPosRef.current = { x: e.clientX, y: e.clientY };
   };
 
+  const handleSlidePointerMove = (e) => {
+    const diffX = Math.abs(e.clientX - pointerStartPosPos(pointerStartPosRef.current.x));
+    const diffY = Math.abs(e.clientY - pointerStartPosPos(pointerStartPosRef.current.y));
+    if (diffX > 8 || diffY > 8) {
+      isDraggingRef.current = true;
+    }
+  };
+
+  function pointerStartPosPos(val) {
+    return val || 0;
+  }
+
   const handleSlideClick = (e, child) => {
-    if (e && pointerDownRef.current.time) {
-      const clientX = e?.touches ? e.touches[0]?.clientX : e?.clientX;
-      const clientY = e?.touches ? e.touches[0]?.clientY : e?.clientY;
-      if (clientX !== undefined && clientY !== undefined) {
-        const diffX = Math.abs(clientX - (pointerDownRef.current.x || 0));
-        const diffY = Math.abs(clientY - (pointerDownRef.current.y || 0));
-        if (diffX > 12 || diffY > 12) {
-          return;
-        }
-      }
+    if (isDraggingRef.current) {
+      isDraggingRef.current = false;
+      return;
     }
     handleCardClick(child);
   };
@@ -1193,7 +1173,7 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                           submitButtonText: "Get Scholarship Code",
                         })
                       }
-                      className="mt-12 relative w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl min-h-[280px] sm:min-h-[320px] md:min-h-[350px] flex flex-col md:flex-row items-center justify-between p-6 sm:p-8 md:p-10 lg:px-12 lg:py-10 select-none text-left cursor-pointer group"
+                      className="mt-12 relative w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl min-h-70 sm:min-h-[320px] md:min-h-[350px] flex flex-col md:flex-row items-center justify-between p-6 sm:p-8 md:p-10 lg:px-12 lg:py-10 select-none text-left cursor-pointer group"
                     >
                       {/* Background Image with Gradient, Coins on Left & Center Student Model */}
                       <Image
@@ -1365,7 +1345,8 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                     <UniversityCarouselBlock
                       block={block}
                       slidesToShowCount={slidesToShowCount}
-                      handleMouseDown={handleMouseDown}
+                      handleSlidePointerDown={handleSlidePointerDown}
+                      handleSlidePointerMove={handleSlidePointerMove}
                       handleSlideClick={handleSlideClick}
                     />
                   )}
@@ -1405,9 +1386,8 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                           viewBox="0 0 24 24"
                           strokeWidth={2.5}
                           stroke="currentColor"
-                          className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                            isExpanded ? "rotate-180" : "group-hover:translate-y-0.5"
-                          }`}
+                          className={`w-3.5 h-3.5 transition-transform duration-200 ${isExpanded ? "rotate-180" : "group-hover:translate-y-0.5"
+                            }`}
                         >
                           <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                         </svg>
