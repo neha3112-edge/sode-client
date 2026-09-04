@@ -1531,9 +1531,13 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                           key={`${crs._id || crs.slug || idx}-${idx}`}
                           onClick={() => {
                             handleCloseModal();
-                            const uniSlug = getItemSlug(modalData.category);
-                            const crsSlug = getItemSlug(crs);
-                            router.push(`/courses?university=${encodeURIComponent(uniSlug)}&course=${encodeURIComponent(crsSlug)}`);
+                            if (crs.targetUrl) {
+                              router.push(crs.targetUrl);
+                            } else {
+                              const uniSlug = getItemSlug(modalData.category);
+                              const crsSlug = getItemSlug(crs);
+                              router.push(`/courses?university=${encodeURIComponent(uniSlug)}&course=${encodeURIComponent(crsSlug)}`);
+                            }
                           }}
                           className="bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl p-1.5 min-[360px]:p-2 aspect-square flex flex-col items-center justify-between text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group min-w-0 w-full shadow-2xs overflow-hidden"
                         >
