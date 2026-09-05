@@ -16,10 +16,13 @@ import {
   VideoCameraOutlined,
   TrophyOutlined,
   PlusOutlined,
-  MinusOutlined,
   QuestionCircleOutlined,
   UserOutlined,
   CreditCardOutlined,
+  BookOutlined,
+  SafetyCertificateOutlined,
+  FileTextOutlined,
+  RiseOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
 import FormWrapper from "@/components/forms/FormWrapper";
@@ -116,6 +119,7 @@ export default function CourseClientView({ initialData = null, slug = "" }) {
   const [activeUniIdx, setActiveUniIdx] = useState(
     typeof initialData?.activeOfferingIdx === "number" ? initialData.activeOfferingIdx : 0
   );
+  const [activeSemesterIdx, setActiveSemesterIdx] = useState(0);
 
   const course = initialData;
 
@@ -160,9 +164,21 @@ export default function CourseClientView({ initialData = null, slug = "" }) {
   }
 
   const primaryDuration =
-    course?.activeSubcourseSlug && heroSub?.duration?.title
-      ? heroSub.duration.title
-      : activeOffering?.duration?.title || "6 Months";
+    (course?.activeSubcourseSlug && heroSub?.duration?.title) ||
+    (typeof activeOffering?.duration === "string" ? activeOffering.duration : null) ||
+    activeOffering?.duration?.name ||
+    activeOffering?.duration?.title ||
+    (typeof course?.duration === "string" ? course.duration : null) ||
+    course?.duration?.name ||
+    course?.duration?.title ||
+    "3 Years";
+
+  const displayFee =
+    course?.fullFee ||
+    (course?.fees?.name ? (course.fees.name.includes("₹") ? course.fees.name : `₹ ${course.fees.name}`) : null) ||
+    (course?.amount ? `₹ ${Number(course.amount).toLocaleString("en-IN")}` : null) ||
+    (course?.feeSection?.tuitionFee ? `₹ ${Number(course.feeSection.tuitionFee).toLocaleString("en-IN")}` : null) ||
+    (activeOffering?.fee?.amount ? `₹ ${Number(activeOffering.fee.amount).toLocaleString("en-IN")}` : null);
 
   const overviewTitle = course?.overviewSection?.title || heroSub?.overviewTitle || "Course Overview";
   const overviewText =
@@ -181,6 +197,7 @@ export default function CourseClientView({ initialData = null, slug = "" }) {
           ...(uniName ? [{ label: "Institute", value: uniName }] : []),
           ...(heroSub?.title ? [{ label: "Programme", value: heroSub.title }] : []),
           ...(primaryDuration ? [{ label: "Duration", value: primaryDuration }] : []),
+          ...(displayFee ? [{ label: "Course Fee", value: displayFee }] : []),
         ];
 
   const whyChooseTitle = course?.whyChooseSection?.title || heroSub?.whyChooseTitle || "Why Choose This Course?";
@@ -232,11 +249,17 @@ export default function CourseClientView({ initialData = null, slug = "" }) {
     ...(whyChooseTitle || whyChooseDescription || highlightsList.length > 0
       ? [{ id: "section-why-choose", label: "Why Choose" }]
       : []),
-    ...(whoCanApplyList.length > 0 || admissionProcessList.length > 0
+    ...(whoCanApplyList.length > 0 ||
+    admissionProcessList.length > 0 ||
+    course?.admissionSection?.eligibilityCriteria?.length > 0 ||
+    course?.admissionSection?.documentsRequired?.length > 0
       ? [{ id: "section-admission", label: "Admission" }]
       : []),
     ...(skillsSection &&
-    (skillsSection.title || skillsSection.skillsGain?.length > 0 || skillsSection.curriculumOverview?.length > 0)
+    (skillsSection.title ||
+      skillsSection.skillsGain?.length > 0 ||
+      skillsSection.curriculumOverview?.length > 0 ||
+      skillsSection.semesters?.length > 0)
       ? [{ id: "section-curriculum", label: "Curriculum" }]
       : []),
     ...(learningExperience &&
@@ -244,14 +267,24 @@ export default function CourseClientView({ initialData = null, slug = "" }) {
       ? [{ id: "section-experience", label: "Experience" }]
       : []),
     ...(instituteSection &&
-    (instituteSection.title || instituteSection.certificateTitle || instituteSection.whyItMatters?.length > 0)
+    (instituteSection.title ||
+      instituteSection.certificateTitle ||
+      instituteSection.whyItMatters?.length > 0 ||
+      instituteSection.instituteHighlights?.length > 0)
       ? [{ id: "section-certificate", label: "Certificate" }]
       : []),
     ...(careerSection &&
-    (careerSection.title || careerSection.careerOpportunities?.length > 0 || careerSection.industriesHiring?.length > 0)
+    (careerSection.title ||
+      careerSection.careerOpportunities?.length > 0 ||
+      careerSection.industriesHiring?.length > 0 ||
+      careerSection.jobRoles?.length > 0)
       ? [{ id: "section-career", label: "Career" }]
       : []),
-    ...(feeSection && (feeSection.title || feeSection.financialSupport?.length > 0)
+    ...(feeSection &&
+    (feeSection.title ||
+      feeSection.financialSupport?.length > 0 ||
+      feeSection.paymentOptions?.length > 0 ||
+      feeSection.feeBreakdown?.length > 0)
       ? [{ id: "section-fees", label: "Fee Details" }]
       : []),
     ...(faqSection && faqSection.faqs && faqSection.faqs.length > 0
@@ -334,21 +367,26 @@ export default function CourseClientView({ initialData = null, slug = "" }) {
     ? getAssetPath(uniObj.logo?.url || uniObj.logo)
     : null;
 
-  const rawImage =
-    course?.heroMedia?.url ||
-    course?.heroMedia ||
+  // University Banner Image ('bannerImg' in University model - exactly like university page)
+  const uniBannerImage =
     uniObj?.bannerImg?.url ||
     uniObj?.bannerImg ||
-    uniObj?.imageSrc?.url ||
-    uniObj?.imageSrc ||
-    (typeof course?.image === "object" ? course?.image?.url : course?.image);
+    (typeof course?.universityId?.bannerImg === "object"
+      ? course?.universityId?.bannerImg?.url
+      : course?.universityId?.bannerImg) ||
+    course?.heroMedia?.url ||
+    course?.heroMedia ||
+    uniObj?.image?.url ||
+    uniObj?.image ||
+    null;
 
-  const imageUrl = rawImage ? getAssetPath(rawImage) : "";
+  const rawImage = uniBannerImage;
+  const imageUrl = rawImage ? getAssetPath(rawImage) : null;
 
   const rawCertImage =
     instituteSection?.certificateImage?.url || instituteSection?.certificateImage;
 
-  const certificateImageUrl = rawCertImage ? getAssetPath(rawCertImage) : "";
+  const certificateImageUrl = rawCertImage ? getAssetPath(rawCertImage) : null;
 
   return (
     <div className="bg-[#F1F4F9] min-h-screen py-5 px-4 sm:px-6 lg:px-8 font-sans">
@@ -385,21 +423,54 @@ export default function CourseClientView({ initialData = null, slug = "" }) {
 
             {/* Hero Banner */}
             <div className="bg-linear-to-r from-[#0F3759] via-[#103D6D] to-[#154E8A] rounded-3xl overflow-hidden text-white relative border border-gray-200">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-                <div className="lg:col-span-7 space-y-5 p-6 pb-0 lg:pl-10 lg:py-10">
-                  <span className="bg-[#FAF0CA] text-[#0C3058] font-semibold text-xs uppercase px-4 py-1.5 rounded-full inline-block tracking-wider">
-                    {categoryName}
-                  </span>
+              <div className="flex flex-col lg:flex-row items-stretch justify-between">
+                <div className="flex-1 space-y-4 p-6 sm:p-8 lg:p-10 flex flex-col justify-center">
+                  <div>
+                    <span className="bg-[#FAF0CA] text-[#0C3058] font-semibold text-xs uppercase px-4 py-1.5 rounded-full inline-block tracking-wider">
+                      {categoryName}
+                    </span>
+                  </div>
 
                   <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-white leading-tight tracking-tight m-0">
                     {displayHeroTitle}
                   </h1>
 
-                  <div className="flex flex-wrap items-center gap-5 text-xs sm:text-sm font-medium text-gray-200 pt-4">
+                  {course?.subTitle && (
+                    <p className="text-white/85 text-xs sm:text-sm font-normal leading-relaxed m-0 pt-0.5">
+                      {course.subTitle}
+                    </p>
+                  )}
+
+                  {Array.isArray(uniObj?.approvals) && uniObj.approvals.length > 0 && (
+                    <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                      {uniObj.approvals.slice(0, 5).map((app, aIdx) => (
+                        <span
+                          key={aIdx}
+                          className="bg-white/15 backdrop-blur-xs text-white text-[11px] font-medium px-2.5 py-0.5 rounded-md border border-white/20 flex items-center gap-1"
+                        >
+                          <CheckCircleFilled className="text-[#00E5FF] text-[10px]" />
+                          {app.name || app.code}
+                        </span>
+                      ))}
+                      {course?.rating && (
+                        <span className="bg-amber-400/20 text-amber-200 text-[11px] font-semibold px-2 py-0.5 rounded-md border border-amber-400/30 flex items-center gap-1">
+                          ★ {course.rating} / 5.0
+                        </span>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="flex flex-wrap items-center gap-5 text-xs sm:text-sm font-medium text-gray-200 pt-2">
                     <span className="flex items-center gap-1.5">
                       <ClockCircleFilled className="text-[#FFC107] text-base" /> Duration:{" "}
                       <span className="text-white font-semibold">{primaryDuration}</span>
                     </span>
+                    {displayFee && (
+                      <span className="flex items-center gap-1.5">
+                        <CreditCardOutlined className="text-[#FFC107] text-base" /> Total Fee:{" "}
+                        <span className="text-white font-semibold">{displayFee}</span>
+                      </span>
+                    )}
                     <span className="flex items-center gap-1.5">
                       <ClockCircleFilled className="text-[#FFC107] text-base" /> Admission Deadline:{" "}
                       <span className="text-white font-semibold">
@@ -443,18 +514,18 @@ export default function CourseClientView({ initialData = null, slug = "" }) {
                   </div>
                 </div>
 
-                <div className="lg:col-span-5 flex justify-center lg:justify-end">
-                  <div className="relative w-full max-w-sm h-88 rounded-3xl overflow-hidden group flex items-center justify-center">
-                    {imageUrl && (
-                      <Image
-                        src={imageUrl}
-                        alt={uniName}
-                        fill
-                        unoptimized
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    )}
-                  </div>
+                {/* Right Column: Flush edge-to-edge banner image with compact width */}
+                <div className="relative w-full lg:w-72 xl:w-80 min-h-[220px] lg:min-h-full shrink-0 overflow-hidden">
+                  {imageUrl && (
+                    <Image
+                      src={imageUrl}
+                      alt={uniName}
+                      fill
+                      unoptimized
+                      priority
+                      className="object-cover object-center transition-transform duration-500 hover:scale-105"
+                    />
+                  )}
                 </div>
               </div>
             </div>
@@ -613,10 +684,13 @@ export default function CourseClientView({ initialData = null, slug = "" }) {
                 )}
 
                 {/* Admission */}
-                {(whoCanApplyList.length > 0 || admissionProcessList.length > 0) && (
+                {(whoCanApplyList.length > 0 ||
+                  admissionProcessList.length > 0 ||
+                  course?.admissionSection?.eligibilityCriteria?.length > 0 ||
+                  course?.admissionSection?.documentsRequired?.length > 0) && (
                   <div
                     id="section-admission"
-                    className="bg-white rounded-2xl p-3.5 sm:p-4 border border-gray-200 space-y-2.5"
+                    className="bg-white rounded-2xl p-3.5 sm:p-4 border border-gray-200 space-y-3"
                   >
                     <div className="border-b border-gray-200 pb-1.5">
                       <h2 className="text-sm sm:text-[15px] font-semibold text-[#0C3058] m-0 flex items-center gap-1.5">
@@ -628,9 +702,35 @@ export default function CourseClientView({ initialData = null, slug = "" }) {
                     </div>
 
                     <p className="text-gray-600 leading-relaxed text-xs sm:text-sm m-0 font-normal">
-                      The programme is designed for graduates and working professionals who want to
-                      develop expertise in this field.
+                      {course?.admissionSection?.description ||
+                        "The programme is designed for high school graduates and working professionals seeking an accredited undergraduate degree."}
                     </p>
+
+                    {/* Eligibility Criteria Cards */}
+                    {Array.isArray(course?.admissionSection?.eligibilityCriteria) &&
+                      course.admissionSection.eligibilityCriteria.length > 0 && (
+                        <div className="space-y-1.5">
+                          <h3 className="text-xs sm:text-sm font-semibold text-[#0C3058] m-0">
+                            Key Eligibility Criteria
+                          </h3>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+                            {course.admissionSection.eligibilityCriteria.map((item, idx) => (
+                              <div
+                                key={idx}
+                                className="bg-gray-50/70 border border-gray-200 rounded-xl p-3 space-y-1"
+                              >
+                                <h4 className="text-xs font-bold text-gray-900 m-0 flex items-center gap-1.5">
+                                  <CheckCircleFilled className="text-[#22b425] text-xs shrink-0" />
+                                  {item.title}
+                                </h4>
+                                <p className="text-xs text-gray-600 m-0 leading-relaxed font-normal">
+                                  {item.criteria || item.description}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-0.5">
                       {whoCanApplyList.length > 0 && (
@@ -657,26 +757,54 @@ export default function CourseClientView({ initialData = null, slug = "" }) {
                       {admissionProcessList.length > 0 && (
                         <div className="bg-gray-50/70 border border-gray-200 rounded-xl p-3 space-y-1.5">
                           <h3 className="text-xs sm:text-sm font-semibold text-[#0C3058] m-0">
-                            Admission Process
+                            Admission Steps
                           </h3>
                           <ol className="space-y-1.5 pt-0.5 list-none p-0 m-0">
                             {admissionProcessList.map((step, idx) => (
                               <li
                                 key={idx}
-                                className="flex items-center gap-2 text-xs sm:text-sm text-gray-700 font-normal leading-snug"
+                                className="flex items-start gap-2 text-xs sm:text-sm text-gray-700 font-normal leading-snug"
                               >
-                                <span className="w-4 h-4 rounded-full bg-[#0C3058] text-white text-[9px] font-semibold flex items-center justify-center shrink-0">
-                                  {idx + 1}
+                                <span className="w-4 h-4 rounded-full bg-[#0C3058] text-white text-[9px] font-semibold flex items-center justify-center shrink-0 mt-0.5">
+                                  {step.stepNumber || idx + 1}
                                 </span>
-                                <span className="font-semibold text-gray-800">
-                                  {typeof step === "object" ? step.title || step.name : step}
-                                </span>
+                                <div>
+                                  <span className="font-semibold text-gray-800 block">
+                                    {typeof step === "object" ? step.title || step.name : step}
+                                  </span>
+                                  {step.description && (
+                                    <span className="text-gray-500 text-[11px] block mt-0.5">
+                                      {step.description}
+                                    </span>
+                                  )}
+                                </div>
                               </li>
                             ))}
                           </ol>
                         </div>
                       )}
                     </div>
+
+                    {/* Documents Required */}
+                    {Array.isArray(course?.admissionSection?.documentsRequired) &&
+                      course.admissionSection.documentsRequired.length > 0 && (
+                        <div className="bg-gray-50/70 border border-gray-200 rounded-xl p-3 space-y-1.5">
+                          <h3 className="text-xs sm:text-sm font-semibold text-[#0C3058] m-0 flex items-center gap-1.5">
+                            <FileTextOutlined className="text-[#0C3058]" /> Documents Required for Verification
+                          </h3>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 pt-0.5">
+                            {course.admissionSection.documentsRequired.map((doc, idx) => (
+                              <div
+                                key={idx}
+                                className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-700 font-normal"
+                              >
+                                <RightOutlined className="text-[#22b425] text-[8px] shrink-0" />
+                                <span className="text-gray-800 font-medium">{doc}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                   </div>
                 )}
 
@@ -684,10 +812,11 @@ export default function CourseClientView({ initialData = null, slug = "" }) {
                 {skillsSection &&
                   (skillsSection.title ||
                     skillsSection.skillsGain?.length > 0 ||
-                    skillsSection.curriculumOverview?.length > 0) && (
+                    skillsSection.curriculumOverview?.length > 0 ||
+                    skillsSection.semesters?.length > 0) && (
                     <div
                       id="section-curriculum"
-                      className="bg-white rounded-2xl p-3.5 sm:p-4 border border-gray-200 space-y-2.5"
+                      className="bg-white rounded-2xl p-3.5 sm:p-4 border border-gray-200 space-y-3"
                     >
                       <div className="border-b border-gray-200 pb-1.5">
                         <h2 className="text-sm sm:text-[15px] font-semibold text-[#0C3058] m-0 flex items-center gap-1.5">
@@ -704,6 +833,7 @@ export default function CourseClientView({ initialData = null, slug = "" }) {
                         </p>
                       )}
 
+                      {/* Skills Gain & Curriculum Overview */}
                       {((skillsSection.skillsGain && skillsSection.skillsGain.length > 0) ||
                         (skillsSection.curriculumOverview &&
                           skillsSection.curriculumOverview.length > 0)) && (
@@ -749,6 +879,92 @@ export default function CourseClientView({ initialData = null, slug = "" }) {
                             )}
                         </div>
                       )}
+
+                      {/* Detailed Semester-wise Curriculum */}
+                      {Array.isArray(skillsSection?.semesters) &&
+                        skillsSection.semesters.length > 0 && (
+                          <div className="bg-gray-50/70 border border-gray-200 rounded-xl p-3 sm:p-4 space-y-3">
+                            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-200 pb-2">
+                              <h3 className="text-xs sm:text-sm font-bold text-[#0C3058] m-0 flex items-center gap-1.5">
+                                <BookOutlined className="text-[#22b425]" /> Semester-wise Detailed Syllabus
+                              </h3>
+                              <span className="text-xs text-gray-500 font-medium">
+                                {skillsSection.semesters.length} Semesters • Complete Curriculum
+                              </span>
+                            </div>
+
+                            {/* Semester Selector Tabs */}
+                            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+                              {skillsSection.semesters.map((sem, sIdx) => (
+                                <button
+                                  key={sIdx}
+                                  type="button"
+                                  onClick={() => setActiveSemesterIdx(sIdx)}
+                                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold shrink-0 transition-all cursor-pointer border ${
+                                    activeSemesterIdx === sIdx
+                                      ? "bg-[#0C3058] text-white border-[#0C3058] shadow-xs"
+                                      : "bg-white text-gray-700 border-gray-200 hover:bg-gray-100"
+                                  }`}
+                                >
+                                  Sem {sem.semesterNumber || sIdx + 1}
+                                </button>
+                              ))}
+                            </div>
+
+                            {/* Active Semester Subjects List */}
+                            {skillsSection.semesters[activeSemesterIdx] && (
+                              <div className="space-y-2 pt-1">
+                                <div className="flex items-center justify-between">
+                                  <h4 className="text-xs sm:text-sm font-bold text-gray-800 m-0">
+                                    {skillsSection.semesters[activeSemesterIdx].semesterTitle ||
+                                      `Semester ${activeSemesterIdx + 1}`}
+                                  </h4>
+                                  <span className="text-[11px] bg-emerald-50 text-emerald-700 font-semibold px-2 py-0.5 rounded-md border border-emerald-200">
+                                    {skillsSection.semesters[activeSemesterIdx].subjects?.length || 0} Subjects
+                                  </span>
+                                </div>
+
+                                <div className="grid grid-cols-1 gap-1.5 pt-1">
+                                  {skillsSection.semesters[activeSemesterIdx].subjects?.map(
+                                    (sub, subIdx) => (
+                                      <div
+                                        key={subIdx}
+                                        className="bg-white border border-gray-200 rounded-lg p-2.5 flex items-center justify-between gap-3 hover:border-blue-300 transition-colors"
+                                      >
+                                        <div className="flex items-center gap-2.5 min-w-0">
+                                          {sub.subjectCode && (
+                                            <span className="shrink-0 bg-blue-50 text-blue-700 font-bold text-[11px] px-2 py-0.5 rounded-md border border-blue-200">
+                                              {sub.subjectCode}
+                                            </span>
+                                          )}
+                                          <span className="text-xs sm:text-sm font-medium text-gray-800 truncate">
+                                            {sub.subjectName}
+                                          </span>
+                                        </div>
+                                        <div className="flex items-center gap-2 shrink-0">
+                                          {sub.credits && (
+                                            <span className="text-[11px] font-semibold text-gray-600 bg-gray-100 px-2 py-0.5 rounded">
+                                              {sub.credits} Credits
+                                            </span>
+                                          )}
+                                          {sub.isElective ? (
+                                            <span className="text-[10px] font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded">
+                                              Elective
+                                            </span>
+                                          ) : (
+                                            <span className="text-[10px] font-semibold text-gray-500 bg-gray-50 border border-gray-200 px-1.5 py-0.5 rounded">
+                                              Core
+                                            </span>
+                                          )}
+                                        </div>
+                                      </div>
+                                    )
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
                     </div>
                   )}
 
@@ -773,6 +989,44 @@ export default function CourseClientView({ initialData = null, slug = "" }) {
                         <p className="text-gray-600 leading-relaxed text-xs sm:text-sm m-0 font-normal">
                           {learningExperience.description}
                         </p>
+                      )}
+
+                      {/* Delivery Mode Callouts */}
+                      {(learningExperience.deliveryMode ||
+                        learningExperience.studyPace ||
+                        learningExperience.studentSupport) && (
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-0.5">
+                          {learningExperience.deliveryMode && (
+                            <div className="bg-purple-50/60 border border-purple-200 rounded-xl p-3 space-y-0.5">
+                              <span className="text-[10px] font-bold text-purple-700 uppercase tracking-wider">
+                                Learning Mode
+                              </span>
+                              <p className="text-xs font-bold text-purple-950 m-0">
+                                {learningExperience.deliveryMode}
+                              </p>
+                            </div>
+                          )}
+                          {learningExperience.studyPace && (
+                            <div className="bg-blue-50/60 border border-blue-200 rounded-xl p-3 space-y-0.5">
+                              <span className="text-[10px] font-bold text-blue-700 uppercase tracking-wider">
+                                Study Pace
+                              </span>
+                              <p className="text-xs font-bold text-blue-950 m-0">
+                                {learningExperience.studyPace}
+                              </p>
+                            </div>
+                          )}
+                          {learningExperience.studentSupport && (
+                            <div className="bg-emerald-50/60 border border-emerald-200 rounded-xl p-3 space-y-0.5">
+                              <span className="text-[10px] font-bold text-emerald-700 uppercase tracking-wider">
+                                Student Support
+                              </span>
+                              <p className="text-xs font-bold text-emerald-950 m-0">
+                                {learningExperience.studentSupport}
+                              </p>
+                            </div>
+                          )}
+                        </div>
                       )}
 
                       {learningExperience.learningFeatures &&
@@ -801,10 +1055,11 @@ export default function CourseClientView({ initialData = null, slug = "" }) {
                 {instituteSection &&
                   (instituteSection.title ||
                     instituteSection.certificateTitle ||
-                    instituteSection.whyItMatters?.length > 0) && (
+                    instituteSection.whyItMatters?.length > 0 ||
+                    instituteSection.instituteHighlights?.length > 0) && (
                     <div
                       id="section-certificate"
-                      className="bg-white rounded-2xl p-3.5 sm:p-4 border border-gray-200 space-y-2.5"
+                      className="bg-white rounded-2xl p-3.5 sm:p-4 border border-gray-200 space-y-3"
                     >
                       <div className="border-b border-gray-200 pb-1.5">
                         <h2 className="text-sm sm:text-[15px] font-semibold text-[#0C3058] m-0 flex items-center gap-1.5">
@@ -822,14 +1077,42 @@ export default function CourseClientView({ initialData = null, slug = "" }) {
                         </p>
                       )}
 
+                      {/* Institute Highlights Grid */}
+                      {Array.isArray(instituteSection?.instituteHighlights) &&
+                        instituteSection.instituteHighlights.length > 0 && (
+                          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 pt-0.5">
+                            {instituteSection.instituteHighlights.map((hl, idx) => (
+                              <div
+                                key={idx}
+                                className="bg-gray-50/70 border border-gray-200 rounded-xl p-3 space-y-1"
+                              >
+                                <h4 className="text-xs font-bold text-gray-900 m-0 flex items-center gap-1">
+                                  <CheckCircleFilled className="text-[#22b425] text-xs shrink-0" />
+                                  {hl.title}
+                                </h4>
+                                <p className="text-[11px] text-gray-600 m-0 leading-relaxed font-normal">
+                                  {hl.description}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
                       {(instituteSection.certificateTitle ||
-                        instituteSection.certificateImage ||
+                        certificateImageUrl ||
                         (instituteSection.whyItMatters &&
                           instituteSection.whyItMatters.length > 0)) && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-0.5 items-center">
+                        <div
+                          className={`grid grid-cols-1 ${
+                            instituteSection.certificateTitle && certificateImageUrl
+                              ? "md:grid-cols-2"
+                              : "grid-cols-1"
+                          } gap-3 pt-0.5 items-center`}
+                        >
                           {instituteSection.certificateTitle && (
-                            <div className="bg-gray-50/70 border border-gray-200 rounded-xl p-3 space-y-1 h-full flex flex-col justify-center">
+                            <div className="bg-gray-50/70 border border-gray-200 rounded-xl p-3 space-y-1.5 h-full flex flex-col justify-center">
                               <h3 className="text-xs sm:text-sm font-semibold text-[#0C3058] m-0 flex items-center gap-1.5">
+                                <SafetyCertificateOutlined className="text-[#22b425]" />
                                 {instituteSection.certificateTitle}
                               </h3>
                               {instituteSection.certificateDescription && (
@@ -839,19 +1122,42 @@ export default function CourseClientView({ initialData = null, slug = "" }) {
                               )}
                             </div>
                           )}
-                          <div className="bg-gray-50/70 border border-gray-200 rounded-xl p-2 flex items-center justify-center overflow-hidden h-full">
-                            <Image
-                              src={certificateImageUrl}
-                              alt="Certificate Preview"
-                              width={440}
-                              height={280}
-                              unoptimized
-                              className="w-full h-auto object-contain rounded-lg max-h-56 transition-transform duration-300 hover:scale-102"
-                              style={{ width: "auto", height: "auto" }}
-                            />
-                          </div>
+                          {certificateImageUrl && (
+                            <div className="bg-gray-50/70 border border-gray-200 rounded-xl p-2 flex items-center justify-center overflow-hidden h-full">
+                              <Image
+                                src={certificateImageUrl}
+                                alt="Certificate Preview"
+                                width={440}
+                                height={280}
+                                unoptimized
+                                className="w-full h-auto object-contain rounded-lg max-h-56 transition-transform duration-300 hover:scale-102"
+                                style={{ width: "auto", height: "auto" }}
+                              />
+                            </div>
+                          )}
                         </div>
                       )}
+
+                      {/* Why Degree Matters Checklist */}
+                      {Array.isArray(instituteSection?.whyItMatters) &&
+                        instituteSection.whyItMatters.length > 0 && (
+                          <div className="bg-gray-50/70 border border-gray-200 rounded-xl p-3 space-y-1.5">
+                            <h3 className="text-xs sm:text-sm font-semibold text-[#0C3058] m-0">
+                              Why This Degree Matters
+                            </h3>
+                            <ul className="space-y-1.5 pt-0.5 p-0 m-0 list-none">
+                              {instituteSection.whyItMatters.map((point, idx) => (
+                                <li
+                                  key={idx}
+                                  className="flex items-start gap-1.5 text-xs sm:text-sm text-gray-700 font-normal leading-snug"
+                                >
+                                  <CheckCircleFilled className="text-[#22b425] text-xs mt-0.5 shrink-0" />
+                                  <span className="text-gray-800 font-medium">{point}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
                     </div>
                   )}
 
@@ -859,10 +1165,11 @@ export default function CourseClientView({ initialData = null, slug = "" }) {
                 {careerSection &&
                   (careerSection.title ||
                     careerSection.careerOpportunities?.length > 0 ||
-                    careerSection.industriesHiring?.length > 0) && (
+                    careerSection.industriesHiring?.length > 0 ||
+                    careerSection.jobRoles?.length > 0) && (
                     <div
                       id="section-career"
-                      className="bg-white rounded-2xl p-3.5 sm:p-4 border border-gray-200 space-y-2.5"
+                      className="bg-white rounded-2xl p-3.5 sm:p-4 border border-gray-200 space-y-3"
                     >
                       <div className="border-b border-gray-200 pb-1.5">
                         <h2 className="text-sm sm:text-[15px] font-semibold text-[#0C3058] m-0 flex items-center gap-1.5">
@@ -878,6 +1185,70 @@ export default function CourseClientView({ initialData = null, slug = "" }) {
                           {careerSection.description}
                         </p>
                       )}
+
+                      {/* Job Roles with Salaries Grid */}
+                      {Array.isArray(careerSection?.jobRoles) &&
+                        careerSection.jobRoles.length > 0 && (
+                          <div className="space-y-1.5 pt-0.5">
+                            <h3 className="text-xs sm:text-sm font-semibold text-[#0C3058] m-0">
+                              Top Job Roles & Salary Packages
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                              {careerSection.jobRoles.map((role, idx) => (
+                                <div
+                                  key={idx}
+                                  className="bg-gray-50/70 border border-gray-200 rounded-xl p-3 space-y-1.5"
+                                >
+                                  <div className="flex items-center justify-between gap-2">
+                                    <h4 className="text-xs sm:text-sm font-bold text-gray-900 m-0 truncate">
+                                      {role.roleName || role.title}
+                                    </h4>
+                                    {role.avgSalary && (
+                                      <span className="shrink-0 bg-emerald-50 text-emerald-700 font-bold text-xs px-2 py-0.5 rounded-md border border-emerald-200">
+                                        {role.avgSalary}
+                                      </span>
+                                    )}
+                                  </div>
+                                  {role.demand && (
+                                    <span className="inline-block text-[10px] font-semibold text-blue-700 bg-blue-50 border border-blue-200 px-1.5 py-0.5 rounded">
+                                      {role.demand}
+                                    </span>
+                                  )}
+                                  {role.description && (
+                                    <p className="text-xs text-gray-600 m-0 leading-relaxed font-normal">
+                                      {role.description}
+                                    </p>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                      {/* Salary Trends by Experience */}
+                      {Array.isArray(careerSection?.salaryTrends) &&
+                        careerSection.salaryTrends.length > 0 && (
+                          <div className="bg-gray-50/70 border border-gray-200 rounded-xl p-3 space-y-1.5">
+                            <h3 className="text-xs sm:text-sm font-semibold text-[#0C3058] m-0 flex items-center gap-1.5">
+                              <RiseOutlined className="text-[#22b425]" /> Experience-wise Salary Growth
+                            </h3>
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
+                              {careerSection.salaryTrends.map((trend, idx) => (
+                                <div
+                                  key={idx}
+                                  className="bg-white border border-gray-200 rounded-lg p-2.5 text-center space-y-0.5"
+                                >
+                                  <p className="text-xs text-gray-500 font-medium m-0">
+                                    {trend.experienceLevel}
+                                  </p>
+                                  <p className="text-sm font-bold text-[#0C3058] m-0">
+                                    {trend.salaryRange}
+                                  </p>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
 
                       {((careerSection.careerOpportunities &&
                         careerSection.careerOpportunities.length > 0) ||
@@ -928,54 +1299,121 @@ export default function CourseClientView({ initialData = null, slug = "" }) {
                   )}
 
                 {/* Fees */}
-                {feeSection && (feeSection.title || feeSection.financialSupport?.length > 0) && (
-                  <div
-                    id="section-fees"
-                    className="bg-white rounded-2xl p-3.5 sm:p-4 border border-gray-200 space-y-2.5"
-                  >
-                    <div className="border-b border-gray-200 pb-1.5">
-                      <h2 className="text-sm sm:text-[15px] font-semibold text-[#0C3058] m-0 flex items-center gap-1.5">
-                        <span className="flex items-center justify-center w-5 h-5 rounded bg-[#E3F2FD] shrink-0">
-                          <CreditCardOutlined className="text-[#1565C0] text-[11px]" />
-                        </span>
-                        {feeSection.title || "Flexible Fee & Payment Options"}
-                      </h2>
-                    </div>
-
-                    {feeSection.description && (
-                      <p className="text-gray-600 leading-relaxed text-xs sm:text-sm m-0 font-normal">
-                        {feeSection.description}
-                      </p>
-                    )}
-
-                    {feeSection.financialSupport && feeSection.financialSupport.length > 0 && (
-                      <div className="pt-0.5">
-                        <h3 className="text-xs sm:text-sm font-semibold text-[#0C3058] m-0 mb-1">
-                          Financial Support
-                        </h3>
-                        <div className="bg-gray-50/70 border border-gray-200 rounded-xl p-3">
-                          <ul className="space-y-1 p-0 m-0 list-none">
-                            {feeSection.financialSupport.map((item, idx) => (
-                              <li
-                                key={idx}
-                                className="flex items-start gap-1.5 text-xs sm:text-sm text-gray-700 font-normal leading-snug"
-                              >
-                                <CheckCircleFilled className="text-[#22b425] text-xs mt-0.5 shrink-0" />
-                                <span className="text-gray-900 font-semibold">{item}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
+                {feeSection &&
+                  (feeSection.title ||
+                    feeSection.financialSupport?.length > 0 ||
+                    feeSection.paymentOptions?.length > 0 ||
+                    feeSection.feeBreakdown?.length > 0) && (
+                    <div
+                      id="section-fees"
+                      className="bg-white rounded-2xl p-3.5 sm:p-4 border border-gray-200 space-y-3"
+                    >
+                      <div className="border-b border-gray-200 pb-1.5">
+                        <h2 className="text-sm sm:text-[15px] font-semibold text-[#0C3058] m-0 flex items-center gap-1.5">
+                          <span className="flex items-center justify-center w-5 h-5 rounded bg-[#E3F2FD] shrink-0">
+                            <CreditCardOutlined className="text-[#1565C0] text-[11px]" />
+                          </span>
+                          {feeSection.title || "Flexible Fee & Payment Options"}
+                        </h2>
                       </div>
-                    )}
 
-                    {feeSection.footerNote && (
-                      <p className="text-xs sm:text-sm text-gray-700 font-medium m-0">
-                        {feeSection.footerNote}
-                      </p>
-                    )}
-                  </div>
-                )}
+                      {feeSection.description && (
+                        <p className="text-gray-600 leading-relaxed text-xs sm:text-sm m-0 font-normal">
+                          {feeSection.description}
+                        </p>
+                      )}
+
+                      {/* Payment Plans Cards */}
+                      {((Array.isArray(feeSection.paymentOptions) &&
+                        feeSection.paymentOptions.length > 0) ||
+                        (Array.isArray(feeSection.feeBreakdown) &&
+                          feeSection.feeBreakdown.length > 0)) && (
+                        <div className="space-y-1.5 pt-0.5">
+                          <h3 className="text-xs sm:text-sm font-semibold text-[#0C3058] m-0">
+                            Available Payment Plans & EMI
+                          </h3>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            {(
+                              feeSection.paymentOptions || feeSection.feeBreakdown
+                            ).map((plan, idx) => (
+                              <div
+                                key={idx}
+                                className="bg-white border-2 border-[#0C3058]/10 hover:border-[#0C3058] rounded-xl p-3.5 space-y-2 transition-all flex flex-col justify-between shadow-xs"
+                              >
+                                <div className="space-y-1">
+                                  <span className="text-[10px] font-bold uppercase tracking-wider text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200 inline-block">
+                                    Option {idx + 1}
+                                  </span>
+                                  <h4 className="text-xs sm:text-sm font-bold text-gray-900 m-0">
+                                    {plan.title || plan.label}
+                                  </h4>
+                                  <div className="text-lg sm:text-xl font-extrabold text-[#0C3058]">
+                                    {typeof plan.amount === "number"
+                                      ? `₹ ${plan.amount.toLocaleString("en-IN")}`
+                                      : plan.amount}
+                                  </div>
+                                  {plan.period && (
+                                    <p className="text-[11px] text-gray-500 font-medium m-0">
+                                      {plan.period}
+                                    </p>
+                                  )}
+                                  {plan.description && (
+                                    <p className="text-xs text-gray-600 font-normal leading-relaxed m-0 pt-0.5">
+                                      {plan.description}
+                                    </p>
+                                  )}
+                                </div>
+                                <Button
+                                  type="primary"
+                                  size="small"
+                                  onClick={() => {
+                                    openFormModal &&
+                                      openFormModal({
+                                        title: `Enroll with ${plan.title || plan.label}`,
+                                        subtitle:
+                                          "Our counselor will guide you through registration & zero-cost EMI",
+                                        defaultCourse: displayHeroTitle,
+                                        submitButtonText: "Enroll with this Plan",
+                                      });
+                                  }}
+                                  className="w-full mt-2 bg-[#0C3058] hover:bg-[#154E8A] text-white text-xs font-semibold rounded-lg h-7 cursor-pointer"
+                                >
+                                  Select Plan
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {feeSection.financialSupport && feeSection.financialSupport.length > 0 && (
+                        <div className="pt-0.5">
+                          <h3 className="text-xs sm:text-sm font-semibold text-[#0C3058] m-0 mb-1">
+                            Financial Support & Scholarships
+                          </h3>
+                          <div className="bg-gray-50/70 border border-gray-200 rounded-xl p-3">
+                            <ul className="space-y-1 p-0 m-0 list-none">
+                              {feeSection.financialSupport.map((item, idx) => (
+                                <li
+                                  key={idx}
+                                  className="flex items-start gap-1.5 text-xs sm:text-sm text-gray-700 font-normal leading-snug"
+                                >
+                                  <CheckCircleFilled className="text-[#22b425] text-xs mt-0.5 shrink-0" />
+                                  <span className="text-gray-900 font-semibold">{item}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+                      )}
+
+                      {feeSection.footerNote && (
+                        <p className="text-xs text-gray-500 font-medium m-0">
+                          {feeSection.footerNote}
+                        </p>
+                      )}
+                    </div>
+                  )}
 
                 {/* FAQs */}
                 {faqSection && faqSection.faqs && faqSection.faqs.length > 0 && (

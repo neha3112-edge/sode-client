@@ -46,6 +46,11 @@ function normalizeCourseData(pageRes) {
     isOfferingPage: true,
     offeringPage: pageRes,
     title: mainTitle,
+    fees: feesObj,
+    fullFee: pageRes.fullFee,
+    amount: pageRes.amount,
+    duration: durationObj,
+    durationMonths: pageRes.durationMonths,
     description: pageRes.overviewSection?.description || pageRes.description || courseObj.description || "",
     categories: pageRes.categories || pageRes.category || courseObj.category || [],
     universityOfferings: offerings.length > 0 ? offerings : [
@@ -59,6 +64,8 @@ function normalizeCourseData(pageRes) {
       },
     ],
     heroMedia: pageRes.heroMedia || pageRes.logo,
+    subTitle: pageRes.subTitle,
+    rating: pageRes.rating,
     brochurePdf: pageRes.brochurePdf,
     admissionDeadline: pageRes.admissionDeadline,
     overviewSection: pageRes.overviewSection,
@@ -75,17 +82,18 @@ function normalizeCourseData(pageRes) {
 
 const getCourseData = cache(async (slug) => {
   if (!slug) return null;
+  const slugPath = Array.isArray(slug) ? slug.map((s) => encodeURIComponent(s)).join("/") : encodeURIComponent(slug);
   try {
     const res = await request.dynamicRead({
       entity: "courses",
       endPoint: "v1/list",
-      id: encodeURIComponent(slug),
+      id: slugPath,
       revalidate: 900,
     });
     const pageRes = res?.result || res;
     return normalizeCourseData(pageRes);
   } catch (err) {
-    console.error(`[Server Component] Error pre-fetching course ${slug}:`, err.message);
+    console.error(`[Server Component] Error pre-fetching course ${slugPath}:`, err.message);
     return null;
   }
 });
@@ -93,8 +101,9 @@ const getCourseData = cache(async (slug) => {
 export async function generateMetadata({ params }) {
   const resolvedParams = await params;
   const slug = resolvedParams?.slug;
+  const slugStr = Array.isArray(slug) ? slug.join("/") : slug;
 
-  if (!slug) {
+  if (!slugStr) {
     return {
       title: "Course Details | mysode",
       description: "Explore top accredited online & executive programmes.",
@@ -122,13 +131,16 @@ export async function generateMetadata({ params }) {
       course.description?.slice(0, 160) ||
       `Enroll in ${cleanTitle} from ${uniName}. Check eligibility criteria, fee structure, duration, career scope, and apply online.`;
     const keywords = `${cleanTitle}, ${cleanTitle} ${uniName}, ${cleanTitle} online fees, ${cleanTitle} syllabus, ${cleanTitle} admission`;
-    const rawImage =
-      course.heroMedia?.url ||
-      course.heroMedia ||
+    const uniBannerImage =
       course.universityOfferings?.[0]?.university?.bannerImg?.url ||
-      course.universityOfferings?.[0]?.university?.bannerImg;
-    const ogImage = rawImage ? getAssetPath(rawImage) : "https://mysode.com/og-image.jpg";
-    const canonical = `https://mysode.com/courses/${course.slug || slug}`;
+      course.universityOfferings?.[0]?.university?.bannerImg ||
+      course.offeringPage?.universityId?.bannerImg?.url ||
+      course.offeringPage?.universityId?.bannerImg ||
+      course.universityOfferings?.[0]?.university?.image?.url ||
+      course.universityOfferings?.[0]?.university?.image ||
+      null;
+    const ogImage = uniBannerImage ? getAssetPath(uniBannerImage) : "https://mysode.com/og-image.jpg";
+    const canonical = `https://mysode.com/courses/${course.slug || slugStr}`;
 
     return {
       title: displayTitle,
@@ -170,8 +182,9 @@ export async function generateMetadata({ params }) {
 export default async function CourseDetailPage({ params }) {
   const resolvedParams = await params;
   const slug = resolvedParams?.slug || "";
+  const slugStr = Array.isArray(slug) ? slug.join("/") : slug;
 
   const initialData = await getCourseData(slug);
 
-  return <CourseClientView initialData={initialData} slug={slug} />;
+  return <CourseClientView initialData={initialData} slug={slugStr} />;
 }

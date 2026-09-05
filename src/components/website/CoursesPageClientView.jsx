@@ -631,9 +631,22 @@ function CoursesContent({
             .replace(/--+/g, "-")
             .replace(/^-+|-+$/g, "");
 
-        const parts = [uniName, courseName, subcourseName].filter(Boolean);
-        let itemSlug = slugify(parts.join("-")) || subcourse.slug || course.slug || item.slug || item._id;
-        const courseDetailHref = itemSlug ? `/courses/${encodeURIComponent(itemSlug)}` : "/courses";
+        const uniSlug = uni?.slug || slugify(uniName);
+        const courseSlug = course?.slug || slugify(course?.shortName || course?.name || courseName);
+        const subcourseSlug = subcourse?.slug || (subcourse?.name ? slugify(subcourse.name) : "");
+
+        let courseDetailHref = "/courses";
+        if (uniSlug && courseSlug && subcourseSlug) {
+          courseDetailHref = `/courses/${encodeURIComponent(uniSlug)}/${encodeURIComponent(courseSlug)}/${encodeURIComponent(subcourseSlug)}`;
+        } else if (uniSlug && courseSlug) {
+          courseDetailHref = `/courses/${encodeURIComponent(uniSlug)}/${encodeURIComponent(courseSlug)}`;
+        } else if (courseSlug && subcourseSlug) {
+          courseDetailHref = `/courses/${encodeURIComponent(courseSlug)}/${encodeURIComponent(subcourseSlug)}`;
+        } else if (courseSlug) {
+          courseDetailHref = `/courses/${encodeURIComponent(courseSlug)}`;
+        } else if (item.slug) {
+          courseDetailHref = `/courses/${encodeURIComponent(item.slug)}`;
+        }
 
         list.push({
           ...item,
@@ -1389,9 +1402,14 @@ function CoursesContent({
                     key={sc._id || idx}
                     onClick={() => {
                       const uniSlug = specializationModalData.uniObj?.slug || specializationModalData.uniName?.toLowerCase().replace(/\s+/g, '-');
+                      const courseSlug = specializationModalData.courseObj?.slug || specializationModalData.courseId?.slug || specializationModalData.cardTitle?.toLowerCase().replace(/\s+/g, '-');
                       const subSlug = sc.slug || sc.name?.toLowerCase().replace(/\s+/g, '-');
                       setSpecializationModalData(null);
-                      router.push(`/courses?university=${encodeURIComponent(uniSlug)}&subcategory=${encodeURIComponent(subSlug)}`);
+                      if (uniSlug && courseSlug && subSlug) {
+                        router.push(`/courses/${encodeURIComponent(uniSlug)}/${encodeURIComponent(courseSlug)}/${encodeURIComponent(subSlug)}`);
+                      } else {
+                        router.push(`/courses?university=${encodeURIComponent(uniSlug)}&subcategory=${encodeURIComponent(subSlug)}`);
+                      }
                     }}
                     className="bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl p-1.5 min-[360px]:p-2 aspect-square flex flex-col items-center justify-between text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group min-w-0 w-full shadow-2xs overflow-hidden"
                   >
