@@ -204,23 +204,23 @@ export default function CourseClientView({
   return (
     <div className="min-h-screen bg-gray-100 text-gray-800 antialiased font-sans pb-10">
       <div className="w-full bg-white border-b border-gray-200">
-        <Container className="py-1.5 flex items-center justify-between text-xs text-gray-500">
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <Link href="/" className="hover:text-blue-600 transition-colors">
+        <Container className="py-2 sm:py-1.5 flex items-center justify-between gap-2 text-xs text-gray-500">
+          <div className="flex items-center gap-1.5 whitespace-nowrap overflow-hidden min-w-0 flex-1">
+            <Link href="/" className="hover:text-blue-600 transition-colors shrink-0">
               Home
             </Link>
-            <span>/</span>
-            <Link href="/courses" className="hover:text-blue-600 transition-colors">
+            <span className="text-gray-400 shrink-0">/</span>
+            <Link href="/courses" className="hover:text-blue-600 transition-colors shrink-0">
               Courses
             </Link>
-            <span>/</span>
-            <span className="text-gray-800 font-semibold">
+            <span className="text-gray-400 shrink-0">/</span>
+            <span className="text-gray-800 font-semibold truncate">
               Online Bachelor of Arts (BA) in English
             </span>
           </div>
           <Link
             href="/courses"
-            className="bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-gray-700 hover:text-blue-600 font-medium px-3 py-1.5 rounded-md shadow-2xs flex items-center gap-1.5 shrink-0 ml-4 transition-all"
+            className="bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-gray-700 hover:text-blue-600 font-medium px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-md shadow-2xs flex items-center gap-1 sm:gap-1.5 shrink-0 ml-2 sm:ml-4 transition-all text-[11px] sm:text-xs whitespace-nowrap"
           >
             ← Back to Courses
           </Link>
@@ -530,45 +530,45 @@ export default function CourseClientView({
         </div>
 
         {/* Online MBA Course Updated Syllabus */}
-        <div className="bg-white rounded-xl border border-gray-200/90 shadow-xs p-6 sm:p-8">
-          <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-6 sm:mb-8 m-0">
+        <div className="bg-white rounded-xl border border-gray-200/90 shadow-xs p-4 sm:p-8">
+          <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-5 sm:mb-8 m-0">
             Online MBA Course Updated Syllabus 2026 at Manipal University
           </h2>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
             {["Semester 1", "Semester 2", "Semester 3", "Semester 4"].map((sem, idx) => (
               <div
                 key={idx}
-                className="bg-white rounded-xl border border-gray-200/90 p-5 shadow-2xs flex flex-col items-center hover:border-blue-200 transition-colors"
+                className="bg-white rounded-xl border border-gray-200/90 p-3 sm:p-5 shadow-2xs flex flex-col items-center hover:border-blue-200 transition-colors"
               >
-                <div className="bg-[#0066CC] text-white px-5 py-1 rounded-full text-xs sm:text-sm font-medium mb-2 tracking-tight shadow-xs">
+                <div className="bg-[#0066CC] text-white px-3 sm:px-5 py-1 rounded-full text-[11px] sm:text-sm font-medium mb-2 tracking-tight shadow-xs">
                   {sem}
                 </div>
 
-                <div className="w-full h-px bg-gray-100 mb-4" />
+                <div className="w-full h-px bg-gray-100 mb-3 sm:mb-4" />
 
-                <ul className="w-full text-left space-y-2 text-xs sm:text-[13px] text-gray-700 m-0 p-0 list-none">
-                  <li className="flex items-start gap-2 leading-snug">
+                <ul className="w-full text-left space-y-1.5 sm:space-y-2 text-[11px] sm:text-[13px] text-gray-700 m-0 p-0 list-none">
+                  <li className="flex items-start gap-1.5 sm:gap-2 leading-snug">
                     <span className="text-gray-900 font-bold shrink-0">•</span>
                     <span>Management Process</span>
                   </li>
-                  <li className="flex items-start gap-2 leading-snug">
+                  <li className="flex items-start gap-1.5 sm:gap-2 leading-snug">
                     <span className="text-gray-900 font-bold shrink-0">•</span>
                     <span>Business Communication</span>
                   </li>
-                  <li className="flex items-start gap-2 leading-snug">
+                  <li className="flex items-start gap-1.5 sm:gap-2 leading-snug">
                     <span className="text-gray-900 font-bold shrink-0">•</span>
                     <span>Statistics for Management</span>
                   </li>
-                  <li className="flex items-start gap-2 leading-snug">
+                  <li className="flex items-start gap-1.5 sm:gap-2 leading-snug">
                     <span className="text-gray-900 font-bold shrink-0">•</span>
                     <span>Financial and Management</span>
                   </li>
-                  <li className="flex items-start gap-2 leading-snug">
+                  <li className="flex items-start gap-1.5 sm:gap-2 leading-snug">
                     <span className="text-gray-900 font-bold shrink-0">•</span>
                     <span>Managerial Economics</span>
                   </li>
-                  <li className="flex items-start gap-2 leading-snug">
+                  <li className="flex items-start gap-1.5 sm:gap-2 leading-snug">
                     <span className="text-gray-900 font-bold shrink-0">•</span>
                     <span>Human Resource Management</span>
                   </li>
