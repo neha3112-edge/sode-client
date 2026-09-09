@@ -9,7 +9,7 @@ export default function SuggestCoursePage() {
   const { openTool } = useToolWizard();
 
   useEffect(() => {
-    openTool("suggest-me-a-university", { tool_mode: "Suggest Course" });
+    openTool("suggest-course", { tool_mode: "Suggest Course" });
   }, [openTool]);
 
   return (
@@ -30,7 +30,7 @@ export default function SuggestCoursePage() {
 
           <button
             onClick={() =>
-              openTool("suggest-me-a-university", { tool_mode: "Suggest Course" })
+              openTool("suggest-course", { tool_mode: "Suggest Course" })
             }
             className="px-8 py-4 rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-base shadow-xl hover:shadow-2xl transition-all inline-flex items-center gap-3 cursor-pointer"
           >

@@ -6,24 +6,26 @@ const ToolWizardContext = createContext(null);
 
 export function ToolWizardProvider({ children }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [activeSlug, setActiveSlug] = useState("suggest-me-a-university");
+  const [activeSlug, setActiveSlug] = useState("suggest-course");
   const [initialAnswers, setInitialAnswers] = useState({});
 
   /**
    * 🚀 Open Tool Wizard with optional pre-selected category/mode
-   * @param {string} slugOrMode - e.g. 'suggest-university', 'suggest-course', or flow slug
-   * @param {object} answers - pre-filled variables e.g. { tool_mode: 'Suggest University' }
+   * @param {string} slugOrMode - e.g. 'suggest-course', 'suggest-university', or flow slug
+   * @param {object} answers - pre-filled variables e.g. { tool_mode: 'Suggest Course' }
    */
-  const openTool = useCallback((slugOrMode = "suggest-me-a-university", answers = {}) => {
-    let targetSlug = "suggest-me-a-university";
+  const openTool = useCallback((slugOrMode = "suggest-course", answers = {}) => {
+    let targetSlug = "suggest-course";
     let defaultAnswers = { ...answers };
 
     const lower = String(slugOrMode).toLowerCase().replace(/_/g, "-");
 
-    if (lower.includes("uni") || lower === "suggest-university") {
-      defaultAnswers.tool_mode = "Suggest University";
-    } else if (lower.includes("course") || lower === "suggest-course") {
+    if (lower.includes("course") || lower === "suggest-course") {
+      targetSlug = "suggest-course";
       defaultAnswers.tool_mode = "Suggest Course";
+    } else if (lower.includes("uni") || lower === "suggest-university" || lower === "suggest-me-a-university") {
+      targetSlug = "suggest-course";
+      defaultAnswers.tool_mode = "Suggest University";
     }
 
     setActiveSlug(targetSlug);
