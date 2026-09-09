@@ -112,35 +112,27 @@ export async function generateMetadata({ params }) {
 
   try {
     const course = await getCourseData(slug);
-
-    if (!course) {
-      return {
-        title: "Course Not Found | mysode",
-        description: "The requested course could not be found.",
-      };
-    }
-
-    const cleanTitle = course.title || "Executive Programme";
+    const cleanTitle = course?.title || (slugStr ? slugStr.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) : "Online MBA");
     const uniName =
-      course.universityOfferings?.[0]?.university?.name ||
-      course.offeringPage?.universityId?.name ||
-      "Partner University";
+      course?.universityOfferings?.[0]?.university?.name ||
+      course?.offeringPage?.universityId?.name ||
+      "Manipal University";
     const displayTitle = `${cleanTitle} from ${uniName} - Syllabus, Fees & Admission | mysode`;
     const description =
-      course.overviewSection?.description?.slice(0, 160) ||
-      course.description?.slice(0, 160) ||
+      course?.overviewSection?.description?.slice(0, 160) ||
+      course?.description?.slice(0, 160) ||
       `Enroll in ${cleanTitle} from ${uniName}. Check eligibility criteria, fee structure, duration, career scope, and apply online.`;
     const keywords = `${cleanTitle}, ${cleanTitle} ${uniName}, ${cleanTitle} online fees, ${cleanTitle} syllabus, ${cleanTitle} admission`;
     const uniBannerImage =
-      course.universityOfferings?.[0]?.university?.bannerImg?.url ||
-      course.universityOfferings?.[0]?.university?.bannerImg ||
-      course.offeringPage?.universityId?.bannerImg?.url ||
-      course.offeringPage?.universityId?.bannerImg ||
-      course.universityOfferings?.[0]?.university?.image?.url ||
-      course.universityOfferings?.[0]?.university?.image ||
+      course?.universityOfferings?.[0]?.university?.bannerImg?.url ||
+      course?.universityOfferings?.[0]?.university?.bannerImg ||
+      course?.offeringPage?.universityId?.bannerImg?.url ||
+      course?.offeringPage?.universityId?.bannerImg ||
+      course?.universityOfferings?.[0]?.university?.image?.url ||
+      course?.universityOfferings?.[0]?.university?.image ||
       null;
     const ogImage = uniBannerImage ? getAssetPath(uniBannerImage) : "https://mysode.com/og-image.jpg";
-    const canonical = `https://mysode.com/courses/${course.slug || slugStr}`;
+    const canonical = `https://mysode.com/courses/${course?.slug || slugStr}`;
 
     return {
       title: displayTitle,
@@ -184,7 +176,26 @@ export default async function CourseDetailPage({ params }) {
   const slug = resolvedParams?.slug || "";
   const slugStr = Array.isArray(slug) ? slug.join("/") : slug;
 
-  const initialData = await getCourseData(slug);
+  const [initialData, coursesRes] = await Promise.all([
+    getCourseData(slug),
+    request
+      .dynamicList({
+        entity: "courses",
+        endPoint: "v1/list",
+        options: { items: 24 },
+        revalidate: 0,
+      })
+      .catch(() => null),
+  ]);
 
-  return <CourseClientView initialData={initialData} slug={slugStr} />;
+  const initialCourses = coursesRes?.result || coursesRes?.programs || [];
+
+  return (
+    <CourseClientView
+      initialData={initialData}
+      initialCourses={initialCourses}
+      slug={slugStr}
+    />
+  );
 }
+
