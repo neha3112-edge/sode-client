@@ -18,6 +18,7 @@ import {
   X,
 } from "lucide-react";
 import { Select, Drawer, Pagination, Modal, Slider, ConfigProvider } from "antd";
+import { PlusOutlined, CheckOutlined } from "@ant-design/icons";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useFormModal } from "@/hooks/useFormModal";
 import { useCompare } from "@/hooks/useCompare";
@@ -573,13 +574,13 @@ function CoursesContent({
         const course = item.courseId || {};
         const subcourse = item.subCourseId || {};
 
-        const uniName = uni.name || "Partner University";
-        const courseName = course.name || "";
+        const uniName = uni.name || item.uniName || "Partner University";
+        const courseName = item.title || course.name || "";
         const subcourseName = subcourse.name || "";
-        const fullDisplayName = item.displayName || course.displayName || course.displayNames?.[0]?.name || "";
+        const fullDisplayName = item.displayName || course.displayName || "";
         const effectiveCourseName = (course.showDisplayName || item.showDisplayName) && fullDisplayName ? fullDisplayName : courseName;
 
-        let cardTitle = item.title || effectiveCourseName || item.name || "Course";
+        let cardTitle = item.title || effectiveCourseName || "Course";
 
         const displayName = fullDisplayName;
 
@@ -1083,16 +1084,16 @@ function CoursesContent({
                               toggleCompare(targetItem);
                               setIsCompareDrawerOpen(true);
                             }}
-                            className="text-xs font-semibold text-gray-800 hover:text-blue-600 flex items-center gap-1 cursor-pointer bg-transparent border-none p-0 transition-colors ml-2"
+                            className="border border-gray-200 hover:border-gray-300 hover:bg-gray-50 bg-white text-xs font-semibold text-gray-800 px-3 py-1.5 rounded-lg transition-colors inline-flex items-center justify-center gap-1.5 cursor-pointer ml-1"
                           >
                             {isInCompare(item._id || item.slug || cardTitle) ? (
                               <>
-                                <Check className="w-3.5 h-3.5 text-teal-600" />
+                                <CheckOutlined className="text-teal-600 text-xs" />
                                 <span className="text-teal-600">Added</span>
                               </>
                             ) : (
                               <>
-                                <Plus className="w-3.5 h-3.5 text-gray-800" />
+                                <PlusOutlined className="text-gray-700 text-xs" />
                                 <span>Add to Compare</span>
                               </>
                             )}
@@ -1141,11 +1142,11 @@ function CoursesContent({
                         )}
                       </Link>
 
-                      {/* Fee & Duration */}
-                      {(feeText || durationText) && (
-                        <div className="flex items-center gap-4 text-xs font-semibold text-gray-700">
+                      {/* Fee & Duration + Compare */}
+                      <div className="flex items-center justify-between gap-2 text-xs font-semibold text-gray-700">
+                        <div className="flex items-center gap-3">
                           {feeText && (
-                            <div className="flex items-center gap-1 text-gray-800">
+                            <div className="flex items-center gap-1 text-gray-800 font-bold">
                               <span>₹</span>
                               <span>{feeText.replace(/^₹\s*/, "")}</span>
                             </div>
@@ -1157,40 +1158,8 @@ function CoursesContent({
                             </div>
                           )}
                         </div>
-                      )}
 
-                      {/* Mobile Action Buttons - Single Row */}
-                      <div className="pt-2.5 border-t border-gray-200 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-                        {Array.isArray(item.subcourses) && item.subcourses.length > 0 && (
-                          <button
-                            type="button"
-                            onClick={() => setSpecializationModalData(item)}
-                            className="flex-1 min-w-max bg-blue-50 hover:bg-blue-100 text-[#0B3B7E] border border-blue-200 text-[11px] font-bold py-2 px-2.5 rounded-lg transition-colors flex items-center justify-center cursor-pointer whitespace-nowrap"
-                          >
-                            <span>Specializations ({item.specializationsCount || item.subcourses.length})</span>
-                          </button>
-                        )}
-                        <Link
-                          href={courseDetailHref}
-                          className="flex-1 min-w-max bg-[#0a2540] text-white text-[11px] font-semibold py-2 px-2.5 rounded-lg text-center no-underline whitespace-nowrap flex items-center justify-center"
-                        >
-                          Know More
-                        </Link>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            openFormModal({
-                              title: "Apply for Course",
-                              subtitle: cardTitle,
-                              defaultCourse: cardTitle,
-                              formNameOverride: `CourseCard_${item.slug || uniName}`,
-                              submitButtonText: "Apply Now",
-                            });
-                          }}
-                          className="flex-1 min-w-max bg-[#F4D068] text-gray-900 text-[11px] font-bold py-2 px-2.5 rounded-lg border-none cursor-pointer whitespace-nowrap flex items-center justify-center"
-                        >
-                          Apply Now
-                        </button>
+                        {/* Mobile Compare Button - In Line With Fee & Duration */}
                         <button
                           type="button"
                           onClick={() => {
@@ -1206,10 +1175,53 @@ function CoursesContent({
                             toggleCompare(targetItem);
                             setIsCompareDrawerOpen(true);
                           }}
-                          className="min-w-max px-2.5 py-2 text-[11px] font-bold text-gray-700 flex items-center justify-center gap-1 cursor-pointer bg-transparent border border-gray-200 rounded-lg whitespace-nowrap shrink-0"
+                          className="border border-gray-200 hover:border-gray-300 hover:bg-gray-50 bg-white text-[11px] font-semibold text-gray-700 px-2.5 py-1 rounded-lg transition-colors inline-flex items-center justify-center gap-1 cursor-pointer shrink-0 self-center"
                         >
-                          <Plus className="w-3 h-3" />
-                          <span>Compare</span>
+                          {isInCompare(item._id || item.slug || cardTitle) ? (
+                            <>
+                              <CheckOutlined className="text-teal-600 text-[10px]" />
+                              <span className="text-teal-600 font-semibold">Added</span>
+                            </>
+                          ) : (
+                            <>
+                              <PlusOutlined className="text-gray-600 text-[10px]" />
+                              <span>Compare</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+
+                      {/* Mobile Action Buttons - Single Row */}
+                      <div className="pt-2.5 border-t border-gray-200 flex items-center gap-1.5">
+                        {Array.isArray(item.subcourses) && item.subcourses.length > 0 && (
+                          <button
+                            type="button"
+                            onClick={() => setSpecializationModalData(item)}
+                            className="flex-1 min-w-0 bg-blue-50 hover:bg-blue-100 text-[#0B3B7E] border border-blue-200 text-[11px] font-bold py-2 px-2 rounded-lg transition-colors flex items-center justify-center cursor-pointer whitespace-nowrap"
+                          >
+                            <span>Specializations ({item.specializationsCount || item.subcourses.length})</span>
+                          </button>
+                        )}
+                        <Link
+                          href={courseDetailHref}
+                          className="flex-1 min-w-0 bg-[#0a2540] text-white text-[11px] font-semibold py-2 px-2 rounded-lg text-center no-underline whitespace-nowrap flex items-center justify-center"
+                        >
+                          Know More
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            openFormModal({
+                              title: "Apply for Course",
+                              subtitle: cardTitle,
+                              defaultCourse: cardTitle,
+                              formNameOverride: `CourseCard_${item.slug || uniName}`,
+                              submitButtonText: "Apply Now",
+                            });
+                          }}
+                          className="flex-1 min-w-0 bg-[#F4D068] text-gray-900 text-[11px] font-bold py-2 px-2 rounded-lg border-none cursor-pointer whitespace-nowrap flex items-center justify-center"
+                        >
+                          Apply Now
                         </button>
                       </div>
                     </div>

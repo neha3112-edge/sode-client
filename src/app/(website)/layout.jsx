@@ -2,6 +2,7 @@ import React from "react";
 import { Header } from "@/components/website/Header";
 import { Footer } from "@/components/website/Footer";
 import MobileBottomNav from "@/components/website/MobileBottomNav";
+import GlobalBreadcrumb from "@/components/common/GlobalBreadcrumb";
 import { request } from "@/services/request";
 
 export const revalidate = 300;
@@ -19,6 +20,7 @@ export default async function WebsiteLayout({ children }) {
   return (
     <div className="flex flex-col min-h-screen">
       <Header initialHeaderData={headerData} />
+      <GlobalBreadcrumb />
       <main className="grow pb-16 lg:pb-0">{children}</main>
       <Footer initialHeaderData={headerData} />
       <MobileBottomNav />

@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Breadcrumb, Button, Modal, Skeleton, Empty, Tabs } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import Link from "next/link";
+import { useBreadcrumb } from "@/context/BreadcrumbContext";
 import {
   MapPin,
   Building2,
@@ -377,31 +378,24 @@ export default function UniversityClientView({ initialData = null, slug = "" }) 
     );
   }
 
+  useBreadcrumb({
+    items: [
+      { label: "Home", href: "/" },
+      { label: "Universities", href: "/universities" },
+      { label: uniName },
+    ],
+    backButton: {
+      label: "Back to Universities",
+      href: "/universities",
+    },
+  }, [uniName]);
+
   return (
     <div className="bg-[#F1F4F9] min-h-screen py-5 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="max-w-7xl mx-auto space-y-4 sm:space-y-5">
-        {/* Breadcrumb + Back Button */}
-        <div className="hidden md:flex flex-wrap items-center justify-between gap-4">
-              <Breadcrumb
-                className="text-xs font-semibold text-gray-500"
-                items={[
-                  { title: <Link href="/" className="hover:text-blue-600">Home</Link> },
-                  { title: <Link href="/universities" className="hover:text-blue-600">Universities</Link> },
-                  { title: <span className="text-gray-800 font-semibold">{uniName}</span> },
-                ]}
-              />
-              <Button
-                icon={<ArrowLeftOutlined />}
-                onClick={() => router.push("/universities")}
-                className="bg-white border-gray-200 rounded-lg text-xs font-semibold text-gray-700 hover:bg-gray-50 cursor-pointer"
-              >
-                Back to Universities
-              </Button>
-            </div>
-
-            {/* 1. HERO BANNER CARD */}
-            <div className="bg-[#0A2540] rounded-2xl sm:rounded-3xl overflow-hidden text-white relative border border-gray-200">
-              {heroBannerUrl && (
+        {/* 1. HERO BANNER CARD */}
+        <div className="bg-[#0A2540] rounded-2xl sm:rounded-3xl overflow-hidden text-white relative border border-gray-200">
+          {heroBannerUrl && (
                 <div className="absolute inset-0 z-0">
                   <Image
                     src={heroBannerUrl}
@@ -645,7 +639,7 @@ export default function UniversityClientView({ initialData = null, slug = "" }) 
                   </p>
                 )}
 
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 pt-1">
+                <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-6 lg:grid-cols-6 gap-2 sm:gap-3 pt-1">
                   {displayApprovalsList.map((acc, idx) => {
                     const accTitle = getSafeText(acc.title || acc.name || acc.code, "Approval");
                     const accDesc = getSafeText(acc.description, "");

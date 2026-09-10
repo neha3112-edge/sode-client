@@ -8,6 +8,7 @@ import { App, ConfigProvider } from "antd";
 import SWRProvider from "@/components/providers/SWRProvider";
 import JsonLd from "@/components/common/JsonLd";
 import { ToolWizardProvider } from "@/components/tool/ToolWizardContext";
+import { BreadcrumbProvider } from "@/context/BreadcrumbContext";
 
 const CompareDrawerWidget = dynamic(() => import("@/components/website/CompareDrawerWidget"), { ssr: false });
 const AutoEngineToolModal = dynamic(() => import("@/components/tool/AutoEngineToolModal"), { ssr: false });
@@ -28,12 +29,14 @@ export default function AppProviders({ children }) {
       >
         <App>
           <SWRProvider>
-            <ToolWizardProvider>
-              <JsonLd />
-              {children}
-              <CompareDrawerWidget />
-              <AutoEngineToolModal />
-            </ToolWizardProvider>
+            <BreadcrumbProvider>
+              <ToolWizardProvider>
+                <JsonLd />
+                {children}
+                <CompareDrawerWidget />
+                <AutoEngineToolModal />
+              </ToolWizardProvider>
+            </BreadcrumbProvider>
           </SWRProvider>
         </App>
       </ConfigProvider>

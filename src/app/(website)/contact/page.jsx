@@ -8,13 +8,7 @@ import Link from "next/link";
 export default function ContactPage() {
   return (
     <div className="flex flex-col min-h-screen bg-[#f8fafc] text-slate-900 font-sans">
-      <main className="flex-1 py-12 px-4 md:px-8 max-w-6xl mx-auto w-full">
-        {/* Breadcrumb */}
-        <Breadcrumb className="mb-6" items={[
-          { title: <Link href="/">Home</Link> },
-          { title: "Contact Us" }
-        ]} />
-
+      <main className="flex-1 py-8 sm:py-12 px-4 md:px-8 max-w-6xl mx-auto w-full">
         {/* Section Header */}
         <div className="mb-12">
           <h1 className="text-3xl md:text-4xl font-extrabold text-[#1C3569] m-0">

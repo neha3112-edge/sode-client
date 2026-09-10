@@ -24,6 +24,7 @@ import { getAssetPath } from "@/lib/utils";
 import WebsiteLayout from "@/components/layout/WebsiteLayout";
 import FormWrapper from "@/components/forms/FormWrapper";
 import SafeHtmlRenderer from "@/components/website/SafeHtmlRenderer";
+import { useBreadcrumb } from "@/context/BreadcrumbContext";
 
 function decodeHtml(html) {
   if (!html) return "";
@@ -171,6 +172,18 @@ export default function BlogClientView({ initialData = null, initialPopularBlogs
   const highlights = pageData?.highlights || blog.highlights || [];
   const faqs = pageData?.faqs || blog.faqs || [];
   const conclusion = pageData?.conclusion || blog.conclusion || {};
+
+  useBreadcrumb({
+    items: [
+      { label: "Home", href: "/" },
+      { label: "Blog", href: "/blog" },
+      { label: headline },
+    ],
+    backButton: {
+      label: "Back to Blog",
+      href: "/blog",
+    },
+  }, [headline]);
 
   const formattedDate = blog.publishedAt
     ? new Date(blog.publishedAt).toLocaleDateString("en-US", {

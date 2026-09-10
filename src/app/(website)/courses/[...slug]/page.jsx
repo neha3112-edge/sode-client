@@ -7,76 +7,44 @@ export const revalidate = 900;
 
 function normalizeCourseData(pageRes) {
   if (!pageRes) return null;
+  const raw = pageRes.result || pageRes;
 
-  const uniList = Array.isArray(pageRes.universityIds)
-    ? pageRes.universityIds
-    : pageRes.universityId
-      ? (Array.isArray(pageRes.universityId) ? pageRes.universityId : [pageRes.universityId])
-      : [];
+  const durationStr =
+    typeof raw.duration === "string"
+      ? raw.duration
+      : raw.duration?.name || (raw.duration?.months ? `${raw.duration.months} Months` : "");
 
-  const courseObj = pageRes.courseId?.name
-    ? pageRes.courseId
-    : pageRes.name
-      ? pageRes
-      : {};
-
-  const sub = pageRes.subCourseId?.name
-    ? pageRes.subCourseId
-    : pageRes.courseId
-      ? pageRes
-      : {};
-
-  const feesObj = pageRes.fees || null;
-  const durationObj = pageRes.duration || null;
-
-  const offerings = uniList.map((u, i) => ({
-    _id: `${pageRes._id}-${u._id || i}`,
-    university: u,
-    subcourses: sub._id || sub.name ? [sub] : [],
-    duration: durationObj,
-    fees: feesObj,
-    fee: feesObj,
-  }));
-
-  const mainTitle = pageRes.title || courseObj.name || pageRes.name || pageRes.slug;
+  const feeStr =
+    typeof raw.fees === "string"
+      ? raw.fees
+      : raw.fees?.name || (raw.fees?.amount ? `₹${Number(raw.fees.amount).toLocaleString("en-IN")}` : "");
 
   return {
-    _id: pageRes._id,
-    slug: pageRes.slug || pageRes._id,
-    isOfferingPage: true,
-    offeringPage: pageRes,
-    title: mainTitle,
-    fees: feesObj,
-    fullFee: pageRes.fullFee,
-    amount: pageRes.amount,
-    duration: durationObj,
-    durationMonths: pageRes.durationMonths,
-    description: pageRes.overviewSection?.description || pageRes.description || courseObj.description || "",
-    categories: pageRes.categories || pageRes.category || courseObj.category || [],
-    universityOfferings: offerings.length > 0 ? offerings : [
-      {
-        _id: pageRes._id,
-        university: pageRes.universityId || {},
-        subcourses: sub._id ? [sub] : [],
-        duration: durationObj,
-        fees: feesObj,
-        fee: feesObj,
-      },
-    ],
-    heroMedia: pageRes.heroMedia || pageRes.logo,
-    subTitle: pageRes.subTitle,
-    rating: pageRes.rating,
-    brochurePdf: pageRes.brochurePdf,
-    admissionDeadline: pageRes.admissionDeadline,
-    overviewSection: pageRes.overviewSection,
-    whyChooseSection: pageRes.whyChooseSection,
-    admissionSection: pageRes.admissionSection,
-    skillsSection: pageRes.skillsSection,
-    learningExperience: pageRes.learningExperience,
-    instituteSection: pageRes.instituteSection,
-    careerSection: pageRes.careerSection,
-    feeSection: pageRes.feeSection,
-    faqSection: pageRes.faqSection,
+    _id: raw._id,
+    slug: raw.slug || raw._id,
+    name: raw.name || raw.title || "Course",
+    fullName: raw.fullName || "",
+    duration: durationStr,
+    fees: feeStr,
+    eligibility: raw.eligibility || "",
+    admissionDeadline: raw.admissionDeadline || "",
+    bannerImage: raw.bannerImage || raw.bannerImg || null,
+    logo: raw.logo || null,
+    location: raw.location || "",
+    established: raw.established || "",
+    approvalsTitle: raw.approvalsTitle || (raw.universityName ? `Rankings & Accreditations of ${raw.universityName}` : "Rankings & Accreditations"),
+    approvals: Array.isArray(raw.approvals) ? raw.approvals : [],
+    overviewTitle: raw.overviewTitle || (raw.name ? `${raw.name} Course Overview` : "Course Overview"),
+    overview: raw.overview || raw.description || "",
+    keyHighlights: Array.isArray(raw.keyHighlights) ? raw.keyHighlights : [],
+    faqs: Array.isArray(raw.faqs) ? raw.faqs : [],
+    subCourses: Array.isArray(raw.subCourses) ? raw.subCourses : [],
+    universityName: raw.universityName || "",
+    curriculum: Array.isArray(raw.curriculum) ? raw.curriculum : [],
+    syllabus: Array.isArray(raw.syllabus) ? raw.syllabus : [],
+    paymentType: raw.paymentType || null,
+    fullFee: raw.fullFee || null,
+    topUniversities: Array.isArray(raw.topUniversities) ? raw.topUniversities : [],
   };
 }
 
@@ -88,7 +56,8 @@ const getCourseData = cache(async (slug) => {
       entity: "courses",
       endPoint: "v1/list",
       id: slugPath,
-      revalidate: 900,
+      options: { refresh: "true" },
+      revalidate: 0,
     });
     const pageRes = res?.result || res;
     return normalizeCourseData(pageRes);
@@ -112,25 +81,14 @@ export async function generateMetadata({ params }) {
 
   try {
     const course = await getCourseData(slug);
-    const cleanTitle = course?.title || (slugStr ? slugStr.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) : "Online MBA");
-    const uniName =
-      course?.universityOfferings?.[0]?.university?.name ||
-      course?.offeringPage?.universityId?.name ||
-      "Manipal University";
-    const displayTitle = `${cleanTitle} from ${uniName} - Syllabus, Fees & Admission | mysode`;
+    const cleanTitle = course?.name || (slugStr ? slugStr.replace(/[-/]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) : "Online Course");
+    const uniName = course?.universityName || "Partner University";
+    const displayTitle = `${cleanTitle}${uniName ? ` from ${uniName}` : ""} - Syllabus, Fees & Admission | mysode`;
     const description =
-      course?.overviewSection?.description?.slice(0, 160) ||
-      course?.description?.slice(0, 160) ||
+      course?.overview?.slice(0, 160) ||
       `Enroll in ${cleanTitle} from ${uniName}. Check eligibility criteria, fee structure, duration, career scope, and apply online.`;
     const keywords = `${cleanTitle}, ${cleanTitle} ${uniName}, ${cleanTitle} online fees, ${cleanTitle} syllabus, ${cleanTitle} admission`;
-    const uniBannerImage =
-      course?.universityOfferings?.[0]?.university?.bannerImg?.url ||
-      course?.universityOfferings?.[0]?.university?.bannerImg ||
-      course?.offeringPage?.universityId?.bannerImg?.url ||
-      course?.offeringPage?.universityId?.bannerImg ||
-      course?.universityOfferings?.[0]?.university?.image?.url ||
-      course?.universityOfferings?.[0]?.university?.image ||
-      null;
+    const uniBannerImage = course?.bannerImage || course?.logo || null;
     const ogImage = uniBannerImage ? getAssetPath(uniBannerImage) : "https://mysode.com/og-image.jpg";
     const canonical = `https://mysode.com/courses/${course?.slug || slugStr}`;
 
@@ -176,19 +134,11 @@ export default async function CourseDetailPage({ params }) {
   const slug = resolvedParams?.slug || "";
   const slugStr = Array.isArray(slug) ? slug.join("/") : slug;
 
-  const [initialData, coursesRes] = await Promise.all([
-    getCourseData(slug),
-    request
-      .dynamicList({
-        entity: "courses",
-        endPoint: "v1/list",
-        options: { items: 24 },
-        revalidate: 0,
-      })
-      .catch(() => null),
-  ]);
-
-  const initialCourses = coursesRes?.result || coursesRes?.programs || [];
+  const initialData = await getCourseData(slug);
+  const initialCourses =
+    Array.isArray(initialData?.topUniversities) && initialData.topUniversities.length > 0
+      ? initialData.topUniversities
+      : [];
 
   return (
     <CourseClientView

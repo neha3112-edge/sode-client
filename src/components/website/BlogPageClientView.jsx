@@ -208,15 +208,6 @@ export default function BlogPageClientView({
   return (
     <WebsiteLayout py="py-4 sm:py-6" bg="#f8fafc">
       <div className="max-w-7xl mx-auto space-y-6 px-3 sm:px-4 md:px-6">
-        {/* 🧭 Minimal Top Breadcrumb */}
-        <div className="flex items-center gap-2 text-xs sm:text-sm text-slate-500 font-medium py-1">
-          <Link href="/" className="text-slate-500 hover:text-[#046bd2] transition-colors">
-            Home
-          </Link>
-          <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-          <span className="text-slate-800 font-semibold">Latest Blogs & Articles</span>
-        </div>
-
         {/* 📰 Blog Grid Listing */}
         {blogs.length === 0 ? (
           <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center my-6">

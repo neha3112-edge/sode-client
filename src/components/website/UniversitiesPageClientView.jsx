@@ -262,26 +262,6 @@ export default function UniversitiesPageClientView({ initialUniversities = [] })
 
   return (
     <WebsiteLayout py="py-4 sm:py-6" bg="#f8fafc">
-      {/* Back Button + Breadcrumb */}
-      <div className="flex items-center gap-2.5 mb-4 sm:mb-6">
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="inline-flex items-center justify-center text-slate-500 hover:text-[#1C3569] transition-colors cursor-pointer p-0 shrink-0 -translate-y-[1.5px] bg-transparent border-none outline-none"
-          title="Go Back"
-          aria-label="Go Back"
-        >
-          <ArrowLeft className="w-4 h-4 stroke-[2.2]" />
-        </button>
-        <Breadcrumb
-          className="text-xs font-semibold leading-none"
-          items={[
-            { title: <Link href="/">Home</Link> },
-            { title: "Universities" },
-          ]}
-        />
-      </div>
-
       {filtered.length > 0 ? (
         <>
           <Row gutter={[20, 20]}>

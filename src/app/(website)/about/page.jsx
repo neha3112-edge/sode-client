@@ -8,13 +8,7 @@ import Link from "next/link";
 export default function AboutPage() {
   return (
     <div className="flex flex-col min-h-screen bg-[#f8fafc] text-slate-900 font-sans">
-      <main className="flex-1 py-12 px-4 md:px-8 max-w-6xl mx-auto w-full">
-        {/* Breadcrumb */}
-        <Breadcrumb className="mb-6" items={[
-          { title: <Link href="/">Home</Link> },
-          { title: "About Us" }
-        ]} />
-
+      <main className="flex-1 py-8 sm:py-12 px-4 md:px-8 max-w-6xl mx-auto w-full">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
           <Tag color="#1C3569" className="font-semibold text-xs border-none rounded-full px-3 py-1">
