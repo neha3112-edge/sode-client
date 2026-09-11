@@ -1,93 +1,34 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import React, { useState, useMemo } from "react";
 import Image from "next/image";
-import { Breadcrumb, Button, Modal, Skeleton, Empty, Tabs } from "antd";
-import { ArrowLeftOutlined } from "@ant-design/icons";
 import Link from "next/link";
+import { Modal, Button } from "antd";
+import { PlusOutlined, CheckOutlined } from "@ant-design/icons";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
+import { useCompare } from "@/hooks/useCompare";
+import { useFormModal } from "@/hooks/useFormModal";
+import { getAssetPath } from "@/lib/utils";
 import {
   MapPin,
   Building2,
-  ShieldCheck,
+  BadgeCheck,
   GraduationCap,
   Download,
   PhoneCall,
-  Compass,
   CheckCircle2,
-  Award,
-  Users,
-  BookOpen,
-  Laptop,
-  Video,
-  Network,
-  FileText,
-  Trophy,
-  Sparkles,
-  ChevronLeft,
-  ChevronRight,
   Clock,
-  ExternalLink,
-  ArrowRight,
-  Search,
-  CreditCard,
-  Rocket,
-  FileCheck,
-  MessageSquare,
-  Quote,
   Star,
   Plus,
   Minus,
-  HelpCircle,
-  TrendingUp,
+  ChevronDown,
+  BookOpen,
+  Users,
+  Check,
+  Award,
 } from "lucide-react";
-import { getAssetPath } from "@/lib/utils";
-import { useFormModal } from "@/hooks/useFormModal";
-import { request } from "@/services/request";
 
-const ICONS = {
-  MapPin,
-  Building2,
-  ShieldCheck,
-  GraduationCap,
-  Download,
-  PhoneCall,
-  Compass,
-  CheckCircle2,
-  Award,
-  Users,
-  BookOpen,
-  Laptop,
-  Video,
-  Network,
-  FileText,
-  Trophy,
-  Sparkles,
-  ChevronLeft,
-  ChevronRight,
-  Clock,
-  ExternalLink,
-  ArrowRight,
-  Search,
-  CreditCard,
-  Rocket,
-  FileCheck,
-  MessageSquare,
-  Quote,
-  Star,
-  Plus,
-  Minus,
-  HelpCircle,
-  TrendingUp,
-};
-
-function DynamicIcon({ name, className = "w-4 h-4", ...props }) {
-  const cleanName = (name || "").replace(/Outlined$/, "").replace(/Filled$/, "");
-  const Component = ICONS[cleanName] || ICONS[name] || Trophy;
-  return <Component className={className} {...props} />;
-}
-
+// Safe text helper
 const getSafeText = (val, fallback = "") => {
   if (val === null || val === undefined) return fallback;
   if (typeof val === "string" || typeof val === "number") return String(val);
@@ -98,1090 +39,1268 @@ const getSafeText = (val, fallback = "") => {
     if (val.value && typeof val.value === "string") return val.value;
     if (val.text && typeof val.text === "string") return val.text;
     if (val.year) return String(val.year);
-    return fallback;
   }
   return fallback;
 };
 
-export default function UniversityClientView({ initialData = null, slug = "" }) {
-  const router = useRouter();
+export default function UniversityClientView({ initialData, slug }) {
   const { openFormModal } = useFormModal();
+  const { toggleCompare, isInCompare, setIsCompareDrawerOpen } = useCompare();
 
-  const data = initialData;
-
-  const courseSliderRef = useRef(null);
-  const reviewSliderRef = useRef(null);
-  const [openFaqIndex, setOpenFaqIndex] = useState(0);
+  // Modal & state controls
+  const [selectedCourseSpec, setSelectedCourseSpec] = useState(null);
   const [isCertificateModalOpen, setIsCertificateModalOpen] = useState(false);
+  const [openFaqIndex, setOpenFaqIndex] = useState(0);
+  const [activeCourseFilter, setActiveCourseFilter] = useState("ALL");
+  const [visibleTopUnis, setVisibleTopUnis] = useState(6);
+  const [visibleCoursesCount, setVisibleCoursesCount] = useState(6);
 
-  const [activeSection, setActiveSection] = useState("section-about");
-  const [showTopBar, setShowTopBar] = useState(false);
+  // Pure dynamic data extraction from backend
+  const data = initialData || {};
+  const uni =
+    (data && typeof data.result === "object" ? data.result : null) ||
+    (data && typeof data.universityId === "object" ? data.universityId : null) ||
+    data ||
+    {};
+  const universityData = uni;
 
-  const isManualScrollingRef = useRef(false);
-  const scrollTimeoutRef = useRef(null);
+  const uniName = uni.name || data.name || data.tagline || "University";
 
-  const toggleFaq = (index) => {
-    setOpenFaqIndex((prev) => (prev === index ? null : index));
-  };
+  useBreadcrumb(
+    {
+      items: [
+        { label: "Home", href: "/" },
+        { label: "Universities", href: "/universities" },
+        { label: `Online ${uniName}` },
+      ],
+      backButton: {
+        label: "Back to Universities",
+        href: "/universities",
+      },
+    },
+    [uniName]
+  );
 
-  const uni = (data && typeof data.universityId === "object" ? data.universityId : data) || {};
-  const uniName = getSafeText(uni.name || data?.tagline, "University");
-  const uniLogoUrl =
-    uni.image?.url || uni.image || uni.logo?.url || uni.logo || uni.logoSrc?.url || uni.logoSrc
-      ? getAssetPath(uni.image?.url || uni.image || uni.logo?.url || uni.logo || uni.logoSrc?.url || uni.logoSrc)
-      : null;
-  const heroBannerUrl =
+  // 1. Images & Logos
+  const rawBanner =
     uni.bannerImg?.url ||
-      uni.bannerImg ||
-      data?.heroMedia?.url ||
-      data?.heroMedia ||
-      uni.imageSrc?.url ||
-      uni.imageSrc ||
-      uni.image?.url ||
-      uni.image ||
-      data?.image?.url ||
-      data?.image
-      ? getAssetPath(
-        uni.bannerImg?.url ||
-        uni.bannerImg ||
-        data?.heroMedia?.url ||
-        data?.heroMedia ||
-        uni.imageSrc?.url ||
-        uni.imageSrc ||
-        uni.image?.url ||
-        uni.image ||
-        data?.image?.url ||
-        data?.image
-      )
-      : "";
+    uni.bannerImg ||
+    data.bannerImg?.url ||
+    data.bannerImg ||
+    data.heroMedia?.url ||
+    data.heroMedia ||
+    uni.image?.url ||
+    uni.image;
+  const heroBannerUrl = rawBanner ? getAssetPath(rawBanner) : null;
 
-  const locationText = getSafeText(
-    [
-      data?.city?.name || uni?.city?.name,
-      data?.state?.name || uni?.state?.name,
-      data?.country?.name || uni?.country?.name,
-    ]
-      .filter(Boolean)
-      .join(", "),
-    "India"
-  );
+  const rawLogo =
+    uni.logo?.url ||
+    uni.logo ||
+    data.logo?.url ||
+    data.logo;
+  const logoUrl = rawLogo ? getAssetPath(rawLogo) : null;
 
-  const naacText =
-    data?.naac_rating?.grade ||
-      data?.naac_rating?.name ||
-      uni?.naac_rating?.grade ||
-      uni?.naac_rating?.name
-      ? `NAAC ${data?.naac_rating?.grade ||
-      data?.naac_rating?.name ||
-      uni?.naac_rating?.grade ||
-      uni?.naac_rating?.name
-      }`
-      : "";
-
-  const nirfText = data?.nirf_rank?.rank
-    ? `NIRF Rank #${data.nirf_rank.rank}`
-    : uni?.nirf_rank?.rank
-      ? `NIRF Rank #${uni.nirf_rank.rank}`
-      : uni?.nirf_rank?.title
-        ? `NIRF: ${uni.nirf_rank.title}`
-        : "";
-
-  const rankingText = [naacText, nirfText].filter(Boolean).join(" • ");
-
-  const establishedText = getSafeText(
-    data?.established_year?.year ||
-    data?.established_year ||
-    uni?.established_year?.year ||
-    uni?.established_year,
-    ""
-  );
-
-  const modesText =
-    Array.isArray(data?.mode) && data.mode.length > 0
-      ? data.mode.map((m) => (typeof m === "object" ? m.name : m)).filter(Boolean).join(" • ")
-      : data?.mode?.name || uni?.mode?.name || "";
-
-  // Approvals & Accreditations list from DB
-  const rawAccreditations =
-    Array.isArray(data?.approvalsSection?.accreditations) &&
-      data.approvalsSection.accreditations.length > 0
-      ? data.approvalsSection.accreditations
-      : [];
-
-  const rawApprovals =
-    Array.isArray(data?.approvalsSection?.approvals) && data.approvalsSection.approvals.length > 0
-      ? data.approvalsSection.approvals
-      : Array.isArray(uni?.approvals) && uni.approvals.length > 0
-        ? uni.approvals
-        : [];
-
-  const displayApprovalsList =
-    rawAccreditations.length > 0
-      ? rawAccreditations
-      : rawApprovals.map((a) => ({
-        title: typeof a === "object" ? a.name || a.title || a.code || "Approval" : a,
-        description: typeof a === "object" ? a.description || a.title || a.name || "" : "",
-        logo: typeof a === "object" ? a.logo : null,
-      }));
-
-  // Dynamic offerings list (actual courses linked to this university)
-  const offeringsList =
-    Array.isArray(data?.offerings) && data.offerings.length > 0
-      ? data.offerings
-      : Array.isArray(data?.courses) && data.courses.length > 0
-        ? data.courses
-        : [];
-
-  const totalCoursesText = getSafeText(
-    data?.totalCoursesCount,
-    offeringsList.length ? `${offeringsList.length}+ Programmes` : "10+ Programmes"
-  );
-
-  // Dynamic Factsheet facts with populated data fallback
-  const dynamicFacts =
-    Array.isArray(data?.factsheetSection?.facts) && data.factsheetSection.facts.length > 0
-      ? data.factsheetSection.facts
-      : [
-        { label: "University Name", value: uniName },
-        ...(locationText ? [{ label: "Location", value: locationText }] : []),
-        ...(establishedText ? [{ label: "Established Year", value: establishedText }] : []),
-        ...(naacText ? [{ label: "NAAC Accreditation", value: naacText }] : []),
-        ...(nirfText ? [{ label: "NIRF Ranking", value: nirfText }] : []),
-        ...(displayApprovalsList.length > 0
-          ? [{ label: "Recognitions & Approvals", value: displayApprovalsList.map((a) => a.title).join(", ") }]
-          : []),
-        ...(offeringsList.length > 0
-          ? [{ label: "Total Programmes", value: `${offeringsList.length}+ Degree & Diploma Programmes` }]
-          : []),
-        ...(modesText ? [{ label: "Mode of Learning", value: modesText }] : []),
-      ];
-
-  // Dynamic Navigation Sections
-  const dynamicNavSections = [
-    ...(data?.aboutSection?.enabled !== false && data?.aboutSection?.description
-      ? [{ id: "section-about", label: getSafeText(data.aboutSection.title, "About") }]
-      : []),
-    ...(dynamicFacts.length > 0
-      ? [{ id: "section-factsheet", label: getSafeText(data?.factsheetSection?.title, "Factsheet") }]
-      : []),
-    ...(displayApprovalsList.length > 0
-      ? [{ id: "section-approvals", label: getSafeText(data?.approvalsSection?.title, "Approvals") }]
-      : []),
-    ...(offeringsList.length > 0 ? [{ id: "section-courses", label: "Programmes Offered" }] : []),
-    ...(data?.whyChooseSection?.enabled !== false && data?.whyChooseSection?.advantages?.length > 0
-      ? [{ id: "section-advantages", label: getSafeText(data.whyChooseSection.title, "Why Choose") }]
-      : []),
-    ...(data?.learningMethodologySection?.enabled !== false &&
-      data?.learningMethodologySection?.features?.length > 0
-      ? [
-        {
-          id: "section-learning-methodology",
-          label: getSafeText(data.learningMethodologySection.title, "Methodology"),
-        },
-      ]
-      : []),
-    ...(data?.certificateSection?.enabled !== false
-      ? [{ id: "section-certificate", label: getSafeText(data?.certificateSection?.title, "Certificate") }]
-      : []),
-    ...(data?.testimonialsSection?.enabled !== false &&
-      data?.testimonialsSection?.testimonials?.length > 0
-      ? [{ id: "section-reviews", label: getSafeText(data.testimonialsSection.title, "Reviews") }]
-      : []),
-    ...(data?.faqSection?.enabled !== false && data?.faqSection?.faqs?.length > 0
-      ? [{ id: "section-faqs", label: getSafeText(data?.faqSection?.title, "FAQs") }]
-      : []),
-  ];
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY;
-
-      if (scrollPosition > 320) {
-        setShowTopBar(true);
-      } else {
-        setShowTopBar(false);
-      }
-
-      if (!isManualScrollingRef.current && dynamicNavSections.length > 0) {
-        const offset = 120;
-        const sectionElements = dynamicNavSections
-          .map((sec) => document.getElementById(sec.id))
-          .filter(Boolean);
-
-        let currentSection = dynamicNavSections[0]?.id || "";
-        for (let i = 0; i < sectionElements.length; i++) {
-          const el = sectionElements[i];
-          const rect = el.getBoundingClientRect();
-          if (rect.top <= offset) {
-            currentSection = el.id;
-          }
-        }
-        if (currentSection) {
-          setActiveSection(currentSection);
-        }
-      }
+  // 2. Key Highlights Table Data
+  const highlightsData = useMemo(() => {
+    if (Array.isArray(uni.key_highlights) && uni.key_highlights.length > 0) {
+      return {
+        title: uni.key_highlights[0].title || `Key Highlights of Online ${uniName}`,
+        items: Array.isArray(uni.key_highlights[0].items) ? uni.key_highlights[0].items : [],
+      };
+    }
+    return {
+      title: `Key Highlights of Online ${uniName}`,
+      items: [],
     };
+  }, [uni.key_highlights, uniName]);
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [dynamicNavSections]);
+  // 3. Quick Facts / Metadata items
+  const locationText =
+    uni.location ||
+    [uni?.city?.name || data?.city?.name, uni?.state?.name || data?.state?.name]
+      .filter(Boolean)
+      .join(", ") ||
+    highlightsData.items.find((h) => h.feature?.toLowerCase() === "location")?.details ||
+    "";
 
-  const scrollToSection = (id) => {
-    const el = document.getElementById(id);
-    if (el) {
-      setActiveSection(id);
-      isManualScrollingRef.current = true;
+  const establishedText =
+    getSafeText(uni?.established_year?.year || uni?.established_year?.name || uni?.established_year) ||
+    highlightsData.items.find((h) => h.feature?.toLowerCase().includes("establishment"))?.details ||
+    "";
 
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
-      }
-
-      const yOffset = -70;
-      const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
-      window.scrollTo({ top: y, behavior: "smooth" });
-
-      scrollTimeoutRef.current = setTimeout(() => {
-        isManualScrollingRef.current = false;
-      }, 700);
+  // 4. Rankings & Accreditations (from backend uni.accreditations)
+  const accreditationsList = useMemo(() => {
+    if (Array.isArray(uni.accreditations) && uni.accreditations.length > 0) {
+      return uni.accreditations.map((acc) => ({
+        title: acc.name,
+        image: acc.image?.url || acc.logo?.url || (typeof acc.image === "string" ? acc.image : null),
+        description: acc.description || "",
+      }));
     }
+    return [];
+  }, [uni.accreditations]);
+
+  const approvalsSummary =
+    accreditationsList.map((a) => a.title).filter(Boolean).join(" | ") ||
+    highlightsData.items.find((h) => h.feature?.toLowerCase() === "approval")?.details ||
+    "";
+
+  // 5. Courses List (pure dynamic from backend uni.courses)
+  const coursesList = useMemo(() => {
+    if (Array.isArray(uni.courses) && uni.courses.length > 0) {
+      return uni.courses.map((c, idx) => ({
+        _id: c._id || `c-${idx}`,
+        title: c.title || c.name || "",
+        name: c.name || c.title || "",
+        slug: c.slug || `${slug || uni.slug}/${(c.title || c.name || "").toLowerCase().replace(/\s+/g, "-")}`,
+        fees: c.fees || "",
+        duration: c.duration || "",
+        specializationsCount: c.specializationsCount || c.subcourses?.length || 0,
+        subcourses: Array.isArray(c.subcourses) ? c.subcourses : [],
+      }));
+    }
+    return [];
+  }, [uni.courses, slug, uni.slug]);
+
+  // Course Pills for Hero
+  const coursePills = useMemo(() => {
+    const list = coursesList.map((c) => c.title?.toUpperCase()).filter(Boolean);
+    return Array.from(new Set(list)).slice(0, 7);
+  }, [coursesList]);
+
+  // Filtered courses
+  const filteredCourses = useMemo(() => {
+    if (activeCourseFilter === "ALL") return coursesList;
+    return coursesList.filter(
+      (c) => c.title.toUpperCase() === activeCourseFilter.toUpperCase()
+    );
+  }, [coursesList, activeCourseFilter]);
+
+  // 6. Why Choose Us (from backend uni.why_choose_us)
+  const whyChooseSection = useMemo(() => {
+    if (Array.isArray(uni.why_choose_us) && uni.why_choose_us.length > 0) {
+      const first = uni.why_choose_us[0];
+      return {
+        title: first.title || `Why Choose Online ${uniName}`,
+        items: (first.items || []).map((item) => ({
+          title: item.title,
+          description: item.description,
+          iconUrl: item.icon?.url || (typeof item.icon === "string" ? item.icon : null),
+        })),
+      };
+    }
+    return {
+      title: `Why Choose Online ${uniName}`,
+      items: [],
+    };
+  }, [uni.why_choose_us, uniName]);
+
+  // 7. Sample Degree (100% pure dynamic from backend uni.sample_degree)
+  const sampleDegreeData = useMemo(() => {
+    if (Array.isArray(uni.sample_degree) && uni.sample_degree.length > 0) {
+      const deg = uni.sample_degree[0];
+      return {
+        title: deg.title || "",
+        description: deg.description || "",
+        imageUrl: deg.image?.url || (typeof deg.image === "string" ? deg.image : null),
+        points: Array.isArray(deg.points) ? deg.points : [],
+        ctaText: deg.cta_text || "Get Degree",
+        ctaLink: deg.cta_link || null,
+      };
+    }
+    return null;
+  }, [uni.sample_degree]);
+
+  // 8. Top UGC-DEB Approved Universities (from backend)
+  const topPeerUniversities = useMemo(() => {
+    const list = uni.top_ugc_deb_universities || uni.ugc_deb_universities;
+    if (Array.isArray(list) && list.length > 0) {
+      return list;
+    }
+    return [];
+  }, [uni.top_ugc_deb_universities, uni.ugc_deb_universities]);
+
+  const isUgcDebApproved = topPeerUniversities.length > 0;
+
+  // 9. FAQs (from backend uni.faqs)
+  const faqSection = useMemo(() => {
+    if (Array.isArray(uni.faqs) && uni.faqs.length > 0) {
+      const first = uni.faqs[0];
+      return {
+        title: first.title || `FAQs on Online Degree at ${uniName}`,
+        items: Array.isArray(first.items) ? first.items : [],
+      };
+    }
+    return {
+      title: `FAQs on Online Degree at ${uniName}`,
+      items: [],
+    };
+  }, [uni.faqs, uniName]);
+
+  // Toggle FAQ accordion
+  const toggleFaq = (idx) => {
+    setOpenFaqIndex((prev) => (prev === idx ? -1 : idx));
   };
 
-  const scrollCourses = (direction) => {
-    if (courseSliderRef.current) {
-      const scrollAmount = direction === "left" ? -340 : 340;
-      courseSliderRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
-    }
+  // Compare Handler
+  const handleUniversityCompare = () => {
+    const uniPayload = {
+      _id: uni._id || data._id || slug,
+      name: uniName,
+      slug: slug || uni.slug || data.slug,
+      logo: rawLogo,
+      city: locationText,
+      state: "",
+      naac_rating: { grade: "" },
+      nirf_rank: { rank: "" },
+      established_year: establishedText,
+      approvals: (accreditationsList || []).map((a) => ({ name: a.title })),
+    };
+    toggleCompare(uniPayload);
+    setIsCompareDrawerOpen(true);
   };
 
-  const certificateImgUrl = data?.certificateSection?.certificateImage?.url
-    ? getAssetPath(data.certificateSection.certificateImage.url)
-    : data?.certificateSection?.certificateImage
-      ? getAssetPath(data.certificateSection.certificateImage)
-      : "";
+  return (
+    <div className="min-h-screen bg-gray-100 text-gray-800 antialiased font-sans pb-16">
+      {/* ============================================================ */}
+      {/* 2. HERO SECTION (100% FULL-WIDTH CAMPUS BG + OVERLAPPING CARD) */}
+      {/* ============================================================ */}
+      <div className="relative w-full">
+        {/* Full-Width Campus Photo Banner */}
+        <div className="relative w-full h-64 sm:h-80 md:h-[380px] lg:h-[400px] overflow-hidden bg-linear-to-r from-[#0C2B4E] to-[#0077B6]">
+          {heroBannerUrl ? (
+            <Image
+              src={heroBannerUrl}
+              alt={uniName}
+              fill
+              sizes="100vw"
+              priority
+              className="object-cover object-center"
+            />
+          ) : null}
+        </div>
 
-  if (!data) {
-    return (
-      <div className="bg-[#F1F4F9] min-h-screen py-5 px-4 sm:px-6 lg:px-8 font-sans">
-        <div className="max-w-7xl mx-auto space-y-4 sm:space-y-5">
-          <div className="bg-white rounded-2xl p-10 text-center border border-gray-200">
-            <Empty description="University landing page not found" />
-            <Button
-              type="primary"
-              onClick={() => router.push("/universities")}
-              className="mt-4 bg-[#0C3058] border-none font-semibold text-xs rounded-lg"
-            >
-              Browse All Universities
-            </Button>
+        {/* Overlapping Floating Card Container */}
+        <div className="relative -mt-16 sm:-mt-20 md:-mt-24 lg:-mt-28 z-10 max-w-6xl mx-auto px-3 sm:px-4 md:px-0">
+          <div className="rounded-2xl overflow-hidden border border-transparent">
+            {/* Top Blue Hero Header Box (#0C3A66) */}
+            <div className="bg-[#0C3A66] text-white px-3.5 py-3.5 sm:px-7 sm:py-6">
+              {/* Top Row: Logo Card + Title / Rating / Course Pills */}
+              <div className="flex flex-row items-center gap-2.5 sm:gap-4">
+                {/* University Logo Card */}
+                <div className="w-18 h-18 sm:w-28 sm:h-28 rounded-xl sm:rounded-2xl bg-white p-1 sm:p-1.5 shadow-md border border-gray-100 flex flex-col items-center justify-center text-center shrink-0">
+                  {logoUrl ? (
+                    <div className="relative w-full h-11 sm:h-16">
+                      <Image
+                        src={logoUrl}
+                        alt={uniName}
+                        fill
+                        sizes="96px"
+                        className="object-contain"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-amber-500/20 text-amber-800 flex items-center justify-center font-bold text-base sm:text-lg">
+                      🎓
+                    </div>
+                  )}
+                  <span className="text-[9px] sm:text-[10.5px] font-bold text-gray-800 leading-tight line-clamp-1 sm:line-clamp-2 mt-0.5">
+                    {uniName}
+                  </span>
+                </div>
+
+                {/* Right Container: Title + Ratings + Course Pills */}
+                <div className="flex-1 min-w-0 flex flex-col justify-center gap-1 sm:gap-1.5">
+                  {/* Title */}
+                  <h1 className="text-base sm:text-2xl md:text-[28px] font-extrabold text-white tracking-tight leading-tight m-0 truncate sm:whitespace-normal">
+                    Online {uniName}
+                  </h1>
+
+                  {/* Star Ratings + Score + STUDENT RATING label */}
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <div className="flex items-center gap-0.5 text-amber-400 shrink-0">
+                      <Star size={14} className="fill-amber-400 text-amber-400 sm:w-4 sm:h-4" />
+                      <Star size={14} className="fill-amber-400 text-amber-400 sm:w-4 sm:h-4" />
+                      <Star size={14} className="fill-amber-400 text-amber-400 sm:w-4 sm:h-4" />
+                      <Star size={14} className="fill-amber-400 text-amber-400 sm:w-4 sm:h-4" />
+                      <Star size={14} className="fill-amber-400 text-amber-400 sm:w-4 sm:h-4" />
+                    </div>
+                    <div className="flex flex-col leading-none">
+                      <span className="text-xs sm:text-[13px] font-bold text-white leading-none">
+                        {uni.avg_rating ? `${uni.avg_rating}/5` : "4.8/5"}
+                      </span>
+                      <span className="text-[7.5px] sm:text-[8.5px] font-semibold text-white/70 uppercase tracking-wider mt-0.5">
+                        Student Rating
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Course Pills (with Desktop-only Action Buttons aligned right) */}
+                  <div className="flex items-center justify-between gap-3 mt-0.5">
+                    {coursePills.length > 0 && (
+                      <div className="flex items-center gap-1 sm:gap-1.5 flex-nowrap overflow-x-auto no-scrollbar py-0.5 max-w-full">
+                        {coursePills.map((cp) => (
+                          <button
+                            key={cp}
+                            type="button"
+                            onClick={() => setActiveCourseFilter(cp)}
+                            className={`text-[10px] sm:text-xs font-semibold px-2 sm:px-3 py-0.5 sm:py-1 rounded-full transition-all cursor-pointer whitespace-nowrap shrink-0 border ${activeCourseFilter === cp
+                              ? "bg-white text-[#0C3A66] border-white shadow-xs font-bold"
+                              : "bg-white/20 text-white border-white/20 hover:bg-white/30"
+                              }`}
+                          >
+                            {cp}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Desktop Action Buttons: Aligned right directly across from Course Pills */}
+                    <div className="hidden lg:flex items-center gap-2.5 xl:gap-3 shrink-0 ml-auto">
+                      {/* Get Brochure */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          openFormModal &&
+                            openFormModal({
+                              title: `Download Brochure - ${uniName}`,
+                              subtitle: "Fill details to receive instant digital brochure",
+                              defaultCourse: uniName,
+                              submitButtonText: "Get Brochure",
+                            });
+                        }}
+                        className="whitespace-nowrap bg-[#00B4D8] hover:bg-[#0096C7] text-white font-bold text-xs sm:text-sm px-4 py-2 rounded-full border-none cursor-pointer flex items-center gap-1.5 shadow-sm transition-all active:scale-95 shrink-0"
+                      >
+                        <span>Get Brochure</span>
+                        <Download size={14} className="stroke-[2.5]" />
+                      </button>
+
+                      {/* Get Counseling */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          openFormModal &&
+                            openFormModal({
+                              title: `Get Counseling - ${uniName}`,
+                              subtitle: "Speak directly with academic counselors",
+                              defaultCourse: uniName,
+                              submitButtonText: "Get Counseling",
+                            });
+                        }}
+                        className="whitespace-nowrap bg-transparent hover:bg-white/10 text-white font-semibold text-xs sm:text-sm px-4 py-2 rounded-full border border-white cursor-pointer flex items-center gap-1.5 transition-all active:scale-95 shrink-0"
+                      >
+                        <span>Get Counseling</span>
+                      </button>
+
+                      {/* Add to Compare */}
+                      <button
+                        type="button"
+                        onClick={handleUniversityCompare}
+                        className={`whitespace-nowrap font-semibold text-xs sm:text-sm px-4 py-2 rounded-full cursor-pointer flex items-center gap-1.5 transition-all active:scale-95 shrink-0 ${isInCompare(uni._id || data._id || slug)
+                          ? "bg-emerald-600 hover:bg-emerald-700 text-white border-none shadow-xs"
+                          : "bg-transparent hover:bg-white/10 text-white border border-white"
+                          }`}
+                      >
+                        <span>
+                          {isInCompare(uni._id || data._id || slug)
+                            ? "In Compare"
+                            : "+ Add to Compare"}
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bottom Row: Action Buttons (MOBILE ONLY - original working code) */}
+              <div className="flex lg:hidden items-center gap-2 sm:gap-3 shrink-0 flex-nowrap overflow-x-auto no-scrollbar mt-3.5 sm:mt-4 pt-1">
+                {/* Get Brochure */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    openFormModal &&
+                      openFormModal({
+                        title: `Download Brochure - ${uniName}`,
+                        subtitle: "Fill details to receive instant digital brochure",
+                        defaultCourse: uniName,
+                        submitButtonText: "Get Brochure",
+                      });
+                  }}
+                  className="whitespace-nowrap bg-[#00B4D8] hover:bg-[#0096C7] text-white font-bold text-xs sm:text-sm px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full border-none cursor-pointer flex items-center gap-1.5 shadow-sm transition-all active:scale-95 shrink-0"
+                >
+                  <span>Get Brochure</span>
+                  <Download size={14} className="stroke-[2.5]" />
+                </button>
+
+                {/* Get Counseling */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    openFormModal &&
+                      openFormModal({
+                        title: `Get Counseling - ${uniName}`,
+                        subtitle: "Speak directly with academic counselors",
+                        defaultCourse: uniName,
+                        submitButtonText: "Get Counseling",
+                      });
+                  }}
+                  className="whitespace-nowrap bg-transparent hover:bg-white/10 text-white font-semibold text-xs sm:text-sm px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full border border-white/80 cursor-pointer flex items-center gap-1.5 transition-all active:scale-95 shrink-0"
+                >
+                  <span>Get Counseling</span>
+                </button>
+
+                {/* Add to Compare */}
+                <button
+                  type="button"
+                  onClick={handleUniversityCompare}
+                  className={`whitespace-nowrap font-semibold text-xs sm:text-sm px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full cursor-pointer flex items-center gap-1.5 transition-all active:scale-95 shrink-0 ${isInCompare(uni._id || data._id || slug)
+                    ? "bg-emerald-600 hover:bg-emerald-700 text-white border-none shadow-xs"
+                    : "bg-transparent hover:bg-white/10 text-white border border-white/80"
+                    }`}
+                >
+                  <span>
+                    {isInCompare(uni._id || data._id || slug)
+                      ? "In Compare"
+                      : "+ Add to Compare"}
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            {/* Bottom Quick Facts Strip (2 in a row on mobile, border-right instead of border-bottom) */}
+            <div className="bg-white p-3.5 sm:p-5 grid grid-cols-2 lg:grid-cols-4 gap-y-3.5 sm:gap-y-4 lg:gap-y-0">
+              {/* 1. Location */}
+              <div className="flex items-center gap-2.5 sm:gap-3 pr-2.5 sm:pr-4 border-r border-gray-200">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#0077B6] text-white flex items-center justify-center shrink-0 shadow-2xs">
+                  <MapPin size={17} className="fill-white" />
+                </div>
+                <div className="min-w-0">
+                  <span className="text-[11px] sm:text-xs text-gray-500 font-medium block leading-none mb-1">Location</span>
+                  <span className="text-xs sm:text-sm font-bold text-gray-900 block leading-tight truncate">
+                    {locationText || "India"}
+                  </span>
+                </div>
+              </div>
+
+              {/* 2. Established */}
+              <div className="flex items-center gap-2.5 sm:gap-3 pl-2.5 sm:pl-4 lg:pr-4 lg:border-r border-gray-200">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#0077B6] text-white flex items-center justify-center shrink-0 shadow-2xs">
+                  <Building2 size={17} />
+                </div>
+                <div className="min-w-0">
+                  <span className="text-[11px] sm:text-xs text-gray-500 font-medium block leading-none mb-1">Established</span>
+                  <span className="text-xs sm:text-sm font-bold text-gray-900 block leading-tight truncate">
+                    {establishedText || "—"}
+                  </span>
+                </div>
+              </div>
+
+              {/* 3. Approvals */}
+              <div className="flex items-center gap-2.5 sm:gap-3 pr-2.5 sm:pr-4 border-r border-gray-200 lg:pl-4">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#0077B6] text-white flex items-center justify-center shrink-0 shadow-2xs">
+                  <BadgeCheck size={17} className="fill-white text-[#0077B6]" />
+                </div>
+                <div className="min-w-0">
+                  <span className="text-[11px] sm:text-xs text-gray-500 font-medium block leading-none mb-1">Approvals:</span>
+                  <span className="text-xs sm:text-sm font-bold text-gray-900 block leading-tight line-clamp-2">
+                    {approvalsSummary || "UGC-DEB"}
+                  </span>
+                </div>
+              </div>
+
+              {/* 4. Admissions */}
+              <div className="flex items-center gap-2.5 sm:gap-3 pl-2.5 sm:pl-4">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#0077B6] text-white flex items-center justify-center shrink-0 shadow-2xs">
+                  {uni.admission_deadline ? <Clock size={17} /> : <GraduationCap size={17} />}
+                </div>
+                <div className="min-w-0">
+                  {uni.admission_deadline ? (
+                    <>
+                      <span className="text-[11px] sm:text-xs text-red-500 font-semibold block leading-none mb-1">
+                        Admission deadline
+                      </span>
+                      <span className="text-xs sm:text-sm font-bold text-gray-900 block leading-tight truncate">
+                        {uni.admission_deadline}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-[11px] sm:text-xs text-emerald-700 font-semibold block leading-none mb-1">
+                        Admission Status
+                      </span>
+                      <span className="text-xs sm:text-sm font-bold text-gray-900 block leading-tight truncate">
+                        {uni.admission_status || "Admissions Open"}
+                      </span>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    );
-  }
 
-  useBreadcrumb({
-    items: [
-      { label: "Home", href: "/" },
-      { label: "Universities", href: "/universities" },
-      { label: uniName },
-    ],
-    backButton: {
-      label: "Back to Universities",
-      href: "/universities",
-    },
-  }, [uniName]);
+      {/* ============================================================ */}
+      {/* PAGE CONTENT CONTAINER (MAX-W-6XL) */}
+      {/* ============================================================ */}
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 md:px-0 space-y-6 pt-6">
+        {/* ============================================================ */}
+        {/* 3. ABOUT UNIVERSITY SECTION */}
+        {/* ============================================================ */}
+        {uni.description ? (
+          <div className="bg-white rounded-2xl shadow-xs border border-gray-200 p-6 sm:p-10 space-y-4 text-center">
+            <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight m-0 text-center">
+              About {uniName}
+            </h2>
 
-  return (
-    <div className="bg-[#F1F4F9] min-h-screen py-5 px-4 sm:px-6 lg:px-8 font-sans">
-      <div className="max-w-7xl mx-auto space-y-4 sm:space-y-5">
-        {/* 1. HERO BANNER CARD */}
-        <div className="bg-[#0A2540] rounded-2xl sm:rounded-3xl overflow-hidden text-white relative border border-gray-200">
-          {heroBannerUrl && (
-                <div className="absolute inset-0 z-0">
-                  <Image
-                    src={heroBannerUrl}
-                    alt={uniName}
-                    fill
-                    unoptimized
-                    className="object-cover object-center"
-                    priority
-                  />
-                  <div className="absolute inset-0 bg-linear-to-r from-[#07192C]/95 via-[#0C2A4A]/90 to-[#103D6D]/80" />
-                </div>
-              )}
+            <div className="w-full max-w-4xl mx-auto h-[1px] bg-gray-200/80 my-2" />
 
-              <div className="relative z-10 p-6 sm:p-8 lg:p-10 space-y-4 max-w-4xl">
-                <div>
-                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-white leading-tight tracking-tight m-0">
-                    {uniName}
-                  </h1>
-                  {data?.tagline && (
-                    <p className="text-blue-100 text-xs sm:text-sm font-normal mt-1.5 m-0 max-w-3xl leading-relaxed">
-                      {getSafeText(data.tagline)}
-                    </p>
-                  )}
-                </div>
-
-                {/* Meta Highlights Pill Tags */}
-                <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs sm:text-sm font-semibold text-gray-100 pt-1">
-                  {locationText && (
-                    <span className="flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3.5 py-1.5 rounded-xl border border-white/15">
-                      <MapPin className="w-4 h-4 text-[#FFD166]" /> {locationText}
-                    </span>
-                  )}
-                  {rankingText && (
-                    <span className="flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3.5 py-1.5 rounded-xl border border-white/15">
-                      <Trophy className="w-4 h-4 text-[#FFD166]" /> {rankingText}
-                    </span>
-                  )}
-                  {establishedText && (
-                    <span className="flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3.5 py-1.5 rounded-xl border border-white/15">
-                      <Building2 className="w-4 h-4 text-[#FFD166]" /> Est. {establishedText}
-                    </span>
-                  )}
-                  {totalCoursesText && (
-                    <span className="flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3.5 py-1.5 rounded-xl border border-white/15">
-                      <GraduationCap className="w-4 h-4 text-[#FFD166]" /> {totalCoursesText}
-                    </span>
-                  )}
-                  {modesText && (
-                    <span className="flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3.5 py-1.5 rounded-xl border border-white/15">
-                      <Laptop className="w-4 h-4 text-[#FFD166]" /> {modesText}
-                    </span>
-                  )}
-                </div>
-
-                {/* CTAs */}
-                <div className="flex flex-wrap items-center gap-3.5 pt-2">
-                  <Button
-                    type="primary"
-                    size="large"
-                    onClick={() => {
-                      openFormModal &&
-                        openFormModal({
-                          title: `Enquire Now - ${uniName}`,
-                          subtitle: "Speak directly with senior academic counselors",
-                          defaultCourse: uniName,
-                          submitButtonText: "Enquire Now",
-                        });
-                    }}
-                    className="bg-[#00B4D8] hover:bg-[#0096C7] text-white border-none font-semibold text-sm px-5 h-10 rounded-xl cursor-pointer flex items-center gap-1"
-                  >
-                    <span>Enquire Now</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </Button>
-                  <Button
-                    size="large"
-                    onClick={() => {
-                      openFormModal &&
-                        openFormModal({
-                          title: `Download Brochure - ${uniName}`,
-                          subtitle: "Fill details to receive instant digital brochure",
-                          defaultCourse: uniName,
-                          submitButtonText: "Download Brochure",
-                        });
-                    }}
-                    className="bg-transparent hover:bg-white/10 text-white border-2 border-white/80 font-semibold text-sm px-5 h-10 rounded-xl cursor-pointer flex items-center gap-1"
-                  >
-                    <span>Download Brochure</span>
-                    <Download className="w-3.5 h-3.5" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            {/* FIXED TOP STICKY BAR (Ant Design Tabs) */}
             <div
-              className={`fixed top-0 left-0 right-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-gray-200 transition-all duration-300 transform ${showTopBar
-                ? "translate-y-0 opacity-100 pointer-events-auto"
-                : "-translate-y-full opacity-0 pointer-events-none"
-                }`}
-            >
-              <div className="w-full max-w-7xl mx-auto px-4 sm:px-6">
-                <Tabs
-                  activeKey={activeSection}
-                  onChange={(key) => scrollToSection(key)}
-                  tabBarGutter={20}
-                  className="[&_.ant-tabs-nav]:mb-0 [&_.ant-tabs-tab-btn]:font-medium [&_.ant-tabs-tab-btn]:text-xs sm:[&_.ant-tabs-tab-btn]:text-sm [&_.ant-tabs-tab-btn]:text-gray-700 [&_.ant-tabs-tab-btn]:hover:text-[#0C3058] [&_.ant-tabs-tab-active_.ant-tabs-tab-btn]:text-[#0C3058]! [&_.ant-tabs-ink-bar]:bg-[#0C3058]! [&_.ant-tabs-ink-bar]:h-0.5 [&_.ant-tabs-nav-wrap]:py-1"
-                  items={dynamicNavSections.map((sec) => ({
-                    key: sec.id,
-                    label: sec.label,
-                  }))}
-                />
+              dangerouslySetInnerHTML={{ __html: uni.description }}
+              className="space-y-4 text-xs sm:text-[13.5px] text-gray-700 leading-relaxed max-w-5xl mx-auto font-normal text-center"
+            />
+          </div>
+        ) : null}
+
+        {/* ============================================================ */}
+        {/* 4. RANKINGS & ACCREDITATIONS (EXACT COURSE PAGE CSS) */}
+        {/* ============================================================ */}
+        {accreditationsList.length > 0 && (
+          <div className="bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8 text-center">
+            <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight mb-5 sm:mb-7 m-0">
+              Rankings & Accreditations of {uniName}
+            </h2>
+
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 gap-2 sm:gap-2.5 md:gap-3.5">
+              {accreditationsList.map((acc, idx) => (
+                <div
+                  key={idx}
+                  className="bg-white rounded-xl border border-gray-200 p-2 sm:p-2.5 md:p-3 flex flex-col items-center justify-center text-center aspect-square shadow-2xs hover:border-blue-300 transition-colors"
+                >
+                  <div className="h-8 sm:h-10 md:h-11 flex items-center justify-center relative w-full mb-1 shrink-0">
+                    {acc.image ? (
+                      <img
+                        src={acc.image}
+                        alt={acc.title}
+                        className="object-contain max-h-7 sm:max-h-9 md:max-h-10 w-auto"
+                      />
+                    ) : (
+                      <Award className="w-6 h-6 sm:w-7 sm:h-7 text-blue-600" />
+                    )}
+                  </div>
+                  <h3 className="text-[10.5px] sm:text-xs md:text-[13px] font-bold text-gray-900 m-0 tracking-tight leading-tight line-clamp-2 w-full">
+                    {acc.title}
+                  </h3>
+                  <p className="text-[8.5px] sm:text-[9.5px] md:text-[10.5px] text-gray-500 leading-tight m-0 line-clamp-2 w-full mt-0.5">
+                    {acc.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ============================================================ */}
+        {/* 5. KEY HIGHLIGHTS OF UNIVERSITY (PURE DYNAMIC TABLE) */}
+        {/* ============================================================ */}
+        {highlightsData.items.length > 0 && (
+          <div className="bg-white rounded-2xl shadow-xs border border-gray-200 p-6 sm:p-10 space-y-6">
+            <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight m-0 text-center">
+              {highlightsData.title}
+            </h2>
+
+            <div className="overflow-hidden border border-gray-200 shadow-2xs max-w-5xl mx-auto rounded-lg">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-[#0C2B4E] text-white text-xs sm:text-sm font-bold tracking-wide">
+                      <th className="py-2.5 sm:py-3 px-4 sm:px-6 w-[32%] sm:w-70 border-r border-white/20">
+                        Feature
+                      </th>
+                      <th className="py-2.5 sm:py-3 px-4 sm:px-6">Details</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 text-xs sm:text-[13.5px] bg-white">
+                    {highlightsData.items.map((row, idx) => (
+                      <tr
+                        key={idx}
+                        className="bg-white hover:bg-blue-50/30 transition-colors"
+                      >
+                        <td className="py-2.5 px-4 sm:px-6 font-bold text-gray-900 border-r border-gray-200 whitespace-nowrap">
+                          {row.feature}
+                        </td>
+                        <td className="py-2.5 px-4 sm:px-6 text-gray-800 font-normal">
+                          {row.details}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
+          </div>
+        )}
 
-            {/* 2. ABOUT UNIVERSITY SECTION */}
-            {data?.aboutSection && (
-              <div
-                id="section-about"
-                className="bg-white rounded-2xl p-3.5 sm:p-4 border border-gray-200 space-y-2.5"
-              >
-                <div className="border-b border-gray-200 pb-1.5">
-                  <h2 className="text-sm sm:text-[15px] font-semibold text-[#0C3058] m-0 flex items-center gap-1.5">
-                    <span className="flex items-center justify-center w-5 h-5 rounded bg-[#EBF4FF] shrink-0">
-                      <Compass className="w-3.5 h-3.5 text-[#0C3058]" />
-                    </span>
-                    {getSafeText(data.aboutSection.title, `About ${uniName}`)}
-                  </h2>
-                </div>
+        {/* ============================================================ */}
+        {/* 6. ONLINE UNIVERSITY COURSES (EXACT COURSE PAGE CSS) */}
+        {/* ============================================================ */}
+        {coursesList.length > 0 && (
+          <div className="bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8">
+            <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-6 sm:mb-8 m-0">
+              Online {uniName} Courses
+            </h2>
 
-                <p className="text-gray-600 leading-relaxed text-xs sm:text-sm m-0 font-normal">
-                  {getSafeText(data.aboutSection.description)}
-                </p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+              {filteredCourses.slice(0, visibleCoursesCount).map((item, index) => {
+                const cardTitle = item.title || item.name || "";
+                const durationText = item.duration || "";
+                const feeText = item.fees || "";
+                const courseDetailHref = `/courses/${item.slug || encodeURIComponent(cardTitle.toLowerCase())}`;
+                const specCount = item.specializationsCount || item.subcourses?.length || 0;
+                const inCmp = isInCompare(item._id || item.slug || cardTitle);
 
-                {data.aboutSection.keyHighlights && data.aboutSection.keyHighlights.length > 0 && (
-                  <div className="pt-1">
-                    <h3 className="text-xs sm:text-sm font-semibold text-[#0C3058] mb-2">
-                      Institutional Highlights
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {data.aboutSection.keyHighlights.map((item, idx) => (
-                        <div
-                          key={idx}
-                          className="flex items-start gap-2.5 p-3 rounded-xl bg-gray-50/80 border border-gray-200 hover:border-gray-300 transition-colors"
+                return (
+                  <div
+                    key={item._id || item.slug || `${cardTitle}-${index}`}
+                    className={`bg-white rounded-xl border border-gray-200 hover:border-blue-400 p-2 sm:p-2.5 hover:shadow-md transition-all flex flex-col items-center justify-between text-center relative group min-w-0 shadow-2xs ${index === 5 && visibleCoursesCount === 6 ? "flex lg:hidden" : "flex"
+                      }`}
+                  >
+                    {/* Top Right Corner Specializations Badge */}
+                    {specCount > 0 && (
+                      <div className="absolute top-0 right-0 z-10">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedCourseSpec(item)}
+                          className="bg-[#FFF0F3] border-b border-l border-[#FFE4E6] text-[#E52E2E] text-[8.5px] sm:text-[9.5px] font-semibold px-2 py-0.5 rounded-bl-lg rounded-tr-xl cursor-pointer hover:bg-[#FFE4E6] transition-colors border-none"
                         >
-                          <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-[#EBF4FF] text-[#0C3058] shrink-0 mt-0.5">
-                            <DynamicIcon name={item.icon || "Trophy"} className="w-3.5 h-3.5" />
-                          </span>
-                          <div>
-                            <h4 className="font-semibold text-gray-900 text-xs sm:text-sm m-0 leading-tight">
-                              {getSafeText(item.title)}
-                            </h4>
-                            {item.description && (
-                              <p className="text-xs text-gray-500 m-0 mt-0.5 leading-snug font-normal">
-                                {getSafeText(item.description)}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* 3. UNIVERSITY FACTSHEET (KEY INFO TABLE) */}
-            {dynamicFacts && dynamicFacts.length > 0 && (
-              <div
-                id="section-factsheet"
-                className="bg-white rounded-2xl p-3.5 sm:p-4 border border-gray-200 space-y-2.5"
-              >
-                <div className="border-b border-gray-200 pb-1.5">
-                  <h2 className="text-sm sm:text-[15px] font-semibold text-[#0C3058] m-0 flex items-center gap-1.5">
-                    <span className="flex items-center justify-center w-5 h-5 rounded bg-[#E8F5E9] shrink-0">
-                      <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                    </span>
-                    {getSafeText(data?.factsheetSection?.title, "University Factsheet")}
-                  </h2>
-                </div>
-
-                {data?.factsheetSection?.description && (
-                  <p className="text-gray-600 text-xs sm:text-sm m-0 font-normal">
-                    {getSafeText(data.factsheetSection.description)}
-                  </p>
-                )}
-
-                <div className="overflow-hidden rounded-xl border border-gray-200">
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse min-w-125">
-                      <thead>
-                        <tr className="bg-[#0C3058] text-white text-xs font-semibold uppercase tracking-wider">
-                          <th className="py-2.5 px-3 md:px-4 w-2/5 border-r border-white/10">
-                            Particular
-                          </th>
-                          <th className="py-2.5 px-3 md:px-4 w-3/5">Details</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-100 text-xs sm:text-sm">
-                        {dynamicFacts.map((fact, idx) => (
-                          <tr
-                            key={idx}
-                            className={
-                              idx % 2 === 0
-                                ? "bg-white hover:bg-gray-50/70"
-                                : "bg-gray-50/50 hover:bg-gray-50/80"
-                            }
-                          >
-                            <td className="py-2.5 px-3 md:px-4 font-semibold text-gray-800 border-r border-gray-100">
-                              {getSafeText(fact.label)}
-                            </td>
-                            <td className="py-2.5 px-3 md:px-4 text-gray-600 font-normal">
-                              {getSafeText(fact.value)}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* 4. APPROVALS & ACCREDITATIONS */}
-            {displayApprovalsList && displayApprovalsList.length > 0 && (
-              <div
-                id="section-approvals"
-                className="bg-white rounded-2xl p-3.5 sm:p-4 border border-gray-200 space-y-2.5"
-              >
-                <div className="border-b border-gray-200 pb-1.5">
-                  <h2 className="text-sm sm:text-[15px] font-semibold text-[#0C3058] m-0 flex items-center gap-1.5">
-                    <span className="flex items-center justify-center w-5 h-5 rounded bg-[#FFF8E1] shrink-0">
-                      <ShieldCheck className="w-3.5 h-3.5 text-amber-500" />
-                    </span>
-                    {getSafeText(data?.approvalsSection?.title, "Approvals & Accreditations")}
-                  </h2>
-                </div>
-
-                {data?.approvalsSection?.description && (
-                  <p className="text-gray-600 text-xs sm:text-sm m-0 font-normal">
-                    {getSafeText(data.approvalsSection.description)}
-                  </p>
-                )}
-
-                <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-6 lg:grid-cols-6 gap-2 sm:gap-3 pt-1">
-                  {displayApprovalsList.map((acc, idx) => {
-                    const accTitle = getSafeText(acc.title || acc.name || acc.code, "Approval");
-                    const accDesc = getSafeText(acc.description, "");
-                    const accLogo =
-                      acc.logo?.url || acc.logo ? getAssetPath(acc.logo?.url || acc.logo) : null;
-
-                    return (
-                      <div
-                        key={idx}
-                        className="bg-gray-50/70 p-3 rounded-xl border border-gray-200 hover:border-gray-300 transition-all flex flex-col items-center justify-center text-center space-y-1"
-                      >
-                        {accLogo ? (
-                          <div className="relative w-10 h-7 mb-0.5">
-                            <Image
-                              src={accLogo}
-                              alt={accTitle}
-                              fill
-                              unoptimized
-                              className="object-contain"
-                            />
-                          </div>
-                        ) : (
-                          <div className="w-7 h-7 rounded-full bg-blue-100 text-[#0C3058] flex items-center justify-center font-semibold text-xs">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-[#0C3058]" />
-                          </div>
-                        )}
-                        <span className="font-semibold text-xs text-gray-800 leading-tight line-clamp-1">
-                          {accTitle}
-                        </span>
-                        {accDesc && accDesc !== accTitle && (
-                          <span className="text-[10px] text-gray-500 line-clamp-1">
-                            {accDesc}
-                          </span>
-                        )}
+                          {specCount} Specializations
+                        </button>
                       </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
+                    )}
 
-            {/* 5. PROGRAMMES OFFERED (DYNAMIC COURSES LINKED TO THIS UNIVERSITY) */}
-            {offeringsList.length > 0 && (
-              <div
-                id="section-courses"
-                className="bg-white rounded-2xl p-3.5 sm:p-4 border border-gray-200 space-y-2.5"
-              >
-                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 pb-1.5">
-                  <div>
-                    <h2 className="text-sm sm:text-[15px] font-semibold text-[#0C3058] m-0 flex items-center gap-1.5">
-                      <span className="flex items-center justify-center w-5 h-5 rounded bg-[#EBF4FF] shrink-0">
-                        <GraduationCap className="w-3.5 h-3.5 text-[#0C3058]" />
-                      </span>
-                      Programmes Offered ({offeringsList.length})
-                    </h2>
-                    <p className="text-gray-500 text-xs mt-0.5 m-0 font-normal">
-                      Explore top online and executive programmes offered by {uniName}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      onClick={() => scrollCourses("left")}
-                      aria-label="Previous Course"
-                      className="w-7 h-7 rounded-full bg-gray-100 hover:bg-[#0C3058] text-gray-700 hover:text-white flex items-center justify-center transition-colors cursor-pointer border-none"
-                    >
-                      <ChevronLeft className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      onClick={() => scrollCourses("right")}
-                      aria-label="Next Course"
-                      className="w-7 h-7 rounded-full bg-gray-100 hover:bg-[#0C3058] text-gray-700 hover:text-white flex items-center justify-center transition-colors cursor-pointer border-none"
-                    >
-                      <ChevronRight className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
+                    {/* University Logo */}
+                    <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-full p-1 flex items-center justify-center bg-white border border-gray-100 shadow-2xs relative my-0.5 shrink-0">
+                      {logoUrl ? (
+                        <Image
+                          src={logoUrl}
+                          alt={uniName}
+                          fill
+                          sizes="(max-width: 768px) 44px, 56px"
+                          className="object-contain p-0.5"
+                        />
+                      ) : (
+                        <div className="w-full h-full rounded-full bg-blue-50 text-blue-600 font-semibold flex items-center justify-center text-xs uppercase">
+                          {uniName.charAt(0)}
+                        </div>
+                      )}
+                    </div>
 
-                <div
-                  ref={courseSliderRef}
-                  className="flex gap-4 overflow-x-auto scrollbar-none scroll-smooth pb-3 pt-1 snap-x snap-mandatory px-0.5"
-                >
-                  {offeringsList.map((off, idx) => {
-                    const courseTitle = getSafeText(
-                      off.courseId?.title || off.courseId?.name || off.title,
-                      "Executive Programme"
-                    );
-                    const subTitle = getSafeText(off.subCourseId?.title || off.subCourseId?.name, "");
-                    const fullCourseTitle = subTitle ? `${courseTitle} (${subTitle})` : courseTitle;
-                    const courseImg =
-                      off.heroMedia?.url ||
-                      off.heroMedia ||
-                      off.courseId?.image?.url ||
-                      off.courseId?.image ||
-                      heroBannerUrl;
-                    const durationStr = getSafeText(
-                      off.duration || (off.durationMonths ? `${off.durationMonths} Months` : null),
-                      "Flexible Duration"
-                    );
-                    const feeStr =
-                      (off.fees?.name ? (off.fees.name.includes("₹") ? off.fees.name : `₹${off.fees.name}`) : null) ||
-                      (off.fees?.amount ? `₹${Number(off.fees.amount).toLocaleString("en-IN")}` : null) ||
-                      (off.fullFee ? (off.fullFee.includes("₹") ? off.fullFee : `₹${off.fullFee}`) : null) ||
-                      (off.amount ? `₹${Number(off.amount).toLocaleString("en-IN")}` : null) ||
-                      (off.fees?.fullFee ? `₹${Number(off.fees.fullFee).toLocaleString("en-IN")}` : null) ||
-                      "Contact for Fee Structure";
-                    const targetCourseSlug = getSafeText(off.slug, "");
+                    {/* Course Title & Fee / Duration grouped tightly */}
+                    <div className="w-full space-y-0.5 my-0.5">
+                      <div className="min-h-[28px] sm:min-h-[32px] flex items-center justify-center">
+                        <h4 className="text-xs sm:text-[13px] font-semibold text-[#0a2540] line-clamp-2 leading-tight m-0 w-full text-center">
+                          {cardTitle}
+                        </h4>
+                      </div>
 
-                    return (
-                      <div
-                        key={off._id || idx}
-                        className="w-full min-w-72 sm:min-w-80 lg:w-[calc(33.333%-11px)] snap-start shrink-0 bg-white rounded-xl border border-gray-200 hover:border-gray-300 transition-all duration-200 overflow-hidden flex flex-col justify-between"
-                      >
-                        <div className="relative h-36 w-full overflow-hidden bg-gray-900">
-                          {courseImg ? (
-                            <Image
-                              src={getAssetPath(courseImg)}
-                              alt={fullCourseTitle}
-                              fill
-                              unoptimized
-                              className="object-cover transition-transform duration-500 hover:scale-105"
-                            />
-                          ) : (
-                            <div className="w-full h-full bg-linear-to-br from-blue-900 to-indigo-950 flex items-center justify-center p-3 text-center">
-                              <span className="text-white font-semibold text-xs">{fullCourseTitle}</span>
+                      {(feeText || durationText) && (
+                        <div className="flex items-center justify-center gap-1.5 sm:gap-2 text-center w-full flex-wrap pt-0.5">
+                          {feeText && (
+                            <span className="text-xs sm:text-[13.5px] font-bold text-[#0D3B66] tracking-tight">
+                              {feeText.replace(/\s*INR$/, "")}
+                            </span>
+                          )}
+                          {feeText && durationText && (
+                            <span className="text-gray-300 text-xs">•</span>
+                          )}
+                          {durationText && (
+                            <div className="text-[11px] sm:text-xs text-gray-500 font-normal flex items-center gap-1 shrink-0">
+                              <Clock className="w-3 h-3 shrink-0 text-gray-400" />
+                              <span>{durationText}</span>
                             </div>
                           )}
-                          <div className="absolute top-2.5 left-2.5 bg-[#0C3058] text-white text-[10px] font-semibold px-2.5 py-0.5 rounded-full">
-                            {getSafeText(
-                              off.courseId?.category?.[0] || off.courseId?.category,
-                              "Executive Programme"
-                            )}
-                          </div>
                         </div>
+                      )}
+                    </div>
 
-                        <div className="p-3.5 flex flex-col justify-between flex-1 space-y-3">
-                          <div>
-                            <h3 className="font-semibold text-xs sm:text-sm text-[#0C3058] line-clamp-2 m-0 leading-snug min-h-10">
-                              {fullCourseTitle}
-                            </h3>
-                            {off.overviewDescription && (
-                              <p className="text-[11px] text-gray-500 line-clamp-2 mt-1.5 m-0 leading-relaxed font-normal">
-                                {getSafeText(off.overviewDescription)}
-                              </p>
-                            )}
-                          </div>
+                    {/* Full-width Compare Button */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const targetItem = {
+                          _id: item._id || item.slug,
+                          slug: item.slug || item._id,
+                          title: cardTitle,
+                          uniName: uniName,
+                          logoUrl: logoUrl,
+                          feeText: feeText,
+                          durationText: durationText,
+                        };
+                        toggleCompare(targetItem);
+                        setIsCompareDrawerOpen(true);
+                      }}
+                      className={`w-full py-1.5 px-2 rounded-md sm:rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer mt-1.5 border ${inCmp
+                        ? "bg-teal-50 border-teal-300 text-teal-700"
+                        : "bg-gray-50/90 hover:bg-gray-100 border-gray-200 text-gray-700 hover:text-[#0D3B66]"
+                        }`}
+                    >
+                      {inCmp ? (
+                        <>
+                          <Check className="w-3.5 h-3.5 text-teal-600 shrink-0 stroke-2" />
+                          <span>Added to Compare</span>
+                        </>
+                      ) : (
+                        <>
+                          <Plus className="w-3.5 h-3.5 text-gray-500 shrink-0 stroke-2" />
+                          <span>Add to Compare</span>
+                        </>
+                      )}
+                    </button>
 
-                          <div className="space-y-1.5 pt-2 border-t border-gray-100 text-xs text-gray-700 font-medium">
-                            <div className="flex items-center gap-1.5">
-                              <Clock className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-                              <span>
-                                <span className="font-semibold text-gray-800">Duration:</span>{" "}
-                                {durationStr}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-1.5">
-                              <CreditCard className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                              <span>
-                                <span className="font-semibold text-gray-800">Fee:</span> {feeStr}
-                              </span>
-                            </div>
-                          </div>
+                    {/* Action Buttons in Flex Row: Apply Now | Know More */}
+                    <div className="w-full flex items-center gap-1.5 mt-1.5">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          openFormModal &&
+                            openFormModal({
+                              title: "Apply for Course",
+                              subtitle: `${cardTitle} - ${uniName}`,
+                              defaultCourse: `${cardTitle} - ${uniName}`,
+                              university: uniName,
+                              formNameOverride: `CourseCard_${item.slug || uniName}`,
+                              submitButtonText: "Apply Now",
+                            });
+                        }}
+                        className="flex-1 bg-[#F4D068] hover:bg-[#ebc557] text-gray-900 text-xs sm:text-sm font-semibold py-1.5 sm:py-2 px-1 rounded-md sm:rounded-lg border-none cursor-pointer transition-colors shadow-2xs active:scale-95 flex items-center justify-center whitespace-nowrap"
+                      >
+                        Apply Now
+                      </button>
+                      <Link
+                        href={courseDetailHref}
+                        className="flex-1 bg-white hover:bg-gray-50 text-[#0a2540] hover:text-blue-600 border border-gray-200 text-xs sm:text-sm font-semibold py-1.5 sm:py-2 px-1 rounded-md sm:rounded-lg text-center no-underline transition-colors flex items-center justify-center shadow-2xs whitespace-nowrap"
+                      >
+                        Know More
+                      </Link>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
 
-                          <div className="space-y-1.5 pt-1">
-                            <div className="flex items-center gap-2">
-                              <Button
-                                type="primary"
-                                onClick={() => {
-                                  if (targetCourseSlug) {
-                                    router.push(`/courses/${targetCourseSlug}`);
-                                  } else {
-                                    openFormModal &&
-                                      openFormModal({
-                                        title: `Apply Now - ${fullCourseTitle}`,
-                                        defaultCourse: fullCourseTitle,
-                                        submitButtonText: "Apply Now",
-                                      });
-                                  }
-                                }}
-                                className="flex-1 bg-[#00B4D8] hover:bg-[#0096C7] text-white border-none font-semibold text-xs py-1.5 h-auto rounded-lg cursor-pointer flex items-center justify-center gap-1"
-                              >
-                                <span>Explore Course</span>
-                                <ArrowRight className="w-3 h-3" />
-                              </Button>
-                              <Button
-                                onClick={() => {
-                                  openFormModal &&
-                                    openFormModal({
-                                      title: `Download Brochure - ${fullCourseTitle}`,
-                                      subtitle: "Receive full curriculum & syllabus",
-                                      defaultCourse: fullCourseTitle,
-                                      submitButtonText: "Download Brochure",
-                                    });
-                                }}
-                                className="flex-1 bg-gray-50 hover:bg-gray-100 text-[#0C3058] border border-gray-200 font-semibold text-xs py-1.5 h-auto rounded-lg cursor-pointer flex items-center justify-center gap-1"
-                              >
-                                <span>Brochure</span>
-                                <Download className="w-3 h-3" />
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+            {/* View More Button */}
+            {(visibleCoursesCount < filteredCourses.length || (filteredCourses.length > 5 && visibleCoursesCount === 6)) && (
+              <div className={`justify-center mt-4 pt-1 ${visibleCoursesCount >= filteredCourses.length ? "hidden lg:flex" : "flex"}`}>
+                <button
+                  type="button"
+                  onClick={() => setVisibleCoursesCount((prev) => prev + 5)}
+                  className="inline-flex items-center justify-center gap-1.5 px-5 py-1.5 rounded-full text-xs font-bold text-[#0B3B7E] bg-blue-50/80 hover:bg-blue-100 border border-blue-200/80 transition-all cursor-pointer shadow-none group"
+                >
+                  <span>View More</span>
+                  <ChevronDown className="w-3.5 h-3.5" />
+                </button>
               </div>
             )}
+          </div>
+        )}
 
-            {/* 6. WHY CHOOSE / THE ADVANTAGE */}
-            {data?.whyChooseSection?.advantages && data.whyChooseSection.advantages.length > 0 && (
-              <div
-                id="section-advantages"
-                className="bg-white rounded-2xl p-3.5 sm:p-4 border border-gray-200 space-y-2.5"
-              >
-                <div className="border-b border-gray-200 pb-1.5">
-                  <h2 className="text-sm sm:text-[15px] font-semibold text-[#0C3058] m-0 flex items-center gap-1.5">
-                    <span className="flex items-center justify-center w-5 h-5 rounded bg-[#EDE7F6] shrink-0">
-                      <Trophy className="w-3.5 h-3.5 text-purple-600" />
-                    </span>
-                    {getSafeText(data.whyChooseSection.title, `Why Choose ${uniName}?`)}
-                  </h2>
+        {/* ============================================================ */}
+        {/* 7. WHY CHOOSE ONLINE UNIVERSITY (PURE DYNAMIC CARDS) */}
+        {/* ============================================================ */}
+        {whyChooseSection.items.length > 0 && (
+          <div className="bg-white rounded-xl shadow-xs border border-gray-200 p-6 sm:p-8 space-y-6">
+            <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight m-0 text-center">
+              {whyChooseSection.title}
+            </h2>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              {whyChooseSection.items.map((item, idx) => (
+                <div
+                  key={idx}
+                  className="rounded-xl border border-blue-100/80 bg-blue-50/20 p-6 text-center hover:border-blue-300 hover:shadow-md transition-all duration-200 flex flex-col items-center space-y-3 shadow-2xs"
+                >
+                  <div className="w-14 h-14 rounded-2xl bg-white text-[#0D5CAD] flex items-center justify-center shrink-0 border border-blue-100 shadow-2xs p-2.5">
+                    {item.iconUrl ? (
+                      <img
+                        src={item.iconUrl}
+                        alt={item.title}
+                        className="w-full h-full object-contain"
+                      />
+                    ) : (
+                      <CheckCircle2 size={26} className="text-[#0077B6]" />
+                    )}
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <h3 className="text-base font-bold text-gray-900 leading-snug">
+                      {item.title}
+                    </h3>
+                    <p className="text-xs text-gray-600 leading-relaxed font-normal">
+                      {item.description}
+                    </p>
+                  </div>
                 </div>
+              ))}
+            </div>
+          </div>
+        )}
 
-                {data.whyChooseSection.description && (
-                  <p className="text-gray-600 text-xs sm:text-sm m-0 font-normal">
-                    {getSafeText(data.whyChooseSection.description)}
+        {/* ============================================================ */}
+        {/* ============================================================ */}
+        {/* 8. SAMPLE DEGREE ONLINE UNIVERSITY (100% PURE DYNAMIC FROM BACKEND) */}
+        {/* ============================================================ */}
+        {sampleDegreeData && (sampleDegreeData.imageUrl || sampleDegreeData.title) && (
+          <div className="bg-white rounded-2xl shadow-xs border border-gray-100 p-6 sm:p-10">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center max-w-5xl mx-auto">
+              {/* Left Column: Backend Certificate Image */}
+              <div className="lg:col-span-6 flex justify-center w-full">
+                {sampleDegreeData.imageUrl ? (
+                  <div
+                    onClick={() => setIsCertificateModalOpen(true)}
+                    className="w-full max-w-[460px] rounded-xl overflow-hidden cursor-pointer hover:shadow-md transition-shadow duration-200 bg-white"
+                  >
+                    <img
+                      src={sampleDegreeData.imageUrl}
+                      alt={sampleDegreeData.title || `Sample Degree ${uniName}`}
+                      className="w-full h-auto max-h-[340px] object-contain rounded-xl block mx-auto"
+                    />
+                  </div>
+                ) : null}
+              </div>
+
+              {/* Right Column: Title + Description + Points + Get Degree Button */}
+              <div className="lg:col-span-6 space-y-4 text-left">
+                {sampleDegreeData.title && (
+                  <h2 className="text-2xl sm:text-[28px] font-bold text-[#0D3B66] tracking-tight m-0 leading-tight">
+                    {sampleDegreeData.title}
+                  </h2>
+                )}
+
+                {sampleDegreeData.description && (
+                  <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-normal m-0 max-w-lg">
+                    {sampleDegreeData.description}
                   </p>
                 )}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pt-0.5">
-                  {data.whyChooseSection.advantages.map((adv, idx) => (
-                    <div
-                      key={idx}
-                      className="bg-gray-50/70 border border-gray-200 rounded-xl p-3.5 space-y-1.5 hover:border-gray-300 transition-all"
-                    >
-                      <div className="w-7 h-7 rounded-lg bg-white border border-gray-200 text-[#0C3058] flex items-center justify-center">
-                        <DynamicIcon name={adv.icon || "Rocket"} className="w-3.5 h-3.5" />
-                      </div>
-                      <h3 className="font-semibold text-xs sm:text-sm text-[#0C3058] m-0 leading-tight">
-                        {getSafeText(adv.title)}
-                      </h3>
-                      <p className="text-xs text-gray-500 font-normal leading-relaxed m-0">
-                        {getSafeText(adv.description)}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* 7. LEARNING METHODOLOGY */}
-            {data?.learningMethodologySection?.features &&
-              data.learningMethodologySection.features.length > 0 && (
-                <div
-                  id="section-learning-methodology"
-                  className="bg-white rounded-2xl p-3.5 sm:p-4 border border-gray-200 space-y-2.5"
-                >
-                  <div className="border-b border-gray-200 pb-1.5">
-                    <h2 className="text-sm sm:text-[15px] font-semibold text-[#0C3058] m-0 flex items-center gap-1.5">
-                      <span className="flex items-center justify-center w-5 h-5 rounded bg-[#E0F2FE] shrink-0">
-                        <Laptop className="w-3.5 h-3.5 text-sky-600" />
-                      </span>
-                      {getSafeText(
-                        data.learningMethodologySection.title,
-                        "Learning Methodology & Pedagogy"
-                      )}
-                    </h2>
-                  </div>
-
-                  {data.learningMethodologySection.description && (
-                    <p className="text-gray-600 text-xs sm:text-sm m-0 font-normal">
-                      {getSafeText(data.learningMethodologySection.description)}
-                    </p>
-                  )}
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-0.5">
-                    {data.learningMethodologySection.features.map((feat, idx) => (
-                      <div
-                        key={idx}
-                        className="flex items-start gap-2.5 p-3 rounded-xl bg-gray-50/70 border border-gray-200 text-xs sm:text-sm text-gray-700 font-medium leading-snug"
-                      >
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
-                        <span>{getSafeText(feat)}</span>
+                {/* 2-Column Checklist Points with Green Square Checkmark */}
+                {sampleDegreeData.points?.length > 0 && (
+                  <div className="grid grid-cols-2 gap-x-6 gap-y-3.5 pt-2 max-w-md">
+                    {sampleDegreeData.points.map((pt, pIdx) => (
+                      <div key={pIdx} className="flex items-center gap-2.5">
+                        <span className="w-5 h-5 rounded-[4px] bg-[#48BB78] flex items-center justify-center text-white shrink-0 shadow-2xs">
+                          <Check size={13} strokeWidth={3.5} />
+                        </span>
+                        <span className="text-xs sm:text-[14px] font-bold text-gray-900 leading-tight">
+                          {pt}
+                        </span>
                       </div>
                     ))}
                   </div>
+                )}
 
-                  {data.learningMethodologySection.note && (
-                    <div className="bg-blue-50/60 border border-blue-200 rounded-xl p-3 text-xs sm:text-sm text-[#0C3058] font-medium flex items-center gap-2.5">
-                      <Sparkles className="w-4 h-4 text-blue-600 shrink-0" />
-                      <span>{getSafeText(data.learningMethodologySection.note)}</span>
+                {/* Action Button */}
+                <div className="pt-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      openFormModal &&
+                        openFormModal({
+                          title: `${sampleDegreeData.title || "Get Degree Details"} - ${uniName}`,
+                          subtitle: "Get free syllabus & enrollment guidance",
+                          defaultCourse: uniName,
+                          submitButtonText: sampleDegreeData.ctaText || "Get Degree",
+                        });
+                    }}
+                    className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-xs sm:text-sm px-7 py-3 rounded-lg border-none cursor-pointer transition-all active:scale-95 shadow-sm inline-flex items-center justify-center"
+                  >
+                    {sampleDegreeData.ctaText || "Get Degree"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ============================================================ */}
+        {/* 9. TOP ONLINE UGC-DEB APPROVED UNIVERSITIES (PURE DYNAMIC) */}
+        {/* ============================================================ */}
+        {isUgcDebApproved && (
+          <div className="bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8">
+            <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-6 sm:mb-8 m-0">
+              Top Online UGC-DEB Approved Universities
+            </h2>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+              {topPeerUniversities.slice(0, visibleTopUnis).map((peer, index) => {
+                const inCmp = isInCompare(peer._id || peer.slug || peer.name);
+                const peerLogo = peer.logo?.url || peer.logoUrl;
+
+                return (
+                  <div
+                    key={peer._id || peer.slug || `${peer.name}-${index}`}
+                    className={`bg-white rounded-xl border border-gray-200 hover:border-blue-400 p-2 sm:p-2.5 hover:shadow-md transition-all flex flex-col items-center justify-between text-center relative group min-w-0 shadow-2xs ${index === 5 && visibleTopUnis === 6 ? "flex lg:hidden" : "flex"
+                      }`}
+                  >
+                    {/* University Logo */}
+                    <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-full p-1 flex items-center justify-center bg-white border border-gray-100 shadow-2xs relative my-0.5 shrink-0 overflow-hidden">
+                      {peerLogo ? (
+                        <img
+                          src={peerLogo}
+                          alt={peer.name}
+                          className="w-full h-full object-contain p-0.5"
+                        />
+                      ) : (
+                        <div className="w-full h-full rounded-full bg-blue-50 text-blue-600 font-semibold flex items-center justify-center text-xs uppercase">
+                          {peer.initial || (peer.name && peer.name.charAt(0)) || "U"}
+                        </div>
+                      )}
                     </div>
-                  )}
+
+                    {/* Uni Name & Location */}
+                    <div className="w-full space-y-0.5 my-0.5">
+                      <div className="min-h-7 sm:min-h-[32px] flex items-center justify-center">
+                        <h4 className="text-xs sm:text-[12.5px] font-semibold text-[#0a2540] line-clamp-2 leading-tight m-0 w-full text-center">
+                          {peer.name}
+                        </h4>
+                      </div>
+                      {peer.location && (
+                        <div className="text-[10px] sm:text-[11px] text-gray-500 font-normal flex items-center justify-center gap-1 shrink-0">
+                          <MapPin size={11} className="text-red-500 shrink-0" />
+                          <span className="line-clamp-1">{peer.location}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Full-width Compare Button */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        toggleCompare({
+                          _id: peer._id || peer.slug,
+                          name: peer.name,
+                          title: peer.name,
+                          uniName: peer.name,
+                          slug: peer.slug,
+                          city: peer.location,
+                          logoUrl: peerLogo,
+                        });
+                        setIsCompareDrawerOpen(true);
+                      }}
+                      className={`w-full py-1.5 px-1.5 rounded-md sm:rounded-lg text-[10.5px] sm:text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer mt-1.5 border ${inCmp
+                        ? "bg-teal-50 border-teal-300 text-teal-700"
+                        : "bg-gray-50/90 hover:bg-gray-100 border-gray-200 text-gray-700 hover:text-[#0D3B66]"
+                        }`}
+                    >
+                      {inCmp ? (
+                        <>
+                          <Check className="w-3.5 h-3.5 text-teal-600 shrink-0 stroke-2" />
+                          <span>Added to Compare</span>
+                        </>
+                      ) : (
+                        <>
+                          <Plus className="w-3.5 h-3.5 text-gray-500 shrink-0 stroke-2" />
+                          <span>Add to Compare</span>
+                        </>
+                      )}
+                    </button>
+
+                    {/* Action Buttons in Flex Row: Apply Now | Know More */}
+                    <div className="w-full flex items-center gap-1.5 mt-1.5">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          openFormModal &&
+                            openFormModal({
+                              title: `Apply to ${peer.name}`,
+                              subtitle: "Get free admission counseling",
+                              defaultCourse: peer.name,
+                              university: peer.name,
+                              formNameOverride: `PeerUni_${peer.slug}`,
+                              submitButtonText: "Apply Now",
+                            });
+                        }}
+                        className="flex-1 bg-[#F4D068] hover:bg-[#ebc557] text-gray-900 text-[10.5px] sm:text-xs font-semibold py-1.5 sm:py-2 px-1 rounded-md sm:rounded-lg border-none cursor-pointer transition-colors shadow-2xs active:scale-95 flex items-center justify-center whitespace-nowrap"
+                      >
+                        Apply Now
+                      </button>
+                      <Link
+                        href={`/universities/${peer.slug}`}
+                        className="flex-1 bg-white hover:bg-gray-50 text-[#0a2540] hover:text-blue-600 border border-gray-200 text-[10.5px] sm:text-xs font-semibold py-1.5 sm:py-2 px-1 rounded-md sm:rounded-lg text-center no-underline transition-colors flex items-center justify-center shadow-2xs whitespace-nowrap"
+                      >
+                        Know More
+                      </Link>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* View More Button */}
+            {(visibleTopUnis < topPeerUniversities.length || (topPeerUniversities.length > 5 && visibleTopUnis === 6)) && (
+              <div className={`justify-center mt-4 pt-1 ${visibleTopUnis >= topPeerUniversities.length ? "hidden lg:flex" : "flex"}`}>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setVisibleTopUnis((prev) =>
+                      prev >= topPeerUniversities.length ? 6 : topPeerUniversities.length
+                    )
+                  }
+                  className="inline-flex items-center justify-center gap-1.5 px-5 py-1.5 rounded-full text-xs font-bold text-[#0B3B7E] bg-blue-50/80 hover:bg-blue-100 border border-blue-200/80 transition-all cursor-pointer shadow-none group"
+                >
+                  <span>
+                    {visibleTopUnis >= topPeerUniversities.length ? "View Less" : "View More"}
+                  </span>
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 transition-transform duration-200 ${visibleTopUnis >= topPeerUniversities.length ? "rotate-180" : "group-hover:translate-y-0.5"
+                      }`}
+                  />
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ============================================================ */}
+        {/* 10. FAQS ON ONLINE DEGREE AT UNIVERSITY (PURE DYNAMIC) */}
+        {/* ============================================================ */}
+        {faqSection.items.length > 0 && (
+          <div className="bg-white rounded-xl shadow-xs border border-gray-200 p-6 sm:p-8 space-y-6">
+            <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight m-0 text-center">
+              {faqSection.title}
+            </h2>
+
+            <div className="space-y-3 max-w-5xl mx-auto">
+              {faqSection.items.map((faq, idx) => {
+                const isOpen = openFaqIndex === idx;
+                return (
+                  <div
+                    key={idx}
+                    className={`rounded-xl border transition-all duration-200 overflow-hidden ${isOpen
+                      ? "border-blue-400 bg-blue-50/30 shadow-2xs"
+                      : "border-gray-200 bg-white hover:border-gray-300"
+                      }`}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => toggleFaq(idx)}
+                      className="w-full flex items-center justify-between gap-4 p-4 sm:p-4.5 text-left cursor-pointer bg-transparent border-none outline-none"
+                    >
+                      <span
+                        className={`text-xs sm:text-[13.5px] font-bold leading-snug ${isOpen ? "text-[#0C2B4E]" : "text-gray-900"
+                          }`}
+                      >
+                        Q{idx + 1}. {faq.question}
+                      </span>
+                      <span
+                        className={`flex items-center justify-center w-6 h-6 rounded-full shrink-0 transition-colors ${isOpen
+                          ? "bg-[#0C2B4E] text-white"
+                          : "bg-gray-100 text-gray-500"
+                          }`}
+                      >
+                        {isOpen ? <Minus size={13} /> : <Plus size={13} />}
+                      </span>
+                    </button>
+
+                    {isOpen && (
+                      <div className="px-4 pb-4 pt-0 text-xs sm:text-[13px] text-gray-600 leading-relaxed font-normal border-t border-blue-100/60 pt-3">
+                        {faq.answer}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+
+      </div>
+
+      {/* ============================================================ */}
+      {/* 12. SPECIALIZATIONS POPUP MODAL */}
+      {/* ============================================================ */}
+      <Modal
+        open={Boolean(selectedCourseSpec)}
+        onCancel={() => setSelectedCourseSpec(null)}
+        footer={null}
+        centered
+        width={780}
+        className="specialization-antd-modal"
+        styles={{
+          content: {
+            padding: "24px",
+            borderRadius: "20px",
+            overflow: "hidden",
+          },
+          body: {
+            padding: "0px",
+          },
+        }}
+      >
+        {selectedCourseSpec && (
+          <div className="flex flex-col sm:flex-row items-center sm:items-stretch gap-5 sm:gap-6 pt-1">
+            {/* Left: Dynamic Banner Image with University Badge */}
+            <div className="relative w-full max-w-65 sm:w-65 sm:max-w-none aspect-square shrink-0 rounded-2xl overflow-hidden shadow-sm bg-gray-100">
+              {heroBannerUrl || selectedCourseSpec.banner ? (
+                <Image
+                  src={selectedCourseSpec.banner || heroBannerUrl}
+                  alt={selectedCourseSpec.title || uniName}
+                  fill
+                  className="object-cover object-center rounded-2xl"
+                  priority
+                />
+              ) : (
+                <div className="w-full h-full bg-linear-to-br from-[#0C2B4E] to-[#0077B6] rounded-2xl flex items-center justify-center">
+                  <GraduationCap className="w-16 h-16 text-white/40" />
                 </div>
               )}
 
-            {/* 8. PRESTIGIOUS DEGREE / CERTIFICATE PREVIEW */}
-            {data?.certificateSection && (
-              <div
-                id="section-certificate"
-                className="bg-white rounded-2xl p-3.5 sm:p-4 border border-gray-200 space-y-2.5"
-              >
-                <div className="border-b border-gray-200 pb-1.5">
-                  <h2 className="text-sm sm:text-[15px] font-semibold text-[#0C3058] m-0 flex items-center gap-1.5">
-                    <span className="flex items-center justify-center w-5 h-5 rounded bg-[#EBF4FF] shrink-0">
-                      <Award className="w-3.5 h-3.5 text-[#0C3058]" />
-                    </span>
-                    {getSafeText(
-                      data.certificateSection.title,
-                      `Prestigious Certificate from ${uniName}`
-                    )}
-                  </h2>
-                </div>
-
-                {data.certificateSection.description && (
-                  <p className="text-gray-600 text-xs sm:text-sm m-0 font-normal">
-                    {getSafeText(data.certificateSection.description)}
-                  </p>
-                )}
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-0.5 items-center">
-                  <div className="bg-gray-50/70 border border-gray-200 rounded-xl p-3.5 space-y-2">
-                    <h3 className="text-xs sm:text-sm font-semibold text-[#0C3058] m-0">
-                      {getSafeText(
-                        data.certificateSection.certificateTitle,
-                        "Earn Executive Alumni Status"
-                      )}
-                    </h3>
-                    {data.certificateSection.certificateDescription && (
-                      <p className="text-xs text-gray-500 font-normal leading-relaxed m-0">
-                        {getSafeText(data.certificateSection.certificateDescription)}
-                      </p>
-                    )}
-
-                    {data.certificateSection.keyBenefits &&
-                      data.certificateSection.keyBenefits.length > 0 && (
-                        <ul className="space-y-1.5 pt-1 list-none p-0 m-0">
-                          {data.certificateSection.keyBenefits.map((benefit, idx) => (
-                            <li
-                              key={idx}
-                              className="flex items-start gap-2 text-xs sm:text-sm text-gray-700 font-medium"
-                            >
-                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 mt-0.5 shrink-0" />
-                              <span>{getSafeText(benefit)}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
+              {/* University Logo Badge on Modal Image */}
+              {logoUrl && (
+                <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 z-10 bg-white rounded-xl shadow-md p-1.5 sm:p-2 border border-gray-100 flex items-center justify-center">
+                  <div className="relative w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center">
+                    <Image
+                      src={logoUrl}
+                      alt={uniName}
+                      fill
+                      className="object-contain"
+                    />
                   </div>
+                </div>
+              )}
+            </div>
 
-                  {certificateImgUrl && (
-                    <div
-                      onClick={() => setIsCertificateModalOpen(true)}
-                      className="bg-gray-50/70 border border-gray-200 rounded-xl p-3 flex items-center justify-center overflow-hidden cursor-pointer group"
-                    >
-                      <Image
-                        src={certificateImgUrl}
-                        alt="Sample Degree Certificate"
-                        width={480}
-                        height={320}
-                        unoptimized
-                        className="w-full h-auto object-contain rounded-lg max-h-60 transition-transform duration-300 group-hover:scale-102"
-                      />
+            {/* Right: Content details */}
+            <div className="flex-1 flex flex-col justify-between space-y-3.5 text-left py-1 w-full min-w-0">
+              <div className="space-y-2">
+                <h3 className="text-xl sm:text-2xl font-bold text-[#0D3B66] m-0 tracking-tight leading-snug">
+                  {selectedCourseSpec.title || selectedCourseSpec.name} Specializations
+                </h3>
+                <p className="text-xs sm:text-[13px] text-gray-600 leading-relaxed m-0 font-normal line-clamp-2">
+                  {selectedCourseSpec.description ||
+                    `${selectedCourseSpec.title || "Course"} specializations offered at ${uniName}. Equips learners with specialized industry knowledge and professional competencies.`}
+                </p>
+              </div>
+
+              {/* Available Specializations List */}
+              {selectedCourseSpec.subcourses && selectedCourseSpec.subcourses.length > 0 && (
+                <div className="space-y-1.5">
+                  <span className="text-[11px] font-bold text-gray-700 uppercase tracking-wider block">
+                    Available Specializations ({selectedCourseSpec.subcourses.length}):
+                  </span>
+                  <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto pr-1">
+                    {selectedCourseSpec.subcourses.map((sub, idx) => {
+                      const subName = typeof sub === "string" ? sub : sub.name || "";
+                      return (
+                        <span
+                          key={idx}
+                          className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-lg bg-blue-50/80 text-[#0C2B4E] border border-blue-100"
+                        >
+                          <CheckCircle2 size={12} className="text-blue-600 shrink-0" />
+                          <span>{subName}</span>
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Fee & Duration Strip */}
+              <div className="space-y-2 text-xs sm:text-[13px] text-[#0D3B66] font-medium pt-1 border-t border-gray-100">
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                  {selectedCourseSpec.duration && (
+                    <div className="flex items-center gap-1.5">
+                      <Clock className="w-3.5 h-3.5 text-[#0D3B66] shrink-0" />
+                      <span className="text-gray-800">{selectedCourseSpec.duration}</span>
                     </div>
                   )}
-                </div>
-              </div>
-            )}
-
-            {/* 9. ALUMNI TESTIMONIALS & REVIEWS */}
-            {data?.testimonialsSection && (
-              <div
-                id="section-reviews"
-                className="bg-white rounded-2xl p-3.5 sm:p-4 border border-gray-200 space-y-2.5"
-              >
-                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 pb-1.5">
-                  <div>
-                    <h2 className="text-sm sm:text-[15px] font-semibold text-[#0C3058] m-0 flex items-center gap-1.5">
-                      <span className="flex items-center justify-center w-5 h-5 rounded bg-[#FFF3E0] shrink-0">
-                        <MessageSquare className="w-3.5 h-3.5 text-amber-500" />
+                  {selectedCourseSpec.fees && (
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[#0D3B66] font-bold text-sm">₹</span>
+                      <span className="text-gray-800">
+                        {selectedCourseSpec.fees.replace(/^₹\s*/, "")}
                       </span>
-                      {getSafeText(data.testimonialsSection.title, "Student & Alumni Reviews")}
-                    </h2>
-                    {data.testimonialsSection.description && (
-                      <p className="text-gray-500 text-xs mt-0.5 m-0 font-normal">
-                        {getSafeText(data.testimonialsSection.description)}
-                      </p>
-                    )}
-                  </div>
-
-                  {data.testimonialsSection.stats && data.testimonialsSection.stats.length > 0 && (
-                    <div className="flex items-center gap-3">
-                      {data.testimonialsSection.stats.map((stat, idx) => (
-                        <div
-                          key={idx}
-                          className="bg-gray-50 px-3 py-1 rounded-lg border border-gray-200 text-center"
-                        >
-                          <span className="font-semibold text-[#0C3058] text-xs block">
-                            {getSafeText(stat.value)}
-                          </span>
-                          <span className="text-[10px] text-gray-500 font-normal">
-                            {getSafeText(stat.label)}
-                          </span>
-                        </div>
-                      ))}
                     </div>
                   )}
                 </div>
-
-                {data.testimonialsSection.testimonials &&
-                  data.testimonialsSection.testimonials.length > 0 && (
-                    <div
-                      ref={reviewSliderRef}
-                      className="flex gap-4 overflow-x-auto scrollbar-none scroll-smooth pb-3 pt-1 snap-x snap-mandatory px-0.5"
-                    >
-                      {data.testimonialsSection.testimonials.map((review, idx) => (
-                        <div
-                          key={idx}
-                          className="w-full min-w-72 sm:min-w-80 lg:w-[calc(33.333%-11px)] snap-start shrink-0 bg-gray-50/70 border border-gray-200 rounded-xl p-3.5 flex flex-col justify-between space-y-3"
-                        >
-                          <div className="space-y-2">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-1">
-                                {[...Array(review.rating || 5)].map((_, i) => (
-                                  <Star key={i} className="w-3.5 h-3.5 text-amber-500 fill-amber-400" />
-                                ))}
-                              </div>
-                              <Quote className="w-4 h-4 text-gray-300 rotate-180" />
-                            </div>
-                            <p className="text-xs text-gray-600 italic leading-relaxed m-0 font-normal">
-                              &quot;{getSafeText(review.review || review.quote)}&quot;
-                            </p>
-                          </div>
-
-                          <div className="pt-2 border-t border-gray-200 flex items-center justify-between gap-3">
-                            <div>
-                              <h4 className="font-semibold text-xs text-[#0C3058] m-0">
-                                {getSafeText(review.name)}
-                              </h4>
-                              <span className="text-[11px] text-gray-500 font-normal block">
-                                {getSafeText(review.role)}{" "}
-                                {review.company ? `• ${getSafeText(review.company)}` : ""}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
               </div>
-            )}
 
-            {/* 10. FREQUENTLY ASKED QUESTIONS (FAQS) */}
-            {data?.faqSection?.faqs && data.faqSection.faqs.length > 0 && (
-              <div
-                id="section-faqs"
-                className="bg-white rounded-2xl p-3.5 sm:p-4 border border-gray-200 space-y-2.5"
-              >
-                <div className="border-b border-gray-200 pb-1.5">
-                  <h2 className="text-sm sm:text-[15px] font-semibold text-[#0C3058] m-0 flex items-center gap-1.5">
-                    <span className="flex items-center justify-center w-5 h-5 rounded bg-[#E8F5E9] shrink-0">
-                      <HelpCircle className="w-3.5 h-3.5 text-emerald-600" />
-                    </span>
-                    {getSafeText(
-                      data.faqSection.title,
-                      `Frequently Asked Questions about ${uniName}`
-                    )}
-                  </h2>
-                </div>
+              {/* Action Buttons */}
+              <div className="w-full flex items-center gap-2 sm:gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const cTitle = selectedCourseSpec.title || selectedCourseSpec.name;
+                    setSelectedCourseSpec(null);
+                    openFormModal &&
+                      openFormModal({
+                        title: `Download Brochure - ${cTitle}`,
+                        subtitle: `${uniName} - Specializations`,
+                        defaultCourse: `${cTitle} - ${uniName}`,
+                        university: uniName,
+                        submitButtonText: "Download Brochure",
+                      });
+                  }}
+                  className="flex-1 bg-[#0C2B4E] hover:bg-[#081f38] text-white text-[10px] sm:text-sm font-semibold py-2 sm:py-2.5 px-2 sm:px-4 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-xs active:scale-95 whitespace-nowrap border-none"
+                >
+                  <span>Download Brochure</span>
+                  <Download className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
+                </button>
 
-                <div className="space-y-2 pt-1">
-                  {data.faqSection.faqs.map((faq, idx) => {
-                    const isOpen = openFaqIndex === idx;
-                    return (
-                      <div
-                        key={idx}
-                        className={`border rounded-xl overflow-hidden transition-all duration-200 ${isOpen
-                          ? "border-[#0C3058] bg-blue-50/30"
-                          : "border-gray-200 bg-white hover:border-gray-300"
-                          }`}
-                      >
-                        <button
-                          type="button"
-                          onClick={() => toggleFaq(idx)}
-                          className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left cursor-pointer bg-transparent border-none outline-none"
-                        >
-                          <span
-                            className={`text-xs sm:text-sm font-semibold leading-snug transition-colors ${isOpen ? "text-[#0C3058]" : "text-gray-800"
-                              }`}
-                          >
-                            {getSafeText(faq.question)}
-                          </span>
-                          <span
-                            className={`flex items-center justify-center w-6 h-6 rounded-full shrink-0 transition-colors ${isOpen ? "bg-[#0C3058] text-white" : "bg-gray-100 text-gray-500"
-                              }`}
-                          >
-                            {isOpen ? (
-                              <Minus className="w-3 h-3" />
-                            ) : (
-                              <Plus className="w-3 h-3" />
-                            )}
-                          </span>
-                        </button>
-                        {isOpen && (
-                          <div className="px-4 pb-3.5 pt-0.5 text-gray-600 text-xs sm:text-sm leading-relaxed border-t border-gray-100 font-normal">
-                            {getSafeText(faq.answer)}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const cTitle = selectedCourseSpec.title || selectedCourseSpec.name;
+                    setSelectedCourseSpec(null);
+                    openFormModal &&
+                      openFormModal({
+                        title: `Get Counseling - ${cTitle}`,
+                        subtitle: `${uniName} - Specializations Guidance`,
+                        defaultCourse: `${cTitle} - ${uniName}`,
+                        university: uniName,
+                        submitButtonText: "Get Free Counseling",
+                      });
+                  }}
+                  className="flex-1 bg-white hover:bg-gray-50 text-[#0C2B4E] border border-[#0C2B4E] text-[10px] sm:text-sm font-semibold py-2 sm:py-2.5 px-2 sm:px-4 rounded-lg flex items-center justify-center transition-all cursor-pointer shadow-xs active:scale-95 whitespace-nowrap"
+                >
+                  Get 100% FREE Counseling
+                </button>
               </div>
-            )}
-      </div>
+            </div>
+          </div>
+        )}
+      </Modal>
 
-      {/* CERTIFICATE FULL PREVIEW MODAL */}
-      <Modal
-        open={isCertificateModalOpen}
-        onCancel={() => setIsCertificateModalOpen(false)}
-        footer={null}
-        width={750}
-        centered
-      >
-        <div className="p-3 text-center space-y-3">
-          <h3 className="text-sm sm:text-base font-semibold text-[#0C3058] m-0">
-            Sample Degree & Certificate Preview - {uniName}
-          </h3>
-          {certificateImgUrl && (
-            <div className="bg-gray-50 p-2 rounded-xl border border-gray-200">
-              <Image
-                src={certificateImgUrl}
-                alt="Sample Degree Certificate"
-                width={800}
-                height={550}
-                unoptimized
-                className="w-full h-auto object-contain rounded-lg"
+      {/* ============================================================ */}
+      {/* 13. CERTIFICATE FULL PREVIEW MODAL */}
+      {/* ============================================================ */}
+      {sampleDegreeData?.imageUrl && (
+        <Modal
+          open={isCertificateModalOpen}
+          onCancel={() => setIsCertificateModalOpen(false)}
+          footer={null}
+          width={720}
+          centered
+        >
+          <div className="p-4 text-center space-y-3">
+            <h3 className="text-base font-bold text-[#0C2B4E] m-0">
+              {sampleDegreeData.title || `Sample Degree Certificate - ${uniName}`}
+            </h3>
+            {sampleDegreeData.description && (
+              <p className="text-xs text-gray-500">
+                {sampleDegreeData.description}
+              </p>
+            )}
+            <div className="bg-gray-50 p-4 sm:p-6 rounded-2xl border border-gray-200 flex items-center justify-center">
+              <img
+                src={sampleDegreeData.imageUrl}
+                alt={sampleDegreeData.title || `Sample Degree Certificate - ${uniName}`}
+                className="max-h-[520px] w-auto max-w-full object-contain rounded-xl shadow-md mx-auto"
               />
             </div>
-          )}
-        </div>
-      </Modal>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }

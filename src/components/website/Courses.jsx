@@ -394,6 +394,7 @@ export function Courses({
                           src={getAssetPath(rawLogo)}
                           alt={uniName}
                           fill
+                          sizes="48px"
                           className="object-contain"
                         />
                       </div>

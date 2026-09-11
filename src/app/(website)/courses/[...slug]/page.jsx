@@ -44,6 +44,7 @@ function normalizeCourseData(pageRes) {
     syllabus: Array.isArray(raw.syllabus) ? raw.syllabus : [],
     paymentType: raw.paymentType || null,
     fullFee: raw.fullFee || null,
+    customContent: raw.customContent || "",
     topUniversities: Array.isArray(raw.topUniversities) ? raw.topUniversities : [],
   };
 }

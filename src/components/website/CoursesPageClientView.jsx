@@ -801,7 +801,7 @@ function CoursesContent({
     (coursesOptionsList || []).forEach((c) => {
       if (!c) return;
       const val = c.slug || String(c._id || "");
-      const fullDisplay = c.displayNames?.[0]?.name || c.displayName;
+      const fullDisplay = c.displayName || c.name || "";
       const effectiveName = c.showDisplayName && fullDisplay ? fullDisplay : (c.name || c.title || val);
       const label = effectiveName;
       if (val && !seen.has(val)) {
@@ -1378,6 +1378,7 @@ function CoursesContent({
                       src={specializationModalData.logoUrl}
                       alt={specializationModalData.uniName}
                       fill
+                      sizes="40px"
                       className="object-contain p-0.5"
                     />
                   </div>

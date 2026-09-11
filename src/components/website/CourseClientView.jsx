@@ -461,7 +461,7 @@ export default function CourseClientView({
               {courseData?.approvalsTitle || (universityName ? `Rankings & Accreditations of ${universityName}` : "Rankings & Accreditations")}
             </h2>
 
-            <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-6 lg:grid-cols-6 gap-2 sm:gap-3.5 md:gap-4">
+            <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-6 lg:grid-cols-7 gap-2 sm:gap-3.5 md:gap-4">
               {approvalsList.map((item, idx) => {
                 const logoSrc = item.logo || item.image ? getAssetPath(item.logo || item.image) : null;
                 const title = item.name || item.code || "Accredited";
@@ -470,23 +470,25 @@ export default function CourseClientView({
                 return (
                   <div
                     key={item._id || idx}
-                    className="bg-white rounded-xl border border-gray-200 p-2 sm:p-3 md:p-4 flex flex-col items-center text-center space-y-1 sm:space-y-2 shadow-2xs hover:border-blue-300 transition-colors"
+                    className="bg-white rounded-xl border border-gray-200 p-2 sm:p-2.5 md:p-3 flex flex-col items-center justify-center text-center aspect-square shadow-2xs hover:border-blue-300 transition-colors"
                   >
-                    <div className="h-10 sm:h-12 md:h-14 flex items-center justify-center relative w-full">
+                    <div className="h-8 sm:h-10 md:h-11 flex items-center justify-center relative w-full mb-1 shrink-0">
                       {logoSrc ? (
                         <Image
                           src={logoSrc}
                           alt={title}
                           width={60}
                           height={50}
-                          className="object-contain max-h-8 sm:max-h-10 md:max-h-12 w-auto"
+                          className="object-contain max-h-7 sm:max-h-9 md:max-h-10 w-auto"
                         />
                       ) : (
-                        <Award className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600" />
+                        <Award className="w-6 h-6 sm:w-7 sm:h-7 text-blue-600" />
                       )}
                     </div>
-                    <h3 className="text-[11px] sm:text-xs md:text-sm font-bold text-gray-900 m-0 tracking-tight leading-tight">{title}</h3>
-                    <p className="text-[9.5px] sm:text-[11px] md:text-xs text-gray-500 leading-snug m-0 line-clamp-2">
+                    <h3 className="text-[10.5px] sm:text-xs md:text-[13px] font-bold text-gray-900 m-0 tracking-tight leading-tight line-clamp-2 w-full">
+                      {title}
+                    </h3>
+                    <p className="text-[8.5px] sm:text-[9.5px] md:text-[10.5px] text-gray-500 leading-tight m-0 line-clamp-2 w-full mt-0.5">
                       {desc}
                     </p>
                   </div>
