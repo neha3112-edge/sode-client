@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { getAssetPath } from "@/lib/utils";
-import { ArrowLeft, X, Search, GraduationCap, Building2, Sparkles, ArrowRight, TrendingUp, Loader2, MapPin, Wallet, Clock, FolderTree, Layers } from "lucide-react";
+import { X, Search, GraduationCap, Building2, Sparkles, ArrowRight, TrendingUp, Loader2, MapPin, Wallet, Clock, FolderTree, Layers } from "lucide-react";
 import { Carousel, Modal } from "antd";
 import { useToolWizard } from "@/components/tool/ToolWizardContext";
 import { useFormModal } from "@/hooks/useFormModal";
@@ -965,7 +965,7 @@ export function Category({ categories = [], universities = [], programs = [] }) 
       {/* ── TOP STATS CARDS SECTION ── */}
       {rootCategories.length > 0 && (
         <section className="py-3 bg-white relative overflow-hidden" suppressHydrationWarning>
-          <Container>
+          <div className="mx-auto max-w-90 sm:max-w-290 lg:max-w-290 xl:max-w-280 2xl:max-w-290">
             {/* Grid: 4 columns on mobile, auto-fit on desktop for dynamic width */}
             <div className="grid grid-cols-4 md:grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-1.5 sm:gap-2.5 w-full mx-auto md:px-8 items-stretch" suppressHydrationWarning>
               {rootCategories.map((item) => (
@@ -985,7 +985,7 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                 </div>
               ))}
             </div>
-          </Container>
+          </div>
         </section>
       )}
 
