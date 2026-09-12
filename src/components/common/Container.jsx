@@ -8,7 +8,7 @@ const { Content } = Layout;
 export function Container({ children, className = "", style = {}, ...props }) {
   return (
     <Content
-      className={`max-w-7xl mx-auto px-4 md:px-8 w-full ${className}`}
+      className={`max-w-90 md:max-w-4xl lg:max-w-265 2xl:max-w-275 mx-auto ${className}`}
       style={{ background: "transparent", ...style }}
       {...props}
     >

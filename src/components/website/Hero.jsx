@@ -7,25 +7,6 @@ import { Carousel } from "antd";
 import { Container } from "@/components/common/Container";
 import { useFormModal } from "@/hooks/useFormModal";
 
-// Smart Helper to detect if background color is light or dark
-function isLightColor(hexColor) {
-  if (!hexColor) return false;
-  const hex = hexColor.replace("#", "").trim();
-  if (hex.length === 3) {
-    const r = parseInt(hex[0] + hex[0], 16);
-    const g = parseInt(hex[1] + hex[1], 16);
-    const b = parseInt(hex[2] + hex[2], 16);
-    return (r * 299 + g * 587 + b * 114) / 1000 > 160;
-  }
-  if (hex.length === 6) {
-    const r = parseInt(hex.substring(0, 2), 16);
-    const g = parseInt(hex.substring(2, 4), 16);
-    const b = parseInt(hex.substring(4, 6), 16);
-    return (r * 299 + g * 587 + b * 114) / 1000 > 160;
-  }
-  return false;
-}
-
 export function Hero({ initialHeroData = null }) {
   const { openFormModal } = useFormModal();
 
@@ -46,7 +27,6 @@ export function Hero({ initialHeroData = null }) {
     return null;
   };
 
-  // Carousel Settings
   const isCarousel = Boolean(
     heroData?.is_carousel && Array.isArray(heroData?.slides) && heroData.slides.length > 0
   );
@@ -56,108 +36,115 @@ export function Hero({ initialHeroData = null }) {
   const showDots = carouselSettings.show_dots !== false;
   const showArrows = Boolean(carouselSettings.show_arrows);
 
-  // Helper to render styled dual-color headings matching each slide's exact reference
-  const renderSlideHeading = (rawTitle, isLight, titleColor) => {
+  const renderSlideHeading = (rawTitle, highlightText, isLight, titleColor) => {
     if (!rawTitle) return null;
 
-    const lower = rawTitle.toLowerCase();
+    const defaultColor = titleColor || (isLight ? "#072C50" : "#ffffff");
+    const highlightColor = isLight ? "#965D2C" : "#F6DE95";
+    const lines = rawTitle.split("\n");
 
-    // 1. Slide 2: Compare 50+ Universities (Blue & Brown) / Choose with Confidence.
-    if (lower.includes("choose with confidence") || lower.includes("compare 50+")) {
-      return (
-        <h1 className="text-lg sm:text-2xl md:text-[28px] lg:text-[32px] font-black leading-[1.15] tracking-tight m-0 font-sans">
-          <span className="block" style={{ color: "#072C50" }}>
-            Compare <span style={{ color: "#996633" }}>50+ Universities</span>
-          </span>
-          <span className="block" style={{ color: "#072C50" }}>
-            Choose with <span style={{ color: "#996633" }}>Confidence.</span>
-          </span>
-        </h1>
-      );
-    }
-
-    // 2. Slide 4: GOVERNOR OF KERALA (Brown) / HONORABLE SH. ARIF MOHAMMED KHAN (Blue)
-    if (lower.includes("governor of kerala") || lower.includes("arif mohammed")) {
-      return (
-        <div className="flex flex-col space-y-0.5">
-          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-[32px] font-black tracking-wide m-0" style={{ color: "#996633" }}>
-            GOVERNOR OF KERALA
-          </h1>
-          <span className="text-[11px] sm:text-xs md:text-sm font-bold tracking-wider" style={{ color: "#072C50" }}>
-            HONORABLE SH. ARIF MOHAMMED KHAN
-          </span>
-        </div>
-      );
-    }
-
-    // 3. Slide 3: 5 Lakh+ Students Found Their Right Career Path
-    if (lower.includes("5 lakh") || lower.includes("career path")) {
-      return (
-        <h1 className="text-lg sm:text-2xl md:text-[28px] lg:text-[32px] font-extrabold leading-[1.18] tracking-tight text-white m-0">
-          <span className="block">5 Lakh+ Students Found</span>
-          <span className="block text-amber-200">Their Right Career Path</span>
-        </h1>
-      );
-    }
-
-    // 4. Slide 1 / Default: Certifications & Online Degree Courses...
     return (
-      <h1
-        style={{ color: titleColor }}
-        className={`text-base sm:text-xl md:text-2xl lg:text-[28px] font-extrabold leading-[1.18] tracking-tight m-0 ${isLight ? "" : "text-white drop-shadow-sm"
-          }`}
-      >
-        {rawTitle}
-      </h1>
-    );
-  };
+      <div className="flex flex-col space-y-0.5 sm:space-y-1">
+        {lines.map((line, lIdx) => {
+          const isGovernorHeader = line.toUpperCase() === "GOVERNOR OF KERALA";
+          const isGovernorSub = line.toUpperCase().includes("ARIF MOHAMMED KHAN");
 
-  // Helper to render badge per slide style
-  const renderSlideBadge = (badgeText, isLight) => {
-    if (!badgeText) return null;
+          if (isGovernorHeader) {
+            return (
+              <h1
+                key={lIdx}
+                style={{ color: "#965D2C" }}
+                className="text-xl sm:text-2xl md:text-3xl lg:text-[34px] xl:text-[36px] font-black tracking-wide leading-none m-0 font-sans uppercase"
+              >
+                {line}
+              </h1>
+            );
+          }
 
-    const lower = badgeText.toLowerCase();
+          if (isGovernorSub) {
+            return (
+              <span
+                key={lIdx}
+                style={{ color: "#072C50" }}
+                className="text-xs sm:text-sm md:text-[15px] lg:text-[16px] font-black tracking-wide leading-snug m-0 uppercase"
+              >
+                {line}
+              </span>
+            );
+          }
 
-    // #1 School of Online & Distance Education
-    if (badgeText.startsWith("#1") || lower.includes("school of online")) {
-      return (
-        <div className="inline-flex items-center gap-1.5 text-xs sm:text-sm tracking-wide">
-          <span className="font-serif italic font-extrabold text-amber-300 text-sm sm:text-base">#1</span>
-          <span className="font-medium text-slate-100 italic">{badgeText.replace(/^#1\s*/i, "")}</span>
-        </div>
-      );
-    }
+          let lineContent = line;
+          if (highlightText && line.toLowerCase().includes(highlightText.toLowerCase())) {
+            const idx = line.toLowerCase().indexOf(highlightText.toLowerCase());
+            const before = line.slice(0, idx);
+            const match = line.slice(idx, idx + highlightText.length);
+            const after = line.slice(idx + highlightText.length);
 
-    // Standard Styled Badge (Rounded rectangle with star)
-    return (
-      <div
-        className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[11px] sm:text-xs font-semibold tracking-normal border shadow-2xs ${isLight
-          ? "bg-[#996633]/8 text-[#996633] border-[#996633]/30"
-          : "bg-white/10 text-amber-200 border-white/20 backdrop-blur-md"
-          }`}
-      >
-        <span className="text-amber-500 font-bold text-xs leading-none">★</span>
-        <span className="leading-tight">{badgeText.replace(/^[#★1\s*]+/i, "").trim() || badgeText}</span>
+            lineContent = (
+              <>
+                {before}
+                <span style={{ color: highlightColor }}>{match}</span>
+                {after}
+              </>
+            );
+          }
+
+          return (
+            <h1
+              key={lIdx}
+              style={{ color: defaultColor }}
+              className="text-lg sm:text-2xl md:text-[28px] lg:text-[32px] font-black leading-[1.15] tracking-tight m-0 font-sans"
+            >
+              {lineContent}
+            </h1>
+          );
+        })}
       </div>
     );
   };
 
-  // Single Slide / Hero Renderer
+  const renderSlideBadge = (badgeText, isLight) => {
+    if (!badgeText) return null;
+
+    if (badgeText.startsWith("#1")) {
+      return (
+        <div className="inline-flex items-center gap-1.5 text-xs sm:text-sm tracking-wide">
+          <span className="font-serif italic font-extrabold text-amber-300 text-sm sm:text-base">#1</span>
+          <span className="font-medium text-slate-100 italic">{badgeText.replace(/^#1\s*/, "")}</span>
+        </div>
+      );
+    }
+
+    const cleanText = badgeText.replace(/^[#★⭐\s*]+/i, "").trim() || badgeText;
+
+    return (
+      <div
+        style={{
+          borderColor: isLight ? "#B88B4A" : "rgba(255, 255, 255, 0.35)",
+          backgroundColor: isLight ? "rgba(253, 247, 236, 0.9)" : "rgba(255, 255, 255, 0.1)",
+        }}
+        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-[11px] sm:text-xs font-bold tracking-normal border shadow-xs"
+      >
+        <span className="text-amber-400 font-bold text-xs leading-none">⭐</span>
+        <span style={{ color: isLight ? "#072C50" : "#ffffff" }} className="leading-tight font-bold">
+          {cleanText}
+        </span>
+      </div>
+    );
+  };
+
   const renderHeroContent = (data, isSlide = false, index = 0) => {
     if (!data) return null;
 
     const badgeText = data?.badge_text;
     const title = data?.title;
+    const highlightText = data?.highlight_text;
     const subtitle = data?.subtitle;
 
-    // Custom or dynamic text colors
-    const bgColor = data?.background_color || "#0f1f38";
-    const isLight = isLightColor(bgColor);
-
+    const isLight = data?.title_color === "#072C50" || data?.title_color === "#965D2C";
     const titleColor = data?.title_color || (isLight ? "#072C50" : "#ffffff");
-    const subtitleColor = data?.subtitle_color || (isLight ? "#996633" : "#cbd5e1");
+    const subtitleColor = data?.subtitle_color || (isLight ? "#072C50" : "#cbd5e1");
 
-    // Dynamic Categories from CRM
     const categoryItems = Array.isArray(data?.categories)
       ? data.categories
         .filter(Boolean)
@@ -169,7 +156,6 @@ export function Hero({ initialHeroData = null }) {
         .filter((item) => Boolean(item.name))
       : [];
 
-    // Background Banner Images from DB / API
     const desktopBannerUrl =
       getMediaUrl(data?.banner_image) ||
       getMediaUrl(data?.background_image) ||
@@ -198,13 +184,16 @@ export function Hero({ initialHeroData = null }) {
     return (
       <div
         key={data?._id || index}
-        style={{ backgroundColor: bgColor }}
+        style={{
+          backgroundImage: desktopBannerUrl ? `url("${desktopBannerUrl}")` : "none",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
         className="relative w-full overflow-hidden aspect-[1.9/1] sm:aspect-[3.2/1] md:aspect-[3.8/1] lg:aspect-[4/1] min-h-[200px] sm:min-h-[220px] md:min-h-[240px] lg:min-h-[280px] max-h-[340px] flex items-center select-none py-3.5 sm:py-0"
       >
-        {/* 1. 100% FULL-WIDTH BACKGROUND IMAGE (SEAMLESS FULL-BLEED ZERO WHITE EDGE & UNOPTIMIZED FOR MAXIMUM CRISP CLARITY) */}
         {desktopBannerUrl && (
           <div className="absolute inset-0 w-full h-full pointer-events-none select-none overflow-hidden">
-            {/* Desktop Background Banner Image */}
             <div className={`relative w-full h-full ${mobileBannerUrl && mobileBannerUrl !== desktopBannerUrl ? "hidden md:block" : "block"}`}>
               <Image
                 src={desktopBannerUrl}
@@ -219,7 +208,6 @@ export function Hero({ initialHeroData = null }) {
               />
             </div>
 
-            {/* Mobile Background Banner Image */}
             {mobileBannerUrl && mobileBannerUrl !== desktopBannerUrl && (
               <div className="block md:hidden relative w-full h-full">
                 <Image
@@ -238,27 +226,20 @@ export function Hero({ initialHeroData = null }) {
           </div>
         )}
 
-        {/* 2. FOREGROUND TEXT CONTENT & CTA (Pixel-Perfect Match to Reference Design) */}
         <Container className="relative z-10 w-full pointer-events-auto">
-          <div className="w-full max-w-[62%] sm:max-w-[50%] md:max-w-[46%] lg:max-w-[44%] flex flex-col items-start space-y-1 sm:space-y-1.5 md:space-y-2 lg:space-y-2.5">
-
-            {/* Top Badge */}
+          <div className="w-full max-w-[62%] sm:max-w-[50%] md:max-w-[46%] lg:max-w-[44%] flex flex-col items-start space-y-1.5 sm:space-y-2 md:space-y-2.5">
             {renderSlideBadge(badgeText, isLight)}
+            {renderSlideHeading(title, highlightText, isLight, titleColor)}
 
-            {/* Main Heading with Dual Colors (#072C50 Blue + #996633 Brown) */}
-            {renderSlideHeading(title, isLight, titleColor)}
-
-            {/* Subtitle */}
             {subtitle && (
               <p
-                style={{ color: isLight ? "#475569" : subtitleColor }}
+                style={{ color: subtitleColor }}
                 className="text-[10px] sm:text-xs md:text-[13px] leading-tight sm:leading-relaxed font-normal line-clamp-2 max-w-sm sm:max-w-md lg:max-w-lg m-0"
               >
                 {subtitle}
               </p>
             )}
 
-            {/* Category Tags */}
             {categoryItems && categoryItems.length > 0 && (
               <div className="hidden sm:flex flex-wrap gap-1 pt-0.5">
                 {categoryItems.map((item, tIdx) => (
@@ -266,8 +247,8 @@ export function Hero({ initialHeroData = null }) {
                     key={item._id || tIdx}
                     href={item.url || "#"}
                     className={`px-2 py-0.5 rounded text-[10px] sm:text-xs font-medium transition-all shadow-2xs ${isLight
-                      ? "bg-white/90 text-[#072C50] border border-[#EEC471]/40 hover:border-[#EEC471] hover:bg-amber-50"
-                      : "bg-white/10 text-white border border-white/20 hover:bg-white/20 backdrop-blur-md"
+                        ? "bg-white/90 text-[#072C50] border border-[#EEC471]/40 hover:border-[#EEC471] hover:bg-amber-50"
+                        : "bg-white/10 text-white border border-white/20 hover:bg-white/20 backdrop-blur-md"
                       }`}
                   >
                     {item.name}
@@ -276,7 +257,6 @@ export function Hero({ initialHeroData = null }) {
               </div>
             )}
 
-            {/* Action Buttons: Soft Golden Gradient (#F6DE95 to #EEC471) with #072C50 Text */}
             <div className="flex flex-wrap items-center gap-2 pt-0.5 sm:pt-1">
               {primaryBtn?.enabled !== false && primaryBtn?.text && (
                 primaryBtn?.is_modal ? (
@@ -284,10 +264,12 @@ export function Hero({ initialHeroData = null }) {
                     type="button"
                     onClick={handlePrimaryClick}
                     style={{
-                      background: "linear-gradient(180deg, #F6DE95 0%, #EEC471 100%)",
+                      background: "linear-gradient(180deg, #F3CE7F 0%, #E7B85D 100%)",
                       color: "#072C50",
+                      border: "1px solid rgba(226, 176, 83, 0.6)",
+                      boxShadow: isLight ? "0 4px 12px rgba(184, 139, 74, 0.35)" : "0 4px 12px rgba(0, 0, 0, 0.25)",
                     }}
-                    className="px-3 py-1 sm:px-4 sm:py-1.5 md:px-5 md:py-2 rounded-md font-bold text-[11px] sm:text-xs md:text-sm shadow-xs hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap border border-[#EEC471]/60"
+                    className="px-4 py-1.5 sm:px-5 sm:py-2 rounded-lg font-bold text-xs sm:text-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap"
                   >
                     {primaryBtn.text}
                   </button>
@@ -295,10 +277,12 @@ export function Hero({ initialHeroData = null }) {
                   <Link
                     href={primaryBtn?.url || "/counselling"}
                     style={{
-                      background: "linear-gradient(180deg, #F6DE95 0%, #EEC471 100%)",
+                      background: "linear-gradient(180deg, #F3CE7F 0%, #E7B85D 100%)",
                       color: "#072C50",
+                      border: "1px solid rgba(226, 176, 83, 0.6)",
+                      boxShadow: isLight ? "0 4px 12px rgba(184, 139, 74, 0.35)" : "0 4px 12px rgba(0, 0, 0, 0.25)",
                     }}
-                    className="px-3 py-1 sm:px-4 sm:py-1.5 md:px-5 md:py-2 rounded-md font-bold text-[11px] sm:text-xs md:text-sm shadow-xs hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap border border-[#EEC471]/60"
+                    className="px-4 py-1.5 sm:px-5 sm:py-2 rounded-lg font-bold text-xs sm:text-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap"
                   >
                     {primaryBtn.text}
                   </Link>
@@ -310,27 +294,20 @@ export function Hero({ initialHeroData = null }) {
                   <button
                     type="button"
                     onClick={handleSecondaryClick}
-                    className={`hidden sm:inline-block px-3 py-1 sm:px-3.5 sm:py-1.5 md:px-4 md:py-2 rounded-md font-semibold text-[11px] sm:text-xs md:text-sm transition-all cursor-pointer whitespace-nowrap ${isLight
-                      ? "bg-[#072C50]/10 hover:bg-[#072C50]/15 border border-[#072C50]/20 text-[#072C50]"
-                      : "bg-white/15 hover:bg-white/20 border border-white/25 text-white backdrop-blur-md"
-                      }`}
+                    className="hidden sm:inline-block px-4 py-1.5 sm:px-4.5 sm:py-2 rounded-lg font-bold text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap border border-white/30 bg-transparent text-white hover:bg-white/10"
                   >
                     {secondaryBtn.text}
                   </button>
                 ) : (
                   <Link
                     href={secondaryBtn?.url || "/courses"}
-                    className={`hidden sm:inline-block px-3 py-1 sm:px-3.5 sm:py-1.5 md:px-4 md:py-2 rounded-md font-semibold text-[11px] sm:text-xs md:text-sm transition-all cursor-pointer whitespace-nowrap ${isLight
-                      ? "bg-[#072C50]/10 hover:bg-[#072C50]/15 border border-[#072C50]/20 text-[#072C50]"
-                      : "bg-white/15 hover:bg-white/20 border border-white/25 text-white backdrop-blur-md"
-                      }`}
+                    className="hidden sm:inline-block px-4 py-1.5 sm:px-4.5 sm:py-2 rounded-lg font-bold text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap border border-white/30 bg-transparent text-white hover:bg-white/10"
                   >
                     {secondaryBtn.text}
                   </Link>
                 )
               )}
             </div>
-
           </div>
         </Container>
       </div>
@@ -340,7 +317,7 @@ export function Hero({ initialHeroData = null }) {
   return (
     <section
       id="hero-section"
-      className="relative w-full overflow-hidden aspect-[1.9/1] sm:aspect-[3.2/1] md:aspect-[3.8/1] lg:aspect-[4/1] min-h-[200px] sm:min-h-[220px] md:min-h-[240px] lg:min-h-[280px] max-h-[340px] bg-[#072C50]"
+      className="relative w-full overflow-hidden aspect-[1.9/1] sm:aspect-[3.2/1] md:aspect-[3.8/1] lg:aspect-[4/1] min-h-[200px] sm:min-h-[220px] md:min-h-[240px] lg:min-h-[280px] max-h-[340px]"
     >
       <style dangerouslySetInnerHTML={{
         __html: `
@@ -356,17 +333,37 @@ export function Hero({ initialHeroData = null }) {
           min-height: inherit !important;
         }
         .hero-carousel .slick-dots {
-          bottom: 4px !important;
+          bottom: 6px !important;
           z-index: 20 !important;
+          display: flex !important;
+          justify-content: center !important;
+          align-items: center !important;
+          gap: 6px !important;
         }
         @media (min-width: 640px) {
           .hero-carousel .slick-dots {
-            bottom: 8px !important;
+            bottom: 10px !important;
           }
         }
+        .hero-carousel .slick-dots li {
+          margin: 0 !important;
+          width: auto !important;
+          height: auto !important;
+        }
         .hero-carousel .slick-dots li button {
-          height: 3px !important;
-          border-radius: 2px !important;
+          width: 7px !important;
+          height: 7px !important;
+          border-radius: 9999px !important;
+          background: rgba(255, 255, 255, 0.45) !important;
+          opacity: 1 !important;
+          transition: all 0.3s ease !important;
+          padding: 0 !important;
+        }
+        .hero-carousel .slick-dots li.slick-active button {
+          width: 8px !important;
+          height: 8px !important;
+          background: #F3CE7F !important;
+          transform: scale(1.1) !important;
         }
         .hero-carousel:not(.slick-initialized) {
           display: block !important;

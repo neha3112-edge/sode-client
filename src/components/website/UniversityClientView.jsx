@@ -3,8 +3,7 @@
 import React, { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Modal, Button } from "antd";
-import { PlusOutlined, CheckOutlined } from "@ant-design/icons";
+import { Modal } from "antd";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
 import { useCompare } from "@/hooks/useCompare";
 import { useFormModal } from "@/hooks/useFormModal";
@@ -15,20 +14,16 @@ import {
   BadgeCheck,
   GraduationCap,
   Download,
-  PhoneCall,
   CheckCircle2,
   Clock,
   Star,
   Plus,
   Minus,
   ChevronDown,
-  BookOpen,
-  Users,
   Check,
   Award,
 } from "lucide-react";
 
-// Safe text helper
 const getSafeText = (val, fallback = "") => {
   if (val === null || val === undefined) return fallback;
   if (typeof val === "string" || typeof val === "number") return String(val);
@@ -46,8 +41,6 @@ const getSafeText = (val, fallback = "") => {
 export default function UniversityClientView({ initialData, slug }) {
   const { openFormModal } = useFormModal();
   const { toggleCompare, isInCompare, setIsCompareDrawerOpen } = useCompare();
-
-  // Modal & state controls
   const [selectedCourseSpec, setSelectedCourseSpec] = useState(null);
   const [isCertificateModalOpen, setIsCertificateModalOpen] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState(0);
@@ -55,14 +48,12 @@ export default function UniversityClientView({ initialData, slug }) {
   const [visibleTopUnis, setVisibleTopUnis] = useState(6);
   const [visibleCoursesCount, setVisibleCoursesCount] = useState(6);
 
-  // Pure dynamic data extraction from backend
   const data = initialData || {};
   const uni =
     (data && typeof data.result === "object" ? data.result : null) ||
     (data && typeof data.universityId === "object" ? data.universityId : null) ||
     data ||
     {};
-  const universityData = uni;
 
   const uniName = uni.name || data.name || data.tagline || "University";
 
@@ -81,30 +72,16 @@ export default function UniversityClientView({ initialData, slug }) {
     [uniName]
   );
 
-  // 1. Images & Logos
-  const rawBanner =
-    uni.bannerImg?.url ||
-    uni.bannerImg ||
-    data.bannerImg?.url ||
-    data.bannerImg ||
-    data.heroMedia?.url ||
-    data.heroMedia ||
-    uni.image?.url ||
-    uni.image;
+  const rawBanner = uni.bannerImg?.url || null;
   const heroBannerUrl = rawBanner ? getAssetPath(rawBanner) : null;
 
-  const rawLogo =
-    uni.logo?.url ||
-    uni.logo ||
-    data.logo?.url ||
-    data.logo;
+  const rawLogo = data.logo?.url || null;
   const logoUrl = rawLogo ? getAssetPath(rawLogo) : null;
 
-  // 2. Key Highlights Table Data
   const highlightsData = useMemo(() => {
     if (Array.isArray(uni.key_highlights) && uni.key_highlights.length > 0) {
       return {
-        title: uni.key_highlights[0].title || `Key Highlights of Online ${uniName}`,
+        title: uni.key_highlights[0].title,
         items: Array.isArray(uni.key_highlights[0].items) ? uni.key_highlights[0].items : [],
       };
     }
@@ -114,7 +91,6 @@ export default function UniversityClientView({ initialData, slug }) {
     };
   }, [uni.key_highlights, uniName]);
 
-  // 3. Quick Facts / Metadata items
   const locationText =
     uni.location ||
     [uni?.city?.name || data?.city?.name, uni?.state?.name || data?.state?.name]
@@ -128,7 +104,6 @@ export default function UniversityClientView({ initialData, slug }) {
     highlightsData.items.find((h) => h.feature?.toLowerCase().includes("establishment"))?.details ||
     "";
 
-  // 4. Rankings & Accreditations (from backend uni.accreditations)
   const accreditationsList = useMemo(() => {
     if (Array.isArray(uni.accreditations) && uni.accreditations.length > 0) {
       return uni.accreditations.map((acc) => ({
@@ -145,7 +120,6 @@ export default function UniversityClientView({ initialData, slug }) {
     highlightsData.items.find((h) => h.feature?.toLowerCase() === "approval")?.details ||
     "";
 
-  // 5. Courses List (pure dynamic from backend uni.courses)
   const coursesList = useMemo(() => {
     if (Array.isArray(uni.courses) && uni.courses.length > 0) {
       return uni.courses.map((c, idx) => ({
@@ -162,13 +136,11 @@ export default function UniversityClientView({ initialData, slug }) {
     return [];
   }, [uni.courses, slug, uni.slug]);
 
-  // Course Pills for Hero
   const coursePills = useMemo(() => {
     const list = coursesList.map((c) => c.title?.toUpperCase()).filter(Boolean);
     return Array.from(new Set(list)).slice(0, 7);
   }, [coursesList]);
 
-  // Filtered courses
   const filteredCourses = useMemo(() => {
     if (activeCourseFilter === "ALL") return coursesList;
     return coursesList.filter(
@@ -176,7 +148,6 @@ export default function UniversityClientView({ initialData, slug }) {
     );
   }, [coursesList, activeCourseFilter]);
 
-  // 6. Why Choose Us (from backend uni.why_choose_us)
   const whyChooseSection = useMemo(() => {
     if (Array.isArray(uni.why_choose_us) && uni.why_choose_us.length > 0) {
       const first = uni.why_choose_us[0];
@@ -195,7 +166,6 @@ export default function UniversityClientView({ initialData, slug }) {
     };
   }, [uni.why_choose_us, uniName]);
 
-  // 7. Sample Degree (100% pure dynamic from backend uni.sample_degree)
   const sampleDegreeData = useMemo(() => {
     if (Array.isArray(uni.sample_degree) && uni.sample_degree.length > 0) {
       const deg = uni.sample_degree[0];
@@ -211,7 +181,6 @@ export default function UniversityClientView({ initialData, slug }) {
     return null;
   }, [uni.sample_degree]);
 
-  // 8. Top UGC-DEB Approved Universities (from backend)
   const topPeerUniversities = useMemo(() => {
     const list = uni.top_ugc_deb_universities || uni.ugc_deb_universities;
     if (Array.isArray(list) && list.length > 0) {
@@ -222,7 +191,6 @@ export default function UniversityClientView({ initialData, slug }) {
 
   const isUgcDebApproved = topPeerUniversities.length > 0;
 
-  // 9. FAQs (from backend uni.faqs)
   const faqSection = useMemo(() => {
     if (Array.isArray(uni.faqs) && uni.faqs.length > 0) {
       const first = uni.faqs[0];
@@ -237,12 +205,10 @@ export default function UniversityClientView({ initialData, slug }) {
     };
   }, [uni.faqs, uniName]);
 
-  // Toggle FAQ accordion
   const toggleFaq = (idx) => {
     setOpenFaqIndex((prev) => (prev === idx ? -1 : idx));
   };
 
-  // Compare Handler
   const handleUniversityCompare = () => {
     const uniPayload = {
       _id: uni._id || data._id || slug,
@@ -262,12 +228,8 @@ export default function UniversityClientView({ initialData, slug }) {
 
   return (
     <div className="min-h-screen bg-gray-100 text-gray-800 antialiased font-sans pb-16">
-      {/* ============================================================ */}
-      {/* 2. HERO SECTION (100% FULL-WIDTH CAMPUS BG + OVERLAPPING CARD) */}
-      {/* ============================================================ */}
       <div className="relative w-full">
-        {/* Full-Width Campus Photo Banner */}
-        <div className="relative w-full h-64 sm:h-80 md:h-[380px] lg:h-[400px] overflow-hidden bg-linear-to-r from-[#0C2B4E] to-[#0077B6]">
+        <div className="relative w-full h-56 sm:h-74 overflow-hidden">
           {heroBannerUrl ? (
             <Image
               src={heroBannerUrl}
@@ -280,17 +242,13 @@ export default function UniversityClientView({ initialData, slug }) {
           ) : null}
         </div>
 
-        {/* Overlapping Floating Card Container */}
-        <div className="relative -mt-16 sm:-mt-20 md:-mt-24 lg:-mt-28 z-10 max-w-6xl mx-auto px-3 sm:px-4 md:px-0">
-          <div className="rounded-2xl overflow-hidden border border-transparent">
-            {/* Top Blue Hero Header Box (#0C3A66) */}
-            <div className="bg-[#0C3A66] text-white px-3.5 py-3.5 sm:px-7 sm:py-6">
-              {/* Top Row: Logo Card + Title / Rating / Course Pills */}
+        <div className="relative -mt-16 sm:-mt-24 z-10 max-w-6xl mx-auto px-3 sm:px-4 md:px-0">
+          <div className="rounded-3xl overflow-hidden border border-transparent">
+            <div className="bg-[#0C3A66] text-white px-3.5 py-3.5 sm:px-7 sm:py-5.5">
               <div className="flex flex-row items-center gap-2.5 sm:gap-4">
-                {/* University Logo Card */}
-                <div className="w-18 h-18 sm:w-28 sm:h-28 rounded-xl sm:rounded-2xl bg-white p-1 sm:p-1.5 shadow-md border border-gray-100 flex flex-col items-center justify-center text-center shrink-0">
+                <div className="w-16 h-16 sm:w-24 sm:h-24 rounded-xl sm:rounded-3xl bg-white p-1 sm:p-1 flex flex-col items-center justify-center text-center shrink-0">
                   {logoUrl ? (
-                    <div className="relative w-full h-11 sm:h-16">
+                    <div className="relative w-full h-10 sm:h-16">
                       <Image
                         src={logoUrl}
                         alt={uniName}
@@ -304,19 +262,16 @@ export default function UniversityClientView({ initialData, slug }) {
                       🎓
                     </div>
                   )}
-                  <span className="text-[9px] sm:text-[10.5px] font-bold text-gray-800 leading-tight line-clamp-1 sm:line-clamp-2 mt-0.5">
+                  <span className="text-[10px] sm:text-[10px] font-medium text-gray-800 leading-tight line-clamp-1 sm:line-clamp-2">
                     {uniName}
                   </span>
                 </div>
 
-                {/* Right Container: Title + Ratings + Course Pills */}
                 <div className="flex-1 min-w-0 flex flex-col justify-center gap-1 sm:gap-1.5">
-                  {/* Title */}
                   <h1 className="text-base sm:text-2xl md:text-[28px] font-extrabold text-white tracking-tight leading-tight m-0 truncate sm:whitespace-normal">
                     Online {uniName}
                   </h1>
 
-                  {/* Star Ratings + Score + STUDENT RATING label */}
                   <div className="flex items-center gap-1.5 sm:gap-2">
                     <div className="flex items-center gap-0.5 text-amber-400 shrink-0">
                       <Star size={14} className="fill-amber-400 text-amber-400 sm:w-4 sm:h-4" />
@@ -335,7 +290,6 @@ export default function UniversityClientView({ initialData, slug }) {
                     </div>
                   </div>
 
-                  {/* Course Pills (with Desktop-only Action Buttons aligned right) */}
                   <div className="flex items-center justify-between gap-3 mt-0.5">
                     {coursePills.length > 0 && (
                       <div className="flex items-center gap-1 sm:gap-1.5 flex-nowrap overflow-x-auto no-scrollbar py-0.5 max-w-full">
@@ -355,9 +309,7 @@ export default function UniversityClientView({ initialData, slug }) {
                       </div>
                     )}
 
-                    {/* Desktop Action Buttons: Aligned right directly across from Course Pills */}
                     <div className="hidden lg:flex items-center gap-2.5 xl:gap-3 shrink-0 ml-auto">
-                      {/* Get Brochure */}
                       <button
                         type="button"
                         onClick={() => {
@@ -375,7 +327,6 @@ export default function UniversityClientView({ initialData, slug }) {
                         <Download size={14} className="stroke-[2.5]" />
                       </button>
 
-                      {/* Get Counseling */}
                       <button
                         type="button"
                         onClick={() => {
@@ -392,7 +343,6 @@ export default function UniversityClientView({ initialData, slug }) {
                         <span>Get Counseling</span>
                       </button>
 
-                      {/* Add to Compare */}
                       <button
                         type="button"
                         onClick={handleUniversityCompare}
@@ -412,9 +362,7 @@ export default function UniversityClientView({ initialData, slug }) {
                 </div>
               </div>
 
-              {/* Bottom Row: Action Buttons (MOBILE ONLY - original working code) */}
               <div className="flex lg:hidden items-center gap-2 sm:gap-3 shrink-0 flex-nowrap overflow-x-auto no-scrollbar mt-3.5 sm:mt-4 pt-1">
-                {/* Get Brochure */}
                 <button
                   type="button"
                   onClick={() => {
@@ -432,7 +380,6 @@ export default function UniversityClientView({ initialData, slug }) {
                   <Download size={14} className="stroke-[2.5]" />
                 </button>
 
-                {/* Get Counseling */}
                 <button
                   type="button"
                   onClick={() => {
@@ -449,7 +396,6 @@ export default function UniversityClientView({ initialData, slug }) {
                   <span>Get Counseling</span>
                 </button>
 
-                {/* Add to Compare */}
                 <button
                   type="button"
                   onClick={handleUniversityCompare}
@@ -467,9 +413,7 @@ export default function UniversityClientView({ initialData, slug }) {
               </div>
             </div>
 
-            {/* Bottom Quick Facts Strip (2 in a row on mobile, border-right instead of border-bottom) */}
             <div className="bg-white p-3.5 sm:p-5 grid grid-cols-2 lg:grid-cols-4 gap-y-3.5 sm:gap-y-4 lg:gap-y-0">
-              {/* 1. Location */}
               <div className="flex items-center gap-2.5 sm:gap-3 pr-2.5 sm:pr-4 border-r border-gray-200">
                 <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#0077B6] text-white flex items-center justify-center shrink-0 shadow-2xs">
                   <MapPin size={17} className="fill-white" />
@@ -482,7 +426,6 @@ export default function UniversityClientView({ initialData, slug }) {
                 </div>
               </div>
 
-              {/* 2. Established */}
               <div className="flex items-center gap-2.5 sm:gap-3 pl-2.5 sm:pl-4 lg:pr-4 lg:border-r border-gray-200">
                 <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#0077B6] text-white flex items-center justify-center shrink-0 shadow-2xs">
                   <Building2 size={17} />
@@ -495,7 +438,6 @@ export default function UniversityClientView({ initialData, slug }) {
                 </div>
               </div>
 
-              {/* 3. Approvals */}
               <div className="flex items-center gap-2.5 sm:gap-3 pr-2.5 sm:pr-4 border-r border-gray-200 lg:pl-4">
                 <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#0077B6] text-white flex items-center justify-center shrink-0 shadow-2xs">
                   <BadgeCheck size={17} className="fill-white text-[#0077B6]" />
@@ -508,7 +450,6 @@ export default function UniversityClientView({ initialData, slug }) {
                 </div>
               </div>
 
-              {/* 4. Admissions */}
               <div className="flex items-center gap-2.5 sm:gap-3 pl-2.5 sm:pl-4">
                 <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#0077B6] text-white flex items-center justify-center shrink-0 shadow-2xs">
                   {uni.admission_deadline ? <Clock size={17} /> : <GraduationCap size={17} />}
@@ -540,13 +481,7 @@ export default function UniversityClientView({ initialData, slug }) {
         </div>
       </div>
 
-      {/* ============================================================ */}
-      {/* PAGE CONTENT CONTAINER (MAX-W-6XL) */}
-      {/* ============================================================ */}
       <div className="max-w-6xl mx-auto px-3 sm:px-4 md:px-0 space-y-6 pt-6">
-        {/* ============================================================ */}
-        {/* 3. ABOUT UNIVERSITY SECTION */}
-        {/* ============================================================ */}
         {uni.description ? (
           <div className="bg-white rounded-2xl shadow-xs border border-gray-200 p-6 sm:p-10 space-y-4 text-center">
             <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight m-0 text-center">
@@ -562,9 +497,6 @@ export default function UniversityClientView({ initialData, slug }) {
           </div>
         ) : null}
 
-        {/* ============================================================ */}
-        {/* 4. RANKINGS & ACCREDITATIONS (EXACT COURSE PAGE CSS) */}
-        {/* ============================================================ */}
         {accreditationsList.length > 0 && (
           <div className="bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8 text-center">
             <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight mb-5 sm:mb-7 m-0">
@@ -600,9 +532,6 @@ export default function UniversityClientView({ initialData, slug }) {
           </div>
         )}
 
-        {/* ============================================================ */}
-        {/* 5. KEY HIGHLIGHTS OF UNIVERSITY (PURE DYNAMIC TABLE) */}
-        {/* ============================================================ */}
         {highlightsData.items.length > 0 && (
           <div className="bg-white rounded-2xl shadow-xs border border-gray-200 p-6 sm:p-10 space-y-6">
             <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight m-0 text-center">
@@ -641,9 +570,6 @@ export default function UniversityClientView({ initialData, slug }) {
           </div>
         )}
 
-        {/* ============================================================ */}
-        {/* 6. ONLINE UNIVERSITY COURSES (EXACT COURSE PAGE CSS) */}
-        {/* ============================================================ */}
         {coursesList.length > 0 && (
           <div className="bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8">
             <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-6 sm:mb-8 m-0">
@@ -665,7 +591,6 @@ export default function UniversityClientView({ initialData, slug }) {
                     className={`bg-white rounded-xl border border-gray-200 hover:border-blue-400 p-2 sm:p-2.5 hover:shadow-md transition-all flex flex-col items-center justify-between text-center relative group min-w-0 shadow-2xs ${index === 5 && visibleCoursesCount === 6 ? "flex lg:hidden" : "flex"
                       }`}
                   >
-                    {/* Top Right Corner Specializations Badge */}
                     {specCount > 0 && (
                       <div className="absolute top-0 right-0 z-10">
                         <button
@@ -678,7 +603,6 @@ export default function UniversityClientView({ initialData, slug }) {
                       </div>
                     )}
 
-                    {/* University Logo */}
                     <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-full p-1 flex items-center justify-center bg-white border border-gray-100 shadow-2xs relative my-0.5 shrink-0">
                       {logoUrl ? (
                         <Image
@@ -695,7 +619,6 @@ export default function UniversityClientView({ initialData, slug }) {
                       )}
                     </div>
 
-                    {/* Course Title & Fee / Duration grouped tightly */}
                     <div className="w-full space-y-0.5 my-0.5">
                       <div className="min-h-[28px] sm:min-h-[32px] flex items-center justify-center">
                         <h4 className="text-xs sm:text-[13px] font-semibold text-[#0a2540] line-clamp-2 leading-tight m-0 w-full text-center">
@@ -723,7 +646,6 @@ export default function UniversityClientView({ initialData, slug }) {
                       )}
                     </div>
 
-                    {/* Full-width Compare Button */}
                     <button
                       type="button"
                       onClick={() => {
@@ -757,7 +679,6 @@ export default function UniversityClientView({ initialData, slug }) {
                       )}
                     </button>
 
-                    {/* Action Buttons in Flex Row: Apply Now | Know More */}
                     <div className="w-full flex items-center gap-1.5 mt-1.5">
                       <button
                         type="button"
@@ -788,7 +709,6 @@ export default function UniversityClientView({ initialData, slug }) {
               })}
             </div>
 
-            {/* View More Button */}
             {(visibleCoursesCount < filteredCourses.length || (filteredCourses.length > 5 && visibleCoursesCount === 6)) && (
               <div className={`justify-center mt-4 pt-1 ${visibleCoursesCount >= filteredCourses.length ? "hidden lg:flex" : "flex"}`}>
                 <button
@@ -804,9 +724,6 @@ export default function UniversityClientView({ initialData, slug }) {
           </div>
         )}
 
-        {/* ============================================================ */}
-        {/* 7. WHY CHOOSE ONLINE UNIVERSITY (PURE DYNAMIC CARDS) */}
-        {/* ============================================================ */}
         {whyChooseSection.items.length > 0 && (
           <div className="bg-white rounded-xl shadow-xs border border-gray-200 p-6 sm:p-8 space-y-6">
             <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight m-0 text-center">
@@ -845,14 +762,9 @@ export default function UniversityClientView({ initialData, slug }) {
           </div>
         )}
 
-        {/* ============================================================ */}
-        {/* ============================================================ */}
-        {/* 8. SAMPLE DEGREE ONLINE UNIVERSITY (100% PURE DYNAMIC FROM BACKEND) */}
-        {/* ============================================================ */}
         {sampleDegreeData && (sampleDegreeData.imageUrl || sampleDegreeData.title) && (
           <div className="bg-white rounded-2xl shadow-xs border border-gray-100 p-6 sm:p-10">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center max-w-5xl mx-auto">
-              {/* Left Column: Backend Certificate Image */}
               <div className="lg:col-span-6 flex justify-center w-full">
                 {sampleDegreeData.imageUrl ? (
                   <div
@@ -868,7 +780,6 @@ export default function UniversityClientView({ initialData, slug }) {
                 ) : null}
               </div>
 
-              {/* Right Column: Title + Description + Points + Get Degree Button */}
               <div className="lg:col-span-6 space-y-4 text-left">
                 {sampleDegreeData.title && (
                   <h2 className="text-2xl sm:text-[28px] font-bold text-[#0D3B66] tracking-tight m-0 leading-tight">
@@ -882,7 +793,6 @@ export default function UniversityClientView({ initialData, slug }) {
                   </p>
                 )}
 
-                {/* 2-Column Checklist Points with Green Square Checkmark */}
                 {sampleDegreeData.points?.length > 0 && (
                   <div className="grid grid-cols-2 gap-x-6 gap-y-3.5 pt-2 max-w-md">
                     {sampleDegreeData.points.map((pt, pIdx) => (
@@ -898,7 +808,6 @@ export default function UniversityClientView({ initialData, slug }) {
                   </div>
                 )}
 
-                {/* Action Button */}
                 <div className="pt-3">
                   <button
                     type="button"
@@ -921,9 +830,6 @@ export default function UniversityClientView({ initialData, slug }) {
           </div>
         )}
 
-        {/* ============================================================ */}
-        {/* 9. TOP ONLINE UGC-DEB APPROVED UNIVERSITIES (PURE DYNAMIC) */}
-        {/* ============================================================ */}
         {isUgcDebApproved && (
           <div className="bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8">
             <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-6 sm:mb-8 m-0">
@@ -941,7 +847,6 @@ export default function UniversityClientView({ initialData, slug }) {
                     className={`bg-white rounded-xl border border-gray-200 hover:border-blue-400 p-2 sm:p-2.5 hover:shadow-md transition-all flex flex-col items-center justify-between text-center relative group min-w-0 shadow-2xs ${index === 5 && visibleTopUnis === 6 ? "flex lg:hidden" : "flex"
                       }`}
                   >
-                    {/* University Logo */}
                     <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-full p-1 flex items-center justify-center bg-white border border-gray-100 shadow-2xs relative my-0.5 shrink-0 overflow-hidden">
                       {peerLogo ? (
                         <img
@@ -956,7 +861,6 @@ export default function UniversityClientView({ initialData, slug }) {
                       )}
                     </div>
 
-                    {/* Uni Name & Location */}
                     <div className="w-full space-y-0.5 my-0.5">
                       <div className="min-h-7 sm:min-h-[32px] flex items-center justify-center">
                         <h4 className="text-xs sm:text-[12.5px] font-semibold text-[#0a2540] line-clamp-2 leading-tight m-0 w-full text-center">
@@ -971,7 +875,6 @@ export default function UniversityClientView({ initialData, slug }) {
                       )}
                     </div>
 
-                    {/* Full-width Compare Button */}
                     <button
                       type="button"
                       onClick={() => {
@@ -1004,7 +907,6 @@ export default function UniversityClientView({ initialData, slug }) {
                       )}
                     </button>
 
-                    {/* Action Buttons in Flex Row: Apply Now | Know More */}
                     <div className="w-full flex items-center gap-1.5 mt-1.5">
                       <button
                         type="button"
@@ -1035,7 +937,6 @@ export default function UniversityClientView({ initialData, slug }) {
               })}
             </div>
 
-            {/* View More Button */}
             {(visibleTopUnis < topPeerUniversities.length || (topPeerUniversities.length > 5 && visibleTopUnis === 6)) && (
               <div className={`justify-center mt-4 pt-1 ${visibleTopUnis >= topPeerUniversities.length ? "hidden lg:flex" : "flex"}`}>
                 <button
@@ -1060,9 +961,6 @@ export default function UniversityClientView({ initialData, slug }) {
           </div>
         )}
 
-        {/* ============================================================ */}
-        {/* 10. FAQS ON ONLINE DEGREE AT UNIVERSITY (PURE DYNAMIC) */}
-        {/* ============================================================ */}
         {faqSection.items.length > 0 && (
           <div className="bg-white rounded-xl shadow-xs border border-gray-200 p-6 sm:p-8 space-y-6">
             <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight m-0 text-center">
@@ -1112,13 +1010,8 @@ export default function UniversityClientView({ initialData, slug }) {
             </div>
           </div>
         )}
-
-
       </div>
 
-      {/* ============================================================ */}
-      {/* 12. SPECIALIZATIONS POPUP MODAL */}
-      {/* ============================================================ */}
       <Modal
         open={Boolean(selectedCourseSpec)}
         onCancel={() => setSelectedCourseSpec(null)}
@@ -1139,7 +1032,6 @@ export default function UniversityClientView({ initialData, slug }) {
       >
         {selectedCourseSpec && (
           <div className="flex flex-col sm:flex-row items-center sm:items-stretch gap-5 sm:gap-6 pt-1">
-            {/* Left: Dynamic Banner Image with University Badge */}
             <div className="relative w-full max-w-65 sm:w-65 sm:max-w-none aspect-square shrink-0 rounded-2xl overflow-hidden shadow-sm bg-gray-100">
               {heroBannerUrl || selectedCourseSpec.banner ? (
                 <Image
@@ -1155,7 +1047,6 @@ export default function UniversityClientView({ initialData, slug }) {
                 </div>
               )}
 
-              {/* University Logo Badge on Modal Image */}
               {logoUrl && (
                 <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 z-10 bg-white rounded-xl shadow-md p-1.5 sm:p-2 border border-gray-100 flex items-center justify-center">
                   <div className="relative w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center">
@@ -1170,7 +1061,6 @@ export default function UniversityClientView({ initialData, slug }) {
               )}
             </div>
 
-            {/* Right: Content details */}
             <div className="flex-1 flex flex-col justify-between space-y-3.5 text-left py-1 w-full min-w-0">
               <div className="space-y-2">
                 <h3 className="text-xl sm:text-2xl font-bold text-[#0D3B66] m-0 tracking-tight leading-snug">
@@ -1182,7 +1072,6 @@ export default function UniversityClientView({ initialData, slug }) {
                 </p>
               </div>
 
-              {/* Available Specializations List */}
               {selectedCourseSpec.subcourses && selectedCourseSpec.subcourses.length > 0 && (
                 <div className="space-y-1.5">
                   <span className="text-[11px] font-bold text-gray-700 uppercase tracking-wider block">
@@ -1205,7 +1094,6 @@ export default function UniversityClientView({ initialData, slug }) {
                 </div>
               )}
 
-              {/* Fee & Duration Strip */}
               <div className="space-y-2 text-xs sm:text-[13px] text-[#0D3B66] font-medium pt-1 border-t border-gray-100">
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
                   {selectedCourseSpec.duration && (
@@ -1225,7 +1113,6 @@ export default function UniversityClientView({ initialData, slug }) {
                 </div>
               </div>
 
-              {/* Action Buttons */}
               <div className="w-full flex items-center gap-2 sm:gap-3 pt-2">
                 <button
                   type="button"
@@ -1271,9 +1158,6 @@ export default function UniversityClientView({ initialData, slug }) {
         )}
       </Modal>
 
-      {/* ============================================================ */}
-      {/* 13. CERTIFICATE FULL PREVIEW MODAL */}
-      {/* ============================================================ */}
       {sampleDegreeData?.imageUrl && (
         <Modal
           open={isCertificateModalOpen}

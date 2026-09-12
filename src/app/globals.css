@@ -238,3 +238,26 @@ body {
 .slot-dock-enter {
   animation: slotDockBounce 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
+
+.ant-menu-horizontal > .ant-menu-item::after,
+.ant-menu-horizontal > .ant-menu-submenu::after,
+.ant-menu-horizontal > .ant-menu-item-selected::after,
+.ant-menu-horizontal > .ant-menu-item-active::after,
+.ant-menu-horizontal > .ant-menu-submenu-selected::after,
+.ant-menu-horizontal > .ant-menu-submenu-active::after {
+  display: none !important;
+  border-bottom: none !important;
+  content: none !important;
+}
+
+.ant-drawer-top .ant-drawer-content-wrapper {
+  height: auto !important;
+  max-height: 85vh !important;
+}
+
+.ant-drawer-top .ant-drawer-content {
+  height: auto !important;
+  max-height: 85vh !important;
+  border-bottom-left-radius: 20px !important;
+  border-bottom-right-radius: 20px !important;
+}
