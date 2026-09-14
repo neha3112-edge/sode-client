@@ -227,7 +227,7 @@ export function Hero({ initialHeroData = null }) {
         )}
 
         <Container className="relative z-10 w-full pointer-events-auto">
-          <div className="w-full max-w-[62%] sm:max-w-[50%] md:max-w-[46%] lg:max-w-[44%] flex flex-col items-start space-y-1.5 sm:space-y-2 md:space-y-2.5">
+          <div className="w-full max-w-[70%] sm:max-w-[50%] md:max-w-[46%] lg:max-w-[44%] flex flex-col items-start space-y-1.5 sm:space-y-2 md:space-y-2.5">
             {renderSlideBadge(badgeText, isLight)}
             {renderSlideHeading(title, highlightText, isLight, titleColor)}
 
@@ -247,8 +247,8 @@ export function Hero({ initialHeroData = null }) {
                     key={item._id || tIdx}
                     href={item.url || "#"}
                     className={`px-2 py-0.5 rounded text-[10px] sm:text-xs font-medium transition-all shadow-2xs ${isLight
-                        ? "bg-white/90 text-[#072C50] border border-[#EEC471]/40 hover:border-[#EEC471] hover:bg-amber-50"
-                        : "bg-white/10 text-white border border-white/20 hover:bg-white/20 backdrop-blur-md"
+                      ? "bg-white/90 text-[#072C50] border border-[#EEC471]/40 hover:border-[#EEC471] hover:bg-amber-50"
+                      : "bg-white/10 text-white border border-white/20 hover:bg-white/20 backdrop-blur-md"
                       }`}
                   >
                     {item.name}

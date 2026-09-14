@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -23,12 +23,13 @@ import {
   Minus,
   Check,
   BookOpen,
+  X,
 } from "lucide-react";
+import { Carousel } from "antd";
 import { useFormModal } from "@/hooks/useFormModal";
 import { useCompare } from "@/hooks/useCompare";
 import { Container } from "@/components/common/Container";
 import { getAssetPath } from "@/lib/utils";
-import { Modal } from "antd";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
 
 const SPEC_ICONS = [Briefcase, BookOpen, GraduationCap, Award, Database, UserCog, ShoppingCart];
@@ -45,11 +46,9 @@ export default function CourseClientView({
   const courseData = initialData || {};
   const [visibleCount, setVisibleCount] = useState(6);
 
-  const [specializationModal, setSpecializationModal] = useState({
-    open: false,
-    title: "",
-    description: "",
-  });
+  const [activeSpecIndex, setActiveSpecIndex] = useState(null);
+  const carouselRef = useRef(null);
+  const specializationSectionRef = useRef(null);
 
   const rawCourses = useMemo(() => {
     if (Array.isArray(courseData?.topUniversities) && courseData.topUniversities.length > 0) {
@@ -311,6 +310,7 @@ export default function CourseClientView({
               src={heroBannerSrc}
               alt={displayCourseTitle}
               fill
+              sizes="(max-width: 768px) 100vw, 50vw"
               className="object-cover object-center"
               priority
             />
@@ -323,6 +323,7 @@ export default function CourseClientView({
                     src={universityLogoSrc}
                     alt={universityName || "University Logo"}
                     fill
+                    sizes="(max-width: 640px) 44px, 64px"
                     className="object-contain"
                   />
                 </div>
@@ -532,41 +533,211 @@ export default function CourseClientView({
 
         {/* Course Specialisations */}
         {specializations.length > 0 && (
-          <div className="bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8">
-            <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-5 sm:mb-7 m-0">
-              {universityName ? `${universityName} ` : ""}{courseData?.name || "Course"} Specialisations
-            </h2>
+          <div
+            ref={specializationSectionRef}
+            className="bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8 relative transition-all"
+          >
+            {activeSpecIndex === null ? (
+              <>
+                <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-5 sm:mb-7 m-0">
+                  {universityName ? `${universityName} ` : ""}{courseData?.name || "Course"} Specialisations
+                </h2>
 
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3.5 md:gap-4">
-              {specializations.map((item, idx) => {
-                const IconComponent = SPEC_ICONS[idx % SPEC_ICONS.length];
-                const specTitle = item.name || "Specialization";
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3.5 md:gap-4">
+                  {specializations.map((item, idx) => {
+                    const IconComponent = SPEC_ICONS[idx % SPEC_ICONS.length];
+                    const specTitle = item.name || "Specialization";
 
-                return (
-                  <div
-                    key={item._id || idx}
-                    onClick={() => {
-                      const modalTitle = specTitle.toLowerCase().includes(" in ")
-                        ? specTitle
-                        : `${courseData?.name ? `${courseData.name} in ` : ""}${specTitle}`;
-                      setSpecializationModal({
-                        open: true,
-                        title: modalTitle,
-                        description:
-                          item.description?.trim() ||
-                          `${modalTitle} specialization under ${courseData?.name || "this program"}${universityName ? ` at ${universityName}` : ""}. Equips learners with specialized industry knowledge and professional competencies.`,
-                      });
-                    }}
-                    className="bg-white rounded-xl border border-gray-200 p-2.5 sm:p-3.5 md:p-4 flex items-center gap-2 sm:gap-3.5 cursor-pointer hover:border-blue-400 transition-colors"
-                  >
-                    <IconComponent className="text-[#205493] shrink-0 w-4.5 h-4.5 sm:w-5.5 sm:h-5.5" />
-                    <span className="text-[11px] sm:text-xs md:text-[13.5px] font-bold text-gray-900 tracking-tight leading-snug">
-                      {specTitle}
-                    </span>
+                    return (
+                      <div
+                        key={item._id || idx}
+                        onClick={() => {
+                          setActiveSpecIndex(idx);
+                          specializationSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+                        }}
+                        className="bg-white rounded-xl border border-gray-200 p-2.5 sm:p-3.5 md:p-4 flex items-center gap-2 sm:gap-3.5 cursor-pointer hover:border-blue-400 transition-colors"
+                      >
+                        <IconComponent className="text-[#205493] shrink-0 w-4.5 h-4.5 sm:w-5.5 sm:h-5.5" />
+                        <span className="text-[11px] sm:text-xs md:text-[13.5px] font-bold text-gray-900 tracking-tight leading-snug">
+                          {specTitle}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            ) : (
+              <div className="relative">
+                {/* Close Button */}
+                <button
+                  type="button"
+                  onClick={() => setActiveSpecIndex(null)}
+                  className="absolute top-0 right-0 z-10 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-800 flex items-center justify-center transition-colors cursor-pointer"
+                  title="Close preview"
+                  aria-label="Close specialization view"
+                >
+                  <X className="w-4 h-4 sm:w-5 sm:h-5" />
+                </button>
+                {/* Ant Design Carousel with dots and smooth slide navigation */}
+                <Carousel
+                  ref={carouselRef}
+                  arrows={false}
+                  dots={false}
+                  infinite={true}
+                  draggable={true}
+                  swipe={true}
+                  initialSlide={activeSpecIndex}
+                  afterChange={(current) => setActiveSpecIndex(current)}
+                  className="specialization-carousel w-full"
+                >
+                  {specializations.map((item, idx) => {
+                    const specTitle = item.name || "Specialization";
+                    const modalTitle = specTitle.toLowerCase().includes(" in ")
+                      ? specTitle
+                      : `${courseData?.name ? `${courseData.name} in ` : ""}${specTitle}`;
+                    const itemDuration = item.duration || courseData?.duration;
+                    const itemFees = item.fees || item.fee || courseData?.fees;
+                    const itemDeadline = item.admissionDeadline || courseData?.admissionDeadline;
+                    const itemDesc =
+                      item.description?.trim() ||
+                      `${modalTitle} specialization under ${courseData?.name || "this program"}${universityName ? ` at ${universityName}` : ""}. Equips learners with specialized industry knowledge and professional competencies.`;
+
+                    return (
+                      <div key={item._id || idx} className="outline-none">
+                        <div className="flex flex-col sm:flex-row items-center sm:items-stretch gap-5 sm:gap-6 pt-1">
+                          {/* Left: Dynamic Banner Image with University Badge */}
+                          <div className="relative w-full max-w-65 sm:w-65 sm:max-w-none aspect-square shrink-0 rounded-2xl overflow-hidden shadow-none">
+                            <Image
+                              src={heroBannerSrc}
+                              alt={modalTitle || displayCourseTitle}
+                              fill
+                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                              className="object-cover object-center rounded-2xl"
+                              priority={idx === 0}
+                            />
+
+                            {/* University Logo Badge on Image */}
+                            {universityLogoSrc && (
+                              <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 z-10 bg-white rounded-xl shadow-md p-1.5 sm:p-2 border border-gray-100 flex items-center justify-center">
+                                <div className="relative w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center">
+                                  <Image
+                                    src={universityLogoSrc}
+                                    alt={universityName || "University Logo"}
+                                    fill
+                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                    className="object-contain"
+                                  />
+                                </div>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Right: Content details */}
+                          <div className="flex-1 flex flex-col justify-between space-y-3.5 text-left py-1 w-full">
+                            <div className="space-y-1">
+                              <h3 className="text-xl sm:text-2xl font-bold text-[#0D3B66] m-0 tracking-tight leading-snug">
+                                {modalTitle}
+                              </h3>
+                              <p className="text-xs sm:text-[13px] text-gray-500 font-medium m-0">
+                                {specTitle}
+                              </p>
+                              <p className="text-xs sm:text-[13px] text-gray-600 leading-relaxed m-0 font-normal pt-1">
+                                {itemDesc}
+                              </p>
+                            </div>
+
+                            <div className="space-y-2 text-xs sm:text-[13px] text-[#0D3B66] font-medium pt-1">
+                              <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                                {itemDuration && (
+                                  <div className="flex items-center gap-1.5">
+                                    <Clock className="w-3.5 h-3.5 text-[#0D3B66] shrink-0" />
+                                    <span className="text-gray-800">{itemDuration}</span>
+                                  </div>
+                                )}
+                                {itemFees && (
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="text-[#0D3B66] font-bold text-sm">₹</span>
+                                    <span className="text-gray-800">
+                                      {itemFees.replace(/^₹\s*/, "")}
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                              {itemDeadline && (
+                                <div className="flex items-center gap-1.5">
+                                  <Clock className="w-3.5 h-3.5 text-[#0D3B66] shrink-0" />
+                                  <span className="text-gray-800">
+                                    Admission Deadline : {itemDeadline}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="w-full flex items-center gap-2 sm:gap-3 pt-2">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  handleOpenLead("Download Brochure", modalTitle);
+                                }}
+                                className="flex-1 bg-[#0C2B4E] hover:bg-[#081f38] text-white text-[10px] sm:text-sm font-semibold py-2 sm:py-2.5 px-2 sm:px-4 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-xs active:scale-95 whitespace-nowrap"
+                              >
+                                <span>Download Broucher</span>
+                                <Download className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  handleOpenLead("Free Counseling", modalTitle);
+                                }}
+                                className="flex-1 bg-white hover:bg-gray-50 text-[#0C2B4E] border border-[#0C2B4E] text-[10px] sm:text-sm font-semibold py-2 sm:py-2.5 px-2 sm:px-4 rounded-lg flex items-center justify-center transition-all cursor-pointer shadow-xs active:scale-95 whitespace-nowrap"
+                              >
+                                Get 100% FREE Counseling
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </Carousel>
+
+                {/* All Available Specialisations Underneath */}
+                <div className="mt-6 sm:mt-7">
+                  <h4 className="text-base sm:text-lg md:text-xl font-bold text-[#0D3B66] text-center m-0 mb-4 sm:mb-5 tracking-tight">
+                    {universityName ? `${universityName} ` : ""}{courseData?.name || "Course"} Specialisations
+                  </h4>
+
+                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3.5 md:gap-4">
+                    {specializations.map((item, idx) => {
+                      const IconComponent = SPEC_ICONS[idx % SPEC_ICONS.length];
+                      const specTitle = item.name || "Specialization";
+                      const isSelected = activeSpecIndex === idx;
+
+                      return (
+                        <div
+                          key={item._id || idx}
+                          onClick={() => {
+                            setActiveSpecIndex(idx);
+                            carouselRef.current?.goTo(idx);
+                          }}
+                          className={`rounded-xl border p-2.5 sm:p-3.5 md:p-4 flex items-center gap-2 sm:gap-3.5 cursor-pointer transition-all ${isSelected
+                            ? "bg-blue-50/70 border-blue-600 ring-1 ring-blue-500 shadow-xs"
+                            : "bg-white border-gray-200 hover:border-blue-400"
+                            }`}
+                        >
+                          <IconComponent className={`shrink-0 w-4.5 h-4.5 sm:w-5.5 sm:h-5.5 ${isSelected ? "text-blue-700" : "text-[#205493]"}`} />
+                          <span className={`text-[11px] sm:text-xs md:text-[13.5px] font-bold tracking-tight leading-snug ${isSelected ? "text-blue-900 font-semibold" : "text-gray-900"}`}>
+                            {specTitle}
+                          </span>
+                        </div>
+                      );
+                    })}
                   </div>
-                );
-              })}
-            </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -826,116 +997,6 @@ export default function CourseClientView({
 
 
       </div>
-
-      {/* Ant Design Modal for Specialization Details */}
-      <Modal
-        open={specializationModal.open}
-        onCancel={() => setSpecializationModal((prev) => ({ ...prev, open: false }))}
-        footer={null}
-        centered
-        width={780}
-        className="specialization-antd-modal"
-        styles={{
-          content: {
-            padding: "24px",
-            borderRadius: "20px",
-            overflow: "hidden",
-          },
-          body: {
-            padding: "0px",
-          },
-        }}
-      >
-        <div className="flex flex-col sm:flex-row items-center sm:items-stretch gap-5 sm:gap-6 pt-1">
-          {/* Left: Dynamic Banner Image with University Badge */}
-          <div className="relative w-full max-w-65 sm:w-65 sm:max-w-none aspect-square shrink-0 rounded-2xl overflow-hidden shadow-sm">
-            <Image
-              src={heroBannerSrc}
-              alt={specializationModal.title || displayCourseTitle}
-              fill
-              className="object-cover object-center rounded-2xl"
-              priority
-            />
-
-            {/* University Logo Badge on Modal Image */}
-            {universityLogoSrc && (
-              <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 z-10 bg-white rounded-xl shadow-md p-1.5 sm:p-2 border border-gray-100 flex items-center justify-center">
-                <div className="relative w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center">
-                  <Image
-                    src={universityLogoSrc}
-                    alt={universityName || "University Logo"}
-                    fill
-                    className="object-contain"
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Right: Content details */}
-          <div className="flex-1 flex flex-col justify-between space-y-3.5 text-left py-1">
-            <div className="space-y-2">
-              <h3 className="text-xl sm:text-2xl font-bold text-[#0D3B66] m-0 tracking-tight leading-snug">
-                {specializationModal.title}
-              </h3>
-              <p className="text-xs sm:text-[13px] text-gray-600 leading-relaxed m-0 font-normal">
-                {specializationModal.description}
-              </p>
-            </div>
-
-            <div className="space-y-2 text-xs sm:text-[13px] text-[#0D3B66] font-medium pt-1">
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-                {courseData?.duration && (
-                  <div className="flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5 text-[#0D3B66] shrink-0" />
-                    <span className="text-gray-800">{courseData.duration}</span>
-                  </div>
-                )}
-                {courseData?.fees && (
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[#0D3B66] font-bold text-sm">₹</span>
-                    <span className="text-gray-800">
-                      {courseData.fees.replace(/^₹\s*/, "")}
-                    </span>
-                  </div>
-                )}
-              </div>
-              {courseData?.admissionDeadline && (
-                <div className="flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-[#0D3B66] shrink-0" />
-                  <span className="text-gray-800">Admission Deadline : {courseData.admissionDeadline}</span>
-                </div>
-              )}
-            </div>
-
-            {/* Action Buttons */}
-            <div className="w-full flex items-center gap-2 sm:gap-3 pt-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setSpecializationModal((prev) => ({ ...prev, open: false }));
-                  handleOpenLead("Download Brochure", specializationModal.title);
-                }}
-                className="flex-1 bg-[#0C2B4E] hover:bg-[#081f38] text-white text-[10px] sm:text-sm font-semibold py-2 sm:py-2.5 px-2 sm:px-4 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-xs active:scale-95 whitespace-nowrap"
-              >
-                <span>Download Broucher</span>
-                <Download className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setSpecializationModal((prev) => ({ ...prev, open: false }));
-                  handleOpenLead("Free Counseling", specializationModal.title);
-                }}
-                className="flex-1 bg-white hover:bg-gray-50 text-[#0C2B4E] border border-[#0C2B4E] text-[10px] sm:text-sm font-semibold py-2 sm:py-2.5 px-2 sm:px-4 rounded-lg flex items-center justify-center transition-all cursor-pointer shadow-xs active:scale-95 whitespace-nowrap"
-              >
-                Get 100% FREE Counseling
-              </button>
-            </div>
-          </div>
-        </div>
-      </Modal>
     </div>
   );
 }

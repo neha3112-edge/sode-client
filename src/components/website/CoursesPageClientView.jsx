@@ -1250,7 +1250,7 @@ function CoursesContent({
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex justify-center pt-6 pb-2">
+            <div className="flex justify-end items-center m-5">
               <Pagination
                 current={currentPage}
                 total={totalCount}
@@ -1262,7 +1262,11 @@ function CoursesContent({
                   }
                 }}
                 showSizeChanger={false}
-                className="font-semibold"
+                showTotal={(totalCount, range) => (
+                  <span className="text-xs font-semibold text-slate-500 mr-2">
+                    Showing {range[0]}–{range[1]} of {totalCount} courses
+                  </span>
+                )}
               />
             </div>
           )}

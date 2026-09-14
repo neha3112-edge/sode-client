@@ -23,26 +23,44 @@ export const metadata = {
 
 export default async function UniversitiesPage() {
   let initialUniversities = [];
+  let initialOptions = null;
 
   try {
-    const res = await request.dynamicList({
-      entity: "universities",
-      endPoint: "v1/list",
-      options: { items: 100 },
-      revalidate: 900,
-    });
-    initialUniversities = Array.isArray(res?.result)
-      ? res.result
-      : Array.isArray(res)
-      ? res
-      : [];
+    const [uniRes, optionsRes] = await Promise.allSettled([
+      request.dynamicList({
+        entity: "universities",
+        endPoint: "v1/list",
+        options: { items: 100 },
+        revalidate: 900,
+      }),
+      request.dynamicList({
+        entity: "universities",
+        endPoint: "v1/list/options",
+        revalidate: 900,
+      }),
+    ]);
+
+    if (uniRes.status === "fulfilled" && uniRes.value) {
+      initialUniversities = Array.isArray(uniRes.value?.result)
+        ? uniRes.value.result
+        : Array.isArray(uniRes.value)
+        ? uniRes.value
+        : [];
+    }
+
+    if (optionsRes.status === "fulfilled" && optionsRes.value) {
+      initialOptions = optionsRes.value?.result || null;
+    }
   } catch (err) {
     console.error("[Universities Page] Server fetch error:", err.message);
   }
 
   return (
     <Suspense fallback={null}>
-      <UniversitiesPageClientView initialUniversities={initialUniversities} />
+      <UniversitiesPageClientView
+        initialUniversities={initialUniversities}
+        initialOptions={initialOptions}
+      />
     </Suspense>
   );
 }

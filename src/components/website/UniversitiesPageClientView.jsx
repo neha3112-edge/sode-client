@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Button, Empty, Input, Pagination, Select } from "antd";
 import { StarFilled, SwapOutlined } from "@ant-design/icons";
 import {
@@ -17,6 +17,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useCompare } from "@/hooks/useCompare";
 import { getAssetPath } from "@/lib/utils";
+import { request } from "@/services/request";
 import Container from "../common/Container";
 
 const AVATAR_COLORS = [
@@ -52,7 +53,10 @@ function UniversityCard({ uni }) {
         .replace(/^-+|-+$/g, "")
       : uni?._id || "");
   const type = uni?.type || uni?.category?.name || (uni?.isTop ? "Top" : (uni?.isFeatured ? "Featured" : ""));
-  const location = uni?.location || [uni?.city?.name, uni?.state?.name, uni?.country?.name].filter(Boolean).join(", ") || "";
+  const location =
+    typeof uni?.location === "object" && uni?.location !== null
+      ? (uni.location.name || uni.location.formatted || [uni.location.city?.name || uni.location.city, uni.location.state?.name || uni.location.state, uni.location.country?.name || uni.location.country].filter(Boolean).join(", "))
+      : (uni?.locationText || uni?.location || [uni?.city?.name, uni?.state?.name, uni?.country?.name].filter(Boolean).join(", ") || "");
 
   const rawApprovals = Array.isArray(uni?.approvals)
     ? uni.approvals.map((a) => (typeof a === "object" ? a.name || a.code || a.title || "" : a)).filter(Boolean)
@@ -67,12 +71,10 @@ function UniversityCard({ uni }) {
   const reviewsCount = typeof uni?.reviewsCount === "number" ? uni.reviewsCount : 250;
 
   const coursesList = Array.isArray(uni?.courses)
-    ? uni.courses.map((c) => (typeof c === "object" ? c?.name || c?.title || "" : c)).filter(Boolean)
+    ? uni.courses.map((c) => (typeof c === "object" ? c?.name || c?.displayName || c?.title || "" : c)).filter(Boolean)
     : [];
   const featuredCourse = uni?.featuredCourse || coursesList[0] || "";
-  const programsText = coursesList.length > 0
-    ? coursesList.slice(0, 6).join(" | ")
-    : "MBA | MCA | MCOM | MSC | BBA | BA";
+  const programsText = coursesList.length > 0 ? coursesList.slice(0, 6).join(" | ") : "";
 
   const logoUrl = !logoErr ? resolveMediaUrl(uni?.image || uni?.logoSrc || uni?.logo) : null;
   const imageSrc = !imgErr ? resolveMediaUrl(uni?.bannerImg || uni?.imageSrc || uni?.image) : null;
@@ -157,15 +159,17 @@ function UniversityCard({ uni }) {
           ))}
         </div>
 
-        <div className="mt-2.5 pt-2 border-t border-slate-100 flex flex-col gap-0.5">
-          <div className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider text-slate-400">
-            <FileText className="w-2.5 h-2.5 text-slate-400" />
-            FEATURED PROGRAM
+        {programsText ? (
+          <div className="mt-2.5 pt-2 border-t border-slate-100 flex flex-col gap-0.5">
+            <div className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider text-slate-400">
+              <FileText className="w-2.5 h-2.5 text-slate-400" />
+              FEATURED PROGRAM
+            </div>
+            <div className="text-[11px] font-semibold text-slate-700 line-clamp-1 leading-tight">
+              {programsText}
+            </div>
           </div>
-          <div className="text-[11px] font-semibold text-slate-700 line-clamp-1 leading-tight">
-            {programsText}
-          </div>
-        </div>
+        ) : null}
 
         <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between gap-2 mt-auto">
           <div className="flex items-center gap-1 text-[11px]">
@@ -215,16 +219,98 @@ function UniversityCard({ uni }) {
   );
 }
 
-export default function UniversitiesPageClientView({ initialUniversities = [] }) {
+export default function UniversitiesPageClientView({
+  initialUniversities = [],
+  initialOptions = null,
+}) {
   const ITEMS_PER_PAGE = 12;
-
   const [allUniversities] = useState(initialUniversities);
+  const [filterOptions, setFilterOptions] = useState(initialOptions);
+  const [serverSearchResults, setServerSearchResults] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
   const [selectedTop, setSelectedTop] = useState(null);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [selectedState, setSelectedState] = useState(null);
   const [selectedAccreditation, setSelectedAccreditation] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+
+  // ⏱️ Debounce search term by 300ms to avoid unnecessary load
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+    }, 300);
+
+    return () => clearTimeout(handler);
+  }, [searchTerm]);
+
+  // 🚀 Fetch filter options from backend API if not pre-populated
+  useEffect(() => {
+    if (filterOptions) return;
+    let isMounted = true;
+
+    request
+      .dynamicList({
+        entity: "universities",
+        endPoint: "v1/list/options",
+        revalidate: 900,
+      })
+      .then((res) => {
+        if (!isMounted) return;
+        if (res?.result) {
+          setFilterOptions(res.result);
+        }
+      })
+      .catch(() => {});
+
+    return () => {
+      isMounted = false;
+    };
+  }, [filterOptions]);
+
+  // 🚀 Fetch search results from Redis-cached backend API on debounced search
+  useEffect(() => {
+    const trimmed = debouncedSearch.trim();
+    if (!trimmed) {
+      setServerSearchResults(null);
+      setIsSearching(false);
+      return;
+    }
+
+    let isMounted = true;
+    setIsSearching(true);
+
+    request
+      .dynamicList({
+        entity: "universities",
+        endPoint: "v1/list",
+        options: {
+          search: trimmed,
+          items: 100,
+        },
+        revalidate: 900,
+      })
+      .then((res) => {
+        if (!isMounted) return;
+        const list = Array.isArray(res?.result) ? res.result : (Array.isArray(res) ? res : []);
+        setServerSearchResults(list);
+        setIsSearching(false);
+      })
+      .catch(() => {
+        if (isMounted) {
+          setIsSearching(false);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [debouncedSearch]);
+
+  const activeUniversities = useMemo(() => {
+    return serverSearchResults !== null ? serverSearchResults : allUniversities;
+  }, [serverSearchResults, allUniversities]);
 
   const statesList = useMemo(() => {
     const s = new Set();
@@ -235,41 +321,54 @@ export default function UniversitiesPageClientView({ initialUniversities = [] })
     return Array.from(s).sort();
   }, [allUniversities]);
 
-  const topOptions = [
-    { value: "top10", label: "Top 10 Universities" },
-    { value: "naac_a", label: "NAAC A+ & A++" },
-    { value: "featured", label: "Featured Universities" },
-    { value: "gov", label: "Government / Central" },
-  ];
+  // 🏛️ Dynamic Categories / Top options from API
+  const topOptions = useMemo(() => {
+    if (Array.isArray(filterOptions?.categories) && filterOptions.categories.length > 0) {
+      return filterOptions.categories.map((c) => ({
+        value: c.value || c.slug || c._id,
+        label: c.label || c.name,
+      }));
+    }
+    return [];
+  }, [filterOptions]);
 
-  const courseOptions = [
-    { value: "MBA", label: "Online MBA" },
-    { value: "MCA", label: "Online MCA" },
-    { value: "BBA", label: "Online BBA" },
-    { value: "BCA", label: "Online BCA" },
-    { value: "MCOM", label: "Online M.Com" },
-    { value: "BCOM", label: "Online B.Com" },
-    { value: "MSC", label: "Online M.Sc" },
-    { value: "MA", label: "Online MA" },
-    { value: "BA", label: "Online BA" },
-  ];
+  // 🎓 Dynamic Courses from API (Deduplicated with actual Mode)
+  const courseOptions = useMemo(() => {
+    if (Array.isArray(filterOptions?.courses) && filterOptions.courses.length > 0) {
+      return filterOptions.courses.map((c) => ({
+        value: c.value || c.label || c.name,
+        label: c.label || c.name,
+      }));
+    }
+    return [];
+  }, [filterOptions]);
 
+  // 📍 Dynamic States from API
   const stateOptions = useMemo(() => {
+    if (Array.isArray(filterOptions?.states) && filterOptions.states.length > 0) {
+      return filterOptions.states.map((st) => ({
+        value: typeof st === "object" ? st.value || st.label || st.name : st,
+        label: typeof st === "object" ? st.label || st.name || st.value : st,
+      }));
+    }
     return statesList.map((st) => ({ value: st, label: st }));
-  }, [statesList]);
+  }, [filterOptions, statesList]);
 
-  const accreditationOptions = [
-    { value: "UGC", label: "UGC Approved" },
-    { value: "UGC-DEB", label: "UGC-DEB Approved" },
-    { value: "NAAC", label: "NAAC Accredited" },
-    { value: "AICTE", label: "AICTE Approved" },
-    { value: "AIU", label: "AIU Member" },
-    { value: "WES", label: "WES Recognized" },
-    { value: "NIRF", label: "NIRF Ranked" },
-  ];
+  // 🛡️ Dynamic Accreditations from API
+  const accreditationOptions = useMemo(() => {
+    if (Array.isArray(filterOptions?.accreditations) && filterOptions.accreditations.length > 0) {
+      return filterOptions.accreditations.map((a) => ({
+        value: typeof a === "object" ? a.value || a.name || a.code : a,
+        label: typeof a === "object" ? a.label || a.title || a.name : a,
+      }));
+    }
+    return [];
+  }, [filterOptions]);
 
   const resetFilters = () => {
     setSearchTerm("");
+    setDebouncedSearch("");
+    setServerSearchResults(null);
     setSelectedTop(null);
     setSelectedCourse(null);
     setSelectedState(null);
@@ -278,60 +377,76 @@ export default function UniversitiesPageClientView({ initialUniversities = [] })
   };
 
   const filtered = useMemo(() => {
-    return allUniversities.filter((uni) => {
+    return activeUniversities.filter((uni) => {
       const name = (uni?.name || "").toLowerCase();
-      const loc = (uni?.location || "").toLowerCase();
-      const stateName = (uni?.state?.name || uni?.state || "").toLowerCase();
+      const loc = (typeof uni?.location === "object" && uni?.location !== null
+        ? (uni.location.name || uni.location.formatted || "")
+        : (uni?.locationText || uni?.location || "")).toLowerCase();
+      const stateName = (uni?.location?.state?.name || uni?.state?.name || uni?.state || "").toLowerCase();
       const q = searchTerm.trim().toLowerCase();
 
       if (q && !name.includes(q) && !loc.includes(q) && !stateName.includes(q)) {
         return false;
       }
 
-      if (selectedState && stateName !== selectedState.toLowerCase()) {
-        return false;
+      if (selectedState) {
+        const selSt = selectedState.toLowerCase().trim();
+        if (stateName !== selSt && !loc.includes(selSt)) {
+          return false;
+        }
       }
 
       if (selectedAccreditation) {
         const rawApps = Array.isArray(uni?.approvals)
-          ? uni.approvals.map((a) => (typeof a === "object" ? a.name || a.code || "" : a).toUpperCase())
+          ? uni.approvals.map((a) => (typeof a === "object" ? a.name || a.code || a.title || "" : String(a)).toUpperCase())
           : [];
-        const target = selectedAccreditation.toUpperCase();
-        const hasApproval = rawApps.some((a) => a.includes(target));
+        const target = selectedAccreditation.toUpperCase().trim();
+        const hasApproval = rawApps.some((a) => a.includes(target) || target.includes(a));
         const hasNaac = target.includes("NAAC") && Boolean(uni?.naac_rating?.grade || uni?.naac_rating?.name);
         if (!hasApproval && !hasNaac) return false;
       }
 
       if (selectedTop) {
-        if (selectedTop === "top10" && !uni?.isTop) {
-          return true;
-        }
-        if (selectedTop === "naac_a") {
-          const grade = (uni?.naac_rating?.grade || uni?.naac_rating?.name || "").toUpperCase();
-          if (!grade.includes("A")) return false;
-        }
-        if (selectedTop === "featured" && !uni?.isFeatured) {
-          return false;
-        }
-        if (selectedTop === "gov") {
-          const typeStr = (uni?.type || "").toLowerCase();
-          if (!typeStr.includes("gov") && !typeStr.includes("central")) return false;
-        }
+        const sel = selectedTop.toLowerCase();
+        const uniCats = Array.isArray(uni?.category)
+          ? uni.category
+          : (uni?.category ? [uni.category] : []);
+        const hasCategory = uniCats.some((c) => {
+          if (!c) return false;
+          const cSlug = (typeof c === "object" ? (c.slug || "") : "").toLowerCase();
+          const cName = (typeof c === "object" ? (c.name || "") : String(c || "")).toLowerCase();
+          const cCode = (typeof c === "object" ? (c.code || "") : "").toLowerCase();
+          const cId = (typeof c === "object" ? (c._id || "") : "").toString().toLowerCase();
+          return (
+            (cSlug && cSlug === sel) ||
+            (cName && cName === sel) ||
+            (cCode && cCode === sel) ||
+            (cId && cId === sel) ||
+            (cSlug && sel.includes(cSlug)) ||
+            (cSlug && cSlug.includes(sel)) ||
+            (cName && sel.includes(cName)) ||
+            (cName && cName.includes(sel))
+          );
+        });
+        if (!hasCategory) return false;
       }
 
       if (selectedCourse) {
-        const cTarget = selectedCourse.toLowerCase();
+        const cTarget = selectedCourse
+          .toLowerCase()
+          .replace(/^(online|distance|regular)\s+/i, "")
+          .replace(/[^a-z0-9]/g, "");
         const uniCourses = Array.isArray(uni?.courses)
-          ? uni.courses.map((c) => (typeof c === "object" ? c?.name || c?.title || "" : c).toLowerCase())
+          ? uni.courses.map((c) => (typeof c === "object" ? c?.name || c?.displayName || c?.title || "" : String(c)).toLowerCase().replace(/[^a-z0-9]/g, ""))
           : [];
-        if (uniCourses.length > 0 && !uniCourses.some((c) => c.includes(cTarget))) {
+        if (uniCourses.length > 0 && !uniCourses.some((c) => c === cTarget || c.includes(cTarget))) {
           return false;
         }
       }
 
       return true;
     });
-  }, [allUniversities, searchTerm, selectedTop, selectedCourse, selectedState, selectedAccreditation]);
+  }, [activeUniversities, searchTerm, selectedTop, selectedCourse, selectedState, selectedAccreditation]);
 
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedUniversities = useMemo(() => {
@@ -360,6 +475,7 @@ export default function UniversitiesPageClientView({ initialUniversities = [] })
           <Input.Search
             className="w-full"
             allowClear
+            loading={isSearching}
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
@@ -367,6 +483,7 @@ export default function UniversitiesPageClientView({ initialUniversities = [] })
             }}
             onSearch={(val) => {
               setSearchTerm(val);
+              setDebouncedSearch(val);
               setCurrentPage(1);
             }}
             placeholder="Search Universities Amity, Manipal, LPU etc.........."
@@ -377,6 +494,7 @@ export default function UniversitiesPageClientView({ initialUniversities = [] })
           <Input.Search
             className="flex-1 min-w-55"
             allowClear
+            loading={isSearching}
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
@@ -384,6 +502,7 @@ export default function UniversitiesPageClientView({ initialUniversities = [] })
             }}
             onSearch={(val) => {
               setSearchTerm(val);
+              setDebouncedSearch(val);
               setCurrentPage(1);
             }}
             placeholder="Search Universities Amity, Manipal, LPU etc.........."
@@ -398,7 +517,7 @@ export default function UniversitiesPageClientView({ initialUniversities = [] })
             placeholder={
               <span className="flex items-center gap-1.5 text-slate-700 font-bold">
                 <Landmark className="w-3.5 h-3.5 text-slate-600 shrink-0" />
-                Top 10 Universities
+                Select Category
               </span>
             }
             options={topOptions}
@@ -416,7 +535,7 @@ export default function UniversitiesPageClientView({ initialUniversities = [] })
             placeholder={
               <span className="flex items-center gap-1.5 text-slate-700 font-bold">
                 <GraduationCap className="w-3.5 h-3.5 text-slate-600 shrink-0" />
-                Online MBA
+                Select Course
               </span>
             }
             options={courseOptions}
@@ -535,7 +654,7 @@ export default function UniversitiesPageClientView({ initialUniversities = [] })
             placeholder={
               <span className="flex items-center gap-1.5 text-slate-700 font-bold truncate">
                 <Landmark className="w-3.5 h-3.5 text-slate-600 shrink-0" />
-                Top 10 Universities
+                Select Category
               </span>
             }
             options={topOptions}
@@ -553,7 +672,7 @@ export default function UniversitiesPageClientView({ initialUniversities = [] })
             placeholder={
               <span className="flex items-center gap-1.5 text-slate-700 font-bold truncate">
                 <GraduationCap className="w-3.5 h-3.5 text-slate-600 shrink-0" />
-                Online MBA
+                Select Course
               </span>
             }
             options={courseOptions}
@@ -609,7 +728,7 @@ export default function UniversitiesPageClientView({ initialUniversities = [] })
           </div>
 
           {filtered.length > ITEMS_PER_PAGE && (
-            <div className="flex justify-center items-center mt-8 sm:mt-10 pt-6 border-t border-slate-200/80">
+            <div className="flex justify-end items-center m-5">
               <Pagination
                 current={currentPage}
                 pageSize={ITEMS_PER_PAGE}
@@ -622,7 +741,7 @@ export default function UniversitiesPageClientView({ initialUniversities = [] })
                 }}
                 showSizeChanger={false}
                 showTotal={(totalCount, range) => (
-                  <span className="text-xs font-semibold text-slate-500">
+                  <span className="text-xs font-semibold text-slate-500 mr-2">
                     Showing {range[0]}–{range[1]} of {totalCount} universities
                   </span>
                 )}
