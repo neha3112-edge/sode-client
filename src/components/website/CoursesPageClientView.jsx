@@ -612,7 +612,13 @@ function CoursesContent({
         }
 
         let feeText = null;
-        if (fees?.amount) {
+        if (fees?.semesterFees) {
+          feeText = `₹ ${Number(fees.semesterFees).toLocaleString("en-IN")} / Semester`;
+        } else if (fees?.formattedSemesterFees) {
+          feeText = fees.formattedSemesterFees;
+        } else if (fees?.perSemesterPayable) {
+          feeText = `₹ ${Number(fees.perSemesterPayable).toLocaleString("en-IN")} / Semester`;
+        } else if (fees?.amount) {
           feeText = `₹ ${Number(fees.amount).toLocaleString("en-IN")} INR`;
         } else if (fees?.name) {
           feeText = fees.name.includes("₹") ? `${fees.name} INR` : `₹ ${fees.name} INR`;

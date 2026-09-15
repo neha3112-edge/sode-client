@@ -43,7 +43,46 @@ export default function CourseClientView({
   const { toggleCompare, isInCompare, setIsCompareDrawerOpen } = useCompare();
   const [openFaq, setOpenFaq] = useState(0);
 
+  const [selectedPlanTab, setSelectedPlanTab] = useState("semester");
+  const [activeEmiSubTab, setActiveEmiSubTab] = useState("semester");
   const courseData = initialData || {};
+
+  const activeLedgerData = useMemo(() => {
+    const rawLedger = courseData?.ledger || courseData?.feesLedger?.ledger;
+    const promoData = courseData?.feesLedger || courseData;
+
+    if (!rawLedger) return null;
+
+    const full = rawLedger.fullfees || rawLedger.FULLFEES;
+    const year = rawLedger.yearly || rawLedger.YEARLY;
+    const sem = rawLedger.semester || rawLedger.SEMESTER;
+    const emi = promoData?.emi || rawLedger?.emi;
+
+    const fullEmi = full?.emi || emi?.fullfees || (emi?.available && !emi.fullfees ? emi : null);
+    const yearEmi = year?.emi || emi?.yearly || (emi?.available && !emi.yearly ? emi : null);
+    const semEmi = sem?.emi || emi?.semester || (emi?.available && !emi.semester ? emi : null);
+
+    const availableSummary =
+      (semEmi?.available ? semEmi : null) ||
+      (yearEmi?.available ? yearEmi : null) ||
+      (fullEmi?.available ? fullEmi : null) ||
+      (emi?.available ? emi : null);
+
+    return {
+      fullfees: full ? { ...full, emi: fullEmi } : null,
+      yearly: year ? { ...year, emi: yearEmi } : null,
+      semester: sem ? { ...sem, emi: semEmi } : null,
+      emi: {
+        fullfees: fullEmi,
+        yearly: yearEmi,
+        semester: semEmi,
+        summary: availableSummary,
+      },
+      scholarship: promoData?.scholarship || null,
+      coupon: promoData?.coupon || null,
+      appliedPromoCode: promoData?.appliedPromoCode || null,
+    };
+  }, [courseData]);
   const [visibleCount, setVisibleCount] = useState(6);
 
   const [activeSpecIndex, setActiveSpecIndex] = useState(null);
@@ -215,7 +254,13 @@ export default function CourseClientView({
       }
 
       let feeText = null;
-      if (fees?.amount) {
+      if (fees?.semesterFees) {
+        feeText = `₹ ${Number(fees.semesterFees).toLocaleString("en-IN")} / Semester`;
+      } else if (fees?.formattedSemesterFees) {
+        feeText = fees.formattedSemesterFees;
+      } else if (fees?.perSemesterPayable) {
+        feeText = `₹ ${Number(fees.perSemesterPayable).toLocaleString("en-IN")} / Semester`;
+      } else if (fees?.amount) {
         feeText = `₹ ${Number(fees.amount).toLocaleString("en-IN")} INR`;
       } else if (fees?.name) {
         feeText = fees.name.includes("₹") ? `${fees.name} INR` : `₹ ${fees.name} INR`;
@@ -440,6 +485,8 @@ export default function CourseClientView({
           </div>
         </div>
 
+
+
         {/* Course Overview */}
         {(courseData?.overview || courseData?.description) && (
           <div className="bg-white rounded-xl border border-gray-200/90 p-6 sm:p-4 text-center space-y-3 shadow-xs">
@@ -452,6 +499,359 @@ export default function CourseClientView({
             <p className="text-xs sm:text-sm text-gray-600 leading-relaxed max-w-4xl mx-auto m-0 text-center">
               {courseData.overview || courseData.description}
             </p>
+          </div>
+        )}
+
+        {/* Fee Structure & Dynamic 3-Plan Ledger Selector */}
+        {activeLedgerData && (
+          <div className="bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8 space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-gray-100">
+              <div>
+                <div className="flex items-center gap-2">
+                  <CreditCard className="w-6 h-6 text-[#0C2B4E]" />
+                  <h2 className="text-xl sm:text-2xl font-extrabold text-[#0C2B4E] tracking-tight m-0">
+                    Fee Structure & Flexible Payment Plans
+                  </h2>
+                </div>
+                <p className="text-xs sm:text-sm text-gray-500 m-0 mt-1">
+                  Select a payment option below to view semester, annual, and full-fee installment options.
+                </p>
+              </div>
+
+              {activeLedgerData.scholarship && (
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold shrink-0">
+                  <Award className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>{activeLedgerData.scholarship?.name || "Scholarship Applied"}</span>
+                  <span className="bg-emerald-700 text-white px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider">
+                    {activeLedgerData.scholarship?.code}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Side-by-Side Plan & EMI Comparison Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Semester Card */}
+              <div
+                onClick={() => setSelectedPlanTab("semester")}
+                className={`p-4 rounded-xl border-2 transition-all cursor-pointer relative flex flex-col justify-between space-y-3 ${
+                  selectedPlanTab === "semester"
+                    ? "border-[#0C2B4E] bg-blue-50/40 shadow-md ring-2 ring-[#0C2B4E]/10"
+                    : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-xs"
+                }`}
+              >
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-extrabold uppercase tracking-wider text-[#0C2B4E]">
+                      Semester-wise
+                    </span>
+                    {activeLedgerData.semester?.discountPercentage > 0 && (
+                      <span className="bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">
+                        {activeLedgerData.semester.discountPercentage}% OFF
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-lg font-black text-gray-900 pt-1">
+                    {activeLedgerData.semester?.formattedPayable || "₹ 16,320 / Sem"}
+                  </div>
+                  <p className="text-[11px] text-gray-500 m-0">
+                    {activeLedgerData.semester?.totalSemesters || 6} Semesters • Installments
+                  </p>
+                </div>
+                <div className="pt-2 text-xs font-bold text-[#0C2B4E] flex items-center justify-between border-t border-gray-100">
+                  <span>View Details</span>
+                  <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] ${selectedPlanTab === "semester" ? "bg-[#0C2B4E] text-white" : "bg-gray-200 text-gray-600"}`}>
+                    ✓
+                  </span>
+                </div>
+              </div>
+
+              {/* Yearly Card */}
+              <div
+                onClick={() => setSelectedPlanTab("yearly")}
+                className={`p-4 rounded-xl border-2 transition-all cursor-pointer relative flex flex-col justify-between space-y-3 ${
+                  selectedPlanTab === "yearly"
+                    ? "border-[#0C2B4E] bg-blue-50/40 shadow-md ring-2 ring-[#0C2B4E]/10"
+                    : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-xs"
+                }`}
+              >
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-extrabold uppercase tracking-wider text-[#0C2B4E]">
+                      Yearly (Annual)
+                    </span>
+                    {activeLedgerData.yearly?.discountPercentage > 0 && (
+                      <span className="bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">
+                        {activeLedgerData.yearly.discountPercentage}% OFF
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-lg font-black text-gray-900 pt-1">
+                    {activeLedgerData.yearly?.formattedPayable || "₹ 30,720 / Year"}
+                  </div>
+                  <p className="text-[11px] text-gray-500 m-0">
+                    {activeLedgerData.yearly?.totalYears || 3} Annual Installments
+                  </p>
+                </div>
+                <div className="pt-2 text-xs font-bold text-[#0C2B4E] flex items-center justify-between border-t border-gray-100">
+                  <span>View Details</span>
+                  <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] ${selectedPlanTab === "yearly" ? "bg-[#0C2B4E] text-white" : "bg-gray-200 text-gray-600"}`}>
+                    ✓
+                  </span>
+                </div>
+              </div>
+
+              {/* Fullfees Card */}
+              <div
+                onClick={() => setSelectedPlanTab("fullfees")}
+                className={`p-4 rounded-xl border-2 transition-all cursor-pointer relative flex flex-col justify-between space-y-3 ${
+                  selectedPlanTab === "fullfees"
+                    ? "border-[#0C2B4E] bg-blue-50/40 shadow-md ring-2 ring-[#0C2B4E]/10"
+                    : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-xs"
+                }`}
+              >
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-extrabold uppercase tracking-wider text-[#0C2B4E]">
+                      Fullfees (One-Time)
+                    </span>
+                    {activeLedgerData.fullfees?.discountPercentage > 0 && (
+                      <span className="bg-amber-500 text-gray-950 text-[10px] font-bold px-2 py-0.5 rounded">
+                        MAX SAVINGS {activeLedgerData.fullfees.discountPercentage}%
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-lg font-black text-gray-900 pt-1">
+                    {activeLedgerData.fullfees?.formattedPayable || "₹ 80,640"}
+                  </div>
+                  <p className="text-[11px] text-gray-500 m-0">
+                    One-time lump sum • Max discount
+                  </p>
+                </div>
+                <div className="pt-2 text-xs font-bold text-[#0C2B4E] flex items-center justify-between border-t border-gray-100">
+                  <span>View Details</span>
+                  <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] ${selectedPlanTab === "fullfees" ? "bg-[#0C2B4E] text-white" : "bg-gray-200 text-gray-600"}`}>
+                    ✓
+                  </span>
+                </div>
+              </div>
+
+              {/* EMI Card */}
+              <div
+                onClick={() => {
+                  setSelectedPlanTab("emi");
+                  if (!activeLedgerData.emi?.[activeEmiSubTab]?.available) {
+                    if (activeLedgerData.emi?.semester?.available) setActiveEmiSubTab("semester");
+                    else if (activeLedgerData.emi?.yearly?.available) setActiveEmiSubTab("yearly");
+                    else if (activeLedgerData.emi?.fullfees?.available) setActiveEmiSubTab("fullfees");
+                  }
+                }}
+                className={`p-4 rounded-xl border-2 transition-all cursor-pointer relative flex flex-col justify-between space-y-3 ${
+                  selectedPlanTab === "emi"
+                    ? "border-amber-600 bg-amber-50/40 shadow-md ring-2 ring-amber-500/20"
+                    : "border-amber-200 bg-amber-50/20 hover:border-amber-300 hover:shadow-xs"
+                }`}
+              >
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-extrabold uppercase tracking-wider text-amber-900">
+                      {activeLedgerData.emi?.summary?.hasInterest ? "Standard EMI Plan" : "No-Cost EMI Plan"}
+                    </span>
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
+                      activeLedgerData.emi?.summary?.hasInterest 
+                        ? "bg-[#0C2B4E] text-white" 
+                        : "bg-amber-600 text-white"
+                    }`}>
+                      {activeLedgerData.emi?.summary?.hasInterest ? "EASY FINANCING" : "0% INTEREST"}
+                    </span>
+                  </div>
+                  <div className="text-lg font-black text-amber-950 pt-1">
+                    {activeLedgerData.emi?.summary?.formattedMinMonthlyEmi ? `Starting ${activeLedgerData.emi.summary.formattedMinMonthlyEmi}` : "Bank & NBFC EMI"}
+                  </div>
+                  <p className="text-[11px] text-amber-800/80 m-0 truncate">
+                    {activeLedgerData.emi?.summary?.planName || "Bank & NBFC Financing"}
+                  </p>
+                </div>
+                <div className="pt-2 text-xs font-bold text-amber-900 flex items-center justify-between border-t border-amber-200/60">
+                  <span>View EMI Breakdown</span>
+                  <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] ${selectedPlanTab === "emi" ? "bg-amber-700 text-white" : "bg-amber-200 text-amber-800"}`}>
+                    ✓
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Non-EMI Plan Details (Semester / Yearly / Fullfees) */}
+            {selectedPlanTab !== "emi" && activeLedgerData[selectedPlanTab] && (() => {
+              const currentPlan = activeLedgerData[selectedPlanTab];
+              return (
+                <div className="mt-4 p-4 sm:p-5 rounded-xl bg-blue-50/40 border border-blue-200/80 space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-blue-200/60">
+                    <div>
+                      <h4 className="text-base font-bold text-[#0C2B4E] m-0">
+                        {currentPlan.label || "Payment Plan Details"}
+                      </h4>
+                      <p className="text-xs text-gray-600 m-0 mt-0.5">
+                        Payable Amount: <strong className="text-gray-900">{currentPlan.formattedPayable}</strong>
+                        {currentPlan.formattedGross && currentPlan.discountPercentage > 0 && (
+                          <span className="ml-2 text-gray-500 line-through">{currentPlan.formattedGross}</span>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                    <div className="bg-white p-3 rounded-lg border border-gray-200">
+                      <span className="text-gray-500 block text-[11px] font-medium">Gross Fee</span>
+                      <span className="font-bold text-gray-900">{currentPlan.formattedGross || "—"}</span>
+                    </div>
+                    <div className="bg-white p-3 rounded-lg border border-gray-200">
+                      <span className="text-gray-500 block text-[11px] font-medium">Applied Discount</span>
+                      <span className="font-bold text-emerald-700">{currentPlan.formattedDiscount || "₹ 0"} ({currentPlan.discountPercentage || 0}%)</span>
+                    </div>
+                    <div className="bg-white p-3 rounded-lg border border-gray-200">
+                      <span className="text-gray-500 block text-[11px] font-medium">Installment Frequency</span>
+                      <span className="font-bold text-gray-900">
+                        {selectedPlanTab === "semester" ? `${currentPlan.totalSemesters || 6} Semesters` : selectedPlanTab === "yearly" ? `${currentPlan.totalYears || 3} Years` : "One-Time Lump Sum"}
+                      </span>
+                    </div>
+                    <div className="bg-white p-3 rounded-lg border border-gray-200">
+                      <span className="text-gray-500 block text-[11px] font-medium">Net Payable</span>
+                      <span className="font-bold text-[#0C2B4E]">{currentPlan.formattedPayable}</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+
+            {/* EMI Breakdown View */}
+            {selectedPlanTab === "emi" && activeLedgerData.emi && (() => {
+              const availableSubTabs = [
+                { key: "semester", label: "Semester EMI", ledger: activeLedgerData.emi.semester },
+                { key: "yearly", label: "Yearly EMI", ledger: activeLedgerData.emi.yearly },
+                { key: "fullfees", label: "Fullfees EMI", ledger: activeLedgerData.emi.fullfees },
+              ].filter(t => t.ledger && t.ledger.available);
+
+              const currentSubTabKey = activeEmiSubTab && activeLedgerData.emi[activeEmiSubTab]?.available 
+                ? activeEmiSubTab 
+                : (availableSubTabs[0]?.key || "semester");
+
+              const currentEmi = activeLedgerData.emi[currentSubTabKey] || activeLedgerData.emi.summary;
+
+              if (!currentEmi || !currentEmi.available) {
+                return (
+                  <div className="mt-4 p-5 rounded-xl bg-amber-50/60 border border-amber-200/80 text-center text-amber-900 text-sm font-medium">
+                    No EMI options available for the selected course fee structure.
+                  </div>
+                );
+              }
+
+              return (
+                <div className="mt-4 p-4 sm:p-5 rounded-xl bg-amber-50/60 border border-amber-200/80 space-y-4">
+                  {/* Payment Type EMI Sub-Tabs */}
+                  {availableSubTabs.length > 1 && (
+                    <div className="flex flex-wrap items-center gap-2 pb-3 border-b border-amber-200/60">
+                      <span className="text-xs font-bold text-amber-950 mr-2">Select EMI Payment Plan:</span>
+                      {availableSubTabs.map((tab) => (
+                        <button
+                          key={tab.key}
+                          type="button"
+                          onClick={() => setActiveEmiSubTab(tab.key)}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                            currentSubTabKey === tab.key
+                              ? "bg-amber-700 text-white shadow-xs"
+                              : "bg-white text-amber-900 border border-amber-300 hover:bg-amber-100"
+                          }`}
+                        >
+                          {tab.label} ({tab.ledger.formattedMinMonthlyEmi})
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-amber-200/60">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <CreditCard className="w-5 h-5 text-amber-700" />
+                        <h4 className="text-base font-bold text-amber-950 m-0">
+                          {currentEmi.planName || "EMI Plan Breakdown"}
+                        </h4>
+                        {currentEmi.planCode && (
+                          <span className="text-[10px] bg-amber-700 text-white font-bold px-2 py-0.5 rounded uppercase">
+                            {currentEmi.planCode}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-amber-900/80 m-0 mt-0.5">
+                        Net Principal Amount: <strong>{currentEmi.formattedNetEmiPrincipal || currentEmi.formattedGrossFee}</strong>
+                      </p>
+                    </div>
+
+                    {Array.isArray(currentEmi.partners) && currentEmi.partners.length > 0 && (
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span className="text-[11px] font-semibold text-amber-900 mr-1">Financing Partners:</span>
+                        {currentEmi.partners.map((partner, idx) => (
+                          <span key={idx} className="bg-amber-200/70 text-amber-950 text-[11px] font-bold px-2 py-0.5 rounded-full border border-amber-300/60">
+                            {partner}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Tenure Options Cards */}
+                  {Array.isArray(currentEmi.tenures) && currentEmi.tenures.length > 0 && (
+                    <div>
+                      <span className="text-xs font-bold text-amber-950 block mb-2">Available Monthly Tenure Options:</span>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                        {currentEmi.tenures.map((tenure, idx) => (
+                          <div key={idx} className="bg-white rounded-xl border border-amber-200 p-3.5 shadow-2xs space-y-2 flex flex-col justify-between">
+                            <div>
+                              <div className="flex items-center justify-between gap-1 mb-1">
+                                <span className="text-xs font-extrabold text-amber-900 block">{tenure.months} Months Tenure</span>
+                                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                                  tenure.isNoCost || tenure.interestRatePct === 0
+                                    ? "bg-emerald-100 text-emerald-800 border border-emerald-300/60"
+                                    : "bg-blue-100 text-blue-800 border border-blue-300/60"
+                                }`}>
+                                  {tenure.isNoCost || tenure.interestRatePct === 0
+                                    ? "0% Interest"
+                                    : `${tenure.interestRatePct}% p.a. Interest`}
+                                </span>
+                              </div>
+                              <span className="text-base font-black text-gray-900 block">{tenure.formattedMonthlyFee}</span>
+                            </div>
+
+                            <div className="pt-2 border-t border-gray-100 text-[11px] space-y-1 text-gray-600">
+                              {tenure.totalInterest > 0 && (
+                                <div className="flex justify-between items-center text-amber-900 font-medium">
+                                  <span>Total Interest:</span>
+                                  <span className="font-bold">{tenure.formattedTotalInterest}</span>
+                                </div>
+                              )}
+                              {tenure.totalPayableWithInterest > 0 && tenure.totalInterest > 0 && (
+                                <div className="flex justify-between items-center text-gray-900 font-semibold">
+                                  <span>Total Payable:</span>
+                                  <span className="font-bold text-[#0C2B4E]">{tenure.formattedTotalPayableWithInterest}</span>
+                                </div>
+                              )}
+                              {tenure.downPayment > 0 && (
+                                <div className="flex justify-between items-center text-amber-800 font-medium">
+                                  <span>Downpayment:</span>
+                                  <span className="font-bold">{tenure.formattedDownPayment}</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
+
+
           </div>
         )}
 

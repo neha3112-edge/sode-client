@@ -20,12 +20,17 @@ export function ToolWizardProvider({ children }) {
 
     const lower = String(slugOrMode).toLowerCase().replace(/_/g, "-");
 
-    if (lower.includes("course") || lower === "suggest-course") {
-      targetSlug = "suggest-course";
-      defaultAnswers.tool_mode = "Suggest Course";
+    if (lower.includes("eligib") || lower === "check-eligibility") {
+      targetSlug = "check-eligibility";
+      defaultAnswers.tool_category = "Check Eligibility";
     } else if (lower.includes("uni") || lower === "suggest-university" || lower === "suggest-me-a-university") {
+      targetSlug = "suggest-university";
+      defaultAnswers.tool_category = "Suggest University";
+    } else if (lower.includes("course") || lower === "suggest-course") {
       targetSlug = "suggest-course";
-      defaultAnswers.tool_mode = "Suggest University";
+      defaultAnswers.tool_category = "Suggest Course";
+    } else {
+      targetSlug = lower;
     }
 
     setActiveSlug(targetSlug);

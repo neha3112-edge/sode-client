@@ -1039,7 +1039,7 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                         let btnText = "Suggest University";
                         let desc = "Find universities that match your goals, preferences, and career plans.";
                         let clickHandler = () =>
-                          openTool("suggest-me-a-university", { tool_mode: "Suggest University" });
+                          openTool("suggest-university");
                         let isLink = false;
                         let linkUrl = "#";
 
@@ -1057,7 +1057,7 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                           btnText = "Check Eligibility";
                           desc = "Instantly check which courses and universities you're eligible for.";
                           clickHandler = () =>
-                            openTool("suggest-me-a-university", { tool_mode: "Check Eligibility" });
+                            openTool("check-eligibility");
                           // User Checklist Icon SVG
                           iconSvg = (
                             <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1083,9 +1083,9 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                           iconCircleBg = "bg-[#FCE4EC] text-[#C2185B]";
                           underlineClass = "border-[#EC407A]";
                           btnText = "Suggest Course";
-                          desc = "Compare universities, courses, fees, and key benefits side by side.";
+                          desc = "Discover accredited degree and diploma programs matched to your background.";
                           clickHandler = () =>
-                            openTool("suggest-me-a-university", { tool_mode: "Suggest Course" });
+                            openTool("suggest-course");
                           // Open Book SVG
                           iconSvg = (
                             <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

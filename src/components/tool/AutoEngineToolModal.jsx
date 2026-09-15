@@ -4,7 +4,6 @@ import React, { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { useToolWizard } from "./ToolWizardContext";
 import { dynamicRead, dynamicPost } from "@/services/request";
-import FormWrapper from "@/components/forms/FormWrapper";
 import {
   X,
   ArrowLeft,
@@ -31,6 +30,8 @@ import {
   Tag,
   UserCheck,
   XCircle,
+  Search,
+  AlertTriangle,
 } from "lucide-react";
 
 const iconMap = {
@@ -63,6 +64,7 @@ export default function AutoEngineToolModal() {
   const [answers, setAnswers] = useState({});
   const [recommendations, setRecommendations] = useState(null);
   const [courses, setCourses] = useState([]);
+  const [resultPayload, setResultPayload] = useState(null);
   const [userSummary, setUserSummary] = useState(null);
   const [resultHeader, setResultHeader] = useState({
     title: "Great! Ready to discover courses that match your preferences?",
@@ -70,6 +72,40 @@ export default function AutoEngineToolModal() {
   });
   const [selectedOtherId, setSelectedOtherId] = useState(null);
   const [otherInputText, setOtherInputText] = useState("");
+  const [searchFilter, setSearchFilter] = useState("");
+  const [selectedMultiOptions, setSelectedMultiOptions] = useState([]);
+  const [submitting, setSubmitting] = useState(false);
+
+  // Directly fetch recommendations without showing lead form
+  const fetchRecommendationsDirectly = async (finalAnswers) => {
+    setSubmitting(true);
+    try {
+      const res = await dynamicPost({
+        entity: "tool",
+        endPoint: "public/submit",
+        body: {
+          slug: activeSlug,
+          leadData: {},
+          userAnswers: finalAnswers || answers,
+        },
+      });
+      const payload = res?.result || res?.data || res;
+      setResultPayload(payload);
+      setRecommendations(payload?.recommendations || []);
+      setCourses(payload?.courses || []);
+      setUserSummary(payload?.userSummary || {});
+      if (payload?.resultTitle) {
+        setResultHeader({
+          title: payload.resultTitle,
+          subtitle: payload.resultSubtitle || "Academic Report",
+        });
+      }
+    } catch (err) {
+      console.error("Error fetching AI recommendations:", err);
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   // 1. Fetch Workflow Definition on Open
   useEffect(() => {
@@ -77,11 +113,15 @@ export default function AutoEngineToolModal() {
 
     let isMounted = true;
     setLoading(true);
+    setSubmitting(false);
     setHistory([]);
     setRecommendations(null);
     setCourses([]);
+    setResultPayload(null);
     setSelectedOtherId(null);
     setOtherInputText("");
+    setSearchFilter("");
+    setSelectedMultiOptions([]);
 
     const mergedAnswers = { ...initialAnswers };
     setAnswers(mergedAnswers);
@@ -103,13 +143,31 @@ export default function AutoEngineToolModal() {
         const nodes = flowData.nodes || [];
         const edges = flowData.edges || [];
 
-        // Determine First Step Node
-        const startNode =
-          nodes.find((n) => n.id === "node_q1_persona") ||
-          nodes.find((n) => n.id === "node_step1_persona") ||
-          nodes.find((n) => n.id === "node_step1_level") ||
-          nodes.find((n) => n.type !== "start") ||
-          nodes[0];
+        // Determine First Step Node (Jump directly to Question 1 if specific tool slug is launched)
+        let startNode = null;
+        if (activeSlug === "suggest-course") {
+          startNode = nodes.find((n) => n.id === "node_profile") || nodes.find((n) => n.id === "node_sc_q1");
+        } else if (activeSlug === "suggest-university") {
+          startNode = nodes.find((n) => n.id === "node_profile") || nodes.find((n) => n.id === "node_su_q1");
+        } else if (activeSlug === "check-eligibility") {
+          startNode = nodes.find((n) => n.id === "node_profile") || nodes.find((n) => n.id === "node_ce_q1");
+        }
+
+        if (!startNode) {
+          const startEdge = edges.find(
+            (e) => e.source === "start" || e.source === flowData.startNodeId
+          );
+          startNode = startEdge ? nodes.find((n) => n.id === startEdge.target) : null;
+        }
+
+        if (!startNode) {
+          startNode =
+            nodes.find((n) => n.id === "node_q1_persona") ||
+            nodes.find((n) => n.id === "node_step1_persona") ||
+            nodes.find((n) => n.id === "node_step1_level") ||
+            nodes.find((n) => n.type !== "start") ||
+            nodes[0];
+        }
 
         setCurrentNodeId(startNode?.id || null);
         setLoading(false);
@@ -124,6 +182,7 @@ export default function AutoEngineToolModal() {
     };
   }, [isOpen, activeSlug, initialAnswers]);
 
+
   // Current Node Helper
   const currentNode = useMemo(() => {
     if (!workflow?.nodes || !currentNodeId) return null;
@@ -136,6 +195,23 @@ export default function AutoEngineToolModal() {
     if (!history) return 10;
     return Math.min(10 + history.length * 7.5, 95);
   }, [history, recommendations]);
+
+  // Options helpers
+  const rawOptions = useMemo(() => {
+    return currentNode?.data?.options || currentNode?.data?.branches || [];
+  }, [currentNode]);
+
+  const filteredOptions = useMemo(() => {
+    if (!searchFilter.trim()) return rawOptions;
+    const q = searchFilter.toLowerCase().trim();
+    return rawOptions.filter((opt) => {
+      const title =
+        typeof opt === "object"
+          ? opt.title || opt.name || opt.text || opt.label || ""
+          : String(opt);
+      return title.toLowerCase().includes(q);
+    });
+  }, [rawOptions, searchFilter]);
 
   // Handle Option Select (Next Step Traversal)
   const handleSelectOption = async (option, storeVariable, customText = "") => {
@@ -157,6 +233,8 @@ export default function AutoEngineToolModal() {
     setAnswers(updatedAnswers);
     setSelectedOtherId(null);
     setOtherInputText("");
+    setSearchFilter("");
+    setSelectedMultiOptions([]);
 
     // Call Backend Step Evaluator or compute from graph
     try {
@@ -173,21 +251,46 @@ export default function AutoEngineToolModal() {
           (typeof option === "object" && option.id && e.sourceHandle === option.id)
       );
 
+      // Check if an outgoing edge matches the active tool_category
+      if (!matchedEdge && outgoingEdges.length > 0 && updatedAnswers.tool_category) {
+        matchedEdge = outgoingEdges.find(
+          (e) =>
+            e.sourceHandle === updatedAnswers.tool_category ||
+            e.label === updatedAnswers.tool_category
+        );
+      }
+
       if (!matchedEdge && outgoingEdges.length > 0) {
         matchedEdge = outgoingEdges.find((e) => e.sourceHandle === "default") || outgoingEdges[0];
       }
 
       if (matchedEdge) {
         const nextNode = nodes.find((n) => n.id === matchedEdge.target);
-        if (nextNode) {
+        if (nextNode && nextNode.type !== "tool_lead_form") {
           setHistory((prev) => [...prev, currentNodeId]);
           setCurrentNodeId(nextNode.id);
           return;
         }
       }
+
+      // Reached the end of questions or lead form node -> Directly fetch recommendations!
+      await fetchRecommendationsDirectly(updatedAnswers);
     } catch (err) {
-      console.warn("Error finding next step, fallback to API:", err);
+      console.warn("Error finding next step, generating recommendations:", err);
+      await fetchRecommendationsDirectly(updatedAnswers);
     }
+  };
+
+  // Multi-Select Handlers
+  const handleToggleMultiOption = (optVal) => {
+    setSelectedMultiOptions((prev) =>
+      prev.includes(optVal) ? prev.filter((x) => x !== optVal) : [...prev, optVal]
+    );
+  };
+
+  const handleMultiSelectSubmit = () => {
+    if (selectedMultiOptions.length === 0) return;
+    handleSelectOption(selectedMultiOptions.join(", "), currentNode?.data?.storeVariable);
   };
 
   // Handle Back Button
@@ -198,6 +301,8 @@ export default function AutoEngineToolModal() {
       setCurrentNodeId(prevId);
       setSelectedOtherId(null);
       setOtherInputText("");
+      setSearchFilter("");
+      setSelectedMultiOptions([]);
     }
   };
 
@@ -261,55 +366,141 @@ export default function AutoEngineToolModal() {
         {/* CONTENT BODY */}
         {/* ========================================================= */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8">
-          {loading ? (
-            <div className="py-20 flex flex-col items-center justify-center gap-3 text-slate-500">
-              <div className="w-10 h-10 border-3 border-blue-600 border-t-transparent rounded-full animate-spin" />
-              <p className="text-sm font-medium">Loading AI Advisor Engine...</p>
+          {loading || submitting ? (
+            <div className="py-20 flex flex-col items-center justify-center gap-4 text-center">
+              <div className="relative">
+                <div className="w-16 h-16 rounded-3xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-500/30 animate-pulse text-white">
+                  <Sparkles size={30} />
+                </div>
+                <div className="absolute -inset-1 rounded-3xl border-2 border-blue-400 border-t-transparent animate-spin" />
+              </div>
+              <div className="space-y-1">
+                <h4 className="text-lg font-extrabold text-slate-900">
+                  {submitting ? "Analyzing & Generating Recommendations..." : "Loading AI Engine..."}
+                </h4>
+                <p className="text-xs text-slate-500 max-w-sm">
+                  {submitting
+                    ? "Evaluating academic criteria, university accreditations, and best suited career options."
+                    : "Fetching the latest question flow..."}
+                </p>
+              </div>
             </div>
           ) : recommendations ? (
             /* ===================================================== */
-            /* 🏆 RESULTS VIEW: LIST OF COURSES & UNIVERSITY MATCHES */
+            /* 🏆 RESULTS VIEW: ELIGIBILITY REPORT / UNIVERSITIES / COURSES */
             /* ===================================================== */
-            <div className="space-y-8">
-              {/* Header Title & Subtitle as requested */}
-              <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-r from-slate-900 via-[#1e2f4d] to-slate-900 text-white relative overflow-hidden shadow-xl border border-slate-700/40">
-                <div className="relative z-10 space-y-2 text-center sm:text-left">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30 text-[11px] font-bold uppercase tracking-wider">
-                    <Sparkles size={14} className="text-amber-400" />
-                    AI Academic Recommendation
+            <div className="space-y-6 sm:space-y-8">
+              {/* ELIGIBILITY REPORT VERDICT BANNER */}
+              {resultPayload?.resultType === "eligibility_report" ? (
+                <div
+                  className={`p-6 sm:p-7 rounded-3xl text-white relative overflow-hidden shadow-xl border ${
+                    resultPayload.eligibilityStatus === "eligible"
+                      ? "bg-gradient-to-r from-emerald-900 via-teal-950 to-emerald-900 border-emerald-500/30"
+                      : resultPayload.eligibilityStatus === "provisional"
+                      ? "bg-gradient-to-r from-amber-900 via-yellow-950 to-amber-900 border-amber-500/30"
+                      : "bg-gradient-to-r from-rose-950 via-red-950 to-rose-900 border-rose-500/30"
+                  }`}
+                >
+                  <div className="relative z-10 space-y-2.5">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 text-white border border-white/20 text-[11px] font-bold uppercase tracking-wider">
+                      <ShieldCheck size={15} />
+                      {resultPayload.eligibilityStatus === "eligible"
+                        ? "Official COBSE Evaluation • Eligible"
+                        : resultPayload.eligibilityStatus === "provisional"
+                        ? "COBSE Evaluation • Provisional Eligibility"
+                        : "COBSE Evaluation • Additional Criteria Required"}
+                    </div>
+                    <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-white leading-snug">
+                      {resultPayload.verdictTitle || resultHeader.title}
+                    </h2>
+                    <p className="text-xs sm:text-sm text-slate-200 font-medium leading-relaxed max-w-2xl">
+                      {resultPayload.verdictSubtitle || resultHeader.subtitle}
+                    </p>
                   </div>
-                  <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-white leading-snug">
-                    {resultHeader.title || "Great! Ready to discover courses that match your preferences?"}
-                  </h2>
-                  <p className="text-xs sm:text-sm text-blue-200 font-medium">
-                    {resultHeader.subtitle || "List of courses"}
-                  </p>
                 </div>
-              </div>
+              ) : (
+                /* Header for Course / University Recommender */
+                <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-r from-slate-900 via-[#1e2f4d] to-slate-900 text-white relative overflow-hidden shadow-xl border border-slate-700/40">
+                  <div className="relative z-10 space-y-2 text-center sm:text-left">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30 text-[11px] font-bold uppercase tracking-wider">
+                      <Sparkles size={14} className="text-amber-400" />
+                      {resultPayload?.resultType === "university_list"
+                        ? "AI University Recommender"
+                        : "AI Academic Recommendation"}
+                    </div>
+                    <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-white leading-snug">
+                      {resultHeader.title || "Great! Ready to discover courses that match your preferences?"}
+                    </h2>
+                    <p className="text-xs sm:text-sm text-blue-200 font-medium">
+                      {resultHeader.subtitle || "List of recommendations"}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* CRITERIA CHECKS BREAKDOWN (FOR ELIGIBILITY REPORT) */}
+              {resultPayload?.criteriaChecks && resultPayload.criteriaChecks.length > 0 && (
+                <div className="space-y-3">
+                  <h3 className="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
+                    <CheckCircle2 className="text-emerald-600" size={18} />
+                    <span>Official Criteria Verification Checklist</span>
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                    {resultPayload.criteriaChecks.map((check, cIdx) => (
+                      <div
+                        key={cIdx}
+                        className="p-4 rounded-2xl border border-slate-200/80 bg-white shadow-xs space-y-1.5"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-xs font-bold text-slate-900 leading-snug">
+                            {check.criterion}
+                          </span>
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold shrink-0 ${
+                              check.status === "passed"
+                                ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                                : "bg-amber-50 text-amber-700 border border-amber-200"
+                            }`}
+                          >
+                            {check.status === "passed" ? "Passed" : "Provisional"}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-slate-500 leading-relaxed">
+                          {check.details}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Profile Summary Badges */}
-              <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200/80 flex flex-wrap items-center justify-between gap-3 text-xs text-amber-900 font-medium">
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-800 font-medium">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse" />
                   <span>
                     Profile: <strong>{userSummary?.persona || answers.user_persona || "Student / Professional"}</strong>
                   </span>
                   <span>•</span>
                   <span>
-                    Goal: <strong>{userSummary?.careerGoal || answers.career_goal || "Career Growth"}</strong>
+                    Qualification: <strong>{userSummary?.qualification || answers.highest_qualification || "12th Standard"}</strong>
                   </span>
-                  <span>•</span>
-                  <span>
-                    Budget: <strong>{userSummary?.budget || answers.budget_preference || "Flexible"}</strong>
-                  </span>
+                  {userSummary?.budget && (
+                    <>
+                      <span>•</span>
+                      <span>
+                        Budget: <strong>{userSummary.budget}</strong>
+                      </span>
+                    </>
+                  )}
                 </div>
-                <span className="bg-amber-200/80 text-amber-950 px-3 py-1 rounded-full font-bold text-xs">
+                <span className="bg-blue-100 text-blue-900 px-3 py-1 rounded-full font-bold text-xs">
                   {(courses?.length || 0) > 0 ? `${courses.length} Courses Matched` : `${recommendations.length} Universities Found`}
                 </span>
               </div>
 
               {/* ===================================================== */}
-              {/* 🎓 1. LIST OF RECOMMENDED COURSES */}
+              {/* 🎓 1. LIST OF RECOMMENDED COURSES (IF APPLICABLE) */}
               {/* ===================================================== */}
               {courses && courses.length > 0 && (
                 <div className="space-y-4">
@@ -493,49 +684,6 @@ export default function AutoEngineToolModal() {
                 </button>
               </div>
             </div>
-          ) : currentNode?.type === "tool_lead_form" ? (
-            /* ===================================================== */
-            /* 📋 LEAD CAPTURE FORM STEP (USING SITE FORMWRAPPER) */
-            /* ===================================================== */
-            <div className="max-w-lg mx-auto py-2">
-              <FormWrapper
-                isModal={false}
-                title={currentNode.data?.title || "Almost Done! Unlock Your Course Matches"}
-                subtitle={currentNode.data?.subtitle || "Enter your contact details to generate personalized courses"}
-                defaultCourse={answers.course_type || answers.Course_Name || ""}
-                hideCourseField={true}
-                formNameOverride={`SODE_AI_Wizard_${activeSlug}`}
-                sourceOverride="Website AI Course Wizard"
-                submitButtonText={currentNode.data?.submitButtonText || "Submit & Discover Courses 🚀"}
-                redirectUrl=""
-                onSuccess={async (leadPayload) => {
-                  // Fetch AI Recommendations
-                  try {
-                    const res = await dynamicPost({
-                      entity: "tool",
-                      endPoint: "public/submit",
-                      body: {
-                        slug: activeSlug,
-                        leadData: leadPayload || {},
-                        userAnswers: answers,
-                      },
-                    });
-                    const payload = res?.result || res?.data || res;
-                    setRecommendations(payload?.recommendations || []);
-                    setCourses(payload?.courses || []);
-                    setUserSummary(payload?.userSummary || {});
-                    if (payload?.resultTitle) {
-                      setResultHeader({
-                        title: payload.resultTitle,
-                        subtitle: payload.resultSubtitle || "List of courses",
-                      });
-                    }
-                  } catch (err) {
-                    console.error("Error fetching AI recommendations:", err);
-                  }
-                }}
-              />
-            </div>
           ) : (
             /* ===================================================== */
             /* ❓ STEP QUESTION / BRANCH SELECTION CARDS */
@@ -553,17 +701,39 @@ export default function AutoEngineToolModal() {
                 </h3>
               </div>
 
+              {/* Search Filter for large lists (36 Courses, 222 Specializations, 61 Boards) */}
+              {rawOptions.length > 6 && (
+                <div className="relative max-w-md mx-auto">
+                  <Search
+                    size={16}
+                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+                  />
+                  <input
+                    type="text"
+                    value={searchFilter}
+                    onChange={(e) => setSearchFilter(e.target.value)}
+                    placeholder={`Search from ${rawOptions.length} available options...`}
+                    className="w-full pl-10 pr-10 py-2.5 rounded-2xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 text-xs sm:text-sm bg-slate-50 focus:bg-white text-slate-900 transition-all outline-none"
+                  />
+                  {searchFilter && (
+                    <button
+                      type="button"
+                      onClick={() => setSearchFilter("")}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600 font-semibold"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+              )}
+
               {/* Options Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-4 md:gap-5">
-                {(
-                  currentNode?.data?.options ||
-                  currentNode?.data?.branches ||
-                  []
-                ).map((opt, idx) => {
+                {filteredOptions.map((opt, idx) => {
                   const optTitle =
                     typeof opt === "object"
                       ? opt.title || opt.text || opt.label || opt.name
-                      : opt;
+                      : String(opt);
                   const optDesc =
                     typeof opt === "object" ? opt.description : null;
                   const IconComp =
@@ -580,27 +750,42 @@ export default function AutoEngineToolModal() {
                         optTitle.toLowerCase() === "other"));
 
                   const isSelectedOther = selectedOtherId === optId;
+                  const isMultiSelected = selectedMultiOptions.includes(optTitle);
 
                   return (
                     <div
                       key={idx}
                       onClick={() => {
-                        if (isOtherOption) {
+                        if (currentNode?.data?.isMultiSelect) {
+                          handleToggleMultiOption(optTitle);
+                        } else if (isOtherOption) {
                           setSelectedOtherId(optId);
                         } else {
                           handleSelectOption(opt, currentNode?.data?.storeVariable);
                         }
                       }}
                       className={`p-3.5 sm:p-5 md:p-6 rounded-2xl sm:rounded-3xl border transition-all text-left flex flex-col justify-between gap-3 group cursor-pointer ${
-                        isSelectedOther
-                          ? "border-blue-600 bg-blue-50/50 ring-2 ring-blue-300 shadow-md"
+                        isSelectedOther || isMultiSelected
+                          ? "border-blue-600 bg-blue-50/60 ring-2 ring-blue-300 shadow-md"
                           : "border-slate-200 sm:border-2 hover:border-blue-600 bg-white hover:bg-blue-50/40 hover:shadow-xl hover:-translate-y-1"
                       }`}
                     >
                       <div className="flex items-center gap-3 sm:gap-4 w-full">
-                        <div className="w-10 h-10 sm:w-13 sm:h-13 rounded-xl sm:rounded-2xl bg-blue-50 group-hover:bg-blue-600 group-hover:text-white text-blue-600 flex items-center justify-center shrink-0 transition-all shadow-xs group-hover:scale-105 aspect-square">
-                          <IconComp size={20} className="sm:w-6 sm:h-6" strokeWidth={2.2} />
-                        </div>
+                        {currentNode?.data?.isMultiSelect ? (
+                          <div
+                            className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center shrink-0 transition-all ${
+                              isMultiSelected
+                                ? "bg-blue-600 border-blue-600 text-white"
+                                : "border-slate-300 bg-white"
+                            }`}
+                          >
+                            {isMultiSelected && <Check size={14} strokeWidth={3} />}
+                          </div>
+                        ) : (
+                          <div className="w-10 h-10 sm:w-13 sm:h-13 rounded-xl sm:rounded-2xl bg-blue-50 group-hover:bg-blue-600 group-hover:text-white text-blue-600 flex items-center justify-center shrink-0 transition-all shadow-xs group-hover:scale-105 aspect-square">
+                            <IconComp size={20} className="sm:w-6 sm:h-6" strokeWidth={2.2} />
+                          </div>
+                        )}
                         <div className="space-y-0.5 sm:space-y-1 flex-1 min-w-0">
                           <h4 className="text-xs sm:text-base md:text-lg font-bold text-slate-900 group-hover:text-blue-700 transition-colors leading-snug">
                             {optTitle}
@@ -611,9 +796,11 @@ export default function AutoEngineToolModal() {
                             </p>
                           )}
                         </div>
-                        <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-slate-100 group-hover:bg-blue-600 group-hover:text-white text-slate-400 flex items-center justify-center shrink-0 transition-all group-hover:translate-x-1 aspect-square">
-                          <ChevronRight size={14} className="sm:w-[18px] sm:h-[18px]" />
-                        </div>
+                        {!currentNode?.data?.isMultiSelect && (
+                          <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-slate-100 group-hover:bg-blue-600 group-hover:text-white text-slate-400 flex items-center justify-center shrink-0 transition-all group-hover:translate-x-1 aspect-square">
+                            <ChevronRight size={14} className="sm:w-[18px] sm:h-[18px]" />
+                          </div>
+                        )}
                       </div>
 
                       {/* Description Box if selected */}
@@ -662,6 +849,24 @@ export default function AutoEngineToolModal() {
                   );
                 })}
               </div>
+
+              {/* Multi-Select Floating / Bottom Continue Bar */}
+              {currentNode?.data?.isMultiSelect && (
+                <div className="pt-4 flex items-center justify-between border-t border-slate-100">
+                  <span className="text-xs font-semibold text-slate-500">
+                    {selectedMultiOptions.length} option(s) selected
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleMultiSelectSubmit}
+                    disabled={selectedMultiOptions.length === 0}
+                    className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold text-xs transition-all shadow-md flex items-center gap-2 cursor-pointer"
+                  >
+                    <span>Continue</span>
+                    <ChevronRight size={14} />
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>
