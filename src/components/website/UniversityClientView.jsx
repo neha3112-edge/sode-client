@@ -108,7 +108,7 @@ export default function UniversityClientView({ initialData, slug }) {
     if (Array.isArray(uni.accreditations) && uni.accreditations.length > 0) {
       return uni.accreditations.map((acc) => ({
         title: acc.name,
-        image: acc.image?.url || acc.logo?.url || (typeof acc.image === "string" ? acc.image : null),
+        logo: acc.logo?.url || (typeof acc.logo === "string" ? acc.logo : null),
         description: acc.description || "",
       }));
     }
@@ -498,34 +498,41 @@ export default function UniversityClientView({ initialData, slug }) {
         ) : null}
 
         {accreditationsList.length > 0 && (
-          <div className="bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8 text-center">
-            <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight mb-5 sm:mb-7 m-0">
+          <div className="bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 text-center">
+            <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight mb-4">
               Rankings & Accreditations of {uniName}
             </h2>
-
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 gap-2 sm:gap-2.5 md:gap-3.5">
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 gap-1.5 sm:gap-2 md:gap-3">
               {accreditationsList.map((acc, idx) => (
                 <div
                   key={idx}
-                  className="bg-white rounded-xl border border-gray-200 p-2 sm:p-2.5 md:p-3 flex flex-col items-center justify-center text-center aspect-square shadow-2xs hover:border-blue-300 transition-colors"
+                  className="bg-white rounded-xl border border-gray-200 flex flex-col p-2 sm:p-3 items-center justify-between text-center aspect-square shadow-2xs hover:border-blue-300 transition-colors overflow-hidden"
                 >
-                  <div className="h-8 sm:h-10 md:h-11 flex items-center justify-center relative w-full mb-1 shrink-0">
-                    {acc.image ? (
-                      <img
-                        src={acc.image}
+                  <div className="flex-1 min-h-0 w-full relative">
+                    {acc.logo ? (
+                      <Image
+                        src={getAssetPath(acc.logo)}
                         alt={acc.title}
-                        className="object-contain max-h-7 sm:max-h-9 md:max-h-10 w-auto"
+                        fill
+                        sizes="(max-width: 768px) 64px, 80px"
+                        className="object-contain"
                       />
                     ) : (
-                      <Award className="w-6 h-6 sm:w-7 sm:h-7 text-blue-600" />
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Award className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-blue-600" />
+                      </div>
                     )}
                   </div>
-                  <h3 className="text-[10.5px] sm:text-xs md:text-[13px] font-bold text-gray-900 m-0 tracking-tight leading-tight line-clamp-2 w-full">
-                    {acc.title}
-                  </h3>
-                  <p className="text-[8.5px] sm:text-[9.5px] md:text-[10.5px] text-gray-500 leading-tight m-0 line-clamp-2 w-full mt-0.5">
-                    {acc.description}
-                  </p>
+                  <div className="w-full shrink-0 flex flex-col items-center justify-end">
+                    <h3 className="text-[10px] sm:text-[11.5px] md:text-[12.5px] font-bold text-gray-900 m-0 tracking-tight leading-tight line-clamp-1 sm:line-clamp-2 w-full">
+                      {acc.title}
+                    </h3>
+                    {acc.description ? (
+                      <p className="text-[8px] sm:text-[9px] md:text-[10px] text-gray-500 leading-tight m-0 line-clamp-1 sm:line-clamp-2 w-full mt-0.5">
+                        {acc.description}
+                      </p>
+                    ) : null}
+                  </div>
                 </div>
               ))}
             </div>
@@ -620,7 +627,7 @@ export default function UniversityClientView({ initialData, slug }) {
                     </div>
 
                     <div className="w-full space-y-0.5 my-0.5">
-                      <div className="min-h-[28px] sm:min-h-[32px] flex items-center justify-center">
+                      <div className="min-h-7 sm:min-h-8 flex items-center justify-center">
                         <h4 className="text-xs sm:text-[13px] font-semibold text-[#0a2540] line-clamp-2 leading-tight m-0 w-full text-center">
                           {cardTitle}
                         </h4>
@@ -736,12 +743,14 @@ export default function UniversityClientView({ initialData, slug }) {
                   key={idx}
                   className="rounded-xl border border-blue-100/80 bg-blue-50/20 p-6 text-center hover:border-blue-300 hover:shadow-md transition-all duration-200 flex flex-col items-center space-y-3 shadow-2xs"
                 >
-                  <div className="w-14 h-14 rounded-2xl bg-white text-[#0D5CAD] flex items-center justify-center shrink-0 border border-blue-100 shadow-2xs p-2.5">
+                  <div className="w-14 h-14 rounded-2xl bg-white text-[#0D5CAD] flex items-center justify-center shrink-0 border border-blue-100 shadow-2xs relative overflow-hidden">
                     {item.iconUrl ? (
-                      <img
-                        src={item.iconUrl}
+                      <Image
+                        src={getAssetPath(item.iconUrl)}
                         alt={item.title}
-                        className="w-full h-full object-contain"
+                        fill
+                        sizes="56px"
+                        className="object-contain p-2.5"
                       />
                     ) : (
                       <CheckCircle2 size={26} className="text-[#0077B6]" />
@@ -769,12 +778,14 @@ export default function UniversityClientView({ initialData, slug }) {
                 {sampleDegreeData.imageUrl ? (
                   <div
                     onClick={() => setIsCertificateModalOpen(true)}
-                    className="w-full max-w-[460px] rounded-xl overflow-hidden cursor-pointer hover:shadow-md transition-shadow duration-200 bg-white"
+                    className="w-full max-w-115 aspect-[460/340] rounded-xl overflow-hidden cursor-pointer hover:shadow-md transition-shadow duration-200 bg-white relative"
                   >
-                    <img
-                      src={sampleDegreeData.imageUrl}
+                    <Image
+                      src={getAssetPath(sampleDegreeData.imageUrl)}
                       alt={sampleDegreeData.title || `Sample Degree ${uniName}`}
-                      className="w-full h-auto max-h-[340px] object-contain rounded-xl block mx-auto"
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 460px"
+                      className="object-contain rounded-xl"
                     />
                   </div>
                 ) : null}
@@ -797,7 +808,7 @@ export default function UniversityClientView({ initialData, slug }) {
                   <div className="grid grid-cols-2 gap-x-6 gap-y-3.5 pt-2 max-w-md">
                     {sampleDegreeData.points.map((pt, pIdx) => (
                       <div key={pIdx} className="flex items-center gap-2.5">
-                        <span className="w-5 h-5 rounded-[4px] bg-[#48BB78] flex items-center justify-center text-white shrink-0 shadow-2xs">
+                        <span className="w-5 h-5 rounded-sm bg-[#48BB78] flex items-center justify-center text-white shrink-0 shadow-2xs">
                           <Check size={13} strokeWidth={3.5} />
                         </span>
                         <span className="text-xs sm:text-[14px] font-bold text-gray-900 leading-tight">
@@ -849,10 +860,12 @@ export default function UniversityClientView({ initialData, slug }) {
                   >
                     <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-full p-1 flex items-center justify-center bg-white border border-gray-100 shadow-2xs relative my-0.5 shrink-0 overflow-hidden">
                       {peerLogo ? (
-                        <img
-                          src={peerLogo}
+                        <Image
+                          src={getAssetPath(peerLogo)}
                           alt={peer.name}
-                          className="w-full h-full object-contain p-0.5"
+                          fill
+                          sizes="56px"
+                          className="object-contain"
                         />
                       ) : (
                         <div className="w-full h-full rounded-full bg-blue-50 text-blue-600 font-semibold flex items-center justify-center text-xs uppercase">
@@ -862,7 +875,7 @@ export default function UniversityClientView({ initialData, slug }) {
                     </div>
 
                     <div className="w-full space-y-0.5 my-0.5">
-                      <div className="min-h-7 sm:min-h-[32px] flex items-center justify-center">
+                      <div className="min-h-7 sm:min-h-8 flex items-center justify-center">
                         <h4 className="text-xs sm:text-[12.5px] font-semibold text-[#0a2540] line-clamp-2 leading-tight m-0 w-full text-center">
                           {peer.name}
                         </h4>
@@ -1035,9 +1048,10 @@ export default function UniversityClientView({ initialData, slug }) {
             <div className="relative w-full max-w-65 sm:w-65 sm:max-w-none aspect-square shrink-0 rounded-2xl overflow-hidden shadow-sm bg-gray-100">
               {heroBannerUrl || selectedCourseSpec.banner ? (
                 <Image
-                  src={selectedCourseSpec.banner || heroBannerUrl}
+                  src={getAssetPath(selectedCourseSpec.banner || heroBannerUrl)}
                   alt={selectedCourseSpec.title || uniName}
                   fill
+                  sizes="(max-width: 640px) 100vw, 260px"
                   className="object-cover object-center rounded-2xl"
                   priority
                 />
@@ -1051,9 +1065,10 @@ export default function UniversityClientView({ initialData, slug }) {
                 <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 z-10 bg-white rounded-xl shadow-md p-1.5 sm:p-2 border border-gray-100 flex items-center justify-center">
                   <div className="relative w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center">
                     <Image
-                      src={logoUrl}
+                      src={getAssetPath(logoUrl)}
                       alt={uniName}
                       fill
+                      sizes="44px"
                       className="object-contain"
                     />
                   </div>
@@ -1176,11 +1191,15 @@ export default function UniversityClientView({ initialData, slug }) {
               </p>
             )}
             <div className="bg-gray-50 p-4 sm:p-6 rounded-2xl border border-gray-200 flex items-center justify-center">
-              <img
-                src={sampleDegreeData.imageUrl}
-                alt={sampleDegreeData.title || `Sample Degree Certificate - ${uniName}`}
-                className="max-h-[520px] w-auto max-w-full object-contain rounded-xl shadow-md mx-auto"
-              />
+              <div className="relative w-full h-[320px] sm:h-[480px] max-h-[75vh]">
+                <Image
+                  src={getAssetPath(sampleDegreeData.imageUrl)}
+                  alt={sampleDegreeData.title || `Sample Degree Certificate - ${uniName}`}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 700px"
+                  className="object-contain rounded-xl shadow-md"
+                />
+              </div>
             </div>
           </div>
         </Modal>
