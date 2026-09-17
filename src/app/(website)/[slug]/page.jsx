@@ -3,23 +3,47 @@ import { notFound } from "next/navigation";
 import { request } from "@/services/request";
 import { getAssetPath } from "@/lib/utils";
 import CustomPageClientView from "@/components/website/CustomPageClientView";
+import DynamicListingClientView from "@/components/website/DynamicListingClientView";
 
 export const revalidate = 600;
 
-const getCustomPageData = cache(async (slug) => {
+// Unified page resolver: checks Dynamic Listing Page first, then Custom Page
+const getPageData = cache(async (slug) => {
   if (!slug) return null;
+
+  // 1. Try Dynamic Listing Page (e.g. /top-online-ma-universities-in-india)
   try {
-    const res = await request.dynamicRead({
+    const dynamicRes = await request.dynamicRead({
+      entity: "dynamic-listing-pages",
+      endPoint: "v1/detail",
+      slug: encodeURIComponent(slug),
+      revalidate: 600,
+    });
+    const dynamicPage = dynamicRes?.result || dynamicRes;
+    if (dynamicPage && dynamicPage.title) {
+      return { type: "dynamic-listing", data: dynamicPage };
+    }
+  } catch (err) {
+    // fallback to custom-pages silently
+  }
+
+  // 2. Try Custom Page (e.g. /online-mba, /privacy-policy)
+  try {
+    const customRes = await request.dynamicRead({
       entity: "custom-pages",
       endPoint: "v1/detail",
       slug: encodeURIComponent(slug),
       revalidate: 600,
     });
-    return res?.result || res || null;
+    const customPage = customRes?.result || customRes;
+    if (customPage && customPage.title) {
+      return { type: "custom-page", data: customPage };
+    }
   } catch (err) {
-    console.error(`[Server Component] Error pre-fetching custom page ${slug}:`, err.message);
-    return null;
+    console.error(`[Server Component] Error pre-fetching page ${slug}:`, err.message);
   }
+
+  return null;
 });
 
 export async function generateMetadata({ params }) {
@@ -33,7 +57,8 @@ export async function generateMetadata({ params }) {
   }
 
   try {
-    const page = await getCustomPageData(slug);
+    const resolved = await getPageData(slug);
+    const page = resolved?.data;
 
     if (!page || !page.title) {
       return {
@@ -50,7 +75,11 @@ export async function generateMetadata({ params }) {
       page.content?.replace(/<[^>]+>/g, "").slice(0, 160) ||
       "Explore course details, fee structure, top universities, and admissions guidance at SODE.";
 
-    const keywords = page.keywords || `${page.title}, online education, distance degree programs, sode`;
+    const keywords =
+      page.metaKeywords ||
+      page.keywords ||
+      `${page.title}, online education, top universities in india, sode`;
+
     const rawImage = page.ogImage || page.bannerImage || page.featuredImage;
     const ogImage = rawImage ? getAssetPath(rawImage) : "https://mysode.com/og-image.jpg";
     const canonical = page.canonicalUrl || `https://mysode.com/${page.slug || slug}`;
@@ -105,23 +134,28 @@ export default async function CustomDynamicPage({ params }) {
   const resolvedParams = await params;
   const slug = resolvedParams?.slug || "";
 
-  const [page, heroRes] = await Promise.all([
-    getCustomPageData(slug),
-    request
-      .dynamicRead({
-        entity: "hero",
-        endPoint: "public/by-slug",
-        slug: encodeURIComponent(slug),
-        revalidate: 0,
-      })
-      .catch(() => null),
-  ]);
+  const resolved = await getPageData(slug);
 
-  if (!page || !page.title) {
+  if (!resolved || !resolved.data || !resolved.data.title) {
     notFound();
   }
 
+  // 1. Dynamic Listing & Ranking Page
+  if (resolved.type === "dynamic-listing") {
+    return <DynamicListingClientView page={resolved.data} slug={slug} />;
+  }
+
+  // 2. Custom Rich Editorial / Builder Page
+  const heroRes = await request
+    .dynamicRead({
+      entity: "hero",
+      endPoint: "public/by-slug",
+      slug: encodeURIComponent(slug),
+      revalidate: 0,
+    })
+    .catch(() => null);
+
   const heroData = heroRes?.result || heroRes || null;
 
-  return <CustomPageClientView page={page} slug={slug} heroData={heroData} />;
+  return <CustomPageClientView page={resolved.data} slug={slug} heroData={heroData} />;
 }
