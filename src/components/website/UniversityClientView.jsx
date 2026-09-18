@@ -741,7 +741,7 @@ export default function UniversityClientView({ initialData, slug }) {
               {whyChooseSection.items.map((item, idx) => (
                 <div
                   key={idx}
-                  className="rounded-xl border border-blue-100/80 bg-blue-50/20 p-6 text-center hover:border-blue-300 hover:shadow-md transition-all duration-200 flex flex-col items-center space-y-3 shadow-2xs"
+                  className="rounded-xl border border-blue-100/80 bg-blue-50/20 p-5 text-center hover:border-blue-300 hover:shadow-md transition-all duration-200 flex flex-col items-center space-y-3 shadow-2xs"
                 >
                   <div className="w-14 h-14 rounded-2xl bg-white text-[#0D5CAD] flex items-center justify-center shrink-0 border border-blue-100 shadow-2xs relative overflow-hidden">
                     {item.iconUrl ? (
