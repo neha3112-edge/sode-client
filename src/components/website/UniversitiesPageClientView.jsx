@@ -9,8 +9,6 @@ import {
   MapPin,
   ShieldCheck,
   FileText,
-  RotateCcw,
-  Filter,
   X,
 } from "lucide-react";
 import Link from "next/link";
@@ -74,7 +72,7 @@ function UniversityCard({ uni }) {
     ? uni.courses.map((c) => (typeof c === "object" ? c?.name || c?.displayName || c?.title || "" : c)).filter(Boolean)
     : [];
   const featuredCourse = uni?.featuredCourse || coursesList[0] || "";
-  const programsText = coursesList.length > 0 ? coursesList.slice(0, 6).join(" | ") : "";
+  const programsText = coursesList.length > 0 ? coursesList.join(" | ") : "";
 
   const logoUrl = !logoErr ? resolveMediaUrl(uni?.image || uni?.logoSrc || uni?.logo) : null;
   const imageSrc = !imgErr ? resolveMediaUrl(uni?.bannerImg || uni?.imageSrc || uni?.image) : null;
@@ -114,7 +112,7 @@ function UniversityCard({ uni }) {
           </span>
         )}
 
-        <div className="absolute -bottom-3 left-3 h-8.5 sm:h-9 w-24 sm:w-26 bg-white rounded-md border border-slate-200/90 shadow-sm flex items-center justify-center p-1 z-10 overflow-hidden">
+        <div className="absolute -bottom-3 left-0 h-9 sm:h-12 w-24 sm:w-26 bg-white rounded-md rounded-tl-none flex items-center justify-center p-1 z-10 overflow-hidden">
           {logoUrl ? (
             <div className="relative w-full h-full">
               <Image
@@ -165,13 +163,13 @@ function UniversityCard({ uni }) {
               <FileText className="w-2.5 h-2.5 text-slate-400" />
               FEATURED PROGRAM
             </div>
-            <div className="text-[11px] font-semibold text-slate-700 line-clamp-1 leading-tight">
+            <div className="text-[11px] font-semibold text-slate-700 line-clamp-2 leading-tight">
               {programsText}
             </div>
           </div>
         ) : null}
 
-        <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between gap-2 mt-auto">
+        <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
           <div className="flex items-center gap-1 text-[11px]">
             <StarFilled className="text-amber-500 text-[11px]" />
             <span className="font-bold text-slate-700">{rating}</span>
@@ -262,7 +260,7 @@ export default function UniversitiesPageClientView({
           setFilterOptions(res.result);
         }
       })
-      .catch(() => {});
+      .catch(() => { });
 
     return () => {
       isMounted = false;
@@ -471,28 +469,9 @@ export default function UniversitiesPageClientView({
           </div>
         </div>
 
-        <div className="mt-3 block lg:hidden w-full">
+        <div className="mt-3 sm:mt-4 flex flex-col lg:flex-row items-stretch lg:items-center gap-2 sm:gap-2.5 w-full">
           <Input.Search
-            className="w-full"
-            allowClear
-            loading={isSearching}
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setCurrentPage(1);
-            }}
-            onSearch={(val) => {
-              setSearchTerm(val);
-              setDebouncedSearch(val);
-              setCurrentPage(1);
-            }}
-            placeholder="Search Universities Amity, Manipal, LPU etc.........."
-          />
-        </div>
-
-        <div className="mt-2 sm:mt-4 hidden lg:flex flex-wrap lg:flex-nowrap items-center gap-2 sm:gap-2.5 w-full">
-          <Input.Search
-            className="flex-1 min-w-55"
+            className="w-full lg:flex-1 lg:min-w-55"
             allowClear
             loading={isSearching}
             value={searchTerm}
@@ -508,77 +487,79 @@ export default function UniversitiesPageClientView({
             placeholder="Search Universities Amity, Manipal, LPU etc.........."
           />
 
-          <Select
-            value={selectedTop}
-            onChange={(val) => {
-              setSelectedTop(val);
-              setCurrentPage(1);
-            }}
-            placeholder={
-              <span className="flex items-center gap-1.5 text-slate-700 font-bold">
-                <Landmark className="w-3.5 h-3.5 text-slate-600 shrink-0" />
-                Select Category
-              </span>
-            }
-            options={topOptions}
-            allowClear
-            className="w-auto min-w-[165px] font-bold"
-            popupMatchSelectWidth={false}
-          />
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:flex items-center gap-2 sm:gap-2.5 w-full lg:w-auto">
+            <Select
+              value={selectedTop}
+              onChange={(val) => {
+                setSelectedTop(val);
+                setCurrentPage(1);
+              }}
+              placeholder={
+                <span className="flex items-center gap-1.5 text-slate-700">
+                  <Landmark className="w-3.5 h-3.5 text-slate-600 shrink-0" />
+                  Select Category
+                </span>
+              }
+              options={topOptions}
+              allowClear
+              className="w-full lg:w-auto lg:min-w-41.25"
+              popupMatchSelectWidth={false}
+            />
 
-          <Select
-            value={selectedCourse}
-            onChange={(val) => {
-              setSelectedCourse(val);
-              setCurrentPage(1);
-            }}
-            placeholder={
-              <span className="flex items-center gap-1.5 text-slate-700 font-bold">
-                <GraduationCap className="w-3.5 h-3.5 text-slate-600 shrink-0" />
-                Select Course
-              </span>
-            }
-            options={courseOptions}
-            allowClear
-            className="w-auto min-w-36.25 font-bold"
-            popupMatchSelectWidth={false}
-          />
+            <Select
+              value={selectedCourse}
+              onChange={(val) => {
+                setSelectedCourse(val);
+                setCurrentPage(1);
+              }}
+              placeholder={
+                <span className="flex items-center gap-1.5 text-slate-700">
+                  <GraduationCap className="w-3.5 h-3.5 text-slate-600 shrink-0" />
+                  Select Course
+                </span>
+              }
+              options={courseOptions}
+              allowClear
+              className="w-full lg:w-auto lg:min-w-36.25"
+              popupMatchSelectWidth={false}
+            />
 
-          <Select
-            value={selectedState}
-            onChange={(val) => {
-              setSelectedState(val);
-              setCurrentPage(1);
-            }}
-            placeholder={
-              <span className="flex items-center gap-1.5 text-slate-700 font-bold">
-                <MapPin className="w-3.5 h-3.5 text-slate-600 shrink-0" />
-                Select State
-              </span>
-            }
-            options={stateOptions}
-            allowClear
-            className="w-auto min-w-[145px] font-bold"
-            popupMatchSelectWidth={false}
-          />
+            <Select
+              value={selectedState}
+              onChange={(val) => {
+                setSelectedState(val);
+                setCurrentPage(1);
+              }}
+              placeholder={
+                <span className="flex items-center gap-1.5 text-slate-700">
+                  <MapPin className="w-3.5 h-3.5 text-slate-600 shrink-0" />
+                  Select State
+                </span>
+              }
+              options={stateOptions}
+              allowClear
+              className="w-full lg:w-auto lg:min-w-36.25"
+              popupMatchSelectWidth={false}
+            />
 
-          <Select
-            value={selectedAccreditation}
-            onChange={(val) => {
-              setSelectedAccreditation(val);
-              setCurrentPage(1);
-            }}
-            placeholder={
-              <span className="flex items-center gap-1.5 text-slate-700 font-bold">
-                <ShieldCheck className="w-3.5 h-3.5 text-slate-600 shrink-0" />
-                Select Accreditation
-              </span>
-            }
-            options={accreditationOptions}
-            allowClear
-            className="w-auto min-w-[165px] font-bold"
-            popupMatchSelectWidth={false}
-          />
+            <Select
+              value={selectedAccreditation}
+              onChange={(val) => {
+                setSelectedAccreditation(val);
+                setCurrentPage(1);
+              }}
+              placeholder={
+                <span className="flex items-center gap-1.5 text-slate-700">
+                  <ShieldCheck className="w-3.5 h-3.5 text-slate-600 shrink-0" />
+                  Select Accreditation
+                </span>
+              }
+              options={accreditationOptions}
+              allowClear
+              className="w-full lg:w-auto lg:min-w-41.25"
+              popupMatchSelectWidth={false}
+            />
+          </div>
         </div>
 
         {hasActiveFilters && (
@@ -623,100 +604,6 @@ export default function UniversitiesPageClientView({
             </button>
           </div>
         )}
-      </div>
-
-      <div className="block lg:hidden mb-4 w-full">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <div className="w-5 h-5 rounded-md flex items-center justify-center text-gray-800">
-              <Filter className="w-3 h-3 fill-current" />
-            </div>
-            <span className="font-bold text-slate-800 text-sm">Filter</span>
-          </div>
-
-          <button
-            type="button"
-            onClick={resetFilters}
-            className="text-red-500 hover:text-red-600 text-xs font-semibold flex items-center gap-1 cursor-pointer transition-colors"
-          >
-            <RotateCcw className="w-3 h-3" />
-            Clear Filter
-          </button>
-        </div>
-
-        <div className="grid grid-cols-2 gap-2 mt-2.5">
-          <Select
-            value={selectedTop}
-            onChange={(val) => {
-              setSelectedTop(val);
-              setCurrentPage(1);
-            }}
-            placeholder={
-              <span className="flex items-center gap-1.5 text-slate-700 font-bold truncate">
-                <Landmark className="w-3.5 h-3.5 text-slate-600 shrink-0" />
-                Select Category
-              </span>
-            }
-            options={topOptions}
-            allowClear
-            className="w-full font-bold"
-            popupMatchSelectWidth={false}
-          />
-
-          <Select
-            value={selectedCourse}
-            onChange={(val) => {
-              setSelectedCourse(val);
-              setCurrentPage(1);
-            }}
-            placeholder={
-              <span className="flex items-center gap-1.5 text-slate-700 font-bold truncate">
-                <GraduationCap className="w-3.5 h-3.5 text-slate-600 shrink-0" />
-                Select Course
-              </span>
-            }
-            options={courseOptions}
-            allowClear
-            className="w-full font-bold"
-            popupMatchSelectWidth={false}
-          />
-
-          <Select
-            value={selectedAccreditation}
-            onChange={(val) => {
-              setSelectedAccreditation(val);
-              setCurrentPage(1);
-            }}
-            placeholder={
-              <span className="flex items-center gap-1.5 text-slate-700 font-bold truncate">
-                <ShieldCheck className="w-3.5 h-3.5 text-slate-600 shrink-0" />
-                Select Accreditation
-              </span>
-            }
-            options={accreditationOptions}
-            allowClear
-            className="w-full font-bold"
-            popupMatchSelectWidth={false}
-          />
-
-          <Select
-            value={selectedState}
-            onChange={(val) => {
-              setSelectedState(val);
-              setCurrentPage(1);
-            }}
-            placeholder={
-              <span className="flex items-center gap-1.5 text-slate-700 font-bold truncate">
-                <MapPin className="w-3.5 h-3.5 text-slate-600 shrink-0" />
-                Select State
-              </span>
-            }
-            options={stateOptions}
-            allowClear
-            className="w-full font-bold"
-            popupMatchSelectWidth={false}
-          />
-        </div>
       </div>
 
       {filtered.length > 0 ? (

@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Modal } from "antd";
+import { Button, Modal } from "antd";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
 import { useCompare } from "@/hooks/useCompare";
 import { useFormModal } from "@/hooks/useFormModal";
@@ -115,10 +115,10 @@ export default function UniversityClientView({ initialData, slug }) {
     return [];
   }, [uni.accreditations]);
 
-  const approvalsSummary =
-    accreditationsList.map((a) => a.title).filter(Boolean).join(" | ") ||
-    highlightsData.items.find((h) => h.feature?.toLowerCase() === "approval")?.details ||
-    "";
+  const approvalsSummary = useMemo(() => {
+    const found = accreditationsList.find((a) => /ugc/i.test(a.title));
+    return found ? (found.title.includes("DEB") ? found.title : `${found.title}-DEB`) : "UGC-DEB";
+  }, [accreditationsList]);
 
   const coursesList = useMemo(() => {
     if (Array.isArray(uni.courses) && uni.courses.length > 0) {
@@ -138,7 +138,7 @@ export default function UniversityClientView({ initialData, slug }) {
 
   const coursePills = useMemo(() => {
     const list = coursesList.map((c) => c.title?.toUpperCase()).filter(Boolean);
-    return Array.from(new Set(list)).slice(0, 7);
+    return Array.from(new Set(list));
   }, [coursesList]);
 
   const filteredCourses = useMemo(() => {
@@ -269,7 +269,7 @@ export default function UniversityClientView({ initialData, slug }) {
 
                 <div className="flex-1 min-w-0 flex flex-col justify-center gap-1 sm:gap-1.5">
                   <h1 className="text-base sm:text-2xl md:text-[28px] font-extrabold text-white tracking-tight leading-tight m-0 truncate sm:whitespace-normal">
-                    Online {uniName}
+                    {uniName}
                   </h1>
 
                   <div className="flex items-center gap-1.5 sm:gap-2">
@@ -290,9 +290,9 @@ export default function UniversityClientView({ initialData, slug }) {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between gap-3 mt-0.5">
+                  <div className="flex items-start justify-between gap-3 mt-1">
                     {coursePills.length > 0 && (
-                      <div className="flex items-center gap-1 sm:gap-1.5 flex-nowrap overflow-x-auto no-scrollbar py-0.5 max-w-full">
+                      <div className="flex flex-wrap items-center gap-1 sm:gap-1.5 py-0.5 flex-1 min-w-0 max-w-[340px] sm:max-w-[420px] lg:max-w-[480px] xl:max-w-[550px]">
                         {coursePills.map((cp) => (
                           <button
                             key={cp}
@@ -309,7 +309,7 @@ export default function UniversityClientView({ initialData, slug }) {
                       </div>
                     )}
 
-                    <div className="hidden lg:flex items-center gap-2.5 xl:gap-3 shrink-0 ml-auto">
+                    <div className="hidden lg:flex items-center gap-2.5 xl:gap-3 shrink-0 ml-auto self-start -mt-0.5">
                       <button
                         type="button"
                         onClick={() => {
@@ -444,7 +444,7 @@ export default function UniversityClientView({ initialData, slug }) {
                 </div>
                 <div className="min-w-0">
                   <span className="text-[11px] sm:text-xs text-gray-500 font-medium block leading-none mb-1">Approvals:</span>
-                  <span className="text-xs sm:text-sm font-bold text-gray-900 block leading-tight line-clamp-2">
+                  <span className="text-xs sm:text-sm font-bold text-gray-900 block leading-tight truncate">
                     {approvalsSummary || "UGC-DEB"}
                   </span>
                 </div>
@@ -457,7 +457,7 @@ export default function UniversityClientView({ initialData, slug }) {
                 <div className="min-w-0">
                   {uni.admission_deadline ? (
                     <>
-                      <span className="text-[11px] sm:text-xs text-red-500 font-semibold block leading-none mb-1">
+                      <span className="text-[11px] sm:text-xs text-gray-500 font-semibold block leading-none mb-1">
                         Admission deadline
                       </span>
                       <span className="text-xs sm:text-sm font-bold text-gray-900 block leading-tight truncate">
@@ -502,11 +502,11 @@ export default function UniversityClientView({ initialData, slug }) {
             <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight mb-4">
               Rankings & Accreditations of {uniName}
             </h2>
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 gap-1.5 sm:gap-2 md:gap-3">
+            <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-6 lg:grid-cols-6 gap-1.5 sm:gap-2.5 md:gap-3">
               {accreditationsList.map((acc, idx) => (
                 <div
                   key={idx}
-                  className="bg-white rounded-xl border border-gray-200 flex flex-col p-2 sm:p-3 items-center justify-between text-center aspect-square shadow-2xs hover:border-blue-300 transition-colors overflow-hidden"
+                  className="bg-white rounded-xl border border-gray-200 flex flex-col p-1.5 sm:p-3 items-center justify-between text-center aspect-square shadow-2xs hover:border-blue-300 transition-colors overflow-hidden"
                 >
                   <div className="flex-1 min-h-0 w-full relative">
                     {acc.logo ? (
