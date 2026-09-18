@@ -490,7 +490,7 @@ export default function CourseClientView({
         {/* Course Overview */}
         {(courseData?.overview || courseData?.description) && (
           <div className="bg-white rounded-xl border border-gray-200/90 p-6 sm:p-4 text-center space-y-3 shadow-xs">
-            <div className="space-y-3">
+            <div className="space-y-2">
               <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight m-0">
                 {courseData.overviewTitle || `${courseData.name} Course Overview`}
               </h2>
@@ -504,26 +504,15 @@ export default function CourseClientView({
 
         {/* Fee Structure & Dynamic 3-Plan Ledger Selector */}
         {activeLedgerData && (
-          <div className="bg-white rounded-xl border border-gray-200/90 p-4 sm:p-4 md:p-4 space-y-5">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="bg-white rounded-xl border border-gray-200/90 p-4 sm:p-4 md:p-6 space-y-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-center">
               <div>
-                <div className="flex items-center gap-2">
-                  <CreditCard className="w-6 h-6 text-[#0C2B4E]" />
+                <div className="flex items-center justify-center">
                   <h2 className="text-xl sm:text-xl font-extrabold text-[#0C2B4E] tracking-tight m-0">
                     Fee Structure & Flexible Payment Plans
                   </h2>
                 </div>
               </div>
-
-              {activeLedgerData.scholarship && (
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold shrink-0">
-                  <Award className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>{activeLedgerData.scholarship?.name || "Scholarship Applied"}</span>
-                  <span className="bg-emerald-700 text-white px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider">
-                    {activeLedgerData.scholarship?.code}
-                  </span>
-                </div>
-              )}
             </div>
 
             {/* Side-by-Side Plan & EMI Comparison Cards */}
@@ -533,8 +522,12 @@ export default function CourseClientView({
                   id: "semester",
                   title: "Semester-wise",
                   badge: activeLedgerData.semester?.discountPercentage > 0 ? {
-                    text: `${activeLedgerData.semester.discountPercentage}% OFF`,
-                    color: "success",
+                    text: activeLedgerData.semester?.badgeText || (
+                      activeLedgerData.scholarship || activeLedgerData.semester?.discountType === "SCHOLARSHIP"
+                        ? `${activeLedgerData.semester.discountPercentage}% SCHOLARSHIP`
+                        : `${activeLedgerData.semester.discountPercentage}% OFF`
+                    ),
+                    color: activeLedgerData.semester?.badgeColor || "success",
                   } : null,
                   hasDiscount: Boolean(
                     (activeLedgerData.semester?.discountPercentage > 0 ||
@@ -553,8 +546,12 @@ export default function CourseClientView({
                   id: "yearly",
                   title: "Yearly (Annual)",
                   badge: activeLedgerData.yearly?.discountPercentage > 0 ? {
-                    text: `${activeLedgerData.yearly.discountPercentage}% OFF`,
-                    color: "success",
+                    text: activeLedgerData.yearly?.badgeText || (
+                      activeLedgerData.scholarship || activeLedgerData.yearly?.discountType === "SCHOLARSHIP"
+                        ? `${activeLedgerData.yearly.discountPercentage}% SCHOLARSHIP`
+                        : `${activeLedgerData.yearly.discountPercentage}% OFF`
+                    ),
+                    color: activeLedgerData.yearly?.badgeColor || "success",
                   } : null,
                   hasDiscount: Boolean(
                     (activeLedgerData.yearly?.discountPercentage > 0 ||
@@ -573,8 +570,12 @@ export default function CourseClientView({
                   id: "fullfees",
                   title: "Fullfees (One-Time)",
                   badge: activeLedgerData.fullfees?.discountPercentage > 0 ? {
-                    text: `MAX SAVINGS ${activeLedgerData.fullfees.discountPercentage}%`,
-                    color: "warning",
+                    text: activeLedgerData.fullfees?.badgeText || (
+                      activeLedgerData.scholarship || activeLedgerData.fullfees?.discountType === "SCHOLARSHIP"
+                        ? `${activeLedgerData.fullfees.discountPercentage}% SCHOLARSHIP`
+                        : `MAX SAVINGS ${activeLedgerData.fullfees.discountPercentage}%`
+                    ),
+                    color: activeLedgerData.fullfees?.badgeColor || (activeLedgerData.scholarship ? "success" : "warning"),
                   } : null,
                   hasDiscount: Boolean(
                     (activeLedgerData.fullfees?.discountPercentage > 0 ||
