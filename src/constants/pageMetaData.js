@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "@/config";
+import { API_BASE_URL, getFetchCacheOptions } from "@/config";
 import { getAssetPath } from "@/lib/utils";
 
 const SITE_NAME = "SODE";
@@ -21,11 +21,7 @@ export async function getPageMetaData(path = "/") {
   try {
     const res = await fetch(
       `${API_BASE_URL}pagemeta/website-read?path=${encodeURIComponent(path)}`,
-      {
-        next: {
-          revalidate: 300, // Revalidate cache every 5 minutes (300 seconds)
-        },
-      }
+      getFetchCacheOptions(300, "pagemeta")
     );
 
     if (!res.ok) return DEFAULT_META;

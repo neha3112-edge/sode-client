@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "@/config";
+import { API_BASE_URL, getFetchCacheOptions } from "@/config";
 
 /* =========================================================
    TABS & PROGRAMS (DYNAMICALLY FETCHED FROM MONGO DB API)
@@ -13,11 +13,7 @@ export const programs = [];
 
 export async function getCoursesData() {
   try {
-    const res = await fetch(`${API_BASE_URL}courses/website-list`, {
-      next: {
-        revalidate: 300, // Revalidate cache every 5 minutes (300 seconds)
-      },
-    });
+    const res = await fetch(`${API_BASE_URL}courses/website-list`, getFetchCacheOptions(300, "courses"));
 
     if (!res.ok) {
       return { tabs: [], programs: [] };

@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "@/config";
+import { API_BASE_URL, getFetchCacheOptions } from "@/config";
 
 /* =========================================================
    UNIVERSITIES DATA (DYNAMICALLY FETCHED FROM MONGO DB API)
@@ -20,11 +20,7 @@ export async function getUniversitiesData(params = {}) {
     const queryString = query.toString();
     const url = `${API_BASE_URL}universities/website-list${queryString ? `?${queryString}` : ""}`;
 
-    const res = await fetch(url, {
-      next: {
-        revalidate: 300, // Revalidate cache every 5 minutes (300 seconds)
-      },
-    });
+    const res = await fetch(url, getFetchCacheOptions(300, "universities"));
 
     if (!res.ok) {
       return [];

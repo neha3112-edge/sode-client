@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "@/config";
+import { API_BASE_URL, getFetchCacheOptions } from "@/config";
 
 async function fetchFromApi(path, options = {}, revalidate = 900) {
   try {
@@ -14,12 +14,7 @@ async function fetchFromApi(path, options = {}, revalidate = 900) {
     const base = API_BASE_URL.replace(/\/+$/, "");
     const url = `${base}/${path}${query ? `?${query}` : ""}`;
     const tags = options?.tags || (typeof path === "string" ? [path.split("/")[0]] : []);
-    const fetchOptions = {
-      next: {
-        revalidate,
-        tags: Array.isArray(tags) ? tags : [tags],
-      },
-    };
+    const fetchOptions = getFetchCacheOptions(revalidate, tags);
     const res = await fetch(url, fetchOptions);
     if (!res.ok) return null;
     return await res.json();

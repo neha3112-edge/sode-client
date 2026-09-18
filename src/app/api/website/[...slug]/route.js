@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { API_BASE_URL } from "@/config";
+import { API_BASE_URL, getFetchCacheOptions } from "@/config";
 
 export async function GET(req, { params }) {
   try {
@@ -9,7 +9,7 @@ export async function GET(req, { params }) {
     const base = API_BASE_URL.replace(/\/+$/, "");
     const targetUrl = `${base}/${path}${searchParams ? `?${searchParams}` : ""}`;
 
-    const res = await fetch(targetUrl, { next: { revalidate: 300 } });
+    const res = await fetch(targetUrl, getFetchCacheOptions(300, slug?.[0] || "website-api"));
     if (!res.ok) {
       return NextResponse.json({ success: false, message: "Backend error" }, { status: res.status });
     }

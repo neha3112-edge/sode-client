@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "@/config";
+import { API_BASE_URL, getFetchCacheOptions } from "@/config";
 
 /* =========================================================
    FOOTER DATA
@@ -31,11 +31,7 @@ export const PROGRAMS = [
 
 export async function getFooterData() {
   try {
-    const res = await fetch(`${API_BASE_URL}footer/website-data`, {
-      next: {
-        revalidate: 300, // 5 minutes cache
-      },
-    });
+    const res = await fetch(`${API_BASE_URL}footer/website-data`, getFetchCacheOptions(300, "footer"));
 
     if (!res.ok) {
       return { universities: UNIVERSITIES, programs: PROGRAMS };

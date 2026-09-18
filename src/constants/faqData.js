@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "@/config";
+import { API_BASE_URL, getFetchCacheOptions } from "@/config";
 
 export const faqs = [
   {
@@ -29,11 +29,7 @@ export const faqs = [
 
 export async function getFaqData() {
   try {
-    const res = await fetch(`${API_BASE_URL}faq/website-list`, {
-      next: {
-        revalidate: 300, // 5 minutes cache
-      },
-    });
+    const res = await fetch(`${API_BASE_URL}faq/website-list`, getFetchCacheOptions(300, "faq"));
 
     if (!res.ok) {
       return faqs;

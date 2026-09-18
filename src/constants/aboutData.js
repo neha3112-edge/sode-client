@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "@/config";
+import { API_BASE_URL, getFetchCacheOptions } from "@/config";
 import { getAssetPath } from "@/lib/utils";
 
 /* =========================================================
@@ -53,11 +53,7 @@ export const rightCards = [
 
 export async function getAboutData() {
   try {
-    const res = await fetch(`${API_BASE_URL}about/website-data`, {
-      next: {
-        revalidate: 300, // 5 minutes cache
-      },
-    });
+    const res = await fetch(`${API_BASE_URL}about/website-data`, getFetchCacheOptions(300, "about"));
 
     if (!res.ok) {
       return { leftCards, rightCards };

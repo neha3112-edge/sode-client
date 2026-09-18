@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "@/config";
+import { API_BASE_URL, getFetchCacheOptions } from "@/config";
 
 /* =========================================================
    TESTIMONIALS DATA
@@ -52,11 +52,7 @@ export const testimonials = [
 
 export async function getTestimonialsData() {
   try {
-    const res = await fetch(`${API_BASE_URL}testimonials/website-list`, {
-      next: {
-        revalidate: 300, // 5 minutes cache
-      },
-    });
+    const res = await fetch(`${API_BASE_URL}testimonials/website-list`, getFetchCacheOptions(300, "testimonials"));
 
     if (!res.ok) {
       return testimonials;

@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "@/config";
+import { API_BASE_URL, getFetchCacheOptions } from "@/config";
 import { getAssetPath } from "@/lib/utils";
 
 const SITE_NAME = "SODE";
@@ -23,11 +23,10 @@ const DEFAULT_SITE_SETTING = {
 
 export async function getSiteSettingData() {
   try {
-    const res = await fetch(`${API_BASE_URL}sitesetting/website-read`, {
-      next: {
-        revalidate: 300, // Revalidate cache every 5 minutes (300 seconds)
-      },
-    });
+    const res = await fetch(
+      `${API_BASE_URL}sitesetting/website-read`,
+      getFetchCacheOptions(300, "sitesetting")
+    );
 
     if (!res.ok) return DEFAULT_SITE_SETTING;
 

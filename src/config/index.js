@@ -6,3 +6,10 @@ export {
 } from "./api";
 
 export { env } from "./env";
+
+export {
+  isISRActive,
+  getFetchCacheOptions,
+  getRevalidateTime,
+} from "./cache";
+
