@@ -939,7 +939,7 @@ export default function UniversityClientView({ initialData, slug }) {
                       )}
                     </button>
 
-                    <div className="w-full flex items-center gap-1.5 mt-1.5">
+                    <div className="w-full grid grid-cols-2 gap-1.5 mt-1.5 items-center">
                       <button
                         type="button"
                         onClick={() => {
@@ -953,13 +953,13 @@ export default function UniversityClientView({ initialData, slug }) {
                               submitButtonText: "Apply Now",
                             });
                         }}
-                        className="flex-1 bg-[#F4D068] hover:bg-[#ebc557] text-gray-900 text-[10.5px] sm:text-xs font-semibold py-1.5 sm:py-2 px-1 rounded-md sm:rounded-lg border-none cursor-pointer transition-colors shadow-2xs active:scale-95 flex items-center justify-center whitespace-nowrap"
+                        className="w-full bg-[#F4D068] hover:bg-[#ebc557] text-gray-900 text-[11px] sm:text-xs font-semibold py-1.5 px-1 rounded-md sm:rounded-lg border-none cursor-pointer transition-colors active:scale-95 flex items-center justify-center text-center whitespace-nowrap leading-none"
                       >
                         Apply Now
                       </button>
                       <Link
                         href={`/universities/${peer.slug}`}
-                        className="flex-1 bg-white hover:bg-gray-50 text-[#0a2540] hover:text-blue-600 border border-gray-200 text-[10.5px] sm:text-xs font-semibold py-1.5 sm:py-2 px-1 rounded-md sm:rounded-lg text-center no-underline transition-colors flex items-center justify-center shadow-2xs whitespace-nowrap"
+                        className="w-full bg-white hover:bg-gray-50 text-[#0a2540] hover:text-blue-600 border border-gray-200 text-[11px] sm:text-xs font-semibold py-1.5 px-1 rounded-md sm:rounded-lg text-center no-underline transition-colors flex items-center justify-center whitespace-nowrap leading-none"
                       >
                         Know More
                       </Link>
