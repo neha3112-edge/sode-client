@@ -127,6 +127,7 @@ export default function UniversityClientView({ initialData, slug }) {
         title: c.title || c.name || "",
         name: c.name || c.title || "",
         slug: c.slug || `${slug || uni.slug}/${(c.title || c.name || "").toLowerCase().replace(/\s+/g, "-")}`,
+        logo: c.logo || null,
         fees: c.fees || "",
         duration: c.duration || "",
         specializationsCount: c.specializationsCount || c.subcourses?.length || 0,
@@ -169,17 +170,22 @@ export default function UniversityClientView({ initialData, slug }) {
   const sampleDegreeData = useMemo(() => {
     if (Array.isArray(uni.sample_degree) && uni.sample_degree.length > 0) {
       const deg = uni.sample_degree[0];
+      const autoPoints = (accreditationsList || []).map((a) => a.title).filter(Boolean);
+      const points = Array.isArray(deg.points) && deg.points.length > 0
+        ? deg.points
+        : autoPoints;
+
       return {
         title: deg.title || "",
         description: deg.description || "",
         imageUrl: deg.image?.url || (typeof deg.image === "string" ? deg.image : null),
-        points: Array.isArray(deg.points) ? deg.points : [],
+        points: points,
         ctaText: deg.cta_text || "Get Degree",
         ctaLink: deg.cta_link || null,
       };
     }
     return null;
-  }, [uni.sample_degree]);
+  }, [uni.sample_degree, accreditationsList]);
 
   const topPeerUniversities = useMemo(() => {
     const list = uni.top_ugc_deb_universities || uni.ugc_deb_universities;
@@ -580,17 +586,27 @@ export default function UniversityClientView({ initialData, slug }) {
         {coursesList.length > 0 && (
           <div className="bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8">
             <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-6 sm:mb-8 m-0">
-              Online {uniName} Courses
+              {uniName} Courses
             </h2>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
               {filteredCourses.slice(0, visibleCoursesCount).map((item, index) => {
                 const cardTitle = item.title || item.name || "";
                 const durationText = item.duration || "";
-                const feeText = item.fees || "";
+                const feeText = typeof item.fees === "string"
+                  ? item.fees
+                  : item.fees?.formattedSemesterFees ||
+                  (item.fees?.semesterFees ? `₹ ${Number(item.fees.semesterFees).toLocaleString("en-IN")} / Semester` : null) ||
+                  item.fees?.formattedPerSemesterPayable ||
+                  item.fees?.formattedActualFees ||
+                  item.fees?.formattedNetPayable ||
+                  "";
                 const courseDetailHref = `/courses/${item.slug || encodeURIComponent(cardTitle.toLowerCase())}`;
                 const specCount = item.specializationsCount || item.subcourses?.length || 0;
                 const inCmp = isInCompare(item._id || item.slug || cardTitle);
+                const courseRawLogo = item.logo?.url || item.logo?.path || (typeof item.logo === "string" ? item.logo : null);
+                const courseLogoUrl = courseRawLogo ? getAssetPath(courseRawLogo) : null;
+                const displayCourseLogo = courseLogoUrl || logoUrl;
 
                 return (
                   <div
@@ -610,18 +626,18 @@ export default function UniversityClientView({ initialData, slug }) {
                       </div>
                     )}
 
-                    <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-full p-1 flex items-center justify-center bg-white border border-gray-100 shadow-2xs relative my-0.5 shrink-0">
-                      {logoUrl ? (
+                    <div className="w-11 h-11 sm:w-15 sm:h-15 rounded-full p-1 flex items-center justify-center relative my-0.5 shrink-0">
+                      {displayCourseLogo ? (
                         <Image
-                          src={logoUrl}
-                          alt={uniName}
+                          src={displayCourseLogo}
+                          alt={cardTitle || uniName}
                           fill
                           sizes="(max-width: 768px) 44px, 56px"
                           className="object-contain p-0.5"
                         />
                       ) : (
                         <div className="w-full h-full rounded-full bg-blue-50 text-blue-600 font-semibold flex items-center justify-center text-xs uppercase">
-                          {uniName.charAt(0)}
+                          {(cardTitle || uniName).charAt(0)}
                         </div>
                       )}
                     </div>
@@ -634,17 +650,17 @@ export default function UniversityClientView({ initialData, slug }) {
                       </div>
 
                       {(feeText || durationText) && (
-                        <div className="flex items-center justify-center gap-1.5 sm:gap-2 text-center w-full flex-wrap pt-0.5">
+                        <div className="flex items-center justify-center gap-1 sm:gap-1.5 text-center w-full whitespace-nowrap overflow-hidden pt-0.5">
                           {feeText && (
-                            <span className="text-xs sm:text-[13.5px] font-bold text-[#0D3B66] tracking-tight">
-                              {feeText.replace(/\s*INR$/, "")}
+                            <span className="text-[11.5px] sm:text-[13px] font-bold text-[#0D3B66] tracking-tight shrink-0">
+                              {feeText.replace(/\s*\/\s*Semester/i, " / Sem").replace(/\s*INR$/, "")}
                             </span>
                           )}
                           {feeText && durationText && (
-                            <span className="text-gray-300 text-xs">•</span>
+                            <span className="text-gray-300 text-xs shrink-0">•</span>
                           )}
                           {durationText && (
-                            <div className="text-[11px] sm:text-xs text-gray-500 font-normal flex items-center gap-1 shrink-0">
+                            <div className="text-[10.5px] sm:text-[11.5px] text-gray-500 font-normal flex items-center gap-0.5 sm:gap-1 shrink-0">
                               <Clock className="w-3 h-3 shrink-0 text-gray-400" />
                               <span>{durationText}</span>
                             </div>
@@ -661,7 +677,7 @@ export default function UniversityClientView({ initialData, slug }) {
                           slug: item.slug || item._id,
                           title: cardTitle,
                           uniName: uniName,
-                          logoUrl: logoUrl,
+                          logoUrl: displayCourseLogo || logoUrl,
                           feeText: feeText,
                           durationText: durationText,
                         };
@@ -687,7 +703,7 @@ export default function UniversityClientView({ initialData, slug }) {
                     </button>
 
                     <div className="w-full flex items-center gap-1.5 mt-1.5">
-                      <button
+                      <Button
                         type="button"
                         onClick={() => {
                           openFormModal &&
@@ -700,13 +716,13 @@ export default function UniversityClientView({ initialData, slug }) {
                               submitButtonText: "Apply Now",
                             });
                         }}
-                        className="flex-1 bg-[#F4D068] hover:bg-[#ebc557] text-gray-900 text-xs sm:text-sm font-semibold py-1.5 sm:py-2 px-1 rounded-md sm:rounded-lg border-none cursor-pointer transition-colors shadow-2xs active:scale-95 flex items-center justify-center whitespace-nowrap"
+                        className="flex-1 bg-[#F4D068] hover:bg-[#ebc557] text-gray-900 text-xs sm:text-sm font-semibold rounded-md sm:rounded-lg border-none cursor-pointer transition-colors active:scale-95 flex items-center justify-center whitespace-nowrap"
                       >
                         Apply Now
-                      </button>
+                      </Button>
                       <Link
                         href={courseDetailHref}
-                        className="flex-1 bg-white hover:bg-gray-50 text-[#0a2540] hover:text-blue-600 border border-gray-200 text-xs sm:text-sm font-semibold py-1.5 sm:py-2 px-1 rounded-md sm:rounded-lg text-center no-underline transition-colors flex items-center justify-center shadow-2xs whitespace-nowrap"
+                        className="flex-1 bg-white hover:bg-gray-50 text-[#0a2540] hover:text-blue-600 border border-gray-200 text-xs sm:text-sm font-semibold py-1 px-2 rounded-md sm:rounded-lg text-center no-underline transition-colors flex items-center justify-center whitespace-nowrap"
                       >
                         Know More
                       </Link>
@@ -778,7 +794,7 @@ export default function UniversityClientView({ initialData, slug }) {
                 {sampleDegreeData.imageUrl ? (
                   <div
                     onClick={() => setIsCertificateModalOpen(true)}
-                    className="w-full max-w-115 aspect-[460/340] rounded-xl overflow-hidden cursor-pointer hover:shadow-md transition-shadow duration-200 bg-white relative"
+                    className="w-full max-w-115 aspect-460/340 rounded-xl overflow-hidden cursor-pointer hover:shadow-md transition-shadow duration-200 bg-white relative"
                   >
                     <Image
                       src={getAssetPath(sampleDegreeData.imageUrl)}
@@ -805,13 +821,16 @@ export default function UniversityClientView({ initialData, slug }) {
                 )}
 
                 {sampleDegreeData.points?.length > 0 && (
-                  <div className="grid grid-cols-2 gap-x-6 gap-y-3.5 pt-2 max-w-md">
+                  <div className="grid grid-cols-3 gap-1.5 sm:gap-2.5 pt-2 max-w-lg">
                     {sampleDegreeData.points.map((pt, pIdx) => (
-                      <div key={pIdx} className="flex items-center gap-2.5">
-                        <span className="w-5 h-5 rounded-sm bg-[#48BB78] flex items-center justify-center text-white shrink-0 shadow-2xs">
-                          <Check size={13} strokeWidth={3.5} />
+                      <div
+                        key={pIdx}
+                        className="flex items-center gap-1.5 sm:gap-2 rounded-lg"
+                      >
+                        <span className="w-4 h-4 rounded-full bg-green-600 text-white flex items-center justify-center">
+                          <Check size={11} strokeWidth={3} />
                         </span>
-                        <span className="text-xs sm:text-[14px] font-bold text-gray-900 leading-tight">
+                        <span className="text-[11px] sm:text-[12.5px] font-bold text-gray-900 leading-tight">
                           {pt}
                         </span>
                       </div>
@@ -1117,14 +1136,25 @@ export default function UniversityClientView({ initialData, slug }) {
                       <span className="text-gray-800">{selectedCourseSpec.duration}</span>
                     </div>
                   )}
-                  {selectedCourseSpec.fees && (
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-[#0D3B66] font-bold text-sm">₹</span>
-                      <span className="text-gray-800">
-                        {selectedCourseSpec.fees.replace(/^₹\s*/, "")}
-                      </span>
-                    </div>
-                  )}
+                  {selectedCourseSpec.fees && (() => {
+                    const semFee = typeof selectedCourseSpec.fees === "object"
+                      ? selectedCourseSpec.fees?.formattedSemesterFees ||
+                      (selectedCourseSpec.fees?.semesterFees ? `₹ ${Number(selectedCourseSpec.fees.semesterFees).toLocaleString("en-IN")} / Semester` : null)
+                      : null;
+                    const fullFee = typeof selectedCourseSpec.fees === "string"
+                      ? selectedCourseSpec.fees
+                      : selectedCourseSpec.fees?.formattedActualFees || selectedCourseSpec.fees?.formattedNetPayable || "";
+                    const modalFeeText = semFee || fullFee;
+                    if (!modalFeeText) return null;
+                    return (
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[#0D3B66] font-bold text-sm">₹</span>
+                        <span className="text-gray-800">
+                          {modalFeeText.replace(/^₹\s*/, "")}
+                        </span>
+                      </div>
+                    );
+                  })()}
                 </div>
               </div>
 
