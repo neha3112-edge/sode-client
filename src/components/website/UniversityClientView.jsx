@@ -62,7 +62,7 @@ export default function UniversityClientView({ initialData, slug }) {
       items: [
         { label: "Home", href: "/" },
         { label: "Universities", href: "/universities" },
-        { label: `Online ${uniName}` },
+        { label: `${uniName}` },
       ],
       backButton: {
         label: "Back to Universities",
@@ -74,7 +74,6 @@ export default function UniversityClientView({ initialData, slug }) {
 
   const rawBanner = uni.bannerImg?.url || null;
   const heroBannerUrl = rawBanner ? getAssetPath(rawBanner) : null;
-
   const rawLogo = data.logo?.url || null;
   const logoUrl = rawLogo ? getAssetPath(rawLogo) : null;
 
@@ -86,7 +85,7 @@ export default function UniversityClientView({ initialData, slug }) {
       };
     }
     return {
-      title: `Key Highlights of Online ${uniName}`,
+      title: `Key Highlights of ${uniName}`,
       items: [],
     };
   }, [uni.key_highlights, uniName]);
@@ -449,7 +448,7 @@ export default function UniversityClientView({ initialData, slug }) {
                   <BadgeCheck size={17} className="fill-white text-[#0077B6]" />
                 </div>
                 <div className="min-w-0">
-                  <span className="text-[11px] sm:text-xs text-gray-500 font-medium block leading-none mb-1">Approvals:</span>
+                  <span className="text-[11px] sm:text-xs text-gray-500 font-medium block leading-none mb-1">Approvals</span>
                   <span className="text-xs sm:text-sm font-bold text-gray-900 block leading-tight truncate">
                     {approvalsSummary || "UGC-DEB"}
                   </span>
@@ -463,7 +462,7 @@ export default function UniversityClientView({ initialData, slug }) {
                 <div className="min-w-0">
                   {uni.admission_deadline ? (
                     <>
-                      <span className="text-[11px] sm:text-xs text-gray-500 font-semibold block leading-none mb-1">
+                      <span className="text-[11px] sm:text-xs text-red-500 font-medium block leading-none mb-1">
                         Admission deadline
                       </span>
                       <span className="text-xs sm:text-sm font-bold text-gray-900 block leading-tight truncate">
@@ -472,7 +471,7 @@ export default function UniversityClientView({ initialData, slug }) {
                     </>
                   ) : (
                     <>
-                      <span className="text-[11px] sm:text-xs text-emerald-700 font-semibold block leading-none mb-1">
+                      <span className="text-[11px] sm:text-xs text-red-700 font-medium block leading-none mb-1">
                         Admission Status
                       </span>
                       <span className="text-xs sm:text-sm font-bold text-gray-900 block leading-tight truncate">

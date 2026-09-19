@@ -8,21 +8,39 @@ import { request } from "@/services/request";
 export const revalidate = 300;
 
 export default async function WebsiteLayout({ children }) {
-  const headerRes = await request.dynamicRead({
-    entity: "header",
-    endPoint: "public/by-slug",
-    slug: "global",
-    revalidate: 300,
-  });
+  const [headerRes, footerRes, legalPoliciesRes] = await Promise.all([
+    request.dynamicRead({
+      entity: "header",
+      endPoint: "public/by-slug",
+      slug: "global",
+      revalidate: 300,
+    }).catch(() => null),
+    request.dynamicList({
+      entity: "footer",
+      endPoint: "v1/list",
+      revalidate: 300,
+    }).catch(() => null),
+    request.dynamicList({
+      entity: "legal-policy",
+      endPoint: "v1/list",
+      revalidate: 300,
+    }).catch(() => null),
+  ]);
 
   const headerData = headerRes?.result || headerRes;
+  const footerData = footerRes?.result || footerRes;
+  const legalPolicies = legalPoliciesRes?.result || [];
 
   return (
     <div className="flex flex-col min-h-screen">
       <Header initialHeaderData={headerData} />
       <GlobalBreadcrumb />
       <main className="grow pb-16 lg:pb-0">{children}</main>
-      <Footer initialHeaderData={headerData} />
+      <Footer
+        initialHeaderData={headerData}
+        initialFooterData={footerData}
+        initialLegalPolicies={legalPolicies}
+      />
       <MobileBottomNav />
     </div>
   );

@@ -64,10 +64,7 @@ function UniversityCard({ uni }) {
   if (uni?.naac_rating?.grade || uni?.naac_rating?.name) {
     approvals.push(`NAAC ${uni.naac_rating.grade || uni.naac_rating.name}`);
   }
-
   const rating = Number(uni?.rating || uni?.avg_rating || 4.8).toFixed(1);
-  const reviewsCount = typeof uni?.reviewsCount === "number" ? uni.reviewsCount : 250;
-
   const coursesList = Array.isArray(uni?.courses)
     ? uni.courses.map((c) => (typeof c === "object" ? c?.name || c?.displayName || c?.title || "" : c)).filter(Boolean)
     : [];
@@ -173,7 +170,6 @@ function UniversityCard({ uni }) {
           <div className="flex items-center gap-1 text-[11px]">
             <StarFilled className="text-amber-500 text-[11px]" />
             <span className="font-bold text-slate-700">{rating}</span>
-            <span className="text-slate-400 font-normal">({reviewsCount})</span>
           </div>
 
           <div className="flex items-center gap-1.5">

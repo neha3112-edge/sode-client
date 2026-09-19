@@ -44,7 +44,7 @@ export default function CourseClientView({
   const [openFaq, setOpenFaq] = useState(0);
 
   const [selectedPlanTab, setSelectedPlanTab] = useState("semester");
-  const [activeEmiSubTab, setActiveEmiSubTab] = useState("semester");
+  const [activeEmiSubTab, setActiveEmiSubTab] = useState("fullfees");
   const courseData = initialData || {};
 
   const activeLedgerData = useMemo(() => {
@@ -56,16 +56,16 @@ export default function CourseClientView({
     const full = rawLedger.fullfees || rawLedger.FULLFEES;
     const year = rawLedger.yearly || rawLedger.YEARLY;
     const sem = rawLedger.semester || rawLedger.SEMESTER;
-    const emi = promoData?.emi || rawLedger?.emi;
+    const emi = promoData?.emi || rawLedger?.emi || courseData?.emi;
 
     const fullEmi = full?.emi || emi?.fullfees || (emi?.available && !emi.fullfees ? emi : null);
     const yearEmi = year?.emi || emi?.yearly || (emi?.available && !emi.yearly ? emi : null);
     const semEmi = sem?.emi || emi?.semester || (emi?.available && !emi.semester ? emi : null);
 
     const availableSummary =
-      (semEmi?.available ? semEmi : null) ||
-      (yearEmi?.available ? yearEmi : null) ||
       (fullEmi?.available ? fullEmi : null) ||
+      (yearEmi?.available ? yearEmi : null) ||
+      (semEmi?.available ? semEmi : null) ||
       (emi?.available ? emi : null);
 
     return {
@@ -605,9 +605,9 @@ export default function CourseClientView({
                   onClick: () => {
                     setSelectedPlanTab("emi");
                     if (!activeLedgerData.emi?.[activeEmiSubTab]?.available) {
-                      if (activeLedgerData.emi?.semester?.available) setActiveEmiSubTab("semester");
+                      if (activeLedgerData.emi?.fullfees?.available) setActiveEmiSubTab("fullfees");
                       else if (activeLedgerData.emi?.yearly?.available) setActiveEmiSubTab("yearly");
-                      else if (activeLedgerData.emi?.fullfees?.available) setActiveEmiSubTab("fullfees");
+                      else if (activeLedgerData.emi?.semester?.available) setActiveEmiSubTab("semester");
                     }
                   },
                 },
@@ -664,14 +664,14 @@ export default function CourseClientView({
             {/* EMI Breakdown View */}
             {selectedPlanTab === "emi" && activeLedgerData.emi && (() => {
               const availableSubTabs = [
-                { key: "semester", label: "Semester EMI", ledger: activeLedgerData.emi.semester },
+                { key: "fullfees", label: "Full Course EMI", ledger: activeLedgerData.emi.fullfees },
                 { key: "yearly", label: "Yearly EMI", ledger: activeLedgerData.emi.yearly },
-                { key: "fullfees", label: "Fullfees EMI", ledger: activeLedgerData.emi.fullfees },
+                { key: "semester", label: "Semester EMI", ledger: activeLedgerData.emi.semester },
               ].filter(t => t.ledger && t.ledger.available);
 
               const currentSubTabKey = activeEmiSubTab && activeLedgerData.emi[activeEmiSubTab]?.available
                 ? activeEmiSubTab
-                : (availableSubTabs[0]?.key || "semester");
+                : (availableSubTabs[0]?.key || "fullfees");
 
               const currentEmi = activeLedgerData.emi[currentSubTabKey] || activeLedgerData.emi.summary;
 
@@ -705,35 +705,6 @@ export default function CourseClientView({
                     </div>
                   )}
 
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-amber-200/60">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <CreditCard className="w-5 h-5 text-amber-700" />
-                        <h4 className="text-base font-bold text-amber-950 m-0">
-                          {currentEmi.planName || "EMI Plan Breakdown"}
-                        </h4>
-                        {currentEmi.planCode && (
-                          <span className="text-[10px] bg-amber-700 text-white font-bold px-2 py-0.5 rounded uppercase">
-                            {currentEmi.planCode}
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-xs text-amber-900/80 m-0 mt-0.5">
-                        Net Principal Amount: <strong>{currentEmi.formattedNetEmiPrincipal || currentEmi.formattedGrossFee}</strong>
-                      </p>
-                    </div>
-
-                    {Array.isArray(currentEmi.partners) && currentEmi.partners.length > 0 && (
-                      <div className="flex flex-wrap items-center gap-1.5">
-                        <span className="text-[11px] font-semibold text-amber-900 mr-1">Financing Partners:</span>
-                        {currentEmi.partners.map((partner, idx) => (
-                          <span key={idx} className="bg-amber-200/70 text-amber-950 text-[11px] font-bold px-2 py-0.5 rounded-full border border-amber-300/60">
-                            {partner}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
 
                   {/* Tenure Options Cards */}
                   {Array.isArray(currentEmi.tenures) && currentEmi.tenures.length > 0 && (
@@ -745,38 +716,41 @@ export default function CourseClientView({
                             <div>
                               <div className="flex items-center justify-between gap-1 mb-1">
                                 <span className="text-xs font-extrabold text-amber-900 block">{tenure.months} Months Tenure</span>
-                                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${tenure.isNoCost || tenure.interestRatePct === 0
-                                  ? "bg-emerald-100 text-emerald-800 border border-emerald-300/60"
-                                  : "bg-blue-100 text-blue-800 border border-blue-300/60"
-                                  }`}>
-                                  {tenure.isNoCost || tenure.interestRatePct === 0
-                                    ? "0% Interest"
-                                    : `${tenure.interestRatePct}% p.a. Interest`}
-                                </span>
+                                {tenure.interestRatePct && Number(tenure.interestRatePct) > 0 ? (
+                                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 border border-blue-300/60">
+                                    {tenure.interestRatePct}% p.a. Interest
+                                  </span>
+                                ) : (
+                                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300/60">
+                                    0% Interest
+                                  </span>
+                                )}
                               </div>
                               <span className="text-base font-black text-gray-900 block">{tenure.formattedMonthlyFee}</span>
                             </div>
 
-                            <div className="pt-2 border-t border-gray-100 text-[11px] space-y-1 text-gray-600">
-                              {tenure.totalInterest > 0 && (
-                                <div className="flex justify-between items-center text-amber-900 font-medium">
-                                  <span>Total Interest:</span>
-                                  <span className="font-bold">{tenure.formattedTotalInterest}</span>
-                                </div>
-                              )}
-                              {tenure.totalPayableWithInterest > 0 && tenure.totalInterest > 0 && (
-                                <div className="flex justify-between items-center text-gray-900 font-semibold">
-                                  <span>Total Payable:</span>
-                                  <span className="font-bold text-[#0C2B4E]">{tenure.formattedTotalPayableWithInterest}</span>
-                                </div>
-                              )}
-                              {tenure.downPayment > 0 && (
-                                <div className="flex justify-between items-center text-amber-800 font-medium">
-                                  <span>Downpayment:</span>
-                                  <span className="font-bold">{tenure.formattedDownPayment}</span>
-                                </div>
-                              )}
-                            </div>
+                            {(tenure.totalInterest > 0 || tenure.downPayment > 0) && (
+                              <div className="pt-2 border-t border-gray-100 text-[11px] space-y-1 text-gray-600">
+                                {tenure.totalInterest > 0 && (
+                                  <div className="flex justify-between items-center text-amber-900 font-medium">
+                                    <span>Total Interest:</span>
+                                    <span className="font-bold">{tenure.formattedTotalInterest}</span>
+                                  </div>
+                                )}
+                                {tenure.totalPayableWithInterest > 0 && tenure.totalInterest > 0 && (
+                                  <div className="flex justify-between items-center text-gray-900 font-semibold">
+                                    <span>Total Payable:</span>
+                                    <span className="font-bold text-[#0C2B4E]">{tenure.formattedTotalPayableWithInterest}</span>
+                                  </div>
+                                )}
+                                {tenure.downPayment > 0 && (
+                                  <div className="flex justify-between items-center text-amber-800 font-medium">
+                                    <span>Downpayment:</span>
+                                    <span className="font-bold">{tenure.formattedDownPayment}</span>
+                                  </div>
+                                )}
+                              </div>
+                            )}
                           </div>
                         ))}
                       </div>

@@ -28,6 +28,7 @@ function normalizeCourseData(pageRes) {
     fees: feeStr,
     ledger: raw.ledger || null,
     feesLedger: raw.feesLedger || null,
+    emi: raw.emi || raw.feesLedger?.emi || raw.ledger?.emi || null,
     eligibility: raw.eligibility || "",
     admissionDeadline: raw.admissionDeadline || "",
     bannerImage: raw.bannerImage || raw.bannerImg || null,
