@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Button, Modal } from "antd";
+import { Modal } from "antd";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
 import { useCompare } from "@/hooks/useCompare";
 import { useFormModal } from "@/hooks/useFormModal";
@@ -702,8 +702,8 @@ export default function UniversityClientView({ initialData, slug }) {
                       )}
                     </button>
 
-                    <div className="w-full flex items-center gap-1.5 mt-1.5">
-                      <Button
+                    <div className="w-full grid grid-cols-2 gap-1.5 mt-1.5 items-center">
+                      <button
                         type="button"
                         onClick={() => {
                           openFormModal &&
@@ -716,13 +716,13 @@ export default function UniversityClientView({ initialData, slug }) {
                               submitButtonText: "Apply Now",
                             });
                         }}
-                        className="flex-1 bg-[#F4D068] hover:bg-[#ebc557] text-gray-900 text-xs sm:text-sm font-semibold rounded-md sm:rounded-lg border-none cursor-pointer transition-colors active:scale-95 flex items-center justify-center whitespace-nowrap"
+                        className="w-full bg-[#F4D068] hover:bg-[#ebc557] text-gray-900 text-[11px] sm:text-xs font-semibold py-1.5 px-1 rounded-md sm:rounded-lg border-none cursor-pointer transition-colors active:scale-95 flex items-center justify-center text-center whitespace-nowrap leading-none"
                       >
                         Apply Now
-                      </Button>
+                      </button>
                       <Link
                         href={courseDetailHref}
-                        className="flex-1 bg-white hover:bg-gray-50 text-[#0a2540] hover:text-blue-600 border border-gray-200 text-xs sm:text-sm font-semibold py-1 px-2 rounded-md sm:rounded-lg text-center no-underline transition-colors flex items-center justify-center whitespace-nowrap"
+                        className="w-full bg-white hover:bg-gray-50 text-[#0a2540] hover:text-blue-600 border border-gray-200 text-[11px] sm:text-xs font-semibold py-1.5 px-1 rounded-md sm:rounded-lg text-center no-underline transition-colors flex items-center justify-center whitespace-nowrap leading-none"
                       >
                         Know More
                       </Link>
