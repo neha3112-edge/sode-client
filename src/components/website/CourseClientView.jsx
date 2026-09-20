@@ -23,7 +23,7 @@ import {
   X,
   ChevronDown,
 } from "lucide-react";
-import { Carousel, Tag } from "antd";
+import { Modal, Tag } from "antd";
 import { FaBuilding, FaCalendar, FaMapMarkerAlt } from "react-icons/fa";
 import { useFormModal } from "@/hooks/useFormModal";
 import { useCompare } from "@/hooks/useCompare";
@@ -83,8 +83,7 @@ export default function CourseClientView({
   }, [courseData]);
 
   const [visibleCount, setVisibleCount] = useState(6);
-  const [activeSpecIndex, setActiveSpecIndex] = useState(null);
-  const carouselRef = useRef(null);
+  const [selectedSpecModal, setSelectedSpecModal] = useState(null);
   const specializationSectionRef = useRef(null);
 
   const rawCourses = useMemo(() => {
@@ -297,15 +296,17 @@ export default function CourseClientView({
 
       let courseDetailHref = "/courses";
       if (uniSlug && courseSlug && subcourseSlug) {
-        courseDetailHref = `/courses/${encodeURIComponent(uniSlug)}/${encodeURIComponent(courseSlug)}/${encodeURIComponent(subcourseSlug)}`;
+        courseDetailHref = `/university/${encodeURIComponent(uniSlug)}/${encodeURIComponent(courseSlug)}/${encodeURIComponent(subcourseSlug)}`;
       } else if (uniSlug && courseSlug) {
-        courseDetailHref = `/courses/${encodeURIComponent(uniSlug)}/${encodeURIComponent(courseSlug)}`;
+        courseDetailHref = `/university/${encodeURIComponent(uniSlug)}/${encodeURIComponent(courseSlug)}`;
       } else if (courseSlug && subcourseSlug) {
         courseDetailHref = `/courses/${encodeURIComponent(courseSlug)}/${encodeURIComponent(subcourseSlug)}`;
       } else if (courseSlug) {
         courseDetailHref = `/courses/${encodeURIComponent(courseSlug)}`;
       } else if (item.slug) {
-        courseDetailHref = `/courses/${encodeURIComponent(item.slug)}`;
+        courseDetailHref = item.slug.includes("/")
+          ? `/university/${item.slug}`
+          : `/courses/${encodeURIComponent(item.slug)}`;
       }
 
       list.push({
@@ -707,12 +708,12 @@ export default function CourseClientView({
                     key={card.id}
                     onClick={card.onClick}
                     className={`p-2 sm:p-3 rounded-xl border transition-all cursor-pointer relative flex flex-col justify-between space-y-1 ${isSelected
-                        ? isEmi
-                          ? "border-amber-600 bg-amber-50/40 shadow-md ring-1 ring-amber-500/20"
-                          : "border-[#0C2B4E] bg-blue-50/40 shadow-md ring-1 ring-[#0C2B4E]/10"
-                        : isEmi
-                          ? "border-amber-200 bg-amber-50/20 hover:border-amber-300 hover:shadow-xs"
-                          : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-xs"
+                      ? isEmi
+                        ? "border-amber-600 bg-amber-50/40 shadow-md ring-1 ring-amber-500/20"
+                        : "border-[#0C2B4E] bg-blue-50/40 shadow-md ring-1 ring-[#0C2B4E]/10"
+                      : isEmi
+                        ? "border-amber-200 bg-amber-50/20 hover:border-amber-300 hover:shadow-xs"
+                        : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-xs"
                       }`}
                   >
                     <div className="space-y-1">
@@ -782,8 +783,8 @@ export default function CourseClientView({
                           type="button"
                           onClick={() => setActiveEmiSubTab(tab.key)}
                           className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${currentSubTabKey === tab.key
-                              ? "bg-amber-700 text-white shadow-xs"
-                              : "bg-white text-amber-900 border border-amber-300 hover:bg-amber-100"
+                            ? "bg-amber-700 text-white shadow-xs"
+                            : "bg-white text-amber-900 border border-amber-300 hover:bg-amber-100"
                             }`}
                         >
                           {tab.label} ({tab.ledger.formattedMinMonthlyEmi})
@@ -956,212 +957,160 @@ export default function CourseClientView({
             ref={specializationSectionRef}
             className="scroll-mt-16 bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8 relative transition-all"
           >
-            {activeSpecIndex === null ? (
-              <>
-                <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-5 sm:mb-7 m-0">
-                  {universityName ? `${universityName} ` : ""}{courseData?.name || "Course"} Specialisations
-                </h2>
+            <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-5 sm:mb-7 m-0">
+              {universityName ? `${universityName} ` : ""}{courseData?.name || "Course"} Specialisations
+            </h2>
 
-                <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3.5 md:gap-4">
-                  {specializations.map((item, idx) => {
-                    const IconComponent = SPEC_ICONS[idx % SPEC_ICONS.length];
-                    const specTitle = item.name || "Specialization";
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3.5 md:gap-4">
+              {specializations.map((item, idx) => {
+                const IconComponent = SPEC_ICONS[idx % SPEC_ICONS.length];
+                const specTitle = item.name || "Specialization";
 
-                    return (
-                      <div
-                        key={item._id || idx}
-                        onClick={() => {
-                          setActiveSpecIndex(idx);
-                          specializationSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-                        }}
-                        className="bg-white rounded-xl border border-gray-200 p-2.5 sm:p-3.5 md:p-4 flex items-center gap-2 sm:gap-3.5 cursor-pointer hover:border-[#08AEAA] hover:shadow-xs transition-all"
-                      >
-                        <IconComponent className="text-[#0C3A66] shrink-0 w-4.5 h-4.5 sm:w-5.5 sm:h-5.5" />
-                        <span className="text-[11px] sm:text-xs md:text-[13.5px] font-bold text-gray-900 tracking-tight leading-snug">
-                          {specTitle}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </>
-            ) : (
-              <div className="relative">
-                {/* Close Button */}
-                <button
-                  type="button"
-                  onClick={() => setActiveSpecIndex(null)}
-                  className="absolute top-0 right-0 z-10 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-800 flex items-center justify-center transition-colors cursor-pointer"
-                  title="Close preview"
-                  aria-label="Close specialization view"
-                >
-                  <X className="w-4 h-4 sm:w-5 sm:h-5" />
-                </button>
-
-                <Carousel
-                  ref={carouselRef}
-                  arrows={false}
-                  dots={false}
-                  infinite={true}
-                  draggable={true}
-                  swipe={true}
-                  initialSlide={activeSpecIndex}
-                  afterChange={(current) => setActiveSpecIndex(current)}
-                  className="specialization-carousel w-full"
-                >
-                  {specializations.map((item, idx) => {
-                    const specTitle = item.name || "Specialization";
-                    const modalTitle = specTitle.toLowerCase().includes(" in ")
-                      ? specTitle
-                      : `${courseData?.name ? `${courseData.name} in ` : ""}${specTitle}`;
-                    const itemDuration = item.duration || courseData?.duration;
-                    const itemFees = item.fees || item.fee || courseData?.fees;
-                    const itemDeadline = item.admissionDeadline || courseData?.admissionDeadline;
-                    const itemDesc =
-                      item.description?.trim() ||
-                      `${modalTitle} specialization under ${courseData?.name || "this program"}${universityName ? ` at ${universityName}` : ""}. Equips learners with specialized industry knowledge and professional competencies.`;
-
-                    return (
-                      <div key={item._id || idx} className="outline-none">
-                        <div className="flex flex-col sm:flex-row items-center sm:items-stretch gap-5 sm:gap-6 pt-1">
-                          {/* Banner Image with University Badge */}
-                          <div className="relative w-full max-w-65 sm:w-65 sm:max-w-none aspect-square shrink-0 rounded-2xl overflow-hidden shadow-none bg-gray-100">
-                            {heroBannerSrc ? (
-                              <Image
-                                src={heroBannerSrc}
-                                alt={modalTitle || displayCourseTitle}
-                                fill
-                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                className="object-cover object-center rounded-2xl"
-                                priority={idx === 0}
-                              />
-                            ) : (
-                              <div className="w-full h-full bg-[#0C2B4E] rounded-2xl flex items-center justify-center text-white/40">
-                                <GraduationCap className="w-16 h-16" />
-                              </div>
-                            )}
-
-                            {universityLogoSrc && (
-                              <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 z-10 bg-white rounded-xl shadow-md p-1.5 sm:p-2 border border-gray-100 flex items-center justify-center">
-                                <div className="relative w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center">
-                                  <Image
-                                    src={universityLogoSrc}
-                                    alt={universityName || "University Logo"}
-                                    fill
-                                    sizes="44px"
-                                    className="object-contain"
-                                  />
-                                </div>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Details */}
-                          <div className="flex-1 flex flex-col justify-between space-y-3.5 text-left py-1 w-full">
-                            <div className="space-y-1">
-                              <h3 className="text-xl sm:text-2xl font-bold text-[#0D3B66] m-0 tracking-tight leading-snug">
-                                {modalTitle}
-                              </h3>
-                              <p className="text-xs sm:text-[13px] text-gray-500 font-medium m-0">
-                                {specTitle}
-                              </p>
-                              <p className="text-xs sm:text-[13px] text-gray-600 leading-relaxed m-0 font-normal pt-1">
-                                {itemDesc}
-                              </p>
-                            </div>
-
-                            <div className="space-y-2 text-xs sm:text-[13px] text-[#0D3B66] font-medium pt-1">
-                              <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-                                {itemDuration && (
-                                  <div className="flex items-center gap-1.5">
-                                    <Clock className="w-3.5 h-3.5 text-[#0D3B66] shrink-0" />
-                                    <span className="text-gray-800">{itemDuration}</span>
-                                  </div>
-                                )}
-                                {itemFees && (
-                                  <div className="flex items-center gap-1.5">
-                                    <span className="text-[#0D3B66] font-bold text-sm">₹</span>
-                                    <span className="text-gray-800">
-                                      {itemFees.replace(/^₹\s*/, "")}
-                                    </span>
-                                  </div>
-                                )}
-                              </div>
-                              {itemDeadline && (
-                                <div className="flex items-center gap-1.5">
-                                  <Clock className="w-3.5 h-3.5 text-[#0D3B66] shrink-0" />
-                                  <span className="text-gray-800">
-                                    Admission Deadline : {itemDeadline}
-                                  </span>
-                                </div>
-                              )}
-                            </div>
-
-                            {/* Action Buttons */}
-                            <div className="w-full flex items-center gap-2 sm:gap-3 pt-2">
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  handleOpenLead("Download Brochure", modalTitle);
-                                }}
-                                className="flex-1 bg-[#0C2B4E] hover:bg-[#081f38] text-white text-[10px] sm:text-sm font-semibold py-2 sm:py-2.5 px-2 sm:px-4 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-xs active:scale-95 whitespace-nowrap border-none"
-                              >
-                                <span>Download Brochure</span>
-                                <Download className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
-                              </button>
-
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  handleOpenLead("Free Counseling", modalTitle);
-                                }}
-                                className="flex-1 bg-white hover:bg-gray-50 text-[#0C2B4E] border border-[#0C2B4E] text-[10px] sm:text-sm font-semibold py-2 sm:py-2.5 px-2 sm:px-4 rounded-lg flex items-center justify-center transition-all cursor-pointer shadow-xs active:scale-95 whitespace-nowrap"
-                              >
-                                Get 100% FREE Counseling
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </Carousel>
-
-                {/* Available Specialisations Grid */}
-                <div className="mt-6 sm:mt-7">
-                  <h4 className="text-base sm:text-lg md:text-xl font-bold text-[#0D3B66] text-center m-0 mb-4 sm:mb-5 tracking-tight">
-                    {universityName ? `${universityName} ` : ""}{courseData?.name || "Course"} Specialisations
-                  </h4>
-
-                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3.5 md:gap-4">
-                    {specializations.map((item, idx) => {
-                      const IconComponent = SPEC_ICONS[idx % SPEC_ICONS.length];
-                      const specTitle = item.name || "Specialization";
-                      const isSelected = activeSpecIndex === idx;
-
-                      return (
-                        <div
-                          key={item._id || idx}
-                          onClick={() => {
-                            setActiveSpecIndex(idx);
-                            carouselRef.current?.goTo(idx);
-                          }}
-                          className={`rounded-xl border p-2.5 sm:p-3.5 md:p-4 flex items-center gap-2 sm:gap-3.5 cursor-pointer transition-all ${isSelected
-                              ? "bg-blue-50/70 border-blue-600 ring-1 ring-blue-500 shadow-xs"
-                              : "bg-white border-gray-200 hover:border-[#08AEAA]"
-                            }`}
-                        >
-                          <IconComponent className={`shrink-0 w-4.5 h-4.5 sm:w-5.5 sm:h-5.5 ${isSelected ? "text-blue-700" : "text-[#0C3A66]"}`} />
-                          <span className={`text-[11px] sm:text-xs md:text-[13.5px] font-bold tracking-tight leading-snug ${isSelected ? "text-blue-900 font-semibold" : "text-gray-900"}`}>
-                            {specTitle}
-                          </span>
-                        </div>
-                      );
-                    })}
+                return (
+                  <div
+                    key={item._id || idx}
+                    onClick={() => setSelectedSpecModal(item)}
+                    className="bg-white rounded-xl border border-gray-200 p-2.5 sm:p-3.5 md:p-4 flex items-center gap-2 sm:gap-3.5 cursor-pointer hover:border-[#08AEAA] hover:shadow-xs transition-all group"
+                  >
+                    <IconComponent className="text-[#0C3A66] group-hover:text-[#08AEAA] shrink-0 w-4.5 h-4.5 sm:w-5.5 sm:h-5.5 transition-colors" />
+                    <span className="text-[11px] sm:text-xs md:text-[13.5px] font-bold text-gray-900 group-hover:text-[#08AEAA] tracking-tight leading-snug transition-colors">
+                      {specTitle}
+                    </span>
                   </div>
-                </div>
-              </div>
-            )}
+                );
+              })}
+            </div>
+
+            {/* Specialization Details Modal */}
+            {selectedSpecModal && (() => {
+              const specTitle = selectedSpecModal.name || "Specialization";
+              const modalTitle = specTitle.toLowerCase().includes(" in ")
+                ? specTitle
+                : `${courseData?.name ? `${courseData.name} in ` : ""}${specTitle}`;
+              const itemDuration = selectedSpecModal.duration || courseData?.duration;
+              const itemFees = selectedSpecModal.fees || selectedSpecModal.fee || courseData?.fees;
+              const itemDeadline = selectedSpecModal.admissionDeadline || courseData?.admissionDeadline;
+              const itemDesc = selectedSpecModal.description?.trim() || "";
+
+              return (
+                <Modal
+                  open={Boolean(selectedSpecModal)}
+                  onCancel={() => setSelectedSpecModal(null)}
+                  footer={null}
+                  width={720}
+                  centered
+                  className="max-w-[95vw]"
+                >
+                  <div className="pt-2 pb-1 space-y-4">
+                    {/* Header */}
+                    <div className="border-b border-gray-100 pb-2.5">
+                      {universityName && (
+                        <span className="text-[11px] font-bold text-[#08AEAA] uppercase tracking-wider block mb-1">
+                          {universityName}
+                        </span>
+                      )}
+                      <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
+                        <h3 className="text-xl sm:text-2xl font-bold text-[#0D3B66] m-0 tracking-tight leading-tight shrink-0">
+                          {modalTitle}
+                        </h3>
+                        {itemDuration && (
+                          <div className="inline-flex items-center gap-1.5 bg-gray-50 px-2.5 py-1 rounded-md border border-gray-200 text-xs font-semibold text-gray-700 shrink-0">
+                            <Clock className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                            <span>{itemDuration}</span>
+                          </div>
+                        )}
+                        {itemFees && (
+                          <div className="inline-flex items-center gap-1 bg-gray-50 px-2.5 py-1 rounded-md border border-gray-200 text-xs font-semibold text-gray-700 shrink-0">
+                            <span className="text-gray-400 font-normal">Fee:</span>
+                            <span className="text-[#0D3B66] font-bold">
+                              {typeof itemFees === "string" ? itemFees : `₹ ${itemFees}`}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Body: Banner + Details */}
+                    <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5">
+                      <div className="relative w-full sm:w-56 aspect-video sm:aspect-4/3 shrink-0 rounded-xl overflow-hidden bg-gray-100 border border-gray-200">
+                        {heroBannerSrc ? (
+                          <Image
+                            src={heroBannerSrc}
+                            alt={modalTitle}
+                            fill
+                            sizes="(max-width: 640px) 100vw, 240px"
+                            className="object-cover object-center"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-[#0C2B4E] flex items-center justify-center text-white/40">
+                            <GraduationCap className="w-12 h-12" />
+                          </div>
+                        )}
+
+                        {universityLogoSrc && (
+                          <div className="absolute top-2.5 left-2.5 z-10 bg-white/95 rounded-lg shadow-sm p-1.5 border border-gray-100 flex items-center justify-center">
+                            <div className="relative w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center">
+                              <Image
+                                src={universityLogoSrc}
+                                alt={universityName || "University Logo"}
+                                fill
+                                sizes="32px"
+                                className="object-contain"
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex-1 space-y-3 text-left w-full">
+                        {itemDesc && (
+                          <p className="text-xs sm:text-[13px] text-gray-600 leading-relaxed m-0">
+                            {itemDesc}
+                          </p>
+                        )}
+
+                        {itemDeadline && (
+                          <div className="flex items-center gap-1.5 bg-gray-50 px-2.5 py-1 rounded-md border border-gray-200 text-xs text-gray-600 w-fit">
+                            <Clock className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                            <span>
+                              Deadline: <strong className="text-gray-900">{itemDeadline}</strong>
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* CTAs */}
+                    <div className="w-full flex items-center gap-2.5 pt-2 border-t border-gray-100">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const title = modalTitle;
+                          setSelectedSpecModal(null);
+                          handleOpenLead("Download Brochure", title);
+                        }}
+                        className="flex-1 bg-[#0C2B4E] hover:bg-[#081f38] text-white text-xs sm:text-sm font-semibold py-2.5 px-4 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-xs active:scale-95 whitespace-nowrap border-none"
+                      >
+                        <span>Download Brochure</span>
+                        <Download className="w-3.5 h-3.5 shrink-0" />
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const title = modalTitle;
+                          setSelectedSpecModal(null);
+                          handleOpenLead("Free Counseling", title);
+                        }}
+                        className="flex-1 bg-white hover:bg-gray-50 text-[#0C2B4E] border border-[#0C2B4E] text-xs sm:text-sm font-semibold py-2.5 px-4 rounded-lg flex items-center justify-center transition-all cursor-pointer shadow-xs active:scale-95 whitespace-nowrap"
+                      >
+                        Get 100% FREE Counseling
+                      </button>
+                    </div>
+                  </div>
+                </Modal>
+              );
+            })()}
           </div>
         )}
 
@@ -1183,7 +1132,11 @@ export default function CourseClientView({
                 const providerName = item.providerName || null;
                 const durationText = item.durationText || null;
                 const feeText = item.feeText || null;
-                const courseDetailHref = item.courseDetailHref || `/courses`;
+                const rawHref = item.courseDetailHref || `/courses`;
+                const courseDetailHref =
+                  rawHref.startsWith("/courses/") && rawHref.split("/").length > 3
+                    ? rawHref.replace("/courses/", "/university/")
+                    : rawHref;
                 const inCmp = isInCompare(item._id || item.slug || cardTitle);
 
                 return (
@@ -1294,8 +1247,8 @@ export default function CourseClientView({
                           setIsCompareDrawerOpen(true);
                         }}
                         className={`w-full py-1 text-[11px] sm:text-xs font-medium flex items-center justify-center gap-1 transition-all cursor-pointer mt-1 border-none bg-transparent min-h-[22px] ${inCmp
-                            ? "text-[#08AEAA] font-bold"
-                            : "text-gray-600 hover:text-[#0D3B66]"
+                          ? "text-[#08AEAA] font-bold"
+                          : "text-gray-600 hover:text-[#0D3B66]"
                           }`}
                       >
                         {inCmp ? (
@@ -1332,11 +1285,10 @@ export default function CourseClientView({
                     {visibleCount >= processedPrograms.length ? "View Less" : "View More"}
                   </span>
                   <ChevronDown
-                    className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                      visibleCount >= processedPrograms.length
+                    className={`w-3.5 h-3.5 transition-transform duration-200 ${visibleCount >= processedPrograms.length
                         ? "rotate-180"
                         : "group-hover:translate-y-0.5"
-                    }`}
+                      }`}
                   />
                 </button>
               </div>
@@ -1364,8 +1316,8 @@ export default function CourseClientView({
                   <div
                     key={faq._id || idx}
                     className={`rounded-xl border border-gray-300 transition-all duration-200 overflow-hidden ${isOpen
-                        ? "border-blue-400 bg-blue-200/30 shadow-2xs"
-                        : "border-gray-200 bg-white hover:border-gray-300"
+                      ? "border-blue-400 bg-blue-200/30 shadow-2xs"
+                      : "border-gray-200 bg-white hover:border-gray-300"
                       }`}
                   >
                     <button
@@ -1381,8 +1333,8 @@ export default function CourseClientView({
                       </span>
                       <span
                         className={`flex items-center justify-center w-4 h-4 rounded-full shrink-0 transition-colors ${isOpen
-                            ? "bg-[#0C2B4E] text-white"
-                            : "bg-gray-300 text-gray-500"
+                          ? "bg-[#0C2B4E] text-white"
+                          : "bg-gray-300 text-gray-500"
                           }`}
                       >
                         {isOpen ? <Minus size={10} /> : <Plus size={10} />}

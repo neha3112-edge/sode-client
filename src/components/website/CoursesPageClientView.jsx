@@ -644,15 +644,17 @@ function CoursesContent({
 
         let courseDetailHref = "/courses";
         if (uniSlug && courseSlug && subcourseSlug) {
-          courseDetailHref = `/courses/${encodeURIComponent(uniSlug)}/${encodeURIComponent(courseSlug)}/${encodeURIComponent(subcourseSlug)}`;
+          courseDetailHref = `/university/${encodeURIComponent(uniSlug)}/${encodeURIComponent(courseSlug)}/${encodeURIComponent(subcourseSlug)}`;
         } else if (uniSlug && courseSlug) {
-          courseDetailHref = `/courses/${encodeURIComponent(uniSlug)}/${encodeURIComponent(courseSlug)}`;
+          courseDetailHref = `/university/${encodeURIComponent(uniSlug)}/${encodeURIComponent(courseSlug)}`;
         } else if (courseSlug && subcourseSlug) {
           courseDetailHref = `/courses/${encodeURIComponent(courseSlug)}/${encodeURIComponent(subcourseSlug)}`;
         } else if (courseSlug) {
           courseDetailHref = `/courses/${encodeURIComponent(courseSlug)}`;
         } else if (item.slug) {
-          courseDetailHref = `/courses/${encodeURIComponent(item.slug)}`;
+          courseDetailHref = item.slug.includes("/")
+            ? `/university/${item.slug}`
+            : `/courses/${encodeURIComponent(item.slug)}`;
         }
 
         list.push({
@@ -961,7 +963,11 @@ function CoursesContent({
                 const providerName = item.providerName || null;
                 const durationText = item.durationText || null;
                 const feeText = item.feeText || null;
-                const courseDetailHref = item.courseDetailHref || `/courses`;
+                const rawHref = item.courseDetailHref || `/courses`;
+                const courseDetailHref =
+                  rawHref.startsWith("/courses/") && rawHref.split("/").length > 3
+                    ? rawHref.replace("/courses/", "/university/")
+                    : rawHref;
 
                 return (
                   <div
