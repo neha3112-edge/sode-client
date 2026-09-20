@@ -21,6 +21,7 @@ import {
   ChevronDown,
   Check,
   Award,
+  Eye,
 } from "lucide-react";
 import { FaBuilding, FaCalendar, FaMapMarkerAlt } from "react-icons/fa";
 
@@ -803,15 +804,27 @@ export default function UniversityClientView({ initialData, slug }) {
               })}
             </div>
 
-            {(visibleCoursesCount < filteredCourses.length || (filteredCourses.length > 5 && visibleCoursesCount === 6)) && (
-              <div className={`justify-center mt-4 pt-1 ${visibleCoursesCount >= filteredCourses.length ? "hidden lg:flex" : "flex"}`}>
+            {filteredCourses.length > 5 && (
+              <div className="flex justify-center mt-4 pt-1">
                 <button
                   type="button"
-                  onClick={() => setVisibleCoursesCount((prev) => prev + 5)}
+                  onClick={() =>
+                    setVisibleCoursesCount((prev) =>
+                      prev >= filteredCourses.length ? 6 : filteredCourses.length
+                    )
+                  }
                   className="inline-flex items-center justify-center gap-1.5 px-5 py-1.5 rounded-full text-xs font-bold text-[#0B3B7E] bg-blue-50/80 hover:bg-blue-100 border border-blue-200/80 transition-all cursor-pointer shadow-none group"
                 >
-                  <span>View More</span>
-                  <ChevronDown className="w-3.5 h-3.5" />
+                  <span>
+                    {visibleCoursesCount >= filteredCourses.length ? "View Less" : "View More"}
+                  </span>
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                      visibleCoursesCount >= filteredCourses.length
+                        ? "rotate-180"
+                        : "group-hover:translate-y-0.5"
+                    }`}
+                  />
                 </button>
               </div>
             )}
@@ -865,20 +878,36 @@ export default function UniversityClientView({ initialData, slug }) {
                 {sampleDegreeData.imageUrl ? (
                   <div
                     onClick={() => setIsCertificateModalOpen(true)}
-                    className="w-full max-w-115 aspect-460/340 rounded-xl overflow-hidden cursor-pointer hover:shadow-md transition-shadow duration-200 bg-white relative shadow-md shadow-gray-300"
+                    className="w-full max-w-115 aspect-460/340 rounded-xl overflow-hidden cursor-pointer hover:shadow-md transition-all duration-200 bg-white relative shadow-md shadow-gray-300 group"
                   >
                     <Image
                       src={getAssetPath(sampleDegreeData.imageUrl)}
                       alt={sampleDegreeData.title || `Sample Degree ${uniName}`}
                       fill
                       sizes="(max-width: 1024px) 100vw, 460px"
-                      className="object-contain rounded-xl"
+                      className="object-contain rounded-xl transition-transform duration-300 group-hover:scale-[1.02]"
                     />
+
+                    {/* View Button Overlay on Side */}
+                    <div className="absolute bottom-2.5 right-2.5 sm:bottom-3 sm:right-3 z-10">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsCertificateModalOpen(true);
+                        }}
+                        className="bg-[#0C2B4E]/90 hover:bg-[#0C2B4E] text-white px-2.5 py-1 rounded-full text-[10.5px] sm:text-[11px] font-semibold flex items-center gap-1 shadow-sm backdrop-blur-xs transition-all cursor-pointer hover:scale-105 active:scale-95 border border-white/25 leading-none"
+                        title="Click to view full degree certificate"
+                      >
+                        <Eye size={11.5} className="shrink-0" />
+                        <span>View</span>
+                      </button>
+                    </div>
                   </div>
                 ) : null}
               </div>
 
-              <div className="lg:col-span-6 space-y-4 text-left">
+              <div className="lg:col-span-6 space-y-4 text-center lg:text-left flex flex-col items-center lg:items-start">
                 {sampleDegreeData.title && (
                   <h2 className="text-2xl sm:text-[28px] font-bold text-[#0D3B66] tracking-tight m-0 leading-tight">
                     {sampleDegreeData.title}
@@ -886,19 +915,19 @@ export default function UniversityClientView({ initialData, slug }) {
                 )}
 
                 {sampleDegreeData.description && (
-                  <p className="text-xs sm:text-sm text-gray-600 leading-tight font-normal mt-2 max-w-lg">
+                  <p className="text-xs sm:text-sm text-gray-600 leading-tight font-normal mt-2 max-w-lg mx-auto lg:mx-0">
                     {sampleDegreeData.description}
                   </p>
                 )}
 
                 {sampleDegreeData.points?.length > 0 && (
-                  <div className="grid grid-cols-3 gap-1.5 sm:gap-3 pt-2 max-w-lg">
+                  <div className="grid grid-cols-3 gap-1.5 sm:gap-3 pt-2 max-w-lg mx-auto lg:mx-0 w-full">
                     {sampleDegreeData.points.map((pt, pIdx) => (
                       <div
                         key={pIdx}
-                        className="flex items-center gap-1.5 sm:gap-2 rounded-lg"
+                        className="flex items-center justify-center lg:justify-start gap-1.5 sm:gap-2 rounded-lg"
                       >
-                        <span className="w-4 h-4 rounded-full bg-green-600 text-white flex items-center justify-center">
+                        <span className="w-4 h-4 rounded-full bg-green-600 text-white flex items-center justify-center shrink-0">
                           <Check size={11} strokeWidth={3} />
                         </span>
                         <span className="text-[11px] sm:text-[12.5px] font-bold text-gray-900 leading-tight">
@@ -909,7 +938,7 @@ export default function UniversityClientView({ initialData, slug }) {
                   </div>
                 )}
 
-                <div className="pt-3">
+                <div className="pt-3 w-full flex justify-center lg:justify-start">
                   <button
                     type="button"
                     onClick={() => {
@@ -921,7 +950,7 @@ export default function UniversityClientView({ initialData, slug }) {
                           submitButtonText: sampleDegreeData.ctaText || "Get Degree",
                         });
                     }}
-                    className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-xs sm:text-sm px-7 py-3 rounded-lg border-none cursor-pointer transition-all active:scale-95 shadow-sm inline-flex items-center justify-center"
+                    className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-xs sm:text-sm px-5 py-2 sm:py-2.5 rounded-lg border-none cursor-pointer transition-all active:scale-95 shadow-xs inline-flex items-center justify-center"
                   >
                     {sampleDegreeData.ctaText || "Get Degree"}
                   </button>
@@ -1040,8 +1069,8 @@ export default function UniversityClientView({ initialData, slug }) {
               })}
             </div>
 
-            {(visibleTopUnis < topPeerUniversities.length || (topPeerUniversities.length > 5 && visibleTopUnis === 6)) && (
-              <div className={`justify-center mt-4 pt-1 ${visibleTopUnis >= topPeerUniversities.length ? "hidden lg:flex" : "flex"}`}>
+            {topPeerUniversities.length > 5 && (
+              <div className="flex justify-center mt-4 pt-1">
                 <button
                   type="button"
                   onClick={() =>
@@ -1055,8 +1084,9 @@ export default function UniversityClientView({ initialData, slug }) {
                     {visibleTopUnis >= topPeerUniversities.length ? "View Less" : "View More"}
                   </span>
                   <ChevronDown
-                    className={`w-3.5 h-3.5 transition-transform duration-200 ${visibleTopUnis >= topPeerUniversities.length ? "rotate-180" : "group-hover:translate-y-0.5"
-                      }`}
+                    className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                      visibleTopUnis >= topPeerUniversities.length ? "rotate-180" : "group-hover:translate-y-0.5"
+                    }`}
                   />
                 </button>
               </div>
@@ -1282,25 +1312,23 @@ export default function UniversityClientView({ initialData, slug }) {
           width={720}
           centered
         >
-          <div className="p-4 text-center space-y-3">
-            <h3 className="text-base font-bold text-[#0C2B4E] m-0">
+          <div className="pt-2 text-center">
+            <h3 className="text-base sm:text-lg font-bold text-[#0C2B4E] m-0 mb-1">
               {sampleDegreeData.title || `Sample Degree Certificate - ${uniName}`}
             </h3>
             {sampleDegreeData.description && (
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-500 max-w-lg mx-auto mb-3">
                 {sampleDegreeData.description}
               </p>
             )}
-            <div className="bg-gray-50 p-4 sm:p-6 rounded-2xl border border-gray-200 flex items-center justify-center">
-              <div className="relative w-full h-[320px] sm:h-[480px] max-h-[75vh]">
-                <Image
-                  src={getAssetPath(sampleDegreeData.imageUrl)}
-                  alt={sampleDegreeData.title || `Sample Degree Certificate - ${uniName}`}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 700px"
-                  className="object-contain rounded-xl shadow-md"
-                />
-              </div>
+            <div className="relative w-full h-[380px] sm:h-[520px] max-h-[75vh] flex items-center justify-center mt-2">
+              <Image
+                src={getAssetPath(sampleDegreeData.imageUrl)}
+                alt={sampleDegreeData.title || `Sample Degree Certificate - ${uniName}`}
+                fill
+                sizes="(max-width: 768px) 100vw, 700px"
+                className="object-contain rounded-lg"
+              />
             </div>
           </div>
         </Modal>

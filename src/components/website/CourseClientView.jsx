@@ -1,16 +1,13 @@
 "use client";
 
-import React, { useState, useMemo, useRef } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
   Clock,
-  CreditCard,
   Download,
   MapPin,
-  Building,
   Building2,
-  ShieldCheck,
   BadgeCheck,
   User,
   GraduationCap,
@@ -24,11 +21,12 @@ import {
   Check,
   BookOpen,
   X,
+  ChevronDown,
 } from "lucide-react";
 import { Carousel, Tag } from "antd";
+import { FaBuilding, FaCalendar, FaMapMarkerAlt } from "react-icons/fa";
 import { useFormModal } from "@/hooks/useFormModal";
 import { useCompare } from "@/hooks/useCompare";
-import { Container } from "@/components/common/Container";
 import { getAssetPath } from "@/lib/utils";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
 
@@ -83,8 +81,8 @@ export default function CourseClientView({
       appliedPromoCode: promoData?.appliedPromoCode || null,
     };
   }, [courseData]);
-  const [visibleCount, setVisibleCount] = useState(6);
 
+  const [visibleCount, setVisibleCount] = useState(6);
   const [activeSpecIndex, setActiveSpecIndex] = useState(null);
   const carouselRef = useRef(null);
   const specializationSectionRef = useRef(null);
@@ -99,23 +97,35 @@ export default function CourseClientView({
     return [];
   }, [courseData?.topUniversities, initialCourses]);
 
-  const universityName = courseData?.universityName || "";
+  const universityName =
+    courseData?.universityName ||
+    courseData?.universityId?.name ||
+    courseData?.university?.name ||
+    "";
   const displayCourseTitle = courseData?.name || "Course Details";
-  const heroBannerSrc = getAssetPath(courseData?.bannerImage);
-  const universityLogoSrc = courseData?.logo ? getAssetPath(courseData.logo) : null;
+  const heroBannerSrc = getAssetPath(
+    courseData?.bannerImage || courseData?.banner || courseData?.universityId?.bannerImg?.url
+  );
+  const universityLogoSrc = courseData?.logo
+    ? getAssetPath(courseData.logo)
+    : courseData?.universityId?.logo
+      ? getAssetPath(courseData.universityId.logo)
+      : null;
 
   const approvalsList = useMemo(() => {
     return Array.isArray(courseData?.approvals) ? courseData.approvals : [];
   }, [courseData]);
 
   const approvalsSummary = useMemo(() => {
-    if (approvalsList.length > 0) {
-      return approvalsList
-        .map((a) => a.name || a.code || (typeof a === "string" ? a : ""))
-        .filter(Boolean)
-        .join(" | ");
+    const found = approvalsList.find((a) => {
+      const name = typeof a === "string" ? a : (a.name || a.code || a.title || "");
+      return /ugc/i.test(name);
+    });
+    if (found) {
+      const name = typeof found === "string" ? found : (found.name || found.code || found.title || "");
+      return name.includes("DEB") ? name : `${name}-DEB`;
     }
-    return "";
+    return "UGC-DEB";
   }, [approvalsList]);
 
   const highlightsList = useMemo(() => {
@@ -195,11 +205,10 @@ export default function CourseClientView({
       if (!item) return;
 
       const uni = item.universityId || item.university || {};
-      const uniName = uni.name || item.uniName || item.name || "Partner University";
+      const uName = uni.name || item.uniName || item.name || "Partner University";
       const uSlug = (uni.slug || "").toLowerCase().trim();
-      const uNameLower = uniName.toLowerCase().trim();
+      const uNameLower = uName.toLowerCase().trim();
 
-      // Exclude the current university where the user already is
       if (currentUniName && uNameLower === currentUniName) return;
       if (currentUniSlug && uSlug === currentUniSlug) return;
 
@@ -282,7 +291,7 @@ export default function CourseClientView({
           .replace(/--+/g, "-")
           .replace(/^-+|-+$/g, "");
 
-      const uniSlug = uni?.slug || slugify(uniName);
+      const uniSlug = uni?.slug || slugify(uName);
       const courseSlug = course?.slug || slugify(course?.shortName || course?.name || courseName);
       const subcourseSlug = subcourse?.slug || (subcourse?.name ? slugify(subcourse.name) : "");
 
@@ -305,7 +314,7 @@ export default function CourseClientView({
         title: cardTitle,
         cardTitle,
         displayName,
-        uniName,
+        uniName: uName,
         logoUrl,
         providerName,
         durationText,
@@ -316,7 +325,7 @@ export default function CourseClientView({
     });
 
     return list;
-  }, [rawCourses]);
+  }, [rawCourses, universityName, courseData?.universitySlug]);
 
   const handleOpenLead = (actionType = "Download Brochure", specName = null) => {
     const courseTitleForLead = specName
@@ -330,35 +339,45 @@ export default function CourseClientView({
     });
   };
 
-  useBreadcrumb({
-    items: [
-      { label: "Home", href: "/" },
-      { label: "Courses", href: "/courses" },
-      {
-        label: `${displayCourseTitle}${courseData?.fullName ? ` (${courseData.fullName})` : ""}`.trim(),
+
+
+  useBreadcrumb(
+    {
+      items: [
+        { label: "Home", href: "/" },
+        { label: "Courses", href: "/courses" },
+        {
+          label: `${displayCourseTitle}${courseData?.fullName ? ` (${courseData.fullName})` : ""}`.trim(),
+        },
+      ],
+      backButton: {
+        label: "Back to Courses",
+        href: "/courses",
       },
-    ],
-    backButton: {
-      label: "Back to Courses",
-      href: "/courses",
     },
-  }, [displayCourseTitle, courseData?.fullName]);
+    [displayCourseTitle, courseData?.fullName]
+  );
 
   return (
-    <div className="min-h-screen bg-gray-100 text-gray-800 antialiased font-sans pb-10">
-      <div className="pt-4 space-y-6 max-w-6xl mx-auto px-3 sm:px-4 md:px-0">
-        {/* Hero Banner Section */}
+    <div className="min-h-screen bg-gray-100 text-gray-800 antialiased font-sans pb-16">
+      {/* Top Hero and Quick Facts */}
+      <div className="pt-4 space-y-6 max-w-6xl mx-auto px-3 sm:px-4 md:px-0 mb-6">
+        {/* Original Course Hero Banner Section */}
         <div className="rounded-2xl overflow-hidden shadow-sm border border-gray-200 bg-[#0C2B4E] flex flex-col md:grid md:grid-cols-12 min-h-80 md:min-h-90">
           {/* Mobile Image (Top) / Desktop Image (Right) */}
           <div className="order-1 md:order-2 md:col-span-6 relative w-full h-64 sm:h-72 md:h-full overflow-hidden rounded-b-4xl md:rounded-l-4xl">
-            <Image
-              src={heroBannerSrc}
-              alt={displayCourseTitle}
-              fill
-              sizes="(max-width: 768px) 100vw, 50vw"
-              className="object-cover object-center"
-              priority
-            />
+            {heroBannerSrc ? (
+              <Image
+                src={heroBannerSrc}
+                alt={displayCourseTitle}
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-cover object-center"
+                priority
+              />
+            ) : (
+              <div className="w-full h-full bg-[#0C2B4E]" />
+            )}
 
             {/* University Logo with Compact White Background */}
             {universityLogoSrc && (
@@ -418,10 +437,10 @@ export default function CourseClientView({
             <div className="flex items-center gap-2 sm:gap-3 pt-2 w-full">
               <button
                 type="button"
-                onClick={() => handleOpenLead("Download Broucher")}
+                onClick={() => handleOpenLead("Download Brochure")}
                 className="flex-1 sm:flex-initial bg-[#E5A93C] hover:bg-[#D4982B] text-gray-950 font-bold px-2.5 sm:px-5 py-2.5 rounded-lg text-xs sm:text-sm transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 text-center leading-tight whitespace-nowrap"
               >
-                <span>Download Broucher</span>
+                <span>Download Brochure</span>
                 <Download size={14} className="shrink-0" />
               </button>
 
@@ -436,87 +455,155 @@ export default function CourseClientView({
           </div>
         </div>
 
-        {/* Quick Facts Bar */}
-        <div className="bg-white rounded-xl shadow-xs border border-gray-200 p-4 sm:p-5">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+        {/* Quick Facts Bar with Solid Icons & UGC-DEB */}
+        <div className="bg-white rounded-xl shadow-xs border border-gray-200 p-3.5 sm:p-5">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-3.5 sm:gap-y-4 lg:gap-y-0">
             {/* Location */}
-            <div className="flex items-start gap-2.5 sm:gap-3">
-              <MapPin size={22} className="text-[#0D5CAD] fill-[#0D5CAD] shrink-0 mt-0.5" />
+            <div className="flex items-center gap-2.5 sm:gap-3 pl-2.5 sm:pl-6 lg:justify-center pr-2 border-r border-gray-200">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#0077B6] text-white flex items-center justify-center shrink-0 shadow-2xs">
+                <FaMapMarkerAlt size={22} className="fill-white" />
+              </div>
               <div className="min-w-0">
-                <span className="text-xs text-gray-600 font-medium block">Location</span>
-                <span className="text-xs sm:text-sm font-bold text-gray-900 block leading-tight truncate">
-                  {courseData?.location || "Online"}
+                <span className="text-[11px] sm:text-xs text-gray-500 font-medium block leading-none mb-1">Location</span>
+                <span className="text-xs sm:text-sm font-bold text-gray-900 block leading-snug line-clamp-2 sm:truncate">
+                  {courseData?.location || universityName || "Online"}
                 </span>
               </div>
             </div>
 
             {/* Established */}
-            <div className="flex items-start gap-2.5 sm:gap-3">
-              <Building2 size={22} className="text-[#0D5CAD] shrink-0 mt-0.5" />
+            <div className="flex items-center gap-2.5 sm:gap-3 pl-3.5 sm:pl-6 lg:justify-center pr-2 lg:border-r border-gray-200">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#0077B6] text-white flex items-center justify-center shrink-0 shadow-2xs">
+                <FaBuilding size={17} />
+              </div>
               <div className="min-w-0">
-                <span className="text-xs text-gray-600 font-medium block">Established</span>
-                <span className="text-xs sm:text-sm font-bold text-gray-900 block leading-tight truncate">
-                  {courseData?.established || "N/A"}
+                <span className="text-[11px] sm:text-xs text-gray-500 font-medium block leading-none mb-1">Established</span>
+                <span className="text-xs sm:text-sm font-bold text-gray-900 block leading-snug line-clamp-2 sm:truncate">
+                  {courseData?.established || "—"}
                 </span>
               </div>
             </div>
 
             {/* Approvals */}
-            <div className="flex items-start gap-2.5 sm:gap-3">
-              <BadgeCheck size={22} className="text-white fill-[#0D5CAD] shrink-0 mt-0.5" />
+            <div className="flex items-center gap-2.5 sm:gap-3 pl-2.5 sm:pl-6 lg:justify-center pr-2 border-r border-gray-200">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#0077B6] text-white flex items-center justify-center shrink-0 shadow-2xs">
+                <BadgeCheck size={22} className="fill-white text-[#0077B6]" />
+              </div>
               <div className="min-w-0">
-                <span className="text-xs text-gray-600 font-medium block">Approvals :</span>
-                <span className="text-xs sm:text-sm font-bold text-gray-900 block leading-tight line-clamp-2">
-                  {approvalsSummary || "UGC / AICTE Approved"}
+                <span className="text-[11px] sm:text-xs text-gray-500 font-medium block leading-none mb-1">Approvals</span>
+                <span className="text-xs sm:text-sm font-bold text-gray-900 block leading-snug line-clamp-2 sm:truncate">
+                  {approvalsSummary || "UGC-DEB"}
                 </span>
               </div>
             </div>
 
             {/* Eligibility */}
-            <div className="flex items-start gap-2.5 sm:gap-3">
-              <User size={22} className="text-[#0D5CAD] fill-[#0D5CAD] shrink-0 mt-0.5" />
+            <div className="flex items-center gap-2.5 sm:gap-3 pl-3.5 sm:pl-6 lg:justify-center pr-2">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#0077B6] text-white flex items-center justify-center shrink-0 shadow-2xs">
+                {courseData?.admissionDeadline ? (
+                  <FaCalendar size={17} />
+                ) : (
+                  <User size={18} className="fill-white text-[#0077B6]" />
+                )}
+              </div>
               <div className="min-w-0">
-                <span className="text-xs text-gray-600 font-medium block">Eligibility</span>
-                <span className="text-xs sm:text-sm font-bold text-gray-900 block leading-tight line-clamp-2">
-                  {courseData?.eligibility || "10+2 / Graduation"}
-                </span>
+                {courseData?.admissionDeadline ? (
+                  <>
+                    <span className="text-[11px] sm:text-xs text-red-500 font-medium block leading-none mb-1">
+                      Admission deadline
+                    </span>
+                    <span className="text-xs sm:text-sm font-bold text-gray-900 block leading-tight truncate">
+                      {courseData.admissionDeadline}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-[11px] sm:text-xs text-gray-500 font-medium block leading-none mb-1">
+                      Eligibility
+                    </span>
+                    <span className="text-xs sm:text-sm font-bold text-gray-900 block leading-tight truncate">
+                      {courseData?.eligibility || "10+2 / Graduation"}
+                    </span>
+                  </>
+                )}
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-
-
-        {/* Course Overview */}
+      {/* Main Content Area Sections */}
+      <div className="space-y-6 max-w-6xl mx-auto px-3 sm:px-4 md:px-0">
+        {/* 1. About / Course Overview */}
         {(courseData?.overview || courseData?.description) && (
-          <div className="bg-white rounded-xl border border-gray-200/90 p-6 sm:p-4 text-center space-y-3 shadow-xs">
-            <div className="space-y-2">
-              <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight m-0">
-                {courseData.overviewTitle || `${courseData.name} Course Overview`}
-              </h2>
-              <div className="w-full max-w-2xl mx-auto h-px bg-linear-to-r from-transparent via-gray-200 to-transparent" />
+          <div
+            id="about"
+            className="scroll-mt-16 bg-white rounded-2xl shadow-xs border border-gray-200 p-6 sm:p-10 space-y-4 text-center"
+          >
+            <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight m-0 text-center">
+              {courseData.overviewTitle || `${courseData.name || "Course"} Overview`}
+            </h2>
+            <div className="w-full max-w-4xl mx-auto h-px bg-gray-200/80 my-2" />
+            <div className="space-y-4 text-xs sm:text-[13.5px] text-gray-700 leading-relaxed max-w-5xl mx-auto font-normal text-center">
+              <p className="m-0">{courseData.overview || courseData.description}</p>
             </div>
-            <p className="text-xs sm:text-sm text-gray-600 leading-relaxed max-w-4xl mx-auto m-0 text-center">
-              {courseData.overview || courseData.description}
-            </p>
           </div>
         )}
 
-        {/* Fee Structure & Dynamic 3-Plan Ledger Selector */}
-        {activeLedgerData && (
-          <div className="bg-white rounded-xl border border-gray-200/90 p-4 sm:p-4 md:p-6 space-y-2">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-center">
-              <div>
-                <div className="flex items-center justify-center">
-                  <h2 className="text-xl sm:text-xl font-extrabold text-[#0C2B4E] tracking-tight m-0">
-                    Fee Structure & Flexible Payment Plans
-                  </h2>
-                </div>
+        {/* 2. Key Highlights Table Card */}
+        {highlightsList.length > 0 && (
+          <div
+            id="key-highlights"
+            className="scroll-mt-16 bg-white rounded-2xl shadow-xs border border-gray-200 p-6 sm:p-10 space-y-6"
+          >
+            <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight mb-5 text-center">
+              Key Highlights of {courseData?.name || "Course"} {universityName ? `at ${universityName} ` : ""}2026
+            </h2>
+
+            <div className="overflow-hidden border border-gray-200 shadow-2xs max-w-5xl mx-auto rounded-lg">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-[#0C2B4E] text-white text-xs sm:text-sm font-bold tracking-wide">
+                      <th className="py-2.5 sm:py-3 px-4 sm:px-6 w-[32%] sm:w-70 border-r border-white/20">
+                        Category
+                      </th>
+                      <th className="py-2.5 sm:py-3 px-4 sm:px-6">Details</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 text-xs sm:text-[13.5px] bg-white">
+                    {highlightsList.map((row, idx) => (
+                      <tr
+                        key={row._id || idx}
+                        className="bg-white hover:bg-blue-50/30 transition-colors"
+                      >
+                        <td className="py-2.5 px-4 sm:px-6 font-bold text-gray-900 border-r border-gray-200 whitespace-nowrap">
+                          {row.label}
+                        </td>
+                        <td className="py-2.5 px-4 sm:px-6 text-gray-800 font-normal">
+                          {row.value}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* 3. Fee Structure & Dynamic 3-Plan Ledger Selector */}
+        {activeLedgerData && (
+          <div
+            id="fee-structure"
+            className="scroll-mt-16 bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8 space-y-4"
+          >
+            <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-5 sm:mb-6 m-0">
+              Fee Structure & Flexible Payment Plans
+            </h2>
 
             {/* Side-by-Side Plan & EMI Comparison Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
               {[
                 {
                   id: "semester",
@@ -619,40 +706,40 @@ export default function CourseClientView({
                   <div
                     key={card.id}
                     onClick={card.onClick}
-                    className={`p-2 sm:p-2.5 rounded-xl border transition-all cursor-pointer relative flex flex-col justify-between space-y-1 ${isSelected
-                      ? isEmi
-                        ? "border-amber-600 bg-amber-50/40 shadow-md ring-1 ring-amber-500/20"
-                        : "border-[#0C2B4E] bg-blue-50/40 shadow-md ring-1 ring-[#0C2B4E]/10"
-                      : isEmi
-                        ? "border-amber-200 bg-amber-50/20 hover:border-amber-300 hover:shadow-xs"
-                        : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-xs"
+                    className={`p-2 sm:p-3 rounded-xl border transition-all cursor-pointer relative flex flex-col justify-between space-y-1 ${isSelected
+                        ? isEmi
+                          ? "border-amber-600 bg-amber-50/40 shadow-md ring-1 ring-amber-500/20"
+                          : "border-[#0C2B4E] bg-blue-50/40 shadow-md ring-1 ring-[#0C2B4E]/10"
+                        : isEmi
+                          ? "border-amber-200 bg-amber-50/20 hover:border-amber-300 hover:shadow-xs"
+                          : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-xs"
                       }`}
                   >
                     <div className="space-y-1">
-                      <div className="flex items-center justify-between gap-1.5 min-w-0">
-                        <span className={`text-[11px] sm:text-xs font-semibold uppercase tracking-tight whitespace-nowrap ${isEmi ? "text-amber-900" : "text-[#0C2B4E]"}`}>
+                      <div className="flex items-center justify-between gap-1 min-w-0">
+                        <span className={`text-[10px] sm:text-xs font-semibold uppercase tracking-tight truncate ${isEmi ? "text-amber-900" : "text-[#0C2B4E]"}`}>
                           {card.title}
                         </span>
                         {card.badge && (
                           <Tag
                             color={card.badge.color}
-                            className="m-0 text-[9.5px] sm:text-[10px] font-semibold rounded-2xl whitespace-nowrap shrink-0"
+                            className="m-0 text-[8px] sm:text-[10px] font-semibold rounded-2xl whitespace-nowrap shrink-0 px-1 sm:px-1.5 leading-tight"
                           >
                             {card.badge.text}
                           </Tag>
                         )}
                       </div>
-                      <div className="flex items-baseline gap-2 pt-1 flex-wrap">
+                      <div className="flex items-baseline gap-1 sm:gap-2 pt-0.5 sm:pt-1 flex-wrap">
                         {card.hasDiscount && card.grossFee && (
-                          <span className="text-[15px] font-bold text-gray-600 line-through decoration-red-600 decoration-2">
+                          <span className="text-xs sm:text-[15px] font-bold text-gray-600 line-through decoration-red-600 decoration-2">
                             {card.grossFee}
                           </span>
                         )}
-                        <span className={`text-lg font-bold ${isEmi ? "text-amber-950" : "text-gray-900"}`}>
+                        <span className={`text-sm sm:text-lg font-bold ${isEmi ? "text-amber-950" : "text-gray-900"}`}>
                           {card.payableFee}
                         </span>
                       </div>
-                      <p className={`text-[11px] m-0 ${isEmi ? "text-amber-800/80 truncate" : "text-gray-500"}`}>
+                      <p className={`text-[9.5px] sm:text-[11px] m-0 ${isEmi ? "text-amber-800/80 truncate" : "text-gray-500 truncate"}`}>
                         {card.subtitle}
                       </p>
                     </div>
@@ -695,8 +782,8 @@ export default function CourseClientView({
                           type="button"
                           onClick={() => setActiveEmiSubTab(tab.key)}
                           className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${currentSubTabKey === tab.key
-                            ? "bg-amber-700 text-white shadow-xs"
-                            : "bg-white text-amber-900 border border-amber-300 hover:bg-amber-100"
+                              ? "bg-amber-700 text-white shadow-xs"
+                              : "bg-white text-amber-900 border border-amber-300 hover:bg-amber-100"
                             }`}
                         >
                           {tab.label} ({tab.ledger.formattedMinMonthlyEmi})
@@ -704,7 +791,6 @@ export default function CourseClientView({
                       ))}
                     </div>
                   )}
-
 
                   {/* Tenure Options Cards */}
                   {Array.isArray(currentEmi.tenures) && currentEmi.tenures.length > 0 && (
@@ -759,19 +845,64 @@ export default function CourseClientView({
                 </div>
               );
             })()}
-
-
           </div>
         )}
 
-        {/* Rankings & Accreditations */}
-        {approvalsList.length > 0 && (
-          <div className="bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8 text-center">
-            <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight mb-5 sm:mb-7 m-0">
-              {courseData?.approvalsTitle || (universityName ? `Rankings & Accreditations of ${universityName}` : "Rankings & Accreditations")}
+        {/* 4. Syllabus / Updated Course Curriculum */}
+        {curriculumList.length > 0 && (
+          <div
+            id="syllabus"
+            className="scroll-mt-16 bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8"
+          >
+            <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-6 sm:mb-8 m-0">
+              {courseData?.name || "Course"} Course Updated Syllabus 2026 {universityName ? `at ${universityName}` : ""}
             </h2>
 
-            <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-6 lg:grid-cols-7 gap-2 sm:gap-3.5 md:gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
+              {curriculumList.map((sem, idx) => {
+                const rawLabel = sem.semester || `Semester ${idx + 1}`;
+                const numMatch = rawLabel.match(/\d+/);
+                const semesterTitle = numMatch ? `Semester ${numMatch[0]}` : rawLabel;
+
+                return (
+                  <div
+                    key={idx}
+                    className="bg-white rounded-2xl border border-gray-200/90 p-4 sm:p-5 shadow-2xs flex flex-col items-center hover:border-[#08AEAA] transition-colors"
+                  >
+                    <div className="bg-[#0C3A66] text-white px-5 py-1.5 rounded-full text-xs sm:text-sm font-semibold mb-3 shadow-xs">
+                      {semesterTitle}
+                    </div>
+
+                    <div className="w-full h-px bg-gray-100 mb-3 sm:mb-4" />
+
+                    <ul className="w-full text-left space-y-2 sm:space-y-2.5 text-xs sm:text-[13px] text-gray-700 m-0 p-0 list-none flex-1">
+                      {sem.subjects.map((sub, sIdx) => {
+                        const subName = typeof sub === "string" ? sub : (sub.name || "");
+                        return (
+                          <li key={sIdx} className="flex items-start gap-1.5 sm:gap-2 leading-relaxed">
+                            <span className="text-gray-900 font-bold shrink-0">•</span>
+                            <span className="text-gray-700">{subName}</span>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* 5. Approvals / Rankings & Accreditations */}
+        {approvalsList.length > 0 && (
+          <div
+            id="approvals"
+            className="scroll-mt-16 bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 text-center"
+          >
+            <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight mb-4">
+              {courseData?.approvalsTitle || (universityName ? `Rankings & Accreditations of ${universityName}` : "Rankings & Accreditations")}
+            </h2>
+            <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2.5 md:gap-3 w-full">
               {approvalsList.map((item, idx) => {
                 const logoSrc = item.logo || item.image ? getAssetPath(item.logo || item.image) : null;
                 const title = item.name || item.code || "Accredited";
@@ -780,27 +911,37 @@ export default function CourseClientView({
                 return (
                   <div
                     key={item._id || idx}
-                    className="bg-white rounded-xl border border-gray-200 p-2 sm:p-2.5 md:p-3 flex flex-col items-center justify-center text-center aspect-square shadow-2xs hover:border-blue-300 transition-colors"
+                    className="bg-white rounded-xl border border-gray-200 flex flex-col p-1.5 sm:p-3 items-center justify-between text-center aspect-[4/4.6] sm:aspect-square shadow-2xs hover:border-blue-300 transition-colors overflow-hidden shrink-0 w-[calc((100%-12px)/3)] sm:w-[calc((100%-20px)/3)] md:w-[calc((100%-60px)/6)]"
                   >
-                    <div className="h-8 sm:h-10 md:h-11 flex items-center justify-center relative w-full mb-1 shrink-0">
+                    <div className="flex-1 min-h-0 w-full relative">
                       {logoSrc ? (
                         <Image
                           src={logoSrc}
                           alt={title}
-                          width={60}
-                          height={50}
-                          className="object-contain max-h-7 sm:max-h-9 md:max-h-10 w-auto"
+                          fill
+                          sizes="(max-width: 768px) 64px, 80px"
+                          className="object-contain"
                         />
                       ) : (
-                        <Award className="w-6 h-6 sm:w-7 sm:h-7 text-blue-600" />
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Award className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-blue-600" />
+                        </div>
                       )}
                     </div>
-                    <h3 className="text-[10.5px] sm:text-xs md:text-[13px] font-bold text-gray-900 m-0 tracking-tight leading-tight line-clamp-2 w-full">
-                      {title}
-                    </h3>
-                    <p className="text-[8.5px] sm:text-[9.5px] md:text-[10.5px] text-gray-500 leading-tight m-0 line-clamp-2 w-full mt-0.5">
-                      {desc}
-                    </p>
+                    <div className="w-full shrink-0 flex flex-col items-center justify-start text-center pt-1">
+                      <div className="w-full h-4 sm:h-5 flex items-center justify-center">
+                        <h3 className="text-[10px] sm:text-[11.5px] md:text-[12.5px] font-bold text-gray-900 m-0 tracking-tight leading-tight line-clamp-1 w-full text-center">
+                          {title}
+                        </h3>
+                      </div>
+                      <div className="w-full h-[22px] sm:h-[26px] flex items-start justify-center mt-0.5">
+                        {desc ? (
+                          <p className="text-[8px] sm:text-[9px] md:text-[10px] text-gray-600 leading-tight m-0 line-clamp-2 w-full text-center">
+                            {desc}
+                          </p>
+                        ) : null}
+                      </div>
+                    </div>
                   </div>
                 );
               })}
@@ -808,43 +949,12 @@ export default function CourseClientView({
           </div>
         )}
 
-        {/* Key Highlights Table Card */}
-        {highlightsList.length > 0 && (
-          <div className="bg-white rounded-xl border border-gray-200/90 shadow-xs p-6 sm:p-8">
-            <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-5 sm:mb-7 m-0">
-              Key Highlights of {courseData?.name || "Course"} {universityName ? `at ${universityName} ` : ""}2026
-            </h2>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs sm:text-sm border border-gray-300 border-collapse">
-                <thead>
-                  <tr className="bg-[#102A45] text-white font-bold">
-                    <th className="py-2.5 px-4 sm:px-5 w-[25%] sm:w-[22%] border-r border-white/20">Category</th>
-                    <th className="py-2.5 px-4 sm:px-5">Details</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-300 text-gray-700 bg-white">
-                  {highlightsList.map((row, idx) => (
-                    <tr key={row._id || idx} className="border-b border-gray-300 hover:bg-gray-50/40 transition-colors">
-                      <td className="py-2.5 px-4 sm:px-5 font-bold text-gray-900 border-r border-gray-300">
-                        {row.label}
-                      </td>
-                      <td className="py-2.5 px-4 sm:px-5">
-                        {row.value}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {/* Course Specialisations */}
+        {/* 6. Admission / Course Specialisations */}
         {specializations.length > 0 && (
           <div
+            id="admission"
             ref={specializationSectionRef}
-            className="bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8 relative transition-all"
+            className="scroll-mt-16 bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8 relative transition-all"
           >
             {activeSpecIndex === null ? (
               <>
@@ -864,9 +974,9 @@ export default function CourseClientView({
                           setActiveSpecIndex(idx);
                           specializationSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
                         }}
-                        className="bg-white rounded-xl border border-gray-200 p-2.5 sm:p-3.5 md:p-4 flex items-center gap-2 sm:gap-3.5 cursor-pointer hover:border-blue-400 transition-colors"
+                        className="bg-white rounded-xl border border-gray-200 p-2.5 sm:p-3.5 md:p-4 flex items-center gap-2 sm:gap-3.5 cursor-pointer hover:border-[#08AEAA] hover:shadow-xs transition-all"
                       >
-                        <IconComponent className="text-[#205493] shrink-0 w-4.5 h-4.5 sm:w-5.5 sm:h-5.5" />
+                        <IconComponent className="text-[#0C3A66] shrink-0 w-4.5 h-4.5 sm:w-5.5 sm:h-5.5" />
                         <span className="text-[11px] sm:text-xs md:text-[13.5px] font-bold text-gray-900 tracking-tight leading-snug">
                           {specTitle}
                         </span>
@@ -887,7 +997,7 @@ export default function CourseClientView({
                 >
                   <X className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
-                {/* Ant Design Carousel with dots and smooth slide navigation */}
+
                 <Carousel
                   ref={carouselRef}
                   arrows={false}
@@ -914,18 +1024,23 @@ export default function CourseClientView({
                     return (
                       <div key={item._id || idx} className="outline-none">
                         <div className="flex flex-col sm:flex-row items-center sm:items-stretch gap-5 sm:gap-6 pt-1">
-                          {/* Left: Dynamic Banner Image with University Badge */}
-                          <div className="relative w-full max-w-65 sm:w-65 sm:max-w-none aspect-square shrink-0 rounded-2xl overflow-hidden shadow-none">
-                            <Image
-                              src={heroBannerSrc}
-                              alt={modalTitle || displayCourseTitle}
-                              fill
-                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                              className="object-cover object-center rounded-2xl"
-                              priority={idx === 0}
-                            />
+                          {/* Banner Image with University Badge */}
+                          <div className="relative w-full max-w-65 sm:w-65 sm:max-w-none aspect-square shrink-0 rounded-2xl overflow-hidden shadow-none bg-gray-100">
+                            {heroBannerSrc ? (
+                              <Image
+                                src={heroBannerSrc}
+                                alt={modalTitle || displayCourseTitle}
+                                fill
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                className="object-cover object-center rounded-2xl"
+                                priority={idx === 0}
+                              />
+                            ) : (
+                              <div className="w-full h-full bg-[#0C2B4E] rounded-2xl flex items-center justify-center text-white/40">
+                                <GraduationCap className="w-16 h-16" />
+                              </div>
+                            )}
 
-                            {/* University Logo Badge on Image */}
                             {universityLogoSrc && (
                               <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 z-10 bg-white rounded-xl shadow-md p-1.5 sm:p-2 border border-gray-100 flex items-center justify-center">
                                 <div className="relative w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center">
@@ -933,7 +1048,7 @@ export default function CourseClientView({
                                     src={universityLogoSrc}
                                     alt={universityName || "University Logo"}
                                     fill
-                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                    sizes="44px"
                                     className="object-contain"
                                   />
                                 </div>
@@ -941,7 +1056,7 @@ export default function CourseClientView({
                             )}
                           </div>
 
-                          {/* Right: Content details */}
+                          {/* Details */}
                           <div className="flex-1 flex flex-col justify-between space-y-3.5 text-left py-1 w-full">
                             <div className="space-y-1">
                               <h3 className="text-xl sm:text-2xl font-bold text-[#0D3B66] m-0 tracking-tight leading-snug">
@@ -989,9 +1104,9 @@ export default function CourseClientView({
                                 onClick={() => {
                                   handleOpenLead("Download Brochure", modalTitle);
                                 }}
-                                className="flex-1 bg-[#0C2B4E] hover:bg-[#081f38] text-white text-[10px] sm:text-sm font-semibold py-2 sm:py-2.5 px-2 sm:px-4 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-xs active:scale-95 whitespace-nowrap"
+                                className="flex-1 bg-[#0C2B4E] hover:bg-[#081f38] text-white text-[10px] sm:text-sm font-semibold py-2 sm:py-2.5 px-2 sm:px-4 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-xs active:scale-95 whitespace-nowrap border-none"
                               >
-                                <span>Download Broucher</span>
+                                <span>Download Brochure</span>
                                 <Download className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
                               </button>
 
@@ -1012,7 +1127,7 @@ export default function CourseClientView({
                   })}
                 </Carousel>
 
-                {/* All Available Specialisations Underneath */}
+                {/* Available Specialisations Grid */}
                 <div className="mt-6 sm:mt-7">
                   <h4 className="text-base sm:text-lg md:text-xl font-bold text-[#0D3B66] text-center m-0 mb-4 sm:mb-5 tracking-tight">
                     {universityName ? `${universityName} ` : ""}{courseData?.name || "Course"} Specialisations
@@ -1032,11 +1147,11 @@ export default function CourseClientView({
                             carouselRef.current?.goTo(idx);
                           }}
                           className={`rounded-xl border p-2.5 sm:p-3.5 md:p-4 flex items-center gap-2 sm:gap-3.5 cursor-pointer transition-all ${isSelected
-                            ? "bg-blue-50/70 border-blue-600 ring-1 ring-blue-500 shadow-xs"
-                            : "bg-white border-gray-200 hover:border-blue-400"
+                              ? "bg-blue-50/70 border-blue-600 ring-1 ring-blue-500 shadow-xs"
+                              : "bg-white border-gray-200 hover:border-[#08AEAA]"
                             }`}
                         >
-                          <IconComponent className={`shrink-0 w-4.5 h-4.5 sm:w-5.5 sm:h-5.5 ${isSelected ? "text-blue-700" : "text-[#205493]"}`} />
+                          <IconComponent className={`shrink-0 w-4.5 h-4.5 sm:w-5.5 sm:h-5.5 ${isSelected ? "text-blue-700" : "text-[#0C3A66]"}`} />
                           <span className={`text-[11px] sm:text-xs md:text-[13.5px] font-bold tracking-tight leading-snug ${isSelected ? "text-blue-900 font-semibold" : "text-gray-900"}`}>
                             {specTitle}
                           </span>
@@ -1050,56 +1165,17 @@ export default function CourseClientView({
           </div>
         )}
 
-        {/* Online Course Updated Syllabus (Exact Screenshot Match) */}
-        {curriculumList.length > 0 && (
-          <div className="bg-white rounded-xl border border-gray-200/90 shadow-xs p-4 sm:p-8">
-            <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-5 sm:mb-8 m-0">
-              {courseData?.name || "Course"} Course Updated Syllabus 2026 {universityName ? `at ${universityName}` : ""}
-            </h2>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
-              {curriculumList.map((sem, idx) => {
-                const rawLabel = sem.semester || `Semester ${idx + 1}`;
-                const numMatch = rawLabel.match(/\d+/);
-                const semesterTitle = numMatch ? `Semester ${numMatch[0]}` : rawLabel;
-
-                return (
-                  <div
-                    key={idx}
-                    className="bg-white rounded-2xl border border-gray-200/90 p-4 sm:p-5 shadow-2xs flex flex-col items-center hover:border-blue-300 transition-colors"
-                  >
-                    <div className="bg-[#0066CC] text-white px-5 py-1 rounded-full text-xs sm:text-sm font-medium mb-3 shadow-xs">
-                      {semesterTitle}
-                    </div>
-
-                    <div className="w-full h-px bg-gray-100 mb-3 sm:mb-4" />
-
-                    <ul className="w-full text-left space-y-2 sm:space-y-2.5 text-[11px] sm:text-[13px] text-gray-700 m-0 p-0 list-none flex-1">
-                      {sem.subjects.map((sub, sIdx) => {
-                        const subName = typeof sub === "string" ? sub : (sub.name || "");
-                        return (
-                          <li key={sIdx} className="flex items-start gap-1.5 sm:gap-2 leading-relaxed">
-                            <span className="text-gray-900 font-bold shrink-0">•</span>
-                            <span className="text-gray-700">{subName}</span>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* Top Universities Offering Course Cards Section */}
+        {/* 7. Alternative / Top Universities Offering Course Cards Section */}
         {processedPrograms.length > 0 && (
-          <div className="bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8">
+          <div
+            id="alternative"
+            className="scroll-mt-16 bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8"
+          >
             <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-6 sm:mb-8 m-0">
               Top Universities Offering {courseData?.name || "Online Courses"}
             </h2>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-4 auto-rows-fr">
               {processedPrograms.slice(0, visibleCount).map((item, index) => {
                 const uName = item.uniName || "Partner University";
                 const cardTitle = item.cardTitle || item.title || "Course Program";
@@ -1108,11 +1184,12 @@ export default function CourseClientView({
                 const durationText = item.durationText || null;
                 const feeText = item.feeText || null;
                 const courseDetailHref = item.courseDetailHref || `/courses`;
+                const inCmp = isInCompare(item._id || item.slug || cardTitle);
 
                 return (
                   <div
                     key={item._uniqueKey || `${cardTitle}-${index}`}
-                    className={`bg-white rounded-xl sm:rounded-2xl border border-gray-200 hover:border-blue-400 p-2.5 sm:p-3.5 hover:shadow-md transition-all flex flex-col items-center justify-between text-center relative group min-w-0 shadow-2xs ${index === 5 && visibleCount === 6 ? "flex lg:hidden" : "flex"
+                    className={`bg-gray-50 rounded-xl border border-gray-200 hover:border-[#08AEAA] p-2 sm:p-2.5 hover:shadow-md transition-all flex flex-col items-center justify-between text-center relative group min-w-0 w-full h-full shadow-2xs ${index === 5 && visibleCount === 6 ? "flex lg:hidden" : "flex"
                       }`}
                   >
                     {/* Top Right Corner Pinned Provider Badge */}
@@ -1125,146 +1202,159 @@ export default function CourseClientView({
                     )}
 
                     {/* University Logo */}
-                    <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full p-1 sm:p-1.5 flex items-center justify-center bg-white border border-gray-100 shadow-2xs relative my-1 shrink-0">
+                    <div className="w-12 h-12 sm:w-15 sm:h-15 rounded-full p-1 flex items-center justify-center relative mt-2.5 sm:mt-3 mb-1.5 sm:mb-2 shrink-0">
                       {logoUrl ? (
-                        <Image
-                          src={logoUrl}
-                          alt={uName}
-                          fill
-                          sizes="(max-width: 768px) 48px, 64px"
-                          loading={index < 5 ? "eager" : "lazy"}
-                          className="object-contain p-1"
-                        />
+                        <Link href={courseDetailHref} className="relative w-full h-full block">
+                          <Image
+                            src={logoUrl}
+                            alt={uName}
+                            fill
+                            sizes="(max-width: 768px) 48px, 60px"
+                            className="object-contain p-0.5 transition-transform group-hover:scale-105"
+                          />
+                        </Link>
                       ) : (
-                        <div className="w-full h-full rounded-full bg-blue-50 text-blue-600 font-bold flex items-center justify-center text-xs uppercase">
+                        <Link href={courseDetailHref} className="w-full h-full rounded-full bg-teal-50 text-[#08AEAA] font-bold flex items-center justify-center text-xs uppercase no-underline">
                           {uName.charAt(0)}
-                        </div>
+                        </Link>
                       )}
                     </div>
 
-                    {/* University Name & Fee/Duration grouped tightly */}
-                    <div className="w-full space-y-1 my-1">
-                      <h4 className="text-[11px] sm:text-xs font-bold text-[#0a2540] line-clamp-2 leading-tight m-0 w-full text-center">
-                        {uName}
-                      </h4>
+                    {/* University Name & Fee/Duration */}
+                    <div className="w-full flex-1 flex flex-col justify-center">
+                      <div className="flex items-center justify-center">
+                        <Link
+                          href={courseDetailHref}
+                          className="text-xs sm:text-[13px] font-semibold text-[#0a2540] hover:text-[#08AEAA] line-clamp-2 leading-tight m-0 w-full text-center no-underline transition-colors"
+                        >
+                          {uName}
+                        </Link>
+                      </div>
 
-                      {(feeText || durationText) && (
-                        <div className="flex items-center justify-center gap-1.5 sm:gap-2 text-center w-full flex-wrap pt-0.5">
-                          {feeText && (
-                            <span className="text-[11px] sm:text-xs font-extrabold text-[#0D3B66] tracking-tight">
-                              {feeText.replace(/\s*INR$/, "")}
-                            </span>
-                          )}
-                          {feeText && durationText && (
-                            <span className="text-gray-300 text-[10px]">•</span>
-                          )}
-                          {durationText && (
-                            <div className="text-[10px] sm:text-[11px] text-gray-500 font-medium flex items-center gap-1 shrink-0">
-                              <Clock className="w-2.5 h-2.5 shrink-0 text-gray-400" />
-                              <span>{durationText}</span>
-                            </div>
-                          )}
-                        </div>
-                      )}
+                      <div className="min-h-9 flex items-center justify-center gap-1 sm:gap-1.5 text-center w-full whitespace-nowrap overflow-hidden pt-0.5">
+                        {feeText ? (
+                          <span className="text-[11.5px] sm:text-[13px] font-bold text-[#0D3B66] tracking-tight shrink-0">
+                            {feeText.replace(/\s*\/\s*Semester/i, " / Sem").replace(/\s*INR$/, "")}
+                          </span>
+                        ) : null}
+                        {feeText && durationText && (
+                          <span className="text-gray-300 text-xs shrink-0">•</span>
+                        )}
+                        {durationText ? (
+                          <div className="text-[10.5px] sm:text-[11.5px] text-gray-500 font-normal flex items-center gap-0.5 sm:gap-1 shrink-0">
+                            <Clock className="w-3 h-3 shrink-0 text-gray-400" />
+                            <span>{durationText}</span>
+                          </div>
+                        ) : null}
+                      </div>
                     </div>
 
-                    {/* Full-width Compare Button */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const targetItem = {
-                          _id: item._id || item.slug,
-                          slug: item.slug || item._id,
-                          title: cardTitle,
-                          uniName: uName,
-                          logoUrl: logoUrl,
-                          feeText: feeText,
-                          durationText: durationText,
-                        };
-                        toggleCompare(targetItem);
-                        setIsCompareDrawerOpen(true);
-                      }}
-                      className={`w-full py-1.5 px-2 rounded-md sm:rounded-lg text-[10px] sm:text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer mt-2.5 border ${isInCompare(item._id || item.slug || cardTitle)
-                        ? "bg-teal-50 border-teal-300 text-teal-700 font-bold"
-                        : "bg-gray-50/90 hover:bg-gray-100 border-gray-200 text-gray-700 hover:text-[#0D3B66]"
-                        }`}
-                    >
-                      {isInCompare(item._id || item.slug || cardTitle) ? (
-                        <>
-                          <Check className="w-3.5 h-3.5 text-teal-600 shrink-0" />
-                          <span>Added to Compare</span>
-                        </>
-                      ) : (
-                        <>
-                          <Plus className="w-3.5 h-3.5 text-gray-500 shrink-0" />
-                          <span>Add to Compare</span>
-                        </>
-                      )}
-                    </button>
+                    {/* Action Buttons with Divider and Compare */}
+                    <div className="w-full mt-auto pt-1.5">
+                      <div className="w-full grid grid-cols-2 gap-1.5 items-center">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            openFormModal({
+                              title: "Apply for Course",
+                              subtitle: cardTitle,
+                              defaultCourse: cardTitle,
+                              university: uName,
+                              formNameOverride: `CourseCard_${item.slug || uName}`,
+                              submitButtonText: "Apply Now",
+                            });
+                          }}
+                          className="w-full bg-[#F4D068] hover:bg-[#ebc557] text-gray-900 text-[11px] sm:text-xs font-semibold py-2 px-1 rounded-md sm:rounded-lg border-none cursor-pointer transition-colors active:scale-95 flex items-center justify-center text-center whitespace-nowrap leading-none"
+                        >
+                          Apply Now
+                        </button>
+                        <Link
+                          href={courseDetailHref}
+                          className="w-full bg-[#0D3B66] hover:bg-[#072440] text-white border-none text-[11px] sm:text-xs font-semibold py-2 px-1 rounded-md sm:rounded-lg text-center no-underline transition-colors flex items-center justify-center whitespace-nowrap leading-none"
+                        >
+                          Know More
+                        </Link>
+                      </div>
 
-                    {/* Action Buttons in Flex Row */}
-                    <div className="w-full flex items-center gap-1.5 sm:gap-2 mt-1.5">
+                      <hr className="w-full border-t border-gray-200 my-1.5" />
+
                       <button
                         type="button"
                         onClick={() => {
-                          openFormModal({
-                            title: "Apply for Course",
-                            subtitle: cardTitle,
-                            defaultCourse: cardTitle,
-                            university: uName,
-                            formNameOverride: `CourseCard_${item.slug || uName}`,
-                            submitButtonText: "Apply Now",
-                          });
+                          const targetItem = {
+                            _id: item._id || item.slug,
+                            slug: item.slug || item._id,
+                            title: cardTitle,
+                            uniName: uName,
+                            logoUrl: logoUrl,
+                            feeText: feeText,
+                            durationText: durationText,
+                          };
+                          toggleCompare(targetItem);
+                          setIsCompareDrawerOpen(true);
                         }}
-                        className="flex-1 bg-[#F4D068] hover:bg-[#ebc557] text-gray-900 text-[10px] sm:text-xs font-bold py-1.5 px-1 rounded-md sm:rounded-lg border-none cursor-pointer transition-colors shadow-2xs active:scale-95 flex items-center justify-center whitespace-nowrap"
+                        className={`w-full py-1 text-[11px] sm:text-xs font-medium flex items-center justify-center gap-1 transition-all cursor-pointer mt-1 border-none bg-transparent min-h-[22px] ${inCmp
+                            ? "text-[#08AEAA] font-bold"
+                            : "text-gray-600 hover:text-[#0D3B66]"
+                          }`}
                       >
-                        Apply Now
+                        {inCmp ? (
+                          <>
+                            <Check className="w-3.5 h-3.5 text-[#08AEAA] shrink-0 stroke-[2.5]" />
+                            <span>Added to Compare</span>
+                          </>
+                        ) : (
+                          <>
+                            <Plus className="w-3.5 h-3.5 text-gray-500 shrink-0 stroke-2" />
+                            <span>Add to Compare</span>
+                          </>
+                        )}
                       </button>
-                      <Link
-                        href={courseDetailHref}
-                        className="flex-1 bg-white hover:bg-gray-50 text-[#0a2540] hover:text-blue-600 border border-gray-200 text-[10px] sm:text-xs font-semibold py-1.5 px-1 rounded-md sm:rounded-lg text-center no-underline transition-colors flex items-center justify-center shadow-2xs whitespace-nowrap"
-                      >
-                        Know More
-                      </Link>
                     </div>
                   </div>
                 );
               })}
             </div>
 
-            {/* View More Button */}
-            {visibleCount < processedPrograms.length && (
-              <div className="flex justify-center mt-3 pt-1">
+            {/* View More / View Less Button */}
+            {processedPrograms.length > 5 && (
+              <div className="flex justify-center mt-4 pt-1">
                 <button
                   type="button"
-                  onClick={() => setVisibleCount((prev) => prev + 6)}
+                  onClick={() =>
+                    setVisibleCount((prev) =>
+                      prev >= processedPrograms.length ? 6 : processedPrograms.length
+                    )
+                  }
                   className="inline-flex items-center justify-center gap-1.5 px-5 py-1.5 rounded-full text-xs font-bold text-[#0B3B7E] bg-blue-50/80 hover:bg-blue-100 border border-blue-200/80 transition-all cursor-pointer shadow-none group"
                 >
-                  <span>View More</span>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={2.5}
-                    stroke="currentColor"
-                    className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-y-0.5"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                  </svg>
+                  <span>
+                    {visibleCount >= processedPrograms.length ? "View Less" : "View More"}
+                  </span>
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                      visibleCount >= processedPrograms.length
+                        ? "rotate-180"
+                        : "group-hover:translate-y-0.5"
+                    }`}
+                  />
                 </button>
               </div>
             )}
           </div>
         )}
 
-        {/* FAQs Section */}
+        {/* 8. FAQs Section */}
         {faqList.length > 0 && (
-          <div className="bg-white rounded-xl border border-gray-200/90 shadow-xs p-6 sm:p-8 text-left">
-            <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight mb-5 sm:mb-7 m-0">
+          <div
+            id="faqs"
+            className="scroll-mt-16 bg-white rounded-xl shadow-xs border border-gray-200 p-6 sm:p-8 space-y-6"
+          >
+            <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight mb-5 text-center">
               FAQs on {courseData?.name || "Course"} {universityName ? `at ${universityName}` : ""}
             </h2>
 
-            <div className="space-y-3">
+            <div className="space-y-3 max-w-5xl mx-auto">
               {faqList.map((faq, idx) => {
                 const isOpen = openFaq === idx;
                 const question = faq.question || faq.q || "";
@@ -1273,27 +1363,34 @@ export default function CourseClientView({
                 return (
                   <div
                     key={faq._id || idx}
-                    className="bg-[#F1F3F6] rounded-xl overflow-hidden transition-all"
+                    className={`rounded-xl border border-gray-300 transition-all duration-200 overflow-hidden ${isOpen
+                        ? "border-blue-400 bg-blue-200/30 shadow-2xs"
+                        : "border-gray-200 bg-white hover:border-gray-300"
+                      }`}
                   >
                     <button
                       type="button"
                       onClick={() => setOpenFaq(isOpen ? -1 : idx)}
-                      className="w-full px-5 sm:px-6 py-4 flex items-center justify-between text-left cursor-pointer transition-colors"
+                      className="w-full flex items-center justify-between gap-4 p-2 sm:p-2.5 text-left cursor-pointer bg-transparent border-none outline-none"
                     >
-                      <span className="font-bold text-[#0D3B66] text-xs sm:text-sm tracking-tight pr-4">
-                        {question}
+                      <span
+                        className={`text-xs sm:text-[14px] font-semibold leading-snug ${isOpen ? "text-[#0C2B4E]" : "text-gray-900"
+                          }`}
+                      >
+                        Q{idx + 1}. {question}
                       </span>
-                      <span className="text-[#0D3B66] shrink-0 flex items-center justify-center">
-                        {isOpen ? (
-                          <Minus size={20} className="stroke-[3]" />
-                        ) : (
-                          <Plus size={20} className="stroke-[3]" />
-                        )}
+                      <span
+                        className={`flex items-center justify-center w-4 h-4 rounded-full shrink-0 transition-colors ${isOpen
+                            ? "bg-[#0C2B4E] text-white"
+                            : "bg-gray-300 text-gray-500"
+                          }`}
+                      >
+                        {isOpen ? <Minus size={10} /> : <Plus size={10} />}
                       </span>
                     </button>
 
                     {isOpen && (
-                      <div className="px-5 sm:px-6 pb-5 pt-0 text-xs sm:text-[13px] text-gray-600 leading-relaxed whitespace-pre-line">
+                      <div className="p-3 text-xs sm:text-[13px] text-gray-600 leading-relaxed font-normal border-t border-blue-100/60 whitespace-pre-line">
                         {answer}
                       </div>
                     )}
@@ -1303,8 +1400,6 @@ export default function CourseClientView({
             </div>
           </div>
         )}
-
-
       </div>
     </div>
   );
