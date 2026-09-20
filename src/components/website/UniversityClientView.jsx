@@ -345,10 +345,10 @@ export default function UniversityClientView({ initialData, slug }) {
                     </div>
                   </div>
 
-                  <div className="flex items-start justify-between gap-3 mt-1">
+                  <div className="flex items-start justify-between gap-3 mt-1.5">
                     {coursePills.length > 0 && (
                       <div className="overflow-x-auto no-scrollbar py-0.5 max-w-full">
-                        <div className="grid grid-cols-6 sm:grid-cols-7 gap-1 sm:gap-1.5 w-fit">
+                        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                           {coursePills.map((cp) => (
                             <Link
                               key={cp.title}
@@ -357,7 +357,7 @@ export default function UniversityClientView({ initialData, slug }) {
                                   ? `/university/${cp.slug}`
                                   : `/university/${slug || uni.slug || ""}/${cp.slug || encodeURIComponent(cp.title.toLowerCase())}`
                               }
-                              className="text-[9.5px] sm:text-xs font-semibold px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-full transition-all cursor-pointer whitespace-nowrap text-center border bg-white/20 text-white border-white/20 hover:bg-white hover:text-[#0C3A66] no-underline inline-flex items-center justify-center shadow-2xs"
+                              className="text-[10px] sm:text-xs font-semibold px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full transition-all cursor-pointer whitespace-nowrap text-center border bg-white/20 text-white border-white/20 hover:bg-white hover:text-[#0C3A66] no-underline inline-flex items-center justify-center shadow-2xs w-auto shrink-0"
                             >
                               {cp.title}
                             </Link>
