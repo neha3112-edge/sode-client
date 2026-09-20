@@ -23,7 +23,7 @@ import {
   X,
   ChevronDown,
 } from "lucide-react";
-import { Modal, Tag } from "antd";
+import { Modal, Tag, Radio, ConfigProvider } from "antd";
 import { FaBuilding, FaCalendar, FaMapMarkerAlt } from "react-icons/fa";
 import { useFormModal } from "@/hooks/useFormModal";
 import { useCompare } from "@/hooks/useCompare";
@@ -632,7 +632,7 @@ export default function CourseClientView({
                 },
                 {
                   id: "yearly",
-                  title: "Yearly (Annual)",
+                  title: "Yearly Plan",
                   badge: activeLedgerData.yearly?.discountPercentage > 0 ? {
                     text: activeLedgerData.yearly?.badgeText || (
                       activeLedgerData.scholarship || activeLedgerData.yearly?.discountType === "SCHOLARSHIP"
@@ -656,7 +656,7 @@ export default function CourseClientView({
                 },
                 {
                   id: "fullfees",
-                  title: "Fullfees (One-Time)",
+                  title: "Full Fees",
                   badge: activeLedgerData.fullfees?.discountPercentage > 0 ? {
                     text: activeLedgerData.fullfees?.badgeText || (
                       activeLedgerData.scholarship || activeLedgerData.fullfees?.discountType === "SCHOLARSHIP"
@@ -681,7 +681,7 @@ export default function CourseClientView({
                 {
                   id: "emi",
                   isEmi: true,
-                  title: activeLedgerData.emi?.summary?.hasInterest ? "Standard EMI Plan" : "No-Cost EMI Plan",
+                  title: activeLedgerData.emi?.summary?.hasInterest ? "Standard EMI" : "No-Cost EMI",
                   badge: {
                     text: activeLedgerData.emi?.summary?.hasInterest ? "EASY FINANCING" : "0% INTEREST",
                     color: activeLedgerData.emi?.summary?.hasInterest ? "geekblue" : "orange",
@@ -772,77 +772,108 @@ export default function CourseClientView({
               }
 
               return (
-                <div className="mt-4 p-4 sm:p-5 rounded-xl bg-amber-50/60 border border-amber-200/80 space-y-4">
-                  {/* Payment Type EMI Sub-Tabs */}
+                <div className="mt-4 rounded-xl bg-amber-50/60 border border-amber-200/80 overflow-hidden shadow-2xs">
+                  {/* Full-width top attached Radio Group */}
                   {availableSubTabs.length > 1 && (
-                    <div className="flex flex-wrap items-center gap-2 pb-3 border-b border-amber-200/60">
-                      <span className="text-xs font-bold text-amber-950 mr-2">Select EMI Payment Plan:</span>
-                      {availableSubTabs.map((tab) => (
-                        <button
-                          key={tab.key}
-                          type="button"
-                          onClick={() => setActiveEmiSubTab(tab.key)}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${currentSubTabKey === tab.key
-                            ? "bg-amber-700 text-white shadow-xs"
-                            : "bg-white text-amber-900 border border-amber-300 hover:bg-amber-100"
-                            }`}
+                    <div className="w-full bg-white border-b border-amber-200/80">
+                      <ConfigProvider
+                        theme={{
+                          token: {
+                            colorPrimary: "#b45309",
+                          },
+                        }}
+                      >
+                        <Radio.Group
+                          value={currentSubTabKey}
+                          onChange={(e) => setActiveEmiSubTab(e.target.value)}
+                          buttonStyle="solid"
+                          size="middle"
+                          className="w-full flex [&_.ant-radio-button-wrapper]:flex-1 [&_.ant-radio-button-wrapper]:text-center [&_.ant-radio-button-wrapper]:font-semibold [&_.ant-radio-button-wrapper]:!h-auto [&_.ant-radio-button-wrapper]:min-h-[46px] [&_.ant-radio-button-wrapper]:py-1.5 sm:[&_.ant-radio-button-wrapper]:py-2 [&_.ant-radio-button-wrapper]:px-1 [&_.ant-radio-button-wrapper]:flex [&_.ant-radio-button-wrapper]:items-center [&_.ant-radio-button-wrapper]:justify-center [&_.ant-radio-button-wrapper]:border-0 [&_.ant-radio-button-wrapper]:rounded-none [&_.ant-radio-button-wrapper]:!leading-tight [&_.ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled)]:!bg-[#b45309] [&_.ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled)]:!border-[#b45309] [&_.ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled)]:!text-white"
                         >
-                          {tab.label} ({tab.ledger.formattedMinMonthlyEmi})
-                        </button>
-                      ))}
+                          {availableSubTabs.map((tab) => (
+                            <Radio.Button key={tab.key} value={tab.key} className="text-xs sm:text-sm !h-auto">
+                              <div className="flex flex-col items-center justify-center text-center w-full py-0.5">
+                                <span className="font-bold text-[10.5px] sm:text-xs md:text-sm leading-tight">
+                                  {tab.label}
+                                </span>
+                                <span className="opacity-90 font-medium text-[9.5px] sm:text-[11px] leading-tight mt-0.5 whitespace-nowrap">
+                                  {tab.ledger.formattedMinMonthlyEmi}
+                                </span>
+                              </div>
+                            </Radio.Button>
+                          ))}
+                        </Radio.Group>
+                      </ConfigProvider>
                     </div>
                   )}
 
-                  {/* Tenure Options Cards */}
-                  {Array.isArray(currentEmi.tenures) && currentEmi.tenures.length > 0 && (
-                    <div>
-                      <span className="text-xs font-bold text-amber-950 block mb-2">Available Monthly Tenure Options:</span>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                        {currentEmi.tenures.map((tenure, idx) => (
-                          <div key={idx} className="bg-white rounded-xl border border-amber-200 p-3.5 shadow-2xs space-y-2 flex flex-col justify-between">
-                            <div>
-                              <div className="flex items-center justify-between gap-1 mb-1">
-                                <span className="text-xs font-extrabold text-amber-900 block">{tenure.months} Months Tenure</span>
-                                {tenure.interestRatePct && Number(tenure.interestRatePct) > 0 ? (
-                                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 border border-blue-300/60">
-                                    {tenure.interestRatePct}% p.a. Interest
+                  {/* Tenure Options Cards - Distinct Cards Spanning Full Width */}
+                  {Array.isArray(currentEmi.tenures) && currentEmi.tenures.length > 0 && (() => {
+                    const count = currentEmi.tenures.length;
+                    const gridColsClass = count === 1
+                      ? "grid-cols-1"
+                      : count === 2
+                        ? "grid-cols-1 sm:grid-cols-2"
+                        : count === 3
+                          ? "grid-cols-1 sm:grid-cols-3"
+                          : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4";
+
+                    return (
+                      <div className="p-3 sm:p-4 w-full">
+                        <div className={`grid ${gridColsClass} gap-3 w-full`}>
+                          {currentEmi.tenures.map((tenure, idx) => (
+                            <div
+                              key={idx}
+                              className="bg-white rounded-xl border border-amber-200 p-3.5 sm:p-4 shadow-xs hover:shadow-md hover:border-amber-400 transition-all space-y-2.5 flex flex-col justify-between"
+                            >
+                              <div>
+                                <div className="flex items-center justify-between gap-1 mb-1.5">
+                                  <span className="text-xs sm:text-sm font-extrabold text-amber-950 block">
+                                    {tenure.months} Months Tenure
                                   </span>
-                                ) : (
-                                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300/60">
-                                    0% Interest
-                                  </span>
-                                )}
+                                  {tenure.interestRatePct && Number(tenure.interestRatePct) > 0 ? (
+                                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-2xl bg-blue-100 text-blue-800 border border-blue-300/60">
+                                      {tenure.interestRatePct}% p.a. Interest
+                                    </span>
+                                  ) : (
+                                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-2xl bg-emerald-100 text-emerald-800 border border-emerald-300/60">
+                                      0% Interest
+                                    </span>
+                                  )}
+                                </div>
+                                <span className="text-base sm:text-lg font-black text-gray-900 block">
+                                  {tenure.formattedMonthlyFee}
+                                </span>
                               </div>
-                              <span className="text-base font-black text-gray-900 block">{tenure.formattedMonthlyFee}</span>
+
+                              {(tenure.totalInterest > 0 || tenure.downPayment > 0) && (
+                                <div className="pt-2 border-t border-gray-100 text-[11px] space-y-1 text-gray-600">
+                                  {tenure.totalInterest > 0 && (
+                                    <div className="flex justify-between items-center text-amber-900 font-medium">
+                                      <span>Total Interest:</span>
+                                      <span className="font-bold">{tenure.formattedTotalInterest}</span>
+                                    </div>
+                                  )}
+                                  {tenure.totalPayableWithInterest > 0 && tenure.totalInterest > 0 && (
+                                    <div className="flex justify-between items-center text-gray-900 font-semibold">
+                                      <span>Total Payable:</span>
+                                      <span className="font-bold text-[#0C2B4E]">{tenure.formattedTotalPayableWithInterest}</span>
+                                    </div>
+                                  )}
+                                  {tenure.downPayment > 0 && (
+                                    <div className="flex justify-between items-center text-amber-800 font-medium">
+                                      <span>Downpayment:</span>
+                                      <span className="font-bold">{tenure.formattedDownPayment}</span>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
                             </div>
-
-                            {(tenure.totalInterest > 0 || tenure.downPayment > 0) && (
-                              <div className="pt-2 border-t border-gray-100 text-[11px] space-y-1 text-gray-600">
-                                {tenure.totalInterest > 0 && (
-                                  <div className="flex justify-between items-center text-amber-900 font-medium">
-                                    <span>Total Interest:</span>
-                                    <span className="font-bold">{tenure.formattedTotalInterest}</span>
-                                  </div>
-                                )}
-                                {tenure.totalPayableWithInterest > 0 && tenure.totalInterest > 0 && (
-                                  <div className="flex justify-between items-center text-gray-900 font-semibold">
-                                    <span>Total Payable:</span>
-                                    <span className="font-bold text-[#0C2B4E]">{tenure.formattedTotalPayableWithInterest}</span>
-                                  </div>
-                                )}
-                                {tenure.downPayment > 0 && (
-                                  <div className="flex justify-between items-center text-amber-800 font-medium">
-                                    <span>Downpayment:</span>
-                                    <span className="font-bold">{tenure.formattedDownPayment}</span>
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        ))}
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    );
+                  })()}
                 </div>
               );
             })()}
@@ -1286,8 +1317,8 @@ export default function CourseClientView({
                   </span>
                   <ChevronDown
                     className={`w-3.5 h-3.5 transition-transform duration-200 ${visibleCount >= processedPrograms.length
-                        ? "rotate-180"
-                        : "group-hover:translate-y-0.5"
+                      ? "rotate-180"
+                      : "group-hover:translate-y-0.5"
                       }`}
                   />
                 </button>
