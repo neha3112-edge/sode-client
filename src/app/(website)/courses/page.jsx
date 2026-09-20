@@ -45,18 +45,18 @@ export default async function CoursesPage({ searchParams }) {
       request.dynamicList({
         entity: "category",
         endPoint: "v1/list",
-        revalidate: 0,
+        revalidate: 600, // 10 min — categories rarely change
       }),
       request.dynamicOptions({
         entity: "universities",
         endPoint: "v1/options",
-        revalidate: 0,
+        revalidate: 600, // 10 min — university list rarely changes
       }),
       request.dynamicList({
         entity: "courses",
         endPoint: "v1/list",
         options: queryOptions,
-        revalidate: 0,
+        revalidate: 0, // search results always fresh
       }),
     ]);
 

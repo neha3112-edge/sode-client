@@ -151,7 +151,7 @@ export default async function CustomDynamicPage({ params }) {
       entity: "hero",
       endPoint: "public/by-slug",
       slug: encodeURIComponent(slug),
-      revalidate: 0,
+      revalidate: 300, // 5 min ISR — data from backend, NOT static
     })
     .catch(() => null);
 

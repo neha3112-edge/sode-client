@@ -77,8 +77,7 @@ const getCourseData = cache(async (slug) => {
       entity: "courses",
       endPoint: "v1/list",
       id: slugPath,
-      options: { refresh: "true" },
-      revalidate: 0,
+      revalidate: 300, // 5 min ISR — data from backend, NOT static
     });
     const pageRes = res?.result || res;
     return normalizeCourseData(pageRes);
