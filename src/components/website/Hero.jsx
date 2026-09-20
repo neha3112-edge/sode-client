@@ -139,7 +139,7 @@ export function Hero({ initialHeroData = null }) {
 
         <div
           style={{ backgroundColor: isTransparentCard ? "transparent" : cardBg }}
-          className={`relative z-10 max-w-90 md:max-w-4xl lg:max-w-265 2xl:max-w-275 mx-auto ${isTransparentCard
+          className={`relative z-10 w-full md:max-w-4xl lg:max-w-265 2xl:max-w-275 mx-auto ${isTransparentCard
             ? "p-0"
             : "rounded-2xl shadow-xl border border-slate-200/60 p-6 sm:p-8 md:p-10"
             }`}
