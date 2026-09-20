@@ -637,7 +637,7 @@ function UniversityCarouselBlock({
   handleSlideClick,
 }) {
   return (
-    <div className="relative max-w-6xl mx-auto min-h-22.5 sm:min-h-27.5">
+    <div className="relative w-full mx-auto min-h-22.5 sm:min-h-27.5">
       <Carousel
         arrows={true}
         key={slidesToShowCount}
@@ -967,7 +967,7 @@ export function Category({ categories = [], universities = [], programs = [] }) 
         <section className="py-3 bg-white relative overflow-hidden" suppressHydrationWarning>
           <Container>
             {/* Grid: 4 columns on mobile, auto-fit on desktop for dynamic width */}
-            <div className="grid grid-cols-4 md:grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-1.5 sm:gap-2.5 w-full mx-auto md:px-8 items-stretch" suppressHydrationWarning>
+            <div className="grid grid-cols-4 md:grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-1.5 sm:gap-2.5 w-full mx-auto items-stretch" suppressHydrationWarning>
               {rootCategories.map((item) => (
                 <div
                   key={item._id || item.slug}
@@ -1009,7 +1009,7 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                 <div className="absolute inset-x-0 top-[67%] bottom-0 w-full bg-white z-0 pointer-events-none" />
 
                 <Container className="relative z-10">
-                  <div className="max-w-6xl mx-auto text-center">
+                  <div className="w-full mx-auto text-center">
                     {/* Top Badge */}
                     <div className="flex justify-center mb-1.5 sm:mb-3">
                       <div className="inline-flex items-center gap-1.5 px-3 py-0.5 sm:px-4 sm:py-1 rounded-full bg-[#F5E5BA] text-[#8C6228] border border-[#E9D195] text-[10px] sm:text-xs font-bold shadow-none">
@@ -1243,7 +1243,7 @@ export function Category({ categories = [], universities = [], programs = [] }) 
               suppressHydrationWarning
             >
               <Container>
-                <div className="bg-white border border-gray-200 rounded-2xl p-3 sm:p-4 transition-colors duration-200 max-w-6xl mx-auto">
+                <div className="bg-white border border-gray-200 rounded-2xl p-3 sm:p-4 transition-colors duration-200 w-full mx-auto">
                   {/* Section Title Header with Colored Accent Bar & Right-aligned View More (ONLY for Universities) */}
                   <div className="flex items-center justify-between mb-3 gap-2">
                     <div className="flex items-center gap-2.5 truncate">

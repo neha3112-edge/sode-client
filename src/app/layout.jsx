@@ -29,7 +29,7 @@ export default function RootLayout({ children }) {
     <html
       lang="en-IN"
       suppressHydrationWarning
-      className={`${roboto.variable} font-sans h-full antialiased`}
+      className={`${roboto.variable} font-sans h-full antialiased scroll-smooth`}
     >
       <head>
         <link rel="preconnect" href="https://new.crm.api.mysode.com" crossOrigin="anonymous" />
