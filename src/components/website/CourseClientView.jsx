@@ -56,14 +56,17 @@ export default function CourseClientView({
     const sem = rawLedger.semester || rawLedger.SEMESTER;
     const emi = promoData?.emi || rawLedger?.emi || courseData?.emi;
 
-    const fullEmi = full?.emi || emi?.fullfees || (emi?.available && !emi.fullfees ? emi : null);
-    const yearEmi = year?.emi || emi?.yearly || (emi?.available && !emi.yearly ? emi : null);
-    const semEmi = sem?.emi || emi?.semester || (emi?.available && !emi.semester ? emi : null);
+    const hasSpecificPaymentTypes = Boolean(emi?.hasSpecificPaymentTypes);
+
+    const fullEmi = hasSpecificPaymentTypes ? (full?.emi || emi?.fullfees || null) : null;
+    const yearEmi = hasSpecificPaymentTypes ? (year?.emi || emi?.yearly || null) : null;
+    const semEmi = hasSpecificPaymentTypes ? (sem?.emi || emi?.semester || null) : null;
 
     const availableSummary =
       (fullEmi?.available ? fullEmi : null) ||
       (yearEmi?.available ? yearEmi : null) ||
       (semEmi?.available ? semEmi : null) ||
+      (emi?.summary?.available ? emi.summary : null) ||
       (emi?.available ? emi : null);
 
     return {
@@ -75,6 +78,7 @@ export default function CourseClientView({
         yearly: yearEmi,
         semester: semEmi,
         summary: availableSummary,
+        hasSpecificPaymentTypes,
       },
       scholarship: promoData?.scholarship || null,
       coupon: promoData?.coupon || null,
@@ -626,7 +630,8 @@ export default function CourseClientView({
                     activeLedgerData.semester?.formattedGross !== activeLedgerData.semester?.formattedPayable
                   ),
                   grossFee: activeLedgerData.semester?.formattedGross,
-                  payableFee: activeLedgerData.semester?.formattedPayable || "₹ 16,320 / Sem",
+                  payableFee: activeLedgerData.semester?.formattedBasePayable || activeLedgerData.semester?.formattedPayable || "₹ 16,320 / Sem",
+                  extraOff: activeLedgerData.semester?.extraOff,
                   subtitle: `${activeLedgerData.semester?.totalSemesters || 6} Semesters • Installments`,
                   onClick: () => setSelectedPlanTab("semester"),
                 },
@@ -650,7 +655,8 @@ export default function CourseClientView({
                     activeLedgerData.yearly?.formattedGross !== activeLedgerData.yearly?.formattedPayable
                   ),
                   grossFee: activeLedgerData.yearly?.formattedGross,
-                  payableFee: activeLedgerData.yearly?.formattedPayable || "₹ 30,720 / Year",
+                  payableFee: activeLedgerData.yearly?.formattedBasePayable || activeLedgerData.yearly?.formattedPayable || "₹ 30,720 / Year",
+                  extraOff: activeLedgerData.yearly?.extraOff,
                   subtitle: `${activeLedgerData.yearly?.totalYears || 3} Annual Installments`,
                   onClick: () => setSelectedPlanTab("yearly"),
                 },
@@ -674,7 +680,8 @@ export default function CourseClientView({
                     activeLedgerData.fullfees?.formattedGross !== activeLedgerData.fullfees?.formattedPayable
                   ),
                   grossFee: activeLedgerData.fullfees?.formattedGross,
-                  payableFee: activeLedgerData.fullfees?.formattedPayable || "₹ 80,640",
+                  payableFee: activeLedgerData.fullfees?.formattedBasePayable || activeLedgerData.fullfees?.formattedPayable || "₹ 80,640",
+                  extraOff: activeLedgerData.fullfees?.extraOff,
                   subtitle: "One-time lump sum • Max discount",
                   onClick: () => setSelectedPlanTab("fullfees"),
                 },
@@ -692,7 +699,9 @@ export default function CourseClientView({
                   subtitle: activeLedgerData.emi?.summary?.planName || "Bank & NBFC Financing",
                   onClick: () => {
                     setSelectedPlanTab("emi");
-                    if (!activeLedgerData.emi?.[activeEmiSubTab]?.available) {
+                    if (!activeLedgerData.emi?.hasSpecificPaymentTypes) {
+                      setActiveEmiSubTab(null);
+                    } else if (!activeLedgerData.emi?.[activeEmiSubTab]?.available) {
                       if (activeLedgerData.emi?.fullfees?.available) setActiveEmiSubTab("fullfees");
                       else if (activeLedgerData.emi?.yearly?.available) setActiveEmiSubTab("yearly");
                       else if (activeLedgerData.emi?.semester?.available) setActiveEmiSubTab("semester");
@@ -740,28 +749,67 @@ export default function CourseClientView({
                           {card.payableFee}
                         </span>
                       </div>
-                      <p className={`text-[9.5px] sm:text-[11px] m-0 ${isEmi ? "text-amber-800/80 truncate" : "text-gray-500 truncate"}`}>
-                        {card.subtitle}
-                      </p>
+                      {card.extraOff && card.extraOff.hasExtraOff ? (
+                        <div className="pt-0.5">
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[8.5px] sm:text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs">
+                            🏷️ {card.extraOff.badgeText} • {card.extraOff.finalPayableText || `Pay ${card.extraOff.formattedFinalPayable}`}
+                          </span>
+                        </div>
+                      ) : (
+                        <p className={`text-[9.5px] sm:text-[11px] m-0 ${isEmi ? "text-amber-800/80 truncate" : "text-gray-500 truncate"}`}>
+                          {card.subtitle}
+                        </p>
+                      )}
                     </div>
                   </div>
                 );
               })}
             </div>
 
+            {/* Selected Non-EMI Plan Extra Off / Scholarship Details Banner */}
+            {selectedPlanTab !== "emi" && activeLedgerData[selectedPlanTab] && activeLedgerData[selectedPlanTab]?.extraOff?.hasExtraOff && (
+              <div className="p-3 sm:p-4 rounded-xl bg-gradient-to-r from-emerald-50/70 via-blue-50/40 to-emerald-50/60 border border-emerald-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs sm:text-sm">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-bold text-[#0C2B4E]">
+                      {activeLedgerData[selectedPlanTab].label || (selectedPlanTab === "fullfees" ? "Fullfees (One-Time)" : selectedPlanTab === "yearly" ? "Yearly Plan" : "Semester-wise")}
+                    </span>
+                    {activeLedgerData[selectedPlanTab].badgeText && (
+                      <Tag color="success" className="m-0 text-[10px] font-bold">
+                        {activeLedgerData[selectedPlanTab].badgeText}
+                      </Tag>
+                    )}
+                    <Tag color="gold" className="m-0 text-[10px] font-bold">
+                      🔥 {activeLedgerData[selectedPlanTab].extraOff.badgeText}
+                    </Tag>
+                  </div>
+                  <p className="text-emerald-800 text-[11.5px] sm:text-xs m-0 font-medium leading-relaxed">
+                    Approved <strong>{activeLedgerData[selectedPlanTab].discountPercentage}% Scholarship</strong> ({activeLedgerData[selectedPlanTab].formattedDiscount} off) + <strong>{activeLedgerData[selectedPlanTab].extraOff.badgeText}</strong> applied! Final net payable: <span className="font-extrabold text-emerald-950 underline">{activeLedgerData[selectedPlanTab].extraOff.formattedFinalPayable}</span>
+                  </p>
+                </div>
+                <div className="shrink-0 bg-white border border-emerald-300 px-3.5 py-1.5 rounded-lg text-right shadow-2xs">
+                  <div className="text-[10px] uppercase font-extrabold text-emerald-700 tracking-wider">Final Net Fee</div>
+                  <div className="text-base sm:text-lg font-black text-emerald-950">
+                    {activeLedgerData[selectedPlanTab].extraOff.formattedFinalPayable}
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* EMI Breakdown View */}
             {selectedPlanTab === "emi" && activeLedgerData.emi && (() => {
-              const availableSubTabs = [
+              const hasSpecific = Boolean(activeLedgerData.emi.hasSpecificPaymentTypes);
+              const availableSubTabs = hasSpecific ? [
                 { key: "fullfees", label: "Full Course EMI", ledger: activeLedgerData.emi.fullfees },
                 { key: "yearly", label: "Yearly EMI", ledger: activeLedgerData.emi.yearly },
                 { key: "semester", label: "Semester EMI", ledger: activeLedgerData.emi.semester },
-              ].filter(t => t.ledger && t.ledger.available);
+              ].filter(t => t.ledger && t.ledger.available) : [];
 
-              const currentSubTabKey = activeEmiSubTab && activeLedgerData.emi[activeEmiSubTab]?.available
+              const currentSubTabKey = hasSpecific && activeEmiSubTab && activeLedgerData.emi[activeEmiSubTab]?.available
                 ? activeEmiSubTab
-                : (availableSubTabs[0]?.key || "fullfees");
+                : (availableSubTabs[0]?.key || null);
 
-              const currentEmi = activeLedgerData.emi[currentSubTabKey] || activeLedgerData.emi.summary;
+              const currentEmi = (currentSubTabKey && activeLedgerData.emi[currentSubTabKey]) || activeLedgerData.emi.summary;
 
               if (!currentEmi || !currentEmi.available) {
                 return (
@@ -773,8 +821,8 @@ export default function CourseClientView({
 
               return (
                 <div className="mt-4 rounded-xl bg-amber-50/60 border border-amber-200/80 overflow-hidden shadow-2xs">
-                  {/* Full-width top attached Radio Group */}
-                  {availableSubTabs.length > 1 && (
+                  {/* Full-width top attached Radio Group - Only shown when specific payment types are configured in EMI Plan */}
+                  {hasSpecific && availableSubTabs.length > 1 && (
                     <div className="w-full bg-white border-b border-amber-200/80">
                       <ConfigProvider
                         theme={{
