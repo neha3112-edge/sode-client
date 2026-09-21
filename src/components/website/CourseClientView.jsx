@@ -163,11 +163,29 @@ export default function CourseClientView({
 
   const highlightsList = useMemo(() => {
     if (Array.isArray(courseData?.keyHighlights) && courseData.keyHighlights.length > 0) {
-      return courseData.keyHighlights.map((item) => ({
-        _id: item._id,
-        label: item.label || item.category || item.title || "Category",
-        value: item.value || item.details || item.description || "N/A",
-      }));
+      return courseData.keyHighlights
+        .filter((item) => item && (item.label || item.category || item.title))
+        .map((item) => {
+          const rawVal = item.value || item.details || item.description;
+          let finalVal = rawVal;
+          if (!finalVal || finalVal === "N/A" || finalVal === "") {
+            const lbl = (item.label || item.category || item.title || "").toLowerCase();
+            if (lbl.includes("fee")) {
+              finalVal = courseData?.fees || courseData?.fullFee || "Affordable EMI & Installments Available";
+            } else if (lbl.includes("specializ")) {
+              finalVal = Array.isArray(courseData?.subCourses) && courseData?.subCourses.length > 0
+                ? `${courseData.subCourses.length} Specializations Available`
+                : "Core / General Program";
+            } else {
+              finalVal = "Available on Request";
+            }
+          }
+          return {
+            _id: item._id,
+            label: item.label || item.category || item.title || "Category",
+            value: finalVal,
+          };
+        });
     }
     const list = [];
     if (universityName) list.push({ label: "University", value: universityName });

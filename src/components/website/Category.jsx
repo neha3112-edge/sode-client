@@ -185,6 +185,9 @@ function HeroSearchBar({ allCourses = [], allUniversities = [], allCategories = 
     specializations: [],
     categories: [],
     subcategories: [],
+    appliedFilters: null,
+    comparison: null,
+    aiRecommendation: null,
   });
   const [selectedIndex, setSelectedIndex] = useState(-1);
 
@@ -225,6 +228,9 @@ function HeroSearchBar({ allCourses = [], allUniversities = [], allCategories = 
               specializations: json.result.specializations || [],
               categories: json.result.categories || [],
               subcategories: json.result.subcategories || [],
+              appliedFilters: json.appliedFilters || null,
+              comparison: json.comparison || null,
+              aiRecommendation: json.aiRecommendation || null,
             };
             cacheRef.current.set(lowerQ, data);
             setSearchResults((prev) => ({ ...prev, ...data }));
@@ -354,6 +360,113 @@ function HeroSearchBar({ allCourses = [], allUniversities = [], allCategories = 
           {/* Autocomplete Results Dropdown */}
           {isFocused && trimmed.length > 0 && (
             <div className="absolute left-0 right-0 w-full mt-2 bg-white rounded-2xl border border-slate-200 shadow-xl z-50 overflow-hidden divide-y divide-slate-100 max-h-[420px] overflow-y-auto animate-in fade-in slide-in-from-top-1 duration-150">
+              {/* Natural Language Filter Extraction Indicator */}
+              {searchResults.appliedFilters && (
+                searchResults.appliedFilters.mode ||
+                searchResults.appliedFilters.maxBudget ||
+                searchResults.appliedFilters.location ||
+                searchResults.appliedFilters.minNaacGrade ||
+                searchResults.appliedFilters.degreeLevel
+              ) && (
+                <div className="px-3.5 py-2 bg-gradient-to-r from-blue-50/80 to-indigo-50/80 border-b border-blue-100 flex items-center justify-between gap-2 text-xs">
+                  <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
+                    <Sparkles className="w-3.5 h-3.5 text-[#0B3B7E] shrink-0" />
+                    <span className="text-[11px] font-semibold text-[#0B3B7E]">AI Search Filters:</span>
+                    {searchResults.appliedFilters.mode && (
+                      <span className="bg-white border border-blue-200 px-1.5 py-0.5 rounded text-[10.5px] font-bold text-blue-700 shadow-2xs">
+                        {searchResults.appliedFilters.mode}
+                      </span>
+                    )}
+                    {searchResults.appliedFilters.minBudget && searchResults.appliedFilters.maxBudget ? (
+                      <span className="bg-white border border-emerald-200 px-1.5 py-0.5 rounded text-[10.5px] font-bold text-emerald-700 shadow-2xs">
+                        Budget: ₹{Number(searchResults.appliedFilters.minBudget).toLocaleString("en-IN")} - ₹{Number(searchResults.appliedFilters.maxBudget).toLocaleString("en-IN")}
+                      </span>
+                    ) : searchResults.appliedFilters.maxBudget ? (
+                      <span className="bg-white border border-emerald-200 px-1.5 py-0.5 rounded text-[10.5px] font-bold text-emerald-700 shadow-2xs">
+                        Budget ≤ ₹{Number(searchResults.appliedFilters.maxBudget).toLocaleString("en-IN")}
+                      </span>
+                    ) : null}
+                    {searchResults.appliedFilters.location && (
+                      <span className="bg-white border border-indigo-200 px-1.5 py-0.5 rounded text-[10.5px] font-bold text-indigo-700 shadow-2xs">
+                        📍 {searchResults.appliedFilters.location}
+                      </span>
+                    )}
+                    {searchResults.appliedFilters.minNaacGrade && (
+                      <span className="bg-white border border-amber-200 px-1.5 py-0.5 rounded text-[10.5px] font-bold text-amber-700 shadow-2xs">
+                        🏆 NAAC {searchResults.appliedFilters.minNaacGrade}
+                      </span>
+                    )}
+                    {searchResults.appliedFilters.degreeLevel && (
+                      <span className="bg-white border border-purple-200 px-1.5 py-0.5 rounded text-[10.5px] font-bold text-purple-700 shadow-2xs">
+                        {searchResults.appliedFilters.degreeLevel}
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-[10px] text-slate-400 font-medium shrink-0">Smart Matching</span>
+                </div>
+              )}
+
+              {/* ⚡ AI Compare Intent Card */}
+              {searchResults.comparison && searchResults.comparison.item1 && searchResults.comparison.item2 && (
+                <div
+                  onClick={() => {
+                    setIsFocused(false);
+                    router.push(searchResults.comparison.compareUrl);
+                  }}
+                  className="m-2.5 p-3 rounded-xl bg-gradient-to-r from-blue-700 via-indigo-600 to-purple-700 text-white shadow-md hover:shadow-lg cursor-pointer transition-all group"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-8 h-8 rounded-lg bg-white/20 backdrop-blur-md flex items-center justify-center font-black text-white shrink-0 text-sm">
+                        ⚡
+                      </div>
+                      <div className="min-w-0">
+                        <span className="text-[10px] uppercase tracking-wider font-extrabold text-blue-200 block">
+                          AI Compare Match
+                        </span>
+                        <div className="flex items-center gap-1.5 font-bold text-xs sm:text-sm truncate">
+                          <span className="truncate">{searchResults.comparison.item1.name}</span>
+                          <span className="text-amber-300 font-extrabold text-[11px] px-1 py-0.2 bg-white/10 rounded">VS</span>
+                          <span className="truncate">{searchResults.comparison.item2.name}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <span className="text-[11px] font-bold bg-white text-blue-800 px-2.5 py-1 rounded-lg shrink-0 group-hover:bg-blue-50 transition-colors">
+                      Compare &rarr;
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* 💡 AI Recommendation / Fallback Card */}
+              {searchResults.aiRecommendation?.hasSuggestion && (
+                <div className="p-3 bg-amber-50/70 border-b border-amber-100 text-xs">
+                  <div className="flex items-center gap-1.5 text-amber-800 font-bold mb-1">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                    <span>AI Recommendation</span>
+                  </div>
+                  <p className="text-[11px] text-amber-900/80 mb-2">
+                    {searchResults.aiRecommendation.message}
+                  </p>
+                  {searchResults.aiRecommendation.suggestions?.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {searchResults.aiRecommendation.suggestions.map((s, idx) => (
+                        <span
+                          key={idx}
+                          onClick={() => {
+                            setIsFocused(false);
+                            router.push(s.href);
+                          }}
+                          className="bg-white border border-amber-200 hover:border-amber-400 text-amber-900 px-2 py-0.5 rounded-lg text-[10.5px] font-semibold cursor-pointer shadow-2xs transition-colors"
+                        >
+                          {s.name} {s.startingFee ? `(${s.startingFee})` : ""} &rarr;
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
               {totalMatches > 0 && (
                 <>
                   {/* 📂 Categories & Domains */}
@@ -486,12 +599,15 @@ function HeroSearchBar({ allCourses = [], allUniversities = [], allCategories = 
                                 <span className="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-blue-600 block truncate">
                                   {c.name}
                                 </span>
-                                <div className="flex items-center gap-2 text-[10.5px] text-slate-500 mt-0.5">
+                                <div className="flex items-center gap-2 text-[10.5px] text-slate-500 mt-0.5 flex-wrap">
                                   {c.universitiesCount > 0 && (
                                     <span>{c.universitiesCount} Universities</span>
                                   )}
+                                  {c.subjectsCount > 0 && (
+                                    <span>• {c.subjectsCount} Subjects</span>
+                                  )}
                                   {c.startingFee && (
-                                    <span className="text-emerald-700 font-medium">Starts {c.startingFee}</span>
+                                    <span className="text-emerald-700 font-medium">• Starts {c.startingFee}</span>
                                   )}
                                   {c.duration && <span>• {c.duration}</span>}
                                 </div>
@@ -591,11 +707,19 @@ function HeroSearchBar({ allCourses = [], allUniversities = [], allCategories = 
                                     </span>
                                   )}
                                 </div>
-                                {(u.city || u.state) && (
-                                  <span className="text-[10.5px] text-slate-500 block truncate mt-0.5">
-                                    {[u.city, u.state].filter(Boolean).join(", ")}
-                                  </span>
-                                )}
+                                <div className="flex items-center gap-2 text-[10.5px] text-slate-500 mt-0.5 flex-wrap">
+                                  {(u.city || u.state) && (
+                                    <span className="truncate">
+                                      {[u.city, u.state].filter(Boolean).join(", ")}
+                                    </span>
+                                  )}
+                                  {u.programsCount > 0 && (
+                                    <span>• {u.programsCount} Programs</span>
+                                  )}
+                                  {u.startingFee && (
+                                    <span className="text-emerald-700 font-medium">• {u.startingFee}</span>
+                                  )}
+                                </div>
                               </div>
                             </div>
                             <span className="text-[11px] text-emerald-600 font-medium shrink-0 ml-2">View Programs &rarr;</span>
