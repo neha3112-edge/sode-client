@@ -1035,30 +1035,32 @@ export default function CourseClientView({
                 >
                   <div className="pt-2 pb-1 space-y-4">
                     {/* Header */}
-                    <div className="border-b border-gray-100 pb-2.5">
+                    <div className="border-b border-gray-100 pb-2.5 pr-8 sm:pr-10">
                       {universityName && (
                         <span className="text-[11px] font-bold text-[#08AEAA] uppercase tracking-wider block mb-1">
                           {universityName}
                         </span>
                       )}
-                      <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
-                        <h3 className="text-xl sm:text-2xl font-bold text-[#0D3B66] m-0 tracking-tight leading-tight shrink-0">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                        <h3 className="text-base sm:text-xl font-bold text-[#0D3B66] m-0 tracking-tight leading-snug break-words flex-1 min-w-0">
                           {modalTitle}
                         </h3>
-                        {itemDuration && (
-                          <div className="inline-flex items-center gap-1.5 bg-gray-50 px-2.5 py-1 rounded-md border border-gray-200 text-xs font-semibold text-gray-700 shrink-0">
-                            <Clock className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-                            <span>{itemDuration}</span>
-                          </div>
-                        )}
-                        {itemFees && (
-                          <div className="inline-flex items-center gap-1 bg-gray-50 px-2.5 py-1 rounded-md border border-gray-200 text-xs font-semibold text-gray-700 shrink-0">
-                            <span className="text-gray-400 font-normal">Fee:</span>
-                            <span className="text-[#0D3B66] font-bold">
-                              {typeof itemFees === "string" ? itemFees : `₹ ${itemFees}`}
-                            </span>
-                          </div>
-                        )}
+                        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 shrink-0">
+                          {itemDuration && (
+                            <div className="inline-flex items-center gap-1.5 bg-gray-50 px-2.5 py-1 rounded-md border border-gray-200 text-xs font-semibold text-gray-700">
+                              <Clock className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                              <span>{itemDuration}</span>
+                            </div>
+                          )}
+                          {itemFees && (
+                            <div className="inline-flex items-center gap-1 bg-gray-50 px-2.5 py-1 rounded-md border border-gray-200 text-xs font-semibold text-gray-700">
+                              <span className="text-gray-400 font-normal">Fee:</span>
+                              <span className="text-[#0D3B66] font-bold">
+                                {typeof itemFees === "string" ? itemFees : `₹ ${itemFees}`}
+                              </span>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
 
@@ -1145,7 +1147,7 @@ export default function CourseClientView({
                     )}
 
                     {/* CTAs */}
-                    <div className="w-full flex items-center gap-2.5 pt-2 border-t border-gray-100">
+                    <div className="w-full flex flex-col sm:flex-row items-center gap-2 sm:gap-2.5 pt-2 border-t border-gray-100">
                       <button
                         type="button"
                         onClick={() => {
@@ -1153,7 +1155,7 @@ export default function CourseClientView({
                           setSelectedSpecModal(null);
                           handleOpenLead("Download Brochure", title);
                         }}
-                        className="flex-1 bg-[#0C2B4E] hover:bg-[#081f38] text-white text-xs sm:text-sm font-semibold py-2.5 px-4 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-xs active:scale-95 whitespace-nowrap border-none"
+                        className="w-full sm:flex-1 bg-[#0C2B4E] hover:bg-[#081f38] text-white text-xs sm:text-sm font-semibold py-2.5 px-3 sm:px-4 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-xs active:scale-95 whitespace-nowrap border-none"
                       >
                         <span>Download Brochure</span>
                         <Download className="w-3.5 h-3.5 shrink-0" />
@@ -1166,7 +1168,7 @@ export default function CourseClientView({
                           setSelectedSpecModal(null);
                           handleOpenLead("Free Counseling", title);
                         }}
-                        className="flex-1 bg-white hover:bg-gray-50 text-[#0C2B4E] border border-[#0C2B4E] text-xs sm:text-sm font-semibold py-2.5 px-4 rounded-lg flex items-center justify-center transition-all cursor-pointer shadow-xs active:scale-95 whitespace-nowrap"
+                        className="w-full sm:flex-1 bg-white hover:bg-gray-50 text-[#0C2B4E] border border-[#0C2B4E] text-xs sm:text-sm font-semibold py-2.5 px-3 sm:px-4 rounded-lg flex items-center justify-center transition-all cursor-pointer shadow-xs active:scale-95 whitespace-nowrap"
                       >
                         Get 100% FREE Counseling
                       </button>

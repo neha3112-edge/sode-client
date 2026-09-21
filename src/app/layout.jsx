@@ -29,6 +29,7 @@ export default function RootLayout({ children }) {
     <html
       lang="en-IN"
       suppressHydrationWarning
+      data-scroll-behavior="smooth"
       className={`${roboto.variable} font-sans h-full antialiased scroll-smooth`}
     >
       <head>

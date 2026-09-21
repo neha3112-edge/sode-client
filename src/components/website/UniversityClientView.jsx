@@ -1232,22 +1232,24 @@ export default function UniversityClientView({ initialData, slug }) {
                   </div>
 
                   {/* Course Title + Inline Duration & Fees */}
-                  <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
-                    <h3 className="text-xl sm:text-2xl font-black text-[#0D3B66] m-0 tracking-tight leading-tight shrink-0">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 pr-8 sm:pr-0">
+                    <h3 className="text-base sm:text-xl font-bold text-[#0D3B66] m-0 tracking-tight leading-snug break-words flex-1 min-w-0">
                       {cTitle}
                     </h3>
-                    {selectedCourseSpec.duration && (
-                      <div className="inline-flex items-center gap-1.5 bg-gray-50 px-2.5 py-1 rounded-md border border-gray-200 text-xs font-semibold text-gray-700 shrink-0">
-                        <Clock className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-                        <span>{selectedCourseSpec.duration}</span>
-                      </div>
-                    )}
-                    {modalFeeText && (
-                      <div className="inline-flex items-center gap-1.5 bg-gray-50 px-2.5 py-1 rounded-md border border-gray-200 text-xs font-semibold text-gray-700 shrink-0">
-                        <span className="text-gray-400 font-normal">Fee:</span>
-                        <span className="text-[#0D3B66] font-bold">{modalFeeText}</span>
-                      </div>
-                    )}
+                    <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 shrink-0">
+                      {selectedCourseSpec.duration && (
+                        <div className="inline-flex items-center gap-1.5 bg-gray-50 px-2.5 py-1 rounded-md border border-gray-200 text-xs font-semibold text-gray-700">
+                          <Clock className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                          <span>{selectedCourseSpec.duration}</span>
+                        </div>
+                      )}
+                      {modalFeeText && (
+                        <div className="inline-flex items-center gap-1.5 bg-gray-50 px-2.5 py-1 rounded-md border border-gray-200 text-xs font-semibold text-gray-700">
+                          <span className="text-gray-400 font-normal">Fee:</span>
+                          <span className="text-[#0D3B66] font-bold">{modalFeeText}</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
 
