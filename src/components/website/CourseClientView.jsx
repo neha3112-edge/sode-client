@@ -113,12 +113,17 @@ export default function CourseClientView({
     "";
   const displayCourseTitle = courseData?.name || "Course Details";
   const heroBannerSrc = getAssetPath(
-    courseData?.bannerImage || courseData?.banner || courseData?.universityId?.bannerImg?.url
+    courseData?.coursepageimage ||
+      courseData?.bannerImage ||
+      courseData?.banner ||
+      courseData?.universityId?.coursepageimage?.url ||
+      courseData?.universityId?.bannerImg?.url
   );
   const mobileHeroBannerSrc = getAssetPath(
     courseData?.bannerImageMobile ||
       courseData?.mobileBannerImage ||
       courseData?.universityId?.mobileBannerImg?.url ||
+      courseData?.coursepageimage ||
       courseData?.bannerImage ||
       courseData?.banner ||
       courseData?.universityId?.bannerImg?.url
