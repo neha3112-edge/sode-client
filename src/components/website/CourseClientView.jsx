@@ -22,9 +22,10 @@ import {
   BookOpen,
   X,
   ChevronDown,
+  ChevronRight,
 } from "lucide-react";
 import { Modal, Tag, Radio, ConfigProvider } from "antd";
-import { FaBuilding, FaCalendar, FaMapMarkerAlt } from "react-icons/fa";
+import { FaBuilding, FaCalendar, FaMapMarkerAlt, FaClock } from "react-icons/fa";
 import { useFormModal } from "@/hooks/useFormModal";
 import { useCompare } from "@/hooks/useCompare";
 import { getAssetPath } from "@/lib/utils";
@@ -88,6 +89,11 @@ export default function CourseClientView({
 
   const [visibleCount, setVisibleCount] = useState(6);
   const [selectedSpecModal, setSelectedSpecModal] = useState(null);
+  const [activeSpecSem, setActiveSpecSem] = useState(0);
+
+  useEffect(() => {
+    setActiveSpecSem(0);
+  }, [selectedSpecModal]);
   const specializationSectionRef = useRef(null);
 
   const rawCourses = useMemo(() => {
@@ -1052,159 +1058,205 @@ export default function CourseClientView({
               const modalTitle = specTitle.toLowerCase().includes(" in ")
                 ? specTitle
                 : `${courseData?.name ? `${courseData.name} in ` : ""}${specTitle}`;
-              const itemDuration = selectedSpecModal.duration || courseData?.duration;
-              const itemFees = selectedSpecModal.fees || selectedSpecModal.fee || courseData?.fees;
-              const itemDeadline = selectedSpecModal.admissionDeadline || courseData?.admissionDeadline;
+              const itemDuration = selectedSpecModal.duration || courseData?.duration || "";
+              const itemDeadline = selectedSpecModal.admissionDeadline || courseData?.admissionDeadline || "";
               const itemDesc = selectedSpecModal.description?.trim() || "";
+
+              // Fee — use backend value as-is, no hardcoded formatting
+              const itemFeesFormatted =
+                activeLedgerData?.semester?.formattedPayable ||
+                selectedSpecModal.fees ||
+                selectedSpecModal.fee ||
+                courseData?.calculatedSemesterFee ||
+                "";
+
+              // Build Curriculum List — backend data only
+              const specCurriculum = (() => {
+                if (Array.isArray(selectedSpecModal.curriculum) && selectedSpecModal.curriculum.length > 0) {
+                  return selectedSpecModal.curriculum.map((c, idx) => ({
+                    semester: c.semesterName || `Semester ${idx + 1}`,
+                    subjects: Array.isArray(c.subjects) ? c.subjects : [],
+                  }));
+                }
+                if (curriculumList && curriculumList.length > 0) {
+                  return curriculumList;
+                }
+                return [];
+              })();
+
+              const activeCurriculum = specCurriculum[activeSpecSem] || specCurriculum[0];
 
               return (
                 <Modal
                   open={Boolean(selectedSpecModal)}
                   onCancel={() => setSelectedSpecModal(null)}
                   footer={null}
-                  width={720}
+                  width={1050}
                   centered
-                  className="max-w-[95vw]"
+                  className="max-w-[96vw] [&_.ant-modal-content]:rounded-3xl [&_.ant-modal-content]:p-5 sm:[&_.ant-modal-content]:p-6 md:[&_.ant-modal-content]:p-7 [&_.ant-modal-close]:top-4 [&_.ant-modal-close]:right-4"
                 >
-                  <div className="pt-2 pb-1 space-y-4">
-                    {/* Header */}
-                    <div className="border-b border-gray-100 pb-2.5 pr-8 sm:pr-10">
-                      {universityName && (
-                        <span className="text-[11px] font-bold text-[#08AEAA] uppercase tracking-wider block mb-1">
-                          {universityName}
-                        </span>
+                  <div className="flex flex-col md:flex-row items-stretch gap-5 sm:gap-6">
+                    {/* Left Column: Portrait Banner Card */}
+                    <div className="relative w-full md:w-[260px] lg:w-70 shrink-0 min-h-[300px] md:min-h-[420px] rounded-2xl overflow-hidden bg-slate-900 shadow-xs flex items-stretch">
+                      <Image
+                        src={
+                          selectedSpecModal?.image
+                            ? getAssetPath(selectedSpecModal.image)
+                            : selectedSpecModal?.bannerImage
+                              ? getAssetPath(selectedSpecModal.bannerImage)
+                              : selectedSpecModal?.banner
+                                ? getAssetPath(selectedSpecModal.banner)
+                                : courseData?.bannerImage
+                                  ? getAssetPath(courseData.bannerImage)
+                                  : courseData?.universityId?.bannerImg?.url
+                                    ? getAssetPath(courseData.universityId.bannerImg.url)
+                                    : heroBannerSrc || ""
+                        }
+                        alt={modalTitle}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 280px"
+                        className="object-cover object-center"
+                      />
+
+                      {/* Top-Left University Badge — only show if image doesn't already have logo embedded */}
+                      {universityLogoSrc && !universityName?.toLowerCase().includes("manipal") && (
+                        <div className="absolute top-3.5 left-3.5 z-10 bg-white rounded-xl shadow-md p-2 sm:p-2.5 flex flex-col items-center justify-center text-center border border-gray-100/90 min-w-[74px] max-w-[90px]">
+                          <div className="relative w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center">
+                            <Image
+                              src={universityLogoSrc}
+                              alt={universityName || "University"}
+                              fill
+                              sizes="36px"
+                              className="object-contain"
+                            />
+                          </div>
+                          {universityName && (
+                            <span className="text-[9.5px] font-bold text-gray-900 leading-tight mt-1 line-clamp-2">
+                              {universityName}
+                            </span>
+                          )}
+                        </div>
                       )}
-                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-                        <h3 className="text-base sm:text-xl font-bold text-[#0D3B66] m-0 tracking-tight leading-snug break-words flex-1 min-w-0">
+                    </div>
+
+
+                    {/* Right Column: Content */}
+                    <div className="flex-1 flex flex-col justify-between text-left space-y-3.5 sm:space-y-4">
+                      {/* Top Details */}
+                      <div>
+                        {/* Course Title */}
+                        <h3 className="text-xl sm:text-2xl lg:text-[25px] font-black text-[#0C2B4E] tracking-tight leading-tight m-0">
                           {modalTitle}
                         </h3>
-                        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 shrink-0">
+
+                        {/* Meta Info Row */}
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs sm:text-[13px] text-gray-500 font-medium mt-2">
                           {itemDuration && (
-                            <div className="inline-flex items-center gap-1.5 bg-gray-50 px-2.5 py-1 rounded-md border border-gray-200 text-xs font-semibold text-gray-700">
-                              <Clock className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                            <div className="flex items-center gap-1.5">
+                              <FaClock className="w-3 h-3 text-gray-500 shrink-0" />
                               <span>{itemDuration}</span>
                             </div>
                           )}
-                          {itemFees && (
-                            <div className="inline-flex items-center gap-1 bg-gray-50 px-2.5 py-1 rounded-md border border-gray-200 text-xs font-semibold text-gray-700">
-                              <span className="text-gray-400 font-normal">Fee:</span>
-                              <span className="text-[#0D3B66] font-bold">
-                                {typeof itemFees === "string" ? itemFees : `₹ ${itemFees}`}
+                          {itemFeesFormatted && (
+                            <div className="flex items-center gap-1">
+                              <span className="font-bold text-gray-500">₹</span>
+                              <span className="font-bold text-gray-500">{itemFeesFormatted}</span>
+                            </div>
+                          )}
+                          {itemDeadline && (
+                            <div className="flex items-center gap-1.5">
+                              <FaCalendar className="w-3 h-3 text-gray-500 shrink-0" />
+                              <span>
+                                Admission Deadline : <strong className="font-semibold text-gray-500">{itemDeadline}</strong>
                               </span>
                             </div>
                           )}
                         </div>
-                      </div>
-                    </div>
 
-                    {/* Body: Banner + Details */}
-                    <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5">
-                      <div className="relative w-full sm:w-56 aspect-video sm:aspect-4/3 shrink-0 rounded-xl overflow-hidden bg-gray-100 border border-gray-200">
-                        {heroBannerSrc ? (
-                          <Image
-                            src={heroBannerSrc}
-                            alt={modalTitle}
-                            fill
-                            sizes="(max-width: 640px) 100vw, 240px"
-                            className="object-cover object-center"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-[#0C2B4E] flex items-center justify-center text-white/40">
-                            <GraduationCap className="w-12 h-12" />
-                          </div>
-                        )}
-
-                        {universityLogoSrc && (
-                          <div className="absolute top-2.5 left-2.5 z-10 bg-white/95 rounded-lg shadow-sm p-1.5 border border-gray-100 flex items-center justify-center">
-                            <div className="relative w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center">
-                              <Image
-                                src={universityLogoSrc}
-                                alt={universityName || "University Logo"}
-                                fill
-                                sizes="32px"
-                                className="object-contain"
-                              />
-                            </div>
-                          </div>
-                        )}
+                        {/* Description */}
+                        <p className="text-xs sm:text-[13px] text-gray-600 leading-relaxed mt-2.5 mb-0 font-normal">
+                          {itemDesc}
+                        </p>
                       </div>
 
-                      <div className="flex-1 space-y-3 text-left w-full">
-                        {itemDesc && (
-                          <p className="text-xs sm:text-[13px] text-gray-600 leading-relaxed m-0">
-                            {itemDesc}
-                          </p>
-                        )}
-
-                        {itemDeadline && (
-                          <div className="flex items-center gap-1.5 bg-gray-50 px-2.5 py-1 rounded-md border border-gray-200 text-xs text-gray-600 w-fit">
-                            <Clock className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-                            <span>
-                              Deadline: <strong className="text-gray-900">{itemDeadline}</strong>
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Specialization Semester-Wise Curriculum */}
-                    {Array.isArray(selectedSpecModal.curriculum) && selectedSpecModal.curriculum.length > 0 && (
-                      <div className="pt-3 border-t border-gray-100 text-left">
-                        <div className="flex items-center justify-between mb-2">
-                          <h4 className="text-xs sm:text-[13px] font-bold text-[#0D3B66] uppercase tracking-wider m-0">
-                            {specTitle} Curriculum
+                      {/* Course Curriculum Section */}
+                      <div className="pt-1">
+                        <div className="flex items-center gap-3 mb-2.5">
+                          <h4 className="text-sm sm:text-base font-bold text-[#0C2B4E] m-0 tracking-tight shrink-0">
+                            Course Curriculum
                           </h4>
-                          <span className="text-[11px] text-gray-500 font-medium">
-                            {selectedSpecModal.curriculum.reduce((acc, sem) => acc + (sem.subjects?.length || 0), 0)} Total Subjects
-                          </span>
+                          <div className="flex-1 h-px bg-gray-200" />
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-56 overflow-y-auto pr-1 scrollbar-thin [scrollbar-color:#cbd5e1_transparent]">
-                          {selectedSpecModal.curriculum.map((sem, sIdx) => (
-                            <div key={sIdx} className="bg-gray-50/90 rounded-xl p-2.5 border border-gray-200/80">
-                              <div className="text-[11.5px] font-bold text-[#0C3A66] mb-1.5 pb-1 border-b border-gray-200 flex items-center justify-between">
-                                <span>{sem.semesterName || `Semester ${sIdx + 1}`}</span>
-                                <span className="text-[10px] text-gray-500 font-semibold">{sem.subjects?.length || 0} subjects</span>
-                              </div>
-                              <ul className="space-y-1 text-xs text-gray-700 m-0 p-0 list-none">
-                                {(sem.subjects || []).map((sub, subIdx) => (
-                                  <li key={subIdx} className="flex items-start gap-1.5 leading-snug">
-                                    <span className="text-[#08AEAA] font-bold shrink-0">•</span>
-                                    <span>{typeof sub === "string" ? sub : (sub.name || "")}</span>
-                                  </li>
-                                ))}
-                              </ul>
+
+                        {/* Curriculum Pills + Subject Box */}
+                        <div className="flex flex-row items-start gap-3">
+                          {/* Semester Tabs */}
+                          <div className="shrink-0" style={{ width: 124 }}>
+                            {specCurriculum.map((sem, sIdx) => {
+                              const isActive = activeSpecSem === sIdx;
+                              return (
+                                <button
+                                  key={sIdx}
+                                  type="button"
+                                  onClick={() => setActiveSpecSem(sIdx)}
+                                  style={{ display: "block", width: isActive ? "100%" : "85%", marginBottom: sIdx < specCurriculum.length - 1 ? 8 : 0 }}
+                                  className={`py-2 px-3.5 rounded-full text-xs font-semibold transition-all cursor-pointer border-none ${isActive
+                                    ? "bg-[#0C2B4E] text-white shadow-sm"
+                                    : "bg-[#EEF3FA] text-[#475569] hover:bg-[#dde7f5]"
+                                    }`}
+                                >
+                                  <span className="flex items-center justify-between w-full">
+                                    <span>{sem.semester}</span>
+                                    {isActive && <ChevronRight className="w-3.5 h-3.5 shrink-0 stroke-[2.5]" />}
+                                  </span>
+                                </button>
+                              );
+                            })}
+                          </div>
+
+                          {/* Subjects Box */}
+                          <div className="w-full flex-1 bg-linear-to-br from-blue-50/50 via-blue-50/30 to-slate-50/40 border border-blue-100/80 rounded-2xl p-3.5 sm:p-4 min-h-[135px] flex items-center">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 w-full">
+                              {(activeCurriculum?.subjects || []).map((sub, subIdx) => (
+                                <div key={subIdx} className="flex items-start gap-2 text-xs text-gray-700 leading-snug">
+                                  <span className="text-gray-900 font-bold shrink-0 leading-none mt-0.5">•</span>
+                                  <span className="font-medium text-gray-800 line-clamp-1">
+                                    {typeof sub === "string" ? sub : (sub.name || "")}
+                                  </span>
+                                </div>
+                              ))}
                             </div>
-                          ))}
+                          </div>
                         </div>
                       </div>
-                    )}
 
-                    {/* CTAs */}
-                    <div className="w-full flex flex-col sm:flex-row items-center gap-2 sm:gap-2.5 pt-2 border-t border-gray-100">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const title = modalTitle;
-                          setSelectedSpecModal(null);
-                          handleOpenLead("Download Brochure", title);
-                        }}
-                        className="w-full sm:flex-1 bg-[#0C2B4E] hover:bg-[#081f38] text-white text-xs sm:text-sm font-semibold py-2.5 px-3 sm:px-4 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-xs active:scale-95 whitespace-nowrap border-none"
-                      >
-                        <span>Download Brochure</span>
-                        <Download className="w-3.5 h-3.5 shrink-0" />
-                      </button>
+                      {/* Bottom Action Buttons */}
+                      <div className="flex items-center gap-3 pt-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const title = modalTitle;
+                            setSelectedSpecModal(null);
+                            handleOpenLead("Download Brochure", title);
+                          }}
+                          className="flex-1 bg-[#0C2B4E] hover:bg-[#071c33] text-white text-xs sm:text-sm font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm border-none active:scale-95"
+                        >
+                          <span>Download Broucher</span>
+                          <Download className="w-4 h-4 shrink-0" />
+                        </button>
 
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const title = modalTitle;
-                          setSelectedSpecModal(null);
-                          handleOpenLead("Free Counseling", title);
-                        }}
-                        className="w-full sm:flex-1 bg-white hover:bg-gray-50 text-[#0C2B4E] border border-[#0C2B4E] text-xs sm:text-sm font-semibold py-2.5 px-3 sm:px-4 rounded-lg flex items-center justify-center transition-all cursor-pointer shadow-xs active:scale-95 whitespace-nowrap"
-                      >
-                        Get 100% FREE Counseling
-                      </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const title = modalTitle;
+                            setSelectedSpecModal(null);
+                            handleOpenLead("Free Counseling", title);
+                          }}
+                          className="flex-1 bg-white hover:bg-gray-50 text-[#0C2B4E] border border-[#0C2B4E] text-xs sm:text-sm font-bold py-3 px-4 rounded-xl flex items-center justify-center transition-all cursor-pointer shadow-sm active:scale-95"
+                        >
+                          Get 100% FREE Counseling
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </Modal>
