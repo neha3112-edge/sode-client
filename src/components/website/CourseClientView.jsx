@@ -938,7 +938,7 @@ export default function CourseClientView({
                 return (
                   <div
                     key={idx}
-                    className="bg-white rounded-2xl border border-gray-200/90 p-4 sm:p-5 shadow-2xs flex flex-col items-center hover:border-[#08AEAA] transition-colors h-[320px] sm:h-[350px]"
+                    className="bg-white rounded-2xl border border-gray-200/90 p-4 sm:p-5 shadow-2xs flex flex-col items-center hover:border-[#08AEAA] transition-colors h-full max-h-[340px] sm:max-h-[360px] w-full"
                   >
                     <div className="bg-[#0C3A66] text-white px-5 py-1.5 rounded-full text-xs sm:text-sm font-semibold mb-3 shadow-xs shrink-0">
                       {semesterTitle}
@@ -946,7 +946,7 @@ export default function CourseClientView({
 
                     <div className="w-full h-px bg-gray-100 mb-3 sm:mb-4 shrink-0" />
 
-                    <ul className="w-full text-left space-y-2 sm:space-y-2.5 text-xs sm:text-[13px] text-gray-700 m-0 p-0 list-none flex-1 overflow-y-auto pr-1.5 scrollbar-thin [scrollbar-color:#cbd5e1_transparent]">
+                    <ul className="w-full text-left space-y-2 sm:space-y-2.5 text-xs sm:text-[13px] text-gray-700 m-0 p-0 list-none flex-1 min-h-0 overflow-y-auto pr-1.5 scrollbar-thin [scrollbar-color:#cbd5e1_transparent]">
                       {sem.subjects.map((sub, sIdx) => {
                         const subName = typeof sub === "string" ? sub : (sub.name || "");
 
