@@ -688,10 +688,10 @@ export default function CourseClientView({
                 {
                   id: "emi",
                   isEmi: true,
-                  title: activeLedgerData.emi?.summary?.hasInterest ? "Standard EMI" : "No-Cost EMI",
+                  title: (activeLedgerData.emi?.summary?.hasInterest && Number(activeLedgerData.emi?.summary?.interestRate) > 1) ? "Standard EMI" : "No-Cost EMI",
                   badge: {
-                    text: activeLedgerData.emi?.summary?.hasInterest ? "EASY FINANCING" : "0% INTEREST",
-                    color: activeLedgerData.emi?.summary?.hasInterest ? "geekblue" : "orange",
+                    text: (activeLedgerData.emi?.summary?.hasInterest && Number(activeLedgerData.emi?.summary?.interestRate) > 1) ? "EASY FINANCING" : "NO-COST EMI",
+                    color: (activeLedgerData.emi?.summary?.hasInterest && Number(activeLedgerData.emi?.summary?.interestRate) > 1) ? "geekblue" : "orange",
                   },
                   hasDiscount: false,
                   grossFee: null,
