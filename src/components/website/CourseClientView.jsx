@@ -622,12 +622,7 @@ export default function CourseClientView({
                     color: activeLedgerData.semester?.badgeColor || "success",
                   } : null,
                   hasDiscount: Boolean(
-                    (activeLedgerData.semester?.discountPercentage > 0 ||
-                      (activeLedgerData.semester?.grossFee &&
-                        activeLedgerData.semester?.netPayable &&
-                        activeLedgerData.semester.grossFee > activeLedgerData.semester.netPayable)) &&
-                    activeLedgerData.semester?.formattedGross &&
-                    activeLedgerData.semester?.formattedGross !== activeLedgerData.semester?.formattedPayable
+                    Number(activeLedgerData.semester?.discountFees || activeLedgerData.semester?.totalDiscountFees || 0) > 0
                   ),
                   grossFee: activeLedgerData.semester?.formattedGross,
                   payableFee: activeLedgerData.semester?.formattedBasePayable || activeLedgerData.semester?.formattedPayable || "₹ 16,320 / Sem",
@@ -647,12 +642,7 @@ export default function CourseClientView({
                     color: activeLedgerData.yearly?.badgeColor || "success",
                   } : null,
                   hasDiscount: Boolean(
-                    (activeLedgerData.yearly?.discountPercentage > 0 ||
-                      (activeLedgerData.yearly?.grossFee &&
-                        activeLedgerData.yearly?.netPayable &&
-                        activeLedgerData.yearly.grossFee > activeLedgerData.yearly.netPayable)) &&
-                    activeLedgerData.yearly?.formattedGross &&
-                    activeLedgerData.yearly?.formattedGross !== activeLedgerData.yearly?.formattedPayable
+                    Number(activeLedgerData.yearly?.discountFees || activeLedgerData.yearly?.totalDiscountFees || 0) > 0
                   ),
                   grossFee: activeLedgerData.yearly?.formattedGross,
                   payableFee: activeLedgerData.yearly?.formattedBasePayable || activeLedgerData.yearly?.formattedPayable || "₹ 30,720 / Year",
@@ -672,12 +662,7 @@ export default function CourseClientView({
                     color: activeLedgerData.fullfees?.badgeColor || (activeLedgerData.scholarship ? "success" : "warning"),
                   } : null,
                   hasDiscount: Boolean(
-                    (activeLedgerData.fullfees?.discountPercentage > 0 ||
-                      (activeLedgerData.fullfees?.grossFee &&
-                        activeLedgerData.fullfees?.netPayable &&
-                        activeLedgerData.fullfees.grossFee > activeLedgerData.fullfees.netPayable)) &&
-                    activeLedgerData.fullfees?.formattedGross &&
-                    activeLedgerData.fullfees?.formattedGross !== activeLedgerData.fullfees?.formattedPayable
+                    Number(activeLedgerData.fullfees?.discountFees || activeLedgerData.fullfees?.totalDiscountFees || 0) > 0
                   ),
                   grossFee: activeLedgerData.fullfees?.formattedGross,
                   payableFee: activeLedgerData.fullfees?.formattedBasePayable || activeLedgerData.fullfees?.formattedPayable || "₹ 80,640",
