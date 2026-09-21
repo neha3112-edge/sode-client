@@ -15,6 +15,9 @@ const DEFAULT_META = {
     "Certifications & Online Degree Courses from top IITs, IIMs & global universities via SODE. Enroll in our MBA, DBA & executive leadership programs.",
   ogImage: getAssetPath("/assets/images/sode-homepage-og-card-image.png"),
   twitterCard: "summary_large_image",
+  robots: "noindex, nofollow",
+  noIndex: true,
+  schemaMarkup: null,
 };
 
 export async function getPageMetaData(path = "/") {
@@ -29,15 +32,33 @@ export async function getPageMetaData(path = "/") {
     const data = await res.json();
     if (data && data.success && data.result) {
       const item = data.result;
+      const title = item.metaTitle || item.title || DEFAULT_META.title;
+      const description = item.metaDescription || item.description || DEFAULT_META.description;
+      const keywords = item.metaKeywords || item.keywords || DEFAULT_META.keywords;
+      const ogImage =
+        item.ogImage?.url ||
+        item.ogImage?.path ||
+        item.featuredImage?.url ||
+        item.featuredImage?.path ||
+        (typeof item.ogImage === "string" ? item.ogImage : null) ||
+        DEFAULT_META.ogImage;
+
       return {
-        title: item.title || DEFAULT_META.title,
-        description: item.description || DEFAULT_META.description,
-        keywords: item.keywords || DEFAULT_META.keywords,
-        canonicalUrl: item.canonicalUrl || `${SITE_URL}${path}`,
-        ogTitle: item.ogTitle || item.title || DEFAULT_META.ogTitle,
-        ogDescription: item.ogDescription || item.description || DEFAULT_META.ogDescription,
-        ogImage: item.ogImage || DEFAULT_META.ogImage,
+        title,
+        metaTitle: title,
+        description,
+        metaDescription: description,
+        keywords,
+        metaKeywords: keywords,
+        canonicalUrl: item.canonicalUrl || `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`,
+        ogTitle: item.ogTitle || title || DEFAULT_META.ogTitle,
+        ogDescription: item.ogDescription || description || DEFAULT_META.ogDescription,
+        ogImage,
         twitterCard: item.twitterCard || DEFAULT_META.twitterCard,
+        robots: item.robots || (item.noIndex ? "noindex, nofollow" : "index, follow"),
+        noIndex: Boolean(item.noIndex),
+        schemaMarkup: item.schemaMarkup || item.script || null,
+        script: item.script || item.schemaMarkup || null,
       };
     }
 

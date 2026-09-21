@@ -1,6 +1,7 @@
 import { cache } from "react";
 import { request } from "@/services/request";
 import { getAssetPath } from "@/lib/utils";
+import { getPageMetaData } from "@/constants/pageMetaData";
 import CourseClientView from "@/components/website/CourseClientView";
 
 export const revalidate = 900;
@@ -79,36 +80,46 @@ export async function generateMetadata({ params }) {
 
   if (!slugStr) {
     return {
-      title: "Course Details | mysode",
+      title: "Course Details | SODE",
       description: "Explore top accredited online & executive programmes.",
     };
   }
 
   try {
+    const pageMeta = await getPageMetaData(`/courses/${slugStr}`);
     const course = await getCourseData(slug);
     const cleanTitle = course?.name || (slugStr ? slugStr.replace(/[-/]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) : "Online Course");
     const uniName = course?.universityName || "Partner University";
-    const displayTitle = `${cleanTitle}${uniName ? ` from ${uniName}` : ""} - Syllabus, Fees & Admission | mysode`;
+    const displayTitle =
+      pageMeta?.metaTitle ||
+      pageMeta?.title ||
+      `${cleanTitle}${uniName ? ` from ${uniName}` : ""} - Syllabus, Fees & Admission | SODE`;
     const description =
+      pageMeta?.metaDescription ||
+      pageMeta?.description ||
       course?.overview?.slice(0, 160) ||
       `Enroll in ${cleanTitle} from ${uniName}. Check eligibility criteria, fee structure, duration, career scope, and apply online.`;
-    const keywords = `${cleanTitle}, ${cleanTitle} ${uniName}, ${cleanTitle} online fees, ${cleanTitle} syllabus, ${cleanTitle} admission`;
-    const uniBannerImage = course?.bannerImage || course?.logo || null;
-    const ogImage = uniBannerImage ? getAssetPath(uniBannerImage) : "https://mysode.com/og-image.jpg";
-    const canonical = `https://mysode.com/courses/${course?.slug || slugStr}`;
+    const keywords =
+      pageMeta?.metaKeywords ||
+      pageMeta?.keywords ||
+      `${cleanTitle}, ${cleanTitle} ${uniName}, ${cleanTitle} online fees, ${cleanTitle} syllabus, ${cleanTitle} admission`;
+    const uniBannerImage = pageMeta?.ogImage || course?.bannerImage || course?.logo || null;
+    const ogImage = uniBannerImage ? getAssetPath(uniBannerImage) : "https://sode.co.in/og-image.jpg";
+    const canonical = pageMeta?.canonicalUrl || `https://sode.co.in/courses/${course?.slug || slugStr}`;
 
     return {
       title: displayTitle,
       description,
       keywords,
+      robots: pageMeta?.robots || (pageMeta?.noIndex ? "noindex, nofollow" : "index, follow"),
       alternates: {
         canonical,
       },
       openGraph: {
-        title: displayTitle,
-        description,
+        title: pageMeta?.ogTitle || displayTitle,
+        description: pageMeta?.ogDescription || description,
         url: canonical,
-        siteName: "mysode",
+        siteName: "SODE",
         images: [
           {
             url: ogImage,
@@ -120,15 +131,15 @@ export async function generateMetadata({ params }) {
         type: "website",
       },
       twitter: {
-        card: "summary_large_image",
-        title: displayTitle,
-        description,
+        card: pageMeta?.twitterCard || "summary_large_image",
+        title: pageMeta?.ogTitle || displayTitle,
+        description: pageMeta?.ogDescription || description,
         images: [ogImage],
       },
     };
   } catch (error) {
     return {
-      title: "Course Details | mysode",
+      title: "Course Details | SODE",
       description: "Explore top accredited online & executive programmes.",
     };
   }
