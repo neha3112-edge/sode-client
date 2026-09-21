@@ -115,6 +115,14 @@ export default function CourseClientView({
   const heroBannerSrc = getAssetPath(
     courseData?.bannerImage || courseData?.banner || courseData?.universityId?.bannerImg?.url
   );
+  const mobileHeroBannerSrc = getAssetPath(
+    courseData?.bannerImageMobile ||
+      courseData?.mobileBannerImage ||
+      courseData?.universityId?.mobileBannerImg?.url ||
+      courseData?.bannerImage ||
+      courseData?.banner ||
+      courseData?.universityId?.bannerImg?.url
+  );
   const universityLogoSrc = courseData?.logo
     ? getAssetPath(courseData.logo)
     : courseData?.universityId?.logo
@@ -377,15 +385,29 @@ export default function CourseClientView({
         <div className="rounded-2xl overflow-hidden shadow-sm border border-gray-200 bg-[#0C2B4E] flex flex-col md:grid md:grid-cols-12 min-h-80 md:min-h-90">
           {/* Mobile Image (Top) / Desktop Image (Right) */}
           <div className="order-1 md:order-2 md:col-span-6 relative w-full h-64 sm:h-72 md:h-full overflow-hidden rounded-b-4xl md:rounded-l-4xl">
-            {heroBannerSrc ? (
-              <Image
-                src={heroBannerSrc}
-                alt={displayCourseTitle}
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover object-center"
-                priority
-              />
+            {heroBannerSrc || mobileHeroBannerSrc ? (
+              <>
+                {heroBannerSrc && (
+                  <Image
+                    src={heroBannerSrc}
+                    alt={displayCourseTitle}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    className={`object-cover object-center ${mobileHeroBannerSrc && mobileHeroBannerSrc !== heroBannerSrc ? "hidden md:block" : "block"}`}
+                    priority
+                  />
+                )}
+                {mobileHeroBannerSrc && mobileHeroBannerSrc !== heroBannerSrc && (
+                  <Image
+                    src={mobileHeroBannerSrc}
+                    alt={displayCourseTitle}
+                    fill
+                    sizes="100vw"
+                    className="object-cover object-center block md:hidden"
+                    priority
+                  />
+                )}
+              </>
             ) : (
               <div className="w-full h-full bg-[#0C2B4E]" />
             )}

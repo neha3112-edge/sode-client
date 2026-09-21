@@ -33,6 +33,7 @@ function normalizeCourseData(pageRes) {
     eligibility: raw.eligibility || "",
     admissionDeadline: raw.admissionDeadline || "",
     bannerImage: raw.bannerImage || raw.bannerImg || null,
+    mobileBannerImage: raw.mobileBannerImage || raw.mobileBannerImg || null,
     logo: raw.logo || null,
     location: raw.location || "",
     established: raw.established || "",

@@ -75,6 +75,8 @@ export default function UniversityClientView({ initialData, slug }) {
 
   const rawBanner = uni.bannerImg?.url || null;
   const heroBannerUrl = rawBanner ? getAssetPath(rawBanner) : null;
+  const rawMobileBanner = uni.mobileBannerImg?.url || null;
+  const mobileHeroBannerUrl = rawMobileBanner ? getAssetPath(rawMobileBanner) : heroBannerUrl;
   const rawLogo = data.logo?.url || null;
   const logoUrl = rawLogo ? getAssetPath(rawLogo) : null;
 
@@ -278,15 +280,29 @@ export default function UniversityClientView({ initialData, slug }) {
     <div className="min-h-screen bg-gray-100 text-gray-800 antialiased font-sans pb-16">
       <div className="relative w-full">
         <div className="relative w-full h-56 sm:h-74 overflow-hidden">
-          {heroBannerUrl ? (
-            <Image
-              src={heroBannerUrl}
-              alt={uniName}
-              fill
-              sizes="100vw"
-              priority
-              className="object-cover object-center"
-            />
+          {heroBannerUrl || mobileHeroBannerUrl ? (
+            <>
+              {heroBannerUrl && (
+                <Image
+                  src={heroBannerUrl}
+                  alt={uniName}
+                  fill
+                  sizes="100vw"
+                  priority
+                  className={`object-cover object-center ${mobileHeroBannerUrl && mobileHeroBannerUrl !== heroBannerUrl ? "hidden sm:block" : "block"}`}
+                />
+              )}
+              {mobileHeroBannerUrl && mobileHeroBannerUrl !== heroBannerUrl && (
+                <Image
+                  src={mobileHeroBannerUrl}
+                  alt={uniName}
+                  fill
+                  sizes="100vw"
+                  priority
+                  className="object-cover object-center block sm:hidden"
+                />
+              )}
+            </>
           ) : null}
         </div>
 
