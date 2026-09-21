@@ -195,7 +195,7 @@ export default function UniversityClientView({ initialData, slug }) {
     if (Array.isArray(uni.why_choose_us) && uni.why_choose_us.length > 0) {
       const first = uni.why_choose_us[0];
       return {
-        title: first.title || `Why Choose Online ${uniName}`,
+        title: first.title || `Why Choose ${uniName}`,
         items: (first.items || []).map((item) => ({
           title: item.title,
           description: item.description,
@@ -204,7 +204,7 @@ export default function UniversityClientView({ initialData, slug }) {
       };
     }
     return {
-      title: `Why Choose Online ${uniName}`,
+      title: `Why Choose ${uniName}`,
       items: [],
     };
   }, [uni.why_choose_us, uniName]);
@@ -243,12 +243,12 @@ export default function UniversityClientView({ initialData, slug }) {
     if (Array.isArray(uni.faqs) && uni.faqs.length > 0) {
       const first = uni.faqs[0];
       return {
-        title: first.title || `FAQs on Online Degree at ${uniName}`,
+        title: first.title || `FAQs on Degree at ${uniName}`,
         items: Array.isArray(first.items) ? first.items : [],
       };
     }
     return {
-      title: `FAQs on Online Degree at ${uniName}`,
+      title: `FAQs on Degree at ${uniName}`,
       items: [],
     };
   }, [uni.faqs, uniName]);
