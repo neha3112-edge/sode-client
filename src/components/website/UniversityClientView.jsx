@@ -1274,12 +1274,24 @@ export default function UniversityClientView({ initialData, slug }) {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-64 sm:max-h-72 overflow-y-auto pr-1 py-1">
                     {selectedCourseSpec.subcourses.map((sub, idx) => {
                       const subName = typeof sub === "string" ? sub : sub.name || "";
+                      const subLogo = typeof sub === "object" && sub?.logo ? getAssetPath(sub.logo) : null;
                       return (
                         <div
                           key={idx}
                           className="flex items-center gap-2 text-xs font-semibold px-3 py-2 rounded-lg bg-blue-50/70 text-[#0C2B4E] border border-blue-100 hover:bg-blue-100/60 transition-colors"
                         >
-                          <CheckCircle2 size={14} className="text-[#08AEAA] shrink-0" />
+                          {subLogo ? (
+                            <img
+                              src={subLogo}
+                              alt={subName}
+                              className="w-4 h-4 object-contain rounded shrink-0"
+                              onError={(e) => {
+                                e.target.style.display = "none";
+                              }}
+                            />
+                          ) : (
+                            <CheckCircle2 size={14} className="text-[#08AEAA] shrink-0" />
+                          )}
                           <span className="truncate leading-tight" title={subName}>
                             {subName}
                           </span>

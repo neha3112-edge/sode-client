@@ -1065,7 +1065,19 @@ export default function CourseClientView({
                     onClick={() => setSelectedSpecModal(item)}
                     className="bg-white rounded-xl border border-gray-200 p-2.5 sm:p-3.5 md:p-4 flex items-center gap-2 sm:gap-3.5 cursor-pointer hover:border-[#08AEAA] hover:shadow-xs transition-all group"
                   >
-                    <IconComponent className="text-[#0C3A66] group-hover:text-[#08AEAA] shrink-0 w-4.5 h-4.5 sm:w-5.5 sm:h-5.5 transition-colors" />
+                    {item.logo ? (
+                      <div className="relative w-5 h-5 sm:w-6 sm:h-6 shrink-0">
+                        <Image
+                          src={getAssetPath(item.logo)}
+                          alt={specTitle}
+                          fill
+                          sizes="24px"
+                          className="object-contain"
+                        />
+                      </div>
+                    ) : (
+                      <IconComponent className="text-[#0C3A66] group-hover:text-[#08AEAA] shrink-0 w-4.5 h-4.5 sm:w-5.5 sm:h-5.5 transition-colors" />
+                    )}
                     <span className="text-[11px] sm:text-xs md:text-[13.5px] font-bold text-gray-900 group-hover:text-[#08AEAA] tracking-tight leading-snug transition-colors">
                       {specTitle}
                     </span>
@@ -1091,6 +1103,29 @@ export default function CourseClientView({
                 selectedSpecModal.fee ||
                 courseData?.calculatedSemesterFee ||
                 "";
+
+              // Responsive Spec Banners & Assets
+              const specDesktopBannerRaw =
+                selectedSpecModal?.bannerImage ||
+                selectedSpecModal?.bannerImg?.url ||
+                selectedSpecModal?.banner ||
+                selectedSpecModal?.image ||
+                courseData?.bannerImage ||
+                courseData?.universityId?.bannerImg?.url ||
+                heroBannerSrc ||
+                "";
+              const specDesktopBanner = specDesktopBannerRaw ? getAssetPath(specDesktopBannerRaw) : "";
+
+              const specMobileBannerRaw =
+                selectedSpecModal?.bannerImageMobile ||
+                selectedSpecModal?.mobileBannerImg?.url ||
+                selectedSpecModal?.mobileBannerImg ||
+                courseData?.mobileBannerImage ||
+                courseData?.universityId?.mobileBannerImg?.url ||
+                specDesktopBannerRaw;
+              const specMobileBanner = specMobileBannerRaw ? getAssetPath(specMobileBannerRaw) : specDesktopBanner;
+
+              const specLogo = selectedSpecModal?.logo ? getAssetPath(selectedSpecModal.logo) : null;
 
               // Build Curriculum List — backend data only
               const specCurriculum = (() => {
@@ -1120,43 +1155,43 @@ export default function CourseClientView({
                   <div className="flex flex-col md:flex-row items-stretch gap-5 sm:gap-6">
                     {/* Left Column: Portrait Banner Card */}
                     <div className="relative w-full md:w-[260px] lg:w-70 shrink-0 min-h-[300px] md:min-h-[420px] rounded-2xl overflow-hidden bg-slate-900 shadow-xs flex items-stretch">
-                      <Image
-                        src={
-                          selectedSpecModal?.image
-                            ? getAssetPath(selectedSpecModal.image)
-                            : selectedSpecModal?.bannerImage
-                              ? getAssetPath(selectedSpecModal.bannerImage)
-                              : selectedSpecModal?.banner
-                                ? getAssetPath(selectedSpecModal.banner)
-                                : courseData?.bannerImage
-                                  ? getAssetPath(courseData.bannerImage)
-                                  : courseData?.universityId?.bannerImg?.url
-                                    ? getAssetPath(courseData.universityId.bannerImg.url)
-                                    : heroBannerSrc || ""
-                        }
-                        alt={modalTitle}
-                        fill
-                        sizes="(max-width: 768px) 100vw, 280px"
-                        className="object-cover object-center"
-                      />
+                      {/* Desktop Spec Banner */}
+                      {specDesktopBanner && (
+                        <Image
+                          src={specDesktopBanner}
+                          alt={modalTitle}
+                          fill
+                          sizes="(max-width: 768px) 100vw, 280px"
+                          className={`object-cover object-center ${specMobileBanner && specMobileBanner !== specDesktopBanner ? "hidden md:block" : "block"}`}
+                        />
+                      )}
 
-                      {/* Top-Left University Badge — only show if image doesn't already have logo embedded */}
-                      {universityLogoSrc && !universityName?.toLowerCase().includes("manipal") && (
+                      {/* Mobile Spec Banner */}
+                      {specMobileBanner && specMobileBanner !== specDesktopBanner && (
+                        <Image
+                          src={specMobileBanner}
+                          alt={modalTitle}
+                          fill
+                          sizes="100vw"
+                          className="object-cover object-center block md:hidden"
+                        />
+                      )}
+
+                      {/* Top-Left Logo Badge: Prioritize SubCourse Logo if set, else University Logo */}
+                      {(specLogo || (universityLogoSrc && !universityName?.toLowerCase().includes("manipal"))) && (
                         <div className="absolute top-3.5 left-3.5 z-10 bg-white rounded-xl shadow-md p-2 sm:p-2.5 flex flex-col items-center justify-center text-center border border-gray-100/90 min-w-[74px] max-w-[90px]">
                           <div className="relative w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center">
                             <Image
-                              src={universityLogoSrc}
-                              alt={universityName || "University"}
+                              src={specLogo || universityLogoSrc}
+                              alt={specLogo ? specTitle : (universityName || "University")}
                               fill
                               sizes="36px"
                               className="object-contain"
                             />
                           </div>
-                          {universityName && (
-                            <span className="text-[9.5px] font-bold text-gray-900 leading-tight mt-1 line-clamp-2">
-                              {universityName}
-                            </span>
-                          )}
+                          <span className="text-[9.5px] font-bold text-gray-900 leading-tight mt-1 line-clamp-2">
+                            {specLogo ? specTitle : universityName}
+                          </span>
                         </div>
                       )}
                     </div>
