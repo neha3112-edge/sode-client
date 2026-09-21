@@ -243,14 +243,15 @@ export default function UniversityClientView({ initialData, slug }) {
 
   const faqSection = useMemo(() => {
     if (Array.isArray(uni.faqs) && uni.faqs.length > 0) {
+      const allItems = uni.faqs.flatMap((sec) => (Array.isArray(sec.items) ? sec.items : []));
       const first = uni.faqs[0];
       return {
-        title: first.title || `FAQs on Degree at ${uniName}`,
-        items: Array.isArray(first.items) ? first.items : [],
+        title: first?.title || `Frequently Asked Questions (FAQs) - ${uniName}`,
+        items: allItems.length > 0 ? allItems : (Array.isArray(first?.items) ? first.items : []),
       };
     }
     return {
-      title: `FAQs on Degree at ${uniName}`,
+      title: `Frequently Asked Questions (FAQs) - ${uniName}`,
       items: [],
     };
   }, [uni.faqs, uniName]);
