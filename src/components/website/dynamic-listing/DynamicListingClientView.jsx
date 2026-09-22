@@ -344,9 +344,9 @@ function DynamicHero({ hero, pageTitle, subtitle, targetCourseName }) {
               const logoRaw =
                 u.image?.url || u.image?.path || (typeof u.image === "string" ? u.image : null);
               const url = u.coursePageSlug
-                ? (u.coursePageSlug.includes("/") ? `/university/${u.coursePageSlug}` : `/courses/${u.coursePageSlug}`)
+                ? (u.coursePageSlug.includes("/") ? `/universities/${u.coursePageSlug}` : `/courses/${u.coursePageSlug}`)
                 : u.slug
-                  ? `/university/${u.slug}`
+                  ? `/universities/${u.slug}`
                   : null;
               return {
                 id: u._id || `uni-${i}`,
@@ -501,7 +501,7 @@ function RankedUniversityCard({ item, index, features, targetCourseName }) {
     item?.highlightReason ||
     "Campus Immersion & Placement Assistance";
   const cardLink = item?.courseSlug
-    ? (item.courseSlug.includes("/") ? `/university/${item.courseSlug}` : `/courses/${item.courseSlug}`)
+    ? (item.courseSlug.includes("/") ? `/universities/${item.courseSlug}` : `/courses/${item.courseSlug}`)
     : `/universities/${slug}`;
 
   // Description

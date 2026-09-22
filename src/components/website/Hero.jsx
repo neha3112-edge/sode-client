@@ -291,9 +291,9 @@ export function Hero({ initialHeroData = null }) {
               ...universities.map((u, i) => {
                 const logoRaw = u.image?.url || u.image?.path || (typeof u.image === "string" ? u.image : null);
                 const url = u.coursePageSlug
-                  ? (u.coursePageSlug.includes("/") ? `/university/${u.coursePageSlug}` : `/courses/${u.coursePageSlug}`)
+                  ? (u.coursePageSlug.includes("/") ? `/universities/${u.coursePageSlug}` : `/courses/${u.coursePageSlug}`)
                   : u.slug
-                    ? `/university/${u.slug}`
+                    ? `/universities/${u.slug}`
                     : null;
                 return {
                   id: u._id || `uni-${i}`,

@@ -81,7 +81,7 @@ function processArticleContent(rawHtml, bannerUrl, relatedEntities = []) {
       const rowsHtml = universitiesList
         .map((uni, idx) => {
           const uniName = uni.name || "University";
-          const uniSlug = uni.slug ? `/university/${uni.slug}` : "#";
+          const uniSlug = uni.slug ? `/universities/${uni.slug}` : "#";
           const naac = uni.naacRating?.name || uni.naacRating || "UGC Approved";
           const approvals = Array.isArray(uni.approvals)
             ? uni.approvals.map((a) => a.name || a.code || a).join(", ")
@@ -282,7 +282,7 @@ export default function BlogClientView({ initialData = null, initialPopularBlogs
                 const isCourse = rel.entityType === "Course" || rel.entityType === "SubCourse";
                 const linkUrl = isCourse
                   ? `/courses/${entity.slug || ""}`
-                  : `/university/${entity.slug || ""}`;
+                  : `/universities/${entity.slug || ""}`;
 
                 return (
                   <Link

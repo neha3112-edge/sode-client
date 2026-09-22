@@ -122,8 +122,8 @@ export default function UniversityHero({
                             key={cp.title}
                             href={
                               cp.slug?.includes("/")
-                                ? `/university/${cp.slug}`
-                                : `/university/${cp.slug || encodeURIComponent(cp.title.toLowerCase())}`
+                                ? `/universities/${cp.slug}`
+                                : `/universities/${cp.slug || encodeURIComponent(cp.title.toLowerCase())}`
                             }
                             className="text-[10px] sm:text-xs font-semibold px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full transition-all cursor-pointer whitespace-nowrap text-center border bg-white/20 text-white border-white/20 hover:bg-white hover:text-[#0C3A66] no-underline inline-flex items-center justify-center shadow-2xs w-auto shrink-0"
                           >

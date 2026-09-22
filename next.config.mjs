@@ -40,6 +40,21 @@ const nextConfig = {
     ];
   },
 
+  async redirects() {
+    return [
+      {
+        source: "/university",
+        destination: "/universities",
+        permanent: true,
+      },
+      {
+        source: "/university/:slug*",
+        destination: "/universities/:slug*",
+        permanent: true,
+      },
+    ];
+  },
+
   experimental: {
     optimizePackageImports: [
       "lucide-react",

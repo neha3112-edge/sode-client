@@ -37,7 +37,7 @@ export default function CourseAlternativeUniversities({
           const rawHref = item.courseDetailHref || `/courses`;
           const courseDetailHref =
             rawHref.startsWith("/courses/") && rawHref.split("/").length > 3
-              ? rawHref.replace("/courses/", "/university/")
+              ? rawHref.replace("/courses/", "/universities/")
               : rawHref;
           const inCmp = isInCompare(item._id || item.slug || cardTitle || uName);
 

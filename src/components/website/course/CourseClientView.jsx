@@ -320,16 +320,16 @@ export function CourseClientView({
 
       let courseDetailHref = "/courses";
       if (uniSlug && courseSlug && subcourseSlug) {
-        courseDetailHref = `/university/${encodeURIComponent(uniSlug)}/${encodeURIComponent(courseSlug)}/${encodeURIComponent(subcourseSlug)}`;
+        courseDetailHref = `/universities/${encodeURIComponent(uniSlug)}/${encodeURIComponent(courseSlug)}/${encodeURIComponent(subcourseSlug)}`;
       } else if (uniSlug && courseSlug) {
-        courseDetailHref = `/university/${encodeURIComponent(uniSlug)}/${encodeURIComponent(courseSlug)}`;
+        courseDetailHref = `/universities/${encodeURIComponent(uniSlug)}/${encodeURIComponent(courseSlug)}`;
       } else if (courseSlug && subcourseSlug) {
         courseDetailHref = `/courses/${encodeURIComponent(courseSlug)}/${encodeURIComponent(subcourseSlug)}`;
       } else if (courseSlug) {
         courseDetailHref = `/courses/${encodeURIComponent(courseSlug)}`;
       } else if (item.slug) {
         courseDetailHref = item.slug.includes("/")
-          ? `/university/${item.slug}`
+          ? `/universities/${item.slug}`
           : `/courses/${encodeURIComponent(item.slug)}`;
       }
 

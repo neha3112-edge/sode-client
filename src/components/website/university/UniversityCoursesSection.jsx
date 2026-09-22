@@ -70,8 +70,8 @@ export default function UniversityCoursesSection({
             "";
           const rawCourseSlug = item.slug || encodeURIComponent(cardTitle.toLowerCase());
           const courseDetailHref = rawCourseSlug.includes("/")
-            ? `/university/${rawCourseSlug}`
-            : `/university/${slug || uni.slug || ""}/${rawCourseSlug}`;
+            ? `/universities/${rawCourseSlug}`
+            : `/universities/${slug || uni.slug || ""}/${rawCourseSlug}`;
           const specCount = item.specializationsCount || item.subcourses?.length || 0;
           const inCmp = isInCompare(item._id || item.slug || cardTitle);
           const courseRawLogo = item.logo?.url || item.logo?.path || (typeof item.logo === "string" ? item.logo : null);
