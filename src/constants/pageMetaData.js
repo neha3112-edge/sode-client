@@ -1,47 +1,32 @@
 import { API_BASE_URL, getFetchCacheOptions } from "@/config";
 import { getAssetPath } from "@/lib/utils";
 
-const SITE_NAME = "SODE";
-const SITE_URL = "https://sode.co.in";
-
-const DEFAULT_META = {
-  title: "SODE | Certifications & Online Degree Courses from IITs, IIMs | DBA & MBA",
-  description:
-    "Certifications & Online Degree Courses from top IITs, IIMs & global universities via SODE. Enroll in our MBA, DBA & executive leadership programs.",
-  keywords: "SODE, online mba, distance education, dba, iim, iit",
-  canonicalUrl: `${SITE_URL}/`,
-  ogTitle: "Certifications & Online Degree Courses from IITs, IIMs | DBA MBA – SODE",
-  ogDescription:
-    "Certifications & Online Degree Courses from top IITs, IIMs & global universities via SODE. Enroll in our MBA, DBA & executive leadership programs.",
-  ogImage: getAssetPath("/assets/images/sode-homepage-og-card-image.png"),
-  twitterCard: "summary_large_image",
-  robots: "noindex, nofollow",
-  noIndex: true,
-  schemaMarkup: null,
-};
+export const SITE_NAME = "SODE";
+export const SITE_URL = "https://sode.co.in";
 
 export async function getPageMetaData(path = "/") {
+  const cleanPath = path.startsWith("/") ? path : `/${path}`;
   try {
     const res = await fetch(
-      `${API_BASE_URL}pagemeta/website-read?path=${encodeURIComponent(path)}`,
+      `${API_BASE_URL}pagemeta/website-read?path=${encodeURIComponent(cleanPath)}`,
       getFetchCacheOptions(300, "pagemeta")
     );
 
-    if (!res.ok) return DEFAULT_META;
+    if (!res.ok) return null;
 
     const data = await res.json();
     if (data && data.success && data.result) {
       const item = data.result;
-      const title = item.metaTitle || item.title || DEFAULT_META.title;
-      const description = item.metaDescription || item.description || DEFAULT_META.description;
-      const keywords = item.metaKeywords || item.keywords || DEFAULT_META.keywords;
-      const ogImage =
+      const title = item.metaTitle || item.title || "";
+      const description = item.metaDescription || item.description || "";
+      const keywords = item.metaKeywords || item.keywords || "";
+      const rawImage =
         item.ogImage?.url ||
         item.ogImage?.path ||
         item.featuredImage?.url ||
         item.featuredImage?.path ||
-        (typeof item.ogImage === "string" ? item.ogImage : null) ||
-        DEFAULT_META.ogImage;
+        (typeof item.ogImage === "string" ? item.ogImage : null);
+      const ogImage = rawImage ? getAssetPath(rawImage) : null;
 
       return {
         title,
@@ -50,11 +35,11 @@ export async function getPageMetaData(path = "/") {
         metaDescription: description,
         keywords,
         metaKeywords: keywords,
-        canonicalUrl: item.canonicalUrl || `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`,
-        ogTitle: item.ogTitle || title || DEFAULT_META.ogTitle,
-        ogDescription: item.ogDescription || description || DEFAULT_META.ogDescription,
+        canonicalUrl: item.canonicalUrl || `${SITE_URL}${cleanPath}`,
+        ogTitle: item.ogTitle || title || "",
+        ogDescription: item.ogDescription || description || "",
         ogImage,
-        twitterCard: item.twitterCard || DEFAULT_META.twitterCard,
+        twitterCard: item.twitterCard || "summary_large_image",
         robots: item.robots || (item.noIndex ? "noindex, nofollow" : "index, follow"),
         noIndex: Boolean(item.noIndex),
         schemaMarkup: item.schemaMarkup || item.script || null,
@@ -62,9 +47,58 @@ export async function getPageMetaData(path = "/") {
       };
     }
 
-    return DEFAULT_META;
+    return null;
   } catch (error) {
-    console.warn(`Error fetching PageMeta for ${path}:`, error?.message);
-    return DEFAULT_META;
+    console.warn(`Error fetching PageMeta for ${cleanPath}:`, error?.message);
+    return null;
   }
+}
+
+export function constructMetadata(pageMeta, fallback = {}) {
+  const title = pageMeta?.metaTitle || pageMeta?.title || fallback.title || "";
+  const description = pageMeta?.metaDescription || pageMeta?.description || fallback.description || "";
+  const keywords = pageMeta?.metaKeywords || pageMeta?.keywords || fallback.keywords || "";
+  const canonical = pageMeta?.canonicalUrl || fallback.canonicalUrl || fallback.canonical || `${SITE_URL}/`;
+  const ogTitle = pageMeta?.ogTitle || title;
+  const ogDescription = pageMeta?.ogDescription || description;
+  const ogImage = pageMeta?.ogImage || fallback.ogImage || fallback.image || null;
+  const robots = pageMeta?.robots || (pageMeta?.noIndex ? "noindex, nofollow" : "index, follow");
+
+  const metadata = {
+    robots,
+    alternates: {
+      canonical,
+    },
+    openGraph: {
+      url: canonical,
+      siteName: SITE_NAME,
+      type: fallback.ogType || "website",
+    },
+    twitter: {
+      card: pageMeta?.twitterCard || "summary_large_image",
+    },
+  };
+
+  if (title) {
+    metadata.title = title;
+    metadata.openGraph.title = ogTitle || title;
+    metadata.twitter.title = ogTitle || title;
+  }
+
+  if (description) {
+    metadata.description = description;
+    metadata.openGraph.description = ogDescription || description;
+    metadata.twitter.description = ogDescription || description;
+  }
+
+  if (keywords) {
+    metadata.keywords = keywords;
+  }
+
+  if (ogImage) {
+    metadata.openGraph.images = [{ url: ogImage, width: 1200, height: 630, alt: title || SITE_NAME }];
+    metadata.twitter.images = [ogImage];
+  }
+
+  return metadata;
 }

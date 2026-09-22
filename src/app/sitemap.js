@@ -1,7 +1,7 @@
 import { request } from "@/services/request";
 
 export default async function sitemap() {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://mysode.com";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://sode.co.in";
 
   // Static Pages
   const staticPages = [

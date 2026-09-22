@@ -1,7 +1,7 @@
 import { cache } from "react";
 import { request } from "@/services/request";
 import { getAssetPath } from "@/lib/utils";
-import { getPageMetaData } from "@/constants/pageMetaData";
+import { getPageMetaData, constructMetadata } from "@/constants/pageMetaData";
 import UniversityClientView from "@/components/website/UniversityClientView";
 import CourseClientView from "@/components/website/CourseClientView";
 
@@ -95,10 +95,7 @@ export async function generateMetadata({ params }) {
   const slugArray = Array.isArray(rawSlug) ? rawSlug : [rawSlug].filter(Boolean);
 
   if (!slugArray.length) {
-    return {
-      title: "University & Course Details | mysode",
-      description: "Explore top accredited online & distance universities and courses.",
-    };
+    return {};
   }
 
   // 1 segment -> University Page
@@ -110,31 +107,8 @@ export async function generateMetadata({ params }) {
         getPageMetaData(`/universities/${uniSlug}`),
       ]);
 
-      if (!data && !pageMeta) {
-        return {
-          title: "University Not Found | SODE",
-          description: "The requested university page could not be found.",
-        };
-      }
-
       const uni = (data && typeof data.universityId === "object" ? data.universityId : data) || {};
-      const uniName = uni.name || data?.tagline || "University";
-      const title =
-        pageMeta?.metaTitle ||
-        pageMeta?.title ||
-        data?.metaTitle ||
-        `${uniName} - Courses, Fees, Admissions & Ranking | SODE`;
-      const description =
-        pageMeta?.metaDescription ||
-        pageMeta?.description ||
-        data?.metaDescription ||
-        data?.aboutSection?.description?.slice(0, 160) ||
-        `Explore ${uniName} online & distance learning programmes, fee structure, approvals, placement opportunities, and admissions.`;
-      const keywords =
-        pageMeta?.metaKeywords ||
-        pageMeta?.keywords ||
-        data?.metaKeywords ||
-        `${uniName}, ${uniName} admission, ${uniName} online courses, ${uniName} fees`;
+      const uniName = uni.name || data?.tagline || "";
       const rawImage =
         pageMeta?.ogImage ||
         uni.bannerImg?.url ||
@@ -143,36 +117,14 @@ export async function generateMetadata({ params }) {
         data?.heroMedia ||
         uni.image?.url ||
         uni.image;
-      const ogImage = rawImage ? getAssetPath(rawImage) : "https://sode.co.in/og-image.jpg";
-      const canonical =
-        pageMeta?.canonicalUrl || `https://sode.co.in/universities/${data?.slug || uniSlug}`;
 
-      return {
-        title,
-        description,
-        keywords,
-        robots: pageMeta?.robots || (pageMeta?.noIndex ? "noindex, nofollow" : "index, follow"),
-        alternates: { canonical },
-        openGraph: {
-          title: pageMeta?.ogTitle || title,
-          description: pageMeta?.ogDescription || description,
-          url: canonical,
-          siteName: "SODE",
-          images: [{ url: ogImage, width: 1200, height: 630, alt: uniName }],
-          type: "website",
-        },
-        twitter: {
-          card: pageMeta?.twitterCard || "summary_large_image",
-          title: pageMeta?.ogTitle || title,
-          description: pageMeta?.ogDescription || description,
-          images: [ogImage],
-        },
-      };
+      return constructMetadata(pageMeta, {
+        title: uniName,
+        canonicalUrl: `https://sode.co.in/universities/${data?.slug || uniSlug}`,
+        ogImage: rawImage ? getAssetPath(rawImage) : null,
+      });
     } catch (error) {
-      return {
-        title: "University Details | SODE",
-        description: "Explore top accredited online & distance universities.",
-      };
+      return {};
     }
   }
 
@@ -184,54 +136,17 @@ export async function generateMetadata({ params }) {
       getPageMetaData(`/courses/${slugStr}`),
     ]);
 
-    const cleanTitle =
-      course?.name ||
-      (slugStr ? slugStr.replace(/[-/]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) : "Online Course");
-    const uniName = course?.universityName || "Partner University";
-    const displayTitle =
-      pageMeta?.metaTitle ||
-      pageMeta?.title ||
-      `${cleanTitle}${uniName ? ` from ${uniName}` : ""} - Syllabus, Fees & Admission | SODE`;
-    const description =
-      pageMeta?.metaDescription ||
-      pageMeta?.description ||
-      course?.overview?.slice(0, 160) ||
-      `Enroll in ${cleanTitle} from ${uniName}. Check eligibility criteria, fee structure, duration, career scope, and apply online.`;
-    const keywords =
-      pageMeta?.metaKeywords ||
-      pageMeta?.keywords ||
-      `${cleanTitle}, ${cleanTitle} ${uniName}, ${cleanTitle} online fees, ${cleanTitle} syllabus, ${cleanTitle} admission`;
+    const cleanTitle = course?.name || "";
+    const uniName = course?.universityName || "";
     const uniBannerImage = pageMeta?.ogImage || course?.bannerImage || course?.logo || null;
-    const ogImage = uniBannerImage ? getAssetPath(uniBannerImage) : "https://sode.co.in/og-image.jpg";
-    const canonical =
-      pageMeta?.canonicalUrl || `https://sode.co.in/courses/${course?.slug || slugStr}`;
 
-    return {
-      title: displayTitle,
-      description,
-      keywords,
-      robots: pageMeta?.robots || (pageMeta?.noIndex ? "noindex, nofollow" : "index, follow"),
-      alternates: { canonical },
-      openGraph: {
-        title: pageMeta?.ogTitle || displayTitle,
-        description: pageMeta?.ogDescription || description,
-        url: canonical,
-        siteName: "SODE",
-        images: [{ url: ogImage, width: 1200, height: 630, alt: displayTitle }],
-        type: "website",
-      },
-      twitter: {
-        card: pageMeta?.twitterCard || "summary_large_image",
-        title: pageMeta?.ogTitle || displayTitle,
-        description: pageMeta?.ogDescription || description,
-        images: [ogImage],
-      },
-    };
+    return constructMetadata(pageMeta, {
+      title: cleanTitle ? `${cleanTitle}${uniName ? ` from ${uniName}` : ""}` : "",
+      canonicalUrl: `https://sode.co.in/courses/${course?.slug || slugStr}`,
+      ogImage: uniBannerImage ? getAssetPath(uniBannerImage) : null,
+    });
   } catch (error) {
-    return {
-      title: "Course Details | SODE",
-      description: "Explore top accredited online & executive programmes.",
-    };
+    return {};
   }
 }
 

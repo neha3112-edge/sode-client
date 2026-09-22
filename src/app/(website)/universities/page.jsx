@@ -1,25 +1,16 @@
 import React, { Suspense } from "react";
 import { request } from "@/services/request";
+import { getPageMetaData, constructMetadata } from "@/constants/pageMetaData";
 import UniversitiesPageClientView from "@/components/website/UniversitiesPageClientView";
 
 export const revalidate = 900;
 
-export const metadata = {
-  title: "Top Accredited Universities in India | SODE",
-  description:
-    "Explore and compare UGC-DEB approved online & distance learning universities in India. Find degrees, fee structures, NAAC ratings, and placement reports.",
-  alternates: {
-    canonical: "https://mysode.com/universities",
-  },
-  openGraph: {
-    title: "Top Accredited Universities in India | SODE",
-    description:
-      "Explore and compare UGC-DEB approved online & distance learning universities in India.",
-    url: "https://mysode.com/universities",
-    siteName: "SODE",
-    type: "website",
-  },
-};
+export async function generateMetadata() {
+  const pageMeta = await getPageMetaData("/universities");
+  return constructMetadata(pageMeta, {
+    canonicalUrl: "https://sode.co.in/universities",
+  });
+}
 
 export default async function UniversitiesPage() {
   let initialUniversities = [];

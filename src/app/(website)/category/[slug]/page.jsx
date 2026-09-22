@@ -3,28 +3,29 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Container } from "@/components/common/Container";
 import { request } from "@/services/request";
+import { getPageMetaData, constructMetadata } from "@/constants/pageMetaData";
 
 export const revalidate = 60;
 
 // Dynamic Metadata for Category Page
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  const catRes = await request.dynamicRead({
-    entity: "category",
-    endPoint: "website-read",
-    options: { slug },
-    revalidate: 900,
-  });
+  const [catRes, pageMeta] = await Promise.all([
+    request.dynamicRead({
+      entity: "category",
+      endPoint: "website-read",
+      options: { slug },
+      revalidate: 900,
+    }).catch(() => null),
+    getPageMetaData(`/category/${slug}`),
+  ]);
+
   const category = catRes?.result?.category || catRes?.category;
-  if (!category) {
-    return {
-      title: "Category Not Found | SODE",
-    };
-  }
-  return {
-    title: category.title || `${category.name} | SODE`,
-    description: category.description || `Explore ${category.name} certification programs at SODE.`,
-  };
+  return constructMetadata(pageMeta, {
+    title: category?.title || category?.name || "",
+    description: category?.description || "",
+    canonicalUrl: `https://sode.co.in/category/${slug}`,
+  });
 }
 
 export default async function CategoryDetailPage({ params }) {

@@ -2,6 +2,7 @@ import { cache } from "react";
 import { notFound } from "next/navigation";
 import { request } from "@/services/request";
 import { getAssetPath } from "@/lib/utils";
+import { getPageMetaData, constructMetadata } from "@/constants/pageMetaData";
 import CustomPageClientView from "@/components/website/CustomPageClientView";
 import DynamicListingClientView from "@/components/website/DynamicListingClientView";
 
@@ -51,82 +52,28 @@ export async function generateMetadata({ params }) {
   const slug = resolvedParams?.slug;
 
   if (!slug) {
-    return {
-      title: "Page Not Found | SODE",
-    };
+    return {};
   }
 
   try {
-    const resolved = await getPageData(slug);
+    const [resolved, pageMeta] = await Promise.all([
+      getPageData(slug),
+      getPageMetaData(`/${slug}`),
+    ]);
     const page = resolved?.data;
 
-    if (!page || !page.title) {
-      return {
-        title: "Page Not Found | SODE",
-        description: "The requested page could not be found.",
-      };
-    }
+    const rawImage = page?.ogImage || page?.bannerImage || page?.featuredImage;
+    const ogImage = rawImage ? getAssetPath(rawImage) : null;
 
-    const title = page.metaTitle || `${page.title} | SODE`;
-    const description =
-      page.metaDescription ||
-      page.excerpt ||
-      page.subtitle ||
-      page.content?.replace(/<[^>]+>/g, "").slice(0, 160) ||
-      "Explore course details, fee structure, top universities, and admissions guidance at SODE.";
-
-    const keywords =
-      page.metaKeywords ||
-      page.keywords ||
-      `${page.title}, online education, top universities in india, sode`;
-
-    const rawImage = page.ogImage || page.bannerImage || page.featuredImage;
-    const ogImage = rawImage ? getAssetPath(rawImage) : "https://mysode.com/og-image.jpg";
-    const canonical = page.canonicalUrl || `https://mysode.com/${page.slug || slug}`;
-
-    const metadata = {
-      title,
-      description,
-      keywords,
-      alternates: {
-        canonical,
-      },
-      openGraph: {
-        title,
-        description,
-        url: canonical,
-        siteName: "SODE",
-        images: [
-          {
-            url: ogImage,
-            width: 1200,
-            height: 630,
-            alt: page.title,
-          },
-        ],
-        type: "website",
-      },
-      twitter: {
-        card: "summary_large_image",
-        title,
-        description,
-        images: [ogImage],
-      },
-    };
-
-    if (page.noIndex) {
-      metadata.robots = {
-        index: false,
-        follow: false,
-      };
-    }
-
-    return metadata;
+    return constructMetadata(pageMeta, {
+      title: page?.metaTitle || (page?.title ? `${page.title} | SODE` : ""),
+      description: page?.metaDescription || page?.excerpt || page?.subtitle || "",
+      keywords: page?.metaKeywords || page?.keywords || "",
+      canonicalUrl: `https://sode.co.in/${page?.slug || slug}`,
+      ogImage,
+    });
   } catch (error) {
-    return {
-      title: "SODE - School of Online & Distance Education",
-      description: "Explore top accredited online & distance programs.",
-    };
+    return {};
   }
 }
 

@@ -5,33 +5,16 @@ import { getAboutData } from "@/constants/aboutData";
 import { getFaqData } from "@/constants/faqData";
 import { getTestimonialsData } from "@/constants/testimonialsData";
 import { getFooterData } from "@/constants/footerData";
-import { getPageMetaData } from "@/constants/pageMetaData";
+import { getPageMetaData, constructMetadata } from "@/constants/pageMetaData";
 import { request } from "@/services/request";
 
 export const revalidate = 300;
 
 export async function generateMetadata() {
   const pageMeta = await getPageMetaData("/");
-
-  return {
-    title: pageMeta.title,
-    description: pageMeta.description,
-    keywords: pageMeta.keywords,
-    alternates: {
-      canonical: pageMeta.canonicalUrl,
-    },
-    openGraph: {
-      title: pageMeta.ogTitle,
-      description: pageMeta.ogDescription,
-      images: [{ url: pageMeta.ogImage }],
-    },
-    twitter: {
-      card: pageMeta.twitterCard,
-      title: pageMeta.ogTitle,
-      description: pageMeta.ogDescription,
-      images: [pageMeta.ogImage],
-    },
-  };
+  return constructMetadata(pageMeta, {
+    canonicalUrl: "https://sode.co.in/",
+  });
 }
 
 export default async function Home() {

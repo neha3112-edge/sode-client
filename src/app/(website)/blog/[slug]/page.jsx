@@ -1,6 +1,7 @@
 import { cache } from "react";
 import { request } from "@/services/request";
 import { getAssetPath } from "@/lib/utils";
+import { getPageMetaData, constructMetadata } from "@/constants/pageMetaData";
 import BlogClientView from "@/components/website/BlogClientView";
 
 export const revalidate = 900;
@@ -40,68 +41,32 @@ export async function generateMetadata({ params }) {
   const slug = resolvedParams?.slug;
 
   if (!slug) {
-    return {
-      title: "Blog | mysode",
-      description: "Read the latest higher education articles and guides.",
-    };
+    return {};
   }
 
   try {
-    const { initialData: data } = await getBlogPageData(slug);
+    const [{ initialData: data }, pageMeta] = await Promise.all([
+      getBlogPageData(slug),
+      getPageMetaData(`/blog/${slug}`),
+    ]);
     const blog = data?.blogId || data || {};
 
-    if (!blog?.title && !data?.headline) {
-      return {
-        title: "Blog Not Found | mysode",
-        description: "The requested blog post could not be found.",
-      };
-    }
+    const title = data?.headline || blog?.title || "";
+    const description = data?.metaDescription || blog?.excerpt || "";
+    const keywords = data?.metaKeywords || "";
+    const rawImage = data?.bannerImage || blog?.coverImage;
+    const ogImage = rawImage ? getAssetPath(rawImage) : null;
 
-    const title = data.headline || blog.title || "Blog Article | mysode";
-    const description =
-      data.metaDescription ||
-      blog.excerpt ||
-      blog.content?.replace(/<[^>]+>/g, "").slice(0, 160) ||
-      "Read insightful educational guides, degree comparisons, and career roadmap tips.";
-    const keywords = data.metaKeywords || `${blog.title}, higher education blog, online degree guidance`;
-    const rawImage = data.bannerImage || blog.coverImage;
-    const ogImage = rawImage ? getAssetPath(rawImage) : "https://mysode.com/og-image.jpg";
-    const canonical = `https://mysode.com/blog/${blog.slug || slug}`;
-
-    return {
-      title: `${title} | mysode`,
+    return constructMetadata(pageMeta, {
+      title,
       description,
       keywords,
-      alternates: {
-        canonical,
-      },
-      openGraph: {
-        title,
-        description,
-        url: canonical,
-        siteName: "mysode",
-        images: [
-          {
-            url: ogImage,
-            width: 1200,
-            height: 630,
-            alt: title,
-          },
-        ],
-        type: "article",
-      },
-      twitter: {
-        card: "summary_large_image",
-        title,
-        description,
-        images: [ogImage],
-      },
-    };
+      canonicalUrl: `https://sode.co.in/blog/${blog?.slug || slug}`,
+      ogImage,
+      ogType: "article",
+    });
   } catch (error) {
-    return {
-      title: "Blog | mysode",
-      description: "Read the latest higher education articles and guides.",
-    };
+    return {};
   }
 }
 

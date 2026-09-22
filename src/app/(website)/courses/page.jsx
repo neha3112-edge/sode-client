@@ -1,26 +1,17 @@
 import React, { Suspense } from "react";
 import { request } from "@/services/request";
+import { getPageMetaData, constructMetadata } from "@/constants/pageMetaData";
 import CoursesPageClientView from "@/components/website/CoursesPageClientView";
 
 export const revalidate = 0;
 export const dynamic = "force-dynamic";
 
-export const metadata = {
-  title: "Online Degree & Executive Courses | SODE",
-  description:
-    "Explore accredited online MBA, MCA, BBA, BCA, and executive certification courses from top UGC-DEB approved universities in India. Compare syllabus, fees, and apply online.",
-  alternates: {
-    canonical: "https://mysode.com/courses",
-  },
-  openGraph: {
-    title: "Online Degree & Executive Courses | SODE",
-    description:
-      "Explore accredited online MBA, MCA, BBA, BCA, and executive certification courses from top UGC-DEB approved universities.",
-    url: "https://mysode.com/courses",
-    siteName: "SODE",
-    type: "website",
-  },
-};
+export async function generateMetadata() {
+  const pageMeta = await getPageMetaData("/courses");
+  return constructMetadata(pageMeta, {
+    canonicalUrl: "https://sode.co.in/courses",
+  });
+}
 
 export default async function CoursesPage({ searchParams }) {
   const resolvedSearchParams = searchParams ? await searchParams : {};

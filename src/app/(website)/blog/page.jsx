@@ -1,25 +1,16 @@
 import React from "react";
 import { request } from "@/services/request";
+import { getPageMetaData, constructMetadata } from "@/constants/pageMetaData";
 import BlogPageClientView from "@/components/website/BlogPageClientView";
 
 export const revalidate = 900;
 
-export const metadata = {
-  title: "Higher Education Blogs, Guides & Admission Roadmaps | SODE",
-  description:
-    "Explore latest educational articles, online MBA guides, university comparisons, syllabus benchmarks, and career roadmaps on SODE.",
-  alternates: {
-    canonical: "https://mysode.com/blog",
-  },
-  openGraph: {
-    title: "Higher Education Blogs & Guides | SODE",
-    description:
-      "Explore latest educational articles, online MBA guides, university comparisons, and career roadmaps.",
-    url: "https://mysode.com/blog",
-    siteName: "SODE",
-    type: "website",
-  },
-};
+export async function generateMetadata() {
+  const pageMeta = await getPageMetaData("/blog");
+  return constructMetadata(pageMeta, {
+    canonicalUrl: "https://sode.co.in/blog",
+  });
+}
 
 export default async function BlogPage() {
   let initialBlogs = [];
