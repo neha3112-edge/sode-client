@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import Image from "next/image";
 import { Phone, FileText } from "lucide-react";
 import { Button } from "antd";
@@ -20,14 +21,18 @@ export default function LandingNavbar({ brand = {}, onOpenApply, onOpenBrochure 
         {/* Logos: University & Platform */}
         <div className="flex items-center gap-3 sm:gap-5">
           {logo && (
-            <div className="relative h-9 sm:h-11 w-32 sm:w-40">
-              <Image src={logo} alt={name} fill priority className="object-contain object-left" sizes="160px" />
-            </div>
+            <Link href="#hero" className="inline-flex items-center" aria-label={name}>
+              <div className="relative h-9 sm:h-11 w-32 sm:w-40">
+                <Image src={logo} alt={name} fill priority className="object-contain object-left" sizes="160px" />
+              </div>
+            </Link>
           )}
           <div className="h-6 w-px bg-slate-300 hidden sm:block" />
-          <div className="relative h-6 sm:h-8 w-24 sm:w-28 hidden sm:block">
-            <Image src={sodeLogo} alt="SODE" fill priority className="object-contain object-left" sizes="112px" />
-          </div>
+          <Link href="/" className="hidden sm:inline-flex items-center" aria-label="SODE Home">
+            <div className="relative h-6 sm:h-8 w-24 sm:w-28">
+              <Image src={sodeLogo} alt="SODE" fill priority className="object-contain object-left" sizes="112px" />
+            </div>
+          </Link>
         </div>
 
         {/* Action CTAs */}

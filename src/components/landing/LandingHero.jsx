@@ -29,7 +29,7 @@ export default function LandingHero({
       <section id="hero" className="relative py-4 sm:py-6 lg:py-8 overflow-hidden flex items-center">
         {/* Background Campus Image */}
         <div className="absolute inset-0 z-0 pointer-events-none">
-          <Image src={campusImage} alt={name} fill priority className="object-cover object-right md:object-[right_center]" />
+          <Image src={campusImage} alt={name} fill priority sizes="100vw" className="object-cover object-right md:object-[right_center]" />
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">

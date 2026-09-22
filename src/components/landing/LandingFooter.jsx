@@ -19,9 +19,17 @@ export default function LandingFooter({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-5">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="relative h-6 w-24">
-              <Image src={sodeLogo} alt="SODE" fill className="object-contain object-left" sizes="96px" />
-            </div>
+            <Link href="/" className="inline-flex items-center group" aria-label="SODE Home">
+              <div className="relative h-6 w-24">
+                <Image
+                  src={sodeLogo}
+                  alt="SODE - School of Online and Distance Education"
+                  fill
+                  className="object-contain object-left group-hover:opacity-90 transition-opacity"
+                  sizes="96px"
+                />
+              </div>
+            </Link>
             <span className="text-slate-500">|</span>
             <span className="text-slate-300 font-semibold">{universityName} Dedicated Partner Page</span>
           </div>
