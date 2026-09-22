@@ -1149,7 +1149,7 @@ export default function CourseClientView({
                           {/* Curriculum Pills + Subject Box */}
                           <div className="grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-4 items-stretch">
                             {/* Semester Tabs (Span 3) */}
-                            <div className="col-span-12 md:col-span-3 flex flex-col gap-2">
+                            <div className="col-span-12 md:col-span-3 grid grid-cols-2 md:flex md:flex-col gap-2">
                               {specCurriculum.map((sem, sIdx) => {
                                 const isActive = activeSpecSem === sIdx;
                                 return (
@@ -1157,10 +1157,9 @@ export default function CourseClientView({
                                     key={sIdx}
                                     type="button"
                                     onClick={() => setActiveSpecSem(sIdx)}
-                                    style={{ display: "block", width: isActive ? "100%" : "88%" }}
-                                    className={`py-1.5 px-3.5 rounded-full text-xs font-semibold transition-all cursor-pointer border-none ${isActive
-                                      ? "bg-[#0C2B4E] text-white shadow-sm"
-                                      : "bg-[#EEF3FA] text-[#475569] hover:bg-[#dde7f5]"
+                                    className={`w-full py-1.5 px-3 rounded-full text-xs font-semibold transition-all cursor-pointer border-none ${isActive
+                                      ? "bg-[#0C2B4E] text-white shadow-sm md:w-full"
+                                      : "bg-[#EEF3FA] text-[#475569] hover:bg-[#dde7f5] md:w-[88%]"
                                       }`}
                                   >
                                     <span className="flex items-center justify-between w-full">
