@@ -3,9 +3,10 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Plus, Check, ChevronDown, MapPin } from "lucide-react";
+import { Plus, Check, ChevronDown } from "lucide-react";
 import { useCompare } from "@/hooks/useCompare";
 import { useFormModal } from "@/hooks/useFormModal";
+import { getAssetPath } from "@/lib/utils";
 
 export default function CourseAlternativeUniversities({
   processedPrograms,
@@ -32,6 +33,7 @@ export default function CourseAlternativeUniversities({
           const cardTitle = item.cardTitle || item.title || "Course Program";
           const logoUrl = item.logoUrl;
           const providerName = item.providerName || null;
+          const coursesOfferedText = `${item.coursesCount || item.programsCount || 10}+ Programs`;
           const rawHref = item.courseDetailHref || `/courses`;
           const courseDetailHref =
             rawHref.startsWith("/courses/") && rawHref.split("/").length > 3
@@ -55,7 +57,7 @@ export default function CourseAlternativeUniversities({
                 </div>
               )}
 
-              {/* Circular Logo Container */}
+              {/* Circular Logo Container without border */}
               <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-full p-1 flex items-center justify-center bg-white relative my-0.5 shrink-0 overflow-hidden">
                 {logoUrl ? (
                   <Link href={courseDetailHref} className="relative w-full h-full block">
@@ -68,13 +70,16 @@ export default function CourseAlternativeUniversities({
                     />
                   </Link>
                 ) : (
-                  <Link href={courseDetailHref} className="w-full h-full rounded-full bg-blue-50 text-blue-600 font-semibold flex items-center justify-center text-xs uppercase no-underline">
+                  <Link
+                    href={courseDetailHref}
+                    className="w-full h-full rounded-full bg-blue-50 text-blue-600 font-semibold flex items-center justify-center text-xs uppercase no-underline"
+                  >
                     {uName.charAt(0) || "U"}
                   </Link>
                 )}
               </div>
 
-              {/* University Name & Location */}
+              {/* University Name & Courses Count */}
               <div className="w-full space-y-0.5 my-0.5">
                 <div className="min-h-7 sm:min-h-8 flex items-center justify-center">
                   <Link
@@ -84,12 +89,9 @@ export default function CourseAlternativeUniversities({
                     {uName}
                   </Link>
                 </div>
-                {item.location && (
-                  <div className="text-[10px] sm:text-[11px] text-gray-500 font-normal flex items-center justify-center gap-1 shrink-0">
-                    <MapPin size={11} className="text-red-500 shrink-0" />
-                    <span className="line-clamp-1">{item.location}</span>
-                  </div>
-                )}
+                <div className="text-[10px] sm:text-[11px] text-gray-500 font-normal flex items-center justify-center">
+                  <span className="truncate">{item.location || coursesOfferedText}</span>
+                </div>
               </div>
 
               {/* Full-width Add to Compare Pill */}
