@@ -285,7 +285,7 @@ export default function UniversityCoursesSection({
 
                 {/* Top-Left Logo Badge: University Logo */}
                 {uniLogoSrc && (
-                  <div className="absolute top-2.5 left-2.5 sm:top-3.5 sm:left-3.5 z-10 bg-white rounded-lg sm:rounded-xl shadow-md p-1.5 sm:p-2 flex flex-col items-center justify-center text-center border border-gray-100/90 min-w-[60px] sm:min-w-[74px] max-w-[76px] sm:max-w-[90px]">
+                  <div className="absolute top-2.5 left-2.5 sm:top-3.5 sm:left-3.5 z-10 bg-white rounded-lg sm:rounded-xl shadow-md p-1.5 sm:p-2 flex flex-col items-center justify-center text-center min-w-[60px] sm:min-w-[74px] max-w-[76px] sm:max-w-[90px]">
                     <div className="relative w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center">
                       <Image
                         src={uniLogoSrc}

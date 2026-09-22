@@ -140,11 +140,11 @@ export default function CourseSpecializations({
             footer={null}
             width={1150}
             centered
-            className="max-w-[96vw] [&_.ant-modal-content]:rounded-3xl [&_.ant-modal-content]:p-5 sm:[&_.ant-modal-content]:p-6 md:[&_.ant-modal-content]:p-7 [&_.ant-modal-close]:top-4 [&_.ant-modal-close]:right-4"
+            className="max-w-[96vw] [&_.ant-modal-content]:rounded-3xl [&_.ant-modal-content]:p-4 sm:[&_.ant-modal-content]:p-6 md:[&_.ant-modal-content]:p-7 [&_.ant-modal-close]:top-4 [&_.ant-modal-close]:right-4 [&_.ant-modal-content]:max-h-[85vh] [&_.ant-modal-content]:overflow-y-auto [&_.ant-modal-content]:overflow-x-hidden"
           >
             <div className="flex flex-col md:flex-row items-stretch gap-5 sm:gap-6">
               {/* Left Column: Portrait Banner Card */}
-              <div className="relative w-full md:w-85 lg:w-92.5 shrink-0 min-h-80 md:min-h-110 rounded-2xl overflow-hidden bg-slate-900 shadow-xs flex items-stretch">
+              <div className="relative w-full md:w-80 lg:w-88 shrink-0 h-36 sm:h-44 md:h-auto min-h-36 sm:min-h-44 md:min-h-[350px] md:max-h-[460px] rounded-xl sm:rounded-2xl overflow-hidden bg-slate-900 shadow-xs flex items-stretch">
                 {specDesktopBanner && (
                   <Image
                     src={specDesktopBanner}
@@ -168,7 +168,7 @@ export default function CourseSpecializations({
                 )}
 
                 {(specLogo || (universityLogoSrc && !universityName?.toLowerCase().includes("manipal"))) && (
-                  <div className="absolute top-2.5 left-2.5 sm:top-3.5 sm:left-3.5 z-10 bg-white rounded-xl shadow-md p-1.5 sm:p-2.5 flex flex-col items-center justify-center text-center border border-gray-100/90 min-w-[64px] sm:min-w-[74px] max-w-[80px] sm:max-w-[90px]">
+                  <div className="absolute top-2.5 left-2.5 sm:top-3.5 sm:left-3.5 z-10 bg-white rounded-xl shadow-md p-1.5 sm:p-2.5 flex flex-col items-center justify-center text-center min-w-[64px] sm:min-w-[74px] max-w-[80px] sm:max-w-[90px]">
                     <div className="relative w-7 h-7 sm:w-9 sm:h-9 flex items-center justify-center">
                       <Image
                         src={specLogo || universityLogoSrc}

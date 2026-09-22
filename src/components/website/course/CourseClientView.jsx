@@ -257,11 +257,14 @@ export function CourseClientView({
       const rawLogo =
         uni.logo?.url ||
         uni.logo?.path ||
+        (typeof uni.logo === "string" ? uni.logo : null) ||
         uni.logoSrc?.url ||
         uni.logoSrc ||
-        uni.logo ||
+        item.logo?.url ||
+        item.logo?.path ||
+        (typeof item.logo === "string" ? item.logo : null) ||
         item.logoUrl;
-      const logoUrl = getAssetPath(rawLogo, null);
+      const logoUrl = rawLogo ? getAssetPath(rawLogo, null) : null;
 
       let durationText = null;
       if (typeof duration === "string" && duration.trim()) {
@@ -327,6 +330,11 @@ export function CourseClientView({
           : `/courses/${encodeURIComponent(item.slug)}`;
       }
 
+      const uniLocation =
+        uni.city && uni.state
+          ? `${uni.city}, ${uni.state}`
+          : uni.location || uni.city || uni.state || item.location || "";
+
       list.push({
         ...item,
         _uniqueKey: `${item._id || item.slug || cardTitle || "program"}-${index}`,
@@ -335,6 +343,7 @@ export function CourseClientView({
         displayName,
         uniName: uName,
         logoUrl,
+        location: uniLocation,
         providerName,
         durationText,
         feeText,

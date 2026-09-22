@@ -51,7 +51,7 @@ export default function UniversityHero({
 
         {/* University Logo Badge */}
         {logoUrl && (
-          <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 bg-white rounded-xl shadow-md p-1.5 sm:p-2 border border-gray-100 flex items-center justify-center">
+          <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 bg-white rounded-xl shadow-md p-1.5 sm:p-2 flex items-center justify-center">
             <div className="relative w-11 h-11 sm:w-16 sm:h-16">
               <Image
                 src={logoUrl}
