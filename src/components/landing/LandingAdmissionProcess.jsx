@@ -1,65 +1,100 @@
 "use client";
 
 import React from "react";
-import { ArrowRight } from "lucide-react";
-import { Button } from "antd";
+
+const STEP_STYLES = [
+  {
+    themeColor: "#ff7a00",
+    bg: "bg-[#fff8f0]",
+    borderBottom: "border-b-[#ff7a00]",
+  },
+  {
+    themeColor: "#0066cc",
+    bg: "bg-[#f0f7ff]",
+    borderBottom: "border-b-[#0066cc]",
+  },
+  {
+    themeColor: "#ff2a6d",
+    bg: "bg-[#fff0f5]",
+    borderBottom: "border-b-[#ff2a6d]",
+  },
+  {
+    themeColor: "#16a34a",
+    bg: "bg-[#f0faf3]",
+    borderBottom: "border-b-[#16a34a]",
+  },
+  {
+    themeColor: "#8b5cf6",
+    bg: "bg-[#f7f2ff]",
+    borderBottom: "border-b-[#8b5cf6]",
+  },
+  {
+    themeColor: "#ff7a00",
+    bg: "bg-[#fff8f0]",
+    borderBottom: "border-b-[#ff7a00]",
+  },
+];
 
 export default function LandingAdmissionProcess({
   admissionSteps = [],
-  universityName = "University Online",
-  onOpenApply,
+  universityName = "Amity University Online",
 }) {
   if (!admissionSteps || admissionSteps.length === 0) return null;
 
+  // Format heading and clean university name for subtitle
+  const cleanUni = universityName.replace(/\s*Online\s*$/i, "");
+  const headingText = universityName.toLowerCase().includes("course")
+    ? `How to Apply for ${universityName}`
+    : `How to Apply for ${universityName} Courses`;
+
   return (
-    <section id="process" className="py-12 sm:py-16 bg-[#fafbfc] border-t border-slate-200/80">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-2xl sm:text-3xl lg:text-[32px] font-bold text-center text-[#08417b] tracking-tight mb-2 m-0">
-          Admission Process in {universityName}
+    <section id="process" className="py-10 sm:py-14 bg-white w-full">
+      <div className="w-full px-4 sm:px-4">
+        {/* Heading matching screenshot */}
+        <h2 className="text-2xl sm:text-3xl lg:text-[34px] font-bold text-center text-[#08417b] tracking-tight mb-2 sm:mb-2.5 m-0">
+          {headingText}
         </h2>
-        <p className="text-xs sm:text-sm text-center text-slate-600 mb-8 sm:mb-12 max-w-xl mx-auto m-0">
-          Simple, transparent, and completely digital 6-step online admission pathway
+
+        {/* Subtitle matching screenshot */}
+        <p className="text-xs sm:text-[13.5px] text-center text-slate-600 mb-8 sm:mb-10 max-w-3xl mx-auto font-normal leading-relaxed m-0">
+          The admission process for {cleanUni} course admissions is very simple and user-friendly. Here&apos;s a step-by-step guide to enrolling in a degree course at the university :
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
-          {admissionSteps.map((step) => (
-            <div
-              key={step.num}
-              className={`${step.cardBg || "bg-white"} p-4 rounded-xl border ${
-                step.borderColor || "border-slate-200"
-              } ${step.bottomBorder || "border-b-4 border-blue-600"} shadow-2xs flex flex-col justify-between hover:shadow-md transition-shadow`}
-            >
-              <div>
+        {/* 6 Step Cards Grid matching screenshot - Full Screen Width */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+          {admissionSteps.map((step, idx) => {
+            const style = STEP_STYLES[idx % STEP_STYLES.length];
+            const num = step.num || idx + 1;
+            const themeColor = step.themeColor?.includes("#")
+              ? step.themeColor.match(/#[0-9a-fA-F]+/)?.[0] || style.themeColor
+              : style.themeColor;
+            const cardBg = step.cardBg || style.bg;
+
+            return (
+              <div
+                key={num}
+                className={`${cardBg} rounded-2xl border-b-4 ${style.borderBottom} p-3.5 sm:p-4 pt-5 pb-5 sm:pt-6 sm:pb-6 text-center flex flex-col items-center justify-start h-full transition-transform hover:-translate-y-1 shadow-2xs hover:shadow-xs`}
+              >
+                {/* Circular Number Badge */}
                 <div
-                  className={`w-8 h-8 rounded-full border-2 ${
-                    step.borderColor || "border-blue-600"
-                  } flex items-center justify-center font-black text-sm ${
-                    step.themeColor || "text-blue-600"
-                  } mb-3`}
+                  className="w-11 h-11 sm:w-12 sm:h-12 rounded-full border-2 bg-white flex items-center justify-center font-bold text-base sm:text-lg mb-3.5 sm:mb-4 shrink-0 shadow-2xs select-none"
+                  style={{ borderColor: themeColor, color: themeColor }}
                 >
-                  {step.num}
+                  {num}
                 </div>
-                <h3 className="text-sm font-bold text-slate-900 mb-1 leading-snug m-0">
+
+                {/* Step Title */}
+                <h3 className="text-[13px] sm:text-[14px] font-bold text-slate-900 mb-1.5 leading-snug m-0">
                   {step.title}
                 </h3>
-                <p className="text-[11.5px] text-slate-600 leading-normal m-0">
+
+                {/* Step Description */}
+                <p className="text-[11px] sm:text-[11.5px] text-slate-600 leading-relaxed font-normal m-0">
                   {step.desc}
                 </p>
               </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="text-center mt-8">
-          <Button
-            type="primary"
-            size="large"
-            icon={<ArrowRight className="w-4 h-4" />}
-            onClick={() => onOpenApply?.()}
-            className="!bg-[#08417b] hover:!bg-[#063366] !text-white !font-bold !text-xs sm:!text-sm !h-10 !rounded-md !border-none !shadow-sm"
-          >
-            Start Your Application
-          </Button>
+            );
+          })}
         </div>
       </div>
     </section>

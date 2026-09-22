@@ -85,11 +85,11 @@ export default function UniversityLandingView({ data = {} }) {
         <LandingStats stats={stats} />
         <LandingWhyChoose whyChoose={whyChoose} brand={brand} onOpenApply={() => handleOpenApply()} />
         <LandingAdmissionProcess admissionSteps={admissionSteps} universityName={brand.name} onOpenApply={() => handleOpenApply()} />
-        <LandingFaq faqs={faqs} universityName={brand.name} />
+        <LandingFaq faqs={faqs} universityName={brand.name} brand={brand} />
         <LandingFooterForm brand={brand} courses={courses} onOpenDisclaimer={() => handleOpenLegal("disclaimer")} />
         <LandingCompareBanner brand={brand} onOpenCompare={() => setIsCompareOpen(true)} />
       </main>
-      <LandingFooter onOpenDisclaimer={() => handleOpenLegal("disclaimer")} onOpenTerms={() => handleOpenLegal("terms")} onOpenPrivacy={() => handleOpenLegal("privacy")} />
+      <LandingFooter brand={brand} onOpenDisclaimer={() => handleOpenLegal("disclaimer")} onOpenTerms={() => handleOpenLegal("terms")} onOpenPrivacy={() => handleOpenLegal("privacy")} />
       <LandingStickyCtas brand={brand} onOpenApply={() => handleOpenApply()} onOpenBrochure={() => handleOpenBrochure()} onOpenScholarship={() => setIsScholarshipOpen(true)} onOpenCompare={() => setIsCompareOpen(true)} />
       <BrochureModal isOpen={isBrochureOpen} onClose={() => setIsBrochureOpen(false)} universityName={brand.name} courses={courses} selectedCourse={selectedCourse} onOpenDisclaimer={() => handleOpenLegal("disclaimer")} />
       <ScholarshipModal isOpen={isScholarshipOpen} onClose={() => setIsScholarshipOpen(false)} universityName={brand.name} courses={courses} onOpenDisclaimer={() => handleOpenLegal("disclaimer")} />

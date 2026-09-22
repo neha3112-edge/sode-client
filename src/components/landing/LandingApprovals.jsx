@@ -27,7 +27,7 @@ export default function LandingApprovals({ approvals = [] }) {
               {/* Description and Pill Tag */}
               <div className="space-y-1">
                 {item.tag && (
-                  <Tag color="blue" className="!text-[10px] !font-bold !px-1.5 !py-0 !m-0 !rounded-xs">
+                  <Tag color="blue" className="text-[10px] font-bold px-1.5 py-0 m-0 rounded-xs">
                     {item.tag}
                   </Tag>
                 )}

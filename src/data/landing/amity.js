@@ -38,6 +38,8 @@ export const amityData = {
       "MBA | MCA | MCOM | MA | MSC",
       "| BBA | BCA | BCOM | BA",
     ],
+    footerDisclaimer:
+      "SODE Counselling Services LLP act as a marketing agency. All university names, logos, and trademarks mentioned are used for informational purposes only. We are not a university or an admission authority. Users are encouraged to verify information on the official website of the University before making decisions.",
   },
   courses: [
     { value: "MBA", label: "MBA" },

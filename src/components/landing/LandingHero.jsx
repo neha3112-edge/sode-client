@@ -69,7 +69,7 @@ export default function LandingHero({
                   size="large"
                   icon={<Download className="w-3.5 h-3.5" />}
                   onClick={() => onOpenBrochure?.()}
-                  className="!bg-[#08417b] hover:!bg-[#063366] !text-white !font-bold !text-xs sm:!text-sm !h-10 !rounded-md !border-none !shadow-sm"
+                  className="bg-[#08417b] hover:bg-[#063366] text-white font-bold text-xs sm:text-sm h-10 rounded-md border-none shadow-sm"
                 >
                   Download Brochure
                 </Button>

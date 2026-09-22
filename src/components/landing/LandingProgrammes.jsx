@@ -48,7 +48,7 @@ export default function LandingProgrammes({
                 <div className="relative h-44 w-full bg-slate-100 overflow-hidden">
                   <Image src={c.image} alt={c.title} fill className="object-cover group-hover:scale-105 transition-transform duration-300" sizes="(max-width: 768px) 100vw, 33vw" />
                   <div className="absolute top-2.5 right-2.5">
-                    <Tag color="gold" className="!font-bold !text-[11px] !px-2 !py-0.5 !rounded-md !m-0 !shadow-2xs">
+                    <Tag color="gold" className="font-bold text-[11px] px-2 py-0.5 rounded-md m-0 shadow-2xs">
                       {c.level}
                     </Tag>
                   </div>
@@ -63,7 +63,7 @@ export default function LandingProgrammes({
                   size="middle"
                   icon={<Download className="w-3.5 h-3.5" />}
                   onClick={() => onSelectCourseForBrochure?.(c.code || c.title)}
-                  className="!text-xs !font-semibold !rounded-md"
+                  className="text-xs font-semibold rounded-md"
                 >
                   Brochure
                 </Button>
@@ -72,7 +72,7 @@ export default function LandingProgrammes({
                   size="middle"
                   icon={<ArrowRight className="w-3.5 h-3.5" />}
                   onClick={() => onOpenApply?.(c.code || c.title)}
-                  className="!bg-[#ffd200] hover:!bg-[#ffc107] !text-[#08417b] !font-bold !text-xs !rounded-md !border-none"
+                  className="bg-[#ffd200] hover:bg-[#ffc107] text-[#08417b] font-bold text-xs rounded-md border-none"
                 >
                   Apply Now
                 </Button>

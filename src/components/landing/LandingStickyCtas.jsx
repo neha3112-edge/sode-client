@@ -22,7 +22,7 @@ export default function LandingStickyCtas({
           type="primary"
           icon={<Sparkles className="w-4 h-4" />}
           onClick={() => onOpenScholarship?.()}
-          className="!bg-[#e91e63] hover:!bg-[#d81b60] !text-white !font-bold !h-11 !px-5 !rounded-full !shadow-lg !border-none flex items-center gap-2"
+          className="bg-[#e91e63] hover:bg-[#d81b60] text-white font-bold h-11 px-5 rounded-full shadow-lg border-none flex items-center gap-2"
         >
           Check Scholarship
         </Button>
@@ -30,7 +30,7 @@ export default function LandingStickyCtas({
           type="default"
           icon={<Scale className="w-4 h-4" />}
           onClick={() => onOpenCompare?.()}
-          className="!bg-white hover:!bg-slate-50 !text-[#08417b] !font-bold !h-11 !px-5 !rounded-full !shadow-lg !border !border-slate-300 flex items-center gap-2"
+          className="bg-white hover:bg-slate-50 text-[#08417b] font-bold h-11 px-5 rounded-full shadow-lg border border-slate-300 flex items-center gap-2"
           style={{ color: brand.primaryColor || "#08417b" }}
         >
           Compare

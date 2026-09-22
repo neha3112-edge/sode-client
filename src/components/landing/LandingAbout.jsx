@@ -37,7 +37,7 @@ export default function LandingAbout({ about = {}, brand = {}, onOpenApply }) {
                 size="large"
                 icon={<ArrowRight className="w-4 h-4" />}
                 onClick={() => onOpenApply?.()}
-                className="!bg-[#ffd200] hover:!bg-[#ffc107] !text-[#08417b] !font-bold !text-xs sm:!text-sm !h-10 !rounded-md !border-none !shadow-xs"
+                className="bg-[#ffd200] hover:bg-[#ffc107] text-[#08417b] font-bold text-xs sm:text-sm h-10 rounded-md border-none shadow-xs"
               >
                 Know More & Apply
               </Button>

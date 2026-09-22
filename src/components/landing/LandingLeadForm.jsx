@@ -69,30 +69,30 @@ export default function LandingLeadForm({
       </div>
       <div className="p-4 sm:p-5">
         <Form form={form} layout="vertical" onFinish={onFinish} initialValues={{ course: defaultCourse, terms: true }} requiredMark={false} className="space-y-3">
-          <Form.Item name="full_name" rules={[{ required: true, message: "Please enter your name" }]} className="!mb-2.5">
-            <Input size="middle" placeholder="Full Name *" className="!rounded-md" />
+          <Form.Item name="full_name" rules={[{ required: true, message: "Please enter your name" }]} className="mb-2.5">
+            <Input size="middle" placeholder="Full Name *" className="rounded-md" />
           </Form.Item>
-          <Form.Item name="email" rules={[{ required: true, type: "email", message: "Please enter valid email" }]} className="!mb-2.5">
-            <Input size="middle" placeholder="Email Address *" className="!rounded-md" />
+          <Form.Item name="email" rules={[{ required: true, type: "email", message: "Please enter valid email" }]} className="mb-2.5">
+            <Input size="middle" placeholder="Email Address *" className="rounded-md" />
           </Form.Item>
-          <Form.Item name="phone" rules={[{ required: true, pattern: /^[6-9]\d{9}$/, message: "Valid 10-digit number" }]} className="!mb-2.5">
-            <Input size="middle" prefix="+91" placeholder="Mobile Number *" maxLength={10} className="!rounded-md" />
+          <Form.Item name="phone" rules={[{ required: true, pattern: /^[6-9]\d{9}$/, message: "Valid 10-digit number" }]} className="mb-2.5">
+            <Input size="middle" prefix="+91" placeholder="Mobile Number *" maxLength={10} className="rounded-md" />
           </Form.Item>
-          <div className="grid grid-cols-2 gap-2 !mb-2.5">
-            <Form.Item name="course" rules={[{ required: true, message: "Select course" }]} className="!mb-0">
+          <div className="grid grid-cols-2 gap-2 mb-2.5">
+            <Form.Item name="course" rules={[{ required: true, message: "Select course" }]} className="mb-0">
               <Select placeholder="Course *" options={courseList} size="middle" className="w-full" />
             </Form.Item>
-            <Form.Item name="state" rules={[{ required: true, message: "Select state" }]} className="!mb-0">
+            <Form.Item name="state" rules={[{ required: true, message: "Select state" }]} className="mb-0">
               <Select placeholder="State *" options={stateOptions} showSearch size="middle" className="w-full" />
             </Form.Item>
           </div>
-          <Form.Item name="terms" valuePropName="checked" rules={[{ validator: (_, v) => v ? Promise.resolve() : Promise.reject(new Error("Accept terms")) }]} className="!mb-3">
+          <Form.Item name="terms" valuePropName="checked" rules={[{ validator: (_, v) => v ? Promise.resolve() : Promise.reject(new Error("Accept terms")) }]} className="mb-3">
             <Checkbox className="text-[11px] leading-tight text-slate-600">
               I agree to receive admission updates.{" "}
               <button type="button" onClick={() => onOpenDisclaimer?.()} className="text-blue-600 underline cursor-pointer">Disclaimer</button>
             </Checkbox>
           </Form.Item>
-          <Button type="primary" htmlType="submit" loading={loading} block icon={<PhoneCall className="w-3.5 h-3.5" />} className="!bg-[#ffd200] hover:!bg-[#ffc107] !text-[#08417b] !font-bold !h-10 !rounded-md !border-none !shadow-xs text-xs sm:text-sm">
+          <Button type="primary" htmlType="submit" loading={loading} block icon={<PhoneCall className="w-3.5 h-3.5" />} className="bg-[#ffd200] hover:bg-[#ffc107] text-[#08417b] font-bold h-10 rounded-md border-none shadow-xs text-xs sm:text-sm">
             {buttonText}
           </Button>
         </Form>
