@@ -214,6 +214,7 @@ export function UniversityClientView({ initialData, slug }) {
           slug={slug}
           uni={uni}
           logoUrl={logoUrl}
+          heroBannerUrl={heroBannerUrl}
           openFormModal={openFormModal}
         />
 
