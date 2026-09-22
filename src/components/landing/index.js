@@ -1,0 +1,18 @@
+export { default as UniversityLandingView, default } from "./UniversityLandingView";
+export { default as LandingNavbar } from "./LandingNavbar";
+export { default as LandingHero } from "./LandingHero";
+export { default as LandingLeadForm } from "./LandingLeadForm";
+export { default as LandingApprovals } from "./LandingApprovals";
+export { default as LandingProgrammes } from "./LandingProgrammes";
+export { default as LandingAbout } from "./LandingAbout";
+export { default as LandingStats } from "./LandingStats";
+export { default as LandingWhyChoose } from "./LandingWhyChoose";
+export { default as LandingAdmissionProcess } from "./LandingAdmissionProcess";
+export { default as LandingFaq } from "./LandingFaq";
+export { default as LandingFooterForm } from "./LandingFooterForm";
+export { default as LandingFooter } from "./LandingFooter";
+export { default as LandingStickyCtas } from "./LandingStickyCtas";
+export { default as BrochureModal } from "./modals/BrochureModal";
+export { default as ScholarshipModal } from "./modals/ScholarshipModal";
+export { default as CompareModal } from "./modals/CompareModal";
+export { default as LegalModal } from "./modals/LegalModal";
