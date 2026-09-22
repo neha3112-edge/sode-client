@@ -10,7 +10,11 @@ export default function UniversityKeyHighlights({
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-xs border border-gray-200 p-6 sm:p-10 space-y-6">
+    <div
+      id="key-highlights"
+      data-nav-label="Highlights"
+      className="scroll-mt-20 bg-white rounded-2xl shadow-xs border border-gray-200 p-6 sm:p-10 space-y-6"
+    >
       <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight mb-5 text-center">
         {highlightsData.title}
       </h2>

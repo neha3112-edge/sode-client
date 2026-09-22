@@ -6,7 +6,6 @@ import Image from "next/image";
 import { Plus, Check, ChevronDown } from "lucide-react";
 import { useCompare } from "@/hooks/useCompare";
 import { useFormModal } from "@/hooks/useFormModal";
-import { getAssetPath } from "@/lib/utils";
 
 export default function CourseAlternativeUniversities({
   processedPrograms,
@@ -21,7 +20,8 @@ export default function CourseAlternativeUniversities({
   return (
     <div
       id="alternative"
-      className="scroll-mt-16 bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8"
+      data-nav-label="Top Universities"
+      className="scroll-mt-20 bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8"
     >
       <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-6 sm:mb-8 m-0">
         Top Universities Offering {courseData?.name || "Online Courses"}
@@ -44,9 +44,8 @@ export default function CourseAlternativeUniversities({
           return (
             <div
               key={item._uniqueKey || `${cardTitle}-${index}`}
-              className={`bg-gray-50 rounded-xl border border-gray-200 hover:border-blue-400 p-2 sm:p-2.5 hover:shadow-md transition-all flex flex-col items-center justify-between text-center relative group min-w-0 shadow-2xs ${
-                index === 5 && visibleCount === 6 ? "flex lg:hidden" : "flex"
-              }`}
+              className={`bg-gray-50 rounded-xl border border-gray-200 hover:border-blue-400 p-2 sm:p-2.5 hover:shadow-md transition-all flex flex-col items-center justify-between text-center relative group min-w-0 shadow-2xs ${index === 5 && visibleCount === 6 ? "flex lg:hidden" : "flex"
+                }`}
             >
               {/* Top Right Corner Pinned Provider Badge */}
               {Boolean(providerName) && (
@@ -110,11 +109,10 @@ export default function CourseAlternativeUniversities({
                   toggleCompare(targetItem);
                   setIsCompareDrawerOpen(true);
                 }}
-                className={`w-full py-1 px-2 rounded-lg text-[10px] sm:text-[11px] font-semibold transition-all flex items-center justify-center gap-1 border cursor-pointer mt-1 ${
-                  inCmp
+                className={`w-full py-1 px-2 rounded-lg text-[10px] sm:text-[11px] font-semibold transition-all flex items-center justify-center gap-1 border cursor-pointer mt-1 ${inCmp
                     ? "bg-teal-50 text-teal-700 border-teal-600 shadow-2xs"
                     : "bg-white text-[#0a2540] border-gray-200 hover:bg-gray-50 hover:border-gray-300"
-                }`}
+                  }`}
               >
                 {inCmp ? (
                   <>
@@ -176,9 +174,8 @@ export default function CourseAlternativeUniversities({
               {visibleCount >= processedPrograms.length ? "View Less" : "View More"}
             </span>
             <ChevronDown
-              className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                visibleCount >= processedPrograms.length ? "rotate-180" : ""
-              }`}
+              className={`w-3.5 h-3.5 transition-transform duration-200 ${visibleCount >= processedPrograms.length ? "rotate-180" : ""
+                }`}
             />
           </button>
         </div>

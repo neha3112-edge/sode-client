@@ -15,7 +15,8 @@ export default function CourseFaq({
   return (
     <div
       id="faqs"
-      className="scroll-mt-16 bg-white rounded-xl shadow-xs border border-gray-200 p-6 sm:p-8 space-y-6"
+      data-nav-label="FAQs"
+      className="scroll-mt-20 bg-white rounded-xl shadow-xs border border-gray-200 p-6 sm:p-8 space-y-6"
     >
       <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight mb-5 text-center">
         FAQs on {courseData?.name || "Course"} {universityName ? `at ${universityName}` : ""}

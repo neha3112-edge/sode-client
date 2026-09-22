@@ -15,6 +15,7 @@ import UniversityWhyChoose from "./UniversityWhyChoose";
 import UniversitySampleDegree from "./UniversitySampleDegree";
 import UniversityPeerUniversities from "./UniversityPeerUniversities";
 import UniversityFaq from "./UniversityFaq";
+import UniversityStickyNav from "./UniversityStickyNav";
 
 const getSafeText = (val, fallback = "") => {
   if (val === null || val === undefined) return fallback;
@@ -279,7 +280,13 @@ export function UniversityClientView({ initialData, slug }) {
         admissionStatus={uni.admission_status}
       />
 
-      <div className="max-w-6xl mx-auto px-3 sm:px-4 md:px-0 space-y-6 pt-6">
+      {/* Dynamic Sticky Tabs Header */}
+      <UniversityStickyNav containerId="university-content-sections" />
+
+      <div
+        id="university-content-sections"
+        className="max-w-6xl mx-auto px-3 sm:px-4 md:px-0 space-y-6 pt-6"
+      >
         {/* About Section */}
         {uni.description && (
           <UniversityAbout

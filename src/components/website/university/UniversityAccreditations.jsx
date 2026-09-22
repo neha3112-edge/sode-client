@@ -12,7 +12,11 @@ export default function UniversityAccreditations({
   if (!accreditationsList || accreditationsList.length === 0) return null;
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 text-center">
+    <div
+      id="accreditations"
+      data-nav-label="Accreditations"
+      className="scroll-mt-20 bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 text-center"
+    >
       <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight mb-4">
         Rankings & Accreditations of {uniName}
       </h2>

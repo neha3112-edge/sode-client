@@ -9,3 +9,4 @@ export { default as UniversityCoursesSection } from "./UniversityCoursesSection"
 export { default as UniversitySampleDegree } from "./UniversitySampleDegree";
 export { default as UniversityPeerUniversities } from "./UniversityPeerUniversities";
 export { default as UniversityFaq } from "./UniversityFaq";
+export { default as UniversityStickyNav } from "./UniversityStickyNav";

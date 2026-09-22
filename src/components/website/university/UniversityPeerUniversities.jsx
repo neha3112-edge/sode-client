@@ -17,7 +17,11 @@ export default function UniversityPeerUniversities({
   if (!topUniversities || topUniversities.length === 0) return null;
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8">
+    <div
+      id="peer-universities"
+      data-nav-label="Peer Universities"
+      className="scroll-mt-20 bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8"
+    >
       <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-6 sm:mb-8 m-0">
         Compare with Peer Universities
       </h2>

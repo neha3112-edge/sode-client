@@ -31,7 +31,11 @@ export default function UniversityCoursesSection({
   if (!coursesList || coursesList.length === 0) return null;
 
   return (
-    <div id="university-courses-section" className="bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8 scroll-mt-20">
+    <div
+      id="university-courses-section"
+      data-nav-label="Courses"
+      className="bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8 scroll-mt-20"
+    >
       <div className="flex flex-col items-center justify-center mb-3 sm:mb-5">
         <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight text-center m-0">
           {uniName} Courses

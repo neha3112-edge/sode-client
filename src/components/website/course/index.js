@@ -10,3 +10,4 @@ export { default as CourseApprovals } from "./CourseApprovals";
 export { default as CourseSpecializations } from "./CourseSpecializations";
 export { default as CourseAlternativeUniversities } from "./CourseAlternativeUniversities";
 export { default as CourseFaq } from "./CourseFaq";
+export { default as CourseStickyNav } from "./CourseStickyNav";

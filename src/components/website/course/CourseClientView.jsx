@@ -14,6 +14,7 @@ import CourseApprovals from "./CourseApprovals";
 import CourseSpecializations from "./CourseSpecializations";
 import CourseAlternativeUniversities from "./CourseAlternativeUniversities";
 import CourseFaq from "./CourseFaq";
+import CourseStickyNav from "./CourseStickyNav";
 
 export function CourseClientView({
   initialData = null,
@@ -386,6 +387,45 @@ export function CourseClientView({
     [displayCourseTitle, courseData?.fullName]
   );
 
+  const availableSections = useMemo(() => {
+    const list = [];
+    if (courseData?.overview || courseData?.description) {
+      list.push({ id: "about", label: "Overview" });
+    }
+    if (highlightsList && highlightsList.length > 0) {
+      list.push({ id: "key-highlights", label: "Highlights" });
+    }
+    if (activeLedgerData) {
+      list.push({ id: "fee-structure", label: "Fee Structure" });
+    }
+    if (curriculumList && curriculumList.length > 0) {
+      list.push({ id: "syllabus", label: "Syllabus" });
+    }
+    if (approvalsList && approvalsList.length > 0) {
+      list.push({ id: "approvals", label: "Accreditations" });
+    }
+    if (specializations && specializations.length > 0) {
+      list.push({ id: "admission", label: "Specialisations" });
+    }
+    if (processedPrograms && processedPrograms.length > 0) {
+      list.push({ id: "alternative", label: "Top Universities" });
+    }
+    if (faqList && faqList.length > 0) {
+      list.push({ id: "faqs", label: "FAQs" });
+    }
+    return list;
+  }, [
+    courseData?.overview,
+    courseData?.description,
+    highlightsList,
+    activeLedgerData,
+    curriculumList,
+    approvalsList,
+    specializations,
+    processedPrograms,
+    faqList,
+  ]);
+
   return (
     <div className="min-h-screen bg-gray-100 text-gray-800 antialiased font-sans pb-16">
       {/* Top Hero and Quick Facts */}
@@ -407,8 +447,17 @@ export function CourseClientView({
         />
       </div>
 
+      {/* Auto Sticky Tabs Header based on present sections */}
+      <CourseStickyNav
+        sections={availableSections}
+        courseName={displayCourseTitle}
+      />
+
       {/* Main Content Area Sections */}
-      <div className="space-y-6 max-w-6xl mx-auto px-3 sm:px-4 md:px-0">
+      <div
+        id="course-content-sections"
+        className="space-y-6 max-w-6xl mx-auto px-3 sm:px-4 md:px-0"
+      >
         {/* 1. About / Course Overview */}
         <CourseAbout courseData={courseData} />
 

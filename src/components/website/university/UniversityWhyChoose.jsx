@@ -15,7 +15,8 @@ export default function UniversityWhyChoose({
   return (
     <div
       id="why-choose-us"
-      className="bg-white rounded-xl shadow-xs border border-gray-200 p-6 sm:p-8 space-y-6"
+      data-nav-label="Why Choose Us"
+      className="scroll-mt-20 bg-white rounded-xl shadow-xs border border-gray-200 p-6 sm:p-8 space-y-6"
     >
       <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight mb-7 text-center">
         {whyChooseSection.title || `Why Choose ${uniName}`}

@@ -14,7 +14,8 @@ export default function CourseAbout({
   return (
     <div
       id="about"
-      className="scroll-mt-16 bg-white rounded-2xl shadow-xs border border-gray-200 p-6 sm:p-10 space-y-4 text-center"
+      data-nav-label="Overview"
+      className="scroll-mt-20 bg-white rounded-2xl shadow-xs border border-gray-200 p-6 sm:p-10 space-y-4 text-center"
     >
       <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight m-0 text-center">
         {title}

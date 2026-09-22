@@ -12,7 +12,8 @@ export default function CourseKeyHighlights({
   return (
     <div
       id="key-highlights"
-      className="scroll-mt-16 bg-white rounded-2xl shadow-xs border border-gray-200 p-6 sm:p-10 space-y-6"
+      data-nav-label="Highlights"
+      className="scroll-mt-20 bg-white rounded-2xl shadow-xs border border-gray-200 p-6 sm:p-10 space-y-6"
     >
       <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight mb-5 text-center">
         Key Highlights of {courseData?.name || "Course"} {universityName ? `at ${universityName} ` : ""}2026

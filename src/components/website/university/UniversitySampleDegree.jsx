@@ -18,7 +18,11 @@ export default function UniversitySampleDegree({
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-xs border border-gray-100 p-6 sm:p-10">
+    <div
+      id="sample-degree"
+      data-nav-label="Sample Degree"
+      className="scroll-mt-20 bg-white rounded-2xl shadow-xs border border-gray-100 p-6 sm:p-10"
+    >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center max-w-5xl mx-auto">
         <div className="lg:col-span-6 flex justify-center w-full">
           {sampleDegreeData.imageUrl ? (
