@@ -3,8 +3,7 @@ import { notFound } from "next/navigation";
 import { request } from "@/services/request";
 import { getAssetPath } from "@/lib/utils";
 import { getPageMetaData, constructMetadata } from "@/constants/pageMetaData";
-import CustomPageClientView from "@/components/website/CustomPageClientView";
-import DynamicListingClientView from "@/components/website/DynamicListingClientView";
+import { CustomPageClientView, DynamicListingClientView } from "@/components/website";
 
 export const revalidate = 600;
 

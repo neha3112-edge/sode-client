@@ -2,7 +2,7 @@ import { cache } from "react";
 import { request } from "@/services/request";
 import { getAssetPath } from "@/lib/utils";
 import { getPageMetaData, constructMetadata } from "@/constants/pageMetaData";
-import BlogClientView from "@/components/website/BlogClientView";
+import { BlogClientView } from "@/components/website";
 
 export const revalidate = 900;
 

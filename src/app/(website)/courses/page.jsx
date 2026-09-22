@@ -1,7 +1,7 @@
 import React, { Suspense } from "react";
 import { request } from "@/services/request";
 import { getPageMetaData, constructMetadata } from "@/constants/pageMetaData";
-import CoursesPageClientView from "@/components/website/CoursesPageClientView";
+import { CoursesPageClientView } from "@/components/website";
 
 export const revalidate = 0;
 export const dynamic = "force-dynamic";

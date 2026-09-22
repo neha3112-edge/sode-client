@@ -1,7 +1,5 @@
 import React from "react";
-import { Header } from "@/components/website/Header";
-import { Footer } from "@/components/website/Footer";
-import MobileBottomNav from "@/components/website/MobileBottomNav";
+import { Header, Footer, MobileBottomNav } from "@/components/website";
 import GlobalBreadcrumb from "@/components/common/GlobalBreadcrumb";
 import { request } from "@/services/request";
 

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import Script from "next/script";
+import confetti from "canvas-confetti";
 import { Headphones, Home, Mail, CheckCircle2 } from "lucide-react";
 import { getAssetPath } from "@/lib/utils";
 
@@ -42,6 +43,21 @@ export default function ThankYouClient({
     try { return sessionStorage.getItem("isBrochureFlow") === "true"; } catch (e) { return false; }
   });
   const isClientReady = useSyncExternalStore(() => () => {}, () => true, () => false);
+
+  /* Trigger celebratory confetti on client mount */
+  useEffect(() => {
+    if (!isClientReady) return;
+    try {
+      confetti({
+        particleCount: 80,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ["#1C3569", "#FFC107", "#22C55E", "#3B82F6"],
+      });
+    } catch {
+      // Safe fallback if canvas is not supported
+    }
+  }, [isClientReady]);
 
   /* =========================================================
      GOOGLE ADS CONVERSION TRACKING

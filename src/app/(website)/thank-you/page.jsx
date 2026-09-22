@@ -1,4 +1,4 @@
-import ThankYouClient from "@/components/website/ThankYouClient";
+import { ThankYouClient } from "@/components/website";
 
 /* =========================================================
    NEXT.JS METADATA

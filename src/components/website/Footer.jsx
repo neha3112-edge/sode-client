@@ -7,20 +7,11 @@ import DynamicLegalModal from "@/components/common/legal/DynamicLegalModal";
 import { useFormModal } from "@/hooks/useFormModal";
 import { getAssetPath } from "@/lib/utils";
 
-import {
-  UNIVERSITIES as defaultUniversities,
-  PROGRAMS as defaultPrograms,
-} from "@/constants/footerData";
-
 export function Footer({
-  initialUniversities = defaultUniversities,
-  initialPrograms = defaultPrograms,
   initialHeaderData = null,
   initialFooterData = null,
   initialLegalPolicies = [],
 }) {
-  const UNIVERSITIES = initialUniversities || defaultUniversities;
-  const PROGRAMS = initialPrograms || defaultPrograms;
   const { openFormModal } = useFormModal();
 
   // 1. Resolve Data from Props
