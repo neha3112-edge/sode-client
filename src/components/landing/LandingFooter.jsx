@@ -5,58 +5,52 @@ import Link from "next/link";
 import Image from "next/image";
 
 export default function LandingFooter({
-  brand = {},
   onOpenDisclaimer,
   onOpenTerms,
   onOpenPrivacy,
-  onOpenCompare,
 }) {
-  const universityName = brand.name || "University Online";
-  const sodeLogo = brand.sodeLogo || "/assets/images/sode_logo_official.webp";
-
   return (
-    <footer className="bg-slate-950 text-slate-400 py-8 border-t border-slate-800 text-xs">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-5">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Link href="/" className="inline-flex items-center group" aria-label="SODE Home">
-              <div className="relative h-6 w-24">
-                <Image
-                  src={sodeLogo}
-                  alt="SODE - School of Online and Distance Education"
-                  fill
-                  className="object-contain object-left group-hover:opacity-90 transition-opacity"
-                  sizes="96px"
-                />
-              </div>
-            </Link>
-            <span className="text-slate-500">|</span>
-            <span className="text-slate-300 font-semibold">{universityName} Dedicated Partner Page</span>
-          </div>
-
-          <div className="flex items-center gap-4 text-[11px] text-slate-400 flex-wrap justify-center">
-            <button type="button" onClick={() => onOpenDisclaimer?.()} className="hover:text-amber-400 underline cursor-pointer">
-              Disclaimer
-            </button>
-            <button type="button" onClick={() => onOpenTerms?.()} className="hover:text-amber-400 underline cursor-pointer">
-              Terms & Conditions
-            </button>
-            <button type="button" onClick={() => onOpenPrivacy?.()} className="hover:text-amber-400 underline cursor-pointer">
-              Privacy Policy
-            </button>
-            <button type="button" onClick={() => onOpenCompare?.()} className="hover:text-amber-400 underline cursor-pointer">
-              Compare Universities
-            </button>
-          </div>
+    <footer className="bg-white text-slate-600 pt-10 border-t border-slate-200 text-xs">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
+        {/* Big Official Logo */}
+        <div className="flex justify-center">
+          <Link href="/" className="inline-block" aria-label="Distance Education School / SODE">
+            <div className="relative w-64 sm:w-80 h-16 sm:h-20">
+              <Image
+                src="/assets/images/sode_full_logo.webp"
+                alt="Distance Education School - School of Online & Distance Education"
+                fill
+                className="object-contain"
+                sizes="(max-width: 640px) 256px, 320px"
+              />
+            </div>
+          </Link>
         </div>
 
-        <p className="text-[11px] text-slate-500 leading-relaxed text-center sm:text-left m-0">
-          Disclaimer: SODE is an authorized information and counseling platform providing guidance to students. All university names, logos, degrees, and trademarks belong to their respective institutions. Fee structures, syllabus, and examination schedules are subject to university revisions.
+        {/* Agency Disclaimer Text */}
+        <p className="text-[11px] sm:text-xs text-slate-500 leading-relaxed max-w-3xl mx-auto m-0">
+          SODE Counselling Services LLP acts as a marketing agency. All university names, logos, and trademarks mentioned are used for informational purposes only. We are not a university or an admission authority. Users are encouraged to verify information on the official website of the University before making decisions.
         </p>
 
-        <div className="text-[11px] text-slate-600 text-center sm:text-left pt-2 border-t border-slate-900">
-          © {new Date().getFullYear()} SODE & {universityName}. All Rights Reserved.
+        {/* Policy Links */}
+        <div className="flex items-center justify-center gap-3 text-[11px] text-slate-600 pb-4">
+          <button type="button" onClick={() => onOpenDisclaimer?.()} className="hover:text-blue-600 underline cursor-pointer">
+            Disclaimer
+          </button>
+          <span>|</span>
+          <button type="button" onClick={() => onOpenTerms?.()} className="hover:text-blue-600 underline cursor-pointer">
+            Terms & Conditions
+          </button>
+          <span>|</span>
+          <button type="button" onClick={() => onOpenPrivacy?.()} className="hover:text-blue-600 underline cursor-pointer">
+            Privacy Policy
+          </button>
         </div>
+      </div>
+
+      {/* Dark Bottom Bar */}
+      <div className="bg-[#082b4e] text-white/90 text-center py-2.5 px-4 text-[11px] font-normal">
+        © {new Date().getFullYear()} SODE Counselling Services LLP
       </div>
     </footer>
   );

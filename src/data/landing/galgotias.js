@@ -28,6 +28,8 @@ export const galgotiasData = {
     buildingAboutImage: "/assets/images/amity_building_about.png",
     whyChooseStudentImage: "/assets/images/why_choose_student.png",
     primaryColor: "#003366",
+    themeBg: "bg-[#003366]",
+    themeBorder: "border-[#003366]",
     accentColor: "#ffd200",
     goldColor: "#ffc107",
     badgeText: "Admission Open Jan 2026",

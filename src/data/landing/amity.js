@@ -29,6 +29,8 @@ export const amityData = {
     buildingAboutImage: "/assets/images/amity_building_about.png",
     whyChooseStudentImage: "/assets/images/why_choose_student.png",
     primaryColor: "#08417b",
+    themeBg: "bg-[#08417b]",
+    themeBorder: "border-[#08417b]",
     accentColor: "#ffd200",
     goldColor: "#ffc107",
     badgeText: "Admission Open Jan 2026",

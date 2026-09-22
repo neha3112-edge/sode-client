@@ -28,6 +28,8 @@ export const cuData = {
     buildingAboutImage: "/assets/images/amity_building_about.png",
     whyChooseStudentImage: "/assets/images/why_choose_student.png",
     primaryColor: "#c0392b",
+    themeBg: "bg-[#c0392b]",
+    themeBorder: "border-[#c0392b]",
     accentColor: "#ffd200",
     goldColor: "#ffc107",
     badgeText: "Admissions Open Jan 2026",

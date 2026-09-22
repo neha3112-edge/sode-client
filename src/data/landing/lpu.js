@@ -29,6 +29,8 @@ export const lpuData = {
     buildingAboutImage: "/assets/images/amity_building_about.png",
     whyChooseStudentImage: "/assets/images/why_choose_student.png",
     primaryColor: "#E05A2B",
+    themeBg: "bg-[#E05A2B]",
+    themeBorder: "border-[#E05A2B]",
     accentColor: "#ffd200",
     goldColor: "#ffc107",
     badgeText: "Admissions Open 2026",

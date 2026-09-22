@@ -10,6 +10,7 @@ export { default as LandingWhyChoose } from "./LandingWhyChoose";
 export { default as LandingAdmissionProcess } from "./LandingAdmissionProcess";
 export { default as LandingFaq } from "./LandingFaq";
 export { default as LandingFooterForm } from "./LandingFooterForm";
+export { default as LandingCompareBanner } from "./LandingCompareBanner";
 export { default as LandingFooter } from "./LandingFooter";
 export { default as LandingStickyCtas } from "./LandingStickyCtas";
 export { default as BrochureModal } from "./modals/BrochureModal";
