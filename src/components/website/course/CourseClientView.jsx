@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import { useFormModal } from "@/hooks/useFormModal";
-import { getAssetPath } from "@/lib/utils";
+import { getAssetPath, formatAdmissionDeadline } from "@/lib/utils";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
 import CourseHero from "./CourseHero";
 import CourseQuickFacts from "./CourseQuickFacts";
@@ -183,7 +183,7 @@ export function CourseClientView({
     if (courseData?.duration) list.push({ label: "Duration", value: courseData.duration });
     list.push({ label: "Mode of Study", value: "Online" });
     if (approvalsSummary) list.push({ label: "Ranking & Approvals", value: approvalsSummary });
-    if (courseData?.admissionDeadline) list.push({ label: "Admission Deadline", value: courseData.admissionDeadline });
+    if (courseData?.admissionDeadline) list.push({ label: "Admission Deadline", value: formatAdmissionDeadline(courseData.admissionDeadline) });
     return list;
   }, [courseData, universityName, approvalsSummary]);
 
@@ -405,10 +405,10 @@ export function CourseClientView({
       list.push({ id: "approvals", label: "Accreditations" });
     }
     if (specializations && specializations.length > 0) {
-      list.push({ id: "admission", label: "Specialisations" });
+      list.push({ id: "specializations", label: "Specialisations" });
     }
     if (processedPrograms && processedPrograms.length > 0) {
-      list.push({ id: "alternative", label: "Top Universities" });
+      list.push({ id: "alternative", label: "Alternative Universities" });
     }
     if (faqList && faqList.length > 0) {
       list.push({ id: "faqs", label: "FAQs" });

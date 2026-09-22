@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Rate } from "antd";
 import { Download, BadgeCheck, GraduationCap } from "lucide-react";
 import { FaBuilding, FaCalendar, FaMapMarkerAlt } from "react-icons/fa";
-import { getAssetPath } from "@/lib/utils";
+import { getAssetPath, formatAdmissionDeadline } from "@/lib/utils";
 
 export default function UniversityHero({
   uniName,
@@ -293,7 +293,7 @@ export default function UniversityHero({
                       Admission deadline
                     </span>
                     <span className="text-xs sm:text-sm font-bold text-gray-900 block leading-tight truncate">
-                      {admissionDeadline}
+                      {formatAdmissionDeadline(admissionDeadline)}
                     </span>
                   </>
                 ) : (

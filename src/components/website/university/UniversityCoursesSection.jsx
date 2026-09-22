@@ -7,7 +7,7 @@ import { Modal } from "antd";
 import { Clock, Plus, Check, ChevronDown, Download, Briefcase, GraduationCap, Award, BookOpen, Database, UserCog, ShoppingCart, CheckCircle2 } from "lucide-react";
 import { FaCalendar, FaClock } from "react-icons/fa";
 import { useCompare } from "@/hooks/useCompare";
-import { getAssetPath } from "@/lib/utils";
+import { getAssetPath, formatAdmissionDeadline } from "@/lib/utils";
 
 const SPEC_ICONS = [Briefcase, BookOpen, GraduationCap, Award, Database, UserCog, ShoppingCart];
 
@@ -247,7 +247,7 @@ export default function UniversityCoursesSection({
         const modalFeeText = rawFee ? (String(rawFee).trim().startsWith("₹") ? rawFee : `₹ ${rawFee}`) : "";
 
         const cDuration = selectedCourseSpec.duration || "";
-        const itemDeadline = selectedCourseSpec.admissionDeadline || uni?.admissionDeadline || uni?.admission_deadline || "";
+        const itemDeadline = formatAdmissionDeadline(selectedCourseSpec.admissionDeadline || uni?.admissionDeadline || uni?.admission_deadline || "");
         const itemDesc = selectedCourseSpec.description?.trim() || selectedCourseSpec.overview?.trim() || selectedCourseSpec.desc?.trim() || (cTitle ? `This Program focuses on ${cTitle}, covering specialized concepts and practical applications. Learners build analysis and professional problem-solving through degree study, preparing for relevant professional and industry roles and supporting confident professional growth.` : "");
 
         const specializationsList = Array.isArray(selectedCourseSpec.subcourses) && selectedCourseSpec.subcourses.length > 0

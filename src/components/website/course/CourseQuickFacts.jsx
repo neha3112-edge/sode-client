@@ -3,6 +3,7 @@
 import React from "react";
 import { BadgeCheck, User } from "lucide-react";
 import { FaBuilding, FaCalendar, FaMapMarkerAlt } from "react-icons/fa";
+import { formatAdmissionDeadline } from "@/lib/utils";
 
 export default function CourseQuickFacts({
   courseData,
@@ -67,7 +68,7 @@ export default function CourseQuickFacts({
                   Admission deadline
                 </span>
                 <span className="text-xs sm:text-sm font-bold text-gray-900 block leading-tight truncate">
-                  {courseData.admissionDeadline}
+                  {formatAdmissionDeadline(courseData.admissionDeadline)}
                 </span>
               </>
             ) : (

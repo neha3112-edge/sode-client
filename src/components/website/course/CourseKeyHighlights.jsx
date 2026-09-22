@@ -1,6 +1,66 @@
 "use client";
 
 import React from "react";
+import { formatAdmissionDeadline } from "@/lib/utils";
+
+function renderHighlightValue(val, label = "") {
+  if (typeof val !== "string") return val;
+
+  const lblLower = (label || "").toLowerCase();
+  if (lblLower.includes("deadline") || lblLower.includes("admission")) {
+    val = formatAdmissionDeadline(val);
+  }
+
+  // Check if string contains "Read More" or "..."
+  if (val.includes("Read More") || val.includes("...")) {
+    const parts = val.split(/(?:Read More|\.\.\.)/g);
+    return (
+      <span>
+        {parts.map((part, i) => (
+          <React.Fragment key={i}>
+            {part}
+            {i < parts.length - 1 && (
+              <a
+                href="#specializations"
+                onClick={(e) => {
+                  e.preventDefault();
+                  const target =
+                    document.getElementById("specializations") ||
+                    document.getElementById("admission");
+                  if (target) {
+                    const navHeight = 60;
+                    const rect = target.getBoundingClientRect();
+                    const scrollTop =
+                      window.pageYOffset || document.documentElement.scrollTop;
+                    window.scrollTo({
+                      top: Math.max(0, rect.top + scrollTop - navHeight - 16),
+                      behavior: "smooth",
+                    });
+                  }
+                }}
+                className="text-[#0077B6] hover:text-[#0C2B4E] font-semibold underline underline-offset-2 ml-1 cursor-pointer transition-colors inline-block"
+              >
+                Read More
+              </a>
+            )}
+          </React.Fragment>
+        ))}
+      </span>
+    );
+  }
+
+  // If contains HTML tags
+  if (/<[a-z][\s\S]*>/i.test(val)) {
+    return (
+      <span
+        dangerouslySetInnerHTML={{ __html: val }}
+        className="[&_a]:text-[#0077B6] [&_a]:hover:text-[#0C2B4E] [&_a]:font-semibold [&_a]:underline [&_a]:underline-offset-2"
+      />
+    );
+  }
+
+  return val;
+}
 
 export default function CourseKeyHighlights({
   courseData,
@@ -40,7 +100,7 @@ export default function CourseKeyHighlights({
                     {row.label}
                   </td>
                   <td className="py-2.5 px-4 sm:px-6 text-gray-800 font-normal">
-                    {row.value}
+                    {renderHighlightValue(row.value, row.label)}
                   </td>
                 </tr>
               ))}
@@ -51,3 +111,4 @@ export default function CourseKeyHighlights({
     </div>
   );
 }
+

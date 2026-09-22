@@ -20,11 +20,11 @@ export default function CourseAlternativeUniversities({
   return (
     <div
       id="alternative"
-      data-nav-label="Top Universities"
+      data-nav-label="Alternative Universities"
       className="scroll-mt-20 bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8"
     >
       <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-6 sm:mb-8 m-0">
-        Top Universities Offering {courseData?.name || "Online Courses"}
+        Top Alternative Universities Offering {courseData?.name || "Online Courses"}
       </h2>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
