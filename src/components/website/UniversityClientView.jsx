@@ -715,7 +715,7 @@ export default function UniversityClientView({ initialData, slug }) {
                       </div>
                     )}
 
-                    <div className="w-12 h-12 sm:w-15 sm:h-15 rounded-full p-1 flex items-center justify-center relative mt-2.5 sm:mt-3 mb-1.5 sm:mb-2 shrink-0">
+                    <div className="w-11 h-11 sm:w-11 sm:h-11 rounded-full p-1 flex items-center justify-center relative mt-2.5 sm:mt-3 mb-1.5 sm:mb-2 shrink-0">
                       {displayCourseLogo ? (
                         <Link href={courseDetailHref} className="relative w-full h-full block">
                           <Image
@@ -723,7 +723,7 @@ export default function UniversityClientView({ initialData, slug }) {
                             alt={cardTitle || uniName}
                             fill
                             sizes="(max-width: 768px) 48px, 60px"
-                            className="object-contain p-0.5 transition-transform group-hover:scale-105"
+                            className="object-contain transition-transform group-hover:scale-105"
                           />
                         </Link>
                       ) : (
@@ -843,11 +843,10 @@ export default function UniversityClientView({ initialData, slug }) {
                     {visibleCoursesCount >= filteredCourses.length ? "View Less" : "View More"}
                   </span>
                   <ChevronDown
-                    className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                      visibleCoursesCount >= filteredCourses.length
-                        ? "rotate-180"
-                        : "group-hover:translate-y-0.5"
-                    }`}
+                    className={`w-3.5 h-3.5 transition-transform duration-200 ${visibleCoursesCount >= filteredCourses.length
+                      ? "rotate-180"
+                      : "group-hover:translate-y-0.5"
+                      }`}
                   />
                 </button>
               </div>
@@ -1108,9 +1107,8 @@ export default function UniversityClientView({ initialData, slug }) {
                     {visibleTopUnis >= topPeerUniversities.length ? "View Less" : "View More"}
                   </span>
                   <ChevronDown
-                    className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                      visibleTopUnis >= topPeerUniversities.length ? "rotate-180" : "group-hover:translate-y-0.5"
-                    }`}
+                    className={`w-3.5 h-3.5 transition-transform duration-200 ${visibleTopUnis >= topPeerUniversities.length ? "rotate-180" : "group-hover:translate-y-0.5"
+                      }`}
                   />
                 </button>
               </div>
@@ -1192,7 +1190,7 @@ export default function UniversityClientView({ initialData, slug }) {
           const cTitle = selectedCourseSpec.title || selectedCourseSpec.name || "Course";
           const semFee = typeof selectedCourseSpec.fees === "object"
             ? selectedCourseSpec.fees?.formattedSemesterFees ||
-              (selectedCourseSpec.fees?.semesterFees ? `₹ ${Number(selectedCourseSpec.fees.semesterFees).toLocaleString("en-IN")} / Semester` : null)
+            (selectedCourseSpec.fees?.semesterFees ? `₹ ${Number(selectedCourseSpec.fees.semesterFees).toLocaleString("en-IN")} / Semester` : null)
             : null;
           const fullFee = typeof selectedCourseSpec.fees === "string"
             ? selectedCourseSpec.fees
