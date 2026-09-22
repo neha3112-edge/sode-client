@@ -1081,7 +1081,7 @@ function ApprovalDirectoryTable({
 }
 
 // ── Main Export Client Component ──
-export default function DynamicListingClientView({ page, slug }) {
+export function DynamicListingClientView({ page, slug }) {
   useBreadcrumb([
     { label: "Home", href: "/" },
     { label: page?.categoryMenu || "Top 10 Universities", href: "/universities" },
@@ -1363,3 +1363,5 @@ export default function DynamicListingClientView({ page, slug }) {
     </main>
   );
 }
+
+export default DynamicListingClientView;

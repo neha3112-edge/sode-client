@@ -1,1 +1,1 @@
-export { DynamicListingClientView, default } from "./DynamicListingClientView";
+export { default as DynamicListingClientView, default } from "./DynamicListingClientView";

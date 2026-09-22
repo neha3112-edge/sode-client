@@ -1,4 +1,4 @@
-export { CourseClientView, default } from "./CourseClientView";
+export { default as CourseClientView, default } from "./CourseClientView";
 export { default as CoursesPageClientView } from "./CoursesPageClientView";
 export { default as CourseHero } from "./CourseHero";
 export { default as CourseKeyHighlights } from "./CourseKeyHighlights";

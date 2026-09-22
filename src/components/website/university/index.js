@@ -1,4 +1,4 @@
-export { UniversityClientView, default } from "./UniversityClientView";
+export { default as UniversityClientView, default } from "./UniversityClientView";
 export { default as UniversitiesPageClientView } from "./UniversitiesPageClientView";
 export { default as UniversityHero } from "./UniversityHero";
 export { default as UniversityKeyHighlights } from "./UniversityKeyHighlights";
