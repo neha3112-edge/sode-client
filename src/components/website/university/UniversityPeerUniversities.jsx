@@ -18,12 +18,12 @@ export default function UniversityPeerUniversities({
 
   return (
     <div
-      id="peer-universities"
-      data-nav-label="Peer Universities"
+      id="top-universities"
+      data-nav-label="Top Universities"
       className="scroll-mt-20 bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8"
     >
       <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-6 sm:mb-8 m-0">
-        Compare with Peer Universities
+        Top UGC Approved Universities
       </h2>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
