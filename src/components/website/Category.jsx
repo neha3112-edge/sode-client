@@ -46,7 +46,7 @@ function CourseIcon({ course }) {
 
   if (iconUrl && !imgError) {
     return (
-      <div className="w-7 h-7 min-[360px]:w-8 min-[360px]:h-8 sm:w-10 sm:h-10 md:w-11 md:h-11 relative shrink-0">
+      <div className="w-7 h-7 md:w-8 md:h-8 relative shrink-0">
         <Image
           src={iconUrl}
           alt={course?.name}
@@ -368,43 +368,43 @@ function HeroSearchBar({ allCourses = [], allUniversities = [], allCategories = 
                 searchResults.appliedFilters.minNaacGrade ||
                 searchResults.appliedFilters.degreeLevel
               ) && (
-                <div className="px-3.5 py-2 bg-gradient-to-r from-blue-50/80 to-indigo-50/80 border-b border-blue-100 flex items-center justify-between gap-2 text-xs">
-                  <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
-                    <Sparkles className="w-3.5 h-3.5 text-[#0B3B7E] shrink-0" />
-                    <span className="text-[11px] font-semibold text-[#0B3B7E]">AI Search Filters:</span>
-                    {searchResults.appliedFilters.mode && (
-                      <span className="bg-white border border-blue-200 px-1.5 py-0.5 rounded text-[10.5px] font-bold text-blue-700 shadow-2xs">
-                        {searchResults.appliedFilters.mode}
-                      </span>
-                    )}
-                    {searchResults.appliedFilters.minBudget && searchResults.appliedFilters.maxBudget ? (
-                      <span className="bg-white border border-emerald-200 px-1.5 py-0.5 rounded text-[10.5px] font-bold text-emerald-700 shadow-2xs">
-                        Budget: ₹{Number(searchResults.appliedFilters.minBudget).toLocaleString("en-IN")} - ₹{Number(searchResults.appliedFilters.maxBudget).toLocaleString("en-IN")}
-                      </span>
-                    ) : searchResults.appliedFilters.maxBudget ? (
-                      <span className="bg-white border border-emerald-200 px-1.5 py-0.5 rounded text-[10.5px] font-bold text-emerald-700 shadow-2xs">
-                        Budget ≤ ₹{Number(searchResults.appliedFilters.maxBudget).toLocaleString("en-IN")}
-                      </span>
-                    ) : null}
-                    {searchResults.appliedFilters.location && (
-                      <span className="bg-white border border-indigo-200 px-1.5 py-0.5 rounded text-[10.5px] font-bold text-indigo-700 shadow-2xs">
-                        📍 {searchResults.appliedFilters.location}
-                      </span>
-                    )}
-                    {searchResults.appliedFilters.minNaacGrade && (
-                      <span className="bg-white border border-amber-200 px-1.5 py-0.5 rounded text-[10.5px] font-bold text-amber-700 shadow-2xs">
-                        🏆 NAAC {searchResults.appliedFilters.minNaacGrade}
-                      </span>
-                    )}
-                    {searchResults.appliedFilters.degreeLevel && (
-                      <span className="bg-white border border-purple-200 px-1.5 py-0.5 rounded text-[10.5px] font-bold text-purple-700 shadow-2xs">
-                        {searchResults.appliedFilters.degreeLevel}
-                      </span>
-                    )}
+                  <div className="px-3.5 py-2 bg-gradient-to-r from-blue-50/80 to-indigo-50/80 border-b border-blue-100 flex items-center justify-between gap-2 text-xs">
+                    <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
+                      <Sparkles className="w-3.5 h-3.5 text-[#0B3B7E] shrink-0" />
+                      <span className="text-[11px] font-semibold text-[#0B3B7E]">AI Search Filters:</span>
+                      {searchResults.appliedFilters.mode && (
+                        <span className="bg-white border border-blue-200 px-1.5 py-0.5 rounded text-[10.5px] font-bold text-blue-700 shadow-2xs">
+                          {searchResults.appliedFilters.mode}
+                        </span>
+                      )}
+                      {searchResults.appliedFilters.minBudget && searchResults.appliedFilters.maxBudget ? (
+                        <span className="bg-white border border-emerald-200 px-1.5 py-0.5 rounded text-[10.5px] font-bold text-emerald-700 shadow-2xs">
+                          Budget: ₹{Number(searchResults.appliedFilters.minBudget).toLocaleString("en-IN")} - ₹{Number(searchResults.appliedFilters.maxBudget).toLocaleString("en-IN")}
+                        </span>
+                      ) : searchResults.appliedFilters.maxBudget ? (
+                        <span className="bg-white border border-emerald-200 px-1.5 py-0.5 rounded text-[10.5px] font-bold text-emerald-700 shadow-2xs">
+                          Budget ≤ ₹{Number(searchResults.appliedFilters.maxBudget).toLocaleString("en-IN")}
+                        </span>
+                      ) : null}
+                      {searchResults.appliedFilters.location && (
+                        <span className="bg-white border border-indigo-200 px-1.5 py-0.5 rounded text-[10.5px] font-bold text-indigo-700 shadow-2xs">
+                          📍 {searchResults.appliedFilters.location}
+                        </span>
+                      )}
+                      {searchResults.appliedFilters.minNaacGrade && (
+                        <span className="bg-white border border-amber-200 px-1.5 py-0.5 rounded text-[10.5px] font-bold text-amber-700 shadow-2xs">
+                          🏆 NAAC {searchResults.appliedFilters.minNaacGrade}
+                        </span>
+                      )}
+                      {searchResults.appliedFilters.degreeLevel && (
+                        <span className="bg-white border border-purple-200 px-1.5 py-0.5 rounded text-[10.5px] font-bold text-purple-700 shadow-2xs">
+                          {searchResults.appliedFilters.degreeLevel}
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-[10px] text-slate-400 font-medium shrink-0">Smart Matching</span>
                   </div>
-                  <span className="text-[10px] text-slate-400 font-medium shrink-0">Smart Matching</span>
-                </div>
-              )}
+                )}
 
               {/* ⚡ AI Compare Intent Card */}
               {searchResults.comparison && searchResults.comparison.item1 && searchResults.comparison.item2 && (
