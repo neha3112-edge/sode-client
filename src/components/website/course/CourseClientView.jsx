@@ -5,6 +5,8 @@ import { useFormModal } from "@/hooks/useFormModal";
 import { getAssetPath } from "@/lib/utils";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
 import CourseHero from "./CourseHero";
+import CourseQuickFacts from "./CourseQuickFacts";
+import CourseAbout from "./CourseAbout";
 import CourseKeyHighlights from "./CourseKeyHighlights";
 import CourseFeesPlan from "./CourseFeesPlan";
 import CourseCurriculum from "./CourseCurriculum";
@@ -398,33 +400,26 @@ export function CourseClientView({
           handleOpenLead={handleOpenLead}
         />
 
-        <CourseKeyHighlights
+        <CourseQuickFacts
           courseData={courseData}
           universityName={universityName}
           approvalsSummary={approvalsSummary}
-          highlightsList={highlightsList}
         />
       </div>
 
       {/* Main Content Area Sections */}
       <div className="space-y-6 max-w-6xl mx-auto px-3 sm:px-4 md:px-0">
         {/* 1. About / Course Overview */}
-        {(courseData?.overview || courseData?.description) && (
-          <div
-            id="about"
-            className="scroll-mt-16 bg-white rounded-2xl shadow-xs border border-gray-200 p-6 sm:p-10 space-y-4 text-center"
-          >
-            <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight m-0 text-center">
-              {courseData.overviewTitle || `${courseData.name || "Course"} Overview`}
-            </h2>
-            <div className="w-full max-w-4xl mx-auto h-px bg-gray-200/80 my-2" />
-            <div className="space-y-4 text-xs sm:text-[13.5px] text-gray-700 leading-relaxed max-w-5xl mx-auto font-normal text-center">
-              <p className="m-0">{courseData.overview || courseData.description}</p>
-            </div>
-          </div>
-        )}
+        <CourseAbout courseData={courseData} />
 
-        {/* 2. Fee Structure */}
+        {/* 2. Key Highlights */}
+        <CourseKeyHighlights
+          courseData={courseData}
+          universityName={universityName}
+          highlightsList={highlightsList}
+        />
+
+        {/* 3. Fee Structure */}
         <CourseFeesPlan
           activeLedgerData={activeLedgerData}
           selectedPlanTab={selectedPlanTab}
