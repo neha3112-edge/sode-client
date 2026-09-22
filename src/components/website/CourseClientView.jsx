@@ -1033,14 +1033,13 @@ export default function CourseClientView({
 
               // Build Curriculum List — backend data only
               const specCurriculum = (() => {
-                if (Array.isArray(selectedSpecModal.curriculum) && selectedSpecModal.curriculum.length > 0) {
-                  return selectedSpecModal.curriculum.map((c, idx) => ({
-                    semester: c.semesterName || `Semester ${idx + 1}`,
-                    subjects: Array.isArray(c.subjects) ? c.subjects : [],
-                  }));
-                }
-                if (curriculumList && curriculumList.length > 0) {
-                  return curriculumList;
+                if (Array.isArray(selectedSpecModal?.curriculum) && selectedSpecModal.curriculum.length > 0) {
+                  return selectedSpecModal.curriculum
+                    .filter((c) => c && Array.isArray(c.subjects) && c.subjects.length > 0)
+                    .map((c, idx) => ({
+                      semester: c.semesterName || `Semester ${idx + 1}`,
+                      subjects: c.subjects,
+                    }));
                 }
                 return [];
               })();
@@ -1052,20 +1051,20 @@ export default function CourseClientView({
                   open={Boolean(selectedSpecModal)}
                   onCancel={() => setSelectedSpecModal(null)}
                   footer={null}
-                  width={1050}
+                  width={1150}
                   centered
                   className="max-w-[96vw] [&_.ant-modal-content]:rounded-3xl [&_.ant-modal-content]:p-5 sm:[&_.ant-modal-content]:p-6 md:[&_.ant-modal-content]:p-7 [&_.ant-modal-close]:top-4 [&_.ant-modal-close]:right-4"
                 >
                   <div className="flex flex-col md:flex-row items-stretch gap-5 sm:gap-6">
                     {/* Left Column: Portrait Banner Card */}
-                    <div className="relative w-full md:w-[260px] lg:w-70 shrink-0 min-h-[300px] md:min-h-[420px] rounded-2xl overflow-hidden bg-slate-900 shadow-xs flex items-stretch">
+                    <div className="relative w-full md:w-85 lg:w-92.5 shrink-0 min-h-80 md:min-h-110 rounded-2xl overflow-hidden bg-slate-900 shadow-xs flex items-stretch">
                       {/* Desktop Spec Banner */}
                       {specDesktopBanner && (
                         <Image
                           src={specDesktopBanner}
                           alt={modalTitle}
                           fill
-                          sizes="(max-width: 768px) 100vw, 280px"
+                          sizes="(max-width: 768px) 100vw, 370px"
                           className={`object-cover object-center ${specMobileBanner && specMobileBanner !== specDesktopBanner ? "hidden md:block" : "block"}`}
                         />
                       )}
@@ -1111,7 +1110,7 @@ export default function CourseClientView({
                         </h3>
 
                         {/* Meta Info Row */}
-                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs sm:text-[13px] text-gray-500 font-medium mt-2">
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-gray-500 font-medium">
                           {itemDuration && (
                             <div className="flex items-center gap-1.5">
                               <FaClock className="w-3 h-3 text-gray-500 shrink-0" />
@@ -1119,15 +1118,12 @@ export default function CourseClientView({
                             </div>
                           )}
                           {itemFeesFormatted && (
-                            <div className="flex items-center gap-1">
-                              <span className="font-bold text-gray-500">₹</span>
-                              <span className="font-bold text-gray-500">{itemFeesFormatted}</span>
-                            </div>
+                            <span className="font-bold text-gray-500">{itemFeesFormatted}</span>
                           )}
                           {itemDeadline && (
                             <div className="flex items-center gap-1.5">
-                              <FaCalendar className="w-3 h-3 text-gray-500 shrink-0" />
-                              <span>
+                              <FaCalendar className="w-3 h-3 text-red-500 shrink-0" />
+                              <span className='text-red-500'>
                                 Admission Deadline : <strong className="font-semibold text-gray-500">{itemDeadline}</strong>
                               </span>
                             </div>
@@ -1141,55 +1137,57 @@ export default function CourseClientView({
                       </div>
 
                       {/* Course Curriculum Section */}
-                      <div className="pt-1">
-                        <div className="flex items-center gap-3 mb-2.5">
-                          <h4 className="text-sm sm:text-base font-bold text-[#0C2B4E] m-0 tracking-tight shrink-0">
-                            Course Curriculum
-                          </h4>
-                          <div className="flex-1 h-px bg-gray-200" />
-                        </div>
-
-                        {/* Curriculum Pills + Subject Box */}
-                        <div className="flex flex-row items-start gap-3">
-                          {/* Semester Tabs */}
-                          <div className="shrink-0" style={{ width: 124 }}>
-                            {specCurriculum.map((sem, sIdx) => {
-                              const isActive = activeSpecSem === sIdx;
-                              return (
-                                <button
-                                  key={sIdx}
-                                  type="button"
-                                  onClick={() => setActiveSpecSem(sIdx)}
-                                  style={{ display: "block", width: isActive ? "100%" : "85%", marginBottom: sIdx < specCurriculum.length - 1 ? 8 : 0 }}
-                                  className={`py-2 px-3.5 rounded-full text-xs font-semibold transition-all cursor-pointer border-none ${isActive
-                                    ? "bg-[#0C2B4E] text-white shadow-sm"
-                                    : "bg-[#EEF3FA] text-[#475569] hover:bg-[#dde7f5]"
-                                    }`}
-                                >
-                                  <span className="flex items-center justify-between w-full">
-                                    <span>{sem.semester}</span>
-                                    {isActive && <ChevronRight className="w-3.5 h-3.5 shrink-0 stroke-[2.5]" />}
-                                  </span>
-                                </button>
-                              );
-                            })}
+                      {specCurriculum.length > 0 && (
+                        <div className="pt-1">
+                          <div className="flex items-center gap-3 mb-2.5">
+                            <h4 className="text-sm sm:text-base font-bold text-[#0C2B4E] m-0 tracking-tight shrink-0">
+                              Course Curriculum
+                            </h4>
+                            <div className="flex-1 h-px bg-gray-200" />
                           </div>
 
-                          {/* Subjects Box */}
-                          <div className="w-full flex-1 bg-linear-to-br from-blue-50/50 via-blue-50/30 to-slate-50/40 border border-blue-100/80 rounded-2xl p-3.5 sm:p-4 min-h-[135px] flex items-center">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 w-full">
-                              {(activeCurriculum?.subjects || []).map((sub, subIdx) => (
-                                <div key={subIdx} className="flex items-start gap-2 text-xs text-gray-700 leading-snug">
-                                  <span className="text-gray-900 font-bold shrink-0 leading-none mt-0.5">•</span>
-                                  <span className="font-medium text-gray-800 line-clamp-1">
-                                    {typeof sub === "string" ? sub : (sub.name || "")}
-                                  </span>
-                                </div>
-                              ))}
+                          {/* Curriculum Pills + Subject Box */}
+                          <div className="grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-4 items-stretch">
+                            {/* Semester Tabs (Span 3) */}
+                            <div className="col-span-12 md:col-span-3 flex flex-col gap-2">
+                              {specCurriculum.map((sem, sIdx) => {
+                                const isActive = activeSpecSem === sIdx;
+                                return (
+                                  <button
+                                    key={sIdx}
+                                    type="button"
+                                    onClick={() => setActiveSpecSem(sIdx)}
+                                    style={{ display: "block", width: isActive ? "100%" : "88%" }}
+                                    className={`py-1.5 px-3.5 rounded-full text-xs font-semibold transition-all cursor-pointer border-none ${isActive
+                                      ? "bg-[#0C2B4E] text-white shadow-sm"
+                                      : "bg-[#EEF3FA] text-[#475569] hover:bg-[#dde7f5]"
+                                      }`}
+                                  >
+                                    <span className="flex items-center justify-between w-full">
+                                      <span>{sem.semester}</span>
+                                      {isActive && <ChevronRight className="w-3.5 h-3.5 shrink-0 stroke-[2.5]" />}
+                                    </span>
+                                  </button>
+                                );
+                              })}
+                            </div>
+
+                            {/* Subjects Box (Span 9) */}
+                            <div className="col-span-12 md:col-span-9 bg-linear-to-br from-blue-50/50 via-blue-50/30 to-slate-50/40 border border-blue-100/80 rounded-2xl p-3.5 sm:p-4 min-h-[135px] flex items-start">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 w-full">
+                                {(activeCurriculum?.subjects || []).map((sub, subIdx) => (
+                                  <div key={subIdx} className="flex items-start gap-2 text-xs text-gray-700 leading-snug">
+                                    <span className="text-gray-900 font-bold shrink-0 leading-none mt-0.5">•</span>
+                                    <span className="font-medium text-gray-800 line-clamp-1">
+                                      {typeof sub === "string" ? sub : (sub.name || "")}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
+                      )}
 
                       {/* Bottom Action Buttons */}
                       <div className="flex items-center gap-3 pt-2">
