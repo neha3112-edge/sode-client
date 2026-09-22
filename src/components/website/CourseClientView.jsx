@@ -1055,9 +1055,9 @@ export default function CourseClientView({
                   centered
                   className="max-w-[96vw] [&_.ant-modal-content]:rounded-3xl [&_.ant-modal-content]:p-5 sm:[&_.ant-modal-content]:p-6 md:[&_.ant-modal-content]:p-7 [&_.ant-modal-close]:top-4 [&_.ant-modal-close]:right-4"
                 >
-                  <div className="flex flex-col md:flex-row items-stretch gap-5 sm:gap-6">
+                  <div className="flex flex-col md:flex-row items-stretch gap-5 sm:gap-6 p-2 md:p-4">
                     {/* Left Column: Portrait Banner Card */}
-                    <div className="relative w-full md:w-85 lg:w-92.5 shrink-0 min-h-80 md:min-h-110 rounded-2xl overflow-hidden bg-slate-900 shadow-xs flex items-stretch">
+                    <div className="relative w-full md:w-85 lg:w-92.5 shrink-0 h-38 min-h-38 md:h-auto md:min-h-0 rounded-2xl overflow-hidden bg-slate-900 shadow-xs flex items-stretch">
                       {/* Desktop Spec Banner */}
                       {specDesktopBanner && (
                         <Image
@@ -1082,8 +1082,8 @@ export default function CourseClientView({
 
                       {/* Top-Left Logo Badge: Prioritize SubCourse Logo if set, else University Logo */}
                       {(specLogo || (universityLogoSrc && !universityName?.toLowerCase().includes("manipal"))) && (
-                        <div className="absolute top-3.5 left-3.5 z-10 bg-white rounded-xl shadow-md p-2 sm:p-2.5 flex flex-col items-center justify-center text-center border border-gray-100/90 min-w-[74px] max-w-[90px]">
-                          <div className="relative w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center">
+                        <div className="absolute top-2.5 left-2.5 sm:top-3.5 sm:left-3.5 z-10 bg-white rounded-xl shadow-md p-1.5 sm:p-2.5 flex flex-col items-center justify-center text-center border border-gray-100/90 min-w-[64px] sm:min-w-[74px] max-w-[80px] sm:max-w-[90px]">
+                          <div className="relative w-7 h-7 sm:w-9 sm:h-9 flex items-center justify-center">
                             <Image
                               src={specLogo || universityLogoSrc}
                               alt={specLogo ? specTitle : (universityName || "University")}
@@ -1092,7 +1092,7 @@ export default function CourseClientView({
                               className="object-contain"
                             />
                           </div>
-                          <span className="text-[9.5px] font-bold text-gray-900 leading-tight mt-1 line-clamp-2">
+                          <span className="text-[8.5px] sm:text-[9.5px] font-bold text-gray-900 leading-tight mt-0.5 sm:mt-1 line-clamp-1 sm:line-clamp-2">
                             {specLogo ? specTitle : universityName}
                           </span>
                         </div>
@@ -1101,19 +1101,19 @@ export default function CourseClientView({
 
 
                     {/* Right Column: Content */}
-                    <div className="flex-1 flex flex-col justify-between text-left space-y-3.5 sm:space-y-4">
+                    <div className="flex-1 flex flex-col justify-start text-left gap-3 sm:gap-3.5">
                       {/* Top Details */}
                       <div>
                         {/* Course Title */}
-                        <h3 className="text-xl sm:text-2xl lg:text-[25px] font-black text-[#0C2B4E] tracking-tight leading-tight m-0">
+                        <h3 className="text-xl sm:text-2xl lg:text-[25px] font-black text-[#0C2B4E] tracking-tight leading-tight mb-2.5">
                           {modalTitle}
                         </h3>
 
                         {/* Meta Info Row */}
-                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-gray-500 font-medium">
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-gray-500 font-medium mb-2.5">
                           {itemDuration && (
                             <div className="flex items-center gap-1.5">
-                              <FaClock className="w-3 h-3 text-gray-500 shrink-0" />
+                              <FaClock className="w-3 h-3 text-[#072C50] shrink-0" />
                               <span>{itemDuration}</span>
                             </div>
                           )}
@@ -1122,7 +1122,7 @@ export default function CourseClientView({
                           )}
                           {itemDeadline && (
                             <div className="flex items-center gap-1.5">
-                              <FaCalendar className="w-3 h-3 text-red-500 shrink-0" />
+                              <FaCalendar className="w-3 h-3 text-[#072C50] shrink-0" />
                               <span className='text-red-500'>
                                 Admission Deadline : <strong className="font-semibold text-gray-500">{itemDeadline}</strong>
                               </span>
@@ -1131,14 +1131,14 @@ export default function CourseClientView({
                         </div>
 
                         {/* Description */}
-                        <p className="text-xs sm:text-[13px] text-gray-600 leading-relaxed mt-2.5 mb-0 font-normal">
+                        <p className="text-xs sm:text-[13px] text-gray-600 leading-relaxed mb-0 font-normal">
                           {itemDesc}
                         </p>
                       </div>
 
                       {/* Course Curriculum Section */}
                       {specCurriculum.length > 0 && (
-                        <div className="pt-1">
+                        <div>
                           <div className="flex items-center gap-3 mb-2.5">
                             <h4 className="text-sm sm:text-base font-bold text-[#0C2B4E] m-0 tracking-tight shrink-0">
                               Course Curriculum
@@ -1149,7 +1149,7 @@ export default function CourseClientView({
                           {/* Curriculum Pills + Subject Box */}
                           <div className="grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-4 items-stretch">
                             {/* Semester Tabs (Span 3) */}
-                            <div className="col-span-12 md:col-span-3 grid grid-cols-2 md:flex md:flex-col gap-2">
+                            <div className="col-span-12 md:col-span-3 grid grid-cols-3 md:flex md:flex-col gap-2">
                               {specCurriculum.map((sem, sIdx) => {
                                 const isActive = activeSpecSem === sIdx;
                                 return (
@@ -1189,7 +1189,7 @@ export default function CourseClientView({
                       )}
 
                       {/* Bottom Action Buttons */}
-                      <div className="flex items-center gap-3 pt-2">
+                      <div className="flex items-center gap-3">
                         <button
                           type="button"
                           onClick={() => {
@@ -1197,10 +1197,10 @@ export default function CourseClientView({
                             setSelectedSpecModal(null);
                             handleOpenLead("Download Brochure", title);
                           }}
-                          className="flex-1 bg-[#0C2B4E] hover:bg-[#071c33] text-white text-xs sm:text-sm font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm border-none active:scale-95"
+                          className="flex-1 min-w-0 bg-[#0C2B4E] hover:bg-[#071c33] text-white text-[11px] sm:text-xs md:text-sm font-bold py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all cursor-pointer shadow-sm border-none active:scale-95"
                         >
-                          <span>Download Broucher</span>
-                          <Download className="w-4 h-4 shrink-0" />
+                          <span className="truncate">Download Brochure</span>
+                          <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
                         </button>
 
                         <button
@@ -1210,9 +1210,9 @@ export default function CourseClientView({
                             setSelectedSpecModal(null);
                             handleOpenLead("Free Counseling", title);
                           }}
-                          className="flex-1 bg-white hover:bg-gray-50 text-[#0C2B4E] border border-[#0C2B4E] text-xs sm:text-sm font-bold py-3 px-4 rounded-xl flex items-center justify-center transition-all cursor-pointer shadow-sm active:scale-95"
+                          className="flex-1 min-w-0 bg-white hover:bg-gray-50 text-[#0C2B4E] border border-[#0C2B4E] text-[10.5px] min-[380px]:text-[11.5px] sm:text-xs md:text-sm font-bold py-2.5 sm:py-3 px-1.5 sm:px-4 rounded-xl flex items-center justify-center text-center transition-all cursor-pointer shadow-sm active:scale-95"
                         >
-                          Get 100% FREE Counseling
+                          <span className="truncate">Get 100% FREE Counseling</span>
                         </button>
                       </div>
                     </div>
