@@ -3,12 +3,13 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { Modal } from "antd";
-import { Eye, CheckCircle2 } from "lucide-react";
+import { Eye, Check } from "lucide-react";
 import { getAssetPath } from "@/lib/utils";
 
 export default function UniversitySampleDegree({
   sampleDegreeData,
   uniName,
+  openFormModal,
 }) {
   const [isCertificateModalOpen, setIsCertificateModalOpen] = useState(false);
 
@@ -33,7 +34,7 @@ export default function UniversitySampleDegree({
                 className="object-contain rounded-xl transition-transform duration-300 group-hover:scale-[1.02]"
               />
 
-              {/* View Button Overlay */}
+              {/* View Button Overlay on Side */}
               <div className="absolute bottom-2.5 right-2.5 sm:bottom-3 sm:right-3 z-10">
                 <button
                   type="button"
@@ -70,40 +71,65 @@ export default function UniversitySampleDegree({
               {sampleDegreeData.points.map((pt, pIdx) => (
                 <div
                   key={pIdx}
-                  className="bg-blue-50/50 border border-blue-100/80 rounded-xl p-2 sm:p-2.5 flex flex-col items-center justify-center text-center shadow-2xs"
+                  className="flex items-center justify-center lg:justify-start gap-1.5 sm:gap-2 rounded-lg"
                 >
-                  <CheckCircle2 size={16} className="text-[#0077B6] mb-1 shrink-0" />
-                  <span className="text-[10px] sm:text-xs font-semibold text-gray-800 leading-tight">
+                  <span className="w-4 h-4 rounded-full bg-green-600 text-white flex items-center justify-center shrink-0">
+                    <Check size={11} strokeWidth={3} />
+                  </span>
+                  <span className="text-[11px] sm:text-[12.5px] font-bold text-gray-900 leading-tight">
                     {pt}
                   </span>
                 </div>
               ))}
             </div>
           )}
+
+          <div className="pt-3 w-full flex justify-center lg:justify-start">
+            <button
+              type="button"
+              onClick={() => {
+                openFormModal &&
+                  openFormModal({
+                    title: `${sampleDegreeData.title || "Get Degree Details"} - ${uniName}`,
+                    subtitle: "Get free syllabus & enrollment guidance",
+                    defaultCourse: uniName,
+                    submitButtonText: sampleDegreeData.ctaText || "Get Degree",
+                  });
+              }}
+              className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-xs sm:text-sm px-5 py-2 sm:py-2.5 rounded-lg border-none cursor-pointer transition-all active:scale-95 shadow-xs inline-flex items-center justify-center"
+            >
+              {sampleDegreeData.ctaText || "Get Degree"}
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Full Size Certificate Modal */}
-      {sampleDegreeData.imageUrl && (
+      {sampleDegreeData?.imageUrl && (
         <Modal
           open={isCertificateModalOpen}
           onCancel={() => setIsCertificateModalOpen(false)}
           footer={null}
+          width={720}
           centered
-          width={800}
-          title={
-            <span className="text-sm font-bold text-[#0D3B66]">
-              {sampleDegreeData.title || `Sample Degree - ${uniName}`}
-            </span>
-          }
         >
-          <div className="relative w-full h-[60vh] min-h-[350px]">
-            <Image
-              src={getAssetPath(sampleDegreeData.imageUrl)}
-              alt={sampleDegreeData.title || "Degree Certificate"}
-              fill
-              className="object-contain"
-            />
+          <div className="pt-2 text-center">
+            <h3 className="text-base sm:text-lg font-bold text-[#0C2B4E] m-0 mb-1">
+              {sampleDegreeData.title || `Sample Degree Certificate - ${uniName}`}
+            </h3>
+            {sampleDegreeData.description && (
+              <p className="text-xs text-gray-500 max-w-lg mx-auto mb-3">
+                {sampleDegreeData.description}
+              </p>
+            )}
+            <div className="relative w-full h-[380px] sm:h-[520px] max-h-[75vh] flex items-center justify-center mt-2">
+              <Image
+                src={getAssetPath(sampleDegreeData.imageUrl)}
+                alt={sampleDegreeData.title || `Sample Degree Certificate - ${uniName}`}
+                fill
+                sizes="(max-width: 768px) 100vw, 700px"
+                className="object-contain rounded-lg"
+              />
+            </div>
           </div>
         </Modal>
       )}
