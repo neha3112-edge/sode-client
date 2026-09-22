@@ -1002,10 +1002,10 @@ export default function UniversityClientView({ initialData, slug }) {
                 return (
                   <div
                     key={peer._id || peer.slug || `${peer.name}-${index}`}
-                    className={`bg-white rounded-xl border border-gray-200 hover:border-blue-400 p-2 sm:p-2.5 hover:shadow-md transition-all flex flex-col items-center justify-between text-center relative group min-w-0 shadow-2xs ${index === 5 && visibleTopUnis === 6 ? "flex lg:hidden" : "flex"
+                    className={`bg-gray-50 rounded-xl border border-gray-200 hover:border-blue-400 p-2 sm:p-2.5 hover:shadow-md transition-all flex flex-col items-center justify-between text-center relative group min-w-0 shadow-2xs ${index === 5 && visibleTopUnis === 6 ? "flex lg:hidden" : "flex"
                       }`}
                   >
-                    <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-full p-1 flex items-center justify-center bg-white border border-gray-100 shadow-2xs relative my-0.5 shrink-0 overflow-hidden">
+                    <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-full p-1 flex items-center justify-center bg-white relative my-0.5 shrink-0 overflow-hidden">
                       {peerLogo ? (
                         <Image
                           src={getAssetPath(peerLogo)}
