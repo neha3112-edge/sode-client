@@ -1,7 +1,7 @@
 export { Category, default } from "./Category";
-export { default as HeroSearchBar } from "./HeroSearchBar";
-export { default as UniversityCarouselBlock } from "./UniversityCarouselBlock";
-export { default as AiToolsAndScholarship } from "./AiToolsAndScholarship";
-export { default as CategorySectionBlock } from "./CategorySectionBlock";
-export { default as CategoryDetailModal } from "./CategoryDetailModal";
+export { default as SearchBar, default as HeroSearchBar } from "./SearchBar";
+export { default as UniversityCarousel, default as UniversityCarouselBlock } from "./UniversityCarousel";
+export { default as AiTools, default as AiToolsAndScholarship } from "./AiTools";
+export { default as CategorySection, default as CategorySectionBlock } from "./CategorySection";
+export { default as CategoryModal, default as CategoryDetailModal } from "./CategoryModal";
 export * from "./CategoryIcons";

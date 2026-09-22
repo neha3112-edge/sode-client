@@ -5,13 +5,13 @@ import { useBreadcrumb } from "@/context/BreadcrumbContext";
 import { useFormModal } from "@/hooks/useFormModal";
 import { getAssetPath } from "@/lib/utils";
 import UniversityHero from "./UniversityHero";
-import UniversityKeyHighlights from "./UniversityKeyHighlights";
+import UniversityHighlights from "./UniversityHighlights";
 import UniversityAbout from "./UniversityAbout";
 import UniversityWhyChoose from "./UniversityWhyChoose";
 import UniversityAccreditations from "./UniversityAccreditations";
-import UniversityCoursesSection from "./UniversityCoursesSection";
+import UniversityCourses from "./UniversityCourses";
 import UniversitySampleDegree from "./UniversitySampleDegree";
-import UniversityPeerUniversities from "./UniversityPeerUniversities";
+import UniversityPeerUnis from "./UniversityPeerUnis";
 import UniversityFaq from "./UniversityFaq";
 
 const getSafeText = (val, fallback = "") => {
@@ -177,7 +177,7 @@ export function UniversityClientView({ initialData, slug }) {
           openFormModal={openFormModal}
         />
 
-        <UniversityKeyHighlights
+        <UniversityHighlights
           locationText={locationText}
           establishedYear={establishedYear}
           approvalsSummary={approvalsSummary}
@@ -203,7 +203,7 @@ export function UniversityClientView({ initialData, slug }) {
           uniName={uniName}
         />
 
-        <UniversityCoursesSection
+        <UniversityCourses
           coursesList={coursesList}
           filteredCourses={filteredCourses}
           activeCourseFilter={activeCourseFilter}
@@ -223,7 +223,7 @@ export function UniversityClientView({ initialData, slug }) {
           uniName={uniName}
         />
 
-        <UniversityPeerUniversities
+        <UniversityPeerUnis
           topUniversities={topUniversities}
           openFormModal={openFormModal}
         />

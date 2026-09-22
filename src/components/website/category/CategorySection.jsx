@@ -3,7 +3,7 @@
 import React from "react";
 import { Container } from "@/components/common/Container";
 import { PartnerLogoIcon, CourseIcon, getItemSlug } from "./CategoryIcons";
-import UniversityCarouselBlock from "./UniversityCarouselBlock";
+import UniversityCarousel from "./UniversityCarousel";
 
 export default function CategorySectionBlock({
   block,
@@ -132,7 +132,7 @@ export default function CategorySectionBlock({
               })}
             </div>
           ) : (
-            <UniversityCarouselBlock
+            <UniversityCarousel
               block={block}
               slidesToShowCount={slidesToShowCount}
               handleSlidePointerDown={handleSlidePointerDown}

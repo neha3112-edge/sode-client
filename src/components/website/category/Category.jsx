@@ -3,11 +3,11 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Container } from "@/components/common/Container";
-import HeroSearchBar from "./HeroSearchBar";
+import SearchBar from "./SearchBar";
 import { CategoryIcon, getItemSlug } from "./CategoryIcons";
-import AiToolsAndScholarship from "./AiToolsAndScholarship";
-import CategorySectionBlock from "./CategorySectionBlock";
-import CategoryDetailModal from "./CategoryDetailModal";
+import AiTools from "./AiTools";
+import CategorySection from "./CategorySection";
+import CategoryModal from "./CategoryModal";
 
 export function Category({ categories = [], universities = [], programs = [] }) {
   const router = useRouter();
@@ -268,7 +268,7 @@ export function Category({ categories = [], universities = [], programs = [] }) 
       ` }} />
 
       {/* ── 🔍 HERO FLOATING SEARCH BAR ── */}
-      <HeroSearchBar
+      <SearchBar
         allCourses={allCourses}
         allUniversities={allUniversities}
         allCategories={categoriesList}
@@ -283,14 +283,14 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                 <div
                   key={item._id || item.slug}
                   onClick={() => handleCardClick(item)}
-                  className="bg-white hover:bg-gray-50 border border-gray-200 rounded-xl sm:rounded-xl p-1 min-[360px]:p-1.5 sm:p-2.5 aspect-square flex flex-col items-center justify-center text-center cursor-pointer select-none transition-colors duration-200 group min-w-0 w-full"
+                  className="w-full aspect-square bg-slate-50 hover:bg-amber-50/50 border border-slate-200/80 hover:border-amber-400 rounded-xl sm:rounded-2xl p-1.5 min-[360px]:p-2 sm:p-3 flex flex-col items-center justify-center text-center cursor-pointer transition-colors duration-200 group min-w-0"
                 >
                   <div className="mb-0.5 sm:mb-1 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
-                    <CategoryIcon cat={item} />
+                    <CategoryIcon category={item} />
                   </div>
-                  <div className="h-6 min-[360px]:h-7 sm:h-8 flex items-center justify-center w-full min-w-0 px-0.5">
-                    <span className="line-clamp-2 text-center leading-tight font-semibold text-[10px] min-[360px]:text-[11px] sm:text-xs text-gray-700 group-hover:text-blue-500 transition-colors w-full px-0.5">
-                      {item.label || item.name}
+                  <div className="h-6 min-[360px]:h-7 sm:h-8 flex items-center justify-center w-full min-w-0">
+                    <span className="line-clamp-2 text-center leading-tight uppercase font-semibold text-[10px] min-[360px]:text-[11px] sm:text-xs text-slate-700 group-hover:text-amber-700 transition-colors w-full px-0.5">
+                      {item.name}
                     </span>
                   </div>
                 </div>
@@ -309,7 +309,7 @@ export function Category({ categories = [], universities = [], programs = [] }) 
 
           if (isToolsBlock) {
             return (
-              <AiToolsAndScholarship
+              <AiTools
                 key={block._id || block.slug || bIdx}
                 block={block}
                 bIdx={bIdx}
@@ -318,7 +318,7 @@ export function Category({ categories = [], universities = [], programs = [] }) 
           }
 
           return (
-            <CategorySectionBlock
+            <CategorySection
               key={String(block._id || block.slug || bIdx)}
               block={block}
               bIdx={bIdx}
@@ -337,7 +337,7 @@ export function Category({ categories = [], universities = [], programs = [] }) 
         })}
 
       {/* ── MODAL POPUP FOR SELECTED CATEGORY / UNIVERSITY ── */}
-      <CategoryDetailModal
+      <CategoryModal
         activeCategory={activeCategory}
         modalData={modalData}
         onClose={handleCloseModal}

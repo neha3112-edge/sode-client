@@ -10,7 +10,7 @@ import JsonLd from "@/components/common/JsonLd";
 import { ToolWizardProvider } from "@/components/tool/ToolWizardContext";
 import { BreadcrumbProvider } from "@/context/BreadcrumbContext";
 
-const CompareDrawerWidget = dynamic(() => import("@/components/website/CompareDrawerWidget"), { ssr: false });
+const CompareDrawer = dynamic(() => import("@/components/website/CompareDrawer"), { ssr: false });
 const AutoEngineToolModal = dynamic(() => import("@/components/tool/AutoEngineToolModal"), { ssr: false });
 
 /**
@@ -33,7 +33,7 @@ export default function AppProviders({ children }) {
               <ToolWizardProvider>
                 <JsonLd />
                 {children}
-                <CompareDrawerWidget />
+                <CompareDrawer />
                 <AutoEngineToolModal />
               </ToolWizardProvider>
             </BreadcrumbProvider>

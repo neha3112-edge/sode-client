@@ -5,12 +5,12 @@ import { useFormModal } from "@/hooks/useFormModal";
 import { getAssetPath } from "@/lib/utils";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
 import CourseHero from "./CourseHero";
-import CourseKeyHighlights from "./CourseKeyHighlights";
+import CourseHighlights from "./CourseHighlights";
 import CourseFeesPlan from "./CourseFeesPlan";
 import CourseCurriculum from "./CourseCurriculum";
 import CourseApprovals from "./CourseApprovals";
 import CourseSpecializations from "./CourseSpecializations";
-import CourseAlternativeUniversities from "./CourseAlternativeUniversities";
+import CourseAlternativeUnis from "./CourseAlternativeUnis";
 import CourseFaq from "./CourseFaq";
 
 export function CourseClientView({
@@ -389,7 +389,7 @@ export function CourseClientView({
           handleOpenLead={handleOpenLead}
         />
 
-        <CourseKeyHighlights
+        <CourseHighlights
           courseData={courseData}
           universityName={universityName}
           approvalsSummary={approvalsSummary}
@@ -449,7 +449,7 @@ export function CourseClientView({
         />
 
         {/* 6. Alternative Universities */}
-        <CourseAlternativeUniversities
+        <CourseAlternativeUnis
           processedPrograms={processedPrograms}
           courseData={courseData}
         />
