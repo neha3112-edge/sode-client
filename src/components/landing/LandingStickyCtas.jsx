@@ -11,7 +11,8 @@ export default function LandingStickyCtas({
   onOpenScholarship,
   onOpenCompare,
 }) {
-  const phone = brand.phone || "1800-102-3434";
+  const phone = brand.phone || "7065777755";
+  const whatsappText = encodeURIComponent(`I want to Download ${brand.name || "University"} Online Brochure`);
 
   return (
     <>
@@ -19,48 +20,57 @@ export default function LandingStickyCtas({
       <div className="fixed bottom-6 right-6 z-30 hidden lg:flex flex-col gap-2.5">
         <Button
           type="primary"
-          icon={<Sparkles className="w-3.5 h-3.5" />}
+          icon={<Sparkles className="w-4 h-4" />}
           onClick={() => onOpenScholarship?.()}
-          className="!bg-[#e91e63] hover:!bg-[#d81b60] !text-white !font-bold !h-10 !px-4 !rounded-full !shadow-lg !border-none flex items-center gap-1.5"
+          className="!bg-[#e91e63] hover:!bg-[#d81b60] !text-white !font-bold !h-11 !px-5 !rounded-full !shadow-lg !border-none flex items-center gap-2"
         >
           Check Scholarship
         </Button>
         <Button
           type="default"
-          icon={<Scale className="w-3.5 h-3.5" />}
+          icon={<Scale className="w-4 h-4" />}
           onClick={() => onOpenCompare?.()}
-          className="!bg-white hover:!bg-slate-50 !text-[#08417b] !font-bold !h-10 !px-4 !rounded-full !shadow-lg !border !border-slate-300 flex items-center gap-1.5"
+          className="!bg-white hover:!bg-slate-50 !text-[#08417b] !font-bold !h-11 !px-5 !rounded-full !shadow-lg !border !border-slate-300 flex items-center gap-2"
+          style={{ color: brand.primaryColor || "#08417b" }}
         >
           Compare
         </Button>
       </div>
 
-      {/* Sticky Bottom Bar on Mobile/Tablet */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 p-2 sm:p-3 shadow-lg flex items-center gap-2">
+      {/* Floating Call Button on mobile right above footer sticky */}
+      <a
+        href={`tel:${phone.replace(/\D/g, "")}`}
+        aria-label="Call Expert"
+        className="lg:hidden fixed bottom-20 right-3 z-40 w-12 h-12 rounded-full bg-[#25d366] text-white flex items-center justify-center shadow-lg active:scale-95 transition-transform"
+      >
+        <Phone className="w-6 h-6 fill-white text-white" />
+      </a>
+
+      {/* Sticky Bottom Bar on Mobile/Tablet matching .footer_sticky_buttons */}
+      <div
+        className="footer_sticky_buttons lg:hidden fixed bottom-0 left-0 right-0 z-50 p-2.5 grid grid-cols-2 gap-2 shadow-2xl transition-colors"
+        style={{ backgroundColor: brand.primaryColor || "#08417b" }}
+      >
+        {/* Left: WhatsApp / Brochure Green Pill */}
         <a
-          href={`tel:${phone.replace(/\D/g, "")}`}
-          className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-lg bg-slate-100 text-slate-800 font-bold text-xs no-underline border border-slate-200 active:bg-slate-200"
+          href={`https://api.whatsapp.com/send/?phone=+91${phone.replace(/\D/g, "").slice(-10)}&text=${whatsappText}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="wp_btn flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-[#25d366] text-white font-bold text-sm no-underline shadow-sm active:opacity-90"
         >
-          <Phone className="w-3.5 h-3.5 text-blue-600" />
-          <span>Call Now</span>
+          <Download className="w-4 h-4" />
+          <span>Get Brochure</span>
         </a>
 
-        <Button
-          type="default"
-          icon={<Download className="w-3.5 h-3.5" />}
-          onClick={() => onOpenBrochure?.()}
-          className="!flex-1 !h-10 !text-xs !font-bold !rounded-lg"
-        >
-          Brochure
-        </Button>
-
-        <Button
-          type="primary"
+        {/* Right: Apply Now Yellow Pill */}
+        <button
+          type="button"
           onClick={() => onOpenApply?.()}
-          className="!flex-1 !h-10 !bg-[#ffd200] hover:!bg-[#ffc107] !text-[#08417b] !font-bold !text-xs !rounded-lg !border-none !shadow-xs"
+          className="apply_btn flex items-center justify-center gap-1.5 py-2 px-3 rounded-full bg-[#ffd508] text-black font-bold text-sm border-none shadow-sm cursor-pointer active:opacity-90"
         >
-          Apply Now
-        </Button>
+          <span>Apply Now</span>
+          <span className="text-base leading-none">»</span>
+        </button>
       </div>
     </>
   );

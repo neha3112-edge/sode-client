@@ -7,30 +7,28 @@ export default function LandingCompareBanner({ brand = {}, onOpenCompare }) {
   const universityName = brand.name || "University Online";
 
   return (
-    <section className="bg-slate-50 py-8 sm:py-10">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="compare_Section bg-[#f6f8fa] py-12 sm:py-16">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6">
         <div
-          className={`relative rounded-2xl p-6 sm:p-8 text-center text-white shadow-md transition-colors ${
-            brand.themeBg || "bg-[#08417b]"
-          }`}
-          style={{ backgroundColor: brand.primaryColor }}
+          className="compare_box relative rounded-[20px] px-6 sm:px-12 py-10 sm:py-12 text-center text-white transition-colors flex flex-col items-center justify-center"
+          style={{ backgroundColor: brand.primaryColor || "#08417b" }}
         >
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-white tracking-tight m-0">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight m-0">
             Still Confused?
           </h2>
-          <p className="text-xs sm:text-sm text-white/95 font-semibold mt-1 sm:mt-1.5 max-w-2xl mx-auto m-0">
+          <h4 className="text-sm sm:text-base text-white/95 font-medium mt-2 max-w-2xl mx-auto m-0">
             Compare {universityName} with Top UGC-DEB Approved Universities
-          </p>
+          </h4>
 
-          {/* Centered Overlapping Circular Button */}
-          <div className="absolute -bottom-6 left-1/2 -translate-x-1/2">
+          {/* Centered Overlapping Circular Button matching .compare_btn img */}
+          <div className="absolute -bottom-7 sm:-bottom-8 left-1/2 -translate-x-1/2">
             <button
               type="button"
               onClick={() => onOpenCompare?.()}
               aria-label="Compare universities"
-              className="w-12 h-12 rounded-full bg-white text-slate-800 border-[3px] border-amber-400 shadow-md flex items-center justify-center cursor-pointer hover:scale-110 active:scale-95 transition-all group"
+              className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white text-slate-800 shadow-[0_4px_15px_rgba(0,0,0,0.18)] flex items-center justify-center cursor-pointer hover:scale-105 active:scale-95 transition-all group border-2 border-slate-100"
             >
-              <ArrowDown className="w-5 h-5 text-amber-500 group-hover:translate-y-0.5 transition-transform" />
+              <ArrowDown className="w-6 h-6 text-[#08417b] group-hover:translate-y-1 transition-transform" style={{ color: brand.primaryColor || "#08417b" }} />
             </button>
           </div>
         </div>
