@@ -1,10 +1,4 @@
-import { Hero } from "@/components/website/Hero";
-import { Category } from "@/components/website/Category";
-import { getUniversitiesData } from "@/constants/universitiesData";
-import { getAboutData } from "@/constants/aboutData";
-import { getFaqData } from "@/constants/faqData";
-import { getTestimonialsData } from "@/constants/testimonialsData";
-import { getFooterData } from "@/constants/footerData";
+import { Hero, Category } from "@/components/website";
 import { getPageMetaData, constructMetadata } from "@/constants/pageMetaData";
 import { request } from "@/services/request";
 
@@ -21,17 +15,18 @@ export default async function Home() {
   // Parallel High-Speed Data Fetching with ISR Caching
   const [
     heroRes,
-    universities,
+    universitiesRes,
     coursesData,
     categoryApiData,
   ] = await Promise.all([
     request.dynamicRead({ entity: "hero", endPoint: "public/by-slug", slug: "home", revalidate: 300 }),
-    getUniversitiesData(),
+    request.dynamicList({ entity: "universities", endPoint: "v1/list", options: { items: 30 }, revalidate: 300 }),
     request.dynamicList({ entity: "courses", endPoint: "v1/list", options: { items: 30 }, revalidate: 300 }),
     request.dynamicList({ entity: "category", endPoint: "v1/list", revalidate: 900 }),
   ]);
 
   const heroData = heroRes?.result || heroRes;
+  const universities = universitiesRes?.result || universitiesRes?.universities || [];
   const programs = coursesData?.result || coursesData?.programs || [];
 
   const categories = Array.isArray(categoryApiData?.result)

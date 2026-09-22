@@ -1,0 +1,11 @@
+export { UniversityClientView, default } from "./UniversityClientView";
+export { default as UniversitiesPageClientView } from "./UniversitiesPageClientView";
+export { default as UniversityHero } from "./UniversityHero";
+export { default as UniversityKeyHighlights } from "./UniversityKeyHighlights";
+export { default as UniversityAbout } from "./UniversityAbout";
+export { default as UniversityWhyChoose } from "./UniversityWhyChoose";
+export { default as UniversityAccreditations } from "./UniversityAccreditations";
+export { default as UniversityCoursesSection } from "./UniversityCoursesSection";
+export { default as UniversitySampleDegree } from "./UniversitySampleDegree";
+export { default as UniversityPeerUniversities } from "./UniversityPeerUniversities";
+export { default as UniversityFaq } from "./UniversityFaq";

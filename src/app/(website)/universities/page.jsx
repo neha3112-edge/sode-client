@@ -1,7 +1,7 @@
 import React, { Suspense } from "react";
 import { request } from "@/services/request";
 import { getPageMetaData, constructMetadata } from "@/constants/pageMetaData";
-import UniversitiesPageClientView from "@/components/website/UniversitiesPageClientView";
+import { UniversitiesPageClientView } from "@/components/website";
 
 export const revalidate = 900;
 

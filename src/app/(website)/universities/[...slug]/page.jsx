@@ -2,8 +2,7 @@ import { cache } from "react";
 import { request } from "@/services/request";
 import { getAssetPath } from "@/lib/utils";
 import { getPageMetaData, constructMetadata } from "@/constants/pageMetaData";
-import UniversityClientView from "@/components/website/UniversityClientView";
-import CourseClientView from "@/components/website/CourseClientView";
+import { UniversityClientView, CourseClientView } from "@/components/website";
 
 export const revalidate = 900;
 
