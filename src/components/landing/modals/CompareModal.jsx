@@ -18,7 +18,7 @@ export default function CompareModal({
       footer={null}
       centered
       width={480}
-      destroyOnClose
+      destroyOnHidden
       className="p-0 overflow-hidden"
     >
       <div className="pt-2">

@@ -24,7 +24,7 @@ export default function LegalModal({
       footer={null}
       centered
       width={600}
-      destroyOnClose
+      destroyOnHidden
       title={<span className="text-base font-bold text-slate-800">{titles[type] || "Legal Information"}</span>}
     >
       <div className="text-xs text-slate-600 space-y-3 py-2 leading-relaxed max-h-[60vh] overflow-y-auto pr-2">
