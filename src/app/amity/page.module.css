@@ -1,0 +1,1446 @@
+/* ============================================================
+   AMITY LANDING PAGE  —  UI mirrored from
+   https://distanceeducationschool.com/amity/
+   ============================================================ */
+
+.page {
+  --navy: #08417b;
+  --navy-deep: #0b3c66;
+  --navy-2: #193579;
+  --yellow: #fbcb12;
+  --yellow-btn: #ffd508;
+  --yellow-alt: #ffca05;
+  --cream: #fff5c4;
+  --grey: #f6f8fa;
+  --ink: #000;
+  background: #fff;
+  color: var(--ink);
+  overflow-x: hidden;
+  padding-top: 74px;
+}
+
+/* Poppins everywhere (the reference site loads Poppins via @import) */
+.page,
+.page *,
+.page *::before,
+.page *::after,
+.page :global(.ant-btn),
+.page :global(.ant-input),
+.page :global(.ant-select),
+.page :global(.ant-select-selector),
+.page :global(.ant-select-item),
+.page :global(.ant-select-item-option-content),
+.page :global(.ant-input-group-addon),
+.page :global(.ant-checkbox),
+.page :global(.ant-checkbox-wrapper),
+.page :global(.ant-form-item),
+.page :global(.ant-form-item-label),
+.page :global(.ant-collapse),
+.page :global(.ant-collapse-header),
+.page :global(.ant-collapse-content),
+.page :global(.ant-message) {
+  font-family: var(--font-poppins), Poppins, var(--font-roboto), Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+}
+
+.page p {
+  margin-bottom: 0;
+}
+
+.page h1,
+.page h2,
+.page h3,
+.page h4,
+.page h5 {
+  margin-top: 0;
+}
+
+.container {
+  width: 100%;
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+/* ============ HEADER (.navbar / .top-navbar) ============ */
+.topbar {
+  height: 74px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 max(4vw, 24px);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1049;
+  box-shadow: 0 5px 20px #00000025;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  text-decoration: none;
+}
+
+.brand img {
+  flex: none;
+  display: block;
+  object-fit: contain;
+}
+
+.sodeLogo {
+  width: 66px;
+  height: 66px;
+}
+
+.amityLogo {
+  width: 162px;
+  height: auto;
+  border-left: 1px solid #dce4eb;
+  padding-left: 13px;
+}
+
+.admission {
+  color: var(--navy);
+  font-size: 22px;
+  font-weight: 700;
+  padding-right: 25px;
+  line-height: 1.25;
+}
+
+.admission strong {
+  color: #f3b900;
+}
+
+/* ============ HERO / BANNER ============ */
+.banner {
+  position: relative;
+  padding: 20px 0;
+  background: #eef3f7 url("/amitylp/amity_new_desktop_bg.png") center/cover no-repeat;
+}
+
+.banner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, #ffffffd9 0%, #ffffffb0 42%, #ffffff00 78%);
+}
+
+.bannerGrid {
+  position: relative;
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 15px;
+  display: grid;
+  grid-template-columns: 5fr 4fr;
+  gap: 0 30px;
+  align-items: start;
+}
+
+.bannerCopy {
+  padding-top: 50px;
+}
+
+.hashtag {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--navy);
+  padding-bottom: 8px;
+}
+
+.bannerTitle {
+  font-size: 36px;
+  font-weight: 500;
+  color: var(--navy);
+  line-height: 1.15;
+}
+
+.bannerAbout {
+  font-size: 19px;
+  color: #000;
+  padding-top: 5px;
+}
+
+.yellowLabel {
+  display: inline-block;
+  margin-left: -5px;
+  padding: 2px 10px;
+  border-radius: 20px;
+  background: var(--yellow);
+  color: var(--navy);
+  font-weight: 700;
+}
+
+.highlightCourse {
+  width: 80%;
+  margin: 14px 0 20px;
+  padding: 14px 10px;
+  background: #fff;
+  border: 2px solid var(--navy);
+  border-radius: 5px;
+}
+
+.highlightCourse h2 {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--navy);
+  margin: 0;
+}
+
+.brochureBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: #fff;
+  border: 2px solid var(--navy);
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #000;
+  cursor: pointer;
+}
+
+.brochureBtn:hover {
+  background: var(--navy);
+  color: #fff;
+}
+
+.bannerModel {
+  display: none;
+}
+
+.bannerModel img {
+  width: 100%;
+  border-radius: 20px;
+  display: block;
+}
+
+/* ============ LEAD FORM (#form) ============ */
+.leadForm {
+  background: var(--navy);
+  border-radius: 10px;
+  padding: 20px;
+  margin-top: 50px;
+  color: #fff;
+  box-shadow: 0 14px 30px #092f551c;
+}
+
+.formTitle {
+  text-align: center;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--yellow);
+}
+
+.formSubtitle {
+  text-align: center;
+  font-size: 13px;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.callPillSection {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 10px;
+}
+
+.callPill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: fit-content;
+  padding: 3px 20px;
+  border-radius: 20px;
+  background: var(--yellow);
+  color: #000;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.5px;
+  text-decoration: none;
+}
+
+.callPill:hover {
+  color: #000;
+  background: #ffd42e;
+}
+
+.leadForm :global(.ant-form-item) {
+  margin-bottom: 10px;
+}
+
+.leadForm :global(.ant-input),
+.leadForm :global(.ant-select-selector) {
+  height: 32px !important;
+  font-size: 12px !important;
+  border-radius: 4px;
+}
+
+.leadForm :global(.ant-input-group-addon) {
+  padding: 0 8px;
+  font-size: 12px;
+}
+
+.leadForm :global(.ant-checkbox-wrapper) {
+  font-size: 10px;
+  color: #fff;
+  line-height: 1.15;
+}
+
+.leadForm :global(.ant-btn) {
+  height: 34px;
+  border: 0;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 8px 18px #06231b3d;
+}
+
+/* ============ RECOGNITION & APPROVALS ============ */
+.approvals {
+  background: var(--cream);
+}
+
+.approvalHead {
+  background: var(--yellow-btn);
+  padding: 10px;
+  text-align: center;
+}
+
+.approvalHead h2 {
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--navy);
+  margin: 0;
+}
+
+.approvalGrid {
+  width: 100%;
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 10px 15px 20px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.approvalBox {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 20px 0;
+}
+
+.approvalBox img {
+  width: 80px;
+  height: auto;
+  flex: none;
+  object-fit: contain;
+}
+
+.approvalBox p {
+  font-size: 15px;
+  line-height: 1.2;
+  padding: 15px;
+  color: #000;
+}
+
+/* ============ PROGRAMMES / DEGREE COURSES ============ */
+.programmes {
+  background: var(--navy);
+  padding: 50px 0;
+}
+
+.programmeHeading {
+  color: #fff;
+  text-align: center;
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 1.25;
+  margin: 0 0 40px;
+  padding: 0 15px;
+}
+
+.programmeRow {
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 15px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 22px;
+}
+
+.programCard {
+  position: relative;
+  background: #fff;
+  border-radius: 5px 5px 7px 7px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px #062e5b32;
+}
+
+.programLabel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  padding: 10px;
+  border-radius: 2px;
+  background: green;
+  color: #fff;
+  font-size: 14px;
+}
+
+.programCard img {
+  display: block;
+  width: 100%;
+  height: 185px;
+  object-fit: cover;
+}
+
+.programBody {
+  background: #fff;
+  padding: 10px 20px 14px;
+  margin-top: -5px;
+}
+
+.programBody h3 {
+  color: var(--navy);
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.programBody h4 {
+  color: var(--navy);
+  font-size: 13px;
+  font-weight: 500;
+  margin: 2px 0 8px;
+}
+
+.programBody p {
+  color: #333;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.6;
+  min-height: 100px;
+}
+
+.programBody hr {
+  border: 0;
+  border-top: 1px solid #d9d9d9;
+  margin: 10px 0;
+}
+
+.infoBox {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.infoBox button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  padding: 7px 15px;
+  border-radius: 3px;
+  background: var(--yellow);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.infoBox p {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 8px;
+  font-size: 12px;
+  color: #333;
+  white-space: nowrap;
+}
+
+/* ============ ABOUT ============ */
+.aboutSection {
+  width: 100%;
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 30px 15px 0;
+}
+
+.aboutGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  align-items: center;
+}
+
+.aboutGrid img {
+  width: 100%;
+  display: block;
+  border-radius: 8px;
+}
+
+.aboutCopy h2 {
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--navy);
+}
+
+.aboutCopy p {
+  font-size: 14px;
+  line-height: 1.75;
+  color: #333;
+  margin-top: 12px;
+}
+
+.aboutBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 10px 20px;
+  background: #fff;
+  border: 2px solid var(--navy);
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #000;
+  cursor: pointer;
+}
+
+.aboutBtn:hover {
+  background: var(--navy);
+  color: #fff;
+}
+
+.aboutSection hr {
+  border: 0;
+  border-top: 1px solid #ddd;
+  margin: 26px 0 0;
+}
+
+/* ============ ACHIEVEMENTS ============ */
+.achievement {
+  background: var(--navy);
+  color: #fff;
+  padding: 50px 15px;
+}
+
+.achievementGrid {
+  width: 100%;
+  max-width: 1140px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.achieveBox {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.achieveBox img {
+  width: 80px;
+  height: auto;
+  flex: none;
+}
+
+.achieveBox h3 {
+  font-size: 40px;
+  font-weight: 600;
+  line-height: 1;
+  margin: 5px 0 0;
+}
+
+.achieveBox p {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: #fff;
+}
+
+/* ============ WHY CHOOSE ============ */
+.whyChoose {
+  width: 100%;
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 50px 15px;
+}
+
+.whyChoose h2 {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #000;
+  margin: 0;
+}
+
+.whyGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 30px;
+  align-items: start;
+  margin-top: 10px;
+}
+
+.whyTextGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 24px;
+}
+
+.whyItem {
+  margin-top: 30px;
+}
+
+.whyItem h3 {
+  font-size: 16px;
+  font-weight: 500;
+  color: #084183;
+}
+
+.whyItem p {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #333;
+}
+
+.applyYellow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  padding: 10px 20px;
+  border: 0;
+  border-radius: 5px;
+  background: var(--yellow-alt);
+  color: var(--navy);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.whyImage img {
+  width: 100%;
+  display: block;
+}
+
+.whyImage .applyYellow {
+  display: none;
+}
+
+/* ============ HOW TO APPLY (steps) ============ */
+.applySection {
+  background: #fff;
+  padding: 0 20px 40px;
+  text-align: center;
+}
+
+.applySection h2 {
+  font-size: 30px;
+  font-weight: 600;
+  color: var(--navy-2);
+  margin: 0;
+}
+
+.sectionDesc {
+  max-width: 900px;
+  margin: 0 auto 50px;
+  padding-top: 10px;
+  color: #555;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.stepsWrapper {
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 20px;
+}
+
+.stepCard {
+  position: relative;
+  background: #fff;
+  padding: 20px 18px;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.stepCard::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 5px;
+  border-radius: 0 0 14px 14px;
+}
+
+.stepNumber {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.stepCard h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #000;
+  margin: 20px 0 10px;
+  padding-bottom: 10px;
+}
+
+.stepCard p {
+  font-size: 12px;
+  line-height: 1.55;
+  color: #444;
+}
+
+.orange {
+  background: #fff4e9;
+}
+
+.orange::after {
+  background: #ff8c32;
+}
+
+.orange .stepNumber {
+  border: 3px solid #ff8c32;
+  color: #ff8c32;
+}
+
+.blue::after {
+  background: #0b5ed7;
+}
+
+.blue .stepNumber {
+  border: 3px solid #0b5ed7;
+  color: #0b5ed7;
+}
+
+.pink {
+  background: #fff1f6;
+}
+
+.pink::after {
+  background: #ff2d6f;
+}
+
+.pink .stepNumber {
+  border: 3px solid #ff2d6f;
+  color: #ff2d6f;
+}
+
+.green {
+  background: #effff5;
+}
+
+.green::after {
+  background: #1faa59;
+}
+
+.green .stepNumber {
+  border: 3px solid #1faa59;
+  color: #1faa59;
+}
+
+.purple {
+  background: #f9f0ff;
+}
+
+.purple::after {
+  background: #8e2de2;
+}
+
+.purple .stepNumber {
+  border: 3px solid #8e2de2;
+  color: #8e2de2;
+}
+
+/* ============ FAQ ============ */
+.faqSection {
+  width: 100%;
+  max-width: 1140px;
+  margin: 50px auto;
+  padding: 0 15px;
+}
+
+.faqSection h2 {
+  color: var(--navy);
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0 0 10px 5px;
+}
+
+.faqSection :global(.ant-collapse) {
+  background: transparent;
+  border: 0;
+}
+
+.faqSection :global(.ant-collapse-item) {
+  border-bottom: 1px solid #ccc !important;
+  border-radius: 0 !important;
+}
+
+.faqSection :global(.ant-collapse-header) {
+  padding: 20px 10px !important;
+  font-size: 16px !important;
+  font-weight: 500;
+  color: #000 !important;
+  align-items: center !important;
+}
+
+.faqSection :global(.ant-collapse-expand-icon) {
+  color: var(--navy);
+}
+
+.faqSection :global(.ant-collapse-content) {
+  background: transparent;
+  border: 0 !important;
+}
+
+.faqSection :global(.ant-collapse-content-box) {
+  padding: 10px !important;
+  font-size: 14px !important;
+  color: #333;
+}
+
+/* ============ FOOTER FORM (#ftr-frm) ============ */
+.footerForm {
+  background: var(--navy);
+  padding: 50px 0;
+  margin-top: 50px;
+}
+
+.footerFormInner {
+  width: 100%;
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.footerFormTitle {
+  color: var(--yellow);
+  font-size: 26px;
+  font-weight: 600;
+}
+
+.footerFormText {
+  color: #fff;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.compactForm {
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.compactForm :global(.ant-form-item) {
+  margin-bottom: 10px;
+}
+
+.compactForm :global(.ant-input),
+.compactForm :global(.ant-select-selector) {
+  height: 38px !important;
+  font-size: 13px !important;
+  border: 0;
+  border-radius: 5px;
+}
+
+.compactForm :global(.ant-checkbox-wrapper) {
+  font-size: 11px;
+  color: #fff;
+}
+
+.compactForm :global(.ant-btn) {
+  height: 38px;
+  border: 0;
+  border-radius: 3px;
+  background: var(--yellow-btn);
+  color: var(--navy);
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: none;
+}
+
+/* ============ COMPARE UNIVERSITY ============ */
+.compareSection {
+  background: var(--grey);
+  padding: 60px 15px;
+}
+
+.compareBox {
+  width: 100%;
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 50px;
+  background: var(--navy);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.compareBox h2 {
+  color: #fff;
+  font-size: 28px;
+  font-weight: 700;
+  text-align: center;
+  margin: 0;
+}
+
+.compareBox h4 {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 500;
+  text-align: center;
+  margin: 6px 0 0;
+}
+
+.compareBtn {
+  margin-top: 12px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  line-height: 0;
+}
+
+.compareBtn img {
+  width: 70px;
+  border-radius: 100%;
+  display: block;
+}
+
+/* ============ FOOTER (.mini-footer) ============ */
+.miniFooter {
+  background: var(--grey);
+  color: #777;
+  padding-top: 10px;
+}
+
+.footerLogoWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 15px 10px;
+}
+
+.footerLogoWrap img {
+  width: 50%;
+}
+
+.footerBar {
+  padding: 40px 30px 10px;
+  text-align: center;
+}
+
+.footerBar p {
+  font-size: 13px;
+  line-height: 1.7;
+  color: #777;
+}
+
+.legalLink {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #000;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.footerBottom {
+  background: var(--navy-deep);
+  color: #fff;
+  text-align: center;
+  padding: 7px 10px;
+  font-size: 13px;
+}
+
+/* ============ FLOATING BUTTONS ============ */
+.couponBtn {
+  position: fixed;
+  right: 10px;
+  bottom: 15px;
+  z-index: 99999;
+  padding: 0;
+  border: 0;
+  border-radius: 100%;
+  background: none;
+  cursor: pointer;
+  line-height: 0;
+}
+
+.couponBtn img {
+  width: 60px;
+  border-radius: 50%;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3), 0 0 20px rgba(46, 204, 113, 0.6);
+  transition: 0.3s ease;
+}
+
+.couponBtn img:hover {
+  transform: scale(1.1);
+}
+
+.callFix {
+  position: fixed;
+  right: 9px;
+  bottom: 85px;
+  z-index: 9999;
+  line-height: 0;
+}
+
+.callFix img {
+  width: 65px;
+  border-radius: 50px;
+  display: block;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 0 35px rgba(46, 204, 113, 0.9);
+}
+
+/* ============ MOBILE STICKY BUTTONS ============ */
+.stickyBar {
+  display: none;
+}
+
+.wpBtn {
+  background: #25d366;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px;
+  border-radius: 100px;
+  color: #fff;
+  font-size: 16px;
+  text-decoration: none;
+}
+
+.wpBtn svg {
+  width: 16px;
+  height: 16px;
+  fill: #fff;
+}
+
+.applyBtn {
+  border: 0;
+  border-radius: 100px;
+  background: var(--yellow-btn);
+  color: #000;
+  font-size: 16px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+/* ============ ENQUIRY MODAL ============ */
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  background: #00000099;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  overflow: auto;
+}
+
+.modal {
+  width: min(420px, 100%);
+  position: relative;
+}
+
+.closeButton {
+  position: absolute;
+  right: 0;
+  top: -32px;
+  z-index: 2;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+}
+
+.modal .leadForm {
+  margin-top: 0;
+  box-shadow: 0 20px 50px #001b32;
+}
+
+/* ============ LEGAL MODALS ============ */
+.legalModal {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  max-height: 80vh;
+  overflow-y: auto;
+  margin: 5% auto;
+  padding: 30px 40px;
+  background: #fff;
+  border-radius: 10px;
+  text-align: left;
+}
+
+.legalModal h2 {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--navy);
+  text-align: center;
+}
+
+.legalModal h5 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #000;
+  padding-top: 15px;
+}
+
+.legalModal p,
+.legalModal li {
+  font-size: 13px;
+  line-height: 1.7;
+  color: #333;
+}
+
+.legalModal ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.legalModal hr {
+  border: 0;
+  border-top: 1px solid #e5e5e5;
+  margin: 14px 0;
+}
+
+.legalClose {
+  position: absolute;
+  right: 15px;
+  top: 10px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 1200px) {
+  .stepsWrapper {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .programmeRow {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 1024px) {
+  .admission {
+    display: none;
+  }
+}
+
+@media (max-width: 992px) {
+  .programmeRow {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .approvalGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .whyGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .applyYellow {
+    display: none;
+  }
+
+  .whyImage .applyYellow {
+    display: inline-flex;
+  }
+}
+
+@media (max-width: 768px) {
+  .banner {
+    background-image: url("/amitylp/amity_new_mobile_bg.webp");
+    background-position: center top;
+  }
+
+  .bannerGrid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .bannerCopy {
+    padding-top: 20px;
+  }
+
+  .bannerTitle {
+    font-size: 24px;
+  }
+
+  .bannerAbout {
+    font-size: 17px;
+  }
+
+  .hashtag {
+    font-size: 15px;
+  }
+
+  .highlightCourse {
+    width: 100%;
+  }
+
+  .highlightCourse h2 {
+    font-size: 18px;
+  }
+
+  .bannerModel {
+    display: block;
+  }
+
+  .leadForm {
+    margin-top: 0;
+    padding: 16px;
+  }
+
+  .approvalHead h2 {
+    font-size: 20px;
+  }
+
+  .approvalBox {
+    padding: 15px 0;
+  }
+
+  .approvalBox img {
+    width: 64px;
+  }
+
+  .approvalBox p {
+    font-size: 11px;
+    padding: 10px;
+  }
+
+  .programmes {
+    padding: 30px 0;
+  }
+
+  .programmeHeading {
+    font-size: 25px;
+    margin-bottom: 25px;
+  }
+
+  .programmeRow {
+    grid-template-columns: 1fr;
+  }
+
+  .programBody p {
+    min-height: 0;
+  }
+
+  .aboutGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .aboutCopy h2 {
+    font-size: 22px;
+    text-align: center;
+  }
+
+  .achievement {
+    padding: 35px 15px;
+  }
+
+  .achievementGrid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .achieveBox img {
+    width: 62px;
+  }
+
+  .achieveBox h3 {
+    font-size: 32px;
+  }
+
+  .whyChoose {
+    padding: 30px 15px;
+  }
+
+  .whyChoose h2 {
+    font-size: 24px;
+  }
+
+  .whyTextGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .applySection h2 {
+    font-size: 20px;
+  }
+
+  .stepsWrapper {
+    grid-template-columns: 1fr;
+  }
+
+  .stepCard p {
+    font-size: 14px;
+  }
+
+  .faqSection {
+    margin: 35px auto;
+  }
+
+  .faqSection h2 {
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+
+  .footerForm {
+    padding: 35px 0;
+  }
+
+  .footerFormTitle {
+    font-size: 22px;
+  }
+
+  .compareSection {
+    padding: 40px 20px;
+  }
+
+  .compareBox {
+    padding: 50px 20px 20px;
+  }
+
+  .compareBox h2 {
+    font-size: 26px;
+  }
+
+  .compareBox h4 {
+    font-size: 14px;
+  }
+
+  .footerLogoWrap img {
+    width: 100%;
+    padding: 0 35px;
+  }
+
+  .footerBar {
+    padding: 30px 20px 10px;
+  }
+
+  .footerBottom {
+    padding-bottom: 70px;
+  }
+
+  .callFix {
+    bottom: 140px;
+  }
+
+  .callFix img {
+    width: 60px;
+  }
+
+  .couponBtn {
+    bottom: 70px;
+  }
+
+  .stickyBar {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 3px;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    z-index: 99999;
+    background: var(--navy);
+    padding: 10px;
+  }
+}
+
+@media (max-width: 650px) {
+  .page {
+    padding-top: 60px;
+  }
+
+  .topbar {
+    height: 60px;
+    padding: 0 14px;
+  }
+
+  .brand {
+    gap: 9px;
+  }
+
+  .sodeLogo {
+    width: 46px;
+    height: 46px;
+  }
+
+  .amityLogo {
+    width: 118px;
+    padding-left: 9px;
+  }
+
+  .approvalGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal {
+    width: 100%;
+  }
+
+  .legalModal {
+    padding: 24px 18px;
+  }
+
+  .legalModal h2 {
+    font-size: 22px;
+  }
+}
+
+
+
+
+
+
