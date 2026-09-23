@@ -16,7 +16,6 @@ export default function LandingWhyChoose({ whyChoose = [], brand = {}, onOpenApp
         <h2 className="text-2xl sm:text-3xl lg:text-[32px] font-bold text-slate-900 tracking-tight m-0">
           Why Choose {universityName} for Degree Courses
         </h2>
-
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-center">
           {/* Left: 4 Features (2x2 Grid) + Apply Now Button */}
           <div className="lg:col-span-8">

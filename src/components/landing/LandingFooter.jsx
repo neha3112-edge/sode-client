@@ -16,12 +16,22 @@ export default function LandingFooter({
     brand.footerDisclaimer ||
     "SODE Counselling Services LLP act as a marketing agency. All university names, logos, and trademarks mentioned are used for informational purposes only. We are not a university or an admission authority. Users are encouraged to verify information on the official website of the University before making decisions.";
 
+  const handleScrollTop = (e) => {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <footer className="mini-footer bg-[#f6f8fa] text-[#777] pt-4 sm:pt-6 relative">
       <div className="max-w-full mx-auto px-4 sm:px-11 text-center">
         {/* SODE / Distance Education School Official Full Logo */}
         <div className="footer_sode_logo_container flex justify-center items-center">
-          <Link href="/" className="inline-block" aria-label="Distance Education School">
+          <Link
+            href="#hero"
+            onClick={handleScrollTop}
+            className="inline-block cursor-pointer"
+            aria-label="Back to Top"
+          >
             <div className="relative w-75 sm:w-210 h-28 sm:h-48">
               <Image
                 src="/assets/images/new-des-logo.webp"
@@ -34,6 +44,7 @@ export default function LandingFooter({
             </div>
           </Link>
         </div>
+
 
         {/* Agency Disclaimer Text */}
         <div id="footer-bottom-bar" className="mt-2 sm:mt-3 px-2 sm:px-8">

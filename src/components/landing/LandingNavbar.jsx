@@ -14,12 +14,27 @@ export default function LandingNavbar({ brand = {}, onOpenApply, onOpenBrochure 
     primaryColor = "#08417b",
   } = brand;
 
+  const handleScrollTop = (e) => {
+    e.preventDefault();
+    const heroEl = document.getElementById("hero");
+    if (heroEl) {
+      heroEl.scrollIntoView({ behavior: "smooth" });
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
   return (
     <header className="navbar sticky top-0 z-50 bg-white shadow-[0px_4px_20px_rgba(0,0,0,0.08)]">
-      <LandingContainer className="top-navbar h-[66px] sm:h-[72px] flex items-center justify-between">
+      <LandingContainer className="top-navbar h-16.5 sm:h-18 flex items-center justify-between">
         {/* Left: SODE Icon + Divider + University Logo */}
         <div className="logo flex items-center">
-          <Link href="/" className="des_logo flex items-center shrink-0" aria-label="SODE Home">
+          <Link
+            href="#hero"
+            onClick={handleScrollTop}
+            className="des_logo flex items-center shrink-0 cursor-pointer"
+            aria-label="Back to Top"
+          >
             <div className="relative w-9 sm:w-11 h-9 sm:h-11">
               <Image
                 src="/assets/images/sode_icon.png"

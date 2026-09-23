@@ -75,7 +75,7 @@ export default function UniversityLandingView({ data = {} }) {
   };
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 flex flex-col font-sans selection:bg-blue-900 selection:text-white">
+    <div className="landing-page-root min-h-screen bg-white text-slate-900 flex flex-col font-sans selection:bg-blue-900 selection:text-white">
       <LandingNavbar brand={brand} onOpenApply={() => handleOpenApply()} onOpenBrochure={() => handleOpenBrochure()} />
       <main className="flex-1">
         <LandingHero brand={brand} courses={courses} onOpenBrochure={() => handleOpenBrochure()} onOpenApply={() => handleOpenApply()} onOpenDisclaimer={() => handleOpenLegal("disclaimer")} />
