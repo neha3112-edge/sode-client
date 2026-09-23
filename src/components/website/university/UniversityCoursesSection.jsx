@@ -27,6 +27,7 @@ export default function UniversityCoursesSection({
 }) {
   const { toggleCompare, isInCompare, setIsCompareDrawerOpen } = useCompare();
   const [selectedCourseSpec, setSelectedCourseSpec] = useState(null);
+  const brandColor = uni?.color_code || "#08AEAA";
 
   if (!coursesList || coursesList.length === 0) return null;
 
@@ -90,7 +91,8 @@ export default function UniversityCoursesSection({
                   <button
                     type="button"
                     onClick={() => setSelectedCourseSpec(item)}
-                    className="bg-[#08AEAA] hover:bg-[#079995] text-white text-[9px] sm:text-[10px] font-bold px-2.5 sm:px-3 py-1 rounded-tl-xl rounded-br-xl cursor-pointer transition-colors border-none flex items-center gap-1 shadow-2xs leading-none"
+                    style={{ backgroundColor: brandColor }}
+                    className="hover:opacity-90 text-white text-[9px] sm:text-[10px] font-bold px-2.5 sm:px-3 py-1 rounded-tl-xl rounded-br-xl cursor-pointer transition-opacity border-none flex items-center gap-1 shadow-2xs leading-none"
                   >
                     {String(specCount).padStart(2, "0")} Specialisation
                   </button>
