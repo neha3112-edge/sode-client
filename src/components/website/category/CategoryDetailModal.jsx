@@ -3,7 +3,7 @@
 import React from "react";
 import { Modal } from "antd";
 import { X } from "lucide-react";
-import { CategoryIcon, PartnerLogoIcon, CourseIcon, formatTwoLineText, getItemSlug } from "./CategoryIcons";
+import { CategoryIcon, PartnerLogoIcon, CourseIcon, formatTwoLineText, getItemSlug, isObjectId } from "./CategoryIcons";
 
 export default function CategoryDetailModal({
   activeCategory,
@@ -89,6 +89,8 @@ export default function CategoryDetailModal({
                             router.push(`/courses?category=${encodeURIComponent(parentCatSlug)}&subcategory=${encodeURIComponent(itemSlug)}`);
                           } else if (it.targetUrl && !/[0-9a-fA-F]{24}/.test(it.targetUrl)) {
                             router.push(it.targetUrl);
+                          } else if (it.targetUrl && itemSlug && !isObjectId(itemSlug)) {
+                            router.push(it.targetUrl.replace(/[0-9a-fA-F]{24}/g, encodeURIComponent(itemSlug)));
                           } else {
                             router.push(`/courses?subcategory=${encodeURIComponent(itemSlug)}`);
                           }

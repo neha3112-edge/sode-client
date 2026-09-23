@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Container } from "@/components/common/Container";
-import { PartnerLogoIcon, CourseIcon, getItemSlug } from "./CategoryIcons";
+import { PartnerLogoIcon, CourseIcon, getItemSlug, isObjectId } from "./CategoryIcons";
 import UniversityCarouselBlock from "./UniversityCarouselBlock";
 
 export default function CategorySectionBlock({
@@ -110,7 +110,14 @@ export default function CategorySectionBlock({
                       if (isUni) {
                         handleCardClick(child);
                       } else {
-                        router.push(`/courses?course=${encodeURIComponent(getItemSlug(child))}`);
+                        const cleanSlug = getItemSlug(child);
+                        if (child.targetUrl && !/[0-9a-fA-F]{24}/.test(child.targetUrl)) {
+                          router.push(child.targetUrl);
+                        } else if (child.targetUrl && cleanSlug && !isObjectId(cleanSlug)) {
+                          router.push(child.targetUrl.replace(/[0-9a-fA-F]{24}/g, encodeURIComponent(cleanSlug)));
+                        } else {
+                          router.push(`/courses?course=${encodeURIComponent(cleanSlug)}`);
+                        }
                       }
                     }}
                     className="w-full aspect-square bg-white hover:bg-gray-50 border border-gray-200 rounded-xl sm:rounded-2xl p-1.5 min-[360px]:p-2 sm:p-2.5 flex flex-col items-center justify-center text-center cursor-pointer transition-colors duration-200 group min-w-0"

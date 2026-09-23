@@ -105,6 +105,13 @@ export default function UniversityStickyNav({
     setActiveKey(key);
     isManualScrollRef.current = true;
 
+    // 🔗 Sync active section ID with browser URL hash
+    if (typeof window !== "undefined" && key) {
+      if (window.location.hash !== `#${key}`) {
+        window.history.replaceState(null, "", `#${key}`);
+      }
+    }
+
     const targetEl = document.getElementById(key);
     if (targetEl) {
       const navEl = containerRef.current;
@@ -165,6 +172,24 @@ export default function UniversityStickyNav({
 
       if (currentId) {
         setActiveKey(currentId);
+
+        // 🔗 Sync URL hash as user scrolls through sections
+        if (typeof window !== "undefined" && shouldShow) {
+          if (window.location.hash !== `#${currentId}`) {
+            window.history.replaceState(null, "", `#${currentId}`);
+          }
+        }
+      }
+
+      // If scrolled back up above the sticky nav, remove the hash
+      if (!shouldShow && typeof window !== "undefined") {
+        if (window.location.hash) {
+          window.history.replaceState(
+            null,
+            "",
+            window.location.pathname + window.location.search
+          );
+        }
       }
     };
 
@@ -174,6 +199,27 @@ export default function UniversityStickyNav({
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
+  }, [detectedSections]);
+
+  // On mount / deep-link: Scroll to section if hash exists in URL
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const rawHash = window.location.hash.replace("#", "").trim();
+    if (!rawHash) return;
+
+    const targetKey =
+      rawHash === "faq" && !document.getElementById("faq") && document.getElementById("faqs")
+        ? "faqs"
+        : rawHash;
+
+    const timer = setTimeout(() => {
+      const targetEl = document.getElementById(targetKey) || document.getElementById(rawHash);
+      if (targetEl) {
+        handleTabChange(targetKey);
+      }
+    }, 350);
+
+    return () => clearTimeout(timer);
   }, [detectedSections]);
 
   const tabItems = useMemo(() => {

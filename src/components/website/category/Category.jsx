@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Container } from "@/components/common/Container";
 import HeroSearchBar from "./HeroSearchBar";
-import { CategoryIcon, getItemSlug } from "./CategoryIcons";
+import { CategoryIcon, getItemSlug, isObjectId } from "./CategoryIcons";
 import AiToolsAndScholarship from "./AiToolsAndScholarship";
 import CategorySectionBlock from "./CategorySectionBlock";
 import CategoryDetailModal from "./CategoryDetailModal";
@@ -116,6 +116,11 @@ export function Category({ categories = [], universities = [], programs = [] }) 
   // Extract all distinct courses & universities for instant search autocomplete
   const allCourses = useMemo(() => {
     const courseMap = new Map();
+    (programs || []).forEach((p) => {
+      if (p && p.name && !courseMap.has(p.name.toLowerCase())) {
+        courseMap.set(p.name.toLowerCase(), p);
+      }
+    });
     (parentBlocks || []).forEach((b) => {
       (b.children || []).forEach((c) => {
         if (c && c.name && (b.isCourseBlock || c.isCourse) && !courseMap.has(c.name.toLowerCase())) {
@@ -124,7 +129,7 @@ export function Category({ categories = [], universities = [], programs = [] }) 
       });
     });
     return Array.from(courseMap.values());
-  }, [parentBlocks]);
+  }, [parentBlocks, programs]);
 
   const allUniversities = useMemo(() => {
     const uniMap = new Map();
@@ -192,17 +197,25 @@ export function Category({ categories = [], universities = [], programs = [] }) 
     if (activeCategory) {
       setActiveCategory(null);
     }
-    if (item.targetUrl && !/[0-9a-fA-F]{24}/.test(item.targetUrl)) {
-      router.push(item.targetUrl);
-    } else {
-      const targetSlug = getItemSlug(item);
-      if (item.isUniversity === true || item.itemType === "university") {
-        router.push(`/courses?university=${encodeURIComponent(targetSlug)}`);
-      } else if (item.itemType === "course" || item.targetType === "COURSE") {
-        router.push(`/courses?course=${encodeURIComponent(targetSlug)}`);
-      } else {
-        router.push(`/courses?category=${encodeURIComponent(targetSlug)}`);
+    const targetSlug = getItemSlug(item);
+    if (item.targetUrl) {
+      if (!/[0-9a-fA-F]{24}/.test(item.targetUrl)) {
+        router.push(item.targetUrl);
+        return;
       }
+      if (targetSlug && !isObjectId(targetSlug)) {
+        const cleanedUrl = item.targetUrl.replace(/[0-9a-fA-F]{24}/g, encodeURIComponent(targetSlug));
+        router.push(cleanedUrl);
+        return;
+      }
+    }
+
+    if (item.isUniversity === true || item.itemType === "university") {
+      router.push(`/courses?university=${encodeURIComponent(targetSlug)}`);
+    } else if (item.itemType === "course" || item.targetType === "COURSE") {
+      router.push(`/courses?course=${encodeURIComponent(targetSlug)}`);
+    } else {
+      router.push(`/courses?category=${encodeURIComponent(targetSlug)}`);
     }
   };
 

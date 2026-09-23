@@ -165,8 +165,68 @@ export function formatTwoLineText(text = "") {
   );
 }
 
+export function isObjectId(val) {
+  return Boolean(val && /^[0-9a-fA-F]{24}$/.test(String(val).trim()));
+}
+
+export function slugifyText(text) {
+  if (!text) return "";
+  return String(text)
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
 export function getItemSlug(item) {
   if (!item) return "";
-  if (typeof item === "string") return item;
-  return item.slug || item._id || (item.name ? item.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") : "");
+
+  // 1. If item is a primitive string
+  if (typeof item === "string") {
+    const trimmed = item.trim();
+    if (!isObjectId(trimmed)) {
+      return slugifyText(trimmed);
+    }
+    return trimmed;
+  }
+
+  // 2. Explicit clean slug on item (e.g. item.slug, item.courseSlug, item.parentCourseSlug)
+  if (item.slug && typeof item.slug === "string" && !isObjectId(item.slug)) {
+    return slugifyText(item.slug);
+  }
+  if (item.courseSlug && typeof item.courseSlug === "string" && !isObjectId(item.courseSlug)) {
+    return slugifyText(item.courseSlug);
+  }
+
+  // 3. Short name or code (e.g. "BBA", "MBA", "MCA", "B.Tech")
+  if (item.shortName && typeof item.shortName === "string" && !isObjectId(item.shortName)) {
+    const s = slugifyText(item.shortName);
+    if (s && !isObjectId(s)) return s;
+  }
+  if (item.code && typeof item.code === "string" && !isObjectId(item.code)) {
+    const s = slugifyText(item.code);
+    if (s && !isObjectId(s)) return s;
+  }
+
+  // 4. Readable Name, Title, Label, or DisplayName (e.g. "BBA" -> "bba")
+  const readableName = item.name || item.title || item.label || item.displayName;
+  if (readableName && typeof readableName === "string") {
+    const s = slugifyText(readableName);
+    if (s && !isObjectId(s)) return s;
+  }
+
+  // 5. Target URL parameter extraction if it contains a non-ObjectId slug
+  if (item.targetUrl && typeof item.targetUrl === "string") {
+    const match = item.targetUrl.match(/[?&](?:course|category|university|subcourse)=([^&#]+)/);
+    if (match && match[1]) {
+      const decoded = decodeURIComponent(match[1]);
+      if (!isObjectId(decoded)) {
+        return slugifyText(decoded);
+      }
+    }
+  }
+
+  // 6. Absolute last fallback (only if no name, title, shortName, code exists)
+  return (!isObjectId(item.slug) ? item.slug : "") || item._id || "";
 }
+

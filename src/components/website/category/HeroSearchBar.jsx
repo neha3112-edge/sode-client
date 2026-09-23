@@ -17,6 +17,7 @@ import {
   GraduationCap,
   Building2,
 } from "lucide-react";
+import { getItemSlug, isObjectId } from "./CategoryIcons";
 
 export default function HeroSearchBar({
   allCourses = [],
@@ -24,6 +25,26 @@ export default function HeroSearchBar({
   allCategories = [],
 }) {
   const router = useRouter();
+
+  const safeNavigate = (href, item, fallbackParam = "course") => {
+    setIsFocused(false);
+    if (!href) {
+      const slug = getItemSlug(item);
+      router.push(`/courses?${fallbackParam}=${encodeURIComponent(slug)}`);
+      return;
+    }
+    if (!/[0-9a-fA-F]{24}/.test(href)) {
+      router.push(href);
+      return;
+    }
+    const slug = getItemSlug(item);
+    if (slug && !isObjectId(slug)) {
+      router.push(href.replace(/[0-9a-fA-F]{24}/g, encodeURIComponent(slug)));
+      return;
+    }
+    router.push(href);
+  };
+
   const [searchTerm, setSearchTerm] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -122,8 +143,7 @@ export default function HeroSearchBar({
     if (e) e.preventDefault();
     if (selectedIndex >= 0 && flatItems[selectedIndex]) {
       const item = flatItems[selectedIndex];
-      setIsFocused(false);
-      router.push(item.href || `/courses?search=${encodeURIComponent(trimmed)}`);
+      safeNavigate(item.href, item, item.itemType || "course");
       return;
     }
     if (!trimmed) return;
@@ -310,8 +330,7 @@ export default function HeroSearchBar({
                         <span
                           key={idx}
                           onClick={() => {
-                            setIsFocused(false);
-                            router.push(s.href);
+                            safeNavigate(s.href, s, "course");
                           }}
                           className="bg-white border border-amber-200 hover:border-amber-400 text-amber-900 px-2 py-0.5 rounded-lg text-[10.5px] font-semibold cursor-pointer shadow-2xs transition-colors"
                         >
@@ -336,8 +355,7 @@ export default function HeroSearchBar({
                           <div
                             key={cat._id || cat.slug}
                             onClick={() => {
-                              setIsFocused(false);
-                              router.push(cat.href);
+                              safeNavigate(cat.href, cat, "category");
                             }}
                             className="flex items-center justify-between p-2 rounded-xl hover:bg-amber-50/80 cursor-pointer transition-colors group"
                           >
@@ -384,8 +402,7 @@ export default function HeroSearchBar({
                           <div
                             key={scat._id || scat.slug}
                             onClick={() => {
-                              setIsFocused(false);
-                              router.push(scat.href);
+                              safeNavigate(scat.href, scat, "subcategory");
                             }}
                             className="flex items-center justify-between p-2 rounded-xl hover:bg-sky-50/80 cursor-pointer transition-colors group"
                           >
@@ -432,8 +449,7 @@ export default function HeroSearchBar({
                           <div
                             key={c._id || c.slug}
                             onClick={() => {
-                              setIsFocused(false);
-                              router.push(c.href);
+                              safeNavigate(c.href, c, "course");
                             }}
                             className="flex items-center justify-between p-2 rounded-xl hover:bg-blue-50/80 cursor-pointer transition-colors group"
                           >
@@ -483,8 +499,7 @@ export default function HeroSearchBar({
                           <div
                             key={sc._id || sc.slug}
                             onClick={() => {
-                              setIsFocused(false);
-                              router.push(sc.href);
+                              safeNavigate(sc.href, sc, "subcourse");
                             }}
                             className="flex items-center justify-between p-2 rounded-xl hover:bg-purple-50/80 cursor-pointer transition-colors group"
                           >
@@ -524,8 +539,7 @@ export default function HeroSearchBar({
                           <div
                             key={u._id || u.slug}
                             onClick={() => {
-                              setIsFocused(false);
-                              router.push(u.href);
+                              safeNavigate(u.href, u, "university");
                             }}
                             className="flex items-center justify-between p-2 rounded-xl hover:bg-emerald-50/80 cursor-pointer transition-colors group"
                           >
