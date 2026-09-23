@@ -387,7 +387,7 @@ export default function ScholarshipModal({
             ================================================== */}
 
         <div
-          className="relative w-full max-w-[550px] mx-auto rounded-[18px] p-6 sm:p-7 text-white select-none"
+          className="relative w-full max-w-[550px] mx-auto rounded-[14px] sm:rounded-[18px] p-4 sm:p-7 text-white select-none"
           style={{
             backgroundColor:
               brand?.hero?.formBackground ||

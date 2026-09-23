@@ -1,11 +1,8 @@
 "use client";
 
 import React from "react";
-import { Building2, GraduationCap, Users, BookOpen } from "lucide-react";
+import { BookOpen } from "lucide-react";
 
-/**
- * Custom SVG icons matching reference Image 1
- */
 function BuildingIcon({ className }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="currentColor">
@@ -47,28 +44,29 @@ export default function LandingStats({ stats = [] }) {
   if (!stats || stats.length === 0) return null;
 
   return (
-    <section className="bg-[#08417b] py-10 sm:py-14 text-white border-y border-[#063366] transition-colors">
+    <section className="bg-[#08417b] py-8 sm:py-12 lg:py-14 text-white border-y border-[#063366] transition-colors">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 lg:gap-10 items-center justify-center">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-10 items-center justify-center">
           {stats.map((st, idx) => {
             const IconComponent = ICON_MAP[st.iconType] || BuildingIcon;
             const circleBg = st.circleBg || "bg-[#ffc107]";
             return (
-              <div key={idx} className="flex items-center gap-3.5 sm:gap-4.5 group justify-center sm:justify-start">
-                {/* Large Colorful Circle */}
+              <div key={idx} className="flex items-center gap-2.5 sm:gap-4 group justify-start">
+                {/* Colorful Circle */}
                 <div
-                  className={`w-16 h-16 sm:w-20 sm:h-20 lg:w-[74px] lg:h-[74px] rounded-full ${circleBg} flex items-center justify-center shrink-0 shadow-lg group-hover:scale-105 transition-transform duration-300`}
+                  className={`w-12 h-12 sm:w-16 sm:h-16 lg:w-[70px] lg:h-[70px] rounded-full ${circleBg} flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition-transform duration-300`}
                 >
-                  <IconComponent className="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 text-white" />
+                  <IconComponent className="w-6 h-6 sm:w-8 sm:h-8 lg:w-9 lg:h-9 text-white drop-shadow-xs" />
                 </div>
+
                 {/* Number & Label */}
-                <div className="text-left">
-                  <div className="text-2xl sm:text-3xl lg:text-[36px] font-bold text-white leading-none tracking-tight">
+                <div className="flex flex-col min-w-0">
+                  <h3 className="text-[20px] sm:text-[26px] lg:text-[32px] font-extrabold text-white leading-tight tracking-tight m-0 truncate">
                     {st.number}
-                  </div>
-                  <div className="text-[12px] sm:text-[13px] lg:text-[14px] text-white/95 font-semibold leading-snug mt-1.5 max-w-[120px]">
+                  </h3>
+                  <p className="text-[11px] sm:text-[12.5px] lg:text-[13px] text-white/95 font-medium leading-snug mt-0.5 m-0 line-clamp-2">
                     {st.label}
-                  </div>
+                  </p>
                 </div>
               </div>
             );

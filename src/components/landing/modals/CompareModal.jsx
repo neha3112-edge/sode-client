@@ -19,7 +19,7 @@ export default function CompareModal({
       centered
       width={480}
       destroyOnHidden
-      className="p-0 overflow-hidden"
+      className="p-0 overflow-hidden max-w-[calc(100vw-24px)] mx-auto"
     >
       <div className="pt-2">
         <LandingLeadForm

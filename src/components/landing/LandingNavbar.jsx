@@ -3,14 +3,12 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Phone, FileText } from "lucide-react";
-import { Button } from "antd";
 import LandingContainer from "./LandingContainer";
 
 export default function LandingNavbar({ brand = {}, onOpenApply, onOpenBrochure }) {
   const {
     name = "Amity University Online",
-    logo = "/assets/images/amity_online_logo.png",
+    logo = "/assets/amitylp/Amity-online-logo.png",
     primaryColor = "#08417b",
   } = brand;
 
@@ -26,53 +24,53 @@ export default function LandingNavbar({ brand = {}, onOpenApply, onOpenBrochure 
 
   return (
     <header className="navbar sticky top-0 z-50 bg-white shadow-[0px_4px_20px_rgba(0,0,0,0.08)]">
-      <LandingContainer className="top-navbar h-16.5 sm:h-18 flex items-center justify-between">
+      <LandingContainer className="top-navbar h-14 sm:h-16 lg:h-18 flex items-center justify-between px-3 sm:px-6">
         {/* Left: SODE Icon + Divider + University Logo */}
-        <div className="logo flex items-center">
+        <div className="logo flex items-center min-w-0">
           <Link
             href="#hero"
             onClick={handleScrollTop}
             className="des_logo flex items-center shrink-0 cursor-pointer"
             aria-label="Back to Top"
           >
-            <div className="relative w-9 sm:w-11 h-9 sm:h-11">
+            <div className="relative w-8 sm:w-10 lg:w-11 h-8 sm:h-10 lg:h-11">
               <Image
                 src="/assets/images/sode_icon.png"
                 alt="SODE"
                 fill
                 priority
                 className="object-contain"
-                sizes="(max-width: 640px) 36px, 44px"
+                sizes="(max-width: 640px) 32px, 44px"
               />
             </div>
           </Link>
 
           {/* Thin Vertical Divider */}
-          <div className="h-8 sm:h-10 w-[1px] bg-[#d1d5db] mx-2.5 sm:mx-4 shrink-0" />
+          <div className="h-6 sm:h-8 lg:h-10 w-[1px] bg-[#d1d5db] mx-2 sm:mx-3 lg:mx-4 shrink-0" />
 
           {/* University Online Logo */}
-          <Link href="#hero" className="mang_logo flex items-center" aria-label={name}>
-            <div className="relative w-32 sm:w-44 h-8 sm:h-10">
+          <Link href="#hero" className="mang_logo flex items-center min-w-0" aria-label={name}>
+            <div className="relative w-28 sm:w-36 lg:w-44 h-7 sm:h-9 lg:h-10">
               <Image
                 src={logo}
                 alt={name}
                 fill
                 priority
                 className="object-contain object-left"
-                sizes="(max-width: 640px) 128px, 176px"
+                sizes="(max-width: 640px) 112px, 176px"
               />
             </div>
           </Link>
         </div>
 
         {/* Right: Admission Open 2026 */}
-        <div className="header_heading">
-          <h2
-            className="text-[15px] sm:text-xl md:text-2xl font-bold tracking-tight m-0 text-right"
+        <div className="header_heading shrink-0 pl-2">
+          <span
+            className="inline-block text-[12px] sm:text-base md:text-xl lg:text-2xl font-bold tracking-tight text-right select-none"
             style={{ color: primaryColor || "#08417b" }}
           >
             Admission Open 2026
-          </h2>
+          </span>
         </div>
       </LandingContainer>
     </header>

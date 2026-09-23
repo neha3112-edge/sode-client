@@ -192,19 +192,19 @@ export default function LandingLeadForm({
 
   return (
     <div
-      className={`landing-lead-card relative w-full max-w-[420px] lg:ml-auto lg:mr-0 mx-auto overflow-hidden text-white ${isCard ? "landing-lead-card--hero" : "landing-lead-card--default"
+      className={`landing-lead-card relative w-full max-w-full sm:max-w-[420px] lg:ml-auto lg:mr-0 mx-auto overflow-hidden text-white ${isCard ? "landing-lead-card--hero" : "landing-lead-card--default"
         } ${className}`}
       style={{
         ...(isCard
           ? {
             backgroundColor: activePrimaryColor,
             borderRadius: "14px",
-            padding: "18px 16px 20px",
+            padding: "16px 14px 18px",
             boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.2)",
           }
           : {
             backgroundColor: "#ffffff",
-            padding: "16px",
+            padding: "14px",
           }),
         ...style,
       }}

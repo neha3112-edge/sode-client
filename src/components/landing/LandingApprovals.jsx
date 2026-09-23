@@ -5,8 +5,8 @@ import Image from "next/image";
 
 /**
  * Reusable Landing Approvals Section
- * Matches the reference design with full-width yellow header banner and clean circular approvals grid.
- * Data-driven from JSON/landing data (approvals array, universityName, brand).
+ * Matches the reference design with full-width yellow header banner and clean approvals grid.
+ * Fully responsive: 1 column on mobile, 2 on tablet, 4 on desktop.
  */
 export default function LandingApprovals({
   approvals = [],
@@ -19,48 +19,51 @@ export default function LandingApprovals({
   if (!approvals || approvals.length === 0) return null;
 
   const activeUniversity = universityName || brand?.name || "Amity University Online";
-  const activeBannerBg = bannerBg || brand?.accentColor || "#53df30ff";
+  const activeBannerBg = bannerBg || brand?.accentColor || "#ffd200";
 
   return (
     <section id="approvals" className="w-full">
-      {/* 1. Full-Width Yellow Header Banner matching Image 1 */}
+      {/* 1. Full-Width Yellow Header Banner */}
       <div
-        className="w-full py-3 sm:py-3.5 px-4 text-center select-none shadow-xs"
+        className="w-full py-2.5 sm:py-3.5 px-4 text-center select-none shadow-xs"
         style={{ backgroundColor: activeBannerBg }}
       >
-        <h3 className="m-0 text-[17px] sm:text-[19px] md:text-[21px] font-bold text-[#08417b] tracking-tight leading-tight">
+        <h3 className="m-0 text-[14px] sm:text-[17px] md:text-[20px] font-bold text-[#08417b] tracking-tight leading-tight">
           {activeUniversity}
         </h3>
-        <h2 className="m-0 mt-0.5 text-[22px] sm:text-[25px] md:text-[28px] font-extrabold text-[#08417b] tracking-tight leading-tight">
+        <h2 className="m-0 mt-0.5 text-[18px] sm:text-[22px] md:text-[26px] font-extrabold text-[#08417b] tracking-tight leading-tight">
           {title}
         </h2>
       </div>
 
-      {/* 2. Approvals Grid on Warm Light Cream Background matching Image 1 */}
-      <div className="py-8 sm:py-10 bg-[#fffde8] border-b border-amber-200/50">
+      {/* 2. Approvals Grid on Warm Light Cream Background */}
+      <div className="py-6 sm:py-10 bg-[#fffde8] border-b border-amber-200/50">
         <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-7 sm:gap-y-9 gap-x-4 sm:gap-x-6 lg:gap-x-8 items-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 lg:gap-8 items-center">
             {approvals.map((item, idx) => (
-              <div key={idx} className="flex items-center gap-3 sm:gap-3.5 group">
-                {/* Large Logo Image without duplicate outer border (PNG has built-in golden ring) */}
-                <div className="relative w-[76px] h-[76px] sm:w-[84px] sm:h-[84px] lg:w-[90px] lg:h-[90px] shrink-0 transition-transform duration-200 group-hover:scale-105">
+              <div
+                key={idx}
+                className="flex items-center gap-3 sm:gap-3.5 bg-white/70 sm:bg-transparent p-2.5 sm:p-0 rounded-lg sm:rounded-none border border-amber-100 sm:border-none shadow-xs sm:shadow-none group"
+              >
+                {/* Logo Image */}
+                <div className="relative w-[64px] h-[64px] sm:w-[80px] sm:h-[80px] lg:w-[88px] lg:h-[88px] shrink-0 transition-transform duration-200 group-hover:scale-105">
                   <Image
                     src={item.image}
                     alt={item.text || "Recognition approval"}
                     fill
                     className="object-contain"
-                    sizes="(max-width: 640px) 76px, 90px"
+                    sizes="(max-width: 640px) 64px, 88px"
                   />
                 </div>
 
-                {/* Clean Description Text */}
-                <div className="flex-1">
+                {/* Description Text */}
+                <div className="flex-1 min-w-0">
                   {showTags && item.tag && (
                     <span className="inline-block text-[10px] font-bold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded mb-1">
                       {item.tag}
                     </span>
                   )}
-                  <p className="text-[12.5px] sm:text-[13.5px] lg:text-[14px] font-semibold text-[#1a1a1a] leading-[1.3] m-0 max-w-[200px]">
+                  <p className="text-[12px] sm:text-[13px] leading-snug text-[#333333] font-medium m-0">
                     {item.text}
                   </p>
                 </div>
