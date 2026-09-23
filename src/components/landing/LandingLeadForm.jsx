@@ -2,24 +2,149 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Form, Input, Select, Button, Checkbox, message } from "antd";
-import { PhoneCall } from "lucide-react";
+import { Form, Checkbox, message } from "antd";
+import { Phone } from "lucide-react";
 import { STATE_OPTIONS } from "@/constants/stateOptions";
 
+const DEFAULT_COURSES = [
+  { value: "MBA", label: "MBA" },
+  { value: "MCA", label: "MCA" },
+  { value: "MCOM", label: "MCOM" },
+  { value: "MA", label: "MA" },
+  { value: "MSC", label: "MSC" },
+  { value: "BBA", label: "BBA" },
+  { value: "BCA", label: "BCA" },
+  { value: "BCOM", label: "BCOM" },
+  { value: "BA", label: "BA" },
+];
+
+// Clean Indian Flag SVG (resolves Windows OS emoji rendering as plain text 'IN')
+const IndiaFlag = () => (
+  <svg
+    className="w-[20px] h-[14px] rounded-[1px] shadow-xs shrink-0 select-none"
+    viewBox="0 0 640 480"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path fill="#FF9933" d="M0 0h640v160H0z" />
+    <path fill="#FFFFFF" d="M0 160h640v160H0z" />
+    <path fill="#128807" d="M0 320h640v160H0z" />
+    <g transform="matrix(3.2 0 0 3.2 320 240)">
+      <circle r="20" fill="none" stroke="#000080" strokeWidth="2.5" />
+      <circle r="4" fill="#000080" />
+      <path
+        fill="none"
+        stroke="#000080"
+        strokeWidth="1"
+        d="M0-20V20M-20 0H20M-14.1-14.1l28.2 28.2M-14.1 14.1L14.1-14.1M-18.5-7.7l37 15.4M-18.5 7.7l37-15.4M-7.7-18.5l15.4 37M7.7-18.5l-15.4 37"
+      />
+    </g>
+  </svg>
+);
+
+// Mobile Phone Input with Grey Flag Pill matching Image 2
+const PhoneInputField = ({ value, onChange, placeholder = "Enter 10-digit Mobile Number", maxLength = 10 }) => (
+  <div className="flex items-center w-full h-[40px] bg-white rounded-[6px] overflow-hidden shadow-xs focus-within:ring-2 focus-within:ring-amber-400">
+    <div className="flex items-center gap-1.5 h-full px-2.5 bg-[#f0f2f5] border-r border-[#d1d5db] select-none shrink-0">
+      <IndiaFlag />
+      <span className="text-slate-900 font-bold text-[13px] tracking-tight">+91</span>
+      <span className="text-slate-600 text-[9px] leading-none">▾</span>
+    </div>
+    <input
+      type="tel"
+      value={value || ""}
+      onChange={onChange}
+      placeholder={placeholder}
+      maxLength={maxLength}
+      className="w-full h-full px-3 bg-white text-slate-800 placeholder:text-[#555555] border-none outline-none text-[13.5px] font-normal"
+    />
+  </div>
+);
+
+// Dropdown Select with Bold Dark Arrow matching Image 2
+const CustomSelectField = ({ value, onChange, placeholder, options }) => (
+  <div className="relative w-full">
+    <select
+      value={value || ""}
+      onChange={onChange}
+      className={`w-full h-[40px] px-3.5 pr-8 bg-white rounded-[6px] border-none outline-none text-[13.5px] font-normal appearance-none cursor-pointer shadow-xs focus:ring-2 focus:ring-amber-400 ${value ? "text-slate-800" : "text-[#555555]"
+        }`}
+    >
+      <option value="" disabled className="text-[#555555]">
+        {placeholder}
+      </option>
+      {options.map((opt) => (
+        <option key={opt.value} value={opt.value} className="text-slate-900">
+          {opt.label}
+        </option>
+      ))}
+    </select>
+    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-800">
+      <svg className="w-3.5 h-3.5 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
+      </svg>
+    </div>
+  </div>
+);
+
+/**
+ * Reusable Landing Lead Form
+ * Exact 1:1 match to reference UI (navy card, yellow header, grey phone badge, green submit)
+ */
 export default function LandingLeadForm({
-  universityName = "University Online",
-  courseList = [],
-  formName = "Landing Lead Form",
+  data,
+  brand,
+  courses,
+  courseList,
+  universityName,
   defaultCourse = "",
-  title = "Enquire Now",
-  subtitle = "Academic Experts will assist you!",
+  formName = "Hero Enquire Form",
+  title,
+  subtitle,
   buttonText = "Submit",
+  phoneText,
+  phoneHref,
+  showPhoneBadge = true,
+  primaryColor,
+  accentColor,
+  variant = "card",
+  className = "",
+  style = {},
   onSuccess,
   onOpenDisclaimer,
 }) {
   const [form] = Form.useForm();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+
+  // Fallback chain for full flexibility and reusability
+  const activeBrand = brand || data?.brand || {};
+  const activeUniversity = universityName || activeBrand.name || "University Online";
+  const rawCourses = courseList || courses || data?.courses || DEFAULT_COURSES;
+  const activeCourses = (rawCourses.length > 0 ? rawCourses : DEFAULT_COURSES).map((item) =>
+    typeof item === "string" ? { value: item, label: item } : item
+  );
+
+  const activeTitle = title ?? activeBrand.enquireTitle ?? "Enquire Now";
+  const activeSubtitle = subtitle ?? activeBrand.enquireSubtitle ?? "Academic Experts will assist you!";
+  const activePhoneText =
+    phoneText ||
+    activeBrand.phoneDisplay ||
+    activeBrand.phone ||
+    "+91 7065 7777 55";
+  const activePhoneHref = phoneHref || activePhoneText.replace(/\D/g, "");
+
+  const activePrimaryColor =
+    primaryColor ||
+    activeBrand.hero?.formBackground ||
+    activeBrand.primaryColor ||
+    "#08417b";
+  const activeAccentColor =
+    accentColor ||
+    activeBrand.accentColor ||
+    activeBrand.goldColor ||
+    "#fdb913";
+
+  const isCard = variant === "card" || variant === "hero";
 
   const stateOptions = STATE_OPTIONS.map((st) =>
     typeof st === "string" ? { value: st, label: st } : st
@@ -28,20 +153,24 @@ export default function LandingLeadForm({
   const onFinish = async (values) => {
     setLoading(true);
     try {
-      const searchParams = new URLSearchParams(window.location.search);
+      const searchParams =
+        typeof window !== "undefined"
+          ? new URLSearchParams(window.location.search)
+          : new URLSearchParams();
+
       const leadPayload = {
         name: values.full_name,
         email: values.email,
-        phone: values.phone.replace(/\D/g, "").slice(-10),
+        phone: String(values.phone || "").replace(/\D/g, "").slice(-10),
         course: values.course,
         state: values.state,
-        university: universityName,
-        source: universityName,
+        university: activeUniversity,
+        source: activeUniversity,
         form_name: formName,
-        utm_source: searchParams.get("utm_source") || `${universityName}_LP`,
+        utm_source: searchParams.get("utm_source") || `${activeUniversity}_LP`,
         utm_medium: searchParams.get("utm_medium") || "Direct",
         utm_campaign: searchParams.get("utm_campaign") || "Online_Admission_2026",
-        page_url: window.location.href,
+        page_url: typeof window !== "undefined" ? window.location.href : "",
       };
 
       await fetch("/api/lead", {
@@ -62,41 +191,162 @@ export default function LandingLeadForm({
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-lg border border-slate-200/90 overflow-hidden">
-      <div className="bg-[#08417b] text-white p-3.5 text-center">
-        <h3 className="text-base sm:text-lg font-bold tracking-tight m-0">{title}</h3>
-        {subtitle && <p className="text-xs text-white/90 mt-0.5 m-0">{subtitle}</p>}
-      </div>
-      <div className="p-4 sm:p-5">
-        <Form form={form} layout="vertical" onFinish={onFinish} initialValues={{ course: defaultCourse, terms: true }} requiredMark={false} className="space-y-3">
-          <Form.Item name="full_name" rules={[{ required: true, message: "Please enter your name" }]} className="mb-2.5">
-            <Input size="middle" placeholder="Full Name *" className="rounded-md" />
-          </Form.Item>
-          <Form.Item name="email" rules={[{ required: true, type: "email", message: "Please enter valid email" }]} className="mb-2.5">
-            <Input size="middle" placeholder="Email Address *" className="rounded-md" />
-          </Form.Item>
-          <Form.Item name="phone" rules={[{ required: true, pattern: /^[6-9]\d{9}$/, message: "Valid 10-digit number" }]} className="mb-2.5">
-            <Input size="middle" prefix="+91" placeholder="Mobile Number *" maxLength={10} className="rounded-md" />
-          </Form.Item>
-          <div className="grid grid-cols-2 gap-2 mb-2.5">
-            <Form.Item name="course" rules={[{ required: true, message: "Select course" }]} className="mb-0">
-              <Select placeholder="Course *" options={courseList} size="middle" className="w-full" />
-            </Form.Item>
-            <Form.Item name="state" rules={[{ required: true, message: "Select state" }]} className="mb-0">
-              <Select placeholder="State *" options={stateOptions} showSearch size="middle" className="w-full" />
-            </Form.Item>
-          </div>
-          <Form.Item name="terms" valuePropName="checked" rules={[{ validator: (_, v) => v ? Promise.resolve() : Promise.reject(new Error("Accept terms")) }]} className="mb-3">
-            <Checkbox className="text-[11px] leading-tight text-slate-600">
-              I agree to receive admission updates.{" "}
-              <button type="button" onClick={() => onOpenDisclaimer?.()} className="text-blue-600 underline cursor-pointer">Disclaimer</button>
-            </Checkbox>
-          </Form.Item>
-          <Button type="primary" htmlType="submit" loading={loading} block icon={<PhoneCall className="w-3.5 h-3.5" />} className="bg-[#ffd200] hover:bg-[#ffc107] text-[#08417b] font-bold h-10 rounded-md border-none shadow-xs text-xs sm:text-sm">
-            {buttonText}
-          </Button>
-        </Form>
-      </div>
+    <div
+      className={`landing-lead-card relative w-full max-w-[420px] lg:ml-auto lg:mr-0 mx-auto overflow-hidden text-white ${isCard ? "landing-lead-card--hero" : "landing-lead-card--default"
+        } ${className}`}
+      style={{
+        ...(isCard
+          ? {
+            backgroundColor: activePrimaryColor,
+            borderRadius: "14px",
+            padding: "18px 16px 20px",
+            boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.2)",
+          }
+          : {
+            backgroundColor: "#ffffff",
+            padding: "16px",
+          }),
+        ...style,
+      }}
+    >
+      {/* Card Header matching reference UI */}
+      {isCard ? (
+        <div className="text-center mb-3">
+          <h2
+            className="m-0 text-[23px] sm:text-[24px] font-extrabold tracking-tight leading-tight"
+            style={{ color: activeAccentColor }}
+          >
+            {activeTitle}
+          </h2>
+          <p className="m-0 mt-1 text-[13px] text-white font-medium leading-normal">
+            {activeSubtitle}
+          </p>
+
+          {showPhoneBadge && activePhoneText && (
+            <div className="flex justify-center mt-2.5 mb-3.5">
+              <a
+                href={`tel:${activePhoneHref}`}
+                className="inline-flex items-center justify-center gap-2 px-5 py-1.5 rounded-full font-bold text-[15px] sm:text-[16px] text-black shadow-sm transition-all duration-150 hover:opacity-95 active:scale-95 no-underline cursor-pointer select-none"
+                style={{ backgroundColor: activeAccentColor }}
+              >
+                <Phone className="w-4 h-4 fill-black text-black stroke-[2.5]" />
+                <span className="tracking-tight">{activePhoneText}</span>
+              </a>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="mb-4 text-center">
+          <h2 className="m-0 text-xl font-bold" style={{ color: activePrimaryColor }}>
+            {activeTitle}
+          </h2>
+          <p className="m-0 mt-1 text-sm text-slate-500">{activeSubtitle}</p>
+        </div>
+      )}
+
+      {/* Main Form */}
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={onFinish}
+        initialValues={{ course: defaultCourse || undefined, terms: false }}
+        className="space-y-2 [&_.ant-form-item]:!mb-2 [&_.ant-form-item-label]:hidden [&_.ant-form-item-explain-error]:!text-red-200 [&_.ant-form-item-explain-error]:!text-[11px] [&_.ant-form-item-explain-error]:!pt-1"
+      >
+        {/* Full Name */}
+        <Form.Item
+          name="full_name"
+          rules={[{ required: true, message: "Please enter your name" }]}
+        >
+          <input
+            type="text"
+            placeholder="Enter Your Name"
+            className="w-full h-[40px] px-3.5 bg-white text-slate-800 placeholder:text-[#555555] rounded-[6px] border-none outline-none text-[13.5px] font-normal shadow-xs focus:ring-2 focus:ring-amber-400"
+          />
+        </Form.Item>
+
+        {/* Email */}
+        <Form.Item
+          name="email"
+          rules={[
+            { required: true, message: "Please enter your email" },
+            { type: "email", message: "Please enter a valid email" },
+          ]}
+        >
+          <input
+            type="email"
+            placeholder="Enter Your Email"
+            className="w-full h-[40px] px-3.5 bg-white text-slate-800 placeholder:text-[#555555] rounded-[6px] border-none outline-none text-[13.5px] font-normal shadow-xs focus:ring-2 focus:ring-amber-400"
+          />
+        </Form.Item>
+
+        {/* Mobile Number with India Flag and Country Code Pill */}
+        <Form.Item
+          name="phone"
+          rules={[
+            { required: true, message: "Please enter mobile number" },
+            { pattern: /^[6-9]\d{9}$/, message: "Enter 10-digit mobile number" },
+          ]}
+        >
+          <PhoneInputField placeholder="Enter 10-digit Mobile Number" maxLength={10} />
+        </Form.Item>
+
+        {/* Course Select */}
+        <Form.Item
+          name="course"
+          rules={[{ required: true, message: "Please select course" }]}
+        >
+          <CustomSelectField
+            placeholder="Select Your Course"
+            options={activeCourses}
+          />
+        </Form.Item>
+
+        {/* State Select */}
+        <Form.Item
+          name="state"
+          rules={[{ required: true, message: "Please select state" }]}
+        >
+          <CustomSelectField
+            placeholder="Select Your State"
+            options={stateOptions}
+          />
+        </Form.Item>
+
+        {/* Terms & Conditions Checkbox with Disclaimer Link */}
+        <Form.Item name="terms" valuePropName="checked" className="!mb-2.5 !mt-1">
+          <label className="flex items-start gap-2 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              className="mt-0.5 w-[14px] h-[14px] rounded-[2px] bg-white border border-slate-300 accent-[#22c55e] cursor-pointer shrink-0"
+            />
+            <span className={`text-[11px] leading-snug font-normal ${isCard ? "text-white" : "text-slate-600"}`}>
+              I consent to receive university updates via email and mobile number.{" "}
+              <button
+                type="button"
+                onClick={() => onOpenDisclaimer?.()}
+                className={`font-semibold underline cursor-pointer bg-transparent border-none p-0 inline ${isCard ? "text-white hover:text-amber-300" : "text-blue-600 hover:text-blue-700"
+                  }`}
+              >
+                Disclaimer
+              </button>
+            </span>
+          </label>
+        </Form.Item>
+
+        {/* Solid Vibrant Green Submit Button matching Image 2 */}
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full h-[44px] rounded-[8px] text-white font-bold text-[16px] border-none shadow-md cursor-pointer transition-all flex items-center justify-center mt-1 active:scale-[0.99] hover:opacity-95"
+          style={{ backgroundColor: "#22c55e", color: "#ffffff" }}
+        >
+          {loading ? (
+            <span className="inline-block w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+          ) : (
+            buttonText
+          )}
+        </button>
+      </Form>
     </div>
   );
 }

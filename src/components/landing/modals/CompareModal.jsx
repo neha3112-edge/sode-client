@@ -29,6 +29,7 @@ export default function CompareModal({
           title="Compare Universities"
           subtitle={`Compare ${universityName} approvals, fees, and placements side-by-side`}
           buttonText="Request Detailed Comparison Report"
+          variant="modal"
           onSuccess={onClose}
           onOpenDisclaimer={onOpenDisclaimer}
         />

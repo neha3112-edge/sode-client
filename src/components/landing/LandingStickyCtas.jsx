@@ -16,35 +16,37 @@ export default function LandingStickyCtas({
 
   return (
     <>
-      {/* Floating Desktop Widgets (Right Edge) */}
-      <div className="fixed bottom-6 right-6 z-30 hidden lg:flex flex-col gap-2.5">
-        <Button
-          type="primary"
-          icon={<Sparkles className="w-4 h-4" />}
-          onClick={() => onOpenScholarship?.()}
-          className="bg-[#e91e63] hover:bg-[#d81b60] text-white font-bold h-11 px-5 rounded-full shadow-lg border-none flex items-center gap-2"
+      {/* Floating Action Buttons (Right Edge) - Call/WhatsApp icon & Gift icon */}
+      <div className="fixed bottom-20 sm:bottom-6 right-3 sm:right-6 z-40 flex flex-col items-center gap-3">
+        {/* Top: Call / WhatsApp Icon */}
+        <a
+          href={`https://api.whatsapp.com/send/?phone=+91${phone.replace(/\D/g, "").slice(-10)}&text=${whatsappText}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="WhatsApp / Call Expert"
+          className="w-13 h-13 sm:w-15 sm:h-15 lg:w-16 lg:h-16 rounded-full overflow-hidden shadow-2xl flex items-center justify-center transition-transform hover:scale-110 active:scale-95 bg-white drop-shadow-lg"
         >
-          Check Scholarship
-        </Button>
-        <Button
-          type="default"
-          icon={<Scale className="w-4 h-4" />}
-          onClick={() => onOpenCompare?.()}
-          className="bg-white hover:bg-slate-50 text-[#08417b] font-bold h-11 px-5 rounded-full shadow-lg border border-slate-300 flex items-center gap-2"
-          style={{ color: brand.primaryColor || "#08417b" }}
-        >
-          Compare
-        </Button>
-      </div>
+          <img
+            src="/assets/amitylp/call_icon.gif"
+            alt="Call / WhatsApp"
+            className="w-full h-full object-cover"
+          />
+        </a>
 
-      {/* Floating Call Button on mobile right above footer sticky */}
-      <a
-        href={`tel:${phone.replace(/\D/g, "")}`}
-        aria-label="Call Expert"
-        className="lg:hidden fixed bottom-20 right-3 z-40 w-12 h-12 rounded-full bg-[#25d366] text-white flex items-center justify-center shadow-lg active:scale-95 transition-transform"
-      >
-        <Phone className="w-6 h-6 fill-white text-white" />
-      </a>
+        {/* Bottom: Gift Icon - opens Scholarship Coupon Code Modal */}
+        <button
+          type="button"
+          onClick={() => onOpenScholarship?.()}
+          aria-label="Get Scholarship Coupon Code"
+          className="w-13 h-13 sm:w-15 sm:h-15 lg:w-16 lg:h-16 rounded-full overflow-hidden shadow-2xl flex items-center justify-center transition-transform hover:scale-110 active:scale-95 bg-white border-none cursor-pointer p-1.5 drop-shadow-lg"
+        >
+          <img
+            src="/assets/amitylp/gift.gif"
+            alt="Gift Voucher"
+            className="w-full h-full object-contain"
+          />
+        </button>
+      </div>
 
       {/* Sticky Bottom Bar on Mobile/Tablet matching .footer_sticky_buttons */}
       <div

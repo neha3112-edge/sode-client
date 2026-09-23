@@ -3,101 +3,120 @@
 import React from "react";
 import Image from "next/image";
 import { Download } from "lucide-react";
-import { Button } from "antd";
+import LandingContainer from "./LandingContainer";
 import LandingLeadForm from "./LandingLeadForm";
 
 export default function LandingHero({
   brand = {},
   courses = [],
   onOpenBrochure,
-  onOpenApply,
   onOpenDisclaimer,
 }) {
-  const {
-    name = "University Online",
-    hashtag = "#YourFutureBeginsHere",
-    headline = "University Online",
-    tagline1 = "Learn from Anywhere,",
-    tagline2 = "Grow Everywhere",
-    logo,
-    campusImage = "/assets/images/amity_campus.png",
-    coursesStrip = ["MBA | MCA | MCOM | MA | MSC", "| BBA | BCA | BCOM | BA"],
-  } = brand;
+  const hero = brand.hero || {};
+  const courseLines = brand.coursesStrip || [
+    "MBA | MCA | MCOM | MA | MSC",
+    "| BBA | BCA | BCOM | BA",
+  ];
+  const phoneText = brand.phoneDisplay || brand.phone || "+91 7065 7777 55";
 
   return (
-    <>
-      <section id="hero" className="relative py-4 sm:py-6 lg:py-8 overflow-hidden flex items-center">
-        {/* Background Campus Image */}
-        <div className="absolute inset-0 z-0 pointer-events-none">
-          <Image src={campusImage} alt={name} fill priority sizes="100vw" className="object-cover object-right md:object-[right_center]" />
-        </div>
+    <section
+      id="hero"
+      className="relative isolate overflow-hidden bg-[#f7fbfc]"
+      style={{
+        minHeight: hero.minHeight || "480px",
+        backgroundImage: `url(${hero.backgroundImage || "/assets/amitylp/amity_new_desktop_bg.png"})`,
+        backgroundPosition: "center right",
+        backgroundSize: "cover",
+      }}
+    >
+      {/* Soft gradient overlay on the left so text is crisp and campus building shows through on the right */}
+      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-white/95 via-white/85 to-white/15" />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-center">
-            {/* Left Content Column */}
-            <div className="lg:col-span-7 space-y-2.5 sm:space-y-3">
-              {logo && (
-                <div className="flex items-center">
-                  <Image src={logo} alt={name} width={200} height={60} className="h-9 sm:h-12 w-auto object-contain" priority />
-                </div>
-              )}
-              <p className="text-xs sm:text-sm font-semibold text-slate-800 tracking-normal !mt-1">{hashtag}</p>
-              <h1 className="text-2xl sm:text-4xl lg:text-[42px] font-black tracking-tight text-[#08417b] leading-tight !mt-0.5">{headline}</h1>
-              <div className="text-xs sm:text-sm font-normal text-slate-800 leading-snug !mt-0.5">
-                <p>{tagline1}</p>
-                <p>{tagline2}</p>
-              </div>
-
-              {/* Courses Badge Strip */}
-              <div className="pt-1 max-w-md">
-                <span className="inline-block px-2.5 py-0.5 bg-[#ffc107] text-[#08417b] font-black text-[11px] sm:text-xs rounded-md shadow-2xs mb-[-6px] ml-2 relative z-10">
-                  Online Degree Courses :
-                </span>
-                <div className="bg-white/95 backdrop-blur-xs border-2 border-[#08417b] rounded-md p-2.5 pt-3 shadow-xs">
-                  <div className="font-black text-xs sm:text-base text-[#08417b] leading-snug">
-                    {coursesStrip.map((line, i) => (
-                      <div key={i}>{line}</div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Brochure CTA */}
-              <div className="pt-1">
-                <Button
-                  type="primary"
-                  size="large"
-                  icon={<Download className="w-3.5 h-3.5" />}
-                  onClick={() => onOpenBrochure?.()}
-                  className="bg-[#08417b] hover:bg-[#063366] text-white font-bold text-xs sm:text-sm h-10 rounded-md border-none shadow-sm"
-                >
-                  Download Brochure
-                </Button>
-              </div>
+      <LandingContainer
+        className="relative flex min-h-[480px] items-stretch justify-between gap-6 px-4 sm:px-6 lg:px-8"
+        style={{ maxWidth: hero.contentMaxWidth || "1400px", padding: hero.contentPadding || "30px 16px 26px" }}
+      >
+        <div className="relative z-10 flex w-full flex-col justify-center pt-2 sm:pt-0 lg:flex-1 lg:max-w-none">
+          {/* University Logo matching Image 1 */}
+          {(brand.logo || hero.logo) && (
+            <div className="mb-2">
+              <Image
+                src={brand.logo || hero.logo || "/assets/amitylp/Amity-online-logo.png"}
+                alt={brand.name || "University Logo"}
+                width={175}
+                height={48}
+                style={{ width: "auto", height: "auto", maxHeight: "48px" }}
+                className="w-auto h-10 sm:h-12 object-contain"
+                priority
+              />
             </div>
+          )}
 
-            {/* Right Form Column */}
-            <div className="lg:col-span-5 flex justify-center lg:justify-end">
-              <div className="w-full max-w-sm">
-                <LandingLeadForm
-                  universityName={name}
-                  courseList={courses}
-                  formName="Hero Enquiry Form"
-                  buttonText="Submit"
-                  onOpenDisclaimer={onOpenDisclaimer}
-                />
-              </div>
+          {/* Hashtag */}
+          <p className="m-0 text-[14px] sm:text-[15px] font-semibold text-[#111111]">
+            {brand.hashtag || "#YourFutureBeginsHere"}
+          </p>
+
+          {/* Headline */}
+          <h1
+            className="mt-1 mb-0 text-[30px] font-extrabold leading-[1.08] text-[#08417b] sm:text-[38px]"
+            style={{ fontFamily: hero.headingFont || "Arial Narrow, Arial, sans-serif" }}
+          >
+            {brand.headline || brand.name}
+          </h1>
+
+          {/* Tagline */}
+          <p className="mt-1.5 mb-5 text-[17px] leading-snug text-[#222222] sm:text-[19px]">
+            {brand.tagline1 || "Learn from Anywhere,"} <br className="hidden sm:inline" />
+            {brand.tagline2 || "Grow Everywhere"}
+          </p>
+
+          {/* Online Degree Courses Box */}
+          <div className="relative z-20 w-fit max-w-full my-1">
+            <span className="absolute -top-3.5 left-2 z-10 rounded-full bg-[#ffd200] px-3 py-0.5 text-[13px] sm:text-[14px] font-bold leading-normal text-[#08417b] shadow-2xs">
+              Online Degree Courses :
+            </span>
+            <div
+              className="rounded-[4px] border-2 bg-white/95 px-3 pb-2 pt-3 text-[18px] font-bold leading-[1.2] text-[#08417b] sm:px-4 sm:text-[20px] shadow-xs"
+              style={{ borderColor: hero.courseBorder || brand.primaryColor || "#08417b" }}
+            >
+              {courseLines.map((line) => (
+                <div key={line}>{line}</div>
+              ))}
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Recognition Strip Banner */}
-      <div className="bg-[#ffd200] py-2 px-4 text-center shadow-xs">
-        <h2 className="text-base sm:text-xl lg:text-[26px] font-bold text-[#08417b] leading-snug m-0">
-          {name} Recognition and Approvals
-        </h2>
-      </div>
-    </>
+          {/* Solid Blue Download Brochure Button matching Image 1 */}
+          <button
+            type="button"
+            onClick={() => onOpenBrochure?.()}
+            className="mt-4 inline-flex w-fit items-center gap-2 rounded-[4px] bg-[#08417b] hover:bg-[#063366] active:scale-95 px-5 py-2.5 text-[15px] font-semibold text-white transition-all shadow-xs cursor-pointer border-none"
+          >
+            <span>Download Brochure</span>
+            <Download size={16} strokeWidth={2.5} />
+          </button>
+        </div>
+
+        {/* Lead Form on the right */}
+        <div
+          className="relative z-30 w-full self-center lg:self-start flex justify-center lg:justify-end shrink-0 lg:ml-auto"
+          style={{ width: hero.formWidth || "550px", maxWidth: hero.formWidth || "550px" }}
+        >
+          <LandingLeadForm
+            brand={brand}
+            courses={courses}
+            universityName={brand.name}
+            courseList={courses}
+            variant="hero"
+            primaryColor={hero.formBackground || brand.primaryColor || "#08417b"}
+            accentColor={brand.accentColor || "#fdb913"}
+            phoneText={phoneText}
+            buttonText="Submit"
+            onOpenDisclaimer={onOpenDisclaimer}
+          />
+        </div>
+      </LandingContainer>
+    </section>
   );
 }

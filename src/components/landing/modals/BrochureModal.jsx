@@ -31,6 +31,7 @@ export default function BrochureModal({
           title={`Download ${selectedCourse} Brochure`}
           subtitle={`Get official curriculum, fee breakdown, & eligibility for ${universityName}`}
           buttonText="Get Brochure on Email & WhatsApp"
+          variant="modal"
           onSuccess={onClose}
           onOpenDisclaimer={onOpenDisclaimer}
         />

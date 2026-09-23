@@ -79,8 +79,8 @@ export default function UniversityLandingView({ data = {} }) {
       <LandingNavbar brand={brand} onOpenApply={() => handleOpenApply()} onOpenBrochure={() => handleOpenBrochure()} />
       <main className="flex-1">
         <LandingHero brand={brand} courses={courses} onOpenBrochure={() => handleOpenBrochure()} onOpenApply={() => handleOpenApply()} onOpenDisclaimer={() => handleOpenLegal("disclaimer")} />
-        <LandingApprovals approvals={approvals} />
-        <LandingProgrammes programmes={programmes} universityName={brand.name} onSelectCourseForBrochure={handleOpenBrochure} onOpenApply={handleOpenApply} />
+        <LandingApprovals approvals={approvals} universityName={brand.name} brand={brand} />
+        <LandingProgrammes programmes={programmes} universityName={brand.name} brand={brand} onSelectCourseForBrochure={handleOpenBrochure} onOpenApply={handleOpenApply} />
         <LandingAbout about={about} brand={brand} onOpenApply={() => handleOpenApply()} />
         <LandingStats stats={stats} />
         <LandingWhyChoose whyChoose={whyChoose} brand={brand} onOpenApply={() => handleOpenApply()} />
@@ -92,7 +92,7 @@ export default function UniversityLandingView({ data = {} }) {
       <LandingFooter brand={brand} onOpenDisclaimer={() => handleOpenLegal("disclaimer")} onOpenTerms={() => handleOpenLegal("terms")} onOpenPrivacy={() => handleOpenLegal("privacy")} />
       <LandingStickyCtas brand={brand} onOpenApply={() => handleOpenApply()} onOpenBrochure={() => handleOpenBrochure()} onOpenScholarship={() => setIsScholarshipOpen(true)} onOpenCompare={() => setIsCompareOpen(true)} />
       <BrochureModal isOpen={isBrochureOpen} onClose={() => setIsBrochureOpen(false)} universityName={brand.name} courses={courses} selectedCourse={selectedCourse} onOpenDisclaimer={() => handleOpenLegal("disclaimer")} />
-      <ScholarshipModal isOpen={isScholarshipOpen} onClose={() => setIsScholarshipOpen(false)} universityName={brand.name} courses={courses} onOpenDisclaimer={() => handleOpenLegal("disclaimer")} />
+      <ScholarshipModal isOpen={isScholarshipOpen} onClose={() => setIsScholarshipOpen(false)} universityName={brand.name} courses={courses} brand={brand} onOpenDisclaimer={() => handleOpenLegal("disclaimer")} />
       <CompareModal isOpen={isCompareOpen} onClose={() => setIsCompareOpen(false)} universityName={brand.name} courses={courses} onOpenDisclaimer={() => handleOpenLegal("disclaimer")} />
       <LegalModal isOpen={legalModalState.isOpen} onClose={() => setLegalModalState({ isOpen: false, type: "disclaimer" })} type={legalModalState.type} brand={brand} />
     </div>
