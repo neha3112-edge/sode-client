@@ -12,4 +12,5 @@ export { default as CustomPageClientView } from "./CustomPageClientView";
 export { default as ThankYouClient } from "./ThankYouClient";
 export { default as NotFoundPage } from "./NotFoundPage";
 export { default as CompareDrawerWidget } from "./CompareDrawerWidget";
+export { default as CompareUniversityClientView } from "./CompareUniversityClientView";
 export { default as SafeHtmlRenderer } from "./SafeHtmlRenderer";

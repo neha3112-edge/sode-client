@@ -52,13 +52,13 @@ export function MobileBottomNav() {
     },
     {
       label: "Compare",
-      href: "/compare",
+      href: "/compare-university",
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v18m-6-6 6 6 6-6M6 9l6-6 6 6" />
         </svg>
       ),
-      active: pathname.startsWith("/compare") || pathname.includes("compare"),
+      active: pathname.startsWith("/compare-university"),
     },
   ];
 

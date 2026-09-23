@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useRef, Suspense } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Button, Select, Tag, Empty, Skeleton, Table, Modal } from "antd";
+import { Button, Select, Tag, Empty, Table, Modal } from "antd";
 import {
   ArrowLeftOutlined,
   CheckCircleFilled,
@@ -31,7 +31,15 @@ import { useFormModal as useAppDrawer } from "@/hooks/useFormModal";
 import { request } from "@/services/request";
 import { getAssetPath } from "@/lib/utils";
 
-function CompareContent() {
+export default function CompareUniversityClientView({
+  initialComparedData = [],
+  initialAllUniversities = [],
+  initialAllCourses = [],
+  initialAllModes = [],
+  initialCompareCategories = [],
+  initialAllStates = [],
+  initialAllApprovals = [],
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const {
@@ -42,84 +50,18 @@ function CompareContent() {
   } = useCompare();
   const { openFormModal } = useAppDrawer();
 
-  const [allUniversities, setAllUniversities] = useState([]);
-  const [allCourses, setAllCourses] = useState([]);
-  const [allModes, setAllModes] = useState([]);
-  const [comparedData, setComparedData] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [allUniversities, setAllUniversities] = useState(initialAllUniversities);
+  const [allCourses, setAllCourses] = useState(initialAllCourses);
+  const [allModes, setAllModes] = useState(initialAllModes);
+  const [dbCompareCategories, setDbCompareCategories] = useState(initialCompareCategories);
+  const [allStates, setAllStates] = useState(initialAllStates);
+  const [allApprovals, setAllApprovals] = useState(initialAllApprovals);
+  const [comparedData, setComparedData] = useState(initialComparedData);
   const [baseUniversityObj, setBaseUniversityObj] = useState(null);
-  const [selectedCourses, setSelectedCourses] = useState([]);
+  const [selectedCourse, setSelectedCourse] = useState(null);
   const [selectedMode, setSelectedMode] = useState("all");
   const [flyingLogo, setFlyingLogo] = useState(null);
 
-  // 1. Fetch all universities, courses, and modes for dropdown selectors
-  useEffect(() => {
-    let isMounted = true;
-
-    request.dynamicOptions({ entity: "universities", endPoint: "v1/options" })
-      .then((res) => {
-        if (!isMounted) return;
-        const uList = Array.isArray(res?.result) ? res.result : Array.isArray(res) ? res : [];
-        setAllUniversities(uList);
-      })
-      .catch((err) => console.error("Error fetching university options:", err));
-
-    request.dynamicOptions({ entity: "courses", endPoint: "v1/options" })
-      .then((res) => {
-        if (!isMounted) return;
-        const cList = Array.isArray(res?.result) ? res.result : Array.isArray(res) ? res : [];
-        setAllCourses(cList);
-      })
-      .catch((err) => console.error("Error fetching course options:", err));
-
-    request.dynamicOptions({ entity: "modeinfo", endPoint: "v1/options" })
-      .then((res) => {
-        if (!isMounted) return;
-        const mList = Array.isArray(res?.result) ? res.result : Array.isArray(res) ? res : [];
-        setAllModes(mList);
-      })
-      .catch((err) => console.error("Error fetching mode options:", err));
-
-    // Fetch dynamic categories configured with showOnCompare in CRM
-    request.dynamicList({ entity: "category", endPoint: "v1/list" })
-      .then((res) => {
-        if (!isMounted) return;
-        const list = Array.isArray(res?.data) ? res.data : Array.isArray(res?.result) ? res.result : [];
-        const compareCats = list.filter((c) => c.showOnCompare);
-        if (compareCats.length > 0) {
-          setDbCompareCategories(compareCats);
-        }
-      })
-      .catch((err) => console.log("Category list fetch:", err));
-
-    // Fetch all states for State Wise selection
-    request.dynamicOptions({ entity: "states", endPoint: "v1/options" })
-      .then((res) => {
-        if (!isMounted) return;
-        const sList = Array.isArray(res?.result) ? res.result : Array.isArray(res) ? res : [];
-        if (sList.length > 0) {
-          setAllStates(sList);
-        }
-      })
-      .catch((err) => console.log("States options fetch:", err));
-
-    // Fetch dynamic approvals / accreditations
-    request.dynamicOptions({ entity: "approvals", endPoint: "v1/options" })
-      .then((res) => {
-        if (!isMounted) return;
-        const aList = Array.isArray(res?.result) ? res.result : Array.isArray(res) ? res : [];
-        if (aList.length > 0) setAllApprovals(aList);
-      })
-      .catch((err) => console.log("Approvals options fetch:", err));
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  const [dbCompareCategories, setDbCompareCategories] = useState([]);
-  const [allStates, setAllStates] = useState([]);
-  const [allApprovals, setAllApprovals] = useState([]);
   const [isTrendingModalOpen, setIsTrendingModalOpen] = useState(false);
   const [isRecommendedModalOpen, setIsRecommendedModalOpen] = useState(false);
   const [isStateModalOpen, setIsStateModalOpen] = useState(false);
@@ -128,6 +70,13 @@ function CompareContent() {
   const [selectedStateObj, setSelectedStateObj] = useState(null);
   const [selectedAccreditationObj, setSelectedAccreditationObj] = useState(null);
   const [allUnisSearchText, setAllUnisSearchText] = useState("");
+
+  // Sync if server re-delivers updated comparedData via props
+  useEffect(() => {
+    if (initialComparedData && initialComparedData.length > 0) {
+      setComparedData(initialComparedData);
+    }
+  }, [initialComparedData]);
 
   // All Universities with showInModal !== false (filtered by search if any)
   const modalUniversitiesList = useMemo(() => {
@@ -363,7 +312,11 @@ function CompareContent() {
     if (compareList && compareList.length > 0) {
       return compareList.map((item) => item.slug || item._id || item.id).filter(Boolean);
     }
-    const urlIds = searchParams.get("universityid") || searchParams.get("ids") || searchParams.get("universities");
+    const urlIds =
+      searchParams.get("university") ||
+      searchParams.get("universityid") ||
+      searchParams.get("ids") ||
+      searchParams.get("universities");
     if (urlIds) {
       return urlIds.split(",").map((s) => s.trim()).filter(Boolean);
     }
@@ -414,31 +367,28 @@ function CompareContent() {
       }
     }
     if (detected.length > 0) {
-      setSelectedCourses((prev) => (prev.length === 0 ? detected : prev));
+      setSelectedCourse((prev) => (prev ? prev : detected[0]));
     }
   }, [compareList, allCourses]);
 
   // 3. Fetch live comparison data from backend API ONLY when "Compare Now" is clicked
   const handleCompareNow = async () => {
     if (currentIdentifiers.length === 0) return;
-    setLoading(true);
     try {
       const res = await request.dynamicRead({
         entity: "universities",
         endPoint: "v1/compare",
-        options: { universityid: currentIdentifiers.join(",") },
+        options: { university: currentIdentifiers.join(",") },
       });
       const data = Array.isArray(res?.result) ? res.result : Array.isArray(res) ? res : [];
       setComparedData(data);
 
-      // Update URL query parameters with clean university slugs
+      // Update URL query parameters with clean university slugs without %2C encoding
       const slugsToUse = (compareList && compareList.length > 0)
         ? compareList.map((u) => u.slug || u._id || u.id).filter(Boolean)
         : currentIdentifiers;
 
-      const newParams = new URLSearchParams(searchParams.toString());
-      newParams.set("universityid", slugsToUse.join(","));
-      router.replace(`?${newParams.toString()}`, { scroll: false });
+      syncCompareUrl(slugsToUse);
 
       // Smooth scroll to the comparison matrix section
       setTimeout(() => {
@@ -447,35 +397,27 @@ function CompareContent() {
       }, 100);
     } catch (err) {
       console.error("❌ Failed to load live comparison data:", err);
-    } finally {
-      setLoading(false);
     }
   };
 
-  const initialFetchDoneRef = useRef(false);
+  // Helper to synchronize compare URL with clean literal commas (e.g. ?university=amity-university,andhra-university)
+  const syncCompareUrl = (slugs) => {
+    if (typeof window === "undefined") return;
+    const slugsList = (slugs || []).filter(Boolean);
+    const newParams = new URLSearchParams(window.location.search);
+    newParams.delete("universityid");
+    newParams.delete("ids");
+    newParams.delete("universities");
+    newParams.delete("university");
 
-  // Initial fetch ONLY on page mount if URL already contains query parameters
-  useEffect(() => {
-    if (initialFetchDoneRef.current) return;
-    const urlIds = searchParams.get("universityid") || searchParams.get("ids") || searchParams.get("universities");
-    if (!urlIds) return;
-    const ids = urlIds.split(",").map((s) => s.trim()).filter(Boolean);
-    if (ids.length === 0) return;
+    const otherQuery = newParams.toString();
+    const uniParam = slugsList.length > 0 ? `university=${slugsList.join(",")}` : "";
+    const fullQuery = [uniParam, otherQuery].filter(Boolean).join("&");
+    const targetUrl = fullQuery ? `/compare-university?${fullQuery}` : "/compare-university";
 
-    initialFetchDoneRef.current = true;
-    setLoading(true);
-    request.dynamicRead({
-      entity: "universities",
-      endPoint: "v1/compare",
-      options: { universityid: ids.join(",") },
-    })
-      .then((res) => {
-        const data = Array.isArray(res?.result) ? res.result : Array.isArray(res) ? res : [];
-        setComparedData(data);
-      })
-      .catch((err) => console.error("❌ Failed to load comparison data on mount:", err))
-      .finally(() => setLoading(false));
-  }, [searchParams]);
+    router.replace(targetUrl, { scroll: false });
+    window.history.replaceState(null, "", targetUrl);
+  };
 
   // Remove single university and synchronize URL cleanly
   const handleRemoveUniversity = (identifier) => {
@@ -495,21 +437,7 @@ function CompareContent() {
     });
 
     const remainingSlugs = remainingItems.map((u) => u.slug || u._id || u.id).filter(Boolean);
-
-    if (typeof window !== "undefined") {
-      const newParams = new URLSearchParams(window.location.search);
-      if (remainingSlugs.length > 0) {
-        newParams.set("universityid", remainingSlugs.join(","));
-        const newQuery = newParams.toString();
-        router.replace(`?${newQuery}`, { scroll: false });
-      } else {
-        newParams.delete("universityid");
-        newParams.delete("ids");
-        newParams.delete("universities");
-        const newQuery = newParams.toString();
-        router.replace(newQuery ? `?${newQuery}` : "/compare", { scroll: false });
-      }
-    }
+    syncCompareUrl(remainingSlugs);
   };
 
   // Clear all universities from slots, table, recommendations, and URL
@@ -517,15 +445,7 @@ function CompareContent() {
     clearCompare();
     setComparedData([]);
     setBaseUniversityObj(null);
-
-    if (typeof window !== "undefined") {
-      const newParams = new URLSearchParams(window.location.search);
-      newParams.delete("universityid");
-      newParams.delete("ids");
-      newParams.delete("universities");
-      const newQuery = newParams.toString();
-      router.replace(newQuery ? `?${newQuery}` : "/compare", { scroll: false });
-    }
+    syncCompareUrl([]);
   };
 
   // Determine Primary / Base University for modal labels
@@ -535,33 +455,29 @@ function CompareContent() {
     return null;
   }, [compareList, comparedData]);
 
-  // Available universities (excluding currently selected ones & filtered by selectedCourses & selectedMode)
+  // Available universities (excluding currently selected ones & filtered by selectedCourse & selectedMode)
   const availableUniversities = useMemo(() => {
     const selectedKeys = new Set([
       ...(compareList || []).map((u) => String(u._id || u.id || u.slug || "").toLowerCase()),
       ...(comparedData || []).map((u) => String(u._id || u.slug || "").toLowerCase()),
     ]);
 
-    // 1. Determine allowed university IDs from selectedCourses
+    // 1. Determine allowed university IDs from selectedCourse
     let allowedUniversityIds = null;
-    if (selectedCourses && selectedCourses.length > 0) {
-      const activeCoursesLower = selectedCourses
-        .filter((c) => c && c !== "all")
-        .map((c) => String(c).toLowerCase().trim());
-
-      if (activeCoursesLower.length > 0) {
-        const idSet = new Set();
-        (allCourses || []).forEach((c) => {
-          const cName = String(c.name || c.title || "").toLowerCase().trim();
-          if (
-            activeCoursesLower.includes(cName) ||
-            activeCoursesLower.some((sel) => cName.includes(sel) || sel.includes(cName))
-          ) {
-            (c.universityIds || []).forEach((uId) => idSet.add(String(uId)));
-          }
-        });
-        allowedUniversityIds = idSet;
-      }
+    if (selectedCourse && selectedCourse !== "all") {
+      const activeCourseLower = String(selectedCourse).toLowerCase().trim();
+      const idSet = new Set();
+      (allCourses || []).forEach((c) => {
+        const cName = String(c.name || c.title || "").toLowerCase().trim();
+        if (
+          cName === activeCourseLower ||
+          cName.includes(activeCourseLower) ||
+          activeCourseLower.includes(cName)
+        ) {
+          (c.universityIds || []).forEach((uId) => idSet.add(String(uId)));
+        }
+      });
+      allowedUniversityIds = idSet;
     }
 
     return (allUniversities || []).filter((u) => {
@@ -592,7 +508,7 @@ function CompareContent() {
       }
       return true;
     });
-  }, [allUniversities, allCourses, compareList, comparedData, selectedCourses, selectedMode]);
+  }, [allUniversities, allCourses, compareList, comparedData, selectedCourse, selectedMode]);
 
   // Rich Select Options with Logos for the in-slot university picker
   const universitySelectOptions = useMemo(() => {
@@ -938,118 +854,116 @@ function CompareContent() {
   const tableDataSource = useMemo(() => {
     if (!comparedData || comparedData.length === 0) return [];
 
-    const hasCoursesSelected = Array.isArray(selectedCourses) && selectedCourses.length > 0;
+    const hasCourseSelected = Boolean(selectedCourse && selectedCourse !== "all");
     const hasOfferingComparison = comparedData.some((u) => u.isCourseOffering || u.type === "course_offering");
 
     const courseSpecificRows = [];
 
-    if (hasCoursesSelected) {
-      selectedCourses.forEach((cName) => {
-        const suffix = selectedCourses.length > 1 ? ` (${cName})` : "";
-        courseSpecificRows.push(
-          {
-            key: `course_status_${cName}`,
-            icon: <BookOutlined className="text-[#009F93]" />,
-            featureTitle: `Course Availability${suffix}`,
-            renderCell: (uni) => {
-              const off = findCourseOffering(uni, cName);
-              return off ? (
-                <Tag color="success" className="font-bold text-xs px-2.5 py-0.5 rounded-full m-0">
-                  Offered
-                </Tag>
-              ) : (
-                <Tag color="default" className="text-slate-400 font-semibold text-xs px-2.5 py-0.5 rounded-full m-0">
-                  Not Offered
-                </Tag>
-              );
-            },
+    if (hasCourseSelected) {
+      const cName = selectedCourse;
+      courseSpecificRows.push(
+        {
+          key: `course_status_${cName}`,
+          icon: <BookOutlined className="text-[#009F93]" />,
+          featureTitle: `Course Availability (${cName})`,
+          renderCell: (uni) => {
+            const off = findCourseOffering(uni, cName);
+            return off ? (
+              <Tag color="success" className="font-bold text-xs px-2.5 py-0.5 rounded-full m-0">
+                Offered
+              </Tag>
+            ) : (
+              <Tag color="default" className="text-slate-400 font-semibold text-xs px-2.5 py-0.5 rounded-full m-0">
+                Not Offered
+              </Tag>
+            );
           },
-          {
-            key: `course_fees_${cName}`,
-            icon: <DollarOutlined className="text-emerald-600" />,
-            featureTitle: `Fees per Semester${suffix}`,
-            renderCell: (uni) => {
-              const off = findCourseOffering(uni, cName);
-              if (!off) return <span className="text-slate-400">-</span>;
-              return off.fee_per_semester ? (
-                <Tag color="success" className="font-extrabold text-xs px-2.5 py-0.5 rounded-full m-0">
-                  {off.fee_per_semester}
-                </Tag>
-              ) : (
-                <span className="text-slate-400">Contact for Fees</span>
-              );
-            },
+        },
+        {
+          key: `course_fees_${cName}`,
+          icon: <DollarOutlined className="text-emerald-600" />,
+          featureTitle: `Fees per Semester (${cName})`,
+          renderCell: (uni) => {
+            const off = findCourseOffering(uni, cName);
+            if (!off) return <span className="text-slate-400">-</span>;
+            return off.fee_per_semester ? (
+              <Tag color="success" className="font-extrabold text-xs px-2.5 py-0.5 rounded-full m-0">
+                {off.fee_per_semester}
+              </Tag>
+            ) : (
+              <span className="text-slate-400">Contact for Fees</span>
+            );
           },
-          {
-            key: `course_discount_${cName}`,
-            icon: <DollarOutlined className="text-orange-500" />,
-            featureTitle: `Fees Discount${suffix}`,
-            renderCell: (uni) => {
-              const off = findCourseOffering(uni, cName);
-              if (!off) return <span className="text-slate-400">-</span>;
-              return (
-                <Tag color="orange" className="font-bold text-[11px] px-2.5 py-0.5 rounded-full m-0">
-                  {off.fee_discount || "Upto 20%"}
-                </Tag>
-              );
-            },
+        },
+        {
+          key: `course_discount_${cName}`,
+          icon: <DollarOutlined className="text-orange-500" />,
+          featureTitle: `Fees Discount (${cName})`,
+          renderCell: (uni) => {
+            const off = findCourseOffering(uni, cName);
+            if (!off) return <span className="text-slate-400">-</span>;
+            return (
+              <Tag color="orange" className="font-bold text-[11px] px-2.5 py-0.5 rounded-full m-0">
+                {off.fee_discount || "Upto 20%"}
+              </Tag>
+            );
           },
-          {
-            key: `course_rating_${cName}`,
-            icon: <TrophyOutlined className="text-amber-500" />,
-            featureTitle: `Course Rating${suffix}`,
-            renderCell: (uni) => {
-              const off = findCourseOffering(uni, cName);
-              if (!off) return <span className="text-slate-400">-</span>;
-              return (
-                <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-0.5 rounded-full font-bold text-xs">
-                  ★ {off.rating || "4.5"} / 5
-                </span>
-              );
-            },
+        },
+        {
+          key: `course_rating_${cName}`,
+          icon: <TrophyOutlined className="text-amber-500" />,
+          featureTitle: `Course Rating (${cName})`,
+          renderCell: (uni) => {
+            const off = findCourseOffering(uni, cName);
+            if (!off) return <span className="text-slate-400">-</span>;
+            return (
+              <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-0.5 rounded-full font-bold text-xs">
+                ★ {off.rating || "4.5"} / 5
+              </span>
+            );
           },
-          {
-            key: `course_duration_${cName}`,
-            icon: <ClockCircleOutlined className="text-blue-600" />,
-            featureTitle: `Course Duration${suffix}`,
-            renderCell: (uni) => {
-              const off = findCourseOffering(uni, cName);
-              if (!off) return <span className="text-slate-400">-</span>;
-              return <span className="font-bold text-slate-700">{off.duration || "2 Years"}</span>;
-            },
+        },
+        {
+          key: `course_duration_${cName}`,
+          icon: <ClockCircleOutlined className="text-blue-600" />,
+          featureTitle: `Course Duration (${cName})`,
+          renderCell: (uni) => {
+            const off = findCourseOffering(uni, cName);
+            if (!off) return <span className="text-slate-400">-</span>;
+            return <span className="font-bold text-slate-700">{off.duration || "2 Years"}</span>;
           },
-          {
-            key: `course_eligibility_${cName}`,
-            icon: <SafetyCertificateOutlined className="text-blue-600" />,
-            featureTitle: `Course Eligibility${suffix}`,
-            renderCell: (uni) => {
-              const off = findCourseOffering(uni, cName);
-              if (!off) return <span className="text-slate-400">-</span>;
-              return <span className="text-slate-600 font-semibold text-[11px]">{off.eligibility || "Graduation / 10+2"}</span>;
-            },
+        },
+        {
+          key: `course_eligibility_${cName}`,
+          icon: <SafetyCertificateOutlined className="text-blue-600" />,
+          featureTitle: `Course Eligibility (${cName})`,
+          renderCell: (uni) => {
+            const off = findCourseOffering(uni, cName);
+            if (!off) return <span className="text-slate-400">-</span>;
+            return <span className="text-slate-600 font-semibold text-[11px]">{off.eligibility || "Graduation / 10+2"}</span>;
           },
-          {
-            key: `course_specializations_${cName}`,
-            icon: <BookOutlined className="text-purple-600" />,
-            featureTitle: `Course Specializations${suffix}`,
-            renderCell: (uni) => {
-              const off = findCourseOffering(uni, cName);
-              if (!off) return <span className="text-slate-400">-</span>;
-              const specs = off.specializations || [];
-              if (specs.length === 0) return <span className="text-slate-500 font-medium">Standard / General</span>;
-              return (
-                <div className="flex flex-wrap items-center justify-center gap-1 max-w-[260px] mx-auto">
-                  {specs.map((s, sIdx) => (
-                    <Tag key={sIdx} color="purple" className="font-bold text-[10px] m-0">
-                      {s}
-                    </Tag>
-                  ))}
-                </div>
-              );
-            },
-          }
-        );
-      });
+        },
+        {
+          key: `course_specializations_${cName}`,
+          icon: <BookOutlined className="text-purple-600" />,
+          featureTitle: `Course Specializations (${cName})`,
+          renderCell: (uni) => {
+            const off = findCourseOffering(uni, cName);
+            if (!off) return <span className="text-slate-400">-</span>;
+            const specs = off.specializations || [];
+            if (specs.length === 0) return <span className="text-slate-500 font-medium">Standard / General</span>;
+            return (
+              <div className="flex flex-wrap items-center justify-center gap-1 max-w-[260px] mx-auto">
+                {specs.map((s, sIdx) => (
+                  <Tag key={sIdx} color="purple" className="font-bold text-[10px] m-0">
+                    {s}
+                  </Tag>
+                ))}
+              </div>
+            );
+          },
+        }
+      );
     } else if (hasOfferingComparison) {
       courseSpecificRows.push(
         {
@@ -1552,7 +1466,7 @@ function CompareContent() {
                 openFormModal({
                   title: `Apply Now - ${uni.name}`,
                   subtitle: "Fill your details to get free expert 1:1 counseling",
-                  defaultCourse: selectedCourses.length > 0 ? selectedCourses.join(", ") : uni.name,
+                  defaultCourse: selectedCourse || uni.name,
                 });
               }}
               className="bg-[#00B4D8] hover:bg-[#0096C7] border-none font-semibold text-[11px] sm:text-xs rounded-xl h-7 sm:h-8 px-2.5 w-full sm:w-auto cursor-pointer"
@@ -1573,7 +1487,7 @@ function CompareContent() {
     ];
 
     return [...courseSpecificRows, ...universityRows];
-  }, [comparedData, selectedCourses, openFormModal]);
+  }, [comparedData, selectedCourse, openFormModal]);
 
   return (
     <div className="bg-[#F1F4F9] min-h-screen font-sans text-gray-800">
@@ -1585,16 +1499,14 @@ function CompareContent() {
             <span className="text-white">Choose Best For You!</span>
           </h1>
 
-          {/* Course Selector Dropdown inside Hero */}
+          {/* Course Selector Dropdown inside Hero (Single Select) */}
           <div className="max-w-lg mx-auto pt-1">
             <Select
-              mode="multiple"
-              maxTagCount="responsive"
               showSearch
               size="large"
               allowClear
-              value={selectedCourses}
-              onChange={(vals) => setSelectedCourses(vals || [])}
+              value={selectedCourse}
+              onChange={(val) => setSelectedCourse(val || null)}
               placeholder="Select Course to Compare.... MBA, MCA..."
               className="w-full rounded-2xl text-left font-normal text-balance text-gray-500 bg-white"
               options={courseSelectOptions.filter((opt) => opt.value !== "all")}
@@ -1746,8 +1658,7 @@ function CompareContent() {
               <div className="flex flex-wrap items-center justify-center gap-3 mt-4">
                 <Button
                   type="primary"
-                  disabled={currentIdentifiers.length === 0 || loading}
-                  loading={loading}
+                  disabled={currentIdentifiers.length === 0}
                   onClick={handleCompareNow}
                   className="bg-[#00B4D8] hover:bg-[#0096C7] text-white font-semibold rounded-xl transition-all inline-flex items-center gap-1.5 cursor-pointer border-none h-10 px-5"
                 >
@@ -1848,25 +1759,7 @@ function CompareContent() {
 
       {/* ── COMPARISON MATRIX SECTION ── */}
       <div id="comparison-matrix-section" className="max-w-[1440px] mx-auto px-3 sm:px-5 md:px-6 py-6 space-y-4">
-        {loading ? (
-          <div className="bg-white rounded-3xl border border-slate-200/80 p-8">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="p-6 rounded-2xl border border-slate-100 flex flex-col gap-4 bg-slate-50/50">
-                  <div className="flex items-center gap-3">
-                    <Skeleton.Avatar active size="large" shape="square" style={{ borderRadius: 12 }} />
-                    <div className="flex-1">
-                      <Skeleton.Input active size="small" style={{ width: "80%", height: 18 }} />
-                      <Skeleton.Input active size="small" style={{ width: "50%", height: 14, marginTop: 4 }} />
-                    </div>
-                  </div>
-                  <Skeleton active paragraph={{ rows: 6, width: ["100%", "85%", "90%", "75%", "60%", "70%"] }} />
-                  <Skeleton.Button active size="small" style={{ width: "100%", height: 36, borderRadius: 12, marginTop: "auto" }} />
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : comparedData.length > 0 ? (
+        {comparedData.length > 0 ? (
           <div>
             <div className="hidden md:block">
               <Table
@@ -2004,7 +1897,7 @@ function CompareContent() {
                   openFormModal({
                     title: "Book 1:1 Free Counseling",
                     subtitle: "Speak with an academic expert to choose the best university for your career",
-                    defaultCourse: selectedCourses.length > 0 ? selectedCourses.join(", ") : "General Counseling",
+                    defaultCourse: selectedCourse || "General Counseling",
                   });
                 }}
                 className="bg-[#00B4D8] hover:bg-[#0096C7] text-white font-semibold text-sm md:text-base px-8 h-11 rounded-xl border-none cursor-pointer inline-flex items-center gap-2"
@@ -2852,16 +2745,4 @@ function CompareContent() {
   );
 }
 
-export default function ComparePage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen bg-[#f4f7f9] flex items-center justify-center p-8">
-          <Skeleton active paragraph={{ rows: 8 }} />
-        </div>
-      }
-    >
-      <CompareContent />
-    </Suspense>
-  );
-}
+

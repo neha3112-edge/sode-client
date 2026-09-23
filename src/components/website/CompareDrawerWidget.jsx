@@ -14,13 +14,24 @@ export default function CompareDrawerWidget() {
   const { compareList, removeFromCompare, clearCompare, triggerExecuteCompare } = useCompare();
 
   // Do not show the floating widget on the dedicated compare page
-  if (pathname === "/compare" || pathname?.startsWith("/compare/")) {
+  if (
+    pathname === "/compare-university" ||
+    pathname?.startsWith("/compare-university/")
+  ) {
     return null;
   }
 
   if (!compareList || compareList.length === 0) {
     return null;
   }
+
+  const compareUrl =
+    compareList.length > 0
+      ? `/compare-university?university=${compareList
+          .map((u) => u.slug || u._id || u.id)
+          .filter(Boolean)
+          .join(",")}`
+      : "/compare-university";
 
   return (
     <div className="fixed bottom-20 sm:bottom-4 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-4xl bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-2xl rounded-2xl p-3 transition-all animate-in fade-in slide-in-from-bottom-5 duration-300">
@@ -86,7 +97,7 @@ export default function CompareDrawerWidget() {
             Clear
           </button>
 
-          <Link href="/compare">
+          <Link href={compareUrl}>
             <Button
               type="primary"
               onClick={triggerExecuteCompare}
@@ -148,7 +159,7 @@ export default function CompareDrawerWidget() {
         </div>
 
         {/* Bottom Full-Width Action Button */}
-        <Link href="/compare" className="w-full">
+        <Link href={compareUrl} className="w-full">
           <Button
             type="primary"
             onClick={triggerExecuteCompare}

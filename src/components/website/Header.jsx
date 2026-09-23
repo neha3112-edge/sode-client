@@ -400,7 +400,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
             {rawFeaturedButtons.map((btn, idx) => (
               <Button
                 key={btn._id || idx}
-                onClick={() => router.push(btn.url || "/compare")}
+                onClick={() => router.push(btn.url || "/compare-university")}
                 style={{ ...goldBtnStyle, fontSize: "12px", boxShadow: "none", height: "32px", padding: "0 16px", borderRadius: "6px" }}
                 className="hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap"
               >
@@ -420,7 +420,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
             {rawFeaturedButtons[0] && (
               <Button
                 size="small"
-                onClick={() => router.push(rawFeaturedButtons[0]?.url || "/compare")}
+                onClick={() => router.push(rawFeaturedButtons[0]?.url || "/compare-university")}
                 style={{ ...goldBtnStyle, fontSize: "12px", boxShadow: "none", borderRadius: "6px", height: "28px", padding: "0 10px" }}
                 className="whitespace-nowrap shrink-0 shadow-none"
               >
