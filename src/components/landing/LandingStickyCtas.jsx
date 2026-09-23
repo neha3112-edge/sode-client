@@ -1,8 +1,7 @@
 "use client";
 
-import React from "react";
-import { Phone, Download, Sparkles, Scale } from "lucide-react";
-import { Button } from "antd";
+import Image from "next/image";
+import { Download } from "lucide-react";
 
 export default function LandingStickyCtas({
   brand = {},
@@ -24,12 +23,15 @@ export default function LandingStickyCtas({
           target="_blank"
           rel="noopener noreferrer"
           aria-label="WhatsApp / Call Expert"
-          className="w-13 h-13 sm:w-15 sm:h-15 lg:w-16 lg:h-16 rounded-full overflow-hidden shadow-2xl flex items-center justify-center transition-transform hover:scale-110 active:scale-95 bg-white drop-shadow-lg"
+          className="relative w-13 h-13 sm:w-15 sm:h-15 lg:w-16 lg:h-16 rounded-full overflow-hidden shadow-2xl flex items-center justify-center transition-transform hover:scale-110 active:scale-95 bg-white drop-shadow-lg"
         >
-          <img
+          <Image
             src="/assets/amitylp/call_icon.gif"
             alt="Call / WhatsApp"
-            className="w-full h-full object-cover"
+            fill
+            unoptimized
+            className="object-cover"
+            sizes="64px"
           />
         </a>
 
@@ -38,12 +40,15 @@ export default function LandingStickyCtas({
           type="button"
           onClick={() => onOpenScholarship?.()}
           aria-label="Get Scholarship Coupon Code"
-          className="w-13 h-13 sm:w-15 sm:h-15 lg:w-16 lg:h-16 rounded-full overflow-hidden shadow-2xl flex items-center justify-center transition-transform hover:scale-110 active:scale-95 bg-white border-none cursor-pointer p-1.5 drop-shadow-lg"
+          className="relative w-13 h-13 sm:w-15 sm:h-15 lg:w-16 lg:h-16 rounded-full overflow-hidden shadow-2xl flex items-center justify-center transition-transform hover:scale-110 active:scale-95 bg-white border-none cursor-pointer p-1.5 drop-shadow-lg"
         >
-          <img
+          <Image
             src="/assets/amitylp/gift.gif"
             alt="Gift Voucher"
-            className="w-full h-full object-contain"
+            fill
+            unoptimized
+            className="object-contain p-1"
+            sizes="64px"
           />
         </button>
       </div>

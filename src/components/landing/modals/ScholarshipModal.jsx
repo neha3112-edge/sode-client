@@ -227,7 +227,7 @@ export default function ScholarshipModal({
             : "",
       };
 
-      await fetch("/api/leads", {
+      await fetch("/api/lead", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
