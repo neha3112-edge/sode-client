@@ -113,15 +113,14 @@ export default function CourseFeesPlan({
             <div
               key={card.id}
               onClick={card.onClick}
-              className={`p-2 sm:p-3 rounded-xl border transition-all cursor-pointer relative flex flex-col justify-between space-y-1 ${
-                isSelected
-                  ? isEmi
-                    ? "border-amber-600 bg-amber-50/40 shadow-md ring-1 ring-amber-500/20"
-                    : "border-[#0C2B4E] bg-blue-50/40 shadow-md ring-1 ring-[#0C2B4E]/10"
-                  : isEmi
-                    ? "border-amber-200 bg-amber-50/20 hover:border-amber-300 hover:shadow-xs"
-                    : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-xs"
-              }`}
+              className={`p-2 sm:p-3 rounded-xl border transition-all cursor-pointer relative flex flex-col justify-between space-y-1 ${isSelected
+                ? isEmi
+                  ? "border-amber-600 bg-amber-50/40 shadow-md ring-1 ring-amber-500/20"
+                  : "border-[#0C2B4E] bg-blue-50/40 shadow-md ring-1 ring-[#0C2B4E]/10"
+                : isEmi
+                  ? "border-amber-200 bg-amber-50/20 hover:border-amber-300 hover:shadow-xs"
+                  : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-xs"
+                }`}
             >
               <div className="space-y-1">
                 <div className="flex items-center justify-between gap-1 min-w-0">
@@ -190,6 +189,32 @@ export default function CourseFeesPlan({
             <div className="text-base sm:text-lg font-black text-emerald-950">
               {activeLedgerData[selectedPlanTab].extraOff.formattedFinalPayable}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* 💡 Divider & Additional Mandatory University Fees & Notes */}
+      {activeLedgerData?.breakdown?.excludedSummary?.hasExcluded && (
+        <div>
+          <hr className="border-t border-gray-200 my-3" />
+          <div className="p-3 rounded-xl border border-amber-200/90 bg-linear-to-br from-amber-50/70 via-orange-50/40 to-amber-50/50 shadow-2xs">
+            {/* Clean Bullet Points */}
+            <ul className="space-y-2 text-xs sm:text-[12.5px] text-amber-950 list-none p-0 m-0">
+              {activeLedgerData.breakdown.excludedSummary.items?.map((item, idx) => (
+                <li key={idx} className="flex items-start gap-2.5 leading-relaxed">
+                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-600 mt-2 shrink-0" />
+                  <span className="text-amber-900/95 font-medium">{item.note}</span>
+                </li>
+              ))}
+
+              {/* 3rd Bullet: Policy Notice */}
+              <li className="flex items-start gap-2.5 leading-relaxed">
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-600 mt-2 shrink-0" />
+                <span className="text-amber-900/95 font-medium">
+                  The payment plan fees shown above cover the core academic course package. Excluded and separate university fees (such as semester-wise examination fees and one-time registration fees) are collected directly by the university at their respective academic cycles and are not discounted by scholarships.
+                </span>
+              </li>
+            </ul>
           </div>
         </div>
       )}

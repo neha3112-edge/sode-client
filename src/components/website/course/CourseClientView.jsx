@@ -59,10 +59,21 @@ export function CourseClientView({
       (emi?.summary?.available ? emi.summary : null) ||
       (emi?.available ? emi : null);
 
+    const breakdown =
+      promoData?.breakdown ||
+      rawLedger?.fullfees?.breakdown ||
+      rawLedger?.yearly?.breakdown ||
+      rawLedger?.semester?.breakdown ||
+      courseData?.fees?.breakdown ||
+      courseData?.feesLedger?.breakdown ||
+      null;
+
     return {
       fullfees: full ? { ...full, emi: fullEmi } : null,
       yearly: year ? { ...year, emi: yearEmi } : null,
       semester: sem ? { ...sem, emi: semEmi } : null,
+      breakdown,
+      formattedActualFees: promoData?.formattedActualFees || full?.formattedGross || null,
       emi: {
         fullfees: fullEmi,
         yearly: yearEmi,

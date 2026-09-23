@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Form, Input, Select, Button, Checkbox, message } from "antd";
-import { PhoneCall } from "lucide-react";
+import { Phone } from "lucide-react";
 import { STATE_OPTIONS } from "@/constants/stateOptions";
 
 export default function LandingLeadForm({
@@ -13,6 +13,7 @@ export default function LandingLeadForm({
   defaultCourse = "",
   title = "Enquire Now",
   subtitle = "Academic Experts will assist you!",
+  phone = "+91 7065 7777 55",
   buttonText = "Submit",
   onSuccess,
   onOpenDisclaimer,
@@ -62,41 +63,141 @@ export default function LandingLeadForm({
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-lg border border-slate-200/90 overflow-hidden">
-      <div className="bg-[#08417b] text-white p-3.5 text-center">
-        <h3 className="text-base sm:text-lg font-bold tracking-tight m-0">{title}</h3>
-        {subtitle && <p className="text-xs text-white/90 mt-0.5 m-0">{subtitle}</p>}
+    <div className="bg-[#08417b] rounded-2xl p-3.5 sm:p-4 text-white shadow-2xl border border-white/15 w-full max-w-[350px] mx-auto">
+      {/* Header */}
+      <div className="text-center">
+        <h3 className="text-lg sm:text-xl font-black text-[#ffd200] tracking-tight m-0">
+          {title}
+        </h3>
+        {subtitle && (
+          <p className="text-[11px] sm:text-xs text-white/90 font-normal mt-0.5 m-0">
+            {subtitle}
+          </p>
+        )}
       </div>
-      <div className="p-4 sm:p-5">
-        <Form form={form} layout="vertical" onFinish={onFinish} initialValues={{ course: defaultCourse, terms: true }} requiredMark={false} className="space-y-3">
-          <Form.Item name="full_name" rules={[{ required: true, message: "Please enter your name" }]} className="mb-2.5">
-            <Input size="middle" placeholder="Full Name *" className="rounded-md" />
-          </Form.Item>
-          <Form.Item name="email" rules={[{ required: true, type: "email", message: "Please enter valid email" }]} className="mb-2.5">
-            <Input size="middle" placeholder="Email Address *" className="rounded-md" />
-          </Form.Item>
-          <Form.Item name="phone" rules={[{ required: true, pattern: /^[6-9]\d{9}$/, message: "Valid 10-digit number" }]} className="mb-2.5">
-            <Input size="middle" prefix="+91" placeholder="Mobile Number *" maxLength={10} className="rounded-md" />
-          </Form.Item>
-          <div className="grid grid-cols-2 gap-2 mb-2.5">
-            <Form.Item name="course" rules={[{ required: true, message: "Select course" }]} className="mb-0">
-              <Select placeholder="Course *" options={courseList} size="middle" className="w-full" />
-            </Form.Item>
-            <Form.Item name="state" rules={[{ required: true, message: "Select state" }]} className="mb-0">
-              <Select placeholder="State *" options={stateOptions} showSearch size="middle" className="w-full" />
-            </Form.Item>
-          </div>
-          <Form.Item name="terms" valuePropName="checked" rules={[{ validator: (_, v) => v ? Promise.resolve() : Promise.reject(new Error("Accept terms")) }]} className="mb-3">
-            <Checkbox className="text-[11px] leading-tight text-slate-600">
-              I agree to receive admission updates.{" "}
-              <button type="button" onClick={() => onOpenDisclaimer?.()} className="text-blue-600 underline cursor-pointer">Disclaimer</button>
-            </Checkbox>
-          </Form.Item>
-          <Button type="primary" htmlType="submit" loading={loading} block icon={<PhoneCall className="w-3.5 h-3.5" />} className="bg-[#ffd200] hover:bg-[#ffc107] text-[#08417b] font-bold h-10 rounded-md border-none shadow-xs text-xs sm:text-sm">
-            {buttonText}
-          </Button>
-        </Form>
-      </div>
+
+      {/* Phone CTA Pill */}
+      {phone && (
+        <div className="flex justify-center mt-1.5 mb-2.5">
+          <a
+            href={`tel:${phone.replace(/\s+/g, "")}`}
+            className="bg-[#ffd200] hover:bg-[#ffc107] text-slate-900 font-extrabold text-xs px-3.5 py-1 rounded-full inline-flex items-center gap-1.5 shadow-xs transition-transform active:scale-95 no-underline"
+          >
+            <Phone className="w-3 h-3 fill-slate-900 text-slate-900" />
+            <span>{phone}</span>
+          </a>
+        </div>
+      )}
+
+      {/* Form Fields */}
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={onFinish}
+        initialValues={{ course: defaultCourse || undefined, terms: true }}
+        requiredMark={false}
+        className="space-y-2"
+      >
+        <Form.Item
+          name="full_name"
+          rules={[{ required: true, message: "Please enter your name" }]}
+          className="mb-1.5"
+        >
+          <Input
+            size="middle"
+            placeholder="Enter Your Name"
+            className="h-8.5 rounded-md text-xs sm:text-sm bg-white text-slate-800 placeholder:text-slate-400 border-none"
+          />
+        </Form.Item>
+
+        <Form.Item
+          name="email"
+          rules={[{ required: true, type: "email", message: "Please enter valid email" }]}
+          className="mb-1.5"
+        >
+          <Input
+            size="middle"
+            placeholder="Enter Your Email"
+            className="h-8.5 rounded-md text-xs sm:text-sm bg-white text-slate-800 placeholder:text-slate-400 border-none"
+          />
+        </Form.Item>
+
+        <Form.Item
+          name="phone"
+          rules={[{ required: true, pattern: /^[6-9]\d{9}$/, message: "Valid 10-digit number" }]}
+          className="mb-1.5"
+        >
+          <Input
+            size="middle"
+            prefix={
+              <span className="flex items-center gap-1 text-slate-700 font-semibold text-xs pr-1 border-r border-slate-200 mr-1.5 shrink-0">
+                <span className="text-sm leading-none">🇮🇳</span> +91
+                <span className="text-[10px] text-slate-400">▾</span>
+              </span>
+            }
+            placeholder="Enter 10-digit Mobile Number"
+            maxLength={10}
+            className="h-8.5 rounded-md text-xs sm:text-sm bg-white text-slate-800 placeholder:text-slate-400 border-none"
+          />
+        </Form.Item>
+
+        <Form.Item
+          name="course"
+          rules={[{ required: true, message: "Select your course" }]}
+          className="mb-1.5"
+        >
+          <Select
+            placeholder="Select Your Course"
+            options={courseList}
+            size="middle"
+            className="w-full h-8.5 [&_.ant-select-selector]:!bg-white [&_.ant-select-selector]:!rounded-md [&_.ant-select-selector]:!border-none [&_.ant-select-selection-placeholder]:!text-slate-400 [&_.ant-select-selection-item]:!text-slate-800 text-xs sm:text-sm"
+          />
+        </Form.Item>
+
+        <Form.Item
+          name="state"
+          rules={[{ required: true, message: "Select your state" }]}
+          className="mb-1.5"
+        >
+          <Select
+            placeholder="Select Your State"
+            options={stateOptions}
+            showSearch
+            size="middle"
+            className="w-full h-8.5 [&_.ant-select-selector]:!bg-white [&_.ant-select-selector]:!rounded-md [&_.ant-select-selector]:!border-none [&_.ant-select-selection-placeholder]:!text-slate-400 [&_.ant-select-selection-item]:!text-slate-800 text-xs sm:text-sm"
+          />
+        </Form.Item>
+
+
+        <Form.Item
+          name="terms"
+          valuePropName="checked"
+          rules={[{ validator: (_, v) => v ? Promise.resolve() : Promise.reject(new Error("Accept terms")) }]}
+          className="mb-2"
+        >
+          <Checkbox className="text-[10px] sm:text-[10.5px] leading-tight text-white/90">
+            I consent to receive university updates via email and mobile number.{" "}
+            <button
+              type="button"
+              onClick={() => onOpenDisclaimer?.()}
+              className="text-white underline font-semibold cursor-pointer p-0 bg-transparent border-none inline"
+            >
+              Disclaimer
+            </button>
+          </Checkbox>
+        </Form.Item>
+
+        <Button
+          type="primary"
+          htmlType="submit"
+          loading={loading}
+          block
+          className="bg-[#22c55e] hover:bg-[#16a34a] text-white font-bold h-9 rounded-lg border-none shadow-md text-sm cursor-pointer transition-all active:scale-[0.98]"
+        >
+          {buttonText}
+        </Button>
+      </Form>
     </div>
+
   );
 }
