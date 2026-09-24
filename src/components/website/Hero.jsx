@@ -576,7 +576,7 @@ export function Hero({ initialHeroData = null }) {
                 loading="eager"
                 fetchPriority="high"
                 unoptimized
-                sizes="100vw"
+                sizes={mobileBannerUrl && mobileBannerUrl !== desktopBannerUrl ? "(min-width: 768px) 100vw, 1px" : "100vw"}
                 className="object-cover object-center"
               />
             </div>
@@ -591,7 +591,7 @@ export function Hero({ initialHeroData = null }) {
                   loading="eager"
                   fetchPriority="high"
                   unoptimized
-                  sizes="100vw"
+                  sizes="(max-width: 767px) 100vw, 1px"
                   className="object-cover object-center"
                 />
               </div>
