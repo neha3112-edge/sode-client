@@ -30,8 +30,8 @@ export function Footer({
     Array.isArray(legal?.policies) && legal.policies.length > 0
       ? legal.policies
       : Array.isArray(initialLegalPolicies) && initialLegalPolicies.length > 0
-      ? initialLegalPolicies
-      : [];
+        ? initialLegalPolicies
+        : [];
 
   // Logo resolution priority: Brand logo_dark -> Brand logo -> Header logo_dark -> Header logo -> fallback
   const footerLogoUrl =

@@ -32,28 +32,35 @@ export default function CourseHero({
   return (
     <div className="rounded-2xl overflow-hidden shadow-sm border border-gray-200 bg-[#0C2B4E] flex flex-col md:grid md:grid-cols-12 min-h-80 md:min-h-90">
       {/* Mobile Image (Top) / Desktop Image (Right) */}
-      <div className="order-1 md:order-2 md:col-span-6 relative w-full h-64 sm:h-72 md:h-full overflow-hidden rounded-b-4xl md:rounded-l-4xl">
+      <div className="order-1 md:order-2 md:col-span-6 relative w-full h-64 sm:h-72 md:h-full overflow-hidden rounded-b-3xl md:rounded-none md:rounded-l-3xl">
         {heroBannerSrc || mobileHeroBannerSrc ? (
           <>
             {heroBannerSrc && (
               <Image
                 src={heroBannerSrc}
-                alt={displayCourseTitle}
+                alt={displayCourseTitle || courseData?.name || "Course Banner"}
                 fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className={`object-cover object-center ${mobileHeroBannerSrc && mobileHeroBannerSrc !== heroBannerSrc ? "hidden md:block" : "block"
-                  }`}
+                sizes={
+                  mobileHeroBannerSrc && mobileHeroBannerSrc !== heroBannerSrc
+                    ? "(min-width: 768px) 50vw, 1px"
+                    : "(max-width: 768px) 100vw, 50vw"
+                }
+                className={`object-cover object-center ${
+                  mobileHeroBannerSrc && mobileHeroBannerSrc !== heroBannerSrc ? "hidden md:block" : "block"
+                }`}
                 priority
+                loading="eager"
               />
             )}
             {mobileHeroBannerSrc && mobileHeroBannerSrc !== heroBannerSrc && (
               <Image
                 src={mobileHeroBannerSrc}
-                alt={displayCourseTitle}
+                alt={displayCourseTitle || courseData?.name || "Course Banner"}
                 fill
-                sizes="100vw"
+                sizes="(max-width: 767px) 100vw, 1px"
                 className="object-cover object-center block md:hidden"
                 priority
+                loading="eager"
               />
             )}
           </>
@@ -69,6 +76,8 @@ export default function CourseHero({
                 src={universityLogoSrc}
                 alt={effectiveUniName || "University Logo"}
                 fill
+                priority
+                loading="eager"
                 sizes="(max-width: 640px) 44px, 64px"
                 className="object-contain"
               />

@@ -40,6 +40,7 @@ export default function UniversityTopRecruiters({
                     src={logoSrc}
                     alt={r.name || "Recruiter Logo"}
                     fill
+                    unoptimized
                     sizes="(max-width: 640px) 140px, (max-width: 1024px) 160px, 180px"
                     className="object-contain transition-transform group-hover:scale-105"
                   />
