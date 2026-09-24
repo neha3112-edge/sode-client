@@ -195,6 +195,12 @@ export function CourseClientView({
     return Array.isArray(courseData?.subCourses) ? courseData.subCourses : [];
   }, [courseData]);
 
+  const targetSpecSlug = useMemo(() => {
+    if (!slug) return "";
+    const parts = String(slug).split("/").filter(Boolean);
+    return parts.length >= 3 ? parts[2] : "";
+  }, [slug]);
+
   const curriculumList = useMemo(() => {
     if (Array.isArray(courseData?.curriculum) && courseData.curriculum.length > 0) {
       return courseData.curriculum
@@ -319,11 +325,15 @@ export function CourseClientView({
           .replace(/^-+|-+$/g, "");
 
       const uniSlug = uni?.slug || slugify(uName);
-      const courseSlug = course?.slug || slugify(course?.shortName || course?.name || courseName);
-      const subcourseSlug = subcourse?.slug || (subcourse?.name ? slugify(subcourse.name) : "");
+      const courseSlug = item.courseSlug || course?.slug || slugify(course?.shortName || course?.name || courseName);
+      const subcourseSlug = item.subCourseSlug || subcourse?.slug || (subcourse?.name ? slugify(subcourse.name) : "");
 
       let courseDetailHref = "/courses";
-      if (uniSlug && courseSlug && subcourseSlug) {
+      if (item.coursePageSlug && item.coursePageSlug.includes("/")) {
+        courseDetailHref = `/universities/${item.coursePageSlug}`;
+      } else if (item.slug && item.slug.includes("/")) {
+        courseDetailHref = `/universities/${item.slug}`;
+      } else if (uniSlug && courseSlug && subcourseSlug) {
         courseDetailHref = `/universities/${encodeURIComponent(uniSlug)}/${encodeURIComponent(courseSlug)}/${encodeURIComponent(subcourseSlug)}`;
       } else if (uniSlug && courseSlug) {
         courseDetailHref = `/universities/${encodeURIComponent(uniSlug)}/${encodeURIComponent(courseSlug)}`;
@@ -379,6 +389,11 @@ export function CourseClientView({
       items: [
         { label: "Home", href: "/" },
         { label: "Courses", href: "/courses" },
+        ...(universityName && (courseData?.universitySlug || courseData?.universityId?.slug)
+          ? [{ label: universityName, href: `/university/${courseData.universitySlug || courseData.universityId?.slug}` }]
+          : universityName
+          ? [{ label: universityName }]
+          : []),
         {
           label: `${displayCourseTitle}${courseData?.fullName ? ` (${courseData.fullName})` : ""}`.trim(),
         },
@@ -388,7 +403,7 @@ export function CourseClientView({
         href: "/courses",
       },
     },
-    [displayCourseTitle, courseData?.fullName]
+    [displayCourseTitle, courseData?.fullName, universityName, courseData?.universitySlug, courseData?.universityId?.slug]
   );
 
   const availableSections = useMemo(() => {
@@ -503,6 +518,7 @@ export function CourseClientView({
           heroBannerSrc={heroBannerSrc}
           activeLedgerData={activeLedgerData}
           handleOpenLead={handleOpenLead}
+          targetSpecSlug={targetSpecSlug}
         />
 
         {/* 6. Alternative Universities */}

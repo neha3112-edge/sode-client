@@ -134,7 +134,7 @@ export async function generateMetadata({ params }) {
   try {
     const [course, pageMeta] = await Promise.all([
       getCourseData(slugArray),
-      getPageMetaData(`/courses/${slugStr}`),
+      getPageMetaData(`/universities/${slugStr}`),
     ]);
 
     const cleanTitle = course?.name || "";
@@ -143,7 +143,7 @@ export async function generateMetadata({ params }) {
 
     return constructMetadata(pageMeta, {
       title: cleanTitle ? `${cleanTitle}${uniName ? ` from ${uniName}` : ""}` : "",
-      canonicalUrl: `https://sode.co.in/courses/${course?.slug || slugStr}`,
+      canonicalUrl: `https://sode.co.in/universities/${course?.slug || slugStr}`,
       ogImage: uniBannerImage ? getAssetPath(uniBannerImage) : null,
     });
   } catch (error) {

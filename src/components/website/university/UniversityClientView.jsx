@@ -161,13 +161,16 @@ export function UniversityClientView({ initialData, slug }) {
     const seen = new Set();
     const result = [];
     for (const c of coursesList) {
-      const title = (c.title || c.name || "").trim();
-      const upper = title.toUpperCase();
+      const rawShortName = (c.rawName || "").trim();
+      const cleanShort = (rawShortName || c.title || c.name || "")
+        .replace(/^(?:online|distance|odl)\s+/i, "")
+        .trim();
+      const upper = cleanShort.toUpperCase();
       if (upper && !seen.has(upper)) {
         seen.add(upper);
         result.push({
           title: upper,
-          slug: c.slug || `${slug || uni.slug || ""}/${title.toLowerCase().replace(/\s+/g, "-")}`,
+          slug: c.slug || `${slug || uni.slug || ""}/${cleanShort.toLowerCase().replace(/\s+/g, "-")}`,
         });
       }
     }
@@ -176,9 +179,17 @@ export function UniversityClientView({ initialData, slug }) {
 
   const filteredCourses = useMemo(() => {
     if (activeCourseFilter === "ALL") return coursesList;
-    return coursesList.filter(
-      (c) => c.title.toUpperCase() === activeCourseFilter.toUpperCase()
-    );
+    const filterUpper = activeCourseFilter.toUpperCase();
+    return coursesList.filter((c) => {
+      const cardTitle = (c.title || c.name || "").toUpperCase();
+      const rawTitle = (c.rawName || "").toUpperCase();
+      const cleanTitle = cardTitle.replace(/^(?:ONLINE|DISTANCE|ODL)\s+/i, "").trim();
+      return (
+        cardTitle === filterUpper ||
+        rawTitle === filterUpper ||
+        cleanTitle === filterUpper
+      );
+    });
   }, [coursesList, activeCourseFilter]);
 
   const whyChooseSection = useMemo(() => {

@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Download } from "lucide-react";
 import { FaClock, FaCalendar } from "react-icons/fa";
 import { formatAdmissionDeadline } from "@/lib/utils";
@@ -15,6 +16,19 @@ export default function CourseHero({
   universityLogoSrc,
   handleOpenLead,
 }) {
+  const effectiveUniName =
+    universityName ||
+    courseData?.universityName ||
+    courseData?.universityId?.name ||
+    courseData?.university?.name ||
+    "";
+
+  const effectiveUniSlug =
+    courseData?.universitySlug ||
+    courseData?.universityId?.slug ||
+    courseData?.university?.slug ||
+    "";
+
   return (
     <div className="rounded-2xl overflow-hidden shadow-sm border border-gray-200 bg-[#0C2B4E] flex flex-col md:grid md:grid-cols-12 min-h-80 md:min-h-90">
       {/* Mobile Image (Top) / Desktop Image (Right) */}
@@ -27,9 +41,8 @@ export default function CourseHero({
                 alt={displayCourseTitle}
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
-                className={`object-cover object-center ${
-                  mobileHeroBannerSrc && mobileHeroBannerSrc !== heroBannerSrc ? "hidden md:block" : "block"
-                }`}
+                className={`object-cover object-center ${mobileHeroBannerSrc && mobileHeroBannerSrc !== heroBannerSrc ? "hidden md:block" : "block"
+                  }`}
                 priority
               />
             )}
@@ -54,7 +67,7 @@ export default function CourseHero({
             <div className="relative w-11 h-11 sm:w-16 sm:h-16">
               <Image
                 src={universityLogoSrc}
-                alt={universityName || "University Logo"}
+                alt={effectiveUniName || "University Logo"}
                 fill
                 sizes="(max-width: 640px) 44px, 64px"
                 className="object-contain"
@@ -66,7 +79,7 @@ export default function CourseHero({
 
       {/* Text Content */}
       <div className="order-2 md:order-1 md:col-span-6 text-white p-5 sm:p-7 md:py-9 md:px-9 flex flex-col justify-center space-y-4 md:space-y-5">
-        <div className="space-y-1">
+        <div className="space-y-1 sm:space-y-1">
           <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white m-0 leading-tight">
             {courseData?.name || "Online Course"}
           </h1>
@@ -75,8 +88,23 @@ export default function CourseHero({
               ( {courseData.fullName} )
             </p>
           )}
+          {effectiveUniName && (
+            <div>
+              {effectiveUniSlug ? (
+                <Link
+                  href={`/universities/${effectiveUniSlug}`}
+                  className="text-xs font-medium text-white transition-colors inline-block tracking-wide"
+                >
+                  ( {effectiveUniName} )
+                </Link>
+              ) : (
+                <span className="text-xs font-medium text-white tracking-wide">
+                  ( {effectiveUniName} )
+                </span>
+              )}
+            </div>
+          )}
         </div>
-
         <div className="space-y-2.5 text-xs sm:text-sm font-medium text-white/95">
           <div className="flex flex-wrap items-center gap-4 sm:gap-6">
             {courseData?.duration && (
@@ -92,7 +120,6 @@ export default function CourseHero({
               </div>
             )}
           </div>
-
           {courseData?.admissionDeadline && (
             <div className="flex items-center gap-2 text-xs sm:text-sm font-medium text-white">
               <FaCalendar className="w-4 h-4 text-amber-400 shrink-0" />

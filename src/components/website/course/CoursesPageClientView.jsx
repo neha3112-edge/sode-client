@@ -639,11 +639,15 @@ function CoursesContent({
             .replace(/^-+|-+$/g, "");
 
         const uniSlug = uni?.slug || slugify(uniName);
-        const courseSlug = course?.slug || slugify(course?.shortName || course?.name || courseName);
-        const subcourseSlug = subcourse?.slug || (subcourse?.name ? slugify(subcourse.name) : "");
+        const courseSlug = item.courseSlug || course?.slug || slugify(course?.shortName || course?.name || courseName);
+        const subcourseSlug = item.subCourseSlug || subcourse?.slug || (subcourse?.name ? slugify(subcourse.name) : "");
 
         let courseDetailHref = "/courses";
-        if (uniSlug && courseSlug && subcourseSlug) {
+        if (item.coursePageSlug && item.coursePageSlug.includes("/")) {
+          courseDetailHref = `/universities/${item.coursePageSlug}`;
+        } else if (item.slug && item.slug.includes("/")) {
+          courseDetailHref = `/universities/${item.slug}`;
+        } else if (uniSlug && courseSlug && subcourseSlug) {
           courseDetailHref = `/universities/${encodeURIComponent(uniSlug)}/${encodeURIComponent(courseSlug)}/${encodeURIComponent(subcourseSlug)}`;
         } else if (uniSlug && courseSlug) {
           courseDetailHref = `/universities/${encodeURIComponent(uniSlug)}/${encodeURIComponent(courseSlug)}`;
@@ -1430,14 +1434,43 @@ function CoursesContent({
                   <div
                     key={sc._id || idx}
                     onClick={() => {
-                      const uniSlug = specializationModalData.uniObj?.slug || specializationModalData.uniName?.toLowerCase().replace(/\s+/g, '-');
-                      const courseSlug = specializationModalData.courseObj?.slug || specializationModalData.courseId?.slug || specializationModalData.cardTitle?.toLowerCase().replace(/\s+/g, '-');
-                      const subSlug = sc.slug || sc.name?.toLowerCase().replace(/\s+/g, '-');
+                      let baseHref =
+                        specializationModalData.courseDetailHref ||
+                        (specializationModalData.coursePageSlug ? `/universities/${specializationModalData.coursePageSlug}` : "") ||
+                        (specializationModalData.slug?.includes("/") ? `/universities/${specializationModalData.slug}` : "");
+
+                      if (baseHref && baseHref.startsWith("/courses/")) {
+                        baseHref = baseHref.replace("/courses/", "/universities/");
+                      }
+
+                      const subSlug =
+                        sc.slug ||
+                        (sc.name || "")
+                          .toLowerCase()
+                          .replace(/^online\s+[a-z0-9+-]+\s+in\s+/i, "")
+                          .replace(/^distance\s+[a-z0-9+-]+\s+in\s+/i, "")
+                          .replace(/[^a-z0-9]+/g, "-")
+                          .replace(/^-|-$/g, "");
+
                       setSpecializationModalData(null);
-                      if (uniSlug && courseSlug && subSlug) {
-                        router.push(`/courses/${encodeURIComponent(uniSlug)}/${encodeURIComponent(courseSlug)}/${encodeURIComponent(subSlug)}`);
+
+                      if (baseHref && subSlug) {
+                        router.push(`${baseHref}/${encodeURIComponent(subSlug)}#specializations`);
                       } else {
-                        router.push(`/courses?university=${encodeURIComponent(uniSlug)}&subcategory=${encodeURIComponent(subSlug)}`);
+                        const uniSlug =
+                          specializationModalData.uniObj?.slug ||
+                          specializationModalData.universitySlug ||
+                          specializationModalData.uniName?.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+                        const courseSlug =
+                          specializationModalData.courseSlug ||
+                          specializationModalData.courseObj?.slug ||
+                          specializationModalData.cardTitle?.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+                        if (uniSlug && courseSlug && subSlug) {
+                          router.push(`/universities/${encodeURIComponent(uniSlug)}/${encodeURIComponent(courseSlug)}/${encodeURIComponent(subSlug)}#specializations`);
+                        } else if (uniSlug && subSlug) {
+                          router.push(`/universities/${encodeURIComponent(uniSlug)}?subcategory=${encodeURIComponent(subSlug)}`);
+                        }
                       }
                     }}
                     className="bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl p-1.5 min-[360px]:p-2 aspect-square flex flex-col items-center justify-between text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group min-w-0 w-full shadow-2xs overflow-hidden"
