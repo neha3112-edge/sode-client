@@ -261,6 +261,11 @@ export default function UniversityCoursesSection({
         const courseRawLogo = selectedCourseSpec.logo?.url || selectedCourseSpec.logo?.path || (typeof selectedCourseSpec.logo === "string" ? selectedCourseSpec.logo : null);
         const uniLogoSrc = logoUrl || (courseRawLogo ? getAssetPath(courseRawLogo) : null);
 
+        const rawCourseSlug = selectedCourseSpec.slug || encodeURIComponent(cTitle.toLowerCase());
+        const baseCourseDetailHref = rawCourseSlug.includes("/")
+          ? `/universities/${rawCourseSlug}`
+          : `/universities/${slug || uni?.slug || ""}/${rawCourseSlug}`;
+
         const bannerSrc = selectedCourseSpec.banner || selectedCourseSpec.coursepageimage || selectedCourseSpec.bannerImage || heroBannerUrl;
 
         return (
@@ -312,7 +317,13 @@ export default function UniversityCoursesSection({
               <div className="flex-1 flex flex-col justify-start text-left gap-3 sm:gap-3.5">
                 <div>
                   <h3 className="text-xl sm:text-2xl lg:text-[25px] font-black text-[#0C2B4E] tracking-tight leading-tight mb-2.5">
-                    {cTitle}
+                    <Link
+                      href={baseCourseDetailHref}
+                      onClick={() => setSelectedCourseSpec(null)}
+                      className="text-[#0C2B4E] hover:text-[#08AEAA] no-underline transition-colors cursor-pointer"
+                    >
+                      {cTitle}
+                    </Link>
                   </h3>
 
                   <div className="flex flex-wrap items-center gap-x-3 sm:gap-x-4 gap-y-1.5 text-xs text-gray-500 font-medium mb-2.5">
@@ -355,16 +366,34 @@ export default function UniversityCoursesSection({
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-1.5 sm:gap-2 max-h-32 sm:max-h-40 overflow-y-auto pr-1">
                       {specializationsList.map((sub, idx) => {
                         const subName = typeof sub === "string" ? sub : sub.name || "";
+                        const subSlug =
+                          (typeof sub === "object" ? sub.slug : "") ||
+                          subName
+                            .toLowerCase()
+                            .replace(/^online\s+[a-z0-9+-]+\s+in\s+/i, "")
+                            .replace(/^distance\s+[a-z0-9+-]+\s+in\s+/i, "")
+                            .replace(/[^a-z0-9]+/g, "-")
+                            .replace(/^-|-$/g, "");
+
+                        const rawCourseSlug = selectedCourseSpec.slug || encodeURIComponent(cTitle.toLowerCase());
+                        const baseCourseDetailHref = rawCourseSlug.includes("/")
+                          ? `/universities/${rawCourseSlug}`
+                          : `/universities/${slug || uni?.slug || ""}/${rawCourseSlug}`;
+
+                        const specHref = `${baseCourseDetailHref}/${encodeURIComponent(subSlug)}#specializations`;
+
                         return (
-                          <div
+                          <Link
                             key={idx}
-                            className="flex items-center gap-1.5 sm:gap-2 text-[10.5px] sm:text-xs font-semibold px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-blue-50/50 text-[#0C2B4E] border border-blue-100 hover:bg-blue-100/50 transition-colors"
+                            href={specHref}
+                            onClick={() => setSelectedCourseSpec(null)}
+                            className="flex items-center gap-1.5 sm:gap-2 text-[10.5px] sm:text-xs font-semibold px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-blue-50/50 text-[#0C2B4E] border border-blue-100 hover:border-[#08AEAA] hover:bg-blue-100/70 hover:shadow-xs transition-all no-underline cursor-pointer group/spec"
                           >
-                            <CheckCircle2 size={13} className="text-[#08AEAA] shrink-0" />
-                            <span className="truncate leading-tight" title={subName}>
+                            <CheckCircle2 size={13} className="text-[#08AEAA] group-hover/spec:scale-110 transition-transform shrink-0" />
+                            <span className="truncate leading-tight group-hover/spec:text-[#08AEAA] transition-colors" title={subName}>
                               {subName}
                             </span>
-                          </div>
+                          </Link>
                         );
                       })}
                     </div>
