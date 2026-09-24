@@ -1,10 +1,13 @@
 export { CourseClientView, CourseClientView as CourseDetail, default } from "./CourseDetail";
 export { default as CoursesPageClientView, default as CoursesListing } from "./CoursesListing";
 export { default as CourseHero } from "./CourseHero";
-export { default as CourseHighlights, default as CourseKeyHighlights } from "./CourseHighlights";
+export { default as CourseQuickFacts } from "./CourseQuickFacts";
+export { default as CourseAbout } from "./CourseAbout";
+export { default as CourseKeyHighlights, default as CourseHighlights } from "./CourseKeyHighlights";
 export { default as CourseFeesPlan } from "./CourseFeesPlan";
 export { default as CourseCurriculum } from "./CourseCurriculum";
 export { default as CourseApprovals } from "./CourseApprovals";
 export { default as CourseSpecializations } from "./CourseSpecializations";
 export { default as CourseAlternativeUnis, default as CourseAlternativeUniversities } from "./CourseAlternativeUnis";
 export { default as CourseFaq } from "./CourseFaq";
+export { default as CourseStickyNav } from "./CourseStickyNav";

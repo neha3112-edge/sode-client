@@ -2,7 +2,9 @@
 
 import React from "react";
 import Image from "next/image";
-import { Clock, Download } from "lucide-react";
+import { Download } from "lucide-react";
+import { FaClock, FaCalendar } from "react-icons/fa";
+import { formatAdmissionDeadline } from "@/lib/utils";
 
 export default function CourseHero({
   courseData,
@@ -48,7 +50,7 @@ export default function CourseHero({
 
         {/* University Logo */}
         {universityLogoSrc && (
-          <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 bg-white rounded-xl shadow-md p-1.5 sm:p-2 border border-gray-100 flex items-center justify-center">
+          <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 bg-white rounded-xl shadow-md p-1.5 sm:p-2 flex items-center justify-center">
             <div className="relative w-11 h-11 sm:w-16 sm:h-16">
               <Image
                 src={universityLogoSrc}
@@ -79,7 +81,7 @@ export default function CourseHero({
           <div className="flex flex-wrap items-center gap-4 sm:gap-6">
             {courseData?.duration && (
               <div className="flex items-center gap-1.5">
-                <Clock size={16} className="text-amber-400 shrink-0" />
+                <FaClock className="w-4 h-4 text-amber-400 shrink-0" />
                 <span>{courseData.duration}</span>
               </div>
             )}
@@ -93,8 +95,8 @@ export default function CourseHero({
 
           {courseData?.admissionDeadline && (
             <div className="flex items-center gap-2 text-xs sm:text-sm font-medium text-white">
-              <Clock size={16} className="text-amber-400 shrink-0" />
-              <span>Admission Deadline : {courseData.admissionDeadline}</span>
+              <FaCalendar className="w-4 h-4 text-amber-400 shrink-0" />
+              <span>Admission Deadline : {formatAdmissionDeadline(courseData.admissionDeadline)}</span>
             </div>
           )}
         </div>

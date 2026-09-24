@@ -2,17 +2,20 @@
 
 import React, { useState, useMemo } from "react";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
+import { useCompare } from "@/hooks/useCompare";
 import { useFormModal } from "@/hooks/useFormModal";
 import { getAssetPath } from "@/lib/utils";
+
 import UniversityHero from "./UniversityHero";
 import UniversityHighlights from "./UniversityHighlights";
 import UniversityAbout from "./UniversityAbout";
-import UniversityWhyChoose from "./UniversityWhyChoose";
 import UniversityAccreditations from "./UniversityAccreditations";
 import UniversityCourses from "./UniversityCourses";
+import UniversityWhyChoose from "./UniversityWhyChoose";
 import UniversitySampleDegree from "./UniversitySampleDegree";
 import UniversityPeerUnis from "./UniversityPeerUnis";
 import UniversityFaq from "./UniversityFaq";
+import UniversityStickyNav from "./UniversityStickyNav";
 
 const getSafeText = (val, fallback = "") => {
   if (val === null || val === undefined) return fallback;
@@ -30,6 +33,8 @@ const getSafeText = (val, fallback = "") => {
 
 export function UniversityClientView({ initialData, slug }) {
   const { openFormModal } = useFormModal();
+  const { toggleCompare, isInCompare, setIsCompareDrawerOpen } = useCompare();
+
   const [activeCourseFilter, setActiveCourseFilter] = useState("ALL");
   const [visibleCoursesCount, setVisibleCoursesCount] = useState(6);
 
@@ -73,110 +78,209 @@ export function UniversityClientView({ initialData, slug }) {
   const starRatingValue = useMemo(() => {
     const dec = numericRating % 1;
     const base = Math.floor(numericRating);
-    if (dec >= 0.1 && dec < 0.8) {
-      return base + 0.5;
-    }
-    if (dec >= 0.8) {
-      return base + 1;
-    }
+    if (dec >= 0.1 && dec < 0.8) return base + 0.5;
+    if (dec >= 0.8) return base + 1;
     return base;
   }, [numericRating]);
 
-  const locationText = useMemo(() => {
-    const city = getSafeText(uni.city || data.city);
-    const state = getSafeText(uni.state || data.state);
-    if (city && state) return `${city}, ${state}`;
-    return city || state || "Online / Distance";
-  }, [uni.city, data.city, uni.state, data.state]);
+  const displayRatingText = useMemo(() => {
+    const raw = uni?.avg_rating ?? data?.avg_rating ?? uni?.rating ?? data?.rating;
+    if (raw !== undefined && raw !== null && String(raw).trim() !== "") {
+      const parsed = parseFloat(raw);
+      if (!isNaN(parsed)) return `${parsed}/5`;
+      return `${raw}/5`;
+    }
+    return "4.8/5";
+  }, [uni?.avg_rating, data?.avg_rating, uni?.rating, data?.rating]);
 
-  const establishedYear = useMemo(() => {
-    return getSafeText(uni.established || data.established || uni.established_year || data.established_year);
-  }, [uni.established, data.established, uni.established_year, data.established_year]);
+  const highlightsData = useMemo(() => {
+    if (Array.isArray(uni.key_highlights) && uni.key_highlights.length > 0) {
+      return {
+        title: uni.key_highlights[0].title,
+        items: Array.isArray(uni.key_highlights[0].items) ? uni.key_highlights[0].items : [],
+      };
+    }
+    return {
+      title: `Key Highlights of ${uniName}`,
+      items: [],
+    };
+  }, [uni.key_highlights, uniName]);
 
-  const approvalsList = useMemo(() => {
-    return Array.isArray(uni.approvals) && uni.approvals.length > 0
-      ? uni.approvals
-      : Array.isArray(data.approvals)
-        ? data.approvals
-        : [];
-  }, [uni.approvals, data.approvals]);
+  const locationText =
+    uni.location ||
+    [uni?.city?.name || data?.city?.name, uni?.state?.name || data?.state?.name]
+      .filter(Boolean)
+      .join(", ") ||
+    highlightsData.items.find((h) => h.feature?.toLowerCase() === "location")?.details ||
+    "";
+
+  const establishedText =
+    getSafeText(uni?.established_year?.year || uni?.established_year?.name || uni?.established_year) ||
+    highlightsData.items.find((h) => h.feature?.toLowerCase().includes("establishment"))?.details ||
+    "";
+
+  const accreditationsList = useMemo(() => {
+    if (Array.isArray(uni.accreditations) && uni.accreditations.length > 0) {
+      return uni.accreditations.map((acc) => ({
+        title: acc.name,
+        logo: acc.logo?.url || (typeof acc.logo === "string" ? acc.logo : null),
+        description: acc.description || "",
+      }));
+    }
+    return [];
+  }, [uni.accreditations]);
 
   const approvalsSummary = useMemo(() => {
-    if (approvalsList.length > 0) {
-      const names = approvalsList
-        .map((a) => (typeof a === "string" ? a : a.name || a.code || a.title || ""))
-        .filter(Boolean);
-      if (names.length > 0) {
-        return names.slice(0, 3).join(" • ");
-      }
-    }
-    return "UGC-DEB";
-  }, [approvalsList]);
+    const found = accreditationsList.find((a) => /ugc/i.test(a.title));
+    return found ? (found.title.includes("DEB") ? found.title : `${found.title}-DEB`) : "UGC-DEB";
+  }, [accreditationsList]);
 
   const coursesList = useMemo(() => {
-    const list = Array.isArray(data.courses)
-      ? data.courses
-      : Array.isArray(uni.courses)
-        ? uni.courses
-        : [];
-    return list;
-  }, [data.courses, uni.courses]);
+    if (Array.isArray(uni.courses) && uni.courses.length > 0) {
+      return uni.courses.map((c, idx) => ({
+        ...c,
+        _id: c._id || `c-${idx}`,
+        title: c.title || c.name || "",
+        name: c.name || c.title || "",
+        slug: c.slug || `${slug || uni.slug}/${(c.title || c.name || "").toLowerCase().replace(/\s+/g, "-")}`,
+        logo: c.logo || null,
+        fees: c.fees || "",
+        duration: c.duration || "",
+        description: c.description || c.overview || c.desc || "",
+        overview: c.overview || c.description || "",
+        admissionDeadline: c.admissionDeadline || uni.admissionDeadline || uni.admission_deadline || "",
+        banner: c.banner || c.coursepageimage || c.bannerImage || null,
+        specializationsCount: c.specializationsCount || c.subcourses?.length || 0,
+        subcourses: Array.isArray(c.subcourses) ? c.subcourses : [],
+      }));
+    }
+    return [];
+  }, [uni.courses, slug, uni.slug, uni.admissionDeadline, uni.admission_deadline]);
+
+  const coursePills = useMemo(() => {
+    const seen = new Set();
+    const result = [];
+    for (const c of coursesList) {
+      const title = (c.title || c.name || "").trim();
+      const upper = title.toUpperCase();
+      if (upper && !seen.has(upper)) {
+        seen.add(upper);
+        result.push({
+          title: upper,
+          slug: c.slug || `${slug || uni.slug || ""}/${title.toLowerCase().replace(/\s+/g, "-")}`,
+        });
+      }
+    }
+    return result;
+  }, [coursesList, slug, uni.slug]);
 
   const filteredCourses = useMemo(() => {
     if (activeCourseFilter === "ALL") return coursesList;
-    return coursesList.filter((c) => {
-      const type = (c.programType || c.degreeType || c.level || "").toUpperCase();
-      return type.includes(activeCourseFilter);
-    });
+    return coursesList.filter(
+      (c) => c.title.toUpperCase() === activeCourseFilter.toUpperCase()
+    );
   }, [coursesList, activeCourseFilter]);
 
-  const whyChooseList = useMemo(() => {
-    return Array.isArray(data.whyChooseUs) && data.whyChooseUs.length > 0
-      ? data.whyChooseUs
-      : Array.isArray(uni.whyChooseUs) && uni.whyChooseUs.length > 0
-        ? uni.whyChooseUs
-        : [];
-  }, [data.whyChooseUs, uni.whyChooseUs]);
+  const whyChooseSection = useMemo(() => {
+    if (Array.isArray(uni.why_choose_us) && uni.why_choose_us.length > 0) {
+      const first = uni.why_choose_us[0];
+      return {
+        title: first.title || `Why Choose ${uniName}`,
+        items: (first.items || []).map((item) => ({
+          title: item.title,
+          description: item.description,
+          iconUrl: item.icon?.url || (typeof item.icon === "string" ? item.icon : null),
+        })),
+      };
+    }
+    return {
+      title: `Why Choose ${uniName}`,
+      items: [],
+    };
+  }, [uni.why_choose_us, uniName]);
 
   const sampleDegreeData = useMemo(() => {
-    return data.sampleDegree || uni.sampleDegree || null;
-  }, [data.sampleDegree, uni.sampleDegree]);
+    if (Array.isArray(uni.sample_degree) && uni.sample_degree.length > 0) {
+      const deg = uni.sample_degree[0];
+      const autoPoints = (accreditationsList || []).map((a) => a.title).filter(Boolean);
+      const points = Array.isArray(deg.points) && deg.points.length > 0
+        ? deg.points
+        : autoPoints;
 
-  const topUniversities = useMemo(() => {
-    return Array.isArray(data.topUniversities) && data.topUniversities.length > 0
-      ? data.topUniversities
-      : Array.isArray(uni.topUniversities) && uni.topUniversities.length > 0
-        ? uni.topUniversities
-        : [];
-  }, [data.topUniversities, uni.topUniversities]);
+      return {
+        title: deg.title || "",
+        description: deg.description || "",
+        imageUrl: deg.image?.url || (typeof deg.image === "string" ? deg.image : null),
+        points: points,
+        ctaText: deg.cta_text || "Get Degree",
+        ctaLink: deg.cta_link || null,
+      };
+    }
+    return null;
+  }, [uni.sample_degree, accreditationsList]);
+
+  const topPeerUniversities = useMemo(() => {
+    const list = uni.top_ugc_deb_universities || uni.ugc_deb_universities;
+    if (Array.isArray(list) && list.length > 0) {
+      return list;
+    }
+    return [];
+  }, [uni.top_ugc_deb_universities, uni.ugc_deb_universities]);
 
   const faqSection = useMemo(() => {
-    const items = Array.isArray(data.faqs) && data.faqs.length > 0
-      ? data.faqs
-      : Array.isArray(uni.faqs) && uni.faqs.length > 0
-        ? uni.faqs
-        : [];
+    if (Array.isArray(uni.faqs) && uni.faqs.length > 0) {
+      const allItems = uni.faqs.flatMap((sec) => (Array.isArray(sec.items) ? sec.items : []));
+      const first = uni.faqs[0];
+      return {
+        title: first?.title || `Frequently Asked Questions (FAQs) - ${uniName}`,
+        items: allItems.length > 0 ? allItems : (Array.isArray(first?.items) ? first.items : []),
+      };
+    }
     return {
-      title: data.faqTitle || uni.faqTitle || `FAQs on ${uniName}`,
-      items,
+      title: `Frequently Asked Questions (FAQs) - ${uniName}`,
+      items: [],
     };
-  }, [data.faqs, uni.faqs, data.faqTitle, uni.faqTitle, uniName]);
+  }, [uni.faqs, uniName]);
+
+  const handleUniversityCompare = () => {
+    const uniPayload = {
+      _id: uni._id || data._id || slug,
+      name: uniName,
+      slug: slug || uni.slug || data.slug,
+      logo: rawLogo,
+      city: locationText,
+      state: "",
+      naac_rating: { grade: "" },
+      nirf_rank: { rank: "" },
+      established_year: establishedText,
+      approvals: (accreditationsList || []).map((a) => ({ name: a.title })),
+    };
+    toggleCompare(uniPayload);
+    setIsCompareDrawerOpen(true);
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 text-gray-800 antialiased font-sans pb-16">
-      <div className="pt-4 space-y-6 max-w-6xl mx-auto px-3 sm:px-4 md:px-0 mb-6">
-        <UniversityHero
-          uniName={uniName}
-          data={data}
-          uni={uni}
-          heroBannerUrl={heroBannerUrl}
-          mobileHeroBannerUrl={mobileHeroBannerUrl}
-          logoUrl={logoUrl}
-          starRatingValue={starRatingValue}
-          numericRating={numericRating}
-          openFormModal={openFormModal}
-        />
+      {/* Hero Header Section */}
+      <UniversityHero
+        uniName={uniName}
+        heroBannerUrl={heroBannerUrl}
+        mobileHeroBannerUrl={mobileHeroBannerUrl}
+        logoUrl={logoUrl}
+        starRatingValue={starRatingValue}
+        displayRatingText={displayRatingText}
+        coursePills={coursePills}
+        openFormModal={openFormModal}
+        handleUniversityCompare={handleUniversityCompare}
+        isInCompare={isInCompare(uni._id || data._id || slug)}
+        locationText={locationText}
+        establishedText={establishedText}
+        approvalsSummary={approvalsSummary}
+        admissionDeadline={uni.admission_deadline}
+        admissionStatus={uni.admission_status}
+      />
 
+<<<<<<< HEAD:src/components/website/university/UniversityDetail.jsx
         <UniversityHighlights
           locationText={locationText}
           establishedYear={establishedYear}
@@ -185,24 +289,36 @@ export function UniversityClientView({ initialData, slug }) {
           naacGrade={uni.naac_grade || data.naac_grade}
         />
       </div>
+=======
+      {/* Dynamic Sticky Tabs Header */}
+      <UniversityStickyNav containerId="university-content-sections" />
+>>>>>>> origin/Atosh-Website:src/components/website/university/UniversityClientView.jsx
 
-      <div className="max-w-6xl mx-auto px-3 sm:px-4 md:px-0 space-y-6 pt-2">
-        <UniversityAbout
-          aboutTitle={data.aboutTitle || uni.aboutTitle}
-          aboutText={uni.description || data.description || uni.about || data.about}
-          uniName={uniName}
-        />
+      <div
+        id="university-content-sections"
+        className="max-w-6xl mx-auto px-3 sm:px-4 md:px-0 space-y-6 pt-6"
+      >
+        {/* About Section */}
+        {uni.description && (
+          <UniversityAbout
+            aboutTitle={`About ${uniName}`}
+            aboutText={uni.description}
+            uniName={uniName}
+          />
+        )}
 
+        {/* Accreditations Section */}
         <UniversityAccreditations
-          approvalsList={approvalsList}
+          accreditationsList={accreditationsList}
           uniName={uniName}
         />
 
-        <UniversityWhyChoose
-          whyChooseList={whyChooseList}
-          uniName={uniName}
+        {/* Key Highlights Table */}
+        <UniversityHighlights
+          highlightsData={highlightsData}
         />
 
+        {/* Courses Section with Modal */}
         <UniversityCourses
           coursesList={coursesList}
           filteredCourses={filteredCourses}
@@ -218,16 +334,26 @@ export function UniversityClientView({ initialData, slug }) {
           openFormModal={openFormModal}
         />
 
-        <UniversitySampleDegree
-          sampleDegreeData={sampleDegreeData}
+        {/* Why Choose Section */}
+        <UniversityWhyChoose
+          whyChooseSection={whyChooseSection}
           uniName={uniName}
         />
 
-        <UniversityPeerUnis
-          topUniversities={topUniversities}
+        {/* Sample Degree Section */}
+        <UniversitySampleDegree
+          sampleDegreeData={sampleDegreeData}
+          uniName={uniName}
           openFormModal={openFormModal}
         />
 
+        {/* Top Peer Universities Section */}
+        <UniversityPeerUnis
+          topUniversities={topPeerUniversities || topUniversities}
+          openFormModal={openFormModal}
+        />
+
+        {/* FAQ Accordion Section */}
         <UniversityFaq
           faqSection={faqSection}
           uniName={uniName}

@@ -15,7 +15,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { FaClock, FaCalendar } from "react-icons/fa";
-import { getAssetPath } from "@/lib/utils";
+import { getAssetPath, formatAdmissionDeadline } from "@/lib/utils";
 
 const SPEC_ICONS = [Briefcase, BookOpen, GraduationCap, Award, Database, UserCog, ShoppingCart];
 
@@ -40,10 +40,12 @@ export default function CourseSpecializations({
 
   return (
     <div
-      id="admission"
+      id="specializations"
+      data-nav-label="Specialisations"
       ref={specializationSectionRef}
-      className="scroll-mt-16 bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8 relative transition-all"
+      className="scroll-mt-20 bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8 relative transition-all"
     >
+      <span id="admission" className="sr-only" />
       <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-5 sm:mb-7 m-0">
         {universityName ? `${universityName} ` : ""}{courseData?.name || "Course"} Specialisations
       </h2>
@@ -83,11 +85,9 @@ export default function CourseSpecializations({
       {/* Specialization Details Modal */}
       {selectedSpecModal && (() => {
         const specTitle = selectedSpecModal.name || "Specialization";
-        const modalTitle = specTitle.toLowerCase().includes(" in ")
-          ? specTitle
-          : `${courseData?.name ? `${courseData.name} in ` : ""}${specTitle}`;
+        const modalTitle = specTitle;
         const itemDuration = selectedSpecModal.duration || courseData?.duration || "";
-        const itemDeadline = selectedSpecModal.admissionDeadline || courseData?.admissionDeadline || "";
+        const itemDeadline = formatAdmissionDeadline(selectedSpecModal.admissionDeadline || courseData?.admissionDeadline || "");
         const itemDesc = selectedSpecModal.description?.trim() || "";
 
         const itemFeesFormatted =
@@ -140,11 +140,11 @@ export default function CourseSpecializations({
             footer={null}
             width={1150}
             centered
-            className="max-w-[96vw] [&_.ant-modal-content]:rounded-3xl [&_.ant-modal-content]:p-5 sm:[&_.ant-modal-content]:p-6 md:[&_.ant-modal-content]:p-7 [&_.ant-modal-close]:top-4 [&_.ant-modal-close]:right-4"
+            className="max-w-[96vw] [&_.ant-modal-content]:rounded-3xl [&_.ant-modal-content]:p-4 sm:[&_.ant-modal-content]:p-6 md:[&_.ant-modal-content]:p-7 [&_.ant-modal-close]:top-4 [&_.ant-modal-close]:right-4 [&_.ant-modal-content]:max-h-[85vh] [&_.ant-modal-content]:overflow-y-auto [&_.ant-modal-content]:overflow-x-hidden"
           >
             <div className="flex flex-col md:flex-row items-stretch gap-5 sm:gap-6">
               {/* Left Column: Portrait Banner Card */}
-              <div className="relative w-full md:w-85 lg:w-92.5 shrink-0 min-h-80 md:min-h-110 rounded-2xl overflow-hidden bg-slate-900 shadow-xs flex items-stretch">
+              <div className="relative w-full md:w-80 lg:w-88 shrink-0 h-36 sm:h-44 md:h-auto min-h-36 sm:min-h-44 md:min-h-[350px] md:max-h-[460px] rounded-xl sm:rounded-2xl overflow-hidden bg-slate-900 shadow-xs flex items-stretch">
                 {specDesktopBanner && (
                   <Image
                     src={specDesktopBanner}
@@ -168,7 +168,7 @@ export default function CourseSpecializations({
                 )}
 
                 {(specLogo || (universityLogoSrc && !universityName?.toLowerCase().includes("manipal"))) && (
-                  <div className="absolute top-2.5 left-2.5 sm:top-3.5 sm:left-3.5 z-10 bg-white rounded-xl shadow-md p-1.5 sm:p-2.5 flex flex-col items-center justify-center text-center border border-gray-100/90 min-w-[64px] sm:min-w-[74px] max-w-[80px] sm:max-w-[90px]">
+                  <div className="absolute top-2.5 left-2.5 sm:top-3.5 sm:left-3.5 z-10 bg-white rounded-xl shadow-md p-1.5 sm:p-2.5 flex flex-col items-center justify-center text-center min-w-[64px] sm:min-w-[74px] max-w-[80px] sm:max-w-[90px]">
                     <div className="relative w-7 h-7 sm:w-9 sm:h-9 flex items-center justify-center">
                       <Image
                         src={specLogo || universityLogoSrc}

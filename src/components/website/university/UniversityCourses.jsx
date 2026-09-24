@@ -7,7 +7,7 @@ import { Modal } from "antd";
 import { Clock, Plus, Check, ChevronDown, Download, Briefcase, GraduationCap, Award, BookOpen, Database, UserCog, ShoppingCart, CheckCircle2 } from "lucide-react";
 import { FaCalendar, FaClock } from "react-icons/fa";
 import { useCompare } from "@/hooks/useCompare";
-import { getAssetPath } from "@/lib/utils";
+import { getAssetPath, formatAdmissionDeadline } from "@/lib/utils";
 
 const SPEC_ICONS = [Briefcase, BookOpen, GraduationCap, Award, Database, UserCog, ShoppingCart];
 
@@ -31,7 +31,11 @@ export default function UniversityCoursesSection({
   if (!coursesList || coursesList.length === 0) return null;
 
   return (
-    <div id="university-courses-section" className="bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8 scroll-mt-20">
+    <div
+      id="university-courses-section"
+      data-nav-label="Courses"
+      className="bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8 scroll-mt-20"
+    >
       <div className="flex flex-col items-center justify-center mb-3 sm:mb-5">
         <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight text-center m-0">
           {uniName} Courses
@@ -66,8 +70,8 @@ export default function UniversityCoursesSection({
             "";
           const rawCourseSlug = item.slug || encodeURIComponent(cardTitle.toLowerCase());
           const courseDetailHref = rawCourseSlug.includes("/")
-            ? `/university/${rawCourseSlug}`
-            : `/university/${slug || uni.slug || ""}/${rawCourseSlug}`;
+            ? `/universities/${rawCourseSlug}`
+            : `/universities/${slug || uni.slug || ""}/${rawCourseSlug}`;
           const specCount = item.specializationsCount || item.subcourses?.length || 0;
           const inCmp = isInCompare(item._id || item.slug || cardTitle);
           const courseRawLogo = item.logo?.url || item.logo?.path || (typeof item.logo === "string" ? item.logo : null);
@@ -243,7 +247,7 @@ export default function UniversityCoursesSection({
         const modalFeeText = rawFee ? (String(rawFee).trim().startsWith("₹") ? rawFee : `₹ ${rawFee}`) : "";
 
         const cDuration = selectedCourseSpec.duration || "";
-        const itemDeadline = selectedCourseSpec.admissionDeadline || uni?.admissionDeadline || uni?.admission_deadline || "";
+        const itemDeadline = formatAdmissionDeadline(selectedCourseSpec.admissionDeadline || uni?.admissionDeadline || uni?.admission_deadline || "");
         const itemDesc = selectedCourseSpec.description?.trim() || selectedCourseSpec.overview?.trim() || selectedCourseSpec.desc?.trim() || (cTitle ? `This Program focuses on ${cTitle}, covering specialized concepts and practical applications. Learners build analysis and professional problem-solving through degree study, preparing for relevant professional and industry roles and supporting confident professional growth.` : "");
 
         const specializationsList = Array.isArray(selectedCourseSpec.subcourses) && selectedCourseSpec.subcourses.length > 0
@@ -285,7 +289,7 @@ export default function UniversityCoursesSection({
 
                 {/* Top-Left Logo Badge: University Logo */}
                 {uniLogoSrc && (
-                  <div className="absolute top-2.5 left-2.5 sm:top-3.5 sm:left-3.5 z-10 bg-white rounded-lg sm:rounded-xl shadow-md p-1.5 sm:p-2 flex flex-col items-center justify-center text-center border border-gray-100/90 min-w-[60px] sm:min-w-[74px] max-w-[76px] sm:max-w-[90px]">
+                  <div className="absolute top-2.5 left-2.5 sm:top-3.5 sm:left-3.5 z-10 bg-white rounded-lg sm:rounded-xl shadow-md p-1.5 sm:p-2 flex flex-col items-center justify-center text-center min-w-[60px] sm:min-w-[74px] max-w-[76px] sm:max-w-[90px]">
                     <div className="relative w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center">
                       <Image
                         src={uniLogoSrc}

@@ -3,7 +3,17 @@ import { notFound } from "next/navigation";
 import { request } from "@/services/request";
 import { getAssetPath } from "@/lib/utils";
 import { getPageMetaData, constructMetadata } from "@/constants/pageMetaData";
-import { CustomPageClientView, DynamicListingClientView } from "@/components/website";
+import {
+  CustomPageClientView,
+  DynamicListingClientView,
+  Header,
+  Footer,
+  MobileBottomNav,
+} from "@/components/website";
+import GlobalBreadcrumb from "@/components/common/GlobalBreadcrumb";
+import { getLandingData } from "@/data/landing";
+import UniversityLandingView from "@/components/landing/UniversityLandingView";
+import LPULandingView from "@/components/landing/lpu/LPULandingView";
 
 export const revalidate = 600;
 
@@ -54,6 +64,11 @@ export async function generateMetadata({ params }) {
     return {};
   }
 
+  const landingData = getLandingData(slug);
+  if (landingData?.meta) {
+    return landingData.meta;
+  }
+
   try {
     const [resolved, pageMeta] = await Promise.all([
       getPageData(slug),
@@ -76,32 +91,79 @@ export async function generateMetadata({ params }) {
   }
 }
 
-export default async function CustomDynamicPage({ params }) {
+export default async function DynamicSlugPage({ params }) {
   const resolvedParams = await params;
   const slug = resolvedParams?.slug || "";
 
+  // 1. Check if it's a University Landing Page (amity, manipal, lpu, cu, galgotias, mu, etc.)
+  const landingData = getLandingData(slug);
+  if (landingData) {
+    if (slug === "lpu") {
+      return <LPULandingView data={landingData} />;
+    }
+    // Isolated Landing Page: renders ONLY its own Navbar, Content, and Footer
+    return <UniversityLandingView data={landingData} />;
+  }
+
+  // 2. Otherwise fetch from backend CMS (Website Pages)
   const resolved = await getPageData(slug);
 
   if (!resolved || !resolved.data || !resolved.data.title) {
     notFound();
   }
 
-  // 1. Dynamic Listing & Ranking Page
+  // Fetch website header & footer data for CMS pages
+  const [headerRes, footerRes, legalPoliciesRes] = await Promise.all([
+    request.dynamicRead({
+      entity: "header",
+      endPoint: "public/by-slug",
+      slug: "global",
+      revalidate: 300,
+    }).catch(() => null),
+    request.dynamicList({
+      entity: "footer",
+      endPoint: "v1/list",
+      revalidate: 300,
+    }).catch(() => null),
+    request.dynamicList({
+      entity: "legal-policy",
+      endPoint: "v1/list",
+      revalidate: 300,
+    }).catch(() => null),
+  ]);
+
+  const headerData = headerRes?.result || headerRes;
+  const footerData = footerRes?.result || footerRes;
+  const legalPolicies = legalPoliciesRes?.result || [];
+
+  let content = null;
   if (resolved.type === "dynamic-listing") {
-    return <DynamicListingClientView page={resolved.data} slug={slug} />;
+    content = <DynamicListingClientView page={resolved.data} slug={slug} />;
+  } else {
+    const heroRes = await request
+      .dynamicRead({
+        entity: "hero",
+        endPoint: "public/by-slug",
+        slug: encodeURIComponent(slug),
+        revalidate: 300,
+      })
+      .catch(() => null);
+
+    const heroData = heroRes?.result || heroRes || null;
+    content = <CustomPageClientView page={resolved.data} slug={slug} heroData={heroData} />;
   }
 
-  // 2. Custom Rich Editorial / Builder Page
-  const heroRes = await request
-    .dynamicRead({
-      entity: "hero",
-      endPoint: "public/by-slug",
-      slug: encodeURIComponent(slug),
-      revalidate: 300, // 5 min ISR — data from backend, NOT static
-    })
-    .catch(() => null);
-
-  const heroData = heroRes?.result || heroRes || null;
-
-  return <CustomPageClientView page={resolved.data} slug={slug} heroData={heroData} />;
+  return (
+    <div className="flex flex-col min-h-screen">
+      <Header initialHeaderData={headerData} />
+      <GlobalBreadcrumb />
+      <main className="grow pb-16 lg:pb-0">{content}</main>
+      <Footer
+        initialHeaderData={headerData}
+        initialFooterData={footerData}
+        initialLegalPolicies={legalPolicies}
+      />
+      <MobileBottomNav />
+    </div>
+  );
 }

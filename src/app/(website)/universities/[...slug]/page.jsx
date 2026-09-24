@@ -21,6 +21,7 @@ function normalizeCourseData(pageRes) {
       : raw.fees?.name || (raw.fees?.amount ? `₹${Number(raw.fees.amount).toLocaleString("en-IN")}` : "");
 
   return {
+    ...raw,
     _id: raw._id,
     slug: raw.slug || raw._id,
     name: raw.name || raw.title || "Course",
@@ -32,8 +33,9 @@ function normalizeCourseData(pageRes) {
     emi: raw.emi || raw.feesLedger?.emi || raw.ledger?.emi || null,
     eligibility: raw.eligibility || "",
     admissionDeadline: raw.admissionDeadline || "",
-    bannerImage: raw.bannerImage || raw.bannerImg || null,
-    mobileBannerImage: raw.mobileBannerImage || raw.mobileBannerImg || null,
+    coursepageimage: raw.coursepageimage || null,
+    bannerImage: raw.coursepageimage || raw.bannerImage || raw.bannerImg || null,
+    mobileBannerImage: raw.bannerImageMobile || raw.mobileBannerImage || raw.mobileBannerImg || null,
     logo: raw.logo || null,
     location: raw.location || "",
     established: raw.established || "",

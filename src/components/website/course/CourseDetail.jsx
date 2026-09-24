@@ -2,16 +2,19 @@
 
 import React, { useState, useMemo } from "react";
 import { useFormModal } from "@/hooks/useFormModal";
-import { getAssetPath } from "@/lib/utils";
+import { getAssetPath, formatAdmissionDeadline } from "@/lib/utils";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
 import CourseHero from "./CourseHero";
-import CourseHighlights from "./CourseHighlights";
+import CourseQuickFacts from "./CourseQuickFacts";
+import CourseAbout from "./CourseAbout";
+import CourseKeyHighlights from "./CourseKeyHighlights";
 import CourseFeesPlan from "./CourseFeesPlan";
 import CourseCurriculum from "./CourseCurriculum";
 import CourseApprovals from "./CourseApprovals";
 import CourseSpecializations from "./CourseSpecializations";
 import CourseAlternativeUnis from "./CourseAlternativeUnis";
 import CourseFaq from "./CourseFaq";
+import CourseStickyNav from "./CourseStickyNav";
 
 export function CourseClientView({
   initialData = null,
@@ -180,7 +183,7 @@ export function CourseClientView({
     if (courseData?.duration) list.push({ label: "Duration", value: courseData.duration });
     list.push({ label: "Mode of Study", value: "Online" });
     if (approvalsSummary) list.push({ label: "Ranking & Approvals", value: approvalsSummary });
-    if (courseData?.admissionDeadline) list.push({ label: "Admission Deadline", value: courseData.admissionDeadline });
+    if (courseData?.admissionDeadline) list.push({ label: "Admission Deadline", value: formatAdmissionDeadline(courseData.admissionDeadline) });
     return list;
   }, [courseData, universityName, approvalsSummary]);
 
@@ -257,11 +260,14 @@ export function CourseClientView({
       const rawLogo =
         uni.logo?.url ||
         uni.logo?.path ||
+        (typeof uni.logo === "string" ? uni.logo : null) ||
         uni.logoSrc?.url ||
         uni.logoSrc ||
-        uni.logo ||
+        item.logo?.url ||
+        item.logo?.path ||
+        (typeof item.logo === "string" ? item.logo : null) ||
         item.logoUrl;
-      const logoUrl = getAssetPath(rawLogo, null);
+      const logoUrl = rawLogo ? getAssetPath(rawLogo, null) : null;
 
       let durationText = null;
       if (typeof duration === "string" && duration.trim()) {
@@ -314,18 +320,23 @@ export function CourseClientView({
 
       let courseDetailHref = "/courses";
       if (uniSlug && courseSlug && subcourseSlug) {
-        courseDetailHref = `/university/${encodeURIComponent(uniSlug)}/${encodeURIComponent(courseSlug)}/${encodeURIComponent(subcourseSlug)}`;
+        courseDetailHref = `/universities/${encodeURIComponent(uniSlug)}/${encodeURIComponent(courseSlug)}/${encodeURIComponent(subcourseSlug)}`;
       } else if (uniSlug && courseSlug) {
-        courseDetailHref = `/university/${encodeURIComponent(uniSlug)}/${encodeURIComponent(courseSlug)}`;
+        courseDetailHref = `/universities/${encodeURIComponent(uniSlug)}/${encodeURIComponent(courseSlug)}`;
       } else if (courseSlug && subcourseSlug) {
         courseDetailHref = `/courses/${encodeURIComponent(courseSlug)}/${encodeURIComponent(subcourseSlug)}`;
       } else if (courseSlug) {
         courseDetailHref = `/courses/${encodeURIComponent(courseSlug)}`;
       } else if (item.slug) {
         courseDetailHref = item.slug.includes("/")
-          ? `/university/${item.slug}`
+          ? `/universities/${item.slug}`
           : `/courses/${encodeURIComponent(item.slug)}`;
       }
+
+      const uniLocation =
+        uni.city && uni.state
+          ? `${uni.city}, ${uni.state}`
+          : uni.location || uni.city || uni.state || item.location || "";
 
       list.push({
         ...item,
@@ -335,6 +346,7 @@ export function CourseClientView({
         displayName,
         uniName: uName,
         logoUrl,
+        location: uniLocation,
         providerName,
         durationText,
         feeText,
@@ -375,6 +387,45 @@ export function CourseClientView({
     [displayCourseTitle, courseData?.fullName]
   );
 
+  const availableSections = useMemo(() => {
+    const list = [];
+    if (courseData?.overview || courseData?.description) {
+      list.push({ id: "about", label: "Overview" });
+    }
+    if (highlightsList && highlightsList.length > 0) {
+      list.push({ id: "key-highlights", label: "Highlights" });
+    }
+    if (activeLedgerData) {
+      list.push({ id: "fee-structure", label: "Fee Structure" });
+    }
+    if (curriculumList && curriculumList.length > 0) {
+      list.push({ id: "syllabus", label: "Syllabus" });
+    }
+    if (approvalsList && approvalsList.length > 0) {
+      list.push({ id: "approvals", label: "Accreditations" });
+    }
+    if (specializations && specializations.length > 0) {
+      list.push({ id: "specializations", label: "Specialisations" });
+    }
+    if (processedPrograms && processedPrograms.length > 0) {
+      list.push({ id: "alternative", label: "Alternative Universities" });
+    }
+    if (faqList && faqList.length > 0) {
+      list.push({ id: "faqs", label: "FAQs" });
+    }
+    return list;
+  }, [
+    courseData?.overview,
+    courseData?.description,
+    highlightsList,
+    activeLedgerData,
+    curriculumList,
+    approvalsList,
+    specializations,
+    processedPrograms,
+    faqList,
+  ]);
+
   return (
     <div className="min-h-screen bg-gray-100 text-gray-800 antialiased font-sans pb-16">
       {/* Top Hero and Quick Facts */}
@@ -389,33 +440,35 @@ export function CourseClientView({
           handleOpenLead={handleOpenLead}
         />
 
-        <CourseHighlights
+        <CourseQuickFacts
           courseData={courseData}
           universityName={universityName}
           approvalsSummary={approvalsSummary}
-          highlightsList={highlightsList}
         />
       </div>
 
-      {/* Main Content Area Sections */}
-      <div className="space-y-6 max-w-6xl mx-auto px-3 sm:px-4 md:px-0">
-        {/* 1. About / Course Overview */}
-        {(courseData?.overview || courseData?.description) && (
-          <div
-            id="about"
-            className="scroll-mt-16 bg-white rounded-2xl shadow-xs border border-gray-200 p-6 sm:p-10 space-y-4 text-center"
-          >
-            <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight m-0 text-center">
-              {courseData.overviewTitle || `${courseData.name || "Course"} Overview`}
-            </h2>
-            <div className="w-full max-w-4xl mx-auto h-px bg-gray-200/80 my-2" />
-            <div className="space-y-4 text-xs sm:text-[13.5px] text-gray-700 leading-relaxed max-w-5xl mx-auto font-normal text-center">
-              <p className="m-0">{courseData.overview || courseData.description}</p>
-            </div>
-          </div>
-        )}
+      {/* Auto Sticky Tabs Header based on present sections */}
+      <CourseStickyNav
+        sections={availableSections}
+        courseName={displayCourseTitle}
+      />
 
-        {/* 2. Fee Structure */}
+      {/* Main Content Area Sections */}
+      <div
+        id="course-content-sections"
+        className="space-y-6 max-w-6xl mx-auto px-3 sm:px-4 md:px-0"
+      >
+        {/* 1. About / Course Overview */}
+        <CourseAbout courseData={courseData} />
+
+        {/* 2. Key Highlights */}
+        <CourseKeyHighlights
+          courseData={courseData}
+          universityName={universityName}
+          highlightsList={highlightsList}
+        />
+
+        {/* 3. Fee Structure */}
         <CourseFeesPlan
           activeLedgerData={activeLedgerData}
           selectedPlanTab={selectedPlanTab}

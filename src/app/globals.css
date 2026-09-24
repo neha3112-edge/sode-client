@@ -271,3 +271,63 @@ body {
   border-bottom-left-radius: 20px !important;
   border-bottom-right-radius: 20px !important;
 }
+
+/* =========================================================
+   STANDALONE LANDING PAGE ISOLATION
+   Hides website header, footer, and nav when viewing LP
+========================================================= */
+body:has(.landing-page-root) > div > header,
+body:has(.landing-page-root) > div > footer,
+body:has(.landing-page-root) > div > nav,
+body:has(.landing-page-root) .global-breadcrumb {
+  display: none !important;
+}
+
+body:has(.landing-page-root) > div > main {
+  padding-bottom: 0 !important;
+}
+
+/* =========================================================
+   LANDING LEAD FORM CARD STYLING (EXACT SPEC MATCHING IMAGE 2)
+========================================================= */
+.landing-lead-card {
+  box-sizing: border-box !important;
+  font-family: inherit !important;
+}
+
+.landing-lead-card--hero input::placeholder {
+  color: #555555 !important;
+  opacity: 1 !important;
+  font-size: 13.5px !important;
+}
+
+.landing-lead-card--hero select {
+  color: #1f2937 !important;
+}
+
+.landing-lead-card--hero select option {
+  color: #1f2937 !important;
+  background-color: #ffffff !important;
+}
+
+.landing-lead-card--hero select option:first-child {
+  color: #555555 !important;
+}
+
+.landing-lead-card--hero .ant-form-item-explain-error {
+  color: #fecaca !important;
+  font-size: 11px !important;
+  padding-top: 2px !important;
+}
+
+.landing-lead-card--hero .ant-checkbox-inner {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  border-radius: 2px !important;
+}
+
+.landing-lead-card--hero .ant-checkbox-checked .ant-checkbox-inner {
+  background-color: #22c55e !important;
+  border-color: #22c55e !important;
+}
+

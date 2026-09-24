@@ -14,7 +14,8 @@ export default function CourseFeesPlan({
   return (
     <div
       id="fee-structure"
-      className="scroll-mt-16 bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8 space-y-4"
+      data-nav-label="Fee Structure"
+      className="scroll-mt-20 bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8 space-y-4"
     >
       <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-5 sm:mb-6 m-0">
         Fee Structure & Flexible Payment Plans

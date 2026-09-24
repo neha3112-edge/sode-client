@@ -21,6 +21,7 @@ function normalizeCourseData(pageRes) {
       : raw.fees?.name || (raw.fees?.amount ? `₹${Number(raw.fees.amount).toLocaleString("en-IN")}` : "");
 
   return {
+    ...raw,
     _id: raw._id,
     slug: raw.slug || raw._id,
     name: raw.name || raw.title || "Course",
