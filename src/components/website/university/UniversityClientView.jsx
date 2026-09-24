@@ -17,6 +17,7 @@ import UniversityPeerUniversities from "./UniversityPeerUniversities";
 import UniversityFaq from "./UniversityFaq";
 import UniversityStickyNav from "./UniversityStickyNav";
 import UniversityTopRecruiters from "./UniversityTopRecruiters";
+import UniversityAdmissionProcess from "./UniversityAdmissionProcess";
 
 const getSafeText = (val, fallback = "") => {
   if (val === null || val === undefined) return fallback;
@@ -272,7 +273,7 @@ export function UniversityClientView({ initialData, slug }) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 text-gray-800 antialiased font-sans pb-16">
+    <div className="min-h-screen bg-gray-100 text-gray-800 antialiased font-sans pb-16 overflow-x-hidden">
       {/* Hero Header Section */}
       <UniversityHero
         uniName={uniName}
@@ -361,6 +362,13 @@ export function UniversityClientView({ initialData, slug }) {
           topUniversities={topPeerUniversities}
           openFormModal={openFormModal}
         />
+
+        {/* Admission Process Section (Above FAQ) */}
+        {uni.admission_process && Array.isArray(uni.admission_process.steps) && uni.admission_process.steps.length > 0 && (
+          <UniversityAdmissionProcess
+            admissionProcess={uni.admission_process}
+          />
+        )}
 
         {/* FAQ Accordion Section */}
         <UniversityFaq

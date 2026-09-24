@@ -11,3 +11,5 @@ export { default as UniversityPeerUniversities } from "./UniversityPeerUniversit
 export { default as UniversityFaq } from "./UniversityFaq";
 export { default as UniversityStickyNav } from "./UniversityStickyNav";
 export { default as UniversityTopRecruiters } from "./UniversityTopRecruiters";
+export { default as UniversityAdmissionProcess } from "./UniversityAdmissionProcess";
+export { default as UniversityLatestNews } from "./UniversityLatestNews";

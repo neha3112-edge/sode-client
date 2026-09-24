@@ -435,12 +435,6 @@ export function CourseClientView({
     ) {
       list.push({ id: "career-opportunities", label: "Career & Scope" });
     }
-    if (
-      courseData?.careerOpportunity?.hiringPartners &&
-      courseData.careerOpportunity.hiringPartners.length > 0
-    ) {
-      list.push({ id: "top-recruiters", label: "Top Recruiters" });
-    }
     if (processedPrograms && processedPrograms.length > 0) {
       list.push({ id: "alternative", label: "Alternative Universities" });
     }
