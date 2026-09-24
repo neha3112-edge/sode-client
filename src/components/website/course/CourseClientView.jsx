@@ -12,6 +12,7 @@ import CourseFeesPlan from "./CourseFeesPlan";
 import CourseCurriculum from "./CourseCurriculum";
 import CourseApprovals from "./CourseApprovals";
 import CourseSpecializations from "./CourseSpecializations";
+import CourseCareerOpportunities from "./CourseCareerOpportunities";
 import CourseAlternativeUniversities from "./CourseAlternativeUniversities";
 import CourseFaq from "./CourseFaq";
 import CourseStickyNav from "./CourseStickyNav";
@@ -426,6 +427,20 @@ export function CourseClientView({
     if (specializations && specializations.length > 0) {
       list.push({ id: "specializations", label: "Specialisations" });
     }
+    if (
+      courseData?.careerOpportunity &&
+      (courseData.careerOpportunity.jobRoles?.length > 0 ||
+        courseData.careerOpportunity.highlights?.highestPackage ||
+        courseData.careerOpportunity.highlights?.averagePackage)
+    ) {
+      list.push({ id: "career-opportunities", label: "Career & Scope" });
+    }
+    if (
+      courseData?.careerOpportunity?.hiringPartners &&
+      courseData.careerOpportunity.hiringPartners.length > 0
+    ) {
+      list.push({ id: "top-recruiters", label: "Top Recruiters" });
+    }
     if (processedPrograms && processedPrograms.length > 0) {
       list.push({ id: "alternative", label: "Alternative Universities" });
     }
@@ -436,6 +451,7 @@ export function CourseClientView({
   }, [
     courseData?.overview,
     courseData?.description,
+    courseData?.careerOpportunity,
     highlightsList,
     activeLedgerData,
     curriculumList,
@@ -521,13 +537,21 @@ export function CourseClientView({
           targetSpecSlug={targetSpecSlug}
         />
 
-        {/* 6. Alternative Universities */}
+        {/* 6. Career Opportunities */}
+        <CourseCareerOpportunities
+          careerData={courseData?.careerOpportunity}
+          courseName={displayCourseTitle}
+          universityName={universityName}
+          handleOpenLead={handleOpenLead}
+        />
+
+        {/* 7. Alternative Universities */}
         <CourseAlternativeUniversities
           processedPrograms={processedPrograms}
           courseData={courseData}
         />
 
-        {/* 7. FAQs */}
+        {/* 8. FAQs */}
         <CourseFaq
           faqList={faqList}
           courseData={courseData}

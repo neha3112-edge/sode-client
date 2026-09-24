@@ -16,6 +16,7 @@ import UniversitySampleDegree from "./UniversitySampleDegree";
 import UniversityPeerUniversities from "./UniversityPeerUniversities";
 import UniversityFaq from "./UniversityFaq";
 import UniversityStickyNav from "./UniversityStickyNav";
+import UniversityTopRecruiters from "./UniversityTopRecruiters";
 
 const getSafeText = (val, fallback = "") => {
   if (val === null || val === undefined) return fallback;
@@ -346,6 +347,14 @@ export function UniversityClientView({ initialData, slug }) {
           uniName={uniName}
           openFormModal={openFormModal}
         />
+
+        {/* Top Recruiters Section */}
+        {Array.isArray(uni.recruiters) && uni.recruiters.length > 0 && (
+          <UniversityTopRecruiters
+            recruiters={uni.recruiters}
+            uniName={uniName}
+          />
+        )}
 
         {/* Top Peer Universities Section */}
         <UniversityPeerUniversities

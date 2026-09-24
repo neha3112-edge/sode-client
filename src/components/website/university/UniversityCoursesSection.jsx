@@ -82,9 +82,8 @@ export default function UniversityCoursesSection({
           return (
             <div
               key={item._id || item.slug || `${cardTitle}-${index}`}
-              className={`bg-gray-50 rounded-xl border border-gray-200 hover:border-[#08AEAA] p-2 sm:p-2.5 hover:shadow-md transition-all flex flex-col items-center justify-between text-center relative group min-w-0 w-full h-full shadow-2xs ${
-                index === 5 && visibleCoursesCount === 6 ? "flex lg:hidden" : "flex"
-              }`}
+              className={`bg-gray-50 rounded-xl border border-gray-200 hover:border-[#08AEAA] p-2 sm:p-2.5 hover:shadow-md transition-all flex flex-col items-center justify-between text-center relative group min-w-0 w-full h-full shadow-2xs ${index === 5 && visibleCoursesCount === 6 ? "flex lg:hidden" : "flex"
+                }`}
             >
               {specCount > 0 && (
                 <div className="absolute top-0 left-0 z-10">
@@ -189,11 +188,10 @@ export default function UniversityCoursesSection({
                     toggleCompare(targetItem);
                     setIsCompareDrawerOpen(true);
                   }}
-                  className={`w-full py-1 text-[11px] sm:text-xs font-medium flex items-center justify-center gap-1 transition-all cursor-pointer mt-1 border-none bg-transparent min-h-[22px] ${
-                    inCmp
+                  className={`w-full py-1 text-[11px] sm:text-xs font-medium flex items-center justify-center gap-1 transition-all cursor-pointer mt-1 border-none bg-transparent min-h-[22px] ${inCmp
                       ? "text-[#08AEAA] font-bold"
                       : "text-gray-600 hover:text-[#0D3B66]"
-                  }`}
+                    }`}
                 >
                   {inCmp ? (
                     <>
@@ -228,11 +226,10 @@ export default function UniversityCoursesSection({
               {visibleCoursesCount >= filteredCourses.length ? "View Less" : "View More"}
             </span>
             <ChevronDown
-              className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                visibleCoursesCount >= filteredCourses.length
+              className={`w-3.5 h-3.5 transition-transform duration-200 ${visibleCoursesCount >= filteredCourses.length
                   ? "rotate-180"
                   : "group-hover:translate-y-0.5"
-              }`}
+                }`}
             />
           </button>
         </div>

@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Plus, Check, ChevronDown } from "lucide-react";
 import { useCompare } from "@/hooks/useCompare";
 import { useFormModal } from "@/hooks/useFormModal";
+import { getAssetPath } from "@/lib/utils";
 
 export default function CourseAlternativeUniversities({
   processedPrograms,
@@ -31,7 +32,7 @@ export default function CourseAlternativeUniversities({
         {processedPrograms.slice(0, visibleCount).map((item, index) => {
           const uName = item.uniName || "Partner University";
           const cardTitle = item.cardTitle || item.title || "Course Program";
-          const logoUrl = item.logoUrl;
+          const logoUrl = getAssetPath(item.logoUrl);
           const providerName = item.providerName || null;
           const coursesOfferedText = `${item.coursesCount || item.programsCount || 10}+ Programs`;
           const rawHref = item.courseDetailHref || `/courses`;
