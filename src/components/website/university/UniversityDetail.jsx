@@ -280,19 +280,8 @@ export function UniversityClientView({ initialData, slug }) {
         admissionStatus={uni.admission_status}
       />
 
-<<<<<<< HEAD:src/components/website/university/UniversityDetail.jsx
-        <UniversityHighlights
-          locationText={locationText}
-          establishedYear={establishedYear}
-          approvalsSummary={approvalsSummary}
-          coursesCount={coursesList.length}
-          naacGrade={uni.naac_grade || data.naac_grade}
-        />
-      </div>
-=======
       {/* Dynamic Sticky Tabs Header */}
       <UniversityStickyNav containerId="university-content-sections" />
->>>>>>> origin/Atosh-Website:src/components/website/university/UniversityClientView.jsx
 
       <div
         id="university-content-sections"

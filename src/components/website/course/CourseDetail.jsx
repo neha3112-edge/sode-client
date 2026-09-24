@@ -7,7 +7,7 @@ import { useBreadcrumb } from "@/context/BreadcrumbContext";
 import CourseHero from "./CourseHero";
 import CourseQuickFacts from "./CourseQuickFacts";
 import CourseAbout from "./CourseAbout";
-import CourseKeyHighlights from "./CourseKeyHighlights";
+import CourseKeyHighlights from "./CourseHighlights";
 import CourseFeesPlan from "./CourseFeesPlan";
 import CourseCurriculum from "./CourseCurriculum";
 import CourseApprovals from "./CourseApprovals";

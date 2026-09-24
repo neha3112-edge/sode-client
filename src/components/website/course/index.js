@@ -3,7 +3,7 @@ export { default as CoursesPageClientView, default as CoursesListing } from "./C
 export { default as CourseHero } from "./CourseHero";
 export { default as CourseQuickFacts } from "./CourseQuickFacts";
 export { default as CourseAbout } from "./CourseAbout";
-export { default as CourseKeyHighlights, default as CourseHighlights } from "./CourseKeyHighlights";
+export { default as CourseKeyHighlights, default as CourseHighlights } from "./CourseHighlights";
 export { default as CourseFeesPlan } from "./CourseFeesPlan";
 export { default as CourseCurriculum } from "./CourseCurriculum";
 export { default as CourseApprovals } from "./CourseApprovals";
