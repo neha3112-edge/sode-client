@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Modal, Form, Checkbox, message } from "antd";
 import { STATE_OPTIONS } from "@/constants/stateOptions";
+import { triggerFormConfetti } from "@/lib/confetti";
 
 // ======================================================
 // INDIA FLAG
@@ -148,6 +149,14 @@ export default function ScholarshipModal({
   const [form] = Form.useForm();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      triggerFormConfetti({
+        colors: ["#22c55e", "#f59e0b", "#06b6d4", "#3b82f6", "#ec4899"],
+      });
+    }
+  }, [isOpen]);
 
   // ======================================================
   // COURSE OPTIONS

@@ -1,8 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Modal } from "antd";
 import LandingLeadForm from "../LandingLeadForm";
+import { triggerFormConfetti } from "@/lib/confetti";
 
 export default function CompareModal({
   isOpen,
@@ -11,6 +12,12 @@ export default function CompareModal({
   courses = [],
   onOpenDisclaimer,
 }) {
+  useEffect(() => {
+    if (isOpen) {
+      triggerFormConfetti();
+    }
+  }, [isOpen]);
+
   return (
     <Modal
       open={isOpen}

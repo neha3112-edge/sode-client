@@ -1,8 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Modal } from "antd";
 import LandingLeadForm from "../LandingLeadForm";
+import { triggerFormConfetti } from "@/lib/confetti";
 
 export default function BrochureModal({
   isOpen,
@@ -12,6 +13,12 @@ export default function BrochureModal({
   selectedCourse = "MBA",
   onOpenDisclaimer,
 }) {
+  useEffect(() => {
+    if (isOpen) {
+      triggerFormConfetti();
+    }
+  }, [isOpen]);
+
   return (
     <Modal
       open={isOpen}

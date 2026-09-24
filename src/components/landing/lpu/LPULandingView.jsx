@@ -13,6 +13,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { STATE_OPTIONS } from "@/constants/stateOptions";
+import { triggerFormConfetti } from "@/lib/confetti";
 
 export default function LPULandingView({ data = {} }) {
   const router = useRouter();
@@ -72,6 +73,13 @@ export default function LPULandingView({ data = {} }) {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Trigger confetti when any lead modal opens
+  useEffect(() => {
+    if (isCounselingOpen || isBrochureOpen || isScholarshipOpen || isCompareOpen) {
+      triggerFormConfetti();
+    }
+  }, [isCounselingOpen, isBrochureOpen, isScholarshipOpen, isCompareOpen]);
 
   // Generic Lead Submission Handler
   const handleLeadSubmit = async (values, formType, autoDownloadPdf = false) => {

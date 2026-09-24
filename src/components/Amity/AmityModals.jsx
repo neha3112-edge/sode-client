@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Modal, Form, Input, Select, Button, Checkbox, message } from "antd";
 import { Download, Gift, Scale } from "lucide-react";
-import confetti from "canvas-confetti";
+import { triggerFormConfetti } from "@/lib/confetti";
 import { AMITY_COURSE_OPTIONS, AMITY_STATE_OPTIONS } from "./AmityLeadForm";
 
 /* =========================================================
@@ -26,6 +26,7 @@ export function AmityBrochureModal({
         course: selectedCourse || "MBA",
         disclaimer: true,
       });
+      triggerFormConfetti();
     }
   }, [isOpen, selectedCourse, form]);
 
@@ -210,16 +211,9 @@ export function AmityScholarshipModal({ isOpen, onClose, onOpenDisclaimer }) {
   useEffect(() => {
     if (isOpen) {
       form.setFieldsValue({ course: "MBA", disclaimer: true });
-      try {
-        confetti({
-          particleCount: 100,
-          spread: 80,
-          origin: { y: 0.6 },
-          colors: ["#f59e0b", "#3b82f6", "#10b981", "#ef4444"],
-        });
-      } catch (err) {
-        console.warn("Confetti error:", err);
-      }
+      triggerFormConfetti({
+        colors: ["#f59e0b", "#3b82f6", "#10b981", "#ef4444", "#22c55e"],
+      });
     }
   }, [isOpen, form]);
 
