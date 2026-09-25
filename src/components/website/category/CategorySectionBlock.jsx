@@ -43,58 +43,7 @@ export default function CategorySectionBlock({
               </h3>
             </div>
 
-            {!isCourse && block.children && block.children.length > slidesToShowCount && (
-              <button
-                type="button"
-                onClick={(e) => {
-                  const btnElement = e.currentTarget;
-                  const sectionElement = btnElement.closest("section");
 
-                  if (isExpanded) {
-                    setExpandedSections((prev) => ({ ...prev, [blockKey]: false }));
-                    setTimeout(() => {
-                      if (sectionElement) {
-                        const yOffset = -70;
-                        const y = sectionElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
-                        window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
-                      }
-                    }, 60);
-                  } else {
-                    setExpandedSections((prev) => ({ ...prev, [blockKey]: true }));
-                    setTimeout(() => {
-                      const scrollDelta = window.innerWidth < 768 ? 220 : 180;
-                      window.scrollBy({ top: scrollDelta, behavior: "smooth" });
-                    }, 100);
-                  }
-                }}
-                className="text-xs font-bold text-[#0B3B7E] hover:text-blue-700 flex items-center gap-1 transition-colors group shrink-0 cursor-pointer border-0 bg-transparent"
-              >
-                <span>{isExpanded ? "View Less" : "View More"}</span>
-                {isExpanded ? (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={2.5}
-                    stroke="currentColor"
-                    className="w-3.5 h-3.5 shrink-0"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" />
-                  </svg>
-                ) : (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={2.5}
-                    stroke="currentColor"
-                    className="w-3.5 h-3.5 shrink-0 group-hover:translate-x-0.5 transition-transform"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                  </svg>
-                )}
-              </button>
-            )}
           </div>
 
           {/* Content: Course Grid OR University Carousel */}
@@ -148,7 +97,7 @@ export default function CategorySectionBlock({
             />
           )}
 
-          {/* ── BOTTOM VIEW MORE / VIEW LESS FOR COURSES ── */}
+          {/* ── BOTTOM VIEW MORE / VIEW LESS (COURSES + UNIVERSITIES) ── */}
           {isCourse && block.children && block.children.length > 8 && (
             <div className="flex justify-center mt-2.5">
               <button
@@ -168,6 +117,51 @@ export default function CategorySectionBlock({
                     }, 60);
                   } else {
                     setVisibleCounts((prev) => ({ ...prev, [blockKey]: (prev[blockKey] || 8) + 8 }));
+                    setTimeout(() => {
+                      const scrollDelta = window.innerWidth < 768 ? 220 : 180;
+                      window.scrollBy({ top: scrollDelta, behavior: "smooth" });
+                    }, 100);
+                  }
+                }}
+                className="inline-flex items-center justify-center gap-1.5 px-5 py-1.5 rounded-full text-xs font-bold text-[#0B3B7E] bg-blue-50/80 hover:bg-blue-100 border border-blue-200/80 transition-all cursor-pointer shadow-none group"
+              >
+                <span>{isExpanded ? "View Less" : "View More"}</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2.5}
+                  stroke="currentColor"
+                  className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                    isExpanded ? "rotate-180" : "group-hover:translate-y-0.5"
+                  }`}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                </svg>
+              </button>
+            </div>
+          )}
+
+          {/* University section View More button - bottom center */}
+          {!isCourse && block.children && block.children.length > slidesToShowCount && (
+            <div className="flex justify-center mt-2.5">
+              <button
+                type="button"
+                onClick={(e) => {
+                  const btnElement = e.currentTarget;
+                  const sectionElement = btnElement.closest("section");
+
+                  if (isExpanded) {
+                    setExpandedSections((prev) => ({ ...prev, [blockKey]: false }));
+                    setTimeout(() => {
+                      if (sectionElement) {
+                        const yOffset = -70;
+                        const y = sectionElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                        window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+                      }
+                    }, 60);
+                  } else {
+                    setExpandedSections((prev) => ({ ...prev, [blockKey]: true }));
                     setTimeout(() => {
                       const scrollDelta = window.innerWidth < 768 ? 220 : 180;
                       window.scrollBy({ top: scrollDelta, behavior: "smooth" });
