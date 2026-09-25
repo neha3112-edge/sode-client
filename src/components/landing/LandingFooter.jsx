@@ -22,58 +22,57 @@ export default function LandingFooter({
   };
 
   return (
-    <footer className="mini-footer bg-[#f6f8fa] text-[#777] pt-4 sm:pt-6 relative">
-      <div className="max-w-full mx-auto px-4 sm:px-11 text-center">
-        {/* SODE / Distance Education School Official Full Logo */}
+    <footer className="mini-footer bg-[#f6f8fa] text-[#777777] pt-4 sm:pt-6 relative select-none">
+      <div className="w-full max-w-full mx-auto px-4 sm:px-8 text-center flex flex-col items-center">
+        {/* SODE / Distance Education School Official Full Logo (Large like First Image) */}
         <div className="footer_sode_logo_container flex justify-center items-center">
           <Link
             href="#hero"
             onClick={handleScrollTop}
-            className="inline-block cursor-pointer"
+            className="inline-block cursor-pointer transition-transform hover:scale-[1.01] active:scale-[0.99]"
             aria-label="Back to Top"
           >
-            <div className="relative w-75 sm:w-210 h-28 sm:h-48">
+            <div className="relative w-[320px] sm:w-[520px] md:w-[600px] lg:w-[640px] h-[95px] sm:h-[155px] md:h-[180px] lg:h-[190px]">
               <Image
-                src="/assets/images/new-des-logo.webp"
+                src={brand.sodeLogo || "/assets/images/new-des-logo.webp"}
                 alt="Distance Education School - SODE School of Online & Distance Education"
                 fill
                 className="object-contain"
-                sizes="(max-width: 640px) 300px, (max-width: 768px) 440px, 480px"
+                sizes="(max-width: 640px) 320px, (max-width: 768px) 520px, 640px"
                 priority
               />
             </div>
           </Link>
         </div>
 
-
-        {/* Agency Disclaimer Text */}
-        <div id="footer-bottom-bar" className="mt-2 sm:mt-3 px-2 sm:px-8">
-          <p className="m-0 text-[11px] sm:text-[12.5px] text-[#555] leading-relaxed max-w-full mx-auto">
+        {/* Agency Disclaimer Text (Grey & 2-line layout matching First Image) */}
+        <div id="footer-bottom-bar" className="mt-2 sm:mt-2.5 px-2 sm:px-6 w-full max-w-[1240px] mx-auto text-center">
+          <p className="m-0 text-[11.5px] sm:text-[12.5px] text-[#777777] leading-relaxed font-normal">
             {footerText}
           </p>
 
-          {/* Legal Links matching screenshot */}
-          <div className="mt-3 text-[12px] sm:text-[13px] font-bold text-black flex items-center justify-center gap-2">
+          {/* Legal Links matching live reference */}
+          <div className="mt-2.5 sm:mt-3 text-[12px] sm:text-[13px] font-bold text-[#111111] flex items-center justify-center gap-2">
             <button
               type="button"
               onClick={() => onOpenDisclaimer?.()}
-              className="hover:underline cursor-pointer font-bold text-black border-none bg-transparent p-0"
+              className="hover:underline hover:text-black cursor-pointer font-bold text-[#111111] border-none bg-transparent p-0 transition-colors"
             >
               Disclaimer
             </button>
-            <span className="text-[#888] font-normal">|</span>
+            <span className="text-[#888888] font-normal">|</span>
             <button
               type="button"
               onClick={() => onOpenTerms?.()}
-              className="hover:underline cursor-pointer font-bold text-black border-none bg-transparent p-0"
+              className="hover:underline hover:text-black cursor-pointer font-bold text-[#111111] border-none bg-transparent p-0 transition-colors"
             >
               Terms & Conditions
             </button>
-            <span className="text-[#888] font-normal">|</span>
+            <span className="text-[#888888] font-normal">|</span>
             <button
               type="button"
               onClick={() => onOpenPrivacy?.()}
-              className="hover:underline cursor-pointer font-bold text-black border-none bg-transparent p-0"
+              className="hover:underline hover:text-black cursor-pointer font-bold text-[#111111] border-none bg-transparent p-0 transition-colors"
             >
               Privacy Policy
             </button>
@@ -82,7 +81,7 @@ export default function LandingFooter({
       </div>
 
       {/* Dark Navy Copyright Bar */}
-      <div className="mini-footer-bottom mt-5 sm:mt-6 bg-[#082b4e] text-white text-center py-2 px-4 text-[11px] sm:text-[12px] pb-18.75 md:pb-2 tracking-wide font-normal">
+      <div className="mini-footer-bottom mt-5 sm:mt-6 bg-[#082b4e] text-white text-center py-2.5 px-4 text-[13px] sm:text-[14px] pb-20 md:pb-2.5 tracking-wide font-normal">
         © {new Date().getFullYear()} SODE Counseling Services LLP
       </div>
     </footer>

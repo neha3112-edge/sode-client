@@ -6,11 +6,11 @@ export default function LandingCompareBanner({ brand = {}, onOpenCompare }) {
   const universityName = brand.shortName || (brand.name ? brand.name.replace(/\s*Online\s*$/i, "") : "Amity University");
 
   return (
-    <section className="compare_Section bg-[#f6f8fa] pt-8 sm:pt-14 pb-8 sm:pb-10">
+    <section className="compare_Section bg-[#f6f8fa] pt-8 sm:pt-14 pb-14 sm:pb-16">
       <div className="max-w-full mx-auto px-4 sm:px-11">
         <div
           className="compare_box relative rounded-2xl sm:rounded-3xl px-6 sm:px-12 pt-9 pb-18 sm:pt-12 sm:pb-16 text-center text-white transition-colors flex flex-col items-center justify-center shadow-sm"
-          style={{ backgroundColor: brand.primaryColor || "#08417b" }}
+          style={{ background: brand.compareBannerBg || brand.primaryColor || "#08417b" }}
         >
           {/* Heading */}
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight m-0">
@@ -32,7 +32,7 @@ export default function LandingCompareBanner({ brand = {}, onOpenCompare }) {
             >
               <div className="relative w-full h-full rounded-full overflow-hidden">
                 <Image
-                  src="/assets/images/arrow.gif"
+                  src={brand.arrowGif || "/assets/images/arrow.gif"}
                   alt="Compare down arrow"
                   fill
                   className="object-cover rounded-full"

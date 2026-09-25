@@ -6,14 +6,13 @@ import { Download, ChevronLeft, ChevronRight, Hourglass } from "lucide-react";
 
 /**
  * Reusable Landing Programmes Carousel (Infinite Loop with Timer + Touch Swipe)
- * - 4 cards visible on desktop, 2 on tablet, 1 on mobile
- * - Touch swipe support for mobile gesture navigation
- * - Smooth auto-play with pause on hover/touch
- * - Green level badge, Yellow Get Brochure button, and Duration
+ * Supports:
+ * 1. Clean Card Style (Manipal - 3 cards visible on desktop, no stock image, bold code & title, logo, orange button)
+ * 2. Classic Card Style (Amity - 4 cards visible, stock photo, green badge, duration)
  */
 export default function LandingProgrammes({
   programmes = [],
-  universityName = "Amity University",
+  universityName = "University Online",
   brand = {},
   title = "Online Degree Courses",
   intervalTime = 3000,
@@ -22,21 +21,28 @@ export default function LandingProgrammes({
 }) {
   const total = programmes.length;
 
+  const isCleanCard =
+    brand.programmesCardStyle === "clean" ||
+    brand.programmesCardStyle === "card" ||
+    Boolean(brand.programmesPrefix);
+
+  const defaultVisible = isCleanCard ? 3 : 4;
+
   const [currentIndex, setCurrentIndex] = useState(total > 0 ? total : 0);
   const [withTransition, setWithTransition] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
-  const [visibleCount, setVisibleCount] = useState(4);
+  const [visibleCount, setVisibleCount] = useState(defaultVisible);
   const timerRef = useRef(null);
 
   // Touch swipe state
   const touchStartXRef = useRef(0);
   const touchEndXRef = useRef(0);
 
-  const rawUni = universityName || brand.name || "Amity University";
+  const rawUni = universityName || brand.name || "University Online";
   const displayUniversity = rawUni.replace(/\s+Online$/i, "").trim() || rawUni;
-  const primaryBg = brand.hero?.formBackground || brand.primaryColor || "#08417b";
+  const sectionBg = brand.programmesBg || (isCleanCard ? "#f5ede7" : brand.primaryColor || "#08417b");
 
-  // Responsive visible cards count: 1 on mobile (<640px), 2 on tablet (<1024px), 4 on desktop
+  // Responsive visible cards count
   useEffect(() => {
     const handleResize = () => {
       if (typeof window === "undefined") return;
@@ -45,14 +51,14 @@ export default function LandingProgrammes({
       } else if (window.innerWidth < 1024) {
         setVisibleCount(2);
       } else {
-        setVisibleCount(4);
+        setVisibleCount(isCleanCard ? 3 : 4);
       }
     };
 
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  }, [isCleanCard]);
 
   const extendedList =
     total > 0
@@ -130,8 +136,8 @@ export default function LandingProgrammes({
   return (
     <section
       id="programmes"
-      className="py-10 sm:py-14 lg:py-16 text-white overflow-hidden relative select-none transition-colors w-full"
-      style={{ backgroundColor: primaryBg }}
+      className="py-6 sm:py-8 lg:py-10 overflow-hidden relative select-none transition-colors w-full"
+      style={{ backgroundColor: sectionBg }}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onTouchStart={handleTouchStart}
@@ -139,18 +145,55 @@ export default function LandingProgrammes({
       onTouchEnd={handleTouchEnd}
     >
       {/* Section Heading */}
-      <div className="text-center mb-6 sm:mb-8 lg:mb-10 px-4 max-w-4xl mx-auto">
-        <h3 className="text-xl sm:text-2xl lg:text-[28px] font-bold text-white m-0 tracking-tight leading-tight">
-          {displayUniversity}
-        </h3>
-        <h2 className="text-2xl sm:text-3xl lg:text-[36px] font-bold text-white mt-1 m-0 tracking-tight leading-tight">
-          {title}
-        </h2>
+      <div className="text-center mb-5 sm:mb-6 px-4 max-w-4xl mx-auto">
+        {isCleanCard ? (
+          <h2 className="text-2xl sm:text-3xl lg:text-[32px] font-bold m-0 tracking-tight leading-tight">
+            <span className="text-[#ee3024]">{brand.programmesPrefix || "Programs Offered by "}</span>
+            <span className="text-[#192f59]">{brand.programmesHighlight || displayUniversity}</span>
+          </h2>
+        ) : (
+          <div>
+            <h3
+              className="text-xl sm:text-2xl lg:text-[28px] font-bold m-0 tracking-tight leading-tight"
+              style={{ color: brand.primaryColor || "#f35a06" }}
+            >
+              {displayUniversity}
+            </h3>
+            <h2 className="text-2xl sm:text-3xl lg:text-[36px] font-bold mt-1 m-0 tracking-tight leading-tight text-slate-900">
+              {title}
+            </h2>
+          </div>
+        )}
       </div>
 
       {/* Carousel Container */}
-      <div className="w-full max-w-[1240px] xl:max-w-[1360px] 2xl:max-w-[1400px] mx-auto px-3 sm:px-5 lg:px-6 relative">
-        <div className="w-full overflow-hidden rounded-[8px]">
+      <div
+        className={`w-full mx-auto px-4 relative ${isCleanCard
+            ? "max-w-[1140px] px-3 sm:px-6"
+            : "max-w-[1240px] xl:max-w-[1260px] sm:px-8 lg:px-10"
+          }`}
+      >
+        {/* Navigation Chevrons */}
+        <button
+          type="button"
+          onClick={handlePrev}
+          aria-label="Previous programme"
+          className="absolute -left-2 sm:-left-4 lg:-left-5 top-1/2 -translate-y-1/2 z-20 text-[#222222] hover:text-[#ee3024] transition-colors p-1 bg-transparent border-none cursor-pointer flex items-center justify-center active:scale-90"
+        >
+          <ChevronLeft className="w-7 h-7 sm:w-8 sm:h-8 stroke-[2.5]" />
+        </button>
+
+        <button
+          type="button"
+          onClick={handleNext}
+          aria-label="Next programme"
+          className="absolute -right-2 sm:-right-4 lg:-right-5 top-1/2 -translate-y-1/2 z-20 text-[#222222] hover:text-[#ee3024] transition-colors p-1 bg-transparent border-none cursor-pointer flex items-center justify-center active:scale-90"
+        >
+          <ChevronRight className="w-7 h-7 sm:w-8 sm:h-8 stroke-[2.5]" />
+        </button>
+
+        {/* Viewport */}
+        <div className="w-full overflow-hidden">
           <div
             onTransitionEnd={handleTransitionEnd}
             className="flex items-stretch"
@@ -162,6 +205,65 @@ export default function LandingProgrammes({
             }}
           >
             {extendedList.map((c, idx) => {
+              if (isCleanCard) {
+                /* Clean Card Style (Exact match to First Image reference) */
+                return (
+                  <div
+                    key={`${c.id || c.code}-${idx}`}
+                    className="shrink-0 px-2 sm:px-2.5 lg:px-3 box-border"
+                    style={{ width: `${100 / visibleCount}%` }}
+                  >
+                    <div className={brand.programmeCardClass || "bg-white rounded-[5px] shadow-[0px_3px_15px_rgba(0,0,0,0.13)] py-4 sm:py-5 px-5 sm:px-[22px] flex flex-col justify-between h-full min-h-[350px] sm:min-h-[360px] text-left"}>
+                      <div>
+                        {/* Course Code (e.g. BBA, BCA, MBA) */}
+                        <h3 className="text-[26px] sm:text-[28px] font-bold text-[#000000] m-0 tracking-tight leading-none">
+                          {c.code || c.id?.toUpperCase()}
+                        </h3>
+
+                        {/* Full Title (e.g. Bachelor of Business Administration) */}
+                        <h4 className="text-[17.5px] sm:text-[18.5px] font-semibold text-[#222222] mt-1.5 mb-1.5 leading-[1.2] min-h-[42px] flex items-start">
+                          {c.title}
+                        </h4>
+
+                        {/* Description */}
+                        <p className="text-[12.5px] sm:text-[13px] text-[#333333] leading-[1.5] font-normal m-0">
+                          {c.description}
+                        </p>
+                      </div>
+
+                      <div className="mt-3 pt-0.5">
+                        {/* Manipal Online Logo */}
+                        <div className="relative w-28 sm:w-[114px] h-7 sm:h-[28px] mb-2">
+                          <Image
+                            src={brand.manipalLogo || c.logo || "/assets/manipal_v1_images/manipal-logo.webp"}
+                            alt="Online Manipal"
+                            fill
+                            className="object-contain object-left"
+                            sizes="120px"
+                          />
+                        </div>
+
+                        {/* Download Brochure Button */}
+                        <button
+                          type="button"
+                          onClick={() => onSelectCourseForBrochure?.(c.code || c.title)}
+                          className="w-full py-2 sm:py-2.5 px-4 rounded-[5px] text-white font-medium text-[13px] sm:text-[13.5px] flex items-center justify-center gap-2 border-none cursor-pointer transition-opacity hover:opacity-95 shadow-xs"
+                          style={{
+                            background:
+                              brand.programmeBtnBg ||
+                              "linear-gradient(270deg, #ff6600 0%, #ee3024 100%)",
+                          }}
+                        >
+                          <span>Download Brochure</span>
+                          <Download className="w-4 h-4 stroke-[2.5]" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
+
+              /* Classic Card Style with Photo & Badge */
               const isPostGrad =
                 c.level?.toLowerCase().includes("post") ||
                 c.title?.toLowerCase().includes("master") ||
@@ -176,10 +278,8 @@ export default function LandingProgrammes({
                   className="shrink-0 px-1.5 sm:px-2 xl:px-2.5 box-border"
                   style={{ width: `${100 / visibleCount}%` }}
                 >
-                  {/* Course Card */}
                   <div className="bg-white rounded-[8px] overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col justify-between h-full group text-left border border-slate-200/80">
                     <div>
-                      {/* Course Image with Green Level Badge */}
                       <div className="relative h-44 sm:h-44 xl:h-48 w-full bg-slate-100 overflow-hidden">
                         <Image
                           src={c.image || "/assets/amitylp/MBA-amity.png"}
@@ -188,18 +288,22 @@ export default function LandingProgrammes({
                           className="object-cover group-hover:scale-105 transition-transform duration-300"
                           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                         />
-                        {/* Green Level Badge */}
                         <div className="absolute top-0 left-0 bg-[#009900] text-white text-[11px] sm:text-[11.5px] font-semibold px-2.5 sm:px-3 py-1 rounded-br-[4px] tracking-wide select-none shadow-xs">
                           {levelText}
                         </div>
                       </div>
 
-                      {/* Card Content */}
                       <div className="p-3.5 sm:p-4 pb-2">
-                        <h3 className="text-[20px] sm:text-[22px] xl:text-[24px] font-bold text-[#08417b] m-0 leading-tight tracking-tight">
+                        <h3
+                          className="text-[20px] sm:text-[22px] xl:text-[24px] font-bold m-0 leading-tight tracking-tight"
+                          style={{ color: brand.primaryColor || "#08417b" }}
+                        >
                           {c.code || c.id?.toUpperCase() || c.title}
                         </h3>
-                        <p className="text-[12.5px] sm:text-[13px] font-semibold text-[#08417b] mt-1 mb-1.5 line-clamp-1">
+                        <p
+                          className="text-[12.5px] sm:text-[13px] font-semibold mt-1 mb-1.5 line-clamp-1"
+                          style={{ color: brand.primaryColor || "#08417b" }}
+                        >
                           {c.title}
                         </p>
                         <p className="text-[11.5px] sm:text-[12px] text-[#444444] leading-[1.5] line-clamp-3 sm:line-clamp-4 min-h-[54px] sm:min-h-[72px] m-0">
@@ -208,19 +312,20 @@ export default function LandingProgrammes({
                       </div>
                     </div>
 
-                    {/* Bottom Action Bar */}
                     <div className="px-3.5 sm:px-4 pt-2 pb-3.5 flex items-center justify-between border-t border-slate-100 mt-1">
-                      {/* Yellow Get Brochure Button */}
                       <button
                         type="button"
                         onClick={() => onSelectCourseForBrochure?.(c.code || c.title)}
-                        className="bg-[#ffd200] hover:bg-[#ffc107] active:scale-95 text-black font-bold text-[11.5px] sm:text-[12px] px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-[4px] inline-flex items-center gap-1.5 border-none cursor-pointer transition-all shadow-xs shrink-0"
+                        className="active:scale-95 font-bold text-[11.5px] sm:text-[12px] px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-[4px] inline-flex items-center gap-1.5 border-none cursor-pointer transition-all shadow-xs shrink-0"
+                        style={{
+                          background: brand.programmeBtnBg || "#ffd200",
+                          color: brand.programmeBtnText || "#000000",
+                        }}
                       >
-                        <span>Get Brochure</span>
+                        <span>Download Brochure</span>
                         <Download className="w-3.5 h-3.5 stroke-[2.5]" />
                       </button>
 
-                      {/* Duration Indicator with Hourglass */}
                       <div className="flex items-center gap-1 text-[11.5px] sm:text-[12px] font-medium text-[#333333] select-none shrink-0">
                         <Hourglass className="w-3.5 h-3.5 text-[#555555]" />
                         <span>{durationText}</span>
@@ -231,27 +336,6 @@ export default function LandingProgrammes({
               );
             })}
           </div>
-        </div>
-
-        {/* Mobile Navigation Controls */}
-        <div className="flex items-center justify-center gap-3 mt-4 sm:hidden">
-          <button
-            type="button"
-            onClick={handlePrev}
-            aria-label="Previous programme"
-            className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center border-none cursor-pointer active:scale-95 transition-all"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-          <span className="text-[11.5px] text-white/80 font-medium">Swipe to explore</span>
-          <button
-            type="button"
-            onClick={handleNext}
-            aria-label="Next programme"
-            className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center border-none cursor-pointer active:scale-95 transition-all"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
         </div>
       </div>
     </section>

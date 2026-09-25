@@ -5,11 +5,20 @@ import Link from "next/link";
 import Image from "next/image";
 import LandingContainer from "./LandingContainer";
 
-export default function LandingNavbar({ brand = {}, onOpenApply, onOpenBrochure }) {
+export default function LandingNavbar({
+  brand = {},
+  onOpenApply,
+  onOpenBrochure,
+  onOpenScholarship,
+}) {
   const {
-    name = "Amity University Online",
+    name = "Manipal University Online",
     logo = "/assets/amitylp/Amity-online-logo.png",
+    sodeIcon = "/assets/images/sode_icon.png",
     primaryColor = "#08417b",
+    badgeText = "Admission Open 2026",
+    giftGif = "/assets/images/gift.gif",
+    showCouponBtn = false,
   } = brand;
 
   const handleScrollTop = (e) => {
@@ -35,7 +44,7 @@ export default function LandingNavbar({ brand = {}, onOpenApply, onOpenBrochure 
           >
             <div className="relative w-8 sm:w-10 lg:w-11 h-8 sm:h-10 lg:h-11">
               <Image
-                src="/assets/images/sode_icon.png"
+                src={sodeIcon}
                 alt="SODE"
                 fill
                 priority
@@ -50,27 +59,50 @@ export default function LandingNavbar({ brand = {}, onOpenApply, onOpenBrochure 
 
           {/* University Online Logo */}
           <Link href="#hero" className="mang_logo flex items-center min-w-0" aria-label={name}>
-            <div className="relative w-28 sm:w-36 lg:w-44 h-7 sm:h-9 lg:h-10">
+            <div className="relative w-28 sm:w-36 lg:w-48 h-7 sm:h-9 lg:h-11">
               <Image
                 src={logo}
                 alt={name}
                 fill
                 priority
                 className="object-contain object-left"
-                sizes="(max-width: 640px) 112px, 176px"
+                sizes="(max-width: 640px) 112px, 192px"
               />
             </div>
           </Link>
         </div>
 
-        {/* Right: Admission Open 2026 */}
-        <div className="header_heading shrink-0 pl-2">
-          <span
-            className="inline-block text-[12px] sm:text-base md:text-xl lg:text-2xl font-bold tracking-tight text-right select-none"
-            style={{ color: primaryColor || "#08417b" }}
-          >
-            Admission Open 2026
-          </span>
+        {/* Right: Scholarship Coupon Code Button */}
+        <div className="header_heading shrink-0 pl-2 flex items-center">
+          {onOpenScholarship || showCouponBtn ? (
+            <button
+              type="button"
+              onClick={() => onOpenScholarship?.()}
+              className="coupon-btn-main inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg text-white font-bold text-[11px] sm:text-[13.5px] cursor-pointer shadow-md hover:scale-[1.02] active:scale-95 transition-all border-none"
+              style={{
+                background: "linear-gradient(135deg, #2ecc71, #27ae60)",
+                boxShadow: "0 4px 15px rgba(46, 204, 113, 0.35)",
+              }}
+            >
+              <div className="relative w-4 sm:w-5 h-4 sm:h-5 shrink-0">
+                <Image
+                  src={giftGif}
+                  alt="Scholarship Gift"
+                  fill
+                  unoptimized
+                  className="object-contain"
+                />
+              </div>
+              <span className="truncate">Scholarship Coupon Code</span>
+            </button>
+          ) : (
+            <span
+              className="inline-block text-[12px] sm:text-base md:text-xl lg:text-2xl font-bold tracking-tight text-right select-none"
+              style={{ color: primaryColor || "#08417b" }}
+            >
+              {badgeText}
+            </span>
+          )}
         </div>
       </LandingContainer>
     </header>

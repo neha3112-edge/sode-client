@@ -1,39 +1,46 @@
 "use client";
 
 import React from "react";
-import { Modal } from "antd";
-import LandingLeadForm from "../LandingLeadForm";
+import ScholarshipModal from "./ScholarshipModal";
 
+/**
+ * CompareModal reuses the exact same ScholarshipModal component.
+ * No new form is created; all behavior, layout, inputs, and validation
+ * are shared, and styling/content are driven purely by JSON configuration.
+ */
 export default function CompareModal({
   isOpen,
   onClose,
   universityName = "University Online",
   courses = [],
+  brand = {},
+  compareModal = {},
   onOpenDisclaimer,
 }) {
+  const config = compareModal || brand?.compareModal || {
+    modalBg: "#ffffff",
+    titleText: "Compare Universities",
+    titleColor: "#082b4e",
+    subtitleText: `Compare ${universityName} approvals, fees, and placements side-by-side`,
+    subtitleColor: "#555555",
+    inputBg: "#f8f9fa",
+    inputTextColor: "#111827",
+    closeBtnColor: "#888888",
+    submitBtnBg: "#16a34a",
+    submitBtnText: "Request Detailed Comparison Report",
+    phonePlaceholder: "Enter Mobile Number",
+    formName: "Compare Universities Modal",
+  };
+
   return (
-    <Modal
-      open={isOpen}
-      onCancel={onClose}
-      footer={null}
-      centered
-      width={480}
-      destroyOnHidden
-      className="p-0 overflow-hidden max-w-[calc(100vw-24px)] mx-auto"
-    >
-      <div className="pt-2">
-        <LandingLeadForm
-          universityName={universityName}
-          courseList={courses}
-          formName="Compare Universities Modal"
-          title="Compare Universities"
-          subtitle={`Compare ${universityName} approvals, fees, and placements side-by-side`}
-          buttonText="Request Detailed Comparison Report"
-          variant="modal"
-          onSuccess={onClose}
-          onOpenDisclaimer={onOpenDisclaimer}
-        />
-      </div>
-    </Modal>
+    <ScholarshipModal
+      isOpen={isOpen}
+      onClose={onClose}
+      universityName={universityName}
+      courses={courses}
+      brand={brand}
+      scholarshipModal={config}
+      onOpenDisclaimer={onOpenDisclaimer}
+    />
   );
 }

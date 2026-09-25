@@ -4,11 +4,14 @@ import React, { useState, useEffect } from "react";
 import LandingNavbar from "./LandingNavbar";
 import LandingHero from "./LandingHero";
 import LandingApprovals from "./LandingApprovals";
+import LandingWhyChoose from "./LandingWhyChoose";
 import LandingProgrammes from "./LandingProgrammes";
+import LandingOffersAndPlacement from "./LandingOffersAndPlacement";
 import LandingAbout from "./LandingAbout";
 import LandingStats from "./LandingStats";
-import LandingWhyChoose from "./LandingWhyChoose";
+import LandingTestimonials from "./LandingTestimonials";
 import LandingAdmissionProcess from "./LandingAdmissionProcess";
+import LandingSodeAbout from "./LandingSodeAbout";
 import LandingFaq from "./LandingFaq";
 import LandingFooterForm from "./LandingFooterForm";
 import LandingCompareBanner from "./LandingCompareBanner";
@@ -27,10 +30,16 @@ export default function UniversityLandingView({ data = {} }) {
     approvals = [],
     stats = [],
     programmes = [],
+    offersAndPlacements,
     about = {},
     whyChoose = [],
+    testimonials = [],
     admissionSteps = [],
+    enrollmentProcess,
+    sodeAbout,
     faqs = [],
+    scholarshipModal,
+    compareModal,
   } = data;
 
   const [isBrochureOpen, setIsBrochureOpen] = useState(false);
@@ -76,25 +85,135 @@ export default function UniversityLandingView({ data = {} }) {
 
   return (
     <div className="landing-page-root min-h-screen bg-white text-slate-900 flex flex-col font-sans selection:bg-blue-900 selection:text-white">
-      <LandingNavbar brand={brand} onOpenApply={() => handleOpenApply()} onOpenBrochure={() => handleOpenBrochure()} />
+      {/* 1. Header / Navbar */}
+      <LandingNavbar
+        brand={brand}
+        onOpenApply={() => handleOpenApply()}
+        onOpenBrochure={() => handleOpenBrochure()}
+        onOpenScholarship={() => setIsScholarshipOpen(true)}
+      />
+
       <main className="flex-1">
-        <LandingHero brand={brand} courses={courses} onOpenBrochure={() => handleOpenBrochure()} onOpenApply={() => handleOpenApply()} onOpenDisclaimer={() => handleOpenLegal("disclaimer")} />
+        {/* 2. Hero Section (#banner) */}
+        <LandingHero
+          brand={brand}
+          courses={courses}
+          onOpenBrochure={() => handleOpenBrochure()}
+          onOpenApply={() => handleOpenApply()}
+          onOpenDisclaimer={() => handleOpenLegal("disclaimer")}
+        />
+
+        {/* 3. Accreditation & Approvals Carousel (#approvals) */}
         <LandingApprovals approvals={approvals} universityName={brand.name} brand={brand} />
-        <LandingProgrammes programmes={programmes} universityName={brand.name} brand={brand} onSelectCourseForBrochure={handleOpenBrochure} onOpenApply={handleOpenApply} />
-        <LandingAbout about={about} brand={brand} onOpenApply={() => handleOpenApply()} />
-        <LandingStats stats={stats} />
+
+        {/* 4. Key Features / Why Choose (#advantage) */}
         <LandingWhyChoose whyChoose={whyChoose} brand={brand} onOpenApply={() => handleOpenApply()} />
-        <LandingAdmissionProcess admissionSteps={admissionSteps} universityName={brand.name} onOpenApply={() => handleOpenApply()} />
+
+        {/* 5. Programs Offered (#programs) */}
+        <LandingProgrammes
+          programmes={programmes}
+          universityName={brand.name}
+          brand={brand}
+          onSelectCourseForBrochure={handleOpenBrochure}
+          onOpenApply={handleOpenApply}
+        />
+
+        {/* 6. Early Access Offers & Placements (#E1) */}
+        {offersAndPlacements && (
+          <LandingOffersAndPlacement offersAndPlacements={offersAndPlacements} brand={brand} />
+        )}
+
+        {/* 7. About Manipal University Online (#about) */}
+        <LandingAbout about={about} brand={brand} stats={stats} onOpenApply={() => handleOpenApply()} />
+
+        {/* 8. Stats / Achievements (#achievement) */}
+        {brand.showSeparateStats !== false && <LandingStats stats={stats} brand={brand} />}
+
+        {/* 9. Testimonials Carousel (#testimonials) */}
+        {testimonials && testimonials.length > 0 && (
+          <LandingTestimonials testimonials={testimonials} universityName={brand.name} brand={brand} />
+        )}
+
+        {/* 10. Enrollment Process (.apply-section) */}
+        <LandingAdmissionProcess
+          admissionSteps={admissionSteps}
+          enrollmentProcess={enrollmentProcess}
+          universityName={brand.name}
+          brand={brand}
+          onOpenApply={() => handleOpenApply()}
+        />
+
+        {/* 11. About SODE (#sode_about) */}
+        {sodeAbout && (
+          <LandingSodeAbout
+            sodeAbout={sodeAbout}
+            brand={brand}
+            onOpenApply={() => handleOpenApply()}
+            onOpenCompare={() => setIsCompareOpen(true)}
+          />
+        )}
+
+        {/* 12. FAQs Section (#faqs) */}
         <LandingFaq faqs={faqs} universityName={brand.name} brand={brand} />
+
+        {/* 13. Footer Lead Form (#enroll-frm) */}
         <LandingFooterForm brand={brand} courses={courses} onOpenDisclaimer={() => handleOpenLegal("disclaimer")} />
+
+        {/* 14. Compare Banner */}
         <LandingCompareBanner brand={brand} onOpenCompare={() => setIsCompareOpen(true)} />
       </main>
-      <LandingFooter brand={brand} onOpenDisclaimer={() => handleOpenLegal("disclaimer")} onOpenTerms={() => handleOpenLegal("terms")} onOpenPrivacy={() => handleOpenLegal("privacy")} />
-      <LandingStickyCtas brand={brand} onOpenApply={() => handleOpenApply()} onOpenBrochure={() => handleOpenBrochure()} onOpenScholarship={() => setIsScholarshipOpen(true)} onOpenCompare={() => setIsCompareOpen(true)} />
-      <BrochureModal isOpen={isBrochureOpen} onClose={() => setIsBrochureOpen(false)} universityName={brand.name} courses={courses} selectedCourse={selectedCourse} onOpenDisclaimer={() => handleOpenLegal("disclaimer")} />
-      <ScholarshipModal isOpen={isScholarshipOpen} onClose={() => setIsScholarshipOpen(false)} universityName={brand.name} courses={courses} brand={brand} onOpenDisclaimer={() => handleOpenLegal("disclaimer")} />
-      <CompareModal isOpen={isCompareOpen} onClose={() => setIsCompareOpen(false)} universityName={brand.name} courses={courses} onOpenDisclaimer={() => handleOpenLegal("disclaimer")} />
-      <LegalModal isOpen={legalModalState.isOpen} onClose={() => setLegalModalState({ isOpen: false, type: "disclaimer" })} type={legalModalState.type} brand={brand} />
+
+      {/* 15. Footer */}
+      <LandingFooter
+        brand={brand}
+        onOpenDisclaimer={() => handleOpenLegal("disclaimer")}
+        onOpenTerms={() => handleOpenLegal("terms")}
+        onOpenPrivacy={() => handleOpenLegal("privacy")}
+      />
+
+      {/* 16. Floating Sticky CTAs */}
+      <LandingStickyCtas
+        brand={brand}
+        onOpenApply={() => handleOpenApply()}
+        onOpenBrochure={() => handleOpenBrochure()}
+        onOpenScholarship={() => setIsScholarshipOpen(true)}
+        onOpenCompare={() => setIsCompareOpen(true)}
+      />
+
+      {/* 17. Modals */}
+      <BrochureModal
+        isOpen={isBrochureOpen}
+        onClose={() => setIsBrochureOpen(false)}
+        universityName={brand.name}
+        courses={courses}
+        selectedCourse={selectedCourse}
+        onOpenDisclaimer={() => handleOpenLegal("disclaimer")}
+      />
+      <ScholarshipModal
+        isOpen={isScholarshipOpen}
+        onClose={() => setIsScholarshipOpen(false)}
+        universityName={brand.name}
+        courses={courses}
+        brand={brand}
+        scholarshipModal={scholarshipModal || brand.scholarshipModal}
+        onOpenDisclaimer={() => handleOpenLegal("disclaimer")}
+      />
+      <CompareModal
+        isOpen={isCompareOpen}
+        onClose={() => setIsCompareOpen(false)}
+        universityName={brand.name}
+        courses={courses}
+        brand={brand}
+        compareModal={compareModal || brand.compareModal}
+        onOpenDisclaimer={() => handleOpenLegal("disclaimer")}
+      />
+      <LegalModal
+        isOpen={legalModalState.isOpen}
+        onClose={() => setLegalModalState({ isOpen: false, type: "disclaimer" })}
+        type={legalModalState.type}
+        brand={brand}
+      />
     </div>
   );
 }
+
