@@ -16,13 +16,16 @@ import {
   Search,
   ArrowLeft,
   X,
+  CheckCircle2,
+  Download,
+  Calendar,
 } from "lucide-react";
 import { Select, Drawer, Pagination, Modal, Slider, ConfigProvider } from "antd";
 import { PlusOutlined, CheckOutlined } from "@ant-design/icons";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useFormModal } from "@/hooks/useFormModal";
 import { useCompare } from "@/hooks/useCompare";
-import { getAssetPath } from "@/lib/utils";
+import { getAssetPath, formatAdmissionDeadline } from "@/lib/utils";
 import WebsiteLayout from "@/components/layout/WebsiteLayout";
 import { request } from "@/services/request";
 
@@ -661,6 +664,29 @@ function CoursesContent({
             : `/courses/${encodeURIComponent(item.slug)}`;
         }
 
+        const rawCourseImage =
+          item.courseImage ||
+          item.coursepageimage ||
+          uni.courseImage ||
+          uni.coursepageimage ||
+          uni.bannerImg ||
+          uni.image ||
+          null;
+        const courseImageUrl = getAssetPath(rawCourseImage, null);
+
+        const overviewText =
+          item.overview ||
+          item.description ||
+          course.description ||
+          uni.description ||
+          "";
+
+        const rawAdmissionDeadline =
+          item.admissionDeadline ||
+          uni.admissionDeadline ||
+          uni.admission_deadline ||
+          null;
+
         list.push({
           ...item,
           _uniqueKey: `${item._id || item.slug || cardTitle || "program"}-${index}`,
@@ -672,6 +698,12 @@ function CoursesContent({
           courseObj: course,
           subcourseObj: subcourse,
           logoUrl,
+          courseImageUrl,
+          courseImage: rawCourseImage,
+          coursepageimage: item.coursepageimage || uni.coursepageimage,
+          overview: overviewText,
+          description: overviewText,
+          admissionDeadline: rawAdmissionDeadline,
           providerName,
           durationText,
           feeText,
@@ -1266,7 +1298,10 @@ function CoursesContent({
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex justify-end items-center m-5">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-6 pb-2 px-1">
+              <span className="text-xs font-semibold text-slate-500 text-center sm:text-left">
+                Showing {Math.min((currentPage - 1) * ITEMS_PER_PAGE + 1, totalCount)}–{Math.min(currentPage * ITEMS_PER_PAGE, totalCount)} of {totalCount} courses
+              </span>
               <Pagination
                 current={currentPage}
                 total={totalCount}
@@ -1278,11 +1313,7 @@ function CoursesContent({
                   }
                 }}
                 showSizeChanger={false}
-                showTotal={(totalCount, range) => (
-                  <span className="text-xs font-semibold text-slate-500 mr-2">
-                    Showing {range[0]}–{range[1]} of {totalCount} courses
-                  </span>
-                )}
+                responsive
               />
             </div>
           )}
@@ -1371,126 +1402,275 @@ function CoursesContent({
         open={Boolean(specializationModalData)}
         onCancel={() => setSpecializationModalData(null)}
         footer={null}
-        width={620}
+        width={940}
         centered
         closable={false}
         destroyOnHidden
         styles={{
           content: {
-            padding: "16px",
-            borderRadius: "20px",
+            padding: "20px 24px",
+            borderRadius: "24px",
             border: "1px solid #e2e8f0",
             boxShadow: "0 25px 50px -12px rgba(15, 23, 42, 0.25)",
+            overflow: "hidden",
           },
           body: {
             padding: 0,
           },
         }}
       >
-        {specializationModalData && (
-          <div className="flex flex-col text-left min-h-0">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 mb-2.5 shrink-0 gap-3">
-              <div className="flex items-center gap-3 min-w-0">
-                {specializationModalData.logoUrl ? (
-                  <div className="w-10 h-10 rounded-full border border-slate-200 p-1 flex items-center justify-center relative shrink-0 bg-white shadow-2xs">
-                    <Image
-                      src={specializationModalData.logoUrl}
-                      alt={specializationModalData.uniName}
-                      fill
-                      sizes="40px"
-                      className="object-contain p-0.5"
-                    />
-                  </div>
-                ) : (
-                  <div className="w-10 h-10 rounded-full bg-blue-50 text-[#0B3B7E] font-bold flex items-center justify-center text-xs shrink-0 border border-blue-100 uppercase">
-                    {specializationModalData.uniName?.charAt(0)}
-                  </div>
-                )}
-                <div className="min-w-0">
-                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 leading-tight tracking-tight truncate m-0">
-                    {specializationModalData.title} Specializations ({specializationModalData.specializationsCount || specializationModalData.subcourses?.length || 0})
-                  </h3>
-                  <span className="text-xs text-slate-500 block mt-0.5 truncate">
-                    {specializationModalData.uniName}
-                  </span>
-                </div>
-              </div>
+        {specializationModalData && (() => {
+          const modalUniName = specializationModalData.uniName || "University";
+          const modalLogoUrl = specializationModalData.logoUrl;
+          const modalCourseTitle =
+            specializationModalData.cardTitle ||
+            specializationModalData.title ||
+            "Course Program";
 
+          const modalCourseImage =
+            specializationModalData.courseImageUrl ||
+            getAssetPath(specializationModalData.courseImage) ||
+            getAssetPath(specializationModalData.coursepageimage) ||
+            getAssetPath(specializationModalData.uniObj?.courseImage) ||
+            getAssetPath(specializationModalData.uniObj?.coursepageimage) ||
+            getAssetPath(specializationModalData.uniObj?.bannerImg) ||
+            getAssetPath(specializationModalData.uniObj?.image) ||
+            null;
+
+          const modalBadgeText = (() => {
+            const name = specializationModalData.uniName || "";
+            const mode = specializationModalData.mode || "ONLINE";
+            if (name.toUpperCase().includes(mode.toUpperCase())) {
+              return name.toUpperCase();
+            }
+            return `${name} ${mode}`.toUpperCase();
+          })();
+
+          const rawOverview =
+            specializationModalData.overview ||
+            specializationModalData.description ||
+            specializationModalData.courseObj?.description ||
+            specializationModalData.uniObj?.description ||
+            "";
+          const modalOverview =
+            String(rawOverview)
+              .replace(/<[^>]*>/g, " ")
+              .replace(/\s+/g, " ")
+              .trim() ||
+            `${modalUniName} ${modalCourseTitle} is a comprehensive program designed for graduates and working professionals seeking advanced business and industry-ready leadership knowledge.`;
+
+          const rawDeadline =
+            specializationModalData.admissionDeadline ||
+            specializationModalData.uniObj?.admissionDeadline ||
+            specializationModalData.uniObj?.admission_deadline;
+          const modalDeadline = rawDeadline ? formatAdmissionDeadline(rawDeadline) : null;
+
+          const subcourses = Array.isArray(specializationModalData.subcourses)
+            ? specializationModalData.subcourses
+            : [];
+          const specCount = specializationModalData.specializationsCount || subcourses.length;
+
+          return (
+            <div className="relative text-left">
+              {/* Close Button Top-Right */}
               <button
                 type="button"
                 onClick={() => setSpecializationModalData(null)}
-                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-900 transition-colors flex items-center justify-center cursor-pointer border-0 shrink-0"
+                className="absolute top-0 right-0 z-20 w-8 h-8 rounded-full bg-slate-100/90 hover:bg-slate-200 text-slate-500 hover:text-slate-900 transition-colors flex items-center justify-center cursor-pointer border-0"
                 aria-label="Close modal"
               >
                 <X className="w-4 h-4" />
               </button>
-            </div>
 
-            {/* Modal Body Grid - 3 Cards Mobile / 5 Cards Desktop Grid Layout */}
-            <div className="flex-1 overflow-y-auto max-h-[64vh] overscroll-contain pr-0.5 space-y-4 scrollbar-thin [scrollbar-color:#cbd5e1_transparent]">
-              <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-3">
-                {(specializationModalData.subcourses || []).map((sc, idx) => (
-                  <div
-                    key={sc._id || idx}
-                    onClick={() => {
-                      let baseHref =
-                        specializationModalData.courseDetailHref ||
-                        (specializationModalData.coursePageSlug ? `/universities/${specializationModalData.coursePageSlug}` : "") ||
-                        (specializationModalData.slug?.includes("/") ? `/universities/${specializationModalData.slug}` : "");
+              <div className="flex flex-col md:flex-row gap-5 lg:gap-6 items-stretch">
+                {/* Left Column: Campus / Course Image with University Badge */}
+                <div className="w-full md:w-[320px] lg:w-[340px] shrink-0 relative rounded-2xl overflow-hidden aspect-[4/3] md:aspect-auto bg-slate-100 flex items-center justify-center self-stretch min-h-[260px]">
+                  {modalCourseImage ? (
+                    <Image
+                      src={modalCourseImage}
+                      alt={modalUniName}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 340px"
+                      className="object-cover"
+                      priority
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-slate-200 to-slate-300 flex items-center justify-center">
+                      <span className="text-slate-400 font-bold text-sm">No Image</span>
+                    </div>
+                  )}
 
-                      if (baseHref && baseHref.startsWith("/courses/")) {
-                        baseHref = baseHref.replace("/courses/", "/universities/");
-                      }
+                  {/* Floating University Card in top-left */}
+                  <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 bg-white/95 backdrop-blur-xs rounded-xl shadow-lg border border-white/80 p-2 sm:p-2.5 flex flex-col items-center justify-center min-w-[76px] max-w-[105px] text-center">
+                    <div className="w-9 h-9 sm:w-10 sm:h-10 relative flex items-center justify-center">
+                      {modalLogoUrl ? (
+                        <Image
+                          src={modalLogoUrl}
+                          alt={modalUniName}
+                          fill
+                          sizes="40px"
+                          className="object-contain"
+                        />
+                      ) : (
+                        <div className="w-full h-full rounded-full bg-blue-50 text-[#0B3B7E] font-bold flex items-center justify-center text-xs uppercase">
+                          {modalUniName.charAt(0)}
+                        </div>
+                      )}
+                    </div>
+                    <span className="text-[10px] sm:text-[10.5px] font-bold text-[#0B2546] leading-tight mt-1 line-clamp-2">
+                      {modalUniName}
+                    </span>
+                  </div>
+                </div>
 
-                      const subSlug =
-                        sc.slug ||
-                        (sc.name || "")
-                          .toLowerCase()
-                          .replace(/^online\s+[a-z0-9+-]+\s+in\s+/i, "")
-                          .replace(/^distance\s+[a-z0-9+-]+\s+in\s+/i, "")
-                          .replace(/[^a-z0-9]+/g, "-")
-                          .replace(/^-|-$/g, "");
+                {/* Right Column: Details, Specializations, CTAs */}
+                <div className="flex-1 min-w-0 flex flex-col justify-between gap-3 pt-1 md:pt-0">
+                  <div className="space-y-2.5">
+                    {/* Course Title & University Name */}
+                    <div>
+                      <h2 className="text-2xl sm:text-[26px] font-black text-[#0B2546] leading-tight m-0 tracking-tight">
+                        {modalCourseTitle}
+                      </h2>
+                      {modalUniName && (
+                        <p className="text-xs sm:text-[13px] font-medium text-gray-700 m-0 mt-0.5">
+                          ({modalUniName})
+                        </p>
+                      )}
+                    </div>
 
-                      setSpecializationModalData(null);
+                    {/* Meta row: Duration, Fee, Admission Deadline */}
+                    <div className="flex items-center flex-wrap gap-x-4 gap-y-1.5 text-xs text-gray-700 font-medium">
+                      {specializationModalData.durationText && (
+                        <div className="flex items-center gap-1.5">
+                          <Clock className="w-3.5 h-3.5 text-gray-500 shrink-0" />
+                          <span className="font-normal text-gray-800">{specializationModalData.durationText}</span>
+                        </div>
+                      )}
+                      {specializationModalData.feeText && (
+                        <div className="flex items-center gap-1">
+                          <span className="font-normal text-gray-800">{specializationModalData.feeText}</span>
+                        </div>
+                      )}
+                      {modalDeadline && (
+                        <div className="flex items-center gap-1.5">
+                          <Calendar className="w-3.5 h-3.5 text-gray-500 shrink-0" />
+                          <span className="text-red-500 font-bold">Admission Deadline :</span>
+                          <span className="font-normal text-gray-800">{modalDeadline}</span>
+                        </div>
+                      )}
+                    </div>
 
-                      if (baseHref && subSlug) {
-                        router.push(`${baseHref}/${encodeURIComponent(subSlug)}#specializations`);
-                      } else {
-                        const uniSlug =
-                          specializationModalData.uniObj?.slug ||
-                          specializationModalData.universitySlug ||
-                          specializationModalData.uniName?.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-                        const courseSlug =
-                          specializationModalData.courseSlug ||
-                          specializationModalData.courseObj?.slug ||
-                          specializationModalData.cardTitle?.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+                    {/* Overview paragraph */}
+                    <p className="text-xs sm:text-[12.5px] text-gray-600 leading-[1.35] sm:leading-normal line-clamp-3 m-0">
+                      {modalOverview}
+                    </p>
 
-                        if (uniSlug && courseSlug && subSlug) {
-                          router.push(`/universities/${encodeURIComponent(uniSlug)}/${encodeURIComponent(courseSlug)}/${encodeURIComponent(subSlug)}#specializations`);
-                        } else if (uniSlug && subSlug) {
-                          router.push(`/universities/${encodeURIComponent(uniSlug)}?subcategory=${encodeURIComponent(subSlug)}`);
-                        }
-                      }
-                    }}
-                    className="bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl p-1.5 min-[360px]:p-2 aspect-square flex flex-col items-center justify-between text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group min-w-0 w-full shadow-2xs overflow-hidden"
-                  >
-                    <div className="flex-1 flex items-center justify-center w-full min-h-0 pt-0.5">
-                      <div className="w-8 h-8 rounded-xl bg-blue-50 text-[#0B3B7E] flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
-                        <BookOpen className="w-4 h-4" />
+                    {/* Middle: Specializations Grid */}
+                    <div className="pt-1.5">
+                      <h4 className="text-xs sm:text-sm font-bold text-[#0B2546] mb-2">
+                        {specCount} Specializations Available
+                      </h4>
+                      <div className="max-h-[160px] sm:max-h-[175px] overflow-y-auto pr-1 scrollbar-thin [scrollbar-color:#cbd5e1_transparent]">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 sm:gap-2">
+                          {subcourses.map((sc, idx) => (
+                            <button
+                              key={sc._id || idx}
+                              type="button"
+                              onClick={() => {
+                                let baseHref =
+                                  specializationModalData.courseDetailHref ||
+                                  (specializationModalData.coursePageSlug ? `/universities/${specializationModalData.coursePageSlug}` : "") ||
+                                  (specializationModalData.slug?.includes("/") ? `/universities/${specializationModalData.slug}` : "");
+
+                                if (baseHref && baseHref.startsWith("/courses/")) {
+                                  baseHref = baseHref.replace("/courses/", "/universities/");
+                                }
+
+                                const subSlug =
+                                  sc.slug ||
+                                  (sc.name || "")
+                                    .toLowerCase()
+                                    .replace(/^online\s+[a-z0-9+-]+\s+in\s+/i, "")
+                                    .replace(/^distance\s+[a-z0-9+-]+\s+in\s+/i, "")
+                                    .replace(/[^a-z0-9]+/g, "-")
+                                    .replace(/^-|-$/g, "");
+
+                                setSpecializationModalData(null);
+
+                                if (baseHref && subSlug) {
+                                  router.push(`${baseHref}/${encodeURIComponent(subSlug)}#specializations`);
+                                } else {
+                                  const uniSlug =
+                                    specializationModalData.uniObj?.slug ||
+                                    specializationModalData.universitySlug ||
+                                    specializationModalData.uniName?.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+                                  const courseSlug =
+                                    specializationModalData.courseSlug ||
+                                    specializationModalData.courseObj?.slug ||
+                                    specializationModalData.cardTitle?.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+                                  if (uniSlug && courseSlug && subSlug) {
+                                    router.push(`/universities/${encodeURIComponent(uniSlug)}/${encodeURIComponent(courseSlug)}/${encodeURIComponent(subSlug)}#specializations`);
+                                  } else if (uniSlug && subSlug) {
+                                    router.push(`/universities/${encodeURIComponent(uniSlug)}?subcategory=${encodeURIComponent(subSlug)}`);
+                                  }
+                                }
+                              }}
+                              className="group bg-[#F4F9FD] hover:bg-[#EAF3FA] border border-[#DCEDF9] hover:border-sky-300 rounded-full px-2.5 sm:px-3 py-1.5 flex items-center gap-1.5 sm:gap-2 text-left cursor-pointer transition-all duration-150 min-w-0 w-full"
+                            >
+                              <CheckCircle2 className="w-3.5 h-3.5 text-sky-500 group-hover:text-sky-600 shrink-0" />
+                              <span className="text-[11px] sm:text-xs font-medium text-slate-700 group-hover:text-slate-900 truncate">
+                                {sc.name}
+                              </span>
+                            </button>
+                          ))}
+                        </div>
                       </div>
                     </div>
-                    <div className="h-7 min-[360px]:h-8 sm:h-8.5 flex items-center justify-center w-full min-w-0 px-0.5 pb-0.5 shrink-0">
-                      <h5 className="text-[9.5px] min-[360px]:text-[10px] sm:text-[10.5px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors text-center w-full tracking-tight min-w-0 m-0 uppercase leading-tight line-clamp-2">
-                        {sc.name}
-                      </h5>
-                    </div>
                   </div>
-                ))}
+
+                  {/* Bottom: Action Buttons */}
+                  <div className="flex items-center gap-3 pt-2 mt-auto">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSpecializationModalData(null);
+                        openFormModal({
+                          title: "Download Brochure",
+                          subtitle: modalCourseTitle,
+                          defaultCourse: modalCourseTitle,
+                          formNameOverride: `BrochureModal_${specializationModalData.slug || modalUniName}`,
+                          submitButtonText: "Download Brochure",
+                        });
+                      }}
+                      className="bg-[#0B2546] hover:bg-[#06182c] text-white text-xs sm:text-sm font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 flex-1 shadow-sm transition-all cursor-pointer border-none"
+                    >
+                      <Download className="w-4 h-4" />
+                      <span>Download Brochure</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSpecializationModalData(null);
+                        openFormModal({
+                          title: "Get 100% FREE Counseling",
+                          subtitle: modalCourseTitle,
+                          defaultCourse: modalCourseTitle,
+                          formNameOverride: `CounselingModal_${specializationModalData.slug || modalUniName}`,
+                          submitButtonText: "Get 100% FREE Counseling",
+                        });
+                      }}
+                      className="bg-white hover:bg-slate-50 border border-[#0B2546] text-[#0B2546] text-xs sm:text-sm font-bold py-2.5 px-4 rounded-xl flex items-center justify-center flex-1 transition-all cursor-pointer"
+                    >
+                      <span>Get 100% FREE Counseling</span>
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
       </Modal>
     </WebsiteLayout>
   );
