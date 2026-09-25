@@ -276,13 +276,13 @@ body {
    STANDALONE LANDING PAGE ISOLATION
    Hides website header, footer, and nav when viewing LP
 ========================================================= */
-body:has(.landing-page-root) > div > header,
-body:has(.landing-page-root) > div > footer,
-body:has(.landing-page-root) > div > nav,
+body:has(.landing-page-root)>div>header,
+body:has(.landing-page-root)>div>footer,
+body:has(.landing-page-root)>div>nav,
 body:has(.landing-page-root) .global-breadcrumb {
   display: none !important;
 }
 
-body:has(.landing-page-root) > div > main {
+body:has(.landing-page-root)>div>main {
   padding-bottom: 0 !important;
 }
