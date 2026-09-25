@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
+import { request } from "@/services/request";
 import Image from "next/image";
 import Link from "next/link";
 import { Table, Select, Input } from "antd";
@@ -22,232 +23,6 @@ import { getAssetPath } from "@/lib/utils";
 import { Container } from "@/components/common/Container";
 
 const { Option } = Select;
-
-// Default/Reference mock universities matching user screenshot
-const DEFAULT_UNIVERSITIES = [
-  {
-    id: "shoolini-1",
-    name: "Shoolini University",
-    slug: "shoolini-university",
-    state: "Uttarakhand",
-    location: "Dehradun, Uttarakhand",
-    heiType: "State University",
-    established: "2011",
-    logo: "https://new.crm.api.mysode.com/minio/crm-media/2026/09/19/276d4e8a51d30c92486a93eaa5f6161c.webp",
-    courses: ["MBA", "MCA", "MCOM", "MSC", "BCOM", "BBA", "BCA"],
-  },
-  {
-    id: "manipal-1",
-    name: "Manipal University",
-    slug: "manipal-university",
-    state: "Rajasthan",
-    location: "Jaipur, Rajasthan",
-    heiType: "Private University",
-    established: "2011",
-    logo: "https://new.crm.api.mysode.com/minio/images/2026/08/11/7a5535b36dcbbe99e3abab5a02d280fd.webp",
-    courses: ["MBA", "MCA", "MCOM", "MSC", "BCOM", "BBA"],
-  },
-  {
-    id: "vgu-1",
-    name: "Vivekananda Global Universities",
-    slug: "vivekananda-global-university",
-    state: "Haryana",
-    location: "Faridabad, Haryana",
-    heiType: "Central University",
-    established: "2012",
-    logo: "https://new.crm.api.mysode.com/minio/images/2026/08/11/e1e8b8e8f49eadafbe83edbcfd591644.webp",
-    courses: ["MBA", "MCA", "MCOM", "MSC", "BCOM", "BBA", "BCA"],
-  },
-  {
-    id: "amity-1",
-    name: "Amity University",
-    slug: "amity-university",
-    state: "Uttar Pradesh",
-    location: "Noida, Uttar Pradesh",
-    heiType: "State University",
-    established: "2005",
-    logo: "https://new.crm.api.mysode.com/minio/images/2026/08/11/fbcd0028ef3d00be9fc5650eaef40268.webp",
-    courses: ["MBA", "MCA", "MCOM", "MSC", "BCOM", "BBA", "BCA", "BA", "MA"],
-  },
-  {
-    id: "cu-1",
-    name: "Chandigarh University",
-    slug: "chandigarh-university",
-    state: "Punjab",
-    location: "Mohali, Punjab",
-    heiType: "Private University",
-    established: "2012",
-    logo: "https://new.crm.api.mysode.com/minio/images/2026/07/20/eecc1735c03c7725504d4cb75cbafe52.png",
-    courses: ["MBA", "MCA", "MCOM", "MSC", "BBA", "BCA", "BA"],
-  },
-  {
-    id: "lpu-1",
-    name: "Lovely Professional University",
-    slug: "lovely-professional-university",
-    state: "Punjab",
-    location: "Phagwara, Punjab",
-    heiType: "Private University",
-    established: "2005",
-    logo: "https://new.crm.api.mysode.com/minio/images/2026/07/20/c3c413b94196e71853bff1312bc96253.png",
-    courses: ["MBA", "MCA", "MCOM", "BBA", "BCA", "BA", "MA"],
-  },
-  {
-    id: "uttaranchal-1",
-    name: "Uttaranchal University",
-    slug: "uttaranchal-university",
-    state: "Uttarakhand",
-    location: "Dehradun, Uttarakhand",
-    heiType: "State University",
-    established: "2013",
-    logo: "https://new.crm.api.mysode.com/minio/images/2026/07/20/0d972d5c77d043f96d42c023d0c186f9.png",
-    courses: ["MBA", "MCA", "BBA", "BCA", "BA"],
-  },
-  {
-    id: "jain-1",
-    name: "Jain University",
-    slug: "jain-university",
-    state: "Karnataka",
-    location: "Bangalore, Karnataka",
-    heiType: "Deemed University",
-    established: "1990",
-    logo: "https://new.crm.api.mysode.com/minio/images/2026/07/20/3179441b81cb827cc9160e3545552f48.png",
-    courses: ["MBA", "MCA", "MCOM", "BCOM", "BBA", "BCA"],
-  },
-  {
-    id: "galgotias-1",
-    name: "Galgotias University",
-    slug: "galgotias-university",
-    state: "Uttar Pradesh",
-    location: "Greater Noida, Uttar Pradesh",
-    heiType: "Private University",
-    established: "2011",
-    logo: "https://new.crm.api.mysode.com/minio/images/2026/07/20/596209327b7456d829182b41dfaa61e1.png",
-    courses: ["MBA", "MCA", "BBA", "BCA", "BCOM"],
-  },
-  {
-    id: "mangal-1",
-    name: "Mangalayatan University",
-    slug: "mangalayatan-university",
-    state: "Uttar Pradesh",
-    location: "Aligarh, Uttar Pradesh",
-    heiType: "Private University",
-    established: "2006",
-    logo: "https://new.crm.api.mysode.com/minio/images/2026/07/20/596209327b7456d829182b41dfaa61e1.png",
-    courses: ["MBA", "MCA", "MCOM", "MSC", "BA", "MA"],
-  },
-  {
-    id: "smu-1",
-    name: "Sikkim Manipal University",
-    slug: "sikkim-manipal-university",
-    state: "Sikkim",
-    location: "Gangtok, Sikkim",
-    heiType: "State University",
-    established: "1995",
-    logo: "https://new.crm.api.mysode.com/minio/images/2026/07/20/84d371678b2d757a0cd5235ddab27570.png",
-    courses: ["MBA", "MCA", "BBA", "BCA", "MCOM"],
-  },
-  {
-    id: "dypatil-1",
-    name: "D.Y. Patil University",
-    slug: "dy-patil-university",
-    state: "Maharashtra",
-    location: "Navi Mumbai, Maharashtra",
-    heiType: "Deemed University",
-    established: "2002",
-    logo: "https://new.crm.api.mysode.com/minio/images/2026/07/20/dc7cd981dfa436f31f28d9ee8eb730d6.png",
-    courses: ["MBA", "BBA", "BCA", "MCA"],
-  },
-  {
-    id: "graphicera-1",
-    name: "Graphic Era University",
-    slug: "graphic-era-university",
-    state: "Uttarakhand",
-    location: "Dehradun, Uttarakhand",
-    heiType: "Deemed University",
-    established: "1993",
-    logo: "https://new.crm.api.mysode.com/minio/crm-media/2026/09/19/276d4e8a51d30c92486a93eaa5f6161c.webp",
-    courses: ["MBA", "MCA", "BBA", "BCA", "BCOM"],
-  },
-  {
-    id: "nmims-1",
-    name: "NMIMS University",
-    slug: "nmims-university",
-    state: "Maharashtra",
-    location: "Mumbai, Maharashtra",
-    heiType: "Deemed University",
-    established: "1981",
-    logo: "https://new.crm.api.mysode.com/minio/images/2026/08/11/7a5535b36dcbbe99e3abab5a02d280fd.webp",
-    courses: ["MBA", "BBA", "BCOM"],
-  },
-  {
-    id: "upes-1",
-    name: "UPES University",
-    slug: "upes-university",
-    state: "Uttarakhand",
-    location: "Dehradun, Uttarakhand",
-    heiType: "State University",
-    established: "2003",
-    logo: "https://new.crm.api.mysode.com/minio/images/2026/08/11/e1e8b8e8f49eadafbe83edbcfd591644.webp",
-    courses: ["MBA", "MCA", "BBA", "BCA"],
-  },
-  {
-    id: "gla-1",
-    name: "GLA University",
-    slug: "gla-university",
-    state: "Uttar Pradesh",
-    location: "Mathura, Uttar Pradesh",
-    heiType: "Private University",
-    established: "2010",
-    logo: "https://new.crm.api.mysode.com/minio/images/2026/08/11/fbcd0028ef3d00be9fc5650eaef40268.webp",
-    courses: ["MBA", "MCA", "BCOM", "BBA", "BCA"],
-  },
-  {
-    id: "srm-1",
-    name: "SRM University",
-    slug: "srm-university",
-    state: "Tamil Nadu",
-    location: "Chennai, Tamil Nadu",
-    heiType: "Deemed University",
-    established: "1985",
-    logo: "https://new.crm.api.mysode.com/minio/images/2026/07/20/c3c413b94196e71853bff1312bc96253.png",
-    courses: ["MBA", "MCA", "MCOM", "BBA", "BCA"],
-  },
-  {
-    id: "jindal-1",
-    name: "OP Jindal Global University",
-    slug: "op-jindal-global-university",
-    state: "Haryana",
-    location: "Sonipat, Haryana",
-    heiType: "Private University",
-    established: "2009",
-    logo: "https://new.crm.api.mysode.com/minio/images/2026/07/20/eecc1735c03c7725504d4cb75cbafe52.png",
-    courses: ["MBA", "MA", "BA", "BBA"],
-  },
-  {
-    id: "kalinga-1",
-    name: "Kalinga University",
-    slug: "kalinga-university",
-    state: "Chhattisgarh",
-    location: "Raipur, Chhattisgarh",
-    heiType: "Private University",
-    established: "2013",
-    logo: "https://new.crm.api.mysode.com/minio/images/2026/08/11/7a5535b36dcbbe99e3abab5a02d280fd.webp",
-    courses: ["MBA", "MCA", "BCOM", "BBA", "BCA", "BA", "MA"],
-  },
-  {
-    id: "gyanvihar-1",
-    name: "Suresh Gyan Vihar University",
-    slug: "suresh-gyan-vihar-university",
-    state: "Rajasthan",
-    location: "Jaipur, Rajasthan",
-    heiType: "Private University",
-    established: "2008",
-    logo: "https://new.crm.api.mysode.com/minio/images/2026/08/11/e1e8b8e8f49eadafbe83edbcfd591644.webp",
-    courses: ["MBA", "MCA", "BBA", "BCA", "BCOM"],
-  },
-];
-
-const SESSIONS = ["January 2026", "July 2025", "January 2025", "July 2024"];
 
 // Smooth Accordion Card Component for Expanded Details
 function SmoothExpandedCard({
@@ -424,118 +199,90 @@ function SmoothExpandedCard({
   );
 }
 
-export default function ApprovalUniversityDirectory({
-  universities = DEFAULT_UNIVERSITIES,
-  title = "UGC-DEB Approved Online Universities List– January Session -2026",
-  sessions = SESSIONS,
-  initialSession = "January 2026",
-  className = "",
-}) {
+export default function ApprovalUniversityDirectory({ initialData = null, className = "" }) {
   const { openFormModal } = useFormModal();
   const { toggleCompare, isInCompare } = useCompare();
 
-  // State management
-  const [selectedSession, setSelectedSession] = useState(initialSession);
+  // ─── State ────────────────────────────────────────────────────
+  const [apiData, setApiData] = useState(initialData);
+  const [loading, setLoading] = useState(false);
+  const [selectedSession, setSelectedSession] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCourse, setSelectedCourse] = useState("all");
   const [selectedState, setSelectedState] = useState("all");
   const [selectedHeiType, setSelectedHeiType] = useState("all");
   const [expandedRowKeys, setExpandedRowKeys] = useState([]);
 
-  // Normalize universities data
+  // Session change → refetch via request.dynamicList
+  const handleSessionChange = async (val) => {
+    const sess = val === "all" ? "" : val;
+    setSelectedSession(sess);
+    setLoading(true);
+    try {
+      const pageSlug = initialData?.approval?.slug || "ugc-deb-approved-online-universities";
+      const options = {};
+      if (sess) options.session = sess;
+      const res = await request.dynamicList({
+        entity: "universities",
+        endPoint: `v1/approval-directory/${pageSlug}`,
+        options,
+        revalidate: 0,
+      });
+      if (res) setApiData(res);
+    } catch (err) {
+      console.error("Session filter error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Normalize API response into standard shape
   const normalizedList = useMemo(() => {
-    const rawList = Array.isArray(universities) && universities.length > 0 ? universities : DEFAULT_UNIVERSITIES;
-    return rawList.map((item, idx) => {
-      const uni = item.university || item;
-      const uniName = uni.name || item.name || "University";
-      const uniSlug = uni.slug || item.slug || "";
-      const stateName =
-        item.state ||
-        item.stateName ||
-        uni.state?.name ||
-        uni.city?.name ||
-        "India";
-      const heiType =
-        item.heiType ||
-        (Array.isArray(uni.ownership_type) ? uni.ownership_type[0] : uni.ownership_type) ||
-        "Private University";
-      const location =
-        item.location ||
-        (uni.city?.name && uni.state?.name ? `${uni.city.name}, ${uni.state.name}` : stateName);
-      const established = item.established || uni.established || "2011";
-      const logoUrl = getAssetPath(item.logo || uni.logo || uni.image);
-      const courses =
-        Array.isArray(item.courses) && item.courses.length > 0
-          ? item.courses
-          : ["MBA", "MCA", "MCOM", "MSC", "BCOM", "BBA", "BCA"];
+    const rawList = apiData?.result || [];
+    return rawList.map((item) => ({
+      _id: String(item._id),
+      name: item.name || "University",
+      slug: item.slug || "",
+      state: item.state || "India",
+      location: item.location || item.state || "India",
+      heiType: item.heiType || "Private University",
+      mode: Array.isArray(item.mode) ? item.mode : (item.mode ? [item.mode] : []),
+      established: item.established || "",
+      logo: item.logo || null,
+      courses: Array.isArray(item.courses) ? item.courses : [],
+      ugcSessions: item.ugcSessions || [],
+      rawUni: item,
+    }));
+  }, [apiData]);
 
-      return {
-        _id: String(uni._id || item.id || `uni-${idx}`),
-        name: uniName,
-        slug: uniSlug,
-        state: stateName,
-        location,
-        heiType,
-        established,
-        logo: logoUrl,
-        courses,
-        rawUni: uni,
-      };
-    });
-  }, [universities]);
+  // Filter options from API response
+  const filterOptions = useMemo(() => ({
+    courses: apiData?.filters?.courses || [],
+    states: apiData?.filters?.states || [],
+    heiTypes: apiData?.filters?.heiTypes || [],
+    sessions: apiData?.filters?.sessions || [],
+  }), [apiData]);
 
-  // Extract unique filter options
-  const filterOptions = useMemo(() => {
-    const coursesSet = new Set();
-    const statesSet = new Set();
-    const heiTypesSet = new Set();
-
-    normalizedList.forEach((u) => {
-      if (u.state) statesSet.add(u.state);
-      if (u.heiType) heiTypesSet.add(u.heiType);
-      u.courses.forEach((c) => coursesSet.add(c));
-    });
-
-    return {
-      courses: Array.from(coursesSet).sort(),
-      states: Array.from(statesSet).sort(),
-      heiTypes: Array.from(heiTypesSet).sort(),
-    };
-  }, [normalizedList]);
-
-  // Filter universities based on search & selects
+  // Client-side filter
   const filteredUniversities = useMemo(() => {
     return normalizedList.filter((u) => {
-      // 1. Search Query
       if (searchTerm.trim()) {
         const q = searchTerm.toLowerCase().trim();
-        const matchName = u.name.toLowerCase().includes(q);
-        const matchState = u.state.toLowerCase().includes(q);
-        const matchType = u.heiType.toLowerCase().includes(q);
-        const matchCourse = u.courses.some((c) => c.toLowerCase().includes(q));
-        if (!matchName && !matchState && !matchType && !matchCourse) {
-          return false;
-        }
+        const match = u.name.toLowerCase().includes(q) ||
+          u.state.toLowerCase().includes(q) ||
+          u.heiType.toLowerCase().includes(q) ||
+          u.courses.some((c) => c.toLowerCase().includes(q));
+        if (!match) return false;
       }
-
-      // 2. Course Filter
       if (selectedCourse !== "all") {
-        const hasCourse = u.courses.some(
-          (c) => c.toLowerCase() === selectedCourse.toLowerCase()
-        );
-        if (!hasCourse) return false;
+        if (!u.courses.some((c) => c.toLowerCase() === selectedCourse.toLowerCase())) return false;
       }
-
-      // 3. State Filter
       if (selectedState !== "all") {
         if (u.state.toLowerCase() !== selectedState.toLowerCase()) return false;
       }
-
-      // 4. HEI Type Filter
       if (selectedHeiType !== "all") {
         if (u.heiType.toLowerCase() !== selectedHeiType.toLowerCase()) return false;
       }
-
       return true;
     });
   }, [normalizedList, searchTerm, selectedCourse, selectedState, selectedHeiType]);
@@ -714,110 +461,116 @@ export default function ApprovalUniversityDirectory({
     );
   };
 
+
   return (
-    <Container>
-      {/* 1. Search Bar */}
-      <div className="relative w-full mb-2.5">
-        <Input.Search
-          size="large"
-          placeholder="Search by University...."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="approval-search w-full"
-        />
-      </div>
-
-      {/* 2. Filters Bar: 2 columns on mobile, 4 columns on desktop */}
-      <div className="mb-3 sm:mb-3.5">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5 w-full">
-          {/* Select Session */}
-          <Select
+    <Container className={`pb-12 sm:pb-16 lg:pb-20 ${className || ""}`}>
+      {/* 🔍 Sticky Search & Filters Bar (Mobile & Desktop) */}
+      <div className="sticky top-0 z-30 bg-white py-2 mb-3 sm:mb-3.5">
+        {/* 1. Search Bar */}
+        <div className="relative w-full mb-2 sm:mb-2.5">
+          <Input.Search
             size="large"
-            value={selectedSession}
-            onChange={setSelectedSession}
-            className="approval-filter-select w-full"
-            suffixIcon={<ChevronDown size={14} className="text-gray-500" />}
-          >
-            {sessions.map((sess) => (
-              <Option key={sess} value={sess}>
-                List {sess}
-              </Option>
-            ))}
-          </Select>
-
-          {/* Filter By Course */}
-          <Select
-            size="large"
-            value={selectedCourse}
-            onChange={setSelectedCourse}
-            className="approval-filter-select w-full"
-            suffixIcon={<ChevronDown size={14} className="text-gray-500" />}
-          >
-            <Option value="all">Filter By Course</Option>
-            {filterOptions.courses.map((course) => (
-              <Option key={course} value={course}>
-                {course}
-              </Option>
-            ))}
-          </Select>
-
-          {/* Filter By State */}
-          <Select
-            size="large"
-            value={selectedState}
-            onChange={setSelectedState}
-            className="approval-filter-select w-full"
-            suffixIcon={<ChevronDown size={14} className="text-gray-500" />}
-          >
-            <Option value="all">Filter by State</Option>
-            {filterOptions.states.map((st) => (
-              <Option key={st} value={st}>
-                {st}
-              </Option>
-            ))}
-          </Select>
-
-          {/* Filter HEI Type */}
-          <Select
-            size="large"
-            value={selectedHeiType}
-            onChange={setSelectedHeiType}
-            className="approval-filter-select w-full"
-            suffixIcon={<ChevronDown size={14} className="text-gray-500" />}
-          >
-            <Option value="all">Filter HEI Type</Option>
-            {filterOptions.heiTypes.map((ht) => (
-              <Option key={ht} value={ht}>
-                {ht}
-              </Option>
-            ))}
-          </Select>
+            placeholder="Search by University...."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="approval-search w-full"
+          />
         </div>
 
-        {/* Reset Filter Button */}
-        {hasActiveFilters && (
-          <div className="mt-2 pt-1.5 border-t border-gray-200/80 flex items-center justify-between text-xs text-gray-600 px-0.5">
-            <span className="font-normal text-gray-500">Active filters applied</span>
-            <button
-              type="button"
-              onClick={handleResetFilters}
-              className="text-[#122A46] hover:text-[#0c1f34] font-normal flex items-center gap-1 cursor-pointer transition-colors"
-              title="Reset All Filters"
+        {/* 2. Filters Bar: 2 columns on mobile, 4 columns on desktop */}
+        <div className="w-full">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5 w-full">
+            {/* Select Session */}
+            <Select
+              size="large"
+              value={selectedSession || "all"}
+              onChange={handleSessionChange}
+              className="approval-filter-select w-full"
+              suffixIcon={<ChevronDown size={14} className="text-gray-500" />}
             >
-              <RotateCcw size={11} />
-              Reset All Filters
-            </button>
+              <Option value="all">All Sessions</Option>
+              {filterOptions.sessions.map((sess) => (
+                <Option key={sess} value={sess}>
+                  List {sess}
+                </Option>
+              ))}
+            </Select>
+
+            {/* Filter By Course */}
+            <Select
+              size="large"
+              value={selectedCourse}
+              onChange={setSelectedCourse}
+              className="approval-filter-select w-full"
+              suffixIcon={<ChevronDown size={14} className="text-gray-500" />}
+            >
+              <Option value="all">Filter By Course</Option>
+              {filterOptions.courses.map((course) => (
+                <Option key={course} value={course}>
+                  {course}
+                </Option>
+              ))}
+            </Select>
+
+            {/* Filter By State */}
+            <Select
+              size="large"
+              value={selectedState}
+              onChange={setSelectedState}
+              className="approval-filter-select w-full"
+              suffixIcon={<ChevronDown size={14} className="text-gray-500" />}
+            >
+              <Option value="all">Filter by State</Option>
+              {filterOptions.states.map((st) => (
+                <Option key={st} value={st}>
+                  {st}
+                </Option>
+              ))}
+            </Select>
+
+            {/* Filter HEI Type */}
+            <Select
+              size="large"
+              value={selectedHeiType}
+              onChange={setSelectedHeiType}
+              className="approval-filter-select w-full"
+              suffixIcon={<ChevronDown size={14} className="text-gray-500" />}
+            >
+              <Option value="all">Filter HEI Type</Option>
+              {filterOptions.heiTypes.map((ht) => (
+                <Option key={ht} value={ht}>
+                  {ht}
+                </Option>
+              ))}
+            </Select>
           </div>
-        )}
+
+          {/* Reset Filter Button */}
+          {hasActiveFilters && (
+            <div className="mt-2 pt-1.5 border-t border-gray-200/80 flex items-center justify-between text-xs text-gray-600 px-0.5">
+              <span className="font-normal text-gray-500">Active filters applied</span>
+              <button
+                type="button"
+                onClick={handleResetFilters}
+                className="text-[#122A46] hover:text-[#0c1f34] font-normal flex items-center gap-1 cursor-pointer transition-colors"
+                title="Reset All Filters"
+              >
+                <RotateCcw size={11} />
+                Reset All Filters
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* 3. Ant Design Table (Fits 100% width on mobile without scrolling, wrapping university names) */}
-      <div className="bg-white rounded-xl border border-gray-200/90 shadow-2xs overflow-hidden approvals-table-wrapper">
+      <div className="bg-white rounded-xl border border-gray-200/90 shadow-2xs overflow-hidden approvals-table-wrapper mb-6 sm:mb-8">
         <Table
           columns={columns}
           dataSource={filteredUniversities}
           rowKey="_id"
           pagination={false}
+          loading={loading}
           className="approvals-antd-table"
           rowClassName={(record, index) => {
             const isExpanded = expandedRowKeys.includes(record._id);
@@ -866,7 +619,7 @@ export default function ApprovalUniversityDirectory({
               width: 100% !important;
             }
             .approvals-antd-table .ant-table {
-              overflow-x: hidden !important;
+              overflow-x: visible !important;
             }
             .approvals-antd-table .ant-table-body {
               max-height: none !important;
