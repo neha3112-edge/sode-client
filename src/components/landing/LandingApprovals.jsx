@@ -1,29 +1,205 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 /**
  * Reusable Landing Approvals Section
- * Matches the reference design with full-width yellow header banner and clean approvals grid.
- * Fully responsive: 1 column on mobile, 2 on tablet, 4 on desktop.
+ * Supports:
+ * 1. SMU Modern Rankings & Accreditations Carousel (clean light grey background, centered description, arrows, 4-column carousel).
+ * 2. Classic Banner Grid (full-width yellow banner header, cream background grid).
  */
 export default function LandingApprovals({
   approvals = [],
   universityName,
-  brand,
+  brand = {},
   title = "Recognition and Approvals",
   bannerBg,
   showTags = false,
 }) {
   if (!approvals || approvals.length === 0) return null;
 
+  const isCarouselLayout =
+    brand.approvalsLayout === "smu-carousel" || brand.slug === "smu";
+
+  const total = approvals.length;
+  const [currentIndex, setCurrentIndex] = useState(total > 0 ? total : 0);
+  const [withTransition, setWithTransition] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(4);
+  const timerRef = useRef(null);
+
+  // Responsive visible cards count: 1 on mobile, 2 on tablet, 4 on desktop
+  useEffect(() => {
+    const handleResize = () => {
+      if (typeof window === "undefined") return;
+      if (window.innerWidth < 640) {
+        setVisibleCount(1);
+      } else if (window.innerWidth < 1024) {
+        setVisibleCount(2);
+      } else {
+        setVisibleCount(4);
+      }
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const extendedList =
+    total > 0
+      ? [
+          ...approvals,
+          ...approvals,
+          ...approvals,
+          ...approvals,
+        ]
+      : [];
+
+  const handleTransitionEnd = () => {
+    if (currentIndex >= total * 2) {
+      setWithTransition(false);
+      setCurrentIndex(total);
+    } else if (currentIndex < total) {
+      setWithTransition(false);
+      setCurrentIndex(total + (currentIndex % total));
+    }
+  };
+
+  const handleNext = () => {
+    setWithTransition(true);
+    setCurrentIndex((prev) => prev + 1);
+  };
+
+  const handlePrev = () => {
+    setWithTransition(true);
+    setCurrentIndex((prev) => prev - 1);
+  };
+
+  // Auto-play timer for carousel
+  useEffect(() => {
+    if (!isCarouselLayout || isPaused || total <= 1) return;
+
+    timerRef.current = setInterval(() => {
+      setWithTransition(true);
+      setCurrentIndex((prev) => {
+        if (prev >= total * 2) {
+          return total + 1;
+        }
+        return prev + 1;
+      });
+    }, 3500);
+
+    return () => clearInterval(timerRef.current);
+  }, [isCarouselLayout, isPaused, total]);
+
+  // ==========================================
+  // Layout 1: SMU Clean Rankings & Accreditations Carousel
+  // ==========================================
+  if (isCarouselLayout) {
+    const sectionTitle =
+      brand.approvalsTitle ||
+      `${brand.name || "Sikkim Manipal University"} Online Rankings & Accreditations`;
+    const sectionDescription =
+      brand.approvalsDescription ||
+      "Sikkim Manipal University is one of the top ranked university in India. The university is UGC-DEB recognised and is accredited by leading national accreditation bodies. It is an advanced online learning platform. SMU Online delivers industry-aligned programs which hold academic excellence. Sikkim Manipal University online courses are the most preferred choice for learners. They offer flexibility, credibility and high-quality higher education.";
+
+    return (
+      <section
+        id="approvals"
+        className="w-full py-10 sm:py-14 lg:py-16 bg-[#f8f9fa] border-b border-slate-200/80 select-none overflow-hidden"
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+      >
+        <div className="max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Section Header */}
+          <div className="text-center max-w-4xl mx-auto mb-8 sm:mb-12">
+            <h2 className="text-[24px] sm:text-[30px] lg:text-[34px] font-bold text-[#111827] tracking-tight leading-tight m-0">
+              {sectionTitle}
+            </h2>
+            <p className="mt-3.5 mb-0 text-[13px] sm:text-[14px] text-slate-600 leading-relaxed font-normal">
+              {sectionDescription}
+            </p>
+          </div>
+
+          {/* Carousel Slider */}
+          <div className="relative px-6 sm:px-10">
+            {/* Left Navigation Arrow */}
+            <button
+              type="button"
+              onClick={handlePrev}
+              aria-label="Previous Accreditation"
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/90 hover:bg-white text-slate-800 flex items-center justify-center shadow-xs border border-slate-200 transition-all cursor-pointer active:scale-95"
+            >
+              <ChevronLeft className="w-5 h-5 stroke-[2.5]" />
+            </button>
+
+            {/* Slider Track */}
+            <div className="w-full overflow-hidden">
+              <div
+                onTransitionEnd={handleTransitionEnd}
+                className="flex items-stretch"
+                style={{
+                  transform: `translateX(-${currentIndex * (100 / visibleCount)}%)`,
+                  transition: withTransition
+                    ? "transform 500ms cubic-bezier(0.25, 1, 0.5, 1)"
+                    : "none",
+                }}
+              >
+                {extendedList.map((item, idx) => (
+                  <div
+                    key={`${item.tag || item.text}-${idx}`}
+                    className="shrink-0 px-3 sm:px-4 box-border"
+                    style={{ width: `${100 / visibleCount}%` }}
+                  >
+                    <div className="flex flex-col items-center justify-start text-center h-full group p-2">
+                      {/* Logo Image */}
+                      <div className="relative w-full h-[95px] sm:h-[110px] flex items-center justify-center mb-3">
+                        <Image
+                          src={item.image}
+                          alt={item.text || "Accreditation"}
+                          fill
+                          className="object-contain transition-transform duration-200 group-hover:scale-105"
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                        />
+                      </div>
+
+                      {/* Description Text */}
+                      <p className="text-[13px] sm:text-[14px] text-slate-700 font-medium leading-snug m-0 max-w-[240px]">
+                        {item.text}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right Navigation Arrow */}
+            <button
+              type="button"
+              onClick={handleNext}
+              aria-label="Next Accreditation"
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/90 hover:bg-white text-slate-800 flex items-center justify-center shadow-xs border border-slate-200 transition-all cursor-pointer active:scale-95"
+            >
+              <ChevronRight className="w-5 h-5 stroke-[2.5]" />
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ==========================================
+  // Layout 2: Classic Banner Grid (Amity, etc.)
+  // ==========================================
   const activeUniversity = universityName || brand?.name || "Amity University Online";
   const activeBannerBg = bannerBg || brand?.accentColor || "#ffd200";
 
   return (
     <section id="approvals" className="w-full">
-      {/* 1. Full-Width Yellow Header Banner */}
+      {/* 1. Full-Width Header Banner */}
       <div
         className="w-full py-2.5 sm:py-3.5 px-4 text-center select-none shadow-xs"
         style={{ backgroundColor: activeBannerBg }}
@@ -36,7 +212,7 @@ export default function LandingApprovals({
         </h2>
       </div>
 
-      {/* 2. Approvals Grid on Warm Light Cream Background */}
+      {/* 2. Approvals Grid on Light Cream Background */}
       <div className="py-6 sm:py-10 bg-[#fffde8] border-b border-amber-200/50">
         <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 lg:gap-8 items-center">

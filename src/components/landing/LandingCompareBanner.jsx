@@ -3,14 +3,28 @@
 import Image from "next/image";
 
 export default function LandingCompareBanner({ brand = {}, onOpenCompare }) {
-  const universityName = brand.shortName || (brand.name ? brand.name.replace(/\s*Online\s*$/i, "") : "Amity University");
+  const isSmu =
+    brand.slug === "smu" ||
+    brand.name?.toLowerCase().includes("sikkim") ||
+    brand.name?.toLowerCase().includes("smu");
+
+  const universityName =
+    brand.compareUniversityName ||
+    (isSmu
+      ? "Sikkim Manipal University"
+      : brand.shortName ||
+        (brand.name ? brand.name.replace(/\s*Online\s*$/i, "") : "Amity University"));
+
+  const bannerBg =
+    brand.compareBannerColor ||
+    (isSmu ? "#f05525" : (brand.primaryColor || "#08417b"));
 
   return (
-    <section className="compare_Section bg-[#f6f8fa] pt-8 sm:pt-14 pb-8 sm:pb-10">
-      <div className="max-w-full mx-auto px-4 sm:px-11">
+    <section className="compare_Section bg-[#f6f8fa] pt-8 sm:pt-14 pb-8 sm:pb-10 select-none">
+      <div className="max-w-[1240px] xl:max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8">
         <div
-          className="compare_box relative rounded-2xl sm:rounded-3xl px-6 sm:px-12 pt-9 pb-18 sm:pt-12 sm:pb-16 text-center text-white transition-colors flex flex-col items-center justify-center shadow-sm"
-          style={{ backgroundColor: brand.primaryColor || "#08417b" }}
+          className="compare_box relative rounded-2xl sm:rounded-3xl px-6 sm:px-12 pt-9 pb-18 sm:pt-12 sm:pb-16 text-center text-white transition-colors flex flex-col items-center justify-center shadow-md"
+          style={{ backgroundColor: bannerBg }}
         >
           {/* Heading */}
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight m-0">

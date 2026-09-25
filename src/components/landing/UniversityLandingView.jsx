@@ -28,7 +28,9 @@ export default function UniversityLandingView({ data = {} }) {
     stats = [],
     programmes = [],
     about = {},
+    leader,
     whyChoose = [],
+    admissionProcess,
     admissionSteps = [],
     faqs = [],
   } = data;
@@ -74,20 +76,38 @@ export default function UniversityLandingView({ data = {} }) {
     setLegalModalState({ isOpen: true, type });
   };
 
+  const isSmu = slug === "smu" || brand.slug === "smu";
+
   return (
     <div className="landing-page-root min-h-screen bg-white text-slate-900 flex flex-col font-sans selection:bg-blue-900 selection:text-white">
-      <LandingNavbar brand={brand} onOpenApply={() => handleOpenApply()} onOpenBrochure={() => handleOpenBrochure()} />
+      <LandingNavbar
+        brand={brand}
+        onOpenApply={() => handleOpenApply()}
+        onOpenBrochure={() => handleOpenBrochure()}
+        onOpenScholarship={() => setIsScholarshipOpen(true)}
+      />
       <main className="flex-1">
         <LandingHero brand={brand} courses={courses} onOpenBrochure={() => handleOpenBrochure()} onOpenApply={() => handleOpenApply()} onOpenDisclaimer={() => handleOpenLegal("disclaimer")} />
         <LandingApprovals approvals={approvals} universityName={brand.name} brand={brand} />
         <LandingProgrammes programmes={programmes} universityName={brand.name} brand={brand} onSelectCourseForBrochure={handleOpenBrochure} onOpenApply={handleOpenApply} />
-        <LandingAbout about={about} brand={brand} onOpenApply={() => handleOpenApply()} />
-        <LandingStats stats={stats} />
-        <LandingWhyChoose whyChoose={whyChoose} brand={brand} onOpenApply={() => handleOpenApply()} />
-        <LandingAdmissionProcess admissionSteps={admissionSteps} universityName={brand.name} onOpenApply={() => handleOpenApply()} />
-        <LandingFaq faqs={faqs} universityName={brand.name} brand={brand} />
-        <LandingFooterForm brand={brand} courses={courses} onOpenDisclaimer={() => handleOpenLegal("disclaimer")} />
-        <LandingCompareBanner brand={brand} onOpenCompare={() => setIsCompareOpen(true)} />
+        {isSmu && (
+          <LandingWhyChoose whyChoose={whyChoose} brand={brand} onOpenApply={() => handleOpenApply()} />
+        )}
+        <LandingAbout about={about} brand={brand} leader={leader} onOpenApply={() => handleOpenApply()} />
+        <LandingStats stats={stats} brand={{ ...brand, slug: brand.slug || slug }} />
+        {!isSmu && (
+          <LandingWhyChoose whyChoose={whyChoose} brand={brand} onOpenApply={() => handleOpenApply()} />
+        )}
+        <LandingAdmissionProcess
+          admissionSteps={admissionSteps}
+          admissionProcess={admissionProcess}
+          universityName={brand.name}
+          brand={{ ...brand, slug: brand.slug || slug }}
+          onOpenApply={() => handleOpenApply()}
+        />
+        <LandingFaq faqs={faqs} universityName={brand.name} brand={{ ...brand, slug: brand.slug || slug }} />
+        <LandingFooterForm brand={{ ...brand, slug: brand.slug || slug }} courses={courses} onOpenDisclaimer={() => handleOpenLegal("disclaimer")} />
+        <LandingCompareBanner brand={{ ...brand, slug: brand.slug || slug }} onOpenCompare={() => setIsCompareOpen(true)} />
       </main>
       <LandingFooter brand={brand} onOpenDisclaimer={() => handleOpenLegal("disclaimer")} onOpenTerms={() => handleOpenLegal("terms")} onOpenPrivacy={() => handleOpenLegal("privacy")} />
       <LandingStickyCtas brand={brand} onOpenApply={() => handleOpenApply()} onOpenBrochure={() => handleOpenBrochure()} onOpenScholarship={() => setIsScholarshipOpen(true)} onOpenCompare={() => setIsCompareOpen(true)} />

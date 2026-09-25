@@ -4,6 +4,7 @@ import { muData } from "./mu";
 import { manipalData } from "./manipal";
 import { cuData } from "./cu";
 import { galgotiasData } from "./galgotias";
+import { smuData } from "./smu";
 
 export const LANDING_REGISTRY = {
   amity: amityData,
@@ -12,6 +13,9 @@ export const LANDING_REGISTRY = {
   manipal: manipalData,
   cu: cuData,
   galgotias: galgotiasData,
+  smu: smuData,
+  "sikkim-manipal-university": smuData,
+  "sikkim-manipal": smuData,
 };
 
 export function getLandingData(slug) {
@@ -20,4 +24,13 @@ export function getLandingData(slug) {
   return LANDING_REGISTRY[key] || null;
 }
 
-export { amityData, lpuData, muData, manipalData, cuData, galgotiasData };
+export {
+  amityData,
+  lpuData,
+  muData,
+  manipalData,
+  cuData,
+  galgotiasData,
+  smuData,
+};
+

@@ -40,9 +40,45 @@ const ICON_MAP = {
   book: OpenBookIcon,
 };
 
-export default function LandingStats({ stats = [] }) {
+export default function LandingStats({ stats = [], brand = {} }) {
   if (!stats || stats.length === 0) return null;
 
+  const isSmuLayout =
+    brand.statsLayout === "smu-clean" ||
+    brand.slug === "smu" ||
+    brand.name?.toLowerCase().includes("sikkim") ||
+    brand.name?.toLowerCase().includes("smu");
+
+  // ==========================================
+  // SMU Layout: Clean Gold Numbers on White Background
+  // ==========================================
+  if (isSmuLayout) {
+    return (
+      <section className="w-full bg-white py-10 sm:py-14 lg:py-16 select-none">
+        <div className="max-w-[1240px] xl:max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 lg:gap-12 text-center">
+            {stats.map((st, idx) => (
+              <div
+                key={idx}
+                className="flex flex-col items-center justify-center space-y-1.5"
+              >
+                <div className="text-[32px] sm:text-[38px] lg:text-[44px] font-bold text-[#ffb100] tracking-tight leading-none">
+                  {st.number}
+                </div>
+                <p className="text-[13px] sm:text-[14px] text-[#212529] font-medium leading-snug m-0">
+                  {st.label}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ==========================================
+  // Classic Blue Banner (Amity, etc.)
+  // ==========================================
   return (
     <section className="bg-[#08417b] py-8 sm:py-12 lg:py-14 text-white border-y border-[#063366] transition-colors">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">

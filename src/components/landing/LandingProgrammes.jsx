@@ -3,29 +3,28 @@
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { Download, ChevronLeft, ChevronRight, Hourglass } from "lucide-react";
+import { FaDownload } from "react-icons/fa";
 
 /**
- * Reusable Landing Programmes Carousel (Infinite Loop with Timer + Touch Swipe)
- * - 4 cards visible on desktop, 2 on tablet, 1 on mobile
- * - Touch swipe support for mobile gesture navigation
- * - Smooth auto-play with pause on hover/touch
- * - Green level badge, Yellow Get Brochure button, and Duration
+ * Reusable Landing Programmes Section
  */
 export default function LandingProgrammes({
   programmes = [],
   universityName = "Amity University",
   brand = {},
   title = "Online Degree Courses",
-  intervalTime = 3000,
+  intervalTime = 3500,
   onSelectCourseForBrochure,
   onOpenApply,
 }) {
-  const total = programmes.length;
+  const isSmuLayout =
+    brand.programmesLayout === "smu-cards" || brand.slug === "smu";
 
+  const total = programmes.length;
   const [currentIndex, setCurrentIndex] = useState(total > 0 ? total : 0);
   const [withTransition, setWithTransition] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
-  const [visibleCount, setVisibleCount] = useState(4);
+  const [visibleCount, setVisibleCount] = useState(isSmuLayout ? 3 : 4);
   const timerRef = useRef(null);
 
   // Touch swipe state
@@ -35,8 +34,11 @@ export default function LandingProgrammes({
   const rawUni = universityName || brand.name || "Amity University";
   const displayUniversity = rawUni.replace(/\s+Online$/i, "").trim() || rawUni;
   const primaryBg = brand.hero?.formBackground || brand.primaryColor || "#08417b";
+  const sectionTitle =
+    brand.programmesTitle ||
+    `Programs offered by ${brand.name || "Sikkim Manipal University Online"}`;
 
-  // Responsive visible cards count: 1 on mobile (<640px), 2 on tablet (<1024px), 4 on desktop
+  // Responsive visible cards count
   useEffect(() => {
     const handleResize = () => {
       if (typeof window === "undefined") return;
@@ -45,23 +47,23 @@ export default function LandingProgrammes({
       } else if (window.innerWidth < 1024) {
         setVisibleCount(2);
       } else {
-        setVisibleCount(4);
+        setVisibleCount(isSmuLayout ? 3 : 4);
       }
     };
 
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  }, [isSmuLayout]);
 
   const extendedList =
     total > 0
       ? [
-        ...programmes,
-        ...programmes,
-        ...programmes,
-        ...programmes,
-      ]
+          ...programmes,
+          ...programmes,
+          ...programmes,
+          ...programmes,
+        ]
       : [];
 
   const handleTransitionEnd = () => {
@@ -112,6 +114,7 @@ export default function LandingProgrammes({
   useEffect(() => {
     if (isPaused || total <= 1) return;
 
+    const delay = isSmuLayout ? 7500 : intervalTime;
     timerRef.current = setInterval(() => {
       setWithTransition(true);
       setCurrentIndex((prev) => {
@@ -120,18 +123,29 @@ export default function LandingProgrammes({
         }
         return prev + 1;
       });
-    }, intervalTime);
+    }, delay);
 
     return () => clearInterval(timerRef.current);
-  }, [isPaused, total, intervalTime]);
+  }, [isPaused, total, intervalTime, isSmuLayout]);
 
   if (!programmes || programmes.length === 0) return null;
 
   return (
     <section
-      id="programmes"
-      className="py-10 sm:py-14 lg:py-16 text-white overflow-hidden relative select-none transition-colors w-full"
-      style={{ backgroundColor: primaryBg }}
+      id={isSmuLayout ? "programs" : "programmes"}
+      className={
+        isSmuLayout
+          ? "w-full pt-10 pb-12 sm:pt-12 sm:pb-14 text-slate-900 overflow-hidden relative select-none"
+          : "py-10 sm:py-14 lg:py-16 text-white overflow-hidden relative select-none transition-colors w-full"
+      }
+      style={
+        isSmuLayout
+          ? {
+              background:
+                "linear-gradient(to bottom, #ffffff 0%, #ffffff 56%, #efefef 56%, #efefef 100%)",
+            }
+          : { backgroundColor: primaryBg }
+      }
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onTouchStart={handleTouchStart}
@@ -139,17 +153,52 @@ export default function LandingProgrammes({
       onTouchEnd={handleTouchEnd}
     >
       {/* Section Heading */}
-      <div className="text-center mb-6 sm:mb-8 lg:mb-10 px-4 max-w-4xl mx-auto">
-        <h3 className="text-xl sm:text-2xl lg:text-[28px] font-bold text-white m-0 tracking-tight leading-tight">
-          {displayUniversity}
-        </h3>
-        <h2 className="text-2xl sm:text-3xl lg:text-[36px] font-bold text-white mt-1 m-0 tracking-tight leading-tight">
-          {title}
-        </h2>
+      <div
+        className={
+          isSmuLayout
+            ? "text-center mb-7 sm:mb-9 lg:mb-10 px-4 max-w-4xl mx-auto"
+            : "text-center mb-6 sm:mb-8 lg:mb-10 px-4 max-w-4xl mx-auto"
+        }
+      >
+        {isSmuLayout ? (
+          <h2 className="text-[24px] sm:text-[28px] lg:text-[32px] font-bold text-[#212529] m-0 tracking-tight leading-tight">
+            {sectionTitle}
+          </h2>
+        ) : (
+          <>
+            <h3 className="text-xl sm:text-2xl lg:text-[28px] font-bold text-white m-0 tracking-tight leading-tight">
+              {displayUniversity}
+            </h3>
+            <h2 className="text-2xl sm:text-3xl lg:text-[36px] font-bold text-white mt-1 m-0 tracking-tight leading-tight">
+              {title}
+            </h2>
+          </>
+        )}
       </div>
 
       {/* Carousel Container */}
-      <div className="w-full max-w-[1240px] xl:max-w-[1360px] 2xl:max-w-[1400px] mx-auto px-3 sm:px-5 lg:px-6 relative">
+      <div
+        className={
+          isSmuLayout
+            ? "w-full max-w-[1200px] xl:max-w-[1240px] mx-auto px-6 sm:px-10 lg:px-12 relative"
+            : "w-full max-w-[1240px] xl:max-w-[1360px] 2xl:max-w-[1400px] mx-auto px-3 sm:px-5 lg:px-6 relative"
+        }
+      >
+        {/* Left Chevron Arrow */}
+        <button
+          type="button"
+          onClick={handlePrev}
+          aria-label="Previous programme"
+          className={
+            isSmuLayout
+              ? "absolute -left-1 sm:-left-3 lg:-left-5 top-1/2 -translate-y-1/2 z-20 text-[#212529] hover:text-black transition-all cursor-pointer p-2 border-none bg-transparent flex items-center justify-center active:scale-90"
+              : "hidden sm:flex absolute -left-4 lg:-left-5 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white items-center justify-center border-none cursor-pointer active:scale-95 transition-all"
+          }
+        >
+          <ChevronLeft className={isSmuLayout ? "w-7 h-7 sm:w-8 sm:h-8 stroke-[3]" : "w-5 h-5"} />
+        </button>
+
+        {/* Slider Track */}
         <div className="w-full overflow-hidden rounded-[8px]">
           <div
             onTransitionEnd={handleTransitionEnd}
@@ -170,13 +219,69 @@ export default function LandingProgrammes({
               const levelText = c.level || (isPostGrad ? "Post Graduation" : "Graduation");
               const durationText = c.duration || (isPostGrad ? "24 Months" : "36 Months");
 
+              if (isSmuLayout) {
+                return (
+                  <div
+                    key={`${c.id || c.code}-${idx}`}
+                    className="shrink-0 px-2.5 sm:px-3 box-border"
+                    style={{ width: `${100 / visibleCount}%` }}
+                  >
+                    {/* SMU Course Card */}
+                    <div className="bg-white rounded-[8px] sm:rounded-[10px] shadow-[0px_4px_20px_rgba(0,0,0,0.08)] hover:shadow-[0px_8px_28px_rgba(0,0,0,0.12)] transition-all duration-300 p-4 sm:p-5 flex flex-col justify-between h-full group text-left">
+                      <div>
+                        {/* Top Image */}
+                        <div className="relative h-44 sm:h-48 md:h-[185px] w-full rounded-[6px] overflow-hidden mb-3.5 bg-slate-100">
+                          <Image
+                            src={c.image || "/assets/images/smu_mba.jpg"}
+                            alt={c.title}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-300"
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                          />
+                        </div>
+
+                        {/* Course Title */}
+                        <h3 className="text-[17px] sm:text-[18px] font-bold text-[#074a76] m-0 tracking-tight leading-snug">
+                          {c.title}
+                        </h3>
+
+                        {/* Course Description */}
+                        <p className="text-[12px] sm:text-[12.5px] text-[#4b5563] leading-[1.55] mt-2 sm:mt-2.5 mb-2 line-clamp-4 min-h-[58px] sm:min-h-[60px] m-0">
+                          {c.description}
+                        </p>
+                      </div>
+
+                      {/* Dual Action Buttons: Get Brochure (Orange) & Apply Now (Navy Blue) */}
+                      <div className="grid grid-cols-2 gap-2 sm:gap-2.5 mt-4 sm:mt-5">
+                        <button
+                          type="button"
+                          onClick={() => onSelectCourseForBrochure?.(c.code || c.title)}
+                          className="bg-[#f78d2d] hover:bg-[#ea7e20] active:scale-95 text-white font-semibold text-[13px] sm:text-[13.5px] py-2.5 px-2 rounded-[5px] flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer border-none"
+                        >
+                          <span>Get Brochure</span>
+                          <FaDownload className="w-3 h-3 text-white shrink-0" />
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => onOpenApply?.(c.code || c.title)}
+                          className="bg-[#074a76] hover:bg-[#053759] active:scale-95 text-white font-semibold text-[13px] sm:text-[13.5px] py-2.5 px-2 rounded-[5px] flex items-center justify-center transition-all shadow-xs cursor-pointer border-none"
+                        >
+                          <span>Apply Now</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
+
               return (
                 <div
                   key={`${c.id || c.code}-${idx}`}
                   className="shrink-0 px-1.5 sm:px-2 xl:px-2.5 box-border"
                   style={{ width: `${100 / visibleCount}%` }}
                 >
-                  {/* Course Card */}
+                  {/* Classic Course Card (Amity, etc.) */}
                   <div className="bg-white rounded-[8px] overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col justify-between h-full group text-left border border-slate-200/80">
                     <div>
                       {/* Course Image with Green Level Badge */}
@@ -233,26 +338,42 @@ export default function LandingProgrammes({
           </div>
         </div>
 
-        {/* Mobile Navigation Controls */}
-        <div className="flex items-center justify-center gap-3 mt-4 sm:hidden">
-          <button
-            type="button"
-            onClick={handlePrev}
-            aria-label="Previous programme"
-            className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center border-none cursor-pointer active:scale-95 transition-all"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-          <span className="text-[11.5px] text-white/80 font-medium">Swipe to explore</span>
-          <button
-            type="button"
-            onClick={handleNext}
-            aria-label="Next programme"
-            className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center border-none cursor-pointer active:scale-95 transition-all"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
-        </div>
+        {/* Right Chevron Arrow */}
+        <button
+          type="button"
+          onClick={handleNext}
+          aria-label="Next programme"
+          className={
+            isSmuLayout
+              ? "absolute -right-1 sm:-right-3 lg:-right-5 top-1/2 -translate-y-1/2 z-20 text-[#212529] hover:text-black transition-all cursor-pointer p-2 border-none bg-transparent flex items-center justify-center active:scale-90"
+              : "hidden sm:flex absolute -right-4 lg:-right-5 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white items-center justify-center border-none cursor-pointer active:scale-95 transition-all"
+          }
+        >
+          <ChevronRight className={isSmuLayout ? "w-7 h-7 sm:w-8 sm:h-8 stroke-[3]" : "w-5 h-5"} />
+        </button>
+
+        {/* Mobile Navigation Controls for Classic view */}
+        {!isSmuLayout && (
+          <div className="flex items-center justify-center gap-3 mt-4 sm:hidden">
+            <button
+              type="button"
+              onClick={handlePrev}
+              aria-label="Previous programme"
+              className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center border-none cursor-pointer active:scale-95 transition-all"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <span className="text-[11.5px] text-white/80 font-medium">Swipe to explore</span>
+            <button
+              type="button"
+              onClick={handleNext}
+              aria-label="Next programme"
+              className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center border-none cursor-pointer active:scale-95 transition-all"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );

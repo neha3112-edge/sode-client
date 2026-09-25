@@ -37,26 +37,51 @@ const STEP_STYLES = [
 
 export default function LandingAdmissionProcess({
   admissionSteps = [],
+  admissionProcess = null,
   universityName = "Amity University Online",
+  brand = {},
 }) {
   if (!admissionSteps || admissionSteps.length === 0) return null;
 
+  const isSmu =
+    brand.slug === "smu" ||
+    brand.name?.toLowerCase().includes("sikkim") ||
+    brand.name?.toLowerCase().includes("smu");
+
   const cleanUni = universityName.replace(/\s*Online\s*$/i, "");
-  const headingText = universityName.toLowerCase().includes("course")
-    ? `How to Apply for ${universityName}`
-    : `How to Apply for ${universityName} Courses`;
+  
+  const headingText =
+    admissionProcess?.title ||
+    brand.admissionTitle ||
+    (isSmu
+      ? `How To Take Admission In ${brand.name || "Sikkim Manipal University Online"}?`
+      : universityName.toLowerCase().includes("course")
+      ? `How to Apply for ${universityName}`
+      : `How to Apply for ${universityName} Courses`);
+
+  const subtitleText =
+    admissionProcess?.subtitle ||
+    brand.admissionSubtitle ||
+    (isSmu
+      ? `Admissions in ${brand.name || "Sikkim Manipal University Online"} is a convenient process. Any eligible candidate can enrol in their desired courses. Follow these steps to secure your admission:`
+      : `The admission process for ${cleanUni} course admissions is very simple and user-friendly. Here's a step-by-step guide to enrolling in a degree course at the university :`);
+
+  const headingColor = isSmu ? "#193579" : (brand.primaryColor || "#08417b");
 
   return (
-    <section id="process" className="py-8 sm:py-12 lg:py-14 bg-white w-full">
-      <div className="w-full px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <section id="process" className="py-10 sm:py-14 lg:py-16 bg-white w-full select-none">
+      <div className="w-full px-4 sm:px-6 lg:px-8 max-w-[1240px] xl:max-w-[1300px] mx-auto">
         {/* Heading */}
-        <h2 className="text-xl sm:text-2xl lg:text-[32px] font-bold text-center text-[#08417b] tracking-tight mb-2 m-0">
+        <h2
+          className="text-[22px] sm:text-[28px] lg:text-[34px] font-bold text-center tracking-tight mb-3 m-0"
+          style={{ color: headingColor }}
+        >
           {headingText}
         </h2>
 
         {/* Subtitle */}
-        <p className="text-xs sm:text-[13.5px] text-center text-slate-600 mb-6 sm:mb-8 lg:mb-10 max-w-3xl mx-auto font-normal leading-relaxed m-0 px-2">
-          The admission process for {cleanUni} course admissions is very simple and user-friendly. Here&apos;s a step-by-step guide to enrolling in a degree course at the university :
+        <p className="text-[13px] sm:text-[14px] text-center text-[#4b5563] mb-8 sm:mb-10 lg:mb-12 max-w-3xl mx-auto font-normal leading-relaxed m-0 px-4">
+          {subtitleText}
         </p>
 
         {/* Responsive Step Cards Grid */}
@@ -72,24 +97,24 @@ export default function LandingAdmissionProcess({
             return (
               <div
                 key={num}
-                className={`${cardBg} rounded-2xl border-0 border-b-4 p-4 sm:p-4 pt-5 pb-5 text-center flex flex-col items-center justify-start h-full transition-transform hover:-translate-y-1 shadow-2xs hover:shadow-xs`}
+                className={`${cardBg} rounded-2xl border-0 border-b-4 p-4 sm:p-4 pt-6 pb-6 text-center flex flex-col items-center justify-start h-full transition-all duration-300 hover:-translate-y-1 shadow-2xs hover:shadow-xs`}
                 style={{ borderBottomColor: themeColor }}
               >
                 {/* Circular Number Badge */}
                 <div
-                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border-2 bg-white flex items-center justify-center font-bold text-base sm:text-lg mb-3 shrink-0 shadow-2xs select-none"
+                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border-2 bg-white flex items-center justify-center font-bold text-[15px] sm:text-[16px] mb-3.5 shrink-0 shadow-2xs select-none"
                   style={{ borderColor: themeColor, color: themeColor }}
                 >
                   {num}
                 </div>
 
                 {/* Step Title */}
-                <h3 className="text-[13.5px] sm:text-[14px] font-bold text-slate-900 mb-1.5 leading-snug m-0">
+                <h3 className="text-[14px] sm:text-[15px] font-bold text-[#111827] mb-2 leading-snug m-0">
                   {step.title}
                 </h3>
 
                 {/* Step Description */}
-                <p className="text-[11.5px] sm:text-[12px] text-slate-600 leading-relaxed font-normal m-0">
+                <p className="text-[12px] sm:text-[12.5px] text-[#4b5563] leading-[1.65] font-normal m-0">
                   {step.desc}
                 </p>
               </div>
