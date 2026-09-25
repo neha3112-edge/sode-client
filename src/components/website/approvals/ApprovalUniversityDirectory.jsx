@@ -219,7 +219,13 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
     setSelectedSession(sess);
     setLoading(true);
     try {
-      const pageSlug = initialData?.approval?.slug || "ugc-deb-approved-online-universities";
+      const pageSlug =
+        apiData?.approval?.pageSlug ||
+        initialData?.approval?.pageSlug ||
+        (Array.isArray(initialData?.approval?.slug)
+          ? initialData.approval.slug[0]
+          : initialData?.approval?.slug) ||
+        "ugc-deb-approved-online-universities";
       const options = {};
       if (sess) options.session = sess;
       const res = await request.dynamicList({
@@ -287,14 +293,22 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
     });
   }, [normalizedList, searchTerm, selectedCourse, selectedState, selectedHeiType]);
 
-  const hasActiveFilters =
-    searchTerm || selectedCourse !== "all" || selectedState !== "all" || selectedHeiType !== "all";
+  const hasActiveFilters = Boolean(
+    searchTerm.trim() ||
+    (selectedSession && selectedSession !== "all") ||
+    selectedCourse !== "all" ||
+    selectedState !== "all" ||
+    selectedHeiType !== "all"
+  );
 
   const handleResetFilters = () => {
     setSearchTerm("");
     setSelectedCourse("all");
     setSelectedState("all");
     setSelectedHeiType("all");
+    if (selectedSession && selectedSession !== "all") {
+      handleSessionChange("all");
+    }
   };
 
   const [closingRowKeys, setClosingRowKeys] = useState([]);
