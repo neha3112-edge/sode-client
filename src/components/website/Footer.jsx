@@ -2,8 +2,17 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import DynamicLegalModal from "@/components/common/legal/DynamicLegalModal";
 import { useFormModal } from "@/hooks/useFormModal";
+
+function resolveLegalUrl(target = "") {
+  const str = (target || "").toLowerCase().trim();
+  if (str.includes("privacy")) return "/privacy-policy";
+  if (str.includes("refund")) return "/refund-policy";
+  if (str.includes("terms")) return "/terms-and-conditions";
+  if (str.includes("disclaimer")) return "/disclaimer";
+  if (str.startsWith("/")) return str;
+  return `/${str}`;
+}
 
 export function Footer({
   initialHeaderData = null,
@@ -37,9 +46,6 @@ export function Footer({
   const topCtaText = topCta?.text_color || "#072C50";
   const topCtaBtnBg = topCta?.button_bg_color || "#ffffff";
   const topCtaBtnText = topCta?.button_text_color || "#072C50";
-
-  const [activeDialog, setActiveDialog] = useState(null);
-
   const openExpertForm = (customTitle, customSubtitle) => {
     openFormModal({
       title: customTitle || "Talk to Experts",
@@ -47,12 +53,6 @@ export function Footer({
       submitButtonText: "Talk to Experts",
     });
   };
-
-  const closeLegalDialog = () => {
-    setActiveDialog(null);
-  };
-
-  // Helper to render platform SVGs
   const renderSocialIcon = (platform) => {
     const p = (platform || "").toLowerCase();
     if (p.includes("face")) {
@@ -302,7 +302,10 @@ export function Footer({
               </div>
               {/* Google Rating Card (Desktop: in Column 1, Mobile: shown under social in 4th cell next to GET STARTED) */}
               {mediaBar?.show_rating !== false && (
-                <div className="mt-5 hidden sm:flex items-center gap-3 rounded-lg bg-white px-3.5 py-2.5 shadow-md">
+                <Link
+                  href="/distance-education-school-reviews"
+                  className="mt-5 hidden sm:flex items-center gap-3 rounded-lg bg-white px-3.5 py-2.5 shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+                >
                   <div className="shrink-0">
                     <svg viewBox="0 0 24 24" className="h-6 w-6" aria-hidden="true">
                       <path
@@ -343,7 +346,7 @@ export function Footer({
                       {mediaBar?.rating_text || `Based on ${mediaBar?.rating_reviews_count || 1027} reviews`}
                     </span>
                   </div>
-                </div>
+                </Link>
               )}
             </div>
 
@@ -423,7 +426,10 @@ export function Footer({
 
                 {/* Review card under social links */}
                 {mediaBar?.show_rating !== false && (
-                  <div className="mt-2.5 flex items-center gap-2 rounded-lg bg-white p-2 shadow-xs">
+                  <Link
+                    href="/distance-education-school-reviews"
+                    className="mt-2.5 flex items-center gap-2 rounded-lg bg-white p-2 shadow-xs hover:shadow-sm transition cursor-pointer"
+                  >
                     <div className="shrink-0">
                       <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
                         <path
@@ -464,7 +470,7 @@ export function Footer({
                         {mediaBar?.rating_text || `Based on ${mediaBar?.rating_reviews_count || 1027} reviews`}
                       </span>
                     </div>
-                  </div>
+                  </Link>
                 )}
               </div>
             </div>
@@ -497,99 +503,74 @@ export function Footer({
 
             <div className="order-1 sm:order-2 flex flex-wrap items-center justify-center gap-2">
               {Array.isArray(legal?.legal_links) && legal.legal_links.length > 0 ? (
-                legal.legal_links.map((link, idx) => (
-                  <span key={link?._id || idx} className="flex items-center gap-2">
-                    {link.is_modal ? (
-                      <button
-                        type="button"
-                        onClick={() => setActiveDialog(link.modal_type || link.slug || "disclaimer")}
-                        className="cursor-pointer text-gray-300 hover:text-white transition-colors"
-                      >
-                        {link.label}
-                      </button>
-                    ) : (
+                legal.legal_links.map((link, idx) => {
+                  const href = resolveLegalUrl(link.url || link.slug || link.modal_type);
+                  return (
+                    <span key={link?._id || idx} className="flex items-center gap-2">
                       <Link
-                        href={link.url || "#"}
+                        href={href}
                         className="text-gray-300 hover:text-white transition-colors"
                       >
                         {link.label}
                       </Link>
-                    )}
-                    {idx < legal.legal_links.length - 1 && <span aria-hidden="true">|</span>}
-                  </span>
-                ))
+                      {idx < legal.legal_links.length - 1 && <span aria-hidden="true">|</span>}
+                    </span>
+                  );
+                })
               ) : availablePolicies.length > 0 ? (
                 availablePolicies.map((policy, idx) => {
                   if (policy?.enabled === false || policy?.show_in_footer === false) return null;
                   const slug = policy?.slug || policy?.type || "disclaimer";
                   const title = policy?.title || policy?.name || "Policy";
+                  const href = resolveLegalUrl(slug);
 
                   return (
                     <span key={policy?._id || idx} className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setActiveDialog(slug)}
-                        className="cursor-pointer text-gray-300 hover:text-white transition-colors"
+                      <Link
+                        href={href}
+                        className="text-gray-300 hover:text-white transition-colors"
                       >
                         {title}
-                      </button>
+                      </Link>
                       {idx < availablePolicies.length - 1 && <span aria-hidden="true">|</span>}
                     </span>
                   );
                 })
               ) : (
                 <>
-                  <button
-                    type="button"
-                    onClick={() => setActiveDialog("disclaimer")}
-                    className="cursor-pointer text-gray-300 hover:text-white transition-colors"
+                  <Link
+                    href="/disclaimer"
+                    className="text-gray-300 hover:text-white transition-colors"
                   >
                     Disclaimer
-                  </button>
+                  </Link>
                   <span aria-hidden="true">|</span>
-                  <button
-                    type="button"
-                    onClick={() => setActiveDialog("privacy")}
-                    className="cursor-pointer text-gray-300 hover:text-white transition-colors"
+                  <Link
+                    href="/privacy-policy"
+                    className="text-gray-300 hover:text-white transition-colors"
                   >
-                    Privacy
-                  </button>
+                    Privacy Policy
+                  </Link>
                   <span aria-hidden="true">|</span>
-                  <button
-                    type="button"
-                    onClick={() => setActiveDialog("terms")}
-                    className="cursor-pointer text-gray-300 hover:text-white transition-colors"
+                  <Link
+                    href="/terms-and-conditions"
+                    className="text-gray-300 hover:text-white transition-colors"
                   >
-                    Terms & Condition
-                  </button>
+                    Terms & Conditions
+                  </Link>
+                  <span aria-hidden="true">|</span>
+                  <Link
+                    href="/refund-policy"
+                    className="text-gray-300 hover:text-white transition-colors"
+                  >
+                    Refund Policy
+                  </Link>
                 </>
               )}
             </div>
           </div>
         </div>
 
-        {/* Dynamic Legal Policy Modal */}
-        {activeDialog && (
-          <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm">
-            <div className="relative max-h-[85vh] w-full max-w-3xl overflow-y-auto rounded-xl bg-white p-6 shadow-2xl text-gray-800">
-              <button
-                type="button"
-                onClick={closeLegalDialog}
-                className="absolute right-4 top-4 text-gray-500 hover:text-gray-800 font-bold text-lg"
-              >
-                ✕
-              </button>
-              <div className="space-y-4">
-                <DynamicLegalModal
-                  policy={availablePolicies.find(
-                    (p) => p?.slug === activeDialog || p?.type === activeDialog
-                  )}
-                  onClose={closeLegalDialog}
-                />
-              </div>
-            </div>
-          </div>
-        )}
       </footer>
     </>
   );
