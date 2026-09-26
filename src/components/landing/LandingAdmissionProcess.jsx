@@ -3,19 +3,6 @@
 import React from "react";
 
 /**
- * Standard Step Styles for the 6 Admission Steps
- * Built-in so all landing pages share identical aesthetic CSS automatically.
- */
-export const DEFAULT_STEP_STYLES = [
-  { themeColor: "#ff7a00", borderColor: "#ff7a00", cardBg: "#fff8f0" },
-  { themeColor: "#0066cc", borderColor: "#0066cc", cardBg: "#f0f7ff" },
-  { themeColor: "#ff2a6d", borderColor: "#ff2a6d", cardBg: "#fff0f5" },
-  { themeColor: "#16a34a", borderColor: "#16a34a", cardBg: "#f0faf3" },
-  { themeColor: "#8b5cf6", borderColor: "#8b5cf6", cardBg: "#f7f2ff" },
-  { themeColor: "#ff7a00", borderColor: "#ff7a00", cardBg: "#fff8f0" },
-];
-
-/**
  * Global Default 6 Admission Steps used consistently across all university landing pages.
  */
 export const GLOBAL_ADMISSION_STEPS = [
@@ -70,9 +57,17 @@ export const GLOBAL_ADMISSION_STEPS = [
 ];
 
 /**
+ * Helper to normalize background color strings (supports "#fff8f0" and legacy "bg-[#fff8f0]")
+ */
+const getCardBg = (bg, fallback = "#fff8f0") => {
+  if (!bg) return fallback;
+  if (bg.startsWith("bg-[")) return bg.slice(4, -1);
+  return bg;
+};
+
+/**
  * Reusable Global Admission & Enrollment Process Section (Full Width)
- * Standardized across all pages.
- * Works seamlessly out-of-the-box with global defaults or custom overrides.
+ * Standardized across all landing pages.
  */
 export default function LandingAdmissionProcess({
   admissionSteps,
@@ -134,7 +129,11 @@ export default function LandingAdmissionProcess({
     brand.admissionProcess?.title ||
     (isSmu
       ? `How To Take Admission In ${activeUniversity}?`
-      : `How to Apply for ${activeUniversity.toLowerCase().includes("course") ? activeUniversity : `${activeUniversity} Courses`}`);
+      : `How to Apply for ${
+          activeUniversity.toLowerCase().includes("course")
+            ? activeUniversity
+            : `${activeUniversity} Courses`
+        }`);
 
   const subtitleText =
     admissionProcess?.subtitle ||
@@ -147,24 +146,6 @@ export default function LandingAdmissionProcess({
   const headingColor =
     brand.admissionHeadingColor ||
     (isSmu ? "#193579" : brand.primaryColor || "#08417b");
-
-  // Safely resolve color strings
-  const resolveColor = (c, fallback) => {
-    if (!c || typeof c !== "string") return fallback;
-    if (c.startsWith("#") || c.startsWith("rgb")) return c;
-    const match = c.match(/\[(#[0-9a-fA-F]+)\]/);
-    if (match) return match[1];
-    return fallback;
-  };
-
-  // Safely resolve background
-  const resolveBg = (bg, fallback) => {
-    if (!bg || typeof bg !== "string") return { isHex: true, value: fallback };
-    if (bg.startsWith("#") || bg.startsWith("rgb")) return { isHex: true, value: bg };
-    const match = bg.match(/bg-\[(#[0-9a-fA-F]+)\]/);
-    if (match) return { isHex: true, value: match[1] };
-    return { isHex: false, value: bg };
-  };
 
   return (
     <section id="process" className="py-10 sm:py-14 lg:py-16 bg-white w-full select-none">
@@ -193,18 +174,16 @@ export default function LandingAdmissionProcess({
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-3.5 lg:gap-4 xl:gap-5 w-full">
           {activeSteps.map((step, idx) => {
             const num = step.num || idx + 1;
-            const defaultStyle = DEFAULT_STEP_STYLES[idx % DEFAULT_STEP_STYLES.length];
-
-            const themeColor = resolveColor(step.themeColor, defaultStyle.themeColor);
-            const borderColor = resolveColor(step.borderColor || step.themeColor, defaultStyle.borderColor);
-            const bgInfo = resolveBg(step.cardBg, defaultStyle.cardBg);
+            const themeColor = step.themeColor || "#ff7a00";
+            const borderColor = step.borderColor || themeColor;
+            const cardBg = getCardBg(step.cardBg);
 
             return (
               <div
                 key={num}
-                className={`${!bgInfo.isHex ? bgInfo.value : ""} rounded-[16px] sm:rounded-2xl overflow-hidden p-3.5 sm:p-4 md:p-5 pt-6 pb-6 text-center flex flex-col items-center justify-start h-full min-h-[165px] sm:min-h-[175px] transition-all duration-200 hover:-translate-y-1 shadow-2xs hover:shadow-xs relative`}
+                className="rounded-[16px] sm:rounded-2xl overflow-hidden p-3.5 sm:p-4 md:p-5 pt-6 pb-6 text-center flex flex-col items-center justify-start h-full min-h-[165px] sm:min-h-[175px] transition-all duration-200 hover:-translate-y-1 shadow-2xs hover:shadow-xs relative"
                 style={{
-                  backgroundColor: bgInfo.isHex ? bgInfo.value : undefined,
+                  backgroundColor: cardBg,
                   borderBottom: `4px solid ${borderColor}`,
                 }}
               >
