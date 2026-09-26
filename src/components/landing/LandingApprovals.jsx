@@ -21,10 +21,73 @@ export default function LandingApprovals({
   const activeUniversity = universityName || brand?.name || "University Online";
   const activeTitle = brand?.approvalsTitle || title;
   const subtitle = brand?.approvalsSubtitle || null;
-  const isSlider = brand?.approvalsLayout === "slider" || Boolean(subtitle);
+  const isSplit = brand?.approvalsLayout === "split";
+  const isSlider = brand?.approvalsLayout === "slider" || (!isSplit && Boolean(subtitle));
   const primaryColor = brand?.approvalsHeaderColor || brand?.primaryColor || "#ee3024";
   const borderColor = brand?.approvalsBorderColor || brand?.primaryColor || "#f35a06";
   const gridBg = brand?.approvalsBg || "#ffffff";
+
+  if (isSplit) {
+    return (
+      <section id="approval" className="w-full select-none p-0 overflow-hidden bg-[#010d2a]">
+        <div className="w-full grid grid-cols-1 lg:grid-cols-12 items-stretch">
+          {/* Left Dark Box matching #approval-box1 */}
+          <div className="lg:col-span-5 bg-[#010d2a] text-white flex flex-col justify-center px-6 sm:px-12 lg:px-16 xl:pl-20 py-8 sm:py-12">
+            <h2 className="text-2xl sm:text-3xl lg:text-[32px] font-bold leading-tight m-0 mb-3 text-white">
+              <span
+                className="font-extrabold inline"
+                style={{
+                  background: brand?.themeGradient || "linear-gradient(to right, #fd202a, #ff4be5)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                {activeUniversity}{" "}
+              </span>
+              <span className="text-white font-bold">Recognitions & Accreditations</span>
+            </h2>
+            {subtitle && (
+              <p className="text-[13px] sm:text-[14px] text-[#ecf0f1] font-normal leading-relaxed m-0">
+                {subtitle}
+              </p>
+            )}
+          </div>
+
+          {/* Right Gradient Grid matching #approval-box2 - Visible soft blush pink to white gradient matching First Image */}
+          <div
+            className="lg:col-span-7 p-6 sm:p-8 lg:p-10 xl:pr-16 flex items-center"
+            style={{
+              background: "linear-gradient(to right, #fce8e8 0%, #fdf3f3 40%, #ffffff 100%)",
+            }}
+          >
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 sm:gap-8 w-full">
+              {approvals.map((item, idx) => (
+                <div key={idx} className="flex flex-col items-start text-left">
+                  <div className="relative w-24 sm:w-28 h-12 sm:h-14 mb-2">
+                    <Image
+                      src={item.image}
+                      alt={item.tag || item.title || "approval"}
+                      fill
+                      className="object-contain object-left"
+                      sizes="120px"
+                    />
+                  </div>
+                  <div className="text-[13px] sm:text-[13.5px] leading-tight">
+                    <span className="font-extrabold text-[#fd202a] block">
+                      {item.tag || item.title}
+                    </span>
+                    <span className="font-bold text-[#000000] block mt-0.5">
+                      {item.subtext || item.text}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   // Slider State
   const [visibleCount, setVisibleCount] = useState(4);

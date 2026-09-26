@@ -1,5 +1,10 @@
 @import "tailwindcss" important;
 
+.font-anton {
+  font-family: 'Anton', 'Impact', sans-serif !important;
+  letter-spacing: 0.5px;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #0f172a;
@@ -350,21 +355,21 @@ body:has(.landing-page-root) > div > main {
 @keyframes couponOuterShadow {
   0% {
     box-shadow: 
-      0 0 0 0 rgba(46, 204, 113, 0.55),
+      0 0 0 0 var(--coupon-shadow-start, rgba(46, 204, 113, 0.55)),
       0 2px 5px rgba(0, 0, 0, 0.06);
   }
   30% {
     /* Radiates outward */
     box-shadow: 
-      0 0 0 4px rgba(46, 204, 113, 0.42),
-      0 0 7px rgba(46, 204, 113, 0.22),
+      0 0 0 4px var(--coupon-shadow-mid1, rgba(46, 204, 113, 0.42)),
+      0 0 7px var(--coupon-shadow-mid2, rgba(46, 204, 113, 0.22)),
       0 2px 6px rgba(0, 0, 0, 0.05);
   }
   60% {
-    /* Expands further outward with lighter green */
+    /* Expands further outward */
     box-shadow: 
-      0 0 0 9px rgba(74, 222, 128, 0.28),
-      0 0 12px rgba(74, 222, 128, 0.16),
+      0 0 0 9px var(--coupon-shadow-mid3, rgba(74, 222, 128, 0.28)),
+      0 0 12px var(--coupon-shadow-mid4, rgba(74, 222, 128, 0.16)),
       0 3px 8px rgba(0, 0, 0, 0.04);
   }
   85%, 100% {
@@ -378,7 +383,7 @@ body:has(.landing-page-root) > div > main {
 
 .coupon-btn-main {
   position: relative !important;
-  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%) !important;
+  background: var(--coupon-btn-bg, linear-gradient(135deg, #2ecc71 0%, #27ae60 100%)) !important;
   border-radius: 8px !important;
   animation: couponOuterShadow 2.5s infinite ease-out !important;
   transition: transform 0.25s ease !important;

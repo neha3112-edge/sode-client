@@ -5,7 +5,8 @@ import LandingContainer from "./LandingContainer";
 
 export default function LandingFaq({ faqs = [], universityName = "University Online", brand = {} }) {
   const [openIndex, setOpenIndex] = useState(0); // first item open by default matching screenshot
-  const brandColor = brand.primaryColor || "#08417b";
+  const headingColor = brand.faqHeaderColor || "#08417b";
+  const iconColor = brand.faqIconColor || brand.primaryColor || "#fd202a";
 
   if (!faqs || faqs.length === 0) return null;
 
@@ -16,10 +17,10 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
   return (
     <section id="faqs" className="py-10 sm:py-16 bg-white">
       <LandingContainer>
-        {/* Title matching screenshot */}
+        {/* Title matching screenshot and style4.css */}
         <h2
-          className="text-2xl sm:text-3xl font-bold tracking-tight mb-6 sm:mb-8 text-left m-0"
-          style={{ color: brandColor }}
+          className="text-2xl sm:text-3xl font-semibold tracking-tight mb-6 sm:mb-8 text-left m-0"
+          style={{ color: headingColor }}
         >
           Frequently Asked Questions
         </h2>
@@ -41,23 +42,23 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
                   aria-expanded={isOpen}
                 >
                   <span
-                    className={`text-[13.5px] sm:text-[15px] leading-snug transition-colors ${isOpen
-                      ? "text-slate-900 font-semibold"
-                      : "text-slate-700 font-normal sm:font-medium hover:text-slate-900"
+                    className={`text-[14px] sm:text-[16px] leading-snug transition-colors ${isOpen
+                      ? "text-[#000000] font-semibold"
+                      : "text-[#000000] font-medium hover:text-[#08417b]"
                       }`}
                   >
                     {formattedQuestion}
                   </span>
                   <span
                     className="font-bold text-xl sm:text-2xl leading-none shrink-0 w-6 text-right select-none"
-                    style={{ color: brandColor }}
+                    style={{ color: iconColor }}
                   >
                     {isOpen ? "−" : "+"}
                   </span>
                 </button>
 
                 {isOpen && (
-                  <div className="pb-4 pt-1 text-[13px] sm:text-[14px] text-slate-700 leading-relaxed font-normal">
+                  <div className="pb-4 pt-1 text-[13.5px] sm:text-[15px] text-[#4d4d4d] leading-relaxed font-normal">
                     {faq.a}
                   </div>
                 )}

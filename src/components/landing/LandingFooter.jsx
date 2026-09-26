@@ -81,7 +81,10 @@ export default function LandingFooter({
       </div>
 
       {/* Dark Navy Copyright Bar */}
-      <div className="mini-footer-bottom mt-5 sm:mt-6 bg-[#082b4e] text-white text-center py-2.5 px-4 text-[13px] sm:text-[14px] pb-20 md:pb-2.5 tracking-wide font-normal">
+      <div
+        className="mini-footer-bottom mt-5 sm:mt-6 text-white text-center py-2.5 px-4 text-[13px] sm:text-[14px] pb-20 md:pb-2.5 tracking-wide font-normal"
+        style={{ backgroundColor: brand.footerBg || "#010d2a" }}
+      >
         © {new Date().getFullYear()} SODE Counseling Services LLP
       </div>
     </footer>

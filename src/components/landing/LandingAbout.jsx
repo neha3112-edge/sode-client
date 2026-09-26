@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import { User } from "lucide-react";
 
 /**
  * Reusable Landing About Section
@@ -47,9 +48,8 @@ export default function LandingAbout({ about = {}, brand = {}, stats = [], onOpe
             {paragraphs.map((p, idx) => (
               <p
                 key={idx}
-                className={`text-[12.5px] sm:text-[13.5px] text-slate-700 leading-relaxed font-normal m-0 ${
-                  idx === 1 ? "font-semibold italic text-slate-800" : ""
-                }`}
+                className={`text-[12.5px] sm:text-[13.5px] text-slate-700 leading-relaxed font-normal m-0 ${idx === 1 ? "font-semibold italic text-slate-800" : ""
+                  }`}
               >
                 {p}
               </p>
@@ -90,31 +90,48 @@ export default function LandingAbout({ about = {}, brand = {}, stats = [], onOpe
     );
   }
 
-  return (
-    <section id="about" className="py-8 sm:py-12 lg:py-14 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
-          {/* Image Column */}
-          <div className="lg:col-span-5 order-1 lg:order-1">
-            <div className="relative w-full h-48 sm:h-64 lg:h-[295px] overflow-hidden rounded-[8px] shadow-xs">
-              <Image
-                src={imageSrc}
-                alt={title}
-                fill
-                priority
-                className="object-cover object-center"
-                sizes="(max-width: 1024px) 100vw, 42vw"
-              />
-            </div>
-          </div>
+  const isImageRight =
+    brand.aboutLayout === "imageRight" ||
+    about.imagePosition === "right";
+  const showApplyButton = about.showButton !== false;
 
+  const sectionBg =
+    brand.aboutBg ||
+    (brand.themeGradient && brand.primaryColor === "#fd202a"
+      ? "linear-gradient(to right, #fcf1f1, #ffffff)"
+      : "#ffffff");
+
+  return (
+    <section id="about" className="py-10 sm:py-14 select-none" style={{ background: sectionBg }}>
+      <div className="max-w-[1140px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
           {/* Text Column */}
-          <div className="lg:col-span-7 space-y-3.5 order-2 lg:order-2 text-center sm:text-left">
-            <h2 className="text-xl sm:text-2xl lg:text-[28px] font-bold text-[#111827] tracking-tight m-0">
-              {title}
+          <div
+            className={`lg:col-span-6 xl:col-span-6 space-y-3.5 ${isImageRight ? "order-1 lg:order-1" : "order-2 lg:order-2"
+              } text-left max-w-[500px]`}
+          >
+            <h2
+              className="text-2xl sm:text-3xl lg:text-[32px] font-black tracking-tight m-0 leading-[1.18]"
+              style={
+                brand.aboutTitleGradient || (brand.themeGradient && brand.primaryColor === "#fd202a")
+                  ? {
+                    background: brand.themeGradient || "linear-gradient(to right, #fd202a, #ff4be5)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                  }
+                  : { color: "#111827" }
+              }
+            >
+              {title.includes(" Online") ? (
+                <>
+                  {title.replace(/\s+Online$/i, "")} <br className="hidden sm:inline" />Online
+                </>
+              ) : (
+                title
+              )}
             </h2>
 
-            <div className="space-y-2.5 text-[12.5px] sm:text-[13px] text-[#333333] leading-[1.65]">
+            <div className="space-y-2 text-[13px] sm:text-[15px] text-[#333333] leading-[1.55] max-w-[580px]">
               {paragraphs.map((p, idx) => (
                 <p key={idx} className="m-0">
                   {p}
@@ -122,27 +139,63 @@ export default function LandingAbout({ about = {}, brand = {}, stats = [], onOpe
               ))}
             </div>
 
-            <div className="pt-2">
-              <button
-                type="button"
-                onClick={() => onOpenApply?.()}
-                className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-[4px] font-semibold text-[13px] sm:text-[14px] transition-all cursor-pointer border-2 bg-transparent hover:text-white active:scale-95 w-full sm:w-fit"
-                style={{
-                  color: primaryColor,
-                  borderColor: primaryColor,
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = primaryColor;
-                  e.currentTarget.style.color = "#ffffff";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "transparent";
-                  e.currentTarget.style.color = primaryColor;
-                }}
-              >
-                <span>{buttonText}</span>
-                <span className="text-base font-bold leading-none">→</span>
-              </button>
+            {/* How It Works (Pay-After-Placement) Callout Box - Sharp rectangular 2px black border matching First Image */}
+            {about.howItWorks && (
+              <div className="border-2 border-black p-4 sm:p-4 my-4 rounded-none text-left bg-transparent max-w-[490px]">
+                <h3 className="text-sm sm:text-[20px] font-bold text-[#000000] m-0 mb-0.5">
+                  {about.howItWorks.title || "Here’s how it works:"}
+                </h3>
+                <h4 className="text-xs sm:text-[15px] font-semibold text-[#000000] m-0 mb-2">
+                  {about.howItWorks.subtitle || "Pay 70% upfront and the remaining 30% after placement."}
+                </h4>
+                <p className="text-[11.5px] sm:text-[14.5px] text-[#4d4d4d] m-0 flex items-center gap-1.5 font-normal">
+                  <User className="w-3.5 h-3.5 text-black shrink-0" />
+                  <span>{about.howItWorks.note || "Pay-After-Placement: Why Students Trust Shoolini University Online"}</span>
+                </p>
+              </div>
+            )}
+
+            {showApplyButton && (
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={() => onOpenApply?.()}
+                  className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-[4px] font-semibold text-[13px] sm:text-[14px] transition-all cursor-pointer border-2 bg-transparent hover:text-white active:scale-95 w-full sm:w-fit"
+                  style={{
+                    color: primaryColor,
+                    borderColor: primaryColor,
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = primaryColor;
+                    e.currentTarget.style.color = "#ffffff";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "transparent";
+                    e.currentTarget.style.color = primaryColor;
+                  }}
+                >
+                  <span>{buttonText}</span>
+                  <span className="text-base font-bold leading-none">→</span>
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Image Column - Full uncropped megaphone image matching First Image */}
+          <div
+            className={`lg:col-span-6 xl:col-span-6 ${isImageRight ? "order-2 lg:order-2" : "order-1 lg:order-1"
+              } flex items-center justify-center`}
+          >
+            <div className="relative w-full max-w-[460px] mx-auto flex items-center justify-center">
+              <Image
+                src={imageSrc}
+                alt={title}
+                width={460}
+                height={450}
+                priority
+                className="w-full h-auto object-contain max-h-[460px]"
+                sizes="(max-width: 1024px) 100vw, 460px"
+              />
             </div>
           </div>
         </div>

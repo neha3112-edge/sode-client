@@ -254,8 +254,9 @@ export default function LandingLeadForm({
                 iconPosition="left"
                 className="px-4 py-1.5 text-[13px] rounded-full shadow-xs"
                 style={{
-                  backgroundColor: isWhiteCard ? (activeBrand.hero?.phoneBadgeBg || "#ff5500") : activeAccentColor,
+                  background: activeBrand.hero?.phoneBadgeBackground || (isWhiteCard ? (activeBrand.hero?.phoneBadgeBg || "#ff5500") : activeAccentColor),
                   color: isWhiteCard ? "#ffffff" : "#000000",
+                  ...activeBrand.hero?.phoneBadgeStyle,
                 }}
               >
                 <span className="tracking-tight font-bold">{activePhoneText}</span>

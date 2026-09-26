@@ -98,6 +98,18 @@ export default function LandingNavbar({
               type="button"
               onClick={handleCouponClick}
               aria-label="Get Scholarship Coupon Code"
+              style={
+                brand.couponBtnBg || brand.themeGradient
+                  ? {
+                      "--coupon-btn-bg": brand.couponBtnBg || brand.themeGradient,
+                      "--coupon-shadow-start": "rgba(253, 32, 42, 0.55)",
+                      "--coupon-shadow-mid1": "rgba(253, 32, 42, 0.42)",
+                      "--coupon-shadow-mid2": "rgba(253, 32, 42, 0.22)",
+                      "--coupon-shadow-mid3": "rgba(255, 75, 229, 0.28)",
+                      "--coupon-shadow-mid4": "rgba(255, 75, 229, 0.16)",
+                    }
+                  : undefined
+              }
               className="coupon-btn-main relative inline-flex items-center gap-1.5 sm:gap-2 px-5 sm:px-7 py-1 sm:py-1.5 rounded-[8px] text-white font-bold text-[11px] sm:text-[13px] cursor-pointer border-none overflow-hidden select-none"
             >
               {/* Moving Light Green Box from left to right using transform */}
