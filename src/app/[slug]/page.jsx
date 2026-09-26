@@ -13,7 +13,6 @@ import {
 import GlobalBreadcrumb from "@/components/common/GlobalBreadcrumb";
 import { getLandingData } from "@/data/landing";
 import UniversityLandingView from "@/components/landing/UniversityLandingView";
-import LPULandingView from "@/components/landing/lpu/LPULandingView";
 
 export const revalidate = 600;
 
@@ -98,9 +97,6 @@ export default async function DynamicSlugPage({ params }) {
   // 1. Check if it's a University Landing Page (amity, manipal, lpu, cu, galgotias, mu, etc.)
   const landingData = getLandingData(slug);
   if (landingData) {
-    if (slug === "lpu") {
-      return <LPULandingView data={landingData} />;
-    }
     // Isolated Landing Page: renders ONLY its own Navbar, Content, and Footer
     return <UniversityLandingView data={landingData} />;
   }
