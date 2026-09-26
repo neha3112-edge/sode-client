@@ -4,7 +4,7 @@ import { request } from "@/services/request";
 
 export const revalidate = 300;
 
-export default async function AboutPage() {
+export default async function AboutUsPage() {
   let aboutData = null;
   let reviewsData = [];
 
@@ -29,7 +29,7 @@ export default async function AboutPage() {
       reviewsRes?.result ??
       (Array.isArray(reviewsRes) ? reviewsRes : []);
   } catch (e) {
-    console.error("Error fetching data for about page:", e);
+    console.error("Error fetching data for about us page:", e);
   }
 
   return (
