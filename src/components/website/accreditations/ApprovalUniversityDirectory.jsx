@@ -229,7 +229,7 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
       const options = {};
       if (sess) options.session = sess;
       const res = await request.dynamicList({
-        entity: "universities",
+        entity: "accreditations",
         endPoint: `v1/approval-directory/${pageSlug}`,
         options,
         revalidate: 0,

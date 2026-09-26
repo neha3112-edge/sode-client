@@ -18,6 +18,7 @@ export function AccreditationsView({ initialAccreditations = [] }) {
         item.logo?.url || item.logo || item.image?.url || item.image || null;
       const title = item.code || item.name || "Accreditation";
       const description = item.description || item.name || "";
+      const slug = item.slug || (Array.isArray(item.slugs) ? item.slugs[0] : "") || "";
 
       return {
         id: item._id || item.id || String(idx),
@@ -26,6 +27,8 @@ export function AccreditationsView({ initialAccreditations = [] }) {
         description,
         name: item.name || "",
         code: item.code || "",
+        slug,
+        universityCount: item.universityCount,
       };
     });
   }, [initialAccreditations]);
@@ -81,45 +84,54 @@ export function AccreditationsView({ initialAccreditations = [] }) {
             </div>
           )}
 
-          {/* ─── 3. EXACT SECTION & CSS FROM UNIVERSITY PAGE (Left-Aligned Grid) ─── */}
+          {/* ─── 3. EXACT SECTION & CSS FROM UNIVERSITY PAGE (Clickable Cards with Slug) ─── */}
           {filteredAccreditations.length > 0 ? (
-            <div className="grid grid-cols-3 md:grid-cols-6 gap-1.5 sm:gap-2.5 md:gap-3 w-full">
-              {filteredAccreditations.map((acc, idx) => (
-                <div
-                  key={acc.id || idx}
-                  className="bg-white rounded-xl border border-gray-200 flex flex-col p-1.5 sm:p-3 items-center justify-between text-center aspect-[4/4.6] sm:aspect-square shadow-2xs hover:border-blue-300 transition-colors overflow-hidden w-full"
-                >
-                  <div className="flex-1 min-h-0 w-full relative">
-                    {acc.logo ? (
-                      <Image
-                        src={getAssetPath(acc.logo)}
-                        alt={acc.title}
-                        fill
-                        sizes="(max-width: 768px) 64px, 80px"
-                        className="object-contain"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Award className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-blue-600" />
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 sm:gap-2.5 md:gap-3 w-full">
+              {filteredAccreditations.map((acc, idx) => {
+                const cardContent = (
+                  <div
+                    className="bg-white rounded-xl border border-gray-200 flex flex-col p-1.5 sm:p-3 items-center justify-between text-center aspect-[4/4.6] sm:aspect-square shadow-2xs hover:border-blue-400 hover:shadow-md transition-all overflow-hidden w-full group cursor-pointer"
+                  >
+                    <div className="flex-1 min-h-0 w-full relative">
+                      {acc.logo ? (
+                        <Image
+                          src={getAssetPath(acc.logo)}
+                          alt={acc.title}
+                          fill
+                          sizes="(max-width: 768px) 64px, 80px"
+                          className="object-contain group-hover:scale-105 transition-transform"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Award className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-blue-600 group-hover:scale-110 transition-transform" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="w-full shrink-0 flex flex-col items-center justify-start text-center pt-1">
+                      <div className="w-full h-4 sm:h-5 flex items-center justify-center">
+                        <h3 className="text-[10px] sm:text-[11.5px] md:text-[12.5px] font-bold text-gray-900 group-hover:text-blue-600 m-0 tracking-tight leading-tight line-clamp-1 w-full text-center transition-colors">
+                          {acc.title}
+                        </h3>
                       </div>
-                    )}
-                  </div>
-                  <div className="w-full shrink-0 flex flex-col items-center justify-start text-center pt-1">
-                    <div className="w-full h-4 sm:h-5 flex items-center justify-center">
-                      <h3 className="text-[10px] sm:text-[11.5px] md:text-[12.5px] font-bold text-gray-900 m-0 tracking-tight leading-tight line-clamp-1 w-full text-center">
-                        {acc.title}
-                      </h3>
-                    </div>
-                    <div className="w-full h-[22px] sm:h-[26px] flex items-start justify-center mt-0.5">
-                      {acc.description ? (
-                        <p className="text-[8px] sm:text-[9px] md:text-[10px] text-gray-600 leading-tight m-0 line-clamp-2 w-full text-center">
-                          {acc.description}
-                        </p>
-                      ) : null}
+                      <div className="w-full h-[22px] sm:h-[26px] flex items-start justify-center mt-0.5">
+                        {acc.description ? (
+                          <p className="text-[8px] sm:text-[9px] md:text-[10px] text-gray-600 leading-tight m-0 line-clamp-2 w-full text-center">
+                            {acc.description}
+                          </p>
+                        ) : null}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+
+                return acc.slug ? (
+                  <Link key={acc.id || idx} href={`/accreditations/${acc.slug}`} className="block no-underline">
+                    {cardContent}
+                  </Link>
+                ) : (
+                  <div key={acc.id || idx}>{cardContent}</div>
+                );
+              })}
             </div>
           ) : (
             <div className="py-16 text-center text-slate-500">

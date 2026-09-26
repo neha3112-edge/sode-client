@@ -14,7 +14,6 @@ export { default as NotFoundPage } from "./NotFoundPage";
 export { default as CompareDrawerWidget } from "./CompareDrawerWidget";
 export { default as CompareUniversityClientView } from "./CompareUniversityClientView";
 export { default as SafeHtmlRenderer } from "./SafeHtmlRenderer";
-export { ApprovalUniversityDirectory } from "./approvals";
+export { ApprovalUniversityDirectory, AccreditationsView } from "./accreditations";
 export { CareerExpertsSection } from "./counselor";
-export { AccreditationsView } from "./accreditations";
 export { ToolsView } from "./tools";

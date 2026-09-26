@@ -118,7 +118,7 @@ export function Footer({
     {
       title: "UNIVERSITIES",
       links: [
-        { label: "UGC-DEB Universities", url: "/approvals-directory/ugc-deb-approved-distance-universities" },
+        { label: "UGC-DEB Universities", url: "/accreditations/ugc-deb-approved-distance-universities" },
         { label: "Global Universities", url: "/universities" },
         { label: "IITs & IIMs", url: "/universities" },
       ],

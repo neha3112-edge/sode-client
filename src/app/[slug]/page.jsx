@@ -6,7 +6,6 @@ import { getPageMetaData, constructMetadata } from "@/constants/pageMetaData";
 import {
   CustomPageClientView,
   DynamicListingClientView,
-  ApprovalUniversityDirectory,
   Header,
   Footer,
   MobileBottomNav,
@@ -50,19 +49,6 @@ const getPageData = cache(async (slug) => {
   } catch (err) {
     console.error(`[Server Component] Error pre-fetching page ${slug}:`, err.message);
   }
-
-  // 3. Try Approval Directory
-  try {
-    const approvalRes = await request.dynamicList({
-      entity: "universities",
-      endPoint: `v1/approval-directory/${slug}`,
-      options: {},
-      revalidate: 900,
-    });
-    if (approvalRes && approvalRes.approval) {
-      return { type: "approval-directory", data: approvalRes };
-    }
-  } catch (err) { }
 
   return null;
 });
@@ -159,13 +145,6 @@ export default async function DynamicSlugPage({ params }) {
     </div>
   );
 
-  // ── Approval Directory ─────────────────────────────────────────────────────
-  if (resolved.type === "approval-directory") {
-    return withLayout(
-      <ApprovalUniversityDirectory initialData={resolved.data} />,
-      "grow pb-16 lg:pb-0 pt-2 sm:pt-3"
-    );
-  }
 
   // ── CMS pages need title ───────────────────────────────────────────────────
   if (!resolved.data?.title) notFound();
