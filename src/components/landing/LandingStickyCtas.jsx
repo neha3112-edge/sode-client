@@ -4,6 +4,8 @@ import React from "react";
 import Image from "next/image";
 import { Download } from "lucide-react";
 
+import confetti from "canvas-confetti";
+
 export default function LandingStickyCtas({
   brand = {},
   onOpenApply,
@@ -14,6 +16,24 @@ export default function LandingStickyCtas({
   const phone = brand.phone || "7065777755";
   const rawPhone = phone.replace(/\D/g, "").slice(-10);
   const whatsappText = encodeURIComponent(`I want to Download ${brand.name || "University"} Online Brochure`);
+
+  const handleGiftClick = (e) => {
+    try {
+      if (typeof window !== "undefined") {
+        const rect = e?.currentTarget?.getBoundingClientRect();
+        const x = rect ? (rect.left + rect.width / 2) / window.innerWidth : 0.9;
+        const y = rect ? (rect.top + rect.height / 2) / window.innerHeight : 0.85;
+        confetti({
+          particleCount: 50,
+          spread: 60,
+          origin: { x, y },
+          zIndex: 99999,
+          colors: ["#ff5722", "#ffb300", "#4caf50", "#ffd700", "#e91e63"],
+        });
+      }
+    } catch {}
+    onOpenScholarship?.();
+  };
 
   return (
     <>
@@ -26,7 +46,7 @@ export default function LandingStickyCtas({
           className="relative w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full overflow-hidden shadow-2xl flex items-center justify-center transition-transform hover:scale-110 active:scale-95 bg-white drop-shadow-lg"
         >
           <Image
-            src="/assets/amitylp/call_icon.gif"
+            src={brand.callGif || "/assets/images/call_icon.gif"}
             alt="Call Expert"
             fill
             unoptimized
@@ -38,12 +58,12 @@ export default function LandingStickyCtas({
         {/* Bottom: Gift Icon - opens Scholarship Coupon Code Modal */}
         <button
           type="button"
-          onClick={() => onOpenScholarship?.()}
+          onClick={handleGiftClick}
           aria-label="Get Scholarship Coupon Code"
           className="relative w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full overflow-hidden shadow-2xl flex items-center justify-center transition-transform hover:scale-110 active:scale-95 bg-white border-none cursor-pointer p-1.5 drop-shadow-lg"
         >
           <Image
-            src="/assets/amitylp/gift.gif"
+            src={brand.giftGif || "/assets/images/gift.gif"}
             alt="Gift Voucher"
             fill
             unoptimized

@@ -252,16 +252,16 @@ export default function LandingFooterForm({ brand = {}, courses = [], onOpenDisc
     <section
       id="ftr-frm"
       className="py-8 sm:py-10 text-white transition-colors"
-      style={{ backgroundColor: brand.primaryColor || "#08417b" }}
+      style={{ background: brand.footerFormBg || brand.primaryColor || "#08417b" }}
     >
       <LandingContainer>
         {/* Header */}
         <div className="mb-5 text-center sm:text-left">
           <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-[#fbcb12] m-0">
-            Have Questions?
+            {brand.footerFormTitle || "Have Questions?"}
           </h3>
           <p className="text-xs sm:text-sm text-white/90 mt-1 m-0 font-normal">
-            Don&apos;t hesitate to contact us. Our academic experts are here to assist you!
+            {brand.footerFormSubtitle || "Don't hesitate to contact us. Our academic experts are here to assist you!"}
           </p>
         </div>
 
@@ -314,7 +314,7 @@ export default function LandingFooterForm({ brand = {}, courses = [], onOpenDisc
               </Form.Item>
             </div>
 
-            {/* Row 2: Course, State, Green Submit */}
+            {/* Row 2: Course, State, Submit */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 items-end">
               <Form.Item
                 label="Course"
@@ -351,7 +351,11 @@ export default function LandingFooterForm({ brand = {}, courses = [], onOpenDisc
                   htmlType="submit"
                   loading={loading}
                   id="frm-submit"
-                  className="bg-[#28a745] hover:bg-[#218838] text-white font-bold text-[15px] border-none shadow-none w-full h-[40px] cursor-pointer rounded-[6px]"
+                  className="font-bold text-[15px] border-none shadow-none w-full h-[40px] cursor-pointer rounded-[6px] hover:opacity-95"
+                  style={{
+                    background: brand.footerSubmitBtnBg || "#28a745",
+                    color: brand.footerSubmitBtnText || "#ffffff",
+                  }}
                 >
                   Submit
                 </Button>

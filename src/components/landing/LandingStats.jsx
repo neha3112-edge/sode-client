@@ -80,7 +80,12 @@ export default function LandingStats({ stats = [], brand = {} }) {
   // Classic Blue Banner (Amity, etc.)
   // ==========================================
   return (
-    <section className="bg-[#08417b] py-8 sm:py-12 lg:py-14 text-white border-y border-[#063366] transition-colors">
+    <section
+      className="py-8 sm:py-12 lg:py-14 text-white border-y border-white/10 transition-colors"
+      style={{
+        background: brand.statsBg || brand.primaryColor || "#08417b",
+      }}
+    >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-10 items-center justify-center">
           {stats.map((st, idx) => {

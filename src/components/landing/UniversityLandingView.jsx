@@ -4,13 +4,16 @@ import React, { useState, useEffect } from "react";
 import LandingNavbar from "./LandingNavbar";
 import LandingHero from "./LandingHero";
 import LandingApprovals from "./LandingApprovals";
+import LandingWhyChoose from "./LandingWhyChoose";
 import LandingProgrammes from "./LandingProgrammes";
+import LandingOffersAndPlacement from "./LandingOffersAndPlacement";
 import LandingAbout from "./LandingAbout";
 import LandingStats from "./LandingStats";
-import LandingWhyChoose from "./LandingWhyChoose";
+import LandingTestimonials from "./LandingTestimonials";
 import LandingDegree from "./LandingDegree";
 import LandingRecruiters from "./LandingRecruiters";
 import LandingAdmissionProcess from "./LandingAdmissionProcess";
+import LandingSodeAbout from "./LandingSodeAbout";
 import LandingFaq from "./LandingFaq";
 import LandingFooterForm from "./LandingFooterForm";
 import LandingCompareBanner from "./LandingCompareBanner";
@@ -29,14 +32,20 @@ export default function UniversityLandingView({ data = {} }) {
     approvals = [],
     stats = [],
     programmes = [],
+    offersAndPlacements,
     about = {},
     leader,
     whyChoose = [],
     degreeInfo = {},
     recruiters = {},
-    admissionProcess,
+    testimonials = [],
     admissionSteps = [],
+    admissionProcess,
+    enrollmentProcess,
+    sodeAbout,
     faqs = [],
+    scholarshipModal,
+    compareModal,
   } = data;
 
   const [isBrochureOpen, setIsBrochureOpen] = useState(false);
@@ -68,7 +77,7 @@ export default function UniversityLandingView({ data = {} }) {
 
   const handleOpenApply = (course) => {
     if (course) setSelectedCourse(course);
-    const heroEl = document.getElementById("hero");
+    const heroEl = document.getElementById("hero") || document.getElementById("banner");
     if (heroEl) {
       heroEl.scrollIntoView({ behavior: "smooth", block: "start" });
     } else {
@@ -81,46 +90,263 @@ export default function UniversityLandingView({ data = {} }) {
   };
 
   const isSmu = slug === "smu" || brand.slug === "smu";
+  const isVgu = slug === "vgu" || brand.slug === "vgu";
 
   return (
     <div className="landing-page-root min-h-screen bg-white text-slate-900 flex flex-col font-sans selection:bg-blue-900 selection:text-white">
+      {/* 1. Header / Navbar */}
       <LandingNavbar
         brand={brand}
         onOpenApply={() => handleOpenApply()}
         onOpenBrochure={() => handleOpenBrochure()}
         onOpenScholarship={() => setIsScholarshipOpen(true)}
       />
+
       <main className="flex-1">
-        <LandingHero brand={brand} courses={courses} onOpenBrochure={() => handleOpenBrochure()} onOpenApply={() => handleOpenApply()} onOpenDisclaimer={() => handleOpenLegal("disclaimer")} />
-        <LandingApprovals approvals={approvals} universityName={brand.name} brand={brand} />
-        <LandingProgrammes programmes={programmes} universityName={brand.name} brand={brand} onSelectCourseForBrochure={handleOpenBrochure} onOpenApply={handleOpenApply} />
-        {isSmu && (
-          <LandingWhyChoose whyChoose={whyChoose} brand={brand} onOpenApply={() => handleOpenApply()} />
-        )}
-        <LandingAbout about={about} brand={brand} leader={leader} onOpenApply={() => handleOpenApply()} />
-        <LandingStats stats={stats} brand={{ ...brand, slug: brand.slug || slug }} />
-        {!isSmu && (
-          <LandingWhyChoose whyChoose={whyChoose} brand={brand} onOpenApply={() => handleOpenApply()} />
-        )}
-        <LandingDegree degreeInfo={degreeInfo} brand={brand} onOpenApply={() => handleOpenApply()} />
-        <LandingRecruiters recruiters={recruiters} brand={brand} />
-        <LandingAdmissionProcess
-          admissionSteps={admissionSteps}
-          admissionProcess={admissionProcess}
-          universityName={brand.name}
-          brand={{ ...brand, slug: brand.slug || slug }}
+        {/* 2. Hero Section (#banner / #hero) */}
+        <LandingHero
+          brand={brand}
+          courses={courses}
+          onOpenBrochure={() => handleOpenBrochure()}
           onOpenApply={() => handleOpenApply()}
+          onOpenDisclaimer={() => handleOpenLegal("disclaimer")}
         />
-        <LandingFaq faqs={faqs} universityName={brand.name} brand={{ ...brand, slug: brand.slug || slug }} />
-        <LandingFooterForm brand={{ ...brand, slug: brand.slug || slug }} courses={courses} onOpenDisclaimer={() => handleOpenLegal("disclaimer")} />
-        <LandingCompareBanner brand={{ ...brand, slug: brand.slug || slug }} onOpenCompare={() => setIsCompareOpen(true)} />
+
+        {/* Section Dispatcher based on brand.sectionOrder or default flow */}
+        {(() => {
+          const defaultOrder = isSmu
+            ? [
+                "approvals",
+                "programmes",
+                "whyChoose",
+                "about",
+                "stats",
+                "admissionProcess",
+                "faqs",
+                "footerForm",
+                "compareBanner",
+              ]
+            : isVgu
+            ? [
+                "approvals",
+                "programmes",
+                "about",
+                "stats",
+                "whyChoose",
+                "degree",
+                "recruiters",
+                "admissionProcess",
+                "faqs",
+                "footerForm",
+                "compareBanner",
+              ]
+            : [
+                "approvals",
+                "whyChoose",
+                "programmes",
+                "offersAndPlacement",
+                "about",
+                "stats",
+                "degree",
+                "recruiters",
+                "testimonials",
+                "admissionProcess",
+                "sodeAbout",
+                "faqs",
+                "footerForm",
+                "compareBanner",
+              ];
+
+          const activeOrder = brand.sectionOrder || defaultOrder;
+
+          return activeOrder.map((sectionKey) => {
+            switch (sectionKey) {
+              case "approvals":
+                return (
+                  <LandingApprovals
+                    key="approvals"
+                    approvals={approvals}
+                    universityName={brand.name}
+                    brand={brand}
+                  />
+                );
+              case "programmes":
+                return (
+                  <LandingProgrammes
+                    key="programmes"
+                    programmes={programmes}
+                    universityName={brand.name}
+                    brand={brand}
+                    onSelectCourseForBrochure={handleOpenBrochure}
+                    onOpenApply={handleOpenApply}
+                  />
+                );
+              case "about":
+                return (
+                  <LandingAbout
+                    key="about"
+                    about={about}
+                    brand={brand}
+                    stats={stats}
+                    leader={leader}
+                    onOpenApply={() => handleOpenApply()}
+                  />
+                );
+              case "whyChoose":
+                return (
+                  <LandingWhyChoose
+                    key="whyChoose"
+                    whyChoose={whyChoose}
+                    brand={brand}
+                    onOpenApply={() => handleOpenApply()}
+                  />
+                );
+              case "degree":
+                return degreeInfo && Object.keys(degreeInfo).length > 0 ? (
+                  <LandingDegree
+                    key="degree"
+                    degreeInfo={degreeInfo}
+                    brand={brand}
+                    onOpenApply={() => handleOpenApply()}
+                  />
+                ) : null;
+              case "recruiters":
+              case "placement":
+              case "partners":
+              case "placements":
+                return (recruiters && Object.keys(recruiters).length > 0) || brand.recruiters || brand.recruitersTitle || brand.recruitersDesktopImage ? (
+                  <LandingRecruiters
+                    key="recruiters"
+                    brand={brand}
+                    recruiters={recruiters || brand.recruiters}
+                  />
+                ) : null;
+              case "offersAndPlacement":
+                return offersAndPlacements ? (
+                  <LandingOffersAndPlacement
+                    key="offersAndPlacement"
+                    offersAndPlacements={offersAndPlacements}
+                    brand={brand}
+                  />
+                ) : null;
+              case "stats":
+                return brand.showSeparateStats !== false && stats?.length > 0 ? (
+                  <LandingStats key="stats" stats={stats} brand={{ ...brand, slug: brand.slug || slug }} />
+                ) : null;
+              case "testimonials":
+                return testimonials && testimonials.length > 0 ? (
+                  <LandingTestimonials
+                    key="testimonials"
+                    testimonials={testimonials}
+                    universityName={brand.name}
+                    brand={brand}
+                  />
+                ) : null;
+              case "admissionProcess":
+                return (
+                  <LandingAdmissionProcess
+                    key="admissionProcess"
+                    admissionSteps={admissionSteps}
+                    admissionProcess={admissionProcess}
+                    enrollmentProcess={enrollmentProcess}
+                    universityName={brand.name}
+                    brand={{ ...brand, slug: brand.slug || slug }}
+                    onOpenApply={() => handleOpenApply()}
+                  />
+                );
+              case "sodeAbout":
+                return sodeAbout ? (
+                  <LandingSodeAbout
+                    key="sodeAbout"
+                    sodeAbout={sodeAbout}
+                    brand={brand}
+                    onOpenApply={() => handleOpenApply()}
+                    onOpenCompare={() => setIsCompareOpen(true)}
+                  />
+                ) : null;
+              case "faqs":
+                return (
+                  <LandingFaq
+                    key="faqs"
+                    faqs={faqs}
+                    universityName={brand.name}
+                    brand={{ ...brand, slug: brand.slug || slug }}
+                  />
+                );
+              case "footerForm":
+                return brand.showFooterForm !== false ? (
+                  <LandingFooterForm
+                    key="footerForm"
+                    brand={{ ...brand, slug: brand.slug || slug }}
+                    courses={courses}
+                    onOpenDisclaimer={() => handleOpenLegal("disclaimer")}
+                  />
+                ) : null;
+              case "compareBanner":
+                return (
+                  <LandingCompareBanner
+                    key="compareBanner"
+                    brand={{ ...brand, slug: brand.slug || slug }}
+                    onOpenCompare={() => setIsCompareOpen(true)}
+                  />
+                );
+              default:
+                return null;
+            }
+          });
+        })()}
       </main>
-      <LandingFooter brand={brand} onOpenDisclaimer={() => handleOpenLegal("disclaimer")} onOpenTerms={() => handleOpenLegal("terms")} onOpenPrivacy={() => handleOpenLegal("privacy")} />
-      <LandingStickyCtas brand={brand} onOpenApply={() => handleOpenApply()} onOpenBrochure={() => handleOpenBrochure()} onOpenScholarship={() => setIsScholarshipOpen(true)} onOpenCompare={() => setIsCompareOpen(true)} />
-      <BrochureModal isOpen={isBrochureOpen} onClose={() => setIsBrochureOpen(false)} universityName={brand.name} courses={courses} selectedCourse={selectedCourse} onOpenDisclaimer={() => handleOpenLegal("disclaimer")} />
-      <ScholarshipModal isOpen={isScholarshipOpen} onClose={() => setIsScholarshipOpen(false)} universityName={brand.name} courses={courses} brand={brand} onOpenDisclaimer={() => handleOpenLegal("disclaimer")} />
-      <CompareModal isOpen={isCompareOpen} onClose={() => setIsCompareOpen(false)} universityName={brand.name} courses={courses} onOpenDisclaimer={() => handleOpenLegal("disclaimer")} />
-      <LegalModal isOpen={legalModalState.isOpen} onClose={() => setLegalModalState({ isOpen: false, type: "disclaimer" })} type={legalModalState.type} brand={brand} />
+
+      {/* Footer */}
+      <LandingFooter
+        brand={brand}
+        onOpenDisclaimer={() => handleOpenLegal("disclaimer")}
+        onOpenTerms={() => handleOpenLegal("terms")}
+        onOpenPrivacy={() => handleOpenLegal("privacy")}
+      />
+
+      {/* Floating Sticky CTAs */}
+      <LandingStickyCtas
+        brand={brand}
+        onOpenApply={() => handleOpenApply()}
+        onOpenBrochure={() => handleOpenBrochure()}
+        onOpenScholarship={() => setIsScholarshipOpen(true)}
+        onOpenCompare={() => setIsCompareOpen(true)}
+      />
+
+      {/* Modals */}
+      <BrochureModal
+        isOpen={isBrochureOpen}
+        onClose={() => setIsBrochureOpen(false)}
+        universityName={brand.name}
+        courses={courses}
+        selectedCourse={selectedCourse}
+        onOpenDisclaimer={() => handleOpenLegal("disclaimer")}
+      />
+      <ScholarshipModal
+        isOpen={isScholarshipOpen}
+        onClose={() => setIsScholarshipOpen(false)}
+        universityName={brand.name}
+        courses={courses}
+        brand={brand}
+        scholarshipModal={scholarshipModal || brand.scholarshipModal}
+        onOpenDisclaimer={() => handleOpenLegal("disclaimer")}
+      />
+      <CompareModal
+        isOpen={isCompareOpen}
+        onClose={() => setIsCompareOpen(false)}
+        universityName={brand.name}
+        courses={courses}
+        brand={brand}
+        compareModal={compareModal || brand.compareModal}
+        onOpenDisclaimer={() => handleOpenLegal("disclaimer")}
+      />
+      <LegalModal
+        isOpen={legalModalState.isOpen}
+        onClose={() => setLegalModalState({ isOpen: false, type: "disclaimer" })}
+        type={legalModalState.type}
+        brand={brand}
+      />
     </div>
   );
 }

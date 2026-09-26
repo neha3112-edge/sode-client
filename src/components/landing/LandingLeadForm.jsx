@@ -2,9 +2,10 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Form, Checkbox, message } from "antd";
+import { Form, message } from "antd";
 import { Phone } from "lucide-react";
 import { STATE_OPTIONS } from "@/constants/stateOptions";
+import LandingButton from "./LandingButton";
 
 const DEFAULT_COURSES = [
   { value: "MBA", label: "MBA" },
@@ -21,7 +22,7 @@ const DEFAULT_COURSES = [
 // Clean Indian Flag SVG
 const IndiaFlag = () => (
   <svg
-    className="w-[20px] h-[14px] rounded-[1px] shadow-xs shrink-0 select-none"
+    className="w-[18px] h-[13px] rounded-[1px] shadow-xs shrink-0 select-none"
     viewBox="0 0 640 480"
     xmlns="http://www.w3.org/2000/svg"
   >
@@ -47,30 +48,40 @@ const PhoneInputField = ({
   onChange,
   placeholder = "Enter 10-digit Mobile Number",
   maxLength = 10,
+  isWhiteCard = false,
   bordered = false,
-}) => (
-  <div
-    className={`flex items-center w-full h-[40px] bg-white rounded-[6px] overflow-hidden ${
-      bordered
-        ? "border border-slate-300 focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500"
-        : "shadow-xs focus-within:ring-2 focus-within:ring-amber-400"
-    }`}
-  >
-    <div className="flex items-center gap-1.5 h-full px-2.5 bg-[#f0f2f5] border-r border-[#d1d5db] select-none shrink-0">
-      <IndiaFlag />
-      <span className="text-slate-900 font-bold text-[13px] tracking-tight">+91</span>
-      <span className="text-slate-600 text-[9px] leading-none">▾</span>
+}) => {
+  const isBordered = isWhiteCard || bordered;
+  return (
+    <div
+      className={`flex items-center w-full h-[36px] sm:h-[38px] rounded-[6px] overflow-hidden ${
+        isBordered
+          ? "bg-[#f8fafc] border border-slate-300 focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500"
+          : "bg-white shadow-xs focus-within:ring-2 focus-within:ring-amber-400"
+      }`}
+    >
+      <div
+        className={`flex items-center gap-1.5 h-full px-2.5 select-none shrink-0 ${
+          isBordered
+            ? "bg-[#f1f5f9] border-r border-slate-300"
+            : "bg-[#f0f2f5] border-r border-[#d1d5db]"
+        }`}
+      >
+        <IndiaFlag />
+        <span className="text-slate-900 font-bold text-[12.5px] tracking-tight">+91</span>
+        <span className="text-slate-500 text-[9px] leading-none">▾</span>
+      </div>
+      <input
+        type="tel"
+        value={value || ""}
+        onChange={onChange}
+        placeholder={placeholder}
+        maxLength={maxLength}
+        className="w-full h-full px-3 bg-white text-slate-800 placeholder:text-slate-400 border-none outline-none text-[13px] font-normal"
+      />
     </div>
-    <input
-      type="tel"
-      value={value || ""}
-      onChange={onChange}
-      placeholder={placeholder}
-      maxLength={maxLength}
-      className="w-full h-full px-3 bg-white text-slate-800 placeholder:text-[#888888] border-none outline-none text-[13.5px] font-normal"
-    />
-  </div>
-);
+  );
+};
 
 // Dropdown Select with Arrow
 const CustomSelectField = ({
@@ -78,34 +89,38 @@ const CustomSelectField = ({
   onChange,
   placeholder,
   options,
+  isWhiteCard = false,
   bordered = false,
-}) => (
-  <div className="relative w-full">
-    <select
-      value={value || ""}
-      onChange={onChange}
-      className={`w-full h-[40px] px-3.5 pr-8 bg-white rounded-[6px] outline-none text-[13.5px] font-normal appearance-none cursor-pointer ${
-        bordered
-          ? "border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          : "border-none shadow-xs focus:ring-2 focus:ring-amber-400"
-      } ${value ? "text-slate-800" : "text-[#888888]"}`}
-    >
-      <option value="" disabled className="text-[#888888]">
-        {placeholder}
-      </option>
-      {options.map((opt) => (
-        <option key={opt.value} value={opt.value} className="text-slate-900">
-          {opt.label}
+}) => {
+  const isBordered = isWhiteCard || bordered;
+  return (
+    <div className="relative w-full">
+      <select
+        value={value || ""}
+        onChange={onChange}
+        className={`w-full h-[36px] sm:h-[38px] px-3.5 pr-8 rounded-[6px] outline-none text-[13px] font-normal appearance-none cursor-pointer ${
+          isBordered
+            ? "bg-[#f8fafc] border border-slate-300 text-slate-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            : "bg-white border-none shadow-xs focus:ring-2 focus:ring-amber-400"
+        } ${value ? "text-slate-800" : "text-slate-400"}`}
+      >
+        <option value="" disabled className="text-slate-400">
+          {placeholder}
         </option>
-      ))}
-    </select>
-    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-800">
-      <svg className="w-3.5 h-3.5 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
-      </svg>
+        {options.map((opt) => (
+          <option key={opt.value} value={opt.value} className="text-slate-900">
+            {opt.label}
+          </option>
+        ))}
+      </select>
+      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-600">
+        <svg className="w-3.5 h-3.5 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
+        </svg>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default function LandingLeadForm({
   data,
@@ -141,7 +156,11 @@ export default function LandingLeadForm({
   );
 
   const isWhiteCard =
-    variant === "white-card" || activeBrand.hero?.formCardType === "white";
+    variant === "white-card" ||
+    variant === "whiteCard" ||
+    activeBrand.hero?.formCardType === "white" ||
+    activeBrand.hero?.cardStyle === "white";
+
   const isCard = variant === "card" || variant === "hero" || isWhiteCard;
 
   const activeTitle = title ?? activeBrand.enquireTitle ?? "Get 100% Free Counselling";
@@ -210,23 +229,23 @@ export default function LandingLeadForm({
 
   return (
     <div
-      className={`landing-lead-card relative w-full max-w-full sm:max-w-[420px] lg:ml-auto lg:mr-0 mx-auto overflow-hidden ${
-        isWhiteCard ? "text-slate-900" : "text-white"
+      className={`landing-lead-card relative w-full max-w-full sm:max-w-[360px] lg:max-w-[360px] lg:ml-auto lg:mr-0 mx-auto overflow-hidden ${
+        isWhiteCard ? "text-slate-800" : "text-white"
       } ${isCard ? "landing-lead-card--hero" : "landing-lead-card--default"} ${className}`}
       style={{
         ...(isWhiteCard
           ? {
               backgroundColor: "#ffffff",
               borderRadius: "14px",
-              padding: "20px 18px",
-              boxShadow: "0 12px 30px rgba(0, 0, 0, 0.22)",
+              padding: "18px 18px",
+              boxShadow: "0 14px 32px rgba(0, 0, 0, 0.22)",
               border: "1px solid rgba(226, 232, 240, 0.9)",
             }
           : isCard
           ? {
               backgroundColor: activePrimaryColor,
-              borderRadius: "14px",
-              padding: "16px 14px 18px",
+              borderRadius: "12px",
+              padding: "14px 16px 16px",
               boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.2)",
             }
           : {
@@ -238,19 +257,19 @@ export default function LandingLeadForm({
     >
       {/* Card Header */}
       {isCard ? (
-        <div className="text-center mb-3">
+        <div className="text-center mb-2.5">
           <h2
-            className="m-0 text-[20px] sm:text-[22px] font-extrabold tracking-tight leading-tight"
+            className="m-0 text-[20px] sm:text-[22px] font-bold tracking-tight leading-tight"
             style={{
               color: isWhiteCard
-                ? activeBrand.hero?.formTitleColor || "#004b7a"
+                ? activeBrand.hero?.formTitleColor || activeBrand.hero?.enquireColor || "#ee3024"
                 : activeAccentColor,
             }}
           >
             {activeTitle}
           </h2>
           <p
-            className={`m-0 mt-0.5 text-[12px] sm:text-[13px] font-medium leading-normal ${
+            className={`m-0 mt-0.5 text-[12.5px] sm:text-[13px] font-medium leading-normal ${
               isWhiteCard ? "text-slate-600" : "text-white"
             }`}
           >
@@ -258,34 +277,42 @@ export default function LandingLeadForm({
           </p>
 
           {showPhoneBadge && activePhoneText && (
-            <div className="flex justify-center mt-2 mb-3">
-              <a
+            <div className="flex justify-center mt-1.5 mb-2.5">
+              <LandingButton
                 href={`tel:${activePhoneHref}`}
-                className={`inline-flex items-center justify-center gap-1.5 px-4 py-1 rounded-full font-bold text-[13.5px] sm:text-[14px] shadow-xs transition-all duration-150 hover:opacity-95 active:scale-95 no-underline cursor-pointer select-none ${
-                  isWhiteCard ? "text-white" : "text-black"
-                }`}
+                variant="phone"
+                skewEffect={true}
+                icon={
+                  <Phone
+                    className={`w-3.5 h-3.5 stroke-[2.5] ${
+                      isWhiteCard ? "fill-white text-white" : "fill-black text-black"
+                    }`}
+                  />
+                }
+                iconPosition="left"
+                className="px-4 py-1.5 text-[13px] rounded-full shadow-xs"
                 style={{
-                  backgroundColor: isWhiteCard
-                    ? activeBrand.hero?.formPhoneBg || "#f78d2d"
-                    : activeAccentColor,
+                  background:
+                    activeBrand.hero?.phoneBadgeBackground ||
+                    activeBrand.hero?.formPhoneBg ||
+                    (isWhiteCard
+                      ? activeBrand.hero?.phoneBadgeBg || "#f78d2d"
+                      : activeAccentColor),
+                  color: isWhiteCard ? "#ffffff" : "#000000",
+                  ...activeBrand.hero?.phoneBadgeStyle,
                 }}
               >
-                <Phone
-                  className={`w-3.5 h-3.5 stroke-[2.5] ${
-                    isWhiteCard ? "fill-white text-white" : "fill-black text-black"
-                  }`}
-                />
-                <span className="tracking-tight">{activePhoneText}</span>
-              </a>
+                <span className="tracking-tight font-bold">{activePhoneText}</span>
+              </LandingButton>
             </div>
           )}
         </div>
       ) : (
-        <div className="mb-4 text-center">
-          <h2 className="m-0 text-xl font-bold" style={{ color: activePrimaryColor }}>
+        <div className="mb-3 text-center">
+          <h2 className="m-0 text-lg font-bold" style={{ color: activePrimaryColor }}>
             {activeTitle}
           </h2>
-          <p className="m-0 mt-1 text-sm text-slate-500">{activeSubtitle}</p>
+          <p className="m-0 mt-0.5 text-xs text-slate-500">{activeSubtitle}</p>
         </div>
       )}
 
@@ -305,10 +332,10 @@ export default function LandingLeadForm({
           <input
             type="text"
             placeholder="Enter Your Name"
-            className={`w-full h-[40px] px-3.5 bg-white text-slate-800 placeholder:text-[#888888] rounded-[6px] outline-none text-[13.5px] font-normal ${
+            className={`w-full h-[36px] sm:h-[38px] px-3.5 rounded-[6px] outline-none text-[13px] font-normal ${
               isWhiteCard
-                ? "border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                : "border-none shadow-xs focus:ring-2 focus:ring-amber-400"
+                ? "bg-[#f8fafc] border border-slate-300 text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                : "bg-white text-slate-800 placeholder:text-[#888888] border-none shadow-xs focus:ring-2 focus:ring-amber-400"
             }`}
           />
         </Form.Item>
@@ -324,10 +351,10 @@ export default function LandingLeadForm({
           <input
             type="email"
             placeholder="Enter Your Email"
-            className={`w-full h-[40px] px-3.5 bg-white text-slate-800 placeholder:text-[#888888] rounded-[6px] outline-none text-[13.5px] font-normal ${
+            className={`w-full h-[36px] sm:h-[38px] px-3.5 rounded-[6px] outline-none text-[13px] font-normal ${
               isWhiteCard
-                ? "border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                : "border-none shadow-xs focus:ring-2 focus:ring-amber-400"
+                ? "bg-[#f8fafc] border border-slate-300 text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                : "bg-white text-slate-800 placeholder:text-[#888888] border-none shadow-xs focus:ring-2 focus:ring-amber-400"
             }`}
           />
         </Form.Item>
@@ -341,9 +368,9 @@ export default function LandingLeadForm({
           ]}
         >
           <PhoneInputField
-            placeholder="Enter Your Number"
+            placeholder="Enter Mobile Number"
             maxLength={10}
-            bordered={isWhiteCard}
+            isWhiteCard={isWhiteCard}
           />
         </Form.Item>
 
@@ -355,7 +382,7 @@ export default function LandingLeadForm({
           <CustomSelectField
             placeholder="Select Your Course"
             options={activeCourses}
-            bordered={isWhiteCard}
+            isWhiteCard={isWhiteCard}
           />
         </Form.Item>
 
@@ -367,21 +394,21 @@ export default function LandingLeadForm({
           <CustomSelectField
             placeholder="Select Your State"
             options={stateOptions}
-            bordered={isWhiteCard}
+            isWhiteCard={isWhiteCard}
           />
         </Form.Item>
 
-        {/* Terms Checkbox */}
+        {/* Terms Checkbox with Disclaimer Link */}
         {!activeBrand.hero?.hideTermsCheckbox && (
-          <Form.Item name="terms" valuePropName="checked" className="!mb-2.5 !mt-1">
-            <label className="flex items-start gap-2 cursor-pointer select-none">
+          <Form.Item name="terms" valuePropName="checked" className="!mb-2 !mt-1">
+            <label className="flex items-start gap-1.5 cursor-pointer select-none">
               <input
                 type="checkbox"
-                className="mt-0.5 w-[14px] h-[14px] rounded-[2px] bg-white border border-slate-300 accent-[#22c55e] cursor-pointer shrink-0"
+                className="mt-0.5 w-[13px] h-[13px] rounded-[2px] bg-white border border-slate-300 accent-[#22c55e] cursor-pointer shrink-0"
               />
               <span
-                className={`text-[10.5px] leading-tight font-normal ${
-                  isWhiteCard ? "text-slate-700" : "text-white"
+                className={`text-[10px] sm:text-[10.5px] leading-tight font-normal ${
+                  isWhiteCard ? "text-slate-600" : isCard ? "text-white" : "text-slate-600"
                 }`}
               >
                 I consent to receive university updates via email and mobile number.{" "}
@@ -391,7 +418,9 @@ export default function LandingLeadForm({
                   className={`font-semibold underline cursor-pointer bg-transparent border-none p-0 inline ${
                     isWhiteCard
                       ? "text-blue-600 hover:text-blue-700"
-                      : "text-white hover:text-amber-300"
+                      : isCard
+                      ? "text-white hover:text-amber-300"
+                      : "text-blue-600 hover:text-blue-700"
                   }`}
                 >
                   Disclaimer
@@ -402,22 +431,23 @@ export default function LandingLeadForm({
         )}
 
         {/* Submit Button */}
-        <button
+        <LandingButton
           type="submit"
-          disabled={loading}
-          className="w-full h-[42px] text-white font-bold text-[16px] border-none shadow-xs cursor-pointer transition-all flex items-center justify-center mt-2 active:scale-[0.99] hover:opacity-95"
+          variant="submit"
+          loading={loading}
+          className="w-full h-[38px] sm:h-[40px] text-[14px] sm:text-[15px] font-bold mt-1"
           style={{
-            backgroundColor: activeBrand.hero?.submitButtonBackground || "#22c55e",
+            background:
+              activeBrand.hero?.submitButtonBackground ||
+              activeBrand.hero?.submitBtnBg ||
+              activeBrand.submitBtnBg ||
+              "#22c55e",
             color: activeBrand.hero?.submitButtonTextColor || "#ffffff",
             borderRadius: activeBrand.hero?.submitButtonRadius || "8px",
           }}
         >
-          {loading ? (
-            <span className="inline-block w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-          ) : (
-            buttonText
-          )}
-        </button>
+          {buttonText}
+        </LandingButton>
       </Form>
     </div>
   );

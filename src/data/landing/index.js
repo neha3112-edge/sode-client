@@ -6,6 +6,7 @@ import { cuData } from "./cu";
 import { galgotiasData } from "./galgotias";
 import { smuData } from "./smu";
 import { vguData } from "./vgu";
+import { shooliniData } from "./shoolini";
 
 export const LANDING_REGISTRY = {
   amity: amityData,
@@ -18,6 +19,7 @@ export const LANDING_REGISTRY = {
   vgu: vguData,
   "sikkim-manipal-university": smuData,
   "sikkim-manipal": smuData,
+  shoolini: shooliniData,
 };
 
 export function getLandingData(slug) {
@@ -35,5 +37,5 @@ export {
   galgotiasData,
   smuData,
   vguData,
+  shooliniData,
 };
-
