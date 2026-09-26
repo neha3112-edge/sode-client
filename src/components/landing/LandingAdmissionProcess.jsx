@@ -5,40 +5,104 @@ import React from "react";
 /**
  * Standard Step Styles for the 6 Admission Steps
  * Built-in so all landing pages share identical aesthetic CSS automatically.
- * Landing pages only need to pass content (title, desc), while retaining the option
- * to override colors if needed.
  */
-const DEFAULT_STEP_STYLES = [
-  { themeColor: "#ff7a00", borderColor: "#ff7a00", cardBg: "#fff6ee" },
+export const DEFAULT_STEP_STYLES = [
+  { themeColor: "#ff7a00", borderColor: "#ff7a00", cardBg: "#fff8f0" },
   { themeColor: "#0066cc", borderColor: "#0066cc", cardBg: "#f0f7ff" },
   { themeColor: "#ff2a6d", borderColor: "#ff2a6d", cardBg: "#fff0f5" },
   { themeColor: "#16a34a", borderColor: "#16a34a", cardBg: "#f0faf3" },
   { themeColor: "#8b5cf6", borderColor: "#8b5cf6", cardBg: "#f7f2ff" },
-  { themeColor: "#ff7a00", borderColor: "#ff7a00", cardBg: "#fff6ee" },
+  { themeColor: "#ff7a00", borderColor: "#ff7a00", cardBg: "#fff8f0" },
 ];
 
 /**
- * Reusable Admission & Enrollment Process Section
- * Large, beautiful cards matching the reference design.
- * CSS is standardized inside the component; universities supply their content via JSON.
+ * Global Default 6 Admission Steps used consistently across all university landing pages.
+ */
+export const GLOBAL_ADMISSION_STEPS = [
+  {
+    num: 1,
+    title: "Submit Form",
+    desc: "Fill in and submit your application form online",
+    themeColor: "#ff7a00",
+    borderColor: "#ff7a00",
+    cardBg: "#fff8f0",
+  },
+  {
+    num: 2,
+    title: "Expert's Counseling",
+    desc: "You will receive a call from our expert counselor",
+    themeColor: "#0066cc",
+    borderColor: "#0066cc",
+    cardBg: "#f0f7ff",
+  },
+  {
+    num: 3,
+    title: "Choose University",
+    desc: "Select the course & university according to your interest",
+    themeColor: "#ff2a6d",
+    borderColor: "#ff2a6d",
+    cardBg: "#fff0f5",
+  },
+  {
+    num: 4,
+    title: "Online Payment",
+    desc: "You need to make a smooth online fee submission",
+    themeColor: "#16a34a",
+    borderColor: "#16a34a",
+    cardBg: "#f0faf3",
+  },
+  {
+    num: 5,
+    title: "Document Submit",
+    desc: "You need to upload all the required verified documents.",
+    themeColor: "#8b5cf6",
+    borderColor: "#8b5cf6",
+    cardBg: "#f7f2ff",
+  },
+  {
+    num: 6,
+    title: "Admission Confirm",
+    desc: "Get Confirmation on your Email & Whatsapp",
+    themeColor: "#ff7a00",
+    borderColor: "#ff7a00",
+    cardBg: "#fff8f0",
+  },
+];
+
+/**
+ * Reusable Global Admission & Enrollment Process Section (Full Width)
+ * Standardized across all pages.
+ * Works seamlessly out-of-the-box with global defaults or custom overrides.
  */
 export default function LandingAdmissionProcess({
-  admissionSteps = [],
+  admissionSteps,
   admissionProcess = null,
   enrollmentProcess = null,
-  universityName = "University Online",
+  universityName,
   brand = {},
 }) {
-  if (!admissionSteps || admissionSteps.length === 0) return null;
+  if (brand.hideAdmissionProcess) return null;
+
+  // Active steps with fallback to global 6 steps
+  const activeSteps =
+    admissionSteps && admissionSteps.length > 0
+      ? admissionSteps
+      : brand.admissionSteps && brand.admissionSteps.length > 0
+      ? brand.admissionSteps
+      : GLOBAL_ADMISSION_STEPS;
+
+  const activeUniversity =
+    universityName ||
+    brand.name ||
+    brand.universityName ||
+    "University Online";
 
   const isSmu =
     brand.slug === "smu" ||
-    brand.name?.toLowerCase().includes("sikkim") ||
-    brand.name?.toLowerCase().includes("smu");
+    activeUniversity.toLowerCase().includes("sikkim") ||
+    activeUniversity.toLowerCase().includes("smu");
 
-  const cleanUni = universityName.replace(/\s*Online\s*$/i, "");
-
-  // Heading logic
+  // Heading & subtitle logic
   const hasEnrollmentPrefix = Boolean(
     enrollmentProcess?.titlePrefix || brand?.enrollmentProcess?.titlePrefix
   );
@@ -51,7 +115,7 @@ export default function LandingAdmissionProcess({
   const titleHighlight =
     enrollmentProcess?.titleHighlight ||
     brand?.enrollmentProcess?.titleHighlight ||
-    `${universityName} ?`;
+    `${activeUniversity} ?`;
 
   const prefixColor =
     enrollmentProcess?.prefixColor ||
@@ -67,22 +131,22 @@ export default function LandingAdmissionProcess({
   const headingText =
     admissionProcess?.title ||
     brand.admissionTitle ||
+    brand.admissionProcess?.title ||
     (isSmu
-      ? `How To Take Admission In ${brand.name || "Sikkim Manipal University Online"}?`
-      : universityName.toLowerCase().includes("course")
-      ? `How to Apply for ${universityName}`
-      : `How to Apply for ${universityName} Courses`);
+      ? `How To Take Admission In ${activeUniversity}?`
+      : `How to Apply for ${activeUniversity.toLowerCase().includes("course") ? activeUniversity : `${activeUniversity} Courses`}`);
 
   const subtitleText =
     admissionProcess?.subtitle ||
     enrollmentProcess?.description ||
     brand?.enrollmentProcess?.description ||
     brand.admissionSubtitle ||
-    (isSmu
-      ? `Admissions in ${brand.name || "Sikkim Manipal University Online"} is a convenient process. Any eligible candidate can enrol in their desired courses. Follow these steps to secure your admission:`
-      : `The admission process for ${cleanUni} course admissions is very simple and user-friendly. Here's a step-by-step guide to enrolling in a degree course at the university :`);
+    brand.admissionProcess?.subtitle ||
+    `Students can easily enrol in ${activeUniversity} courses. Candidates can conveniently apply by selecting their desired program. Follow these steps to secure admission in the university.`;
 
-  const headingColor = isSmu ? "#193579" : brand.primaryColor || "#08417b";
+  const headingColor =
+    brand.admissionHeadingColor ||
+    (isSmu ? "#193579" : brand.primaryColor || "#08417b");
 
   // Safely resolve color strings
   const resolveColor = (c, fallback) => {
@@ -104,7 +168,7 @@ export default function LandingAdmissionProcess({
 
   return (
     <section id="process" className="py-10 sm:py-14 lg:py-16 bg-white w-full select-none">
-      <div className="w-full px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 mx-auto">
+      <div className="w-full px-4 sm:px-6 md:px-8 lg:px-10 xl:px-14 2xl:px-16 mx-auto">
         {/* Heading */}
         {hasEnrollmentPrefix ? (
           <h2 className="text-2xl sm:text-3xl lg:text-[34px] font-bold text-center tracking-tight mb-3 m-0">
@@ -125,9 +189,9 @@ export default function LandingAdmissionProcess({
           {subtitleText}
         </p>
 
-        {/* Responsive Step Cards Grid - Full Width across screen */}
+        {/* Responsive Step Cards Grid - Full Width Across All Screen Sizes */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-3.5 lg:gap-4 xl:gap-5 w-full">
-          {admissionSteps.map((step, idx) => {
+          {activeSteps.map((step, idx) => {
             const num = step.num || idx + 1;
             const defaultStyle = DEFAULT_STEP_STYLES[idx % DEFAULT_STEP_STYLES.length];
 
