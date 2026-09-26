@@ -476,12 +476,14 @@ function CoursesContent({
       if (!val || val === "all") return "";
       if (/^[0-9a-fA-F]{24}$/.test(String(val))) return String(val);
       const targetStr = String(val).trim().toLowerCase();
+      const targetSlug = targetStr.replace(/[^a-z0-9]+/g, '-');
       const found = (list || []).find((item) => {
         if (!item) return false;
         const s = String(item.slug || "").trim().toLowerCase();
         const v = String(item.value || "").trim().toLowerCase();
         const n = String(item.name || item.title || item.label || "").trim().toLowerCase();
-        return s === targetStr || v === targetStr || n === targetStr;
+        const nSlug = n.replace(/[^a-z0-9]+/g, '-');
+        return s === targetStr || v === targetStr || n === targetStr || s === targetSlug || nSlug === targetSlug || nSlug === targetStr;
       });
       return found?._id || found?.id || (found?.value && /^[0-9a-fA-F]{24}$/.test(found.value) ? found.value : val);
     };
@@ -844,7 +846,10 @@ function CoursesContent({
     const seen = new Set();
     (coursesOptionsList || []).forEach((c) => {
       if (!c) return;
-      const val = c.slug || String(c._id || "");
+      const cleanSlug = (c.slug && !/^[0-9a-fA-F]{24}$/.test(c.slug))
+        ? c.slug
+        : (c.name ? c.name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') : String(c._id || ""));
+      const val = cleanSlug;
       const fullDisplay = c.displayName || c.name || "";
       const effectiveName = c.showDisplayName && fullDisplay ? fullDisplay : (c.name || c.title || val);
       const label = effectiveName;
