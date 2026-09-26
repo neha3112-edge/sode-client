@@ -4,7 +4,7 @@ import { request } from "@/services/request";
 
 export const revalidate = 300;
 
-export default async function ContactPage() {
+export default async function ContactUsPage() {
   let tenantData = null;
   let coursesData = [];
   let statesData = [];
@@ -32,7 +32,7 @@ export default async function ContactPage() {
     coursesData = coursesRes?.result ?? (Array.isArray(coursesRes) ? coursesRes : []);
     statesData = statesRes?.result ?? (Array.isArray(statesRes) ? statesRes : []);
   } catch (e) {
-    console.error("Error fetching data for contact page:", e);
+    console.error("Error fetching data for contact us page:", e);
   }
 
   return (
