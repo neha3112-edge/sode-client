@@ -14,12 +14,18 @@ export const getReviewsData = cache(async () => {
     const res = await request.dynamicList({
       entity: "student-review",
       endPoint: "public/list",
+      options: {
+        page: 1,
+        items: 15,
+      },
       revalidate: 60,
     });
 
-    const data = res?.result ?? res ?? null;
-    if (data && Array.isArray(data.reviews)) {
-      return data;
+    const result = res?.result ?? res ?? null;
+    const pagination = res?.pagination ?? null;
+
+    if (result && Array.isArray(result.reviews)) {
+      return { ...result, pagination };
     }
   } catch (err) {
     console.error("[StudentReviews] Error fetching reviews from API:", err?.message || err);
