@@ -14,6 +14,8 @@ export { default as LandingFooterForm } from "./LandingFooterForm";
 export { default as LandingCompareBanner } from "./LandingCompareBanner";
 export { default as LandingFooter } from "./LandingFooter";
 export { default as LandingStickyCtas } from "./LandingStickyCtas";
+export { default as LandingDegree } from "./LandingDegree";
+export { default as LandingRecruiters } from "./LandingRecruiters";
 export { default as BrochureModal } from "./modals/BrochureModal";
 export { default as ScholarshipModal } from "./modals/ScholarshipModal";
 export { default as CompareModal } from "./modals/CompareModal";

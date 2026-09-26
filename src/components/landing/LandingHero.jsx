@@ -38,10 +38,12 @@ export default function LandingHero({
       />
 
       {/* Overlay - Only on left side on desktop so the center student stays vibrant and clear */}
-      {isDarkMode ? (
-        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-[#074a76]/90 via-[#074a76]/70 to-[#074a76]/95 lg:bg-gradient-to-r lg:from-[#074a76] lg:via-[#074a76]/85 lg:via-30% lg:to-transparent lg:w-[48%]" />
-      ) : (
-        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-white/95 via-white/90 to-white/70 md:bg-gradient-to-r md:from-white/95 md:via-white/85 md:to-white/15" />
+      {!hero.noOverlay && (
+        isDarkMode ? (
+          <div className="absolute inset-0 -z-10 bg-gradient-to-b from-[#074a76]/90 via-[#074a76]/70 to-[#074a76]/95 lg:bg-gradient-to-r lg:from-[#074a76] lg:via-[#074a76]/85 lg:via-30% lg:to-transparent lg:w-[48%]" />
+        ) : (
+          <div className="absolute inset-0 -z-10 bg-gradient-to-b from-white/95 via-white/90 to-white/70 md:bg-gradient-to-r md:from-white/95 md:via-white/85 md:to-white/15" />
+        )
       )}
 
       <LandingContainer
@@ -51,16 +53,18 @@ export default function LandingHero({
         {/* Left Column: University info & Titles */}
         <div className="relative z-10 flex w-full flex-col items-center sm:items-start text-center sm:text-left lg:w-[420px] xl:w-[460px] shrink-0 pt-1 sm:pt-2">
           {/* Hashtag */}
-          <p
-            className="m-0 text-[13px] sm:text-[14px] font-semibold"
-            style={{ color: hero.hashtagColor || (isDarkMode ? "#ffffff" : "#111111") }}
-          >
-            {brand.hashtag || "#WhereAmbitionsFindTheirWings"}
-          </p>
+          {brand.hashtag ? (
+            <p
+              className="m-0 text-[13px] sm:text-[14px] font-semibold"
+              style={{ color: hero.hashtagColor || (isDarkMode ? "#ffffff" : "#111111") }}
+            >
+              {brand.hashtag}
+            </p>
+          ) : null}
 
           {/* Headline */}
           <h1
-            className="mt-1 mb-0 text-[32px] sm:text-[42px] lg:text-[48px] font-extrabold leading-[1.08] tracking-tight whitespace-pre-line"
+            className="mt-1 mb-0 text-[30px] sm:text-[38px] lg:text-[42px] font-extrabold leading-[1.12] tracking-tight whitespace-pre-line"
             style={{
               color: hero.titleColor || (isDarkMode ? "#f78d2d" : "#08417b"),
               fontFamily: hero.headingFont || "'Poppins', sans-serif",
@@ -71,7 +75,7 @@ export default function LandingHero({
 
           {/* Tagline */}
           <p
-            className="mt-2.5 mb-1.5 text-[15px] sm:text-[18px] lg:text-[19px] font-semibold leading-snug"
+            className="mt-2.5 mb-2 text-[13.5px] sm:text-[14.5px] font-medium leading-relaxed max-w-[440px]"
             style={{ color: hero.taglineColor || (isDarkMode ? "#ffffff" : "#222222") }}
           >
             {brand.tagline1 || "Learn Without Limits with SMU Online"}
@@ -80,10 +84,12 @@ export default function LandingHero({
           {/* Courses */}
           {hero.hideCourseBox ? (
             <h2
-              className="text-[20px] sm:text-[23px] lg:text-[25px] font-extrabold tracking-tight mt-1 mb-4"
+              className="text-[19px] sm:text-[22px] lg:text-[24px] font-extrabold tracking-tight mt-1 mb-4 leading-snug"
               style={{ color: hero.coursesColor || (isDarkMode ? "#ffffff" : "#08417b") }}
             >
-              {courseLines.join(" ")}
+              {courseLines.map((line, idx) => (
+                <div key={idx}>{line}</div>
+              ))}
             </h2>
           ) : (
             <div className="relative z-20 w-full max-w-sm sm:max-w-none sm:w-fit my-2">
@@ -105,7 +111,9 @@ export default function LandingHero({
           <button
             type="button"
             onClick={() => onOpenBrochure?.()}
-            className="mt-3 inline-flex w-full sm:w-fit items-center justify-center gap-2 rounded-[6px] active:scale-95 px-6 py-2.5 text-[14px] sm:text-[15px] font-bold text-white transition-all shadow-md cursor-pointer border-none"
+            className={`mt-2 inline-flex w-full sm:w-fit items-center justify-center gap-2 ${
+              hero.buttonRadius || "rounded-[6px]"
+            } active:scale-95 px-7 py-2.5 text-[14.5px] sm:text-[15.5px] font-bold text-white transition-all shadow-md cursor-pointer border-none`}
             style={{
               backgroundColor: hero.buttonBackground || (isDarkMode ? "#f78d2d" : "#08417b"),
               color: hero.buttonTextColor || "#ffffff",

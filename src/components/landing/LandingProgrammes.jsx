@@ -17,8 +17,107 @@ export default function LandingProgrammes({
   onSelectCourseForBrochure,
   onOpenApply,
 }) {
+  const isVguGrid =
+    brand.programmesLayout === "vgu-cards" ||
+    brand.programmesLayout === "vgu-grid" ||
+    (brand.slug === "vgu" && brand.programmesLayout !== "carousel");
+
   const isSmuLayout =
     brand.programmesLayout === "smu-cards" || brand.slug === "smu";
+
+  // ==========================================
+  // Layout 1: VGU Static 4-Column Grid (Matches VGU screenshot 100%)
+  // ==========================================
+  if (isVguGrid) {
+    const heading =
+      brand.programmesTitle ||
+      "VGU Online | Vivekananda Global University Online Courses";
+
+    return (
+      <section id="program" className="w-full py-12 sm:py-16 bg-[#f7f9fa] border-b border-slate-200">
+        <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-center text-[24px] sm:text-[28px] lg:text-[32px] font-bold text-[#203061] tracking-tight mb-8 sm:mb-12">
+            {heading}
+          </h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-6 lg:gap-7">
+            {programmes.map((c, idx) => {
+              const isPostGrad =
+                c.level?.toLowerCase().includes("post") ||
+                c.title?.toLowerCase().includes("master") ||
+                c.code?.toLowerCase().startsWith("m");
+              const durationText =
+                c.duration || (isPostGrad ? "24 Months" : "36 Months");
+
+              return (
+                <div
+                  key={`${c.id || c.code}-${idx}`}
+                  className="bg-white rounded-[14px] overflow-hidden shadow-[0_10px_24px_rgba(0,0,0,0.12)] hover:shadow-[0_16px_32px_rgba(0,0,0,0.16)] transition-all duration-300 flex flex-col justify-between group"
+                >
+                  <div>
+                    {/* Top Image with Black Duration Badge */}
+                    <div className="relative h-44 sm:h-48 w-full bg-slate-100 overflow-hidden">
+                      <Image
+                        src={c.image || "/assets/vgu/mba-vgu.webp"}
+                        alt={c.title}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      />
+                      {/* Black duration badge top right */}
+                      <span className="absolute top-2.5 right-2.5 bg-black/95 text-white text-[11px] font-bold px-2.5 py-0.5 rounded-[4px] shadow-sm select-none">
+                        {durationText}
+                      </span>
+                    </div>
+
+                    {/* Card Content (Centered) */}
+                    <div className="p-4 sm:p-5 text-center flex flex-col items-center">
+                      {/* Course Code (e.g. MBA, MCA) */}
+                      <h3 className="text-[26px] sm:text-[28px] font-extrabold text-[#811811] m-0 tracking-tight leading-tight">
+                        {c.code || c.id?.toUpperCase() || c.title}
+                      </h3>
+
+                      {/* Full Course Name */}
+                      <p className="text-[12px] sm:text-[12.5px] font-semibold text-slate-800 mt-1 mb-2.5 line-clamp-1">
+                        {c.title}
+                      </p>
+
+                      {/* Description */}
+                      <p className="text-[11px] sm:text-[11.5px] text-slate-600 leading-[1.55] line-clamp-4 min-h-[66px] m-0">
+                        {c.description}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Dual Action Buttons (Green Get Brochure & Maroon Apply Now) */}
+                  <div className="p-4 sm:p-5 pt-0 grid grid-cols-2 gap-2 mt-2">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        onSelectCourseForBrochure?.(c.code || c.title)
+                      }
+                      className="bg-[#008000] hover:bg-[#006e00] active:scale-95 text-white font-bold text-[11.5px] sm:text-[12px] py-2 px-2 rounded-full inline-flex items-center justify-center gap-1 shadow-xs transition-all cursor-pointer border-none"
+                    >
+                      <span>Get Brochure</span>
+                      <Download className="w-3 h-3 stroke-[2.5]" />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => onOpenApply?.(c.code || c.title)}
+                      className="bg-[#811811] hover:bg-[#6b130e] active:scale-95 text-white font-bold text-[11.5px] sm:text-[12px] py-2 px-2 rounded-full inline-flex items-center justify-center shadow-xs transition-all cursor-pointer border-none"
+                    >
+                      <span>Apply Now</span>
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   const total = programmes.length;
   const [currentIndex, setCurrentIndex] = useState(total > 0 ? total : 0);
@@ -241,7 +340,10 @@ export default function LandingProgrammes({
                         </div>
 
                         {/* Course Title */}
-                        <h3 className="text-[17px] sm:text-[18px] font-bold text-[#074a76] m-0 tracking-tight leading-snug">
+                        <h3
+                          className="text-[17px] sm:text-[18px] font-bold m-0 tracking-tight leading-snug"
+                          style={{ color: brand.primaryColor || "#074a76" }}
+                        >
                           {c.title}
                         </h3>
 
@@ -251,12 +353,18 @@ export default function LandingProgrammes({
                         </p>
                       </div>
 
-                      {/* Dual Action Buttons: Get Brochure (Orange) & Apply Now (Navy Blue) */}
+                      {/* Dual Action Buttons */}
                       <div className="grid grid-cols-2 gap-2 sm:gap-2.5 mt-4 sm:mt-5">
                         <button
                           type="button"
                           onClick={() => onSelectCourseForBrochure?.(c.code || c.title)}
-                          className="bg-[#f78d2d] hover:bg-[#ea7e20] active:scale-95 text-white font-semibold text-[13px] sm:text-[13.5px] py-2.5 px-2 rounded-[5px] flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer border-none"
+                          className="active:scale-95 text-white font-semibold text-[13px] sm:text-[13.5px] py-2.5 px-2 rounded-[5px] flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer border-none"
+                          style={{
+                            backgroundColor:
+                              brand.slug === "vgu"
+                                ? "#008000"
+                                : brand.hero?.buttonBackground || "#f78d2d",
+                          }}
                         >
                           <span>Get Brochure</span>
                           <FaDownload className="w-3 h-3 text-white shrink-0" />
@@ -265,7 +373,10 @@ export default function LandingProgrammes({
                         <button
                           type="button"
                           onClick={() => onOpenApply?.(c.code || c.title)}
-                          className="bg-[#074a76] hover:bg-[#053759] active:scale-95 text-white font-semibold text-[13px] sm:text-[13.5px] py-2.5 px-2 rounded-[5px] flex items-center justify-center transition-all shadow-xs cursor-pointer border-none"
+                          className="active:scale-95 text-white font-semibold text-[13px] sm:text-[13.5px] py-2.5 px-2 rounded-[5px] flex items-center justify-center transition-all shadow-xs cursor-pointer border-none"
+                          style={{
+                            backgroundColor: brand.primaryColor || "#074a76",
+                          }}
                         >
                           <span>Apply Now</span>
                         </button>

@@ -372,39 +372,45 @@ export default function LandingLeadForm({
         </Form.Item>
 
         {/* Terms Checkbox */}
-        <Form.Item name="terms" valuePropName="checked" className="!mb-2.5 !mt-1">
-          <label className="flex items-start gap-2 cursor-pointer select-none">
-            <input
-              type="checkbox"
-              className="mt-0.5 w-[14px] h-[14px] rounded-[2px] bg-white border border-slate-300 accent-[#22c55e] cursor-pointer shrink-0"
-            />
-            <span
-              className={`text-[10.5px] leading-tight font-normal ${
-                isWhiteCard ? "text-slate-700" : "text-white"
-              }`}
-            >
-              I consent to receive university updates via email and mobile number.{" "}
-              <button
-                type="button"
-                onClick={() => onOpenDisclaimer?.()}
-                className={`font-semibold underline cursor-pointer bg-transparent border-none p-0 inline ${
-                  isWhiteCard
-                    ? "text-blue-600 hover:text-blue-700"
-                    : "text-white hover:text-amber-300"
+        {!activeBrand.hero?.hideTermsCheckbox && (
+          <Form.Item name="terms" valuePropName="checked" className="!mb-2.5 !mt-1">
+            <label className="flex items-start gap-2 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                className="mt-0.5 w-[14px] h-[14px] rounded-[2px] bg-white border border-slate-300 accent-[#22c55e] cursor-pointer shrink-0"
+              />
+              <span
+                className={`text-[10.5px] leading-tight font-normal ${
+                  isWhiteCard ? "text-slate-700" : "text-white"
                 }`}
               >
-                Disclaimer
-              </button>
-            </span>
-          </label>
-        </Form.Item>
+                I consent to receive university updates via email and mobile number.{" "}
+                <button
+                  type="button"
+                  onClick={() => onOpenDisclaimer?.()}
+                  className={`font-semibold underline cursor-pointer bg-transparent border-none p-0 inline ${
+                    isWhiteCard
+                      ? "text-blue-600 hover:text-blue-700"
+                      : "text-white hover:text-amber-300"
+                  }`}
+                >
+                  Disclaimer
+                </button>
+              </span>
+            </label>
+          </Form.Item>
+        )}
 
-        {/* Green Submit Button */}
+        {/* Submit Button */}
         <button
           type="submit"
           disabled={loading}
-          className="w-full h-[42px] rounded-[6px] text-white font-bold text-[16px] border-none shadow-xs cursor-pointer transition-all flex items-center justify-center mt-1 active:scale-[0.99] hover:bg-[#16a34a]"
-          style={{ backgroundColor: "#22c55e", color: "#ffffff" }}
+          className="w-full h-[42px] text-white font-bold text-[16px] border-none shadow-xs cursor-pointer transition-all flex items-center justify-center mt-2 active:scale-[0.99] hover:opacity-95"
+          style={{
+            backgroundColor: activeBrand.hero?.submitButtonBackground || "#22c55e",
+            color: activeBrand.hero?.submitButtonTextColor || "#ffffff",
+            borderRadius: activeBrand.hero?.submitButtonRadius || "8px",
+          }}
         >
           {loading ? (
             <span className="inline-block w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />

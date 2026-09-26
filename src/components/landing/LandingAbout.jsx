@@ -35,8 +35,65 @@ export default function LandingAbout({ about = {}, brand = {}, leader = null, on
 
   const primaryColor = brand.primaryColor || "#08417b";
 
+  const isVguLayout =
+    brand.aboutLayout === "vgu-banner" ||
+    brand.aboutLayout === "vgu" ||
+    brand.slug === "vgu";
+
   // ==========================================
-  // SMU Layout: Deep Teal Full-Width Banner with Overflow Model + Visionary Leader Section
+  // Layout 1: VGU Blue Full-Width Banner (Matches VGU screenshot 100%)
+  // ==========================================
+  if (isVguLayout) {
+    return (
+      <section id="about" className="w-full py-12 sm:py-16 bg-[#30669b] text-white">
+        <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            {/* Campus Image Left */}
+            <div className="lg:col-span-5">
+              <div className="relative w-full h-[240px] sm:h-[300px] lg:h-[330px] rounded-[24px] overflow-hidden shadow-lg">
+                <Image
+                  src={imageSrc}
+                  alt={title}
+                  fill
+                  priority
+                  className="object-cover object-center"
+                  sizes="(max-width: 1024px) 100vw, 42vw"
+                />
+              </div>
+            </div>
+
+            {/* Content Right */}
+            <div className="lg:col-span-7 space-y-4 text-left">
+              <h2 className="text-[26px] sm:text-[32px] lg:text-[36px] font-bold text-white tracking-tight leading-tight m-0">
+                {title}
+              </h2>
+
+              <div className="space-y-3 text-[13.5px] sm:text-[14.5px] text-white/95 leading-[1.65] font-normal">
+                {paragraphs.map((p, idx) => (
+                  <p key={idx} className="m-0">
+                    {p}
+                  </p>
+                ))}
+              </div>
+
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={() => onOpenApply?.()}
+                  className="inline-flex items-center justify-center bg-[#ffc107] hover:bg-[#e0a800] text-slate-950 font-bold text-[14px] px-7 py-2.5 rounded-[6px] shadow-xs active:scale-95 transition-all cursor-pointer border-none"
+                >
+                  <span>{buttonText}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ==========================================
+  // Layout 2: SMU Deep Teal Full-Width Banner
   // ==========================================
   if (isSmuLayout) {
     return (

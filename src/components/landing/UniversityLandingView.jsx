@@ -8,6 +8,8 @@ import LandingProgrammes from "./LandingProgrammes";
 import LandingAbout from "./LandingAbout";
 import LandingStats from "./LandingStats";
 import LandingWhyChoose from "./LandingWhyChoose";
+import LandingDegree from "./LandingDegree";
+import LandingRecruiters from "./LandingRecruiters";
 import LandingAdmissionProcess from "./LandingAdmissionProcess";
 import LandingFaq from "./LandingFaq";
 import LandingFooterForm from "./LandingFooterForm";
@@ -30,6 +32,8 @@ export default function UniversityLandingView({ data = {} }) {
     about = {},
     leader,
     whyChoose = [],
+    degreeInfo = {},
+    recruiters = {},
     admissionProcess,
     admissionSteps = [],
     faqs = [],
@@ -98,6 +102,8 @@ export default function UniversityLandingView({ data = {} }) {
         {!isSmu && (
           <LandingWhyChoose whyChoose={whyChoose} brand={brand} onOpenApply={() => handleOpenApply()} />
         )}
+        <LandingDegree degreeInfo={degreeInfo} brand={brand} onOpenApply={() => handleOpenApply()} />
+        <LandingRecruiters recruiters={recruiters} brand={brand} />
         <LandingAdmissionProcess
           admissionSteps={admissionSteps}
           admissionProcess={admissionProcess}

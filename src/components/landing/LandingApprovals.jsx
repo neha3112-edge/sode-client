@@ -96,7 +96,75 @@ export default function LandingApprovals({
   }, [isCarouselLayout, isPaused, total]);
 
   // ==========================================
-  // Layout 1: SMU Clean Rankings & Accreditations Carousel
+  // Layout 1: VGU 2-Column Badges Layout (matches VGU live page & screenshot)
+  // ==========================================
+  const isVguLayout =
+    brand.approvalsLayout === "vgu-badges" || brand.slug === "vgu";
+
+  if (isVguLayout) {
+    const sectionTitle =
+      brand.approvalsTitle ||
+      `${brand.name || "Vivekananda Global University"} Online Accreditation & Approval`;
+    const sectionDescription =
+      brand.approvalsDescription ||
+      "Vivekananda Global University Online Courses are UGC-recognised and have top accreditations and approvals from the country's recognised statutory bodies.";
+
+    return (
+      <section id="approvals" className="w-full py-10 sm:py-14 bg-white border-b border-slate-200">
+        <div className="max-w-[1340px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            {/* Left Column: Title, Description, Enquire Button */}
+            <div className="lg:col-span-4 text-center sm:text-left">
+              <h2 className="text-[22px] sm:text-[26px] lg:text-[28px] font-extrabold text-[#811811] leading-tight tracking-tight m-0">
+                {sectionTitle}
+              </h2>
+              <p className="mt-3.5 mb-6 text-[12.5px] sm:text-[13.5px] text-slate-700 leading-relaxed font-normal">
+                {sectionDescription}
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  const heroEl = document.getElementById("hero");
+                  if (heroEl) heroEl.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="inline-flex items-center justify-center gap-2 bg-[#ffc107] hover:bg-[#e0a800] text-slate-950 font-bold text-[13.5px] sm:text-[14px] px-6 py-2.5 rounded-[6px] shadow-xs active:scale-95 transition-all cursor-pointer border-none"
+              >
+                <span>Enquire Now</span>
+              </button>
+            </div>
+
+            {/* Right Column: 2x2 Grid of Pill Badge Cards */}
+            <div className="lg:col-span-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {approvals.map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center gap-3.5 px-4 py-3 bg-white rounded-[32px] border border-slate-700/60 shadow-2xs hover:shadow-xs transition-shadow"
+                  >
+                    <div className="relative w-12 h-12 sm:w-14 sm:h-14 shrink-0 flex items-center justify-center">
+                      <Image
+                        src={item.image}
+                        alt={item.text || "Approval"}
+                        fill
+                        className="object-contain"
+                        sizes="56px"
+                      />
+                    </div>
+                    <p className="text-[12px] sm:text-[12.5px] font-semibold text-slate-800 leading-snug m-0">
+                      {item.text}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ==========================================
+  // Layout 2: SMU Clean Rankings & Accreditations Carousel
   // ==========================================
   if (isCarouselLayout) {
     const sectionTitle =

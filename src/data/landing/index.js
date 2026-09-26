@@ -5,6 +5,7 @@ import { manipalData } from "./manipal";
 import { cuData } from "./cu";
 import { galgotiasData } from "./galgotias";
 import { smuData } from "./smu";
+import { vguData } from "./vgu";
 
 export const LANDING_REGISTRY = {
   amity: amityData,
@@ -14,6 +15,7 @@ export const LANDING_REGISTRY = {
   cu: cuData,
   galgotias: galgotiasData,
   smu: smuData,
+  vgu: vguData,
   "sikkim-manipal-university": smuData,
   "sikkim-manipal": smuData,
 };
@@ -32,5 +34,6 @@ export {
   cuData,
   galgotiasData,
   smuData,
+  vguData,
 };
 
