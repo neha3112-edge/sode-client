@@ -15,6 +15,8 @@ export default function CompareDrawerWidget() {
 
   // Do not show the floating widget on the dedicated compare page
   if (
+    pathname === "/tools/compare-universities" ||
+    pathname?.startsWith("/tools/compare-universities/") ||
     pathname === "/compare-university" ||
     pathname?.startsWith("/compare-university/")
   ) {
@@ -27,11 +29,11 @@ export default function CompareDrawerWidget() {
 
   const compareUrl =
     compareList.length > 0
-      ? `/compare-university?university=${compareList
+      ? `/tools/compare-universities?university=${compareList
           .map((u) => u.slug || u._id || u.id)
           .filter(Boolean)
           .join(",")}`
-      : "/compare-university";
+      : "/tools/compare-universities";
 
   return (
     <div className="fixed bottom-20 sm:bottom-4 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-4xl bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-2xl rounded-2xl p-3 transition-all animate-in fade-in slide-in-from-bottom-5 duration-300">

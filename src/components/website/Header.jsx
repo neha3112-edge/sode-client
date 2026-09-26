@@ -237,7 +237,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
       ? headerData.featured_buttons.filter((b) => b.enabled !== false)
       : headerData?.featured_button?.enabled !== false && headerData?.featured_button?.text
         ? [headerData.featured_button]
-        : [{ text: "Compare Universities", url: "/compare-university" }];
+        : [{ text: "Compare Universities", url: "/tools/compare-universities" }];
   }, [headerData]);
 
   const handleToolClick = (e) => {
@@ -574,7 +574,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
             {rawFeaturedButtons.map((btn, idx) => (
               <Link
                 key={btn._id || idx}
-                href={btn.url || "/compare-university"}
+                href={btn.url || "/tools/compare-universities"}
                 onClick={() => setActiveMenuKey(null)}
                 style={{
                   ...(btn.variant === "gold" || !btn.bg_color ? goldBtnStyle : {}),
@@ -604,7 +604,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
 
             {rawFeaturedButtons[0] && (
               <Link
-                href={rawFeaturedButtons[0].url || "/compare-university"}
+                href={rawFeaturedButtons[0].url || "/tools/compare-universities"}
                 style={{ ...goldBtnStyle, fontSize: "11px", borderRadius: "6px", height: "28px", padding: "0 10px" }}
                 className="inline-flex items-center justify-center whitespace-nowrap shrink-0 shadow-none font-bold select-none"
               >
@@ -988,7 +988,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
               {rawFeaturedButtons.map((btn, idx) => (
                 <Link
                   key={btn._id || idx}
-                  href={btn.url || "/compare-university"}
+                  href={btn.url || "/tools/compare-universities"}
                   onClick={() => closeMobile()}
                   style={{ ...goldBtnStyle, height: "40px", borderRadius: "8px" }}
                   className="w-full flex items-center justify-center font-bold text-xs shadow-xs select-none"

@@ -3,7 +3,7 @@ import { request } from "@/services/request";
 import { getPageMetaData, constructMetadata } from "@/constants/pageMetaData";
 import { CompareUniversityClientView } from "@/components/website";
 
-export const revalidate = 1800; // Next.js ISR: 30 minutes (30 * 60 = 1800 seconds)
+export const revalidate = 1800;
 
 export async function generateMetadata({ searchParams }) {
   const resolvedParams = searchParams ? await searchParams : {};
@@ -14,18 +14,18 @@ export async function generateMetadata({ searchParams }) {
     resolvedParams.universities ||
     "";
 
-  const pageMeta = await getPageMetaData("/compare-university");
+  const pageMeta = await getPageMetaData("/tools/compare-universities");
   const dynamicTitle = urlIds
     ? `Compare ${urlIds.split(",").join(" vs ")} | Online Degree Comparison`
     : pageMeta?.metaTitle || "Compare Top Online Universities & Courses";
 
   return constructMetadata(pageMeta, {
-    canonicalUrl: `https://sode.co.in/compare-university${urlIds ? `?university=${encodeURIComponent(urlIds)}` : ""}`,
+    canonicalUrl: `https://distanceeducationschool.com/tools/compare-universities${urlIds ? `?university=${encodeURIComponent(urlIds)}` : ""}`,
     title: dynamicTitle,
   });
 }
 
-export default async function CompareUniversityPage({ searchParams }) {
+export default async function CompareUniversitiesToolPage({ searchParams }) {
   const resolvedSearchParams = searchParams ? await searchParams : {};
   const urlIds =
     resolvedSearchParams.university ||
@@ -109,12 +109,18 @@ export default async function CompareUniversityPage({ searchParams }) {
       ? modesRes
       : [];
 
-    const rawCats = Array.isArray(catRes?.data)
-      ? catRes.data
-      : Array.isArray(catRes?.result)
+    const rawCats = Array.isArray(catRes?.result)
       ? catRes.result
+      : Array.isArray(catRes)
+      ? catRes
       : [];
-    initialCompareCategories = rawCats.filter((c) => c.showOnCompare);
+
+    initialCompareCategories = rawCats
+      .filter((c) => c.showOnCompare === true && c.categoryType !== "PARENT")
+      .map((c) => ({
+        label: c.name,
+        value: c.slug || c._id,
+      }));
 
     initialAllStates = Array.isArray(statesRes?.result)
       ? statesRes.result
@@ -128,18 +134,21 @@ export default async function CompareUniversityPage({ searchParams }) {
       ? approvalsRes
       : [];
   } catch (err) {
-    console.error("❌ Error prefetching compare-university data on server:", err);
+    console.error("[CompareUniversitiesToolPage] Error fetching options:", err);
   }
 
   return (
-    <CompareUniversityClientView
-      initialComparedData={initialComparedData}
-      initialAllUniversities={initialAllUniversities}
-      initialAllCourses={initialAllCourses}
-      initialAllModes={initialAllModes}
-      initialCompareCategories={initialCompareCategories}
-      initialAllStates={initialAllStates}
-      initialAllApprovals={initialAllApprovals}
-    />
+    <main className="w-full min-h-screen bg-slate-50">
+      <CompareUniversityClientView
+        initialComparedData={initialComparedData}
+        allUniversities={initialAllUniversities}
+        allCourses={initialAllCourses}
+        allModes={initialAllModes}
+        compareCategories={initialCompareCategories}
+        allStates={initialAllStates}
+        allApprovals={initialAllApprovals}
+        initialSelectedIds={urlIds}
+      />
+    </main>
   );
 }

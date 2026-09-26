@@ -6,13 +6,17 @@ import { BlogPageClientView } from "@/components/website";
 export const revalidate = 900;
 
 export async function generateMetadata() {
-  const pageMeta = await getPageMetaData("/blog");
+  const pageMeta = await getPageMetaData("/blogs");
   return constructMetadata(pageMeta, {
-    canonicalUrl: "https://sode.co.in/blog",
+    title: pageMeta?.metaTitle || "Latest Educational Blogs, News & Career Guides",
+    description:
+      pageMeta?.metaDescription ||
+      "Read expert articles on distance education, online degree reviews, approvals, and career paths.",
+    canonicalUrl: "https://distanceeducationschool.com/blogs",
   });
 }
 
-export default async function BlogPage() {
+export default async function BlogsPage() {
   let initialBlogs = [];
   let initialCategories = [];
   let initialTotal = 0;
@@ -40,7 +44,7 @@ export default async function BlogPage() {
     const catList = catRes?.result || catRes?.categories || (Array.isArray(catRes) ? catRes : []);
     initialCategories = Array.isArray(catList) ? catList : [];
   } catch (err) {
-    console.error("[Blog Page] Server fetch error:", err.message);
+    console.error("[Blogs Page] Server fetch error:", err.message);
   }
 
   return (

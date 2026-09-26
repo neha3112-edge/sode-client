@@ -16,3 +16,5 @@ export { default as CompareUniversityClientView } from "./CompareUniversityClien
 export { default as SafeHtmlRenderer } from "./SafeHtmlRenderer";
 export { ApprovalUniversityDirectory } from "./approvals";
 export { CareerExpertsSection } from "./counselor";
+export { AccreditationsView } from "./accreditations";
+export { ToolsView } from "./tools";

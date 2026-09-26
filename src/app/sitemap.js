@@ -10,7 +10,7 @@ export default async function sitemap() {
     "/contact",
     "/courses",
     "/universities",
-    "/blog",
+    "/blogs",
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
@@ -92,7 +92,7 @@ export default async function sitemap() {
   const blogUrls = (blogs || [])
     .filter((b) => b && b.slug)
     .map((blog) => ({
-      url: `${baseUrl}/blog/${blog.slug}`,
+      url: `${baseUrl}/blogs/${blog.slug}`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.7,

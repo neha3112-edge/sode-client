@@ -47,7 +47,7 @@ export async function generateMetadata({ params }) {
   try {
     const [{ initialData: data }, pageMeta] = await Promise.all([
       getBlogPageData(slug),
-      getPageMetaData(`/blog/${slug}`),
+      getPageMetaData(`/blogs/${slug}`),
     ]);
     const blog = data?.blogId || data || {};
 
@@ -61,7 +61,7 @@ export async function generateMetadata({ params }) {
       title,
       description,
       keywords,
-      canonicalUrl: `https://sode.co.in/blog/${blog?.slug || slug}`,
+      canonicalUrl: `https://distanceeducationschool.com/blogs/${blog?.slug || slug}`,
       ogImage,
       ogType: "article",
     });

@@ -36,18 +36,17 @@ export default function AiToolsAndScholarship({ block, bIdx }) {
             Make smarter education decisions with AI-powered tools
           </p>
 
-          {/* 4 Cards Grid */}
+          {/* 4 Cards Grid (Strictly 4 on Home) */}
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 md:gap-5 text-center">
-            {block.children.map((child, cIdx) => {
+            {(block.children || []).slice(0, 4).map((child, cIdx) => {
               const cName = (child.name || child.title || "").toLowerCase();
 
               let sparkleColor = "text-[#00ACC1]";
               let underlineClass = "border-[#00ACC1]";
               let btnText = "Suggest University";
               let desc = "Find universities that match your goals, preferences, and career plans.";
-              let clickHandler = () => openTool("suggest-university");
-              let isLink = false;
-              let linkUrl = "#";
+              let isLink = true;
+              let linkUrl = "/tools/suggest-university";
 
               let iconSvg = (
                 <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -60,7 +59,8 @@ export default function AiToolsAndScholarship({ block, bIdx }) {
                 underlineClass = "border-[#AB47BC]";
                 btnText = "Check Eligibility";
                 desc = "Instantly check which courses and universities you're eligible for.";
-                clickHandler = () => openTool("check-eligibility");
+                isLink = true;
+                linkUrl = "/tools/eligibility-checker";
                 iconSvg = (
                   <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -72,7 +72,7 @@ export default function AiToolsAndScholarship({ block, bIdx }) {
                 btnText = "Compare University";
                 desc = "Compare universities, courses, fees, and key benefits side by side.";
                 isLink = true;
-                linkUrl = "/compare-university";
+                linkUrl = "/tools/compare-universities";
                 iconSvg = (
                   <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
@@ -83,7 +83,8 @@ export default function AiToolsAndScholarship({ block, bIdx }) {
                 underlineClass = "border-[#EC407A]";
                 btnText = "Suggest Course";
                 desc = "Discover accredited degree and diploma programs matched to your background.";
-                clickHandler = () => openTool("suggest-course");
+                isLink = true;
+                linkUrl = "/tools/suggest-course";
                 iconSvg = (
                   <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -102,7 +103,7 @@ export default function AiToolsAndScholarship({ block, bIdx }) {
                     ✦
                   </span>
 
-                  <div className="flex flex-col items-center space-y-2 sm:space-y-3 w-full">
+                  <Link href={linkUrl} className="flex flex-col items-center space-y-2 sm:space-y-3 w-full no-underline">
                     <div className="w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center group-hover:scale-110 transition-transform">
                       {child.logo?.url || (typeof child.logo === "string" && child.logo) ? (
                         <Image
@@ -127,7 +128,7 @@ export default function AiToolsAndScholarship({ block, bIdx }) {
                     <p className="text-[#64748B] text-[10px] sm:text-xs md:text-[12.5px] leading-snug sm:leading-relaxed font-normal m-0 line-clamp-2 sm:line-clamp-3">
                       {child.description || desc}
                     </p>
-                  </div>
+                  </Link>
 
                   <div className="w-full pt-3 sm:pt-5">
                     {isLink ? (
@@ -156,6 +157,17 @@ export default function AiToolsAndScholarship({ block, bIdx }) {
                 </div>
               );
             })}
+          </div>
+
+          {/* Link to view all tools */}
+          <div className="mt-5 flex justify-center">
+            <Link
+              href="/tools"
+              className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-[#0B3B7E] hover:text-[#072859] bg-white hover:bg-slate-50 border border-slate-200 px-4 py-1.5 rounded-full shadow-2xs transition-colors"
+            >
+              <span>Explore All AI Tools</span>
+              <span className="text-xs">→</span>
+            </Link>
           </div>
 
           {/* ── MEET OUR CAREER EXPERTS (INSIDE SAME TOOLS SECTION) ── */}

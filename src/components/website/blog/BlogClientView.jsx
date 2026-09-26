@@ -438,12 +438,12 @@ export default function BlogClientView({ initialData, initialPopularBlogs = [], 
       ? {
           items: [
             { label: "Home", href: "/" },
-            { label: "Blog", href: "/blog" },
+            { label: "Blogs", href: "/blogs" },
             { label: pageTitle },
           ],
           backButton: {
-            label: "Blog",
-            href: "/blog",
+            label: "Blogs",
+            href: "/blogs",
           },
         }
       : { hidden: true },

@@ -413,7 +413,7 @@ export default function CompareUniversityClientView({
     const otherQuery = newParams.toString();
     const uniParam = slugsList.length > 0 ? `university=${slugsList.join(",")}` : "";
     const fullQuery = [uniParam, otherQuery].filter(Boolean).join("&");
-    const targetUrl = fullQuery ? `/compare-university?${fullQuery}` : "/compare-university";
+    const targetUrl = fullQuery ? `/tools/compare-universities?${fullQuery}` : "/tools/compare-universities";
 
     router.replace(targetUrl, { scroll: false });
     window.history.replaceState(null, "", targetUrl);

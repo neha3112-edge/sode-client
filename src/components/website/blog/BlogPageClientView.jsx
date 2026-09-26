@@ -130,7 +130,7 @@ function BlogCard({ blog }) {
         </div>
 
         {/* Title */}
-        <Link href={`/blog/${blog.slug}`} className="group-hover:text-blue-600 transition-colors">
+        <Link href={`/blogs/${blog.slug}`} className="group-hover:text-blue-600 transition-colors">
           <h3 className="text-sm sm:text-base font-bold text-slate-900 leading-snug line-clamp-2 m-0">
             {decodeHtml(blog.title)}
           </h3>
@@ -147,7 +147,7 @@ function BlogCard({ blog }) {
             {blog.author?.fullname || "Admin"}
           </span>
           <Link
-            href={`/blog/${blog.slug}`}
+            href={`/blogs/${blog.slug}`}
             className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 group/btn"
           >
             Read Article
