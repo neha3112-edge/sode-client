@@ -15,3 +15,4 @@ export { default as CompareDrawerWidget } from "./CompareDrawerWidget";
 export { default as CompareUniversityClientView } from "./CompareUniversityClientView";
 export { default as SafeHtmlRenderer } from "./SafeHtmlRenderer";
 export { ApprovalUniversityDirectory } from "./approvals";
+export { CareerExpertsSection } from "./counselor";

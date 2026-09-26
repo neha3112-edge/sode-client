@@ -5,23 +5,18 @@ import Image from "next/image";
 import Link from "next/link";
 import { Container } from "@/components/common/Container";
 import { useToolWizard } from "@/components/tool/ToolWizardContext";
-import { useFormModal } from "@/hooks/useFormModal";
+import { CareerExpertsSection } from "@/components/website/counselor";
 
 export default function AiToolsAndScholarship({ block, bIdx }) {
   const { openTool } = useToolWizard();
-  const { openFormModal } = useFormModal();
 
   return (
     <section
       key={block._id || block.slug || bIdx}
-      className="w-full relative pt-5 sm:pt-10 md:pt-12 pb-10 sm:pb-16 text-center"
+      className="w-full relative py-8 sm:py-12 md:py-14 bg-[#F1F5F9] text-center"
       suppressHydrationWarning
     >
-      {/* 🎨 Dual-Layer Background: Balanced overlap across scholarship banner */}
-      <div className="absolute inset-x-0 top-0 h-[67%] w-full bg-[#F1F5F9] z-0 pointer-events-none" />
-      <div className="absolute inset-x-0 top-[67%] bottom-0 w-full bg-white z-0 pointer-events-none" />
-
-      <Container className="relative z-10">
+      <Container className="relative z-10 !max-w-7xl">
         <div className="w-full mx-auto text-center">
           {/* Top Badge */}
           <div className="flex justify-center mb-1.5 sm:mb-3">
@@ -163,59 +158,8 @@ export default function AiToolsAndScholarship({ block, bIdx }) {
             })}
           </div>
 
-          {/* ── SCHOLARSHIP BANNER ── */}
-          <div
-            onClick={() =>
-              openFormModal({
-                title: "Claim Up to 20% Scholarship",
-                subtitle: "Fill the form below to get instant scholarship coupon code & fee concession",
-                submitButtonText: "Get Scholarship Code",
-              })
-            }
-            className="mt-12 relative w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl min-h-70 sm:min-h-[320px] md:min-h-[350px] flex flex-col md:flex-row items-center justify-between p-6 sm:p-8 md:p-10 lg:px-12 lg:py-10 select-none text-left cursor-pointer group"
-          >
-            <Image
-              src="/Scholarship Image.webp"
-              alt="Scholarship Banner Background"
-              fill
-              sizes="(max-width: 768px) 100vw, 1200px"
-              loading="eager"
-              className="object-cover object-center -z-10 transition-transform duration-500"
-            />
-
-            <div className="flex flex-col items-center md:items-start text-center md:text-left shrink-0 z-10 pl-0 md:pl-2">
-              <span className="text-white/90 font-medium text-xs sm:text-sm tracking-[0.2em] uppercase mb-1">
-                UPTO
-              </span>
-              <div className="text-7xl sm:text-8xl lg:text-9xl font-extrabold tracking-tight leading-none text-[#E8CA72]">
-                20%
-              </div>
-              <span className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight uppercase mt-1">
-                Scholarship
-              </span>
-            </div>
-
-            <div className="w-16 md:w-28 lg:w-40 shrink-0 h-8 pointer-events-none" />
-
-            <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-3 sm:space-y-3.5 max-w-md lg:max-w-lg z-10 pr-0 md:pr-2">
-              <h3 className="text-2xl sm:text-3xl lg:text-[34px] font-bold text-white leading-snug tracking-tight m-0">
-                Get <span className="text-[#E8CA72]">Scholarship</span> that <br className="hidden sm:inline" />
-                Make Education Affordable
-              </h3>
-              <p className="text-white/80 text-xs sm:text-[13px] leading-relaxed font-normal m-0 max-w-sm">
-                Education should be accessible to all. Use our Scholarship Coupon Code and get up to 20% off on course fees.
-              </p>
-              <div className="pt-1.5">
-                <button
-                  type="button"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-[#00A8EC] hover:bg-[#0098D6] text-white font-bold text-sm shadow-sm hover:shadow-md transition-all cursor-pointer border-0"
-                >
-                  <span>Get Coupon Code</span>
-                  <span className="text-base leading-none" aria-hidden="true">🎁</span>
-                </button>
-              </div>
-            </div>
-          </div>
+          {/* ── MEET OUR CAREER EXPERTS (INSIDE SAME TOOLS SECTION) ── */}
+          <CareerExpertsSection />
         </div>
       </Container>
     </section>
