@@ -43,6 +43,7 @@ export const manipalData = {
     accentColor: "#f7b314",
     goldColor: "#f7b314",
     badgeText: "Admissions Open 2026",
+    showCouponBtn: true,
     hero: {
       backgroundImage: "/assets/manipal_v1_images/banner-manipal-des-final.webp",
       mobileBackgroundImage: "/assets/manipal_v1_images/banner-muj-mobile1.webp",

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Form, Checkbox, message } from "antd";
 import { Phone } from "lucide-react";
 import { STATE_OPTIONS } from "@/constants/stateOptions";
+import LandingButton from "./LandingButton";
 
 const DEFAULT_COURSES = [
   { value: "MBA", label: "MBA" },
@@ -21,7 +22,7 @@ const DEFAULT_COURSES = [
 // Clean Indian Flag SVG (resolves Windows OS emoji rendering as plain text 'IN')
 const IndiaFlag = () => (
   <svg
-    className="w-[20px] h-[14px] rounded-[1px] shadow-xs shrink-0 select-none"
+    className="w-[18px] h-[13px] rounded-[1px] shadow-xs shrink-0 select-none"
     viewBox="0 0 640 480"
     xmlns="http://www.w3.org/2000/svg"
   >
@@ -41,18 +42,16 @@ const IndiaFlag = () => (
   </svg>
 );
 
-// Mobile Phone Input with Grey Flag Pill matching Image 2
+// Mobile Phone Input with Grey Flag Pill matching Image 1
 const PhoneInputField = ({ value, onChange, placeholder = "Enter 10-digit Mobile Number", maxLength = 10, isWhiteCard = false }) => (
-  <div className={`flex items-center w-full h-[38px] sm:h-[40px] rounded-[6px] overflow-hidden ${
-    isWhiteCard
-      ? "bg-[#f8fafc] border border-slate-200 focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500"
-      : "bg-white shadow-xs focus-within:ring-2 focus-within:ring-amber-400"
-  }`}>
-    <div className={`flex items-center gap-1.5 h-full px-2.5 select-none shrink-0 ${
-      isWhiteCard ? "bg-[#f1f5f9] border-r border-slate-200" : "bg-[#f0f2f5] border-r border-[#d1d5db]"
+  <div className={`flex items-center w-full h-[34px] sm:h-[35px] rounded-[5px] overflow-hidden ${isWhiteCard
+    ? "bg-[#f8fafc] border border-slate-200 focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500"
+    : "bg-white shadow-xs focus-within:ring-2 focus-within:ring-amber-400"
     }`}>
+    <div className={`flex items-center gap-1.5 h-full px-2.5 select-none shrink-0 ${isWhiteCard ? "bg-[#f1f5f9] border-r border-slate-200" : "bg-[#f0f2f5] border-r border-[#d1d5db]"
+      }`}>
       <IndiaFlag />
-      <span className="text-slate-900 font-bold text-[13px] tracking-tight">+91</span>
+      <span className="text-slate-900 font-bold text-[12.5px] tracking-tight">+91</span>
       <span className="text-slate-500 text-[9px] leading-none">▾</span>
     </div>
     <input
@@ -61,24 +60,22 @@ const PhoneInputField = ({ value, onChange, placeholder = "Enter 10-digit Mobile
       onChange={onChange}
       placeholder={placeholder}
       maxLength={maxLength}
-      className={`w-full h-full px-3 text-slate-800 placeholder:text-slate-400 border-none outline-none text-[13px] font-normal ${
-        isWhiteCard ? "bg-transparent" : "bg-white"
-      }`}
+      className={`w-full h-full px-3 text-slate-800 placeholder:text-slate-400 border-none outline-none text-[12.5px] sm:text-[13px] font-normal ${isWhiteCard ? "bg-transparent" : "bg-white"
+        }`}
     />
   </div>
 );
 
-// Dropdown Select with Bold Dark Arrow matching Image 2
+// Dropdown Select with Bold Dark Arrow matching Image 1
 const CustomSelectField = ({ value, onChange, placeholder, options, isWhiteCard = false }) => (
   <div className="relative w-full">
     <select
       value={value || ""}
       onChange={onChange}
-      className={`w-full h-[38px] sm:h-[40px] px-3.5 pr-8 rounded-[6px] outline-none text-[13px] font-normal appearance-none cursor-pointer ${
-        isWhiteCard
-          ? "bg-[#f8fafc] border border-slate-200 text-slate-800 focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
-          : "bg-white border-none shadow-xs focus:ring-2 focus:ring-amber-400"
-      } ${value ? "text-slate-800" : "text-slate-400"}`}
+      className={`w-full h-[34px] sm:h-[35px] px-3 pr-8 rounded-[5px] outline-none text-[12.5px] sm:text-[13px] font-normal appearance-none cursor-pointer ${isWhiteCard
+        ? "bg-[#f8fafc] border border-slate-200 text-slate-800 focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
+        : "bg-white border-none shadow-xs focus:ring-2 focus:ring-amber-400"
+        } ${value ? "text-slate-800" : "text-slate-400"}`}
     >
       <option value="" disabled className="text-slate-400">
         {placeholder}
@@ -205,36 +202,35 @@ export default function LandingLeadForm({
 
   return (
     <div
-      className={`landing-lead-card relative w-full max-w-full sm:max-w-[360px] lg:ml-auto lg:mr-0 mx-auto overflow-hidden ${
-        isWhiteCard ? "text-slate-800" : "text-white"
-      } ${isCard ? "landing-lead-card--hero" : "landing-lead-card--default"} ${className}`}
+      className={`landing-lead-card relative w-full max-w-[340px] sm:max-w-[350px] lg:max-w-[340px] lg:ml-auto lg:mr-0 mx-auto overflow-hidden ${isWhiteCard ? "text-slate-800" : "text-white"
+        } ${isCard ? "landing-lead-card--hero" : "landing-lead-card--default"} ${className}`}
       style={{
         ...(isWhiteCard
           ? {
-              backgroundColor: "#ffffff",
-              borderRadius: "16px",
-              padding: "18px 18px 20px",
-              boxShadow: "0 20px 40px -10px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0,0,0,0.05)",
-            }
+            backgroundColor: "#ffffff",
+            borderRadius: "12px",
+            padding: "16px 18px 18px",
+            boxShadow: "0 15px 35px -8px rgba(0, 0, 0, 0.22), 0 1px 3px rgba(0,0,0,0.05)",
+          }
           : isCard
-          ? {
+            ? {
               backgroundColor: activePrimaryColor,
-              borderRadius: "14px",
-              padding: "16px 14px 18px",
+              borderRadius: "12px",
+              padding: "12px 16px 14px",
               boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.2)",
             }
-          : {
+            : {
               backgroundColor: "#ffffff",
               padding: "14px",
             }),
         ...style,
       }}
     >
-      {/* Card Header matching reference UI */}
+      {/* Card Header matching reference Image 1 */}
       {isCard ? (
-        <div className="text-center mb-3">
+        <div className="text-center mb-2.5">
           <h2
-            className="m-0 text-[22px] sm:text-[23px] font-extrabold tracking-tight leading-tight"
+            className="m-0 text-[21px] sm:text-[22px] font-bold tracking-tight leading-tight"
             style={{
               color: isWhiteCard ? (activeBrand.hero?.enquireColor || "#ee3024") : activeAccentColor,
             }}
@@ -242,35 +238,37 @@ export default function LandingLeadForm({
             {activeTitle}
           </h2>
           <p
-            className={`m-0 mt-1 text-[12px] font-semibold leading-normal ${
-              isWhiteCard ? "text-slate-800" : "text-white font-medium"
-            }`}
+            className={`m-0 mt-1 mb-2.5 text-[14px] sm:text-[13.5px] font-sharp tracking-tight leading-tight ${isWhiteCard ? "text-slate-800" : "text-white font-medium"
+              }`}
           >
             {activeSubtitle}
           </p>
 
           {showPhoneBadge && activePhoneText && (
-            <div className="flex justify-center mt-2 mb-3">
-              <a
+            <div className="flex justify-center mt-1 mb-3">
+              <LandingButton
                 href={`tel:${activePhoneHref}`}
-                className="inline-flex items-center justify-center gap-1.5 px-4 py-1.5 rounded-full font-bold text-[14px] shadow-sm transition-all duration-150 hover:opacity-95 active:scale-95 no-underline cursor-pointer select-none"
+                variant="phone"
+                skewEffect={true}
+                icon={<Phone className={`w-3.5 h-3.5 stroke-[2.5] ${isWhiteCard ? "fill-white text-white" : "fill-black text-black"}`} />}
+                iconPosition="left"
+                className="px-4 py-1.5 text-[13px] rounded-full shadow-xs"
                 style={{
                   backgroundColor: isWhiteCard ? (activeBrand.hero?.phoneBadgeBg || "#ff5500") : activeAccentColor,
                   color: isWhiteCard ? "#ffffff" : "#000000",
                 }}
               >
-                <Phone className={`w-3.5 h-3.5 stroke-[2.5] ${isWhiteCard ? "fill-white text-white" : "fill-black text-black"}`} />
-                <span className="tracking-tight">{activePhoneText}</span>
-              </a>
+                <span className="tracking-tight font-bold">{activePhoneText}</span>
+              </LandingButton>
             </div>
           )}
         </div>
       ) : (
-        <div className="mb-4 text-center">
-          <h2 className="m-0 text-xl font-bold" style={{ color: activePrimaryColor }}>
+        <div className="mb-3 text-center">
+          <h2 className="m-0 text-lg font-bold" style={{ color: activePrimaryColor }}>
             {activeTitle}
           </h2>
-          <p className="m-0 mt-1 text-sm text-slate-500">{activeSubtitle}</p>
+          <p className="m-0 mt-0.5 text-xs text-slate-500">{activeSubtitle}</p>
         </div>
       )}
 
@@ -280,7 +278,7 @@ export default function LandingLeadForm({
         layout="vertical"
         onFinish={onFinish}
         initialValues={{ course: defaultCourse || undefined, terms: false }}
-        className="space-y-2 [&_.ant-form-item]:!mb-2 [&_.ant-form-item-label]:hidden [&_.ant-form-item-explain-error]:!text-red-500 [&_.ant-form-item-explain-error]:!text-[11px] [&_.ant-form-item-explain-error]:!pt-1"
+        className="space-y-1.5 [&_.ant-form-item]:!mb-1.5 [&_.ant-form-item-label]:hidden [&_.ant-form-item-explain-error]:!text-red-500 [&_.ant-form-item-explain-error]:!text-[10.5px] [&_.ant-form-item-explain-error]:!pt-0.5"
       >
         {/* Full Name */}
         <Form.Item
@@ -290,11 +288,10 @@ export default function LandingLeadForm({
           <input
             type="text"
             placeholder="Enter Your Name"
-            className={`w-full h-[38px] sm:h-[40px] px-3.5 rounded-[6px] outline-none text-[13px] font-normal ${
-              isWhiteCard
-                ? "bg-[#f8fafc] border border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
-                : "bg-white text-slate-800 placeholder:text-[#555555] border-none shadow-xs focus:ring-2 focus:ring-amber-400"
-            }`}
+            className={`w-full h-[34px] sm:h-[35px] px-3 rounded-[5px] outline-none text-[12.5px] sm:text-[13px] font-normal ${isWhiteCard
+              ? "bg-[#f8fafc] border border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
+              : "bg-white text-slate-800 placeholder:text-[#555555] border-none shadow-xs focus:ring-2 focus:ring-amber-400"
+              }`}
           />
         </Form.Item>
 
@@ -309,11 +306,10 @@ export default function LandingLeadForm({
           <input
             type="email"
             placeholder="Enter Your Email"
-            className={`w-full h-[38px] sm:h-[40px] px-3.5 rounded-[6px] outline-none text-[13px] font-normal ${
-              isWhiteCard
-                ? "bg-[#f8fafc] border border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
-                : "bg-white text-slate-800 placeholder:text-[#555555] border-none shadow-xs focus:ring-2 focus:ring-amber-400"
-            }`}
+            className={`w-full h-[34px] sm:h-[35px] px-3 rounded-[5px] outline-none text-[12.5px] sm:text-[13px] font-normal ${isWhiteCard
+              ? "bg-[#f8fafc] border border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
+              : "bg-white text-slate-800 placeholder:text-[#555555] border-none shadow-xs focus:ring-2 focus:ring-amber-400"
+              }`}
           />
         </Form.Item>
 
@@ -353,8 +349,8 @@ export default function LandingLeadForm({
         </Form.Item>
 
         {/* Terms & Conditions Checkbox with Disclaimer Link */}
-        <Form.Item name="terms" valuePropName="checked" className="!mb-2.5 !mt-1">
-          <label className="flex items-start gap-2 cursor-pointer select-none">
+        <Form.Item name="terms" valuePropName="checked" className="!mb-2 !mt-1">
+          <label className="flex items-start gap-1.5 cursor-pointer select-none">
             <input
               type="checkbox"
               className="mt-0.5 w-[13px] h-[13px] rounded-[2px] bg-white border border-slate-300 accent-[#28a745] cursor-pointer shrink-0"
@@ -364,13 +360,12 @@ export default function LandingLeadForm({
               <button
                 type="button"
                 onClick={() => onOpenDisclaimer?.()}
-                className={`font-semibold underline cursor-pointer bg-transparent border-none p-0 inline ${
-                  isWhiteCard
-                    ? "text-blue-600 hover:text-blue-700"
-                    : isCard
+                className={`font-semibold underline cursor-pointer bg-transparent border-none p-0 inline ${isWhiteCard
+                  ? "text-blue-600 hover:text-blue-700"
+                  : isCard
                     ? "text-white hover:text-amber-300"
                     : "text-blue-600 hover:text-blue-700"
-                }`}
+                  }`}
               >
                 Disclaimer
               </button>
@@ -378,25 +373,21 @@ export default function LandingLeadForm({
           </label>
         </Form.Item>
 
-        {/* Submit Button with dynamic brand background support */}
-        <button
+        {/* Reusable Submit Button */}
+        <LandingButton
           type="submit"
-          disabled={loading}
-          className="w-full h-[40px] sm:h-[42px] rounded-[6px] text-white font-bold text-[15px] border-none shadow-sm cursor-pointer transition-all flex items-center justify-center mt-1 active:scale-[0.99] hover:opacity-95"
+          variant="submit"
+          loading={loading}
+          className="w-full h-[38px] sm:h-[40px] text-[14px] sm:text-[15px] mt-1"
           style={{
             background:
               activeBrand.hero?.submitBtnBg ||
               activeBrand.submitBtnBg ||
               "#28a745",
-            color: "#ffffff",
           }}
         >
-          {loading ? (
-            <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-          ) : (
-            buttonText
-          )}
-        </button>
+          {buttonText}
+        </LandingButton>
       </Form>
     </div>
   );

@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import confetti from "canvas-confetti";
 import LandingContainer from "./LandingContainer";
 
 export default function LandingNavbar({
@@ -17,8 +18,8 @@ export default function LandingNavbar({
     sodeIcon = "/assets/images/sode_icon.png",
     primaryColor = "#08417b",
     badgeText = "Admission Open 2026",
-    giftGif = "/assets/images/gift.gif",
-    showCouponBtn = false,
+    giftGif = "/assets/manipal_v1_images/gift.gif",
+    showCouponBtn = true,
   } = brand;
 
   const handleScrollTop = (e) => {
@@ -29,6 +30,24 @@ export default function LandingNavbar({
     } else {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
+  };
+
+  const handleCouponClick = (e) => {
+    try {
+      if (typeof window !== "undefined") {
+        const rect = e?.currentTarget?.getBoundingClientRect();
+        const x = rect ? (rect.left + rect.width / 2) / window.innerWidth : 0.85;
+        const y = rect ? (rect.top + rect.height / 2) / window.innerHeight : 0.1;
+        confetti({
+          particleCount: 45,
+          spread: 55,
+          origin: { x, y },
+          zIndex: 99999,
+          colors: ["#2ecc71", "#27ae60", "#ffd700", "#ff5722", "#ffffff"],
+        });
+      }
+    } catch { }
+    onOpenScholarship?.();
   };
 
   return (
@@ -72,28 +91,34 @@ export default function LandingNavbar({
           </Link>
         </div>
 
-        {/* Right: Scholarship Coupon Code Button */}
-        <div className="header_heading shrink-0 pl-2 flex items-center">
+        {/* Right: Scholarship Coupon Code Button (Moved slightly left with margin-right) */}
+        <div className="header_heading shrink-0 pl-2 mr-6 sm:mr-10 lg:mr-14 flex items-center">
           {onOpenScholarship || showCouponBtn ? (
             <button
               type="button"
-              onClick={() => onOpenScholarship?.()}
-              className="coupon-btn-main inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg text-white font-bold text-[11px] sm:text-[13.5px] cursor-pointer shadow-md hover:scale-[1.02] active:scale-95 transition-all border-none"
-              style={{
-                background: "linear-gradient(135deg, #2ecc71, #27ae60)",
-                boxShadow: "0 4px 15px rgba(46, 204, 113, 0.35)",
-              }}
+              onClick={handleCouponClick}
+              aria-label="Get Scholarship Coupon Code"
+              className="coupon-btn-main relative inline-flex items-center gap-1.5 sm:gap-2 px-5 sm:px-7 py-1 sm:py-1.5 rounded-[8px] text-white font-bold text-[11px] sm:text-[13px] cursor-pointer border-none overflow-hidden select-none"
             >
-              <div className="relative w-4 sm:w-5 h-4 sm:h-5 shrink-0">
+              {/* Moving Light Green Box from left to right using transform */}
+              <span className="moving-light-green-box" />
+
+              {/* White Circular Disc for Gift Icon */}
+              <span className="relative w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white flex items-center justify-center shrink-0 shadow-xs z-10 p-0.5">
                 <Image
-                  src={giftGif}
+                  src={giftGif || "/assets/manipal_v1_images/gift.gif"}
                   alt="Scholarship Gift"
-                  fill
+                  width={18}
+                  height={18}
                   unoptimized
                   className="object-contain"
                 />
-              </div>
-              <span className="truncate">Scholarship Coupon Code</span>
+              </span>
+
+              {/* Scholarship Coupon Code Text */}
+              <span className="relative z-10 tracking-tight whitespace-nowrap text-white font-bold drop-shadow-[0_1px_2px_rgba(0,0,0,0.15)]">
+                Scholarship Coupon Code
+              </span>
             </button>
           ) : (
             <span
@@ -108,3 +133,4 @@ export default function LandingNavbar({
     </header>
   );
 }
+

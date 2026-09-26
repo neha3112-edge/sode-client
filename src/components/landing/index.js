@@ -21,3 +21,4 @@ export { default as BrochureModal } from "./modals/BrochureModal";
 export { default as ScholarshipModal } from "./modals/ScholarshipModal";
 export { default as CompareModal } from "./modals/CompareModal";
 export { default as LegalModal } from "./modals/LegalModal";
+export { default as LandingButton } from "./LandingButton";
