@@ -8,7 +8,6 @@ import { Button, Layout, Dropdown, Drawer, Collapse } from "antd";
 import { DownOutlined, MenuOutlined, CloseOutlined, RightOutlined } from "@ant-design/icons";
 import { Container } from "@/components/common/Container";
 import { getAssetPath } from "@/lib/utils";
-import { useToolWizard } from "@/components/tool/ToolWizardContext";
 
 const { Header: AntHeader } = Layout;
 
@@ -203,7 +202,6 @@ function renderCategoryIcon(categoryName = "", type = "programs") {
 
 export function Header({ initialHeaderData = null, siteLogo = null }) {
   const router = useRouter();
-  const { openTool } = useToolWizard();
   const headerData = initialHeaderData?.result || initialHeaderData || {};
   const [activeMenuKey, setActiveMenuKey] = useState(null); // Key of the currently opened menu item
   const [activeCategoryIndex, setActiveCategoryIndex] = useState({});
@@ -239,12 +237,6 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
         ? [headerData.featured_button]
         : [{ text: "Compare Universities", url: "/tools/compare-universities" }];
   }, [headerData]);
-
-  const handleToolClick = (e) => {
-    e?.preventDefault();
-    setActiveMenuKey(null);
-    openTool("suggest-me-a-university", { tool_mode: "Suggest University" });
-  };
 
   const closeMobile = (url) => {
     setMobileMenuOpen(false);
@@ -473,14 +465,13 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
 
               // 1. Highlighted Tool Button (e.g. AI Tools)
               if (item.is_highlighted) {
-                const isAiTool = (item.label || "").toLowerCase().includes("tool") || (item.url || "").includes("suggest");
                 return (
                   <AiToolButton
                     key={itemKey}
                     label={item.label}
                     badge={item.badge || "NEW"}
-                    href={isAiTool ? undefined : (item.url || "#")}
-                    onClick={isAiTool ? handleToolClick : () => setActiveMenuKey(null)}
+                    href={item.url || "/tools"}
+                    onClick={() => setActiveMenuKey(null)}
                     className="ml-1"
                   />
                 );
@@ -598,7 +589,8 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
             <AiToolButton
               label="AI Tools"
               badge="NEW"
-              onClick={handleToolClick}
+              href="/tools"
+              onClick={() => setActiveMenuKey(null)}
               className="whitespace-nowrap shrink-0"
             />
 
@@ -974,16 +966,13 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
             ))}
 
             <div className="pt-4 flex flex-col gap-2.5">
-              <Button
-                block
-                onClick={() => {
-                  closeMobile();
-                  openTool("suggest-me-a-university", { tool_mode: "Suggest University" });
-                }}
-                className="h-10 font-bold text-xs bg-[#EBF3FE] text-[#0B57D0] border-blue-200 rounded-lg flex items-center justify-center gap-1.5"
+              <Link
+                href="/tools"
+                onClick={() => closeMobile()}
+                className="h-10 font-bold text-xs bg-[#EBF3FE] text-[#0B57D0] border border-blue-200 rounded-lg flex items-center justify-center gap-1.5"
               >
                 <span>✦ Explore AI Tools</span>
-              </Button>
+              </Link>
 
               {rawFeaturedButtons.map((btn, idx) => (
                 <Link
