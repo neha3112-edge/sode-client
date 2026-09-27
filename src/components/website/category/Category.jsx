@@ -9,7 +9,7 @@ import AiToolsAndScholarship from "./AiToolsAndScholarship";
 import CategorySectionBlock from "./CategorySectionBlock";
 import CategoryDetailModal from "./CategoryDetailModal";
 
-export function Category({ categories = [], universities = [], programs = [] }) {
+export function Category({ categories = [], universities = [], programs = [], counselors = [] }) {
   const router = useRouter();
   const [activeCategory, setActiveCategory] = useState(null);
   const [modalData, setModalData] = useState({ category: null, children: [], universities: [], courses: [] });
@@ -326,6 +326,7 @@ export function Category({ categories = [], universities = [], programs = [] }) 
                 key={block._id || block.slug || bIdx}
                 block={block}
                 bIdx={bIdx}
+                counselors={counselors}
               />
             );
           }

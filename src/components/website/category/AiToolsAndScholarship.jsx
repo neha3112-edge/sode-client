@@ -7,7 +7,7 @@ import { Container } from "@/components/common/Container";
 import { useToolWizard } from "@/components/tool/ToolWizardContext";
 import { CareerExpertsSection } from "@/components/website/counselor";
 
-export default function AiToolsAndScholarship({ block, bIdx }) {
+export default function AiToolsAndScholarship({ block, bIdx, counselors = [] }) {
   const { openTool } = useToolWizard();
 
   return (
@@ -171,7 +171,7 @@ export default function AiToolsAndScholarship({ block, bIdx }) {
           </div>
 
           {/* ── MEET OUR CAREER EXPERTS (INSIDE SAME TOOLS SECTION) ── */}
-          <CareerExpertsSection />
+          <CareerExpertsSection counselors={counselors} />
         </div>
       </Container>
     </section>
