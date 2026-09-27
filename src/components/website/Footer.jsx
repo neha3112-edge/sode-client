@@ -487,7 +487,10 @@ export function Footer({
               >
                 {legal?.legal_notice_heading || "LEGAL NOTICE"}
               </h5>
-              <p className="text-[11px] sm:text-[12px] leading-relaxed text-start text-gray-300 font-normal">
+              <p
+                className="text-[11px] sm:text-[12px] leading-relaxed text-justify text-gray-300 font-normal"
+                style={{ textAlign: "justify", textJustify: "inter-word" }}
+              >
                 {legal.disclaimer_text}
               </p>
             </div>
