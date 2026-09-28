@@ -374,9 +374,18 @@ export function CourseClientView({
   }, [rawCourses, universityName, courseData?.universitySlug]);
 
   const handleOpenLead = (actionType = "Download Brochure", specName = null) => {
-    const courseTitleForLead = specName
-      ? `${courseData?.name || "Course"} (${specName})`
-      : courseData?.name || "Course";
+    let courseTitleForLead = courseData?.name || "Course";
+    if (specName) {
+      const cleanSpec = String(specName).trim();
+      if (
+        cleanSpec.toLowerCase().startsWith(courseTitleForLead.toLowerCase()) ||
+        cleanSpec.toLowerCase().includes(" in ")
+      ) {
+        courseTitleForLead = cleanSpec;
+      } else {
+        courseTitleForLead = `${courseTitleForLead} in ${cleanSpec}`;
+      }
+    }
 
     openFormModal({
       course: courseTitleForLead,

@@ -28,6 +28,36 @@ const normalizeString = (str) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
 
+export const getCleanSpecName = (rawName, courseName = "") => {
+  if (!rawName) return "Specialization";
+  let str = String(rawName).trim();
+
+  if (courseName) {
+    const escaped = courseName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const re = new RegExp(`^(online\\s+|distance\\s+|regular\\s+)?(${escaped})\\s*(in|—|-|:)\\s*`, "i");
+    str = str.replace(re, "").trim();
+  }
+
+  str = str.replace(/^(online\s+|distance\s+|regular\s+)?[a-z0-9.&/+\s]{2,20}?\s+(in|—|-|:)\s+/i, "").trim();
+
+  return str || rawName;
+};
+
+export const getFullSpecName = (rawName, courseName = "") => {
+  if (!rawName) return courseName || "Course";
+  const clean = getCleanSpecName(rawName, courseName);
+  const baseCourse = courseName || "Course";
+
+  if (/^(online|distance|regular)\s+/i.test(rawName) && rawName.toLowerCase().includes(" in ")) {
+    return rawName;
+  }
+  if (rawName.toLowerCase().startsWith(baseCourse.toLowerCase()) && rawName.toLowerCase().includes(" in ")) {
+    return rawName;
+  }
+
+  return `${baseCourse} in ${clean}`;
+};
+
 const findMatchingSpecialization = (specList, query) => {
   if (!query || !Array.isArray(specList) || specList.length === 0) return null;
   const rawQuery = decodeURIComponent(String(query)).toLowerCase().trim();
@@ -185,7 +215,7 @@ export default function CourseSpecializations({
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3.5 md:gap-4">
         {specializations.map((item, idx) => {
           const IconComponent = SPEC_ICONS[idx % SPEC_ICONS.length];
-          const specTitle = item.name || "Specialization";
+          const cleanSpecTitle = getCleanSpecName(item.name, courseData?.name);
           const isHighlighted =
             (activeSpecId && (activeSpecId === item._id || activeSpecId === item.name)) ||
             (selectedSpecModal && (selectedSpecModal._id === item._id || selectedSpecModal.name === item.name));
@@ -204,7 +234,7 @@ export default function CourseSpecializations({
                 <div className="relative w-5 h-5 sm:w-6 sm:h-6 shrink-0">
                   <Image
                     src={getAssetPath(item.logo)}
-                    alt={specTitle}
+                    alt={cleanSpecTitle}
                     fill
                     sizes="24px"
                     className="object-contain"
@@ -218,7 +248,7 @@ export default function CourseSpecializations({
               <span className={`text-[11px] sm:text-xs md:text-[13.5px] font-bold tracking-tight leading-snug transition-colors ${
                 isHighlighted ? "text-[#08AEAA]" : "text-gray-900 group-hover:text-[#08AEAA]"
               }`}>
-                {specTitle}
+                {cleanSpecTitle}
               </span>
             </div>
           );
@@ -227,8 +257,8 @@ export default function CourseSpecializations({
 
       {/* Specialization Details Modal */}
       {selectedSpecModal && (() => {
-        const specTitle = selectedSpecModal.name || "Specialization";
-        const modalTitle = specTitle;
+        const cleanSpecTitle = getCleanSpecName(selectedSpecModal.name, courseData?.name);
+        const modalTitle = getFullSpecName(selectedSpecModal.name, courseData?.name);
         const itemDuration = selectedSpecModal.duration || courseData?.duration || "";
         const itemDeadline = formatAdmissionDeadline(selectedSpecModal.admissionDeadline || courseData?.admissionDeadline || "");
         const itemDesc = selectedSpecModal.description?.trim() || "";
@@ -315,14 +345,14 @@ export default function CourseSpecializations({
                     <div className="relative w-7 h-7 sm:w-9 sm:h-9 flex items-center justify-center">
                       <Image
                         src={specLogo || universityLogoSrc}
-                        alt={specLogo ? specTitle : (universityName || "University")}
+                        alt={specLogo ? cleanSpecTitle : (universityName || "University")}
                         fill
                         sizes="36px"
                         className="object-contain"
                       />
                     </div>
                     <span className="text-[8.5px] sm:text-[9.5px] font-bold text-gray-900 leading-tight mt-0.5 sm:mt-1 line-clamp-1 sm:line-clamp-2">
-                      {specLogo ? specTitle : universityName}
+                      {specLogo ? cleanSpecTitle : universityName}
                     </span>
                   </div>
                 )}
