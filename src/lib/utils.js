@@ -59,25 +59,34 @@ export function getAssetPath(path = "", fallback = DEFAULT_SVG_LOGO) {
   return fallback;
 }
 
-const FULL_MONTHS = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"
+const SHORT_MONTHS = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"
 ];
 
 const MONTH_MAP = {
-  jan: "January", january: "January",
-  feb: "February", february: "February",
-  mar: "March", march: "March",
-  apr: "April", april: "April",
+  jan: "Jan", january: "Jan",
+  feb: "Feb", february: "Feb",
+  mar: "Mar", march: "Mar",
+  apr: "Apr", april: "Apr",
   may: "May",
-  jun: "June", june: "June",
-  jul: "July", july: "July",
-  aug: "August", august: "August",
-  sep: "September", sept: "September", september: "September",
-  oct: "October", october: "October",
-  nov: "November", november: "November",
-  dec: "December", december: "December"
+  jun: "Jun", june: "Jun",
+  jul: "Jul", july: "Jul",
+  aug: "Aug", august: "Aug",
+  sep: "Sept", sept: "Sept", september: "Sept",
+  oct: "Oct", october: "Oct",
+  nov: "Nov", november: "Nov",
+  dec: "Dec", december: "Dec"
 };
+
+const FULL_TO_SHORT_MONTH_RE = /\b(january|february|march|april|june|july|august|september|sep|october|november|december)\b/gi;
+
+function replaceFullMonths(str) {
+  if (!str) return str;
+  return str.replace(FULL_TO_SHORT_MONTH_RE, (match) => {
+    return MONTH_MAP[match.toLowerCase()] || match;
+  });
+}
 
 function getOrdinalSuffix(n) {
   const num = parseInt(n, 10);
@@ -91,8 +100,8 @@ function getOrdinalSuffix(n) {
 }
 
 /**
- * Formats admission deadline with English ordinal suffix and full month:
- * e.g. 15 -> "15th September 2026", 30th-sept-2026 -> "30th September 2026"
+ * Formats admission deadline with English ordinal suffix and short month:
+ * e.g. 15 -> "15th Sept 2026", 30th-sept-2026 -> "30th Sept 2026", "15 September 2026" -> "15th Sept 2026"
  */
 export function formatAdmissionDeadline(deadline) {
   if (!deadline && deadline !== 0) return "";
@@ -101,7 +110,7 @@ export function formatAdmissionDeadline(deadline) {
 
   const now = new Date();
   const currentYear = now.getFullYear();
-  const currentMonth = FULL_MONTHS[now.getMonth()];
+  const currentMonth = SHORT_MONTHS[now.getMonth()];
 
   // Case 1: Just day number (e.g. 15, 30, "1", "2")
   if (/^\d{1,2}$/.test(str)) {
@@ -122,7 +131,7 @@ export function formatAdmissionDeadline(deadline) {
     const day = parseInt(dmyMatch[1], 10);
     const mIdx = parseInt(dmyMatch[2], 10) - 1;
     const year = dmyMatch[3];
-    const month = (mIdx >= 0 && mIdx < 12) ? FULL_MONTHS[mIdx] : currentMonth;
+    const month = (mIdx >= 0 && mIdx < 12) ? SHORT_MONTHS[mIdx] : currentMonth;
     return `${day}${getOrdinalSuffix(day)} ${month} ${year}`;
   }
 
@@ -132,7 +141,7 @@ export function formatAdmissionDeadline(deadline) {
     const year = ymdMatch[1];
     const mIdx = parseInt(ymdMatch[2], 10) - 1;
     const day = parseInt(ymdMatch[3], 10);
-    const month = (mIdx >= 0 && mIdx < 12) ? FULL_MONTHS[mIdx] : currentMonth;
+    const month = (mIdx >= 0 && mIdx < 12) ? SHORT_MONTHS[mIdx] : currentMonth;
     return `${day}${getOrdinalSuffix(day)} ${month} ${year}`;
   }
 
@@ -146,9 +155,10 @@ export function formatAdmissionDeadline(deadline) {
     return `${day}${getOrdinalSuffix(day)} ${month} ${year}`;
   }
 
-  // Fallback: add ordinal suffix to any leading digits
-  return str.replace(/^(\d{1,2})(?!(?:st|nd|rd|th))\b/i, (match, day) => {
+  // Fallback: add ordinal suffix to any leading digits and convert full month names to short
+  const formatted = str.replace(/^(\d{1,2})(?!(?:st|nd|rd|th))\b/i, (match, day) => {
     return `${day}${getOrdinalSuffix(day)}`;
   });
+  return replaceFullMonths(formatted);
 }
 
