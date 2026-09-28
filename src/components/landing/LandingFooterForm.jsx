@@ -6,6 +6,7 @@ import { Form, Input, Select, Button, message } from "antd";
 import { STATE_OPTIONS } from "@/constants/stateOptions";
 import { Phone } from "lucide-react";
 import LandingContainer from "./LandingContainer";
+import LandingButton from "./LandingButton";
 
 const IndiaFlag = () => (
   <svg
@@ -86,6 +87,18 @@ export default function LandingFooterForm({ brand = {}, courses = [], onOpenDisc
   // SMU Layout: Horizontal Blue Band with Card Floating Over Top and Bottom into White Space
   // ==========================================
   if (isSmu) {
+    const rawCourses = courses && courses.length > 0 ? courses : [
+      { value: "BA", label: "BA" },
+      { value: "BCOM", label: "BCOM" },
+      { value: "MBA", label: "MBA" },
+      { value: "MA", label: "MA" },
+      { value: "MCOM", label: "MCOM" },
+      { value: "MCA", label: "MCA" },
+    ];
+    const activeCourses = rawCourses.map((item) =>
+      typeof item === "string" ? { value: item, label: item } : item
+    );
+
     return (
       <section
         id="ftr-frm"
@@ -108,26 +121,42 @@ export default function LandingFooterForm({ brand = {}, courses = [], onOpenDisc
                 </div>
               </div>
 
-              {/* Right Column: Floating White Card Overlapping Top and Bottom */}
+              {/* Right Column: Floating Warm Ivory Card Overlapping Top and Bottom */}
               <div className="lg:col-span-5 flex justify-center lg:justify-end -my-14 sm:-my-20 lg:-my-24 relative z-20">
-                <div className="w-full max-w-[420px] bg-white rounded-[16px] sm:rounded-[20px] p-5 sm:p-6 shadow-[0_12px_45px_rgba(0,0,0,0.16)] border border-slate-200/90 text-slate-900">
+                <div
+                  className="w-full max-w-[390px] sm:max-w-[400px] text-slate-900"
+                  style={{
+                    backgroundColor: "#faf8f5",
+                    borderRadius: "22px",
+                    padding: "24px 22px 22px 22px",
+                    boxShadow: "0 14px 40px rgba(0, 0, 0, 0.18)",
+                    border: "1px solid rgba(226, 232, 240, 0.85)",
+                  }}
+                >
                   {/* Card Title */}
-                  <h3 className="text-[20px] sm:text-[22px] font-bold text-[#074a76] text-center tracking-tight m-0">
+                  <h3 className="text-[21px] sm:text-[22px] font-bold text-[#004b7a] text-center tracking-tight m-0">
                     Get 100% Free Counselling
                   </h3>
-                  <p className="text-[12px] sm:text-[13px] text-slate-600 text-center mt-1 mb-2 font-normal">
+                  <p className="text-[13px] text-[#222222] text-center mt-1 mb-3 font-medium">
                     Academic Experts will assist you!
                   </p>
 
                   {/* Orange Call Pill Button */}
-                  <div className="flex justify-center mb-3">
-                    <a
+                  <div className="flex justify-center mb-3.5">
+                    <LandingButton
                       href={`tel:${(brand.phone || "+91 7065 7777 55").replace(/\s+/g, "")}`}
-                      className="inline-flex items-center gap-1.5 bg-[#f78d2d] hover:bg-[#ea7d1d] text-white font-bold text-[12.5px] sm:text-[13px] px-4 py-1.5 rounded-full shadow-xs transition-colors cursor-pointer no-underline"
+                      variant="phone"
+                      skewEffect={true}
+                      icon={<Phone className="w-3.5 h-3.5 fill-white text-white stroke-[2.5]" />}
+                      iconPosition="left"
+                      className="px-5 py-1.5 text-[13px] sm:text-[13.5px] rounded-full shadow-xs"
+                      style={{
+                        background: "#f78d2d",
+                        color: "#ffffff",
+                      }}
                     >
-                      <Phone className="w-3.5 h-3.5 fill-current" />
-                      <span>{brand.phoneDisplay || "+91 7065 7777 55"}</span>
-                    </a>
+                      <span className="tracking-tight font-bold">{brand.phoneDisplay || "+91 7065 7777 55"}</span>
+                    </LandingButton>
                   </div>
 
                   {/* Form Fields */}
@@ -141,42 +170,50 @@ export default function LandingFooterForm({ brand = {}, courses = [], onOpenDisc
                     <Form.Item
                       name="full_name"
                       rules={[{ required: true, message: "Please enter your name" }]}
-                      className="mb-0"
+                      className="!mb-2.5"
                     >
                       <Input
                         placeholder="Enter Your Name"
-                        className="h-[38px] text-[13px] rounded-[6px] border-slate-300 hover:border-slate-400 focus:border-[#074a76]"
+                        className="w-full !h-[40px] !text-[13.5px] !rounded-[6px] !bg-white !border !border-[#d1d5db] hover:!border-slate-400 focus:!border-[#004b7a] focus:!shadow-none !px-3.5"
                       />
                     </Form.Item>
 
                     {/* Email */}
                     <Form.Item
                       name="email"
-                      rules={[{ required: true, type: "email", message: "Please enter your email" }]}
-                      className="mb-0"
+                      rules={[
+                        { required: true, message: "Please enter your email" },
+                        { type: "email", message: "Please enter a valid email" },
+                      ]}
+                      className="!mb-2.5"
                     >
                       <Input
+                        type="email"
                         placeholder="Enter Your Email"
-                        className="h-[38px] text-[13px] rounded-[6px] border-slate-300 hover:border-slate-400 focus:border-[#074a76]"
+                        className="w-full !h-[40px] !text-[13.5px] !rounded-[6px] !bg-white !border !border-[#d1d5db] hover:!border-slate-400 focus:!border-[#004b7a] focus:!shadow-none !px-3.5"
                       />
                     </Form.Item>
 
                     {/* Phone */}
                     <Form.Item
                       name="phone"
-                      rules={[{ required: true, pattern: /^[6-9]\d{9}$/, message: "Enter 10-digit mobile" }]}
-                      className="mb-0"
+                      rules={[
+                        { required: true, message: "Please enter mobile number" },
+                        { pattern: /^[6-9]\d{9}$/, message: "Enter 10-digit mobile" },
+                      ]}
+                      className="!mb-2.5"
                     >
                       <Input
                         prefix={
-                          <span className="flex items-center text-slate-700 text-xs font-semibold mr-1.5 select-none">
+                          <div className="flex items-center gap-1.5 pr-2 mr-1.5 border-r border-[#d1d5db] select-none shrink-0">
                             <IndiaFlag />
-                            <span>+91 ▾</span>
-                          </span>
+                            <span className="text-slate-800 font-bold text-[12.5px] tracking-tight">+91</span>
+                            <span className="text-slate-500 text-[9px] leading-none">▾</span>
+                          </div>
                         }
                         placeholder="Enter Your Number"
                         maxLength={10}
-                        className="h-[38px] text-[13px] rounded-[6px] border-slate-300 hover:border-slate-400 focus:border-[#074a76]"
+                        className="w-full !h-[40px] !text-[13.5px] !rounded-[6px] !bg-white !border-[#d1d5db] hover:!border-slate-400 focus-within:!border-[#004b7a]"
                       />
                     </Form.Item>
 
@@ -184,12 +221,12 @@ export default function LandingFooterForm({ brand = {}, courses = [], onOpenDisc
                     <Form.Item
                       name="course"
                       rules={[{ required: true, message: "Please select course" }]}
-                      className="mb-0"
+                      className="!mb-2.5"
                     >
                       <Select
                         placeholder="Select Your Course"
-                        options={courses}
-                        className="w-full h-[38px] text-[13px]"
+                        options={activeCourses}
+                        className="w-full !h-[40px] text-[13.5px] [&_.ant-select-selector]:!h-[40px] [&_.ant-select-selector]:!rounded-[6px] [&_.ant-select-selector]:!border-[#d1d5db] hover:[&_.ant-select-selector]:!border-slate-400 focus-within:[&_.ant-select-selector]:!border-[#004b7a] [&_.ant-select-selection-item]:!leading-[38px] [&_.ant-select-selection-placeholder]:!leading-[38px] [&_.ant-select-selector]:!bg-white [&_.ant-select-arrow]:!text-slate-600"
                       />
                     </Form.Item>
 
@@ -197,24 +234,26 @@ export default function LandingFooterForm({ brand = {}, courses = [], onOpenDisc
                     <Form.Item
                       name="state"
                       rules={[{ required: true, message: "Please select state" }]}
-                      className="mb-0"
+                      className="!mb-2.5"
                     >
                       <Select
                         placeholder="Select Your State"
                         options={stateOptions}
                         showSearch
-                        className="w-full h-[38px] text-[13px]"
+                        optionFilterProp="label"
+                        className="w-full !h-[40px] text-[13.5px] [&_.ant-select-selector]:!h-[40px] [&_.ant-select-selector]:!rounded-[6px] [&_.ant-select-selector]:!border-[#d1d5db] hover:[&_.ant-select-selector]:!border-slate-400 focus-within:[&_.ant-select-selector]:!border-[#004b7a] [&_.ant-select-selection-item]:!leading-[38px] [&_.ant-select-selection-placeholder]:!leading-[38px] [&_.ant-select-selector]:!bg-white [&_.ant-select-arrow]:!text-slate-600"
                       />
                     </Form.Item>
 
                     {/* Disclaimer Checkbox */}
-                    <div className="pt-0.5">
-                      <label className="flex items-start gap-1.5 cursor-pointer select-none">
+                    <div className="pt-0.5 pb-1">
+                      <label className="flex items-start gap-2 cursor-pointer select-none">
                         <input
                           type="checkbox"
-                          className="mt-0.5 w-[13px] h-[13px] rounded-[2px] border border-slate-400 accent-[#2cc36c] cursor-pointer shrink-0"
+                          defaultChecked={false}
+                          className="mt-0.5 w-[13px] h-[13px] rounded-[2px] bg-white border border-slate-300 accent-[#22c55e] cursor-pointer shrink-0"
                         />
-                        <span className="text-[10px] sm:text-[10.5px] text-slate-600 leading-tight">
+                        <span className="text-[10.5px] sm:text-[11px] text-slate-700 leading-tight">
                           I consent to receive university updates via email and mobile number.{" "}
                           <button
                             type="button"
@@ -233,7 +272,7 @@ export default function LandingFooterForm({ brand = {}, courses = [], onOpenDisc
                         type="primary"
                         htmlType="submit"
                         loading={loading}
-                        className="bg-[#2cc36c] hover:bg-[#25ab5e] text-white font-bold text-[15px] border-none shadow-none w-full h-[40px] sm:h-[42px] cursor-pointer rounded-lg transition-colors"
+                        className="w-full !h-[42px] sm:!h-[44px] !bg-[#22c55e] hover:!bg-[#1ea750] !text-white !font-bold !text-[15px] sm:!text-[16px] !rounded-[8px] !border-none !shadow-xs transition-all cursor-pointer flex items-center justify-center tracking-wide"
                       >
                         Submit
                       </Button>

@@ -377,7 +377,7 @@ body:has(.landing-page-root)>div>main {
 .coupon-btn-main {
   position: relative !important;
   background: var(--coupon-btn-bg, linear-gradient(135deg, #2ecc71 0%, #27ae60 100%)) !important;
-  border-radius: 8px !important;
+  border-radius: 9999px !important;
   animation: couponOuterShadow 2.5s infinite ease-out !important;
   transition: transform 0.25s ease !important;
   overflow: hidden !important;

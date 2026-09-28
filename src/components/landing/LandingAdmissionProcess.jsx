@@ -124,6 +124,8 @@ export default function LandingAdmissionProcess({
     "#ee3024";
 
   const headingText =
+    enrollmentProcess?.title ||
+    brand?.enrollmentProcess?.title ||
     admissionProcess?.title ||
     brand.admissionTitle ||
     brand.admissionProcess?.title ||
@@ -136,16 +138,16 @@ export default function LandingAdmissionProcess({
         }`);
 
   const subtitleText =
-    admissionProcess?.subtitle ||
     enrollmentProcess?.description ||
     brand?.enrollmentProcess?.description ||
+    admissionProcess?.subtitle ||
     brand.admissionSubtitle ||
     brand.admissionProcess?.subtitle ||
     `Students can easily enrol in ${activeUniversity} courses. Candidates can conveniently apply by selecting their desired program. Follow these steps to secure admission in the university.`;
 
   const headingColor =
     brand.admissionHeadingColor ||
-    (isSmu ? "#193579" : brand.primaryColor || "#08417b");
+    (brand.slug === "lpu" ? "#222222" : isSmu ? "#193579" : brand.primaryColor || "#08417b");
 
   return (
     <section id="process" className="py-10 sm:py-14 lg:py-16 bg-white w-full select-none">

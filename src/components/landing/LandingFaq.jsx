@@ -10,6 +10,7 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
 
   if (!faqs || faqs.length === 0) return null;
 
+  const isLpu = brand.slug === "lpu" || brand.faqLayout === "lpu";
   const isSmu =
     brand.slug === "smu" ||
     brand.name?.toLowerCase().includes("sikkim") ||
@@ -18,6 +19,67 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
   const toggleFaq = (index) => {
     setOpenIndex(openIndex === index ? null : index);
   };
+
+  // ==========================================
+  // Layout 0: LPU 2-Column FAQ Layout with Left Orange Card & Orange Left-Border Items
+  // ==========================================
+  if (isLpu) {
+    return (
+      <section id="faqs" className="py-12 sm:py-16 bg-white border-b border-slate-100">
+        <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+            {/* Left Column: FAQ Box Card */}
+            <div className="lg:col-span-5 flex justify-center lg:justify-start">
+              <div className="bg-[#fff8f2] p-8 sm:p-10 lg:p-12 rounded-[12px] border border-orange-100/80 shadow-xs w-full max-w-[420px] text-left space-y-2">
+                <h2 className="text-4xl sm:text-5xl lg:text-[56px] font-black text-[#f58220] tracking-tight leading-none m-0">
+                  FAQ
+                </h2>
+                <h3 className="text-xl sm:text-2xl lg:text-[26px] font-extrabold text-slate-900 leading-snug m-0 pt-1">
+                  Frequently Asked Question
+                </h3>
+              </div>
+            </div>
+
+            {/* Right Column: Orange Left Border Accordion List */}
+            <div className="lg:col-span-7 space-y-3">
+              {faqs.map((faq, idx) => {
+                const isOpen = openIndex === idx;
+                const questionText = faq.question || faq.q || `Q${idx + 1}- ${faq.title}`;
+                const answerText = faq.answer || faq.a || "";
+
+                return (
+                  <div
+                    key={idx}
+                    className="w-full bg-[#f1f1f1] rounded-[4px] border-l-4 border-[#f58220] overflow-hidden transition-all"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => toggleFaq(idx)}
+                      className="w-full px-4 sm:px-5 py-3.5 sm:py-4 text-left flex items-center justify-between gap-3 cursor-pointer bg-transparent border-none m-0"
+                      aria-expanded={isOpen}
+                    >
+                      <span className="text-[13px] sm:text-[14px] font-bold text-slate-800 leading-snug">
+                        {questionText}
+                      </span>
+                      <span className="font-extrabold text-xs text-slate-500 shrink-0 ml-2 select-none">
+                        {isOpen ? "▲" : "▼"}
+                      </span>
+                    </button>
+
+                    {isOpen && answerText && (
+                      <div className="px-4 sm:px-5 pb-4 pt-1 text-[12.5px] sm:text-[13px] text-slate-700 leading-relaxed font-normal border-t border-slate-200/60">
+                        {answerText}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   // ==========================================
   // SMU Layout: Individual Bordered Cards with Light Grey Header & +/- Icons
@@ -104,11 +166,10 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
                   aria-expanded={isOpen}
                 >
                   <span
-                    className={`text-[14px] sm:text-[16px] leading-snug transition-colors ${
-                      isOpen
+                    className={`text-[14px] sm:text-[16px] leading-snug transition-colors ${isOpen
                         ? "text-[#000000] font-semibold"
                         : "text-[#000000] font-medium hover:text-[#08417b]"
-                    }`}
+                      }`}
                   >
                     {formattedQuestion}
                   </span>

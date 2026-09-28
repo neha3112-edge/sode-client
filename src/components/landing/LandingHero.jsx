@@ -22,7 +22,141 @@ export default function LandingHero({
     hero.darkOverlay !== false &&
     (hero.darkOverlay || hero.theme === "dark" || brand.slug === "smu");
 
-  const phoneText = brand.phoneDisplay || brand.phone || "1800 202 2424";
+  const phoneText = brand.phoneDisplay || brand.phone || "+91 7065 7777 55";
+  const isLpu = brand.slug === "lpu" || brand.shortName === "LPU" || brand.name === "LPU Online" || hero.isLpuStyle;
+
+  if (isLpu) {
+    return (
+      <>
+        <section
+          id="hero"
+          className="relative isolate overflow-hidden bg-[#fff8f2] py-8 sm:py-12 border-b border-orange-100"
+          style={{
+            backgroundImage: "url('/assets/lpu/new-desktop-front-bg.webp')",
+            backgroundSize: "cover",
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "center",
+          }}
+        >
+          <LandingContainer className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8 max-w-[1360px] px-4 sm:px-6 lg:px-8">
+            {/* Left Column: Heading, Strips, Fees, CTA */}
+            <div className="flex-1 space-y-4 text-center sm:text-left">
+              <div>
+                <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-extrabold text-[#4d4d4d] tracking-tight leading-tight m-0">
+                  <span className="underline decoration-[#f58220] underline-offset-8 decoration-4">
+                    LPU Online
+                  </span>
+                  <br />
+                  <span className="text-slate-800">Career ka </span>
+                  <span className="text-[#f58220]">Turning Point</span>
+                </h1>
+                <p className="text-sm sm:text-base font-semibold text-slate-700 mt-3 mb-0">
+                  LPU Online & Distance Education Courses
+                </p>
+              </div>
+
+              {/* Orange Course Strips */}
+              <div className="space-y-1.5 pt-1">
+                <div>
+                  <div className="bg-[#f58220] text-white font-extrabold text-base sm:text-xl lg:text-[22px] px-3.5 sm:px-4 py-1.5 rounded-xs shadow-xs inline-block tracking-wide">
+                    MBA | MCA | MA | MSc Maths
+                  </div>
+                </div>
+                <div>
+                  <div className="bg-[#f58220] text-white font-extrabold text-base sm:text-xl lg:text-[22px] px-3.5 sm:px-4 py-1.5 rounded-xs shadow-xs inline-block tracking-wide">
+                    MCOM | BCA | BBA | BA
+                  </div>
+                </div>
+              </div>
+
+              {/* Pricing & Zero Cost EMI Stats */}
+              <div className="flex items-center justify-center sm:justify-start gap-6 pt-2">
+                <div>
+                  <p className="text-xs font-semibold text-[#f58220] uppercase tracking-wider m-0">
+                    Fees Starting at
+                  </p>
+                  <h3 className="text-xl sm:text-2xl font-black text-slate-900 mt-0.5 m-0">
+                    ₹20,000/- Sem
+                  </h3>
+                </div>
+
+                <div className="h-9 w-[1px] bg-slate-300" />
+
+                <div>
+                  <p className="text-xs font-semibold text-[#f58220] uppercase tracking-wider m-0">
+                    Zero Cost
+                  </p>
+                  <h3 className="text-xl sm:text-2xl font-black text-slate-900 mt-0.5 m-0">
+                    EMI Available
+                  </h3>
+                </div>
+              </div>
+
+              {/* Download Brochure Button */}
+              <div className="pt-2">
+                <LandingButton
+                  variant="brochure"
+                  icon={<Download size={16} strokeWidth={2.5} />}
+                  iconPosition="right"
+                  onClick={() => onOpenBrochure?.()}
+                  className="py-2.5 px-6 text-[14px] font-bold rounded-[4px] border-none shadow-md"
+                  style={{ backgroundColor: "#4d4d4d", color: "#ffffff" }}
+                >
+                  Download Brochure
+                </LandingButton>
+              </div>
+            </div>
+
+            {/* Right Column: Free Counseling Lead Form */}
+            <div className="w-full sm:w-[360px] shrink-0 flex justify-center lg:justify-end">
+              <LandingLeadForm
+                brand={brand}
+                courses={courses}
+                courseList={courses}
+                universityName={brand.name}
+                variant="white-card"
+                title="Free Counseling"
+                subtitle="Have Doubt? Talk FREE to Our Expert"
+                primaryColor="#f58220"
+                accentColor="#f58220"
+                buttonText="Submit"
+                phoneText={phoneText}
+                phoneHref={brand.phone}
+                showPhoneBadge={true}
+                onOpenDisclaimer={onOpenDisclaimer}
+              />
+            </div>
+          </LandingContainer>
+        </section>
+
+        {/* Admissions Open Bottom Strip */}
+        <section className="bg-[#f9f9f9] border-y border-slate-200 py-4 sm:py-5">
+          <LandingContainer className="max-w-[1360px] px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+              <div>
+                <p className="text-base sm:text-xl font-bold text-slate-800 m-0">
+                  Admissions are Open!{" "}
+                  <span className="text-[#f58220]">LPU Online Degree Courses</span> - 2026 Batch
+                </p>
+              </div>
+              <div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const heroEl = document.getElementById("hero");
+                    heroEl?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                  className="bg-[#f58220] hover:bg-[#e07115] text-white font-bold text-sm px-8 py-2.5 rounded-full shadow-xs cursor-pointer border-none transition-colors"
+                >
+                  Apply Now
+                </button>
+              </div>
+            </div>
+          </LandingContainer>
+        </section>
+      </>
+    );
+  }
 
   return (
     <section

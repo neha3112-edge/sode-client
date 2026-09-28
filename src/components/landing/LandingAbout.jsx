@@ -45,10 +45,65 @@ export default function LandingAbout({
   // ==========================================
   // Layout 1: VGU Blue Full-Width Banner
   // ==========================================
+  const isLpuLayout = brand.aboutLayout === "lpu" || brand.slug === "lpu";
   const isVguLayout =
     brand.aboutLayout === "vgu-banner" ||
     brand.aboutLayout === "vgu" ||
     brand.slug === "vgu";
+
+  // ==========================================
+  // Layout 0: LPU About & Stats
+  // ==========================================
+  if (isLpuLayout) {
+    return (
+      <section id="about" className="py-12 sm:py-16 bg-white">
+        <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+          <div className="space-y-1 text-left">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#cccccc] tracking-tight m-0">
+              {about.subtitle || "About"}
+            </h2>
+            <h3 className="text-2xl sm:text-4xl font-extrabold text-slate-900 m-0">
+              {about.titlePrefix || "LPU"}{" "}
+              <span className="text-[#f58220]">{about.titleHighlight || "Online University"}</span>
+            </h3>
+            <p className="text-xs sm:text-sm font-semibold text-slate-500 pt-1 m-0">
+              {about.subName || "(Lovely Professional University Online)"}
+            </p>
+          </div>
+
+          <div className="space-y-4 text-xs sm:text-sm text-slate-700 leading-relaxed max-w-5xl text-left">
+            {paragraphs.map((p, idx) => (
+              <p key={idx} className="m-0">
+                {p}
+              </p>
+            ))}
+          </div>
+
+          {/* Counter Numbers */}
+          {activeStats.length > 0 && (
+            <div className="bg-white border border-slate-200 rounded-xl p-6 sm:p-8 shadow-xs">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-4 text-center">
+                {activeStats.map((st, idx) => (
+                  <div
+                    key={idx}
+                    className={`space-y-1 ${idx < activeStats.length - 1 ? "md:border-r md:border-slate-300" : ""
+                      }`}
+                  >
+                    <h2 className="text-3xl sm:text-5xl font-black text-[#f58220] m-0">
+                      {st.number}
+                    </h2>
+                    <p className="text-xs sm:text-sm font-bold text-slate-800 m-0">
+                      {st.label}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+    );
+  }
 
   if (isVguLayout) {
     return (
@@ -87,7 +142,7 @@ export default function LandingAbout({
                 <button
                   type="button"
                   onClick={() => onOpenApply?.()}
-                  className="inline-flex items-center justify-center bg-[#ffc107] hover:bg-[#e0a800] text-slate-950 font-bold text-[14px] px-7 py-2.5 rounded-[6px] shadow-xs active:scale-95 transition-all cursor-pointer border-none"
+                  className="inline-flex items-center justify-center bg-[#811811] hover:bg-[#6b130e] text-white font-bold text-[14px] px-7 py-2.5 rounded-[6px] shadow-xs active:scale-95 transition-all cursor-pointer border-none"
                 >
                   <span>{buttonText}</span>
                 </button>
@@ -207,9 +262,8 @@ export default function LandingAbout({
             {paragraphs.map((p, idx) => (
               <p
                 key={idx}
-                className={`text-[12.5px] sm:text-[13.5px] text-slate-700 leading-relaxed font-normal m-0 ${
-                  idx === 1 ? "font-semibold italic text-slate-800" : ""
-                }`}
+                className={`text-[12.5px] sm:text-[13.5px] text-slate-700 leading-relaxed font-normal m-0 ${idx === 1 ? "font-semibold italic text-slate-800" : ""
+                  }`}
               >
                 {p}
               </p>
@@ -268,19 +322,18 @@ export default function LandingAbout({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
           {/* Text Column */}
           <div
-            className={`lg:col-span-6 xl:col-span-6 space-y-3.5 ${
-              isImageRight ? "order-1 lg:order-1" : "order-2 lg:order-2"
-            } text-left max-w-[500px]`}
+            className={`lg:col-span-6 xl:col-span-6 space-y-3.5 ${isImageRight ? "order-1 lg:order-1" : "order-2 lg:order-2"
+              } text-left max-w-[500px]`}
           >
             <h2
               className="text-2xl sm:text-3xl lg:text-[32px] font-black tracking-tight m-0 leading-[1.18]"
               style={
                 brand.aboutTitleGradient || (brand.themeGradient && brand.primaryColor === "#fd202a")
                   ? {
-                      background: brand.themeGradient || "linear-gradient(to right, #fd202a, #ff4be5)",
-                      WebkitBackgroundClip: "text",
-                      WebkitTextFillColor: "transparent",
-                    }
+                    background: brand.themeGradient || "linear-gradient(to right, #fd202a, #ff4be5)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                  }
                   : { color: "#111827" }
               }
             >
@@ -344,9 +397,8 @@ export default function LandingAbout({
 
           {/* Image Column */}
           <div
-            className={`lg:col-span-6 xl:col-span-6 ${
-              isImageRight ? "order-2 lg:order-2" : "order-1 lg:order-1"
-            } flex items-center justify-center`}
+            className={`lg:col-span-6 xl:col-span-6 ${isImageRight ? "order-2 lg:order-2" : "order-1 lg:order-1"
+              } flex items-center justify-center`}
           >
             <div className="relative w-full max-w-[460px] mx-auto flex items-center justify-center">
               <Image

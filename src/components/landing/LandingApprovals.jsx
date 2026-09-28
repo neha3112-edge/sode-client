@@ -25,16 +25,59 @@ export default function LandingApprovals({
   const activeUniversity = universityName || brand?.name || "University Online";
   const activeTitle = brand?.approvalsTitle || title;
   const subtitle = brand?.approvalsSubtitle || brand?.approvalsDescription || null;
+  const isLpuLayout = brand?.approvalsLayout === "lpu-dark" || brand?.slug === "lpu" || brand?.shortName === "LPU";
   const isSplit = brand?.approvalsLayout === "split";
   const isVguLayout = brand?.approvalsLayout === "vgu-badges" || brand?.slug === "vgu";
   const isCarouselLayout = brand?.approvalsLayout === "smu-carousel" || brand?.slug === "smu";
   const isSlider =
     brand?.approvalsLayout === "slider" ||
     isCarouselLayout ||
-    (!isSplit && !isVguLayout && Boolean(subtitle));
+    (!isSplit && !isVguLayout && !isLpuLayout && Boolean(subtitle));
 
   const primaryColor = brand?.approvalsHeaderColor || brand?.primaryColor || "#ee3024";
   const gridBg = brand?.approvalsBg || "#ffffff";
+
+  // ==========================================
+  // Layout 0: LPU Accreditations & Approvals
+  // ==========================================
+  if (isLpuLayout) {
+    return (
+      <section id="approval" className="w-full bg-[#4d4d4d] text-white py-12 sm:py-16 px-4 sm:px-6">
+        <div className="max-w-[1360px] mx-auto text-center">
+          <h2 className="text-2xl sm:text-3xl lg:text-[36px] font-extrabold tracking-tight m-0 mb-8 sm:mb-12">
+            <span className="text-[#f58220]">LPU University </span>
+            <span className="text-white">Accreditations & Approvals</span>
+          </h2>
+
+          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 lg:gap-12">
+            {approvals.map((appr, idx) => (
+              <div key={idx} className="flex flex-col items-center min-w-[130px] sm:min-w-[150px]">
+                <div className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-white flex items-center justify-center p-3 shadow-md">
+                  <Image
+                    src={appr.image}
+                    alt={appr.title || appr.text || "Approval"}
+                    fill
+                    className="object-contain p-2.5"
+                    sizes="128px"
+                  />
+                </div>
+                <div className="mt-3 text-center">
+                  <p className="text-sm sm:text-base font-extrabold text-white leading-tight m-0">
+                    {appr.title || appr.text}
+                  </p>
+                  {appr.status && (
+                    <p className="text-xs font-semibold text-slate-300 mt-0.5 m-0 uppercase tracking-wider">
+                      {appr.status}
+                    </p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   // ==========================================
   // Layout 1: Shoolini Split Layout
@@ -130,7 +173,7 @@ export default function LandingApprovals({
                   const heroEl = document.getElementById("hero") || document.getElementById("banner");
                   if (heroEl) heroEl.scrollIntoView({ behavior: "smooth" });
                 }}
-                className="inline-flex items-center justify-center gap-2 bg-[#ffc107] hover:bg-[#e0a800] text-slate-950 font-bold text-[13.5px] sm:text-[14px] px-6 py-2.5 rounded-[6px] shadow-xs active:scale-95 transition-all cursor-pointer border-none"
+                className="inline-flex items-center justify-center gap-2 bg-[#811811] hover:bg-[#6b130e] text-white font-bold text-[13.5px] sm:text-[14px] px-6 py-2.5 rounded-[6px] shadow-xs active:scale-95 transition-all cursor-pointer border-none"
               >
                 <span>Enquire Now</span>
               </button>

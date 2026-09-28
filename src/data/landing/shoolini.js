@@ -63,6 +63,7 @@ export const shooliniData = {
     hero: {
       backgroundImage: "/assets/shoolini/shoolini-bg-final.webp",
       mobileBackgroundImage: "/assets/shoolini/shoolini-bg-final.webp",
+      noOverlay: true,
       backgroundPosition: "center 0%",
       backgroundSize: "cover",
       isDarkTheme: false,

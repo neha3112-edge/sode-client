@@ -58,7 +58,7 @@ export const smuData = {
       buttonBackground: "#f78d2d",
       buttonTextColor: "#ffffff",
       formCardType: "white",
-      formBackground: "#ffffff",
+      formBackground: "#faf8f5",
       formTitleColor: "#004b7a",
       formPhoneBg: "#f78d2d",
       formPhoneColor: "#ffffff",

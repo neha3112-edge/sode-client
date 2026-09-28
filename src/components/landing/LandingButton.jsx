@@ -63,8 +63,10 @@ export default function LandingButton({
       break;
   }
 
+  const hasSkew = skewEffect || variant === "phone";
+
   const combinedClasses = `inline-flex items-center justify-center gap-1.5 select-none ${
-    skewEffect ? "relative overflow-hidden" : ""
+    hasSkew ? "relative overflow-hidden" : ""
   } ${variantClasses} ${
     disabled || loading ? "opacity-60 cursor-not-allowed pointer-events-none" : ""
   } ${className}`;
@@ -77,7 +79,7 @@ export default function LandingButton({
         <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
       ) : (
         <>
-          {skewEffect && <span className="moving-light-green-box" />}
+          {hasSkew && <span className="moving-light-green-box" />}
           {icon && iconPosition === "left" && <span className="relative z-10 shrink-0">{icon}</span>}
           <span className="relative z-10">{children}</span>
           {icon && iconPosition === "right" && <span className="relative z-10 shrink-0">{icon}</span>}

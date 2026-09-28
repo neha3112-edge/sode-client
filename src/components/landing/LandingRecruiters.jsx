@@ -13,6 +13,77 @@ export default function LandingRecruiters({
   brand = {},
 }) {
   const activeRecruiters = recruiters || brand.recruiters || {};
+  const isLpu = brand.slug === "lpu" || activeRecruiters.layout === "lpu";
+
+  // LPU 2-Column Placement & Hiring Partners Layout
+  if (isLpu) {
+    const titlePrefix = activeRecruiters.titlePrefix || "Placement";
+    const titleHighlight = activeRecruiters.titleHighlight || "& Hiring Partners at LPU Online";
+    const desc = activeRecruiters.desc || "At LPU Online, Students and Professionals get an opportunity to enhance their career truly nurture their ambitions. The Lovely Professional University Online Admission supports students and has a dedicated placement support and a strong network of hiring partners. They create real opportunities for professional growth, whether you're pursuing an LPU MBA Online or an LPU Online MCA program.";
+    const desktopImg = activeRecruiters.desktopImage || "/assets/lpu/placement-desktop.webp";
+    const mobileImg = activeRecruiters.mobileImage || "/assets/lpu/placement-mobile.webp";
+
+    return (
+      <section id="placement" className="py-12 sm:py-16 bg-white border-b border-slate-100">
+        <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            {/* Left Column: Heading, Description, Border, Apply Button */}
+            <div className="lg:col-span-5 text-left space-y-4">
+              <div>
+                <h2 className="text-3xl sm:text-4xl lg:text-[40px] text-[#b3b3b3] font-black tracking-tight leading-none m-0">
+                  {titlePrefix}
+                </h2>
+                <h3 className="text-xl sm:text-2xl lg:text-[26px] font-extrabold text-[#f58220] mt-1.5 m-0 tracking-tight leading-tight">
+                  {titleHighlight}
+                </h3>
+              </div>
+
+              <p className="text-xs sm:text-[13px] text-slate-600 leading-relaxed m-0 font-normal border-b border-slate-200 pb-4">
+                {desc}
+              </p>
+
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const heroEl = document.getElementById("hero") || document.getElementById("banner");
+                    if (heroEl) heroEl.scrollIntoView({ behavior: "smooth" });
+                  }}
+                  className="bg-black hover:bg-slate-900 text-white font-bold text-xs sm:text-sm px-6 py-3 rounded-[6px] shadow-sm transition-colors cursor-pointer border-none inline-flex items-center gap-1.5"
+                >
+                  <span>Apply Now &raquo;</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Right Column: Partners Logos Image */}
+            <div className="lg:col-span-7 flex justify-center">
+              <div className="hidden sm:block relative w-full aspect-[2.4/1]">
+                <Image
+                  src={desktopImg}
+                  alt="Placement & Hiring Partners at LPU Online"
+                  fill
+                  className="object-contain"
+                  sizes="(max-width: 1024px) 100vw, 700px"
+                  priority
+                />
+              </div>
+              <div className="block sm:hidden relative w-full aspect-[1.8/1]">
+                <Image
+                  src={mobileImg}
+                  alt="Placement & Hiring Partners at LPU Online"
+                  fill
+                  className="object-contain"
+                  sizes="100vw"
+                  priority
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   // If VGU or single image is supplied
   if (activeRecruiters.image || brand.slug === "vgu" || brand.recruitersLayout === "vgu") {
