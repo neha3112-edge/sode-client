@@ -204,8 +204,8 @@ export default function LandingFooterForm({ brand = {}, courses = [], onOpenDisc
                       className="!mb-2.5"
                     >
                       <Input
-                        addonBefore={
-                          <div className="flex items-center gap-1.5 px-0.5 select-none">
+                        prefix={
+                          <div className="flex items-center gap-1.5 pr-2 mr-1.5 border-r border-[#d1d5db] select-none shrink-0">
                             <IndiaFlag />
                             <span className="text-slate-800 font-bold text-[12.5px] tracking-tight">+91</span>
                             <span className="text-slate-500 text-[9px] leading-none">▾</span>
@@ -213,7 +213,7 @@ export default function LandingFooterForm({ brand = {}, courses = [], onOpenDisc
                         }
                         placeholder="Enter Your Number"
                         maxLength={10}
-                        className="w-full !h-[40px] !text-[13.5px] [&_.ant-input]:!h-[40px] [&_.ant-input]:!text-[13.5px] [&_.ant-input]:!bg-white [&_.ant-input]:!rounded-r-[6px] [&_.ant-input]:!px-3.5 [&_.ant-input-group-addon]:!rounded-l-[6px] [&_.ant-input-group-addon]:!bg-[#f0f2f5] [&_.ant-input-group-addon]:!border-[#d1d5db] [&_.ant-input]:!border-[#d1d5db] hover:[&_.ant-input]:!border-slate-400 focus-within:[&_.ant-input]:!border-[#004b7a]"
+                        className="w-full !h-[40px] !text-[13.5px] !rounded-[6px] !bg-white !border-[#d1d5db] hover:!border-slate-400 focus-within:!border-[#004b7a]"
                       />
                     </Form.Item>
 
