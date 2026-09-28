@@ -116,18 +116,18 @@ export default function UniversityLandingView({ data = {} }) {
         {(() => {
           const defaultOrder = isSmu
             ? [
-                "approvals",
-                "programmes",
-                "whyChoose",
-                "about",
-                "stats",
-                "admissionProcess",
-                "faqs",
-                "footerForm",
-                "compareBanner",
-              ]
+              "approvals",
+              "programmes",
+              "whyChoose",
+              "about",
+              "stats",
+              "admissionProcess",
+              "faqs",
+              "footerForm",
+              "compareBanner",
+            ]
             : isVgu
-            ? [
+              ? [
                 "approvals",
                 "programmes",
                 "about",
@@ -140,7 +140,7 @@ export default function UniversityLandingView({ data = {} }) {
                 "footerForm",
                 "compareBanner",
               ]
-            : [
+              : [
                 "approvals",
                 "whyChoose",
                 "programmes",

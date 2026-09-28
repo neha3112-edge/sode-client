@@ -32,13 +32,13 @@ export default function LandingFooter({
             className="inline-block cursor-pointer transition-transform hover:scale-[1.01] active:scale-[0.99]"
             aria-label="Back to Top"
           >
-            <div className="relative w-[320px] sm:w-[520px] md:w-[600px] lg:w-[640px] h-[95px] sm:h-[155px] md:h-[180px] lg:h-[190px]">
+            <div className="relative w-[360px] sm:w-[600px] md:w-[700px] lg:w-[1200px] h-[110px] sm:h-[180px] md:h-[210px] lg:h-[230px]">
               <Image
-                src={brand.sodeLogo || "/assets/images/new-des-logo.webp"}
+                src={brand.footerLogo || brand.desLogo || "/assets/lpu/new-des-logo.webp"}
                 alt="Distance Education School - SODE School of Online & Distance Education"
                 fill
                 className="object-contain"
-                sizes="(max-width: 640px) 320px, (max-width: 768px) 520px, 640px"
+                sizes="(max-width: 640px) 360px, (max-width: 768px) 600px, 760px"
                 priority
               />
             </div>

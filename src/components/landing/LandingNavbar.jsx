@@ -124,21 +124,21 @@ export default function LandingNavbar({
               style={
                 couponBtnBg || brand.couponBtnBg || brand.themeGradient
                   ? {
-                      "--coupon-btn-bg": couponBtnBg || brand.couponBtnBg || brand.themeGradient,
-                      "--coupon-shadow-start": "rgba(253, 32, 42, 0.55)",
-                      "--coupon-shadow-mid1": "rgba(253, 32, 42, 0.42)",
-                      "--coupon-shadow-mid2": "rgba(253, 32, 42, 0.22)",
-                      "--coupon-shadow-mid3": "rgba(255, 75, 229, 0.28)",
-                      "--coupon-shadow-mid4": "rgba(255, 75, 229, 0.16)",
-                    }
+                    "--coupon-btn-bg": couponBtnBg || brand.couponBtnBg || brand.themeGradient,
+                    "--coupon-shadow-start": "rgba(253, 32, 42, 0.55)",
+                    "--coupon-shadow-mid1": "rgba(253, 32, 42, 0.42)",
+                    "--coupon-shadow-mid2": "rgba(253, 32, 42, 0.22)",
+                    "--coupon-shadow-mid3": "rgba(255, 75, 229, 0.28)",
+                    "--coupon-shadow-mid4": "rgba(255, 75, 229, 0.16)",
+                  }
                   : couponButtonColor
-                  ? { backgroundColor: couponButtonColor }
-                  : { backgroundColor: "#22c55e" }
+                    ? { backgroundColor: couponButtonColor }
+                    : { backgroundColor: "#22c55e" }
               }
               className="coupon-btn-main relative inline-flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-1.5 sm:py-2 rounded-[12px] sm:rounded-[14px] text-white font-bold text-[12px] sm:text-[14px] cursor-pointer border-none overflow-hidden select-none shadow-xs hover:brightness-105 active:scale-95 transition-all"
             >
-              {/* Moving Light Green Box for gradient button */}
-              {(couponBtnBg || brand.couponBtnBg) && <span className="moving-light-green-box" />}
+              {/* Moving Light Green Box for shine effect on all pages */}
+              <span className="moving-light-green-box" />
 
               {/* White Circular Disc for Gift Icon */}
               <span className="relative w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white flex items-center justify-center shrink-0 shadow-xs z-10 p-0.5">
