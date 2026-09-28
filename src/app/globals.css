@@ -286,3 +286,117 @@ body:has(.landing-page-root) .global-breadcrumb {
 body:has(.landing-page-root)>div>main {
   padding-bottom: 0 !important;
 }
+
+/* =========================================================
+   LANDING LEAD FORM CARD STYLING (EXACT SPEC MATCHING IMAGE 2)
+========================================================= */
+.landing-lead-card {
+  box-sizing: border-box !important;
+  font-family: inherit !important;
+}
+
+.landing-lead-card--hero input::placeholder {
+  color: #555555 !important;
+  opacity: 1 !important;
+  font-size: 13.5px !important;
+}
+
+.landing-lead-card--hero select {
+  color: #1f2937 !important;
+}
+
+.landing-lead-card--hero select option {
+  color: #1f2937 !important;
+  background-color: #ffffff !important;
+}
+
+.landing-lead-card--hero select option:first-child {
+  color: #555555 !important;
+}
+
+.landing-lead-card--hero .ant-form-item-explain-error {
+  color: #fecaca !important;
+  font-size: 11px !important;
+  padding-top: 2px !important;
+}
+
+.landing-lead-card--hero .ant-checkbox-inner {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  border-radius: 2px !important;
+}
+
+.landing-lead-card--hero .ant-checkbox-checked .ant-checkbox-inner {
+  background-color: #22c55e !important;
+  border-color: #22c55e !important;
+}
+
+/* =========================================================
+   SCHOLARSHIP COUPON CODE BUTTON - INFINITE SKEW BOX & EXPANDING SHADOW
+========================================================= */
+@keyframes moveLightGreenBox {
+  0% {
+    left: -80%;
+  }
+  100% {
+    left: 130%;
+  }
+}
+
+@keyframes couponOuterShadow {
+  0% {
+    box-shadow: 
+      0 0 0 0 var(--coupon-shadow-start, rgba(46, 204, 113, 0.55)),
+      0 2px 5px rgba(0, 0, 0, 0.06);
+  }
+  30% {
+    box-shadow: 
+      0 0 0 4px var(--coupon-shadow-mid1, rgba(46, 204, 113, 0.42)),
+      0 0 7px var(--coupon-shadow-mid2, rgba(46, 204, 113, 0.22)),
+      0 2px 6px rgba(0, 0, 0, 0.05);
+  }
+  60% {
+    box-shadow: 
+      0 0 0 9px var(--coupon-shadow-mid3, rgba(74, 222, 128, 0.28)),
+      0 0 12px var(--coupon-shadow-mid4, rgba(74, 222, 128, 0.16)),
+      0 3px 8px rgba(0, 0, 0, 0.04);
+  }
+  85%, 100% {
+    box-shadow: 
+      0 0 0 15px rgba(167, 243, 208, 0),
+      0 0 20px rgba(167, 243, 208, 0),
+      0 2px 5px rgba(0, 0, 0, 0.04);
+  }
+}
+
+.coupon-btn-main {
+  position: relative !important;
+  background: var(--coupon-btn-bg, linear-gradient(135deg, #2ecc71 0%, #27ae60 100%)) !important;
+  border-radius: 8px !important;
+  animation: couponOuterShadow 2.5s infinite ease-out !important;
+  transition: transform 0.25s ease !important;
+  overflow: hidden !important;
+}
+
+.coupon-btn-main:hover {
+  transform: translateY(-1.5px) scale(1.02) !important;
+}
+
+.coupon-btn-main:active {
+  transform: scale(0.97) !important;
+}
+
+.moving-light-green-box {
+  position: absolute !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  left: -80%;
+  width: 50% !important;
+  height: 100% !important;
+  background: rgba(255, 255, 255, 0.4) !important;
+  transform: skewX(-25deg) !important;
+  animation: moveLightGreenBox 2.5s infinite linear !important;
+  pointer-events: none !important;
+  z-index: 1 !important;
+  display: block !important;
+}

@@ -1,8 +1,10 @@
 "use client";
 
 import React from "react";
-import { Phone, Download, Sparkles, Scale } from "lucide-react";
-import { Button } from "antd";
+import Image from "next/image";
+import { Download } from "lucide-react";
+
+import confetti from "canvas-confetti";
 
 export default function LandingStickyCtas({
   brand = {},
@@ -12,51 +14,76 @@ export default function LandingStickyCtas({
   onOpenCompare,
 }) {
   const phone = brand.phone || "7065777755";
+  const rawPhone = phone.replace(/\D/g, "").slice(-10);
   const whatsappText = encodeURIComponent(`I want to Download ${brand.name || "University"} Online Brochure`);
+
+  const handleGiftClick = (e) => {
+    try {
+      if (typeof window !== "undefined") {
+        const rect = e?.currentTarget?.getBoundingClientRect();
+        const x = rect ? (rect.left + rect.width / 2) / window.innerWidth : 0.9;
+        const y = rect ? (rect.top + rect.height / 2) / window.innerHeight : 0.85;
+        confetti({
+          particleCount: 50,
+          spread: 60,
+          origin: { x, y },
+          zIndex: 99999,
+          colors: ["#ff5722", "#ffb300", "#4caf50", "#ffd700", "#e91e63"],
+        });
+      }
+    } catch {}
+    onOpenScholarship?.();
+  };
 
   return (
     <>
-      {/* Floating Desktop Widgets (Right Edge) */}
-      <div className="fixed bottom-6 right-6 z-30 hidden lg:flex flex-col gap-2.5">
-        <Button
-          type="primary"
-          icon={<Sparkles className="w-4 h-4" />}
-          onClick={() => onOpenScholarship?.()}
-          className="bg-[#e91e63] hover:bg-[#d81b60] text-white font-bold h-11 px-5 rounded-full shadow-lg border-none flex items-center gap-2"
+      {/* Floating Action Buttons (Right Edge) - Call icon & Gift icon */}
+      <div className="fixed bottom-20 sm:bottom-6 right-3 sm:right-6 z-40 flex flex-col items-center gap-2.5 sm:gap-3">
+        {/* Top: Call / WhatsApp Icon */}
+        <a
+          href={`tel:+91${rawPhone}`}
+          aria-label={`Call +91 ${rawPhone}`}
+          className="relative w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full overflow-hidden shadow-2xl flex items-center justify-center transition-transform hover:scale-110 active:scale-95 bg-white drop-shadow-lg"
         >
-          Check Scholarship
-        </Button>
-        <Button
-          type="default"
-          icon={<Scale className="w-4 h-4" />}
-          onClick={() => onOpenCompare?.()}
-          className="bg-white hover:bg-slate-50 text-[#08417b] font-bold h-11 px-5 rounded-full shadow-lg border border-slate-300 flex items-center gap-2"
-          style={{ color: brand.primaryColor || "#08417b" }}
+          <Image
+            src={brand.callGif || "/assets/images/call_icon.gif"}
+            alt="Call Expert"
+            fill
+            unoptimized
+            className="object-cover"
+            sizes="64px"
+          />
+        </a>
+
+        {/* Bottom: Gift Icon - opens Scholarship Coupon Code Modal */}
+        <button
+          type="button"
+          onClick={handleGiftClick}
+          aria-label="Get Scholarship Coupon Code"
+          className="relative w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full overflow-hidden shadow-2xl flex items-center justify-center transition-transform hover:scale-110 active:scale-95 bg-white border-none cursor-pointer p-1.5 drop-shadow-lg"
         >
-          Compare
-        </Button>
+          <Image
+            src={brand.giftGif || "/assets/images/gift.gif"}
+            alt="Gift Voucher"
+            fill
+            unoptimized
+            className="object-contain p-1"
+            sizes="64px"
+          />
+        </button>
       </div>
 
-      {/* Floating Call Button on mobile right above footer sticky */}
-      <a
-        href={`tel:${phone.replace(/\D/g, "")}`}
-        aria-label="Call Expert"
-        className="lg:hidden fixed bottom-20 right-3 z-40 w-12 h-12 rounded-full bg-[#25d366] text-white flex items-center justify-center shadow-lg active:scale-95 transition-transform"
-      >
-        <Phone className="w-6 h-6 fill-white text-white" />
-      </a>
-
-      {/* Sticky Bottom Bar on Mobile/Tablet matching .footer_sticky_buttons */}
+      {/* Sticky Bottom Bar on Mobile/Tablet */}
       <div
-        className="footer_sticky_buttons lg:hidden fixed bottom-0 left-0 right-0 z-50 p-2.5 grid grid-cols-2 gap-2 shadow-2xl transition-colors"
+        className="footer_sticky_buttons lg:hidden fixed bottom-0 left-0 right-0 z-50 px-3 py-2.5 grid grid-cols-2 gap-2.5 shadow-2xl transition-colors pb-[max(10px,env(safe-area-inset-bottom))]"
         style={{ backgroundColor: brand.primaryColor || "#08417b" }}
       >
         {/* Left: WhatsApp / Brochure Green Pill */}
         <a
-          href={`https://api.whatsapp.com/send/?phone=+91${phone.replace(/\D/g, "").slice(-10)}&text=${whatsappText}`}
+          href={`https://api.whatsapp.com/send/?phone=+91${rawPhone}&text=${whatsappText}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="wp_btn flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-[#25d366] text-white font-bold text-sm no-underline shadow-sm active:opacity-90"
+          className="wp_btn flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-[#25d366] text-white font-bold text-[13.5px] sm:text-sm no-underline shadow-sm active:opacity-90"
         >
           <Download className="w-4 h-4" />
           <span>Get Brochure</span>
@@ -66,7 +93,7 @@ export default function LandingStickyCtas({
         <button
           type="button"
           onClick={() => onOpenApply?.()}
-          className="apply_btn flex items-center justify-center gap-1.5 py-2 px-3 rounded-full bg-[#ffd508] text-black font-bold text-sm border-none shadow-sm cursor-pointer active:opacity-90"
+          className="apply_btn flex items-center justify-center gap-1.5 py-2 px-3 rounded-full bg-[#ffd508] text-black font-bold text-[13.5px] sm:text-sm border-none shadow-sm cursor-pointer active:opacity-90"
         >
           <span>Apply Now</span>
           <span className="text-base leading-none">»</span>

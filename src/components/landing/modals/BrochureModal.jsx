@@ -1,8 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Modal } from "antd";
 import LandingLeadForm from "../LandingLeadForm";
+import { triggerFormConfetti } from "@/lib/confetti";
 
 export default function BrochureModal({
   isOpen,
@@ -12,6 +13,12 @@ export default function BrochureModal({
   selectedCourse = "MBA",
   onOpenDisclaimer,
 }) {
+  useEffect(() => {
+    if (isOpen) {
+      triggerFormConfetti();
+    }
+  }, [isOpen]);
+
   return (
     <Modal
       open={isOpen}
@@ -20,7 +27,7 @@ export default function BrochureModal({
       centered
       width={480}
       destroyOnHidden
-      className="p-0 overflow-hidden"
+      className="p-0 overflow-hidden max-w-[calc(100vw-24px)] mx-auto"
     >
       <div className="pt-2">
         <LandingLeadForm
@@ -31,6 +38,7 @@ export default function BrochureModal({
           title={`Download ${selectedCourse} Brochure`}
           subtitle={`Get official curriculum, fee breakdown, & eligibility for ${universityName}`}
           buttonText="Get Brochure on Email & WhatsApp"
+          variant="modal"
           onSuccess={onClose}
           onOpenDisclaimer={onOpenDisclaimer}
         />

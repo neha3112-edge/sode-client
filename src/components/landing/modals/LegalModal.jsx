@@ -25,6 +25,7 @@ export default function LegalModal({
       centered
       width={600}
       destroyOnHidden
+      className="max-w-[calc(100vw-24px)] mx-auto"
       title={<span className="text-base font-bold text-slate-800">{titles[type] || "Legal Information"}</span>}
     >
       <div className="text-xs text-slate-600 space-y-3 py-2 leading-relaxed max-h-[60vh] overflow-y-auto pr-2">
