@@ -57,6 +57,7 @@ export default function CourseCareerOpportunities({
     <div
       id="career-opportunities"
       data-nav-label="Career & Scope"
+      suppressHydrationWarning
       className="scroll-mt-20 bg-white rounded-xl border border-gray-200/90 shadow-xs p-3.5 sm:p-7 md:p-8 space-y-4 sm:space-y-5"
     >
       <div className="text-center max-w-4xl mx-auto">
@@ -66,7 +67,7 @@ export default function CourseCareerOpportunities({
       </div>
 
       <div className="overflow-hidden rounded-xl border border-[#D9E5F2] shadow-2xs bg-white w-full">
-        <table className="table-fixed w-full text-left border-collapse">
+        <table suppressHydrationWarning className="table-fixed w-full text-left border-collapse">
           <thead>
             <tr className="bg-[#EBF3FA] border-b border-[#D9E5F2]">
               <th className="py-2.5 sm:py-3 px-2 sm:px-5 text-[10px] sm:text-[13px] font-bold text-gray-900 uppercase tracking-wider border-r border-[#D9E5F2] w-[30%] sm:w-[28%] align-middle break-words">
