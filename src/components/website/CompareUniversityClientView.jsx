@@ -34,11 +34,17 @@ import { getAssetPath } from "@/lib/utils";
 export default function CompareUniversityClientView({
   initialComparedData = [],
   initialAllUniversities = [],
+  allUniversities: rawAllUniversities = [],
   initialAllCourses = [],
+  allCourses: rawAllCourses = [],
   initialAllModes = [],
+  allModes: rawAllModes = [],
   initialCompareCategories = [],
+  compareCategories: rawCompareCategories = [],
   initialAllStates = [],
+  allStates: rawAllStates = [],
   initialAllApprovals = [],
+  allApprovals: rawAllApprovals = [],
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -50,12 +56,19 @@ export default function CompareUniversityClientView({
   } = useCompare();
   const { openFormModal } = useAppDrawer();
 
-  const [allUniversities, setAllUniversities] = useState(initialAllUniversities);
-  const [allCourses, setAllCourses] = useState(initialAllCourses);
-  const [allModes, setAllModes] = useState(initialAllModes);
-  const [dbCompareCategories, setDbCompareCategories] = useState(initialCompareCategories);
-  const [allStates, setAllStates] = useState(initialAllStates);
-  const [allApprovals, setAllApprovals] = useState(initialAllApprovals);
+  const effectiveAllUnis = initialAllUniversities?.length > 0 ? initialAllUniversities : rawAllUniversities || [];
+  const effectiveAllCourses = initialAllCourses?.length > 0 ? initialAllCourses : rawAllCourses || [];
+  const effectiveAllModes = initialAllModes?.length > 0 ? initialAllModes : rawAllModes || [];
+  const effectiveCategories = initialCompareCategories?.length > 0 ? initialCompareCategories : rawCompareCategories || [];
+  const effectiveStates = initialAllStates?.length > 0 ? initialAllStates : rawAllStates || [];
+  const effectiveApprovals = initialAllApprovals?.length > 0 ? initialAllApprovals : rawAllApprovals || [];
+
+  const [allUniversities, setAllUniversities] = useState(effectiveAllUnis);
+  const [allCourses, setAllCourses] = useState(effectiveAllCourses);
+  const [allModes, setAllModes] = useState(effectiveAllModes);
+  const [dbCompareCategories, setDbCompareCategories] = useState(effectiveCategories);
+  const [allStates, setAllStates] = useState(effectiveStates);
+  const [allApprovals, setAllApprovals] = useState(effectiveApprovals);
   const [comparedData, setComparedData] = useState(initialComparedData);
   const [baseUniversityObj, setBaseUniversityObj] = useState(null);
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -375,10 +388,14 @@ export default function CompareUniversityClientView({
   const handleCompareNow = async () => {
     if (currentIdentifiers.length === 0) return;
     try {
+      const compareOptions = { university: currentIdentifiers.join(",") };
+      if (selectedCourse && selectedCourse !== "all") {
+        compareOptions.course = selectedCourse;
+      }
       const res = await request.dynamicRead({
         entity: "universities",
         endPoint: "v1/compare",
-        options: { university: currentIdentifiers.join(",") },
+        options: compareOptions,
       });
       const data = Array.isArray(res?.result) ? res.result : Array.isArray(res) ? res : [];
       setComparedData(data);
@@ -825,26 +842,103 @@ export default function CompareUniversityClientView({
       };
     }
 
-    if (!courseName || courseName === "all") return null;
-    const directOffering = (uni.courseOfferings || []).find(
-      (o) =>
-        o.course_name?.toLowerCase() === courseName.toLowerCase() ||
-        o.course_slug?.toLowerCase() === courseName.toLowerCase()
-    );
+    if (!courseName || courseName === "all") {
+      const firstOffering = (uni.courseOfferings || [])[0];
+      if (firstOffering) return firstOffering;
+      return null;
+    }
+
+    const target = courseName.trim().toLowerCase();
+
+    // 1. Direct offering match against courseOfferings array
+    const directOffering = (uni.courseOfferings || []).find((o) => {
+      if (!o) return false;
+      const cName = (o.course_name || "").toLowerCase();
+      const cShort = (o.course_short_name || "").toLowerCase();
+      const cCode = (o.course_code || "").toLowerCase();
+      const cSlug = (o.course_slug || "").toLowerCase();
+      const cMasterSlug = (o.course_master_slug || "").toLowerCase();
+
+      // Exact matches
+      if (
+        cName === target ||
+        cShort === target ||
+        cCode === target ||
+        cSlug === target ||
+        cMasterSlug === target
+      ) {
+        return true;
+      }
+
+      // Check slug ending or containing (e.g. "amity-university/online-ba" contains "ba")
+      if (
+        cSlug.endsWith(`/${target}`) ||
+        cSlug.endsWith(`-${target}`) ||
+        cSlug.includes(`/${target}-`) ||
+        cSlug.includes(`-${target}-`) ||
+        cSlug.includes(`/online-${target}`) ||
+        cSlug.includes(`-${target}`)
+      ) {
+        return true;
+      }
+
+      // Parentheses check e.g. "Bachelor of Arts (BA)" includes "(BA)"
+      if (cName.includes(`(${target})`) || cName.includes(` ${target} `) || cName.endsWith(` ${target}`)) {
+        return true;
+      }
+
+      // Acronym / Initials check (e.g. "Bachelor of Arts" -> "ba", "Master of Business Administration" -> "mba")
+      const words = cName.split(/[\s-]+/).filter(Boolean);
+      const acronym = words.map((w) => w[0]).join("").toLowerCase();
+      if (acronym === target) return true;
+
+      // Filter out stop words (of, and, in) for acronym
+      const meaningfulAcronym = words
+        .filter((w) => !["of", "and", "in", "&"].includes(w))
+        .map((w) => w[0])
+        .join("")
+        .toLowerCase();
+      if (meaningfulAcronym === target) return true;
+
+      // Partial name match if target is substring
+      if (cName.includes(target) || target.includes(cName)) return true;
+
+      return false;
+    });
+
     if (directOffering) return directOffering;
 
-    const isOfferedInList = (uni.coursesOffered || []).some(
-      (c) => c?.toLowerCase() === courseName.toLowerCase()
-    );
+    // 2. Check in coursesOffered list
+    const isOfferedInList = (uni.coursesOffered || []).some((c) => {
+      if (!c) return false;
+      const cLower = c.toLowerCase();
+      if (cLower === target) return true;
+      if (cLower.includes(`(${target})`) || cLower.includes(` ${target} `) || cLower.endsWith(` ${target}`)) return true;
+      const words = cLower.split(/[\s-]+/).filter(Boolean);
+      const acronym = words.map((w) => w[0]).join("");
+      if (acronym === target) return true;
+      const meaningful = words.filter((w) => !["of", "and", "in", "&"].includes(w)).map((w) => w[0]).join("");
+      if (meaningful === target) return true;
+      return false;
+    });
+
     if (isOfferedInList) {
+      // Find offering or fallback
+      const matchingOffering = (uni.courseOfferings || []).find((o) => {
+        const oName = (o.course_name || "").toLowerCase();
+        return oName.includes(target) || target.includes(oName);
+      });
+      if (matchingOffering) return matchingOffering;
+
+      const firstOffering = (uni.courseOfferings || [])[0];
       return {
         course_name: courseName,
-        fee_per_semester: uni.avg_placement_package || null,
-        fee_discount: "Upto 20%",
-        rating: uni.rating || 4.5,
-        duration: "2–3 Years",
-        eligibility: "Graduation / 10+2 from recognized board",
-        specializations: [],
+        fee_per_semester: uni.fee_per_semester || firstOffering?.fee_per_semester || null,
+        fee_discount: uni.fee_discount || firstOffering?.fee_discount || "Upto 20%",
+        rating: uni.rating || firstOffering?.rating || 4.5,
+        duration: uni.duration || firstOffering?.duration || "2–3 Years",
+        eligibility: uni.eligibility || firstOffering?.eligibility || "Graduation / 10+2 from recognized board",
+        specializations: firstOffering?.specializations || [],
       };
     }
     return null;
@@ -1999,8 +2093,8 @@ export default function CompareUniversityClientView({
                       key={uni._id || uni.id}
                       onClick={() => handleToggleUniversityFromModal(uni)}
                       className={`bg-white border rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-between cursor-pointer transition-all hover:scale-[1.02] text-center min-h-[125px] sm:min-h-[135px] shadow-2xs hover:shadow-md ${isAdded
-                          ? "border-blue-400 bg-blue-50/20 ring-1 ring-blue-300"
-                          : "border-gray-200/90 hover:border-blue-400"
+                        ? "border-blue-400 bg-blue-50/20 ring-1 ring-blue-300"
+                        : "border-gray-200/90 hover:border-blue-400"
                         }`}
                     >
                       <div className="w-full h-14 sm:h-16 flex items-center justify-center relative px-2 mb-1.5">
@@ -2126,8 +2220,8 @@ export default function CompareUniversityClientView({
                       key={uni._id || uni.id}
                       onClick={() => handleToggleUniversityFromModal(uni)}
                       className={`bg-white border rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-between cursor-pointer transition-all hover:scale-[1.02] text-center min-h-[125px] sm:min-h-[135px] shadow-2xs hover:shadow-md ${isAdded
-                          ? "border-blue-400 bg-blue-50/20 ring-1 ring-blue-300"
-                          : "border-gray-200/90 hover:border-blue-400"
+                        ? "border-blue-400 bg-blue-50/20 ring-1 ring-blue-300"
+                        : "border-gray-200/90 hover:border-blue-400"
                         }`}
                     >
                       <div className="w-full h-14 sm:h-16 flex items-center justify-center relative px-2 mb-1.5">
@@ -2283,8 +2377,8 @@ export default function CompareUniversityClientView({
                         key={uni._id || uni.id}
                         onClick={() => handleToggleUniversityFromModal(uni)}
                         className={`bg-white border rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-between cursor-pointer transition-all hover:scale-[1.02] text-center min-h-[125px] sm:min-h-[135px] shadow-2xs hover:shadow-md ${isAdded
-                            ? "border-blue-400 bg-blue-50/20 ring-1 ring-blue-300"
-                            : "border-gray-200/90 hover:border-blue-400"
+                          ? "border-blue-400 bg-blue-50/20 ring-1 ring-blue-300"
+                          : "border-gray-200/90 hover:border-blue-400"
                           }`}
                       >
                         <div className="w-full h-14 sm:h-16 flex items-center justify-center relative px-2 mb-1.5">
@@ -2485,8 +2579,8 @@ export default function CompareUniversityClientView({
                         key={uni._id || uni.id}
                         onClick={() => handleToggleUniversityFromModal(uni)}
                         className={`bg-white border rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-between cursor-pointer transition-all hover:scale-[1.02] text-center min-h-[125px] sm:min-h-[135px] shadow-2xs hover:shadow-md ${isAdded
-                            ? "border-blue-400 bg-blue-50/20 ring-1 ring-blue-300"
-                            : "border-gray-200/90 hover:border-blue-400"
+                          ? "border-blue-400 bg-blue-50/20 ring-1 ring-blue-300"
+                          : "border-gray-200/90 hover:border-blue-400"
                           }`}
                       >
                         <div className="w-full h-14 sm:h-16 flex items-center justify-center relative px-2 mb-1.5">
@@ -2659,8 +2753,8 @@ export default function CompareUniversityClientView({
                       key={uni._id || uni.id}
                       onClick={() => handleToggleUniversityFromModal(uni)}
                       className={`bg-white border rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-between cursor-pointer transition-all hover:scale-[1.02] text-center min-h-[125px] sm:min-h-[135px] shadow-2xs hover:shadow-md ${isAdded
-                          ? "border-blue-400 bg-blue-50/20 ring-1 ring-blue-300"
-                          : "border-gray-200/90 hover:border-blue-400"
+                        ? "border-blue-400 bg-blue-50/20 ring-1 ring-blue-300"
+                        : "border-gray-200/90 hover:border-blue-400"
                         }`}
                     >
                       <div className="w-full h-14 sm:h-16 flex items-center justify-center relative px-2 mb-1.5">

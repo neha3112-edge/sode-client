@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button, Layout, Dropdown, Drawer, Collapse } from "antd";
-import { DownOutlined, MenuOutlined, CloseOutlined, RightOutlined } from "@ant-design/icons";
+import { DownOutlined, MenuOutlined, CloseOutlined, RightOutlined, LeftOutlined } from "@ant-design/icons";
 import { Container } from "@/components/common/Container";
 import { getAssetPath } from "@/lib/utils";
 
@@ -238,11 +238,47 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
         : [{ text: "Compare Universities", url: "/tools/compare-universities" }];
   }, [headerData]);
 
+  const [selectedMobileCategory, setSelectedMobileCategory] = useState(null);
+
   const closeMobile = (url) => {
     setMobileMenuOpen(false);
+    setSelectedMobileCategory(null);
     setMobileActiveKeys([]);
     if (url) router.push(url);
   };
+
+  // Dynamic Mega Menu Sections for Mobile (100% Dynamic from backend database)
+  const mobileMegaSections = useMemo(() => {
+    return rawMenuItems
+      .filter((m) => m.has_dropdown && Array.isArray(m.mega_menu) && m.mega_menu.length > 0)
+      .map((m) => {
+        const l = (m.label || "").toLowerCase();
+        const type = l.includes("universit") ? "universities" : "programs";
+        const validCategories = m.mega_menu
+          .filter((g) => g?.category && (g.items?.length > 0 || g.category.name))
+          .map((g) => ({
+            _id: g.category?._id || g.category?.name,
+            name: g.category?.name || "",
+            items: g.items || [],
+          }));
+
+        return {
+          _id: m._id || m.label,
+          title: m.label,
+          type,
+          icon: type === "universities" ? (
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zm0 8.87L4.72 9 12 5.04 19.28 9 12 11.87zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z" />
+            </svg>
+          ) : (
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z" />
+            </svg>
+          ),
+          categories: validCategories,
+        };
+      });
+  }, [rawMenuItems]);
 
   const announcement = headerData?.announcement_bar;
   const bgColor = headerData?.bg_color || "#ffffff";
@@ -590,33 +626,46 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
             ))}
           </div>
 
-          {/* Mobile Right Controls */}
+          {/* Mobile Right Controls (Matching Mockup) */}
           <div className="flex lg:hidden items-center gap-2 shrink-0">
-            <AiToolButton
-              label="AI Tools"
-              badge="NEW"
+            <Link
               href="/tools"
               onClick={() => setActiveMenuKey(null)}
-              className="whitespace-nowrap shrink-0"
-            />
+              className="relative inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EBF3FE] hover:bg-[#DCEBFD] text-[#0B57D0] border border-blue-200/80 font-bold text-xs transition-all shadow-xs shrink-0 select-none"
+            >
+              <span className="text-[#0B57D0] font-extrabold text-sm leading-none">✦</span>
+              <span className="text-[#072C50] font-bold text-xs">AI Tools</span>
+              <span className="absolute -top-1.5 -right-1 px-1.5 py-0.2 text-[8px] font-black uppercase tracking-wider rounded-full bg-black text-[#FFD166] border border-white leading-none shadow-xs">
+                NEW
+              </span>
+            </Link>
 
-            {rawFeaturedButtons[0] && (
-              <Link
-                href={rawFeaturedButtons[0].url || "/tools/compare-universities"}
-                style={{ ...goldBtnStyle, fontSize: "11px", borderRadius: "6px", height: "28px", padding: "0 10px" }}
-                className="inline-flex items-center justify-center whitespace-nowrap shrink-0 shadow-none font-bold select-none"
-              >
-                {rawFeaturedButtons[0].text?.split(" ")[0] || "Compare"}
-              </Link>
-            )}
+            <Link
+              href="/tools/compare-universities"
+              onClick={() => setActiveMenuKey(null)}
+              style={{ ...goldBtnStyle, fontSize: "11.5px", borderRadius: "9999px", height: "28px", padding: "0 12px" }}
+              className="inline-flex items-center justify-center whitespace-nowrap shrink-0 shadow-xs font-bold text-[#072C50] select-none"
+            >
+              Compare
+            </Link>
 
-            <Button
-              type="text"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              icon={mobileMenuOpen ? <CloseOutlined className="text-lg text-[#072C50]" /> : <MenuOutlined className="text-lg text-[#072C50]" />}
-              className="p-1 flex items-center justify-center cursor-pointer"
+            <button
+              type="button"
+              onClick={() => {
+                setMobileMenuOpen(!mobileMenuOpen);
+                setSelectedMobileCategory(null);
+              }}
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-[#072C50] hover:bg-slate-100 transition-colors cursor-pointer border-none bg-transparent ml-0.5"
               aria-label="Toggle menu"
-            />
+            >
+              {mobileMenuOpen ? (
+                <CloseOutlined className="text-lg text-[#072C50]" />
+              ) : (
+                <svg className="w-5 h-5 text-[#072C50]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.4}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+              )}
+            </button>
           </div>
         </Container>
 
@@ -914,85 +963,232 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
           </>
         )}
 
-        {/* Mobile Navigation Drawer — 100% Dynamic */}
+        {/* Mobile Navigation Drawer — Matching Mockup (Phone 1 & Phone 2) */}
         <Drawer
           open={mobileMenuOpen}
           onClose={() => {
             setMobileMenuOpen(false);
+            setSelectedMobileCategory(null);
             setMobileActiveKeys([]);
           }}
           placement="top"
+          closable={false}
           styles={{
-            wrapper: { height: "auto", maxHeight: "88vh" },
-            section: { height: "auto", maxHeight: "88vh", borderBottomLeftRadius: "20px", borderBottomRightRadius: "20px" },
-            header: { padding: "12px 16px", backgroundColor: "#f8fafc", borderBottom: "1px solid #f1f5f9" },
-            body: { padding: "8px 16px", height: "auto", maxHeight: "calc(88vh - 60px)", overflowY: "auto" },
+            wrapper: { height: "auto", maxHeight: "92vh" },
+            section: { height: "auto", maxHeight: "92vh", borderBottomLeftRadius: "24px", borderBottomRightRadius: "24px", overflow: "hidden" },
+            header: { padding: "8px 16px", backgroundColor: "#ffffff", borderBottom: "1px solid #f1f5f9" },
+            body: { padding: "14px 16px 28px", height: "auto", maxHeight: "calc(92vh - 64px)", overflowY: "auto" },
           }}
           title={
-            <div className="relative w-36 h-9">
-              <Image
-                src={logoUrl}
-                alt={logoAlt}
-                fill
-                priority
-                loading="eager"
-                fetchPriority="high"
-                unoptimized
-                sizes="(max-width: 768px) 150px, 180px"
-                className="object-contain object-left"
-              />
+            <div className="flex items-center justify-between w-full">
+              {/* Logo on Left with Header dimensions */}
+              <Link
+                href={headerData?.logo_url || "/"}
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  setSelectedMobileCategory(null);
+                }}
+                className="flex items-center"
+              >
+                <div style={{ height: "48px" }} className="relative w-36 sm:w-44 flex items-center justify-start">
+                  <Image
+                    src={logoUrl}
+                    alt={logoAlt}
+                    fill
+                    priority
+                    loading="eager"
+                    fetchPriority="high"
+                    unoptimized
+                    sizes="(max-width: 768px) 160px, 200px"
+                    className="object-contain object-left cursor-pointer"
+                  />
+                </div>
+              </Link>
+
+              {/* Close Button on Right */}
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  setSelectedMobileCategory(null);
+                  setMobileActiveKeys([]);
+                }}
+                className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-700 transition-colors border-none cursor-pointer p-0 shrink-0"
+                aria-label="Close"
+              >
+                <CloseOutlined className="text-[13px] font-bold" />
+              </button>
             </div>
           }
-          closeIcon={<CloseOutlined className="text-base text-slate-700 font-bold" />}
         >
-          <div className="space-y-1 pb-4">
-            {mobileCollapseItems.length > 0 && (
-              <Collapse
-                ghost
-                accordion
-                activeKey={mobileActiveKeys}
-                onChange={(keys) => {
-                  setMobileActiveKeys(typeof keys === "string" ? (keys ? [keys] : []) : keys);
-                }}
-                expandIconPlacement="end"
-                items={mobileCollapseItems}
-                className="border-none [&_.ant-collapse-item]:border-b [&_.ant-collapse-item]:border-slate-100 [&_.ant-collapse-header]:py-3.5! [&_.ant-collapse-header]:px-2! [&_.ant-collapse-content-box]:p-2! cursor-pointer"
-              />
-            )}
+          {!selectedMobileCategory ? (
+            /* ── VIEW 1: CATEGORIES OVERVIEW (Matching Phone 1 Mockup) ── */
+            <div className="space-y-6">
+              {/* Dynamic Mega Menu Sections from database */}
+              {mobileMegaSections.map((section) => (
+                <div key={section._id}>
+                  <div className="flex items-center gap-2.5 mb-2.5">
+                    <div className="w-7 h-7 rounded-lg bg-[#0B57D0] text-white flex items-center justify-center shrink-0 shadow-xs">
+                      {section.icon}
+                    </div>
+                    <h3 className="font-extrabold text-[15px] text-[#072C50] m-0 tracking-tight">
+                      {section.title}
+                    </h3>
+                  </div>
 
-            {mobileLinkItems.map((item, idx) => (
-              <Link
-                key={item._id || idx}
-                href={item.url || "#"}
-                onClick={() => closeMobile()}
-                className="block py-3.5 px-2 border-b border-slate-100 font-bold text-[14.5px] text-[#072C50] hover:text-[#0B57D0]"
-              >
-                {item.label}
-              </Link>
-            ))}
-
-            <div className="pt-4 flex flex-col gap-2.5">
-              <Link
-                href="/tools"
-                onClick={() => closeMobile()}
-                className="h-10 font-bold text-xs bg-[#EBF3FE] text-[#0B57D0] border border-blue-200 rounded-lg flex items-center justify-center gap-1.5"
-              >
-                <span>✦ Explore AI Tools</span>
-              </Link>
-
-              {rawFeaturedButtons.map((btn, idx) => (
-                <Link
-                  key={btn._id || idx}
-                  href={btn.url || "/tools/compare-universities"}
-                  onClick={() => closeMobile()}
-                  style={{ ...goldBtnStyle, height: "40px", borderRadius: "8px" }}
-                  className="w-full flex items-center justify-center font-bold text-xs shadow-xs select-none"
-                >
-                  {btn.text || "Compare Universities"}
-                </Link>
+                  <div className="space-y-1">
+                    {section.categories.map((cat, cIdx) => (
+                      <button
+                        key={cat._id || cIdx}
+                        type="button"
+                        onClick={() =>
+                          setSelectedMobileCategory({
+                            title: cat.name,
+                            type: section.type,
+                            items: cat.items || [],
+                          })
+                        }
+                        className="w-full flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-[#F0F6FE] active:bg-[#E2EDFC] transition-colors text-left border-none bg-transparent cursor-pointer group"
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className="text-[#0B57D0] text-base group-hover:scale-110 transition-transform">
+                            {renderCategoryIcon(cat.name, section.type)}
+                          </span>
+                          <span className="font-semibold text-slate-800 text-[13.5px] group-hover:text-[#0B57D0]">
+                            {cat.name}
+                          </span>
+                        </div>
+                        <RightOutlined className="text-[10px] text-slate-400 group-hover:text-[#0B57D0] group-hover:translate-x-0.5 transition-all" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
               ))}
+
+              {/* End of categories */}
             </div>
-          </div>
+          ) : (
+            /* ── VIEW 2: 2-COLUMN CARDS GRID (Matching Phone 2 Mockup) ── */
+            <div>
+              {/* Back Header */}
+              <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setSelectedMobileCategory(null)}
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[#0B57D0] hover:text-[#072C50] transition-colors cursor-pointer bg-transparent border-none p-0"
+                >
+                  <LeftOutlined className="text-[11px]" />
+                  <span>Back</span>
+                </button>
+                <span className="text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-full line-clamp-1 max-w-[170px]">
+                  {selectedMobileCategory.title}
+                </span>
+              </div>
+
+              {/* 2-Column Cards Grid */}
+              <div className="grid grid-cols-2 gap-2.5 pb-4">
+                {selectedMobileCategory.items.map((item, idx) => {
+                  const itemSlug = item.slug || item._id || item.name;
+                  const isUni = selectedMobileCategory.type === "universities" || !!item.location || item.courses_count !== undefined;
+                  const logoSrc = item.logo?.url || (typeof item.logo === "string" ? item.logo : null) || item.image?.url || (typeof item.image === "string" ? item.image : null);
+                  const detailUrl = isUni
+                    ? (item.url || `/universities/${encodeURIComponent(itemSlug)}`)
+                    : (item.url || `/courses?course=${encodeURIComponent(itemSlug)}`);
+                  const viewCoursesUrl = isUni
+                    ? `/courses?university=${encodeURIComponent(itemSlug)}`
+                    : detailUrl;
+
+                  return (
+                    <div
+                      key={item._id || idx}
+                      className="bg-white border border-slate-200/90 rounded-2xl p-2.5 sm:p-3 flex flex-col justify-between shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:border-blue-300 transition-all"
+                    >
+                      <div>
+                        {/* Top Section: Logo Left + Title Right */}
+                        <div className="flex items-center gap-2">
+                          {/* Logo */}
+                          <Link
+                            href={detailUrl}
+                            onClick={() => closeMobile()}
+                            className="relative w-8 h-8 sm:w-9 sm:h-9 shrink-0 flex items-center justify-center"
+                          >
+                            {logoSrc ? (
+                              <Image
+                                src={resolveImg(logoSrc)}
+                                alt={item.name || item.title || "Logo"}
+                                fill
+                                unoptimized
+                                sizes="36px"
+                                className="object-contain"
+                              />
+                            ) : (
+                              <span className="text-xs font-black text-[#072C50]">
+                                {(item.name || item.title || "U").charAt(0)}
+                              </span>
+                            )}
+                          </Link>
+
+                          {/* Title */}
+                          <div className="flex-1 min-w-0 text-left">
+                            <Link
+                              href={detailUrl}
+                              onClick={() => closeMobile()}
+                              className="block hover:text-[#0B57D0]"
+                            >
+                              <h4 className="text-[11.5px] font-bold text-[#072C50] leading-snug line-clamp-2 m-0">
+                                {item.name || item.title}
+                              </h4>
+                            </Link>
+                          </div>
+                        </div>
+
+                        {/* Full-width Badges Row (Starts below the logo for maximum flex space) */}
+                        <div className="flex items-center gap-2 mt-1.5 text-[9.5px]">
+                          <span className="inline-flex items-center gap-1 text-slate-600 font-semibold whitespace-nowrap">
+                            <svg className="w-3 h-3 text-emerald-600 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                            <span className="truncate">{item.approval || "UGC-DEB"}</span>
+                          </span>
+                          <span className="inline-flex items-center gap-1 text-slate-500 font-medium whitespace-nowrap">
+                            <svg className="w-3 h-3 text-blue-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+                            </svg>
+                            <span className="truncate">{item.courses_count ? `${item.courses_count}+ Courses` : (item.duration || "10+ Courses")}</span>
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Bottom Action Buttons */}
+                      <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between gap-1">
+                        <Link
+                          href={detailUrl}
+                          onClick={() => closeMobile()}
+                          className="inline-flex items-center justify-center px-2 py-1 text-[9.5px] font-bold text-[#072C50] hover:text-[#0B57D0] border border-slate-300 rounded-2xl bg-white hover:bg-slate-50 transition-colors whitespace-nowrap"
+                        >
+                          Know More
+                        </Link>
+                        <Link
+                          href={viewCoursesUrl}
+                          onClick={() => closeMobile()}
+                          className="inline-flex items-center gap-0.5 text-[9.5px] font-bold text-[#072C50] hover:text-[#0B57D0] transition-colors whitespace-nowrap overflow-hidden"
+                        >
+                          <span className="truncate">View Courses</span>
+                          <RightOutlined className="text-[6.5px] shrink-0" />
+                        </Link>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {selectedMobileCategory.items.length === 0 && (
+                <div className="py-8 text-center text-slate-400 text-xs">
+                  No items found in this category.
+                </div>
+              )}
+            </div>
+          )}
         </Drawer>
       </AntHeader>
     </>

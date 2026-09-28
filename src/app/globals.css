@@ -338,6 +338,7 @@ body:has(.landing-page-root)>div>main {
   0% {
     left: -80%;
   }
+
   100% {
     left: 130%;
   }
@@ -345,24 +346,28 @@ body:has(.landing-page-root)>div>main {
 
 @keyframes couponOuterShadow {
   0% {
-    box-shadow: 
+    box-shadow:
       0 0 0 0 var(--coupon-shadow-start, rgba(46, 204, 113, 0.55)),
       0 2px 5px rgba(0, 0, 0, 0.06);
   }
+
   30% {
-    box-shadow: 
+    box-shadow:
       0 0 0 4px var(--coupon-shadow-mid1, rgba(46, 204, 113, 0.42)),
       0 0 7px var(--coupon-shadow-mid2, rgba(46, 204, 113, 0.22)),
       0 2px 6px rgba(0, 0, 0, 0.05);
   }
+
   60% {
-    box-shadow: 
+    box-shadow:
       0 0 0 9px var(--coupon-shadow-mid3, rgba(74, 222, 128, 0.28)),
       0 0 12px var(--coupon-shadow-mid4, rgba(74, 222, 128, 0.16)),
       0 3px 8px rgba(0, 0, 0, 0.04);
   }
-  85%, 100% {
-    box-shadow: 
+
+  85%,
+  100% {
+    box-shadow:
       0 0 0 15px rgba(167, 243, 208, 0),
       0 0 20px rgba(167, 243, 208, 0),
       0 2px 5px rgba(0, 0, 0, 0.04);

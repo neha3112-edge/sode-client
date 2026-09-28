@@ -141,11 +141,17 @@ export default async function CompareUniversitiesToolPage({ searchParams }) {
     <main className="w-full min-h-screen bg-slate-50">
       <CompareUniversityClientView
         initialComparedData={initialComparedData}
+        initialAllUniversities={initialAllUniversities}
         allUniversities={initialAllUniversities}
+        initialAllCourses={initialAllCourses}
         allCourses={initialAllCourses}
+        initialAllModes={initialAllModes}
         allModes={initialAllModes}
+        initialCompareCategories={initialCompareCategories}
         compareCategories={initialCompareCategories}
+        initialAllStates={initialAllStates}
         allStates={initialAllStates}
+        initialAllApprovals={initialAllApprovals}
         allApprovals={initialAllApprovals}
         initialSelectedIds={urlIds}
       />
