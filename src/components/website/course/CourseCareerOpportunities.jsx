@@ -22,8 +22,8 @@ export default function CourseCareerOpportunities({
       universityName ? ` at ${universityName}` : ""
     }`;
 
-  const [isExpanded, setIsExpanded] = useState(false);
-  const INITIAL_LIMIT = 5;
+  const STEP = 5;
+  const [visibleCount, setVisibleCount] = useState(STEP);
 
   const formatSalary = (role) => {
     const val = role?.salaryRange || role?.avgSalary;
@@ -35,9 +35,23 @@ export default function CourseCareerOpportunities({
     return `₹${str}`;
   };
 
-  const visibleRoles = isExpanded
-    ? jobRoles
-    : jobRoles.slice(0, INITIAL_LIMIT);
+  const totalRoles = jobRoles.length;
+  const isAllExpanded = visibleCount >= totalRoles;
+  const visibleRoles = jobRoles.slice(0, visibleCount);
+
+  const handleToggle = () => {
+    if (isAllExpanded) {
+      setVisibleCount(STEP);
+      const section = document.getElementById("career-opportunities");
+      if (section) {
+        const yOffset = -70;
+        const y = section.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+      }
+    } else {
+      setVisibleCount((prev) => prev + STEP);
+    }
+  };
 
   return (
     <div
@@ -89,14 +103,26 @@ export default function CourseCareerOpportunities({
         </div>
       </div>
 
-      {jobRoles.length > INITIAL_LIMIT && (
-        <div className="flex justify-center pt-1">
+      {totalRoles > STEP && (
+        <div className="flex justify-center pt-2">
           <button
             type="button"
-            onClick={() => setIsExpanded((prev) => !prev)}
-            className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-xs sm:text-[13px] px-6 py-2 rounded-lg transition-all cursor-pointer shadow-xs active:scale-95"
+            onClick={handleToggle}
+            className="inline-flex items-center justify-center gap-1.5 px-5 py-1.5 rounded-full text-xs font-bold text-[#0B3B7E] bg-blue-50/80 hover:bg-blue-100 border border-blue-200/80 transition-all cursor-pointer shadow-none group"
           >
-            {isExpanded ? "Read Less" : "Read More"}
+            <span>{isAllExpanded ? "View Less" : "View More"}</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2.5}
+              stroke="currentColor"
+              className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                isAllExpanded ? "rotate-180" : "group-hover:translate-y-0.5"
+              }`}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+            </svg>
           </button>
         </div>
       )}
