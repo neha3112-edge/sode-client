@@ -57,7 +57,7 @@ export default function CourseCareerOpportunities({
     <div
       id="career-opportunities"
       data-nav-label="Career & Scope"
-      className="scroll-mt-20 bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8 space-y-4 sm:space-y-5"
+      className="scroll-mt-20 bg-white rounded-xl border border-gray-200/90 shadow-xs p-3.5 sm:p-7 md:p-8 space-y-4 sm:space-y-5"
     >
       <div className="text-center max-w-4xl mx-auto">
         <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight m-0">
@@ -65,42 +65,40 @@ export default function CourseCareerOpportunities({
         </h2>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-[#D9E5F2] shadow-2xs bg-white">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-137.5 sm:min-w-full">
-            <thead>
-              <tr className="bg-[#EBF3FA] border-b border-[#D9E5F2]">
-                <th className="py-3 px-4 sm:px-6 text-xs sm:text-[13px] font-bold text-gray-900 uppercase tracking-wider border-r border-[#D9E5F2] w-[30%]">
-                  JOB ROLE
-                </th>
-                <th className="py-3 px-4 sm:px-6 text-xs sm:text-[13px] font-bold text-gray-900 uppercase tracking-wider border-r border-[#D9E5F2] w-[45%]">
-                  ROLE DESCRIPTION
-                </th>
-                <th className="py-3 px-4 sm:px-6 text-xs sm:text-[13px] font-bold text-gray-900 uppercase tracking-wider w-[25%]">
-                  SALARY RANGE IN INDIA
-                </th>
+      <div className="overflow-hidden rounded-xl border border-[#D9E5F2] shadow-2xs bg-white w-full">
+        <table className="table-fixed w-full text-left border-collapse">
+          <thead>
+            <tr className="bg-[#EBF3FA] border-b border-[#D9E5F2]">
+              <th className="py-2.5 sm:py-3 px-2 sm:px-5 text-[10px] sm:text-[13px] font-bold text-gray-900 uppercase tracking-wider border-r border-[#D9E5F2] w-[30%] sm:w-[28%] align-middle break-words">
+                JOB ROLE
+              </th>
+              <th className="py-2.5 sm:py-3 px-2 sm:px-5 text-[10px] sm:text-[13px] font-bold text-gray-900 uppercase tracking-wider border-r border-[#D9E5F2] w-[44%] sm:w-[48%] align-middle break-words">
+                ROLE DESCRIPTION
+              </th>
+              <th className="py-2.5 sm:py-3 px-2 sm:px-5 text-[10px] sm:text-[13px] font-bold text-gray-900 uppercase tracking-wider w-[26%] sm:w-[24%] align-middle break-words">
+                SALARY RANGE IN INDIA
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-[#E6EEF5] bg-white">
+            {visibleRoles.map((role, idx) => (
+              <tr
+                key={role._id || idx}
+                className="hover:bg-blue-50/25 transition-colors"
+              >
+                <td className="py-2.5 sm:py-3.5 px-2 sm:px-5 text-[11px] sm:text-[13.5px] font-bold text-gray-900 border-r border-[#E6EEF5] align-middle break-words leading-snug">
+                  {role.title}
+                </td>
+                <td className="py-2.5 sm:py-3.5 px-2 sm:px-5 text-[10.5px] sm:text-[13px] text-gray-700 leading-snug sm:leading-relaxed font-normal border-r border-[#E6EEF5] align-middle break-words">
+                  {role.description || "—"}
+                </td>
+                <td className="py-2.5 sm:py-3.5 px-2 sm:px-5 text-[11px] sm:text-[13.5px] font-bold text-gray-900 align-middle break-words leading-snug">
+                  {formatSalary(role)}
+                </td>
               </tr>
-            </thead>
-            <tbody className="divide-y divide-[#E6EEF5] bg-white">
-              {visibleRoles.map((role, idx) => (
-                <tr
-                  key={role._id || idx}
-                  className="hover:bg-blue-50/25 transition-colors"
-                >
-                  <td className="py-3 px-4 sm:px-6 text-xs sm:text-[13.5px] font-bold text-gray-900 border-r border-[#E6EEF5] align-middle">
-                    {role.title}
-                  </td>
-                  <td className="py-3 px-4 sm:px-6 text-xs sm:text-[13px] text-gray-700 leading-relaxed font-normal border-r border-[#E6EEF5] align-middle">
-                    {role.description || "—"}
-                  </td>
-                  <td className="py-3 px-4 sm:px-6 text-xs sm:text-[13.5px] font-bold text-gray-900 whitespace-nowrap align-middle">
-                    {formatSalary(role)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       </div>
 
       {totalRoles > STEP && (
