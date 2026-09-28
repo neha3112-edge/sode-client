@@ -38,7 +38,7 @@ export function UniversityClientView({ initialData, slug }) {
   const { toggleCompare, isInCompare, setIsCompareDrawerOpen } = useCompare();
 
   const [activeCourseFilter, setActiveCourseFilter] = useState("ALL");
-  const [visibleCoursesCount, setVisibleCoursesCount] = useState(6);
+  const [visibleCoursesCount, setVisibleCoursesCount] = useState(5);
 
   const data = initialData || {};
   const uni =

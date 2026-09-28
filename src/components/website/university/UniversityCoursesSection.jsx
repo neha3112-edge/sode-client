@@ -16,7 +16,7 @@ export default function UniversityCoursesSection({
   filteredCourses = [],
   activeCourseFilter = "ALL",
   setActiveCourseFilter,
-  visibleCoursesCount = 6,
+  visibleCoursesCount = 5,
   setVisibleCoursesCount,
   uniName,
   slug,
@@ -82,8 +82,7 @@ export default function UniversityCoursesSection({
           return (
             <div
               key={item._id || item.slug || `${cardTitle}-${index}`}
-              className={`bg-gray-50 rounded-xl border border-gray-200 hover:border-[#08AEAA] p-2 sm:p-2.5 hover:shadow-md transition-all flex flex-col items-center justify-between text-center relative group min-w-0 w-full h-full shadow-2xs ${index === 5 && visibleCoursesCount === 6 ? "flex lg:hidden" : "flex"
-                }`}
+              className="bg-gray-50 rounded-xl border border-gray-200 hover:border-[#08AEAA] p-2 sm:p-2.5 hover:shadow-md transition-all flex flex-col items-center justify-between text-center relative group min-w-0 w-full h-full shadow-2xs"
             >
               {specCount > 0 && (
                 <div className="absolute top-0 left-0 z-10">
@@ -215,11 +214,19 @@ export default function UniversityCoursesSection({
         <div className="flex justify-center mt-4 pt-1">
           <button
             type="button"
-            onClick={() =>
-              setVisibleCoursesCount((prev) =>
-                prev >= filteredCourses.length ? 6 : filteredCourses.length
-              )
-            }
+            onClick={() => {
+              if (visibleCoursesCount >= filteredCourses.length) {
+                setVisibleCoursesCount(5);
+                const section = document.getElementById("university-courses-section");
+                if (section) {
+                  const yOffset = -70;
+                  const y = section.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                  window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+                }
+              } else {
+                setVisibleCoursesCount((prev) => prev + 5);
+              }
+            }}
             className="inline-flex items-center justify-center gap-1.5 px-5 py-1.5 rounded-full text-xs font-bold text-[#0B3B7E] bg-blue-50/80 hover:bg-blue-100 border border-blue-200/80 transition-all cursor-pointer shadow-none group"
           >
             <span>
