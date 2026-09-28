@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Carousel } from "antd";
+import { Carousel, Pagination } from "antd";
 import { Container } from "@/components/common/Container";
 import SafeHtmlRenderer from "@/components/website/SafeHtmlRenderer";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
@@ -511,9 +511,9 @@ function RankedUniversityCard({ item, index, features, targetCourseName }) {
     `${name} is a recognized and accredited university. It boasts approvals from various organizations such as ${approvalsJoined}. Located in ${location}, it operates all over India. Pursuing an online ${targetCourseName || "degree"} from ${name} is very flexible, with learning hours ranging from 15 to 20 hours a week.`;
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200/90 shadow-xs hover:shadow-md transition-all duration-300 p-5 sm:p-7 mb-6 flex flex-col md:flex-row items-stretch gap-6">
+    <div className="bg-white rounded-xl border border-slate-200/90 shadow-xs hover:shadow-md transition-all duration-300 mb-6 flex flex-col md:flex-row items-stretch overflow-hidden">
       {/* ── Left Content (approx 65-70%) ── */}
-      <div className="flex-1 min-w-0 flex flex-col justify-between">
+      <div className="flex-1 min-w-0 p-5 sm:p-7 flex flex-col justify-between">
         <div>
           {/* Header Title with Orange Rank and Dotted Divider */}
           <div className="border-b border-dashed border-slate-300 pb-3 mb-3">
@@ -666,36 +666,15 @@ function RankedUniversityCard({ item, index, features, targetCourseName }) {
         </div>
       </div>
 
-      {/* ── Right Section (Campus Photo + Logo Card, approx 30-35%) ── */}
-      <div className="w-full md:w-72 lg:w-80 shrink-0 flex flex-col justify-center">
-        <div className="rounded-xl border border-slate-200 overflow-hidden bg-white shadow-xs flex flex-col h-full min-h-[210px]">
-          {/* Top Campus Building Photo */}
-          <div className="h-36 sm:h-44 w-full relative bg-slate-100 overflow-hidden">
-            <Image
-              src={bannerUrl || defaultCampusImg}
-              alt={`${name} Campus`}
-              fill
-              className="object-cover"
-              unoptimized
-            />
-          </div>
-
-          {/* Bottom University Logo Box */}
-          <div className="p-4 flex items-center justify-center bg-white border-t border-slate-100 flex-1 min-h-[85px]">
-            {logoUrl ? (
-              <Image
-                src={logoUrl}
-                alt={name}
-                width={170}
-                height={60}
-                className="max-h-14 w-auto object-contain"
-                unoptimized
-              />
-            ) : (
-              <span className="font-bold text-slate-800 text-sm">{name}</span>
-            )}
-          </div>
-        </div>
+      {/* ── Right Section (Campus Photo, approx 30-35%) ── */}
+      <div className="w-full md:w-72 lg:w-80 shrink-0 border-t md:border-t-0 md:border-l border-slate-200/90 relative min-h-[220px] md:min-h-full bg-slate-100 overflow-hidden">
+        <Image
+          src={bannerUrl || defaultCampusImg}
+          alt={`${name} Campus`}
+          fill
+          className="object-cover"
+          unoptimized
+        />
       </div>
     </div>
   );
@@ -1093,6 +1072,8 @@ export function DynamicListingClientView({ page, slug }) {
   const [filterNaacOnly, setFilterNaacOnly] = useState(false);
   const [selectedSession, setSelectedSession] = useState("January 2026");
   const [tableSearch, setTableSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
 
   const rankedList = page?.rankedUniversities || [];
 
@@ -1128,6 +1109,12 @@ export function DynamicListingClientView({ page, slug }) {
 
     return list;
   }, [rankedList, searchTerm, sortOption, filterNaacOnly]);
+
+  const totalUniversities = displayedUniversities.length;
+  const startIndex = (currentPage - 1) * pageSize;
+  const paginatedUniversities = useMemo(() => {
+    return displayedUniversities.slice(startIndex, startIndex + pageSize);
+  }, [displayedUniversities, startIndex, pageSize]);
 
   // Filter for Table Directory Layout
   const tableUniversities = useMemo(() => {
@@ -1235,14 +1222,20 @@ export function DynamicListingClientView({ page, slug }) {
                       type="text"
                       placeholder="Search university..."
                       value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
+                      onChange={(e) => {
+                        setSearchTerm(e.target.value);
+                        setCurrentPage(1);
+                      }}
                       className="w-full pl-9 pr-3 py-1.5 rounded-lg border border-slate-200 text-xs bg-slate-50 focus:bg-white focus:outline-hidden focus:border-blue-600 transition-all"
                     />
                   </div>
 
                   <select
                     value={sortOption}
-                    onChange={(e) => setSortOption(e.target.value)}
+                    onChange={(e) => {
+                      setSortOption(e.target.value);
+                      setCurrentPage(1);
+                    }}
                     className="px-3 py-1.5 rounded-lg border border-slate-200 text-xs bg-slate-50 font-medium text-slate-700 cursor-pointer focus:outline-hidden"
                   >
                     <option value="default">Default Order (#1 - #10)</option>
@@ -1252,7 +1245,10 @@ export function DynamicListingClientView({ page, slug }) {
 
                   <button
                     type="button"
-                    onClick={() => setFilterNaacOnly(!filterNaacOnly)}
+                    onClick={() => {
+                      setFilterNaacOnly(!filterNaacOnly);
+                      setCurrentPage(1);
+                    }}
                     className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all cursor-pointer ${
                       filterNaacOnly
                         ? "bg-amber-400 text-slate-950 border-amber-500 shadow-xs"
@@ -1266,23 +1262,51 @@ export function DynamicListingClientView({ page, slug }) {
 
               {/* Universities Listing */}
               {displayedUniversities.length > 0 ? (
-                <div
-                  className={
-                    page?.features?.cardLayout === "grid"
-                      ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6"
-                      : "flex flex-col gap-6 w-full"
-                  }
-                >
-                  {displayedUniversities.map((item, index) => (
-                    <RankedUniversityCard
-                      key={item.university?._id || index}
-                      item={item}
-                      index={index}
-                      features={page?.features}
-                      targetCourseName={targetCourseName}
-                    />
-                  ))}
-                </div>
+                <>
+                  <div
+                    className={
+                      page?.features?.cardLayout === "grid"
+                        ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6"
+                        : "flex flex-col gap-6 w-full"
+                    }
+                  >
+                    {paginatedUniversities.map((item, index) => (
+                      <RankedUniversityCard
+                        key={item.university?._id || index}
+                        item={item}
+                        index={startIndex + index}
+                        features={page?.features}
+                        targetCourseName={targetCourseName}
+                      />
+                    ))}
+                  </div>
+
+                  {totalUniversities > pageSize && (
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 pb-2 px-1 mt-2">
+                      <span className="text-xs font-semibold text-slate-500 text-center sm:text-left">
+                        Showing {startIndex + 1}–{Math.min(startIndex + pageSize, totalUniversities)} of {totalUniversities} universities
+                      </span>
+                      <Pagination
+                        current={currentPage}
+                        pageSize={pageSize}
+                        total={totalUniversities}
+                        onChange={(page) => {
+                          setCurrentPage(page);
+                          const elem = document.getElementById("universities-list");
+                          if (elem) {
+                            const yOffset = -70;
+                            const y = elem.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                            window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+                          } else if (typeof window !== "undefined") {
+                            window.scrollTo({ top: 0, behavior: "smooth" });
+                          }
+                        }}
+                        showSizeChanger={false}
+                        responsive
+                      />
+                    </div>
+                  )}
+                </>
               ) : (
                 <div className="p-12 text-center bg-white rounded-2xl border border-slate-200 text-slate-500">
                   <GraduationCap className="w-12 h-12 mx-auto text-slate-300 mb-2" />
@@ -1298,6 +1322,7 @@ export function DynamicListingClientView({ page, slug }) {
                       setSearchTerm("");
                       setFilterNaacOnly(false);
                       setSortOption("default");
+                      setCurrentPage(1);
                     }}
                     className="mt-3 px-4 py-1.5 rounded-lg bg-blue-50 text-blue-700 font-bold text-xs hover:bg-blue-100 transition-all cursor-pointer"
                   >

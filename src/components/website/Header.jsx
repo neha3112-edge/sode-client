@@ -464,7 +464,13 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
               const hasFlatDropdown = item.has_dropdown && item.dropdown_type === "flat_list";
 
               // 1. Highlighted Tool Button (e.g. AI Tools)
-              if (item.is_highlighted) {
+              const isAiTool =
+                item.is_highlighted ||
+                (item.label || "").toLowerCase().includes("tool") ||
+                (item.url || "").includes("tool") ||
+                (item.url || "").includes("suggest");
+
+              if (isAiTool) {
                 return (
                   <AiToolButton
                     key={itemKey}
