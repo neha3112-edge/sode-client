@@ -291,18 +291,22 @@ export default function LandingLeadForm({
                 skewEffect={true}
                 icon={
                   <Phone
-                    className="w-3.5 h-3.5 stroke-[2.5] fill-white text-white"
+                    className={`w-3.5 h-3.5 stroke-[2.5] ${
+                      isWhiteCard ? "fill-white text-white" : "fill-slate-900 text-slate-900"
+                    }`}
                   />
                 }
                 iconPosition="left"
-                className="px-4 py-1.5 text-[13px] rounded-full shadow-xs"
+                className="px-4 py-1.5 text-[13px] rounded-full shadow-xs font-bold"
                 style={{
                   background:
                     activeBrand.hero?.phoneBadgeBackground ||
                     activeBrand.hero?.formPhoneBg ||
                     activeBrand.hero?.phoneBadgeBg ||
-                    "#f78d2d",
-                  color: "#ffffff",
+                    (isWhiteCard ? "#f78d2d" : activeAccentColor || "#ffd200"),
+                  color:
+                    activeBrand.hero?.phoneBadgeTextColor ||
+                    (isWhiteCard ? "#ffffff" : "#111111"),
                   ...activeBrand.hero?.phoneBadgeStyle,
                 }}
               >

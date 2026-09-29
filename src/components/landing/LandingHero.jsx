@@ -186,12 +186,12 @@ export default function LandingHero({
 
       {/* Desktop Background */}
       <div
-        className="absolute inset-0 -z-20 hidden md:block bg-cover bg-center md:bg-[52%_center]"
+        className="absolute inset-0 -z-20 hidden md:block bg-cover bg-center"
         style={{
           backgroundImage: `url(${
             hero.backgroundImage || "/assets/images/smu_banner_bg.webp"
           })`,
-          backgroundPosition: hero.backgroundPosition || "center 0%",
+          backgroundPosition: hero.backgroundPosition || "center center",
           backgroundSize: hero.backgroundSize || "cover",
           backgroundRepeat: "no-repeat",
           ...hero.desktopBgStyle,
@@ -354,14 +354,29 @@ export default function LandingHero({
             </div>
           ) : (
             <div className="relative z-20 w-full max-w-sm sm:max-w-none sm:w-fit my-2">
-              <span className="absolute -top-3 left-1/2 -translate-x-1/2 sm:left-3 sm:translate-x-0 z-10 rounded-full bg-[#ffd200] px-3 py-0.5 text-[12px] sm:text-[13px] font-bold leading-normal text-[#08417b] shadow-2xs whitespace-nowrap">
+              <span
+                className="absolute -top-3 left-1/2 -translate-x-1/2 sm:left-3 sm:translate-x-0 z-10 rounded-full px-3.5 py-0.5 text-[12px] sm:text-[13px] font-bold leading-normal shadow-2xs whitespace-nowrap"
+                style={{
+                  backgroundColor:
+                    hero.coursePillBg || brand.accentColor || "#fdb913",
+                  color:
+                    hero.coursePillTextColor ||
+                    hero.headingColor ||
+                    "#004172",
+                }}
+              >
                 Online Degree Courses :
               </span>
               <div
-                className="rounded-[6px] border-2 bg-white/95 px-3 sm:px-4 pb-2 pt-3.5 text-[15px] sm:text-[18px] lg:text-[20px] font-bold leading-[1.25] text-[#08417b] shadow-xs text-center sm:text-left"
+                className="rounded-[6px] border-2 bg-white/95 px-3 sm:px-4 pb-2 pt-3.5 text-[15px] sm:text-[18px] lg:text-[20px] font-bold leading-[1.25] shadow-xs text-center sm:text-left"
                 style={{
                   borderColor:
-                    hero.courseBorder || brand.primaryColor || "#08417b",
+                    hero.courseBorder || brand.primaryColor || "#004172",
+                  color:
+                    hero.coursesColor ||
+                    hero.courseTextColor ||
+                    hero.headingColor ||
+                    "#004172",
                 }}
               >
                 {courseLines.map((line) => (
@@ -374,20 +389,32 @@ export default function LandingHero({
           {/* Download Brochure Button */}
           <LandingButton
             variant="brochure"
-            icon={<Download size={15} strokeWidth={2.5} />}
+            icon={
+              hero.brochureIcon || (
+                <svg
+                  className="w-3.5 h-3.5 fill-current shrink-0"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
+                </svg>
+              )
+            }
             iconPosition="right"
             onClick={() => onOpenBrochure?.()}
-            className={`mt-3 sm:mt-4 py-2.5 px-7 text-[14px] sm:text-[15.5px] font-bold ${
+            className={`mt-3 sm:mt-4 py-2 sm:py-2.5 px-6 sm:px-7 text-[14px] sm:text-[15px] font-bold tracking-tight hover:shadow-md transition-all ${
               hero.buttonRadius || "rounded-[6px]"
-            }`}
+            } ${hero.buttonClassName || ""}`}
             style={{
               background:
-                hero.buttonGradient ||
                 hero.buttonBackground ||
+                hero.buttonGradient ||
                 (isDarkMode
                   ? "#f78d2d"
                   : "linear-gradient(270deg, #ff6600 0%, #ee3024 100%)"),
               color: hero.buttonTextColor || "#ffffff",
+              border:
+                hero.buttonBorder ||
+                (hero.buttonStyle?.border ? undefined : "none"),
               ...hero.buttonStyle,
             }}
           >
@@ -395,8 +422,21 @@ export default function LandingHero({
           </LandingButton>
         </div>
 
-        {/* Center Column Spacer: Leaves the student in the background image completely open and visible */}
-        <div className="hidden lg:block lg:flex-1 min-w-[100px] pointer-events-none" />
+        {/* Center Column: Student Image or Spacer */}
+        {hero.studentImage || brand.heroStudentImage ? (
+          <div className="hidden lg:flex lg:flex-1 justify-center items-end self-end pointer-events-none -mb-4 sm:-mb-6 lg:-mb-6 z-10">
+            <img
+              src={
+                hero.studentImage ||
+                brand.heroStudentImage
+              }
+              alt="Online Student"
+              className="max-h-[380px] xl:max-h-[430px] w-auto object-contain object-bottom drop-shadow-md"
+            />
+          </div>
+        ) : (
+          <div className="hidden lg:block lg:flex-1 min-w-[100px] pointer-events-none" />
+        )}
 
         {/* Right Column: Lead Form */}
         <div

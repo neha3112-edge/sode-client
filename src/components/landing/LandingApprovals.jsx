@@ -414,56 +414,72 @@ export default function LandingApprovals({
   // ==========================================
   // Layout 4: Classic Banner Grid (Amity, etc.)
   // ==========================================
-  const activeBannerBg = bannerBg || brand?.approvalsBannerBg || brand?.accentColor || "#ffd200";
-  const headerTextColor = brand?.approvalsHeaderColor || brand?.primaryColor || "#08417b";
+  const activeBannerBg =
+    bannerBg || brand?.approvalsBannerBg || brand?.accentColor || "#ffd200";
+  const headerTextColor =
+    brand?.approvalsHeaderColor || "#000000";
 
   return (
     <section id="approvals" className="w-full">
+      {/* Top Yellow Banner */}
       <div
         className="w-full py-2.5 sm:py-3.5 px-4 text-center select-none shadow-xs"
         style={{ backgroundColor: activeBannerBg }}
       >
         <h3
-          className="m-0 text-[14px] sm:text-[17px] md:text-[20px] font-bold tracking-tight leading-tight"
+          className="m-0 text-[15px] sm:text-[18px] md:text-[21px] font-extrabold tracking-tight leading-tight"
           style={{ color: headerTextColor }}
         >
           {activeUniversity}
         </h3>
         <h2
-          className="m-0 mt-0.5 text-[18px] sm:text-[22px] md:text-[26px] font-extrabold tracking-tight leading-tight"
+          className="m-0 mt-0.5 text-[17px] sm:text-[20px] md:text-[23px] font-extrabold tracking-tight leading-tight"
           style={{ color: headerTextColor }}
         >
           {activeTitle}
         </h2>
       </div>
 
+      {/* Approvals Grid Container */}
       <div
-        className="py-6 sm:py-10 border-b border-slate-200/50"
-        style={{ backgroundColor: gridBg }}
+        className="py-6 sm:py-9 border-b border-amber-200/50"
+        style={{ backgroundColor: gridBg || "#fff9db" }}
       >
         <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 lg:gap-8 items-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-5 sm:gap-y-7 gap-x-4 sm:gap-x-6 lg:gap-x-8 items-center">
             {approvals.map((item, idx) => (
               <div
                 key={idx}
-                className="flex items-center gap-3 sm:gap-3.5 bg-white/70 sm:bg-transparent p-2.5 sm:p-0 rounded-lg sm:rounded-none border border-amber-100 sm:border-none shadow-xs sm:shadow-none group"
+                className="flex items-center gap-3 sm:gap-3.5 group"
               >
-                <div className="relative w-[64px] h-[64px] sm:w-[80px] sm:h-[80px] lg:w-[88px] lg:h-[88px] shrink-0 transition-transform duration-200 group-hover:scale-105">
+                {/* Circular Badge with Orange/Yellow Ring Border */}
+                <div
+                  className="relative w-14 h-14 sm:w-16 sm:h-16 lg:w-[68px] lg:h-[68px] rounded-full border-2 bg-white flex items-center justify-center p-2 shrink-0 shadow-2xs transition-transform duration-200 group-hover:scale-105"
+                  style={{
+                    borderColor:
+                      item.borderColor ||
+                      brand?.approvalsCircleBorder ||
+                      brand?.accentColor ||
+                      "#fdb913",
+                  }}
+                >
                   <Image
                     src={item.image}
                     alt={item.text || "Recognition approval"}
                     fill
-                    className="object-contain"
-                    sizes="(max-width: 640px) 64px, 88px"
+                    className="object-contain p-2"
+                    sizes="68px"
                   />
                 </div>
+
+                {/* Text Description */}
                 <div className="flex-1 min-w-0">
                   {showTags && item.tag && (
                     <span className="inline-block text-[10px] font-bold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded mb-1">
                       {item.tag}
                     </span>
                   )}
-                  <p className="text-[12px] sm:text-[13px] leading-snug text-[#333333] font-medium m-0">
+                  <p className="text-[11.5px] sm:text-[12px] lg:text-[12.5px] leading-snug text-[#1f2937] font-semibold m-0">
                     {item.text}
                   </p>
                 </div>

@@ -31,9 +31,11 @@ export default function LandingButton({
     case "brochure":
     case "primary":
       variantClasses =
-        "text-white font-bold shadow-md hover:opacity-95 active:scale-[0.98] transition-all cursor-pointer border-none rounded-[6px]";
+        "font-bold shadow-xs hover:opacity-95 active:scale-[0.98] transition-all cursor-pointer rounded-[6px]";
       defaultStyle = {
         background: "linear-gradient(270deg, #ff6600 0%, #ee3024 100%)",
+        color: "#ffffff",
+        border: "none",
       };
       break;
 
