@@ -18,6 +18,188 @@ export default function LandingDegree({
     image = "/assets/vgu/sample-degree-vgu.webp",
   } = degreeInfo;
 
+  const isGalgotias =
+    brand.slug === "galgotias" ||
+    brand.degreeLayout === "galgotias" ||
+    brand.heroStyle === "galgotias";
+
+  if (isGalgotias) {
+    const title =
+      degreeInfo.title || "What's More Than Just A College Degree?";
+    const desc =
+      degreeInfo.desc ||
+      degreeInfo.subtitle ||
+      "Galgotias Online degrees are highly esteemed due to their robust academic framework and alignment with industry needs. These programs are designed to meet current industry standards and equip students with practical, job-ready skills.";
+
+    const points = degreeInfo.features || [
+      {
+        bold: "13+ Years of Excellence:",
+        text: "Galgotias Online boasts over 13 years of educational excellence.",
+      },
+      {
+        bold: "500+ Hiring Partners:",
+        text: "With over 500 hiring partners, Galgotias Online ensures robust placement opportunities for its students.",
+      },
+      {
+        bold: "50K+ Learners:",
+        text: "Galgotias Online has a vast and diverse student community with over 50,000 learners.",
+      },
+      {
+        bold: "50+ Programs and Specialisations:",
+        text: "Offering more than 50 programs and specialisations, Galgotias Online caters to a wide range of academic and professional interests.",
+      },
+    ];
+
+    const certificateImg =
+      degreeInfo.image || "/assets/galgotias/galgotias_degree.webp";
+    const btnText = degreeInfo.buttonText || "Get Degree";
+
+    const defaultWhyChooseRows = [
+      {
+        feature: "Reputation of Excellence",
+        details:
+          "Galgotias University is renowned for its esteemed academic excellence and holds the highest NAAC score (3.37/4) among private universities in Uttar Pradesh.",
+      },
+      {
+        feature: "Affordable Fee Structure",
+        details:
+          "Galgotias Online provides affordable programs, ensuring accessibility to quality education for all aspiring learners.",
+      },
+      {
+        feature: "Flexible Learning Options",
+        details:
+          "Galgotias Online offers flexible learning with live and recorded classes, accommodating students' diverse schedules for personalised education.",
+      },
+      {
+        feature: "Updated Industry-Focused Curriculum",
+        details:
+          "The university ensures its courses are designed and regularly updated by industry experts, guaranteeing you will receive current and pertinent knowledge.",
+      },
+      {
+        feature: "Recognised Degrees",
+        details:
+          "You will earn a degree accredited by UGC and recognised by government bodies, private organisations, and higher education institutions in India and worldwide.",
+      },
+      {
+        feature: "Placement Assistance",
+        details:
+          "At Galgotias University, students can access dedicated placement assistance, which features resume-building workshops, career guidance sessions, and placement drives to enhance their career prospects.",
+      },
+    ];
+
+    const whyChooseTableData =
+      degreeInfo.whyChooseTable || brand.whyChooseTable || {};
+    const whyChooseTitle =
+      whyChooseTableData.title ||
+      "Why Should You Choose Galgotias Online in 2026?";
+    const whyChooseRows = whyChooseTableData.rows || defaultWhyChooseRows;
+
+    return (
+      <section id="Degreeinfo" className="py-10 sm:py-16 bg-white select-none">
+        <div className="max-w-[1360px] mx-auto px-6 sm:px-12 md:px-16 lg:px-24 xl:px-28">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
+            {/* Left Column: Heading, Description, 4 Checklist Points, Button */}
+            <div className="lg:col-span-7 text-left">
+              <h2 className="text-2xl sm:text-3xl lg:text-[32px] font-extrabold text-[#002b49] tracking-tight leading-tight m-0">
+                {title}
+              </h2>
+
+              <p className="text-[13.5px] sm:text-[14px] text-slate-700 leading-relaxed font-normal mt-3 mb-6 max-w-xl">
+                {desc}
+              </p>
+
+              <div className="space-y-3.5 sm:space-y-4 mb-7 sm:mb-8">
+                {points.map((item, idx) => (
+                  <div key={idx} className="flex items-start gap-2.5 sm:gap-3">
+                    <svg
+                      className="w-4 h-4 sm:w-[18px] sm:h-[18px] text-[#22c55e] shrink-0 mt-0.5"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    <p className="text-[13.5px] sm:text-[14px] text-slate-800 leading-relaxed font-normal m-0">
+                      <strong className="font-bold text-slate-900">
+                        {item.bold || item.title}
+                      </strong>{" "}
+                      {item.text || item.desc}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              <div>
+                <button
+                  type="button"
+                  onClick={() => onOpenApply?.()}
+                  className="bg-[#005bb8] hover:bg-[#004a96] active:scale-95 text-white font-bold text-[14px] sm:text-[15px] px-7 py-3 rounded-full inline-flex items-center gap-2 shadow-xs cursor-pointer border-none transition-all"
+                >
+                  <span>{btnText}</span>
+                  <span className="text-lg leading-none">&rarr;</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Right Column: Sample Degree Certificate */}
+            <div className="lg:col-span-5 flex justify-center">
+              <div className="relative w-full max-w-[340px] sm:max-w-[380px] aspect-[1/1.3] rounded-[8px] overflow-hidden shadow-md border border-slate-200 bg-white">
+                <Image
+                  src={certificateImg}
+                  alt="Galgotias Sample Degree Certificate"
+                  fill
+                  className="object-contain"
+                  sizes="(max-width: 1024px) 340px, 380px"
+                  priority
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Table: Why Should You Choose Galgotias Online in 2026? */}
+          <div className="mt-14 sm:mt-20 pt-2 border-t border-slate-100/80">
+            <h2 className="text-2xl sm:text-3xl lg:text-[28px] font-extrabold text-[#002b49] tracking-tight leading-tight m-0 mb-6 sm:mb-8 text-left">
+              {whyChooseTitle}
+            </h2>
+
+            <div className="overflow-x-auto border border-[#cfe2f3] rounded-[6px] sm:rounded-[8px] shadow-xs">
+              <table className="w-full border-collapse text-left min-w-[620px]">
+                <thead>
+                  <tr className="bg-[#e1f0fa] border-b border-[#cfe2f3]">
+                    <th className="py-3.5 px-4 sm:px-6 text-sm sm:text-[15px] font-bold text-slate-900 w-[28%] sm:w-[25%] border-r border-[#cfe2f3]">
+                      Feature
+                    </th>
+                    <th className="py-3.5 px-4 sm:px-6 text-sm sm:text-[15px] font-bold text-slate-900">
+                      Details
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#cfe2f3] bg-white">
+                  {whyChooseRows.map((row, idx) => (
+                    <tr
+                      key={idx}
+                      className="hover:bg-[#f8fbfe] transition-colors"
+                    >
+                      <td className="py-3.5 px-4 sm:px-6 align-top font-bold text-slate-900 text-[13.5px] sm:text-[14.5px] border-r border-[#cfe2f3]">
+                        {row.feature}
+                      </td>
+                      <td className="py-3.5 px-4 sm:px-6 align-top text-slate-800 text-[13px] sm:text-[14px] font-normal leading-relaxed">
+                        {row.details}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   const isLpu = brand.slug === "lpu";
 
   if (isLpu) {

@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import React from "react";
 import { request } from "@/services/request";
 import { getPageMetaData, constructMetadata } from "@/constants/pageMetaData";
 import { UniversitiesPageClientView } from "@/components/website";
@@ -47,11 +47,11 @@ export default async function UniversitiesPage() {
   }
 
   return (
-    <Suspense fallback={null}>
+    <div className="w-full">
       <UniversitiesPageClientView
         initialUniversities={initialUniversities}
         initialOptions={initialOptions}
       />
-    </Suspense>
+    </div>
   );
 }

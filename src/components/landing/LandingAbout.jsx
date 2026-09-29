@@ -43,6 +43,47 @@ export default function LandingAbout({
   const leaderData = leader || about.leader;
 
   // ==========================================
+  // Layout 0: Galgotias About & Accreditations Text
+  // ==========================================
+  const isGalgotiasLayout = brand.aboutLayout === "galgotias" || brand.slug === "galgotias";
+
+  if (isGalgotiasLayout) {
+    return (
+      <section id="about" className="pt-10 sm:pt-14 pb-2 sm:pb-3 bg-white">
+        <div className="max-w-[1360px] mx-auto px-6 sm:px-12 md:px-16 lg:px-24 xl:px-28 space-y-6 sm:space-y-8 text-left">
+          {/* 1. About Galgotias University Online */}
+          <div className="space-y-4">
+            <h2 className="text-2xl sm:text-3xl lg:text-[32px] font-black text-[#002b49] tracking-tight leading-tight m-0">
+              About Galgotias University Online
+            </h2>
+
+            <div className="space-y-3.5 text-[14px] sm:text-[15.5px] text-slate-700 leading-relaxed font-normal">
+              <p className="m-0">
+                Galgotias Online is a pioneering initiative by Galgotias University, dedicated to providing individuals with a robust platform for elective online learning. This initiative empowers participants to enhance their competencies, cultivate expertise, and refine skills across diverse disciplines and career paths. The <strong className="text-[#0070ba] font-bold">Online degree program</strong> allows students to study at their own pace while still receiving a high-quality education that connects to real-world situations. Students learn from experts who work in their field, work together with other students, and practice what they learn through real examples and hands-on projects.
+              </p>
+
+              <p className="m-0">
+                Galgotias University Online provides a state-of-the-art learning management system (LMS) that allows students to access course materials, submit assignments, and participate in discussions from anywhere in the world. The program doesn't just teach job skills. It also teaches students how to be good leaders, make the right choices, and communicate well with others. This helps create complete professionals who can handle the challenges of today's work world.
+              </p>
+            </div>
+          </div>
+
+          {/* 2. Galgotias University Online Accreditations, Approvals and Ranking */}
+          <div className="space-y-3 pt-2">
+            <h2 className="text-2xl sm:text-3xl lg:text-[30px] font-black text-[#002b49] tracking-tight leading-tight m-0">
+              Galgotias University Online Accreditations, Approvals and Ranking
+            </h2>
+
+            <p className="text-[14px] sm:text-[15.5px] text-slate-700 leading-relaxed font-normal m-0">
+              Galgotias University Online is recognized for its strong commitment to quality education and academic excellence. It has established itself as one of the top private universities in India, focusing on research, innovation, and skill development.
+            </p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ==========================================
   // Layout 1: VGU Blue Full-Width Banner
   // ==========================================
   const isLpuLayout = brand.aboutLayout === "lpu" || brand.slug === "lpu";
@@ -52,7 +93,7 @@ export default function LandingAbout({
     brand.slug === "vgu";
 
   // ==========================================
-  // Layout 0: LPU About & Stats
+  // Layout 2: LPU About & Stats
   // ==========================================
   if (isLpuLayout) {
     return (

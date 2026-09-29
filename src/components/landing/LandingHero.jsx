@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { Download } from "lucide-react";
 import LandingContainer from "./LandingContainer";
 import LandingLeadForm from "./LandingLeadForm";
@@ -24,6 +25,113 @@ export default function LandingHero({
 
   const phoneText = brand.phoneDisplay || brand.phone || "+91 7065 7777 55";
   const isLpu = brand.slug === "lpu" || brand.shortName === "LPU" || brand.name === "LPU Online" || hero.isLpuStyle;
+  const isGalgotias = brand.slug === "galgotias" || hero.style === "galgotias" || brand.heroStyle === "galgotias";
+
+  if (isGalgotias) {
+    const coursePills = ["MA", "M.COM", "MBA", "MCA", "BCA", "BBA"];
+    const approvalIcons = [
+      { img: "/assets/images/approvals/ugc_approval.png", alt: "UGC" },
+      { img: "/assets/images/approvals/naac_a_plus.png", alt: "NAAC A+" },
+      { img: "/assets/images/approvals/nirf_ranking.png", alt: "NIRF" },
+      { img: "/assets/images/approvals/aicte_approval.png", alt: "AICTE" },
+    ];
+
+    return (
+      <section
+        id="hero"
+        className="relative bg-white pt-6 sm:pt-10 pb-8 sm:pb-12 border-b border-slate-200/80"
+      >
+        <LandingContainer className="max-w-[1360px] px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+            {/* Left Column: Title, Description, Approvals, Course Pills, CTAs */}
+            <div className="lg:col-span-6 space-y-4 sm:space-y-5 text-left">
+              <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-black text-slate-900 tracking-tight leading-[1.15] m-0">
+                Galgotias Online University
+              </h1>
+
+              <p className="text-[13.5px] sm:text-[15px] text-slate-700 leading-relaxed font-normal m-0">
+                Grow your career skills by pursuing online courses at Galgotias University in 2026. Recognised by the <strong className="text-slate-900 font-bold">UGC</strong> and accredited with an <strong className="text-slate-900 font-bold">NAAC A+</strong> grade, Galgotias University is among the top institutions in India, with a remarkable NAAC score of 3.37 out of 4.
+              </p>
+
+              {/* 4 Circular Approval Badges */}
+              <div className="flex items-center gap-3 sm:gap-4 pt-1">
+                {approvalIcons.map((app, idx) => (
+                  <div
+                    key={idx}
+                    className="relative w-14 h-14 sm:w-16 sm:h-16 lg:w-[68px] lg:h-[68px] flex items-center justify-center transition-transform hover:scale-105"
+                  >
+                    <Image
+                      src={app.img}
+                      alt={app.alt}
+                      fill
+                      className="object-contain"
+                      sizes="68px"
+                    />
+                  </div>
+                ))}
+              </div>
+
+              {/* Course Pills */}
+              <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 pt-1">
+                {coursePills.map((c, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => onOpenBrochure?.(c)}
+                    className="bg-[#dff3fd] hover:bg-[#cbeafc] text-[#006da8] font-bold text-xs sm:text-[13px] px-3.5 sm:px-4 py-1.5 rounded-[6px] transition-colors cursor-pointer border-none"
+                  >
+                    {c}
+                  </button>
+                ))}
+              </div>
+
+              {/* Action Buttons: 100% Free Counseling & Add to Compare + */}
+              <div className="flex flex-wrap items-center gap-3 sm:gap-4 pt-3">
+                <button
+                  type="button"
+                  onClick={() => onOpenBrochure?.("MBA")}
+                  className="bg-[#ff5a00] hover:bg-[#e65100] active:scale-98 text-white font-bold text-xs sm:text-[14px] px-5 sm:px-6 py-2.5 sm:py-3 rounded-[8px] shadow-sm transition-all cursor-pointer border-none"
+                >
+                  Get 100% Free Counseling
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => onOpenBrochure?.("MBA")}
+                  className="bg-[#058427] hover:bg-[#046e20] active:scale-98 text-white font-bold text-xs sm:text-[14px] px-5 sm:px-6 py-2.5 sm:py-3 rounded-[8px] shadow-sm transition-all cursor-pointer border-none"
+                >
+                  Add to Compare +
+                </button>
+              </div>
+            </div>
+
+            {/* Right Column: Campus Image Card with floating badges */}
+            <div className="lg:col-span-6 flex justify-center lg:justify-end">
+              <div className="relative w-full max-w-[540px] aspect-[16/10.5] sm:aspect-[16/10] rounded-[16px] sm:rounded-[22px] overflow-hidden shadow-xl border border-slate-200/80 bg-slate-100 group">
+                <Image
+                  src={hero.backgroundImage || "/assets/galgotias/galgotias_banner.webp"}
+                  alt="Galgotias University Campus"
+                  fill
+                  priority
+                  className="object-cover group-hover:scale-103 transition-transform duration-500"
+                  sizes="(max-width: 640px) 100vw, 540px"
+                />
+
+                {/* Top-Right Floating Badge: 5 Gold Stars */}
+                <div className="absolute top-3.5 sm:top-4 right-3.5 sm:right-4 bg-white/95 backdrop-blur-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-[8px] shadow-md border border-slate-100 flex items-center gap-1 text-[#f59e0b] text-xs sm:text-sm font-black">
+                  <span>★</span>
+                  <span>★</span>
+                  <span>★</span>
+                  <span>★</span>
+                  <span>★</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </LandingContainer>
+      </section>
+    );
+  }
 
   if (isLpu) {
     return (

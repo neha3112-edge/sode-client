@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, Suspense } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -317,7 +317,7 @@ function FilterSidebarContent({
   );
 }
 
-function CoursesContent({
+export default function CoursesPageClientView({
   initialCoursesData = { programs: [], total: 0, totalPages: 1, page: 1 },
   initialCategories: initialCategoriesProp = [],
   initialUniversities: initialUniversitiesProp = [],
@@ -1183,11 +1183,11 @@ function CoursesContent({
                         </div>
                       </div>
 
-                      {/* Title & Full Display Name Underneath */}
+                      {/* Title & Full Display Name Underneath — using <p> not <h3> to avoid duplicate headings in DOM (SEO) */}
                       <Link href={courseDetailHref} className="no-underline block">
-                        <h3 className="text-xs sm:text-sm font-bold text-gray-900 leading-snug line-clamp-1 m-0">
+                        <p className="text-xs sm:text-sm font-bold text-gray-900 leading-snug line-clamp-1 m-0">
                           {cardTitle}
-                        </h3>
+                        </p>
                         {item.displayName && item.displayName.toLowerCase() !== cardTitle.toLowerCase() && (
                           <span className="text-[10px] sm:text-[11px] font-normal text-gray-500 block leading-tight mt-0.5 tracking-tight">
                             {item.displayName}
@@ -1681,10 +1681,3 @@ function CoursesContent({
   );
 }
 
-export default function CoursesPageClientView(props) {
-  return (
-    <Suspense fallback={null}>
-      <CoursesContent {...props} />
-    </Suspense>
-  );
-}

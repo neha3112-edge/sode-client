@@ -14,6 +14,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
  */
 export default function LandingApprovals({
   approvals = [],
+  keyHighlights = [],
   universityName,
   brand = {},
   title = "Recognition and Approvals",
@@ -25,17 +26,144 @@ export default function LandingApprovals({
   const activeUniversity = universityName || brand?.name || "University Online";
   const activeTitle = brand?.approvalsTitle || title;
   const subtitle = brand?.approvalsSubtitle || brand?.approvalsDescription || null;
+  const isSplit = brand?.approvalsLayout === "split" || brand?.slug === "shoolini";
+  const isVguLayout = brand?.approvalsLayout === "vgu" || brand?.slug === "vgu";
+  const isSlider = brand?.approvalsLayout === "slider" || brand?.slug === "smu" || brand?.slug === "manipal";
   const isLpuLayout = brand?.approvalsLayout === "lpu-dark" || brand?.slug === "lpu" || brand?.shortName === "LPU";
-  const isSplit = brand?.approvalsLayout === "split";
-  const isVguLayout = brand?.approvalsLayout === "vgu-badges" || brand?.slug === "vgu";
-  const isCarouselLayout = brand?.approvalsLayout === "smu-carousel" || brand?.slug === "smu";
-  const isSlider =
-    brand?.approvalsLayout === "slider" ||
-    isCarouselLayout ||
-    (!isSplit && !isVguLayout && !isLpuLayout && Boolean(subtitle));
+  const isGalgotiasTable = brand?.approvalsLayout === "table" || brand?.slug === "galgotias";
+  const primaryColor = brand?.primaryColor || "#002b49";
+  const gridBg = brand?.approvalsGridBg || brand?.approvalsBg || "#ffffff";
 
-  const primaryColor = brand?.approvalsHeaderColor || brand?.primaryColor || "#ee3024";
-  const gridBg = brand?.approvalsBg || "#ffffff";
+  if (isGalgotiasTable) {
+    const tableData = [
+      {
+        logo: "/assets/images/approvals/ugc_approval.png",
+        title: "UGC Approval for Online Degrees and Learning Platform (UGC)",
+        about: "Galgotias University is approved by the University Grants Commission (UGC), ensuring its programs meet national education standards.",
+      },
+      {
+        logo: "/assets/images/approvals/naac_a_plus.png",
+        title: "National Assessment and Accreditation Council (NAAC A+)",
+        about: "The university has received an A+ grade from the National Assessment and Accreditation Council (NAAC), highlighting its dedication to high-quality education.",
+      },
+      {
+        logo: "/assets/galgotias/aiu_logo.webp",
+        title: "Association of Indian Universities",
+        about: "Galgotias University is a member of the Association of Indian Universities (AIU), which supports academic collaboration and helps maintain equivalence of degrees across India.",
+      },
+    ];
+
+    const highlightsList =
+      keyHighlights.length > 0
+        ? keyHighlights
+        : brand?.keyHighlights || [
+            { feature: "University", details: "Galgotias Online University" },
+            { feature: "Accreditation", details: "NAAC A+" },
+            { feature: "Approval", details: "UGC-Entitled" },
+            { feature: "Location", details: "Greater Noida, Uttar Pradesh, India" },
+            { feature: "Establishment Year", details: "2011" },
+            { feature: "Program Types", details: "Postgraduate Online Degree Programs" },
+            { feature: "Focus Areas", details: "Industry-Oriented Education and Professional Development" },
+            { feature: "Educational Expertise", details: "Over 10 Years" },
+            { feature: "Learning Methodologies", details: "Innovative, Digital Learning Solutions for Flexibility" },
+            { feature: "Growth Emphasis", details: "Growth-Oriented Learning for Career Progression" },
+            { feature: "Learning Platform", details: "Convenient, Flexible Learning from Anywhere, Anytime" },
+            { feature: "Support Services", details: "Expert Academic Guidance, Career Support, and Tech Help" },
+            { feature: "Admission Process", details: "Online" },
+            { feature: "Student Rating", details: "4.4/5 Stars" },
+          ];
+
+    return (
+      <section id="approvals" className="pt-0 pb-10 sm:pb-14 bg-white">
+        <div className="max-w-[1360px] mx-auto px-6 sm:px-12 md:px-16 lg:px-24 xl:px-28 space-y-10 sm:space-y-12">
+          {/* Table 1: Accreditations & Approvals */}
+          <div className="overflow-x-auto border border-slate-200 rounded-[6px] sm:rounded-[8px] shadow-xs">
+            <table className="w-full border-collapse text-left min-w-[650px]">
+              {/* Table Header */}
+              <thead>
+                <tr className="bg-[#dff0fa] border-b border-slate-200">
+                  <th className="py-3 px-4 sm:px-6 text-sm sm:text-[15px] font-bold text-slate-900 w-[14%] sm:w-[12%] border-r border-slate-200">
+                    {/* Logo Column */}
+                  </th>
+                  <th className="py-3 px-4 sm:px-6 text-sm sm:text-[15px] font-bold text-slate-900 w-[36%] sm:w-[38%] border-r border-slate-200">
+                    Accreditations &amp; Approvals
+                  </th>
+                  <th className="py-3 px-4 sm:px-6 text-sm sm:text-[15px] font-bold text-slate-900 w-[50%]">
+                    About
+                  </th>
+                </tr>
+              </thead>
+
+              {/* Table Body */}
+              <tbody className="divide-y divide-slate-200 bg-white">
+                {tableData.map((row, idx) => (
+                  <tr key={idx} className="hover:bg-slate-50/50 transition-colors">
+                    {/* Logo Box */}
+                    <td className="py-4 px-4 sm:px-6 align-middle border-r border-slate-200">
+                      <div className="relative w-16 h-14 sm:w-20 sm:h-16 rounded-[4px] border border-slate-200 bg-white p-1.5 flex items-center justify-center shadow-xs mx-auto">
+                        <Image
+                          src={row.logo}
+                          alt={row.title}
+                          width={65}
+                          height={52}
+                          className="object-contain max-h-full max-w-full"
+                        />
+                      </div>
+                    </td>
+
+                    {/* Title */}
+                    <td className="py-4 px-4 sm:px-6 align-middle font-bold text-slate-900 text-[13.5px] sm:text-[14.5px] leading-snug border-r border-slate-200">
+                      {row.title}
+                    </td>
+
+                    {/* Description */}
+                    <td className="py-4 px-4 sm:px-6 align-middle text-slate-700 text-[13px] sm:text-[14px] leading-relaxed font-normal">
+                      {row.about}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Table 2: Key Highlights of Galgotias University Online */}
+          <div className="pt-4 sm:pt-8">
+            <h2 className="text-2xl sm:text-3xl lg:text-[30px] font-black text-[#002b49] tracking-tight leading-tight m-0 mb-4 sm:mb-6">
+              Key Highlights of Galgotias University Online
+            </h2>
+
+            <div className="overflow-x-auto border border-slate-200 rounded-[6px] sm:rounded-[8px] shadow-xs mt-3 sm:mt-4">
+              <table className="w-full border-collapse text-left min-w-[600px]">
+                <thead>
+                  <tr className="bg-[#dff0fa] border-b border-slate-200">
+                    <th className="py-3 px-4 sm:px-6 text-sm sm:text-[15px] font-bold text-slate-900 w-[30%] sm:w-[28%] border-r border-slate-200">
+                      Feature
+                    </th>
+                    <th className="py-3 px-4 sm:px-6 text-sm sm:text-[15px] font-bold text-slate-900">
+                      Details
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody className="divide-y divide-slate-200 bg-white">
+                  {highlightsList.map((row, idx) => (
+                    <tr key={idx} className="hover:bg-slate-50/50 transition-colors">
+                      <td className="py-3.5 px-4 sm:px-6 align-middle font-bold text-slate-900 text-[13.5px] sm:text-[14.5px] border-r border-slate-200">
+                        {row.feature}
+                      </td>
+                      <td className="py-3.5 px-4 sm:px-6 align-middle text-slate-700 text-[13px] sm:text-[14px] font-normal leading-relaxed">
+                        {row.details}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   // ==========================================
   // Layout 0: LPU Accreditations & Approvals

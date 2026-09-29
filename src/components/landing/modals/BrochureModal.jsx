@@ -25,20 +25,21 @@ export default function BrochureModal({
       onCancel={onClose}
       footer={null}
       centered
-      width={480}
+      width={460}
       destroyOnHidden
-      className="p-0 overflow-hidden max-w-[calc(100vw-24px)] mx-auto"
+      className="p-0 overflow-hidden max-w-[calc(100vw-24px)] mx-auto [&_.ant-modal-content]:!rounded-[20px] [&_.ant-modal-content]:!p-5 sm:[&_.ant-modal-content]:!p-7 [&_.ant-modal-close]:!top-4 [&_.ant-modal-close]:!right-4 [&_.ant-modal-close]:!text-slate-800"
     >
-      <div className="pt-2">
+      <div className="pt-0">
         <LandingLeadForm
           universityName={universityName}
           courseList={courses}
           defaultCourse={selectedCourse}
-          formName="Brochure Download Modal"
-          title={`Download ${selectedCourse} Brochure`}
-          subtitle={`Get official curriculum, fee breakdown, & eligibility for ${universityName}`}
-          buttonText="Get Brochure on Email & WhatsApp"
+          formName="Counseling Enquiry Modal"
+          title="Book 100% Free Counseling"
+          subtitle="Get upto 20% Scholarship Coupon Code."
+          buttonText="Submit"
           variant="modal"
+          phoneText="+91 7065 7777 55"
           onSuccess={onClose}
           onOpenDisclaimer={onOpenDisclaimer}
         />

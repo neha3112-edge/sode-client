@@ -19,6 +19,9 @@ import LandingFooterForm from "./LandingFooterForm";
 import LandingCompareBanner from "./LandingCompareBanner";
 import LandingFooter from "./LandingFooter";
 import LandingStickyCtas from "./LandingStickyCtas";
+import LandingSubNav from "./LandingSubNav";
+import LandingEmiSection from "./LandingEmiSection";
+import LandingExamSection from "./LandingExamSection";
 import BrochureModal from "./modals/BrochureModal";
 import ScholarshipModal from "./modals/ScholarshipModal";
 import CompareModal from "./modals/CompareModal";
@@ -30,6 +33,7 @@ export default function UniversityLandingView({ data = {} }) {
     brand = {},
     courses = [],
     approvals = [],
+    keyHighlights = [],
     stats = [],
     programmes = [],
     offersAndPlacements,
@@ -38,10 +42,14 @@ export default function UniversityLandingView({ data = {} }) {
     whyChoose = [],
     degreeInfo = {},
     recruiters = {},
+    faculties = [],
     testimonials = [],
     admissionSteps = [],
     admissionProcess,
     enrollmentProcess,
+    feesAndEmi,
+    examEvaluation,
+    collegeComparison,
     sodeAbout,
     faqs = [],
     scholarshipModal,
@@ -77,11 +85,15 @@ export default function UniversityLandingView({ data = {} }) {
 
   const handleOpenApply = (course) => {
     if (course) setSelectedCourse(course);
-    const heroEl = document.getElementById("hero") || document.getElementById("banner");
-    if (heroEl) {
-      heroEl.scrollIntoView({ behavior: "smooth", block: "start" });
-    } else {
+    if (slug === "galgotias" || brand.slug === "galgotias" || brand.heroStyle === "galgotias") {
       setIsBrochureOpen(true);
+    } else {
+      const heroEl = document.getElementById("hero") || document.getElementById("banner");
+      if (heroEl) {
+        heroEl.scrollIntoView({ behavior: "smooth", block: "start" });
+      } else {
+        setIsBrochureOpen(true);
+      }
     }
   };
 
@@ -111,6 +123,14 @@ export default function UniversityLandingView({ data = {} }) {
           onOpenApply={() => handleOpenApply()}
           onOpenDisclaimer={() => handleOpenLegal("disclaimer")}
         />
+
+        {/* 2.5 Sub-Navigation Sticky Bar (Blue Bar) */}
+        {(brand.showSubNav === true || brand.slug === "galgotias") && (
+          <LandingSubNav
+            brand={brand}
+            onOpenApply={() => handleOpenApply()}
+          />
+        )}
 
         {/* Section Dispatcher based on brand.sectionOrder or default flow */}
         {(() => {
@@ -166,6 +186,7 @@ export default function UniversityLandingView({ data = {} }) {
                   <LandingApprovals
                     key="approvals"
                     approvals={approvals}
+                    keyHighlights={keyHighlights || brand.keyHighlights}
                     universityName={brand.name}
                     brand={brand}
                   />
@@ -229,6 +250,24 @@ export default function UniversityLandingView({ data = {} }) {
                     brand={brand}
                   />
                 ) : null;
+              case "emi":
+                return (
+                  <LandingEmiSection
+                    key="emi"
+                    brand={brand}
+                    feesAndEmi={feesAndEmi || brand.feesAndEmi}
+                    onOpenApply={() => handleOpenApply()}
+                  />
+                );
+              case "exam":
+                return (
+                  <LandingExamSection
+                    key="exam"
+                    brand={brand}
+                    examEvaluation={examEvaluation || brand.examEvaluation}
+                    onOpenApply={() => handleOpenApply()}
+                  />
+                );
               case "stats":
                 return brand.showSeparateStats !== false && stats?.length > 0 ? (
                   <LandingStats key="stats" stats={stats} brand={{ ...brand, slug: brand.slug || slug }} />
@@ -238,6 +277,7 @@ export default function UniversityLandingView({ data = {} }) {
                   <LandingTestimonials
                     key="testimonials"
                     testimonials={testimonials}
+                    faculties={faculties || brand.faculties}
                     universityName={brand.name}
                     brand={brand}
                   />
@@ -283,11 +323,16 @@ export default function UniversityLandingView({ data = {} }) {
                   />
                 ) : null;
               case "compareBanner":
+              case "comparison":
+              case "compare":
                 return (
                   <LandingCompareBanner
                     key="compareBanner"
                     brand={{ ...brand, slug: brand.slug || slug }}
+                    collegeComparison={collegeComparison || brand.collegeComparison}
                     onOpenCompare={() => setIsCompareOpen(true)}
+                    onOpenBrochure={handleOpenBrochure}
+                    onOpenApply={handleOpenApply}
                   />
                 );
               default:
