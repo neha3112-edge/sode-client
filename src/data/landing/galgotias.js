@@ -16,6 +16,22 @@ export const galgotiasData = {
       "Galgotias Distance Education",
     ],
   },
+  theme: {
+    primaryColor: "#002b49",
+    accentColor: "#ffb800",
+    heroBg: "#ffffff",
+    tableHeaderBg: "#e1f0fa",
+    tableBorderColor: "#cfe2f3",
+    footerBg: "#111111",
+  },
+  customCss: `
+    /* =========================================================
+       PAGE-SPECIFIC CSS FOR GALGOTIAS ONLINE
+    ========================================================= */
+    #hero h1 {
+      letter-spacing: -0.02em;
+    }
+  `,
   brand: {
     slug: "galgotias",
     name: "Galgotias University Online",

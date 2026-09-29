@@ -13,6 +13,30 @@ export const amityData = {
       "Amity Admission 2026",
     ],
   },
+  theme: {
+    primaryColor: "#08417b",
+    accentColor: "#fdb913",
+    heroBg: "#ffffff",
+    tableHeaderBg: "#08417b",
+    tableBorderColor: "#cbd5e1",
+    footerBg: "#111111",
+  },
+  customCss: `
+    /* =========================================================
+       PAGE-SPECIFIC CSS FOR AMITY UNIVERSITY ONLINE
+    ========================================================= */
+    .amity-theme-btn {
+      background-color: #fdb913;
+      color: #000000;
+      font-weight: 700;
+    }
+    .amity-theme-btn:hover {
+      background-color: #e5a60b;
+    }
+    .amity-header-accent {
+      color: #08417b;
+    }
+  `,
   brand: {
     slug: "amity",
     name: "Amity University Online",

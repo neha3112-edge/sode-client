@@ -54,6 +54,8 @@ export default function UniversityLandingView({ data = {} }) {
     faqs = [],
     scholarshipModal,
     compareModal,
+    customCss = "",
+    theme = {},
   } = data;
 
   const [isBrochureOpen, setIsBrochureOpen] = useState(false);
@@ -104,8 +106,32 @@ export default function UniversityLandingView({ data = {} }) {
   const isSmu = slug === "smu" || brand.slug === "smu";
   const isVgu = slug === "vgu" || brand.slug === "vgu";
 
+  const activeCustomCss = customCss || brand.customCss || "";
+  const activeTheme = theme || brand.theme || {};
+
+  const themeStyles = {
+    "--primary-color": activeTheme.primaryColor || brand.primaryColor || "#002b49",
+    "--accent-color": activeTheme.accentColor || brand.accentColor || "#ffb800",
+    "--hero-bg": activeTheme.heroBg || brand.hero?.backgroundColor || "#ffffff",
+    "--table-header-bg": activeTheme.tableHeaderBg || "#e1f0fa",
+    "--table-border-color": activeTheme.tableBorderColor || "#cfe2f3",
+    "--footer-bg": activeTheme.footerBg || "#111111",
+    ...(activeTheme.cssVars || {}),
+  };
+
   return (
-    <div className="landing-page-root min-h-screen bg-white text-slate-900 flex flex-col font-sans selection:bg-blue-900 selection:text-white">
+    <div
+      className="landing-page-root min-h-screen bg-white text-slate-900 flex flex-col font-sans selection:bg-blue-900 selection:text-white"
+      style={themeStyles}
+    >
+      {/* Dynamic Page Specific CSS Injection from JSON/JS */}
+      {activeCustomCss && (
+        <style
+          id={`custom-css-${slug}`}
+          dangerouslySetInnerHTML={{ __html: activeCustomCss }}
+        />
+      )}
+
       {/* 1. Header / Navbar */}
       <LandingNavbar
         brand={brand}
