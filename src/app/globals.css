@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,300;1,400;1,500;1,700;1,900&family=Montserrat:wght@400;500;600;700&display=swap');
 @import "tailwindcss" important;
 
 :root {
@@ -8,17 +9,22 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-roboto), Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-sans: 'Roboto', var(--font-roboto), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-roboto: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 /* =========================================================
-   UNIVERSAL ROBOTO TYPOGRAPHY ENFORCEMENT
+   UNIVERSAL ROBOTO TYPOGRAPHY ENFORCEMENT (ALL LANDING PAGES & GLOBAL)
 ========================================================= */
 *,
 *::before,
 *::after,
 html,
 body,
+.landing-page-root,
+.landing-page-root *,
+.landing-page-root *::before,
+.landing-page-root *::after,
 h1,
 h2,
 h3,
@@ -46,8 +52,23 @@ td,
 .ant-card,
 .ant-typography,
 .ant-breadcrumb,
-.ant-table {
-  font-family: var(--font-roboto), Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+.ant-table,
+.ant-modal,
+.ant-modal * {
+  font-family: 'Roboto', var(--font-roboto), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+}
+
+.hero-impact-title,
+.hero-impact-title *,
+.hero-impact-title span,
+.landing-hero-title,
+.landing-hero-title *,
+.landing-hero-title span,
+.hero-montserrat-subtext,
+.hero-montserrat-subtext *,
+.hero-montserrat-paragraph,
+.hero-montserrat-paragraph * {
+  font-family: 'Roboto', var(--font-roboto), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
 }
 
 html {
@@ -67,6 +88,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
 
 /* =========================================================
    NO SCROLLBAR UTILITY (Hide scrollbars cleanly)
@@ -346,31 +368,11 @@ body:has(.landing-page-root)>div>main {
 
 @keyframes couponOuterShadow {
   0% {
-    box-shadow:
-      0 0 0 0 var(--coupon-shadow-start, rgba(46, 204, 113, 0.55)),
-      0 2px 5px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 0 0 0.1px rgba(46, 204, 113, 0.75);
   }
 
-  30% {
-    box-shadow:
-      0 0 0 4px var(--coupon-shadow-mid1, rgba(46, 204, 113, 0.42)),
-      0 0 7px var(--coupon-shadow-mid2, rgba(46, 204, 113, 0.22)),
-      0 2px 6px rgba(0, 0, 0, 0.05);
-  }
-
-  60% {
-    box-shadow:
-      0 0 0 9px var(--coupon-shadow-mid3, rgba(74, 222, 128, 0.28)),
-      0 0 12px var(--coupon-shadow-mid4, rgba(74, 222, 128, 0.16)),
-      0 3px 8px rgba(0, 0, 0, 0.04);
-  }
-
-  85%,
   100% {
-    box-shadow:
-      0 0 0 15px rgba(167, 243, 208, 0),
-      0 0 20px rgba(167, 243, 208, 0),
-      0 2px 5px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 0 0 20px rgba(46, 204, 113, 0);
   }
 }
 
@@ -378,9 +380,8 @@ body:has(.landing-page-root)>div>main {
   position: relative !important;
   background: var(--coupon-btn-bg, linear-gradient(135deg, #2ecc71 0%, #27ae60 100%)) !important;
   border-radius: 8px !important;
-  animation: couponOuterShadow 2.5s infinite ease-out !important;
+  animation: couponOuterShadow 2.4s infinite cubic-bezier(0.16, 1, 0.3, 1) !important;
   transition: transform 0.25s ease !important;
-  overflow: hidden !important;
 }
 
 .coupon-btn-main:hover {

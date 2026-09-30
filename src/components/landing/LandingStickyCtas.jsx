@@ -56,21 +56,23 @@ export default function LandingStickyCtas({
         </a>
 
         {/* Bottom: Gift Icon - opens Scholarship Coupon Code Modal */}
-        <button
-          type="button"
-          onClick={handleGiftClick}
-          aria-label="Get Scholarship Coupon Code"
-          className="relative w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full overflow-hidden shadow-2xl flex items-center justify-center transition-transform hover:scale-110 active:scale-95 bg-white border-none cursor-pointer p-1.5 drop-shadow-lg"
-        >
-          <Image
-            src={brand.giftGif || "/assets/images/gift.gif"}
-            alt="Gift Voucher"
-            fill
-            unoptimized
-            className="object-contain p-1"
-            sizes="64px"
-          />
-        </button>
+        {brand.showFloatingGift !== false && (
+          <button
+            type="button"
+            onClick={handleGiftClick}
+            aria-label="Get Scholarship Coupon Code"
+            className="relative w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full overflow-hidden shadow-2xl flex items-center justify-center transition-transform hover:scale-110 active:scale-95 bg-white border-none cursor-pointer p-1.5 drop-shadow-lg"
+          >
+            <Image
+              src={brand.giftGif || "/assets/images/gift.gif"}
+              alt="Gift Voucher"
+              fill
+              unoptimized
+              className="object-contain p-1"
+              sizes="64px"
+            />
+          </button>
+        )}
       </div>
 
       {/* Sticky Bottom Bar on Mobile/Tablet */}

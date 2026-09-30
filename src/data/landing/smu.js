@@ -64,7 +64,7 @@ export const smuData = {
       formPhoneColor: "#ffffff",
       minHeight: "480px",
       contentMaxWidth: "1400px",
-      headingFont: "'Poppins', sans-serif",
+      headingFont: "var(--font-roboto), Roboto, sans-serif",
     },
     coursesStrip: [
       "BA | BCOM | MA | MBA | MCOM | MCA",
@@ -78,6 +78,9 @@ export const smuData = {
     whyChooseTitle: "Advantages of Sikkim Manipal University Online",
     whyChooseLayout: "smu-advantages",
     aboutLayout: "smu-banner",
+    customCss: `
+      /* Sikkim Manipal University Custom CSS Overrides */
+    `,
   },
   courses: [
     { value: "BA", label: "BA" },

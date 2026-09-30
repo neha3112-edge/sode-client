@@ -11,6 +11,7 @@ export default function LandingNavbar({
   onOpenApply,
   onOpenBrochure,
   onOpenScholarship,
+  onScrollTop,
 }) {
   const {
     name = "University Online",
@@ -35,6 +36,7 @@ export default function LandingNavbar({
 
   const handleScrollTop = (e) => {
     e.preventDefault();
+    onScrollTop?.();
     const heroEl = document.getElementById("hero") || document.getElementById("banner");
     if (heroEl) {
       heroEl.scrollIntoView({ behavior: "smooth" });
@@ -67,9 +69,9 @@ export default function LandingNavbar({
 
   return (
     <header className="navbar sticky top-0 z-50 bg-white border-b border-slate-200/80 shadow-[0px_2px_10px_rgba(0,0,0,0.06)]">
-      <LandingContainer className="top-navbar h-14 sm:h-16 lg:h-18 flex items-center justify-between px-3 sm:px-6">
+      <LandingContainer className="top-navbar h-15 sm:h-17 lg:h-21 flex items-center justify-between px-3 sm:px-6">
         {/* Left: University Logo / Brand */}
-        <div className="logo flex items-center min-w-0">
+        <div className="logo flex items-center min-w-0 -ml-1.5 sm:-ml-3">
           {shouldShowSodeLogo && (
             <>
               <Link
@@ -78,19 +80,21 @@ export default function LandingNavbar({
                 className="des_logo flex items-center shrink-0 cursor-pointer"
                 aria-label="Back to Top"
               >
-                <div className="relative w-8 sm:w-10 lg:w-11 h-8 sm:h-10 lg:h-11">
+                <div className="relative w-11 sm:w-13 lg:w-15 h-10 sm:h-12 lg:h-14">
                   <Image
                     src={sodeIcon || "/assets/images/sode_icon.png"}
                     alt="SODE"
                     fill
                     priority
                     className="object-contain"
-                    sizes="(max-width: 640px) 32px, 44px"
+                    sizes="(max-width: 60px) 32px, 44px"
                   />
                 </div>
               </Link>
               {/* Thin Vertical Divider */}
-              <div className="h-6 sm:h-8 lg:h-10 w-[1px] bg-[#d1d5db] mx-2 sm:mx-3 lg:mx-4 shrink-0" />
+              {!brand.hideNavDivider && brand.showNavDivider !== false && (
+                <div className="h-12 sm:h-14 lg:h-16 w-[1.5px] bg-[#cccccc] mx-1.5 sm:mx-2 lg:mx-2.5 shrink-0" />
+              )}
             </>
           )}
 
@@ -98,10 +102,11 @@ export default function LandingNavbar({
           <Link
             href="#hero"
             onClick={handleScrollTop}
-            className="mang_logo flex items-center min-w-0 cursor-pointer"
+            className={`mang_logo flex items-center min-w-0 cursor-pointer ${brand.hideNavDivider ? "ml-2.5 sm:ml-3.5" : ""
+              }`}
             aria-label={name}
           >
-            <div className="relative w-32 sm:w-44 lg:w-56 h-8 sm:h-10 lg:h-11">
+            <div className="relative w-41 sm:w-53 lg:w-65 h-11 sm:h-13 lg:h-15">
               <Image
                 src={logo}
                 alt={name}
@@ -115,48 +120,61 @@ export default function LandingNavbar({
         </div>
 
         {/* Right: Scholarship Coupon Code Button or Admission Badge */}
-        <div className="header_heading shrink-0 pl-2 flex items-center">
+        <div className="header_heading shrink-0 pl-2 mr-1.5 sm:mr-3  flex items-center">
           {isCouponVisible ? (
-            <button
-              type="button"
-              onClick={handleCouponClick}
-              aria-label="Get Scholarship Coupon Code"
-              style={
-                couponBtnBg || brand.couponBtnBg || brand.themeGradient
-                  ? {
-                      "--coupon-btn-bg": couponBtnBg || brand.couponBtnBg || brand.themeGradient,
-                      "--coupon-shadow-start": "rgba(253, 32, 42, 0.55)",
-                      "--coupon-shadow-mid1": "rgba(253, 32, 42, 0.42)",
-                      "--coupon-shadow-mid2": "rgba(253, 32, 42, 0.22)",
-                      "--coupon-shadow-mid3": "rgba(255, 75, 229, 0.28)",
-                      "--coupon-shadow-mid4": "rgba(255, 75, 229, 0.16)",
-                    }
-                  : couponButtonColor
-                  ? { backgroundColor: couponButtonColor }
-                  : { backgroundColor: "#22c55e" }
+            <div
+              className={
+                brand.couponWrapperBg || brand.showCouponPillWrapper
+                  ? "p-1.5 sm:p-2 rounded-[12px] sm:rounded-[14px] inline-flex items-center justify-center transition-all"
+                  : "inline-flex items-center"
               }
-              className="coupon-btn-main relative inline-flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-1.5 sm:py-2 rounded-[12px] sm:rounded-[14px] text-white font-bold text-[12px] sm:text-[14px] cursor-pointer border-none overflow-hidden select-none shadow-xs hover:brightness-105 active:scale-95 transition-all"
+              style={
+                brand.couponWrapperBg
+                  ? { backgroundColor: brand.couponWrapperBg }
+                  : brand.showCouponPillWrapper
+                    ? { backgroundColor: "#dcfce7" }
+                    : {}
+              }
             >
-              {/* Moving Light Green Box for gradient button */}
-              {(couponBtnBg || brand.couponBtnBg) && <span className="moving-light-green-box" />}
+              <button
+                type="button"
+                onClick={handleCouponClick}
+                aria-label="Get Scholarship Coupon Code"
+                style={{
+                  ...(couponBtnBg || brand.couponBtnBg || brand.themeGradient
+                    ? { "--coupon-btn-bg": couponBtnBg || brand.couponBtnBg || brand.themeGradient }
+                    : couponButtonColor
+                      ? { backgroundColor: couponButtonColor }
+                      : { backgroundColor: "#22c55e" }),
+                  "--coupon-shadow-start": brand.couponShadowColor || "rgba(46, 204, 113, 0.65)",
+                  "--coupon-shadow-mid1": brand.couponShadowColorMid1 || "rgba(46, 204, 113, 0.42)",
+                  "--coupon-shadow-mid2": brand.couponShadowColorMid2 || "rgba(46, 204, 113, 0.22)",
+                  "--coupon-shadow-mid3": brand.couponShadowColorMid3 || "rgba(46, 204, 113, 0.08)",
+                  "--coupon-shadow-end": "rgba(46, 204, 113, 0)",
+                }}
+                className="coupon-btn-main relative inline-flex items-center gap-2 sm:gap-2.5 pl-5 sm:pl-7 md:pl-8 pr-4.5 sm:pr-6 md:pr-7 py-1 sm:py-1.5 rounded-[8px] text-white font-bold text-[10px] sm:text-[11px] md:text-[11.5px] cursor-pointer border-none overflow-hidden select-none hover:brightness-105 active:scale-95"
+              >
+                {/* Moving Light Green Box for gradient button */}
+                <span className="moving-light-green-box" />
 
-              {/* White Circular Disc for Gift Icon */}
-              <span className="relative w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white flex items-center justify-center shrink-0 shadow-xs z-10 p-0.5">
-                <Image
-                  src={giftGif || "/assets/images/gift.gif"}
-                  alt="Scholarship Gift"
-                  width={18}
-                  height={18}
-                  unoptimized
-                  className="w-4 h-4 sm:w-4.5 sm:h-4.5 object-contain"
-                />
-              </span>
+                {/* White Circular Disc for Gift Icon */}
+                <span className="relative -ml-1.5 sm:-ml-2.5 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white flex items-center justify-center shrink-0 shadow-xs z-10 p-0 overflow-hidden">
+                  <Image
+                    src={giftGif || "/assets/images/gift.gif"}
+                    alt="Scholarship Gift"
+                    width={26}
+                    height={26}
+                    unoptimized
+                    className="w-5 h-5 sm:w-6 sm:h-6 object-contain"
+                  />
+                </span>
 
-              {/* Scholarship Coupon Code Text */}
-              <span className="relative z-10 tracking-tight whitespace-nowrap text-white font-bold drop-shadow-[0_1px_2px_rgba(0,0,0,0.15)]">
-                {couponButtonText}
-              </span>
-            </button>
+                {/* Scholarship Coupon Code Text */}
+                <span className="relative z-10 tracking-wide md:tracking-wide whitespace-nowrap text-white font-bold drop-shadow-[0_1px_2px_rgba(0,0,0,0.15)] text-[14px] sm:text-[15px] md:text-[15.5px]">
+                  {couponButtonText}
+                </span>
+              </button>
+            </div>
           ) : (
             <span
               className="inline-block text-[12px] sm:text-base md:text-xl lg:text-2xl font-bold tracking-tight text-right select-none"

@@ -44,7 +44,7 @@ export const amityData = {
       formWidth: "550px",
       formBackground: "#08417b",
       formRadius: "10px",
-      headingFont: "Arial Narrow, Arial, sans-serif",
+      headingFont: "var(--font-roboto), Roboto, sans-serif",
       courseBorder: "#08417b",
       buttonBackground: "#08417b",
     },
@@ -54,6 +54,9 @@ export const amityData = {
     ],
     footerDisclaimer:
       "SODE Counselling Services LLP act as a marketing agency. All university names, logos, and trademarks mentioned are used for informational purposes only. We are not a university or an admission authority. Users are encouraged to verify information on the official website of the University before making decisions.",
+    customCss: `
+      /* Amity University Custom CSS Overrides */
+    `,
   },
   courses: [
     { value: "MBA", label: "MBA" },

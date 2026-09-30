@@ -54,7 +54,7 @@ export const manipalData = {
       noOverlay: true,
       cardStyle: "white",
       contentMaxWidth: "1400px",
-      headingFont: "inherit",
+      headingFont: "var(--font-roboto), Roboto, sans-serif",
       headingColor: "#ffffff",
       courseTextColor: "#ffffff",
       showCourseBox: false,

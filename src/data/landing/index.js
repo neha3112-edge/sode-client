@@ -12,6 +12,8 @@ export const LANDING_REGISTRY = {
   amity: amityData,
   lpu: lpuData,
   mu: muData,
+  mangalayatan: muData,
+  "mangalayatan-university": muData,
   manipal: manipalData,
   cu: cuData,
   galgotias: galgotiasData,

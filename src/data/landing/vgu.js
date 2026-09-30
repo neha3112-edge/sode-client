@@ -69,7 +69,7 @@ export const vguData = {
       hideTermsCheckbox: true,
       minHeight: "520px",
       contentMaxWidth: "1400px",
-      headingFont: "'Montserrat', sans-serif",
+      headingFont: "var(--font-roboto), Roboto, sans-serif",
     },
     coursesStrip: [
       "MBA | MSC | MA | MCA |",
@@ -82,6 +82,9 @@ export const vguData = {
     programmesTitle: "VGU Online | Vivekananda Global University Online Courses",
     programmesLayout: "vgu-cards",
     whyChooseTitle: "Why Vivekananda Global University Online is a Smart Choice for learners?",
+    customCss: `
+      /* Vivekananda Global University Custom CSS Overrides */
+    `,
     whyChooseDescription:
       "Vivekananda Global University Online is the most trusted university by students because of its recognised approvals and job-ready curriculum. VGU University courses are offered online with expert faculty, helpful resources like LMS that help students get strong knowledge and necessary skills, and a smooth Vivekananda Global University course admissions process.",
     whyChooseLayout: "vgu-grid",

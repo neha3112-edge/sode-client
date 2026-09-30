@@ -43,12 +43,74 @@ export default function LandingAbout({
   const leaderData = leader || about.leader;
 
   // ==========================================
+  // Layout 0: Mangalayatan University (MU) Centered with Bottom Campus Illustration
+  // ==========================================
+  const isMuLayout = brand.aboutLayout === "mu" || brand.slug === "mu";
+  if (isMuLayout) {
+    return (
+      <section
+        id="about"
+        className={`landing-about-section landing-about-mu w-full relative select-none ${brand.aboutSectionClassName || "pt-8 sm:pt-12 pb-[190px] sm:pb-[260px] md:pb-[380px] lg:pb-[480px]"
+          }`}
+        style={{
+          backgroundColor: brand.aboutBg || "#ffffff",
+          backgroundImage: `url(${about.backgroundImage || brand.aboutBackgroundImage || "/assets/mu/about-bg.webp"})`,
+          backgroundPosition: "bottom center",
+          backgroundSize: "contain",
+          backgroundRepeat: "no-repeat",
+          ...brand.aboutSectionStyle,
+        }}
+      >
+        <div className={brand.aboutContainerClassName || "max-w-4xl mx-auto px-4 sm:px-6 text-center"}>
+          <h2
+            className={
+              brand.aboutTitleClassName ||
+              "text-[24px] sm:text-[28px] lg:text-[32px] font-extrabold text-[#F97316] uppercase tracking-wide mb-4"
+            }
+            style={brand.aboutTitleStyle}
+          >
+            {title}
+          </h2>
+          <div
+            className={
+              brand.aboutTextClassName ||
+              "space-y-4 text-[13.5px] sm:text-[14.5px] text-slate-700 leading-relaxed font-medium mb-8"
+            }
+          >
+            {paragraphs.map((p, idx) => (
+              <p
+                key={idx}
+                className={brand.aboutParagraphClassName || "m-0 text-justify font-medium sm:text-center"}
+              >
+                {p}
+              </p>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={() => onOpenApply?.()}
+            className={
+              brand.aboutButtonClassName ||
+              "inline-flex items-center justify-center gap-2 bg-[#F97316] hover:bg-[#ea580c] text-white font-bold text-[14px] px-8 py-3 rounded-full shadow-sm active:scale-95 transition-all cursor-pointer border-none"
+            }
+            style={brand.aboutButtonStyle}
+          >
+            <span>{buttonText}</span>
+            <span className="text-base">→</span>
+          </button>
+        </div>
+      </section>
+    );
+  }
+
+  // ==========================================
   // Layout 1: VGU Blue Full-Width Banner
   // ==========================================
   const isVguLayout =
-    brand.aboutLayout === "vgu-banner" ||
-    brand.aboutLayout === "vgu" ||
-    brand.slug === "vgu";
+    !isMuLayout &&
+    (brand.aboutLayout === "vgu-banner" ||
+      brand.aboutLayout === "vgu" ||
+      brand.slug === "vgu");
 
   if (isVguLayout) {
     return (
@@ -207,9 +269,8 @@ export default function LandingAbout({
             {paragraphs.map((p, idx) => (
               <p
                 key={idx}
-                className={`text-[12.5px] sm:text-[13.5px] text-slate-700 leading-relaxed font-normal m-0 ${
-                  idx === 1 ? "font-semibold italic text-slate-800" : ""
-                }`}
+                className={`text-[12.5px] sm:text-[13.5px] text-slate-700 leading-relaxed font-normal m-0 ${idx === 1 ? "font-semibold italic text-slate-800" : ""
+                  }`}
               >
                 {p}
               </p>
@@ -268,19 +329,18 @@ export default function LandingAbout({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
           {/* Text Column */}
           <div
-            className={`lg:col-span-6 xl:col-span-6 space-y-3.5 ${
-              isImageRight ? "order-1 lg:order-1" : "order-2 lg:order-2"
-            } text-left max-w-[500px]`}
+            className={`lg:col-span-6 xl:col-span-6 space-y-3.5 ${isImageRight ? "order-1 lg:order-1" : "order-2 lg:order-2"
+              } text-left max-w-[500px]`}
           >
             <h2
               className="text-2xl sm:text-3xl lg:text-[32px] font-black tracking-tight m-0 leading-[1.18]"
               style={
                 brand.aboutTitleGradient || (brand.themeGradient && brand.primaryColor === "#fd202a")
                   ? {
-                      background: brand.themeGradient || "linear-gradient(to right, #fd202a, #ff4be5)",
-                      WebkitBackgroundClip: "text",
-                      WebkitTextFillColor: "transparent",
-                    }
+                    background: brand.themeGradient || "linear-gradient(to right, #fd202a, #ff4be5)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                  }
                   : { color: "#111827" }
               }
             >
@@ -344,9 +404,8 @@ export default function LandingAbout({
 
           {/* Image Column */}
           <div
-            className={`lg:col-span-6 xl:col-span-6 ${
-              isImageRight ? "order-2 lg:order-2" : "order-1 lg:order-1"
-            } flex items-center justify-center`}
+            className={`lg:col-span-6 xl:col-span-6 ${isImageRight ? "order-2 lg:order-2" : "order-1 lg:order-1"
+              } flex items-center justify-center`}
           >
             <div className="relative w-full max-w-[460px] mx-auto flex items-center justify-center">
               <Image
