@@ -26,15 +26,15 @@ export const shooliniData = {
     enquireTitle: "Cost Free Consultation",
     enquireSubtitle: "From Higher Experience Counselor",
     officialUrl: "https://shooliniuniversity.com",
-    logo: "/assets/shoolini/shoolini-logo.webp",
-    sodeLogo: "/assets/manipal_v1_images/new-des-logo.webp",
-    sodeIcon: "/assets/manipal_v1_images/sode-icon.png",
+    logo: "/assets/shoolini/main-new-logo.webp",
+    sodeLogo: "/assets/shoolini/new-des-logo.webp",
+    sodeIcon: "/assets/shoolini/sode-icon.png",
     campusImage: "/assets/shoolini/pay-after-placement.webp",
     buildingAboutImage: "/assets/shoolini/pay-after-placement.webp",
     whyChooseStudentImage: "/assets/shoolini/university.webp",
-    arrowGif: "/assets/manipal_v1_images/arrow.gif",
-    giftGif: "/assets/manipal_v1_images/gift.gif",
-    callGif: "/assets/manipal_v1_images/call_icon.gif",
+    arrowGif: "/assets/shoolini/arrow.gif",
+    giftGif: "/assets/shoolini/gift.gif",
+    callGif: "/assets/shoolini/call_icon.gif",
     primaryColor: "#fd202a",
     themeBg: "bg-[#fd202a]",
     themeGradient: "linear-gradient(to right, #fd202a, #ff4be5)",
@@ -46,6 +46,38 @@ export const shooliniData = {
     couponBtnBg: "linear-gradient(to right, #fd202a, #ff4be5)",
     faqHeaderColor: "#08417b",
     footerBg: "#010d2a",
+
+    // Custom CSS Overrides specifically for Shoolini University (loaded from JSON)
+    customCss: `
+      /* Shoolini University Custom Styles & Overrides (JSON Configured) */
+      @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700;800;900&display=swap');
+
+      .landing-page--shoolini #hero h1 {
+        font-family: 'Roboto Condensed', var(--font-roboto), Roboto, sans-serif !important;
+        font-weight: 800 !important;
+        letter-spacing: -0.3px !important;
+      }
+      .landing-page--shoolini .landing-lead-card {
+        border-radius: 16px !important;
+        box-shadow: 0 14px 36px rgba(0, 0, 0, 0.12) !important;
+        border: 1px solid rgba(226, 232, 240, 0.9) !important;
+      }
+      .landing-page--shoolini .landing-lead-card input,
+      .landing-page--shoolini .landing-lead-card select {
+        background-color: #efefef !important;
+        border: none !important;
+        font-size: 13px !important;
+      }
+      .landing-page--shoolini .landing-lead-card .flex.items-center.overflow-hidden {
+        background-color: #efefef !important;
+        border: none !important;
+        box-shadow: none !important;
+      }
+      .landing-page--shoolini .landing-lead-card .flex.items-center.overflow-hidden > div:first-child {
+        background-color: #efefef !important;
+        border-right: 1px solid #dcdcdc !important;
+      }
+    `,
 
     // Section sequence exactly matching https://distanceeducationschool.com/shoolini/
     sectionOrder: [
@@ -63,10 +95,16 @@ export const shooliniData = {
     hero: {
       backgroundImage: "/assets/shoolini/shoolini-bg-final.webp",
       mobileBackgroundImage: "/assets/shoolini/shoolini-bg-final.webp",
-      backgroundPosition: "center 0%",
+      backgroundPosition: "center center",
       backgroundSize: "cover",
       isDarkTheme: false,
-      sectionBg: "#fff8f2",
+      noOverlay: true, // Prevents white gradient wash out
+      hideCourseBox: true, // Removes yellow badge & red outline box
+      unborderedInputs: true, // Sets soft grey borderless inputs
+      sectionBg: "#fbf3f2",
+      backgroundColor: "#fbf3f2",
+      minHeight: "560px",
+      containerClassName: "max-w-[1360px] py-6 sm:py-8 lg:py-10",
 
       hashtagText: "#SecureCareerWithShoolini",
       hashtagStyle: {
@@ -78,20 +116,21 @@ export const shooliniData = {
       },
 
       headlineText: "Shoolini University Online",
-      headingFont: "var(--font-roboto), Roboto, sans-serif",
+      headingFont: "'Roboto Condensed', var(--font-roboto), Roboto, sans-serif",
       headingStyle: {
-        color: "#fd202a",
+        color: "#ff1844",
         fontSize: "44px",
-        lineHeight: "1.12",
-        letterSpacing: "0.5px",
+        lineHeight: "1.1",
+        fontWeight: "800",
+        letterSpacing: "0.2px",
         marginTop: "2px",
         marginBottom: "6px",
       },
 
       taglineText: "Globally Recognised, Outcome-Based Online Programs",
       taglineStyle: {
-        color: "#374151",
-        fontSize: "18px",
+        color: "#333333",
+        fontSize: "17.5px",
         fontWeight: "700",
         lineHeight: "1.3",
         marginTop: "0px",
@@ -104,8 +143,7 @@ export const shooliniData = {
           "Online Degree Provider",
         ],
         style: {
-          background: "linear-gradient(90deg, #ff1a40 0%, #fd223a 100%)",
-          backgroundColor: "#fd202a",
+          backgroundColor: "#ff1844",
           color: "#ffffff",
           borderRadius: "8px",
           padding: "12px 28px",
@@ -113,8 +151,8 @@ export const shooliniData = {
           fontWeight: "800",
           textAlign: "center",
           lineHeight: "1.3",
-          boxShadow: "0 4px 14px rgba(253, 32, 42, 0.3)",
-          maxWidth: "430px",
+          boxShadow: "0 4px 14px rgba(255, 24, 68, 0.25)",
+          maxWidth: "460px",
           marginTop: "6px",
           marginBottom: "14px",
         },
@@ -129,7 +167,7 @@ export const shooliniData = {
         fontWeight: "800",
         letterSpacing: "0.3px",
         marginTop: "8px",
-        marginBottom: "14px",
+        marginBottom: "16px",
       },
 
       brochureButtonText: "Download Brochure",
@@ -139,20 +177,26 @@ export const shooliniData = {
         borderRadius: "6px",
         fontSize: "14px",
         fontWeight: "700",
-        padding: "10px 22px",
+        padding: "10px 24px",
         boxShadow: "0 4px 12px rgba(255, 26, 64, 0.35)",
       },
 
       cardStyle: "white",
       formBackground: "#ffffff",
-      enquireColor: "#ff1b53",
-      enquireSubtitleColor: "#374151",
+      formCardType: "white",
+      enquireTitle: "Cost Free Consultation",
+      enquireSubtitle: "From Higher Experience Counselor",
+      enquireColor: "#ff1844",
+      enquireSubtitleColor: "#666666",
       phoneBadgeBg: "linear-gradient(90deg, #ff1a40 0%, #ff4de4 100%)",
       phoneBadgeStyle: {
         background: "linear-gradient(90deg, #ff1a40 0%, #ff4de4 100%)",
         color: "#ffffff",
+        borderRadius: "9999px",
       },
       submitBtnBg: "#22c55e",
+      submitButtonBackground: "#22c55e",
+      submitButtonRadius: "8px",
     },
 
     // Approvals Configuration (Split layout matching reference)

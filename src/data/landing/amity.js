@@ -25,11 +25,15 @@ export const amityData = {
     enquireTitle: "Enquire Now",
     enquireSubtitle: "Academic Experts will assist you!",
     officialUrl: "https://amityonline.com",
-    logo: "/assets/amitylp/Amity-online-logo.png",
-    sodeLogo: "/assets/images/sode_logo_official.webp",
-    campusImage: "/assets/images/amity_campus.png",
-    buildingAboutImage: "/assets/images/amity_building_about.png",
-    whyChooseStudentImage: "/assets/amitylp/Why-choose-amity.png",
+    logo: "/assets/amity/Amity-online-logo.png",
+    sodeLogo: "/assets/amity/new-des-logo.webp",
+    sodeIcon: "/assets/amity/sode-icon.png",
+    arrowGif: "/assets/amity/arrow.gif",
+    giftGif: "/assets/amity/gift.gif",
+    callGif: "/assets/amity/call_icon.gif",
+    campusImage: "/assets/amity/university.webp",
+    buildingAboutImage: "/assets/amity/Amity-About.png",
+    whyChooseStudentImage: "/assets/amity/Why-choose-amity.png",
     primaryColor: "#08417b",
     themeBg: "bg-[#08417b]",
     themeBorder: "border-[#08417b]",
@@ -37,7 +41,8 @@ export const amityData = {
     goldColor: "#ffc107",
     badgeText: "Admission Open Jan 2026",
     hero: {
-      backgroundImage: "/assets/amitylp/amity_new_desktop_bg.png",
+      backgroundImage: "/assets/amity/amity-bg-final.webp",
+      mobileBackgroundImage: "/assets/amity/Mobile-bg-amity.webp",
       minHeight: "470px",
       contentMaxWidth: "1400px",
       contentPadding: "34px 24px 26px",
@@ -71,42 +76,42 @@ export const amityData = {
   ],
   approvals: [
     {
-      image: "/assets/amitylp/Ugc-approval.png",
+      image: "/assets/amity/Ugc-approval.png",
       text: "Approved by the University Grants Commission of India",
       tag: "UGC-DEB",
     },
     {
-      image: "/assets/amitylp/NaacA+-approval.png",
+      image: "/assets/amity/NaacA+-approval.png",
       text: "NAAC Accredited with A+ Grade",
       tag: "NAAC A+",
     },
     {
-      image: "/assets/amitylp/NIRF-Approval.png",
+      image: "/assets/amity/NIRF-Approval.png",
       text: "Ranked 32nd in NIRF (National Institutional Ranking Framework)",
       tag: "NIRF #32",
     },
     {
-      image: "/assets/amitylp/AICTE-Approval.png",
+      image: "/assets/amity/AICTE-Approval.png",
       text: "Approved by All India Council for Technical Education",
       tag: "AICTE",
     },
     {
-      image: "/assets/amitylp/THE-approval.png",
+      image: "/assets/amity/THE-approval.png",
       text: "Recognised by The World University Rankings (THE)",
       tag: "THE Ranked",
     },
     {
-      image: "/assets/amitylp/QS-approval.png",
+      image: "/assets/amity/QS-approval.png",
       text: "Ranked by QS (Quacquarelli Symonds)",
       tag: "QS Asia Top 10",
     },
     {
-      image: "/assets/amitylp/WES-Approval.png",
+      image: "/assets/amity/WES-Approval.png",
       text: "Recognised by World Education Services (WES)",
       tag: "WES (USA/Canada)",
     },
     {
-      image: "/assets/amitylp/WASc-approval.png",
+      image: "/assets/amity/WASc-approval.png",
       text: "Accredited by Western Association of Schools and Colleges (WASC)",
       tag: "WASC (USA)",
     },
@@ -144,7 +149,7 @@ export const amityData = {
       title: "Bachelor of Business Administration",
       level: "Graduation",
       duration: "36 Months",
-      image: "/assets/amitylp/BBA-amity.png",
+      image: "/assets/amity/BBA-amity.png",
       description:
         "In Amity University online BBA program, students learn topics like managerial economics and many more in-depth. The Amity online BBA Program provides an in-depth study of theoretical and functional areas of BBA.",
     },
@@ -154,7 +159,7 @@ export const amityData = {
       title: "Bachelor of Computer Application",
       level: "Graduation",
       duration: "36 Months",
-      image: "/assets/amitylp/BCA-amity.png",
+      image: "/assets/amity/BCA-amity.png",
       description:
         "Amity University Online BCA is a 3-year program that provides knowledge of computer skills in programming, software development, and managing digital data through its online BCA program with top in-demand market areas.",
     },
@@ -164,7 +169,7 @@ export const amityData = {
       title: "Bachelor of Commerce",
       level: "Graduation",
       duration: "36 Months",
-      image: "/assets/amitylp/BCOM-amity.png",
+      image: "/assets/amity/BCOM-amity.png",
       description:
         "Amity University Online offers a 3-year B.COM program providing a solid base in accounting, taxation, business operations, marketing, fund management, and advertising. Amity online B.COM builds students' overall financial knowledge.",
     },
@@ -174,7 +179,7 @@ export const amityData = {
       title: "Bachelor of Arts",
       level: "Graduation",
       duration: "36 Months",
-      image: "/assets/amitylp/BA-amity.png",
+      image: "/assets/amity/BA-amity.png",
       description:
         "Amity University Online BA is a 3-year program that offers the necessary skills required in different work cultures-critical and innovative thinking, communication, humanities, and understanding of different languages.",
     },
@@ -184,7 +189,7 @@ export const amityData = {
       title: "Master of Business Administration",
       level: "Post Graduation",
       duration: "24 Months",
-      image: "/assets/amitylp/MBA-amity.png",
+      image: "/assets/amity/MBA-amity.png",
       description:
         "Amity University Online provides an online 2-year MBA program. Amity University MBA online program is crafted to help learners develop leadership, and business skills for successful careers or entrepreneurship.",
     },
@@ -194,7 +199,7 @@ export const amityData = {
       title: "Master of Computer Application",
       level: "Post Graduation",
       duration: "24 Months",
-      image: "/assets/amitylp/MCA-amity.png",
+      image: "/assets/amity/MCA-amity.png",
       description:
         "The Amity University online MCA program provides learning in advanced technologies and tools. The MCA Online Course Amity provides specializations in Blockchain and many other in collaboration with eCornell and TCS iON.",
     },
@@ -204,7 +209,7 @@ export const amityData = {
       title: "Master of Commerce",
       level: "Post Graduation",
       duration: "24 Months",
-      image: "/assets/amitylp/MCOM-amity.png",
+      image: "/assets/amity/MCOM-amity.png",
       description:
         "Amity University Online M.com offers a rock foundation in 3 aspects - Commerce, Finance, and Technology. Amity University Online M.com offers a specialization in Financial Management, with many more providing strong career opportunities.",
     },
@@ -214,7 +219,7 @@ export const amityData = {
       title: "Master of Arts",
       level: "Post Graduation",
       duration: "24 Months",
-      image: "/assets/amitylp/MA-amity.png",
+      image: "/assets/amity/MA-amity.png",
       description:
         "Amity Online MA in Journalism & Mass Communication or English fosters high-level research capabilities, media production ethics, digital journalism, and creative writing.",
     },
@@ -224,7 +229,7 @@ export const amityData = {
       title: "Master of Science (Data Science)",
       level: "Post Graduation",
       duration: "24 Months",
-      image: "/assets/amitylp/msc-main-img.webp",
+      image: "/assets/amity/msc-main-img.webp",
       description:
         "Amity Online MSC in Data Science offers industry-aligned syllabus covering Machine Learning, Big Data pipelines, Neural Networks, Python, and predictive business analytics.",
     },
@@ -235,7 +240,7 @@ export const amityData = {
       "Amity University Online is India's first UGC-approved online university. This university offers a total of 24 bachelor's and master's degree programs with a wide range of specializations. Amity University Uttar Pradesh, 'A+' NAAC grade, and is recognized by WES, AIU, making it eligible to conduct online courses in different fields. Amity University Online Degree Programs offers an in-demand, up-to-date curriculum. It follows the anytime, anywhere mantra for course content, providing all content, live & recorded lectures.",
     text2:
       "The university also gives career support, expert mentorship, and placement assistance. With flexible learning options, EMI-based fee payment, and a strong academic reputation, it offers to its students.",
-    image: "/assets/amitylp/Amity-About.png",
+    image: "/assets/amity/Amity-About.png",
     buttonText: "Apply Now",
   },
   whyChoose: [

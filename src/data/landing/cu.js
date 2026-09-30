@@ -24,17 +24,31 @@ export const cuData = {
     enquireTitle: "Enquire Now",
     enquireSubtitle: "Academic Experts will assist you!",
     officialUrl: "https://onlinecu.in",
-    logo: "/assets/images/sode_logo_official.webp",
-    sodeLogo: "/assets/images/sode_logo_official.webp",
-    campusImage: "/assets/images/amity_campus.png",
-    buildingAboutImage: "/assets/images/amity_building_about.png",
-    whyChooseStudentImage: "/assets/images/why_choose_student.png",
+    logo: "/assets/cu/cu-online1.png",
+    sodeLogo: "/assets/cu/new-des-logo.webp",
+    sodeIcon: "/assets/cu/sode-icon.png",
+    arrowGif: "/assets/cu/arrow.gif",
+    giftGif: "/assets/cu/gift.gif",
+    callGif: "/assets/cu/call_icon.gif",
+    campusImage: "/assets/cu/CU-about-image1.png",
+    buildingAboutImage: "/assets/cu/CU-about-image1.png",
+    whyChooseStudentImage: "/assets/cu/university.webp",
     primaryColor: "#c0392b",
     themeBg: "bg-[#c0392b]",
     themeBorder: "border-[#c0392b]",
     accentColor: "#ffd200",
     goldColor: "#ffc107",
     badgeText: "Admissions Open Jan 2026",
+    hero: {
+      backgroundImage: "/assets/cu/CU-BG-copy.png",
+      mobileBackgroundImage: "/assets/cu/CU-BG-copy.png",
+      noOverlay: false,
+      backgroundColor: "#c0392b",
+      titleColor: "#ffd200",
+      taglineColor: "#ffffff",
+      coursesColor: "#ffffff",
+      buttonBackground: "#c0392b",
+    },
     coursesStrip: [
       "MBA | MCA | MCOM | MA",
       "| BBA | BCA | BA",
@@ -51,29 +65,24 @@ export const cuData = {
   ],
   approvals: [
     {
-      image: "/assets/images/approvals/ugc_approval.png",
+      image: "/assets/cu/ugc-approvals.png",
       text: "Entitled by University Grants Commission (UGC-DEB)",
       tag: "UGC-DEB",
     },
     {
-      image: "/assets/images/approvals/naac_a_plus.png",
+      image: "/assets/cu/naac-approvals.png",
       text: "NAAC A+ Accredited University",
       tag: "NAAC A+",
     },
     {
-      image: "/assets/images/approvals/nirf_ranking.png",
+      image: "/assets/cu/nirf-approvals.png",
       text: "Ranked Among Top Universities in NIRF Rankings",
       tag: "NIRF Top Ranked",
     },
     {
-      image: "/assets/images/approvals/qs_ranking.png",
-      text: "Ranked #1 Private University in India by QS Asia",
-      tag: "QS #1 Private",
-    },
-    {
-      image: "/assets/images/approvals/aicte_approval.png",
-      text: "Approved by AICTE for Professional Technical Programs",
-      tag: "AICTE",
+      image: "/assets/cu/WES-approvals.png",
+      text: "Recognised by World Education Services (WES)",
+      tag: "WES (USA/Canada)",
     },
   ],
   stats: [
@@ -108,7 +117,7 @@ export const cuData = {
       code: "MBA",
       title: "Master of Business Administration",
       level: "Post Graduation",
-      image: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=800&auto=format&fit=crop",
+      image: "/assets/cu/mba-cu.png",
       description:
         "CU Online MBA equips students with contemporary leadership skills, data analytics for managers, marketing strategies, and venture capital management.",
     },
@@ -117,7 +126,7 @@ export const cuData = {
       code: "MCA",
       title: "Master of Computer Application",
       level: "Post Graduation",
-      image: "https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=800&auto=format&fit=crop",
+      image: "/assets/cu/mca-cu.png",
       description:
         "Specialized tracks in Cloud Computing, AI, Data Science, and Full-Stack Engineering with hands-on capstone industry projects.",
     },
@@ -126,7 +135,7 @@ export const cuData = {
       code: "BBA",
       title: "Bachelor of Business Administration",
       level: "Graduation",
-      image: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=800&auto=format&fit=crop",
+      image: "/assets/cu/bba-cu.png",
       description:
         "Foundational managerial concepts in digital marketing, corporate law, organizational dynamics, and financial systems.",
     },
@@ -135,9 +144,36 @@ export const cuData = {
       code: "BCA",
       title: "Bachelor of Computer Application",
       level: "Graduation",
-      image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=800&auto=format&fit=crop",
+      image: "/assets/cu/bca-cu.png",
       description:
         "Solid 3-year curriculum focusing on core programming, modern software testing, database management, and mobile apps.",
+    },
+    {
+      id: "cu-ma",
+      code: "MA",
+      title: "Master of Arts",
+      level: "Post Graduation",
+      image: "/assets/cu/ma-cu.png",
+      description:
+        "Advance analytical and creative thought processes through versatile disciplines in modern humanities and literature.",
+    },
+    {
+      id: "cu-msc",
+      code: "MSC",
+      title: "Master of Science",
+      level: "Post Graduation",
+      image: "/assets/cu/msc-cu.png",
+      description:
+        "Advanced scientific analytics and mathematical models for research, tech, and specialised corporate roles.",
+    },
+    {
+      id: "cu-bjmc",
+      code: "BJMC",
+      title: "Bachelor of Journalism and Mass Communication",
+      level: "Graduation",
+      image: "/assets/cu/bjmc-cu.png",
+      description:
+        "Industry-focused program covering multimedia production, digital reporting, broadcast journalism, and PR communication.",
     },
   ],
   about: {
@@ -148,23 +184,43 @@ export const cuData = {
       "CU Online bridges the gap between academia and top multinational recruiters with industry-vetted curriculums, live classes by global faculty, and cutting-edge digital learning resources.",
     text3:
       "Degrees awarded by Chandigarh University Online are entitled by UGC-DEB, ensuring full academic and career credibility.",
+    image: "/assets/cu/CU-about-image1.png",
+  },
+  degreeInfo: {
+    title: "Sample Degree Certificate",
+    subtitle: "UGC-Entitled & Globally Accepted",
+    image: "/assets/cu/CU-sample-degree.png",
   },
   whyChoose: [
     {
-      title: "QS Asia Top Ranked University",
-      desc: "Study from one of the highest-rated universities in India with global accreditation standards.",
-    },
-    {
-      title: "High Placement Track Record",
-      desc: "900+ recruitment partners including Microsoft, Google, Amazon, and IBM hiring CU graduates.",
-    },
-    {
-      title: "Affordable Fees & 0% EMI",
+      title: "Affordable Learning",
       desc: "Low-cost semester fees with flexible monthly payment plans designed for working professionals.",
+      image: "/assets/cu/afforadable.png",
     },
     {
-      title: "Cutting-Edge LMS & Mentorship",
+      title: "Global Recognition",
+      desc: "Study from one of the highest-rated universities in India with global accreditation standards.",
+      image: "/assets/cu/global.png",
+    },
+    {
+      title: "Advanced LMS",
       desc: "Interactive webinars, discussion forums, 24/7 student support, and dedicated project supervisors.",
+      image: "/assets/cu/lms.png",
+    },
+    {
+      title: "Top Placement Support",
+      desc: "900+ recruitment partners including Microsoft, Google, Amazon, and IBM hiring CU graduates.",
+      image: "/assets/cu/placement.png",
+    },
+    {
+      title: "Self-Paced Learning",
+      desc: "Learn from recorded video lectures and e-content whenever and wherever your schedule allows.",
+      image: "/assets/cu/self.png",
+    },
+    {
+      title: "Dedicated Student Support",
+      desc: "End-to-end guidance from enrollment to examination with our dedicated student relationship desk.",
+      image: "/assets/cu/support.png",
     },
   ],
   admissionSteps: [
