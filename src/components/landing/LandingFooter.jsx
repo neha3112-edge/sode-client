@@ -285,7 +285,7 @@ export default function LandingFooter({
         <div
           className={
             brand.footerBottomClassName ||
-            "mini-footer-bottom bg-[#0b3c66] text-white text-center py-2.5 px-4 text-[13px] sm:text-[14px] pb-20 md:pb-2.5 font-normal tracking-wide"
+            "mini-footer-bottom bg-[#0b3c66] text-white text-center py-0 px-4 text-[13px] sm:text-[14px] font-normal tracking-wide"
           }
           style={{ backgroundColor: brand.footerBottomBg || "#0b3c66" }}
         >
@@ -303,24 +303,33 @@ export default function LandingFooter({
     brand.footerDisclaimer ||
     "SODE Counselling Services LLP act as a marketing agency. All university names, logos, and trademarks mentioned are used for informational purposes only. We are not a university or an admission authority. Users are encouraged to verify information on the official website of the University before making decisions.";
 
+  const footerBgClass = brand.footerSectionBg || (brand.slug === "ggu" ? "bg-white" : "bg-[#f6f8fa]");
+  const footerLogoSrc =
+    brand.footerLogo ||
+    brand.desLogo ||
+    brand.sodeFooterLogo ||
+    (brand.sodeLogo && !brand.sodeLogo.includes("icon") && !brand.sodeLogo.includes("tm")
+      ? brand.sodeLogo
+      : "/assets/all_universities_images/ggu/new-des-logo.webp");
+
   return (
-    <footer className="mini-footer bg-[#f6f8fa] text-[#777777] pt-4 sm:pt-6 relative select-none" id="footer-v1">
+    <footer className={`mini-footer ${footerBgClass} text-[#777777] pt-0 sm:pt-1 pb-0 relative select-none`} id="footer-v1">
       <div className="w-full max-w-full mx-auto px-4 sm:px-8 text-center flex flex-col items-center">
         {/* SODE / Distance Education School Official Full Logo */}
-        <div className="footer_sode_logo_container flex justify-center items-center">
+        <div className="footer_sode_logo_container flex justify-center items-center mb-3 sm:mb-4">
           <Link
             href="#hero"
             onClick={handleScrollTop}
-            className="inline-block cursor-pointer transition-transform hover:scale-[1.01] active:scale-[0.99]"
+            className="inline-block cursor-pointer"
             aria-label="Back to Top"
           >
-            <div className="relative w-[320px] sm:w-[520px] md:w-[600px] lg:w-[640px] h-[95px] sm:h-[155px] md:h-[180px] lg:h-[190px]">
+            <div className="relative w-[340px] sm:w-[500px] md:w-[600px] lg:w-[680px] xl:w-[720px] h-[85px] sm:h-[125px] md:h-[150px] lg:h-[170px] xl:h-[180px]">
               <Image
-                src={brand.sodeLogo || "/assets/images/new-des-logo.webp"}
+                src={footerLogoSrc}
                 alt="Distance Education School - SODE School of Online & Distance Education"
                 fill
                 className="object-contain"
-                sizes="(max-width: 640px) 320px, (max-width: 768px) 520px, 640px"
+                sizes="(max-width: 640px) 340px, (max-width: 768px) 500px, (max-width: 1024px) 600px, 720px"
                 priority
               />
             </div>
@@ -328,13 +337,13 @@ export default function LandingFooter({
         </div>
 
         {/* Agency Disclaimer Text */}
-        <div id="footer-bottom-bar" className="mt-2 sm:mt-2.5 px-2 sm:px-6 w-full max-w-[1240px] mx-auto text-center">
-          <p className="m-0 text-[11.5px] sm:text-[12.5px] text-[#777777] leading-relaxed font-normal">
+        <div id="footer-bottom-bar" className="mt-2.5 sm:mt-3 px-2 sm:px-6 w-full max-w-[1320px] mx-auto text-center">
+          <p className="m-0 text-[11px] sm:text-[12px] md:text-[12.5px] text-[#444444] leading-relaxed font-semibold">
             {footerText}
           </p>
 
           {/* Legal Links */}
-          <div className="mt-2.5 sm:mt-3 text-[12px] sm:text-[13px] font-bold text-[#111111] flex items-center justify-center gap-2">
+          <div className="mt-2 sm:mt-2.5 mb-3 sm:mb-4 text-[12px] sm:text-[13px] md:text-[13.5px] font-bold text-[#111111] flex items-center justify-center gap-2.5 sm:gap-3">
             <button
               type="button"
               onClick={() => onOpenDisclaimer?.()}
@@ -362,13 +371,23 @@ export default function LandingFooter({
         </div>
       </div>
 
-      {/* Dark Navy Copyright Bar */}
-      <div
-        className="mini-footer-bottom mt-5 sm:mt-6 text-white text-center py-2.5 px-4 text-[13px] sm:text-[14px] pb-20 md:pb-2.5 tracking-wide font-normal"
-        style={{ backgroundColor: brand.footerBg || "#010d2a" }}
-      >
-        © {new Date().getFullYear()} SODE Counseling Services LLP
-      </div>
+      {/* Brand Navy Copyright Bar (reusable across all landing pages) */}
+      {!brand.hideFooterCopyright && (
+        <div
+          className="mini-footer-bottom mt-4 sm:mt-5 text-white py-2.5 px-4 sm:px-8 text-[13px] sm:text-[14px] tracking-wide font-normal transition-colors"
+          style={{
+            backgroundColor:
+              brand.footerBottomBg ||
+              brand.primaryColor ||
+              brand.footerBg ||
+              "#003468",
+          }}
+        >
+          <div className="max-w-[1380px] mx-auto text-center">
+            © {new Date().getFullYear()} SODE Counseling Services LLP
+          </div>
+        </div>
+      )}
     </footer>
   );
 }

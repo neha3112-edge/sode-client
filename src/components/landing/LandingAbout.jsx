@@ -43,6 +43,186 @@ export default function LandingAbout({
   const leaderData = leader || about.leader;
 
   // ==========================================
+  // Layout 0-Liverpool: About Liverpool Business School (#about)
+  // ==========================================
+  const isLiverpoolLayout = brand.aboutLayout === "liverpool" || brand.slug === "liverpool";
+  if (isLiverpoolLayout) {
+    const bgImg = brand.aboutBgImage || "/assets/all_universities_images/liverpool/ljmu-rev.png";
+    return (
+      <section
+        id="about"
+        className="w-full relative select-none py-14 sm:py-20 bg-cover bg-center scroll-mt-20 text-white"
+        style={{
+          backgroundImage: `url(${bgImg})`,
+        }}
+      >
+        <div className="max-w-[1240px] mx-auto px-4 sm:px-8">
+          <div className="max-w-2xl bg-black/45 backdrop-blur-xs p-6 sm:p-10 rounded-[12px] border border-white/10 shadow-xl">
+            <h2 className="text-[26px] sm:text-[32px] font-bold mb-4 text-white m-0">
+              {title || "About Liverpool Business School"}
+            </h2>
+            <div className="space-y-4 text-[14px] sm:text-[15px] leading-relaxed text-white/95 mt-4">
+              {paragraphs.map((p, idx) => (
+                <p key={idx} className="m-0 leading-relaxed">
+                  {p}
+                </p>
+              ))}
+            </div>
+            <div className="pt-6">
+              <button
+                type="button"
+                onClick={() => onOpenApply?.()}
+                className="px-6 py-2.5 bg-[#00408d] text-white font-bold text-[14px] rounded-[5px] hover:brightness-110 active:scale-95 transition-all border-none cursor-pointer inline-flex items-center gap-2 shadow-md"
+              >
+                <i className="fa fa-phone text-white" />
+                <span>Request Call Back</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ==========================================
+  // Layout 0-Rushford: About Us with Campus Building Image (#about)
+  // ==========================================
+  const isRushfordLayout = brand.aboutLayout === "rushford" || brand.slug === "rushford";
+  if (isRushfordLayout) {
+    return (
+      <section id="about" className="w-full relative select-none py-12 sm:py-16 bg-white scroll-mt-20">
+        <div className="max-w-[1240px] mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            <div className="lg:col-span-7">
+              <h2 className="text-[26px] sm:text-[32px] font-bold text-[#111111] mb-4 uppercase tracking-wide">
+                {title}
+              </h2>
+              <div className="space-y-4 text-[14px] sm:text-[15px] leading-relaxed text-[#333333]">
+                {paragraphs.map((p, idx) => (
+                  <p key={idx} className="m-0">
+                    {p}
+                  </p>
+                ))}
+              </div>
+              <div className="pt-6">
+                <button
+                  type="button"
+                  onClick={() => onOpenApply?.()}
+                  className="px-6 py-2.5 bg-[#0cb1ef] text-white font-bold text-[14px] rounded-[5px] hover:brightness-95 transition-all cursor-pointer border-none shadow-sm active:scale-95"
+                >
+                  {buttonText || "Request Call Back"}
+                </button>
+              </div>
+            </div>
+            <div className="lg:col-span-5 flex justify-center">
+              <div className="relative w-full aspect-[4/3] rounded-[8px] overflow-hidden shadow-sm">
+                <Image
+                  src={imageSrc || "/assets/all_universities_images/rushford/rushford-campus-buiding.webp"}
+                  alt="Rushford Campus"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 40vw"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ==========================================
+  // Layout 0-ESGCI: Centered Green About Section (#about)
+  // ==========================================
+  const isEsgciLayout = !isRushfordLayout && (brand.aboutLayout === "esgci" || brand.slug === "esgci");
+  if (isEsgciLayout) {
+    return (
+      <section
+        id="about"
+        className="w-full relative select-none py-14 sm:py-18 bg-[#04903c] text-white text-center scroll-mt-20"
+        style={{ backgroundColor: brand.aboutBg || "#04903c" }}
+      >
+        <div className="max-w-[900px] mx-auto px-4 sm:px-6">
+          <h2 className="text-[28px] sm:text-[36px] font-bold text-white mb-4 uppercase tracking-wide m-0">
+            {title}
+          </h2>
+          <div className="space-y-4 text-[14px] sm:text-[15.5px] leading-relaxed text-white/95 font-normal mt-4">
+            {paragraphs.map((p, idx) => (
+              <p key={idx} className="m-0">
+                {p}
+              </p>
+            ))}
+          </div>
+          <div className="pt-6">
+            <button
+              type="button"
+              onClick={() => onOpenApply?.()}
+              className="px-8 py-3 bg-[#fff000] text-black font-bold text-[15px] rounded-[5px] hover:brightness-95 transition-all cursor-pointer border-none shadow-sm active:scale-95"
+            >
+              {buttonText}
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ==========================================
+  // Layout 0-GGU: Golden Gate University 50/50 Full-Bleed Split
+  // ==========================================
+  const isGguLayout = !isEsgciLayout && (brand.aboutLayout === "ggu" || brand.slug === "ggu");
+  if (isGguLayout) {
+    return (
+      <section
+        id="about"
+        className="w-full relative select-none overflow-hidden bg-[#003468] scroll-mt-20"
+      >
+        <div className="w-full grid grid-cols-1 lg:grid-cols-2 items-stretch min-h-[460px] lg:min-h-[500px]">
+          {/* Left Text Column */}
+          <div className="flex flex-col justify-center px-6 sm:px-12 md:px-14 lg:px-14 xl:px-20 py-12 sm:py-16 text-white text-left">
+            <h2 className="text-[24px] sm:text-[28px] lg:text-[30px] font-bold uppercase tracking-tight text-white m-0 leading-tight">
+              {title}
+            </h2>
+            {about.subtitle && (
+              <h3 className="text-[15px] sm:text-[16.5px] font-semibold text-white/95 mt-1.5 mb-5 m-0 leading-snug">
+                {about.subtitle}
+              </h3>
+            )}
+            <div className="space-y-4 text-[12px] sm:text-[12.5px] lg:text-[13px] leading-[1.65] text-white/95 font-normal max-w-xl">
+              {paragraphs.map((p, idx) => (
+                <p key={idx} className="m-0">
+                  {p}
+                </p>
+              ))}
+            </div>
+            <div className="pt-6">
+              <button
+                type="button"
+                onClick={() => onOpenApply?.()}
+                className="bg-[#DC520A] hover:bg-[#c24608] active:scale-95 text-white font-bold text-[14px] px-6 py-2.5 rounded-[4px] shadow-sm transition-all cursor-pointer border-none inline-flex items-center justify-center w-fit"
+              >
+                <span>{buttonText}</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Right Image Column: Full-bleed Edge-to-Edge */}
+          <div className="relative w-full h-[320px] sm:h-[400px] lg:h-full min-h-[350px] lg:min-h-[480px] bg-slate-900">
+            <Image
+              src={imageSrc}
+              alt={title}
+              fill
+              priority
+              className="object-cover object-center"
+              sizes="(max-width: 1024px) 100vw, 50vw"
+            />
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ==========================================
   // Layout 0: Mangalayatan University (MU) Centered with Bottom Campus Illustration
   // ==========================================
   const isMuLayout = brand.aboutLayout === "mu" || brand.slug === "mu";
@@ -317,6 +497,11 @@ export default function LandingAbout({
     about.imagePosition === "right";
   const showApplyButton = about.showButton !== false;
 
+  const isDark =
+    brand.aboutIsDark ||
+    brand.aboutBg === "#003468" ||
+    brand.slug === "ggu";
+
   const sectionBg =
     brand.aboutBg ||
     (brand.themeGradient && brand.primaryColor === "#fd202a"
@@ -324,7 +509,7 @@ export default function LandingAbout({
       : "#ffffff");
 
   return (
-    <section id="about" className="py-10 sm:py-14 select-none" style={{ background: sectionBg }}>
+    <section id="about" className="py-12 sm:py-16 select-none" style={{ background: sectionBg }}>
       <div className="max-w-[1140px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
           {/* Text Column */}
@@ -341,7 +526,7 @@ export default function LandingAbout({
                     WebkitBackgroundClip: "text",
                     WebkitTextFillColor: "transparent",
                   }
-                  : { color: "#111827" }
+                  : { color: isDark ? "#ffffff" : "#111827" }
               }
             >
               {title.includes(" Online") ? (
@@ -353,7 +538,21 @@ export default function LandingAbout({
               )}
             </h2>
 
-            <div className="space-y-2 text-[13px] sm:text-[15px] text-[#333333] leading-[1.55] max-w-[580px]">
+            {about.subtitle && (
+              <p
+                className={`text-[16px] sm:text-[18px] font-semibold m-0 ${
+                  isDark ? "text-white/90" : "text-slate-700"
+                }`}
+              >
+                {about.subtitle}
+              </p>
+            )}
+
+            <div
+              className={`space-y-3 text-[13px] sm:text-[15px] leading-[1.6] max-w-[580px] ${
+                isDark ? "text-white/90" : "text-[#333333]"
+              }`}
+            >
               {paragraphs.map((p, idx) => (
                 <p key={idx} className="m-0">
                   {p}
@@ -381,18 +580,30 @@ export default function LandingAbout({
                 <button
                   type="button"
                   onClick={() => onOpenApply?.()}
-                  className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-[4px] font-semibold text-[13px] sm:text-[14px] transition-all cursor-pointer border-2 bg-transparent hover:text-white active:scale-95 w-full sm:w-fit"
-                  style={{
-                    color: primaryColor,
-                    borderColor: primaryColor,
-                  }}
+                  className={`inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-[5px] font-semibold text-[13px] sm:text-[14px] transition-all cursor-pointer active:scale-95 w-full sm:w-fit ${
+                    isDark
+                      ? "bg-[#DC520A] text-white hover:bg-[#c24608] border-none shadow-xs"
+                      : "border-2 bg-transparent hover:text-white"
+                  }`}
+                  style={
+                    isDark
+                      ? { backgroundColor: brand.aboutButtonBg || "#DC520A", color: "#ffffff" }
+                      : {
+                          color: primaryColor,
+                          borderColor: primaryColor,
+                        }
+                  }
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = primaryColor;
-                    e.currentTarget.style.color = "#ffffff";
+                    if (!isDark) {
+                      e.currentTarget.style.backgroundColor = primaryColor;
+                      e.currentTarget.style.color = "#ffffff";
+                    }
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "transparent";
-                    e.currentTarget.style.color = primaryColor;
+                    if (!isDark) {
+                      e.currentTarget.style.backgroundColor = "transparent";
+                      e.currentTarget.style.color = primaryColor;
+                    }
                   }}
                 >
                   <span>{buttonText}</span>
@@ -407,16 +618,39 @@ export default function LandingAbout({
             className={`lg:col-span-6 xl:col-span-6 ${isImageRight ? "order-2 lg:order-2" : "order-1 lg:order-1"
               } flex items-center justify-center`}
           >
-            <div className="relative w-full max-w-[460px] mx-auto flex items-center justify-center">
-              <Image
-                src={imageSrc}
-                alt={title}
-                width={460}
-                height={450}
-                priority
-                className="w-full h-auto object-contain max-h-[460px]"
-                sizes="(max-width: 1024px) 100vw, 460px"
-              />
+            <div className="relative w-full max-w-[480px] mx-auto flex items-center justify-center">
+              {about.desktopImage && about.mobileImage ? (
+                <>
+                  <Image
+                    src={about.desktopImage}
+                    alt={title}
+                    width={480}
+                    height={460}
+                    priority
+                    className="w-full h-auto object-contain max-h-[480px] hidden sm:block"
+                    sizes="(max-width: 1024px) 100vw, 480px"
+                  />
+                  <Image
+                    src={about.mobileImage}
+                    alt={title}
+                    width={480}
+                    height={380}
+                    priority
+                    className="w-full h-auto object-contain max-h-[400px] block sm:hidden"
+                    sizes="(max-width: 640px) 100vw, 400px"
+                  />
+                </>
+              ) : (
+                <Image
+                  src={imageSrc}
+                  alt={title}
+                  width={460}
+                  height={450}
+                  priority
+                  className="w-full h-auto object-contain max-h-[460px]"
+                  sizes="(max-width: 1024px) 100vw, 460px"
+                />
+              )}
             </div>
           </div>
         </div>

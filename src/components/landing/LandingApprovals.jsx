@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Carousel } from "antd";
 
 /**
  * Reusable Landing Approvals Section
@@ -25,17 +26,216 @@ export default function LandingApprovals({
   const activeUniversity = universityName || brand?.name || "University Online";
   const activeTitle = brand?.approvalsTitle || title;
   const subtitle = brand?.approvalsSubtitle || brand?.approvalsDescription || null;
-  const isSplit = brand?.approvalsLayout === "split";
-  const isVguLayout = brand?.approvalsLayout === "vgu-badges" || brand?.slug === "vgu";
-  const isMuLayout = brand?.approvalsLayout === "mu" || brand?.slug === "mu";
-  const isCarouselLayout = brand?.approvalsLayout === "smu-carousel" || brand?.slug === "smu";
+  const isLiverpoolLayout =
+    brand?.approvalsLayout === "liverpool" || brand?.slug === "liverpool";
+  const isRushfordLayout =
+    !isLiverpoolLayout &&
+    (brand?.approvalsLayout === "rushford" || brand?.slug === "rushford");
+  const isEsgciLayout = !isLiverpoolLayout && !isRushfordLayout && (brand?.approvalsLayout === "esgci" || brand?.slug === "esgci");
+  const isGguLayout = !isLiverpoolLayout && !isRushfordLayout && !isEsgciLayout && (brand?.approvalsLayout === "ggu" || brand?.slug === "ggu");
+  const isSplit = !isLiverpoolLayout && !isRushfordLayout && !isEsgciLayout && !isGguLayout && brand?.approvalsLayout === "split";
+  const isVguLayout = !isLiverpoolLayout && !isRushfordLayout && !isEsgciLayout && !isGguLayout && (brand?.approvalsLayout === "vgu-badges" || brand?.slug === "vgu");
+  const isMuLayout = !isLiverpoolLayout && !isRushfordLayout && !isEsgciLayout && !isGguLayout && (brand?.approvalsLayout === "mu" || brand?.slug === "mu");
+  const isCarouselLayout = !isLiverpoolLayout && !isRushfordLayout && !isEsgciLayout && !isGguLayout && (brand?.approvalsLayout === "smu-carousel" || brand?.slug === "smu");
   const isSlider =
-    brand?.approvalsLayout === "slider" ||
-    isCarouselLayout ||
-    (!isSplit && !isVguLayout && !isMuLayout && Boolean(subtitle));
+    !isLiverpoolLayout &&
+    !isRushfordLayout &&
+    !isEsgciLayout &&
+    !isGguLayout &&
+    (brand?.approvalsLayout === "slider" ||
+      isCarouselLayout ||
+      (!isSplit && !isVguLayout && !isMuLayout && Boolean(subtitle)));
 
   const primaryColor = brand?.approvalsHeaderColor || brand?.primaryColor || "#ee3024";
   const gridBg = brand?.approvalsBg || "#ffffff";
+
+  // ==========================================
+  // Layout 0-Liverpool: Approvals & Recognition (#certification)
+  // ==========================================
+  if (isLiverpoolLayout) {
+    const heading = brand?.approvalsTitle || "APPROVALS & RECOGNITION";
+    const subHeading = brand?.approvalsSubtitle || "OF ONLINE LIVERPOOL BUSINESS SCHOOL";
+
+    return (
+      <section id="certification" className="w-full py-12 sm:py-16 bg-white select-none scroll-mt-20">
+        <div className="max-w-[1140px] mx-auto px-4 sm:px-6">
+          <h2 className="text-[24px] sm:text-[30px] font-bold text-left text-[#111111] mb-8 leading-tight m-0">
+            {heading} <br />
+            <span className="text-[#00408d]">{subHeading}</span>
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 items-center">
+            {approvals.map((appr, idx) => (
+              <div
+                key={idx}
+                className="b1 flex items-center justify-center p-4 bg-white rounded-[8px] border border-slate-200 shadow-sm hover:shadow-md transition-shadow"
+              >
+                <div className="relative w-full max-w-[280px] h-[90px]">
+                  <Image
+                    src={appr.image || appr}
+                    alt={appr.title || `Approval ${idx + 1}`}
+                    fill
+                    className="object-contain"
+                    sizes="(max-width: 640px) 100vw, 33vw"
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+  if (isRushfordLayout) {
+    const sectionTitle = brand?.approvalsTitle || "Accreditation & Collaboration";
+    const sectionSubtitle = brand?.approvalsSubtitle || "Rushford Business School, Switzerland";
+    return (
+      <section
+        id="accreditations"
+        className="certification w-full py-12 sm:py-16 bg-white text-center select-none scroll-mt-20"
+        style={{ backgroundColor: brand?.approvalsBg || "#ffffff" }}
+      >
+        <div className="max-w-[1240px] mx-auto px-4 sm:px-6">
+          <h2 className="text-[#111111] text-[24px] sm:text-[30px] lg:text-[34px] font-bold text-center m-0 tracking-tight mb-2">
+            {sectionTitle}
+          </h2>
+          {sectionSubtitle && (
+            <p className="text-[15px] sm:text-[17px] text-[#555555] mb-8 font-medium">
+              {sectionSubtitle}
+            </p>
+          )}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
+            {approvals.map((item, idx) => (
+              <div
+                key={idx}
+                className="bg-white p-5 rounded-[10px] border-2 border-slate-200 shadow-sm flex items-start gap-4 transition-all hover:shadow-md"
+              >
+                <div className="relative w-20 h-20 shrink-0 flex items-center justify-center">
+                  <Image
+                    src={item.image}
+                    alt={item.title || "Approval"}
+                    fill
+                    className="object-contain"
+                    sizes="80px"
+                  />
+                </div>
+                <div>
+                  <h3 className="text-[#111111] text-[16px] font-bold mb-1.5 leading-snug">
+                    {item.title}
+                  </h3>
+                  <p className="text-[#555555] text-[13px] leading-relaxed m-0">
+                    {item.description || item.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ==========================================
+  // Layout 0-ESGCI: Approvals and Accreditation (#certification)
+  // ==========================================
+  if (isEsgciLayout) {
+    const sectionTitle = brand?.approvalsTitle || "APPROVALS AND ACCREDITATION";
+    return (
+      <section
+        id="certification"
+        className="certification w-full py-12 sm:py-16 bg-white text-center select-none scroll-mt-20"
+        style={{ backgroundColor: brand?.approvalsBg || "#ffffff" }}
+      >
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6">
+          <h2
+            className="text-[#111111] text-[24px] sm:text-[30px] lg:text-[34px] font-bold text-center m-0 uppercase tracking-tight mb-8"
+            style={{ color: brand?.approvalsHeaderColor || "#111111" }}
+          >
+            {sectionTitle}
+          </h2>
+          <div className="b2-info grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {approvals.map((item, idx) => (
+              <div
+                key={idx}
+                className="b1 bg-white p-6 rounded-[8px] border border-slate-200/90 shadow-[0_2px_12px_rgba(0,0,0,0.05)] flex flex-col items-center text-center transition-all hover:-translate-y-1"
+              >
+                <div className="relative w-full h-20 mb-4 flex items-center justify-center">
+                  <Image
+                    src={item.image}
+                    alt={item.title || "Approval"}
+                    fill
+                    className="object-contain"
+                    sizes="180px"
+                  />
+                </div>
+                <h3 className="text-[#111111] text-[16px] font-bold mb-2 leading-snug">
+                  {item.title}
+                </h3>
+                <p className="text-[#555555] text-[13px] leading-relaxed m-0 font-normal">
+                  {item.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ==========================================
+  // Layout 0-GGU: Golden Gate University Accreditations
+  // ==========================================
+  if (isGguLayout) {
+    const sectionTitle = brand?.approvalsTitle || "Accreditations & Associations";
+    const sectionSubtitle =
+      brand?.approvalsSubtitle || "of Golden Gate University, San Francisco";
+
+    return (
+      <section
+        id="accreditations"
+        className="certification w-full pt-12 sm:pt-16 pb-8 sm:pb-10 bg-[#F6F6F6] text-center select-none"
+        style={{ backgroundColor: brand?.approvalsBg || "#F6F6F6" }}
+      >
+        <div className="max-w-[1140px] mx-auto px-4 sm:px-6">
+          <h2
+            className="text-[#111111] text-2xl sm:text-3xl lg:text-[30px] font-bold text-center m-0 leading-tight tracking-tight"
+            style={{ color: brand?.approvalsHeaderColor || "#111111" }}
+          >
+            {sectionTitle}
+          </h2>
+          {sectionSubtitle && (
+            <p className="sub-pp text-center text-[#444444] text-sm sm:text-[15.5px] font-medium mt-1.5 mb-8">
+              {sectionSubtitle}
+            </p>
+          )}
+
+          <div className="b2-info grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mt-6">
+            {approvals.map((item, idx) => (
+              <div
+                key={idx}
+                className="b1 bg-white p-5 sm:p-6 rounded-[8px] border border-slate-100 border-b-[3px] border-b-[#DC520A] shadow-[0_3px_12px_rgba(0,0,0,0.04)] flex flex-col items-center justify-between text-center transition-all hover:-translate-y-1 h-[165px] sm:h-[180px]"
+                style={{
+                  borderBottomColor: brand?.approvalsBorderColor || "#DC520A",
+                }}
+              >
+                <div className="relative w-full h-18 sm:h-22 flex items-center justify-center my-auto">
+                  <Image
+                    src={item.image}
+                    alt={item.title || item.tag || "Accreditation"}
+                    fill
+                    className="object-contain"
+                    sizes="180px"
+                  />
+                </div>
+                <h3 className="text-[#003468] text-[13.5px] sm:text-[14.5px] font-bold mt-2 mb-0 tracking-tight">
+                  {item.title || item.tag}
+                </h3>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   // ==========================================
   // Layout 0: Mangalayatan University (MU) Approvals
@@ -264,84 +464,8 @@ export default function LandingApprovals({
   // ==========================================
   // Layout 3: Modern Carousel Slider (SMU, Manipal, etc.)
   // ==========================================
-  const [visibleCount, setVisibleCount] = useState(4);
-  const [isPaused, setIsPaused] = useState(false);
-  const [isTransitioning, setIsTransitioning] = useState(true);
-
+  const carouselRef = useRef(null);
   const items = approvals;
-  const extendedItems = [...items, ...items, ...items];
-  const [currentIndex, setCurrentIndex] = useState(items.length);
-
-  const touchStartX = useRef(0);
-  const touchEndX = useRef(0);
-
-  useEffect(() => {
-    const handleResize = () => {
-      const width = window.innerWidth;
-      if (width < 640) {
-        setVisibleCount(1);
-      } else if (width < 1024) {
-        setVisibleCount(2);
-      } else {
-        setVisibleCount(4);
-      }
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  const handleNext = useCallback(() => {
-    setIsTransitioning(true);
-    setCurrentIndex((prev) => prev + 1);
-  }, []);
-
-  const handlePrev = useCallback(() => {
-    setIsTransitioning(true);
-    setCurrentIndex((prev) => prev - 1);
-  }, []);
-
-  useEffect(() => {
-    if (!isSlider || isPaused || items.length === 0) return;
-
-    const timer = setInterval(() => {
-      handleNext();
-    }, 2500);
-
-    return () => clearInterval(timer);
-  }, [isSlider, isPaused, items.length, handleNext]);
-
-  const handleTransitionEnd = () => {
-    if (currentIndex >= items.length * 2) {
-      setIsTransitioning(false);
-      setCurrentIndex((prev) => prev - items.length);
-    } else if (currentIndex < items.length) {
-      setIsTransitioning(false);
-      setCurrentIndex((prev) => prev + items.length);
-    }
-  };
-
-  const handleTouchStart = (e) => {
-    setIsPaused(true);
-    touchStartX.current = e.targetTouches[0].clientX;
-  };
-
-  const handleTouchMove = (e) => {
-    touchEndX.current = e.targetTouches[0].clientX;
-  };
-
-  const handleTouchEnd = () => {
-    const diff = touchStartX.current - touchEndX.current;
-    if (Math.abs(diff) > 40) {
-      if (diff > 0) {
-        handleNext();
-      } else {
-        handlePrev();
-      }
-    }
-    setIsPaused(false);
-  };
 
   const formatApprovalText = (text) => {
     if (!text) return null;
@@ -365,8 +489,6 @@ export default function LandingApprovals({
         id="approvals"
         className="w-full py-10 sm:py-14 border-b border-slate-200/60 overflow-hidden"
         style={{ backgroundColor: gridBg }}
-        onMouseEnter={() => setIsPaused(true)}
-        onMouseLeave={() => setIsPaused(false)}
       >
         <div className="max-w-[1360px] mx-auto px-4 sm:px-8 lg:px-12">
           {/* Header Title & Subtitle */}
@@ -387,7 +509,7 @@ export default function LandingApprovals({
             {/* Left Arrow Button */}
             <button
               type="button"
-              onClick={handlePrev}
+              onClick={() => carouselRef.current?.prev()}
               className="absolute left-0 sm:-left-3 top-[35%] -translate-y-1/2 z-20 text-slate-900 hover:text-[#f35a06] transition-colors p-1 bg-transparent border-none cursor-pointer flex items-center justify-center active:scale-90"
               aria-label="Previous approval"
             >
@@ -397,34 +519,47 @@ export default function LandingApprovals({
             {/* Right Arrow Button */}
             <button
               type="button"
-              onClick={handleNext}
+              onClick={() => carouselRef.current?.next()}
               className="absolute right-0 sm:-right-3 top-[35%] -translate-y-1/2 z-20 text-slate-900 hover:text-[#f35a06] transition-colors p-1 bg-transparent border-none cursor-pointer flex items-center justify-center active:scale-90"
               aria-label="Next approval"
             >
               <ChevronRight className="w-6 h-6 sm:w-8 sm:h-8 stroke-[2.5]" />
             </button>
 
-            {/* Slider Viewport */}
-            <div
-              className="overflow-hidden"
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
-            >
-              <div
-                className="flex"
-                style={{
-                  transform: `translateX(-${currentIndex * (100 / visibleCount)}%)`,
-                  transition: isTransitioning ? "transform 500ms ease-in-out" : "none",
-                }}
-                onTransitionEnd={handleTransitionEnd}
+            {/* Ant Design Carousel Viewport */}
+            <div className="overflow-hidden">
+              <Carousel
+                ref={carouselRef}
+                slidesToShow={4}
+                slidesToScroll={1}
+                autoplay
+                autoplaySpeed={2800}
+                infinite={items.length > 4}
+                dots={false}
+                arrows={false}
+                pauseOnHover
+                draggable
+                responsive={[
+                  {
+                    breakpoint: 1024,
+                    settings: {
+                      slidesToShow: 2,
+                      slidesToScroll: 1,
+                      infinite: items.length > 2,
+                    },
+                  },
+                  {
+                    breakpoint: 640,
+                    settings: {
+                      slidesToShow: 1,
+                      slidesToScroll: 1,
+                      infinite: items.length > 1,
+                    },
+                  },
+                ]}
               >
-                {extendedItems.map((item, idx) => (
-                  <div
-                    key={idx}
-                    className="shrink-0 px-2 sm:px-4 py-2"
-                    style={{ width: `${100 / visibleCount}%` }}
-                  >
+                {items.map((item, idx) => (
+                  <div key={idx} className="px-2 sm:px-4 py-2 outline-none">
                     <div className="flex flex-col items-center text-center h-full group">
                       <div className="relative w-[130px] h-[130px] sm:w-[150px] sm:h-[150px] md:w-[165px] md:h-[165px] shrink-0 transition-transform duration-300 group-hover:scale-105">
                         <Image
@@ -455,7 +590,7 @@ export default function LandingApprovals({
                     </div>
                   </div>
                 ))}
-              </div>
+              </Carousel>
             </div>
           </div>
         </div>

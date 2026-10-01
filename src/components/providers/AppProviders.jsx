@@ -22,7 +22,7 @@ export default function AppProviders({ children }) {
       <ConfigProvider
         theme={{
           token: {
-            fontFamily: "var(--font-roboto), sans-serif",
+            fontFamily: "var(--font-poppins), 'Poppins', sans-serif",
             colorPrimary: "#1d4ed8",
           },
         }}

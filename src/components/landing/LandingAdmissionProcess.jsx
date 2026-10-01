@@ -3,7 +3,21 @@
 import React from "react";
 
 /**
- * Global Default 6 Admission Steps used consistently across all university landing pages.
+ * Multi-colored palette matching Image 2 permanently.
+ * Used as default colors if not overridden in JSON.
+ */
+export const DEFAULT_STEP_PALETTE = [
+  { themeColor: "#ff7a00", borderColor: "#ff7a00", cardBg: "#fff8f0" }, // Step 1: Orange
+  { themeColor: "#0066cc", borderColor: "#0066cc", cardBg: "#f0f7ff" }, // Step 2: Blue
+  { themeColor: "#ff2a6d", borderColor: "#ff2a6d", cardBg: "#fff0f5" }, // Step 3: Pink
+  { themeColor: "#16a34a", borderColor: "#16a34a", cardBg: "#f0faf3" }, // Step 4: Green
+  { themeColor: "#8b5cf6", borderColor: "#8b5cf6", cardBg: "#f7f2ff" }, // Step 5: Purple
+  { themeColor: "#ff7a00", borderColor: "#ff7a00", cardBg: "#fff8f0" }, // Step 6: Orange / Amber
+];
+
+/**
+ * Global Default 6 Admission Steps used consistently across all university landing pages,
+ * perfectly matching the multi-colored design in Image 2.
  */
 export const GLOBAL_ADMISSION_STEPS = [
   {
@@ -41,7 +55,7 @@ export const GLOBAL_ADMISSION_STEPS = [
   {
     num: 5,
     title: "Document Submit",
-    desc: "You need to upload all the required verified documents.",
+    desc: "You will get an admission confirmation on your Email",
     themeColor: "#8b5cf6",
     borderColor: "#8b5cf6",
     cardBg: "#f7f2ff",
@@ -49,7 +63,7 @@ export const GLOBAL_ADMISSION_STEPS = [
   {
     num: 6,
     title: "Admission Confirm",
-    desc: "Get Confirmation on your Email & Whatsapp",
+    desc: "Get Confirmation on your Email , Whatsapp",
     themeColor: "#ff7a00",
     borderColor: "#ff7a00",
     cardBg: "#fff8f0",
@@ -57,17 +71,25 @@ export const GLOBAL_ADMISSION_STEPS = [
 ];
 
 /**
- * Helper to normalize background color strings (supports "#fff8f0" and legacy "bg-[#fff8f0]")
+ * Helper to safely extract color codes (supports "#fff8f0", "rgb(...)", and Tailwind classes like "bg-[#fff8f0]", "text-[#0066cc]")
  */
-const getCardBg = (bg, fallback = "#fff8f0") => {
-  if (!bg) return fallback;
-  if (bg.startsWith("bg-[")) return bg.slice(4, -1);
-  return bg;
+const extractColor = (val, fallback) => {
+  if (!val || typeof val !== "string") return fallback;
+  const trimmed = val.trim();
+  if (trimmed.startsWith("#") || trimmed.startsWith("rgb") || trimmed.startsWith("hsl")) {
+    return trimmed;
+  }
+  const match = trimmed.match(/\[(#[0-9a-fA-F]{3,8}|[a-zA-Z0-9(),\s.%-]+)\]/);
+  if (match && match[1]) {
+    return match[1];
+  }
+  return fallback;
 };
 
 /**
  * Reusable Global Admission & Enrollment Process Section (Full Width)
- * Standardized across all landing pages.
+ * Permanent multi-colored design as shown in Image 2.
+ * All card content, data, and colors can be overridden from JSON.
  */
 export default function LandingAdmissionProcess({
   admissionSteps,
@@ -79,7 +101,7 @@ export default function LandingAdmissionProcess({
   if (brand.hideAdmissionProcess) return null;
 
   // Active steps with fallback to global 6 steps
-  const activeSteps =
+  const rawSteps =
     admissionSteps && admissionSteps.length > 0
       ? admissionSteps
       : brand.admissionSteps && brand.admissionSteps.length > 0
@@ -148,7 +170,10 @@ export default function LandingAdmissionProcess({
     (isSmu ? "#193579" : brand.primaryColor || "#08417b");
 
   return (
-    <section id="process" className="py-10 sm:py-14 lg:py-16 bg-white w-full select-none">
+    <section
+      id={brand.admissionProcessId || (brand.slug === "ggu" ? "how-to-apply" : "process")}
+      className="py-10 sm:py-14 lg:py-16 bg-white w-full select-none"
+    >
       <div className="w-full px-4 sm:px-6 md:px-8 lg:px-10 xl:px-14 2xl:px-16 mx-auto">
         {/* Heading */}
         {hasEnrollmentPrefix ? (
@@ -170,13 +195,30 @@ export default function LandingAdmissionProcess({
           {subtitleText}
         </p>
 
-        {/* Responsive Step Cards Grid - Full Width Across All Screen Sizes */}
+        {/* Responsive Step Cards Grid - Matching Image 2 Permanently */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-3.5 lg:gap-4 xl:gap-5 w-full">
-          {activeSteps.map((step, idx) => {
-            const num = step.num || idx + 1;
-            const themeColor = step.themeColor || "#ff7a00";
-            const borderColor = step.borderColor || themeColor;
-            const cardBg = getCardBg(step.cardBg);
+          {rawSteps.map((step, idx) => {
+            // Default multi-color palette cycle matching Image 2
+            const defaultPalette = DEFAULT_STEP_PALETTE[idx % DEFAULT_STEP_PALETTE.length];
+
+            // Flexible field support for JSON data (num/step/id, title/name/heading, desc/description/text/subtitle)
+            const num = step.num || step.step || step.id || idx + 1;
+            const title = step.title || step.name || step.heading || "";
+            const desc = step.desc || step.description || step.subtitle || step.text || "";
+
+            // Custom or default color assignments from JSON
+            const themeColor = extractColor(step.themeColor || step.color, defaultPalette.themeColor);
+            const borderColor = extractColor(
+              step.borderColor || step.bottomBorderColor || step.bottomBorder,
+              themeColor
+            );
+            const cardBg = extractColor(
+              step.cardBg || step.bgColor || step.background,
+              defaultPalette.cardBg
+            );
+            const circleBg = extractColor(step.circleBg, "#ffffff");
+            const titleColor = extractColor(step.titleColor, "#111827");
+            const descColor = extractColor(step.descColor, "#4b5563");
 
             return (
               <div
@@ -189,21 +231,33 @@ export default function LandingAdmissionProcess({
               >
                 {/* Circular Number Badge */}
                 <div
-                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border-2 bg-white flex items-center justify-center font-bold text-[15px] sm:text-[16px] mb-3.5 shrink-0 shadow-2xs select-none"
-                  style={{ borderColor: themeColor, color: themeColor }}
+                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border-2 flex items-center justify-center font-bold text-[15px] sm:text-[16px] mb-3.5 shrink-0 shadow-2xs select-none"
+                  style={{
+                    backgroundColor: circleBg,
+                    borderColor: themeColor,
+                    color: themeColor,
+                  }}
                 >
                   {num}
                 </div>
 
                 {/* Step Title */}
-                <h3 className="text-[14px] sm:text-[15px] lg:text-[16px] font-bold text-[#111827] mb-2 leading-snug m-0 text-center">
-                  {step.title}
+                <h3
+                  className="text-[14px] sm:text-[15px] lg:text-[16px] font-bold mb-2 leading-snug m-0 text-center"
+                  style={{ color: titleColor }}
+                >
+                  {title}
                 </h3>
 
                 {/* Step Description */}
-                <p className="text-[12px] sm:text-[12.5px] lg:text-[13px] text-[#4b5563] leading-[1.6] font-normal m-0 text-center">
-                  {step.desc}
-                </p>
+                {desc && (
+                  <p
+                    className="text-[12px] sm:text-[12.5px] lg:text-[13px] leading-[1.6] font-normal m-0 text-center"
+                    style={{ color: descColor }}
+                  >
+                    {desc}
+                  </p>
+                )}
               </div>
             );
           })}

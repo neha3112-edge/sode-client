@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import { Carousel } from "antd";
 import { Download, ChevronLeft, ChevronRight, Clock, Hourglass, GraduationCap, ArrowRight } from "lucide-react";
 import { FaDownload } from "react-icons/fa";
 
@@ -23,18 +24,216 @@ export default function LandingProgrammes({
   onSelectCourseForBrochure,
   onOpenApply,
 }) {
-  const isMuTabs =
-    brand.programmesLayout === "tabs" ||
-    brand.programmesLayout === "mu-tabs" ||
-    brand.slug === "mu";
+  const isLiverpool =
+    brand.programmesLayout === "liverpool" ||
+    brand.slug === "liverpool";
 
-  const isVguGrid =
-    !isMuTabs &&
-    (brand.programmesLayout === "vgu-cards" ||
-      brand.programmesLayout === "vgu-grid" ||
-      (brand.slug === "vgu" && brand.programmesLayout !== "carousel"));
+  const isRushford =
+    !isLiverpool &&
+    (brand.programmesLayout === "rushford" ||
+      brand.slug === "rushford");
 
-  const isGrid = !isMuTabs && brand.programmesLayout === "grid";
+  // ==========================================
+  // Layout 0-Liverpool: Courses Offered in Liverpool Online MBA (#courses_offered)
+  // ==========================================
+  if (isLiverpool) {
+    const heading = brand.programmesTitle || "Courses Offered in";
+    const subHeading = brand.programmesSubtitle || "Liverpool Online MBA";
+
+    return (
+      <section id="courses_offered" className="py-12 sm:py-16 bg-[#ffffff] select-none scroll-mt-20">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6">
+          <div className="text-center mb-10">
+            <h2 className="text-[26px] sm:text-[34px] font-bold text-[#111111] leading-tight m-0">
+              {heading} <br />
+              <span className="text-[#00408d]">{subHeading}</span>
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {programmes.map((c, idx) => (
+              <div
+                key={c.id || idx}
+                className="slide bg-white rounded-[10px] shadow-[0_0_8px_rgba(0,0,0,0.12)] border border-slate-100 overflow-hidden flex flex-col justify-between"
+              >
+                <div>
+                  <div className="relative w-full aspect-[16/10] overflow-hidden bg-slate-100">
+                    <Image
+                      src={c.image}
+                      alt={c.title}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                    />
+                  </div>
+                  <div className="p-5">
+                    <h3 className="text-[18px] sm:text-[19px] font-bold text-[#111111] mb-2 leading-snug">
+                      {c.title}
+                    </h3>
+                    <p className="text-[13px] text-[#444444] leading-relaxed line-clamp-3 mb-4">
+                      {c.description}
+                    </p>
+                    <hr className="border-t border-slate-200 mb-4" />
+                  </div>
+                </div>
+                <div className="px-5 pb-5 grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => onOpenApply?.(c.title)}
+                    className="w-full py-2.5 px-3 bg-[#00408d] text-white font-bold text-[13px] rounded-[5px] hover:brightness-110 active:scale-95 transition-all border-none cursor-pointer flex items-center justify-center gap-1.5"
+                  >
+                    <span>Apply Now</span>
+                    <i className="fa fa-check text-white text-[11px]" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onSelectCourseForBrochure?.(c.title)}
+                    className="w-full py-2.5 px-3 bg-black text-white font-bold text-[13px] rounded-[5px] hover:bg-neutral-800 active:scale-95 transition-all border-none cursor-pointer flex items-center justify-center gap-1.5"
+                  >
+                    <span>Get Brochure</span>
+                    <Download className="w-3.5 h-3.5 text-white stroke-[2.5]" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ==========================================
+  // Layout 0-Rushford: DBA Specialisations (#courses)
+  // ==========================================
+  if (isRushford) {
+    const heading = brand.programmesTitle || "DBA Specialisations At";
+    const subHeading = brand.programmesSubtitle || "Rushford Business School";
+
+    return (
+      <section id="courses" className="py-12 sm:py-16 bg-[#ffffff] select-none scroll-mt-20">
+        <div className="max-w-[1240px] mx-auto px-4 sm:px-6">
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-[26px] sm:text-[32px] lg:text-[36px] font-medium text-[#111111] m-0">
+              {heading}
+            </h2>
+            {subHeading && (
+              <p className="text-[22px] sm:text-[28px] text-[#e0007a] font-bold mt-1 m-0">
+                {subHeading}
+              </p>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            {programmes.map((p, idx) => (
+              <div
+                key={idx}
+                className="bg-white rounded-[8px] overflow-hidden border border-slate-200/90 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow group"
+              >
+                <div>
+                  <div className="relative w-full aspect-[16/10] overflow-hidden bg-slate-100">
+                    <Image
+                      src={p.image}
+                      alt={p.title}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                    />
+                  </div>
+                  {/* Multicolor Border strip */}
+                  <div
+                    className="h-[8px] w-full"
+                    style={{
+                      background:
+                        "linear-gradient(to right, #d77a85 25%, #ff0099 25% 50%, #ff5c57 50% 75%, #c2002f 75%)",
+                    }}
+                  />
+                  <div className="p-5 sm:p-6">
+                    <h3 className="text-[18px] sm:text-[19px] font-bold text-[#111111] mb-2 leading-snug">
+                      {p.title}
+                    </h3>
+                    <p className="text-[13px] sm:text-[13.5px] text-[#555555] leading-relaxed mb-4">
+                      {p.description || p.desc}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="px-5 sm:px-6 pb-5 sm:pb-6">
+                  <hr className="border-t border-slate-200 mb-4" />
+                  <button
+                    type="button"
+                    onClick={() => onOpenApply?.(p.title)}
+                    className="w-full py-2.5 px-4 bg-[#0cb1ef] text-white font-bold text-[14px] rounded-[20px] hover:brightness-95 transition-all border-none cursor-pointer shadow-xs active:scale-95"
+                  >
+                    Apply Now
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ==========================================
+  // Layout 0-ESGCI: Who Can Apply for ESGCI Online DBA (#whocanapply)
+  // ==========================================
+  if (isEsgci) {
+    const heading = brand.programmesTitle || "Who Can Apply for the ESGCI Online DBA";
+    return (
+      <section id="whocanapply" className="py-12 sm:py-16 bg-[#ffffff] select-none scroll-mt-20">
+        <div className="max-w-[1240px] mx-auto px-4 sm:px-6">
+          <h2 className="text-center text-[24px] sm:text-[30px] lg:text-[34px] font-bold text-[#111111] mb-8 sm:mb-12">
+            Who Can Apply for the <span className="text-[#04903c]">ESGCI Online DBA</span>
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+            {programmes.map((p, idx) => (
+              <div key={idx} className="bg-white rounded-[8px] overflow-hidden border border-slate-200/90 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+                <div className="relative w-full aspect-[16/10] overflow-hidden bg-slate-100">
+                  <Image src={p.image} alt={p.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 33vw" />
+                </div>
+                <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between text-left">
+                  <div>
+                    <h2 className="text-[18px] sm:text-[20px] font-bold text-[#111111] mb-2 leading-snug">
+                      {p.title}
+                    </h2>
+                    <p className="text-[13px] sm:text-[13.5px] text-[#555555] leading-relaxed mb-4">
+                      {p.description}
+                    </p>
+                  </div>
+                  <div>
+                    <hr className="border-t border-slate-200 mb-4" />
+                    <button
+                      type="button"
+                      onClick={() => onOpenApply?.(p.title)}
+                      className="w-full py-2.5 px-4 bg-[#fff000] text-black font-bold text-[14px] rounded-[5px] hover:brightness-95 transition-all border-none cursor-pointer"
+                    >
+                      Apply Now
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ==========================================
+  // Layout 0-GGU: Golden Gate University Courses Offered
+  // ==========================================
+  if (isGgu) {
+    return (
+      <GguProgrammes
+        programmes={programmes}
+        brand={brand}
+        universityName={universityName}
+        onSelectCourseForBrochure={onSelectCourseForBrochure}
+        onOpenApply={onOpenApply}
+      />
+    );
+  }
 
   // ==========================================
   // Layout 0: Mangalayatan University (MU) Tabbed Grid
@@ -227,17 +426,7 @@ export default function LandingProgrammes({
     brand.programmesCardStyle === "card" ||
     Boolean(brand.programmesPrefix);
 
-  const defaultVisible = isCleanCard || isSmuLayout ? 3 : 4;
-
-  const total = programmes.length;
-  const [currentIndex, setCurrentIndex] = useState(total > 0 ? total : 0);
-  const [withTransition, setWithTransition] = useState(true);
-  const [isPaused, setIsPaused] = useState(false);
-  const [visibleCount, setVisibleCount] = useState(defaultVisible);
-  const timerRef = useRef(null);
-
-  const touchStartXRef = useRef(0);
-  const touchEndXRef = useRef(0);
+  const carouselRef = useRef(null);
 
   const rawUni = universityName || brand.name || "University Online";
   const displayUniversity = rawUni.replace(/\s+Online$/i, "").trim() || rawUni;
@@ -252,94 +441,18 @@ export default function LandingProgrammes({
     brand.programmesTitle ||
     `Programs offered by ${brand.name || "Sikkim Manipal University Online"}`;
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (typeof window === "undefined") return;
-      if (window.innerWidth < 640) {
-        setVisibleCount(1);
-      } else if (window.innerWidth < 1024) {
-        setVisibleCount(2);
-      } else {
-        setVisibleCount(isCleanCard || isSmuLayout ? 3 : 4);
-      }
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [isCleanCard, isSmuLayout]);
-
-  const extendedList =
-    total > 0
-      ? [
-          ...programmes,
-          ...programmes,
-          ...programmes,
-          ...programmes,
-        ]
-      : [];
-
-  const handleTransitionEnd = () => {
-    if (currentIndex >= total * 2) {
-      setWithTransition(false);
-      setCurrentIndex(total);
-    } else if (currentIndex < total) {
-      setWithTransition(false);
-      setCurrentIndex(total + (currentIndex % total));
-    }
-  };
-
   const handleNext = () => {
-    setWithTransition(true);
-    setCurrentIndex((prev) => prev + 1);
+    carouselRef.current?.next();
   };
 
   const handlePrev = () => {
-    setWithTransition(true);
-    setCurrentIndex((prev) => prev - 1);
+    carouselRef.current?.prev();
   };
-
-  const handleTouchStart = (e) => {
-    setIsPaused(true);
-    touchStartXRef.current = e.targetTouches[0].clientX;
-  };
-
-  const handleTouchMove = (e) => {
-    touchEndXRef.current = e.targetTouches[0].clientX;
-  };
-
-  const handleTouchEnd = () => {
-    const deltaX = touchStartXRef.current - touchEndXRef.current;
-    if (Math.abs(deltaX) > 40 && touchEndXRef.current !== 0) {
-      if (deltaX > 0) {
-        handleNext();
-      } else {
-        handlePrev();
-      }
-    }
-    touchStartXRef.current = 0;
-    touchEndXRef.current = 0;
-    setTimeout(() => setIsPaused(false), 2000);
-  };
-
-  useEffect(() => {
-    if (isPaused || total <= 1) return;
-
-    const delay = isSmuLayout ? 7500 : intervalTime;
-    timerRef.current = setInterval(() => {
-      setWithTransition(true);
-      setCurrentIndex((prev) => {
-        if (prev >= total * 2) {
-          return total + 1;
-        }
-        return prev + 1;
-      });
-    }, delay);
-
-    return () => clearInterval(timerRef.current);
-  }, [isPaused, total, intervalTime, isSmuLayout]);
 
   if (!programmes || programmes.length === 0) return null;
+
+  const defaultSlidesToShow = isCleanCard || isSmuLayout ? 3 : 4;
+
 
   return (
     <section
@@ -357,11 +470,6 @@ export default function LandingProgrammes({
             }
           : { backgroundColor: sectionBg }
       }
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
     >
       {/* Section Heading */}
       <div className="text-center mb-5 sm:mb-6 px-4 max-w-4xl mx-auto">
@@ -418,25 +526,49 @@ export default function LandingProgrammes({
           <ChevronRight className="w-7 h-7 sm:w-8 sm:h-8 stroke-[2.5]" />
         </button>
 
-        {/* Viewport */}
+        {/* Ant Design Carousel Viewport */}
         <div className="w-full overflow-hidden">
-          <div
-            onTransitionEnd={handleTransitionEnd}
-            className="flex items-stretch"
-            style={{
-              transform: `translateX(-${currentIndex * (100 / visibleCount)}%)`,
-              transition: withTransition
-                ? "transform 500ms cubic-bezier(0.25, 1, 0.5, 1)"
-                : "none",
-            }}
+          <Carousel
+            ref={carouselRef}
+            autoplay
+            autoplaySpeed={isSmuLayout ? 6000 : intervalTime || 3500}
+            slidesToShow={defaultSlidesToShow}
+            slidesToScroll={1}
+            infinite={programmes.length > 2}
+            dots={false}
+            arrows={false}
+            pauseOnHover={true}
+            draggable={true}
+            responsive={[
+              {
+                breakpoint: 1280,
+                settings: {
+                  slidesToShow: defaultSlidesToShow,
+                  slidesToScroll: 1,
+                },
+              },
+              {
+                breakpoint: 1024,
+                settings: {
+                  slidesToShow: 2,
+                  slidesToScroll: 1,
+                },
+              },
+              {
+                breakpoint: 640,
+                settings: {
+                  slidesToShow: 1,
+                  slidesToScroll: 1,
+                },
+              },
+            ]}
           >
-            {extendedList.map((c, idx) => {
+            {programmes.map((c, idx) => {
               if (isCleanCard) {
                 return (
                   <div
                     key={`${c.id || c.code}-${idx}`}
-                    className="shrink-0 px-2 sm:px-2.5 lg:px-3 box-border"
-                    style={{ width: `${100 / visibleCount}%` }}
+                    className="px-2 sm:px-2.5 lg:px-3 box-border outline-none py-2"
                   >
                     <div className={brand.programmeCardClass || "bg-white rounded-[5px] shadow-[0px_3px_15px_rgba(0,0,0,0.13)] py-4 sm:py-5 px-5 sm:px-[22px] flex flex-col justify-between h-full min-h-[350px] sm:min-h-[360px] text-left"}>
                       <div>
@@ -495,8 +627,7 @@ export default function LandingProgrammes({
                 return (
                   <div
                     key={`${c.id || c.code}-${idx}`}
-                    className="shrink-0 px-2.5 sm:px-3 box-border"
-                    style={{ width: `${100 / visibleCount}%` }}
+                    className="px-2.5 sm:px-3 box-border outline-none py-2"
                   >
                     <div className="bg-white rounded-[8px] sm:rounded-[10px] shadow-[0px_4px_20px_rgba(0,0,0,0.08)] hover:shadow-[0px_8px_28px_rgba(0,0,0,0.12)] transition-all duration-300 p-4 sm:p-5 flex flex-col justify-between h-full group text-left">
                       <div>
@@ -558,8 +689,7 @@ export default function LandingProgrammes({
               return (
                 <div
                   key={`${c.id || c.code}-${idx}`}
-                  className="shrink-0 px-1.5 sm:px-2 xl:px-2.5 box-border"
-                  style={{ width: `${100 / visibleCount}%` }}
+                  className="px-1.5 sm:px-2 xl:px-2.5 box-border outline-none py-2"
                 >
                   <div className="bg-white rounded-[8px] overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col justify-between h-full group text-left border border-slate-200/80">
                     <div>
@@ -618,7 +748,7 @@ export default function LandingProgrammes({
                 </div>
               );
             })}
-          </div>
+          </Carousel>
         </div>
       </div>
     </section>
@@ -819,6 +949,346 @@ function MuProgrammesTabbed({
         </div>
       </div>
     </section>
+  );
+}
+
+// ==========================================
+// Layout: Golden Gate University (GGU) Courses Offered & Specializations
+// ==========================================
+function GguProgrammes({
+  programmes = [],
+  brand = {},
+  universityName = "Golden Gate University",
+  onSelectCourseForBrochure,
+  onOpenApply,
+}) {
+  const [activeTab, setActiveTab] = useState("dba");
+  const specCarouselRef = useRef(null);
+
+  // 1. Primary Programs (MBA and DBA) matching exact user screenshot
+  const mbaProgram =
+    programmes.find(
+      (p) =>
+        p.id === "mba" ||
+        p.code?.toUpperCase() === "MBA" ||
+        p.title?.toLowerCase().includes("master of business")
+    ) || programmes[0];
+
+  const dbaProgram =
+    programmes.find(
+      (p) =>
+        p.id === "dba" ||
+        p.code?.toUpperCase() === "DBA" ||
+        p.title?.toLowerCase().includes("doctor of business")
+    ) || programmes[1];
+
+  const mainCards = [
+    {
+      id: "mba",
+      code: "MBA",
+      badge: "MASTER",
+      title: mbaProgram?.title || "Master of Business Administration (MBA)",
+      image: mbaProgram?.image || "/assets/ggu/master-mba-ggu.webp",
+      description:
+        mbaProgram?.description ||
+        "A US-approved or practice-driven program that offers both from Golden Gate University MBA online. The course builds strong leadership skills, strategic thinking, and data-informed decision-making skills. The University faculty is from a San Francisco-based scholar-practitioner with years of experience.",
+      details: mbaProgram?.details || [
+        { label: "Duration", value: "20 months (online + optional on-campus pathway)" },
+        { label: "Eligibility", value: "Master's or Bachelor's Degree with 5+ years of experience." },
+      ],
+    },
+    {
+      id: "dba",
+      code: "DBA",
+      badge: "DOCTORATE",
+      title: dbaProgram?.title || "Doctor of Business Administration (DBA)",
+      image: dbaProgram?.image || "/assets/ggu/doctorate-dba-ggu.webp",
+      description:
+        dbaProgram?.description ||
+        "A degree that is flexible and recognised, the online DBA at Golden Gate University is an advanced doctoral program that is for senior-level leaders, consultants, and academics. The course focuses on research, problem-solving, and an original dissertation that talks about real-life business challenges.",
+      details: dbaProgram?.details || [
+        { label: "Duration & Credits", value: "36 months | 56 credits" },
+        { label: "Eligibility", value: "Recognised degree in Bachelor’s University" },
+      ],
+    },
+  ];
+
+  // 2. Specializations for Tabs Section
+  const dbaSpecializations = programmes.filter(
+    (p) =>
+      p.id !== "mba" &&
+      p.id !== "dba" &&
+      (p.category === "Doctorate" ||
+        p.level?.toLowerCase().includes("doc") ||
+        p.id?.startsWith("dba-") ||
+        p.code?.toUpperCase().includes("DBA") ||
+        p.title?.toLowerCase().includes("dba"))
+  );
+
+  const mbaSpecializations = programmes.filter(
+    (p) =>
+      p.id !== "mba" &&
+      p.id !== "dba" &&
+      (p.category === "Master" ||
+        p.level?.toLowerCase().includes("post") ||
+        p.id?.startsWith("mba-") ||
+        p.code?.toUpperCase().includes("MBA") ||
+        p.title?.toLowerCase().includes("mba"))
+  );
+
+  const activeSpecs = activeTab === "dba" ? dbaSpecializations : mbaSpecializations;
+
+  const handlePrevSpec = () => {
+    specCarouselRef.current?.prev();
+  };
+
+  const handleNextSpec = () => {
+    specCarouselRef.current?.next();
+  };
+
+
+  return (
+    <div className="w-full">
+      {/* ── 1. COURSES OFFERED Section (Exact Match to User Screenshot & Reference Site) ── */}
+      <section
+        id="main-courses"
+        className="courses-section w-full py-12 sm:py-16 md:py-20 select-none scroll-mt-24"
+        style={{ backgroundColor: brand.programmesBg || "#e6e6e6" }}
+      >
+        <div className="max-w-[1140px] mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Header */}
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-[#DC520A] text-[26px] sm:text-[30px] md:text-[32px] font-bold uppercase tracking-wide m-0 leading-tight">
+              {brand.programmesTitle || "COURSES OFFERED"}
+            </h2>
+            <p className="text-[#222222] text-[15px] sm:text-[17px] font-bold mt-2 m-0">
+              {brand.programmesSubtitle || "By Golden Gate University"}
+            </p>
+          </div>
+
+          {/* 2 Main Course Cards */}
+          <div className="course-container grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 justify-center items-stretch max-w-[1040px] mx-auto">
+            {mainCards.map((card) => (
+              <div
+                key={card.id}
+                className="course-card bg-white rounded-[20px] overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.08)] hover:shadow-[0_16px_36px_rgba(0,0,0,0.14)] transition-all duration-300 flex flex-col justify-between"
+              >
+                <div>
+                  {/* Top Image with Badge */}
+                  <div className="card-image relative w-full h-[200px] sm:h-[225px] overflow-hidden bg-slate-100">
+                    <Image
+                      src={card.image}
+                      alt={card.title}
+                      fill
+                      className="object-cover object-center"
+                      sizes="(max-width: 768px) 100vw, 520px"
+                    />
+                    {/* Orange Badge on Bottom Right */}
+                    <div className="absolute bottom-0 right-0 bg-[#DC520A] text-white text-[12px] sm:text-[13px] font-bold px-4 sm:px-5 py-1.5 rounded-tl-[10px] tracking-wider uppercase shadow-xs z-10 select-none">
+                      {card.badge}
+                    </div>
+                  </div>
+
+                  {/* Card Content */}
+                  <div className="card-content p-6 sm:p-7 md:p-8 pb-4">
+                    <h3 className="text-[19px] sm:text-[21px] font-bold text-[#111111] leading-snug m-0 mb-3 tracking-tight">
+                      {card.title}
+                    </h3>
+                    <p className="description text-[13px] sm:text-[14px] text-[#444444] font-semibold leading-[1.65] m-0 mb-5">
+                      {card.description}
+                    </p>
+
+                    {/* Details list */}
+                    <div className="details space-y-1.5 mb-2 text-[14px] sm:text-[15px]">
+                      {card.details?.map((item, idx) => (
+                        <p key={idx} className="m-0 leading-relaxed text-[#333333] font-semibold">
+                          <strong className="font-bold text-[#111111]">{item.label}:</strong> {item.value}
+                        </p>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Card Action Buttons */}
+                <div className="card-actions p-6 sm:p-7 md:p-8 pt-0 grid grid-cols-2 gap-3 sm:gap-4 mt-auto">
+                  <button
+                    type="button"
+                    onClick={() => onSelectCourseForBrochure?.(card.code || card.title)}
+                    className="btn outline border-2 border-[#DC520A] hover:bg-[#DC520A]/5 active:scale-95 text-[#111111] font-bold text-[13px] sm:text-[14px] py-2.5 px-3 rounded-full flex items-center justify-center gap-1.5 transition-all cursor-pointer bg-transparent"
+                  >
+                    <span>Get Brochure</span>
+                    <Download className="w-3.5 h-3.5 stroke-[2.5] text-[#111111]" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onOpenApply?.(card.code || card.title)}
+                    className="btn solid bg-[#DC520A] hover:bg-[#c24608] active:scale-95 text-white font-bold text-[13px] sm:text-[14px] py-2.5 px-3 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm border-none"
+                  >
+                    <span>Apply now</span>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 2. Specializations Tabs Section (Online DBA / MBA Specialization at GGU) ── */}
+      {activeSpecs.length > 0 && (
+        <section id="courses" className="w-full py-12 sm:py-16 bg-white border-b border-slate-200/80 scroll-mt-24">
+          <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-6 sm:mb-8">
+              <h2 className="text-[#111111] text-[24px] sm:text-[28px] md:text-[30px] font-bold m-0 leading-tight">
+                {activeTab === "dba"
+                  ? "Online DBA Specialization at GGU"
+                  : "Online MBA Specialization at GGU"}
+              </h2>
+              <p className="text-[#666666] text-[15px] sm:text-[16px] mt-1.5 m-0 font-normal">
+                {activeTab === "dba"
+                  ? "(Doctorate of business administration)"
+                  : "(Master of business administration)"}
+              </p>
+            </div>
+
+            {/* Tabs */}
+            <div className="course-tabs flex items-center justify-center gap-2 mb-8">
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab("dba");
+                  specCarouselRef.current?.goTo(0);
+                }}
+                className={`py-2 px-6 rounded-md font-semibold text-[14px] transition-all cursor-pointer border-none ${
+                  activeTab === "dba"
+                    ? "bg-[#DC520A] text-white shadow-sm"
+                    : "bg-[#f2f2f2] text-[#333333] hover:bg-[#e8e8e8]"
+                }`}
+              >
+                DBA Specialization
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab("mba");
+                  specCarouselRef.current?.goTo(0);
+                }}
+                className={`py-2 px-6 rounded-md font-semibold text-[14px] transition-all cursor-pointer border-none ${
+                  activeTab === "mba"
+                    ? "bg-[#DC520A] text-white shadow-sm"
+                    : "bg-[#f2f2f2] text-[#333333] hover:bg-[#e8e8e8]"
+                }`}
+              >
+                MBA Specialization
+              </button>
+            </div>
+
+            {/* Slider / Carousel for Specializations */}
+            <div className="relative group/spec px-1 sm:px-4">
+              {/* Navigation Arrows */}
+              <button
+                type="button"
+                onClick={handlePrevSpec}
+                className="absolute -left-3 sm:-left-4 top-[45%] -translate-y-1/2 z-20 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white shadow-md border border-slate-200 flex items-center justify-center text-slate-800 hover:text-[#DC520A] hover:bg-slate-50 transition-all cursor-pointer active:scale-95 opacity-80 hover:opacity-100"
+                aria-label="Previous specialization"
+              >
+                <ChevronLeft className="w-4 h-4 stroke-[2.5]" />
+              </button>
+              <button
+                type="button"
+                onClick={handleNextSpec}
+                className="absolute -right-3 sm:-right-4 top-[45%] -translate-y-1/2 z-20 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white shadow-md border border-slate-200 flex items-center justify-center text-slate-800 hover:text-[#DC520A] hover:bg-slate-50 transition-all cursor-pointer active:scale-95 opacity-80 hover:opacity-100"
+                aria-label="Next specialization"
+              >
+                <ChevronRight className="w-4 h-4 stroke-[2.5]" />
+              </button>
+
+              <div className="overflow-hidden">
+                <Carousel
+                  ref={specCarouselRef}
+                  slidesToShow={3}
+                  slidesToScroll={1}
+                  autoplay
+                  autoplaySpeed={3500}
+                  infinite={activeSpecs.length > 3}
+                  dots={false}
+                  arrows={false}
+                  pauseOnHover
+                  draggable
+                  responsive={[
+                    {
+                      breakpoint: 1024,
+                      settings: {
+                        slidesToShow: 2,
+                        slidesToScroll: 1,
+                        infinite: activeSpecs.length > 2,
+                      },
+                    },
+                    {
+                      breakpoint: 640,
+                      settings: {
+                        slidesToShow: 1,
+                        slidesToScroll: 1,
+                        infinite: activeSpecs.length > 1,
+                      },
+                    },
+                  ]}
+                >
+                  {activeSpecs.map((spec, sIdx) => (
+                    <div
+                      key={`${spec.id}-${sIdx}`}
+                      className="px-2.5 outline-none"
+                    >
+                      <div className="bg-[#F2F2F2] rounded-[12px] overflow-hidden shadow-xs hover:shadow-md transition-all flex flex-col justify-between border border-slate-200/80 h-full">
+                        <div>
+                          {/* Image */}
+                          <div className="relative w-full h-[185px] sm:h-[195px] bg-slate-100 overflow-hidden">
+                            <Image
+                              src={spec.image || "/assets/all_universities_images/ggu/marketing-ggu.webp"}
+                              alt={spec.title}
+                              fill
+                              className="object-cover"
+                              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 360px"
+                            />
+                          </div>
+                          {/* Multicolor Gradient Border */}
+                          <div
+                            className="h-[3px] w-full"
+                            style={{
+                              background:
+                                "linear-gradient(to right, #d8233a 0%, #ff5238 25%, #ff0077 60%, #e81d76 100%)",
+                            }}
+                          />
+                          {/* Info Box */}
+                          <div className="p-4 sm:p-5 bg-[#F2F2F2] flex-1 flex flex-col justify-between">
+                            <div>
+                              <h4 className="text-[16px] sm:text-[16.5px] font-bold text-[#111111] leading-snug m-0 mb-2">
+                                {spec.title}
+                              </h4>
+                              <p className="text-[12px] sm:text-[12.5px] text-[#333333] leading-[1.55] line-clamp-4 m-0 min-h-[64px]">
+                                {spec.description}
+                              </p>
+                            </div>
+                            <div className="mt-3.5 pt-3 border-t border-slate-300 flex items-center justify-start">
+                              <button
+                                type="button"
+                                onClick={() => onOpenApply?.(spec.code || spec.title)}
+                                className="w-fit bg-[#003468] hover:bg-[#002447] active:scale-95 text-white font-bold text-[12.5px] sm:text-[13px] py-1.5 px-5 rounded-[4px] transition-all cursor-pointer border-none shadow-xs text-left"
+                              >
+                                Apply Now
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </Carousel>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+    </div>
   );
 }
 

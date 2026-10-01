@@ -1,9 +1,17 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,300;1,400;1,500;1,700;1,900&family=Montserrat:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,700&family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;0,900;1,700;1,800&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Montserrat:wght@400;500;600;700;800&display=swap');
+
 @import "tailwindcss" important;
 
 :root {
   --background: #ffffff;
   --foreground: #0f172a;
+  --font-roboto: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-poppins: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-montserrat: 'Montserrat', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-barlow-condensed: 'Barlow Condensed', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  /* Default for Main Website and CMS is Roboto */
+  --app-font-family: var(--font-roboto);
 }
 
 @theme inline {
@@ -11,20 +19,19 @@
   --color-foreground: var(--foreground);
   --font-sans: 'Roboto', var(--font-roboto), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-roboto: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-poppins: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-montserrat: 'Montserrat', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-barlow-condensed: 'Barlow Condensed', var(--font-barlow-condensed), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 /* =========================================================
-   UNIVERSAL ROBOTO TYPOGRAPHY ENFORCEMENT (ALL LANDING PAGES & GLOBAL)
+   UNIVERSAL TYPOGRAPHY (MAIN WEBSITE & CMS: ROBOTO)
 ========================================================= */
 *,
 *::before,
 *::after,
 html,
 body,
-.landing-page-root,
-.landing-page-root *,
-.landing-page-root *::before,
-.landing-page-root *::after,
 h1,
 h2,
 h3,
@@ -55,21 +62,59 @@ td,
 .ant-table,
 .ant-modal,
 .ant-modal * {
-  font-family: 'Roboto', var(--font-roboto), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+  font-family: var(--app-font-family, var(--font-roboto), 'Roboto', sans-serif);
 }
 
-.hero-impact-title,
-.hero-impact-title *,
-.hero-impact-title span,
-.landing-hero-title,
-.landing-hero-title *,
-.landing-hero-title span,
-.hero-montserrat-subtext,
-.hero-montserrat-subtext *,
-.hero-montserrat-paragraph,
-.hero-montserrat-paragraph * {
-  font-family: 'Roboto', var(--font-roboto), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+/* Roboto Default Switcher */
+.font-roboto,
+[data-font="roboto"],
+[data-font-family="roboto"] {
+  --app-font-family: 'Roboto', var(--font-roboto), sans-serif !important;
+  font-family: 'Roboto', var(--font-roboto), sans-serif !important;
 }
+
+.font-roboto *,
+[data-font="roboto"] *,
+[data-font-family="roboto"] * {
+  font-family: 'Roboto', var(--font-roboto), sans-serif !important;
+}
+
+/* Montserrat Switcher (Activate via Landing Page JSON brand.fontFamily = "Montserrat" or class .font-montserrat) */
+.font-montserrat,
+[data-font="montserrat"],
+[data-font-family="montserrat"],
+.landing-page--font-montserrat,
+.landing-page-root[style*="Montserrat"],
+.landing-page-root[style*="montserrat"] {
+  --app-font-family: 'Montserrat', var(--font-montserrat), sans-serif !important;
+  font-family: 'Montserrat', var(--font-montserrat), sans-serif !important;
+}
+
+.font-montserrat *,
+[data-font="montserrat"] *,
+[data-font-family="montserrat"] *,
+.landing-page--font-montserrat *,
+.landing-page-root[style*="Montserrat"] *,
+.landing-page-root[style*="montserrat"] * {
+  font-family: 'Montserrat', var(--font-montserrat), sans-serif !important;
+}
+
+/* Poppins Switcher (Activate via Landing Page JSON brand.fontFamily = "Poppins" or class .font-poppins) */
+.font-poppins,
+[data-font="poppins"],
+[data-font-family="poppins"],
+.landing-page--font-poppins {
+  --app-font-family: 'Poppins', var(--font-poppins), sans-serif !important;
+  font-family: 'Poppins', var(--font-poppins), sans-serif !important;
+}
+
+.font-poppins *,
+[data-font="poppins"] *,
+[data-font-family="poppins"] *,
+.landing-page--font-poppins * {
+  font-family: 'Poppins', var(--font-poppins), sans-serif !important;
+}
+
 
 html {
   scroll-behavior: smooth;
@@ -84,7 +129,7 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-roboto), Roboto, sans-serif !important;
+  font-family: var(--app-font-family, var(--font-roboto), 'Roboto', sans-serif);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -147,13 +192,13 @@ body {
 
 .comparison-matrix-table .ant-table {
   background: #ffffff !important;
-  font-family: var(--font-roboto), Roboto, sans-serif !important;
+  font-family: inherit !important;
   width: 100% !important;
 }
 
 .comparison-matrix-table .ant-table-thead>tr>th {
   background: #f8fafc !important;
-  font-family: var(--font-roboto), Roboto, sans-serif !important;
+  font-family: inherit !important;
   padding: 12px 8px !important;
   border-bottom: 1px solid #e2e8f0 !important;
   border-right: 1px solid #e2e8f0 !important;
@@ -165,7 +210,7 @@ body {
 
 .comparison-matrix-table .ant-table-tbody>tr>td {
   padding: 10px 8px !important;
-  font-family: var(--font-roboto), Roboto, sans-serif !important;
+  font-family: inherit !important;
   font-size: 11px !important;
   border-bottom: 1px solid #e2e8f0 !important;
   border-right: 1px solid #e2e8f0 !important;
@@ -355,7 +400,10 @@ body:has(.landing-page-root)>div>main {
 
 /* =========================================================
    SCHOLARSHIP COUPON CODE BUTTON - INFINITE SKEW BOX & EXPANDING SHADOW
+   (Matches https://distanceeducationschool.com/manipal/)
 ========================================================= */
+
+/* 1. Moving Skew Light Green Box inside: Infinite Loop Left to Right */
 @keyframes moveLightGreenBox {
   0% {
     left: -80%;
@@ -366,22 +414,34 @@ body:has(.landing-page-root)>div>main {
   }
 }
 
+/* 2. Outer Glow Shadow: Continuous Silky-Smooth Outward Pulse (No Micro-Stutters) */
 @keyframes couponOuterShadow {
   0% {
-    box-shadow: 0 0 0 0.1px rgba(46, 204, 113, 0.75);
+    box-shadow:
+      0 0 0 0 var(--coupon-shadow-start, rgba(46, 204, 113, 0.65)),
+      0 0 2px 0 rgba(74, 222, 128, 0.45);
+  }
+
+  60% {
+    box-shadow:
+      0 0 0 13px var(--coupon-shadow-mid2, rgba(46, 204, 113, 0.26)),
+      0 0 7px 2px rgba(74, 222, 128, 0.18);
   }
 
   100% {
-    box-shadow: 0 0 0 20px rgba(46, 204, 113, 0);
+    box-shadow:
+      0 0 0 22px rgba(74, 222, 128, 0),
+      0 0 12px 4px rgba(74, 222, 128, 0);
   }
 }
 
 .coupon-btn-main {
   position: relative !important;
   background: var(--coupon-btn-bg, linear-gradient(135deg, #2ecc71 0%, #27ae60 100%)) !important;
-  border-radius: 8px !important;
-  animation: couponOuterShadow 2.4s infinite cubic-bezier(0.16, 1, 0.3, 1) !important;
-  transition: transform 0.25s ease !important;
+  border-radius: 9px !important;
+  animation: couponOuterShadow 1.8s infinite ease-out !important;
+  transition: transform 0.2s ease !important;
+  overflow: hidden !important;
 }
 
 .coupon-btn-main:hover {
@@ -392,6 +452,7 @@ body:has(.landing-page-root)>div>main {
   transform: scale(0.97) !important;
 }
 
+/* Moving Light Green Box inside the button - Infinite continuous loop left to right */
 .moving-light-green-box {
   position: absolute !important;
   top: 0 !important;
@@ -405,4 +466,26 @@ body:has(.landing-page-root)>div>main {
   pointer-events: none !important;
   z-index: 1 !important;
   display: block !important;
+}
+
+/* =========================================================
+   ANT DESIGN CAROUSEL HELPERS (Card height & flex alignment)
+========================================================= */
+.ant-carousel .slick-slider {
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+}
+
+.ant-carousel .slick-track {
+  display: flex !important;
+  align-items: stretch;
+}
+
+.ant-carousel .slick-slide {
+  height: auto !important;
+}
+
+.ant-carousel .slick-slide>div {
+  height: 100% !important;
 }

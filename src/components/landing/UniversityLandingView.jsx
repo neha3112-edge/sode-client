@@ -1,6 +1,9 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import Image from "next/image";
+import { Download } from "lucide-react";
+import { Carousel } from "antd";
 import LandingNavbar from "./LandingNavbar";
 import LandingHero from "./LandingHero";
 import LandingApprovals from "./LandingApprovals";
@@ -101,6 +104,7 @@ export default function UniversityLandingView({ data = {} }) {
       if (!shouldTrigger) return;
 
       const whyChooseEl =
+        (brand.scholarshipTriggerId && (document.getElementById(brand.scholarshipTriggerId) || document.querySelector(brand.scholarshipTriggerId))) ||
         document.getElementById("whychoose") ||
         document.getElementById("Advantage") ||
         document.querySelector('[data-section="whychoose"]') ||
@@ -165,11 +169,29 @@ export default function UniversityLandingView({ data = {} }) {
   const activeCustomCss = customCss || brand.customCss || data.css || "";
   const pageSlug = brand.slug || slug || "university";
 
+  const requestedFont = (brand.fontFamily || brand.font || data?.fontFamily || "Roboto").toLowerCase();
+  const isMontserrat = requestedFont.includes("montserrat");
+  const isPoppins = requestedFont.includes("poppins");
+  const isRoboto = !isMontserrat && !isPoppins;
+
+  const fontClass = isMontserrat
+    ? "font-montserrat landing-page--font-montserrat"
+    : isPoppins
+    ? "font-poppins landing-page--font-poppins"
+    : "font-roboto landing-page--font-roboto";
+  const activeFontFamily = isMontserrat
+    ? "'Montserrat', var(--font-montserrat), sans-serif"
+    : isPoppins
+    ? "'Poppins', var(--font-poppins), sans-serif"
+    : "'Roboto', var(--font-roboto), sans-serif";
+
   return (
     <div
-      className={`landing-page-root landing-page--${pageSlug} min-h-screen bg-white text-slate-900 flex flex-col font-sans selection:bg-blue-900 selection:text-white ${brand.pageClassName || ""}`}
+      className={`landing-page-root landing-page--${pageSlug} ${fontClass} min-h-screen bg-white text-slate-900 flex flex-col font-sans selection:bg-blue-900 selection:text-white ${brand.pageClassName || ""}`}
+      data-font={isMontserrat ? "montserrat" : isPoppins ? "poppins" : "roboto"}
       style={{
-        fontFamily: brand.fontFamily || "'Roboto', var(--font-roboto), sans-serif",
+        "--app-font-family": activeFontFamily,
+        fontFamily: activeFontFamily,
         ...brand.pageStyle,
       }}
     >
@@ -248,6 +270,80 @@ export default function UniversityLandingView({ data = {} }) {
 
           return activeOrder.map((sectionKey) => {
             switch (sectionKey) {
+              case "overview":
+                return (
+                  <section id="overview" key="overview" className="overview-section py-12 sm:py-16 bg-white text-center select-none scroll-mt-20">
+                    <div className="max-w-[1000px] mx-auto px-4 sm:px-6">
+                      <h2 className="text-[26px] sm:text-[32px] lg:text-[34px] font-bold text-[#111111] leading-tight m-0">
+                        Overview of <span className="text-[#04903c]">{brand.overviewHighlight || "ESCGI Online DBA Program"}</span>
+                      </h2>
+                      <p className="text-[14px] sm:text-[15.5px] text-[#444444] leading-relaxed mt-4 mb-6 max-w-4xl mx-auto">
+                        {brand.overviewDescription || "The ESGCI Online DBA helps professionals gain advanced skills in business and management. The 36-month program includes foundation, leadership, and dissertation phases, giving a clear path for learning. Students receive personal guidance from experienced ESGCI faculty to support research and studies. The program offers interactive learning and global exposure, helping students develop strong leadership and practical skills. It also allows students to use their knowledge on real-world business challenges. Graduates earn a globally recognized doctoral degree, improving career opportunities. After completing the DBA, alumni can work in consulting, research, teaching, or executive roles worldwide."}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => handleOpenBrochure()}
+                        className="downloadBrochureBtn inline-flex items-center gap-2 px-6 py-2.5 rounded-[5px] bg-[#fff000] text-black font-bold text-[15px] hover:brightness-95 transition-all cursor-pointer border-none shadow-xs active:scale-95"
+                      >
+                        <span>{brand.overviewButtonText || "Get Curriculum"}</span>
+                        <Download className="w-4 h-4 stroke-[2.5]" />
+                      </button>
+                    </div>
+                  </section>
+                );
+              case "whyChooseCarousel":
+                const carouselItems = brand.whyChooseCarouselItems || [];
+                return (
+                  <section id="whychoose" key="whyChooseCarousel" className="py-12 sm:py-16 bg-white select-none scroll-mt-20">
+                    <div className="max-w-[1240px] mx-auto px-4 sm:px-6 text-center">
+                      <h2 className="text-[24px] sm:text-[30px] lg:text-[34px] font-bold text-[#111111] mb-8 sm:mb-12">
+                        {brand.whyChooseCarouselTitle || "Why Choose ESGCI Online DBA Program"}
+                      </h2>
+                      <div className="course-info">
+                        <Carousel
+                          autoplay
+                          autoplaySpeed={3000}
+                          dots={true}
+                          slidesToShow={3}
+                          responsive={[
+                            { breakpoint: 1024, settings: { slidesToShow: 2 } },
+                            { breakpoint: 640, settings: { slidesToShow: 1 } },
+                          ]}
+                        >
+                          {carouselItems.map((item, idx) => (
+                            <div key={idx} className="px-3 box-border outline-none py-2">
+                              <div className="bg-white rounded-[8px] overflow-hidden border border-slate-200/90 shadow-sm flex flex-col justify-between text-left h-full min-h-[390px] hover:shadow-md transition-shadow">
+                                <div className="relative w-full aspect-[16/10] overflow-hidden bg-slate-100">
+                                  <Image src={item.image} alt={item.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 33vw" />
+                                </div>
+                                <div className="p-5 flex-1 flex flex-col justify-between">
+                                  <div>
+                                    <h3 className="text-[17px] sm:text-[18px] font-bold text-[#111111] mb-2 leading-snug">
+                                      {item.title}
+                                    </h3>
+                                    <p className="text-[12.5px] sm:text-[13px] text-[#555555] leading-relaxed mb-4">
+                                      {item.desc || item.description}
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <hr className="border-t border-slate-200 mb-4" />
+                                    <button
+                                      type="button"
+                                      onClick={() => handleOpenApply?.(item.title)}
+                                      className="w-full py-2 px-4 bg-[#fff000] text-black font-bold text-[13.5px] rounded-[5px] hover:brightness-95 transition-all border-none cursor-pointer"
+                                    >
+                                      Apply Now
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </Carousel>
+                      </div>
+                    </div>
+                  </section>
+                );
               case "approvals":
                 return (
                   <LandingApprovals

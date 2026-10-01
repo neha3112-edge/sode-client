@@ -145,7 +145,7 @@ export default function LandingHero({
               "mt-1 mb-1 text-[30px] sm:text-[36px] lg:text-[42px] font-extrabold leading-[1.12] tracking-tight"
             }`}
             style={{
-              fontFamily: hero.headingFont || "'Roboto', var(--font-roboto), sans-serif",
+              fontFamily: hero.headingFont || "inherit",
               color:
                 hero.headingColor ||
                 hero.titleColor ||
@@ -163,7 +163,7 @@ export default function LandingHero({
                   className={hero.highlightTitleClassName || ""}
                   style={{
                     color: hero.highlightTitleColor || "#f97316",
-                    fontFamily: hero.headingFont || "'Roboto', var(--font-roboto), sans-serif",
+                    fontFamily: hero.headingFont || "inherit",
                     fontSize: "inherit",
                     fontWeight: "inherit",
                     lineHeight: "inherit",
@@ -178,7 +178,7 @@ export default function LandingHero({
                   className={hero.headlineTextClassName || ""}
                   style={{
                     color: hero.headlineColor || "#ffffff",
-                    fontFamily: hero.headingFont || "'Roboto', var(--font-roboto), sans-serif",
+                    fontFamily: hero.headingFont || "inherit",
                     fontSize: "inherit",
                     fontWeight: "inherit",
                     lineHeight: "inherit",
@@ -244,8 +244,8 @@ export default function LandingHero({
 
           {/* Online Degree Courses Strip or Course Box */}
           {!hasCoursesStrip || hero.hideCourses || hero.coursesStrip === false ? null : hero.hideCourseBox ? (
-            <h2
-              className={`my-2 space-y-0.5 text-[17px] sm:text-[20px] lg:text-[22px] font-extrabold tracking-tight leading-snug ${hero.courseStripClassName || ""
+            <div
+              className={`my-2 space-y-0.5 text-[13.5px] sm:text-[14px] font-medium tracking-normal leading-[1.5] ${hero.courseStripClassName || ""
                 }`}
               style={{
                 color:
@@ -262,7 +262,7 @@ export default function LandingHero({
               {courseLines.map((line, idx) => (
                 <div key={idx}>{line}</div>
               ))}
-            </h2>
+            </div>
           ) : hero.coursesStripOnly ? (
             <div
               className={`my-2 space-y-0.5 text-[16px] sm:text-[18px] lg:text-[19px] font-bold tracking-wide leading-snug ${hero.courseStripClassName || ""

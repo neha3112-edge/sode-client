@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
+import { Carousel } from "antd";
 import LandingContainer from "./LandingContainer";
 
 /**
@@ -19,100 +20,15 @@ export default function LandingTestimonials({
   if (!testimonials || testimonials.length === 0) return null;
 
   const isClassic = brand.testimonialsCardStyle === "classic";
-  const [visibleCount, setVisibleCount] = useState(3);
-  const [isPaused, setIsPaused] = useState(false);
-  const [isTransitioning, setIsTransitioning] = useState(true);
-
-  // Triple items for seamless infinite looping
   const items = testimonials;
-  const extendedItems = [...items, ...items, ...items];
-  const [currentIndex, setCurrentIndex] = useState(items.length);
-
   const primaryColor = brand?.primaryColor || "#ee3024";
   const university = universityName || brand?.name || "Manipal University Online";
-
-  const touchStartXRef = useRef(0);
-  const touchEndXRef = useRef(0);
-
-  useEffect(() => {
-    const handleResize = () => {
-      const width = window.innerWidth;
-      if (width < 640) {
-        setVisibleCount(1);
-      } else if (width < 1024) {
-        setVisibleCount(2);
-      } else {
-        setVisibleCount(3);
-      }
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  const handleNext = useCallback(() => {
-    setIsTransitioning(true);
-    setCurrentIndex((prev) => prev + 1);
-  }, []);
-
-  const handlePrev = useCallback(() => {
-    setIsTransitioning(true);
-    setCurrentIndex((prev) => prev - 1);
-  }, []);
-
-  // 3s Auto-play interval
-  useEffect(() => {
-    if (isPaused || items.length === 0) return;
-    const timer = setInterval(() => {
-      handleNext();
-    }, 3000);
-    return () => clearInterval(timer);
-  }, [isPaused, items.length, handleNext]);
-
-  const handleTransitionEnd = () => {
-    if (currentIndex >= items.length * 2) {
-      setIsTransitioning(false);
-      setCurrentIndex((prev) => prev - items.length);
-    } else if (currentIndex < items.length) {
-      setIsTransitioning(false);
-      setCurrentIndex((prev) => prev + items.length);
-    }
-  };
-
-  // Touch Swipe Handlers for mobile
-  const handleTouchStart = (e) => {
-    setIsPaused(true);
-    touchStartXRef.current = e.targetTouches[0].clientX;
-  };
-
-  const handleTouchMove = (e) => {
-    touchEndXRef.current = e.targetTouches[0].clientX;
-  };
-
-  const handleTouchEnd = () => {
-    const deltaX = touchStartXRef.current - touchEndXRef.current;
-    if (Math.abs(deltaX) > 40 && touchEndXRef.current !== 0) {
-      if (deltaX > 0) {
-        handleNext();
-      } else {
-        handlePrev();
-      }
-    }
-    touchStartXRef.current = 0;
-    touchEndXRef.current = 0;
-    setIsPaused(false);
-  };
+  const carouselRef = useRef(null);
 
   return (
     <section
       id="testimonials"
       className="py-12 sm:py-16 bg-white overflow-hidden select-none"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
     >
       <LandingContainer>
         {/* Heading */}
@@ -133,7 +49,7 @@ export default function LandingTestimonials({
           {/* Controls */}
           <button
             type="button"
-            onClick={handlePrev}
+            onClick={() => carouselRef.current?.prev()}
             className="absolute left-0 sm:-left-3 top-1/2 -translate-y-1/2 z-20 text-slate-800 hover:text-[#ee3024] transition-colors p-1 bg-transparent border-none cursor-pointer flex items-center justify-center active:scale-90"
             aria-label="Previous testimonial"
           >
@@ -141,29 +57,47 @@ export default function LandingTestimonials({
           </button>
           <button
             type="button"
-            onClick={handleNext}
+            onClick={() => carouselRef.current?.next()}
             className="absolute right-0 sm:-right-3 top-1/2 -translate-y-1/2 z-20 text-slate-800 hover:text-[#ee3024] transition-colors p-1 bg-transparent border-none cursor-pointer flex items-center justify-center active:scale-90"
             aria-label="Next testimonial"
           >
             <ChevronRight className="w-6 h-6 sm:w-8 sm:h-8 stroke-[2.5]" />
           </button>
 
-          {/* Viewport */}
+          {/* Ant Design Carousel Viewport */}
           <div className="overflow-hidden">
-            <div
-              className="flex"
-              style={{
-                transform: `translateX(-${currentIndex * (100 / visibleCount)}%)`,
-                transition: isTransitioning ? "transform 500ms ease-in-out" : "none",
-              }}
-              onTransitionEnd={handleTransitionEnd}
+            <Carousel
+              ref={carouselRef}
+              slidesToShow={3}
+              slidesToScroll={1}
+              autoplay
+              autoplaySpeed={3200}
+              infinite={items.length > 3}
+              dots={false}
+              arrows={false}
+              pauseOnHover
+              draggable
+              responsive={[
+                {
+                  breakpoint: 1024,
+                  settings: {
+                    slidesToShow: 2,
+                    slidesToScroll: 1,
+                    infinite: items.length > 2,
+                  },
+                },
+                {
+                  breakpoint: 640,
+                  settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    infinite: items.length > 1,
+                  },
+                },
+              ]}
             >
-              {extendedItems.map((item, idx) => (
-                <div
-                  key={idx}
-                  className="shrink-0 px-2.5 sm:px-3.5 py-2"
-                  style={{ width: `${100 / visibleCount}%` }}
-                >
+              {items.map((item, idx) => (
+                <div key={idx} className="px-2.5 sm:px-3.5 py-2 outline-none h-full">
                   {isClassic ? (
                     /* Classic Card */
                     <div className="bg-white rounded-xl p-5 sm:p-6 border border-slate-200/80 shadow-xs hover:shadow-md transition-shadow h-full flex flex-col justify-between">
@@ -234,7 +168,7 @@ export default function LandingTestimonials({
                   )}
                 </div>
               ))}
-            </div>
+            </Carousel>
           </div>
         </div>
       </LandingContainer>

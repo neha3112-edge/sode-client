@@ -69,7 +69,7 @@ export const vguData = {
       hideTermsCheckbox: true,
       minHeight: "520px",
       contentMaxWidth: "1400px",
-      headingFont: "var(--font-roboto), Roboto, sans-serif",
+      headingFont: "inherit",
     },
     coursesStrip: [
       "MBA | MSC | MA | MCA |",

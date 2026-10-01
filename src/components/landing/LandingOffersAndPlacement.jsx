@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import LandingContainer from "./LandingContainer";
 
 /**
@@ -10,7 +11,8 @@ import LandingContainer from "./LandingContainer";
 export default function LandingOffersAndPlacement({ offersAndPlacements, brand }) {
   if (!offersAndPlacements) return null;
 
-  const { heading, card1, card2 } = offersAndPlacements;
+  const { heading, card1, card2, title, description, image } = offersAndPlacements;
+  const isCopilot = brand?.offersLayout === "rushford-copilot" || brand?.slug === "rushford" || offersAndPlacements?.type === "copilot";
   const isCards = brand?.offersLayout === "cards";
   const bgGradient =
     brand?.offersBg ||
@@ -18,6 +20,36 @@ export default function LandingOffersAndPlacement({ offersAndPlacements, brand }
     "linear-gradient(270deg, #ff6600 0%, #ee3024 100%)";
   const accentColor = brand?.offersAccentColor || brand?.accentColor || "#ffd200";
   const primaryColor = brand?.primaryColor || "#f35a06";
+
+  if (isCopilot) {
+    return (
+      <section id="copilot" className="py-12 sm:py-16 bg-[#ffffff] select-none scroll-mt-20">
+        <LandingContainer>
+          <div className="bg-[#f8f9fa] rounded-[16px] p-6 sm:p-10 lg:p-12 border border-slate-200/90 shadow-sm grid grid-cols-1 lg:grid-cols-12 gap-8 items-center max-w-5xl mx-auto">
+            <div className="lg:col-span-7">
+              <h2 className="text-[22px] sm:text-[26px] lg:text-[28px] font-bold text-[#111111] mb-3 leading-snug">
+                {title || heading || "Get 1 Month FREE Microsoft Copilot Pro with Rushford DBA"}
+              </h2>
+              <p className="text-[13.5px] sm:text-[14.5px] text-[#555555] leading-relaxed m-0">
+                {description || "Get 1 month of FREE Microsoft Copilot Pro with the DBA at Rushford Business School. Access AI tools like Word, Excel, PowerPoint, Teams, and Business Chat to boost productivity, improve insights, and apply learning instantly. Offer exclusively available for DBA aspirants."}
+              </p>
+            </div>
+            <div className="lg:col-span-5 flex justify-center">
+              <div className="relative w-full max-w-[360px] aspect-[16/10]">
+                <Image
+                  src={image || "/assets/all_universities_images/rushford/copilot-rusford.webp"}
+                  alt="Microsoft Copilot Pro"
+                  fill
+                  className="object-contain"
+                  sizes="(max-width: 1024px) 100vw, 35vw"
+                />
+              </div>
+            </div>
+          </div>
+        </LandingContainer>
+      </section>
+    );
+  }
 
   if (isCards) {
     return (

@@ -11,6 +11,10 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
 
   if (!faqs || faqs.length === 0) return null;
 
+  const isGgu =
+    brand.slug === "ggu" ||
+    brand.faqLayout === "ggu";
+
   const isMu =
     brand.slug === "mu" ||
     brand.faqLayout === "mu" ||
@@ -24,6 +28,64 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
   const toggleFaq = (index) => {
     setOpenIndex(openIndex === index ? null : index);
   };
+
+  // ==========================================
+  // Layout: Golden Gate University (GGU) FAQ
+  // ==========================================
+  if (isGgu) {
+    const faqTitle = brand.faqTitle || "FAQ-Frequently Asked Questions";
+    const accentColor = brand.faqAccentColor || "#003468";
+
+    return (
+      <section id="faqs" aria-label="Frequently Asked Questions" className="py-10 sm:py-14 bg-white w-full select-none scroll-mt-24">
+        <div className="max-w-[1140px] mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-[22px] sm:text-[26px] lg:text-[28px] font-bold text-[#111111] text-left m-0 mb-6 sm:mb-8 tracking-tight">
+            {faqTitle}
+          </h2>
+
+          <div className="space-y-3.5 w-full">
+            {faqs.map((faq, idx) => {
+              const isOpen = openIndex === idx;
+              const rawQuestion = (faq.q || faq.question || "").replace(/^Q\d+[\.\:\s]*/i, "");
+
+              return (
+                <div
+                  key={idx}
+                  className="rounded-[3px] overflow-hidden bg-white transition-all shadow-2xs"
+                  style={{
+                    border: "1px solid #d1d5db",
+                    borderLeft: `5px solid ${accentColor}`,
+                  }}
+                >
+                  <button
+                    type="button"
+                    onClick={() => toggleFaq(idx)}
+                    className="w-full px-5 py-3.5 sm:py-4 text-left flex items-center justify-between gap-4 cursor-pointer bg-white hover:bg-slate-50/60 transition-colors border-none m-0"
+                    aria-expanded={isOpen}
+                  >
+                    <h3 className="text-[14px] sm:text-[15px] font-bold text-[#111111] leading-snug m-0">
+                      {rawQuestion}
+                    </h3>
+                    <span className="text-[18px] sm:text-[20px] font-normal text-slate-800 leading-none shrink-0 ml-3 select-none">
+                      +
+                    </span>
+                  </button>
+
+                  {isOpen && (
+                    <div className="px-5 py-3.5 sm:py-4 bg-white border-t border-[#e5e7eb] text-[13px] sm:text-[13.5px] text-[#333333] leading-relaxed font-normal">
+                      <p className="m-0 leading-relaxed font-normal">
+                        {faq.a || faq.answer}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   // ==========================================
   // MU Layout: Exact Match with Reference Image
@@ -214,7 +276,7 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
         <div className="w-full divide-y divide-slate-200 border-t border-slate-200">
           {faqs.map((faq, idx) => {
             const isOpen = openIndex === idx;
-            const rawQuestion = faq.q.replace(/^Q\d+[\.\:\s]*/i, "");
+            const rawQuestion = (faq.q || faq.question || "").replace(/^Q\d+[\.\:\s]*/i, "");
             const formattedQuestion = `Q${idx + 1}. ${rawQuestion}`;
 
             return (
@@ -243,7 +305,7 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
 
                 {isOpen && (
                   <div className="pb-4 pt-1 text-[13.5px] sm:text-[15px] text-[#4d4d4d] leading-relaxed font-normal">
-                    {faq.a}
+                    {faq.a || faq.answer}
                   </div>
                 )}
               </div>

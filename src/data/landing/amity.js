@@ -49,7 +49,7 @@ export const amityData = {
       formWidth: "550px",
       formBackground: "#08417b",
       formRadius: "10px",
-      headingFont: "var(--font-roboto), Roboto, sans-serif",
+      headingFont: "inherit",
       courseBorder: "#08417b",
       buttonBackground: "#08417b",
     },

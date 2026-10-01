@@ -368,7 +368,7 @@ export default function LandingLeadForm({
           ]}
         >
           <PhoneInputField
-            placeholder="Enter your Number"
+            placeholder="Enter Mobile Number"
             maxLength={10}
             isWhiteCard={isWhiteCard}
           />

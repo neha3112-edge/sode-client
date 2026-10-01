@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
+import { Carousel } from "antd";
 import LandingContainer from "./LandingContainer";
 
 /**
@@ -113,84 +114,13 @@ export default function LandingRecruiters({
 
 /**
  * Mangalayatan University (MU) / Generic Partner Logo Carousel
- * Displays 5 cards per row on desktop, auto-rotates in an infinite loop, and features interactive dot indicators
+ * Displays partner logos with Ant Design Carousel, auto-rotates smoothly, responsive
  */
 function MuRecruitersCarousel({ activeRecruiters, brand }) {
   const logos = activeRecruiters.logos || [];
   const title = activeRecruiters.title || `${brand.name || "University"} Top-Tier Hiring Partners`;
   const subtitle = activeRecruiters.subtitle || activeRecruiters.description || null;
-
-  const [visibleCount, setVisibleCount] = useState(5);
-  const [currentIndex, setCurrentIndex] = useState(logos.length || 0);
-  const [withTransition, setWithTransition] = useState(true);
-
-  // Responsive items count (5 on desktop, 3 on tablet, 2 on mobile)
-  useEffect(() => {
-    function updateVisible() {
-      if (typeof window === "undefined") return;
-      if (window.innerWidth < 640) {
-        setVisibleCount(2);
-      } else if (window.innerWidth < 1024) {
-        setVisibleCount(3);
-      } else {
-        setVisibleCount(brand.recruitersVisibleCount || 5);
-      }
-    }
-    updateVisible();
-    window.addEventListener("resize", updateVisible);
-    return () => window.removeEventListener("resize", updateVisible);
-  }, [brand.recruitersVisibleCount]);
-
-  // Triple the logos list for smooth infinite wrapping
-  const extendedLogos = [...logos, ...logos, ...logos];
-
-  // Autoplay timer - right to left infinite rotation
-  useEffect(() => {
-    if (logos.length === 0) return;
-    const interval = brand.recruitersInterval || 2200;
-    const timer = setInterval(() => {
-      setWithTransition(true);
-      setCurrentIndex((prev) => prev + 1);
-    }, interval);
-
-    return () => clearInterval(timer);
-  }, [logos.length, brand.recruitersInterval]);
-
-  // Seamless infinite reset when exceeding boundaries
-  useEffect(() => {
-    if (logos.length === 0) return;
-    if (currentIndex >= logos.length * 2) {
-      const resetTimer = setTimeout(() => {
-        setWithTransition(false);
-        setCurrentIndex((prev) => prev - logos.length);
-      }, 650); // wait for 600ms transition to finish
-      return () => clearTimeout(resetTimer);
-    }
-  }, [currentIndex, logos.length]);
-
-  // Restore transition after silent reset
-  useEffect(() => {
-    if (!withTransition) {
-      const restoreTimer = setTimeout(() => {
-        setWithTransition(true);
-      }, 50);
-      return () => clearTimeout(restoreTimer);
-    }
-  }, [withTransition]);
-
-  // Calculate 2 dots matching reference
-  const totalDots = 2;
-  const normalizedIndex = (currentIndex % logos.length + logos.length) % logos.length;
-  const activeDot = normalizedIndex < 3 ? 0 : 1;
-
-  const handleDotClick = (dotIdx) => {
-    setWithTransition(true);
-    if (dotIdx === 0) {
-      setCurrentIndex(logos.length);
-    } else {
-      setCurrentIndex(logos.length + 3);
-    }
-  };
+  const carouselRef = useRef(null);
 
   return (
     <section
@@ -226,21 +156,40 @@ function MuRecruitersCarousel({ activeRecruiters, brand }) {
           )}
         </div>
 
-        {/* Carousel Window */}
+        {/* Ant Design Carousel Window */}
         <div className="overflow-hidden w-full max-w-[1180px] mx-auto px-1 py-1">
-          <div
-            className="flex items-center"
-            style={{
-              transform: `translateX(-${(currentIndex * 100) / visibleCount}%)`,
-              transition: withTransition ? "transform 600ms cubic-bezier(0.25, 1, 0.5, 1)" : "none",
-            }}
+          <Carousel
+            ref={carouselRef}
+            slidesToShow={brand.recruitersVisibleCount || 5}
+            slidesToScroll={1}
+            autoplay
+            autoplaySpeed={brand.recruitersInterval || 2200}
+            infinite={logos.length > (brand.recruitersVisibleCount || 5)}
+            dots={{ className: "!mt-5" }}
+            arrows={false}
+            pauseOnHover
+            draggable
+            responsive={[
+              {
+                breakpoint: 1024,
+                settings: {
+                  slidesToShow: 3,
+                  slidesToScroll: 1,
+                  infinite: logos.length > 3,
+                },
+              },
+              {
+                breakpoint: 640,
+                settings: {
+                  slidesToShow: 2,
+                  slidesToScroll: 1,
+                  infinite: logos.length > 2,
+                },
+              },
+            ]}
           >
-            {extendedLogos.map((logo, idx) => (
-              <div
-                key={idx}
-                className="shrink-0 px-2 sm:px-2.5"
-                style={{ width: `${100 / visibleCount}%` }}
-              >
+            {logos.map((logo, idx) => (
+              <div key={idx} className="px-2 sm:px-2.5 outline-none py-1">
                 <div
                   className={
                     brand.recruitersCardClassName ||
@@ -257,24 +206,7 @@ function MuRecruitersCarousel({ activeRecruiters, brand }) {
                 </div>
               </div>
             ))}
-          </div>
-        </div>
-
-        {/* Interactive Dot Indicators */}
-        <div className="flex items-center justify-center gap-2 mt-5 sm:mt-6">
-          {Array.from({ length: totalDots }).map((_, dIdx) => (
-            <button
-              key={dIdx}
-              type="button"
-              onClick={() => handleDotClick(dIdx)}
-              aria-label={`Go to slide ${dIdx + 1}`}
-              className={`transition-all cursor-pointer border-none p-0 ${
-                activeDot === dIdx
-                  ? brand.recruitersDotActiveClass || "w-2.5 h-2.5 rounded-full bg-black scale-110"
-                  : brand.recruitersDotInactiveClass || "w-2.5 h-2.5 rounded-full bg-[#b8b8b8] hover:bg-slate-500"
-              }`}
-            />
-          ))}
+          </Carousel>
         </div>
       </div>
     </section>
