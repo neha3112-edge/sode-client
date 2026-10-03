@@ -364,8 +364,9 @@ export default function UniversityLandingView({ data = {} }) {
                   <LandingApprovals
                     key="approvals"
                     approvals={approvals}
+                    keyHighlights={keyHighlights || brand.keyHighlights}
                     universityName={brand.name}
-                    brand={brand}
+                    brand={{ ...brand, slug: brand.slug || slug }}
                   />
                 );
               case "programmes":
