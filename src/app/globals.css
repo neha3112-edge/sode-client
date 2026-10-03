@@ -368,7 +368,7 @@ body:has(.landing-page-root)>div>main {
   position: relative !important;
   background: var(--coupon-btn-bg, linear-gradient(135deg, #2ecc71 0%, #27ae60 100%)) !important;
   border-radius: 8px !important;
-  animation: couponOuterShadow 1.8s infinite cubic-bezier(0.16, 1, 0.3, 1) !important;
+  animation: couponOuterShadow 2.4s infinite cubic-bezier(0.16, 1, 0.3, 1) !important;
   transition: transform 0.25s ease !important;
 }
 

@@ -1,11 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import confetti from "canvas-confetti";
 import { ChevronDown } from "lucide-react";
 import LandingContainer from "./LandingContainer";
+
 export default function LandingNavbar({
   brand = {},
   onOpenApply,
@@ -34,13 +35,10 @@ export default function LandingNavbar({
   const isCouponVisible = showCouponBtn !== false && showCouponButton !== false;
 
   const handleScrollTop = (e) => {
-    e.preventDefault();
+    e?.preventDefault();
     const heroEl = document.getElementById("hero") || document.getElementById("banner");
-    if (heroEl) {
-      heroEl.scrollIntoView({ behavior: "smooth" });
-    } else {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
+    if (heroEl) heroEl.scrollIntoView({ behavior: "smooth" });
+    else if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleCouponClick = (e) => {
@@ -58,27 +56,19 @@ export default function LandingNavbar({
         });
       }
     } catch { }
-    if (onOpenScholarship) {
-      onOpenScholarship();
-    } else if (onOpenApply) {
-      onOpenApply();
-    }
+    if (onOpenScholarship) onOpenScholarship();
+    else if (onOpenApply) onOpenApply();
   };
 
   const isDesNavbar = brand.navbarVariant === "des" || brand.slug === "galgotias";
 
   if (isDesNavbar) {
     return (
-      <header className="navbar sticky top-0 z-50 bg-white border-b border-slate-200/80 shadow-[0_4px_20px_rgba(0,0,0,0.08)]">
-        <LandingContainer className="top-navbar h-16 sm:h-20 flex items-center justify-between px-3 sm:px-6 max-w-[1360px]">
-          {/* Left: DistanceEducationSchool.com official Logo (Enlarged) */}
+      <header className="sticky top-0 z-50 bg-white border-b border-slate-200/80 shadow-[0_4px_20px_rgba(0,0,0,0.08)]">
+        <LandingContainer className="h-16 sm:h-20 flex items-center justify-between px-3 sm:px-6 max-w-[1360px]">
+          {/* Left: DistanceEducationSchool.com official Logo */}
           <div className="flex items-center min-w-0 py-1">
-            <Link
-              href="#hero"
-              onClick={handleScrollTop}
-              className="flex items-center cursor-pointer"
-              aria-label="Distance Education School"
-            >
+            <Link href="#hero" onClick={handleScrollTop} className="flex items-center cursor-pointer" aria-label="Distance Education School">
               <div className="relative w-56 sm:w-72 lg:w-80 h-11 sm:h-14 lg:h-15">
                 <Image
                   src={brand.sodeLogo || "/assets/images/new-des-logo.webp"}
@@ -134,56 +124,41 @@ export default function LandingNavbar({
   }
 
   return (
-    <header className="navbar sticky top-0 z-50 bg-white border-b border-slate-200/80 shadow-[0px_2px_10px_rgba(0,0,0,0.06)]">
-      <LandingContainer className="top-navbar h-14 sm:h-16 lg:h-18 flex items-center justify-between px-3 sm:px-6">
+    <header className="sticky top-0 z-50 bg-white border-b border-slate-200/80 shadow-[0px_2px_10px_rgba(0,0,0,0.06)]">
+      <LandingContainer className="h-16 sm:h-20 lg:h-22 flex items-center justify-between px-3 sm:px-6">
         {/* Left: University Logo / Brand */}
-        <div className="logo flex items-center min-w-0">
+        <div className="flex items-center min-w-0">
           {shouldShowSodeLogo && (
             <>
-              <Link
-                href="#hero"
-                onClick={handleScrollTop}
-                className="des_logo flex items-center shrink-0 cursor-pointer"
-                aria-label="Back to Top"
-              >
-                <div className="relative w-8 sm:w-10 lg:w-11 h-8 sm:h-10 lg:h-11">
-                  <Image
-                    src={sodeIcon || "/assets/images/sode_icon.png"}
-                    alt="SODE"
-                    fill
-                    priority
-                    className="object-contain"
-                    sizes="(max-width: 640px) 32px, 44px"
-                  />
+              <Link href="#hero" onClick={handleScrollTop} className="flex items-center shrink-0 cursor-pointer" aria-label="Back to Top">
+                <div className="relative w-9 sm:w-11 lg:w-20 h-9 sm:h-11 lg:h-12">
+                  <Image src={sodeIcon || "/assets/images/sode_icon.png"} alt="SODE" fill priority className="object-contain" sizes="(max-width: 640px) 36px, 48px" />
                 </div>
               </Link>
-              {/* Thin Vertical Divider */}
-              <div className="h-6 sm:h-8 lg:h-10 w-[1px] bg-[#d1d5db] mx-2 sm:mx-3 lg:mx-4 shrink-0" />
+              <div className="h-7 sm:h-9 lg:h-11 w-[1px] bg-[#d1d5db] mx-2 sm:mx-3 lg:mx-4 shrink-0" />
             </>
           )}
 
-          {/* University Online Logo */}
-          <Link
-            href="#hero"
-            onClick={handleScrollTop}
-            className="mang_logo flex items-center min-w-0 cursor-pointer"
-            aria-label={name}
-          >
-            <div className="relative w-32 sm:w-44 lg:w-56 h-8 sm:h-10 lg:h-11">
+          <Link href="#hero" onClick={handleScrollTop} className="flex items-center min-w-0 cursor-pointer" aria-label={name}>
+            <div
+              className={`relative ${brand.logoWrapperClassName || "w-36 sm:w-48 lg:w-60 h-9 sm:h-11 lg:h-12"}`}
+              style={brand.logoWrapperStyle}
+            >
               <Image
                 src={logo}
                 alt={name}
                 fill
                 priority
-                className="object-contain object-left"
-                sizes="(max-width: 640px) 140px, 240px"
+                className={`object-contain object-left ${brand.logoClassName || ""}`}
+                sizes="(max-width: 640px) 180px, 320px"
+                style={brand.logoStyle}
               />
             </div>
           </Link>
         </div>
 
         {/* Right: Scholarship Coupon Code Button or Admission Badge */}
-        <div className="header_heading shrink-0 pl-2 mr-1.5 sm:mr-3  flex items-center">
+        <div className="shrink-0 pl-2 mr-1.5 sm:mr-3 flex items-center">
           {isCouponVisible ? (
             <div
               className={
@@ -251,3 +226,91 @@ export default function LandingNavbar({
     </header>
   );
 }
+
+/* =========================================================
+   SUB-NAVIGATION STICKY SECTION TABS (SCROLLSPY)
+========================================================= */
+const NAV_TABS = [
+  { id: "about", label: "About", targets: ["about"] },
+  { id: "program", label: "Courses", targets: ["program", "courses", "programmes"] },
+  { id: "emi", label: "EMI", targets: ["emi", "scholarship"] },
+  { id: "whyChoose", label: "Benefits", targets: ["whyChoose", "advantage", "pedagogy", "benefits"] },
+  { id: "exam", label: "Exam", targets: ["exam", "evaluation"] },
+  { id: "approvals", label: "Approvals", targets: ["approvals", "recognition"] },
+  { id: "recruiters", label: "Placement", targets: ["recruiters", "placement", "partners"] },
+  { id: "Degreeinfo", label: "Degree", targets: ["Degreeinfo", "degree"] },
+  { id: "admission", label: "Admission", targets: ["admission", "admissionProcess", "enrollment"] },
+  { id: "compare", label: "Alternative", targets: ["compare", "compareBanner"] },
+  { id: "faqs", label: "FAQ's", targets: ["faqs", "faq"] },
+];
+
+const findEl = (targets) => targets.map((id) => document.getElementById(id)).find(Boolean);
+
+export function LandingSubNav({ brand = {} }) {
+  const [activeTab, setActiveTab] = useState("about");
+  const subNav = brand.subNav || {};
+
+  const scrollToSection = (tab) => {
+    setActiveTab(tab.id);
+    const el = findEl(tab.targets);
+    if (el) {
+      window.scrollTo({
+        top: el.getBoundingClientRect().top + window.scrollY - 90,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPos = window.scrollY + 140;
+      for (let i = NAV_TABS.length - 1; i >= 0; i--) {
+        const el = findEl(NAV_TABS[i].targets);
+        if (el && scrollPos >= el.offsetTop) {
+          setActiveTab(NAV_TABS[i].id);
+          break;
+        }
+      }
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const navBg = subNav.background || brand.primaryColor || "#005bb8";
+  const activeColor = subNav.activeColor || brand.accentColor || "#ffd200";
+
+  return (
+    <nav
+      className={`sticky top-16 sm:top-20 lg:top-22 z-40 text-white shadow-md select-none border-t border-blue-400/20 font-poppins ${subNav.className || ""
+        }`}
+      style={{ backgroundColor: navBg, ...subNav.style }}
+    >
+      <div className={`max-w-[1600px] mx-auto px-2 sm:px-6 ${subNav.containerClassName || ""}`}>
+        <div
+          className={`flex items-center justify-start lg:justify-center overflow-x-auto no-scrollbar space-x-3 sm:space-x-6 md:space-x-8 lg:space-x-10 text-[14px] sm:text-[15px] md:text-[15.5px] h-14 sm:h-20 font-poppins ${subNav.innerClassName || ""
+            }`}
+        >
+          {NAV_TABS.map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => scrollToSection(tab)}
+              className={`h-full flex items-center px-1.5 sm:px-2 whitespace-nowrap transition-colors font-medium border-b-[3px] cursor-pointer bg-transparent border-t-0 border-x-0 ${activeTab === tab.id
+                ? "font-bold"
+                : "text-white/90 border-transparent hover:opacity-100 hover:text-white"
+                } ${subNav.tabClassName || ""}`}
+              style={
+                activeTab === tab.id
+                  ? { color: activeColor, borderColor: activeColor }
+                  : {}
+              }
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    </nav>
+  );
+}
+

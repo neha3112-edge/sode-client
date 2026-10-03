@@ -94,6 +94,32 @@ export const galgotiasData = {
     ],
 
     hero: {
+      title: "Galgotias Online University",
+      descriptionHtml:
+        'Grow your career skills by pursuing online courses at Galgotias University in 2026. Recognised by the <strong class="text-[#0055b8] font-bold">UGC</strong> and accredited with an NAAC A+ grade, Galgotias University is among the top institutions in India, with a remarkable NAAC score of 3.37 out of 4.',
+      approvalIcons: [
+        { img: "/assets/images/approvals/ugc_approval.png", alt: "UGC" },
+        { img: "/assets/images/approvals/naac_a_plus.png", alt: "NAAC A+" },
+        { img: "/assets/images/approvals/nirf_ranking.png", alt: "NIRF" },
+        { img: "/assets/images/approvals/aicte_approval.png", alt: "AICTE" },
+      ],
+      coursePills: ["MA", "M.COM", "MBA", "MCA", "BCA", "BBA"],
+      actionButtons: [
+        {
+          label: "Get 100% Free Counseling",
+          action: "brochure",
+          course: "MBA",
+          className:
+            "bg-[#ff5a00] hover:bg-[#e65100] active:scale-98 text-white font-bold text-[12px] sm:text-[13px] px-3.5 sm:px-4.5 py-1.5 sm:py-2 rounded-[6px] shadow-xs transition-all cursor-pointer border-none",
+        },
+        {
+          label: "Add to Compare +",
+          action: "brochure",
+          course: "MBA",
+          className:
+            "bg-[#058427] hover:bg-[#046e20] active:scale-98 text-white font-bold text-[12px] sm:text-[13px] px-3.5 sm:px-4.5 py-1.5 sm:py-2 rounded-[6px] shadow-xs transition-all cursor-pointer border-none",
+        },
+      ],
       backgroundImage: "/assets/galgotias/galgotias_banner.webp",
       backgroundPosition: "center center",
       backgroundSize: "cover",
@@ -106,19 +132,6 @@ export const galgotiasData = {
       courseBorder: "#002b49",
       formBackground: "#002b49",
       formTitleColor: "#ffb800",
-      brochureButtonText: "Download Brochure",
-      buttonBackground: "#ffb800",
-      buttonTextColor: "#002b49",
-      buttonBorder: "2px solid #ffb800",
-      buttonStyle: {
-        backgroundColor: "#ffb800",
-        color: "#002b49",
-        border: "2px solid #ffb800",
-        borderRadius: "6px",
-        fontWeight: "700",
-        padding: "8px 24px",
-        fontSize: "14px",
-      },
     },
 
     coursesStrip: [
@@ -126,6 +139,9 @@ export const galgotiasData = {
       "| BBA | BCA | BCOM",
     ],
 
+    faqLayout: "pill",
+    faqShowPress: true,
+    faqTitle: "FAQ's | Frequently Asked Questions",
     footerDisclaimer:
       "SODE Counselling Services LLP acts as a marketing & counselling agency. All university names, logos, and trademarks mentioned are used for informational purposes only. We are not a university or an admission authority. Users are encouraged to verify information on the official website of the University before making decisions.",
   },

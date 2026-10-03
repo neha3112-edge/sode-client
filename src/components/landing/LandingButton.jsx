@@ -2,16 +2,35 @@
 
 import React from "react";
 
+const VARIANTS = {
+  primary: {
+    classes: "font-bold shadow-xs hover:opacity-95 active:scale-[0.98] transition-all cursor-pointer rounded-[6px]",
+    style: { background: "linear-gradient(270deg, #ff6600 0%, #ee3024 100%)", color: "#ffffff", border: "none" },
+  },
+  submit: {
+    classes: "text-white font-bold shadow-sm hover:opacity-95 active:scale-[0.98] transition-all cursor-pointer border-none rounded-[5px]",
+    style: { background: "#28a745" },
+  },
+  phone: {
+    classes: "rounded-full font-bold shadow-xs hover:opacity-95 active:scale-[0.97] transition-all cursor-pointer border-none select-none no-underline text-white",
+    style: { backgroundColor: "#ff5500" },
+  },
+  outline: {
+    classes: "border-2 border-white text-white font-bold hover:bg-white hover:text-slate-900 transition-all rounded-[6px] cursor-pointer",
+    style: {},
+  },
+};
+VARIANTS.brochure = VARIANTS.primary;
+
 /**
- * Reusable Landing Page Button
- * Used across LandingHero, LandingLeadForm, and other landing components.
+ * Reusable Landing Page Button & Action Link
  */
 export default function LandingButton({
   children,
   type = "button",
-  variant = "primary", // "primary" | "brochure" | "submit" | "phone" | "outline"
+  variant = "primary",
   icon,
-  iconPosition = "right", // "left" | "right"
+  iconPosition = "right",
   loading = false,
   disabled = false,
   skewEffect = false,
@@ -21,62 +40,22 @@ export default function LandingButton({
   style = {},
   ...props
 }) {
-  const isLink = Boolean(href);
-
-  // Variant-specific styles
-  let variantClasses = "";
-  let defaultStyle = {};
-
-  switch (variant) {
-    case "brochure":
-    case "primary":
-      variantClasses =
-        "font-bold shadow-xs hover:opacity-95 active:scale-[0.98] transition-all cursor-pointer rounded-[6px]";
-      defaultStyle = {
-        background: "linear-gradient(270deg, #ff6600 0%, #ee3024 100%)",
-        color: "#ffffff",
-        border: "none",
-      };
-      break;
-
-    case "submit":
-      variantClasses =
-        "text-white font-bold shadow-sm hover:opacity-95 active:scale-[0.98] transition-all cursor-pointer border-none rounded-[5px]";
-      defaultStyle = {
-        background: "#28a745",
-      };
-      break;
-
-    case "phone":
-      variantClasses =
-        "rounded-full font-bold shadow-xs hover:opacity-95 active:scale-[0.97] transition-all cursor-pointer border-none select-none no-underline text-white";
-      defaultStyle = {
-        backgroundColor: "#ff5500",
-      };
-      break;
-
-    case "outline":
-      variantClasses =
-        "border-2 border-white text-white font-bold hover:bg-white hover:text-slate-900 transition-all rounded-[6px] cursor-pointer";
-      break;
-
-    default:
-      variantClasses = "font-bold rounded-[6px] cursor-pointer transition-all";
-      break;
-  }
-
+  const v = VARIANTS[variant] || { classes: "font-bold rounded-[6px] cursor-pointer transition-all", style: {} };
   const hasSkew = skewEffect || variant === "phone";
+  const Comp = href ? "a" : "button";
 
-  const combinedClasses = `inline-flex items-center justify-center gap-1.5 select-none ${
-    hasSkew ? "relative overflow-hidden" : ""
-  } ${variantClasses} ${
-    disabled || loading ? "opacity-60 cursor-not-allowed pointer-events-none" : ""
-  } ${className}`;
-
-  const mergedStyle = { ...defaultStyle, ...style };
-
-  const content = (
-    <>
+  return (
+    <Comp
+      {...(href ? { href } : { type, disabled: disabled || loading })}
+      onClick={onClick}
+      className={`inline-flex items-center justify-center gap-1.5 select-none ${
+        hasSkew ? "relative overflow-hidden" : ""
+      } ${v.classes} ${
+        disabled || loading ? "opacity-60 cursor-not-allowed pointer-events-none" : ""
+      } ${className}`}
+      style={{ ...v.style, ...style }}
+      {...props}
+    >
       {loading ? (
         <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
       ) : (
@@ -87,33 +66,7 @@ export default function LandingButton({
           {icon && iconPosition === "right" && <span className="relative z-10 shrink-0">{icon}</span>}
         </>
       )}
-    </>
-  );
-
-  if (isLink) {
-    return (
-      <a
-        href={href}
-        onClick={onClick}
-        className={combinedClasses}
-        style={mergedStyle}
-        {...props}
-      >
-        {content}
-      </a>
-    );
-  }
-
-  return (
-    <button
-      type={type}
-      disabled={disabled || loading}
-      onClick={onClick}
-      className={combinedClasses}
-      style={mergedStyle}
-      {...props}
-    >
-      {content}
-    </button>
+    </Comp>
   );
 }
+

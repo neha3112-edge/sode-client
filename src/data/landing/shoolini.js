@@ -37,13 +37,14 @@ export const shooliniData = {
     callGif: "/assets/manipal_v1_images/call_icon.gif",
     primaryColor: "#fd202a",
     themeBg: "bg-[#fd202a]",
-    themeGradient: "linear-gradient(to right, #fd202a, #ff4be5)",
+    themeGradient: "linear-gradient(to right, #fd202a, #ff1a40)",
     themeBorder: "border-[#fd202a]",
     accentColor: "#fd2954",
     goldColor: "#fd202a",
     badgeText: "Admissions Open 2026",
     showCouponBtn: true,
-    couponBtnBg: "linear-gradient(to right, #fd202a, #ff4be5)",
+    couponBtnBg: "#22c55e",
+    faqLayout: "clean",
     faqHeaderColor: "#08417b",
     footerBg: "#010d2a",
 
@@ -68,6 +69,7 @@ export const shooliniData = {
       backgroundSize: "cover",
       isDarkTheme: false,
       sectionBg: "#fff8f2",
+      contentClassName: "lg:max-w-[620px] xl:max-w-[660px]",
 
       hashtagText: "#SecureCareerWithShoolini",
       hashtagStyle: {
@@ -79,14 +81,13 @@ export const shooliniData = {
       },
 
       headlineText: "Shoolini University Online",
-      headingFont: "var(--font-roboto), Roboto, sans-serif",
+      headingFont: "'Oswald', sans-serif",
+      headingClassName: "text-[32px] sm:text-[40px] lg:text-[45px] xl:text-[48px] font-semibold text-[#fd202a] leading-tight tracking-tight sm:whitespace-nowrap mt-1 mb-2",
       headingStyle: {
         color: "#fd202a",
-        fontSize: "44px",
+        fontWeight: 600,
         lineHeight: "1.12",
         letterSpacing: "0.5px",
-        marginTop: "2px",
-        marginBottom: "6px",
       },
 
       taglineText: "Globally Recognised, Outcome-Based Online Programs",
@@ -121,21 +122,21 @@ export const shooliniData = {
         },
       },
 
+      hideCourseBox: true,
       coursesStrip: [
         "MBA | MCA | MA | Msc | BCOM | BBA | BCA",
       ],
+      courseStripClassName: "my-3 text-[17px] sm:text-[19px] lg:text-[20px] font-extrabold text-[#222222] tracking-wide",
       courseStripStyle: {
         color: "#222222",
         fontSize: "19px",
         fontWeight: "800",
         letterSpacing: "0.3px",
-        marginTop: "8px",
-        marginBottom: "14px",
       },
 
       brochureButtonText: "Download Brochure",
       buttonStyle: {
-        background: "linear-gradient(90deg, #ff1a40 0%, #ff4de4 100%)",
+        background: "linear-gradient(90deg, #ff1a40 0%, #fd223a 100%)",
         color: "#ffffff",
         borderRadius: "6px",
         fontSize: "14px",
@@ -145,6 +146,8 @@ export const shooliniData = {
       },
 
       cardStyle: "white",
+      inputStyle: "filled",
+      phonePlaceholder: "Enter Your Number",
       formBackground: "#ffffff",
       enquireColor: "#ff1b53",
       enquireSubtitleColor: "#374151",
@@ -169,7 +172,7 @@ export const shooliniData = {
     programmesLayout: "grid",
     programmesTitle: "Shoolini University Online Courses",
     programmesBg: "#ffffff",
-    programmeBtnBg: "linear-gradient(270deg, #fd202a 0%, #ff4be5 100%)",
+    programmeBtnBg: "linear-gradient(270deg, #fd202a 0%, #ff1a40 100%)",
     programmeBtnTextColor: "#ffffff",
 
     // About Layout Configuration (Image on right with Pay-After-Placement callout)
@@ -190,7 +193,7 @@ export const shooliniData = {
     showFooterForm: false,
 
     // Compare Banner Configuration
-    compareBannerBg: "linear-gradient(270deg, #fd202a 0%, #ff4be5 100%)",
+    compareBannerBg: "linear-gradient(90deg, #ff1a40 0%, #fd223a 100%)",
     footerDisclaimer:
       "SODE Counselling Services LLP act as a marketing agency. All university names, logos, and trademarks mentioned are used for informational purposes only. We are not a university or an admission authority. Users are encouraged to verify information on the official website of the University before making decisions.",
   },
@@ -350,12 +353,10 @@ export const shooliniData = {
     desktopImage: "/assets/shoolini/partiner-desktop.webp",
     mobileImage: "/assets/shoolini/partner-mobile.webp",
   },
-  enrollmentProcess: {
-    titlePrefix: "How to Apply for ",
-    titleHighlight: "Shoolini University Online Courses",
-    prefixColor: "#000000",
-    highlightColor: "#000000",
-    description:
+  admissionProcess: {
+    title: "How To Apply For Shoolini University Online Courses",
+    titleColor: "#203061",
+    subtitle:
       "Students can easily enrol in Shoolini University Online courses. Candidates can conveniently apply by selecting their desired program. Follow these steps to secure admission in the university.",
   },
   admissionSteps: [
@@ -363,31 +364,43 @@ export const shooliniData = {
       num: 1,
       title: "Submit Form",
       desc: "Fill in and submit your application form online",
+      themeColor: "#ff7a00",
+      cardBg: "bg-[#fff8f0]",
     },
     {
       num: 2,
       title: "Expert's Counseling",
       desc: "You will receive a call from our expert counselor",
+      themeColor: "#0066cc",
+      cardBg: "bg-[#f0f7ff]",
     },
     {
       num: 3,
       title: "Choose University",
       desc: "Select the course & university according to your interest",
+      themeColor: "#ff2a6d",
+      cardBg: "bg-[#fff0f5]",
     },
     {
       num: 4,
       title: "Online Payment",
       desc: "You need to make a smooth online fee submission",
+      themeColor: "#16a34a",
+      cardBg: "bg-[#f0faf3]",
     },
     {
       num: 5,
       title: "Document Submit",
       desc: "You need to upload all the required verified documents.",
+      themeColor: "#8b5cf6",
+      cardBg: "bg-[#f7f2ff]",
     },
     {
       num: 6,
       title: "Admission Confirm",
       desc: "Get Confirmation on your Email & Whatsapp",
+      themeColor: "#ff7a00",
+      cardBg: "bg-[#fff8f0]",
     },
   ],
   faqs: [
