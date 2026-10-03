@@ -121,6 +121,30 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
     }
   }, [page?.js]);
 
+  // Responsive slides count for partner universities carousel (strictly 3 on mobile, 7/8 on desktop)
+  const [partnerSlidesToShow, setPartnerSlidesToShow] = useState(7);
+
+  useEffect(() => {
+    const updateSlides = () => {
+      const width = typeof window !== "undefined" ? window.innerWidth : 1200;
+      if (width <= 768) {
+        setPartnerSlidesToShow(3);
+      } else if (width <= 900) {
+        setPartnerSlidesToShow(5);
+      } else if (width <= 1150) {
+        setPartnerSlidesToShow(6);
+      } else if (width <= 1380) {
+        setPartnerSlidesToShow(7);
+      } else {
+        setPartnerSlidesToShow(8);
+      }
+    };
+
+    updateSlides();
+    window.addEventListener("resize", updateSlides);
+    return () => window.removeEventListener("resize", updateSlides);
+  }, []);
+
   // Open enquiry modal helper
   const handleOpenLead = (customTitle, customSub) => {
     openFormModal({
@@ -859,7 +883,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
           `}</style>
           <Container>
             <Carousel
-              key="partner-carousel-strip"
+              key={`partner-carousel-${partnerSlidesToShow}`}
               autoplay={true}
               autoplaySpeed={2500}
               speed={600}
@@ -868,15 +892,16 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
               infinite={true}
               draggable={true}
               swipeToSlide={true}
-              slidesToShow={7}
+              slidesToShow={partnerSlidesToShow}
               slidesToScroll={1}
               responsive={[
                 { breakpoint: 1920, settings: { slidesToShow: 8, slidesToScroll: 1 } },
                 { breakpoint: 1600, settings: { slidesToShow: 8, slidesToScroll: 1 } },
                 { breakpoint: 1380, settings: { slidesToShow: 7, slidesToScroll: 1 } },
                 { breakpoint: 1150, settings: { slidesToShow: 6, slidesToScroll: 1 } },
-                { breakpoint: 860, settings: { slidesToShow: 5, slidesToScroll: 1 } },
-                { breakpoint: 640, settings: { slidesToShow: 4, slidesToScroll: 1 } },
+                { breakpoint: 900, settings: { slidesToShow: 5, slidesToScroll: 1 } },
+                { breakpoint: 768, settings: { slidesToShow: 3, slidesToScroll: 1 } },
+                { breakpoint: 640, settings: { slidesToShow: 3, slidesToScroll: 1 } },
                 { breakpoint: 480, settings: { slidesToShow: 3, slidesToScroll: 1 } },
               ]}
               className="w-full partner-antd-carousel"
