@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import LandingNavbar, { LandingSubNav } from "./LandingNavbar";
 import LandingHero from "./LandingHero";
 import LandingApprovals from "./LandingApprovals";
