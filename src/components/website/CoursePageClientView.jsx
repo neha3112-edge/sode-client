@@ -188,29 +188,38 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
 
   // ── Partner Universities for Carousel Strip (Dynamic from API hero.partnerLogos or topUniversities) ──
   const partnerList = useMemo(() => {
-    const list =
-      (hero?.partnerLogos && hero.partnerLogos.length > 0 && hero.partnerLogos) ||
-      (heroData?.partnerLogos && heroData.partnerLogos.length > 0 && heroData.partnerLogos) ||
-      (universitiesList && universitiesList.length > 0 && universitiesList) ||
-      (page?.offeringUniversities && page.offeringUniversities.length > 0 && page.offeringUniversities) ||
-      [];
+    const candidates = [
+      hero?.partnerLogos,
+      heroData?.partnerLogos,
+      universitiesList,
+      page?.offeringUniversities,
+    ];
 
-    const withValidImage = list.filter((item) => {
-      const src =
-        resolveMediaUrl(item?.logo) ||
-        resolveMediaUrl(item?.logoData) ||
-        resolveMediaUrl(item?.image) ||
-        resolveMediaUrl(item?.imageData) ||
-        resolveMediaUrl(item?.imageUrl) ||
-        null;
-      return !!src;
-    });
-
-    if (withValidImage.length === 0) return [];
-    if (withValidImage.length < 15) {
-      return [...withValidImage, ...withValidImage, ...withValidImage];
+    let validList = [];
+    for (const candidate of candidates) {
+      if (Array.isArray(candidate) && candidate.length > 0) {
+        const filtered = candidate.filter((item) => {
+          const src =
+            resolveMediaUrl(item?.image) ||
+            resolveMediaUrl(item?.imageUrl) ||
+            resolveMediaUrl(item?.logo) ||
+            resolveMediaUrl(item?.logoData) ||
+            resolveMediaUrl(item?.imageData) ||
+            null;
+          return !!src;
+        });
+        if (filtered.length > 0) {
+          validList = filtered;
+          break;
+        }
+      }
     }
-    return withValidImage;
+
+    if (validList.length === 0) return [];
+    if (validList.length < 15) {
+      return [...validList, ...validList, ...validList];
+    }
+    return validList;
   }, [hero?.partnerLogos, heroData?.partnerLogos, universitiesList, page?.offeringUniversities]);
 
   // ── Action Buttons for Hero Section (Database Driven with Multiple Layers of Fallback) ──
@@ -742,7 +751,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
       {/* =====================================================================
           2️⃣ PARTNER UNIVERSITIES STRIP (Shown only if showPartners is true & has logos)
       ===================================================================== */}
-      {hero.showPartners !== false && partnerList && partnerList.length > 0 && (
+      {partnerList && partnerList.length > 0 && (
         <section className="w-full bg-[#F6E3A3] py-1.5 sm:py-2 px-1 sm:px-2 border-b border-amber-300/40 overflow-hidden">
           <style>{`
             .partner-antd-carousel .slick-slide > div {
