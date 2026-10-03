@@ -69,7 +69,11 @@ export default function LandingButton({
     disabled || loading ? "opacity-60 cursor-not-allowed pointer-events-none" : ""
   } ${className}`;
 
-  const mergedStyle = { ...defaultStyle, ...style };
+  const mergedStyle = {
+    ...defaultStyle,
+    ...(style.backgroundColor && !style.background ? { background: style.backgroundColor } : {}),
+    ...style,
+  };
 
   const content = (
     <>

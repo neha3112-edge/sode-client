@@ -20,22 +20,26 @@ export default function LandingCompareBanner({ brand = {}, onOpenCompare }) {
     brand.compareBannerColor ||
     (isSmu ? "#f05525" : brand.primaryColor || "#08417b");
 
+  const sectionBg = brand.compareSectionBg || "bg-white";
+
   return (
-    <section className="compare_Section bg-[#f6f8fa] pt-8 sm:pt-14 pb-14 sm:pb-16 select-none">
-      <div className="max-w-[1240px] xl:max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8">
+    <section className={`compare_Section ${sectionBg} pt-8 sm:pt-14 pb-14 sm:pb-16 select-none`}>
+      <div className={`${brand.compareBoxMaxWidth || "max-w-[1440px] 2xl:max-w-[1540px]"} mx-auto px-4 sm:px-8 lg:px-12`}>
         <div
-          className="compare_box relative rounded-2xl sm:rounded-3xl px-6 sm:px-12 pt-9 pb-18 sm:pt-12 sm:pb-16 text-center text-white transition-colors flex flex-col items-center justify-center shadow-md"
+          className="compare_box relative rounded-xl sm:rounded-2xl px-8 sm:px-16 pt-9 pb-18 sm:pt-12 sm:pb-16 text-center text-white transition-colors flex flex-col items-center justify-center shadow-md"
           style={{ background: bannerBg }}
         >
           {/* Heading */}
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight m-0">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white tracking-tight m-0">
             Still Confused?
           </h2>
 
           {/* Subtitle */}
-          <h4 className="text-sm sm:text-sm md:text-base text-white/95 font-semibold tracking-normal mt-2.5 max-w-xs sm:max-w-xl mx-auto m-0 leading-snug px-1">
-            Compare {universityName} with Top UGC-DEB Approved Universities
-          </h4>
+          <h3 className="text-xs sm:text-sm md:text-sm text-white/95 font-semibold tracking-normal mt-2 max-w-xs sm:max-w-xl mx-auto m-0 leading-snug px-1">
+            {brand.compareSubtitle ||
+              brand.compareBannerSubtitle ||
+              `Compare ${universityName} with Top UGC-DEB Approved Universities`}
+          </h3>
 
           {/* Centered Overlapping Circular Button */}
           <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 z-10">

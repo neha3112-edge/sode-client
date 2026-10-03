@@ -1,7 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
+import { Carousel } from "antd";
 import LandingContainer from "./LandingContainer";
 
 /**
@@ -13,6 +14,16 @@ export default function LandingRecruiters({
   brand = {},
 }) {
   const activeRecruiters = recruiters || brand.recruiters || {};
+
+  // If list of partner logos is provided (e.g. MU Top-Tier Hiring Partners)
+  if (activeRecruiters.logos && activeRecruiters.logos.length > 0) {
+    return (
+      <MuRecruitersCarousel
+        activeRecruiters={activeRecruiters}
+        brand={brand}
+      />
+    );
+  }
 
   // If VGU or single image is supplied
   if (activeRecruiters.image || brand.slug === "vgu" || brand.recruitersLayout === "vgu") {
@@ -97,6 +108,107 @@ export default function LandingRecruiters({
           </div>
         </div>
       </LandingContainer>
+    </section>
+  );
+}
+
+/**
+ * Mangalayatan University (MU) / Generic Partner Logo Carousel
+ * Displays partner logos with Ant Design Carousel, auto-rotates smoothly, responsive
+ */
+function MuRecruitersCarousel({ activeRecruiters, brand }) {
+  const logos = activeRecruiters.logos || [];
+  const title = activeRecruiters.title || `${brand.name || "University"} Top-Tier Hiring Partners`;
+  const subtitle = activeRecruiters.subtitle || activeRecruiters.description || null;
+  const carouselRef = useRef(null);
+
+  return (
+    <section
+      id="placement"
+      className={`select-none ${brand.recruitersSectionClassName || "py-10 sm:py-14 bg-[#f8f9fa] text-center"}`}
+      style={{
+        backgroundColor: brand.recruitersBg || "#f8f9fa",
+        ...brand.recruitersSectionStyle,
+      }}
+    >
+      <div className={brand.recruitersContainerClassName || "max-w-[1240px] mx-auto px-4 sm:px-6"}>
+        {/* Title and Subtitle */}
+        <div className="max-w-4xl mx-auto mb-6 sm:mb-8 text-center">
+          <h2
+            className={
+              brand.recruitersTitleClassName ||
+              "text-[22px] sm:text-[26px] lg:text-[30px] font-bold text-[#193579] uppercase tracking-wide m-0 mb-3"
+            }
+            style={brand.recruitersTitleStyle}
+          >
+            {title}
+          </h2>
+          {subtitle && (
+            <p
+              className={
+                brand.recruitersSubtitleClassName ||
+                "text-[12.5px] sm:text-[13.5px] text-[#333333] leading-[1.55] max-w-4xl mx-auto font-normal m-0"
+              }
+              style={brand.recruitersSubtitleStyle}
+            >
+              {subtitle}
+            </p>
+          )}
+        </div>
+
+        {/* Ant Design Carousel Window */}
+        <div className="overflow-hidden w-full max-w-[1180px] mx-auto px-1 py-1">
+          <Carousel
+            ref={carouselRef}
+            slidesToShow={brand.recruitersVisibleCount || 5}
+            slidesToScroll={1}
+            autoplay
+            autoplaySpeed={brand.recruitersInterval || 2200}
+            infinite={logos.length > (brand.recruitersVisibleCount || 5)}
+            dots={{ className: "!mt-5" }}
+            arrows={false}
+            pauseOnHover
+            draggable
+            responsive={[
+              {
+                breakpoint: 1024,
+                settings: {
+                  slidesToShow: 3,
+                  slidesToScroll: 1,
+                  infinite: logos.length > 3,
+                },
+              },
+              {
+                breakpoint: 640,
+                settings: {
+                  slidesToShow: 2,
+                  slidesToScroll: 1,
+                  infinite: logos.length > 2,
+                },
+              },
+            ]}
+          >
+            {logos.map((logo, idx) => (
+              <div key={idx} className="px-2 sm:px-2.5 outline-none py-1">
+                <div
+                  className={
+                    brand.recruitersCardClassName ||
+                    "bg-white rounded-[8px] h-[72px] sm:h-[82px] w-full px-3 py-2 flex items-center justify-center shadow-xs border border-slate-100 hover:shadow-md transition-all group overflow-hidden"
+                  }
+                  style={brand.recruitersCardStyle}
+                >
+                  <img
+                    src={logo}
+                    alt={`Partner ${(idx % logos.length) + 1}`}
+                    className="max-h-[48px] sm:max-h-[56px] max-w-[85%] w-auto h-auto object-contain mx-auto transition-transform duration-200 group-hover:scale-105"
+                    loading="eager"
+                  />
+                </div>
+              </div>
+            ))}
+          </Carousel>
+        </div>
+      </div>
     </section>
   );
 }

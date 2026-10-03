@@ -13,40 +13,89 @@ export const amityData = {
       "Amity Admission 2026",
     ],
   },
+  theme: {
+    primaryColor: "#08417b",
+    accentColor: "#fdb913",
+    heroBg: "#ffffff",
+    tableHeaderBg: "#08417b",
+    tableBorderColor: "#cbd5e1",
+    footerBg: "#111111",
+  },
+  customCss: `
+    /* =========================================================
+       PAGE-SPECIFIC CSS FOR AMITY UNIVERSITY ONLINE
+    ========================================================= */
+    .amity-theme-btn {
+      background-color: #fdb913;
+      color: #000000;
+      font-weight: 700;
+    }
+    .amity-theme-btn:hover {
+      background-color: #e5a60b;
+    }
+    .amity-header-accent {
+      color: #08417b;
+    }
+  `,
   brand: {
+    slug: "amity",
     name: "Amity University Online",
     shortName: "Amity",
     hashtag: "#YourFutureBeginsHere",
     headline: "Amity University Online",
-    tagline1: "Learn from Anywhere,",
-    tagline2: "Grow Everywhere",
+    tagline1: "Learn from Anywhere, Grow Everywhere",
+    tagline2: "",
     phone: "+91 7065 7777 55",
     phoneDisplay: "+91 7065 7777 55",
     enquireTitle: "Enquire Now",
     enquireSubtitle: "Academic Experts will assist you!",
     officialUrl: "https://amityonline.com",
     logo: "/assets/amitylp/Amity-online-logo.png",
-    sodeLogo: "/assets/images/sode_logo_official.webp",
+    sodeIcon: "/assets/images/sode_icon.png",
+    sodeLogo: "/assets/images/new-des-logo.webp",
+    showSodeLogo: true,
     campusImage: "/assets/images/amity_campus.png",
     buildingAboutImage: "/assets/images/amity_building_about.png",
     whyChooseStudentImage: "/assets/amitylp/Why-choose-amity.png",
     primaryColor: "#08417b",
     themeBg: "bg-[#08417b]",
     themeBorder: "border-[#08417b]",
-    accentColor: "#ffd200",
-    goldColor: "#ffc107",
-    badgeText: "Admission Open Jan 2026",
+    accentColor: "#fdb913",
+    goldColor: "#fdb913",
+    showCouponBtn: false,
+    showCouponButton: false,
+    badgeText: "Admission Open 2026",
+    approvalsTitle: "Recognition and Approvals",
+    approvalsBannerBg: "#fdb913",
+    approvalsHeaderColor: "#000000",
+    approvalsBg: "#fff9db",
+    approvalsCircleBorder: "#fdb913",
     hero: {
-      backgroundImage: "/assets/amitylp/amity_new_desktop_bg.png",
-      minHeight: "470px",
-      contentMaxWidth: "1400px",
-      contentPadding: "34px 24px 26px",
-      formWidth: "550px",
+      backgroundImage: "/assets/images/amity_hero_banner.jpg",
+      backgroundPosition: "center center",
+      backgroundSize: "cover",
+      studentImage: null,
+      noOverlay: true,
+      backgroundColor: "#ffffff",
+      headingColor: "#004172",
+      taglineColor: "#333333",
+      hashtagColor: "#444444",
+      courseBorder: "#004172",
       formBackground: "#08417b",
-      formRadius: "10px",
-      headingFont: "Arial Narrow, Arial, sans-serif",
-      courseBorder: "#08417b",
-      buttonBackground: "#08417b",
+      formTitleColor: "#fdb913",
+      brochureButtonText: "Download Brochure",
+      buttonBackground: "#ffffff",
+      buttonTextColor: "#004172",
+      buttonBorder: "2px solid #004172",
+      buttonStyle: {
+        backgroundColor: "#ffffff",
+        color: "#004172",
+        border: "2px solid #004172",
+        borderRadius: "6px",
+        fontWeight: "700",
+        padding: "8px 24px",
+        fontSize: "14px",
+      },
     },
     coursesStrip: [
       "MBA | MCA | MCOM | MA | MSC",

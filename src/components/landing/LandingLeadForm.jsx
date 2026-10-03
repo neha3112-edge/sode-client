@@ -46,7 +46,7 @@ const IndiaFlag = () => (
 const PhoneInputField = ({
   value,
   onChange,
-  placeholder = "Enter 10-digit Mobile Number",
+  placeholder = "Enter your Number",
   maxLength = 10,
   isWhiteCard = false,
   bordered = false,
@@ -56,14 +56,14 @@ const PhoneInputField = ({
     <div
       className={`flex items-center w-full h-[36px] sm:h-[38px] rounded-[6px] overflow-hidden ${
         isBordered
-          ? "bg-[#f8fafc] border border-slate-300 focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500"
+          ? "bg-white border border-[#cccccc] focus-within:ring-1 focus-within:ring-[#193579] focus-within:border-[#193579]"
           : "bg-white shadow-xs focus-within:ring-2 focus-within:ring-amber-400"
       }`}
     >
       <div
         className={`flex items-center gap-1.5 h-full px-2.5 select-none shrink-0 ${
           isBordered
-            ? "bg-[#f1f5f9] border-r border-slate-300"
+            ? "bg-[#f8fafc] border-r border-[#cccccc]"
             : "bg-[#f0f2f5] border-r border-[#d1d5db]"
         }`}
       >
@@ -100,7 +100,7 @@ const CustomSelectField = ({
         onChange={onChange}
         className={`w-full h-[36px] sm:h-[38px] px-3.5 pr-8 rounded-[6px] outline-none text-[13px] font-normal appearance-none cursor-pointer ${
           isBordered
-            ? "bg-[#f8fafc] border border-slate-300 text-slate-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            ? "bg-white border border-[#cccccc] text-slate-800 focus:ring-1 focus:ring-[#193579] focus:border-[#193579]"
             : "bg-white border-none shadow-xs focus:ring-2 focus:ring-amber-400"
         } ${value ? "text-slate-800" : "text-slate-400"}`}
       >
@@ -334,7 +334,7 @@ export default function LandingLeadForm({
             placeholder="Enter Your Name"
             className={`w-full h-[36px] sm:h-[38px] px-3.5 rounded-[6px] outline-none text-[13px] font-normal ${
               isWhiteCard
-                ? "bg-[#f8fafc] border border-slate-300 text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                ? "bg-white border border-[#cccccc] text-slate-800 placeholder:text-slate-400 focus:ring-1 focus:ring-[#193579] focus:border-[#193579]"
                 : "bg-white text-slate-800 placeholder:text-[#888888] border-none shadow-xs focus:ring-2 focus:ring-amber-400"
             }`}
           />
@@ -353,7 +353,7 @@ export default function LandingLeadForm({
             placeholder="Enter Your Email"
             className={`w-full h-[36px] sm:h-[38px] px-3.5 rounded-[6px] outline-none text-[13px] font-normal ${
               isWhiteCard
-                ? "bg-[#f8fafc] border border-slate-300 text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                ? "bg-white border border-[#cccccc] text-slate-800 placeholder:text-slate-400 focus:ring-1 focus:ring-[#193579] focus:border-[#193579]"
                 : "bg-white text-slate-800 placeholder:text-[#888888] border-none shadow-xs focus:ring-2 focus:ring-amber-400"
             }`}
           />

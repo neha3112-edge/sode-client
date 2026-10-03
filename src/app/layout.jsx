@@ -1,4 +1,4 @@
-import { Roboto } from "next/font/google";
+import { Roboto, Poppins, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import AppProviders from "@/components/providers/AppProviders";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -7,6 +7,20 @@ const roboto = Roboto({
   subsets: ["latin"],
   variable: "--font-roboto",
   weight: ["300", "400", "500", "700", "900"],
+  display: "swap",
+});
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  variable: "--font-poppins",
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  display: "swap",
+});
+
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-jakarta",
+  weight: ["400", "500", "600", "700", "800"],
   display: "swap",
 });
 
@@ -30,13 +44,14 @@ export default function RootLayout({ children }) {
       lang="en-IN"
       suppressHydrationWarning
       data-scroll-behavior="smooth"
-      className={`${roboto.variable} font-sans h-full antialiased scroll-smooth`}
+      className={`${roboto.variable} ${poppins.variable} ${jakarta.variable} font-sans h-full antialiased scroll-smooth`}
     >
       <head>
         <link rel="preconnect" href="https://new.crm.api.mysode.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://new.crm.api.mysode.com" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;0,900;1,700;1,800&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,700;1,800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet" />
       </head>
       <body className={`${roboto.className} min-h-full flex flex-col`} suppressHydrationWarning>
         <AppProviders>
@@ -47,3 +62,4 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
+
