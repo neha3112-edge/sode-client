@@ -154,11 +154,10 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
   const durationDisplay = quickStats.durationText || "";
   const eligibilityDisplay = quickStats.eligibilityText || "";
   const feeDisplay = quickStats.semesterFeeText || "";
-  const expectedSalaryDisplay = quickStats.expectedSalaryText || "";
 
   const hasQuickStats =
     quickStats.enabled !== false &&
-    Boolean(approvalsDisplay || durationDisplay || eligibilityDisplay || feeDisplay || expectedSalaryDisplay);
+    Boolean(approvalsDisplay || durationDisplay || eligibilityDisplay || feeDisplay);
 
   // Dynamic Section Lists (Strictly from Backend Data)
   const accreditationItems = accreditations.items || [];
@@ -902,17 +901,6 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                   <div className="leading-tight min-w-0">
                     <span className="block text-[10px] sm:text-xs text-slate-500 font-medium">Semester Fees</span>
                     <span className="block text-xs sm:text-sm font-bold text-slate-900 truncate">{feeDisplay}</span>
-                  </div>
-                </div>
-              )}
-
-              {/* 5. Expected Salary */}
-              {expectedSalaryDisplay && (
-                <div className="flex items-center gap-2 sm:gap-2.5 px-2.5 sm:px-4 py-1.5 bg-slate-50/60 md:bg-transparent rounded-lg md:rounded-none flex-1 min-w-[140px]">
-                  <Trophy className="w-4 h-4 sm:w-5 sm:h-5 text-[#0284C7] shrink-0" />
-                  <div className="leading-tight min-w-0">
-                    <span className="block text-[10px] sm:text-xs text-slate-500 font-medium">Expected Salary</span>
-                    <span className="block text-xs sm:text-sm font-bold text-slate-900 truncate">{expectedSalaryDisplay}</span>
                   </div>
                 </div>
               )}
