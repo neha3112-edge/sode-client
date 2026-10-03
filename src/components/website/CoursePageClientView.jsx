@@ -590,14 +590,14 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                               variant === "green"
                                 ? "bg-[#22C55E] hover:bg-[#16a34a] text-white"
                                 : variant === "amber" || variant === "gold"
-                                ? "bg-[#F5D061] hover:bg-[#ebc44f] text-[#102A45]"
-                                : variant === "blue"
-                                ? "bg-[#0284C7] hover:bg-[#0369a1] text-white"
-                                : variant === "dark"
-                                ? "bg-[#0f172a] hover:bg-[#1e293b] text-white"
-                                : variant === "outline"
-                                ? "bg-transparent hover:bg-white/10 text-white border border-white/80"
-                                : "bg-[#F5D061] hover:bg-[#ebc44f] text-[#102A45]";
+                                  ? "bg-[#F5D061] hover:bg-[#ebc44f] text-[#102A45]"
+                                  : variant === "blue"
+                                    ? "bg-[#0284C7] hover:bg-[#0369a1] text-white"
+                                    : variant === "dark"
+                                      ? "bg-[#0f172a] hover:bg-[#1e293b] text-white"
+                                      : variant === "outline"
+                                        ? "bg-transparent hover:bg-white/10 text-white border border-white/80"
+                                        : "bg-[#F5D061] hover:bg-[#ebc44f] text-[#102A45]";
 
                             if (isModal) {
                               return (
@@ -802,7 +802,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
               font-weight: 700 !important;
             }
           `}</style>
-          <div className="max-w-7xl mx-auto px-1 sm:px-2">
+          <Container>
             <Carousel
               key="partner-carousel-strip"
               autoplay={true}
@@ -813,7 +813,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
               infinite={true}
               draggable={true}
               swipeToSlide={true}
-              slidesToShow={9}
+              slidesToShow={7}
               slidesToScroll={1}
               responsive={[
                 { breakpoint: 1920, settings: { slidesToShow: 8, slidesToScroll: 1 } },
@@ -828,7 +828,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
             >
               {partnerList.map((uni, idx) => {
                 const imageSrc = resolveMediaUrl(
-                  uni.logo || uni.image || uni.logoData || uni.imageData || uni.imageUrl
+                  uni.image || uni.imageUrl
                 );
                 if (!imageSrc) return null;
 
@@ -850,7 +850,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                 );
               })}
             </Carousel>
-          </div>
+          </Container>
         </section>
       )}
 
@@ -922,837 +922,103 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
       <div className="w-full bg-[#F0F4F8] py-5 sm:py-10">
         <Container>
           <div id="course-page-content-sections" className="space-y-6">
-          {/* =====================================================================
+            {/* =====================================================================
               3️⃣ RANKINGS & ACCREDITATIONS (Shown only if accreditationItems has data)
           ===================================================================== */}
-          {accreditations.enabled !== false && accreditationItems && accreditationItems.length > 0 && (
-            <div
-              id="accreditations"
-              data-nav-label="Accreditations"
-              className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-5 sm:p-7 mb-6 scroll-mt-20 text-center"
-            >
-              <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight mb-2">
-                {accreditations.title || (pageTitle ? `Rankings & Accreditations for ${pageTitle}` : "Rankings & Accreditations")}
-              </h2>
-              {accreditations.subtitle && (
-                <p className="text-xs sm:text-sm text-slate-600 text-center max-w-2xl mx-auto mb-6">
-                  {accreditations.subtitle}
-                </p>
-              )}
+            {accreditations.enabled !== false && accreditationItems && accreditationItems.length > 0 && (
+              <div
+                id="accreditations"
+                data-nav-label="Accreditations"
+                className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-5 sm:p-7 mb-6 scroll-mt-20 text-center"
+              >
+                <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight mb-2">
+                  {accreditations.title || (pageTitle ? `Rankings & Accreditations for ${pageTitle}` : "Rankings & Accreditations")}
+                </h2>
+                {accreditations.subtitle && (
+                  <p className="text-xs sm:text-sm text-slate-600 text-center max-w-2xl mx-auto mb-6">
+                    {accreditations.subtitle}
+                  </p>
+                )}
 
-              <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2.5 md:gap-3 w-full">
-                {accreditationItems.map((item, idx) => {
-                  const logoSrc = resolveMediaUrl(item.logo || item.icon);
-                  return (
-                    <div
-                      key={idx}
-                      className="bg-white rounded-xl border border-gray-200 flex flex-col p-1.5 sm:p-3 items-center justify-between text-center aspect-[4/4.6] sm:aspect-square shadow-2xs hover:border-blue-300 transition-colors overflow-hidden shrink-0 w-[calc((100%-12px)/3)] sm:w-[calc((100%-20px)/3)] md:w-[calc((100%-60px)/6)]"
-                    >
-                      <div className="flex-1 min-h-0 w-full relative">
-                        {logoSrc ? (
-                          <Image
-                            src={getAssetPath(logoSrc)}
-                            alt={item.title || "Accreditation"}
-                            fill
-                            sizes="(max-width: 768px) 64px, 80px"
-                            className="object-contain"
-                            unoptimized
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <Award className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-blue-600" />
-                          </div>
-                        )}
-                      </div>
-                      <div className="w-full shrink-0 flex flex-col items-center justify-start text-center pt-1">
-                        <div className="w-full h-4 sm:h-5 flex items-center justify-center">
-                          <h3 className="text-[10px] sm:text-[11.5px] md:text-[12.5px] font-bold text-gray-900 m-0 tracking-tight leading-tight line-clamp-1 w-full text-center">
-                            {item.title}
-                          </h3>
-                        </div>
-                        <div className="w-full h-[22px] sm:h-[26px] flex items-start justify-center mt-0.5">
-                          {item.subtitle || item.description ? (
-                            <p className="text-[8px] sm:text-[9px] md:text-[10px] text-gray-600 leading-tight m-0 line-clamp-2 w-full text-center">
-                              {item.subtitle || item.description}
-                            </p>
-                          ) : null}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* =====================================================================
-              4️⃣ OVERVIEW & KEY HIGHLIGHTS (Shown only if description or table has data)
-          ===================================================================== */}
-          {overview.enabled !== false && (Boolean(overview.description) || overviewTable.length > 0) && (
-            <div
-              id="overview"
-              data-nav-label="Highlights"
-              className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-4 sm:p-6 md:p-8 mb-6 scroll-mt-20"
-            >
-              <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
-                {overview.title || "Overview & Key Highlights"}
-              </h2>
-              {overview.subtitle && (
-                <p className="text-xs sm:text-sm text-slate-600 text-center max-w-2xl mx-auto mb-5">
-                  {overview.subtitle}
-                </p>
-              )}
-
-              {/* Thin Divider Line */}
-              <div className="w-full max-w-2xl mx-auto h-[1px] bg-slate-200 mb-6" />
-
-              {overview.description && (
-                <div className="text-xs sm:text-sm text-slate-600 leading-relaxed text-center max-w-4xl mx-auto mb-8">
-                  <SafeHtmlRenderer html={overview.description} />
-                </div>
-              )}
-
-              {/* Highlights Comparison Table */}
-              {overviewTable.length > 0 && (
-                <>
-                  <div className="max-w-5xl mx-auto overflow-hidden border border-gray-200 shadow-2xs rounded-lg">
-                    <Table
-                      columns={overviewTableColumns}
-                      dataSource={overviewDataSource.slice(0, visibleOverviewCount)}
-                      pagination={false}
-                      size="small"
-                      bordered
-                      className="course-antd-table w-full"
-                    />
-                  </div>
-
-                  {/* View More / View Less Buttons for Overview Table */}
-                  {overviewDataSource.length > 5 && (
-                    <div className="flex items-center justify-center gap-3 mt-5">
-                      {visibleOverviewCount < overviewDataSource.length ? (
-                        <>
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setVisibleOverviewCount((prev) =>
-                                Math.min(prev + 5, overviewDataSource.length)
-                              )
-                            }
-                            className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
-                          >
-                            <span>View More</span>
-                            <ChevronDown className="w-3.5 h-3.5" />
-                          </button>
-                          {visibleOverviewCount > 5 && (
-                            <button
-                              type="button"
-                              onClick={() => setVisibleOverviewCount(5)}
-                              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gray-100 text-slate-600 hover:bg-gray-200 transition-colors text-xs font-semibold border border-gray-200 cursor-pointer active:scale-95"
-                            >
-                              <span>View Less</span>
-                              <ChevronDown className="w-3.5 h-3.5 rotate-180" />
-                            </button>
-                          )}
-                        </>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => setVisibleOverviewCount(5)}
-                          className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
-                        >
-                          <span>View Less</span>
-                          <ChevronDown className="w-3.5 h-3.5 rotate-180" />
-                        </button>
-                      )}
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-          )}
-
-          {/* =====================================================================
-              5️⃣ WHY CHOOSE COURSE (Shown only if whyChooseCards has data)
-          ===================================================================== */}
-          {whyChoose.enabled !== false && whyChooseCards && whyChooseCards.length > 0 && (
-            <div
-              id="why-choose"
-              data-nav-label="Why Choose Us"
-              className="bg-white rounded-xl shadow-xs border border-gray-200 p-4 sm:p-6 md:p-8 mb-6 scroll-mt-20 space-y-5 sm:space-y-6"
-            >
-              <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
-                {whyChoose.title || (cleanOnlineTitle ? `Why Choose ${cleanOnlineTitle}?` : "Why Choose?")}
-              </h2>
-              {whyChoose.subtitle && (
-                <p className="text-xs sm:text-sm text-slate-600 text-center max-w-2xl mx-auto mb-6">
-                  {whyChoose.subtitle}
-                </p>
-              )}
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-5">
-                {whyChooseCards.map((card, idx) => {
-                  const iconSrc = resolveMediaUrl(card.icon || card.mediaIcon);
-                  return (
-                    <div
-                      key={idx}
-                      className="rounded-xl border border-blue-100/80 bg-blue-50/20 p-4 sm:p-5 text-center hover:border-blue-300 hover:shadow-md transition-all duration-200 flex flex-col items-center space-y-2.5 sm:space-y-3 shadow-2xs"
-                    >
-                      <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white text-[#0D5CAD] flex items-center justify-center shrink-0 border border-blue-100 shadow-2xs">
-                        {iconSrc ? (
-                          <Image
-                            src={getAssetPath(iconSrc)}
-                            alt={card.title || "Icon"}
-                            width={28}
-                            height={28}
-                            className="object-contain"
-                            unoptimized
-                          />
-                        ) : (
-                          <ShieldCheck className="w-6 h-6 sm:w-7 sm:h-7 text-[#0077B6]" />
-                        )}
-                      </div>
-                      <div className="space-y-1">
-                        <h3 className="text-sm sm:text-base font-bold text-gray-900 leading-snug">
-                          {card.title}
-                        </h3>
-                        {card.description && (
-                          <p className="text-xs text-gray-600 leading-relaxed font-normal">
-                            {card.description}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* =====================================================================
-              6️⃣ ELIGIBILITY CRITERIA (Shown only if eligibilityCards has data)
-          ===================================================================== */}
-          {eligibility.enabled !== false && eligibilityCards && eligibilityCards.length > 0 && (
-            <div
-              id="eligibility"
-              data-nav-label="Eligibility"
-              className="bg-white rounded-xl shadow-xs border border-gray-200 p-4 sm:p-6 md:p-8 mb-6 scroll-mt-20 space-y-5 sm:space-y-6"
-            >
-              <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
-                {eligibility.title || (cleanOnlineTitle ? `Eligibility Criteria for ${cleanOnlineTitle}` : "Eligibility Criteria")}
-              </h2>
-              {eligibility.subtitle && (
-                <p className="text-xs sm:text-sm text-slate-600 text-center max-w-2xl mx-auto mb-6">
-                  {eligibility.subtitle}
-                </p>
-              )}
-
-              <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-200 gap-5 md:gap-0 py-2">
-                {eligibilityCards.map((card, idx) => {
-                  const iconSrc = resolveMediaUrl(card.icon || card.mediaIcon);
-                  return (
-                    <div key={idx} className="flex flex-col items-center text-center px-3 sm:px-6 pt-4 md:pt-0 space-y-2.5">
-                      <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white text-[#0D5CAD] flex items-center justify-center shrink-0 border border-blue-100 shadow-2xs">
-                        {iconSrc ? (
-                          <Image
-                            src={getAssetPath(iconSrc)}
-                            alt={card.title || "Icon"}
-                            width={28}
-                            height={28}
-                            className="object-contain"
-                            unoptimized
-                          />
-                        ) : (
-                          <Building2 className="w-6 h-6 sm:w-7 sm:h-7 text-[#0077B6]" />
-                        )}
-                      </div>
-                      <div className="space-y-1">
-                        <h4 className="font-bold text-sm sm:text-base text-gray-900 leading-snug">
-                          {card.title}
-                        </h4>
-                        {card.description && (
-                          <p className="text-xs text-gray-600 leading-relaxed font-normal">
-                            {card.description}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* =====================================================================
-              7️⃣ ONLINE MBA ADMISSION PROCESS (Shown only if admissionSteps has data)
-          ===================================================================== */}
-          {admissionProcess.enabled !== false && admissionSteps && admissionSteps.length > 0 && (
-            <div
-              id="admission-process"
-              data-nav-label="Admission Process"
-              className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-4 sm:p-6 mb-6 scroll-mt-20"
-            >
-              <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
-                {admissionProcess.title || (cleanOnlineTitle ? `${cleanOnlineTitle} Admission Process` : "Admission Process")}
-              </h2>
-              {admissionProcess.subtitle && (
-                <p className="text-xs sm:text-sm text-slate-600 text-center max-w-2xl mx-auto mb-8">
-                  {admissionProcess.subtitle}
-                </p>
-              )}
-
-              {/* Stepper Cards with Arrows */}
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3.5 items-stretch w-full">
-                {admissionSteps.map((step, idx) => {
-                  const stepNum = step.stepNumber || step.order || idx + 1;
-                  const stepTitle = step.title || "";
-                  const stepDesc = step.description || step.desc || "";
-                  const iconUrl = resolveMediaUrl(step.icon);
-
-                  return (
-                    <div key={idx} className="relative flex">
-                      <div className="w-full rounded-xl p-2.5 sm:p-3.5 text-center flex flex-col items-center bg-white shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300 hover:-translate-y-1">
-                        {/* Large icon circle */}
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center shrink-0 bg-sky-50 border-2 border-sky-300 mb-2 sm:mb-3">
-                          {iconUrl ? (
+                <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2.5 md:gap-3 w-full">
+                  {accreditationItems.map((item, idx) => {
+                    const logoSrc = resolveMediaUrl(item.logo || item.icon);
+                    return (
+                      <div
+                        key={idx}
+                        className="bg-white rounded-xl border border-gray-200 flex flex-col p-1.5 sm:p-3 items-center justify-between text-center aspect-[4/4.6] sm:aspect-square shadow-2xs hover:border-blue-300 transition-colors overflow-hidden shrink-0 w-[calc((100%-12px)/3)] sm:w-[calc((100%-20px)/3)] md:w-[calc((100%-60px)/6)]"
+                      >
+                        <div className="flex-1 min-h-0 w-full relative">
+                          {logoSrc ? (
                             <Image
-                              src={getAssetPath(iconUrl)}
-                              alt={stepTitle || "Step"}
-                              width={24}
-                              height={24}
+                              src={getAssetPath(logoSrc)}
+                              alt={item.title || "Accreditation"}
+                              fill
+                              sizes="(max-width: 768px) 64px, 80px"
                               className="object-contain"
                               unoptimized
                             />
                           ) : (
-                            <span className="font-bold text-sky-600 text-sm sm:text-base">
-                              {stepNum}
-                            </span>
+                            <div className="w-full h-full flex items-center justify-center">
+                              <Award className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-blue-600" />
+                            </div>
                           )}
                         </div>
-
-                        {/* Title with Step Number in front */}
-                        <h4 className="font-bold text-[10.5px] sm:text-[11.5px] text-[#0F2A4A] leading-snug mb-1 sm:mb-1.5">
-                          <span className="text-[#1C3569] font-bold mr-1">{stepNum}.</span>
-                          {stepTitle}
-                        </h4>
-
-                        {/* Description */}
-                        {stepDesc && (
-                          <p className="text-[8.5px] sm:text-[9.5px] text-gray-500 leading-relaxed font-normal">
-                            {stepDesc}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Arrow between cards */}
-                      {idx < admissionSteps.length - 1 && (
-                        <div className="hidden lg:flex absolute -right-2 top-1/2 -translate-y-1/2 z-10 text-sky-400">
-                          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                            <polyline points="9 18 15 12 9 6" />
-                          </svg>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* =====================================================================
-              8️⃣ MODE COMPARISON TABLE (Shown only if comparisonRows has data)
-          ===================================================================== */}
-          {modeComparison.enabled !== false && comparisonRows && comparisonRows.length > 0 && (
-            <div
-              id="mode-comparison"
-              data-nav-label="Mode Comparison"
-              className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-4 sm:p-6 md:p-8 mb-6 scroll-mt-20"
-            >
-              <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
-                {modeComparison.title || (cleanOnlineTitle ? `${cleanOnlineTitle} vs. Regular vs. Distance` : "Mode Comparison")}
-              </h2>
-              {modeComparison.subtitle && (
-                <p className="text-xs sm:text-sm text-slate-600 text-center max-w-2xl mx-auto mb-6">
-                  {modeComparison.subtitle}
-                </p>
-              )}
-
-              {/* Comparison Table */}
-              <div className="max-w-5xl mx-auto overflow-hidden border border-gray-200 shadow-2xs rounded-lg">
-                <Table
-                  columns={modeComparisonColumns}
-                  dataSource={modeComparisonDataSource.slice(0, visibleComparisonCount)}
-                  pagination={false}
-                  size="small"
-                  bordered
-                  className="course-antd-table w-full"
-                />
-              </div>
-
-              {/* View More / View Less Buttons for Mode Comparison Table */}
-              {modeComparisonDataSource.length > 5 && (
-                <div className="flex items-center justify-center gap-3 mt-5">
-                  {visibleComparisonCount < modeComparisonDataSource.length ? (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setVisibleComparisonCount((prev) =>
-                            Math.min(prev + 5, modeComparisonDataSource.length)
-                          )
-                        }
-                        className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
-                      >
-                        <span>View More</span>
-                        <ChevronDown className="w-3.5 h-3.5" />
-                      </button>
-                      {visibleComparisonCount > 5 && (
-                        <button
-                          type="button"
-                          onClick={() => setVisibleComparisonCount(5)}
-                          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gray-100 text-slate-600 hover:bg-gray-200 transition-colors text-xs font-semibold border border-gray-200 cursor-pointer active:scale-95"
-                        >
-                          <span>View Less</span>
-                          <ChevronDown className="w-3.5 h-3.5 rotate-180" />
-                        </button>
-                      )}
-                    </>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => setVisibleComparisonCount(5)}
-                      className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
-                    >
-                      <span>View Less</span>
-                      <ChevronDown className="w-3.5 h-3.5 rotate-180" />
-                    </button>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* =====================================================================
-              9️⃣ POPULAR SPECIALIZATIONS SECTION (Shown only if specializationsList has data)
-          ===================================================================== */}
-          {specializations.enabled !== false && specializationsList && specializationsList.length > 0 && (
-            <div
-              id="specializations"
-              data-nav-label="Specialisations"
-              className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-3 sm:p-6 mb-5 sm:mb-6 scroll-mt-20"
-            >
-              <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-1.5 sm:mb-2">
-                {specializations.title || (cleanOnlineTitle ? `Popular ${cleanOnlineTitle} Specializations` : "Popular Specializations")}
-              </h2>
-              {specializations.subtitle && (
-                <p className="text-xs sm:text-sm text-slate-600 text-center max-w-2xl mx-auto mb-4 sm:mb-6">
-                  {specializations.subtitle}
-                </p>
-              )}
-
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-1.5 sm:gap-3">
-                {specializationsList.map((spec, idx) => {
-                  const isHighlighted = !!spec.highlighted;
-
-                  return (
-                    <div
-                      key={idx}
-                      onClick={() => handleOpenLead(`Specialization: ${spec.name}`, `Enquire for ${spec.name} in ${pageTitle}`)}
-                      className={`px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg border flex items-center transition-all cursor-pointer shadow-2xs min-h-[42px] sm:min-h-[48px] ${
-                        isHighlighted
-                          ? "border-[#00BCD4] bg-cyan-50/20 text-[#00838F]"
-                          : "border-slate-200 bg-white hover:border-slate-300 text-slate-800"
-                      }`}
-                    >
-                      <span className={`text-[11px] sm:text-xs font-bold leading-tight line-clamp-2 ${isHighlighted ? "text-[#00838F]" : "text-slate-800"}`}>
-                        {spec.name}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* =====================================================================
-              🔟 ONLINE MBA SYLLABUS SEMESTER WISE (Shown only if syllabusData has data)
-          ===================================================================== */}
-          {syllabus.enabled !== false && syllabusData && syllabusData.length > 0 && (
-            <div
-              id="syllabus"
-              data-nav-label="Syllabus"
-              className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-4 sm:p-6 mb-6 scroll-mt-20"
-            >
-              <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
-                {syllabus.title || (cleanOnlineTitle ? `${cleanOnlineTitle} Syllabus Semester Wise` : "Syllabus Semester Wise")}
-              </h2>
-              {syllabus.subtitle && (
-                <p className="text-xs sm:text-sm text-slate-600 text-center max-w-2xl mx-auto mb-6">
-                  {syllabus.subtitle}
-                </p>
-              )}
-
-              {/* Semester Pill Tabs */}
-              <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-6">
-                {syllabusData.map((sem) => {
-                  const isActive = activeSemester === sem.semesterNumber;
-                  return (
-                    <button
-                      key={sem.semesterNumber}
-                      type="button"
-                      onClick={() => {
-                        setActiveSemester(sem.semesterNumber);
-                        setVisibleSyllabusCount(5);
-                      }}
-                      className={`px-4 sm:px-7 py-1.5 sm:py-2 rounded-full font-bold text-xs sm:text-sm transition-all duration-150 cursor-pointer ${
-                        isActive
-                          ? "bg-[#0F2A4A] text-white shadow-xs"
-                          : "bg-[#EAF2FA] text-[#0F2A4A] hover:bg-slate-200"
-                      }`}
-                    >
-                      {sem.semesterTitle || `Semester ${sem.semesterNumber}`}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Active Semester Subjects Table */}
-              <div className="max-w-5xl mx-auto overflow-hidden border border-gray-200 shadow-2xs rounded-lg">
-                <Table
-                  columns={syllabusColumns}
-                  dataSource={syllabusDataSource.slice(0, visibleSyllabusCount)}
-                  pagination={false}
-                  size="small"
-                  bordered
-                  className="course-antd-table w-full"
-                />
-              </div>
-
-              {/* View More / View Less Buttons for Syllabus Table */}
-              {syllabusDataSource.length > 5 && (
-                <div className="flex items-center justify-center gap-3 mt-5">
-                  {visibleSyllabusCount < syllabusDataSource.length ? (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setVisibleSyllabusCount((prev) =>
-                            Math.min(prev + 5, syllabusDataSource.length)
-                          )
-                        }
-                        className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
-                      >
-                        <span>View More</span>
-                        <ChevronDown className="w-3.5 h-3.5" />
-                      </button>
-                      {visibleSyllabusCount > 5 && (
-                        <button
-                          type="button"
-                          onClick={() => setVisibleSyllabusCount(5)}
-                          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gray-100 text-slate-600 hover:bg-gray-200 transition-colors text-xs font-semibold border border-gray-200 cursor-pointer active:scale-95"
-                        >
-                          <span>View Less</span>
-                          <ChevronDown className="w-3.5 h-3.5 rotate-180" />
-                        </button>
-                      )}
-                    </>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => setVisibleSyllabusCount(5)}
-                      className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
-                    >
-                      <span>View Less</span>
-                      <ChevronDown className="w-3.5 h-3.5 rotate-180" />
-                    </button>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* =====================================================================
-              1️⃣1️⃣ TOP UNIVERSITIES OFFERING ONLINE MBA IN INDIA (Shown only if universitiesList has data)
-          ===================================================================== */}
-          {topUniversities.enabled !== false && universitiesList && universitiesList.length > 0 && (
-            <div
-              id="top-universities"
-              data-nav-label="Top Universities"
-              className="scroll-mt-20 bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8 mb-6"
-            >
-              <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
-                {topUniversities.title || (cleanOnlineTitle ? `Top Universities Offering ${cleanOnlineTitle} in India` : "Top Universities")}
-              </h2>
-              {topUniversities.subtitle && (
-                <p className="text-xs sm:text-sm text-slate-600 text-center max-w-2xl mx-auto mb-6 sm:mb-8">
-                  {topUniversities.subtitle}
-                </p>
-              )}
-
-              {/* University Cards Grid (Strictly Backend Data, 5-by-5 Incremental Display) */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
-                {universitiesList.slice(0, visibleUnisCount).map((uni, idx) => {
-                  const inCmp = typeof isInCompare === "function" ? isInCompare(uni._id || uni.slug || uni.name) : false;
-                  const coursesOfferedText = uni.programsCount
-                    ? `${uni.programsCount} Programs`
-                    : uni.coursesCount
-                    ? `${uni.coursesCount}+ Programs`
-                    : (uni.city || uni.state || "Recognized University");
-                  const uniHref = uni.slug ? `/universities/${uni.slug}` : "#";
-                  const uniLogo = resolveMediaUrl(uni.logo || uni.image);
-
-                  return (
-                    <div
-                      key={idx}
-                      className="bg-gray-50 rounded-xl border border-gray-200 hover:border-blue-400 p-2 sm:p-2.5 hover:shadow-md transition-all flex flex-col items-center justify-between text-center relative group min-w-0 shadow-2xs"
-                    >
-                      {/* Circular Logo Container */}
-                      <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-full p-1 flex items-center justify-center bg-white relative my-0.5 shrink-0 overflow-hidden border border-gray-100">
-                        {uniLogo ? (
-                          <Image
-                            src={getAssetPath(uniLogo)}
-                            alt={uni.name || "University"}
-                            fill
-                            sizes="56px"
-                            className="object-contain"
-                            unoptimized
-                          />
-                        ) : (
-                          <div className="w-full h-full rounded-full bg-blue-50 text-blue-600 font-semibold flex items-center justify-center text-xs uppercase">
-                            {uni.name ? uni.name.charAt(0) : "U"}
+                        <div className="w-full shrink-0 flex flex-col items-center justify-start text-center pt-1">
+                          <div className="w-full h-4 sm:h-5 flex items-center justify-center">
+                            <h3 className="text-[10px] sm:text-[11.5px] md:text-[12.5px] font-bold text-gray-900 m-0 tracking-tight leading-tight line-clamp-1 w-full text-center">
+                              {item.title}
+                            </h3>
                           </div>
-                        )}
-                      </div>
-
-                      {/* University Name, Location & Fee */}
-                      <div className="w-full space-y-0.5 my-0.5">
-                        <div className="min-h-7 sm:min-h-8 flex items-center justify-center">
-                          <Link
-                            href={uniHref}
-                            className="text-xs sm:text-[12.5px] font-semibold text-[#0a2540] hover:text-blue-600 line-clamp-2 leading-tight m-0 w-full text-center no-underline transition-colors"
-                          >
-                            {uni.name}
-                          </Link>
-                        </div>
-
-                        {/* 📍 Location  ₹ Fee — flex center, no wrap */}
-                        {(uni.location || uni.feeText || uni.customFee) && (
-                          <div className="flex items-center justify-center gap-1 w-full overflow-hidden">
-                            {uni.location && (
-                              <span className="flex items-center gap-0.5 text-[9px] text-gray-500 font-normal min-w-0">
-                                <MapPin className="w-2 h-2 text-[#4A90D9] shrink-0" />
-                                <span className="whitespace-nowrap overflow-hidden text-ellipsis">{uni.location}</span>
-                              </span>
-                            )}
-                            {uni.location && (uni.feeText || uni.customFee) && (
-                              <span className="text-gray-300 text-[8px] shrink-0">·</span>
-                            )}
-                            {(uni.feeText || uni.customFee) && (
-                              <span className="text-[9px] font-bold text-[#1C3569] shrink-0 whitespace-nowrap">
-                                {(uni.feeText || uni.customFee || '')
-                                  .replace(/\/\s*Sem(ester)?/i, '/Sem')
-                                  .replace(/\/\s*Year/i, '/Yr')}
-                              </span>
-                            )}
+                          <div className="w-full h-[22px] sm:h-[26px] flex items-start justify-center mt-0.5">
+                            {item.subtitle || item.description ? (
+                              <p className="text-[8px] sm:text-[9px] md:text-[10px] text-gray-600 leading-tight m-0 line-clamp-2 w-full text-center">
+                                {item.subtitle || item.description}
+                              </p>
+                            ) : null}
                           </div>
-                        )}
-                        {!uni.location && !uni.feeText && !uni.customFee && (
-                          <span className="text-[9px] text-gray-500 text-center w-full block">{coursesOfferedText}</span>
-                        )}
+                        </div>
                       </div>
-
-                      {/* Full-width Add to Compare Pill */}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          toggleCompare(uni);
-                          setIsCompareDrawerOpen && setIsCompareDrawerOpen(true);
-                        }}
-                        className={`w-full py-1 px-2 rounded-lg text-[10px] sm:text-[11px] font-semibold transition-all flex items-center justify-center gap-1 border cursor-pointer mt-1 ${
-                          inCmp
-                            ? "bg-teal-50 text-teal-700 border-teal-600 shadow-2xs"
-                            : "bg-white text-[#0a2540] border-gray-200 hover:bg-gray-50 hover:border-gray-300"
-                        }`}
-                      >
-                        {inCmp ? (
-                          <>
-                            <Check className="w-3.5 h-3.5 text-teal-600 shrink-0 stroke-2" />
-                            <span>Added to Compare</span>
-                          </>
-                        ) : (
-                          <>
-                            <Plus className="w-3.5 h-3.5 text-gray-500 shrink-0 stroke-2" />
-                            <span>Add to Compare</span>
-                          </>
-                        )}
-                      </button>
-
-                      {/* Action Buttons: Apply Now & Know More */}
-                      <div className="w-full grid grid-cols-2 gap-1.5 mt-1.5 items-center">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            openFormModal &&
-                              openFormModal({
-                                title: `Apply to ${uni.name}`,
-                                subtitle: pageTitle,
-                                defaultCourse: pageTitle,
-                                university: uni.name,
-                                formNameOverride: `CourseCard_${uni.slug || uni.name}`,
-                                submitButtonText: "Apply Now",
-                              });
-                          }}
-                          className="w-full bg-[#F4D068] hover:bg-[#ebc557] text-gray-900 text-[11px] sm:text-xs font-semibold py-1.5 px-1 rounded-md sm:rounded-lg border-none cursor-pointer transition-colors active:scale-95 flex items-center justify-center text-center whitespace-nowrap leading-none"
-                        >
-                          Apply Now
-                        </button>
-                        <Link
-                          href={uniHref}
-                          className="w-full bg-white hover:bg-gray-50 text-[#0a2540] hover:text-blue-600 border border-gray-200 text-[11px] sm:text-xs font-semibold py-1.5 px-1 rounded-md sm:rounded-lg text-center no-underline transition-colors flex items-center justify-center whitespace-nowrap leading-none"
-                        >
-                          Know More
-                        </Link>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* View More / View Less Buttons (Initial 5, opens +5 each click, then collapses back to 5) */}
-              {universitiesList.length > 5 && (
-                <div className="flex items-center justify-center gap-3 mt-6">
-                  {visibleUnisCount < universitiesList.length ? (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setVisibleUnisCount((prev) =>
-                            Math.min(prev + 5, universitiesList.length)
-                          )
-                        }
-                        className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
-                      >
-                        <span>View More</span>
-                        <ChevronDown className="w-3.5 h-3.5" />
-                      </button>
-                      {visibleUnisCount > 5 && (
-                        <button
-                          type="button"
-                          onClick={() => setVisibleUnisCount(5)}
-                          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gray-100 text-slate-600 hover:bg-gray-200 transition-colors text-xs font-semibold border border-gray-200 cursor-pointer active:scale-95"
-                        >
-                          <span>View Less</span>
-                          <ChevronDown className="w-3.5 h-3.5 rotate-180" />
-                        </button>
-                      )}
-                    </>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => setVisibleUnisCount(5)}
-                      className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
-                    >
-                      <span>View Less</span>
-                      <ChevronDown className="w-3.5 h-3.5 rotate-180" />
-                    </button>
-                  )}
+                    );
+                  })}
                 </div>
-              )}
-            </div>
-          )}
+              </div>
+            )}
 
-          {/* =====================================================================
-              1️⃣2️⃣ CAREER SCOPE & SALARY EXPECTATIONS (Shown only if data exists)
+            {/* =====================================================================
+              4️⃣ OVERVIEW & KEY HIGHLIGHTS (Shown only if description or table has data)
           ===================================================================== */}
-          {careerScope.enabled !== false &&
-            ((experienceLevels && experienceLevels.length > 0) ||
-              (jobRolesList && jobRolesList.length > 0) ||
-              Boolean(careerScope.jobRolesDescription) ||
-              Boolean(careerScope.salaryTrend)) && (
+            {overview.enabled !== false && (Boolean(overview.description) || overviewTable.length > 0) && (
               <div
-                id="career-scope"
-                data-nav-label="Career & Scope"
+                id="overview"
+                data-nav-label="Highlights"
                 className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-4 sm:p-6 md:p-8 mb-6 scroll-mt-20"
               >
                 <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
-                  {careerScope.title || "Career Scope & Salary Expectations"}
+                  {overview.title || "Overview & Key Highlights"}
                 </h2>
-                {careerScope.subtitle && (
-                  <p className="text-xs sm:text-sm text-slate-600 text-center max-w-2xl mx-auto mb-6">
-                    {careerScope.subtitle}
+                {overview.subtitle && (
+                  <p className="text-xs sm:text-sm text-slate-600 text-center max-w-2xl mx-auto mb-5">
+                    {overview.subtitle}
                   </p>
                 )}
 
-                {/* Table 1: Experience Level vs Job Roles vs Expected Salary */}
-                {experienceLevels.length > 0 && (
-                  <>
-                    <div className="max-w-5xl mx-auto overflow-hidden border border-gray-200 shadow-2xs rounded-lg mb-6">
-                      <Table
-                        columns={careerLevelColumns}
-                        dataSource={careerLevelDataSource.slice(0, visibleCareerLevelCount)}
-                        pagination={false}
-                        size="small"
-                        bordered
-                        className="course-antd-table w-full"
-                      />
-                    </div>
+                {/* Thin Divider Line */}
+                <div className="w-full max-w-2xl mx-auto h-[1px] bg-slate-200 mb-6" />
 
-                    {/* View More / View Less Buttons for Career Level Table */}
-                    {careerLevelDataSource.length > 5 && (
-                      <div className="flex items-center justify-center gap-3 -mt-2 mb-6">
-                        {visibleCareerLevelCount < careerLevelDataSource.length ? (
-                          <>
-                            <button
-                              type="button"
-                              onClick={() =>
-                                setVisibleCareerLevelCount((prev) =>
-                                  Math.min(prev + 5, careerLevelDataSource.length)
-                                )
-                              }
-                              className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
-                            >
-                              <span>View More</span>
-                              <ChevronDown className="w-3.5 h-3.5" />
-                            </button>
-                            {visibleCareerLevelCount > 5 && (
-                              <button
-                                type="button"
-                                onClick={() => setVisibleCareerLevelCount(5)}
-                                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gray-100 text-slate-600 hover:bg-gray-200 transition-colors text-xs font-semibold border border-gray-200 cursor-pointer active:scale-95"
-                              >
-                                <span>View Less</span>
-                                <ChevronDown className="w-3.5 h-3.5 rotate-180" />
-                              </button>
-                            )}
-                          </>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={() => setVisibleCareerLevelCount(5)}
-                            className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
-                          >
-                            <span>View Less</span>
-                            <ChevronDown className="w-3.5 h-3.5 rotate-180" />
-                          </button>
-                        )}
-                      </div>
-                    )}
-                  </>
+                {overview.description && (
+                  <div className="text-xs sm:text-sm text-slate-600 leading-relaxed text-center max-w-4xl mx-auto mb-8">
+                    <SafeHtmlRenderer html={overview.description} />
+                  </div>
                 )}
 
-                {/* Sub-paragraph */}
-                {(careerScope.jobRolesDescription || careerScope.salaryTrend) && (
-                  <p className="text-xs sm:text-sm text-slate-600 text-center max-w-2xl mx-auto my-6">
-                    {careerScope.jobRolesDescription || careerScope.salaryTrend}
-                  </p>
-                )}
-
-                {/* Table 2: Job Role vs Role Description vs Salary Range in India */}
-                {jobRolesList.length > 0 && (
+                {/* Highlights Comparison Table */}
+                {overviewTable.length > 0 && (
                   <>
                     <div className="max-w-5xl mx-auto overflow-hidden border border-gray-200 shadow-2xs rounded-lg">
                       <Table
-                        columns={careerJobRoleColumns}
-                        dataSource={careerJobRoleDataSource.slice(0, visibleJobRolesCount)}
+                        columns={overviewTableColumns}
+                        dataSource={overviewDataSource.slice(0, visibleOverviewCount)}
                         pagination={false}
                         size="small"
                         bordered
@@ -1760,16 +1026,16 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                       />
                     </div>
 
-                    {/* View More / View Less Buttons (Initial 5, opens +5 each click, then collapses back to 5) */}
-                    {careerJobRoleDataSource.length > 5 && (
-                      <div className="flex items-center justify-center gap-3 mt-6">
-                        {visibleJobRolesCount < careerJobRoleDataSource.length ? (
+                    {/* View More / View Less Buttons for Overview Table */}
+                    {overviewDataSource.length > 5 && (
+                      <div className="flex items-center justify-center gap-3 mt-5">
+                        {visibleOverviewCount < overviewDataSource.length ? (
                           <>
                             <button
                               type="button"
                               onClick={() =>
-                                setVisibleJobRolesCount((prev) =>
-                                  Math.min(prev + 5, careerJobRoleDataSource.length)
+                                setVisibleOverviewCount((prev) =>
+                                  Math.min(prev + 5, overviewDataSource.length)
                                 )
                               }
                               className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
@@ -1777,10 +1043,10 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                               <span>View More</span>
                               <ChevronDown className="w-3.5 h-3.5" />
                             </button>
-                            {visibleJobRolesCount > 5 && (
+                            {visibleOverviewCount > 5 && (
                               <button
                                 type="button"
-                                onClick={() => setVisibleJobRolesCount(5)}
+                                onClick={() => setVisibleOverviewCount(5)}
                                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gray-100 text-slate-600 hover:bg-gray-200 transition-colors text-xs font-semibold border border-gray-200 cursor-pointer active:scale-95"
                               >
                                 <span>View Less</span>
@@ -1791,7 +1057,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                         ) : (
                           <button
                             type="button"
-                            onClick={() => setVisibleJobRolesCount(5)}
+                            onClick={() => setVisibleOverviewCount(5)}
                             className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
                           >
                             <span>View Less</span>
@@ -1805,180 +1071,908 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
               </div>
             )}
 
-          {/* =====================================================================
-              1️⃣3️⃣ TOP HIRING RECRUITERS (Shown only if recruitersList has data)
+            {/* =====================================================================
+              5️⃣ WHY CHOOSE COURSE (Shown only if whyChooseCards has data)
           ===================================================================== */}
-          {recruitersSection.enabled !== false && recruitersList && recruitersList.length > 0 && (
-            <div
-              id="recruiters"
-              data-nav-label="Top Recruiters"
-              className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-4 sm:p-6 mb-6 scroll-mt-20"
-            >
-              <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
-                {recruitersSection.title || "Top Hiring Recruiters"}
-              </h2>
-              {recruitersSection.subtitle && (
-                <p className="text-xs sm:text-sm text-slate-600 text-center max-w-2xl mx-auto mb-8">
-                  {recruitersSection.subtitle}
-                </p>
-              )}
+            {whyChoose.enabled !== false && whyChooseCards && whyChooseCards.length > 0 && (
+              <div
+                id="why-choose"
+                data-nav-label="Why Choose Us"
+                className="bg-white rounded-xl shadow-xs border border-gray-200 p-4 sm:p-6 md:p-8 mb-6 scroll-mt-20 space-y-5 sm:space-y-6"
+              >
+                <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
+                  {whyChoose.title || (cleanOnlineTitle ? `Why Choose ${cleanOnlineTitle}?` : "Why Choose?")}
+                </h2>
+                {whyChoose.subtitle && (
+                  <p className="text-xs sm:text-sm text-slate-600 text-center max-w-2xl mx-auto mb-6">
+                    {whyChoose.subtitle}
+                  </p>
+                )}
 
-              {/* Recruiters Grid - 2 cols mobile, 3 sm, 6 md */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2.5 sm:gap-3.5">
-                {recruitersList.map((recruiter, idx) => {
-                  const logoSrc = resolveMediaUrl(recruiter.logo || recruiter.icon);
-                  const rName = recruiter.name || "";
-
-                  return (
-                    <div
-                      key={idx}
-                      className="border border-gray-200 rounded-lg p-1.5 sm:p-2.5 flex items-center justify-center h-12 sm:h-14 bg-white shadow-2xs hover:border-blue-300 hover:shadow-sm transition-all duration-200"
-                    >
-                      {logoSrc ? (
-                        <div className="relative w-full h-8 flex items-center justify-center">
-                          <Image
-                            src={getAssetPath(logoSrc)}
-                            alt={rName || "Recruiter"}
-                            fill
-                            className="object-contain"
-                            unoptimized
-                          />
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-5">
+                  {whyChooseCards.map((card, idx) => {
+                    const iconSrc = resolveMediaUrl(card.icon || card.mediaIcon);
+                    return (
+                      <div
+                        key={idx}
+                        className="rounded-xl border border-blue-100/80 bg-blue-50/20 p-4 sm:p-5 text-center hover:border-blue-300 hover:shadow-md transition-all duration-200 flex flex-col items-center space-y-2.5 sm:space-y-3 shadow-2xs"
+                      >
+                        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white text-[#0D5CAD] flex items-center justify-center shrink-0 border border-blue-100 shadow-2xs">
+                          {iconSrc ? (
+                            <Image
+                              src={getAssetPath(iconSrc)}
+                              alt={card.title || "Icon"}
+                              width={28}
+                              height={28}
+                              className="object-contain"
+                              unoptimized
+                            />
+                          ) : (
+                            <ShieldCheck className="w-6 h-6 sm:w-7 sm:h-7 text-[#0077B6]" />
+                          )}
                         </div>
-                      ) : (
-                        <span className="font-bold text-slate-800 text-xs sm:text-sm truncate px-1 text-center">
-                          {rName}
-                        </span>
-                      )}
-                    </div>
-                  );
-                })}
+                        <div className="space-y-1">
+                          <h3 className="text-sm sm:text-base font-bold text-gray-900 leading-snug">
+                            {card.title}
+                          </h3>
+                          {card.description && (
+                            <p className="text-xs text-gray-600 leading-relaxed font-normal">
+                              {card.description}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* =====================================================================
-              1️⃣4️⃣ COMMON MISTAKES TO AVOID (Shown only if mistakesList has data)
+            {/* =====================================================================
+              6️⃣ ELIGIBILITY CRITERIA (Shown only if eligibilityCards has data)
           ===================================================================== */}
-          {mistakesToAvoid.enabled !== false && mistakesList && mistakesList.length > 0 && (
-            <div
-              id="mistakes-to-avoid"
-              data-nav-label="Mistakes to Avoid"
-              className="bg-white rounded-xl shadow-xs border border-gray-200 p-4 sm:p-6 md:p-8 mb-6 scroll-mt-20 space-y-5 sm:space-y-6"
-            >
-              <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
-                {mistakesToAvoid.title || "Common Mistakes to Avoid"}
-              </h2>
-              {mistakesToAvoid.subtitle && (
-                <p className="text-xs sm:text-sm text-slate-600 text-center max-w-2xl mx-auto mb-6">
-                  {mistakesToAvoid.subtitle}
-                </p>
-              )}
+            {eligibility.enabled !== false && eligibilityCards && eligibilityCards.length > 0 && (
+              <div
+                id="eligibility"
+                data-nav-label="Eligibility"
+                className="bg-white rounded-xl shadow-xs border border-gray-200 p-4 sm:p-6 md:p-8 mb-6 scroll-mt-20 space-y-5 sm:space-y-6"
+              >
+                <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
+                  {eligibility.title || (cleanOnlineTitle ? `Eligibility Criteria for ${cleanOnlineTitle}` : "Eligibility Criteria")}
+                </h2>
+                {eligibility.subtitle && (
+                  <p className="text-xs sm:text-sm text-slate-600 text-center max-w-2xl mx-auto mb-6">
+                    {eligibility.subtitle}
+                  </p>
+                )}
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 sm:gap-6">
-                {mistakesList.map((mstk, idx) => {
-                  const iconSrc = resolveMediaUrl(mstk.icon || mstk.mediaIcon);
-                  return (
-                    <div
-                      key={idx}
-                      className="rounded-xl border border-red-100/80 bg-red-50/20 p-4 sm:p-5 text-center hover:border-red-300 hover:shadow-md transition-all duration-200 flex flex-col items-center space-y-2.5 sm:space-y-3 shadow-2xs"
-                    >
-                      {iconSrc ? (
-                        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center p-1 bg-red-50 border border-red-200">
-                          <Image
-                            src={getAssetPath(iconSrc)}
-                            alt={mstk.title || "Mistake"}
-                            width={24}
-                            height={24}
-                            className="object-contain"
-                            unoptimized
-                          />
+                <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-200 gap-5 md:gap-0 py-2">
+                  {eligibilityCards.map((card, idx) => {
+                    const iconSrc = resolveMediaUrl(card.icon || card.mediaIcon);
+                    return (
+                      <div key={idx} className="flex flex-col items-center text-center px-3 sm:px-6 pt-4 md:pt-0 space-y-2.5">
+                        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white text-[#0D5CAD] flex items-center justify-center shrink-0 border border-blue-100 shadow-2xs">
+                          {iconSrc ? (
+                            <Image
+                              src={getAssetPath(iconSrc)}
+                              alt={card.title || "Icon"}
+                              width={28}
+                              height={28}
+                              className="object-contain"
+                              unoptimized
+                            />
+                          ) : (
+                            <Building2 className="w-6 h-6 sm:w-7 sm:h-7 text-[#0077B6]" />
+                          )}
                         </div>
-                      ) : (
-                        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-red-600 text-white flex items-center justify-center font-bold text-xs sm:text-sm shadow-2xs">
-                          ✕
+                        <div className="space-y-1">
+                          <h4 className="font-bold text-sm sm:text-base text-gray-900 leading-snug">
+                            {card.title}
+                          </h4>
+                          {card.description && (
+                            <p className="text-xs text-gray-600 leading-relaxed font-normal">
+                              {card.description}
+                            </p>
+                          )}
                         </div>
-                      )}
-                      <div className="space-y-1">
-                        <h4 className="font-bold text-sm sm:text-base text-gray-900 leading-snug">
-                          {mstk.title}
-                        </h4>
-                        {mstk.description && (
-                          <p className="text-xs text-gray-600 leading-relaxed font-normal">
-                            {mstk.description}
-                          </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* =====================================================================
+              7️⃣ ONLINE MBA ADMISSION PROCESS (Shown only if admissionSteps has data)
+          ===================================================================== */}
+            {admissionProcess.enabled !== false && admissionSteps && admissionSteps.length > 0 && (
+              <div
+                id="admission-process"
+                data-nav-label="Admission Process"
+                className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-4 sm:p-6 mb-6 scroll-mt-20"
+              >
+                <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
+                  {admissionProcess.title || (cleanOnlineTitle ? `${cleanOnlineTitle} Admission Process` : "Admission Process")}
+                </h2>
+                {admissionProcess.subtitle && (
+                  <p className="text-xs sm:text-sm text-slate-600 text-center max-w-2xl mx-auto mb-8">
+                    {admissionProcess.subtitle}
+                  </p>
+                )}
+
+                {/* Stepper Cards with Arrows */}
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3.5 items-stretch w-full">
+                  {admissionSteps.map((step, idx) => {
+                    const stepNum = step.stepNumber || step.order || idx + 1;
+                    const stepTitle = step.title || "";
+                    const stepDesc = step.description || step.desc || "";
+                    const iconUrl = resolveMediaUrl(step.icon);
+
+                    return (
+                      <div key={idx} className="relative flex">
+                        <div className="w-full rounded-xl p-2.5 sm:p-3.5 text-center flex flex-col items-center bg-white shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+                          {/* Large icon circle */}
+                          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center shrink-0 bg-sky-50 border-2 border-sky-300 mb-2 sm:mb-3">
+                            {iconUrl ? (
+                              <Image
+                                src={getAssetPath(iconUrl)}
+                                alt={stepTitle || "Step"}
+                                width={24}
+                                height={24}
+                                className="object-contain"
+                                unoptimized
+                              />
+                            ) : (
+                              <span className="font-bold text-sky-600 text-sm sm:text-base">
+                                {stepNum}
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Title with Step Number in front */}
+                          <h4 className="font-bold text-[10.5px] sm:text-[11.5px] text-[#0F2A4A] leading-snug mb-1 sm:mb-1.5">
+                            <span className="text-[#1C3569] font-bold mr-1">{stepNum}.</span>
+                            {stepTitle}
+                          </h4>
+
+                          {/* Description */}
+                          {stepDesc && (
+                            <p className="text-[8.5px] sm:text-[9.5px] text-gray-500 leading-relaxed font-normal">
+                              {stepDesc}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Arrow between cards */}
+                        {idx < admissionSteps.length - 1 && (
+                          <div className="hidden lg:flex absolute -right-2 top-1/2 -translate-y-1/2 z-10 text-sky-400">
+                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                              <polyline points="9 18 15 12 9 6" />
+                            </svg>
+                          </div>
                         )}
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* =====================================================================
-              1️⃣5️⃣ FREQUENTLY ASKED QUESTIONS (Shown only if faqsList has data)
+            {/* =====================================================================
+              8️⃣ MODE COMPARISON TABLE (Shown only if comparisonRows has data)
           ===================================================================== */}
-          {faqSection.enabled !== false && faqsList && faqsList.length > 0 && (
-            <div
-              id="faqs"
-              data-nav-label="FAQs"
-              className="bg-white rounded-xl shadow-xs border border-gray-200 p-4 sm:p-6 md:p-8 mb-6 scroll-mt-20 space-y-5 sm:space-y-6"
-            >
-              <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
-                {faqSection.title || (pageTitle ? `FAQs on ${pageTitle}` : "Frequently Asked Questions")}
-              </h2>
-              {faqSection.subtitle && (
-                <p className="text-xs sm:text-sm text-slate-600 text-center max-w-2xl mx-auto mb-5">
-                  {faqSection.subtitle}
-                </p>
-              )}
+            {modeComparison.enabled !== false && comparisonRows && comparisonRows.length > 0 && (
+              <div
+                id="mode-comparison"
+                data-nav-label="Mode Comparison"
+                className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-4 sm:p-6 md:p-8 mb-6 scroll-mt-20"
+              >
+                <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
+                  {modeComparison.title || (cleanOnlineTitle ? `${cleanOnlineTitle} vs. Regular vs. Distance` : "Mode Comparison")}
+                </h2>
+                {modeComparison.subtitle && (
+                  <p className="text-xs sm:text-sm text-slate-600 text-center max-w-2xl mx-auto mb-6">
+                    {modeComparison.subtitle}
+                  </p>
+                )}
 
-              <div className="space-y-2.5 sm:space-y-3 max-w-5xl mx-auto">
-                {faqsList.map((faq, idx) => {
-                  const isOpen = openFaqIndex === idx;
-                  const cleanQuestion = (faq.question || "").replace(/^q\d*[\.\:\s]*/i, "").trim();
-                  return (
-                    <div
-                      key={idx}
-                      className={`rounded-xl border transition-all duration-200 overflow-hidden ${
-                        isOpen
-                          ? "border-blue-400 bg-blue-200/30 shadow-2xs"
-                          : "border-gray-200 bg-white hover:border-gray-300"
-                      }`}
-                    >
+                {/* Comparison Table */}
+                <div className="max-w-5xl mx-auto overflow-hidden border border-gray-200 shadow-2xs rounded-lg">
+                  <Table
+                    columns={modeComparisonColumns}
+                    dataSource={modeComparisonDataSource.slice(0, visibleComparisonCount)}
+                    pagination={false}
+                    size="small"
+                    bordered
+                    className="course-antd-table w-full"
+                  />
+                </div>
+
+                {/* View More / View Less Buttons for Mode Comparison Table */}
+                {modeComparisonDataSource.length > 5 && (
+                  <div className="flex items-center justify-center gap-3 mt-5">
+                    {visibleComparisonCount < modeComparisonDataSource.length ? (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setVisibleComparisonCount((prev) =>
+                              Math.min(prev + 5, modeComparisonDataSource.length)
+                            )
+                          }
+                          className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
+                        >
+                          <span>View More</span>
+                          <ChevronDown className="w-3.5 h-3.5" />
+                        </button>
+                        {visibleComparisonCount > 5 && (
+                          <button
+                            type="button"
+                            onClick={() => setVisibleComparisonCount(5)}
+                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gray-100 text-slate-600 hover:bg-gray-200 transition-colors text-xs font-semibold border border-gray-200 cursor-pointer active:scale-95"
+                          >
+                            <span>View Less</span>
+                            <ChevronDown className="w-3.5 h-3.5 rotate-180" />
+                          </button>
+                        )}
+                      </>
+                    ) : (
                       <button
                         type="button"
-                        onClick={() => setOpenFaqIndex(isOpen ? -1 : idx)}
-                        className="w-full flex items-center justify-between gap-3 p-2.5 sm:p-3 text-left cursor-pointer bg-transparent border-none outline-none"
+                        onClick={() => setVisibleComparisonCount(5)}
+                        className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
                       >
-                        <span
-                          className={`text-xs sm:text-[14px] font-semibold leading-snug ${
-                            isOpen ? "text-[#0C2B4E]" : "text-gray-900"
-                          }`}
-                        >
-                          Q{idx + 1}. {cleanQuestion}
-                        </span>
-                        <span
-                          className={`flex items-center justify-center w-4 h-4 rounded-full shrink-0 transition-colors ${
-                            isOpen
-                              ? "bg-[#0C2B4E] text-white"
-                              : "bg-gray-300 text-gray-500"
-                          }`}
-                        >
-                          {isOpen ? <Minus size={10} /> : <Plus size={10} />}
-                        </span>
+                        <span>View Less</span>
+                        <ChevronDown className="w-3.5 h-3.5 rotate-180" />
                       </button>
-                      {isOpen && (
-                        <div className="p-3 text-xs sm:text-[13px] text-gray-600 leading-relaxed font-normal border-t border-blue-100/60 whitespace-pre-line">
-                          {faq.answer}
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* =====================================================================
+              9️⃣ POPULAR SPECIALIZATIONS SECTION (Shown only if specializationsList has data)
+          ===================================================================== */}
+            {specializations.enabled !== false && specializationsList && specializationsList.length > 0 && (
+              <div
+                id="specializations"
+                data-nav-label="Specialisations"
+                className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-3 sm:p-6 mb-5 sm:mb-6 scroll-mt-20"
+              >
+                <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-1.5 sm:mb-2">
+                  {specializations.title || (cleanOnlineTitle ? `Popular ${cleanOnlineTitle} Specializations` : "Popular Specializations")}
+                </h2>
+                {specializations.subtitle && (
+                  <p className="text-xs sm:text-sm text-slate-600 text-center max-w-2xl mx-auto mb-4 sm:mb-6">
+                    {specializations.subtitle}
+                  </p>
+                )}
+
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-1.5 sm:gap-3">
+                  {specializationsList.map((spec, idx) => {
+                    const isHighlighted = !!spec.highlighted;
+
+                    return (
+                      <div
+                        key={idx}
+                        onClick={() => handleOpenLead(`Specialization: ${spec.name}`, `Enquire for ${spec.name} in ${pageTitle}`)}
+                        className={`px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg border flex items-center transition-all cursor-pointer shadow-2xs min-h-[42px] sm:min-h-[48px] ${isHighlighted
+                          ? "border-[#00BCD4] bg-cyan-50/20 text-[#00838F]"
+                          : "border-slate-200 bg-white hover:border-slate-300 text-slate-800"
+                          }`}
+                      >
+                        <span className={`text-[11px] sm:text-xs font-bold leading-tight line-clamp-2 ${isHighlighted ? "text-[#00838F]" : "text-slate-800"}`}>
+                          {spec.name}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* =====================================================================
+              🔟 ONLINE MBA SYLLABUS SEMESTER WISE (Shown only if syllabusData has data)
+          ===================================================================== */}
+            {syllabus.enabled !== false && syllabusData && syllabusData.length > 0 && (
+              <div
+                id="syllabus"
+                data-nav-label="Syllabus"
+                className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-4 sm:p-6 mb-6 scroll-mt-20"
+              >
+                <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
+                  {syllabus.title || (cleanOnlineTitle ? `${cleanOnlineTitle} Syllabus Semester Wise` : "Syllabus Semester Wise")}
+                </h2>
+                {syllabus.subtitle && (
+                  <p className="text-xs sm:text-sm text-slate-600 text-center max-w-2xl mx-auto mb-6">
+                    {syllabus.subtitle}
+                  </p>
+                )}
+
+                {/* Semester Pill Tabs */}
+                <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-6">
+                  {syllabusData.map((sem) => {
+                    const isActive = activeSemester === sem.semesterNumber;
+                    return (
+                      <button
+                        key={sem.semesterNumber}
+                        type="button"
+                        onClick={() => {
+                          setActiveSemester(sem.semesterNumber);
+                          setVisibleSyllabusCount(5);
+                        }}
+                        className={`px-4 sm:px-7 py-1.5 sm:py-2 rounded-full font-bold text-xs sm:text-sm transition-all duration-150 cursor-pointer ${isActive
+                          ? "bg-[#0F2A4A] text-white shadow-xs"
+                          : "bg-[#EAF2FA] text-[#0F2A4A] hover:bg-slate-200"
+                          }`}
+                      >
+                        {sem.semesterTitle || `Semester ${sem.semesterNumber}`}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Active Semester Subjects Table */}
+                <div className="max-w-5xl mx-auto overflow-hidden border border-gray-200 shadow-2xs rounded-lg">
+                  <Table
+                    columns={syllabusColumns}
+                    dataSource={syllabusDataSource.slice(0, visibleSyllabusCount)}
+                    pagination={false}
+                    size="small"
+                    bordered
+                    className="course-antd-table w-full"
+                  />
+                </div>
+
+                {/* View More / View Less Buttons for Syllabus Table */}
+                {syllabusDataSource.length > 5 && (
+                  <div className="flex items-center justify-center gap-3 mt-5">
+                    {visibleSyllabusCount < syllabusDataSource.length ? (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setVisibleSyllabusCount((prev) =>
+                              Math.min(prev + 5, syllabusDataSource.length)
+                            )
+                          }
+                          className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
+                        >
+                          <span>View More</span>
+                          <ChevronDown className="w-3.5 h-3.5" />
+                        </button>
+                        {visibleSyllabusCount > 5 && (
+                          <button
+                            type="button"
+                            onClick={() => setVisibleSyllabusCount(5)}
+                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gray-100 text-slate-600 hover:bg-gray-200 transition-colors text-xs font-semibold border border-gray-200 cursor-pointer active:scale-95"
+                          >
+                            <span>View Less</span>
+                            <ChevronDown className="w-3.5 h-3.5 rotate-180" />
+                          </button>
+                        )}
+                      </>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => setVisibleSyllabusCount(5)}
+                        className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
+                      >
+                        <span>View Less</span>
+                        <ChevronDown className="w-3.5 h-3.5 rotate-180" />
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* =====================================================================
+              1️⃣1️⃣ TOP UNIVERSITIES OFFERING ONLINE MBA IN INDIA (Shown only if universitiesList has data)
+          ===================================================================== */}
+            {topUniversities.enabled !== false && universitiesList && universitiesList.length > 0 && (
+              <div
+                id="top-universities"
+                data-nav-label="Top Universities"
+                className="scroll-mt-20 bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8 mb-6"
+              >
+                <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
+                  {topUniversities.title || (cleanOnlineTitle ? `Top Universities Offering ${cleanOnlineTitle} in India` : "Top Universities")}
+                </h2>
+                {topUniversities.subtitle && (
+                  <p className="text-xs sm:text-sm text-slate-600 text-center max-w-2xl mx-auto mb-6 sm:mb-8">
+                    {topUniversities.subtitle}
+                  </p>
+                )}
+
+                {/* University Cards Grid (Strictly Backend Data, 5-by-5 Incremental Display) */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+                  {universitiesList.slice(0, visibleUnisCount).map((uni, idx) => {
+                    const inCmp = typeof isInCompare === "function" ? isInCompare(uni._id || uni.slug || uni.name) : false;
+                    const coursesOfferedText = uni.programsCount
+                      ? `${uni.programsCount} Programs`
+                      : uni.coursesCount
+                        ? `${uni.coursesCount}+ Programs`
+                        : (uni.city || uni.state || "Recognized University");
+                    const uniHref = uni.slug ? `/universities/${uni.slug}` : "#";
+                    const uniLogo = resolveMediaUrl(uni.logo || uni.image);
+
+                    return (
+                      <div
+                        key={idx}
+                        className="bg-gray-50 rounded-xl border border-gray-200 hover:border-blue-400 p-2 sm:p-2.5 hover:shadow-md transition-all flex flex-col items-center justify-between text-center relative group min-w-0 shadow-2xs"
+                      >
+                        {/* Circular Logo Container */}
+                        <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-full p-1 flex items-center justify-center bg-white relative my-0.5 shrink-0 overflow-hidden border border-gray-100">
+                          {uniLogo ? (
+                            <Image
+                              src={getAssetPath(uniLogo)}
+                              alt={uni.name || "University"}
+                              fill
+                              sizes="56px"
+                              className="object-contain"
+                              unoptimized
+                            />
+                          ) : (
+                            <div className="w-full h-full rounded-full bg-blue-50 text-blue-600 font-semibold flex items-center justify-center text-xs uppercase">
+                              {uni.name ? uni.name.charAt(0) : "U"}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* University Name, Location & Fee */}
+                        <div className="w-full space-y-0.5 my-0.5">
+                          <div className="min-h-7 sm:min-h-8 flex items-center justify-center">
+                            <Link
+                              href={uniHref}
+                              className="text-xs sm:text-[12.5px] font-semibold text-[#0a2540] hover:text-blue-600 line-clamp-2 leading-tight m-0 w-full text-center no-underline transition-colors"
+                            >
+                              {uni.name}
+                            </Link>
+                          </div>
+
+                          {/* 📍 Location  ₹ Fee — flex center, no wrap */}
+                          {(uni.location || uni.feeText || uni.customFee) && (
+                            <div className="flex items-center justify-center gap-1 w-full overflow-hidden">
+                              {uni.location && (
+                                <span className="flex items-center gap-0.5 text-[9px] text-gray-500 font-normal min-w-0">
+                                  <MapPin className="w-2 h-2 text-[#4A90D9] shrink-0" />
+                                  <span className="whitespace-nowrap overflow-hidden text-ellipsis">{uni.location}</span>
+                                </span>
+                              )}
+                              {uni.location && (uni.feeText || uni.customFee) && (
+                                <span className="text-gray-300 text-[8px] shrink-0">·</span>
+                              )}
+                              {(uni.feeText || uni.customFee) && (
+                                <span className="text-[9px] font-bold text-[#1C3569] shrink-0 whitespace-nowrap">
+                                  {(uni.feeText || uni.customFee || '')
+                                    .replace(/\/\s*Sem(ester)?/i, '/Sem')
+                                    .replace(/\/\s*Year/i, '/Yr')}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                          {!uni.location && !uni.feeText && !uni.customFee && (
+                            <span className="text-[9px] text-gray-500 text-center w-full block">{coursesOfferedText}</span>
+                          )}
+                        </div>
+
+                        {/* Full-width Add to Compare Pill */}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            toggleCompare(uni);
+                            setIsCompareDrawerOpen && setIsCompareDrawerOpen(true);
+                          }}
+                          className={`w-full py-1 px-2 rounded-lg text-[10px] sm:text-[11px] font-semibold transition-all flex items-center justify-center gap-1 border cursor-pointer mt-1 ${inCmp
+                            ? "bg-teal-50 text-teal-700 border-teal-600 shadow-2xs"
+                            : "bg-white text-[#0a2540] border-gray-200 hover:bg-gray-50 hover:border-gray-300"
+                            }`}
+                        >
+                          {inCmp ? (
+                            <>
+                              <Check className="w-3.5 h-3.5 text-teal-600 shrink-0 stroke-2" />
+                              <span>Added to Compare</span>
+                            </>
+                          ) : (
+                            <>
+                              <Plus className="w-3.5 h-3.5 text-gray-500 shrink-0 stroke-2" />
+                              <span>Add to Compare</span>
+                            </>
+                          )}
+                        </button>
+
+                        {/* Action Buttons: Apply Now & Know More */}
+                        <div className="w-full grid grid-cols-2 gap-1.5 mt-1.5 items-center">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              openFormModal &&
+                                openFormModal({
+                                  title: `Apply to ${uni.name}`,
+                                  subtitle: pageTitle,
+                                  defaultCourse: pageTitle,
+                                  university: uni.name,
+                                  formNameOverride: `CourseCard_${uni.slug || uni.name}`,
+                                  submitButtonText: "Apply Now",
+                                });
+                            }}
+                            className="w-full bg-[#F4D068] hover:bg-[#ebc557] text-gray-900 text-[11px] sm:text-xs font-semibold py-1.5 px-1 rounded-md sm:rounded-lg border-none cursor-pointer transition-colors active:scale-95 flex items-center justify-center text-center whitespace-nowrap leading-none"
+                          >
+                            Apply Now
+                          </button>
+                          <Link
+                            href={uniHref}
+                            className="w-full bg-white hover:bg-gray-50 text-[#0a2540] hover:text-blue-600 border border-gray-200 text-[11px] sm:text-xs font-semibold py-1.5 px-1 rounded-md sm:rounded-lg text-center no-underline transition-colors flex items-center justify-center whitespace-nowrap leading-none"
+                          >
+                            Know More
+                          </Link>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* View More / View Less Buttons (Initial 5, opens +5 each click, then collapses back to 5) */}
+                {universitiesList.length > 5 && (
+                  <div className="flex items-center justify-center gap-3 mt-6">
+                    {visibleUnisCount < universitiesList.length ? (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setVisibleUnisCount((prev) =>
+                              Math.min(prev + 5, universitiesList.length)
+                            )
+                          }
+                          className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
+                        >
+                          <span>View More</span>
+                          <ChevronDown className="w-3.5 h-3.5" />
+                        </button>
+                        {visibleUnisCount > 5 && (
+                          <button
+                            type="button"
+                            onClick={() => setVisibleUnisCount(5)}
+                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gray-100 text-slate-600 hover:bg-gray-200 transition-colors text-xs font-semibold border border-gray-200 cursor-pointer active:scale-95"
+                          >
+                            <span>View Less</span>
+                            <ChevronDown className="w-3.5 h-3.5 rotate-180" />
+                          </button>
+                        )}
+                      </>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => setVisibleUnisCount(5)}
+                        className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
+                      >
+                        <span>View Less</span>
+                        <ChevronDown className="w-3.5 h-3.5 rotate-180" />
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* =====================================================================
+              1️⃣2️⃣ CAREER SCOPE & SALARY EXPECTATIONS (Shown only if data exists)
+          ===================================================================== */}
+            {careerScope.enabled !== false &&
+              ((experienceLevels && experienceLevels.length > 0) ||
+                (jobRolesList && jobRolesList.length > 0) ||
+                Boolean(careerScope.jobRolesDescription) ||
+                Boolean(careerScope.salaryTrend)) && (
+                <div
+                  id="career-scope"
+                  data-nav-label="Career & Scope"
+                  className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-4 sm:p-6 md:p-8 mb-6 scroll-mt-20"
+                >
+                  <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
+                    {careerScope.title || "Career Scope & Salary Expectations"}
+                  </h2>
+                  {careerScope.subtitle && (
+                    <p className="text-xs sm:text-sm text-slate-600 text-center max-w-2xl mx-auto mb-6">
+                      {careerScope.subtitle}
+                    </p>
+                  )}
+
+                  {/* Table 1: Experience Level vs Job Roles vs Expected Salary */}
+                  {experienceLevels.length > 0 && (
+                    <>
+                      <div className="max-w-5xl mx-auto overflow-hidden border border-gray-200 shadow-2xs rounded-lg mb-6">
+                        <Table
+                          columns={careerLevelColumns}
+                          dataSource={careerLevelDataSource.slice(0, visibleCareerLevelCount)}
+                          pagination={false}
+                          size="small"
+                          bordered
+                          className="course-antd-table w-full"
+                        />
+                      </div>
+
+                      {/* View More / View Less Buttons for Career Level Table */}
+                      {careerLevelDataSource.length > 5 && (
+                        <div className="flex items-center justify-center gap-3 -mt-2 mb-6">
+                          {visibleCareerLevelCount < careerLevelDataSource.length ? (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setVisibleCareerLevelCount((prev) =>
+                                    Math.min(prev + 5, careerLevelDataSource.length)
+                                  )
+                                }
+                                className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
+                              >
+                                <span>View More</span>
+                                <ChevronDown className="w-3.5 h-3.5" />
+                              </button>
+                              {visibleCareerLevelCount > 5 && (
+                                <button
+                                  type="button"
+                                  onClick={() => setVisibleCareerLevelCount(5)}
+                                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gray-100 text-slate-600 hover:bg-gray-200 transition-colors text-xs font-semibold border border-gray-200 cursor-pointer active:scale-95"
+                                >
+                                  <span>View Less</span>
+                                  <ChevronDown className="w-3.5 h-3.5 rotate-180" />
+                                </button>
+                              )}
+                            </>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => setVisibleCareerLevelCount(5)}
+                              className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
+                            >
+                              <span>View Less</span>
+                              <ChevronDown className="w-3.5 h-3.5 rotate-180" />
+                            </button>
+                          )}
                         </div>
                       )}
-                    </div>
-                  );
-                })}
+                    </>
+                  )}
+
+                  {/* Sub-paragraph */}
+                  {(careerScope.jobRolesDescription || careerScope.salaryTrend) && (
+                    <p className="text-xs sm:text-sm text-slate-600 text-center max-w-2xl mx-auto my-6">
+                      {careerScope.jobRolesDescription || careerScope.salaryTrend}
+                    </p>
+                  )}
+
+                  {/* Table 2: Job Role vs Role Description vs Salary Range in India */}
+                  {jobRolesList.length > 0 && (
+                    <>
+                      <div className="max-w-5xl mx-auto overflow-hidden border border-gray-200 shadow-2xs rounded-lg">
+                        <Table
+                          columns={careerJobRoleColumns}
+                          dataSource={careerJobRoleDataSource.slice(0, visibleJobRolesCount)}
+                          pagination={false}
+                          size="small"
+                          bordered
+                          className="course-antd-table w-full"
+                        />
+                      </div>
+
+                      {/* View More / View Less Buttons (Initial 5, opens +5 each click, then collapses back to 5) */}
+                      {careerJobRoleDataSource.length > 5 && (
+                        <div className="flex items-center justify-center gap-3 mt-6">
+                          {visibleJobRolesCount < careerJobRoleDataSource.length ? (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setVisibleJobRolesCount((prev) =>
+                                    Math.min(prev + 5, careerJobRoleDataSource.length)
+                                  )
+                                }
+                                className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
+                              >
+                                <span>View More</span>
+                                <ChevronDown className="w-3.5 h-3.5" />
+                              </button>
+                              {visibleJobRolesCount > 5 && (
+                                <button
+                                  type="button"
+                                  onClick={() => setVisibleJobRolesCount(5)}
+                                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gray-100 text-slate-600 hover:bg-gray-200 transition-colors text-xs font-semibold border border-gray-200 cursor-pointer active:scale-95"
+                                >
+                                  <span>View Less</span>
+                                  <ChevronDown className="w-3.5 h-3.5 rotate-180" />
+                                </button>
+                              )}
+                            </>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => setVisibleJobRolesCount(5)}
+                              className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
+                            >
+                              <span>View Less</span>
+                              <ChevronDown className="w-3.5 h-3.5 rotate-180" />
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              )}
+
+            {/* =====================================================================
+              1️⃣3️⃣ TOP HIRING RECRUITERS (Shown only if recruitersList has data)
+          ===================================================================== */}
+            {recruitersSection.enabled !== false && recruitersList && recruitersList.length > 0 && (
+              <div
+                id="recruiters"
+                data-nav-label="Top Recruiters"
+                className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-4 sm:p-6 mb-6 scroll-mt-20"
+              >
+                <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
+                  {recruitersSection.title || "Top Hiring Recruiters"}
+                </h2>
+                {recruitersSection.subtitle && (
+                  <p className="text-xs sm:text-sm text-slate-600 text-center max-w-2xl mx-auto mb-8">
+                    {recruitersSection.subtitle}
+                  </p>
+                )}
+
+                {/* Recruiters Grid - 2 cols mobile, 3 sm, 6 md */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2.5 sm:gap-3.5">
+                  {recruitersList.map((recruiter, idx) => {
+                    const logoSrc = resolveMediaUrl(recruiter.logo || recruiter.icon);
+                    const rName = recruiter.name || "";
+
+                    return (
+                      <div
+                        key={idx}
+                        className="border border-gray-200 rounded-lg p-1.5 sm:p-2.5 flex items-center justify-center h-12 sm:h-14 bg-white shadow-2xs hover:border-blue-300 hover:shadow-sm transition-all duration-200"
+                      >
+                        {logoSrc ? (
+                          <div className="relative w-full h-8 flex items-center justify-center">
+                            <Image
+                              src={getAssetPath(logoSrc)}
+                              alt={rName || "Recruiter"}
+                              fill
+                              className="object-contain"
+                              unoptimized
+                            />
+                          </div>
+                        ) : (
+                          <span className="font-bold text-slate-800 text-xs sm:text-sm truncate px-1 text-center">
+                            {rName}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          )}
+            )}
+
+            {/* =====================================================================
+              1️⃣4️⃣ COMMON MISTAKES TO AVOID (Shown only if mistakesList has data)
+          ===================================================================== */}
+            {mistakesToAvoid.enabled !== false && mistakesList && mistakesList.length > 0 && (
+              <div
+                id="mistakes-to-avoid"
+                data-nav-label="Mistakes to Avoid"
+                className="bg-white rounded-xl shadow-xs border border-gray-200 p-4 sm:p-6 md:p-8 mb-6 scroll-mt-20 space-y-5 sm:space-y-6"
+              >
+                <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
+                  {mistakesToAvoid.title || "Common Mistakes to Avoid"}
+                </h2>
+                {mistakesToAvoid.subtitle && (
+                  <p className="text-xs sm:text-sm text-slate-600 text-center max-w-2xl mx-auto mb-6">
+                    {mistakesToAvoid.subtitle}
+                  </p>
+                )}
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 sm:gap-6">
+                  {mistakesList.map((mstk, idx) => {
+                    const iconSrc = resolveMediaUrl(mstk.icon || mstk.mediaIcon);
+                    return (
+                      <div
+                        key={idx}
+                        className="rounded-xl border border-red-100/80 bg-red-50/20 p-4 sm:p-5 text-center hover:border-red-300 hover:shadow-md transition-all duration-200 flex flex-col items-center space-y-2.5 sm:space-y-3 shadow-2xs"
+                      >
+                        {iconSrc ? (
+                          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center p-1 bg-red-50 border border-red-200">
+                            <Image
+                              src={getAssetPath(iconSrc)}
+                              alt={mstk.title || "Mistake"}
+                              width={24}
+                              height={24}
+                              className="object-contain"
+                              unoptimized
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-red-600 text-white flex items-center justify-center font-bold text-xs sm:text-sm shadow-2xs">
+                            ✕
+                          </div>
+                        )}
+                        <div className="space-y-1">
+                          <h4 className="font-bold text-sm sm:text-base text-gray-900 leading-snug">
+                            {mstk.title}
+                          </h4>
+                          {mstk.description && (
+                            <p className="text-xs text-gray-600 leading-relaxed font-normal">
+                              {mstk.description}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* =====================================================================
+              1️⃣5️⃣ FREQUENTLY ASKED QUESTIONS (Shown only if faqsList has data)
+          ===================================================================== */}
+            {faqSection.enabled !== false && faqsList && faqsList.length > 0 && (
+              <div
+                id="faqs"
+                data-nav-label="FAQs"
+                className="bg-white rounded-xl shadow-xs border border-gray-200 p-4 sm:p-6 md:p-8 mb-6 scroll-mt-20 space-y-5 sm:space-y-6"
+              >
+                <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
+                  {faqSection.title || (pageTitle ? `FAQs on ${pageTitle}` : "Frequently Asked Questions")}
+                </h2>
+                {faqSection.subtitle && (
+                  <p className="text-xs sm:text-sm text-slate-600 text-center max-w-2xl mx-auto mb-5">
+                    {faqSection.subtitle}
+                  </p>
+                )}
+
+                <div className="space-y-2.5 sm:space-y-3 max-w-5xl mx-auto">
+                  {faqsList.map((faq, idx) => {
+                    const isOpen = openFaqIndex === idx;
+                    const cleanQuestion = (faq.question || "").replace(/^q\d*[\.\:\s]*/i, "").trim();
+                    return (
+                      <div
+                        key={idx}
+                        className={`rounded-xl border transition-all duration-200 overflow-hidden ${isOpen
+                          ? "border-blue-400 bg-blue-200/30 shadow-2xs"
+                          : "border-gray-200 bg-white hover:border-gray-300"
+                          }`}
+                      >
+                        <button
+                          type="button"
+                          onClick={() => setOpenFaqIndex(isOpen ? -1 : idx)}
+                          className="w-full flex items-center justify-between gap-3 p-2.5 sm:p-3 text-left cursor-pointer bg-transparent border-none outline-none"
+                        >
+                          <span
+                            className={`text-xs sm:text-[14px] font-semibold leading-snug ${isOpen ? "text-[#0C2B4E]" : "text-gray-900"
+                              }`}
+                          >
+                            Q{idx + 1}. {cleanQuestion}
+                          </span>
+                          <span
+                            className={`flex items-center justify-center w-4 h-4 rounded-full shrink-0 transition-colors ${isOpen
+                              ? "bg-[#0C2B4E] text-white"
+                              : "bg-gray-300 text-gray-500"
+                              }`}
+                          >
+                            {isOpen ? <Minus size={10} /> : <Plus size={10} />}
+                          </span>
+                        </button>
+                        {isOpen && (
+                          <div className="p-3 text-xs sm:text-[13px] text-gray-600 leading-relaxed font-normal border-t border-blue-100/60 whitespace-pre-line">
+                            {faq.answer}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         </Container>
       </div>
