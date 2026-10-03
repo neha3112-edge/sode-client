@@ -24,6 +24,8 @@ import {
   VideoCameraOutlined,
   CreditCardOutlined,
   RightOutlined,
+  LikeOutlined,
+  DislikeOutlined,
 } from "@ant-design/icons";
 
 import { useCompare } from "@/hooks/useCompare";
@@ -959,7 +961,7 @@ export default function CompareUniversityClientView({
         {
           key: `course_status_${cName}`,
           icon: <BookOutlined className="text-[#009F93]" />,
-          featureTitle: `Course Availability (${cName})`,
+          featureTitle: "Course Availability",
           renderCell: (uni) => {
             const off = findCourseOffering(uni, cName);
             return off ? (
@@ -976,7 +978,7 @@ export default function CompareUniversityClientView({
         {
           key: `course_fees_${cName}`,
           icon: <DollarOutlined className="text-emerald-600" />,
-          featureTitle: `Fees per Semester (${cName})`,
+          featureTitle: "Fees per Semester",
           renderCell: (uni) => {
             const off = findCourseOffering(uni, cName);
             if (!off) return <span className="text-slate-400">-</span>;
@@ -992,7 +994,7 @@ export default function CompareUniversityClientView({
         {
           key: `course_discount_${cName}`,
           icon: <DollarOutlined className="text-orange-500" />,
-          featureTitle: `Fees Discount (${cName})`,
+          featureTitle: "Fees Discount",
           renderCell: (uni) => {
             const off = findCourseOffering(uni, cName);
             if (!off) return <span className="text-slate-400">-</span>;
@@ -1006,7 +1008,7 @@ export default function CompareUniversityClientView({
         {
           key: `course_rating_${cName}`,
           icon: <TrophyOutlined className="text-amber-500" />,
-          featureTitle: `Course Rating (${cName})`,
+          featureTitle: "Course Rating",
           renderCell: (uni) => {
             const off = findCourseOffering(uni, cName);
             if (!off) return <span className="text-slate-400">-</span>;
@@ -1020,7 +1022,7 @@ export default function CompareUniversityClientView({
         {
           key: `course_duration_${cName}`,
           icon: <ClockCircleOutlined className="text-blue-600" />,
-          featureTitle: `Course Duration (${cName})`,
+          featureTitle: "Course Duration",
           renderCell: (uni) => {
             const off = findCourseOffering(uni, cName);
             if (!off) return <span className="text-slate-400">-</span>;
@@ -1030,7 +1032,7 @@ export default function CompareUniversityClientView({
         {
           key: `course_eligibility_${cName}`,
           icon: <SafetyCertificateOutlined className="text-blue-600" />,
-          featureTitle: `Course Eligibility (${cName})`,
+          featureTitle: "Course Eligibility",
           renderCell: (uni) => {
             const off = findCourseOffering(uni, cName);
             if (!off) return <span className="text-slate-400">-</span>;
@@ -1040,7 +1042,7 @@ export default function CompareUniversityClientView({
         {
           key: `course_specializations_${cName}`,
           icon: <BookOutlined className="text-purple-600" />,
-          featureTitle: `Course Specializations (${cName})`,
+          featureTitle: "Course Specializations",
           renderCell: (uni) => {
             const off = findCourseOffering(uni, cName);
             if (!off) return <span className="text-slate-400">-</span>;
@@ -1323,29 +1325,37 @@ export default function CompareUniversityClientView({
         icon: <SafetyCertificateOutlined className="text-blue-600" />,
         featureTitle: "Accreditations & Approvals",
         renderCell: (uni) => {
-          const approvals = Array.isArray(uni.approvals) ? uni.approvals : [];
           const naac = uni.naac_rating || uni.naac;
           const nirf = uni.nirf_rank || uni.nirf;
           const naacLogo = uni.naac_rating_logo;
           const nirfLogo = uni.nirf_rank_logo;
+
+          const rawApprovals = Array.isArray(uni.approvals) ? uni.approvals : [];
+          // Deduplicate if NAAC / NIRF is already shown via dedicated rating logo
+          const approvals = rawApprovals.filter((a) => {
+            const aName = (typeof a === "object" ? a.name || a.code || a.title : a || "").toString().toUpperCase();
+            if (naacLogo && aName.includes("NAAC")) return false;
+            if (nirfLogo && aName.includes("NIRF")) return false;
+            return true;
+          });
 
           if (approvals.length === 0 && !naac && !nirf && !naacLogo && !nirfLogo) {
             return <span className="text-slate-400">-</span>;
           }
 
           return (
-            <div className="flex flex-wrap items-center justify-center gap-1.5 w-full py-1">
+            <div className="flex flex-wrap items-center justify-center gap-1 w-full py-1">
               {naacLogo ? (
                 <div
                   title={`NAAC ${typeof naac === "object" ? naac.grade || naac.name : naac || "Rating"}`}
-                  className="relative w-12 h-7 sm:w-16 sm:h-9 bg-white rounded-lg border border-slate-200 flex items-center justify-center hover:border-blue-400 transition-all duration-200 hover:scale-105 overflow-hidden p-0.5 shrink-0 shadow-2xs"
+                  className="relative w-14 h-8 sm:w-20 sm:h-11 flex items-center justify-center transition-all duration-200 hover:scale-105 shrink-0"
                 >
                   <Image
                     src={getAssetPath(naacLogo)}
                     alt="NAAC"
                     fill
                     unoptimized
-                    className="object-contain p-0.5"
+                    className="object-contain"
                   />
                 </div>
               ) : naac ? (
@@ -1357,14 +1367,14 @@ export default function CompareUniversityClientView({
               {nirfLogo ? (
                 <div
                   title={`NIRF ${typeof nirf === "object" ? nirf.rank || nirf.name : nirf || "Ranking"}`}
-                  className="relative w-12 h-7 sm:w-16 sm:h-9 bg-white rounded-lg border border-slate-200 flex items-center justify-center hover:border-blue-400 transition-all duration-200 hover:scale-105 overflow-hidden p-0.5 shrink-0 shadow-2xs"
+                  className="relative w-14 h-8 sm:w-20 sm:h-11 flex items-center justify-center transition-all duration-200 hover:scale-105 shrink-0"
                 >
                   <Image
                     src={getAssetPath(nirfLogo)}
                     alt="NIRF"
                     fill
                     unoptimized
-                    className="object-contain p-0.5"
+                    className="object-contain"
                   />
                 </div>
               ) : nirf ? (
@@ -1383,14 +1393,14 @@ export default function CompareUniversityClientView({
                     <div
                       key={i}
                       title={aName}
-                      className="relative w-12 h-7 sm:w-16 sm:h-9 bg-white rounded-lg border border-slate-200 flex items-center justify-center hover:border-blue-400 transition-all duration-200 hover:scale-105 overflow-hidden p-0.5 shrink-0 shadow-2xs"
+                      className="relative w-14 h-8 sm:w-20 sm:h-11 flex items-center justify-center transition-all duration-200 hover:scale-105 shrink-0"
                     >
                       <Image
                         src={logoUrl}
                         alt={aName}
                         fill
                         unoptimized
-                        className="object-contain p-0.5"
+                        className="object-contain"
                       />
                     </div>
                   );
@@ -1423,6 +1433,46 @@ export default function CompareUniversityClientView({
               {highlights.map((item, hIdx) => (
                 <li key={hIdx} className="flex items-start gap-1.5">
                   <CheckOutlined className="text-emerald-500 text-[10px] mt-0.5 shrink-0" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          );
+        },
+      },
+      {
+        key: "advantages",
+        icon: <LikeOutlined className="text-emerald-600" />,
+        featureTitle: "Advantages (Pros)",
+        renderCell: (uni) => {
+          const advantages = Array.isArray(uni.advantages) ? uni.advantages : [];
+          if (advantages.length === 0) return <span className="text-slate-400">-</span>;
+
+          return (
+            <ul className="space-y-1.5 m-0 p-0 list-none text-[11px] text-slate-600 inline-block text-left max-w-[280px]">
+              {advantages.map((item, aIdx) => (
+                <li key={aIdx} className="flex items-start gap-1.5">
+                  <CheckOutlined className="text-emerald-500 text-[10px] mt-0.5 shrink-0" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          );
+        },
+      },
+      {
+        key: "disadvantages",
+        icon: <DislikeOutlined className="text-rose-500" />,
+        featureTitle: "Disadvantages (Cons)",
+        renderCell: (uni) => {
+          const disadvantages = Array.isArray(uni.disadvantages) ? uni.disadvantages : [];
+          if (disadvantages.length === 0) return <span className="text-slate-400">-</span>;
+
+          return (
+            <ul className="space-y-1.5 m-0 p-0 list-none text-[11px] text-slate-600 inline-block text-left max-w-[280px]">
+              {disadvantages.map((item, dIdx) => (
+                <li key={dIdx} className="flex items-start gap-1.5">
+                  <CloseOutlined className="text-rose-500 text-[10px] mt-0.5 shrink-0" />
                   <span>{item}</span>
                 </li>
               ))}

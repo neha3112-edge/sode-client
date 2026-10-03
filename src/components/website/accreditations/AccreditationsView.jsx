@@ -3,8 +3,7 @@
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Search, Award, Sparkles, Info } from "lucide-react";
-import { ArrowRightOutlined } from "@ant-design/icons";
+import { Search, Award, Info } from "lucide-react";
 import { getAssetPath } from "@/lib/utils";
 
 export function AccreditationsView({ initialAccreditations = [] }) {
@@ -16,7 +15,7 @@ export function AccreditationsView({ initialAccreditations = [] }) {
     return initialAccreditations.map((item, idx) => {
       const logo =
         item.logo?.url || item.logo || item.image?.url || item.image || null;
-      const title = item.code || item.name || "Accreditation";
+      const title = item.title || item.name || item.code || "Accreditation";
       const description = item.description || item.name || "";
       const slug = item.slug || (Array.isArray(item.slugs) ? item.slugs[0] : "") || "";
 
@@ -25,7 +24,7 @@ export function AccreditationsView({ initialAccreditations = [] }) {
         title,
         logo,
         description,
-        name: item.name || "",
+        name: item.name || item.title || "",
         code: item.code || "",
         slug,
         universityCount: item.universityCount,
@@ -41,35 +40,33 @@ export function AccreditationsView({ initialAccreditations = [] }) {
       (item) =>
         item.title.toLowerCase().includes(q) ||
         item.description.toLowerCase().includes(q) ||
-        item.name.toLowerCase().includes(q)
+        item.name.toLowerCase().includes(q) ||
+        item.code.toLowerCase().includes(q)
     );
   }, [accreditationsList, searchQuery]);
 
   return (
     <div className="w-full bg-[#f8fafc] text-slate-800 font-sans min-h-screen">
-      {/* ─── 1. TOP DARK BLUE BANNER ─── */}
-      <div className="w-full bg-[#072C50] h-36 sm:h-44 md:h-52" />
+      {/* ─── 1. TOP DARK NAVY BANNER ─── */}
+      <div className="w-full bg-[#11233E] h-44 sm:h-52 md:h-64" />
 
       {/* ─── 2. FLOATING WHITE CONTAINER CARD ─── */}
-      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 md:px-8 -mt-20 sm:-mt-28 md:-mt-32 pb-16 md:pb-24">
-        <article className="w-full bg-white rounded-2xl sm:rounded-3xl shadow-xl border border-slate-100 p-6 sm:p-10 md:p-12 text-[#2D3748]">
-          {/* Centered Page Title inside the card */}
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#072C50] text-center tracking-tight m-0 mb-4 sm:mb-5">
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 md:px-8 -mt-28 sm:-mt-36 md:-mt-44 pb-16 md:pb-24">
+        <article className="w-full bg-white rounded-3xl shadow-sm border border-slate-200 p-6 sm:p-10 md:p-12 text-[#2D3748]">
+          {/* Centered Page Title */}
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#0B1F38] text-center tracking-tight m-0 mb-2.5">
             Accreditations & Approvals
           </h1>
 
-          {/* Full-width Divider Line */}
-          <div className="w-full h-px bg-slate-200/90 mb-6 sm:mb-8" />
-
-          {/* Intro Description */}
-          <div className="mb-8 text-slate-600 text-xs sm:text-sm md:text-[14.5px] leading-relaxed text-center max-w-3xl mx-auto">
+          {/* Intro Subtitle Description (no divider line matching reference) */}
+          <div className="mb-8 sm:mb-10 text-slate-600 text-xs sm:text-[13.5px] md:text-sm leading-relaxed text-center max-w-3xl mx-auto">
             <p className="m-0">
               Statutory approvals and quality accreditations ensuring that degrees earned across our recognized universities are 100% legally valid for government jobs, higher education, and global careers.
             </p>
           </div>
 
-          {/* Search Bar */}
-          {accreditationsList.length > 6 && (
+          {/* Optional Search Bar for large lists */}
+          {accreditationsList.length > 10 && (
             <div className="flex justify-center mb-8">
               <div className="relative w-full max-w-md">
                 <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -78,58 +75,128 @@ export function AccreditationsView({ initialAccreditations = [] }) {
                   placeholder="Search approvals (e.g. UGC, NAAC, AICTE)..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-[#072C50] transition-colors"
+                  className="w-full pl-9 pr-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-[#11233E] transition-colors"
                 />
               </div>
             </div>
           )}
 
-          {/* ─── 3. EXACT SECTION & CSS FROM UNIVERSITY PAGE (Clickable Cards with Slug) ─── */}
+          {/* ─── 3. ACCREDITATIONS CARDS (Exact proportions matching reference screenshot) ─── */}
           {filteredAccreditations.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 sm:gap-2.5 md:gap-3 w-full">
+            <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-4.5 md:gap-5 w-full">
               {filteredAccreditations.map((acc, idx) => {
+                const titleText = (acc.name || acc.title || "").trim();
+                const lower = titleText.toLowerCase();
+
+                let renderedTitle = (
+                  <div className="text-xs sm:text-[13px] text-slate-800 font-semibold leading-snug line-clamp-2 px-1">
+                    {titleText}
+                  </div>
+                );
+
+                if (lower.includes("online")) {
+                  renderedTitle = (
+                    <div className="text-xs sm:text-[13px] text-slate-800 leading-snug">
+                      <span className="block text-slate-700">UGC Approved</span>
+                      <span className="block font-medium">
+                        <strong className="font-bold text-slate-900">Online</strong> Universities
+                      </span>
+                    </div>
+                  );
+                } else if (lower.includes("distance") || lower.includes("deb")) {
+                  renderedTitle = (
+                    <div className="text-xs sm:text-[13px] text-slate-800 leading-snug">
+                      <span className="block text-slate-700">UGC Approved</span>
+                      <span className="block font-medium">
+                        <strong className="font-bold text-slate-900">Distance</strong> Universities
+                      </span>
+                    </div>
+                  );
+                } else if (lower.includes("ugc")) {
+                  renderedTitle = (
+                    <div className="text-xs sm:text-[13px] text-slate-800 leading-snug">
+                      <span className="block text-slate-700">UGC Approved</span>
+                      <span className="block font-semibold text-slate-900">Universities</span>
+                    </div>
+                  );
+                } else if (lower.includes("nirf")) {
+                  renderedTitle = (
+                    <div className="text-xs sm:text-[13px] text-slate-800 leading-snug">
+                      <span className="block font-semibold text-slate-900">NIRF Ranked</span>
+                      <span className="block text-slate-700">universities</span>
+                    </div>
+                  );
+                } else if (lower.includes("naac")) {
+                  renderedTitle = (
+                    <div className="text-xs sm:text-[13px] text-slate-800 leading-snug">
+                      <span className="block font-semibold text-slate-900">NAAC Accredited</span>
+                      <span className="block text-slate-700">Universities</span>
+                    </div>
+                  );
+                } else if (lower.includes("wes")) {
+                  renderedTitle = (
+                    <div className="text-xs sm:text-[13px] text-slate-800 leading-snug">
+                      <span className="block font-semibold text-slate-900">WES Approved</span>
+                      <span className="block text-slate-700">Universities</span>
+                    </div>
+                  );
+                } else if (lower.includes("aicte")) {
+                  renderedTitle = (
+                    <div className="text-xs sm:text-[13px] text-slate-800 leading-snug">
+                      <span className="block font-semibold text-slate-900">AICTE Approved</span>
+                      <span className="block text-slate-700">Universities</span>
+                    </div>
+                  );
+                }
+
                 const cardContent = (
-                  <div
-                    className="bg-white rounded-xl border border-gray-200 flex flex-col p-1.5 sm:p-3 items-center justify-between text-center aspect-[4/4.6] sm:aspect-square shadow-2xs hover:border-blue-400 hover:shadow-md transition-all overflow-hidden w-full group cursor-pointer"
-                  >
-                    <div className="flex-1 min-h-0 w-full relative">
+                  <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:shadow-md hover:border-slate-200 p-4 sm:p-5 flex flex-col items-center justify-between text-center w-full h-full transition-all group">
+                    {/* Top: Logo Image */}
+                    <div className="h-12 sm:h-14 w-full flex items-center justify-center relative mt-1">
                       {acc.logo ? (
                         <Image
                           src={getAssetPath(acc.logo)}
                           alt={acc.title}
                           fill
-                          sizes="(max-width: 768px) 64px, 80px"
+                          sizes="120px"
                           className="object-contain group-hover:scale-105 transition-transform"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <Award className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-blue-600 group-hover:scale-110 transition-transform" />
+                          <Award className="w-8 h-8 sm:w-9 sm:h-9 text-blue-600 group-hover:scale-110 transition-transform" />
                         </div>
                       )}
                     </div>
-                    <div className="w-full shrink-0 flex flex-col items-center justify-start text-center pt-1">
-                      <div className="w-full h-4 sm:h-5 flex items-center justify-center">
-                        <h3 className="text-[10px] sm:text-[11.5px] md:text-[12.5px] font-bold text-gray-900 group-hover:text-blue-600 m-0 tracking-tight leading-tight line-clamp-1 w-full text-center transition-colors">
-                          {acc.title}
-                        </h3>
-                      </div>
-                      <div className="w-full h-[22px] sm:h-[26px] flex items-start justify-center mt-0.5">
-                        {acc.description ? (
-                          <p className="text-[8px] sm:text-[9px] md:text-[10px] text-gray-600 leading-tight m-0 line-clamp-2 w-full text-center">
-                            {acc.description}
-                          </p>
-                        ) : null}
-                      </div>
+
+                    {/* Middle: Title */}
+                    <div className="w-full flex items-center justify-center min-h-[38px] my-auto">
+                      {renderedTitle}
+                    </div>
+
+                    {/* Bottom: Warm Golden-Sand Capsule Button */}
+                    <div className="w-full flex items-center justify-center mb-0.5">
+                      <span className="bg-[#E4BE75] group-hover:bg-[#dbb15f] text-[#4A2E00] text-[10.5px] sm:text-xs font-semibold px-3.5 sm:px-4 py-1.5 rounded-full transition-colors inline-block text-center whitespace-nowrap shadow-2xs">
+                        View Updated List 2026
+                      </span>
                     </div>
                   </div>
                 );
 
                 return acc.slug ? (
-                  <Link key={acc.id || idx} href={`/accreditations/${acc.slug}`} className="block no-underline">
+                  <Link
+                    key={acc.id || idx}
+                    href={`/accreditations/${acc.slug}`}
+                    className="w-[175px] sm:w-[190px] md:w-[200px] h-[195px] sm:h-[210px] md:h-[220px] shrink-0 block no-underline"
+                  >
                     {cardContent}
                   </Link>
                 ) : (
-                  <div key={acc.id || idx}>{cardContent}</div>
+                  <div
+                    key={acc.id || idx}
+                    className="w-[175px] sm:w-[190px] md:w-[200px] h-[195px] sm:h-[210px] md:h-[220px] shrink-0"
+                  >
+                    {cardContent}
+                  </div>
                 );
               })}
             </div>
@@ -144,37 +211,13 @@ export function AccreditationsView({ initialAccreditations = [] }) {
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery("")}
-                  className="mt-3 text-xs text-[#072C50] font-bold underline cursor-pointer"
+                  className="mt-3 text-xs text-[#11233E] font-bold underline cursor-pointer"
                 >
                   Clear Search
                 </button>
               )}
             </div>
           )}
-
-          {/* ─── 4. BOTTOM FREE COUNSELING CALLOUT CARD ─── */}
-          <div className="mt-12 bg-gradient-to-r from-[#072C50] to-[#0D3B66] rounded-2xl p-6 sm:p-8 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-md">
-            <div className="text-center md:text-left space-y-1.5">
-              <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-blue-500/20 text-blue-200 text-xs font-semibold mb-1">
-                <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-                <span>Need Verification Help?</span>
-              </div>
-              <h3 className="text-lg sm:text-xl font-bold text-white m-0">
-                Verify University Approvals with Expert Counselors
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-300 m-0 max-w-xl">
-                Get 100% free guidance on UGC-DEB entitlements, NAAC grades, and course validity before you pay any admission fee.
-              </p>
-            </div>
-
-            <Link
-              href="/contact-us"
-              className="bg-[#f97316] hover:bg-[#ea580c] text-white text-xs sm:text-sm font-bold px-7 py-3 rounded-full shadow-md transition-all hover:scale-105 inline-flex items-center gap-2 shrink-0 cursor-pointer"
-            >
-              <span>Get Free Consultation</span>
-              <ArrowRightOutlined />
-            </Link>
-          </div>
         </article>
       </div>
     </div>
