@@ -24,6 +24,9 @@ export default function LandingApprovals({
   const activeTitle = brand?.approvalsTitle || title;
   const subtitle = brand?.approvalsSubtitle || brand?.approvalsDescription || null;
 
+  if (layout === "mu" || brand?.slug === "mu") {
+    return <MuApprovals approvals={approvals} activeUniversity={activeUni} brand={brand} />;
+  }
   if (layout === "table" || brand?.slug === "galgotias") {
     return <GalgotiasApprovalsTable keyHighlights={keyHighlights} brand={brand} />;
   }
@@ -631,6 +634,93 @@ function ClassicApprovalsGrid({ approvals, activeUniversity, activeTitle, banner
               </div>
             ))}
           </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function MuApprovals({ approvals = [], activeUniversity, brand = {} }) {
+  const sectionTitle = brand?.approvalsTitle || `${activeUniversity}`;
+  const sectionSubtitle = brand?.approvalsSubtitle || "Approvals & Recognition";
+
+  return (
+    <section
+      id="approvals"
+      className={`w-full text-white select-none ${brand?.approvalsSectionClassName || "py-12 sm:py-16"}`}
+      style={{
+        backgroundColor: brand?.approvalsBg || brand?.primaryColor || "#193579",
+        ...brand?.approvalsSectionStyle,
+      }}
+    >
+      <div className={`mx-auto px-4 sm:px-6 lg:px-8 text-center ${brand?.approvalsContainerClassName || "max-w-[1240px]"}`}>
+        <h2
+          className={`text-white uppercase m-0 ${
+            brand?.approvalsTitleClassName || "font-bold tracking-wide text-[24px] sm:text-[28px] lg:text-[30px]"
+          }`}
+          style={{
+            fontFamily: brand?.approvalsTitleFont || "inherit",
+            ...brand?.approvalsTitleStyle,
+          }}
+        >
+          {sectionTitle}
+        </h2>
+        <h3
+          className={`text-white uppercase ${
+            brand?.approvalsSubtitleClassName || "font-normal tracking-wider text-[20px] sm:text-[24px] lg:text-[26px] mt-1 mb-8 sm:mb-12"
+          }`}
+          style={{
+            fontFamily: brand?.approvalsSubtitleFont || "inherit",
+            ...brand?.approvalsSubtitleStyle,
+          }}
+        >
+          {sectionSubtitle}
+        </h3>
+
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 justify-items-center">
+          {approvals.map((item, idx) => (
+            <div
+              key={idx}
+              className={`flex flex-col items-center text-center group w-full ${brand?.approvalsItemClassName || "max-w-[270px]"}`}
+              style={brand?.approvalsItemStyle}
+            >
+              {/* Circular badge container */}
+              <div
+                className="rounded-full bg-white flex items-center justify-center mb-3.5 shadow-md group-hover:scale-105 transition-transform duration-300 w-24 h-24 sm:w-[115px] sm:h-[115px] p-1.5"
+                style={brand?.approvalsBadgeStyle}
+              >
+                <div
+                  className="relative flex items-center justify-center w-[90%] h-[90%]"
+                  style={brand?.approvalsImageInnerStyle}
+                >
+                  <Image
+                    src={item.image}
+                    alt={item.tag || item.title || "Approval"}
+                    fill
+                    className="object-contain"
+                    sizes="160px"
+                  />
+                </div>
+              </div>
+
+              <h4
+                className={`text-white ${
+                  brand?.approvalsItemTitleClassName || "font-semibold tracking-tight text-[16px] sm:text-[17px] mt-1 mb-1.5"
+                }`}
+                style={brand?.approvalsItemTitleStyle}
+              >
+                {item.tag || item.title}
+              </h4>
+              <p
+                className={`text-white ${
+                  brand?.approvalsItemTextClassName || "leading-normal font-normal m-0 text-[12px] sm:text-[12.5px] max-w-[250px]"
+                }`}
+                style={brand?.approvalsItemTextStyle}
+              >
+                {item.text}
+              </p>
+            </div>
+          ))}
         </div>
       </div>
     </section>

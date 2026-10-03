@@ -327,6 +327,32 @@ export default function LandingHero({
           className={`relative z-10 flex w-full flex-col items-center sm:items-start text-center sm:text-left lg:flex-1 ${hero.contentClassName || "lg:max-w-xl"}`}
           style={hero.contentStyle}
         >
+          {/* Welcome Text */}
+          {hero.welcomeText && (
+            <div className="mb-1 text-center sm:text-left">
+              <span
+                className={
+                  hero.welcomeTextClassName ||
+                  "text-[18px] sm:text-[22px] font-bold text-white block"
+                }
+                style={hero.welcomeTextStyle}
+              >
+                {hero.welcomeText}
+              </span>
+              {hero.welcomeSubtext && (
+                <span
+                  className={
+                    hero.welcomeSubtextClassName ||
+                    "text-[15.5px] sm:text-[17px] text-white/95 font-normal block mb-1"
+                  }
+                  style={hero.welcomeSubtextStyle}
+                >
+                  {hero.welcomeSubtext}
+                </span>
+              )}
+            </div>
+          )}
+
           {/* Hashtag */}
           {(hero.hashtagText || brand.hashtag) && (
             <p
@@ -366,7 +392,39 @@ export default function LandingHero({
               ...hero.headingStyle,
             }}
           >
-            {typeof (hero.headlineText || brand.headline || brand.name) === "string" &&
+            {hero.highlightTitle ? (
+              <>
+                <span
+                  className={hero.highlightTitleClassName || ""}
+                  style={{
+                    color: hero.highlightTitleColor || "#f97316",
+                    fontFamily: hero.headingFont || "'Poppins', sans-serif",
+                    fontSize: "inherit",
+                    fontWeight: "inherit",
+                    lineHeight: "inherit",
+                    letterSpacing: "inherit",
+                    ...hero.highlightTitleStyle,
+                  }}
+                >
+                  {hero.highlightTitle}
+                </span>
+                <br />
+                <span
+                  className={hero.headlineTextClassName || ""}
+                  style={{
+                    color: hero.headlineColor || hero.headingColor || "#ffffff",
+                    fontFamily: hero.headingFont || "'Poppins', sans-serif",
+                    fontSize: "inherit",
+                    fontWeight: "inherit",
+                    lineHeight: "inherit",
+                    letterSpacing: "inherit",
+                    ...hero.headlineTextStyle,
+                  }}
+                >
+                  {hero.headlineText || brand.headline || brand.name}
+                </span>
+              </>
+            ) : typeof (hero.headlineText || brand.headline || brand.name) === "string" &&
             (hero.headlineText || brand.headline || brand.name).includes("\n")
               ? (hero.headlineText || brand.headline || brand.name)
                   .split("\n")
@@ -427,7 +485,7 @@ export default function LandingHero({
           )}
 
           {/* Online Degree Courses Strip or Course Box */}
-          {hero.hideCourseBox ? (
+          {hero.hideCourses || hero.coursesStrip === false ? null : hero.hideCourseBox ? (
             <h2
               className={
                 hero.courseStripClassName ||
@@ -521,12 +579,14 @@ export default function LandingHero({
             }
             style={{
               background:
+                hero.buttonStyle?.background ||
+                hero.buttonStyle?.backgroundColor ||
                 hero.buttonBackground ||
                 hero.buttonGradient ||
                 (isDarkMode
                   ? "#f78d2d"
                   : "linear-gradient(270deg, #ff6600 0%, #ee3024 100%)"),
-              color: hero.buttonTextColor || "#ffffff",
+              color: hero.buttonTextColor || hero.buttonStyle?.color || "#ffffff",
               border:
                 hero.buttonBorder ||
                 (hero.buttonStyle?.border ? undefined : "none"),
@@ -555,10 +615,21 @@ export default function LandingHero({
 
         {/* Right Column: Lead Form */}
         <div
-          className={`relative z-20 w-full sm:w-[350px] lg:w-[340px] xl:w-[360px] shrink-0 flex justify-center lg:justify-end ${hero.formContainerClassName || ""
+          className={`relative z-20 w-full sm:w-[350px] lg:w-[340px] xl:w-[360px] shrink-0 flex flex-col items-center lg:items-end justify-center ${hero.formContainerClassName || ""
             }`}
           style={hero.formContainerStyle}
         >
+          {hero.mobileStudentImage && (
+            <div className="block md:hidden w-full max-w-[280px] -mt-3 mb-2 relative aspect-[16/9]">
+              <Image
+                src={hero.mobileStudentImage}
+                alt={brand.name || "University"}
+                fill
+                className="object-contain"
+                sizes="280px"
+              />
+            </div>
+          )}
           <LandingLeadForm
             brand={brand}
             courses={courses}

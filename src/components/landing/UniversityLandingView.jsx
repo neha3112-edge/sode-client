@@ -303,8 +303,12 @@ export default function UniversityLandingView({ data = {} }) {
 
   return (
     <div
-      className="landing-page-root min-h-screen bg-white text-slate-900 flex flex-col font-sans selection:bg-blue-900 selection:text-white"
-      style={themeStyles}
+      className={`landing-page-root landing-page--${brandWithSlug.slug || slug} min-h-screen bg-white text-slate-900 flex flex-col font-sans selection:bg-blue-900 selection:text-white ${brand.pageClassName || ""}`}
+      style={{
+        fontFamily: brand.fontFamily || "'Roboto', var(--font-roboto), sans-serif",
+        ...themeStyles,
+        ...brand.pageStyle,
+      }}
     >
       {/* Dynamic Page Specific CSS Injection */}
       {activeCustomCss && (

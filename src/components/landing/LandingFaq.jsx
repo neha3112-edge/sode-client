@@ -30,6 +30,8 @@ export default function LandingFaq({
       ? "pill"
       : brand.slug === "vgu"
       ? "vgu"
+      : brand.slug === "mu"
+      ? "mu"
       : "divided");
   const headingColor = brand.faqHeaderColor || brand.primaryColor || "#08417b";
   const iconColor = brand.faqIconColor || brand.primaryColor || "#fd202a";
@@ -43,6 +45,111 @@ export default function LandingFaq({
   };
 
   const getAnswer = (faq) => faq.a || faq.answer || "";
+
+  // ================= LAYOUT: MU CARDS WITH ORANGE ACCENTS =================
+  if (layout === "mu" || brand.slug === "mu") {
+    const faqTitle = brand.faqTitle || "Frequently Asked Questions";
+    return (
+      <section
+        id="faqs"
+        className={brand.faqSectionClassName || "py-10 sm:py-14 lg:py-16 bg-white w-full select-none"}
+      >
+        <div className={brand.faqContainerClassName || "max-w-[1140px] mx-auto px-4 sm:px-6"}>
+          <h2
+            className={
+              brand.faqTitleClassName ||
+              "text-2xl sm:text-[28px] lg:text-[32px] font-bold text-[#193579] tracking-normal text-center m-0 mb-6 sm:mb-8"
+            }
+          >
+            <span className="text-[#f97316]">FAQ - </span>
+            {faqTitle.replace(/^FAQ\s*[-–:]*\s*/i, "")}
+          </h2>
+
+          <div className={brand.faqListClassName || "space-y-3 sm:space-y-3.5 w-full"}>
+            {faqs.map((faq, idx) => {
+              const isOpen = openIndex === idx;
+              const rawQuestion = (faq.q || faq.question || "").replace(/^Q\d+[\.\:\-\s]*/i, "").trim();
+              const prefix = brand.faqPrefix
+                ? brand.faqPrefix.replace("{idx}", idx + 1)
+                : `» Q${idx + 1}- `;
+              const formattedQuestion = `${prefix}${rawQuestion}`;
+              const answerText = faq.a || faq.answer || "";
+
+              const headerClass = isOpen
+                ? brand.faqHeaderOpenClassName ||
+                "w-full pl-5 pr-4 sm:pl-6 sm:pr-5 pt-4.5 pb-3.5 sm:pt-5 sm:pb-4 text-left flex items-center justify-between gap-4 cursor-pointer bg-[#193579] text-white border-none rounded-t-lg rounded-b-none m-0 transition-colors shadow-xs relative overflow-hidden"
+                : brand.faqHeaderClosedClassName ||
+                "w-full pl-5 pr-4 sm:pl-6 sm:pr-5 pt-4.5 pb-3.5 sm:pt-5 sm:pb-4 text-left flex items-center justify-between gap-4 cursor-pointer bg-[#e0e6ec] text-[#111827] border-none rounded-lg m-0 hover:bg-[#d5dde5] transition-colors shadow-xs relative overflow-hidden";
+
+              const questionClass = isOpen
+                ? brand.faqQuestionOpenClassName ||
+                "text-[15px] sm:text-[16.5px] font-medium text-white leading-snug"
+                : brand.faqQuestionClosedClassName ||
+                "text-[15px] sm:text-[16.5px] font-medium text-[#111827] leading-snug";
+
+              const answerClass =
+                brand.faqAnswerClassName ||
+                "px-6 sm:px-8 py-5 sm:py-6 bg-[#f7f7f7] border-none rounded-b-lg rounded-t-none text-[14.5px] sm:text-[15.5px] text-[#222222] leading-[1.65] font-normal m-0";
+
+              return (
+                <div key={idx} className={brand.faqItemClassName || "w-full transition-all"}>
+                  <button
+                    type="button"
+                    onClick={() => toggleFaq(idx)}
+                    className={`${headerClass} relative overflow-hidden`}
+                    style={{
+                      borderTopLeftRadius: "8px",
+                      borderTopRightRadius: "8px",
+                      borderBottomLeftRadius: isOpen ? "0px" : "8px",
+                      borderBottomRightRadius: isOpen ? "0px" : "8px",
+                    }}
+                    aria-expanded={isOpen}
+                  >
+                    <span
+                      className={
+                        brand.faqLeftStripClassName ||
+                        "absolute left-0 top-0 bottom-0 w-[4px] sm:w-[5px] bg-[#f97316] pointer-events-none"
+                      }
+                      style={{
+                        backgroundColor: brand.faqLeftStripColor || "#f97316",
+                        borderTopLeftRadius: "8px",
+                        borderBottomLeftRadius: isOpen ? "0px" : "8px",
+                      }}
+                    />
+                    <span className={questionClass}>{formattedQuestion}</span>
+                    <span
+                      className={
+                        brand.faqIconBadgeClassName ||
+                        "w-6 h-6 sm:w-6.5 sm:h-6.5 rounded-full bg-[#f97316] text-white flex items-center justify-center font-bold text-[14px] sm:text-[15px] leading-none shrink-0 shadow-xs select-none"
+                      }
+                    >
+                      {isOpen ? "−" : "+"}
+                    </span>
+                  </button>
+
+                  {isOpen && (
+                    <div
+                      className={answerClass}
+                      style={{
+                        borderTopLeftRadius: "0px",
+                        borderTopRightRadius: "0px",
+                        borderBottomLeftRadius: "8px",
+                        borderBottomRightRadius: "8px",
+                        boxShadow: brand.faqAnswerBoxShadow || "0 3px 6px 2px #ccc",
+                        ...brand.faqAnswerStyle,
+                      }}
+                    >
+                      {answerText}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   // ================= LAYOUT: VGU BAR PILLS (Matching Image 2) =================
   if (layout === "vgu") {

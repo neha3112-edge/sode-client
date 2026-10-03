@@ -8,6 +8,7 @@ import ShooliniWhyChoose from "./whychoose/ShooliniWhyChoose";
 import SmuWhyChooseCarousel from "./whychoose/SmuWhyChooseCarousel";
 import SliderWhyChoose from "./whychoose/SliderWhyChoose";
 import ClassicWhyChoose from "./whychoose/ClassicWhyChoose";
+import MuWhyChoose from "./whychoose/MuWhyChoose";
 
 /**
  * Reusable Why Choose / Key Features Section Router
@@ -15,6 +16,11 @@ import ClassicWhyChoose from "./whychoose/ClassicWhyChoose";
  */
 export default function LandingWhyChoose({ whyChoose = [], brand = {}, onOpenApply }) {
   const layout = brand.whyChooseLayout || brand.slug;
+
+  // 0. Mangalayatan University (MU) Cards Grid
+  if (layout === "mu" || layout === "mu-cards" || brand.slug === "mu") {
+    return <MuWhyChoose whyChoose={whyChoose} brand={brand} />;
+  }
 
   // 1. LPU Pedagogy & Support Services
   if (layout === "lpu") {

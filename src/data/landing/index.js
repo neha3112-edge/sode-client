@@ -7,11 +7,14 @@ import { galgotiasData } from "./galgotias";
 import { smuData } from "./smu";
 import { vguData } from "./vgu";
 import { shooliniData } from "./shoolini";
+import { upesData } from "./upes";
 
 export const LANDING_REGISTRY = {
   amity: amityData,
   lpu: lpuData,
   mu: muData,
+  mangalayatan: muData,
+  "mangalayatan-university": muData,
   manipal: manipalData,
   cu: cuData,
   galgotias: galgotiasData,
@@ -20,6 +23,8 @@ export const LANDING_REGISTRY = {
   "sikkim-manipal-university": smuData,
   "sikkim-manipal": smuData,
   shoolini: shooliniData,
+  upes: upesData,
+  "upes-online": upesData,
 };
 
 export function getLandingData(slug) {
@@ -38,4 +43,5 @@ export {
   smuData,
   vguData,
   shooliniData,
+  upesData,
 };

@@ -61,6 +61,68 @@ export default function LandingAbout({
   const leaderData = leader || about.leader;
   const primaryColor = brand.primaryColor || "#ee3024";
 
+  // ==========================================
+  // Layout 0: Mangalayatan University (MU) Centered with Bottom Campus Illustration
+  // ==========================================
+  const isMuLayout = brand.aboutLayout === "mu" || brand.slug === "mu";
+  if (isMuLayout) {
+    return (
+      <section
+        id="about"
+        className={`landing-about-section landing-about-mu w-full relative select-none ${
+          brand.aboutSectionClassName || "pt-8 sm:pt-12 pb-[190px] sm:pb-[260px] md:pb-[380px] lg:pb-[480px]"
+        }`}
+        style={{
+          backgroundColor: brand.aboutBg || "#ffffff",
+          backgroundImage: `url(${about.backgroundImage || brand.aboutBackgroundImage || "/assets/mu/about-bg.webp"})`,
+          backgroundPosition: "bottom center",
+          backgroundSize: "contain",
+          backgroundRepeat: "no-repeat",
+          ...brand.aboutSectionStyle,
+        }}
+      >
+        <div className={brand.aboutContainerClassName || "max-w-4xl mx-auto px-4 sm:px-6 text-center"}>
+          <h2
+            className={
+              brand.aboutTitleClassName ||
+              "text-[24px] sm:text-[28px] lg:text-[32px] font-extrabold text-[#F97316] uppercase tracking-wide mb-4"
+            }
+            style={brand.aboutTitleStyle}
+          >
+            {title}
+          </h2>
+          <div
+            className={
+              brand.aboutTextClassName ||
+              "space-y-4 text-[13.5px] sm:text-[14.5px] text-slate-700 leading-relaxed font-medium mb-8"
+            }
+          >
+            {paragraphs.map((p, idx) => (
+              <p
+                key={idx}
+                className={brand.aboutParagraphClassName || "m-0 text-justify font-medium sm:text-center"}
+              >
+                {p}
+              </p>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={() => onOpenApply?.()}
+            className={
+              brand.aboutButtonClassName ||
+              "inline-flex items-center justify-center gap-2 bg-[#F97316] hover:bg-[#ea580c] text-white font-bold text-[14px] px-8 py-3 rounded-full shadow-sm active:scale-95 transition-all cursor-pointer border-none"
+            }
+            style={brand.aboutButtonStyle}
+          >
+            <span>{buttonText}</span>
+            <span className="text-base">→</span>
+          </button>
+        </div>
+      </section>
+    );
+  }
+
   // 1. Galgotias Text Layout
   if (layout === "galgotias") {
     return (

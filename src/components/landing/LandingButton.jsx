@@ -53,7 +53,11 @@ export default function LandingButton({
       } ${v.classes} ${
         disabled || loading ? "opacity-60 cursor-not-allowed pointer-events-none" : ""
       } ${className}`}
-      style={{ ...v.style, ...style }}
+      style={{
+        ...v.style,
+        ...(style.backgroundColor && !style.background ? { background: style.backgroundColor } : {}),
+        ...style,
+      }}
       {...props}
     >
       {loading ? (

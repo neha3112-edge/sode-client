@@ -6,6 +6,7 @@ import LpuGrids from "./programmes/LpuGrids";
 import VguGrid from "./programmes/VguGrid";
 import ShooliniGrid from "./programmes/ShooliniGrid";
 import ProgrammesCarousel from "./programmes/ProgrammesCarousel";
+import MuGrid from "./programmes/MuGrid";
 
 /**
  * Reusable Landing Programmes Section Router
@@ -23,6 +24,10 @@ export default function LandingProgrammes({
   if (!programmes?.length) return null;
 
   const layout = brand.programmesLayout || brand.slug;
+
+  if (layout === "mu" || brand.slug === "mu") {
+    return <MuGrid programmes={programmes} brand={brand} onSelectCourseForBrochure={onSelectCourseForBrochure} onOpenApply={onOpenApply} />;
+  }
 
   if (layout === "galgotias" || layout === "galgotias-grid") {
     return <GalgotiasGrid programmes={programmes} brand={brand} onSelectCourseForBrochure={onSelectCourseForBrochure} />;

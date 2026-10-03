@@ -258,7 +258,7 @@ export default function ScholarshipModal({
 
       {/* Modal Box */}
       <div
-        className="relative w-full max-w-[460px] sm:max-w-[480px] rounded-2xl sm:rounded-[22px] p-5 sm:p-7 shadow-2xl transition-all z-10 overflow-hidden"
+        className="relative w-full max-w-[460px] sm:max-w-[480px] rounded-2xl sm:rounded-[22px] p-5 sm:p-7 shadow-2xl transition-all z-10 max-h-[94vh] overflow-y-auto"
         style={{
           backgroundColor: modalBg,
           boxShadow: isLight

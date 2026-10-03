@@ -64,28 +64,30 @@ export default function LandingStickyCtas({
         </a>
 
         {/* Bottom: Gift animated GIF button */}
-        <button
-          type="button"
-          onClick={() => {
-            if (onOpenScholarship) onOpenScholarship();
-            else if (onOpenApply) onOpenApply();
-          }}
-          aria-label="Claim Scholarship"
-          title={brand.couponButtonText || "Scholarship Coupon Code"}
-          className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white flex items-center justify-center shadow-[0_4px_16px_rgba(0,0,0,0.15)] hover:shadow-[0_6px_22px_rgba(255,180,0,0.35)] hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer border border-slate-100/80"
-        >
-          <Image
-            src={giftSrc}
-            alt="Scholarship Gift"
-            width={44}
-            height={44}
-            className="w-9 h-9 sm:w-10 sm:h-10 object-contain pointer-events-none"
-            unoptimized
-            onError={() => {
-              setGiftSrc("/assets/all_universities_images/all_universities_images/smu/gift.gif");
+        {brand.showFloatingGift !== false && (
+          <button
+            type="button"
+            onClick={() => {
+              if (onOpenScholarship) onOpenScholarship();
+              else if (onOpenApply) onOpenApply();
             }}
-          />
-        </button>
+            aria-label="Claim Scholarship"
+            title={brand.couponButtonText || "Scholarship Coupon Code"}
+            className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white flex items-center justify-center shadow-[0_4px_16px_rgba(0,0,0,0.15)] hover:shadow-[0_6px_22px_rgba(255,180,0,0.35)] hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer border border-slate-100/80"
+          >
+            <Image
+              src={giftSrc}
+              alt="Scholarship Gift"
+              width={44}
+              height={44}
+              className="w-9 h-9 sm:w-10 sm:h-10 object-contain pointer-events-none"
+              unoptimized
+              onError={() => {
+                setGiftSrc("/assets/smu/gift.gif");
+              }}
+            />
+          </button>
+        )}
       </div>
 
       {/* Sticky Bottom Bar on Mobile/Tablet */}
