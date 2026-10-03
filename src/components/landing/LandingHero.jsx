@@ -2,8 +2,10 @@
 
 import React from "react";
 import Image from "next/image";
+import { Download } from "lucide-react";
 import LandingContainer from "./LandingContainer";
 import LandingLeadForm from "./LandingLeadForm";
+import LandingButton from "./LandingButton";
 
 export default function LandingHero({
   brand = {},
