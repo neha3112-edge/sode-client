@@ -658,17 +658,17 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
               )}
               <Container>
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
-                  {/* Left Content Column */}
-                  <div className={`${hasHeroMedia ? "lg:col-span-7" : "lg:col-span-12"} flex flex-col items-start z-10`}>
+                  {/* Left Content Column (Order-2 on mobile so video shows first, order-1 on desktop) */}
+                  <div className={`${hasHeroMedia ? "lg:col-span-7" : "lg:col-span-12"} flex flex-col items-center text-center lg:items-start lg:text-left z-10 order-2 lg:order-1`}>
                     {/* Full Degree Subtitle in parentheses */}
                     {shortTitle && (
-                      <p className="text-slate-300 text-sm sm:text-base font-normal tracking-wide mb-1.5">
+                      <p className="text-slate-300 text-sm sm:text-base font-normal tracking-wide mb-1.5 text-center lg:text-left">
                         {shortTitle.startsWith("(") ? shortTitle : `(${shortTitle})`}
                       </p>
                     )}
 
                     {/* Main Heading H1 */}
-                    <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-black text-white tracking-tight leading-tight mb-4">
+                    <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-black text-white tracking-tight leading-tight mb-4 text-center lg:text-left">
                       {hero.title || pageTitle}{" "}
                       {hero.titleHighlight && (
                         <span className="text-[#F5D061]">{hero.titleHighlight}</span>
@@ -677,14 +677,14 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
 
                     {/* Hero Subtitle Description */}
                     {(hero.description || hero.subtitle) && (
-                      <p className="text-slate-300 text-sm sm:text-[15px] leading-relaxed mb-8 max-w-2xl font-normal">
+                      <p className="text-slate-300 text-sm sm:text-[15px] leading-relaxed mb-6 sm:mb-8 max-w-2xl font-normal text-center lg:text-left">
                         {hero.description || hero.subtitle}
                       </p>
                     )}
 
                     {/* Primary Action Buttons (Database Driven with heroButtons) */}
                     {heroButtons.length > 0 && (
-                      <div className="flex flex-row items-center gap-2.5 sm:gap-3 flex-wrap">
+                      <div className="flex flex-row items-center justify-center lg:justify-start gap-2.5 sm:gap-3 flex-wrap">
                         {heroButtons.map((btn, idx) => {
                           const isModal = btn.isModal;
                           const variant = btn.variant || "green";
@@ -729,9 +729,9 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                     )}
                   </div>
 
-                  {/* Right Media Column (Only rendered if real videoUrl or uploaded banner/thumbnail exists) */}
+                  {/* Right Media Column (Order-1 on mobile to show video on top, order-2 on desktop) */}
                   {hasHeroMedia && (
-                    <div className="lg:col-span-5 flex justify-center z-10 w-full">
+                    <div className="lg:col-span-5 flex justify-center z-10 w-full order-1 lg:order-2">
                       {hero.videoUrl ? (
                         <div className="w-full max-w-lg lg:max-w-none rounded-xl overflow-hidden shadow-2xl relative aspect-video bg-[#0c1e30] border border-white/10">
                           <iframe
