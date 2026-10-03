@@ -1,9 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import confetti from "canvas-confetti";
+import { ChevronDown } from "lucide-react";
 import LandingContainer from "./LandingContainer";
 
 export default function LandingNavbar({
@@ -13,10 +14,9 @@ export default function LandingNavbar({
   onOpenScholarship,
   onScrollTop,
 }) {
-  // ─── Destructure brand props (all come from JSON) ───────────────────────────
   const {
     name = "University Online",
-    logo = "/assets/amitylp/Amity-online-logo.png",
+    logo = brand.logo || "/assets/amity/Amity-online-logo.png",
     sodeIcon = "/assets/images/sode_icon.png",
     primaryColor = "#08417b",
     showSodeLogo,
@@ -29,27 +29,18 @@ export default function LandingNavbar({
     badgeText = "Admission Open 2026",
   } = brand;
 
-  // ─── Derived flags ───────────────────────────────────────────────────────────
   const shouldShowSodeLogo =
     showSodeLogo === true ||
-    (showSodeLogo !== false &&
-      (brand.sodeIcon ||
-        brand.slug === "manipal" ||
-        brand.slug === "shoolini"));
+    (showSodeLogo !== false && (brand.sodeIcon || brand.slug === "manipal" || brand.slug === "shoolini"));
 
   const isCouponVisible = showCouponBtn !== false && showCouponButton !== false;
 
-  // ─── Handlers ────────────────────────────────────────────────────────────────
   const handleScrollTop = (e) => {
-    e.preventDefault();
-    onScrollTop?.();
-    const heroEl =
-      document.getElementById("hero") || document.getElementById("banner");
-    if (heroEl) {
-      heroEl.scrollIntoView({ behavior: "smooth" });
-    } else {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
+    e?.preventDefault();
+    if (onScrollTop) onScrollTop();
+    const heroEl = document.getElementById("hero") || document.getElementById("banner");
+    if (heroEl) heroEl.scrollIntoView({ behavior: "smooth" });
+    else if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleCouponClick = (e) => {
@@ -67,112 +58,109 @@ export default function LandingNavbar({
         });
       }
     } catch { }
-    if (onOpenScholarship) {
-      onOpenScholarship();
-    } else if (onOpenApply) {
-      onOpenApply();
-    }
+    if (onOpenScholarship) onOpenScholarship();
+    else if (onOpenApply) onOpenApply();
   };
 
-  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const isDesNavbar = brand.navbarVariant === "des" || brand.slug === "galgotias";
 
-  // ─── Render ──────────────────────────────────────────────────────────────────
-  return (
-    <header className="navbar sticky top-0 z-50 bg-white border-b border-slate-200/80 shadow-[0px_4px_16px_rgba(0,0,0,0.10)]">
-      <LandingContainer className="top-navbar h-18 sm:h-20 lg:h-22 flex items-center justify-between px-3 sm:px-6">
-
-        {/* ── LEFT: Logos ───────────────────────────────────────────────────── */}
-        <div className="logo flex items-center min-w-0 ml-2 sm:ml-1 lg:ml-3">
-
-          {/* SODE Logo — shown when brand.showSodeLogo === true or sodeIcon provided */}
-          {shouldShowSodeLogo && (
-            <>
-              <Link
-                href="#hero"
-                onClick={handleScrollTop}
-                className="des_logo flex items-center shrink-0 cursor-pointer"
-                aria-label="Back to Top"
-              >
-                {/*
-                  Global SODE logo size: 180×92px
-                  To change globally → edit width/height below.
-                  To override per page → set brand.sodeLogoContainerStyle in that page's JSON.
-                */}
-                <div
-                  className="relative"
-                  style={{
-                    width: "90px",
-                    height: "62px",
-                    minWidth: "70px",
-                    position: "relative",
-                    ...brand.sodeLogoContainerStyle,
-                  }}
-                >
-                  <Image
-                    src={sodeIcon || "/assets/images/sode_icon.png"}
-                    alt="SODE"
-                    fill
-                    priority
-                    className="object-contain object-left"
-                    sizes="100px"
-                  />
-                </div>
-              </Link>
-
-              {/* Divider between SODE logo and university logo */}
-              {!brand.hideNavDivider &&
-                brand.showNavDivider !== false &&
-                !brand.hideMangLogo && (
-                  <div className="h-12 sm:h-14 lg:h-16 w-[1.5px] bg-[#cccccc] mx-1.5 sm:mx-2 lg:mx-3 shrink-0" />
-                )}
-            </>
-          )}
-
-          {/* University Logo — hidden when brand.hideMangLogo === true */}
-          {!brand.hideMangLogo && (
-            <Link
-              href="#hero"
-              onClick={handleScrollTop}
-              className={`mang_logo flex items-center min-w-0 cursor-pointer ${brand.hideNavDivider ? "ml-2.5 sm:ml-3.5" : ""
-                }`}
-              aria-label={name}
-            >
-              <div className="relative w-41 sm:w-53 lg:w-65 h-11 sm:h-13 lg:h-15">
+  if (isDesNavbar) {
+    return (
+      <header className="sticky top-0 z-50 bg-white border-b border-slate-200/80 shadow-[0_4px_20px_rgba(0,0,0,0.08)]">
+        <LandingContainer className="h-16 sm:h-20 flex items-center justify-between px-3 sm:px-6 max-w-[1360px]">
+          {/* Left: DistanceEducationSchool.com official Logo */}
+          <div className="flex items-center min-w-0 py-1">
+            <Link href="#hero" onClick={handleScrollTop} className="flex items-center cursor-pointer" aria-label="Distance Education School">
+              <div className="relative w-56 sm:w-72 lg:w-80 h-11 sm:h-14 lg:h-15">
                 <Image
-                  src={logo}
-                  alt={name}
+                  src={brand.sodeLogo || "/assets/images/new-des-logo.webp"}
+                  alt="Distance Education School"
                   fill
                   priority
                   className="object-contain object-left"
-                  sizes="(max-width: 640px) 140px, 240px"
+                  sizes="(max-width: 640px) 240px, 340px"
                 />
               </div>
             </Link>
+          </div>
+
+          {/* Right: Courses, Universities, Compare Button */}
+          <div className="flex items-center gap-6 sm:gap-9 font-poppins">
+            <button
+              type="button"
+              onClick={() => {
+                const el = document.getElementById("program") || document.getElementById("courses");
+                if (el) el.scrollIntoView({ behavior: "smooth" });
+                else onOpenBrochure?.();
+              }}
+              className="hidden md:inline-flex items-center gap-1.5 text-black hover:text-[#0055b8] font-semibold text-[15.5px] cursor-pointer bg-transparent border-none transition-colors select-none font-poppins"
+            >
+              <span>Courses</span>
+              <ChevronDown className="w-4 h-4 text-black stroke-[3]" />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                const el = document.getElementById("compare");
+                if (el) el.scrollIntoView({ behavior: "smooth" });
+                else onOpenApply?.();
+              }}
+              className="hidden md:inline-flex items-center gap-1.5 text-black hover:text-[#0055b8] font-semibold text-[15.5px] cursor-pointer bg-transparent border-none transition-colors select-none font-poppins"
+            >
+              <span>Universities</span>
+              <ChevronDown className="w-4 h-4 text-black stroke-[3]" />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onOpenApply?.()}
+              className="bg-[#00882e] hover:bg-[#007026] text-white font-bold text-sm sm:text-[15px] px-5 sm:px-7 py-2 sm:py-2.5 rounded-[6px] shadow-sm cursor-pointer border-none transition-all active:scale-98"
+            >
+              Compare
+            </button>
+          </div>
+        </LandingContainer>
+      </header>
+    );
+  }
+
+  return (
+    <header className="sticky top-0 z-50 bg-white border-b border-slate-200/80 shadow-[0px_2px_10px_rgba(0,0,0,0.06)]">
+      <LandingContainer className="h-16 sm:h-20 lg:h-22 flex items-center justify-between px-3 sm:px-6">
+        {/* Left: University Logo / Brand */}
+        <div className="flex items-center min-w-0">
+          {shouldShowSodeLogo && (
+            <>
+              <Link href="#hero" onClick={handleScrollTop} className="flex items-center shrink-0 cursor-pointer" aria-label="Back to Top">
+                <div className="relative w-9 sm:w-11 lg:w-20 h-9 sm:h-11 lg:h-12">
+                  <Image src={sodeIcon || "/assets/images/sode_icon.png"} alt="SODE" fill priority className="object-contain" sizes="(max-width: 640px) 36px, 48px" />
+                </div>
+              </Link>
+              <div className="h-7 sm:h-9 lg:h-11 w-[1px] bg-[#d1d5db] mx-2 sm:mx-3 lg:mx-4 shrink-0" />
+            </>
           )}
+
+          <Link href="#hero" onClick={handleScrollTop} className="flex items-center min-w-0 cursor-pointer" aria-label={name}>
+            <div
+              className={`relative ${brand.logoWrapperClassName || "w-36 sm:w-48 lg:w-60 h-9 sm:h-11 lg:h-12"}`}
+              style={brand.logoWrapperStyle}
+            >
+              <Image
+                src={logo}
+                alt={name}
+                fill
+                priority
+                className={`object-contain object-left ${brand.logoClassName || ""}`}
+                sizes="(max-width: 640px) 180px, 320px"
+                style={brand.logoStyle}
+              />
+            </div>
+          </Link>
         </div>
 
-        {/* ── CENTER/RIGHT: Nav Links — from brand.navLinks array in JSON ──── */}
-        {brand.navLinks && brand.navLinks.length > 0 && (
-          <nav className="header_menu hidden md:flex items-center ml-auto mr-4 lg:mr-8">
-            <ul className="header_menu_list flex list-none gap-6 lg:gap-8 items-center m-0 p-0">
-              {brand.navLinks.map((lnk, idx) => (
-                <li key={idx} className="m-0 p-0">
-                  <a
-                    href={lnk.href}
-                    className="text-[#002147] hover:text-[#DC520A] text-[15px] lg:text-[16px] font-semibold tracking-wide transition-colors duration-200 py-1"
-                  >
-                    {lnk.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        )}
-
-        {/* ── RIGHT: CTA Button or Badge ────────────────────────────────────── */}
-        <div className="header_heading shrink-0 pl-2 mr-1.5 sm:mr-3 flex items-center gap-2">
-
-          {/* Condition 1: Coupon Button — shown when showCouponBtn !== false */}
+        {/* Right: Scholarship Coupon Code Button or Admission Badge */}
+        <div className="shrink-0 pl-2 mr-1.5 sm:mr-3 flex items-center">
           {isCouponVisible ? (
             <div
               className={
@@ -198,16 +186,18 @@ export default function LandingNavbar({
                     : couponButtonColor
                       ? { backgroundColor: couponButtonColor }
                       : { backgroundColor: "#22c55e" }),
-                  "--coupon-shadow-start": brand.couponShadowColor || "rgba(46, 204, 113, 0.55)",
+                  "--coupon-shadow-start": brand.couponShadowColor || "rgba(46, 204, 113, 0.65)",
                   "--coupon-shadow-mid1": brand.couponShadowColorMid1 || "rgba(46, 204, 113, 0.42)",
                   "--coupon-shadow-mid2": brand.couponShadowColorMid2 || "rgba(46, 204, 113, 0.22)",
-                  "--coupon-shadow-mid3": brand.couponShadowColorMid3 || "rgba(74, 222, 128, 0.28)",
-                  "--coupon-shadow-mid4": brand.couponShadowColorMid4 || "rgba(74, 222, 128, 0.16)",
-                  "--coupon-shadow-end": "rgba(167, 243, 208, 0)",
+                  "--coupon-shadow-mid3": brand.couponShadowColorMid3 || "rgba(46, 204, 113, 0.08)",
+                  "--coupon-shadow-end": "rgba(46, 204, 113, 0)",
                 }}
                 className="coupon-btn-main relative inline-flex items-center gap-2 sm:gap-2.5 pl-5 sm:pl-7 md:pl-8 pr-4.5 sm:pr-6 md:pr-7 py-1 sm:py-1.5 rounded-[8px] text-white font-bold text-[10px] sm:text-[11px] md:text-[11.5px] cursor-pointer border-none overflow-hidden select-none hover:brightness-105 active:scale-95"
               >
+                {/* Moving Light Green Box for gradient button */}
                 <span className="moving-light-green-box" />
+
+                {/* White Circular Disc for Gift Icon */}
                 <span className="relative -ml-1.5 sm:-ml-2.5 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white flex items-center justify-center shrink-0 shadow-xs z-10 p-0 overflow-hidden">
                   <Image
                     src={giftGif || "/assets/images/gift.gif"}
@@ -218,15 +208,14 @@ export default function LandingNavbar({
                     className="w-5 h-5 sm:w-6 sm:h-6 object-contain"
                   />
                 </span>
-                {/* Button text — from brand.couponButtonText in JSON */}
+
+                {/* Scholarship Coupon Code Text */}
                 <span className="relative z-10 tracking-wide md:tracking-wide whitespace-nowrap text-white font-bold drop-shadow-[0_1px_2px_rgba(0,0,0,0.15)] text-[14px] sm:text-[15px] md:text-[15.5px]">
                   {couponButtonText}
                 </span>
               </button>
             </div>
-
-          ) : brand.hideNavbarBadge || !badgeText || brand.showNavbarBadge === false ? null : (
-            /* Condition 2: Admission badge — shown when coupon is hidden */
+          ) : (
             <span
               className="inline-block text-[12px] sm:text-base md:text-xl lg:text-2xl font-bold tracking-tight text-right select-none"
               style={{ color: primaryColor || "#08417b" }}
@@ -234,45 +223,8 @@ export default function LandingNavbar({
               {badgeText}
             </span>
           )}
-
-          {/* Mobile hamburger — only when navLinks are provided */}
-          {brand.navLinks && brand.navLinks.length > 0 && (
-            <button
-              type="button"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-slate-800 hover:text-[#003468] transition-colors focus:outline-hidden"
-              aria-label="Toggle navigation menu"
-            >
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                {mobileMenuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                )}
-              </svg>
-            </button>
-          )}
         </div>
       </LandingContainer>
-
-      {/* ── Mobile Dropdown Menu ──────────────────────────────────────────────── */}
-      {brand.navLinks && brand.navLinks.length > 0 && mobileMenuOpen && (
-        <div className="md:hidden bg-white border-b border-slate-200 px-4 py-3 shadow-md">
-          <ul className="flex flex-col list-none gap-2.5 m-0 p-0">
-            {brand.navLinks.map((lnk, idx) => (
-              <li key={idx}>
-                <a
-                  href={lnk.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block py-2 text-[#002147] hover:text-[#DC520A] text-[15px] font-semibold border-b border-slate-100 last:border-none"
-                >
-                  {lnk.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
     </header>
   );
 }
