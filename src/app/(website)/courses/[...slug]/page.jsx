@@ -103,23 +103,32 @@ export async function generateMetadata({ params }) {
   }
 }
 
+import JsonLdScript from "@/components/common/JsonLd";
+
 export default async function CourseDetailPage({ params }) {
   const resolvedParams = await params;
   const slug = resolvedParams?.slug || "";
   const slugStr = Array.isArray(slug) ? slug.join("/") : slug;
 
-  const initialData = await getCourseData(slug);
+  const [initialData, pageMeta] = await Promise.all([
+    getCourseData(slug),
+    getPageMetaData(`/courses/${slugStr}`),
+  ]);
+
   const initialCourses =
     Array.isArray(initialData?.topUniversities) && initialData.topUniversities.length > 0
       ? initialData.topUniversities
       : [];
 
   return (
-    <CourseClientView
-      initialData={initialData}
-      initialCourses={initialCourses}
-      slug={slugStr}
-    />
+    <>
+      {pageMeta?.schemaMarkup && <JsonLdScript data={pageMeta.schemaMarkup} />}
+      <CourseClientView
+        initialData={initialData}
+        initialCourses={initialCourses}
+        slug={slugStr}
+      />
+    </>
   );
 }
 

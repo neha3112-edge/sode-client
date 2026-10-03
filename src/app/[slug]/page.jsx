@@ -4,7 +4,7 @@ import { request } from "@/services/request";
 import { getAssetPath } from "@/lib/utils";
 import { getPageMetaData, constructMetadata } from "@/constants/pageMetaData";
 import {
-  CustomPageClientView,
+  CoursePageClientView,
   DynamicListingClientView,
   Header,
   Footer,
@@ -34,17 +34,17 @@ const getPageData = cache(async (slug) => {
     }
   } catch (err) { }
 
-  // 2. Try Custom Page
+  // 2. Try Course Page
   try {
-    const customRes = await request.dynamicRead({
-      entity: "custom-pages",
+    const coursePageRes = await request.dynamicRead({
+      entity: "course-pages",
       endPoint: "v1/detail",
       slug: encodeURIComponent(slug),
       revalidate: 600,
     });
-    const customPage = customRes?.result || customRes;
-    if (customPage && customPage.title) {
-      return { type: "custom-page", data: customPage };
+    const coursePage = coursePageRes?.result || coursePageRes;
+    if (coursePage && (coursePage.pageTitle || coursePage.title)) {
+      return { type: "course-page", data: coursePage };
     }
   } catch (err) {
     console.error(`[Server Component] Error pre-fetching page ${slug}:`, err.message);
@@ -147,14 +147,14 @@ export default async function DynamicSlugPage({ params }) {
 
 
   // ── CMS pages need title ───────────────────────────────────────────────────
-  if (!resolved.data?.title) notFound();
+  if (!resolved.data?.title && !resolved.data?.pageTitle) notFound();
 
   // ── Dynamic Listing ────────────────────────────────────────────────────────
   if (resolved.type === "dynamic-listing") {
     return withLayout(<DynamicListingClientView page={resolved.data} slug={slug} />);
   }
 
-  // ── Custom Page ────────────────────────────────────────────────────────────
+  // ── Course Page ────────────────────────────────────────────────────────────
   const heroRes = await request
     .dynamicRead({
       entity: "hero",
@@ -167,6 +167,6 @@ export default async function DynamicSlugPage({ params }) {
   const heroData = heroRes?.result || heroRes || null;
 
   return withLayout(
-    <CustomPageClientView page={resolved.data} slug={slug} heroData={heroData} />
+    <CoursePageClientView page={resolved.data} slug={slug} heroData={heroData} />
   );
 }

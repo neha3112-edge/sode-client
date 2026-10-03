@@ -48,7 +48,21 @@ export const organizationSchema = {
 
 export default function JsonLdScript({ data }) {
   if (!data) return null;
-  const jsonString = JSON.stringify(data).replace(/</g, "\\u003c");
+
+  let jsonString = '';
+
+  if (typeof data === 'string') {
+    let clean = data.trim();
+    // If wrapped in <script ...> ... </script>, extract inner content
+    if (clean.startsWith('<script') && clean.endsWith('</script>')) {
+      clean = clean.replace(/^<script[^>]*>/i, '').replace(/<\/script>$/i, '').trim();
+    }
+    jsonString = clean.replace(/</g, "\\u003c");
+  } else {
+    jsonString = JSON.stringify(data).replace(/</g, "\\u003c");
+  }
+
+  if (!jsonString) return null;
 
   return (
     <script
