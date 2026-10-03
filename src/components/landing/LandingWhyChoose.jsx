@@ -53,8 +53,8 @@ export default function LandingWhyChoose({ whyChoose = [], brand = {}, onOpenApp
     return <GguWhyChoose whyChoose={whyChoose} brand={brand} />;
   }
 
-  // 7. Mangalayatan University (MU) Custom Cards (if explicitly configured via layout)
-  if (layout === "mu-cards") {
+  // 7. Mangalayatan University (MU) Cards
+  if (layout === "mu" || layout === "mu-cards" || brand.slug === "mu") {
     return <MuWhyChoose whyChoose={whyChoose} brand={brand} />;
   }
 

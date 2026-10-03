@@ -91,7 +91,12 @@ export default function LandingProgrammes({
     );
   }
 
-  if (layout === "mu-tabs") {
+  if (
+    layout === "mu-tabs" ||
+    layout === "mu" ||
+    brand.slug === "mu" ||
+    brand.slug === "mangalayatan"
+  ) {
     return (
       <MuGrid
         programmes={programmes}
