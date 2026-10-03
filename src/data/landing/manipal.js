@@ -44,10 +44,6 @@ export const manipalData = {
     goldColor: "#f7b314",
     badgeText: "Admissions Open 2026",
     showCouponBtn: true,
-    couponBtnBg: "#22c55e",
-    showCouponPillWrapper: false,
-    faqTitleHtml: '<h2 class="text-2xl sm:text-3xl font-bold tracking-tight m-0"><span style="color: #08417b">FAQs</span> <span style="color: #08417b" class="font-normal mx-1">|</span> <span style="color: #ee3024">Frequently Asked Questions</span></h2>',
-    faqIconColor: "#08417b",
     hero: {
       backgroundImage: "/assets/manipal_v1_images/banner-manipal-des-final.webp",
       mobileBackgroundImage: "/assets/manipal_v1_images/banner-muj-mobile1.webp",
@@ -57,62 +53,17 @@ export const manipalData = {
       isDarkTheme: true,
       noOverlay: true,
       cardStyle: "white",
-      contentClassName: "lg:max-w-[620px] xl:max-w-[660px]",
-
-      hashtagText: "#EmpowerToLeadTomorrow",
-      hashtagStyle: {
-        color: "#ffffff",
-        fontSize: "14px",
-        fontWeight: "600",
-        letterSpacing: "0.2px",
-        marginBottom: "4px",
-      },
-
-      headlineText: "Manipal University Online",
-      headingFont: "'Oswald', sans-serif",
-      headingClassName: "text-[32px] sm:text-[38px] lg:text-[42px] xl:text-[46px] font-bold text-white leading-tight tracking-tight sm:whitespace-nowrap mt-1 mb-2",
-      headingStyle: {
-        color: "#ffffff",
-        lineHeight: "1.12",
-      },
-
-      taglineText: "Education that empowers your\nambition",
-      taglineClassName: "whitespace-pre-line text-white font-bold text-[18px] sm:text-[22px] lg:text-[24px] leading-snug my-2.5 max-w-[480px]",
-      taglineStyle: {
-        color: "#ffffff",
-        fontWeight: "700",
-      },
-
-      hideCourseBox: true,
-      coursesStrip: [
-        "MBA | MCA | MCOM | MA-JMC | MA |",
-        "BBA | BCOM | BCA | MSC",
-      ],
-      courseStripClassName: "my-3 text-[17px] sm:text-[20px] lg:text-[21px] font-bold text-white tracking-wide space-y-1",
-      courseStripStyle: {
-        color: "#ffffff",
-        fontWeight: "700",
-      },
-
-      brochureButtonText: "Download Brochure",
-      buttonStyle: {
-        background: "#f35a06",
-        backgroundColor: "#f35a06",
-        color: "#ffffff",
-        borderRadius: "4px",
-        fontSize: "14px",
-        fontWeight: "700",
-        padding: "10px 22px",
-        boxShadow: "0 4px 12px rgba(243, 90, 6, 0.35)",
-      },
-
-      inputStyle: "filled",
-      phonePlaceholder: "Enter Mobile Number",
+      contentMaxWidth: "1400px",
+      headingFont: "var(--font-roboto), Roboto, sans-serif",
+      headingColor: "#ffffff",
+      courseTextColor: "#ffffff",
+      showCourseBox: false,
       formBackground: "#ffffff",
       enquireColor: "#ee3024",
       enquireSubtitleColor: "#333333",
-      phoneBadgeBg: "#f35a06",
-      submitBtnBg: "#22c55e",
+      phoneBadgeBg: "#ff5500",
+      submitBtnBg: "#28a745",
+      buttonBackground: "linear-gradient(270deg, #ff6600 0%, #ee3024 100%)",
     },
     coursesStrip: [
       "MBA | MCA | MCOM | MA-JMC | MA |",

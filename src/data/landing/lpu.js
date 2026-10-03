@@ -15,11 +15,10 @@ export const lpuData = {
     ],
   },
   brand: {
-    slug: "lpu",
     name: "LPU Online",
     fullName: "Lovely Professional University Online",
     shortName: "LPU",
-    hashtag: "",
+    hashtag: "#ThinkBigWithLPU",
     headline: "LPU Online",
     punchlinePrefix: "Career ka",
     punchlineHighlight: "Turning Point",
@@ -31,10 +30,8 @@ export const lpuData = {
       "https://api.whatsapp.com/send/?phone=+917065777755&text=I%20want%20to%20Download%20LPU%20Online%20Brochure",
     officialUrl: "https://distanceeducationschool.com/lpu/",
     logo: "/assets/lpu/lpu-logo.png",
-    sodeIcon: "/assets/lpu/sode-icon.png",
-    sodeLogo: "/assets/lpu/new-des-logo.webp",
-    showSodeLogo: true,
-    giftGif: "/assets/lpu/gift.gif",
+    sodeLogo: "/assets/lpu/sode-icon.png",
+    giftIcon: "/assets/lpu/gift.gif",
     callIcon: "/assets/lpu/call_icon.gif",
     arrowIcon: "/assets/lpu/arrow.gif",
     footerLogo: "/assets/lpu/new-des-logo.webp",
@@ -47,114 +44,11 @@ export const lpuData = {
     emiSubtitle: "Zero Cost",
     primaryColor: "#f58220",
     accentColor: "#4d4d4d",
-    compareBannerBg: "#f58220",
-    footerBg: "#073663",
-    couponBtnBg: "linear-gradient(135deg, #2ecc71, #27ae60)",
-    couponButtonText: "Scholarship Coupon Code",
-    faqLayout: "sidebar",
-    faqSubtitle: "Frequently Asked Question",
     coursesStrip: [
       "MBA | MCA | MA | MSc Maths",
       "MCOM | BCA | BBA | BA",
     ],
-    hero: {
-      backgroundImage: "/assets/lpu/new-desktop-front-bg.webp",
-      mobileBackgroundImage: "/assets/lpu/new-desktop-front-bg.webp",
-      backgroundColor: "#fff8f2",
-      darkOverlay: false,
-      isDarkTheme: false,
-      headlineText: "LPU Online",
-      titleHtml:
-        '<span class="underline decoration-[#f58220] underline-offset-8 decoration-4">LPU Online</span><br /><span class="text-slate-800">Career ka </span><span class="text-[#f58220]">Turning Point</span>',
-      taglineText: "LPU Online & Distance Education Courses",
-      noOverlay: true,
-      coursesStrip: [
-        "MBA | MCA | MA | MSc Maths",
-        "MCOM | BCA | BBA | BA",
-      ],
-      pricingStats: [
-        { label: "Fees Starting at", value: "₹20,000/- Sem" },
-        { label: "Zero Cost", value: "EMI Available" },
-      ],
-      brochureButtonText: "Download Brochure",
-      buttonStyle: {
-        backgroundColor: "#4d4d4d",
-        color: "#ffffff",
-      },
-      bottomStrip: {
-        textHtml:
-          'Admissions are Open! <span class="text-[#f58220]">LPU Online Degree Courses</span> - 2026 Batch',
-        buttonText: "Apply Now",
-      },
-      formCardType: "white",
-      formTitleColor: "#f58220",
-      enquireTitle: "Free Counseling",
-      enquireSubtitle: "Have Doubt? Talk FREE to Our Expert",
-      phoneBadgeBg: "#f58220",
-      submitButtonBackground: "#f58220",
-      submitBtnBg: "#f58220",
-      submitButtonRadius: "6px",
-    },
-    aboutLayout: "lpu",
-    sectionOrder: [
-      "programmes",
-      "approvals",
-      "about",
-      "degree",
-      "whyChoose",
-      "recruiters",
-      "admissionProcess",
-      "faqs",
-      "compareBanner",
-    ],
   },
-  about: {
-    badge: "About The University • Est. 2005",
-    subtitle: "About",
-    titlePrefix: "LPU",
-    titleHighlight: "Online University",
-    subName: "(Lovely Professional University Online)",
-    image: "/assets/lpu/university.webp",
-    campusImage: "/assets/lpu/campus-lpu.webp",
-    paragraphs: [
-      "Lovely Professional University (LPU Online) is a trusted institute which was established in 2005. LPU Online offers a wide range of UGC-approved degree programs. All the courses are delivered through a flexible digital learning platform, therefore allowing students to learn anytime, anywhere across India and abroad.",
-      "Lovely Professional University Online Courses include programs such as LPU MBA Online, LPU Online MCA, and LPU Online BCA. These are designed with an industry-relevant curriculum. The university has extended opportunities like a smooth Lovely Professional University online admission process, affordable fee structures, and strong academic support. Overall, LPU Online courses help learners and working professionals build future-ready careers.",
-    ],
-    p1: "Lovely Professional University (LPU Online) is a trusted institute which was established in 2005. LPU Online offers a wide range of UGC-approved degree programs. All the courses are delivered through a flexible digital learning platform, therefore allowing students to learn anytime, anywhere across India and abroad.",
-    p2: "Lovely Professional University Online Courses include programs such as LPU MBA Online, LPU Online MCA, and LPU Online BCA. These are designed with an industry-relevant curriculum. The university has extended opportunities like a smooth Lovely Professional University online admission process, affordable fee structures, and strong academic support. Overall, LPU Online courses help learners and working professionals build future-ready careers.",
-    features: [
-      {
-        title: "UGC-DEB Entitled",
-        desc: "Globally recognized degrees equivalent to on-campus programs",
-      },
-      {
-        title: "Next-Gen LMS",
-        desc: "Live interactive lectures, recorded classes & 24x7 study portal",
-      },
-      {
-        title: "Career & Placement",
-        desc: "500+ hiring partners, resume mentorship & mock interviews",
-      },
-    ],
-  },
-  stats: [
-    {
-      number: "30K+",
-      label: "Student Enrolled",
-    },
-    {
-      number: "50K+",
-      label: "Alumini",
-    },
-    {
-      number: "600+",
-      label: "Campus Event",
-    },
-    {
-      number: "500+",
-      label: "High Profile visitor",
-    },
-  ],
   courses: [
     { value: "BA", label: "BA" },
     { value: "BCA", label: "BCA" },
@@ -192,78 +86,72 @@ export const lpuData = {
       status: "ACCREDITED",
     },
   ],
-  programmes: [
+  stats: [
+    { number: "30K+", label: "Student Enrolled" },
+    { number: "50K+", label: "Alumini" },
+    { number: "600+", label: "Campus Event" },
+    { number: "500+", label: "High Profile visitor" },
+  ],
+  pgProgrammes: [
     {
       code: "MBA",
       title: "Master of Business Administration",
-      category: "Post-Graduate",
       image: "/assets/lpu/mba-lpu.webp",
       desc: "LPU MBA Online program is designed for future leaders and working professionals. This program is highly flexible and offers practical business exposure.",
     },
     {
       code: "MCA",
       title: "Master of Computer Application",
-      category: "Post-Graduate",
       image: "/assets/lpu/mca-lpu.webp",
       desc: "This LPU Online MCA program enhances software and IT expertise. The course features placement support, real-world projects, within affordably, structured LPU MCA online fees.",
     },
     {
       code: "MSC",
       title: "Master of Science",
-      category: "Post-Graduate",
       image: "/assets/lpu/msc-lpu.webp",
       desc: "Students get access to deepen their scientific knowledge with Lovely Professional University Online MSC degree. There are many career-oriented MSC specialisations.",
     },
     {
       code: "MCOM",
       title: "Master of Commerce",
-      category: "Post-Graduate",
       image: "/assets/lpu/mcom-lpu.webp",
       desc: "Learners can advance their careers in finance and business with an online MCom course from LPU Online. The course tailors to meet modern commerce and industry requirements.",
     },
     {
       code: "MA",
       title: "Master of Arts",
-      category: "Post-Graduate",
       image: "/assets/lpu/ma-lpu.webp",
       desc: "Students get an opportunity to explore a wide range of humanities subjects. The curriculum authorises a student-friendly and affordable online MA degree.",
     },
+  ],
+  ugProgrammes: [
     {
       code: "BBA",
       title: "Bachelor of Business Administration",
-      category: "Undergraduate",
       image: "/assets/lpu/bba-lpu.webp",
       desc: "The LPU Online BBA program is designed for leaders & entrepreneurs as it builds a business foundation with a globally recognised Lovely Professional University Online degree.",
     },
     {
       code: "BA",
       title: "Bachelor of Arts",
-      category: "Undergraduate",
       image: "/assets/lpu/ba-lpu.webp",
       desc: "Lovely Professional University Online Courses provide insights in arts and social sciences. The LPU Online BA degree is ideal for creative and analytical thinkers.",
     },
     {
       code: "BCA",
       title: "Bachelor of Computer Application",
-      category: "Undergraduate",
       image: "/assets/lpu/bca-lpu.webp",
       desc: "Professionals start their career in tech with a practical and affordable LPU Online BCA program. It prepares them for in-demand IT roles through LPU Online courses.",
     },
   ],
-  whyChoose: [
-    {
-      title: "Live Lectures",
-      desc: "The university provides interactive live sessions that create a real-time virtual classroom. It benefits the students pursuing LPU MBA online and LPU MCA online to interact with faculty, clear their doubts instantly, and collaborate with peers.",
-    },
-    {
-      title: "Recorded Videos",
-      desc: "Learners get access to recorded lectures for flexible learning. This facility is ideal for working professionals pursuing LPU MBA Online or LPU BCA Online, as it enables them to revise anytime and anywhere.",
-    },
-    {
-      title: "Assignments & Projects",
-      desc: "The LMS of LPU online includes digital assignment submission and project work. Students from LPU online MCA and LPU MBA online tracks monitor progress and gain practical exposure throughout the course.",
-    },
-  ],
+  about: {
+    subtitle: "About",
+    titlePrefix: "LPU",
+    titleHighlight: "Online University",
+    subName: "(Lovely Professional University Online)",
+    p1: "Lovely Professional University (LPU Online) is a trusted institute which was established in 2005. LPU Online offers a wide range of UGC-approved degree programs. All the courses are delivered through a flexible digital learning platform, therefore allowing students to learn anytime, anywhere across India and abroad.",
+    p2: "Lovely Professional University Online Courses include programs such as LPU MBA Online, LPU Online MCA, and LPU Online BCA. These are designed with an industry-relevant curriculum. The university has extended opportunities like a smooth Lovely Professional University online admission process, affordable fee structures, and strong academic support. Overall, LPU Online courses help learners and working professionals build future-ready careers.",
+  },
   degreeInfo: {
     image: "/assets/lpu/sample-certificate-lpu.webp",
     title: "Get UGC Entitled Online Degree",
@@ -288,12 +176,49 @@ export const lpuData = {
       },
     ],
   },
-  recruiters: {
+  pedagogy: {
+    title: "Learning Pedagogy at LPU Online",
+    desc: "The learning model at Lovely Professional University Online (LPU Online) is tailored to offer flexibility and an engaging experience to all the students who are enrolled in programs such as LPU MBA Online, LPU MCA Online, and LPU Online BCA.",
+    items: [
+      {
+        title: "Live Lectures",
+        image: "/assets/lpu/online-lecture.webp",
+        desc: "The university provides Interactive live sessions that create a real-time virtual classroom. It benefits the students pursuing LPU MBA online and LPU MCA online to interact with faculty, clear their doubts instantly, and collaborate with peers.",
+      },
+      {
+        title: "Recorded Videos",
+        image: "/assets/lpu/exam-1.webp",
+        desc: "Learners get access to recorded lectures for flexible learning. This facility is ideal for working professionals pursuing LPU MBA Online or LPU BCA Online, as it enables them to revise anytime and anywhere.",
+      },
+      {
+        title: "Assignments & Projects",
+        image: "/assets/lpu/exam-1.webp",
+        desc: "The LMS of LPU online includes digital assignment submission and project work. Students from LPU online MCA and LPU MBA online tracks monitor progress and gain practical exposure throughout the course.",
+      },
+    ],
+  },
+  placement: {
+    title: "Placement Support Services at LPU Online",
+    desc: "Lovely Professional University online admission also offers structured placement support to prepare students and professionals for real-world careers and job sectors.",
+    items: [
+      {
+        title: "Professional Enhancement Programme",
+        image: "/assets/lpu/p1.png",
+        desc: "The Placement Enhancement Programme (PEP) trains students in aptitude, soft skills, and interview preparation. It is beneficial for LPU MBA online and LPU online MCA learners.",
+      },
+      {
+        title: "Mock Interviews & Workshops",
+        image: "/assets/lpu/p1.png",
+        desc: "Mock interviews and industry-oriented online workshops are used to provide students of Lovely Professional University Online courses with communication skills, confidence, and real-life insights.",
+      },
+    ],
+  },
+  partners: {
     titlePrefix: "Placement",
     titleHighlight: "& Hiring Partners at LPU Online",
     desc: "At LPU Online, Students and Professionals get an opportunity to enhance their career truly nurture their ambitions. The Lovely Professional University Online Admission supports students and has a dedicated placement support and a strong network of hiring partners. They create real opportunities for professional growth, whether you're pursuing an LPU MBA Online or an LPU Online MCA program.",
-    desktopImage: "/assets/lpu/placement-desktop.webp",
-    mobileImage: "/assets/lpu/placement-mobile.webp",
+    desktopImg: "/assets/lpu/placement-desktop.webp",
+    mobileImg: "/assets/lpu/placement-mobile.webp",
   },
   admissionSteps: [
     {
@@ -339,38 +264,24 @@ export const lpuData = {
       cardBg: "bg-[#fff8f0]",
     },
   ],
-  enrollmentProcess: {
-    title: "What Is The Enrollment Process Of LPU Online?",
-    description: "The admission process of LPU Online is quite simple, quick, and completely student-friendly. It is designed to ensure a seamless enrollment experience for learners applying to online degree programs. Here's a step-by-step guide to enrolling in an online course at the university.",
-  },
   faqs: [
     {
-      question: "Q1- Is the LPU MCA online fees structure affordable?",
-      answer: "The LPU MCA online fees structure is highly affordable and offers more than 5 specialisations.",
       q: "Q1- Is the LPU MCA online fees structure affordable?",
       a: "The LPU MCA online fees structure is highly affordable and offers more than 5 specialisations.",
     },
     {
-      question: "Q2- Does Lovely Professional University Online MBA program have a job-aligned course curriculum that is relevant to today's industry?",
-      answer: "Yes, the program has over 12 specialisations and a number of electives, and it is also relevant to job seekers in the industry.",
       q: "Q2- Does Lovely Professional University Online MBA program have a job-aligned course curriculum that is relevant to today's industry?",
       a: "Yes, the program has over 12 specialisations and a number of electives, and it is also relevant to job seekers in the industry.",
     },
     {
-      question: "Q3- Can you tell me whether all the courses in Lovely Professional University Online courses UGC-DEB approved?",
-      answer: "Yes, Online LPU offers programs that are recognised by UGC and offer valid degrees.",
       q: "Q3- Can you tell me whether all the courses in Lovely Professional University Online courses UGC-DEB approved?",
       a: "Yes, Online LPU offers programs that are recognised by UGC and offer valid degrees.",
     },
     {
-      question: "Q4- What are the benefits of Lovely Professional University Online admission?",
-      answer: "LPU has an LMS that supports students, and the university has a dedicated placement cell.",
       q: "Q4- What are the benefits of Lovely Professional University Online admission?",
       a: "LPU has an LMS that supports students, and the university has a dedicated placement cell.",
     },
     {
-      question: "Q5- What are the ways in which applicants apply to Lovely Professional University Online admissions?",
-      answer: "Students may complete the application form, add the necessary documents as well as the course fees.",
       q: "Q5- What are the ways in which applicants apply to Lovely Professional University Online admissions?",
       a: "Students may complete the application form, add the necessary documents as well as the course fees.",
     },
