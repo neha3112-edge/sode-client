@@ -43,7 +43,6 @@ export const shooliniData = {
     goldColor: "#fd202a",
     badgeText: "Admissions Open 2026",
     showCouponBtn: true,
-    couponBtnBg: "linear-gradient(to right, #fd202a, #ff4be5)",
     faqHeaderColor: "#08417b",
     footerBg: "#010d2a",
 

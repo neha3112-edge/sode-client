@@ -1,5 +1,5 @@
 export { default as UniversityLandingView, default } from "./UniversityLandingView";
-export { default as LandingNavbar, LandingSubNav } from "./LandingNavbar";
+export { default as LandingNavbar } from "./LandingNavbar";
 export { default as LandingContainer } from "./LandingContainer";
 export { default as LandingHero } from "./LandingHero";
 export { default as LandingLeadForm } from "./LandingLeadForm";

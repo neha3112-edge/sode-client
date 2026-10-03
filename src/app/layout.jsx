@@ -1,4 +1,4 @@
-import { Roboto, Poppins, Plus_Jakarta_Sans } from "next/font/google";
+import { Roboto, Poppins, Plus_Jakarta_Sans, Montserrat, Barlow_Condensed } from "next/font/google";
 import "./globals.css";
 import AppProviders from "@/components/providers/AppProviders";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -24,6 +24,20 @@ const jakarta = Plus_Jakarta_Sans({
   display: "swap",
 });
 
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  variable: "--font-montserrat",
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  display: "swap",
+});
+
+const barlowCondensed = Barlow_Condensed({
+  subsets: ["latin"],
+  variable: "--font-barlow-condensed",
+  weight: ["600", "700", "800", "900"],
+  display: "swap",
+});
+
 export const metadata = {
   icons: {
     icon: [
@@ -44,7 +58,7 @@ export default function RootLayout({ children }) {
       lang="en-IN"
       suppressHydrationWarning
       data-scroll-behavior="smooth"
-      className={`${roboto.variable} ${poppins.variable} ${jakarta.variable} font-sans h-full antialiased scroll-smooth`}
+      className={`${roboto.variable} ${poppins.variable} ${jakarta.variable} ${montserrat.variable} ${barlowCondensed.variable} font-sans h-full antialiased scroll-smooth`}
     >
       <head>
         <link rel="preconnect" href="https://new.crm.api.mysode.com" crossOrigin="anonymous" />

@@ -67,7 +67,7 @@ export const smuData = {
       formPhoneColor: "#ffffff",
       minHeight: "480px",
       contentMaxWidth: "1400px",
-      headingFont: "var(--font-roboto), Roboto, sans-serif",
+      headingFont: "inherit",
     },
     coursesStrip: [
       "BA | BCOM | MA | MBA | MCOM | MCA",

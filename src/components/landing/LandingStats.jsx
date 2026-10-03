@@ -43,11 +43,184 @@ const ICON_MAP = {
 export default function LandingStats({ stats = [], brand = {} }) {
   if (!stats || stats.length === 0) return null;
 
+  const isEsgciLayout =
+    brand.statsLayout === "esgci" ||
+    brand.slug === "esgci";
+
+  const isGguLayout =
+    !isEsgciLayout &&
+    (brand.statsLayout === "ggu" ||
+      brand.slug === "ggu");
+
   const isSmuLayout =
-    brand.statsLayout === "smu-clean" ||
-    brand.slug === "smu" ||
-    brand.name?.toLowerCase().includes("sikkim") ||
-    brand.name?.toLowerCase().includes("smu");
+    !isEsgciLayout &&
+    !isGguLayout &&
+    (brand.statsLayout === "smu-clean" ||
+      brand.slug === "smu" ||
+      brand.name?.toLowerCase().includes("sikkim") ||
+      brand.name?.toLowerCase().includes("smu"));
+
+  const isRushfordLayout =
+    !isEsgciLayout &&
+    (brand.statsLayout === "rushford" || brand.slug === "rushford");
+
+  const isLiverpoolLayout =
+    !isEsgciLayout &&
+    !isRushfordLayout &&
+    (brand.statsLayout === "liverpool" || brand.slug === "liverpool");
+
+  // ==========================================
+  // Liverpool Layout: Grey Box with 4 Column Stats (#online-mba-details)
+  // ==========================================
+  if (isLiverpoolLayout) {
+    return (
+      <div id="online-mba-details" className="achievement py-6 bg-[#F5F5F5] select-none">
+        <div className="max-w-[1140px] mx-auto px-4 sm:px-6">
+          <div className="ach grid grid-cols-2 md:grid-cols-4 gap-4 text-[#68676A]">
+            {stats.map((st, idx) => (
+              <div key={idx} className="ac1 p-3 text-center flex flex-col items-center justify-center">
+                <div className="mb-2">
+                  {st.icon === "user" ? (
+                    <svg className="w-8 h-8 text-[#00408d] fill-current" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                  ) : st.icon === "clock" ? (
+                    <svg className="w-8 h-8 text-[#00408d] fill-current" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                  ) : st.icon === "graduation" ? (
+                    <svg className="w-8 h-8 text-[#00408d] fill-current" viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM3.45 13.47L12 18.12l8.55-4.65V18l-8.55 4.67L3.45 18v-4.53z"/></svg>
+                  ) : (
+                    <svg className="w-8 h-8 text-[#00408d] fill-current" viewBox="0 0 24 24"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>
+                  )}
+                </div>
+                <h3 className="text-[17px] sm:text-[19px] font-bold text-[#68676A] mb-1 m-0 tracking-tight">
+                  {st.label || st.title}
+                </h3>
+                <p className="text-[13px] sm:text-[13.5px] text-[#68676A] leading-snug m-0">
+                  {st.value || st.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ==========================================
+  // Rushford Layout: 4 Colored Blocks (#D07786, #E0007A, #F85454, #C80536)
+  // ==========================================
+  if (isRushfordLayout) {
+    const bgColors = ["#D07786", "#E0007A", "#F85454", "#C80536"];
+    return (
+      <section id="stats" aria-label="Key Highlights" className="achievement text-white select-none">
+        <div className="w-full">
+          <div className="ach grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+            {stats.map((st, idx) => (
+              <div
+                key={idx}
+                className="p-6 sm:p-8 flex items-center gap-4 text-white"
+                style={{ backgroundColor: st.bg || bgColors[idx % bgColors.length] }}
+              >
+                <div className="shrink-0">
+                  {st.icon === "user" ? (
+                    <svg className="w-8 h-8 fill-current" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                  ) : st.icon === "clock" ? (
+                    <svg className="w-8 h-8 fill-current" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                  ) : st.icon === "graduation" ? (
+                    <svg className="w-8 h-8 fill-current" viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM3.45 13.47L12 18.12l8.55-4.65V18l-8.55 4.67L3.45 18v-4.53z"/></svg>
+                  ) : st.icon === "rupee" ? (
+                    <span className="text-[32px] font-bold">₹</span>
+                  ) : (
+                    <span className="text-[32px] font-bold">★</span>
+                  )}
+                </div>
+                <div>
+                  <h3 className="text-[20px] font-bold text-white m-0 mb-1 leading-snug">
+                    {st.label || st.title}
+                  </h3>
+                  <p className="text-[13.5px] text-white/95 leading-snug m-0 font-normal">
+                    {st.value || st.desc || st.number}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ==========================================
+  // ESGCI Layout: Black Achievement Bar (#000000)
+  // ==========================================
+  if (isEsgciLayout) {
+    return (
+      <section id="stats" aria-label="Key Highlights" className="achievement bg-black text-white py-6 sm:py-8 select-none">
+        <div className="max-w-[1240px] mx-auto px-4 sm:px-6">
+          <div className="ach grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 text-center">
+            {stats.map((st, idx) => (
+              <div key={idx} className="ac1 p-4 flex flex-col items-center justify-center">
+                {st.icon === "user" ? (
+                  <svg className="w-7 h-7 text-[#04903c] mb-2 fill-current" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                ) : st.icon === "clock" ? (
+                  <svg className="w-7 h-7 text-[#04903c] mb-2 fill-current" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                ) : st.icon === "graduation" ? (
+                  <svg className="w-7 h-7 text-[#04903c] mb-2 fill-current" viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM3.45 13.47L12 18.12l8.55-4.65V18l-8.55 4.67L3.45 18v-4.53z"/></svg>
+                ) : st.icon === "rupee" ? (
+                  <span className="text-[26px] font-bold text-[#04903c] mb-1">₹</span>
+                ) : (
+                  <span className="text-[26px] font-bold text-[#04903c] mb-1">★</span>
+                )}
+                <h3 className="text-[18px] sm:text-[19px] font-bold text-[#04903c] m-0 mb-1 tracking-tight">
+                  {st.label || st.title}
+                </h3>
+                <p className="text-[13px] sm:text-[13.5px] text-white/90 leading-snug m-0 font-normal">
+                  {st.value || st.desc || st.number}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ==========================================
+  // GGU Layout: Navy Box with Stat Highlights
+  // ==========================================
+  if (isGguLayout) {
+    return (
+      <section id="stats" aria-label="Key Statistics" className="achievement py-8 sm:py-12 bg-white select-none">
+        <div className="max-w-[1140px] mx-auto px-4 sm:px-6">
+          <div className="ach bg-[#003468] rounded-[8px] sm:rounded-[10px] py-6 sm:py-7 px-2 sm:px-4 text-white grid grid-cols-2 md:grid-cols-4 shadow-md items-center">
+            {stats.map((st, idx) => (
+              <div
+                key={idx}
+                className={`ac1 relative px-3 sm:px-5 py-3 sm:py-4 text-center flex flex-col items-center justify-center ${
+                  idx % 2 === 0 ? "border-r border-white/20 md:border-r-0" : ""
+                } ${
+                  idx < 2 ? "border-b border-white/20 md:border-b-0" : ""
+                }`}
+              >
+                <span className="block text-[32px] sm:text-[40px] lg:text-[46px] font-bold text-white tracking-tight leading-none">
+                  {st.value || st.number}
+                </span>
+                <p className="text-[12px] sm:text-[13px] lg:text-[13.5px] text-white/90 font-medium mt-2 leading-snug m-0">
+                  {st.label}
+                </p>
+
+                {/* Vertical Divider Line between stats on Desktop (after item 0, 1, 2) */}
+                {idx < stats.length - 1 && (
+                  <div
+                    aria-hidden="true"
+                    className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 w-[1px] h-[65%] bg-white/30 pointer-events-none"
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   // ==========================================
   // SMU Layout: Clean Gold Numbers on White Background

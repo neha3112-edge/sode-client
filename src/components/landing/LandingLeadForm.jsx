@@ -46,28 +46,23 @@ const IndiaFlag = () => (
 const PhoneInputField = ({
   value,
   onChange,
-  placeholder = "Enter Your Number",
+  placeholder = "Enter your Number",
   maxLength = 10,
   isWhiteCard = false,
   bordered = false,
-  isFilled = false,
 }) => {
-  const isBordered = (isWhiteCard || bordered) && !isFilled;
+  const isBordered = isWhiteCard || bordered;
   return (
     <div
       className={`flex items-center w-full h-[36px] sm:h-[38px] rounded-[6px] overflow-hidden ${
-        isFilled
-          ? "bg-[#eef2f6] border-none focus-within:ring-1 focus-within:ring-slate-400"
-          : isBordered
+        isBordered
           ? "bg-white border border-[#cccccc] focus-within:ring-1 focus-within:ring-[#193579] focus-within:border-[#193579]"
           : "bg-white shadow-xs focus-within:ring-2 focus-within:ring-amber-400"
       }`}
     >
       <div
         className={`flex items-center gap-1.5 h-full px-2.5 select-none shrink-0 ${
-          isFilled
-            ? "bg-[#e2e8f0]/50 border-r border-[#d1d5db]"
-            : isBordered
+          isBordered
             ? "bg-[#f8fafc] border-r border-[#cccccc]"
             : "bg-[#f0f2f5] border-r border-[#d1d5db]"
         }`}
@@ -82,9 +77,7 @@ const PhoneInputField = ({
         onChange={onChange}
         placeholder={placeholder}
         maxLength={maxLength}
-        className={`w-full h-full px-3 text-slate-800 placeholder:text-slate-400 border-none outline-none text-[13px] font-normal ${
-          isFilled ? "bg-[#eef2f6]" : "bg-white"
-        }`}
+        className="w-full h-full px-3 bg-white text-slate-800 placeholder:text-slate-400 border-none outline-none text-[13px] font-normal"
       />
     </div>
   );
@@ -98,18 +91,15 @@ const CustomSelectField = ({
   options,
   isWhiteCard = false,
   bordered = false,
-  isFilled = false,
 }) => {
-  const isBordered = (isWhiteCard || bordered) && !isFilled;
+  const isBordered = isWhiteCard || bordered;
   return (
     <div className="relative w-full">
       <select
         value={value || ""}
         onChange={onChange}
         className={`w-full h-[36px] sm:h-[38px] px-3.5 pr-8 rounded-[6px] outline-none text-[13px] font-normal appearance-none cursor-pointer ${
-          isFilled
-            ? "bg-[#eef2f6] border-none text-slate-800 focus:ring-1 focus:ring-slate-400"
-            : isBordered
+          isBordered
             ? "bg-white border border-[#cccccc] text-slate-800 focus:ring-1 focus:ring-[#193579] focus:border-[#193579]"
             : "bg-white border-none shadow-xs focus:ring-2 focus:ring-amber-400"
         } ${value ? "text-slate-800" : "text-slate-400"}`}
@@ -165,18 +155,13 @@ export default function LandingLeadForm({
     typeof item === "string" ? { value: item, label: item } : item
   );
 
-  const isModal = variant === "modal";
   const isWhiteCard =
     variant === "white-card" ||
     variant === "whiteCard" ||
-    isModal ||
     activeBrand.hero?.formCardType === "white" ||
     activeBrand.hero?.cardStyle === "white";
 
-  const isCard = (variant === "card" || variant === "hero" || isWhiteCard) && !isModal;
-  const isFilledInputs =
-    activeBrand.hero?.inputStyle === "filled" ||
-    activeBrand.inputStyle === "filled";
+  const isCard = variant === "card" || variant === "hero" || isWhiteCard;
 
   const activeTitle = title ?? activeBrand.enquireTitle ?? "Get 100% Free Counselling";
   const activeSubtitle = subtitle ?? activeBrand.enquireSubtitle ?? "Academic Experts will assist you!";
@@ -248,7 +233,7 @@ export default function LandingLeadForm({
         isWhiteCard ? "text-slate-800" : "text-white"
       } ${isCard ? "landing-lead-card--hero" : "landing-lead-card--default"} ${className}`}
       style={{
-        ...(isWhiteCard && !isModal
+        ...(isWhiteCard
           ? {
               backgroundColor: "#ffffff",
               borderRadius: "14px",
@@ -277,7 +262,7 @@ export default function LandingLeadForm({
             className="m-0 text-[20px] sm:text-[22px] font-bold tracking-tight leading-tight"
             style={{
               color: isWhiteCard
-                ? activeBrand.hero?.formTitleColor || activeBrand.hero?.enquireColor || "#074a76"
+                ? activeBrand.hero?.formTitleColor || activeBrand.hero?.enquireColor || "#ee3024"
                 : activeAccentColor,
             }}
           >
@@ -324,15 +309,7 @@ export default function LandingLeadForm({
         </div>
       ) : (
         <div className="mb-3 text-center">
-          <h2
-            className="m-0 text-lg sm:text-xl font-bold"
-            style={{
-              color:
-                activeBrand.hero?.formTitleColor ||
-                activeBrand.hero?.enquireColor ||
-                activePrimaryColor,
-            }}
-          >
+          <h2 className="m-0 text-lg font-bold" style={{ color: activePrimaryColor }}>
             {activeTitle}
           </h2>
           <p className="m-0 mt-0.5 text-xs text-slate-500">{activeSubtitle}</p>
@@ -356,9 +333,7 @@ export default function LandingLeadForm({
             type="text"
             placeholder="Enter Your Name"
             className={`w-full h-[36px] sm:h-[38px] px-3.5 rounded-[6px] outline-none text-[13px] font-normal ${
-              isFilledInputs
-                ? "bg-[#eef2f6] border-none text-slate-800 placeholder:text-slate-400 focus:ring-1 focus:ring-slate-400"
-                : isWhiteCard
+              isWhiteCard
                 ? "bg-white border border-[#cccccc] text-slate-800 placeholder:text-slate-400 focus:ring-1 focus:ring-[#193579] focus:border-[#193579]"
                 : "bg-white text-slate-800 placeholder:text-[#888888] border-none shadow-xs focus:ring-2 focus:ring-amber-400"
             }`}
@@ -377,9 +352,7 @@ export default function LandingLeadForm({
             type="email"
             placeholder="Enter Your Email"
             className={`w-full h-[36px] sm:h-[38px] px-3.5 rounded-[6px] outline-none text-[13px] font-normal ${
-              isFilledInputs
-                ? "bg-[#eef2f6] border-none text-slate-800 placeholder:text-slate-400 focus:ring-1 focus:ring-slate-400"
-                : isWhiteCard
+              isWhiteCard
                 ? "bg-white border border-[#cccccc] text-slate-800 placeholder:text-slate-400 focus:ring-1 focus:ring-[#193579] focus:border-[#193579]"
                 : "bg-white text-slate-800 placeholder:text-[#888888] border-none shadow-xs focus:ring-2 focus:ring-amber-400"
             }`}
@@ -395,14 +368,9 @@ export default function LandingLeadForm({
           ]}
         >
           <PhoneInputField
-            placeholder={
-              activeBrand.hero?.phonePlaceholder ||
-              activeBrand.phonePlaceholder ||
-              "Enter 10-digit Mobile Number"
-            }
+            placeholder="Enter Mobile Number"
             maxLength={10}
             isWhiteCard={isWhiteCard}
-            isFilled={isFilledInputs}
           />
         </Form.Item>
 
@@ -415,7 +383,6 @@ export default function LandingLeadForm({
             placeholder="Select Your Course"
             options={activeCourses}
             isWhiteCard={isWhiteCard}
-            isFilled={isFilledInputs}
           />
         </Form.Item>
 
@@ -425,14 +392,9 @@ export default function LandingLeadForm({
           rules={[{ required: true, message: "Please select state" }]}
         >
           <CustomSelectField
-            placeholder={
-              activeBrand.hero?.statePlaceholder ||
-              activeBrand.statePlaceholder ||
-              "Select Your State"
-            }
+            placeholder="Select Your State"
             options={stateOptions}
             isWhiteCard={isWhiteCard}
-            isFilled={isFilledInputs}
           />
         </Form.Item>
 
