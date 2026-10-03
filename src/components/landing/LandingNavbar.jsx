@@ -16,7 +16,7 @@ export default function LandingNavbar({
 }) {
   const {
     name = "University Online",
-    logo = brand.logo || (brand.slug === "amity" ? "/assets/amity/Amity-online-logo.png" : null),
+    logo = brand.logo || (brand.slug === "amity" ? "/assets/amitylp/Amity-online-logo.png" : null),
     sodeIcon = "/assets/images/sode_icon.png",
     primaryColor = "#08417b",
     showSodeLogo,
