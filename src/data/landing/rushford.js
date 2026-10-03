@@ -265,16 +265,16 @@ export const rushfordData = {
 
       coursesStrip: [
         <div key="rushford-pills" className="grid grid-cols-2 gap-2 max-w-[420px] my-3">
-          <span className="border-2 border-[#16459a] py-2 px-3 rounded-[5px] text-[#000] font-semibold text-[12.5px] sm:text-[13px] text-center bg-white/70">
+          <span key="rushford-online" className="border-2 border-[#16459a] py-2 px-3 rounded-[5px] text-[#000] font-semibold text-[12.5px] sm:text-[13px] text-center bg-white/70">
             100% Online
           </span>
-          <span className="border-2 border-[#16459a] py-2 px-3 rounded-[5px] text-[#000] font-semibold text-[12.5px] sm:text-[13px] text-center bg-white/70">
+          <span key="rushford-specialization" className="border-2 border-[#16459a] py-2 px-3 rounded-[5px] text-[#000] font-semibold text-[12.5px] sm:text-[13px] text-center bg-white/70">
             08+ Specialization
           </span>
-          <span className="border-2 border-[#16459a] py-2 px-3 rounded-[5px] text-[#000] font-semibold text-[12.5px] sm:text-[13px] text-center bg-white/70">
+          <span key="rushford-mentorship" className="border-2 border-[#16459a] py-2 px-3 rounded-[5px] text-[#000] font-semibold text-[12.5px] sm:text-[13px] text-center bg-white/70">
             1:1 Thesis Mentorship
           </span>
-          <span className="border-2 border-[#16459a] py-2 px-3 rounded-[5px] text-[#000] font-semibold text-[12.5px] sm:text-[13px] text-center bg-white/70">
+          <span key="rushford-emi" className="border-2 border-[#16459a] py-2 px-3 rounded-[5px] text-[#000] font-semibold text-[12.5px] sm:text-[13px] text-center bg-white/70">
             No Cost EMI
           </span>
         </div>,

@@ -94,6 +94,7 @@ export default function LandingHero({
           {hero.welcomeText && (
             <div className={`mb-1 text-center sm:text-left ${hero.welcomeContainerClassName || ""}`}>
               <span
+                key="welcome-badge-text"
                 className={
                   hero.welcomeBadgeClassName ||
                   "inline-block bg-white text-[#f97316] font-semibold text-[15.5px] sm:text-[16px] px-8 py-2 min-w-[210px] text-center rounded-[7px] shadow-sm mb-2 select-none"
@@ -104,6 +105,7 @@ export default function LandingHero({
               </span>
               {hero.welcomeSubtext && (
                 <span
+                  key="welcome-subtext"
                   className={
                     hero.welcomeSubtextClassName ||
                     "text-[15.5px] sm:text-[17px] text-white/95 font-normal block mb-1"
@@ -138,7 +140,6 @@ export default function LandingHero({
           )}
 
           {/* Headline */}
-          {/* Headline */}
           <h1
             className={`whitespace-pre-line ${
               hero.headingClassName ||
@@ -158,8 +159,9 @@ export default function LandingHero({
             }}
           >
             {hero.highlightTitle ? (
-              <>
+              <React.Fragment key="hero-highlight-fragment">
                 <span
+                  key="hero-highlight-span"
                   className={hero.highlightTitleClassName || ""}
                   style={{
                     color: hero.highlightTitleColor || "#f97316",
@@ -173,8 +175,9 @@ export default function LandingHero({
                 >
                   {hero.highlightTitle}
                 </span>
-                <br />
+                <br key="hero-highlight-br" />
                 <span
+                  key="hero-headline-span"
                   className={hero.headlineTextClassName || ""}
                   style={{
                     color: hero.headlineColor || "#ffffff",
@@ -188,7 +191,16 @@ export default function LandingHero({
                 >
                   {hero.headlineText || brand.headline || brand.name}
                 </span>
-              </>
+              </React.Fragment>
+            ) : typeof (hero.headlineText || brand.headline || brand.name) === "string" &&
+              (hero.headlineText || brand.headline || brand.name).includes("\n") ? (
+              (hero.headlineText || brand.headline || brand.name)
+                .split("\n")
+                .map((line, i) => (
+                  <span key={`headline-part-${i}`} className="block">
+                    {line}
+                  </span>
+                ))
             ) : (
               hero.headlineText || brand.headline || brand.name
             )}
@@ -280,7 +292,10 @@ export default function LandingHero({
             </div>
           ) : (
             <div className="relative z-20 w-full max-w-sm sm:max-w-none sm:w-fit my-2">
-              <span className="absolute -top-3 left-1/2 -translate-x-1/2 sm:left-3 sm:translate-x-0 z-10 rounded-full bg-[#ffd200] px-3 py-0.5 text-[12px] sm:text-[13px] font-bold leading-normal text-[#08417b] shadow-2xs whitespace-nowrap">
+              <span
+                key="course-pill-heading"
+                className="absolute -top-3 left-1/2 -translate-x-1/2 sm:left-3 sm:translate-x-0 z-10 rounded-full bg-[#ffd200] px-3 py-0.5 text-[12px] sm:text-[13px] font-bold leading-normal text-[#08417b] shadow-2xs whitespace-nowrap"
+              >
                 Online Degree Courses :
               </span>
               <div
@@ -290,8 +305,8 @@ export default function LandingHero({
                     hero.courseBorder || brand.primaryColor || "#08417b",
                 }}
               >
-                {courseLines.map((line) => (
-                  <div key={line}>{line}</div>
+                {courseLines.map((line, idx) => (
+                  <div key={idx}>{line}</div>
                 ))}
               </div>
             </div>

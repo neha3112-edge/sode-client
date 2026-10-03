@@ -252,16 +252,16 @@ export const edgewoodData = {
 
       coursesStrip: [
         <div key="edgewood-pills" className="grid grid-cols-2 gap-2 max-w-[420px] my-3">
-          <span className="border-2 border-black py-2 px-3 rounded-[5px] text-[#000] font-semibold text-[12.5px] sm:text-[13px] text-center bg-white/70">
+          <span key="edgewood-online" className="border-2 border-black py-2 px-3 rounded-[5px] text-[#000] font-semibold text-[12.5px] sm:text-[13px] text-center bg-white/70">
             100% Online
           </span>
-          <span className="border-2 border-black py-2 px-3 rounded-[5px] text-[#000] font-semibold text-[12.5px] sm:text-[13px] text-center bg-white/70">
+          <span key="edgewood-hlc" className="border-2 border-black py-2 px-3 rounded-[5px] text-[#000] font-semibold text-[12.5px] sm:text-[13px] text-center bg-white/70">
             HLC Accredited
           </span>
-          <span className="border-2 border-black py-2 px-3 rounded-[5px] text-[#000] font-semibold text-[12.5px] sm:text-[13px] text-center bg-white/70">
+          <span key="edgewood-pwc" className="border-2 border-black py-2 px-3 rounded-[5px] text-[#000] font-semibold text-[12.5px] sm:text-[13px] text-center bg-white/70">
             PwC Certificate
           </span>
-          <span className="border-2 border-black py-2 px-3 rounded-[5px] text-[#000] font-semibold text-[12.5px] sm:text-[13px] text-center bg-white/70">
+          <span key="edgewood-gmat" className="border-2 border-black py-2 px-3 rounded-[5px] text-[#000] font-semibold text-[12.5px] sm:text-[13px] text-center bg-white/70">
             No GMAT/GRE
           </span>
         </div>,

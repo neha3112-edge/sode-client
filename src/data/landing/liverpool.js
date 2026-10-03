@@ -252,16 +252,16 @@ export const liverpoolData = {
 
       coursesStrip: [
         <div key="liverpool-pills" className="grid grid-cols-2 gap-2 max-w-[420px] my-3">
-          <span className="border-2 border-[#00408d] py-2 px-3 rounded-[5px] text-[#000] font-semibold text-[12.5px] sm:text-[13px] text-center bg-white/70">
+          <span key="liverpool-online" className="border-2 border-[#00408d] py-2 px-3 rounded-[5px] text-[#000] font-semibold text-[12.5px] sm:text-[13px] text-center bg-white/70">
             100% Online
           </span>
-          <span className="border-2 border-[#00408d] py-2 px-3 rounded-[5px] text-[#000] font-semibold text-[12.5px] sm:text-[13px] text-center bg-white/70">
+          <span key="liverpool-specializations" className="border-2 border-[#00408d] py-2 px-3 rounded-[5px] text-[#000] font-semibold text-[12.5px] sm:text-[13px] text-center bg-white/70">
             6+ Specializations
           </span>
-          <span className="border-2 border-[#00408d] py-2 px-3 rounded-[5px] text-[#000] font-semibold text-[12.5px] sm:text-[13px] text-center bg-white/70">
+          <span key="liverpool-iim" className="border-2 border-[#00408d] py-2 px-3 rounded-[5px] text-[#000] font-semibold text-[12.5px] sm:text-[13px] text-center bg-white/70">
             IIM Udaipur Cert.
           </span>
-          <span className="border-2 border-[#00408d] py-2 px-3 rounded-[5px] text-[#000] font-semibold text-[12.5px] sm:text-[13px] text-center bg-white/70">
+          <span key="liverpool-emi" className="border-2 border-[#00408d] py-2 px-3 rounded-[5px] text-[#000] font-semibold text-[12.5px] sm:text-[13px] text-center bg-white/70">
             No Cost EMI
           </span>
         </div>,
