@@ -16,7 +16,7 @@ export default function LandingNavbar({
 }) {
   const {
     name = "University Online",
-    logo = brand.logo || "/assets/amity/Amity-online-logo.png",
+    logo = brand.logo || (brand.slug === "amity" ? "/assets/amity/Amity-online-logo.png" : null),
     sodeIcon = "/assets/images/sode_icon.png",
     primaryColor = "#08417b",
     showSodeLogo,
@@ -28,6 +28,13 @@ export default function LandingNavbar({
     giftGif = "/assets/images/gift.gif",
     badgeText = "Admission Open 2026",
   } = brand;
+
+  const shouldHideUniversityLogo =
+    brand.hideMangLogo === true ||
+    brand.hideUniversityLogo === true ||
+    !logo;
+
+  const shouldShowUniversityLogo = !shouldHideUniversityLogo;
 
   const shouldShowSodeLogo =
     showSodeLogo === true ||
@@ -131,32 +138,49 @@ export default function LandingNavbar({
         {/* Left: University Logo / Brand */}
         <div className="flex items-center min-w-0">
           {shouldShowSodeLogo && (
-            <>
-              <Link href="#hero" onClick={handleScrollTop} className="flex items-center shrink-0 cursor-pointer" aria-label="Back to Top">
-                <div className="relative w-9 sm:w-11 lg:w-20 h-9 sm:h-11 lg:h-12">
-                  <Image src={sodeIcon || "/assets/images/sode_icon.png"} alt="SODE" fill priority className="object-contain" sizes="(max-width: 640px) 36px, 48px" />
-                </div>
-              </Link>
-              <div className="h-7 sm:h-9 lg:h-11 w-[1px] bg-[#d1d5db] mx-2 sm:mx-3 lg:mx-4 shrink-0" />
-            </>
+            <Link href="#hero" onClick={handleScrollTop} className="flex items-center shrink-0 cursor-pointer" aria-label="Back to Top">
+              <div
+                className={`relative ${
+                  shouldShowUniversityLogo
+                    ? "w-9 sm:w-11 lg:w-20 h-9 sm:h-11 lg:h-12"
+                    : "w-36 sm:w-44 lg:w-52 h-9 sm:h-12 lg:h-14"
+                }`}
+                style={!shouldShowUniversityLogo && brand.sodeLogoContainerStyle ? brand.sodeLogoContainerStyle : undefined}
+              >
+                <Image
+                  src={sodeIcon || "/assets/images/sode_icon.png"}
+                  alt="SODE"
+                  fill
+                  priority
+                  className="object-contain object-left"
+                  sizes={shouldShowUniversityLogo ? "(max-width: 640px) 36px, 48px" : "(max-width: 640px) 160px, 220px"}
+                />
+              </div>
+            </Link>
           )}
 
-          <Link href="#hero" onClick={handleScrollTop} className="flex items-center min-w-0 cursor-pointer" aria-label={name}>
-            <div
-              className={`relative ${brand.logoWrapperClassName || "w-36 sm:w-48 lg:w-60 h-9 sm:h-11 lg:h-12"}`}
-              style={brand.logoWrapperStyle}
-            >
-              <Image
-                src={logo}
-                alt={name}
-                fill
-                priority
-                className={`object-contain object-left ${brand.logoClassName || ""}`}
-                sizes="(max-width: 640px) 180px, 320px"
-                style={brand.logoStyle}
-              />
-            </div>
-          </Link>
+          {shouldShowSodeLogo && shouldShowUniversityLogo && !brand.hideNavDivider && brand.showNavDivider !== false && (
+            <div className="h-7 sm:h-9 lg:h-11 w-[1px] bg-[#d1d5db] mx-2 sm:mx-3 lg:mx-4 shrink-0" />
+          )}
+
+          {shouldShowUniversityLogo && logo && (
+            <Link href="#hero" onClick={handleScrollTop} className="flex items-center min-w-0 cursor-pointer" aria-label={name}>
+              <div
+                className={`relative ${brand.logoWrapperClassName || "w-36 sm:w-48 lg:w-60 h-9 sm:h-11 lg:h-12"}`}
+                style={brand.logoWrapperStyle}
+              >
+                <Image
+                  src={logo}
+                  alt={name}
+                  fill
+                  priority
+                  className={`object-contain object-left ${brand.logoClassName || ""}`}
+                  sizes="(max-width: 640px) 180px, 320px"
+                  style={brand.logoStyle}
+                />
+              </div>
+            </Link>
+          )}
         </div>
 
         {/* Right: Scholarship Coupon Code Button or Admission Badge */}
