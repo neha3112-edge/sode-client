@@ -192,7 +192,7 @@ export const liverpoolData = {
       welcomeBadgeClassName: "!bg-transparent !p-0 !min-w-0 !shadow-none !border-none !rounded-none !block",
 
       hashtagText: (
-        <span className="inline-block px-3 py-1 bg-[#00408d] text-white text-[12px] font-semibold rounded-[5px]">
+        <span key="liverpool-hashtag" className="inline-block px-3 py-1 bg-[#00408d] text-white text-[12px] font-semibold rounded-[5px]">
           Master of Business Administration
         </span>
       ),
@@ -216,7 +216,7 @@ export const liverpoolData = {
       },
 
       taglineText: (
-        <span>
+        <span key="liverpool-tagline">
           By <u className="font-semibold">Liverpool Business School</u> via <u className="font-semibold">upGrad</u>
         </span>
       ),

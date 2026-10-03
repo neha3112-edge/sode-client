@@ -192,7 +192,7 @@ export const edgewoodData = {
       welcomeBadgeClassName: "!bg-transparent !p-0 !min-w-0 !shadow-none !border-none !rounded-none !block",
 
       hashtagText: (
-        <span className="inline-block px-3 py-1 bg-black text-white text-[12px] font-semibold rounded-[5px]">
+        <span key="edgewood-hashtag" className="inline-block px-3 py-1 bg-black text-white text-[12px] font-semibold rounded-[5px]">
           Learn Business Leadership Skills With
         </span>
       ),
@@ -216,7 +216,7 @@ export const edgewoodData = {
       },
 
       taglineText: (
-        <span>
+        <span key="edgewood-tagline">
           By <u className="font-semibold">Edgewood University</u> via <u className="font-semibold">upGrad</u>
         </span>
       ),

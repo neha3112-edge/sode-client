@@ -205,7 +205,7 @@ export const rushfordData = {
       welcomeBadgeClassName: "!bg-transparent !p-0 !min-w-0 !shadow-none !border-none !rounded-none !block",
 
       hashtagText: (
-        <span className="inline-block px-3 py-1 bg-[#17479e] text-white text-[12px] font-semibold rounded-[5px]">
+        <span key="rushford-hashtag" className="inline-block px-3 py-1 bg-[#17479e] text-white text-[12px] font-semibold rounded-[5px]">
           Doctorate of Business Administration
         </span>
       ),
@@ -229,7 +229,7 @@ export const rushfordData = {
       },
 
       taglineText: (
-        <span>
+        <span key="rushford-tagline">
           By <u className="font-semibold">Rushford Business School</u> via <u className="font-semibold">upGrad</u>
         </span>
       ),

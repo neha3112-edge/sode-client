@@ -223,14 +223,24 @@ export default function LandingHero({
               ...hero.taglineStyle,
             }}
           >
-            {hero.taglineText ||
-              brand.tagline1 ||
-              "Education that empowers your ambition"}
-            {!hero.taglineText && brand.tagline2 ? (
+            {hero.taglineText ? (
+              React.isValidElement(hero.taglineText) ? (
+                React.cloneElement(hero.taglineText, {
+                  key: hero.taglineText.key || "hero-tagline-text",
+                })
+              ) : (
+                hero.taglineText
+              )
+            ) : (
               <>
-                <br className="hidden sm:inline" /> {brand.tagline2}
+                {brand.tagline1 || "Education that empowers your ambition"}
+                {brand.tagline2 ? (
+                  <>
+                    <br className="hidden sm:inline" /> {brand.tagline2}
+                  </>
+                ) : null}
               </>
-            ) : null}
+            )}
           </p>
 
           {/* Highlight Callout Box (e.g. Pay-After-Placement) */}

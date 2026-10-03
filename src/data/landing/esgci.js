@@ -222,7 +222,7 @@ export const esgciData = {
       },
 
       taglineText: (
-        <span>
+        <span key="esgci-tagline">
           By <u className="font-semibold">ESGCI Online</u> via <u className="font-semibold">upGrad</u>
         </span>
       ),

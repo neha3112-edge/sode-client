@@ -33,6 +33,51 @@ export default function LandingProgrammes({
     (brand.programmesLayout === "rushford" ||
       brand.slug === "rushford");
 
+  const isEsgci =
+    !isLiverpool &&
+    !isRushford &&
+    (brand.programmesLayout === "esgci" ||
+      brand.slug === "esgci");
+
+  const isGgu =
+    !isLiverpool &&
+    !isRushford &&
+    !isEsgci &&
+    (brand.programmesLayout === "ggu" ||
+      brand.slug === "ggu");
+
+  const isMuTabs =
+    !isLiverpool &&
+    !isRushford &&
+    !isEsgci &&
+    !isGgu &&
+    (brand.programmesLayout === "mu-tabs" ||
+      brand.programmesLayout === "mu" ||
+      brand.slug === "mu" ||
+      brand.slug === "mangalayatan");
+
+  const isVguGrid =
+    !isLiverpool &&
+    !isRushford &&
+    !isEsgci &&
+    !isGgu &&
+    !isMuTabs &&
+    (brand.programmesLayout === "vgu-cards" ||
+      brand.programmesLayout === "vgu-grid" ||
+      brand.programmesLayout === "vgu" ||
+      brand.slug === "vgu");
+
+  const isGrid =
+    !isLiverpool &&
+    !isRushford &&
+    !isEsgci &&
+    !isGgu &&
+    !isMuTabs &&
+    !isVguGrid &&
+    (brand.programmesLayout === "grid" ||
+      brand.programmesLayout === "shoolini" ||
+      brand.slug === "shoolini");
+
   // ==========================================
   // Layout 0-Liverpool: Courses Offered in Liverpool Online MBA (#courses_offered)
   // ==========================================

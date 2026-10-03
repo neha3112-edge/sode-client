@@ -484,7 +484,7 @@ export const gguData = {
       },
 
       taglineText: (
-        <span>
+        <span key="ggu-tagline">
           By <u>Golden Gate University</u> via <u>upGrad</u>
         </span>
       ),
