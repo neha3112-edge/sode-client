@@ -213,6 +213,77 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
     return withValidImage;
   }, [hero?.partnerLogos, heroData?.partnerLogos, universitiesList, page?.offeringUniversities]);
 
+  // ── Action Buttons for Hero Section (Database Driven with Multiple Layers of Fallback) ──
+  const heroButtons = useMemo(() => {
+    const rawButtons =
+      (Array.isArray(hero.buttons) && hero.buttons.length > 0 && hero.buttons) ||
+      (Array.isArray(heroData?.buttons) && heroData.buttons.length > 0 && heroData.buttons) ||
+      [];
+
+    const activeButtons = rawButtons.filter((b) => b?.enabled !== false && (b?.text || b?.title));
+    if (activeButtons.length > 0) {
+      return activeButtons.map((b) => ({
+        text: b.text || b.title || "",
+        url: b.url || b.link || "#",
+        variant: b.variant || "green",
+        icon: b.icon || "none",
+        isModal: b.isModal === true || b.is_modal === true,
+      }));
+    }
+
+    // Fallbacks if buttons array is empty
+    const list = [];
+    if (hero.counselingBtnText || hero.primaryButtonText) {
+      list.push({
+        text: hero.counselingBtnText || hero.primaryButtonText || "Book 1:1 Counseling",
+        url: hero.primaryButtonUrl || "#counseling-modal",
+        variant: "green",
+        icon: "counseling",
+        isModal: true,
+      });
+    }
+    if (hero.podcastUrl || hero.secondaryButtonText) {
+      list.push({
+        text: hero.podcastTitle || hero.secondaryButtonText || "Listen Podcast",
+        url: hero.podcastUrl || hero.secondaryButtonUrl || "#podcast",
+        variant: "amber",
+        icon: "podcast",
+        isModal: false,
+      });
+    }
+
+    if (list.length === 0) {
+      return [
+        {
+          text: "Book 1:1 Counseling",
+          url: "#counseling-modal",
+          variant: "green",
+          icon: "counseling",
+          isModal: true,
+        },
+        {
+          text: "Listen Podcast",
+          url: "#podcast",
+          variant: "amber",
+          icon: "podcast",
+          isModal: false,
+        },
+      ];
+    }
+
+    return list;
+  }, [
+    hero.buttons,
+    heroData?.buttons,
+    hero.counselingBtnText,
+    hero.primaryButtonText,
+    hero.primaryButtonUrl,
+    hero.podcastUrl,
+    hero.podcastTitle,
+    hero.secondaryButtonText,
+    hero.secondaryButtonUrl,
+  ]);
+
   // ── Ant Design Table Memoized Configurations (100% Mobile Responsive, No Scrolling) ──
   const overviewTableColumns = useMemo(
     () => [
@@ -578,76 +649,51 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                       </p>
                     )}
 
-                    {/* Primary Action Buttons (Database Driven) */}
-                    {Array.isArray(hero.buttons) && hero.buttons.filter((b) => b?.enabled !== false).length > 0 ? (
+                    {/* Primary Action Buttons (Database Driven with heroButtons) */}
+                    {heroButtons.length > 0 && (
                       <div className="flex flex-row items-center gap-2.5 sm:gap-3 flex-wrap">
-                        {hero.buttons
-                          .filter((b) => b?.enabled !== false)
-                          .map((btn, idx) => {
-                            const isModal = btn.isModal;
-                            const variant = btn.variant || "green";
-                            const variantClasses =
-                              variant === "green"
-                                ? "bg-[#22C55E] hover:bg-[#16a34a] text-white"
-                                : variant === "amber" || variant === "gold"
-                                  ? "bg-[#F5D061] hover:bg-[#ebc44f] text-[#102A45]"
-                                  : variant === "blue"
-                                    ? "bg-[#0284C7] hover:bg-[#0369a1] text-white"
-                                    : variant === "dark"
-                                      ? "bg-[#0f172a] hover:bg-[#1e293b] text-white"
-                                      : variant === "outline"
-                                        ? "bg-transparent hover:bg-white/10 text-white border border-white/80"
-                                        : "bg-[#F5D061] hover:bg-[#ebc44f] text-[#102A45]";
+                        {heroButtons.map((btn, idx) => {
+                          const isModal = btn.isModal;
+                          const variant = btn.variant || "green";
+                          const variantClasses =
+                            variant === "green"
+                              ? "bg-[#22C55E] hover:bg-[#16a34a] text-white"
+                              : variant === "amber" || variant === "gold"
+                                ? "bg-[#F5D061] hover:bg-[#ebc44f] text-[#102A45]"
+                                : variant === "blue"
+                                  ? "bg-[#0284C7] hover:bg-[#0369a1] text-white"
+                                  : variant === "dark"
+                                    ? "bg-[#0f172a] hover:bg-[#1e293b] text-white"
+                                    : variant === "outline"
+                                      ? "bg-transparent hover:bg-white/10 text-white border border-white/80"
+                                      : "bg-[#F5D061] hover:bg-[#ebc44f] text-[#102A45]";
 
-                            if (isModal) {
-                              return (
-                                <button
-                                  key={idx}
-                                  type="button"
-                                  onClick={() => handleOpenLead(btn.text || "Counseling", `Course: ${pageTitle}`)}
-                                  className={`px-4 sm:px-5 py-2 sm:py-2.5 font-bold text-xs sm:text-sm rounded-lg shadow-xs transition-all duration-200 cursor-pointer text-center inline-flex items-center justify-center whitespace-nowrap gap-1.5 ${variantClasses}`}
-                                >
-                                  <span>{btn.text}</span>
-                                </button>
-                              );
-                            }
-
+                          if (isModal) {
                             return (
-                              <a
+                              <button
                                 key={idx}
-                                href={btn.url || "#"}
-                                className={`px-3.5 sm:px-4 py-2 sm:py-2.5 font-semibold text-xs sm:text-sm rounded-lg transition-all duration-200 inline-flex items-center justify-center gap-1.5 cursor-pointer text-center whitespace-nowrap ${variantClasses}`}
+                                type="button"
+                                onClick={() => handleOpenLead(btn.text || "Counseling", `Course: ${pageTitle}`)}
+                                className={`px-4 sm:px-5 py-2 sm:py-2.5 font-bold text-xs sm:text-sm rounded-lg shadow-xs transition-all duration-200 cursor-pointer text-center inline-flex items-center justify-center whitespace-nowrap gap-1.5 ${variantClasses}`}
                               >
-                                {btn.icon === "podcast" && <ArrowDownCircle className="w-4 h-4 shrink-0" />}
                                 <span>{btn.text}</span>
-                              </a>
+                              </button>
                             );
-                          })}
+                          }
+
+                          return (
+                            <a
+                              key={idx}
+                              href={btn.url || "#"}
+                              className={`px-3.5 sm:px-4 py-2 sm:py-2.5 font-semibold text-xs sm:text-sm rounded-lg transition-all duration-200 inline-flex items-center justify-center gap-1.5 cursor-pointer text-center whitespace-nowrap ${variantClasses}`}
+                            >
+                              {btn.icon === "podcast" && <ArrowDownCircle className="w-4 h-4 shrink-0" />}
+                              <span>{btn.text}</span>
+                            </a>
+                          );
+                        })}
                       </div>
-                    ) : (hero.counselingBtnText || hero.podcastUrl) ? (
-                      <div className="flex flex-row items-center gap-2.5 sm:gap-3 flex-wrap">
-                        {hero.counselingBtnText && (
-                          <button
-                            type="button"
-                            onClick={() => handleOpenLead(hero.counselingBtnText, `Select course: ${pageTitle}`)}
-                            className="px-4 sm:px-5 py-2 sm:py-2.5 bg-[#F5D061] hover:bg-[#ebc44f] text-[#102A45] font-bold text-xs sm:text-sm rounded-lg shadow-xs transition-all duration-200 cursor-pointer text-center inline-flex items-center justify-center whitespace-nowrap"
-                          >
-                            {hero.counselingBtnText}
-                          </button>
-                        )}
-                        {hero.podcastUrl && (
-                          <a
-                            href={hero.podcastUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="px-3.5 sm:px-4 py-2 sm:py-2.5 bg-transparent hover:bg-white/10 text-white font-semibold text-xs sm:text-sm rounded-lg border border-white/80 transition-all duration-200 inline-flex items-center justify-center gap-1.5 cursor-pointer text-center whitespace-nowrap"
-                          >
-                            <ArrowDownCircle className="w-4 h-4 text-white shrink-0" />
-                            <span>{hero.podcastTitle || "Listen Podcast"}</span>
-                          </a>
-                        )}
-                      </div>
-                    ) : null}
+                    )}
                   </div>
 
                   {/* Right Media Column (Only rendered if real videoUrl or uploaded banner/thumbnail exists) */}
@@ -828,7 +874,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
             >
               {partnerList.map((uni, idx) => {
                 const imageSrc = resolveMediaUrl(
-                  uni.image || uni.imageUrl
+                  uni.image || uni.imageUrl || uni.logo || uni.logoData || uni.imageData
                 );
                 if (!imageSrc) return null;
 
