@@ -11,7 +11,7 @@ export default function UniversityPeerUniversities({
   topUniversities = [],
   openFormModal,
 }) {
-  const [visibleTopUnis, setVisibleTopUnis] = useState(6);
+  const [visibleTopUnis, setVisibleTopUnis] = useState(5);
   const { toggleCompare, isInCompare, setIsCompareDrawerOpen } = useCompare();
 
   if (!topUniversities || topUniversities.length === 0) return null;
@@ -145,27 +145,44 @@ export default function UniversityPeerUniversities({
         })}
       </div>
 
-      {/* View More / View Less Button */}
+      {/* View More / View Less Buttons (Initial 5, opens +5 each click, then collapses back to 5) */}
       {topUniversities.length > 5 && (
-        <div className="flex justify-center mt-6">
-          <button
-            type="button"
-            onClick={() =>
-              setVisibleTopUnis((prev) =>
-                prev >= topUniversities.length ? 6 : topUniversities.length
-              )
-            }
-            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 transition-colors text-xs font-semibold border-none cursor-pointer"
-          >
-            <span>
-              {visibleTopUnis >= topUniversities.length ? "View Less" : "View More"}
-            </span>
-            <ChevronDown
-              className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                visibleTopUnis >= topUniversities.length ? "rotate-180" : ""
-              }`}
-            />
-          </button>
+        <div className="flex items-center justify-center gap-3 mt-6">
+          {visibleTopUnis < topUniversities.length ? (
+            <>
+              <button
+                type="button"
+                onClick={() =>
+                  setVisibleTopUnis((prev) =>
+                    Math.min(prev + 5, topUniversities.length)
+                  )
+                }
+                className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
+              >
+                <span>View More</span>
+                <ChevronDown className="w-3.5 h-3.5" />
+              </button>
+              {visibleTopUnis > 5 && (
+                <button
+                  type="button"
+                  onClick={() => setVisibleTopUnis(5)}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gray-100 text-slate-600 hover:bg-gray-200 transition-colors text-xs font-semibold border border-gray-200 cursor-pointer active:scale-95"
+                >
+                  <span>View Less</span>
+                  <ChevronDown className="w-3.5 h-3.5 rotate-180" />
+                </button>
+              )}
+            </>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setVisibleTopUnis(5)}
+              className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
+            >
+              <span>View Less</span>
+              <ChevronDown className="w-3.5 h-3.5 rotate-180" />
+            </button>
+          )}
         </div>
       )}
     </div>

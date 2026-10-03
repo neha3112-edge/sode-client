@@ -12,7 +12,7 @@ export default function CourseAlternativeUniversities({
   processedPrograms,
   courseData,
 }) {
-  const [visibleCount, setVisibleCount] = useState(6);
+  const [visibleCount, setVisibleCount] = useState(5);
   const { toggleCompare, isInCompare, setIsCompareDrawerOpen } = useCompare();
   const { openFormModal } = useFormModal();
 
@@ -159,26 +159,44 @@ export default function CourseAlternativeUniversities({
         })}
       </div>
 
-      {/* View More / View Less Button */}
+      {/* View More / View Less Buttons (Initial 5, opens +5 each click, then collapses back to 5) */}
       {processedPrograms.length > 5 && (
-        <div className="flex justify-center mt-6">
-          <button
-            type="button"
-            onClick={() =>
-              setVisibleCount((prev) =>
-                prev >= processedPrograms.length ? 6 : processedPrograms.length
-              )
-            }
-            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 transition-colors text-xs font-semibold border-none cursor-pointer"
-          >
-            <span>
-              {visibleCount >= processedPrograms.length ? "View Less" : "View More"}
-            </span>
-            <ChevronDown
-              className={`w-3.5 h-3.5 transition-transform duration-200 ${visibleCount >= processedPrograms.length ? "rotate-180" : ""
-                }`}
-            />
-          </button>
+        <div className="flex items-center justify-center gap-3 mt-6">
+          {visibleCount < processedPrograms.length ? (
+            <>
+              <button
+                type="button"
+                onClick={() =>
+                  setVisibleCount((prev) =>
+                    Math.min(prev + 5, processedPrograms.length)
+                  )
+                }
+                className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
+              >
+                <span>View More</span>
+                <ChevronDown className="w-3.5 h-3.5" />
+              </button>
+              {visibleCount > 5 && (
+                <button
+                  type="button"
+                  onClick={() => setVisibleCount(5)}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gray-100 text-slate-600 hover:bg-gray-200 transition-colors text-xs font-semibold border border-gray-200 cursor-pointer active:scale-95"
+                >
+                  <span>View Less</span>
+                  <ChevronDown className="w-3.5 h-3.5 rotate-180" />
+                </button>
+              )}
+            </>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setVisibleCount(5)}
+              className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
+            >
+              <span>View Less</span>
+              <ChevronDown className="w-3.5 h-3.5 rotate-180" />
+            </button>
+          )}
         </div>
       )}
     </div>
