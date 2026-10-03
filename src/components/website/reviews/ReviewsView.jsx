@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useRef } from "react";
-import Link from "next/link";
+import React, { useState, useRef } from "react";
 import Image from "next/image";
 import { Pagination } from "antd";
 import { request } from "@/services/request";
@@ -52,30 +51,33 @@ function StarRating({ rating = 5, size = "w-3.5 h-3.5" }) {
   );
 }
 
-// Avatar Helper using next/image with fallback
+// Avatar Helper with Google-style Solid Muted Avatar Colors
 function UserAvatar({ name = "User", avatarUrl = "" }) {
   const [imgError, setImgError] = useState(false);
   const initial = (name || "U").trim().charAt(0).toUpperCase();
 
-  const colors = [
-    "from-blue-600 to-indigo-600",
-    "from-emerald-600 to-teal-700",
-    "from-purple-600 to-indigo-700",
-    "from-rose-500 to-pink-600",
-    "from-amber-500 to-orange-600",
-    "from-cyan-600 to-blue-700",
+  // Solid avatar background colors matching Google Reviews
+  const solidColors = [
+    "bg-[#5D4037]", // brown (like Mrigendra Singh in screenshot)
+    "bg-[#4A148C]", // deep purple (like Yuvraj Patil in screenshot)
+    "bg-[#1565C0]", // royal blue
+    "bg-[#00695C]", // teal
+    "bg-[#AD1457]", // magenta
+    "bg-[#E65100]", // deep orange
+    "bg-[#37474F]", // blue grey
+    "bg-[#2E7D32]", // dark green
   ];
   const charCode = initial.charCodeAt(0) || 0;
-  const gradientClass = colors[charCode % colors.length];
+  const bgColor = solidColors[charCode % solidColors.length];
 
   if (avatarUrl && !imgError) {
     return (
-      <div className="relative w-9.5 h-9.5 sm:w-10 sm:h-10 rounded-full overflow-hidden shrink-0 ring-1 ring-slate-200/80 shadow-2xs bg-slate-100">
+      <div className="relative w-9 h-9 rounded-full overflow-hidden shrink-0 ring-1 ring-slate-200/80 bg-slate-100">
         <Image
           src={avatarUrl}
           alt={name}
-          width={40}
-          height={40}
+          width={36}
+          height={36}
           unoptimized
           referrerPolicy="no-referrer"
           className="w-full h-full object-cover"
@@ -87,82 +89,71 @@ function UserAvatar({ name = "User", avatarUrl = "" }) {
 
   return (
     <div
-      className={`w-9.5 h-9.5 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-2xs bg-gradient-to-tr ${gradientClass}`}
+      className={`w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-xs shrink-0 ${bgColor}`}
     >
       {initial}
     </div>
   );
 }
 
-// Single Review Card with Balanced Typography, Equal Height & Aligned Footers
+// Single Review Card Matching Reference Image
 function ReviewCard({ review, onOpenModal }) {
   const isLong = review.text && review.text.length > 90;
 
   return (
-    <div className="bg-white rounded-xl sm:rounded-2xl border border-slate-200/80 hover:border-[#072C50]/30 hover:shadow-xs transition-all duration-150 p-4 sm:p-4.5 flex flex-col justify-between h-full group">
+    <div className="bg-white rounded-xl sm:rounded-2xl border border-slate-200 p-3.5 sm:p-4 flex flex-col justify-between h-full group">
       {/* Top Section */}
       <div>
         {/* User Info Row */}
-        <div className="flex items-start justify-between gap-2.5">
+        <div className="flex items-start justify-between gap-2">
           <div className="flex items-center gap-2.5 min-w-0">
             <UserAvatar name={review.name} avatarUrl={review.avatar} />
             <div className="min-w-0">
-              <h3 className="font-bold text-slate-900 text-sm sm:text-[14.5px] leading-snug group-hover:text-[#072C50] transition-colors truncate">
+              <h3 className="font-bold text-slate-900 text-sm leading-snug group-hover:text-[#11233E] transition-colors truncate">
                 {review.name}
               </h3>
               {review.time && (
-                <p className="text-xs text-slate-400 font-medium leading-none mt-0.5">
+                <p className="text-[11px] text-slate-400 font-medium leading-none mt-0.5">
                   {review.time}
                 </p>
               )}
             </div>
           </div>
 
-          {/* Google Logo Badge */}
-          <div
-            className="shrink-0 p-1 bg-slate-50 border border-slate-100 rounded-full"
-            title="Google Verified Review"
-          >
+          {/* Clean Google Logo Icon (top-right) */}
+          <div className="shrink-0 pt-0.5" title="Google Review">
             <GoogleIcon className="w-3.5 h-3.5" />
           </div>
         </div>
 
         {/* Star Rating Row */}
-        <div className="flex items-center gap-1.5 mt-2.5">
-          <StarRating rating={review.rating} size="w-3.5 h-3.5" />
-          <span className="text-xs font-bold text-slate-700">
+        <div className="flex items-center gap-1.5 mt-1.5">
+          <StarRating rating={review.rating} size="w-3 h-3" />
+          <span className="text-xs font-bold text-slate-800">
             {review.rating}.0
           </span>
         </div>
 
-        {/* Review Text Box (Equalized Height with Clear Readable Font) */}
-        <div className="mt-2 min-h-[42px] flex flex-col justify-start">
-          {review.text ? (
-            <div>
-              <p className="text-[#334155] text-xs sm:text-[13px] leading-relaxed line-clamp-2 m-0">
-                {review.text}
-              </p>
-              {isLong && (
-                <button
-                  type="button"
-                  onClick={() => onOpenModal(review)}
-                  className="mt-0.5 text-xs font-semibold text-[#072C50] hover:underline cursor-pointer inline-block"
-                >
-                  Read full
-                </button>
-              )}
-            </div>
-          ) : (
-            <p className="text-slate-400 text-xs italic m-0 pt-0.5">
-              Verified 5-Star rating on Google
-            </p>
+        {/* Review Text */}
+        <div className="mt-1.5 flex flex-col justify-start">
+          <p className="text-slate-600 text-xs sm:text-[12.5px] leading-snug line-clamp-2 m-0">
+            {review.text || "Verified 5-Star rating on Google"}
+          </p>
+          {isLong && (
+            <button
+              type="button"
+              onClick={() => onOpenModal(review)}
+              className="mt-0.5 text-xs font-bold text-[#11233E] hover:underline cursor-pointer inline-block text-left"
+            >
+              Read full
+            </button>
           )}
         </div>
       </div>
 
-      {/* Card Footer: Always sits on the exact same bottom line */}
-      <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
-        <span className="inline-flex items-center gap-1.5 font-medium text-slate-600">
+      {/* Card Footer */}
+      <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+        <span className="inline-flex items-center gap-1 font-medium text-emerald-600 text-[11px] sm:text-xs">
           <svg
             className="w-3.5 h-3.5 text-emerald-600 fill-emerald-600"
             viewBox="0 0 20 20"
@@ -201,18 +192,15 @@ export default function ReviewsView({ data = null }) {
   const [tabCounts, setTabCounts] = useState(
     data?.counts ?? {
       all: data?.totalReviews || 1026,
-      fiveStar: 868,
-      fourStar: 110,
-      critical: 48,
+      fiveStar: 850,
+      fourStar: 133,
+      critical: 43,
     }
   );
 
   const title = data?.title || "Distance Education School Reviews";
   const rating = data?.rating || 4.7;
   const totalReviews = data?.totalReviews || 1027;
-  const studentsGuided = data?.studentsGuided || "50,000+";
-  const universitiesCount = data?.universitiesCount || "100+";
-  const badge = data?.badge || "Google Overall";
   const scale = data?.scale || "Excellent";
   const companyName = data?.companyName || "Distance Education School";
   const googleReviewUrl =
@@ -221,9 +209,12 @@ export default function ReviewsView({ data = null }) {
   const allReviewsUrl =
     data?.allReviewsUrl ||
     "https://search.google.com/local/reviews?placeid=ChIJH5Teux7kDDkRrAsKZz9s-_U";
-  const introHtml =
-    data?.introHtml ||
-    `<p class="mb-2">Find genuine reviews of <strong>Distance Education School</strong> (a unit of SODE Education Foundation). The platform helps students compare courses, verify university accreditations, and get personalized counseling for their career paths.</p><p>We partner with UGC-DEB recognized universities to ensure reliable and trustworthy guidance for all online learners across India.</p>`;
+
+  // Exact text matching reference image
+  const defaultIntroText =
+    "At Distance Education School, we're proud to share that we have supported over 50,000 students enrolling on 100+ online and distance learning courses last year. From personalised counselling to a smooth and transparent admission process, our team has worked one-on-one with each student to make their educational journey easier. Choosing distance and online education is a big decision, so we offer detailed guidance, free expert counselling, and complete clarity on course and college options. Today, many of our students excel in top companies, both in India and abroad, and we're genuinely grateful for the trust they've shown by recommending our services to others.";
+
+  const introText = (data?.introText || data?.introHtml ? data?.introHtml?.replace(/<[^>]*>/g, "") : null) || defaultIntroText;
 
   // 🌐 Backend Dynamic Fetcher
   const fetchReviewsFromBackend = async (page = 1, filter = activeFilter, query = searchQuery) => {
@@ -267,7 +258,7 @@ export default function ReviewsView({ data = null }) {
         const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
         window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
       } else {
-        window.scrollTo({ top: 350, behavior: "smooth" });
+        window.scrollTo({ top: 400, behavior: "smooth" });
       }
     }
   };
@@ -289,168 +280,93 @@ export default function ReviewsView({ data = null }) {
   };
 
   return (
-    <div className="w-full bg-[#f8fafc] text-slate-800 font-sans min-h-screen">
-      {/* ─── 1. WEBSITE HEADER BANNER (#072C50) ─── */}
-      <div className="w-full bg-[#072C50] text-white pt-8 pb-12 sm:pb-14 px-4">
-        <div className="max-w-6xl mx-auto text-center">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-2">
+    <div className="w-full bg-[#F8FAFC] text-slate-800 font-sans min-h-screen">
+      {/* ─── 1. HERO BANNER (Deep Midnight Navy #11233E) ─── */}
+      <div className="w-full bg-[#11233E] text-white pt-8 sm:pt-12 pb-12 sm:pb-14 px-4 sm:px-6">
+        <div className="max-w-4xl mx-auto text-center">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-2.5 sm:mb-3">
             {title}
           </h1>
 
-          <p className="text-xs sm:text-sm text-blue-100 max-w-xl mx-auto font-normal">
-            Real experiences and verified testimonials from over 50,000+ students guided for UGC-DEB approved university programs.
+          <p className="text-xs sm:text-[13.5px] text-slate-200/90 leading-relaxed font-normal">
+            {introText}
           </p>
         </div>
       </div>
 
-      {/* ─── 2. FLOATING OVERALL SUMMARY & STATS BAR ─── */}
-      <div className="max-w-6xl mx-auto px-3.5 sm:px-6 lg:px-8 -mt-8 sm:-mt-9">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3 mb-5">
-          {/* Stat 1: Overall Rating */}
-          <div className="bg-white rounded-xl p-3 sm:p-3.5 border border-slate-200/80 shadow-2xs flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-amber-50 border border-amber-100 flex items-center justify-center shrink-0 text-base">
-              ⭐
+      {/* ─── 2. FLOATING GOOGLE OVERVIEW CARD (Compact Padding) ─── */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 -mt-8 sm:-mt-9 relative z-10">
+        <div className="bg-white rounded-xl sm:rounded-2xl px-4 sm:px-5 py-3 sm:py-3.5 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+          {/* Left: Google G in rounded-full circular badge + Excellent + Name + Stars */}
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full border border-slate-200 bg-white flex items-center justify-center shrink-0">
+              <GoogleIcon className="w-5.5 h-5.5" />
             </div>
+
             <div>
-              <div className="flex items-center gap-1">
-                <span className="text-lg sm:text-xl font-extrabold text-[#072C50]">
+              <div className="text-[#1a73e8] font-bold text-xs leading-none">
+                {scale}
+              </div>
+              <div className="text-slate-900 font-extrabold text-sm sm:text-base leading-tight mt-0.5">
+                {companyName}
+              </div>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <span className="font-extrabold text-slate-800 text-xs">
                   {rating}
                 </span>
-                <span className="text-[11px] text-slate-400 font-bold">/ 5.0</span>
-              </div>
-              <div className="text-xs font-semibold text-slate-600 leading-tight">
-                Google Overall
-              </div>
-            </div>
-          </div>
-
-          {/* Stat 2: Total Reviews */}
-          <div className="bg-white rounded-xl p-3 sm:p-3.5 border border-slate-200/80 shadow-2xs flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
-              <GoogleIcon className="w-4 h-4" />
-            </div>
-            <div>
-              <div className="text-lg sm:text-xl font-extrabold text-[#072C50]">
-                {totalReviews}+
-              </div>
-              <div className="text-xs font-semibold text-slate-600 leading-tight">
-                Verified Reviews
-              </div>
-            </div>
-          </div>
-
-          {/* Stat 3: Guided Students */}
-          <div className="bg-white rounded-xl p-3 sm:p-3.5 border border-slate-200/80 shadow-2xs flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0 text-base">
-              🎓
-            </div>
-            <div>
-              <div className="text-lg sm:text-xl font-extrabold text-[#072C50]">
-                50,000+
-              </div>
-              <div className="text-xs font-semibold text-slate-600 leading-tight">
-                Students Guided
-              </div>
-            </div>
-          </div>
-
-          {/* Stat 4: Approved Programs */}
-          <div className="bg-white rounded-xl p-3 sm:p-3.5 border border-slate-200/80 shadow-2xs flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-purple-50 border border-purple-100 flex items-center justify-center shrink-0 text-base">
-              🏛️
-            </div>
-            <div>
-              <div className="text-lg sm:text-xl font-extrabold text-[#072C50]">
-                100+
-              </div>
-              <div className="text-xs font-semibold text-slate-600 leading-tight">
-                Universities
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* ─── 3. INTRO STATEMENT & GOOGLE OVERALL BOX ─── */}
-        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-2xs p-4 sm:p-5 mb-5">
-          {/* Paragraph Text */}
-          <div
-            className="text-[#2D3748] text-xs sm:text-[13.5px] leading-relaxed mb-4"
-            dangerouslySetInnerHTML={{ __html: introHtml }}
-          />
-
-          {/* Divider */}
-          <div className="w-full h-px bg-slate-200/70 mb-4" />
-
-          {/* Google Summary Horizontal Box */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#F8F9FA] rounded-xl p-3.5 sm:p-4 border border-slate-200/80">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-slate-200/90 flex items-center justify-center bg-white shrink-0 shadow-2xs">
-                <GoogleIcon className="w-6 h-6 sm:w-6.5 sm:h-6.5" />
-              </div>
-
-              <div>
-                <div className="text-[#154fc1] font-bold text-xs sm:text-sm leading-none">
-                  {scale}
-                </div>
-                <div className="text-[#072C50] font-extrabold text-sm sm:text-base leading-tight mt-0.5">
-                  {companyName}
-                </div>
-                <div className="flex items-center gap-1.5 mt-1">
-                  <span className="font-extrabold text-slate-800 text-xs">
-                    {rating}
-                  </span>
-                  <StarRating rating={5} size="w-3 h-3" />
-                  <span className="text-[11px] text-slate-400 font-medium ml-1">
-                    ({totalReviews} reviews)
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* CTAs */}
-            <div className="flex items-center gap-2">
-              <a
-                href={allReviewsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center bg-[#072C50] hover:bg-[#0c3d6c] text-white text-xs font-semibold px-3.5 py-2 rounded-lg shadow-2xs transition-colors"
-              >
-                See all
-              </a>
-
-              <a
-                href={googleReviewUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-1.5 bg-[#1a73e8] hover:bg-[#1557b0] text-white text-xs font-semibold px-3.5 py-2 rounded-lg shadow-2xs transition-colors"
-              >
-                <span>Review us</span>
-                <span className="bg-white rounded-full p-0.5 inline-flex items-center justify-center">
-                  <GoogleIcon className="w-2.5 h-2.5" />
+                <StarRating rating={5} size="w-3 h-3" />
+                <span className="text-[11px] text-slate-500 font-medium ml-0.5">
+                  ({totalReviews} reviews)
                 </span>
-              </a>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* ─── 4. CONTROLS BAR: FILTER TABS & SEARCH ─── */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 mb-4 bg-white p-2.5 sm:p-3 rounded-xl border border-slate-200/80 shadow-2xs">
-          {/* Tabs */}
-          <div className="flex items-center gap-1 overflow-x-auto pb-1 sm:pb-0">
+          {/* Right: See All & Review Us CTAs */}
+          <div className="flex items-center gap-2">
+            <a
+              href={allReviewsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center bg-[#11233E] hover:bg-[#1a3660] text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors"
+            >
+              See all
+            </a>
+
+            <a
+              href={googleReviewUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-1.5 bg-[#1a73e8] hover:bg-[#1557b0] text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors"
+            >
+              <span>Review us</span>
+              <span className="w-3.5 h-3.5 rounded-full bg-white flex items-center justify-center shrink-0">
+                <GoogleIcon className="w-2 h-2" />
+              </span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* ─── 3. MAIN CONTENT AREA (Filter Tabs, Search, and 3-Col Review Cards) ─── */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8 pb-12">
+        {/* Controls: Filter Pills & Search Bar inside white container box */}
+        <div className="bg-white rounded-xl sm:rounded-2xl border border-slate-200 p-2.5 sm:p-3 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-6">
+          {/* Filter Pills */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
             {[
               { id: "all", label: `All (${tabCounts.all ?? 1026})` },
-              { id: "5", label: `★ 5 (${tabCounts.fiveStar ?? 868})` },
-              { id: "4", label: `★ 4 (${tabCounts.fourStar ?? 110})` },
-              { id: "critical", label: `Critical (${tabCounts.critical ?? 48})` },
+              { id: "5", label: `★ 5 (${tabCounts.fiveStar ?? 850})` },
+              { id: "4", label: `★ 4 (${tabCounts.fourStar ?? 133})` },
             ].map((tab) => (
               <button
                 key={tab.id}
                 type="button"
                 onClick={() => handleFilterClick(tab.id)}
-                className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer whitespace-nowrap ${
+                className={`px-4 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer whitespace-nowrap ${
                   activeFilter === tab.id
-                    ? "bg-[#072C50] text-white shadow-2xs"
-                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    ? "bg-[#11233E] text-white"
+                    : "bg-[#EEF2F6] text-slate-700 hover:bg-slate-200 font-medium"
                 }`}
               >
                 {tab.label}
@@ -465,7 +381,7 @@ export default function ReviewsView({ data = null }) {
               placeholder="Search reviews..."
               value={searchQuery}
               onChange={handleSearchChange}
-              className="w-full sm:w-60 pl-8 pr-2.5 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-[#072C50] focus:bg-white transition"
+              className="w-full sm:w-64 pl-8 pr-3 py-2 text-xs bg-white border border-slate-200 rounded-lg text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-[#11233E] transition"
             />
             <svg
               className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2"
@@ -483,19 +399,19 @@ export default function ReviewsView({ data = null }) {
           </div>
         </div>
 
-        {/* ─── 5. REVIEWS GRID & ANTD PAGINATION (15 PER PAGE) ─── */}
+        {/* Reviews Grid */}
         <div id="reviews-grid-section" className="relative min-h-[300px]">
           {loading && (
-            <div className="absolute inset-0 bg-white/60 backdrop-blur-2xs z-20 flex items-center justify-center rounded-2xl">
-              <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-md border border-slate-200 text-xs font-semibold text-[#072C50]">
-                <div className="w-4 h-4 border-2 border-[#072C50] border-t-transparent rounded-full animate-spin" />
+            <div className="absolute inset-0 bg-white/70 backdrop-blur-2xs z-20 flex items-center justify-center rounded-2xl">
+              <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-md border border-slate-200 text-xs font-semibold text-[#11233E]">
+                <div className="w-4 h-4 border-2 border-[#11233E] border-t-transparent rounded-full animate-spin" />
                 <span>Loading reviews...</span>
               </div>
             </div>
           )}
 
           {reviewsList.length === 0 && !loading ? (
-            <div className="text-center py-12 bg-white rounded-xl border border-slate-200/80 text-slate-500">
+            <div className="text-center py-12 bg-white rounded-2xl border border-slate-200/80 text-slate-500">
               <div className="text-2xl mb-1">🔍</div>
               <p className="text-xs font-medium">No reviews found matching your search filter.</p>
               <button
@@ -503,13 +419,14 @@ export default function ReviewsView({ data = null }) {
                   handleFilterClick("all");
                   setSearchQuery("");
                 }}
-                className="mt-2 text-xs text-[#072C50] font-bold hover:underline cursor-pointer"
+                className="mt-2 text-xs text-[#11233E] font-bold hover:underline cursor-pointer"
               >
                 Reset Filters
               </button>
             </div>
           ) : (
             <>
+              {/* 3 Columns Review Card Grid with compact gap */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-3.5 mb-6 auto-rows-fr">
                 {reviewsList.map((rev) => (
                   <ReviewCard
@@ -520,7 +437,7 @@ export default function ReviewsView({ data = null }) {
                 ))}
               </div>
 
-              {/* 🧭 Ant Design Pagination (15 items per page) */}
+              {/* Ant Design Pagination */}
               {totalCount > ITEMS_PER_PAGE && (
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 pb-8 px-1">
                   <span className="text-xs font-semibold text-slate-500 text-center sm:text-left">
@@ -540,20 +457,20 @@ export default function ReviewsView({ data = null }) {
           )}
         </div>
 
-        {/* ─── 6. BOTTOM CALL-TO-ACTION CARD ─── */}
-        <div className="bg-gradient-to-r from-[#072C50] to-[#0c3d6c] rounded-2xl p-6 sm:p-7 text-white text-center shadow-md mb-12 relative overflow-hidden">
+        {/* ─── 3. BOTTOM CTA BANNER ─── */}
+        <div className="bg-[#11233E] rounded-2xl p-6 sm:p-8 text-white text-center shadow-md mb-12 relative overflow-hidden">
           <div className="relative z-10 max-w-xl mx-auto">
-            <h2 className="text-lg sm:text-xl md:text-2xl font-extrabold mb-2">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-2">
               Are you a Distance Education School Student?
             </h2>
-            <p className="text-xs text-blue-100 mb-4 leading-relaxed">
+            <p className="text-xs sm:text-[13px] text-slate-200/90 mb-4 leading-relaxed">
               Your genuine feedback helps thousands of aspiring students make informed decisions about their higher education and career paths.
             </p>
             <a
               href={googleReviewUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 bg-white text-[#072C50] hover:bg-blue-50 font-bold px-5 py-2.5 rounded-full text-xs shadow-sm transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 bg-white text-[#11233E] hover:bg-slate-100 font-bold px-5 py-2.5 rounded-lg text-xs shadow-sm transition-all cursor-pointer"
             >
               <span>Write a Review on Google</span>
               <GoogleIcon className="w-3.5 h-3.5" />
@@ -562,7 +479,7 @@ export default function ReviewsView({ data = null }) {
         </div>
       </div>
 
-      {/* ─── 7. FULL REVIEW MODAL POPUP ─── */}
+      {/* ─── 4. FULL REVIEW MODAL POPUP ─── */}
       {activeModalReview && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs transition-opacity"
@@ -584,7 +501,7 @@ export default function ReviewsView({ data = null }) {
             </button>
 
             {/* Modal Header */}
-            <div className="flex items-center gap-2.5 pr-6">
+            <div className="flex items-center gap-3 pr-6">
               <UserAvatar name={activeModalReview.name} avatarUrl={activeModalReview.avatar} />
               <div>
                 <h3 className="font-bold text-slate-900 text-sm">
@@ -606,14 +523,14 @@ export default function ReviewsView({ data = null }) {
 
             {/* Modal Footer */}
             <div className="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
-              <span className="inline-flex items-center gap-1 font-medium text-emerald-600">
+              <span className="inline-flex items-center gap-1.5 font-medium text-emerald-600">
                 <GoogleIcon className="w-3.5 h-3.5" />
                 Verified Google Review
               </span>
               <button
                 type="button"
                 onClick={() => setActiveModalReview(null)}
-                className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-md text-[11px] transition cursor-pointer"
+                className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg text-xs transition cursor-pointer"
               >
                 Close
               </button>
