@@ -1289,8 +1289,8 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                     const iconUrl = resolveMediaUrl(step.icon);
 
                     return (
-                      <div key={idx} className="relative flex">
-                        <div className="w-full rounded-xl p-2.5 sm:p-3.5 text-center flex flex-col items-center bg-white shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+                      <div key={idx} className="relative flex flex-col h-full">
+                        <div className="w-full h-full rounded-xl p-2.5 sm:p-3.5 text-center flex flex-col items-center justify-start bg-white shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300 hover:-translate-y-1">
                           {/* Large icon circle */}
                           <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center shrink-0 bg-sky-50 border-2 border-sky-300 mb-2 sm:mb-3">
                             {iconUrl ? (
@@ -1323,10 +1323,14 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                           )}
                         </div>
 
-                        {/* Arrow between cards */}
+                        {/* Arrow between cards - centered vertically to the card and horizontally in the gap */}
                         {idx < admissionSteps.length - 1 && (
-                          <div className="hidden lg:flex absolute -right-2 top-1/2 -translate-y-1/2 z-10 text-sky-400">
-                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                          <div
+                            className={`absolute top-1/2 -translate-y-1/2 left-[calc(100%+7px)] -translate-x-1/2 z-10 text-sky-400 pointer-events-none items-center justify-center ${
+                              idx === 2 ? "hidden lg:flex" : "hidden md:flex"
+                            }`}
+                          >
+                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                               <polyline points="9 18 15 12 9 6" />
                             </svg>
                           </div>
