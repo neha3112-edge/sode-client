@@ -41,13 +41,16 @@ export default function LandingStickyCtas({
       <div className="fixed bottom-20 sm:bottom-6 right-3 sm:right-6 z-40 flex flex-col items-center gap-2.5 sm:gap-3">
         {/* Top: Call / WhatsApp Icon */}
         <a
-          href={`tel:+91${rawPhone}`}
-          aria-label={`Call +91 ${rawPhone}`}
+          href={brand.whatsappUrl || (rawPhone ? `https://api.whatsapp.com/send/?phone=+91${rawPhone}&text=${whatsappText}` : `tel:+91${rawPhone}`)}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`WhatsApp / Call +91 ${rawPhone}`}
+          title={`WhatsApp / Call (+91 ${rawPhone})`}
           className="relative w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full overflow-hidden shadow-2xl flex items-center justify-center transition-transform hover:scale-110 active:scale-95 bg-white drop-shadow-lg"
         >
           <Image
-            src={brand.callGif || "/assets/images/call_icon.gif"}
-            alt="Call Expert"
+            src={brand.callGif || brand.callIcon || "/assets/lpu/call_icon.gif"}
+            alt="WhatsApp / Call Expert"
             fill
             unoptimized
             className="object-cover"

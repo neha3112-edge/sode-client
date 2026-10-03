@@ -36,6 +36,7 @@ export const lpuData = {
     showSodeLogo: true,
     giftGif: "/assets/lpu/gift.gif",
     callIcon: "/assets/lpu/call_icon.gif",
+    callGif: "/assets/lpu/call_icon.gif",
     arrowIcon: "/assets/lpu/arrow.gif",
     footerLogo: "/assets/lpu/new-des-logo.webp",
     heroBg: "/assets/lpu/new-desktop-front-bg.webp",
