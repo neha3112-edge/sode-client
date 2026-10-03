@@ -11,6 +11,7 @@ import { getAssetPath } from "@/lib/utils";
 import { useFormModal } from "@/hooks/useFormModal";
 import { useCompare } from "@/hooks/useCompare";
 import Hero from "@/components/website/Hero";
+import CourseStickyNav from "@/components/website/course/CourseStickyNav";
 import {
   Award,
   Trophy,
@@ -431,6 +432,88 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
   const heroImageSrc = resolveMediaUrl(hero.videoThumbnail || hero.bannerImage);
   const hasHeroMedia = Boolean(hero.videoUrl || heroImageSrc);
 
+  // Dynamic Available Sections for Sticky Tabs Navigation (Strictly Based on Active Data)
+  const availableSections = useMemo(() => {
+    const list = [];
+    if (accreditations.enabled !== false && accreditationItems && accreditationItems.length > 0) {
+      list.push({ id: "accreditations", label: "Accreditations" });
+    }
+    if (overview.enabled !== false && (Boolean(overview.description) || overviewTable.length > 0)) {
+      list.push({ id: "overview", label: "Highlights" });
+    }
+    if (whyChoose.enabled !== false && whyChooseCards && whyChooseCards.length > 0) {
+      list.push({ id: "why-choose", label: "Why Choose Us" });
+    }
+    if (eligibility.enabled !== false && eligibilityCards && eligibilityCards.length > 0) {
+      list.push({ id: "eligibility", label: "Eligibility" });
+    }
+    if (admissionProcess.enabled !== false && admissionSteps && admissionSteps.length > 0) {
+      list.push({ id: "admission-process", label: "Admission Process" });
+    }
+    if (modeComparison.enabled !== false && comparisonRows && comparisonRows.length > 0) {
+      list.push({ id: "mode-comparison", label: "Mode Comparison" });
+    }
+    if (specializations.enabled !== false && specializationsList && specializationsList.length > 0) {
+      list.push({ id: "specializations", label: "Specialisations" });
+    }
+    if (syllabus.enabled !== false && syllabusData && syllabusData.length > 0) {
+      list.push({ id: "syllabus", label: "Syllabus" });
+    }
+    if (topUniversities.enabled !== false && universitiesList && universitiesList.length > 0) {
+      list.push({ id: "top-universities", label: "Top Universities" });
+    }
+    if (
+      careerScope.enabled !== false &&
+      ((experienceLevels && experienceLevels.length > 0) ||
+        (jobRolesList && jobRolesList.length > 0) ||
+        Boolean(careerScope.jobRolesDescription) ||
+        Boolean(careerScope.salaryTrend))
+    ) {
+      list.push({ id: "career-scope", label: "Career & Scope" });
+    }
+    if (recruitersSection.enabled !== false && recruitersList && recruitersList.length > 0) {
+      list.push({ id: "recruiters", label: "Top Recruiters" });
+    }
+    if (mistakesToAvoid.enabled !== false && mistakesList && mistakesList.length > 0) {
+      list.push({ id: "mistakes-to-avoid", label: "Mistakes to Avoid" });
+    }
+    if (faqSection.enabled !== false && faqsList && faqsList.length > 0) {
+      list.push({ id: "faqs", label: "FAQs" });
+    }
+    return list;
+  }, [
+    accreditations.enabled,
+    accreditationItems,
+    overview.enabled,
+    overview.description,
+    overviewTable.length,
+    whyChoose.enabled,
+    whyChooseCards,
+    eligibility.enabled,
+    eligibilityCards,
+    admissionProcess.enabled,
+    admissionSteps,
+    modeComparison.enabled,
+    comparisonRows,
+    specializations.enabled,
+    specializationsList,
+    syllabus.enabled,
+    syllabusData,
+    topUniversities.enabled,
+    universitiesList,
+    careerScope.enabled,
+    experienceLevels,
+    jobRolesList,
+    careerScope.jobRolesDescription,
+    careerScope.salaryTrend,
+    recruitersSection.enabled,
+    recruitersList,
+    mistakesToAvoid.enabled,
+    mistakesList,
+    faqSection.enabled,
+    faqsList,
+  ]);
+
   return (
     <div className="w-full bg-[#F8FAFC] text-slate-800 antialiased min-h-screen">
       {/* ── Custom CSS from builder / editor ── */}
@@ -838,16 +921,28 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
         </section>
       )}
 
+      {/* Auto Sticky Tabs Header based on present dynamic sections */}
+      <CourseStickyNav
+        containerId="course-page-content-sections"
+        sections={availableSections}
+        courseName={cleanOnlineTitle || pageTitle}
+      />
+
       {/* =====================================================================
           MAIN CONTENT AREA (White Island Cards on Soft Slate #F4F6F9)
       ===================================================================== */}
       <div className="w-full bg-[#F0F4F8] py-5 sm:py-10">
         <Container>
+          <div id="course-page-content-sections" className="space-y-6">
           {/* =====================================================================
               3️⃣ RANKINGS & ACCREDITATIONS (Shown only if accreditationItems has data)
           ===================================================================== */}
           {accreditations.enabled !== false && accreditationItems && accreditationItems.length > 0 && (
-            <div className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-5 sm:p-7 mb-6 scroll-mt-20 text-center">
+            <div
+              id="accreditations"
+              data-nav-label="Accreditations"
+              className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-5 sm:p-7 mb-6 scroll-mt-20 text-center"
+            >
               <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight mb-2">
                 {accreditations.title || (pageTitle ? `Rankings & Accreditations for ${pageTitle}` : "Rankings & Accreditations")}
               </h2>
@@ -906,7 +1001,11 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
               4️⃣ OVERVIEW & KEY HIGHLIGHTS (Shown only if description or table has data)
           ===================================================================== */}
           {overview.enabled !== false && (Boolean(overview.description) || overviewTable.length > 0) && (
-            <div className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-4 sm:p-6 md:p-8 mb-6 scroll-mt-20">
+            <div
+              id="overview"
+              data-nav-label="Highlights"
+              className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-4 sm:p-6 md:p-8 mb-6 scroll-mt-20"
+            >
               <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
                 {overview.title || "Overview & Key Highlights"}
               </h2>
@@ -988,7 +1087,11 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
               5️⃣ WHY CHOOSE COURSE (Shown only if whyChooseCards has data)
           ===================================================================== */}
           {whyChoose.enabled !== false && whyChooseCards && whyChooseCards.length > 0 && (
-            <div className="bg-white rounded-xl shadow-xs border border-gray-200 p-4 sm:p-6 md:p-8 mb-6 scroll-mt-20 space-y-5 sm:space-y-6">
+            <div
+              id="why-choose"
+              data-nav-label="Why Choose Us"
+              className="bg-white rounded-xl shadow-xs border border-gray-200 p-4 sm:p-6 md:p-8 mb-6 scroll-mt-20 space-y-5 sm:space-y-6"
+            >
               <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
                 {whyChoose.title || (cleanOnlineTitle ? `Why Choose ${cleanOnlineTitle}?` : "Why Choose?")}
               </h2>
@@ -1041,7 +1144,11 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
               6️⃣ ELIGIBILITY CRITERIA (Shown only if eligibilityCards has data)
           ===================================================================== */}
           {eligibility.enabled !== false && eligibilityCards && eligibilityCards.length > 0 && (
-            <div className="bg-white rounded-xl shadow-xs border border-gray-200 p-4 sm:p-6 md:p-8 mb-6 scroll-mt-20 space-y-5 sm:space-y-6">
+            <div
+              id="eligibility"
+              data-nav-label="Eligibility"
+              className="bg-white rounded-xl shadow-xs border border-gray-200 p-4 sm:p-6 md:p-8 mb-6 scroll-mt-20 space-y-5 sm:space-y-6"
+            >
               <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
                 {eligibility.title || (cleanOnlineTitle ? `Eligibility Criteria for ${cleanOnlineTitle}` : "Eligibility Criteria")}
               </h2>
@@ -1091,7 +1198,11 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
               7️⃣ ONLINE MBA ADMISSION PROCESS (Shown only if admissionSteps has data)
           ===================================================================== */}
           {admissionProcess.enabled !== false && admissionSteps && admissionSteps.length > 0 && (
-            <div className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-4 sm:p-6 mb-6 scroll-mt-20">
+            <div
+              id="admission-process"
+              data-nav-label="Admission Process"
+              className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-4 sm:p-6 mb-6 scroll-mt-20"
+            >
               <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
                 {admissionProcess.title || (cleanOnlineTitle ? `${cleanOnlineTitle} Admission Process` : "Admission Process")}
               </h2>
@@ -1163,7 +1274,11 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
               8️⃣ MODE COMPARISON TABLE (Shown only if comparisonRows has data)
           ===================================================================== */}
           {modeComparison.enabled !== false && comparisonRows && comparisonRows.length > 0 && (
-            <div className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-4 sm:p-6 md:p-8 mb-6 scroll-mt-20">
+            <div
+              id="mode-comparison"
+              data-nav-label="Mode Comparison"
+              className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-4 sm:p-6 md:p-8 mb-6 scroll-mt-20"
+            >
               <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
                 {modeComparison.title || (cleanOnlineTitle ? `${cleanOnlineTitle} vs. Regular vs. Distance` : "Mode Comparison")}
               </h2>
@@ -1232,7 +1347,11 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
               9️⃣ POPULAR SPECIALIZATIONS SECTION (Shown only if specializationsList has data)
           ===================================================================== */}
           {specializations.enabled !== false && specializationsList && specializationsList.length > 0 && (
-            <div className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-3 sm:p-6 mb-5 sm:mb-6 scroll-mt-20">
+            <div
+              id="specializations"
+              data-nav-label="Specialisations"
+              className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-3 sm:p-6 mb-5 sm:mb-6 scroll-mt-20"
+            >
               <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-1.5 sm:mb-2">
                 {specializations.title || (cleanOnlineTitle ? `Popular ${cleanOnlineTitle} Specializations` : "Popular Specializations")}
               </h2>
@@ -1270,7 +1389,11 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
               🔟 ONLINE MBA SYLLABUS SEMESTER WISE (Shown only if syllabusData has data)
           ===================================================================== */}
           {syllabus.enabled !== false && syllabusData && syllabusData.length > 0 && (
-            <div className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-4 sm:p-6 mb-6 scroll-mt-20">
+            <div
+              id="syllabus"
+              data-nav-label="Syllabus"
+              className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-4 sm:p-6 mb-6 scroll-mt-20"
+            >
               <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
                 {syllabus.title || (cleanOnlineTitle ? `${cleanOnlineTitle} Syllabus Semester Wise` : "Syllabus Semester Wise")}
               </h2>
@@ -1363,7 +1486,11 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
               1️⃣1️⃣ TOP UNIVERSITIES OFFERING ONLINE MBA IN INDIA (Shown only if universitiesList has data)
           ===================================================================== */}
           {topUniversities.enabled !== false && universitiesList && universitiesList.length > 0 && (
-            <div className="scroll-mt-20 bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8 mb-6">
+            <div
+              id="top-universities"
+              data-nav-label="Top Universities"
+              className="scroll-mt-20 bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8 mb-6"
+            >
               <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
                 {topUniversities.title || (cleanOnlineTitle ? `Top Universities Offering ${cleanOnlineTitle} in India` : "Top Universities")}
               </h2>
@@ -1408,7 +1535,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                         )}
                       </div>
 
-                      {/* University Name & Courses Count */}
+                      {/* University Name, Location & Fee */}
                       <div className="w-full space-y-0.5 my-0.5">
                         <div className="min-h-7 sm:min-h-8 flex items-center justify-center">
                           <Link
@@ -1418,9 +1545,31 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                             {uni.name}
                           </Link>
                         </div>
-                        <div className="text-[10px] sm:text-[11px] text-gray-500 font-normal flex items-center justify-center">
-                          <span className="truncate">{coursesOfferedText}</span>
-                        </div>
+
+                        {/* 📍 Location  ₹ Fee — flex center, no wrap */}
+                        {(uni.location || uni.feeText || uni.customFee) && (
+                          <div className="flex items-center justify-center gap-1 w-full overflow-hidden">
+                            {uni.location && (
+                              <span className="flex items-center gap-0.5 text-[9px] text-gray-500 font-normal min-w-0">
+                                <MapPin className="w-2 h-2 text-[#4A90D9] shrink-0" />
+                                <span className="whitespace-nowrap overflow-hidden text-ellipsis">{uni.location}</span>
+                              </span>
+                            )}
+                            {uni.location && (uni.feeText || uni.customFee) && (
+                              <span className="text-gray-300 text-[8px] shrink-0">·</span>
+                            )}
+                            {(uni.feeText || uni.customFee) && (
+                              <span className="text-[9px] font-bold text-[#1C3569] shrink-0 whitespace-nowrap">
+                                {(uni.feeText || uni.customFee || '')
+                                  .replace(/\/\s*Sem(ester)?/i, '/Sem')
+                                  .replace(/\/\s*Year/i, '/Yr')}
+                              </span>
+                            )}
+                          </div>
+                        )}
+                        {!uni.location && !uni.feeText && !uni.customFee && (
+                          <span className="text-[9px] text-gray-500 text-center w-full block">{coursesOfferedText}</span>
+                        )}
                       </div>
 
                       {/* Full-width Add to Compare Pill */}
@@ -1531,7 +1680,11 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
               (jobRolesList && jobRolesList.length > 0) ||
               Boolean(careerScope.jobRolesDescription) ||
               Boolean(careerScope.salaryTrend)) && (
-              <div className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-4 sm:p-6 md:p-8 mb-6 scroll-mt-20">
+              <div
+                id="career-scope"
+                data-nav-label="Career & Scope"
+                className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-4 sm:p-6 md:p-8 mb-6 scroll-mt-20"
+              >
                 <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
                   {careerScope.title || "Career Scope & Salary Expectations"}
                 </h2>
@@ -1668,7 +1821,11 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
               1️⃣3️⃣ TOP HIRING RECRUITERS (Shown only if recruitersList has data)
           ===================================================================== */}
           {recruitersSection.enabled !== false && recruitersList && recruitersList.length > 0 && (
-            <div className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-4 sm:p-6 mb-6 scroll-mt-20">
+            <div
+              id="recruiters"
+              data-nav-label="Top Recruiters"
+              className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-4 sm:p-6 mb-6 scroll-mt-20"
+            >
               <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
                 {recruitersSection.title || "Top Hiring Recruiters"}
               </h2>
@@ -1715,7 +1872,11 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
               1️⃣4️⃣ COMMON MISTAKES TO AVOID (Shown only if mistakesList has data)
           ===================================================================== */}
           {mistakesToAvoid.enabled !== false && mistakesList && mistakesList.length > 0 && (
-            <div className="bg-white rounded-xl shadow-xs border border-gray-200 p-4 sm:p-6 md:p-8 mb-6 scroll-mt-20 space-y-5 sm:space-y-6">
+            <div
+              id="mistakes-to-avoid"
+              data-nav-label="Mistakes to Avoid"
+              className="bg-white rounded-xl shadow-xs border border-gray-200 p-4 sm:p-6 md:p-8 mb-6 scroll-mt-20 space-y-5 sm:space-y-6"
+            >
               <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
                 {mistakesToAvoid.title || "Common Mistakes to Avoid"}
               </h2>
@@ -1770,7 +1931,11 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
               1️⃣5️⃣ FREQUENTLY ASKED QUESTIONS (Shown only if faqsList has data)
           ===================================================================== */}
           {faqSection.enabled !== false && faqsList && faqsList.length > 0 && (
-            <div className="bg-white rounded-xl shadow-xs border border-gray-200 p-4 sm:p-6 md:p-8 mb-6 scroll-mt-20 space-y-5 sm:space-y-6">
+            <div
+              id="faqs"
+              data-nav-label="FAQs"
+              className="bg-white rounded-xl shadow-xs border border-gray-200 p-4 sm:p-6 md:p-8 mb-6 scroll-mt-20 space-y-5 sm:space-y-6"
+            >
               <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
                 {faqSection.title || (pageTitle ? `FAQs on ${pageTitle}` : "Frequently Asked Questions")}
               </h2>
@@ -1826,6 +1991,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
               </div>
             </div>
           )}
+          </div>
         </Container>
       </div>
 
