@@ -1042,7 +1042,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                   </p>
                 )}
 
-                <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2.5 md:gap-3 w-full">
+                <div className="flex flex-wrap items-center justify-start md:justify-center gap-1.5 sm:gap-2.5 md:gap-3 w-full">
                   {accreditationItems.map((item, idx) => {
                     const logoSrc = resolveMediaUrl(item.logo || item.icon);
                     return (

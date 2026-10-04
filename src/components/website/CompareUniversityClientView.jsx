@@ -513,16 +513,13 @@ export default function CompareUniversityClientView({
 
       // Filter by Mode if selected
       if (selectedMode && selectedMode !== "all") {
-        const uMode = u.mode || u.education_mode || [];
-        const modeArr = Array.isArray(uMode) ? uMode : [uMode];
-        const hasMode = modeArr.some(
-          (m) =>
-            typeof m === "string" &&
-            (m.toLowerCase() === selectedMode.toLowerCase() ||
-              m.toLowerCase().includes(selectedMode.toLowerCase()))
-        );
-        if (modeArr.length > 0 && !hasMode) {
-          return false;
+        const uMode = u.mode || u.education_mode;
+        const mStr = typeof uMode === "object" ? (uMode?.name || "") : String(uMode || "");
+        if (mStr) {
+          const matches =
+            mStr.toLowerCase() === selectedMode.toLowerCase() ||
+            mStr.toLowerCase().includes(selectedMode.toLowerCase());
+          if (!matches) return false;
         }
       }
       return true;
@@ -1296,8 +1293,8 @@ export default function CompareUniversityClientView({
         icon: <BookOutlined className="text-blue-600" />,
         featureTitle: "Mode of Education",
         renderCell: (uni) => {
-          const modeList = Array.isArray(uni.mode) ? uni.mode.join(", ") : uni.mode;
-          return <span className="text-slate-700 font-semibold">{modeList || "-"}</span>;
+          const modeName = typeof uni.mode === "object" ? (uni.mode?.name || "") : String(uni.mode || "");
+          return <span className="text-slate-700 font-semibold">{modeName || "-"}</span>;
         },
       },
       {

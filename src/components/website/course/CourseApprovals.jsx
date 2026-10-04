@@ -21,7 +21,7 @@ export default function CourseApprovals({
       <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight mb-4">
         {courseData?.approvalsTitle || (universityName ? `Rankings & Accreditations of ${universityName}` : "Rankings & Accreditations")}
       </h2>
-      <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2.5 md:gap-3 w-full">
+      <div className="flex flex-wrap items-center justify-start md:justify-center gap-1.5 sm:gap-2.5 md:gap-3 w-full">
         {approvalsList.map((item, idx) => {
           const logoSrc = item.logo || item.image ? getAssetPath(item.logo || item.image) : null;
           const title = item.name || item.code || "Accredited";

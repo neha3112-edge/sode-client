@@ -5,9 +5,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { Search, Award, Info } from "lucide-react";
 import { getAssetPath } from "@/lib/utils";
+import { Container } from "@/components/common/Container";
 
 export function AccreditationsView({ initialAccreditations = [] }) {
   const [searchQuery, setSearchQuery] = useState("");
+  const currentYear = new Date().getFullYear();
 
   const accreditationsList = useMemo(() => {
     if (!Array.isArray(initialAccreditations)) return [];
@@ -51,8 +53,8 @@ export function AccreditationsView({ initialAccreditations = [] }) {
       <div className="w-full bg-[#11233E] h-44 sm:h-52 md:h-64" />
 
       {/* ─── 2. FLOATING WHITE CONTAINER CARD ─── */}
-      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 md:px-8 -mt-28 sm:-mt-36 md:-mt-44 pb-16 md:pb-24">
-        <article className="w-full bg-white rounded-3xl shadow-sm border border-slate-200 p-6 sm:p-10 md:p-12 text-[#2D3748]">
+      <Container className="relative z-10 -mt-28 sm:-mt-36 md:-mt-44 pb-16 md:pb-24">
+        <article className="w-full bg-white rounded-2xl sm:rounded-3xl shadow-sm border border-slate-200 p-3 sm:p-8 md:p-10 text-[#2D3748]">
           {/* Centered Page Title */}
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#0B1F38] text-center tracking-tight m-0 mb-2.5">
             Accreditations & Approvals
@@ -81,22 +83,25 @@ export function AccreditationsView({ initialAccreditations = [] }) {
             </div>
           )}
 
-          {/* ─── 3. ACCREDITATIONS CARDS (Exact proportions matching reference screenshot) ─── */}
+          {/* ─── 3. ACCREDITATIONS CARDS (3 cols on mobile starting from left, 5 cols on desktop centered) ─── */}
           {filteredAccreditations.length > 0 ? (
-            <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-4.5 md:gap-5 w-full">
+            <div className="flex flex-wrap items-center justify-start md:justify-center gap-1.5 sm:gap-2.5 md:gap-3 w-full">
               {filteredAccreditations.map((acc, idx) => {
+                const CardWrapper = acc.slug ? Link : "div";
+                const cardProps = acc.slug ? { href: `/accreditations/${acc.slug}` } : {};
+
                 const titleText = (acc.name || acc.title || "").trim();
                 const lower = titleText.toLowerCase();
 
                 let renderedTitle = (
-                  <div className="text-xs sm:text-[13px] text-slate-800 font-semibold leading-snug line-clamp-2 px-1">
+                  <div className="text-[10px] sm:text-[11px] md:text-[12px] text-slate-800 font-semibold leading-tight line-clamp-2 px-0.5">
                     {titleText}
                   </div>
                 );
 
                 if (lower.includes("online")) {
                   renderedTitle = (
-                    <div className="text-xs sm:text-[13px] text-slate-800 leading-snug">
+                    <div className="text-[10px] sm:text-[11px] md:text-[12px] text-slate-800 leading-tight">
                       <span className="block text-slate-700">UGC Approved</span>
                       <span className="block font-medium">
                         <strong className="font-bold text-slate-900">Online</strong> Universities
@@ -105,7 +110,7 @@ export function AccreditationsView({ initialAccreditations = [] }) {
                   );
                 } else if (lower.includes("distance") || lower.includes("deb")) {
                   renderedTitle = (
-                    <div className="text-xs sm:text-[13px] text-slate-800 leading-snug">
+                    <div className="text-[10px] sm:text-[11px] md:text-[12px] text-slate-800 leading-tight">
                       <span className="block text-slate-700">UGC Approved</span>
                       <span className="block font-medium">
                         <strong className="font-bold text-slate-900">Distance</strong> Universities
@@ -114,89 +119,77 @@ export function AccreditationsView({ initialAccreditations = [] }) {
                   );
                 } else if (lower.includes("ugc")) {
                   renderedTitle = (
-                    <div className="text-xs sm:text-[13px] text-slate-800 leading-snug">
+                    <div className="text-[10px] sm:text-[11px] md:text-[12px] text-slate-800 leading-tight">
                       <span className="block text-slate-700">UGC Approved</span>
                       <span className="block font-semibold text-slate-900">Universities</span>
                     </div>
                   );
                 } else if (lower.includes("nirf")) {
                   renderedTitle = (
-                    <div className="text-xs sm:text-[13px] text-slate-800 leading-snug">
+                    <div className="text-[10px] sm:text-[11px] md:text-[12px] text-slate-800 leading-tight">
                       <span className="block font-semibold text-slate-900">NIRF Ranked</span>
-                      <span className="block text-slate-700">universities</span>
+                      <span className="block text-slate-700">Universities</span>
                     </div>
                   );
                 } else if (lower.includes("naac")) {
                   renderedTitle = (
-                    <div className="text-xs sm:text-[13px] text-slate-800 leading-snug">
+                    <div className="text-[10px] sm:text-[11px] md:text-[12px] text-slate-800 leading-tight">
                       <span className="block font-semibold text-slate-900">NAAC Accredited</span>
                       <span className="block text-slate-700">Universities</span>
                     </div>
                   );
                 } else if (lower.includes("wes")) {
                   renderedTitle = (
-                    <div className="text-xs sm:text-[13px] text-slate-800 leading-snug">
+                    <div className="text-[10px] sm:text-[11px] md:text-[12px] text-slate-800 leading-tight">
                       <span className="block font-semibold text-slate-900">WES Approved</span>
                       <span className="block text-slate-700">Universities</span>
                     </div>
                   );
                 } else if (lower.includes("aicte")) {
                   renderedTitle = (
-                    <div className="text-xs sm:text-[13px] text-slate-800 leading-snug">
+                    <div className="text-[10px] sm:text-[11px] md:text-[12px] text-slate-800 leading-tight">
                       <span className="block font-semibold text-slate-900">AICTE Approved</span>
                       <span className="block text-slate-700">Universities</span>
                     </div>
                   );
                 }
 
-                const cardContent = (
-                  <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:shadow-md hover:border-slate-200 p-4 sm:p-5 flex flex-col items-center justify-between text-center w-full h-full transition-all group">
-                    {/* Top: Logo Image */}
-                    <div className="h-12 sm:h-14 w-full flex items-center justify-center relative mt-1">
+                return (
+                  <CardWrapper
+                    key={acc.id || idx}
+                    {...cardProps}
+                    className="bg-white rounded-xl border border-gray-200 flex flex-col p-1.5 sm:p-2.5 md:p-3 items-center justify-between text-center aspect-[4/5] sm:aspect-square shadow-2xs hover:border-blue-300 transition-colors overflow-hidden shrink-0 w-[calc((100%-12px)/3)] sm:w-[calc((100%-20px)/3)] md:w-[calc((100%-48px)/5)] cursor-pointer no-underline group"
+                  >
+                    {/* Top: Logo with University page scale (64px mobile, 80px desktop) */}
+                    <div className="flex-1 min-h-0 max-h-14 sm:max-h-16 md:max-h-20 w-full relative flex items-center justify-center">
                       {acc.logo ? (
                         <Image
                           src={getAssetPath(acc.logo)}
                           alt={acc.title}
                           fill
-                          sizes="120px"
+                          sizes="(max-width: 768px) 64px, 80px"
                           className="object-contain group-hover:scale-105 transition-transform"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <Award className="w-8 h-8 sm:w-9 sm:h-9 text-blue-600 group-hover:scale-110 transition-transform" />
+                          <Award className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-blue-600" />
                         </div>
                       )}
                     </div>
 
-                    {/* Middle: Title */}
-                    <div className="w-full flex items-center justify-center min-h-[38px] my-auto">
+                    {/* Middle: Title with exact University page typography */}
+                    <div className="w-full shrink-0 flex items-center justify-center text-center my-0.5 sm:my-1.5 min-h-[26px] sm:min-h-[32px]">
                       {renderedTitle}
                     </div>
 
                     {/* Bottom: Warm Golden-Sand Capsule Button */}
-                    <div className="w-full flex items-center justify-center mb-0.5">
-                      <span className="bg-[#E4BE75] group-hover:bg-[#dbb15f] text-[#4A2E00] text-[10.5px] sm:text-xs font-semibold px-3.5 sm:px-4 py-1.5 rounded-full transition-colors inline-block text-center whitespace-nowrap shadow-2xs">
-                        View Updated List 2026
+                    <div className="w-full shrink-0 flex items-center justify-center mb-0.5">
+                      <span className="bg-[#E4BE75] group-hover:bg-[#dbb15f] text-[#351C00] text-[9px] sm:text-[10px] md:text-[11px] font-bold px-2 sm:px-3 py-1 sm:py-1 rounded-full transition-colors inline-flex items-center justify-center text-center whitespace-nowrap shadow-2xs leading-none">
+                        <span className="hidden sm:inline">View Updated List {currentYear}</span>
+                        <span className="sm:hidden">Updated List {currentYear}</span>
                       </span>
                     </div>
-                  </div>
-                );
-
-                return acc.slug ? (
-                  <Link
-                    key={acc.id || idx}
-                    href={`/accreditations/${acc.slug}`}
-                    className="w-[175px] sm:w-[190px] md:w-[200px] h-[195px] sm:h-[210px] md:h-[220px] shrink-0 block no-underline"
-                  >
-                    {cardContent}
-                  </Link>
-                ) : (
-                  <div
-                    key={acc.id || idx}
-                    className="w-[175px] sm:w-[190px] md:w-[200px] h-[195px] sm:h-[210px] md:h-[220px] shrink-0"
-                  >
-                    {cardContent}
-                  </div>
+                  </CardWrapper>
                 );
               })}
             </div>
@@ -219,7 +212,7 @@ export function AccreditationsView({ initialAccreditations = [] }) {
             </div>
           )}
         </article>
-      </div>
+      </Container>
     </div>
   );
 }

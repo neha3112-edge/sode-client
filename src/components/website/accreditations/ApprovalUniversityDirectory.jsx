@@ -32,6 +32,8 @@ function SmoothExpandedCard({
   isInCompare,
   handleGetBrochure,
   handleCompareClick,
+  isNaacApproval = false,
+  isNirfApproval = false,
 }) {
   const [isMounted, setIsMounted] = useState(false);
   const compared = isInCompare(record.slug || record._id);
@@ -131,6 +133,40 @@ function SmoothExpandedCard({
                   </span>
                 </div>
               </div>
+
+              {/* NAAC Grade - Only on NAAC approval page */}
+              {isNaacApproval && record.naac && (
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 text-xs">
+                    ⭐
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-gray-400 font-normal uppercase tracking-wider block leading-none">
+                      NAAC Grade
+                    </span>
+                    <span className="text-xs sm:text-[13px] font-semibold text-amber-800 block mt-0.5 leading-tight">
+                      {record.naac}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* NIRF Rank - Only on NIRF approval page */}
+              {isNirfApproval && record.nirf && (
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 text-xs">
+                    🏆
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-gray-400 font-normal uppercase tracking-wider block leading-none">
+                      NIRF Rank
+                    </span>
+                    <span className="text-xs sm:text-[13px] font-semibold text-blue-800 block mt-0.5 leading-tight">
+                      {String(record.nirf).startsWith("#") ? record.nirf : `#${record.nirf}`}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Courses Offered */}
@@ -252,14 +288,20 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
       state: item.state || "India",
       location: item.location || item.state || "India",
       heiType: item.heiType || "Private University",
-      mode: Array.isArray(item.mode) ? item.mode : (item.mode ? [item.mode] : []),
+      mode: (typeof item.mode === "object" ? item.mode?.name : item.mode) || null,
       established: item.established || "",
+      naac: item.naac || null,
+      nirf: item.nirf || item.nirf_rank || null,
       logo: item.logo || null,
       courses: Array.isArray(item.courses) ? item.courses : [],
       ugcSessions: item.ugcSessions || [],
+      ugc_accreditations: item.ugc_accreditations || [],
       rawUni: item,
     }));
   }, [apiData]);
+
+  const [selectedNaac, setSelectedNaac] = useState("all");
+  const [selectedNirf, setSelectedNirf] = useState("all");
 
   // Filter options from API response
   const filterOptions = useMemo(() => ({
@@ -267,7 +309,9 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
     states: apiData?.filters?.states || [],
     heiTypes: apiData?.filters?.heiTypes || [],
     sessions: apiData?.filters?.sessions || [],
-  }), [apiData]);
+    naac: apiData?.filters?.naac || [...new Set(normalizedList.map((u) => u.naac).filter(Boolean))].sort(),
+    nirf: apiData?.filters?.nirf || [...new Set(normalizedList.map((u) => u.nirf).filter(Boolean))].sort((a, b) => Number(a) - Number(b)),
+  }), [apiData, normalizedList]);
 
   // Client-side filter
   const filteredUniversities = useMemo(() => {
@@ -277,6 +321,8 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
         const match = u.name.toLowerCase().includes(q) ||
           u.state.toLowerCase().includes(q) ||
           u.heiType.toLowerCase().includes(q) ||
+          (u.naac && u.naac.toLowerCase().includes(q)) ||
+          (u.nirf && String(u.nirf).toLowerCase().includes(q)) ||
           u.courses.some((c) => c.toLowerCase().includes(q));
         if (!match) return false;
       }
@@ -289,16 +335,24 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
       if (selectedHeiType !== "all") {
         if (u.heiType.toLowerCase() !== selectedHeiType.toLowerCase()) return false;
       }
+      if (selectedNaac !== "all") {
+        if ((u.naac || "").toLowerCase() !== selectedNaac.toLowerCase()) return false;
+      }
+      if (selectedNirf !== "all") {
+        if (String(u.nirf || "").toLowerCase() !== selectedNirf.toLowerCase()) return false;
+      }
       return true;
     });
-  }, [normalizedList, searchTerm, selectedCourse, selectedState, selectedHeiType]);
+  }, [normalizedList, searchTerm, selectedCourse, selectedState, selectedHeiType, selectedNaac, selectedNirf]);
 
   const hasActiveFilters = Boolean(
     searchTerm.trim() ||
     (selectedSession && selectedSession !== "all") ||
     selectedCourse !== "all" ||
     selectedState !== "all" ||
-    selectedHeiType !== "all"
+    selectedHeiType !== "all" ||
+    selectedNaac !== "all" ||
+    selectedNirf !== "all"
   );
 
   const handleResetFilters = () => {
@@ -306,6 +360,8 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
     setSelectedCourse("all");
     setSelectedState("all");
     setSelectedHeiType("all");
+    setSelectedNaac("all");
+    setSelectedNirf("all");
     if (selectedSession && selectedSession !== "all") {
       handleSessionChange("all");
     }
@@ -385,53 +441,109 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
     );
   };
 
-  // Ant Design Table Columns: 3 columns fitting 100% width with wrapping text (no horizontal scroll)
-  const columns = [
-    {
-      title: "UNIVERSITY NAME",
-      dataIndex: "name",
-      key: "name",
-      width: "42%",
-      render: (name, record) => (
-        <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
-          <div className="w-10 h-10 sm:w-9 sm:h-9 rounded-lg shrink-0 flex items-center justify-center overflow-hidden">
-            {record.logo ? (
-              <Image
-                src={record.logo}
-                alt={name}
-                width={40}
-                height={40}
-                unoptimized
-                className="object-contain w-full h-full"
-              />
-            ) : (
-              <span className="font-semibold text-xs sm:text-sm text-[#122A46]">
-                {name.charAt(0)}
-              </span>
-            )}
+  // Approval Identifier for dynamic columns (NAAC Grade, NIRF Rank)
+  const approvalIdentifier = useMemo(() => {
+    return [
+      apiData?.approval?.code,
+      apiData?.approval?.name,
+      apiData?.approval?.slug,
+      apiData?.approval?.pageSlug,
+      apiData?.approval?.title,
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+  }, [apiData]);
+
+  const isNaacApproval = approvalIdentifier.includes("naac");
+  const isNirfApproval = approvalIdentifier.includes("nirf");
+
+  // Ant Design Table Columns: dynamically includes NAAC Grade or NIRF Rank column
+  const columns = useMemo(() => {
+    const hasNaacCol = isNaacApproval;
+    const hasNirfCol = isNirfApproval;
+
+    const cols = [
+      {
+        title: "UNIVERSITY NAME",
+        dataIndex: "name",
+        key: "name",
+        width: hasNaacCol || hasNirfCol ? "38%" : "42%",
+        render: (name, record) => (
+          <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+            <div className="w-10 h-10 sm:w-9 sm:h-9 rounded-lg shrink-0 flex items-center justify-center overflow-hidden">
+              {record.logo ? (
+                <Image
+                  src={record.logo}
+                  alt={name}
+                  width={40}
+                  height={40}
+                  unoptimized
+                  className="object-contain w-full h-full"
+                />
+              ) : (
+                <span className="font-semibold text-xs sm:text-sm text-[#122A46]">
+                  {name.charAt(0)}
+                </span>
+              )}
+            </div>
+            <div className="min-w-0 flex-1">
+              {formatUniversityName(name)}
+            </div>
           </div>
-          <div className="min-w-0 flex-1">
-            {formatUniversityName(name)}
-          </div>
-        </div>
-      ),
-    },
-    {
-      title: "STATE",
-      dataIndex: "state",
-      key: "state",
-      width: "28%",
-      render: (state) => (
-        <span className="text-gray-600 text-xs sm:text-[13px] font-normal break-words whitespace-normal leading-tight block">
-          {state}
-        </span>
-      ),
-    },
-    {
+        ),
+      },
+      {
+        title: "STATE",
+        dataIndex: "state",
+        key: "state",
+        width: hasNaacCol || hasNirfCol ? "24%" : "28%",
+        render: (state) => (
+          <span className="text-gray-600 text-xs sm:text-[13px] font-normal break-words whitespace-normal leading-tight block">
+            {state}
+          </span>
+        ),
+      },
+    ];
+
+    if (hasNaacCol) {
+      cols.push({
+        title: "NAAC GRADE",
+        dataIndex: "naac",
+        key: "naac",
+        width: "16%",
+        render: (naac) => {
+          if (!naac) return <span className="text-gray-400 text-xs font-normal">-</span>;
+          return (
+            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] sm:text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200 shadow-2xs">
+              {naac}
+            </span>
+          );
+        },
+      });
+    } else if (hasNirfCol) {
+      cols.push({
+        title: "NIRF RANK",
+        dataIndex: "nirf",
+        key: "nirf",
+        width: "16%",
+        render: (nirf) => {
+          if (!nirf) return <span className="text-gray-400 text-xs font-normal">-</span>;
+          const displayRank = String(nirf).startsWith("#") ? nirf : `#${nirf}`;
+          return (
+            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] sm:text-xs font-semibold bg-blue-50 text-blue-800 border border-blue-200 shadow-2xs">
+              {displayRank}
+            </span>
+          );
+        },
+      });
+    }
+
+    cols.push({
       title: "TYPE OF HEI",
       dataIndex: "heiType",
       key: "heiType",
-      width: "30%",
+      width: hasNaacCol || hasNirfCol ? "22%" : "30%",
       render: (heiType, record) => {
         const isExpanded =
           expandedRowKeys.includes(record._id) && !closingRowKeys.includes(record._id);
@@ -458,8 +570,10 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
           </div>
         );
       },
-    },
-  ];
+    });
+
+    return cols;
+  }, [isNaacApproval, isNirfApproval, expandedRowKeys, closingRowKeys]);
 
   // Smooth Accordion Card Component for Expanded Details
   const renderExpandedCard = (record) => {
@@ -471,6 +585,8 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
         isInCompare={isInCompare}
         handleGetBrochure={handleGetBrochure}
         handleCompareClick={handleCompareClick}
+        isNaacApproval={isNaacApproval}
+        isNirfApproval={isNirfApproval}
       />
     );
   };
@@ -494,21 +610,59 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
         {/* 2. Filters Bar: 2 columns on mobile, 4 columns on desktop */}
         <div className="w-full">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5 w-full">
-            {/* Select Session */}
-            <Select
-              size="large"
-              value={selectedSession || "all"}
-              onChange={handleSessionChange}
-              className="approval-filter-select w-full"
-              suffixIcon={<ChevronDown size={14} className="text-gray-500" />}
-            >
-              <Option value="all">All Sessions</Option>
-              {filterOptions.sessions.map((sess) => (
-                <Option key={sess} value={sess}>
-                  List {sess}
-                </Option>
-              ))}
-            </Select>
+            {/* Filter by NAAC Grade if NAAC approval */}
+            {isNaacApproval && (
+              <Select
+                size="large"
+                value={selectedNaac}
+                onChange={setSelectedNaac}
+                className="approval-filter-select w-full"
+                suffixIcon={<ChevronDown size={14} className="text-gray-500" />}
+              >
+                <Option value="all">All NAAC Grades</Option>
+                {filterOptions.naac.map((grade) => (
+                  <Option key={grade} value={grade}>
+                    Grade {grade}
+                  </Option>
+                ))}
+              </Select>
+            )}
+
+            {/* Filter by NIRF Rank if NIRF approval */}
+            {isNirfApproval && (
+              <Select
+                size="large"
+                value={selectedNirf}
+                onChange={setSelectedNirf}
+                className="approval-filter-select w-full"
+                suffixIcon={<ChevronDown size={14} className="text-gray-500" />}
+              >
+                <Option value="all">All NIRF Ranks</Option>
+                {filterOptions.nirf.map((rank) => (
+                  <Option key={rank} value={rank}>
+                    Rank #{rank}
+                  </Option>
+                ))}
+              </Select>
+            )}
+
+            {/* Select Session if not NAAC and not NIRF */}
+            {!isNaacApproval && !isNirfApproval && (
+              <Select
+                size="large"
+                value={selectedSession || "all"}
+                onChange={handleSessionChange}
+                className="approval-filter-select w-full"
+                suffixIcon={<ChevronDown size={14} className="text-gray-500" />}
+              >
+                <Option value="all">All Sessions</Option>
+                {filterOptions.sessions.map((sess) => (
+                  <Option key={sess} value={sess}>
+                    List {sess}
+                  </Option>
+                ))}
+              </Select>
+            )}
 
             {/* Filter By Course */}
             <Select
