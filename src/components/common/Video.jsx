@@ -38,7 +38,9 @@ function isDirectVideoFile(url) {
   return (
     /\.(mp4|webm|ogg|mov|m4v)(\?.*)?$/i.test(url) ||
     url.includes("/video/") ||
-    url.includes("/uploads/video")
+    url.includes("/uploads/video") ||
+    url.includes("blob.vercel-storage.com") ||
+    url.includes("blob:")
   );
 }
 
