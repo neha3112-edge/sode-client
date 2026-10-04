@@ -4,45 +4,82 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "
 import Link from "next/link";
 import Script from "next/script";
 import confetti from "canvas-confetti";
-import { Headphones, Home, Mail, CheckCircle2 } from "lucide-react";
+import { Headphones, Home, Mail, CheckCircle2, Phone, BookOpen, Award, Compass } from "lucide-react";
 import { getAssetPath } from "@/lib/utils";
 
 /* =========================================================
-   GOOGLE ADS CONVERSION LABELS
-
-   lp:
-   SODE main landing-page conversion
+   ICON MAPPING UTILITY
 ========================================================= */
 
-const GOOGLE_ADS_ID = "AW-17946162864";
-
-const GOOGLE_ADS_CONVERSION_LABELS = {
-  iimk: "AW-17946162864/M_ZICKbCrNAcELDtsu1C",
-  iiitb: "AW-17946162864/j5BSCL-P3sgcELDtsu1C",
-  lp: "AW-17946162864/sLquCMiuu8YcELDtsu1C",
-};
+function renderCardIcon(iconType) {
+  switch (iconType) {
+    case "headphones":
+      return <Headphones className="text-[#8B7500]" size={22} aria-hidden="true" />;
+    case "check":
+      return <CheckCircle2 className="text-[#8B7500]" size={22} aria-hidden="true" />;
+    case "phone":
+      return <Phone className="text-[#8B7500]" size={22} aria-hidden="true" />;
+    case "book":
+      return <BookOpen className="text-[#8B7500]" size={22} aria-hidden="true" />;
+    case "award":
+      return <Award className="text-[#8B7500]" size={22} aria-hidden="true" />;
+    case "mail":
+    default:
+      return <Mail className="text-[#8B7500]" size={22} aria-hidden="true" />;
+  }
+}
 
 /* =========================================================
-   THANK YOU CLIENT COMPONENT
+   THANK YOU CLIENT COMPONENT (STRICTLY DATA-DRIVEN)
 ========================================================= */
 
 export default function ThankYouClient({
   conversionSource = "lp",
-  homeHref = "/",
+  initialData = null,
 }) {
   const [progress, setProgress] = useState(0);
   const [brochureOpened, setBrochureOpened] = useState(false);
   const [brochureUrl] = useState(() => {
     if (typeof window === "undefined") return "";
-    try { return sessionStorage.getItem("brochureUrl") || ""; } catch (e) { return ""; }
+    try {
+      return sessionStorage.getItem("brochureUrl") || "";
+    } catch (e) {
+      return "";
+    }
   });
   const brochureProcessStarted = useRef(false);
   const conversionSent = useRef(false);
   const [isBrochure] = useState(() => {
     if (typeof window === "undefined") return false;
-    try { return sessionStorage.getItem("isBrochureFlow") === "true"; } catch (e) { return false; }
+    try {
+      return sessionStorage.getItem("isBrochureFlow") === "true";
+    } catch (e) {
+      return false;
+    }
   });
-  const isClientReady = useSyncExternalStore(() => () => {}, () => true, () => false);
+  const isClientReady = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
+
+  // Purely dynamic values from Backend API (No hardcoded static text)
+  const googleAdsId = initialData?.googleAdsId || "";
+  const conversionLabel = initialData?.googleAdsConversionLabel || "";
+
+  const badgeText = initialData?.badgeText || "";
+  const title = initialData?.title || "";
+  const subtitle = initialData?.subtitle || "";
+
+  const brochurePreparingText = initialData?.brochurePreparingText || "";
+  const brochureOpenedText = initialData?.brochureOpenedText || "";
+
+  const homeButtonText = initialData?.homeButtonText || "";
+  const homeButtonLink = initialData?.homeButtonLink || "/";
+  const exploreButtonText = initialData?.exploreButtonText || "";
+  const exploreButtonLink = initialData?.exploreButtonLink || "";
+
+  const infoCards = Array.isArray(initialData?.infoCards) ? initialData.infoCards : [];
 
   /* Trigger celebratory confetti on client mount */
   useEffect(() => {
@@ -60,14 +97,14 @@ export default function ThankYouClient({
   }, [isClientReady]);
 
   /* =========================================================
-     GOOGLE ADS CONVERSION TRACKING
+     GOOGLE ADS CONVERSION TRACKING (TRIGGERED ONLY IF CONFIGURED IN API)
   ========================================================= */
 
   useEffect(() => {
-    if (conversionSent.current) return;
+    if (!conversionLabel || conversionSent.current) return;
 
-    const sendTo = GOOGLE_ADS_CONVERSION_LABELS[conversionSource];
-    const conversionSessionKey = `googleAdsConversionSent:${conversionSource}`;
+    const sendTo = conversionLabel;
+    const conversionSessionKey = `googleAdsConversionSent:${conversionSource}:${sendTo}`;
 
     try {
       const alreadySent = sessionStorage.getItem(conversionSessionKey) === "true";
@@ -95,9 +132,7 @@ export default function ThankYouClient({
     } catch (error) {
       console.error("Unable to store Google Ads conversion state:", error);
     }
-
-    console.info(`Google Ads conversion event sent for source: ${conversionSource}`);
-  }, [conversionSource]);
+  }, [conversionLabel, conversionSource]);
 
   /* =========================================================
      GET BROCHURE URL
@@ -161,31 +196,80 @@ export default function ThankYouClient({
 
   return (
     <>
-      {/* Google Ads global tag library */}
-      <Script
-        id="google-ads-library"
-        src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ADS_ID}`}
-        strategy="afterInteractive"
-      />
+      {/* 🏷️ Dynamic JSON-LD Schema Markup (Only if present in API) */}
+      {initialData?.schemaMarkup && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: initialData.schemaMarkup }}
+        />
+      )}
 
-      {/* Google Ads global tag configuration */}
-      <Script id="google-ads-config" strategy="afterInteractive">
-        {`
-          window.dataLayer = window.dataLayer || [];
-          window.gtag = window.gtag || function () {
-            window.dataLayer.push(arguments);
-          };
-          window.gtag("js", new Date());
-          window.gtag("config", "${GOOGLE_ADS_ID}");
-        `}
-      </Script>
+      {/* 📊 Google Ads Global Tag Library (Only if configured in API) */}
+      {googleAdsId && (
+        <>
+          <Script
+            id="google-ads-library"
+            src={`https://www.googletagmanager.com/gtag/js?id=${googleAdsId}`}
+            strategy="afterInteractive"
+          />
+          <Script id="google-ads-config" strategy="afterInteractive">
+            {`
+              window.dataLayer = window.dataLayer || [];
+              window.gtag = window.gtag || function () {
+                window.dataLayer.push(arguments);
+              };
+              window.gtag("js", new Date());
+              window.gtag("config", "${googleAdsId}");
+            `}
+          </Script>
+        </>
+      )}
+
+      {/* 📊 Google Tag Manager (Only if configured in API) */}
+      {initialData?.gtmId && (
+        <Script id="gtm-thankyou" strategy="afterInteractive">
+          {`
+            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer','${initialData.gtmId}');
+          `}
+        </Script>
+      )}
+
+      {/* 📊 Meta / Facebook Pixel (Only if configured in API) */}
+      {initialData?.facebookPixelId && (
+        <Script id="meta-pixel-thankyou" strategy="afterInteractive">
+          {`
+            !function(f,b,e,v,n,t,s)
+            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+            n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t,s)}(window, document,'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+            fbq('init', '${initialData.facebookPixelId}');
+            fbq('track', 'PageView');
+            fbq('track', 'Lead');
+          `}
+        </Script>
+      )}
+
+      {/* ⚙️ Custom Head Tracking Script from Backend Model */}
+      {initialData?.customHeadScript && (
+        <Script id="custom-thankyou-tracking" strategy="afterInteractive">
+          {initialData.customHeadScript}
+        </Script>
+      )}
 
       <main className="mx-auto flex min-h-[calc(100vh-80px)] w-full items-center justify-center bg-gray-50 px-4 py-20">
         <div className="w-full max-w-sm overflow-hidden rounded-[30px] bg-white shadow-2xl transition-all duration-300 md:max-w-4xl">
           <div className="p-6 text-center md:p-12">
 
             {/* =================================================
-                SUCCESS ANIMATION AND HEADING
+                SUCCESS ANIMATION AND HEADING (ONLY IF FROM API)
             ================================================== */}
 
             <div className="mb-8 flex flex-col items-center">
@@ -193,13 +277,17 @@ export default function ThankYouClient({
                 <CheckCircle2 className="h-14 w-14 sm:h-16 sm:w-16 text-emerald-500" strokeWidth={2.5} />
               </div>
 
-              <p className="mb-2 text-xs font-bold tracking-widest text-[#8B7500]">
-                INQUIRY SUCCESSFUL
-              </p>
+              {badgeText && (
+                <p className="mb-2 text-xs font-bold tracking-widest text-[#8B7500]">
+                  {badgeText}
+                </p>
+              )}
 
-              <h1 className="mb-3 text-2xl font-bold text-[#1C3569] md:text-4xl">
-                Thank You for Enquiring
-              </h1>
+              {title && (
+                <h1 className="mb-3 text-2xl font-bold text-[#1C3569] md:text-4xl">
+                  {title}
+                </h1>
+              )}
 
               {/* =============================================
                   BROCHURE DOWNLOAD PROGRESS
@@ -207,11 +295,11 @@ export default function ThankYouClient({
 
               {isClientReady && isBrochure && (
                 <div className="mx-auto mb-5 w-full max-w-lg">
-                  <p className="text-sm leading-relaxed text-gray-600 md:text-base">
-                    {brochureOpened
-                      ? "Your brochure has been opened in a new tab."
-                      : "Your brochure is being prepared. It will open automatically."}
-                  </p>
+                  {(brochureOpened ? brochureOpenedText : brochurePreparingText) && (
+                    <p className="text-sm leading-relaxed text-gray-600 md:text-base">
+                      {brochureOpened ? brochureOpenedText : brochurePreparingText}
+                    </p>
+                  )}
 
                   {!brochureOpened && (
                     <>
@@ -237,69 +325,75 @@ export default function ThankYouClient({
                 </div>
               )}
 
-              <p className="mx-auto max-w-lg text-sm leading-relaxed text-gray-600 md:text-base">
-                Our counselor will contact you shortly to discuss your academic
-                aspirations and guide you through the next steps.
-              </p>
+              {subtitle && (
+                <p className="mx-auto max-w-lg text-sm leading-relaxed text-gray-600 md:text-base">
+                  {subtitle}
+                </p>
+              )}
             </div>
 
             {/* =================================================
-                INFORMATION BOXES
+                INFORMATION BOXES (ONLY IF IN DATABASE)
             ================================================== */}
 
-            <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2">
-              {/* Check Inbox */}
-              <div className="rounded-2xl border border-transparent bg-[#F1F5F9] p-5 text-left transition-all hover:border-[#FFC107]">
-                <div className="flex items-start gap-4">
-                  <div className="shrink-0 rounded-lg bg-white p-2 shadow-sm">
-                    <Mail className="text-[#8B7500]" size={22} aria-hidden="true" />
+            {infoCards.length > 0 && (
+              <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2">
+                {infoCards.map((card, idx) => (
+                  <div
+                    key={card._id || idx}
+                    className="rounded-2xl border border-transparent bg-[#F1F5F9] p-5 text-left transition-all hover:border-[#FFC107]"
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="shrink-0 rounded-lg bg-white p-2 shadow-sm">
+                        {renderCardIcon(card.iconType)}
+                      </div>
+                      <div>
+                        {card.title && (
+                          <h2 className="text-sm font-bold text-[#1C3569] md:text-base">
+                            {card.title}
+                          </h2>
+                        )}
+                        {card.description && (
+                          <p className="mt-1 text-xs leading-relaxed text-gray-600 md:text-sm">
+                            {card.description}
+                          </p>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <h2 className="text-sm font-bold text-[#1C3569] md:text-base">
-                      Check Your Inbox
-                    </h2>
-                    <p className="mt-1 text-xs leading-relaxed text-gray-600 md:text-sm">
-                      We&apos;ve sent a digital brochure and program details to your
-                      registered email address.
-                    </p>
-                  </div>
-                </div>
+                ))}
               </div>
-
-              {/* Expert Guidance */}
-              <div className="rounded-2xl border border-transparent bg-[#F1F5F9] p-5 text-left transition-all hover:border-[#FFC107]">
-                <div className="flex items-start gap-4">
-                  <div className="shrink-0 rounded-lg bg-white p-2 shadow-sm">
-                    <Headphones className="text-[#8B7500]" size={22} aria-hidden="true" />
-                  </div>
-                  <div>
-                    <h2 className="text-sm font-bold text-[#1C3569] md:text-base">
-                      Expert Guidance
-                    </h2>
-                    <p className="mt-1 text-xs leading-relaxed text-gray-600 md:text-sm">
-                      Expect a call within the next 24 business hours from our
-                      dedicated admissions desk.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            )}
 
             {/* =================================================
-                ACTION BUTTON
+                ACTION BUTTONS (ONLY IF CONFIGURED IN API)
             ================================================== */}
 
-            <div className="mx-auto max-w-md">
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <Link
-                  href={homeHref}
-                  className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#FFC107] py-3.5 font-bold text-black transition-colors hover:bg-[#e6af06]"
-                >
-                  <Home size={18} aria-hidden="true" />
-                  <span>Back to Home</span>
-                </Link>
+            {(homeButtonText || exploreButtonText) && (
+              <div className="mx-auto max-w-md">
+                <div className="flex flex-col gap-3 sm:flex-row">
+                  {homeButtonText && (
+                    <Link
+                      href={homeButtonLink || "/"}
+                      className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#FFC107] py-3.5 font-bold text-black transition-colors hover:bg-[#e6af06]"
+                    >
+                      <Home size={18} aria-hidden="true" />
+                      <span>{homeButtonText}</span>
+                    </Link>
+                  )}
+
+                  {exploreButtonText && (
+                    <Link
+                      href={exploreButtonLink || "/universities"}
+                      className="flex flex-1 items-center justify-center gap-2 rounded-xl border-2 border-[#1C3569] bg-white py-3.5 font-bold text-[#1C3569] transition-colors hover:bg-slate-50"
+                    >
+                      <Compass size={18} aria-hidden="true" />
+                      <span>{exploreButtonText}</span>
+                    </Link>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
 
           </div>
         </div>
