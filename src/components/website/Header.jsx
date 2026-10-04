@@ -860,7 +860,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
 
                         // Prioritise header_logo for header, fallback to course logo, then pastel icon
                         const headerLogoObj = prog.header_logo || prog.effective_logo || prog.logo;
-                        const headerLogoUrl = headerLogoObj?.url ? resolveImg(headerLogoObj) : null;
+                        const headerLogoUrl = (headerLogoObj?.url || headerLogoObj?.path || typeof headerLogoObj === "string") ? resolveImg(headerLogoObj) : null;
 
                         return (
                           <div
@@ -1090,7 +1090,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                 {selectedMobileCategory.items.map((item, idx) => {
                   const itemSlug = item.slug || item._id || item.name;
                   const isUni = selectedMobileCategory.type === "universities" || !!item.location || item.courses_count !== undefined;
-                  const logoSrc = item.logo?.url || (typeof item.logo === "string" ? item.logo : null) || item.image?.url || (typeof item.image === "string" ? item.image : null);
+                  const logoSrc = item.header_logo?.url || item.header_logo?.path || (typeof item.header_logo === "string" ? item.header_logo : null) || item.logo?.url || (typeof item.logo === "string" ? item.logo : null) || item.image?.url || (typeof item.image === "string" ? item.image : null);
                   const detailUrl = isUni
                     ? (item.url || `/universities/${encodeURIComponent(itemSlug)}`)
                     : (item.url || `/courses?course=${encodeURIComponent(itemSlug)}`);

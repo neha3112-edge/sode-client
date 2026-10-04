@@ -8,7 +8,7 @@ export const isProduction = process.env.NODE_ENV === "production";
 export const isISRActive =
   process.env.NEXT_PUBLIC_ENABLE_ISR !== undefined
     ? process.env.NEXT_PUBLIC_ENABLE_ISR === "true"
-    : true;
+    : isProduction;
 
 /**
  * Generates fetch options for Next.js based on environment:
