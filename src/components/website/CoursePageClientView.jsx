@@ -12,6 +12,7 @@ import { useFormModal } from "@/hooks/useFormModal";
 import { useCompare } from "@/hooks/useCompare";
 import Hero from "@/components/website/Hero";
 import CourseStickyNav from "@/components/website/course/CourseStickyNav";
+import { Video } from "@/components/common/Video";
 import {
   Award,
   Trophy,
@@ -47,6 +48,19 @@ function getYouTubeEmbedUrl(url) {
     return `https://www.youtube-nocookie.com/embed/${match[1]}?rel=0`;
   }
   return url;
+}
+
+function getYouTubeVideoId(url) {
+  if (!url) return null;
+  const match = url.match(
+    /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/))([\w-]{11})/
+  );
+  return match && match[1] ? match[1] : null;
+}
+
+function isDirectVideoFile(url) {
+  if (!url || typeof url !== "string") return false;
+  return /\.(mp4|webm|ogg|mov|m4v)(\?.*)?$/i.test(url) || url.includes("/video/") || url.includes("/uploads/video");
 }
 
 function resolveMediaUrl(media) {
@@ -532,8 +546,13 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
   );
 
   // Check if Hero has any media (video or banner/thumbnail image)
+  const heroVideoUrl = hero.videoUrl || "";
+  const isDirectVideo = isDirectVideoFile(heroVideoUrl);
+  const ytVideoId = !isDirectVideo ? getYouTubeVideoId(heroVideoUrl) : null;
+  const ytThumbnail = ytVideoId ? `https://i.ytimg.com/vi/${ytVideoId}/hqdefault.jpg` : null;
   const heroImageSrc = resolveMediaUrl(hero.videoThumbnail || hero.bannerImage);
-  const hasHeroMedia = Boolean(hero.videoUrl || heroImageSrc);
+  const videoPosterSrc = heroImageSrc || ytThumbnail;
+  const hasHeroMedia = Boolean(heroVideoUrl || heroImageSrc);
 
   // Dynamic Available Sections for Sticky Tabs Navigation (Strictly Based on Active Data)
   const availableSections = useMemo(() => {
@@ -732,14 +751,17 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                   {/* Right Media Column (Order-1 on mobile to show video on top, order-2 on desktop) */}
                   {hasHeroMedia && (
                     <div className="lg:col-span-5 flex justify-center z-10 w-full order-1 lg:order-2">
-                      {hero.videoUrl ? (
-                        <div className="w-full max-w-lg lg:max-w-none rounded-xl overflow-hidden shadow-2xl relative aspect-video bg-[#0c1e30] border border-white/10">
-                          <iframe
-                            src={getYouTubeEmbedUrl(hero.videoUrl)}
+                      {heroVideoUrl ? (
+                        <div className="w-full max-w-lg lg:max-w-none">
+                          <Video
+                            src={heroVideoUrl}
+                            poster={videoPosterSrc}
                             title={pageTitle}
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                            className="w-full h-full border-0"
+                            preload="none"
+                            controls
+                            playsInline
+                            className="w-full h-full object-cover rounded-xl"
+                            containerClassName="relative w-full aspect-video rounded-xl overflow-hidden bg-[#0c1e30] border border-white/10 shadow-2xl"
                           />
                         </div>
                       ) : heroImageSrc ? (

@@ -17,3 +17,4 @@ export { default as SafeHtmlRenderer } from "./SafeHtmlRenderer";
 export { ApprovalUniversityDirectory, AccreditationsView } from "./accreditations";
 export { CareerExpertsSection } from "./counselor";
 export { ToolsView } from "./tools";
+export { Video } from "@/components/common/Video";
