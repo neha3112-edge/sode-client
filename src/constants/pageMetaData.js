@@ -4,6 +4,14 @@ import { getAssetPath } from "@/lib/utils";
 export const SITE_NAME = "SODE";
 export const SITE_URL = "https://sode.co.in";
 
+export function ensureTrailingSlash(url) {
+  if (!url || typeof url !== "string") return url;
+  if (/\.[a-zA-Z0-9]+$/.test(url)) return url;
+  const [base, queryOrHash] = url.split(/([?#].*)/s);
+  const cleanBase = base.endsWith("/") ? base : `${base}/`;
+  return queryOrHash ? `${cleanBase}${queryOrHash}` : cleanBase;
+}
+
 export async function getPageMetaData(path = "/") {
   const cleanPath = path.startsWith("/") ? path : `/${path}`;
   try {
@@ -41,7 +49,7 @@ export async function getPageMetaData(path = "/") {
         metaDescription: description,
         keywords,
         metaKeywords: keywords,
-        canonicalUrl: item.canonicalUrl || item.ogUrl || `${SITE_URL}${cleanPath}`,
+        canonicalUrl: ensureTrailingSlash(item.canonicalUrl || item.ogUrl || `${SITE_URL}${cleanPath}`),
         authorName: item.authorName || "Distance Education School",
         publisher: item.publisher || "Distance Education School",
         publisherUrl: item.publisherUrl || "https://distanceeducationschool.com/",
@@ -75,7 +83,9 @@ export function constructMetadata(pageMeta, fallback = {}) {
   const title = pageMeta?.metaTitle || pageMeta?.title || fallback.title || "";
   const description = pageMeta?.metaDescription || pageMeta?.description || fallback.description || "";
   const keywords = pageMeta?.metaKeywords || pageMeta?.keywords || fallback.keywords || "";
-  const canonical = pageMeta?.canonicalUrl || fallback.canonicalUrl || fallback.canonical || `${SITE_URL}/`;
+  const canonical = ensureTrailingSlash(
+    pageMeta?.canonicalUrl || fallback.canonicalUrl || fallback.canonical || `${SITE_URL}/`
+  );
   const authorName = pageMeta?.authorName || fallback.author || "Distance Education School";
   const publisherName = pageMeta?.publisher || fallback.publisher || "Distance Education School";
   const publisherUrl = pageMeta?.publisherUrl || fallback.publisherUrl || "https://distanceeducationschool.com/";
