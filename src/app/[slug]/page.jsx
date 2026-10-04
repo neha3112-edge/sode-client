@@ -20,28 +20,31 @@ export const revalidate = 600;
 const getPageData = cache(async (slug) => {
   if (!slug) return null;
 
-  // 1. Try Dynamic Listing Page
   try {
-    const dynamicRes = await request.dynamicRead({
-      entity: "dynamic-listing-pages",
-      endPoint: "v1/detail",
-      slug: encodeURIComponent(slug),
-      revalidate: 600,
-    });
+    const [dynamicRes, coursePageRes] = await Promise.all([
+      request
+        .dynamicRead({
+          entity: "dynamic-listing-pages",
+          endPoint: "v1/detail",
+          slug: encodeURIComponent(slug),
+          revalidate: 600,
+        })
+        .catch(() => null),
+      request
+        .dynamicRead({
+          entity: "course-pages",
+          endPoint: "v1/detail",
+          slug: encodeURIComponent(slug),
+          revalidate: 600,
+        })
+        .catch(() => null),
+    ]);
+
     const dynamicPage = dynamicRes?.result || dynamicRes;
     if (dynamicPage && dynamicPage.title) {
       return { type: "dynamic-listing", data: dynamicPage };
     }
-  } catch (err) { }
 
-  // 2. Try Course Page
-  try {
-    const coursePageRes = await request.dynamicRead({
-      entity: "course-pages",
-      endPoint: "v1/detail",
-      slug: encodeURIComponent(slug),
-      revalidate: 600,
-    });
     const coursePage = coursePageRes?.result || coursePageRes;
     if (coursePage && (coursePage.pageTitle || coursePage.title)) {
       return { type: "course-page", data: coursePage };
@@ -122,10 +125,18 @@ export default async function DynamicSlugPage({ params }) {
     return <UniversityLandingView data={landingData} />;
   }
 
-  // Resolve page type + fetch layout data — both in parallel
-  const [resolved, { headerData, footerData, legalPolicies }] = await Promise.all([
+  // Resolve page type + layout data + hero data — ALL concurrently in parallel
+  const [resolved, { headerData, footerData, legalPolicies }, heroRes] = await Promise.all([
     getPageData(slug),
     getLayoutData(),
+    request
+      .dynamicRead({
+        entity: "hero",
+        endPoint: "public/by-slug",
+        slug: encodeURIComponent(slug),
+        revalidate: 300,
+      })
+      .catch(() => null),
   ]);
 
   if (!resolved) notFound();
@@ -145,7 +156,6 @@ export default async function DynamicSlugPage({ params }) {
     </div>
   );
 
-
   // ── CMS pages need title ───────────────────────────────────────────────────
   if (!resolved.data?.title && !resolved.data?.pageTitle) notFound();
 
@@ -155,15 +165,6 @@ export default async function DynamicSlugPage({ params }) {
   }
 
   // ── Course Page ────────────────────────────────────────────────────────────
-  const heroRes = await request
-    .dynamicRead({
-      entity: "hero",
-      endPoint: "public/by-slug",
-      slug: encodeURIComponent(slug),
-      revalidate: 300,
-    })
-    .catch(() => null);
-
   const heroData = heroRes?.result || heroRes || null;
 
   return withLayout(
