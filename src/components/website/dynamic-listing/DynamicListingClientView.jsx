@@ -1199,67 +1199,6 @@ export function DynamicListingClientView({ page, slug }) {
           return (
             <section key="universities-dir" id="universities-list" className="py-10 sm:py-14">
             <Container>
-              {/* Directory Toolbar Header */}
-              <div className="flex flex-wrap items-center justify-between gap-4 mb-8 bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs">
-                <div>
-                  <h2 className="text-lg sm:text-xl font-black text-slate-900 flex items-center gap-2">
-                    <Trophy className="w-5 h-5 text-amber-500" />
-                    <span>
-                      Ranked Universities ({displayedUniversities.length})
-                    </span>
-                  </h2>
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    Official UGC-DEB approved institutions ranked by accreditation
-                    and student satisfaction.
-                  </p>
-                </div>
-
-                {/* Controls: Search & Filter */}
-                <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
-                  <div className="relative flex-1 sm:w-56">
-                    <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                    <input
-                      type="text"
-                      placeholder="Search university..."
-                      value={searchTerm}
-                      onChange={(e) => {
-                        setSearchTerm(e.target.value);
-                        setCurrentPage(1);
-                      }}
-                      className="w-full pl-9 pr-3 py-1.5 rounded-lg border border-slate-200 text-xs bg-slate-50 focus:bg-white focus:outline-hidden focus:border-blue-600 transition-all"
-                    />
-                  </div>
-
-                  <select
-                    value={sortOption}
-                    onChange={(e) => {
-                      setSortOption(e.target.value);
-                      setCurrentPage(1);
-                    }}
-                    className="px-3 py-1.5 rounded-lg border border-slate-200 text-xs bg-slate-50 font-medium text-slate-700 cursor-pointer focus:outline-hidden"
-                  >
-                    <option value="default">Default Order (#1 - #10)</option>
-                    <option value="naac">NAAC Grade (Highest first)</option>
-                    <option value="alpha">Alphabetical (A - Z)</option>
-                  </select>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setFilterNaacOnly(!filterNaacOnly);
-                      setCurrentPage(1);
-                    }}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all cursor-pointer ${
-                      filterNaacOnly
-                        ? "bg-amber-400 text-slate-950 border-amber-500 shadow-xs"
-                        : "bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200"
-                    }`}
-                  >
-                    ⭐ NAAC Accredited Only
-                  </button>
-                </div>
-              </div>
-
               {/* Universities Listing */}
               {displayedUniversities.length > 0 ? (
                 <>
