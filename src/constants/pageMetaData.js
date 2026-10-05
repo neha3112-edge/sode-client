@@ -65,8 +65,7 @@ export async function getPageMetaData(path = "/") {
         twitterImage,
         twitterSite: item.twitterSite || "@distanceeduschl",
         twitterCreator: item.twitterCreator || "@distanceeduschl",
-        robots: item.robots || (item.noIndex ? "noindex, nofollow" : "index, follow"),
-        noIndex: Boolean(item.noIndex),
+        robots: item.robots || "index, follow",
         schemaMarkup: item.schemaMarkup || item.script || null,
         script: item.script || item.schemaMarkup || null,
       };
@@ -104,7 +103,7 @@ export function constructMetadata(pageMeta, fallback = {}) {
   const twitterSite = pageMeta?.twitterSite || "@distanceeduschl";
   const twitterCreator = pageMeta?.twitterCreator || "@distanceeduschl";
 
-  const robots = pageMeta?.robots || (pageMeta?.noIndex ? "noindex, nofollow" : "index, follow");
+  const robots = pageMeta?.robots || fallback.robots || "index, follow";
 
   const metadata = {
     authors: [{ name: authorName }],
