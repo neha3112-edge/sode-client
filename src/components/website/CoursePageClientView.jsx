@@ -208,8 +208,12 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
   const syllabusData = syllabus.semesters || [];
   const universitiesList = topUniversities.universitiesList || [];
   const experienceLevels = careerScope.experienceLevels || [];
-  const jobRolesList = (careerScope.jobRolesMatrix || []).map((j) => ({
-    role: j.role || "",
+  const jobRolesList = (
+    Array.isArray(careerScope.jobRolesMatrix) && careerScope.jobRolesMatrix.length > 0
+      ? careerScope.jobRolesMatrix
+      : careerScope.jobRoles || []
+  ).map((j) => ({
+    role: j.role || j.title || "",
     desc: j.description || j.desc || "",
     salary: j.salaryRange || j.salary || "",
   }));
@@ -260,76 +264,25 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
     return validList;
   }, [hero?.partnerLogos, heroData?.partnerLogos, universitiesList, page?.offeringUniversities]);
 
-  // ── Action Buttons for Hero Section (Database Driven with Multiple Layers of Fallback) ──
+  // ── Fixed Action Buttons for Hero Section (Standardized Across Course Pages) ──
   const heroButtons = useMemo(() => {
-    const rawButtons =
-      (Array.isArray(hero.buttons) && hero.buttons.length > 0 && hero.buttons) ||
-      (Array.isArray(heroData?.buttons) && heroData.buttons.length > 0 && heroData.buttons) ||
-      [];
-
-    const activeButtons = rawButtons.filter((b) => b?.enabled !== false && (b?.text || b?.title));
-    if (activeButtons.length > 0) {
-      return activeButtons.map((b) => ({
-        text: b.text || b.title || "",
-        url: b.url || b.link || "#",
-        variant: b.variant || "green",
-        icon: b.icon || "none",
-        isModal: b.isModal === true || b.is_modal === true,
-      }));
-    }
-
-    // Fallbacks if buttons array is empty
-    const list = [];
-    if (hero.counselingBtnText || hero.primaryButtonText) {
-      list.push({
-        text: hero.counselingBtnText || hero.primaryButtonText || "Book 1:1 Counseling",
-        url: hero.primaryButtonUrl || "#counseling-modal",
-        variant: "green",
+    return [
+      {
+        text: "Book 1:1 Counseling",
+        url: "#counseling-modal",
+        variant: "amber",
         icon: "counseling",
         isModal: true,
-      });
-    }
-    if (hero.podcastUrl || hero.secondaryButtonText) {
-      list.push({
-        text: hero.podcastTitle || hero.secondaryButtonText || "Listen Podcast",
-        url: hero.podcastUrl || hero.secondaryButtonUrl || "#podcast",
-        variant: "amber",
+      },
+      {
+        text: "Listen Podcast",
+        url: "#podcast",
+        variant: "outline",
         icon: "podcast",
         isModal: false,
-      });
-    }
-
-    if (list.length === 0) {
-      return [
-        {
-          text: "Book 1:1 Counseling",
-          url: "#counseling-modal",
-          variant: "green",
-          icon: "counseling",
-          isModal: true,
-        },
-        {
-          text: "Listen Podcast",
-          url: "#podcast",
-          variant: "amber",
-          icon: "podcast",
-          isModal: false,
-        },
-      ];
-    }
-
-    return list;
-  }, [
-    hero.buttons,
-    heroData?.buttons,
-    hero.counselingBtnText,
-    hero.primaryButtonText,
-    hero.primaryButtonUrl,
-    hero.podcastUrl,
-    hero.podcastTitle,
-    hero.secondaryButtonText,
-    hero.secondaryButtonUrl,
-  ]);
+      },
+    ];
+  }, []);
 
   // ── Ant Design Table Memoized Configurations (100% Mobile Responsive, No Scrolling) ──
   const overviewTableColumns = useMemo(
@@ -1132,30 +1085,18 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                     {overviewDataSource.length > 5 && (
                       <div className="flex items-center justify-center gap-3 mt-5">
                         {visibleOverviewCount < overviewDataSource.length ? (
-                          <>
-                            <button
-                              type="button"
-                              onClick={() =>
-                                setVisibleOverviewCount((prev) =>
-                                  Math.min(prev + 5, overviewDataSource.length)
-                                )
-                              }
-                              className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
-                            >
-                              <span>View More</span>
-                              <ChevronDown className="w-3.5 h-3.5" />
-                            </button>
-                            {visibleOverviewCount > 5 && (
-                              <button
-                                type="button"
-                                onClick={() => setVisibleOverviewCount(5)}
-                                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gray-100 text-slate-600 hover:bg-gray-200 transition-colors text-xs font-semibold border border-gray-200 cursor-pointer active:scale-95"
-                              >
-                                <span>View Less</span>
-                                <ChevronDown className="w-3.5 h-3.5 rotate-180" />
-                              </button>
-                            )}
-                          </>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setVisibleOverviewCount((prev) =>
+                                Math.min(prev + 5, overviewDataSource.length)
+                              )
+                            }
+                            className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
+                          >
+                            <span>View More</span>
+                            <ChevronDown className="w-3.5 h-3.5" />
+                          </button>
                         ) : (
                           <button
                             type="button"
@@ -1398,30 +1339,18 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                 {modeComparisonDataSource.length > 5 && (
                   <div className="flex items-center justify-center gap-3 mt-5">
                     {visibleComparisonCount < modeComparisonDataSource.length ? (
-                      <>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setVisibleComparisonCount((prev) =>
-                              Math.min(prev + 5, modeComparisonDataSource.length)
-                            )
-                          }
-                          className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
-                        >
-                          <span>View More</span>
-                          <ChevronDown className="w-3.5 h-3.5" />
-                        </button>
-                        {visibleComparisonCount > 5 && (
-                          <button
-                            type="button"
-                            onClick={() => setVisibleComparisonCount(5)}
-                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gray-100 text-slate-600 hover:bg-gray-200 transition-colors text-xs font-semibold border border-gray-200 cursor-pointer active:scale-95"
-                          >
-                            <span>View Less</span>
-                            <ChevronDown className="w-3.5 h-3.5 rotate-180" />
-                          </button>
-                        )}
-                      </>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setVisibleComparisonCount((prev) =>
+                            Math.min(prev + 5, modeComparisonDataSource.length)
+                          )
+                        }
+                        className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
+                      >
+                        <span>View More</span>
+                        <ChevronDown className="w-3.5 h-3.5" />
+                      </button>
                     ) : (
                       <button
                         type="button"
@@ -1535,30 +1464,18 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                 {syllabusDataSource.length > 5 && (
                   <div className="flex items-center justify-center gap-3 mt-5">
                     {visibleSyllabusCount < syllabusDataSource.length ? (
-                      <>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setVisibleSyllabusCount((prev) =>
-                              Math.min(prev + 5, syllabusDataSource.length)
-                            )
-                          }
-                          className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
-                        >
-                          <span>View More</span>
-                          <ChevronDown className="w-3.5 h-3.5" />
-                        </button>
-                        {visibleSyllabusCount > 5 && (
-                          <button
-                            type="button"
-                            onClick={() => setVisibleSyllabusCount(5)}
-                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gray-100 text-slate-600 hover:bg-gray-200 transition-colors text-xs font-semibold border border-gray-200 cursor-pointer active:scale-95"
-                          >
-                            <span>View Less</span>
-                            <ChevronDown className="w-3.5 h-3.5 rotate-180" />
-                          </button>
-                        )}
-                      </>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setVisibleSyllabusCount((prev) =>
+                            Math.min(prev + 5, syllabusDataSource.length)
+                          )
+                        }
+                        className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
+                      >
+                        <span>View More</span>
+                        <ChevronDown className="w-3.5 h-3.5" />
+                      </button>
                     ) : (
                       <button
                         type="button"
@@ -1724,30 +1641,18 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                 {universitiesList.length > 5 && (
                   <div className="flex items-center justify-center gap-3 mt-6">
                     {visibleUnisCount < universitiesList.length ? (
-                      <>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setVisibleUnisCount((prev) =>
-                              Math.min(prev + 5, universitiesList.length)
-                            )
-                          }
-                          className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
-                        >
-                          <span>View More</span>
-                          <ChevronDown className="w-3.5 h-3.5" />
-                        </button>
-                        {visibleUnisCount > 5 && (
-                          <button
-                            type="button"
-                            onClick={() => setVisibleUnisCount(5)}
-                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gray-100 text-slate-600 hover:bg-gray-200 transition-colors text-xs font-semibold border border-gray-200 cursor-pointer active:scale-95"
-                          >
-                            <span>View Less</span>
-                            <ChevronDown className="w-3.5 h-3.5 rotate-180" />
-                          </button>
-                        )}
-                      </>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setVisibleUnisCount((prev) =>
+                            Math.min(prev + 5, universitiesList.length)
+                          )
+                        }
+                        className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
+                      >
+                        <span>View More</span>
+                        <ChevronDown className="w-3.5 h-3.5" />
+                      </button>
                     ) : (
                       <button
                         type="button"
@@ -1803,30 +1708,18 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                       {careerLevelDataSource.length > 5 && (
                         <div className="flex items-center justify-center gap-3 -mt-2 mb-6">
                           {visibleCareerLevelCount < careerLevelDataSource.length ? (
-                            <>
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  setVisibleCareerLevelCount((prev) =>
-                                    Math.min(prev + 5, careerLevelDataSource.length)
-                                  )
-                                }
-                                className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
-                              >
-                                <span>View More</span>
-                                <ChevronDown className="w-3.5 h-3.5" />
-                              </button>
-                              {visibleCareerLevelCount > 5 && (
-                                <button
-                                  type="button"
-                                  onClick={() => setVisibleCareerLevelCount(5)}
-                                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gray-100 text-slate-600 hover:bg-gray-200 transition-colors text-xs font-semibold border border-gray-200 cursor-pointer active:scale-95"
-                                >
-                                  <span>View Less</span>
-                                  <ChevronDown className="w-3.5 h-3.5 rotate-180" />
-                                </button>
-                              )}
-                            </>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setVisibleCareerLevelCount((prev) =>
+                                  Math.min(prev + 5, careerLevelDataSource.length)
+                                )
+                              }
+                              className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
+                            >
+                              <span>View More</span>
+                              <ChevronDown className="w-3.5 h-3.5" />
+                            </button>
                           ) : (
                             <button
                               type="button"
@@ -1867,30 +1760,18 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                       {careerJobRoleDataSource.length > 5 && (
                         <div className="flex items-center justify-center gap-3 mt-6">
                           {visibleJobRolesCount < careerJobRoleDataSource.length ? (
-                            <>
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  setVisibleJobRolesCount((prev) =>
-                                    Math.min(prev + 5, careerJobRoleDataSource.length)
-                                  )
-                                }
-                                className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
-                              >
-                                <span>View More</span>
-                                <ChevronDown className="w-3.5 h-3.5" />
-                              </button>
-                              {visibleJobRolesCount > 5 && (
-                                <button
-                                  type="button"
-                                  onClick={() => setVisibleJobRolesCount(5)}
-                                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gray-100 text-slate-600 hover:bg-gray-200 transition-colors text-xs font-semibold border border-gray-200 cursor-pointer active:scale-95"
-                                >
-                                  <span>View Less</span>
-                                  <ChevronDown className="w-3.5 h-3.5 rotate-180" />
-                                </button>
-                              )}
-                            </>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setVisibleJobRolesCount((prev) =>
+                                  Math.min(prev + 5, careerJobRoleDataSource.length)
+                                )
+                              }
+                              className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
+                            >
+                              <span>View More</span>
+                              <ChevronDown className="w-3.5 h-3.5" />
+                            </button>
                           ) : (
                             <button
                               type="button"

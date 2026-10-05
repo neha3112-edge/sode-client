@@ -149,30 +149,18 @@ export default function UniversityPeerUniversities({
       {topUniversities.length > 5 && (
         <div className="flex items-center justify-center gap-3 mt-6">
           {visibleTopUnis < topUniversities.length ? (
-            <>
-              <button
-                type="button"
-                onClick={() =>
-                  setVisibleTopUnis((prev) =>
-                    Math.min(prev + 5, topUniversities.length)
-                  )
-                }
-                className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
-              >
-                <span>View More</span>
-                <ChevronDown className="w-3.5 h-3.5" />
-              </button>
-              {visibleTopUnis > 5 && (
-                <button
-                  type="button"
-                  onClick={() => setVisibleTopUnis(5)}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gray-100 text-slate-600 hover:bg-gray-200 transition-colors text-xs font-semibold border border-gray-200 cursor-pointer active:scale-95"
-                >
-                  <span>View Less</span>
-                  <ChevronDown className="w-3.5 h-3.5 rotate-180" />
-                </button>
-              )}
-            </>
+            <button
+              type="button"
+              onClick={() =>
+                setVisibleTopUnis((prev) =>
+                  Math.min(prev + 5, topUniversities.length)
+                )
+              }
+              className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
+            >
+              <span>View More</span>
+              <ChevronDown className="w-3.5 h-3.5" />
+            </button>
           ) : (
             <button
               type="button"

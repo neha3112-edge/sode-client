@@ -21,6 +21,7 @@ import {
   CreditCard,
   Plus,
   Minus,
+  UserCheck,
 } from "lucide-react";
 
 function getYouTubeEmbedUrl(url) {
@@ -402,6 +403,7 @@ function RankedUniversityCard({ item, index, features }) {
             {eligibilityText && (
               <div>
                 <div className="font-bold text-slate-900 flex items-center gap-1 mb-0.5">
+                  <UserCheck className="w-3.5 h-3.5 text-slate-800 shrink-0" />
                   <span>Eligibility :</span>
                 </div>
                 <div className="text-slate-600 text-xs font-medium line-clamp-1" title={eligibilityText}>
