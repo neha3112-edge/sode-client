@@ -45,7 +45,7 @@ function getMediaUrl(media) {
 function DynamicHero({ hero, pageTitle, subtitle, targetCourseName }) {
   const { openFormModal } = useFormModal();
 
-  if (!hero || hero.enabled === false || hero.heroType === "none") return null;
+  if (!hero || hero.enabled === false) return null;
 
   if (hero.heroType === "hero_ref" && hero.heroRef) {
     return <Hero initialHeroData={hero.heroRef} />;
@@ -66,7 +66,7 @@ function DynamicHero({ hero, pageTitle, subtitle, targetCourseName }) {
 
   const title = hero.title || pageTitle || "";
   const highlight = hero.titleHighlight || "";
-  const desc = hero.description || subtitle || "";
+  const desc = hero.subtitle || hero.description || subtitle || "";
 
   const hasHeroMedia = Boolean(embedUrl || bannerUrl);
 
@@ -110,11 +110,15 @@ function DynamicHero({ hero, pageTitle, subtitle, targetCourseName }) {
               className={`${hasHeroMedia ? "lg:col-span-7" : "lg:col-span-12"
                 } flex flex-col items-center text-center lg:items-start lg:text-left z-10 order-2 lg:order-1`}
             >
-              {hero.badgeText && (
+              {hero.shortTitle ? (
+                <p className="text-slate-300 text-sm sm:text-base font-normal tracking-wide mb-1.5 text-center lg:text-left">
+                  {hero.shortTitle.startsWith("(") ? hero.shortTitle : `(${hero.shortTitle})`}
+                </p>
+              ) : hero.badgeText ? (
                 <p className="text-slate-300 text-sm sm:text-base font-normal tracking-wide mb-1.5 text-center lg:text-left">
                   {hero.badgeText}
                 </p>
-              )}
+              ) : null}
 
               <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-black text-white tracking-tight leading-tight mb-4 text-center lg:text-left">
                 {title}{" "}
