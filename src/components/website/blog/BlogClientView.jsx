@@ -295,7 +295,7 @@ function HeroSection({ hero }) {
               const url = u.coursePageSlug
                 ? u.coursePageSlug.includes("/")
                   ? `/universities/${u.coursePageSlug}`
-                  : `/courses/${u.coursePageSlug}`
+                  : `/${u.coursePageSlug}`
                 : u.slug
                 ? `/universities/${u.slug}`
                 : null;

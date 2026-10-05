@@ -40,21 +40,6 @@ export default async function sitemap() {
     console.error("Error fetching course pages for sitemap:", err);
   }
 
-  try {
-    const coursesRes = await request.dynamicList({
-      entity: "courses",
-      endPoint: "v1/list",
-      options: { items: 1000 },
-      revalidate: 3600,
-    });
-    courses = Array.isArray(coursesRes?.result)
-      ? coursesRes.result
-      : Array.isArray(coursesRes)
-      ? coursesRes
-      : [];
-  } catch (err) {
-    console.error("Error fetching courses for sitemap:", err);
-  }
 
   try {
     const uniRes = await request.dynamicList({
@@ -97,15 +82,6 @@ export default async function sitemap() {
       priority: 0.95,
     }));
 
-  const courseUrls = (courses || [])
-    .filter((c) => c && c.slug)
-    .map((course) => ({
-      url: `${baseUrl}/courses/${course.slug}/`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.9,
-    }));
-
   const universityUrls = (universities || [])
     .filter((u) => u && u.slug)
     .map((uni) => ({
@@ -124,5 +100,5 @@ export default async function sitemap() {
       priority: 0.7,
     }));
 
-  return [...staticPages, ...coursePageUrls, ...courseUrls, ...universityUrls, ...blogUrls];
+  return [...staticPages, ...coursePageUrls, ...universityUrls, ...blogUrls];
 }

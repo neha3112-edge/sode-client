@@ -270,7 +270,7 @@ function DynamicHero({ hero, pageTitle, subtitle, targetCourseName }) {
                 if (!imageSrc) return null;
 
                 const url = uni.courseSlug
-                  ? (uni.courseSlug.includes("/") ? `/universities/${uni.courseSlug}` : `/courses/${uni.courseSlug}`)
+                  ? (uni.courseSlug.includes("/") ? `/universities/${uni.courseSlug}` : `/${uni.courseSlug}`)
                   : uni.slug
                     ? `/universities/${uni.slug}`
                     : null;
@@ -330,7 +330,7 @@ function RankedUniversityCard({ item, index, features }) {
   const eligibilityText = item.eligibility;
   const advantageText = item.highlightReason || item.advantage;
   const cardLink = item.courseSlug
-    ? (item.courseSlug.includes("/") ? `/universities/${item.courseSlug}` : `/courses/${item.courseSlug}`)
+    ? (item.courseSlug.includes("/") ? `/universities/${item.courseSlug}` : `/${item.courseSlug}`)
     : `/universities/${slug}`;
   const rawDescription = item.description || uni.description || "";
   const plainDescription = rawDescription

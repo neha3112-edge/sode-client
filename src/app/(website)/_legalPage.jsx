@@ -2,7 +2,7 @@ import { cache } from "react";
 import { notFound } from "next/navigation";
 import { request } from "@/services/request";
 import LegalPolicyView from "@/components/website/legal/LegalPolicyView";
-import { SITE_NAME, SITE_URL } from "@/constants/pageMetaData";
+import { SITE_NAME, SITE_URL, getPageMetaData, constructMetadata } from "@/constants/pageMetaData";
 
 export const revalidate = 600;
 
@@ -30,17 +30,23 @@ export const getPolicyData = cache(async (slug) => {
 });
 
 /**
- * 🏷️ Dynamic SEO Metadata generated strictly from Database Document
+ * 🏷️ Dynamic SEO Metadata generated strictly from Database Document / PageMeta
  */
 export async function createPolicyMetadata(slug) {
-  const policy = await getPolicyData(slug);
+  const [pageMeta, policy] = await Promise.all([
+    getPageMetaData(`/${slug}`),
+    getPolicyData(slug),
+  ]);
 
-  const title = policy?.meta_title || policy?.title
+  if (pageMeta && (pageMeta.title || pageMeta.metaTitle)) {
+    return constructMetadata(pageMeta, `/${slug}`);
+  }
+
+  const title = policy?.title
     ? `${policy.title} | ${SITE_NAME}`
     : `Legal Policy | ${SITE_NAME}`;
 
   const description =
-    policy?.meta_description ||
     policy?.summary?.replace(/<[^>]+>/g, "").slice(0, 160) ||
     `Official ${policy?.title || "Legal Policy"} of ${SITE_NAME}.`;
 

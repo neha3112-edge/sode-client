@@ -309,7 +309,7 @@ export function Hero({ initialHeroData = null }) {
               ...universities.map((u, i) => {
                 const logoRaw = u.image?.url || u.image?.path || (typeof u.image === "string" ? u.image : null);
                 const url = u.coursePageSlug
-                  ? (u.coursePageSlug.includes("/") ? `/universities/${u.coursePageSlug}` : `/courses/${u.coursePageSlug}`)
+                  ? (u.coursePageSlug.includes("/") ? `/universities/${u.coursePageSlug}` : `/${u.coursePageSlug}`)
                   : u.slug
                     ? `/universities/${u.slug}`
                     : null;
