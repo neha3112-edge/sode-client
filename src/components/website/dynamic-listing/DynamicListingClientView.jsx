@@ -96,6 +96,7 @@ function DynamicHero({ hero, pageTitle, subtitle, targetCourseName }) {
               alt=""
               fill
               priority
+              loading="eager"
               unoptimized
               className="object-cover object-center opacity-30"
             />
@@ -218,6 +219,8 @@ function DynamicHero({ hero, pageTitle, subtitle, targetCourseName }) {
                       src={getAssetPath(bannerUrl)}
                       alt={title}
                       fill
+                      priority
+                      loading="eager"
                       className="object-cover object-center group-hover:scale-105 transition-transform duration-300"
                       unoptimized
                     />
@@ -489,6 +492,8 @@ function RankedUniversityCard({ item, index, features }) {
               src={getAssetPath(desktopImageUrl)}
               alt={name}
               fill
+              priority={index < 2}
+              loading={index < 2 ? "eager" : "lazy"}
               sizes="(min-width: 768px) 420px, 1px"
               className="object-cover object-center hidden md:block"
               unoptimized
@@ -500,6 +505,8 @@ function RankedUniversityCard({ item, index, features }) {
               src={getAssetPath(mobileBannerUrl)}
               alt={name}
               fill
+              priority={index < 2}
+              loading={index < 2 ? "eager" : "lazy"}
               sizes="(max-width: 767px) 100vw, 1px"
               className="object-cover object-center block md:hidden"
               unoptimized
@@ -512,6 +519,8 @@ function RankedUniversityCard({ item, index, features }) {
                   src={getAssetPath(logoUrl)}
                   alt={name}
                   fill
+                  priority={index < 2}
+                  loading={index < 2 ? "eager" : "lazy"}
                   sizes="(max-width: 640px) 40px, 56px"
                   className="object-contain"
                   unoptimized
