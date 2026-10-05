@@ -69,6 +69,9 @@ export default function LandingNavbar({
     else if (onOpenApply) onOpenApply();
   };
 
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+
+
   const isDesNavbar = brand.navbarVariant === "des" || brand.slug === "galgotias";
 
   if (isDesNavbar) {
@@ -183,8 +186,34 @@ export default function LandingNavbar({
           )}
         </div>
 
-        {/* Right: Scholarship Coupon Code Button or Admission Badge */}
-        <div className="shrink-0 pl-2 mr-1.5 sm:mr-3 flex items-center">
+        {/* Right: Navigation Links + Scholarship Coupon Code Button or Admission Badge */}
+        <div className="shrink-0 pl-2 mr-1.5 sm:mr-3 flex items-center gap-4 sm:gap-6 lg:gap-8">
+          {brand.navLinks && brand.navLinks.length > 0 && (
+            <ul className="hidden md:flex items-center gap-5 lg:gap-8 header_menu_list list-none m-0 p-0">
+              {brand.navLinks.map((link, idx) => (
+                <li key={idx}>
+                  <a
+                    href={link.href}
+                    onClick={(e) => {
+                      if (link.href?.startsWith("#")) {
+                        e.preventDefault();
+                        const target = document.getElementById(link.href.slice(1));
+                        if (target) {
+                          const navHeight = 70;
+                          const targetY = target.getBoundingClientRect().top + window.pageYOffset - navHeight;
+                          window.scrollTo({ top: targetY, behavior: "smooth" });
+                        }
+                      }
+                    }}
+                    className="text-[#111111] hover:text-[#0055b8] font-semibold text-[14px] lg:text-[15.5px] transition-colors"
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
+
           {isCouponVisible ? (
             <div
               className={
@@ -239,16 +268,64 @@ export default function LandingNavbar({
                 </span>
               </button>
             </div>
-          ) : (
+          ) : !brand.hideNavbarBadge && badgeText ? (
             <span
               className="inline-block text-[12px] sm:text-base md:text-xl lg:text-2xl font-bold tracking-tight text-right select-none"
               style={{ color: primaryColor || "#08417b" }}
             >
               {badgeText}
             </span>
+          ) : null}
+
+          {/* Mobile Menu Toggle button when navLinks exist */}
+          {brand.navLinks && brand.navLinks.length > 0 && (
+            <button
+              type="button"
+              className="md:hidden p-2 rounded-md text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+              onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
+              aria-label="Toggle menu"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {isMobileNavOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
           )}
         </div>
       </LandingContainer>
+
+      {/* Mobile Menu Dropdown */}
+      {brand.navLinks && brand.navLinks.length > 0 && isMobileNavOpen && (
+        <div className="md:hidden bg-white border-t border-slate-200 px-4 py-3 shadow-md">
+          <ul className="flex flex-col gap-2.5 list-none m-0 p-0">
+            {brand.navLinks.map((link, idx) => (
+              <li key={idx}>
+                <a
+                  href={link.href}
+                  onClick={(e) => {
+                    setIsMobileNavOpen(false);
+                    if (link.href?.startsWith("#")) {
+                      e.preventDefault();
+                      const target = document.getElementById(link.href.slice(1));
+                      if (target) {
+                        const navHeight = 70;
+                        const targetY = target.getBoundingClientRect().top + window.pageYOffset - navHeight;
+                        window.scrollTo({ top: targetY, behavior: "smooth" });
+                      }
+                    }
+                  }}
+                  className="block py-1.5 text-[15px] font-semibold text-slate-800 hover:text-[#0055b8]"
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </header>
   );
 }

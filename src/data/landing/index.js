@@ -13,6 +13,7 @@ import { esgciData } from "./esgci";
 import { rushfordData } from "./rushford";
 import { liverpoolData } from "./liverpool";
 import { edgewoodData } from "./edgewood";
+import { iimData } from "./iim";
 
 export const LANDING_REGISTRY = {
   amity: amityData,
@@ -49,6 +50,10 @@ export const LANDING_REGISTRY = {
   "edgewood-university": edgewoodData,
   "edgewood-online": edgewoodData,
   "edgewood-college": edgewoodData,
+  iim: iimData,
+  "iim-kozhikode": iimData,
+  "iim-hr": iimData,
+  iimk: iimData,
 };
 
 export function getLandingData(slug) {
@@ -73,4 +78,5 @@ export {
   rushfordData,
   liverpoolData,
   edgewoodData,
+  iimData,
 };

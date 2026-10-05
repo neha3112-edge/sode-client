@@ -69,6 +69,37 @@ export default function LandingStats({ stats = [], brand = {} }) {
     !isRushfordLayout &&
     (brand.statsLayout === "liverpool" || brand.slug === "liverpool");
 
+  const isIimLayout =
+    brand.statsLayout === "iim" || brand.slug === "iim";
+
+  // ==========================================
+  // IIM Kozhikode Layout: Yellow/Gold Ribbon (#FFE5B2) with 4 Achievement Items
+  // ==========================================
+  if (isIimLayout) {
+    return (
+      <div id="stats" className="achievement">
+        <div className="container">
+          <div className="ach">
+            {stats.map((st, idx) => (
+              <div key={idx} className="ac1">
+                {st.icon && (
+                  <img
+                    src={st.icon}
+                    alt={st.label}
+                  />
+                )}
+                <div>
+                  <h3>{st.number || st.value}</h3>
+                  <p>{st.label}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // ==========================================
   // Liverpool Layout: Grey Box with 4 Column Stats (#online-mba-details)
   // ==========================================

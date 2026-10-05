@@ -25,7 +25,75 @@ export default function LandingHero({
 
   const phoneText = brand.phoneDisplay || brand.phone || "+91 7065 7777 55";
   const isLpu = brand.slug === "lpu" || brand.shortName === "LPU" || brand.name === "LPU Online" || hero.isLpuStyle;
-  const isGalgotias = brand.slug === "galgotias" || hero.style === "galgotias" || brand.heroStyle === "galgotias";
+  const isIim = brand.slug === "iim" || hero.style === "iim";
+  const isGalgotias =
+    brand.slug === "galgotias" ||
+    brand.shortName === "Galgotias" ||
+    brand.heroStyle === "galgotias" ||
+    hero.isGalgotiasStyle;
+
+  // Dedicated IIM Kozhikode Hero
+  if (isIim) {
+    return (
+      <div id="hero-section">
+        <div className="container">
+          <div className="banner">
+            <div className="banner-info">
+              <div className="un_image_container">
+                <a href={brand.officialUrl || "https://distanceeducationschool.com/iim/"}>
+                  <img src="/assets/iim/upgrade_iim_logo.png" alt="IIM Kozhikode via upGrad" />
+                </a>
+              </div>
+
+              <h1>HRM Analytics<br />Online Certification</h1>
+
+              <div className="new_banner_heading">
+                By <span className="underline_text">IIM Kozhikode</span> via <span className="underline_text">Upgrade</span>
+              </div>
+
+              <p className="banner_content">
+                Earn a 6-month professional certificate from IIM Kozhikode. This HR Analytics course covers recruitment, job posting, and workforce management via case studies &amp; real-world projects.
+              </p>
+              <br />
+              <p className="t1">🕒 6 Months</p>
+              <br />
+              <button
+                type="button"
+                onClick={() => onOpenBrochure?.()}
+                className="downloadBrochureBtn"
+                data-brochure="/assets/iim/main_brochure.pdf"
+              >
+                Get Brochure <Download className="inline-block w-4 h-4 ml-1.5 stroke-[2.5]" />
+              </button>
+            </div>
+
+            <div className="col-md-3 custom_img_section" style={{ padding: "0px" }}>
+              <img src="/assets/iim/iim_mobile_new_img.png" alt="IIM Kozhikode" />
+            </div>
+
+            <div className="banner-form w-full sm:w-[350px] lg:w-[340px] xl:w-[360px] shrink-0 flex justify-center lg:justify-end">
+              <LandingLeadForm
+                brand={brand}
+                courses={courses}
+                courseList={courses}
+                universityName={brand.name}
+                variant="white-card"
+                title={brand.enquireTitle || "Admission Open"}
+                subtitle={brand.enquireSubtitle || "Academic Experts will assist you!"}
+                primaryColor={brand.primaryColor || "#17479e"}
+                accentColor={brand.accentColor || "#0cb1ef"}
+                buttonText="Submit"
+                phoneText={phoneText}
+                phoneHref={brand.phone}
+                showPhoneBadge={true}
+                onOpenDisclaimer={onOpenDisclaimer}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // 1. Galgotias Dedicated Hero
   if (isGalgotias) {
@@ -335,6 +403,29 @@ export default function LandingHero({
           }`}
           style={hero.contentStyle}
         >
+          {/* Top Logo / Badge */}
+          {(hero.logo || hero.welcomeText || brand.heroLogo) && (
+            <div
+              className={`mb-2 sm:mb-3 ${hero.logoContainerClassName || ""}`}
+              style={hero.logoContainerStyle}
+            >
+              {React.isValidElement(hero.welcomeText) ? (
+                hero.welcomeText
+              ) : (
+                <div className={`relative ${hero.logoWrapperClassName || "w-44 sm:w-56 h-11 sm:h-13"}`}>
+                  <Image
+                    src={hero.logo || brand.heroLogo || hero.welcomeText}
+                    alt={brand.name || "University"}
+                    fill
+                    priority
+                    className="object-contain object-left"
+                    sizes="(max-width: 640px) 180px, 240px"
+                  />
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Hashtag */}
           {(hero.hashtagText || brand.hashtag) && (
             <p

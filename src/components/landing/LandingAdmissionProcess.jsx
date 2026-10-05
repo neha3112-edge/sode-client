@@ -100,6 +100,36 @@ export default function LandingAdmissionProcess({
 }) {
   if (brand.hideAdmissionProcess) return null;
 
+  // IIM Kozhikode Dedicated Layout
+  if (brand.slug === "iim" || brand.admissionLayout === "iim") {
+    const steps = [
+      { num: 1, title: "Submit Form", desc: "Fill in and submit your application form online", colorClass: "orange" },
+      { num: 2, title: "Expert's Counseling", desc: "You will receive a call from our expert counselor", colorClass: "blue" },
+      { num: 3, title: "Choose University", desc: "Select the course & university according to your interest", colorClass: "pink" },
+      { num: 4, title: "Online Payment", desc: "You need to make a smooth online fee submission", colorClass: "green" },
+      { num: 5, title: "Document Submit", desc: "You need to upload all the required verified documents.", colorClass: "purple" },
+      { num: 6, title: "Admission Confirm", desc: "Get Confirmation on your Email & Whatsapp", colorClass: "orange" },
+    ];
+    return (
+      <section className="apply-section" id="how-to-apply">
+        <h2>{brand.admissionTitle || "How to Apply for IIM Kozhikode University Online Courses"}</h2>
+        <p className="section-desc">
+          {brand.admissionSubtitle || "Students can easily enrol in IIM Kozhikode University Online courses. Candidates can conveniently apply by selecting their desired program. Follow these steps to secure admission in the university."}
+        </p>
+
+        <div className="steps-wrapper">
+          {steps.map((st) => (
+            <div key={st.num} className={`step-card ${st.colorClass}`}>
+              <div className="step-number">{st.num}</div>
+              <h4>{st.title}</h4>
+              <p>{st.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  }
+
   // Active steps with fallback to global 6 steps
   const rawSteps =
     admissionSteps && admissionSteps.length > 0

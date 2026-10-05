@@ -394,3 +394,128 @@ body:has(.landing-page-root)>div>main {
   z-index: 1 !important;
   display: block !important;
 }
+
+/* =========================================================
+   IIM KOZHIKODE LANDING PAGE SPECIFIC STYLES
+========================================================= */
+.landing-page--iim {
+  font-family: 'Montserrat', sans-serif !important;
+  scroll-behavior: smooth;
+  color: #111111;
+  background-color: #ffffff;
+}
+
+
+
+.landing-page--iim .header_menu_list li a {
+  font-family: 'Montserrat', sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 15px !important;
+  color: #111111 !important;
+  text-decoration: none !important;
+  transition: color 0.2s ease !important;
+}
+
+.landing-page--iim .header_menu_list li a:hover {
+  color: #17479E !important;
+}
+
+.landing-page--iim main {
+  margin: 0 !important;
+  margin-top: 0 !important;
+  padding: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* Hero Section */
+.landing-page--iim #hero,
+.landing-page--iim #hero-section {
+  margin: 0 !important;
+  margin-top: 0 !important;
+  border-top: 0 !important;
+  background-image: url(/assets/iim/iim_desktop_new_img.png) !important;
+  background-position: center top !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+  padding: 24px 15px 35px 15px !important;
+  min-height: auto !important;
+  position: relative !important;
+}
+
+@media (max-width: 768px) {
+  .landing-page--iim #hero,
+  .landing-page--iim #hero-section {
+    background-image: url(/assets/iim/new_iim_mobile_bg.png) !important;
+    background-position: center top !important;
+    padding: 18px 10px !important;
+    margin: 0 !important;
+    margin-top: 0 !important;
+  }
+}
+
+.landing-page--iim #hero > div.absolute {
+  display: none !important;
+}
+
+.landing-page--iim #hero h1 {
+  font-family: 'Anton', sans-serif !important;
+  font-size: 52px !important;
+  line-height: 1.05 !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.5px !important;
+  color: #17479E !important;
+  margin: 8px 0 !important;
+}
+
+@media (max-width: 640px) {
+  .landing-page--iim #hero h1 {
+    font-size: 38px !important;
+  }
+}
+
+/* Buttons & Theming */
+.landing-page--iim .downloadBrochureBtn {
+  background-color: #0CB1EF !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border-radius: 20px !important;
+  transition: all 0.2s ease !important;
+}
+
+.landing-page--iim .downloadBrochureBtn:hover {
+  background-color: #099cd3 !important;
+}
+
+/* Tools cards text color & layout */
+.landing-page--iim #courses .c1 p,
+.landing-page--iim .c1 p,
+.landing-page--iim .c1 .c1-desc {
+  background-color: #17479E !important;
+  color: #ffffff !important;
+  text-align: left !important;
+  line-height: 1.55 !important;
+  padding: 16px 18px 20px 18px !important;
+}
+
+.landing-page--iim #courses .c1 p b,
+.landing-page--iim .c1 p b,
+.landing-page--iim .c1 .c1-desc b,
+.landing-page--iim #courses .c1 p span,
+.landing-page--iim .c1 p span,
+.landing-page--iim .c1 .c1-desc span {
+  color: #ffffff !important;
+  display: inline !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: transparent !important;
+}
+
+/* Compare section */
+.landing-page--iim .compare_box {
+  background-color: #17479E !important;
+}
+
+/* Footer bottom */
+.landing-page--iim .mini-footer-bottom {
+  background-color: #17479E !important;
+}

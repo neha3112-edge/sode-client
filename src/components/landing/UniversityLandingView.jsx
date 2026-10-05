@@ -184,13 +184,13 @@ export default function UniversityLandingView({ data = {} }) {
   const fontClass = isMontserrat
     ? "font-montserrat landing-page--font-montserrat"
     : isPoppins
-    ? "font-poppins landing-page--font-poppins"
-    : "font-roboto landing-page--font-roboto";
+      ? "font-poppins landing-page--font-poppins"
+      : "font-roboto landing-page--font-roboto";
   const activeFontFamily = isMontserrat
     ? "'Montserrat', var(--font-montserrat), sans-serif"
     : isPoppins
-    ? "'Poppins', var(--font-poppins), sans-serif"
-    : "'Roboto', var(--font-roboto), sans-serif";
+      ? "'Poppins', var(--font-poppins), sans-serif"
+      : "'Roboto', var(--font-roboto), sans-serif";
 
   return (
     <div
@@ -240,18 +240,18 @@ export default function UniversityLandingView({ data = {} }) {
         {(() => {
           const defaultOrder = isSmu
             ? [
-                "approvals",
-                "programmes",
-                "whyChoose",
-                "about",
-                "stats",
-                "admissionProcess",
-                "faqs",
-                "footerForm",
-                "compareBanner",
-              ]
+              "approvals",
+              "programmes",
+              "whyChoose",
+              "about",
+              "stats",
+              "admissionProcess",
+              "faqs",
+              "footerForm",
+              "compareBanner",
+            ]
             : isVgu
-            ? [
+              ? [
                 "approvals",
                 "programmes",
                 "about",
@@ -264,7 +264,7 @@ export default function UniversityLandingView({ data = {} }) {
                 "footerForm",
                 "compareBanner",
               ]
-            : [
+              : [
                 "approvals",
                 "whyChoose",
                 "programmes",
@@ -286,6 +286,41 @@ export default function UniversityLandingView({ data = {} }) {
           return activeOrder.map((sectionKey) => {
             switch (sectionKey) {
               case "overview":
+                const overviewData = data.overview || brand.overview;
+                if (brand.slug === "iim" || brand.overviewLayout === "iim") {
+                  return (
+                    <section id="overview" key="overview">
+                      <div className="container">
+                        <div className="overview1">
+                          <h2>{overviewData?.title || "The IIM Kozhikode HRM Analytics Certification Courses"}</h2>
+                          <p>{overviewData?.paragraph || overviewData?.desc || "The certificate course of IIM Kozhikode in HR Analytics is a 6-month online program that helps professionals learn HR concepts with modern analytics. The course is 280 hours of expert learning, live faculty sessions, and industry projects. Learners receive hands-on training in tools such as Tableau, Excel, and Power BI. The course is recognized as one of the leading HR courses. It is ideal for HR professionals, managers, and MBA graduates seeking to advance their careers."}</p>
+                        </div>
+                      </div>
+                    </section>
+                  );
+                }
+                if (overviewData && overviewData.title) {
+                  return (
+                    <section id="overview" key="overview" className="overview-section py-12 sm:py-16 bg-white text-center select-none scroll-mt-20">
+                      <div className="max-w-[1000px] mx-auto px-4 sm:px-6">
+                        <h2 className="text-[26px] sm:text-[32px] lg:text-[34px] font-bold text-[#111111] leading-tight m-0">
+                          {overviewData.title}
+                        </h2>
+                        <p className="text-[14px] sm:text-[15.5px] text-[#444444] leading-relaxed mt-4 mb-6 max-w-4xl mx-auto">
+                          {overviewData.paragraph || overviewData.desc}
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => handleOpenBrochure()}
+                          className="downloadBrochureBtn inline-flex items-center gap-2 px-7 py-3 rounded-full bg-[#0CB1EF] text-white font-bold text-[14.5px] hover:bg-[#099cd3] transition-all cursor-pointer border-none shadow-md active:scale-95"
+                        >
+                          <span>{overviewData.buttonText || "Download Brochure"}</span>
+                          <Download className="w-4 h-4 stroke-[2.5]" />
+                        </button>
+                      </div>
+                    </section>
+                  );
+                }
                 return (
                   <section id="overview" key="overview" className="overview-section py-12 sm:py-16 bg-white text-center select-none scroll-mt-20">
                     <div className="max-w-[1000px] mx-auto px-4 sm:px-6">
@@ -303,6 +338,137 @@ export default function UniversityLandingView({ data = {} }) {
                         <span>{brand.overviewButtonText || "Get Curriculum"}</span>
                         <Download className="w-4 h-4 stroke-[2.5]" />
                       </button>
+                    </div>
+                  </section>
+                );
+              case "keySkills":
+                const keySkillsList = data.keySkills || brand.keySkills || [];
+                if (!keySkillsList.length) return null;
+                if (brand.slug === "iim") {
+                  return (
+                    <section className="certification" id="key-skills" key="keySkills">
+                      <div className="container">
+                        <h2>
+                          Key Skills You Will Gain from the <span className="blue">IIM Kozhikode HR Analytics Course</span>
+                        </h2>
+                        <p>
+                          The IIM Kozhikode HR Analytics Online Course equips learners with industry-relevant skills to manage people and processes through data-driven methods. The curriculum focuses on:
+                        </p>
+                        <br />
+                        <div className="b2-info">
+                          {keySkillsList.map((skill, idx) => (
+                            <div key={idx} className="b1">
+                              <img src={skill.icon} alt={skill.title} />
+                              <div>
+                                <h3>{skill.title}</h3>
+                                <p>{skill.desc}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </section>
+                  );
+                }
+                return (
+                  <section id="key-skills" key="keySkills" className="py-12 sm:py-16 bg-white select-none scroll-mt-20">
+                    <div className="max-w-[1240px] mx-auto px-4 sm:px-6">
+                      <h2 className="text-[24px] sm:text-[30px] lg:text-[32px] font-bold text-center text-[#111111] mb-8 sm:mb-12">
+                        Key Skills You Learn in IIM Kozhikode HR Analytics Course
+                      </h2>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {keySkillsList.map((skill, idx) => (
+                          <div key={idx} className="bg-white border border-slate-200 rounded-[12px] p-6 shadow-xs hover:shadow-md transition-shadow flex flex-col justify-start">
+                            {skill.icon && (
+                              <div className="relative w-12 h-12 mb-4">
+                                <Image src={skill.icon} alt={skill.title} fill className="object-contain" />
+                              </div>
+                            )}
+                            <h3 className="text-[17px] font-bold text-[#111111] mb-2 leading-snug">
+                              {skill.title}
+                            </h3>
+                            <p className="text-[13px] text-slate-600 leading-relaxed m-0">
+                              {skill.desc}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </section>
+                );
+              case "tools":
+                const toolsList = data.tools || brand.tools || [];
+                if (!toolsList.length) return null;
+                if (brand.slug === "iim") {
+                  return (
+                    <section id="courses" key="tools">
+                      <div className="container">
+                        <h2>
+                          Tools &amp; Technologies You’ll Learn in <br /><span className="blue">the IIM Kozhikode HR Analytics Course</span>
+                        </h2>
+                        <p>
+                          The IIM Kozhikode HR Analytics Course, one of the most career-focused courses at IIM Kozhikode, offers hands-on training with tools that define modern HRM practices. Designed as a practical certification course in IIM Kozhikode, it equips learners with the ability to analyze data and apply insights across HR functions.
+                        </p>
+                        <br />
+                        <div className="course-info">
+                          {toolsList.map((t, idx) => (
+                            <div key={idx} className="c1">
+                              <div className="c1-img-wrap" style={{ minHeight: "140px", display: "flex", alignItems: "center", justifyContent: "center", padding: "16px" }}>
+                                <img src={t.image} alt={t.name} className="img-responsive" style={{ maxHeight: "90px", maxWidth: "180px", objectFit: "contain", margin: "auto" }} />
+                              </div>
+                              <p
+                                className="c1-desc"
+                                style={{
+                                  backgroundColor: "#17479E",
+                                  color: "#ffffff",
+                                  padding: "16px 18px 20px 18px",
+                                  fontSize: "13.5px",
+                                  lineHeight: "1.55",
+                                  textAlign: "left",
+                                  margin: 0,
+                                  borderBottomLeftRadius: "10px",
+                                  borderBottomRightRadius: "10px",
+                                  display: "block",
+                                  minHeight: "105px",
+                                }}
+                              >
+                                <b style={{ color: "#ffffff", fontWeight: 700, display: "inline", padding: 0, margin: 0, background: "transparent" }}>
+                                  {t.name}:{" "}
+                                </b>
+                                <span style={{ color: "#ffffff", fontWeight: 400, display: "inline", padding: 0, margin: 0, background: "transparent" }}>
+                                  {t.desc}
+                                </span>
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </section>
+                  );
+                }
+                return (
+                  <section id="courses" key="tools" className="py-12 sm:py-16 bg-slate-50 select-none scroll-mt-20">
+                    <div className="max-w-[1240px] mx-auto px-4 sm:px-6">
+                      <h2 className="text-[24px] sm:text-[30px] lg:text-[32px] font-bold text-center text-[#111111] mb-8 sm:mb-12">
+                        Tools Covered in IIM Kozhikode HR Analytics Course
+                      </h2>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {toolsList.map((t, idx) => (
+                          <div key={idx} className="bg-white border border-slate-200 rounded-[12px] p-6 shadow-xs hover:shadow-md transition-shadow text-center flex flex-col items-center">
+                            {t.image && (
+                              <div className="relative w-16 h-16 mb-4">
+                                <Image src={t.image} alt={t.name} fill className="object-contain" />
+                              </div>
+                            )}
+                            <h3 className="text-[18px] font-bold text-[#111111] mb-2">
+                              {t.name}
+                            </h3>
+                            <p className="text-[13px] text-slate-600 leading-relaxed m-0">
+                              {t.desc}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </section>
                 );
@@ -392,20 +558,33 @@ export default function UniversityLandingView({ data = {} }) {
                   />
                 );
               case "whyChoose":
+              case "benefits":
+              case "eligibility":
+                const whyChooseItems = whyChoose && whyChoose.length > 0 ? whyChoose : data.eligibility?.items || [];
                 return (
                   <LandingWhyChoose
                     key="whyChoose"
-                    whyChoose={whyChoose}
-                    brand={brand}
+                    whyChoose={whyChooseItems}
+                    brand={{
+                      ...brand,
+                      whyChooseTitle: data.eligibility?.title || brand.whyChooseTitle,
+                      whyChooseBgImage: data.eligibility?.desktopBg || brand.whyChooseBgImage,
+                      whyChooseBtnText: data.eligibility?.buttonText || brand.whyChooseBtnText,
+                    }}
                     onOpenApply={() => handleOpenApply()}
                   />
                 );
               case "degree":
-                return degreeInfo && Object.keys(degreeInfo).length > 0 ? (
+              case "sampleDegree":
+                const activeDegree = (degreeInfo && Object.keys(degreeInfo).length > 0) ? degreeInfo : data.degree;
+                return activeDegree && Object.keys(activeDegree).length > 0 ? (
                   <LandingDegree
                     key="degree"
-                    degreeInfo={degreeInfo}
-                    brand={brand}
+                    degreeInfo={activeDegree}
+                    brand={{
+                      ...brand,
+                      degreeLayout: brand.degreeLayout || (brand.slug === "iim" ? "iim" : undefined),
+                    }}
                     onOpenApply={() => handleOpenApply()}
                   />
                 ) : null;
@@ -413,11 +592,17 @@ export default function UniversityLandingView({ data = {} }) {
               case "placement":
               case "partners":
               case "placements":
-                return (recruiters && Object.keys(recruiters).length > 0) || brand.recruiters || brand.recruitersTitle || brand.recruitersDesktopImage ? (
+                const activeRecruiters =
+                  (recruiters && Object.keys(recruiters).length > 0)
+                    ? recruiters
+                    : data.placementPartners && data.placementPartners.length > 0
+                    ? { partners: data.placementPartners, title: brand.recruitersTitle || "IIM Kozhikode HR Analytics Course: Placement Partners" }
+                    : brand.recruiters;
+                return activeRecruiters || brand.recruitersTitle || brand.recruitersDesktopImage ? (
                   <LandingRecruiters
                     key="recruiters"
                     brand={brand}
-                    recruiters={recruiters || brand.recruiters}
+                    recruiters={activeRecruiters || brand.recruiters}
                   />
                 ) : null;
               case "offersAndPlacement":
@@ -442,14 +627,21 @@ export default function UniversityLandingView({ data = {} }) {
                   />
                 ) : null;
               case "admissionProcess":
+              case "howToApply":
+                const activeAdmissionSteps = admissionSteps?.length > 0 ? admissionSteps : data.howToApply?.steps;
                 return (
                   <LandingAdmissionProcess
                     key="admissionProcess"
-                    admissionSteps={admissionSteps}
+                    admissionSteps={activeAdmissionSteps}
                     admissionProcess={admissionProcess}
                     enrollmentProcess={enrollmentProcess}
                     universityName={brand.name}
-                    brand={{ ...brand, slug: brand.slug || slug }}
+                    brand={{
+                      ...brand,
+                      slug: brand.slug || slug,
+                      admissionTitle: data.howToApply?.title || brand.admissionTitle,
+                      admissionSubtitle: data.howToApply?.desc || brand.admissionSubtitle,
+                    }}
                     onOpenApply={() => handleOpenApply()}
                   />
                 );
@@ -543,6 +735,7 @@ export default function UniversityLandingView({ data = {} }) {
         universityName={brand.name}
         courses={courses}
         selectedCourse={selectedCourse}
+        brand={brand}
         onOpenDisclaimer={() => handleOpenLegal("disclaimer")}
       />
       <ScholarshipModal

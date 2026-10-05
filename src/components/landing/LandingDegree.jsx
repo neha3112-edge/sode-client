@@ -78,6 +78,45 @@ export default function LandingDegree({
     );
   }
 
+  const isIim =
+    brand.degreeLayout === "iim" ||
+    brand.slug === "iim";
+
+  if (isIim) {
+    return (
+      <section id="sample-degree">
+        <div className="container">
+          <div className="degree">
+            <center>
+              <img
+                src={image || "/assets/iim/sample-certificate.webp"}
+                alt="sample-degree"
+                className="img-responsive"
+              />
+            </center>
+            <div className="degree-info">
+              <h2>IIM Kozhikode<br /> Sample Degree</h2>
+              <br />
+              <h3>{degreeInfo.subtitle || "HR Analyics Certification Course"}</h3>
+              <br />
+              <p>
+                {description || "Complete all course modules and earn a professional HR Management and Analytics certification from IIM Kozhikode. This course will help you develop important skills for the HR field. It will also boost your career and make you more competitive in the job market."}
+              </p>
+              <br />
+              <button
+                type="button"
+                className="enquireNowBtn"
+                onClick={() => onOpenApply?.()}
+              >
+                {buttonText || "Get Degree"}
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   const isGgu =
     brand.degreeLayout === "ggu" ||
     brand.slug === "ggu";

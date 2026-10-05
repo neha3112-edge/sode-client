@@ -35,6 +35,46 @@ export default function LandingStickyCtas({
     onOpenScholarship?.();
   };
 
+  if (brand.slug === "iim") {
+    return (
+      <>
+        <div className="sticky_btn_Section">
+          <div className="footer_sticky_buttons">
+            <button
+              type="button"
+              onClick={() => onOpenBrochure?.()}
+              className="wp_btn cursor-pointer border-none flex items-center justify-center"
+            >
+              <Download className="w-4 h-4 mr-1 inline stroke-[2.5]" /> Get Brochure
+            </button>
+            <button
+              type="button"
+              className="apply_btn enquireNowBtn"
+              onClick={() => onOpenApply?.()}
+            >
+              Apply Now &raquo;
+            </button>
+          </div>
+        </div>
+
+        <a className="call_fix_image" href="tel:07065777755" aria-label="Call Expert">
+          <img src={brand.callGif || "/assets/iim/call_icon.gif"} alt="Call Now" />
+        </a>
+
+        {brand.showFloatingGift !== false && (
+          <button
+            type="button"
+            className="coupon-btn"
+            onClick={handleGiftClick}
+            aria-label="Get Scholarship Coupon Code"
+          >
+            <img src={brand.giftGif || "/assets/iim/gift.gif"} alt="Scholarship Coupon" />
+          </button>
+        )}
+      </>
+    );
+  }
+
   return (
     <>
       {/* Floating Action Buttons (Right Edge) - Call icon & Gift icon */}
@@ -83,16 +123,15 @@ export default function LandingStickyCtas({
         className="footer_sticky_buttons lg:hidden fixed bottom-0 left-0 right-0 z-50 px-3 py-2.5 grid grid-cols-2 gap-2.5 shadow-2xl transition-colors pb-[max(10px,env(safe-area-inset-bottom))]"
         style={{ backgroundColor: brand.primaryColor || "#08417b" }}
       >
-        {/* Left: WhatsApp / Brochure Green Pill */}
-        <a
-          href={`https://api.whatsapp.com/send/?phone=+91${rawPhone}&text=${whatsappText}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="wp_btn flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-[#25d366] text-white font-bold text-[13.5px] sm:text-sm no-underline shadow-sm active:opacity-90"
+        {/* Left: Get Brochure Green Pill */}
+        <button
+          type="button"
+          onClick={() => onOpenBrochure?.()}
+          className="wp_btn flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-[#25d366] text-white font-bold text-[13.5px] sm:text-sm border-none cursor-pointer shadow-sm active:opacity-90"
         >
           <Download className="w-4 h-4" />
           <span>Get Brochure</span>
-        </a>
+        </button>
 
         {/* Right: Apply Now Yellow Pill */}
         <button

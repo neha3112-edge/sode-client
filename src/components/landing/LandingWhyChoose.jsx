@@ -12,6 +12,7 @@ import LiverpoolWhyChoose from "./whychoose/LiverpoolWhyChoose";
 import RushfordWhyChoose from "./whychoose/RushfordWhyChoose";
 import EsgciWhyChoose from "./whychoose/EsgciWhyChoose";
 import GguWhyChoose from "./whychoose/GguWhyChoose";
+import IimWhyChoose from "./whychoose/IimWhyChoose";
 import ClassicWhyChoose from "./whychoose/ClassicWhyChoose";
 
 /**
@@ -24,6 +25,11 @@ export default function LandingWhyChoose({ whyChoose = [], brand = {}, onOpenApp
   // 1. LPU Pedagogy & Support Services
   if (layout === "lpu" || brand.slug === "lpu") {
     return <LpuWhyChoose whyChoose={whyChoose} brand={brand} />;
+  }
+
+  // IIM Kozhikode Eligibility / Benefits
+  if (layout === "iim" || brand.slug === "iim") {
+    return <IimWhyChoose whyChoose={whyChoose} brand={brand} onOpenApply={onOpenApply} />;
   }
 
   if (!whyChoose?.length) return null;

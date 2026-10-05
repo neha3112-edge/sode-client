@@ -29,6 +29,50 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
     setOpenIndex(openIndex === index ? null : index);
   };
 
+  const isIim =
+    brand.slug === "iim" ||
+    brand.faqLayout === "iim";
+
+  if (isIim) {
+    const faqTitle = brand.faqTitle || "FAQ | Frequently Asked Questions";
+    return (
+      <section id="faqs">
+        <div className="container">
+          <div className="faq-title">
+            <h2>{faqTitle}</h2>
+          </div>
+          <div className="faqs-section">
+            <div className="accordion">
+              {faqs.map((faq, idx) => {
+                const isOpen = openIndex === idx;
+                const rawQ = faq.q || faq.question || "";
+                const displayQ = rawQ.startsWith("Q") ? rawQ : `Q${idx + 1}. ${rawQ}`;
+                return (
+                  <div key={idx} className="accordion-item">
+                    <div
+                      className="accordion-header"
+                      onClick={() => toggleFaq(idx)}
+                      role="button"
+                      tabIndex={0}
+                    >
+                      {displayQ}
+                      <span className="span">{isOpen ? "−" : "+"}</span>
+                    </div>
+                    {isOpen && (
+                      <div className="accordion-content" style={{ display: "block" }}>
+                        {faq.a || faq.answer}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   // ==========================================
   // Layout: Golden Gate University (GGU) FAQ
   // ==========================================
