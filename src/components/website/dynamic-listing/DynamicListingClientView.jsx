@@ -74,7 +74,7 @@ function DynamicHero({ hero, pageTitle, subtitle, targetCourseName }) {
     hero.buttons && hero.buttons.length > 0
       ? hero.buttons.filter((b) => b.enabled !== false)
       : [
-        { text: "Get Free Counseling", variant: "green", isModal: true },
+        { text: "Get Free Counseling", variant: "amber", isModal: true },
         { text: "Compare Universities", variant: "outline", url: "#universities-list" },
       ];
 
@@ -135,19 +135,15 @@ function DynamicHero({ hero, pageTitle, subtitle, targetCourseName }) {
                 <div className="flex flex-row items-center justify-center lg:justify-start gap-2.5 sm:gap-3 flex-wrap">
                   {buttons.map((btn, idx) => {
                     const isModal = btn.isModal || btn.url === "#counseling" || !btn.url;
-                    const variant = btn.variant || "green";
+                    const variant = btn.variant || (idx === 0 ? "amber" : "outline");
                     const variantClasses =
-                      variant === "green"
-                        ? "bg-[#22C55E] hover:bg-[#16a34a] text-white"
-                        : variant === "amber" || variant === "gold"
-                          ? "bg-[#F5D061] hover:bg-[#ebc44f] text-[#102A45]"
-                          : variant === "blue"
-                            ? "bg-[#0284C7] hover:bg-[#0369a1] text-white"
-                            : variant === "dark"
-                              ? "bg-[#0f172a] hover:bg-[#1e293b] text-white"
-                              : variant === "outline"
-                                ? "bg-transparent hover:bg-white/10 text-white border border-white/80"
-                                : "bg-[#22C55E] hover:bg-[#16a34a] text-white";
+                      variant === "outline"
+                        ? "bg-transparent border border-white/80 hover:bg-white/10 text-white font-semibold active:scale-95"
+                        : variant === "blue"
+                          ? "bg-[#0284C7] hover:bg-[#0369a1] text-white font-bold active:scale-95"
+                          : variant === "dark"
+                            ? "bg-[#0f172a] hover:bg-[#1e293b] text-white font-bold active:scale-95"
+                            : "bg-[#E5A93C] hover:bg-[#D4982B] text-gray-950 font-bold shadow-sm border-0 active:scale-95";
 
                     if (isModal) {
                       return (
@@ -392,13 +388,43 @@ function RankedUniversityCard({ item, index, features }) {
               </div>
             )}
 
+            {location && (
+              <div>
+                <div className="font-bold text-slate-900 flex items-center gap-1 mb-0.5">
+                  <MapPin className="w-3.5 h-3.5 text-slate-800 shrink-0" />
+                  <span>Location :</span>
+                </div>
+                <div className="text-slate-600 text-xs font-medium break-words">{location}</div>
+              </div>
+            )}
+
+            <div>
+              <div className="font-bold text-slate-900 flex items-center gap-1 mb-0.5">
+                <CreditCard className="w-3.5 h-3.5 text-slate-800 shrink-0" />
+                <span>EMI Available :</span>
+              </div>
+              <div className="text-slate-600 text-xs font-medium">Yes</div>
+            </div>
+
+            {advantageText && (
+              <div>
+                <div className="font-bold text-slate-900 flex items-center gap-1 mb-0.5">
+                  <Check className="w-3.5 h-3.5 text-slate-800 stroke-[3] shrink-0" />
+                  <span>Advantage:</span>
+                </div>
+                <div className="text-slate-600 text-xs font-medium break-words line-clamp-3 leading-snug" title={advantageText}>
+                  {advantageText}
+                </div>
+              </div>
+            )}
+
             {approvalsJoined && (
               <div>
                 <div className="font-bold text-slate-900 flex items-center gap-1 mb-0.5">
                   <Award className="w-3.5 h-3.5 text-slate-800 shrink-0" />
                   <span>Approvals :</span>
                 </div>
-                <div className="text-slate-600 text-xs font-medium truncate" title={approvalsJoined}>
+                <div className="text-slate-600 text-xs font-medium break-words line-clamp-3 leading-snug" title={approvalsJoined}>
                   {approvalsJoined}
                 </div>
               </div>
@@ -410,41 +436,11 @@ function RankedUniversityCard({ item, index, features }) {
                   <UserCheck className="w-3.5 h-3.5 text-slate-800 shrink-0" />
                   <span>Eligibility :</span>
                 </div>
-                <div className="text-slate-600 text-xs font-medium line-clamp-1" title={eligibilityText}>
+                <div className="text-slate-600 text-xs font-medium break-words line-clamp-3 leading-snug" title={eligibilityText}>
                   {eligibilityText}
                 </div>
               </div>
             )}
-
-            {advantageText && (
-              <div>
-                <div className="font-bold text-slate-900 flex items-center gap-1 mb-0.5">
-                  <Check className="w-3.5 h-3.5 text-slate-800 stroke-[3] shrink-0" />
-                  <span>Advantage:</span>
-                </div>
-                <div className="text-slate-600 text-xs font-medium line-clamp-1" title={advantageText}>
-                  {advantageText}
-                </div>
-              </div>
-            )}
-
-            {location && (
-              <div>
-                <div className="font-bold text-slate-900 flex items-center gap-1 mb-0.5">
-                  <MapPin className="w-3.5 h-3.5 text-slate-800 shrink-0" />
-                  <span>Location :</span>
-                </div>
-                <div className="text-slate-600 text-xs font-medium">{location}</div>
-              </div>
-            )}
-
-            <div>
-              <div className="font-bold text-slate-900 flex items-center gap-1 mb-0.5">
-                <CreditCard className="w-3.5 h-3.5 text-slate-800 shrink-0" />
-                <span>EMI Available :</span>
-              </div>
-              <div className="text-slate-600 text-xs font-medium">Yes</div>
-            </div>
           </div>
         </div>
 
