@@ -178,12 +178,14 @@ function UniversityCard({ uni }) {
               icon={<SwapOutlined className={inCompare ? "text-amber-600 text-xs" : "text-xs"} />}
               onClick={() => {
                 const compareItem = {
-                  _id: uni._id,
+                  _id: uni._id || slug,
                   slug: slug,
-                  title: featuredCourse || `${name} Online Programs`,
+                  name: name,
+                  title: name,
                   uniName: name,
                   uniSlug: slug,
                   logoUrl: logoUrl,
+                  logoSrc: logoUrl,
                   university: uni,
                 };
                 toggleCompare(compareItem);

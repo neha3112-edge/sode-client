@@ -30,7 +30,7 @@ export default function CompareDrawerWidget() {
   const compareUrl =
     compareList.length > 0
       ? `/tools/compare-universities?university=${compareList
-          .map((u) => u.slug || u._id || u.id)
+          .map((u) => u.uniSlug || u.slug || u._id || u.id)
           .filter(Boolean)
           .join(",")}`
       : "/tools/compare-universities";
@@ -50,8 +50,8 @@ export default function CompareDrawerWidget() {
         {/* Center: Selected Badges */}
         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1 flex-1">
           {compareList.map((uni, idx) => {
-            const displayName = uni.title || uni.name || uni.uniName || "Program";
-            const logo = uni.logoSrc || uni.logoUrl || null;
+            const displayName = uni.name || uni.uniName || uni.title || "University";
+            const logo = uni.logoSrc || uni.logoUrl || uni.logo || null;
             const itemKey = uni.slug || uni._id || uni.id || `item-${idx}`;
 
             return (
@@ -119,8 +119,8 @@ export default function CompareDrawerWidget() {
           <div className="flex items-center gap-2">
             <div className="flex items-center -space-x-2 overflow-hidden py-0.5">
               {compareList.map((uni, idx) => {
-                const logo = uni.logoSrc || uni.logoUrl;
-                const displayName = uni.title || uni.name || "Program";
+                const logo = uni.logoSrc || uni.logoUrl || uni.logo || null;
+                const displayName = uni.name || uni.uniName || uni.title || "University";
                 const itemKey = uni.slug || uni._id || uni.id || `m-item-${idx}`;
                 return (
                   <div
