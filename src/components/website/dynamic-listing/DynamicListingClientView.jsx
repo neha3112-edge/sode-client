@@ -42,7 +42,7 @@ function getMediaUrl(media) {
   return media.url || media.path || null;
 }
 
-function DynamicHero({ hero, pageTitle, subtitle, targetCourseName }) {
+function DynamicHero({ hero, pageTitle, targetCourseName }) {
   const { openFormModal } = useFormModal();
 
   if (!hero || hero.enabled === false) return null;
@@ -66,7 +66,7 @@ function DynamicHero({ hero, pageTitle, subtitle, targetCourseName }) {
 
   const title = hero.title || pageTitle || "";
   const highlight = hero.titleHighlight || "";
-  const desc = hero.subtitle || hero.description || subtitle || "";
+  const desc = hero.subtitle || hero.description || "";
 
   const hasHeroMedia = Boolean(embedUrl || bannerUrl);
 
@@ -668,7 +668,6 @@ export function DynamicListingClientView({ page }) {
         <DynamicHero
           hero={page.hero}
           pageTitle={page.title}
-          subtitle={page.subtitle}
           targetCourseName={targetCourseName}
         />
       )}

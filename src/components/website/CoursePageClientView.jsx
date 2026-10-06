@@ -323,15 +323,22 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
     []
   );
 
-  const overviewDataSource = useMemo(
-    () =>
-      (overviewTable || []).map((row, idx) => ({
-        key: row.category || idx,
-        category: row.category,
-        details: row.details,
-      })),
-    [overviewTable]
-  );
+  const overviewDataSource = useMemo(() => {
+    const list = [...(overviewTable || [])].sort((a, b) => {
+      // Dynamic rows (isDynamic === true) always on top, static rows (isDynamic === false) at bottom
+      const aDyn = a?.isDynamic !== false;
+      const bDyn = b?.isDynamic !== false;
+      if (aDyn && !bDyn) return -1;
+      if (!aDyn && bDyn) return 1;
+      return 0;
+    });
+
+    return list.map((row, idx) => ({
+      key: row.category || idx,
+      category: row.category,
+      details: row.details,
+    }));
+  }, [overviewTable]);
 
   const modeComparisonColumns = useMemo(
     () => [
