@@ -404,27 +404,63 @@ export default function LandingHero({
           style={hero.contentStyle}
         >
           {/* Top Logo / Badge */}
-          {(hero.logo || hero.welcomeText || brand.heroLogo) && (
-            <div
-              className={`mb-2 sm:mb-3 ${hero.logoContainerClassName || ""}`}
-              style={hero.logoContainerStyle}
-            >
-              {React.isValidElement(hero.welcomeText) ? (
-                hero.welcomeText
-              ) : (
-                <div className={`relative ${hero.logoWrapperClassName || "w-44 sm:w-56 h-11 sm:h-13"}`}>
-                  <Image
-                    src={hero.logo || brand.heroLogo || hero.welcomeText}
-                    alt={brand.name || "University"}
-                    fill
-                    priority
-                    className="object-contain object-left"
-                    sizes="(max-width: 640px) 180px, 240px"
-                  />
+          {(() => {
+            if (React.isValidElement(hero.welcomeText)) {
+              return (
+                <div
+                  className={`mb-2 sm:mb-3 ${hero.logoContainerClassName || ""}`}
+                  style={hero.logoContainerStyle}
+                >
+                  {hero.welcomeText}
                 </div>
-              )}
-            </div>
-          )}
+              );
+            }
+
+            const logoSrc =
+              (typeof hero.logo === "string" && hero.logo.trim() !== "" ? hero.logo : null) ||
+              (typeof brand.heroLogo === "string" && brand.heroLogo.trim() !== "" ? brand.heroLogo : null) ||
+              (typeof hero.welcomeText === "string" &&
+              (hero.welcomeText.startsWith("/") ||
+                hero.welcomeText.startsWith("http") ||
+                hero.welcomeText.startsWith("data:"))
+                ? hero.welcomeText
+                : null);
+
+            if (logoSrc) {
+              return (
+                <div
+                  className={`mb-2 sm:mb-3 ${hero.logoContainerClassName || ""}`}
+                  style={hero.logoContainerStyle}
+                >
+                  <div className={`relative ${hero.logoWrapperClassName || "w-44 sm:w-56 h-11 sm:h-13"}`}>
+                    <Image
+                      src={logoSrc}
+                      alt={brand.name || "University"}
+                      fill
+                      priority
+                      className="object-contain object-left"
+                      sizes="(max-width: 640px) 180px, 240px"
+                    />
+                  </div>
+                </div>
+              );
+            }
+
+            if (typeof hero.welcomeText === "string" && hero.welcomeText.trim() !== "") {
+              return (
+                <div
+                  className={`mb-2 sm:mb-3 ${hero.logoContainerClassName || ""}`}
+                  style={hero.logoContainerStyle}
+                >
+                  <span className={hero.welcomeBadgeClassName || "inline-block text-sm font-semibold"}>
+                    {hero.welcomeText}
+                  </span>
+                </div>
+              );
+            }
+
+            return null;
+          })()}
 
           {/* Hashtag */}
           {(hero.hashtagText || brand.hashtag) && (
