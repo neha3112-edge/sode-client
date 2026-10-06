@@ -1237,9 +1237,9 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                 <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
                   {admissionProcess.title || (cleanOnlineTitle ? `${cleanOnlineTitle} Admission Process` : "Admission Process")}
                 </h2>
-                {admissionProcess.subtitle && (
+                {(admissionProcess.subtitle || admissionProcess.subTitle) && (
                   <p className="text-xs sm:text-sm text-slate-600 text-center max-w-2xl mx-auto mb-8">
-                    {admissionProcess.subtitle}
+                    {admissionProcess.subtitle || admissionProcess.subTitle}
                   </p>
                 )}
 
@@ -1950,8 +1950,8 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                           </span>
                         </button>
                         {isOpen && (
-                          <div className="p-3 text-xs sm:text-[13px] text-gray-600 leading-relaxed font-normal border-t border-blue-100/60 whitespace-pre-line">
-                            {faq.answer}
+                          <div className="p-3 text-xs sm:text-[13px] text-gray-600 leading-relaxed font-normal border-t border-blue-100/60">
+                            <SafeHtmlRenderer html={faq.answer} />
                           </div>
                         )}
                       </div>
