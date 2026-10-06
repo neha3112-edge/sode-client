@@ -16,6 +16,7 @@ import Image from "next/image";
 import { useCompare } from "@/hooks/useCompare";
 import { getAssetPath } from "@/lib/utils";
 import Container from "@/components/common/Container";
+import { request } from "@/services/request";
 
 const AVATAR_COLORS = [
   "#1C3569", "#4F46E5", "#0369A1", "#047857", "#B45309",
