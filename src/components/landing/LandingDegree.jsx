@@ -131,50 +131,65 @@ export default function LandingDegree({
 
   if (isUu) {
     const subtitleGreen = degreeInfo.highlight || degreeInfo.greenTitle || "UGC Approved";
-    const titleBlack = degreeInfo.line1 && degreeInfo.line2
-      ? `${degreeInfo.line1} ${degreeInfo.line2}`
-      : "Uttaranchal University Online Degree";
+    const line1 = degreeInfo.line1 || "Uttaranchal University";
+    const line2 = degreeInfo.line2 || "Online Degree";
 
     return (
       <section
         id="degree"
-        className="w-full relative select-none py-10 sm:py-16 bg-white scroll-mt-20 text-center"
+        className="w-full relative select-none py-10 sm:py-16 lg:py-20 bg-white scroll-mt-20"
       >
-        <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col items-center max-w-3xl mx-auto">
-            {/* Header: Green Subtitle + Main Title */}
-            <h2 className="text-[24px] sm:text-[32px] lg:text-[36px] font-bold leading-tight m-0 mb-3 text-center">
-              <span className="text-[#62B239] block sm:inline">{subtitleGreen} </span>
-              <span className="text-[#111111]">{titleBlack}</span>
-            </h2>
+        <div className="max-w-[1180px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            {/* Left: Text Info + Button */}
+            <div className="lg:col-span-6 flex flex-col items-center lg:items-start text-center lg:text-left">
+              <h2 className="text-[26px] sm:text-[34px] lg:text-[38px] font-bold leading-tight m-0 mb-4 text-slate-900">
+                <span className="text-[#62B239] block mb-1">{subtitleGreen}</span>
+                <span>{line1}</span>
+                <br />
+                <span>{line2}</span>
+              </h2>
 
-            {description && (
-              <p className="text-[12.5px] sm:text-[14px] text-[#444444] font-normal leading-relaxed m-0 mb-6 text-center max-w-xl">
-                {description}
-              </p>
-            )}
+              {description && (
+                <p className="text-[13px] sm:text-[14.5px] text-[#444444] font-normal leading-relaxed m-0 mb-6 max-w-lg">
+                  {description}
+                </p>
+              )}
 
-            {/* Certificate Image */}
-            <div className="relative w-full max-w-[340px] sm:max-w-[420px] h-[440px] sm:h-[520px] mb-6 flex justify-center">
-              <Image
-                src={image || "/assets/all_universities_images/uu/sample-degree-uttarancha1.webp"}
-                alt="Uttaranchal University Online Degree"
-                fill
-                className="object-contain"
-                sizes="(max-width: 640px) 340px, 420px"
-                priority
-              />
+              <div className="hidden lg:block">
+                <button
+                  type="button"
+                  onClick={() => onOpenApply?.()}
+                  className="px-8 py-2.5 border-2 border-[#0A3C7D] text-[#0A3C7D] hover:bg-[#0A3C7D] hover:text-white font-semibold text-[14px] rounded-[4px] bg-white transition-all cursor-pointer shadow-2xs active:scale-95"
+                >
+                  {buttonText || "Get Degree"}
+                </button>
+              </div>
             </div>
 
-            {/* Get Degree Button */}
-            <div>
-              <button
-                type="button"
-                onClick={() => onOpenApply?.()}
-                className="px-8 py-2.5 border border-[#0A3C7D] text-[#0A3C7D] hover:bg-[#0A3C7D] hover:text-white font-semibold text-[14px] rounded-[4px] bg-transparent transition-all cursor-pointer shadow-2xs active:scale-95"
-              >
-                {buttonText || "Get Degree"}
-              </button>
+            {/* Right: Certificate Image */}
+            <div className="lg:col-span-6 flex flex-col items-center justify-center">
+              <div className="relative w-full max-w-[320px] sm:max-w-[380px] h-[450px] sm:h-[520px] drop-shadow-md">
+                <Image
+                  src={image || "/assets/all_universities_images/uu/sample-degree-uttarancha1.webp"}
+                  alt="Uttaranchal University Online Degree"
+                  fill
+                  className="object-contain"
+                  sizes="(max-width: 640px) 320px, 380px"
+                  priority
+                />
+              </div>
+
+              {/* Mobile button below image */}
+              <div className="block lg:hidden mt-5">
+                <button
+                  type="button"
+                  onClick={() => onOpenApply?.()}
+                  className="px-8 py-2.5 border-2 border-[#0A3C7D] text-[#0A3C7D] hover:bg-[#0A3C7D] hover:text-white font-semibold text-[14px] rounded-[4px] bg-white transition-all cursor-pointer shadow-2xs active:scale-95"
+                >
+                  {buttonText || "Get Degree"}
+                </button>
+              </div>
             </div>
           </div>
         </div>

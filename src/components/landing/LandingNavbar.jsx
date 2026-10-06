@@ -84,23 +84,77 @@ export default function LandingNavbar({
         {/* ── LEFT: Logos ───────────────────────────────────────────────────── */}
         <div className="logo flex items-center min-w-0 ml-2 sm:ml-1 lg:ml-3">
           {brand.slug === "uu" ? (
-            <Link
-              href="#hero"
-              onClick={handleScrollTop}
-              className="mang_logo flex items-center min-w-0 cursor-pointer"
-              aria-label={name}
-            >
-              <div className="relative w-44 sm:w-56 lg:w-68 h-11 sm:h-13 lg:h-15">
-                <Image
-                  src={logo}
-                  alt={name}
-                  fill
-                  priority
-                  className="object-contain object-left"
-                  sizes="(max-width: 640px) 190px, 280px"
-                />
+            <>
+              {/* Mobile (< md): ONLY Uttaranchal University logo on the left */}
+              <Link
+                href="#hero"
+                onClick={handleScrollTop}
+                className="mang_logo flex md:hidden items-center min-w-0 cursor-pointer"
+                aria-label={name}
+              >
+                <div className="relative w-44 sm:w-56 h-11 sm:h-13">
+                  <Image
+                    src={logo}
+                    alt={name}
+                    fill
+                    priority
+                    className="object-contain object-left"
+                    sizes="(max-width: 640px) 190px, 280px"
+                  />
+                </div>
+              </Link>
+
+              {/* Desktop / Laptop (md+): SODE Logo at start (left), divider, then UU logo */}
+              <div className="hidden md:flex items-center min-w-0">
+                <Link
+                  href="#hero"
+                  onClick={handleScrollTop}
+                  className="des_logo flex items-center shrink-0 cursor-pointer"
+                  aria-label="Back to Top"
+                >
+                  <div
+                    className="relative"
+                    style={{
+                      width: "90px",
+                      height: "62px",
+                      minWidth: "70px",
+                      position: "relative",
+                      ...brand.sodeLogoContainerStyle,
+                    }}
+                  >
+                    <Image
+                      src={sodeIcon || "/assets/images/sode_icon.png"}
+                      alt="SODE"
+                      fill
+                      priority
+                      className="object-contain object-left"
+                      sizes="100px"
+                    />
+                  </div>
+                </Link>
+
+                {/* Divider between SODE logo and university logo */}
+                <div className="h-12 sm:h-14 lg:h-16 w-[1.5px] bg-[#cccccc] mx-1.5 sm:mx-2 lg:mx-3 shrink-0" />
+
+                <Link
+                  href="#hero"
+                  onClick={handleScrollTop}
+                  className="mang_logo flex items-center min-w-0 cursor-pointer"
+                  aria-label={name}
+                >
+                  <div className="relative w-44 sm:w-56 lg:w-68 h-11 sm:h-13 lg:h-15">
+                    <Image
+                      src={logo}
+                      alt={name}
+                      fill
+                      priority
+                      className="object-contain object-left"
+                      sizes="(max-width: 640px) 190px, 280px"
+                    />
+                  </div>
+                </Link>
               </div>
-            </Link>
+            </>
           ) : (
             <>
               {/* SODE Logo — shown when brand.showSodeLogo === true or sodeIcon provided */}
@@ -188,11 +242,11 @@ export default function LandingNavbar({
 
         {/* ── RIGHT: CTA Button or Badge ────────────────────────────────────── */}
         <div className="header_heading shrink-0 pl-2 mr-1.5 sm:mr-3 flex items-center gap-2">
-          {brand.slug === "uu" ? (
+          {brand.slug === "uu" && (
             <Link
               href="#hero"
               onClick={handleScrollTop}
-              className="des_logo flex items-center shrink-0 cursor-pointer"
+              className="des_logo flex md:hidden items-center shrink-0 cursor-pointer"
               aria-label="Back to Top"
             >
               <div className="relative w-14 sm:w-18 h-10 sm:h-12">
@@ -206,13 +260,16 @@ export default function LandingNavbar({
                 />
               </div>
             </Link>
-          ) : isCouponVisible ? (
+          )}
+
+          {isCouponVisible ? (
             <div
-              className={
-                brand.couponWrapperBg || brand.showCouponPillWrapper
-                  ? "p-1.5 sm:p-2 rounded-[12px] sm:rounded-[14px] inline-flex items-center justify-center transition-all"
-                  : "inline-flex items-center"
-              }
+              className={`
+                ${brand.slug === "uu" ? "hidden md:inline-flex" : "inline-flex"}
+                ${brand.couponWrapperBg || brand.showCouponPillWrapper
+                  ? "p-1.5 sm:p-2 rounded-[12px] sm:rounded-[14px] items-center justify-center transition-all"
+                  : "items-center"}
+              `}
               style={
                 brand.couponWrapperBg
                   ? { backgroundColor: brand.couponWrapperBg }

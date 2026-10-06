@@ -58,11 +58,19 @@ export const uuData = {
 
       .landing-page--uu #hero h1 {
         font-family: 'Anton', 'Oswald', sans-serif !important;
-        letter-spacing: 0.2px !important;
+        letter-spacing: 0.5px !important;
         text-transform: uppercase !important;
         font-weight: 700 !important;
-        font-size: 32px !important;
-        line-height: 1.05 !important;
+        font-size: 26px !important;
+        line-height: 1.1 !important;
+        white-space: nowrap !important;
+      }
+
+      @media (max-width: 639px) {
+        .landing-page--uu #hero h1 {
+          font-size: 20px !important;
+          white-space: normal !important;
+        }
       }
 
       .landing-page--uu .sp {
@@ -325,26 +333,27 @@ export const uuData = {
       // 2. 📏 HERO SECTION HEIGHT & PADDING (Height kam/zyada karne ke liye)
       minHeight: "390px", // Total Hero Section Minimum Height
       containerClassName: "max-w-[1360px] py-2 sm:py-3 lg:py-3.5", // Vertical Spacing (py)
-      contentClassName: "w-full lg:w-auto lg:max-w-[300px] shrink-0", // Left text container width 300px taaki image se door rahe
+      contentClassName: "w-full lg:w-auto lg:max-w-[480px] shrink-0",
       contentStyle: {
-        maxWidth: "300px",
+        maxWidth: "480px",
       },
 
       // 3. 🔤 HEADING TEXT SIZE & FONT (Title / Heading Style)
       headlineHtml: 'UTTARANCHAL UNIVERSITY <span style="color: #62B239;">ONLINE</span>',
       headlineText: "UTTARANCHAL UNIVERSITY ONLINE",
       headingFont: "'Anton', sans-serif",
-      headingClassName: "text-[24px] sm:text-[28px] md:text-[30px] lg:text-[32px] font-bold leading-none tracking-normal text-white whitespace-normal lg:whitespace-nowrap uppercase mt-0 mb-1",
+      headingClassName: "text-[20px] sm:text-[22px] md:text-[24px] lg:text-[26px] font-bold leading-tight tracking-wide text-white whitespace-normal md:whitespace-nowrap uppercase mt-0 mb-1",
       headingStyle: {
         fontFamily: "'Anton', sans-serif",
         color: "#ffffff",
-        fontSize: "32px", // Heading Text Size
-        lineHeight: "1.05",
-        fontWeight: "700", // Bold Font Weight
-        letterSpacing: "0.2px",
+        fontSize: "26px", // Heading Text Size (reduced to fit on single line)
+        lineHeight: "1.1",
+        fontWeight: "700",
+        letterSpacing: "0.5px",
         marginTop: "0px",
         marginBottom: "5px",
         textTransform: "uppercase",
+        whiteSpace: "nowrap",
       },
 
       // 4. 📚 COURSES STRIP (BBA | BCA | BA | MBA | MCA)
@@ -378,19 +387,10 @@ export const uuData = {
         maxWidth: "390px",
       },
 
-      // 6. 🔴 GET BROCHURE BUTTON STYLING
+      // 6. 🔴 GET BROCHURE BUTTON STYLING (Global Button used in other LPs)
       brochureButtonText: "Get Brochure",
-      buttonStyle: {
-        background: "#d32f2f",
-        backgroundColor: "#d32f2f",
-        color: "#ffffff",
-        borderRadius: "6px",
-        fontSize: "13px",
-        fontWeight: "700",
-        padding: "7px 18px",
-        boxShadow: "0 4px 12px rgba(211, 47, 47, 0.4)",
-        border: "none",
-      },
+      buttonGradient: "linear-gradient(270deg, #ff6600 0%, #ee3024 100%)",
+      buttonRadius: "rounded-[6px]",
 
       // 7. 📋 ENQUIRE LEAD FORM STYLING
       cardStyle: "white",

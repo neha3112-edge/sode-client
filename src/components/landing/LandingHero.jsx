@@ -428,28 +428,6 @@ export default function LandingHero({
               />
             </div>
           )}
-
-          {/* Scholarship Coupon Button if enabled (e.g. UU) */}
-          {(brand.showCouponBtn || brand.showCouponButton) && (
-            <div className="w-full flex justify-center mb-3">
-              <button
-                type="button"
-                onClick={() => onOpenScholarship?.()}
-                className="w-full max-w-[360px] py-2 px-4 rounded-[8px] bg-[#22c55e] hover:bg-[#16a34a] text-white font-bold text-[14px] flex items-center justify-center gap-2 shadow-sm border-none cursor-pointer transition-all active:scale-95"
-              >
-                <div className="relative w-6 h-6 rounded-full bg-white flex items-center justify-center p-0.5 shrink-0 overflow-hidden">
-                  <Image
-                    src={brand.giftGif || "/assets/images/gift.gif"}
-                    alt="Gift"
-                    fill
-                    unoptimized
-                    className="object-contain p-0.5"
-                  />
-                </div>
-                <span>{brand.couponButtonText || "Scholarship Coupon Code"}</span>
-              </button>
-            </div>
-          )}
           <LandingLeadForm
             brand={brand}
             courses={courses}
