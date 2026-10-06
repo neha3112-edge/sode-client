@@ -25,6 +25,72 @@ export default function LandingRecruiters({
     );
   }
 
+  // If IIM Kozhikode Layout
+  if (brand.slug === "iim" || brand.recruitersLayout === "iim") {
+    const partners = activeRecruiters.partners && activeRecruiters.partners.length > 0
+      ? activeRecruiters.partners
+      : [
+          { name: "Capco", image: "/assets/iim/capco.webp" },
+          { name: "Cognizant", image: "/assets/iim/Cognizant.webp" },
+          { name: "Delhivery", image: "/assets/iim/Delhivery.webp" },
+          { name: "Capita", image: "/assets/iim/capita.webp" },
+          { name: "Disney", image: "/assets/iim/disnep.webp" },
+          { name: "Codeyoung", image: "/assets/iim/codeyoung.webp" },
+          { name: "CBSPL", image: "/assets/iim/cbspl.webp" },
+        ];
+
+    return (
+      <section id="placement">
+        <div className="container">
+          <div className="placement-section">
+            <h2><strong>PLACEMENTS</strong> PARTNERS</h2>
+            {partners.map((p, idx) => (
+              <img
+                key={idx}
+                src={p.image}
+                alt={p.name || `p${idx + 1}`}
+                className="placement-img"
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // If partners list is provided (generic fallback)
+  if (activeRecruiters.partners && activeRecruiters.partners.length > 0) {
+    const partners = activeRecruiters.partners;
+    const title = activeRecruiters.title || "IIM Kozhikode HR Analytics Course: Placement Partners";
+
+    return (
+      <section id="placement" className="py-12 sm:py-16 bg-white select-none scroll-mt-20">
+        <LandingContainer>
+          <div className="bg-[#F2F2F2] rounded-[15px] p-6 sm:p-10 text-center">
+            <h2 className="text-[22px] sm:text-[28px] font-bold text-[#2B2146] mb-8 m-0">
+              {title}
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4 items-center justify-center">
+              {partners.map((p, idx) => (
+                <div key={idx} className="bg-white rounded-[8px] h-[70px] p-2 flex items-center justify-center shadow-xs border border-slate-200/60">
+                  <div className="relative w-full h-full">
+                    <Image
+                      src={p.image}
+                      alt={p.name || `Partner ${idx + 1}`}
+                      fill
+                      className="object-contain p-1"
+                      sizes="150px"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </LandingContainer>
+      </section>
+    );
+  }
+
   // If VGU or single image is supplied
   if (activeRecruiters.image || brand.slug === "vgu" || brand.recruitersLayout === "vgu") {
     const title = activeRecruiters.title || "Top Recruiters at VGU Online";

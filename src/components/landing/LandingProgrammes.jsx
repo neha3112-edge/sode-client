@@ -10,6 +10,9 @@ import LiverpoolProgrammes from "./programmes/LiverpoolProgrammes";
 import RushfordProgrammes from "./programmes/RushfordProgrammes";
 import EsgciProgrammes from "./programmes/EsgciProgrammes";
 import GguProgrammes from "./programmes/GguProgrammes";
+import IiitbProgrammes from "./programmes/IiitbProgrammes";
+import UuProgrammes from "./programmes/UuProgrammes";
+import SsbmProgrammes from "./programmes/SsbmProgrammes";
 import ProgrammesCarousel from "./programmes/ProgrammesCarousel";
 
 /**
@@ -72,6 +75,37 @@ export default function LandingProgrammes({
   if (layout === "esgci" || brand.slug === "esgci") {
     return (
       <EsgciProgrammes
+        programmes={programmes}
+        brand={brand}
+        onOpenApply={onOpenApply}
+      />
+    );
+  }
+
+  if (layout === "uu" || brand.slug === "uu") {
+    return (
+      <UuProgrammes
+        programmes={programmes}
+        onSelectCourseForBrochure={onSelectCourseForBrochure}
+        onOpenApply={onOpenApply}
+      />
+    );
+  }
+
+  if (layout === "iiitb" || brand.slug === "iiitb") {
+    return (
+      <IiitbProgrammes
+        programmes={programmes}
+        brand={brand}
+        onSelectCourseForBrochure={onSelectCourseForBrochure}
+        onOpenApply={onOpenApply}
+      />
+    );
+  }
+
+  if (layout === "ssbm" || brand.slug === "ssbm") {
+    return (
+      <SsbmProgrammes
         programmes={programmes}
         brand={brand}
         onOpenApply={onOpenApply}

@@ -29,6 +29,105 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
     setOpenIndex(openIndex === index ? null : index);
   };
 
+  const isUu =
+    brand.slug === "uu" ||
+    brand.faqLayout === "uu";
+
+  const isIim =
+    brand.slug === "iim" ||
+    brand.faqLayout === "iim";
+
+  // ==========================================
+  // Layout: Uttaranchal University (UU) FAQ
+  // ==========================================
+  if (isUu) {
+    const faqTitle = brand.faqTitle || "FAQ | Frequently Asked Question";
+    return (
+      <section id="faqs" aria-label="Frequently Asked Questions" className="py-10 sm:py-14 bg-white w-full select-none scroll-mt-24">
+        <div className="max-w-[1140px] mx-auto px-4 sm:px-6">
+          <h2 className="text-[22px] sm:text-[26px] lg:text-[28px] font-bold text-[#003399] text-left m-0 mb-6 sm:mb-8 tracking-tight">
+            {faqTitle}
+          </h2>
+
+          <div className="w-full divide-y divide-slate-200">
+            {faqs.map((faq, idx) => {
+              const isOpen = openIndex === idx;
+              const rawQuestion = (faq.q || faq.question || "").replace(/^Q\d+[\.\:\s]*/i, "");
+
+              return (
+                <div key={idx} className="py-3 sm:py-3.5 transition-all">
+                  <button
+                    type="button"
+                    onClick={() => toggleFaq(idx)}
+                    className="w-full text-left flex items-center justify-between gap-4 cursor-pointer bg-transparent border-none p-0 m-0"
+                    aria-expanded={isOpen}
+                  >
+                    <h3 className="text-[13.5px] sm:text-[15px] font-normal sm:font-medium text-[#222222] leading-snug m-0">
+                      {rawQuestion}
+                    </h3>
+                    <span
+                      className="w-6 h-6 rounded-[2px] bg-[#eef7ec] text-[#62B239] flex items-center justify-center font-bold text-[15px] leading-none shrink-0 ml-3 select-none"
+                    >
+                      {isOpen ? "−" : "+"}
+                    </span>
+                  </button>
+
+                  {isOpen && (
+                    <div className="pt-2.5 pb-1 text-[13px] sm:text-[13.5px] text-[#555555] leading-relaxed font-normal">
+                      <p className="m-0 leading-relaxed font-normal">
+                        {faq.a || faq.answer}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (isIim) {
+    const faqTitle = brand.faqTitle || "FAQ | Frequently Asked Questions";
+    return (
+      <section id="faqs">
+        <div className="container">
+          <div className="faq-title">
+            <h2>{faqTitle}</h2>
+          </div>
+          <div className="faqs-section">
+            <div className="accordion">
+              {faqs.map((faq, idx) => {
+                const isOpen = openIndex === idx;
+                const rawQ = faq.q || faq.question || "";
+                const displayQ = rawQ.startsWith("Q") ? rawQ : `Q${idx + 1}. ${rawQ}`;
+                return (
+                  <div key={idx} className="accordion-item">
+                    <div
+                      className="accordion-header"
+                      onClick={() => toggleFaq(idx)}
+                      role="button"
+                      tabIndex={0}
+                    >
+                      {displayQ}
+                      <span className="span">{isOpen ? "−" : "+"}</span>
+                    </div>
+                    {isOpen && (
+                      <div className="accordion-content" style={{ display: "block" }}>
+                        {faq.a || faq.answer}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   // ==========================================
   // Layout: Golden Gate University (GGU) FAQ
   // ==========================================

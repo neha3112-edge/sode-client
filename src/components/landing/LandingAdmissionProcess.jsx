@@ -100,6 +100,36 @@ export default function LandingAdmissionProcess({
 }) {
   if (brand.hideAdmissionProcess) return null;
 
+  // IIM Kozhikode Dedicated Layout
+  if (brand.slug === "iim" || brand.admissionLayout === "iim") {
+    const steps = [
+      { num: 1, title: "Submit Form", desc: "Fill in and submit your application form online", colorClass: "orange" },
+      { num: 2, title: "Expert's Counseling", desc: "You will receive a call from our expert counselor", colorClass: "blue" },
+      { num: 3, title: "Choose University", desc: "Select the course & university according to your interest", colorClass: "pink" },
+      { num: 4, title: "Online Payment", desc: "You need to make a smooth online fee submission", colorClass: "green" },
+      { num: 5, title: "Document Submit", desc: "You need to upload all the required verified documents.", colorClass: "purple" },
+      { num: 6, title: "Admission Confirm", desc: "Get Confirmation on your Email & Whatsapp", colorClass: "orange" },
+    ];
+    return (
+      <section className="apply-section" id="how-to-apply">
+        <h2>{brand.admissionTitle || "How to Apply for IIM Kozhikode University Online Courses"}</h2>
+        <p className="section-desc">
+          {brand.admissionSubtitle || "Students can easily enrol in IIM Kozhikode University Online courses. Candidates can conveniently apply by selecting their desired program. Follow these steps to secure admission in the university."}
+        </p>
+
+        <div className="steps-wrapper">
+          {steps.map((st) => (
+            <div key={st.num} className={`step-card ${st.colorClass}`}>
+              <div className="step-number">{st.num}</div>
+              <h4>{st.title}</h4>
+              <p>{st.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  }
+
   // Active steps with fallback to global 6 steps
   const rawSteps =
     admissionSteps && admissionSteps.length > 0
@@ -195,8 +225,14 @@ export default function LandingAdmissionProcess({
           {subtitleText}
         </p>
 
-        {/* Responsive Step Cards Grid - Matching Image 2 Permanently */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-3.5 lg:gap-4 xl:gap-5 w-full">
+        {/* Responsive Step Cards Grid */}
+        <div
+          className={`grid ${
+            rawSteps.length <= 4
+              ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 max-w-4xl mx-auto"
+              : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-6"
+          } gap-3 sm:gap-3.5 lg:gap-4 xl:gap-5 w-full`}
+        >
           {rawSteps.map((step, idx) => {
             // Default multi-color palette cycle matching Image 2
             const defaultPalette = DEFAULT_STEP_PALETTE[idx % DEFAULT_STEP_PALETTE.length];

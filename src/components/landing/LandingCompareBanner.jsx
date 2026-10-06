@@ -15,12 +15,34 @@ export default function LandingCompareBanner({ brand = {}, onOpenCompare }) {
       : brand.shortName ||
         (brand.name ? brand.name.replace(/\s*Online\s*$/i, "") : "Amity University"));
 
-  const bannerBg =
-    brand.compareBannerBg ||
-    brand.compareBannerColor ||
-    (isSmu ? "#f05525" : brand.primaryColor || "#08417b");
+  const isIim =
+    brand.slug === "iim" ||
+    brand.compareLayout === "iim";
+
+  if (isIim) {
+    return (
+      <div className="compare_Section" id="compare-universities">
+        <div className="compare_box">
+          <h2>Still Confused?</h2>
+          <h4>{brand.compareSubtitle || "Compare IIM Kozhikode University with Top World Renowned Universities"}</h4>
+          <a
+            href="javascript:void(0);"
+            className="compare_btn"
+            onClick={() => onOpenCompare?.()}
+          >
+            <img src={brand.arrowGif || "/assets/iim/arrow.gif"} alt="Compare universities" />
+          </a>
+        </div>
+      </div>
+    );
+  }
 
   const sectionBg = brand.compareSectionBg || "bg-white";
+  const bannerBg =
+    brand.compareBannerBg ||
+    (isSmu
+      ? "linear-gradient(90deg, #02203c 0%, #004b87 100%)"
+      : brand.primaryColor || "#002b49");
 
   return (
     <section className={`compare_Section ${sectionBg} pt-8 sm:pt-14 pb-14 sm:pb-16 select-none`}>

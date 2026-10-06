@@ -13,6 +13,10 @@ import { esgciData } from "./esgci";
 import { rushfordData } from "./rushford";
 import { liverpoolData } from "./liverpool";
 import { edgewoodData } from "./edgewood";
+import { iimData } from "./iim";
+import { uuData } from "./uu";
+import { iiitbData } from "./iiitb";
+import { ssbmData } from "./ssbm";
 
 export const LANDING_REGISTRY = {
   amity: amityData,
@@ -49,6 +53,22 @@ export const LANDING_REGISTRY = {
   "edgewood-university": edgewoodData,
   "edgewood-online": edgewoodData,
   "edgewood-college": edgewoodData,
+  iim: iimData,
+  "iim-kozhikode": iimData,
+  "iim-hr": iimData,
+  iimk: iimData,
+  uu: uuData,
+  "uu-online": uuData,
+  uttaranchal: uuData,
+  "uttaranchal-university": uuData,
+  "uttaranchal-university-online": uuData,
+  iiitb: iiitbData,
+  "iiit-bangalore": iiitbData,
+  "iiit-b": iiitbData,
+  "iiitb-online": iiitbData,
+  ssbm: ssbmData,
+  "ssbm-geneva": ssbmData,
+  "ssbm-online": ssbmData,
 };
 
 export function getLandingData(slug) {
@@ -73,4 +93,8 @@ export {
   rushfordData,
   liverpoolData,
   edgewoodData,
+  iimData,
+  uuData,
+  iiitbData,
+  ssbmData,
 };
