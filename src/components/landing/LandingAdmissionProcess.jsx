@@ -225,8 +225,14 @@ export default function LandingAdmissionProcess({
           {subtitleText}
         </p>
 
-        {/* Responsive Step Cards Grid - Matching Image 2 Permanently */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-3.5 lg:gap-4 xl:gap-5 w-full">
+        {/* Responsive Step Cards Grid */}
+        <div
+          className={`grid ${
+            rawSteps.length <= 4
+              ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 max-w-4xl mx-auto"
+              : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-6"
+          } gap-3 sm:gap-3.5 lg:gap-4 xl:gap-5 w-full`}
+        >
           {rawSteps.map((step, idx) => {
             // Default multi-color palette cycle matching Image 2
             const defaultPalette = DEFAULT_STEP_PALETTE[idx % DEFAULT_STEP_PALETTE.length];

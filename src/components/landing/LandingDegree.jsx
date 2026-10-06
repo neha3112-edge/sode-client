@@ -21,6 +21,182 @@ export default function LandingDegree({
     images = null,
   } = degreeInfo;
 
+  const isIiitb =
+    brand.degreeLayout === "iiitb" || brand.slug === "iiitb";
+
+  if (isIiitb) {
+    return (
+      <section
+        id="sample-certificate"
+        className="certificate-slider-section py-14 sm:py-16 bg-[#f5f5f5] select-none scroll-mt-20"
+      >
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+          {/* Certificate display */}
+          <div className="certificate-display flex justify-center">
+            <div className="relative w-full max-w-[480px] h-[340px] sm:h-[400px]">
+              <Image
+                src={
+                  image ||
+                  "/assets/all_universities_images/iiitb/sample-certificate.webp"
+                }
+                alt="Sample Certificate"
+                fill
+                className="object-contain"
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                priority
+              />
+            </div>
+          </div>
+
+          {/* Certificate content */}
+          <div className="certificate-content text-left flex flex-col items-start justify-center">
+            <h2 className="text-[30px] sm:text-[38px] font-medium leading-[1.15] text-[#005382] m-0 mb-3 whitespace-pre-line">
+              {title || "Sample Post \n Graduate Certificate"}
+            </h2>
+            <p className="description text-[14px] text-[#444444] leading-relaxed mb-6 font-normal">
+              {description}
+            </p>
+            <button
+              type="button"
+              onClick={() => onOpenApply?.()}
+              className="get-degree-btn inline-flex items-center gap-2 bg-[#005382] hover:bg-[#004269] text-white font-bold text-[14px] px-8 py-3 rounded-full border-none cursor-pointer transition-all active:scale-95 shadow-md"
+            >
+              <span>{buttonText || "Get Degree"}</span>
+              <span className="arrow text-[16px]">→</span>
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  const isSsbm =
+    brand.degreeLayout === "ssbm" || brand.slug === "ssbm";
+
+  if (isSsbm) {
+    const certImage =
+      image ||
+      brand.degreeImage ||
+      "/assets/all_universities_images/ssbm/deree-ssbm.png";
+
+    return (
+      <section
+        id="sample-degree"
+        className="degree-section py-12 sm:py-16 bg-white select-none scroll-mt-20"
+      >
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-center">
+            {/* Certificate display */}
+            <div className="flex justify-center">
+              <div className="relative w-full max-w-[420px] aspect-[4/3] rounded-[10px] overflow-hidden shadow-[0_0_15px_rgba(0,0,0,0.15)] bg-white p-2">
+                <Image
+                  src={certImage}
+                  alt="SSBM PWC Directorship & Board Advisory Certificate"
+                  fill
+                  className="object-contain p-2"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  priority
+                />
+              </div>
+            </div>
+
+            {/* Certificate content */}
+            <div className="degree-info text-left">
+              <h2 className="text-[24px] sm:text-[30px] lg:text-[34px] font-bold text-[#111111] leading-tight m-0 mb-4 uppercase">
+                {degreeInfo.title1 || "PWC DIRECTORSHIP &"}{" "}
+                <span className="text-[#c11f28] block">
+                  {degreeInfo.title2 || "BOARD ADVISORY CERTIFICATE"}
+                </span>
+              </h2>
+              <p className="text-[13.5px] sm:text-[14.5px] text-[#444444] leading-relaxed mb-6 font-normal">
+                {description}
+              </p>
+              <button
+                type="button"
+                onClick={() => onOpenApply?.()}
+                className="px-8 py-3 bg-[#c11f28] hover:bg-[#a81a22] text-white font-bold text-[15px] rounded-[5px] transition-all border-none cursor-pointer shadow-md active:scale-95"
+              >
+                {buttonText || "Get Degree"}
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  const isUu =
+    brand.degreeLayout === "uu" ||
+    brand.slug === "uu";
+
+  if (isUu) {
+    const subtitleGreen = degreeInfo.highlight || degreeInfo.greenTitle || "UGC Approved";
+    const line1 = degreeInfo.line1 || "Uttaranchal University";
+    const line2 = degreeInfo.line2 || "Online Degree";
+
+    return (
+      <section
+        id="degree"
+        className="w-full relative select-none py-10 sm:py-16 lg:py-20 bg-white scroll-mt-20"
+      >
+        <div className="max-w-[1180px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            {/* Left: Text Info + Button */}
+            <div className="lg:col-span-6 flex flex-col items-center lg:items-start text-center lg:text-left">
+              <h2 className="text-[26px] sm:text-[34px] lg:text-[38px] font-bold leading-tight m-0 mb-4 text-slate-900">
+                <span className="text-[#62B239] block mb-1">{subtitleGreen}</span>
+                <span>{line1}</span>
+                <br />
+                <span>{line2}</span>
+              </h2>
+
+              {description && (
+                <p className="text-[13px] sm:text-[14.5px] text-[#444444] font-normal leading-relaxed m-0 mb-6 max-w-lg">
+                  {description}
+                </p>
+              )}
+
+              <div className="hidden lg:block">
+                <button
+                  type="button"
+                  onClick={() => onOpenApply?.()}
+                  className="px-8 py-2.5 border-2 border-[#0A3C7D] text-[#0A3C7D] hover:bg-[#0A3C7D] hover:text-white font-semibold text-[14px] rounded-[4px] bg-white transition-all cursor-pointer shadow-2xs active:scale-95"
+                >
+                  {buttonText || "Get Degree"}
+                </button>
+              </div>
+            </div>
+
+            {/* Right: Certificate Image */}
+            <div className="lg:col-span-6 flex flex-col items-center justify-center">
+              <div className="relative w-full max-w-[320px] sm:max-w-[380px] h-[450px] sm:h-[520px] drop-shadow-md">
+                <Image
+                  src={image || "/assets/all_universities_images/uu/sample-degree-uttarancha1.webp"}
+                  alt="Uttaranchal University Online Degree"
+                  fill
+                  className="object-contain"
+                  sizes="(max-width: 640px) 320px, 380px"
+                  priority
+                />
+              </div>
+
+              {/* Mobile button below image */}
+              <div className="block lg:hidden mt-5">
+                <button
+                  type="button"
+                  onClick={() => onOpenApply?.()}
+                  className="px-8 py-2.5 border-2 border-[#0A3C7D] text-[#0A3C7D] hover:bg-[#0A3C7D] hover:text-white font-semibold text-[14px] rounded-[4px] bg-white transition-all cursor-pointer shadow-2xs active:scale-95"
+                >
+                  {buttonText || "Get Degree"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   const isLiverpool =
     brand.degreeLayout === "liverpool" || brand.slug === "liverpool";
 

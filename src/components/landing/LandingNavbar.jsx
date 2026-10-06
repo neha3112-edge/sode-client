@@ -214,13 +214,34 @@ export default function LandingNavbar({
             </ul>
           )}
 
+          {brand.slug === "uu" && (
+            <Link
+              href="#hero"
+              onClick={handleScrollTop}
+              className="des_logo flex md:hidden items-center shrink-0 cursor-pointer"
+              aria-label="Back to Top"
+            >
+              <div className="relative w-14 sm:w-18 h-10 sm:h-12">
+                <Image
+                  src={sodeIcon || "/assets/all_universities_images/uu/sode-icon.png"}
+                  alt="SODE"
+                  fill
+                  priority
+                  className="object-contain object-right"
+                  sizes="80px"
+                />
+              </div>
+            </Link>
+          )}
+
           {isCouponVisible ? (
             <div
-              className={
-                brand.couponWrapperBg || brand.showCouponPillWrapper
-                  ? "p-1.5 sm:p-2 rounded-[12px] sm:rounded-[14px] inline-flex items-center justify-center transition-all"
-                  : "inline-flex items-center"
-              }
+              className={`
+                ${brand.slug === "uu" ? "hidden md:inline-flex" : "inline-flex"}
+                ${brand.couponWrapperBg || brand.showCouponPillWrapper
+                  ? "p-1.5 sm:p-2 rounded-[12px] sm:rounded-[14px] items-center justify-center transition-all"
+                  : "items-center"}
+              `}
               style={
                 brand.couponWrapperBg
                   ? { backgroundColor: brand.couponWrapperBg }

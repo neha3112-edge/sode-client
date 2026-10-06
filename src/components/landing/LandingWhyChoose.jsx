@@ -13,6 +13,9 @@ import RushfordWhyChoose from "./whychoose/RushfordWhyChoose";
 import EsgciWhyChoose from "./whychoose/EsgciWhyChoose";
 import GguWhyChoose from "./whychoose/GguWhyChoose";
 import IimWhyChoose from "./whychoose/IimWhyChoose";
+import IiitbWhyChoose from "./whychoose/IiitbWhyChoose";
+import UuWhyChoose from "./whychoose/UuWhyChoose";
+import SsbmWhyChoose from "./whychoose/SsbmWhyChoose";
 import ClassicWhyChoose from "./whychoose/ClassicWhyChoose";
 
 /**
@@ -30,6 +33,21 @@ export default function LandingWhyChoose({ whyChoose = [], brand = {}, onOpenApp
   // IIM Kozhikode Eligibility / Benefits
   if (layout === "iim" || brand.slug === "iim") {
     return <IimWhyChoose whyChoose={whyChoose} brand={brand} onOpenApply={onOpenApply} />;
+  }
+
+  // UU Benefits
+  if (layout === "uu" || brand.slug === "uu") {
+    return <UuWhyChoose whyChoose={whyChoose} brand={brand} onOpenApply={onOpenApply} />;
+  }
+
+  // IIIT Bangalore Why Choose
+  if (layout === "iiitb" || brand.slug === "iiitb") {
+    return <IiitbWhyChoose whyChoose={whyChoose} brand={brand} />;
+  }
+
+  // SSBM Global DBA Benefits
+  if (layout === "ssbm" || brand.slug === "ssbm") {
+    return <SsbmWhyChoose whyChoose={whyChoose} brand={brand} onOpenApply={onOpenApply} />;
   }
 
   if (!whyChoose?.length) return null;
