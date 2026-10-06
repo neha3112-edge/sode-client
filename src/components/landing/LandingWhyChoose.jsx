@@ -27,11 +27,174 @@ export default function LandingWhyChoose({ whyChoose = [], brand = {}, onOpenApp
     (brand.whyChooseLayout === "rushford" || brand.slug === "rushford");
   const isEsgciLayout = !isLiverpoolLayout && !isRushfordLayout && (brand.whyChooseLayout === "esgci" || brand.slug === "esgci");
   const isGguLayout = !isLiverpoolLayout && !isRushfordLayout && !isEsgciLayout && (brand.whyChooseLayout === "ggu" || brand.slug === "ggu");
-  const isMuLayout = !isLiverpoolLayout && !isRushfordLayout && !isEsgciLayout && !isGguLayout && (brand.whyChooseLayout === "mu" || brand.whyChooseLayout === "mu-cards" || brand.slug === "mu");
-  const isVguLayout = !isLiverpoolLayout && !isRushfordLayout && !isEsgciLayout && !isMuLayout && !isGguLayout && (brand.whyChooseLayout === "vgu-grid" || brand.slug === "vgu");
-  const isCheckerboard = !isLiverpoolLayout && !isRushfordLayout && !isEsgciLayout && !isGguLayout && brand.whyChooseLayout === "checkerboard";
-  const isSmuLayout = !isLiverpoolLayout && !isRushfordLayout && !isEsgciLayout && !isGguLayout && (brand.whyChooseLayout === "smu-advantages" || brand.slug === "smu");
-  const isSlider = !isLiverpoolLayout && !isRushfordLayout && !isEsgciLayout && !isGguLayout && brand.whyChooseLayout === "slider";
+  const isUuLayout =
+    !isLiverpoolLayout &&
+    !isRushfordLayout &&
+    !isEsgciLayout &&
+    !isGguLayout &&
+    (brand.whyChooseLayout === "uu" || brand.slug === "uu");
+  const isSsbmLayout =
+    !isLiverpoolLayout &&
+    !isRushfordLayout &&
+    !isEsgciLayout &&
+    !isGguLayout &&
+    !isUuLayout &&
+    (brand.whyChooseLayout === "ssbm" || brand.slug === "ssbm");
+  const isIiitbLayout =
+    !isLiverpoolLayout &&
+    !isRushfordLayout &&
+    !isEsgciLayout &&
+    !isGguLayout &&
+    !isUuLayout &&
+    !isSsbmLayout &&
+    (brand.whyChooseLayout === "iiitb" || brand.slug === "iiitb");
+  const isMuLayout = !isLiverpoolLayout && !isRushfordLayout && !isEsgciLayout && !isGguLayout && !isUuLayout && !isIiitbLayout && !isSsbmLayout && (brand.whyChooseLayout === "mu" || brand.whyChooseLayout === "mu-cards" || brand.slug === "mu");
+  const isVguLayout = !isLiverpoolLayout && !isRushfordLayout && !isEsgciLayout && !isMuLayout && !isGguLayout && !isUuLayout && !isIiitbLayout && !isSsbmLayout && (brand.whyChooseLayout === "vgu-grid" || brand.slug === "vgu");
+  const isCheckerboard = !isLiverpoolLayout && !isRushfordLayout && !isEsgciLayout && !isGguLayout && !isUuLayout && !isIiitbLayout && !isSsbmLayout && brand.whyChooseLayout === "checkerboard";
+  const isSmuLayout = !isLiverpoolLayout && !isRushfordLayout && !isEsgciLayout && !isGguLayout && !isUuLayout && !isIiitbLayout && !isSsbmLayout && (brand.whyChooseLayout === "smu-advantages" || brand.slug === "smu");
+  const isSlider = !isLiverpoolLayout && !isRushfordLayout && !isEsgciLayout && !isGguLayout && !isUuLayout && !isIiitbLayout && !isSsbmLayout && brand.whyChooseLayout === "slider";
+
+  // ==========================================
+  // Layout 0-IIITB: Why Choose IIIT Bangalore (#why_choose)
+  // ==========================================
+  if (isIiitbLayout) {
+    const title = brand.whyChooseTitle || "WHY CHOOSE?";
+    const subtitle = brand.whyChooseSubtitle || "IIIT Bangalore Online Courses";
+
+    return (
+      <section
+        id="why_choose"
+        className="why-section py-14 sm:py-16 bg-white text-center select-none scroll-mt-20"
+      >
+        <div className="max-w-[1240px] mx-auto px-4 sm:px-6">
+          <div className="why-header mb-8 sm:mb-12">
+            <h2 className="text-[28px] sm:text-[34px] font-extrabold text-[#111111] m-0 mb-1">
+              {title}
+            </h2>
+            <p className="text-[16px] sm:text-[18px] text-[#444444] tracking-wide m-0">
+              {subtitle}
+            </p>
+          </div>
+
+          <div className="why-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            {whyChoose.map((item, idx) => {
+              const isDark = idx % 2 === 0;
+              return (
+                <div
+                  key={idx}
+                  className={`why-card p-8 sm:p-10 text-white flex flex-col items-center text-center ${
+                    isDark ? "bg-[#1b355e]" : "bg-[#1f9acb]"
+                  }`}
+                >
+                  <div className="relative w-16 h-16 mb-4 flex items-center justify-center">
+                    <Image
+                      src={item.image}
+                      alt={item.title}
+                      fill
+                      className="object-contain"
+                      sizes="64px"
+                    />
+                  </div>
+                  <h3 className="text-[18px] font-bold mb-3 text-white leading-snug">
+                    {item.title}
+                  </h3>
+                  <p className="text-[13.5px] leading-relaxed text-white/95 m-0 font-normal">
+                    {item.desc || item.description}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ==========================================
+  // Layout 0-UU: Uttaranchal University Benefits (#whychoose)
+  // ==========================================
+  if (isUuLayout) {
+    const title = brand.whyChooseTitle || "Uttaranchal University Benefits in the";
+    const highlight = brand.whyChooseHighlight || "Online Degree Programs";
+    const description =
+      brand.whyChooseDescription ||
+      "Uttaranchal University Online courses are UGC-Entitled offers the convenience & flexibility of online education with the equivalency of a conventional, on-campus degree. Through Uttaranchal University Online, leading international faculty, it offer world-class education in a true sense.";
+    const studentImage = brand.whyChooseStudentImage || "/assets/all_universities_images/uu/image-2nd.webp";
+    const btnText = brand.whyChooseBtnText || "Apply Now";
+
+    return (
+      <section
+        id="whychoose"
+        data-section="whychoose"
+        className="w-full select-none py-10 sm:py-16 lg:py-20 scroll-mt-20 text-white"
+        style={{ backgroundColor: brand.whyChooseBg || "#0A3C7D" }}
+      >
+        <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-center">
+            {/* Left: Student Image */}
+            <div className="lg:col-span-5 flex justify-center">
+              <div className="relative w-full max-w-[360px] sm:max-w-[420px] aspect-[4/4.5] rounded-[24px] sm:rounded-[32px] overflow-hidden shadow-2xl">
+                <Image
+                  src={studentImage}
+                  alt="Uttaranchal University Benefits"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 42vw"
+                  priority
+                />
+              </div>
+            </div>
+
+            {/* Right: Text + 2-Column Icon Grid + Apply Button */}
+            <div className="lg:col-span-7 flex flex-col justify-center text-left">
+              <h2 className="text-[22px] sm:text-[28px] lg:text-[32px] font-bold text-white leading-tight m-0 mb-3">
+                {title} <span className="text-[#62B239]">{highlight}</span>
+              </h2>
+
+              {description && (
+                <p className="text-[12.5px] sm:text-[13.5px] text-white/90 font-normal leading-relaxed m-0 mb-6 sm:mb-8 max-w-2xl">
+                  {description}
+                </p>
+              )}
+
+              {/* 2-Column Icon Grid on both mobile and desktop */}
+              <div className="grid grid-cols-2 gap-x-3 sm:gap-x-6 gap-y-4 sm:gap-y-5 mb-6 sm:mb-8">
+                {whyChoose.map((item, idx) => (
+                  <div key={idx} className="flex items-center gap-2.5 sm:gap-3">
+                    {item.image && (
+                      <div className="relative w-7 h-7 sm:w-8 sm:h-8 shrink-0 flex items-center justify-center">
+                        <Image
+                          src={item.image}
+                          alt={item.title}
+                          fill
+                          className="object-contain"
+                          sizes="36px"
+                        />
+                      </div>
+                    )}
+                    <span className="text-[12px] sm:text-[14px] font-medium text-white leading-snug">
+                      {item.title}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <div>
+                <button
+                  type="button"
+                  onClick={() => onOpenApply?.()}
+                  className="inline-flex items-center gap-2 px-6 py-2 sm:px-7 sm:py-2.5 bg-[#62B239] hover:bg-[#539e2e] text-white font-bold text-[13.5px] sm:text-[14.5px] rounded-[6px] transition-all border-none cursor-pointer shadow-md active:scale-95"
+                >
+                  <span>{btnText}</span>
+                  <ArrowRight className="w-4 h-4 stroke-[2.5]" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   // ==========================================
   // Layout 0-Liverpool: What Makes Liverpool Stand Out (#why-choose)
@@ -230,6 +393,73 @@ export default function LandingWhyChoose({ whyChoose = [], brand = {}, onOpenApp
             <span>Enroll &amp; Get Your DBA Degree</span>
             <ArrowRight className="w-4 h-4" />
           </button>
+        </div>
+      </section>
+    );
+  }
+
+  // ==========================================
+  // Layout 0-SSBM: Global Doctor of Business Administration (#benefits)
+  // ==========================================
+  if (isSsbmLayout) {
+    const title = brand.whyChooseTitle || "Global Doctor of";
+    const subtitle = brand.whyChooseSubtitle || "Business Administration with SSBM";
+
+    return (
+      <section
+        id="benefits"
+        data-section="whychoose"
+        className="benefits-section w-full select-none py-10 sm:py-16 scroll-mt-20 text-white relative bg-cover bg-center"
+        style={{
+          backgroundImage: `url(${brand.whyChooseBgImage || "/assets/all_universities_images/ssbm/Global.webp"})`,
+        }}
+      >
+        <div className="max-w-[1240px] mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            {/* Left Spacer for Desktop Background Alignment */}
+            <div className="hidden lg:block lg:col-span-4" />
+
+            {/* Right Content */}
+            <div className="lg:col-span-8 p-4 sm:p-8 text-left">
+              <h2 className="text-[26px] sm:text-[34px] lg:text-[38px] font-extrabold text-white leading-tight uppercase m-0">
+                {title}
+              </h2>
+              <p className="text-[20px] sm:text-[24px] lg:text-[26px] text-white font-medium mt-1 mb-6 leading-snug">
+                {subtitle}
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4 mb-8">
+                {whyChoose.map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="bnf1 bg-white text-black p-3.5 rounded-[10px] flex items-center gap-3 shadow-md"
+                  >
+                    <div className="relative w-10 h-10 shrink-0">
+                      <Image
+                        src={item.image}
+                        alt={item.title}
+                        fill
+                        className="object-contain"
+                        sizes="40px"
+                      />
+                    </div>
+                    <h3 className="text-[13px] sm:text-[14px] font-semibold text-[#111111] leading-snug m-0">
+                      {item.title}
+                    </h3>
+                  </div>
+                ))}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => onOpenApply?.()}
+                className="inline-flex items-center gap-2.5 px-8 py-3.5 bg-black hover:bg-neutral-900 text-white font-bold text-[14px] sm:text-[15px] rounded-[5px] transition-all border-none cursor-pointer shadow-md active:scale-95"
+              >
+                <span>Enroll &amp; Get Your DBA Degree</span>
+                <ArrowRight className="w-4 h-4 text-white" />
+              </button>
+            </div>
+          </div>
         </div>
       </section>
     );

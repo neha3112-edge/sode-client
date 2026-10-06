@@ -218,6 +218,7 @@ export default function UniversityLandingView({ data = {} }) {
           courses={courses}
           onOpenBrochure={() => handleOpenBrochure()}
           onOpenApply={() => handleOpenApply()}
+          onOpenScholarship={() => setIsScholarshipOpen(true)}
           onOpenDisclaimer={() => handleOpenLegal("disclaimer")}
         />
 
@@ -273,21 +274,65 @@ export default function UniversityLandingView({ data = {} }) {
               case "overview":
                 return (
                   <section id="overview" key="overview" className="overview-section py-12 sm:py-16 bg-white text-center select-none scroll-mt-20">
-                    <div className="max-w-[1000px] mx-auto px-4 sm:px-6">
+                    <div className="max-w-[1050px] mx-auto px-4 sm:px-6">
                       <h2 className="text-[26px] sm:text-[32px] lg:text-[34px] font-bold text-[#111111] leading-tight m-0">
-                        Overview of <span className="text-[#04903c]">{brand.overviewHighlight || "ESCGI Online DBA Program"}</span>
+                        {brand.overviewTitle ? (
+                          brand.overviewTitle
+                        ) : (
+                          <>
+                            Overview of <span style={{ color: brand.primaryColor || "#04903c" }}>{brand.overviewHighlight || "Online DBA Program"}</span>
+                          </>
+                        )}
                       </h2>
-                      <p className="text-[14px] sm:text-[15.5px] text-[#444444] leading-relaxed mt-4 mb-6 max-w-4xl mx-auto">
-                        {brand.overviewDescription || "The ESGCI Online DBA helps professionals gain advanced skills in business and management. The 36-month program includes foundation, leadership, and dissertation phases, giving a clear path for learning. Students receive personal guidance from experienced ESGCI faculty to support research and studies. The program offers interactive learning and global exposure, helping students develop strong leadership and practical skills. It also allows students to use their knowledge on real-world business challenges. Graduates earn a globally recognized doctoral degree, improving career opportunities. After completing the DBA, alumni can work in consulting, research, teaching, or executive roles worldwide."}
+                      <p className="text-[14px] sm:text-[15.5px] text-[#444444] leading-relaxed mt-4 mb-6 max-w-4xl mx-auto font-normal">
+                        {brand.overviewDescription || "The Online DBA helps professionals gain advanced skills in business and management."}
                       </p>
-                      <button
-                        type="button"
-                        onClick={() => handleOpenBrochure()}
-                        className="downloadBrochureBtn inline-flex items-center gap-2 px-6 py-2.5 rounded-[5px] bg-[#fff000] text-black font-bold text-[15px] hover:brightness-95 transition-all cursor-pointer border-none shadow-xs active:scale-95"
-                      >
-                        <span>{brand.overviewButtonText || "Get Curriculum"}</span>
-                        <Download className="w-4 h-4 stroke-[2.5]" />
-                      </button>
+
+                      {brand.overviewItems && brand.overviewItems.length > 0 && (
+                        <div className="overview_lists grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 my-8">
+                          {brand.overviewItems.map((item, idx) => (
+                            <div key={idx} className="overview_list_inner bg-[#f1f1f1] p-3.5 rounded-[6px] flex items-center gap-3 text-left">
+                              <span className="text-[#c11f28] shrink-0 text-[26px]">{item.icon}</span>
+                              <div className="head_inner">
+                                <h3 className="text-[16px] font-bold text-[#111111] m-0 mb-1">{item.title}</h3>
+                                <p className="text-[13px] text-[#555555] m-0 font-medium">{item.value}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      <div className="flex flex-wrap items-center justify-center gap-3 mt-4">
+                        <button
+                          type="button"
+                          onClick={() => handleOpenBrochure()}
+                          className="downloadBrochureBtn inline-flex items-center gap-2 px-6 py-2.5 rounded-[5px] font-bold text-[15px] hover:brightness-95 transition-all cursor-pointer border-none shadow-xs active:scale-95"
+                          style={{
+                            backgroundColor: brand.accentColor || brand.primaryColor || "#fff000",
+                            color: brand.overviewBtnTextColor || "#000000",
+                          }}
+                        >
+                          <span>{brand.overviewButtonText || "Get Curriculum"}</span>
+                          <Download className="w-4 h-4 stroke-[2.5]" />
+                        </button>
+                        {brand.overviewSecondaryBtnText && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const target = document.getElementById("whychoose") || document.getElementById("benefits");
+                              if (target) {
+                                target.scrollIntoView({ behavior: "smooth" });
+                              } else {
+                                handleOpenApply();
+                              }
+                            }}
+                            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-[5px] bg-black text-white font-bold text-[15px] hover:brightness-125 transition-all cursor-pointer border-none shadow-xs active:scale-95"
+                          >
+                            <span>{brand.overviewSecondaryBtnText}</span>
+                            <span className="text-[14px]">▼</span>
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </section>
                 );
@@ -465,6 +510,33 @@ export default function UniversityLandingView({ data = {} }) {
                     onOpenDisclaimer={() => handleOpenLegal("disclaimer")}
                   />
                 ) : null;
+              case "ctaStrip":
+                return (
+                  <section
+                    key="ctaStrip"
+                    className="cta-strip bg-[#005a8d] py-7 sm:py-8 px-4 sm:px-6 select-none scroll-mt-20"
+                  >
+                    <div className="max-w-[1200px] mx-auto flex flex-col md:flex-row items-center justify-between text-center md:text-left gap-5">
+                      <div className="cta-text">
+                        <h3 className="text-white text-[24px] sm:text-[30px] lg:text-[34px] font-bold m-0 leading-tight">
+                          {brand.ctaStripTitle || "Need clarification?"}
+                        </h3>
+                        <p className="text-[#dbe9f3] text-[16px] sm:text-[19px] lg:text-[21px] font-semibold mt-1 m-0">
+                          {brand.ctaStripSubtitle ||
+                            "Interact with experts, Get free consultation."}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleOpenApply()}
+                        className="cta-btn inline-flex items-center gap-2.5 bg-white hover:bg-slate-100 text-black font-semibold text-[15px] sm:text-[16px] px-7 py-3 rounded-full border-none cursor-pointer transition-all active:scale-95 shadow-md shrink-0"
+                      >
+                        <i className="fa fa-phone text-[#005a8d]" />
+                        <span>{brand.ctaStripBtnText || "Talk to Experts"}</span>
+                      </button>
+                    </div>
+                  </section>
+                );
               case "compareBanner":
                 return (
                   <LandingCompareBanner
@@ -504,6 +576,7 @@ export default function UniversityLandingView({ data = {} }) {
         universityName={brand.name}
         courses={courses}
         selectedCourse={selectedCourse}
+        brand={brand}
         onOpenDisclaimer={() => handleOpenLegal("disclaimer")}
       />
       <ScholarshipModal

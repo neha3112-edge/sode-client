@@ -276,7 +276,11 @@ export default function LandingLeadForm({
             {activeSubtitle}
           </p>
 
-          {showPhoneBadge && activePhoneText && (
+          {activeBrand.hero?.showDividerBelowSubtitle && (
+            <hr className="border-t border-slate-200 mt-2.5 mb-1 w-full" />
+          )}
+
+          {showPhoneBadge && activeBrand.hero?.showPhoneBadge !== false && activePhoneText && (
             <div className="flex justify-center mt-1.5 mb-2.5">
               <LandingButton
                 href={`tel:${activePhoneHref}`}
@@ -331,7 +335,7 @@ export default function LandingLeadForm({
         >
           <input
             type="text"
-            placeholder="Enter Your Name"
+            placeholder={activeBrand.hero?.namePlaceholder || "Enter Your Name"}
             className={`w-full h-[36px] sm:h-[38px] px-3.5 rounded-[6px] outline-none text-[13px] font-normal ${
               isWhiteCard
                 ? "bg-white border border-[#cccccc] text-slate-800 placeholder:text-slate-400 focus:ring-1 focus:ring-[#193579] focus:border-[#193579]"
@@ -340,39 +344,79 @@ export default function LandingLeadForm({
           />
         </Form.Item>
 
-        {/* Email */}
-        <Form.Item
-          name="email"
-          rules={[
-            { required: true, message: "Please enter your email" },
-            { type: "email", message: "Please enter a valid email" },
-          ]}
-        >
-          <input
-            type="email"
-            placeholder="Enter Your Email"
-            className={`w-full h-[36px] sm:h-[38px] px-3.5 rounded-[6px] outline-none text-[13px] font-normal ${
-              isWhiteCard
-                ? "bg-white border border-[#cccccc] text-slate-800 placeholder:text-slate-400 focus:ring-1 focus:ring-[#193579] focus:border-[#193579]"
-                : "bg-white text-slate-800 placeholder:text-[#888888] border-none shadow-xs focus:ring-2 focus:ring-amber-400"
-            }`}
-          />
-        </Form.Item>
+        {activeBrand.hero?.phoneBeforeEmail ? (
+          <>
+            {/* Mobile Number */}
+            <Form.Item
+              name="phone"
+              rules={[
+                { required: true, message: "Please enter mobile number" },
+                { pattern: /^[6-9]\d{9}$/, message: "Enter 10-digit mobile number" },
+              ]}
+            >
+              <PhoneInputField
+                placeholder="Enter Mobile Number"
+                maxLength={10}
+                isWhiteCard={isWhiteCard}
+              />
+            </Form.Item>
 
-        {/* Mobile Number */}
-        <Form.Item
-          name="phone"
-          rules={[
-            { required: true, message: "Please enter mobile number" },
-            { pattern: /^[6-9]\d{9}$/, message: "Enter 10-digit mobile number" },
-          ]}
-        >
-          <PhoneInputField
-            placeholder="Enter Mobile Number"
-            maxLength={10}
-            isWhiteCard={isWhiteCard}
-          />
-        </Form.Item>
+            {/* Email */}
+            <Form.Item
+              name="email"
+              rules={[
+                { required: true, message: "Please enter your email" },
+                { type: "email", message: "Please enter a valid email" },
+              ]}
+            >
+              <input
+                type="email"
+                placeholder="Enter Your Email"
+                className={`w-full h-[36px] sm:h-[38px] px-3.5 rounded-[6px] outline-none text-[13px] font-normal ${
+                  isWhiteCard
+                    ? "bg-white border border-[#cccccc] text-slate-800 placeholder:text-slate-400 focus:ring-1 focus:ring-[#193579] focus:border-[#193579]"
+                    : "bg-white text-slate-800 placeholder:text-[#888888] border-none shadow-xs focus:ring-2 focus:ring-amber-400"
+                }`}
+              />
+            </Form.Item>
+          </>
+        ) : (
+          <>
+            {/* Email */}
+            <Form.Item
+              name="email"
+              rules={[
+                { required: true, message: "Please enter your email" },
+                { type: "email", message: "Please enter a valid email" },
+              ]}
+            >
+              <input
+                type="email"
+                placeholder="Enter Your Email"
+                className={`w-full h-[36px] sm:h-[38px] px-3.5 rounded-[6px] outline-none text-[13px] font-normal ${
+                  isWhiteCard
+                    ? "bg-white border border-[#cccccc] text-slate-800 placeholder:text-slate-400 focus:ring-1 focus:ring-[#193579] focus:border-[#193579]"
+                    : "bg-white text-slate-800 placeholder:text-[#888888] border-none shadow-xs focus:ring-2 focus:ring-amber-400"
+                }`}
+              />
+            </Form.Item>
+
+            {/* Mobile Number */}
+            <Form.Item
+              name="phone"
+              rules={[
+                { required: true, message: "Please enter mobile number" },
+                { pattern: /^[6-9]\d{9}$/, message: "Enter 10-digit mobile number" },
+              ]}
+            >
+              <PhoneInputField
+                placeholder="Enter Mobile Number"
+                maxLength={10}
+                isWhiteCard={isWhiteCard}
+              />
+            </Form.Item>
+          </>
+        )}
 
         {/* Course Select */}
         <Form.Item

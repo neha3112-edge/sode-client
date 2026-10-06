@@ -3,17 +3,18 @@
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { Carousel } from "antd";
-import { Download, ChevronLeft, ChevronRight, Clock, Hourglass, GraduationCap, ArrowRight } from "lucide-react";
+import { Download, ChevronLeft, ChevronRight, Clock, Hourglass, GraduationCap, ArrowRight, Laptop } from "lucide-react";
 import { FaDownload } from "react-icons/fa";
 
 /**
  * Reusable Landing Programmes Section
  * Supports:
- * 1. VGU Static 4-Column Grid Layout (vgu-cards / vgu-grid)
- * 2. Shoolini Static 3-Column Grid Layout (grid)
- * 3. Clean Card Carousel (Manipal - 3 cards visible, course code, title, logo, brochure button)
- * 4. SMU Card Carousel (3 cards visible, image, title, description, dual action buttons)
- * 5. Classic Amity Carousel (4 cards visible, level badge, duration hourglass, brochure button)
+ * 1. UU Two-Section Grid Layout (uu - Undergraduate & Postgraduate Programs with green top bar, blue meta, outline download & green apply now)
+ * 2. VGU Static 4-Column Grid Layout (vgu-cards / vgu-grid)
+ * 3. Shoolini Static 3-Column Grid Layout (grid)
+ * 4. Clean Card Carousel (Manipal - 3 cards visible, course code, title, logo, brochure button)
+ * 5. SMU Card Carousel (3 cards visible, image, title, description, dual action buttons)
+ * 6. Classic Amity Carousel (4 cards visible, level badge, duration hourglass, brochure button)
  */
 export default function LandingProgrammes({
   programmes = [],
@@ -24,14 +25,279 @@ export default function LandingProgrammes({
   onSelectCourseForBrochure,
   onOpenApply,
 }) {
+  const isUu =
+    brand.programmesLayout === "uu" ||
+    brand.slug === "uu";
+
+  const isIiitb =
+    !isUu &&
+    (brand.programmesLayout === "iiitb" ||
+      brand.slug === "iiitb");
+
   const isLiverpool =
-    brand.programmesLayout === "liverpool" ||
-    brand.slug === "liverpool";
+    !isUu &&
+    !isIiitb &&
+    (brand.programmesLayout === "liverpool" ||
+      brand.slug === "liverpool");
 
   const isRushford =
+    !isUu &&
+    !isIiitb &&
     !isLiverpool &&
     (brand.programmesLayout === "rushford" ||
       brand.slug === "rushford");
+
+  const isEsgci =
+    !isUu &&
+    !isIiitb &&
+    !isLiverpool &&
+    !isRushford &&
+    (brand.programmesLayout === "esgci" || brand.slug === "esgci");
+
+  const isSsbm =
+    !isUu &&
+    !isIiitb &&
+    !isLiverpool &&
+    !isRushford &&
+    !isEsgci &&
+    (brand.programmesLayout === "ssbm" || brand.slug === "ssbm");
+
+  const isGgu =
+    !isUu &&
+    !isIiitb &&
+    !isLiverpool &&
+    !isRushford &&
+    !isEsgci &&
+    !isSsbm &&
+    (brand.programmesLayout === "ggu" || brand.slug === "ggu");
+
+  const isMuTabs =
+    !isUu &&
+    !isIiitb &&
+    !isLiverpool &&
+    !isRushford &&
+    !isEsgci &&
+    !isGgu &&
+    (brand.programmesLayout === "tabs" ||
+      brand.programmesLayout === "mu-tabs" ||
+      brand.programmesLayout === "mu" ||
+      brand.slug === "mu");
+
+  const isVguGrid =
+    !isUu &&
+    !isIiitb &&
+    !isLiverpool &&
+    !isRushford &&
+    !isEsgci &&
+    !isGgu &&
+    !isMuTabs &&
+    (brand.programmesLayout === "vgu-cards" ||
+      brand.programmesLayout === "vgu-grid" ||
+      brand.slug === "vgu");
+
+  const isGrid =
+    !isUu &&
+    !isIiitb &&
+    !isLiverpool &&
+    !isRushford &&
+    !isEsgci &&
+    !isGgu &&
+    !isMuTabs &&
+    !isVguGrid &&
+    brand.programmesLayout === "grid";
+
+  // ==========================================
+  // Layout IIITB: IIIT Bangalore Courses Offered (#main-courses)
+  // ==========================================
+  if (isIiitb) {
+    const heading = brand.programmesTitle || "Courses Offered";
+    const subHeading = brand.programmesSubtitle || "By IIIT Bangalore";
+
+    return (
+      <section
+        id="main-courses"
+        className="courses-section py-14 sm:py-16 bg-[#f9fafb] select-none scroll-mt-20"
+      >
+        <div className="courses-container max-w-[1200px] mx-auto px-4 sm:px-6">
+          <div className="text-center mb-8 sm:mb-10">
+            <h2 className="section-title text-[28px] sm:text-[32px] font-extrabold text-[#003b6f] m-0">
+              {heading}
+            </h2>
+            {subHeading && (
+              <p className="section-subtitle text-[15px] sm:text-[16px] text-[#555555] mt-1 m-0">
+                {subHeading}
+              </p>
+            )}
+          </div>
+
+          <div className="courses-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
+            {programmes.map((c, idx) => (
+              <div
+                key={c.id || idx}
+                className="course-card bg-white rounded-[14px] overflow-hidden shadow-[0_10px_25px_rgba(0,0,0,0.08)] flex flex-col justify-between hover:shadow-lg transition-shadow duration-300"
+              >
+                <div>
+                  <div className="relative w-full h-[160px] overflow-hidden bg-slate-100">
+                    <Image
+                      src={c.image}
+                      alt={c.title}
+                      fill
+                      className="course-img object-cover"
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                    />
+                  </div>
+                  <div className="course-content p-5">
+                    <h3 className="text-[17px] sm:text-[18px] font-bold text-[#111111] mb-2 leading-snug">
+                      {c.title}
+                    </h3>
+                    <div className="duration_list flex items-center gap-2 text-[13.5px] text-[#333333] mb-3">
+                      <Clock className="w-4 h-4 text-black stroke-[2.5]" />
+                      <span>
+                        <b>Duration:</b> {c.duration || "24 weeks"}
+                      </span>
+                    </div>
+                    <p className="course-desc text-[13px] text-[#555555] leading-relaxed line-clamp-4 m-0">
+                      {c.description || c.desc}
+                    </p>
+                  </div>
+                </div>
+                <div className="course-actions px-4 pb-4.5 pt-0 flex items-center gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => onSelectCourseForBrochure?.(c.title)}
+                    className="btn brochure flex-1 h-[42px] px-2.5 sm:px-3 bg-[#01519a] hover:bg-[#003f7a] text-white font-bold text-[12px] sm:text-[13px] rounded-[8px] border-none cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap transition-all active:scale-95 shadow-xs"
+                  >
+                    <span className="whitespace-nowrap">Download Brochure</span>
+                    <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current shrink-0 text-white" viewBox="0 0 24 24">
+                      <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onOpenApply?.(c.title)}
+                    className="btn apply flex-1 h-[42px] px-2.5 sm:px-3 bg-[#00284d] hover:bg-[#001c38] text-white font-bold text-[12px] sm:text-[13px] rounded-[8px] border-none cursor-pointer flex items-center justify-center gap-1 whitespace-nowrap transition-all active:scale-95 shadow-xs"
+                  >
+                    <span className="whitespace-nowrap">Apply now</span>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ==========================================
+  // Layout UU: Uttaranchal University UG & PG Sections (#program)
+  // ==========================================
+  if (isUu) {
+    const ugPrograms = programmes.filter(
+      (p) =>
+        p.level?.toLowerCase().includes("undergrad") ||
+        ["ba", "bba", "bca"].includes(p.code?.toLowerCase()) ||
+        ["ba", "bba", "bca"].includes(p.id?.toLowerCase())
+    );
+    const pgPrograms = programmes.filter(
+      (p) =>
+        p.level?.toLowerCase().includes("postgrad") ||
+        ["mba", "mca"].includes(p.code?.toLowerCase()) ||
+        ["mba", "mca"].includes(p.id?.toLowerCase())
+    );
+
+    const renderProgramCard = (c, idx) => (
+      <div
+        key={c.id || idx}
+        className="w-full bg-white rounded-[8px] overflow-hidden border border-slate-200/90 shadow-[0_3px_12px_rgba(0,0,0,0.06)] flex flex-col justify-between hover:shadow-md transition-all duration-300"
+      >
+        <div>
+          <div className="relative w-full aspect-[16/9.5] overflow-hidden bg-slate-100">
+            <Image
+              src={c.image}
+              alt={c.title}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 33vw"
+            />
+          </div>
+          {/* Green accent line between image and content */}
+          <div className="h-[3px] bg-[#62B239] w-full" />
+          <div className="p-3.5 sm:p-4 pb-1 flex flex-col">
+            <h3 className="text-[15px] sm:text-[16px] font-bold text-[#003399] mb-1.5 leading-snug">
+              | {c.title}
+            </h3>
+            <p className="text-[12px] sm:text-[12.5px] text-[#555555] leading-relaxed line-clamp-3 mb-2.5">
+              {c.description}
+            </p>
+            <div className="flex items-center gap-4 text-[11.5px] sm:text-[12px] font-medium text-[#003399] mb-2.5">
+              <span className="flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5 text-[#003399] stroke-[2.2]" />
+                <span>{c.duration || "3 Years"}</span>
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Laptop className="w-3.5 h-3.5 text-[#003399] stroke-[2.2]" />
+                <span>Online Course</span>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div className="p-3.5 sm:p-4 pt-1 pb-3.5 grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={() => onSelectCourseForBrochure?.(c.code || c.title)}
+            className="w-full py-1.5 px-1 bg-white text-[#62B239] font-medium text-[11px] sm:text-[11.5px] rounded-[4px] border border-[#62B239] hover:bg-[#62B239]/10 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-1 whitespace-nowrap"
+          >
+            <span>Download Brochure</span>
+            <Download className="w-3 h-3 stroke-[2.5]" />
+          </button>
+          <button
+            type="button"
+            onClick={() => onOpenApply?.(c.code || c.title)}
+            className="w-full py-1.5 px-1 bg-[#62B239] text-white font-medium text-[11px] sm:text-[11.5px] rounded-[4px] border-none hover:bg-[#539e2e] active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-1 shadow-xs whitespace-nowrap"
+          >
+            <span>Apply Now</span>
+            <ArrowRight className="w-3 h-3 stroke-[2.5]" />
+          </button>
+        </div>
+      </div>
+    );
+
+    return (
+      <section id="program" className="py-8 sm:py-12 bg-[#ffffff] select-none scroll-mt-20">
+        <div className="max-w-[1080px] mx-auto px-4 sm:px-6">
+          {/* 1. Undergraduate Programs Section */}
+          {ugPrograms.length > 0 && (
+            <div className="mb-10 sm:mb-12">
+              <div className="text-center mb-6 sm:mb-7">
+                <h2 className="text-[20px] sm:text-[24px] lg:text-[26px] font-bold leading-tight m-0">
+                  <span className="text-[#003399]">Uttaranchal University Online</span>{" "}
+                  <span className="text-[#62B239]">Undergraduate programs</span>
+                </h2>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+                {ugPrograms.map(renderProgramCard)}
+              </div>
+            </div>
+          )}
+
+          {/* 2. Postgraduate Programs Section */}
+          {pgPrograms.length > 0 && (
+            <div>
+              <div className="text-center mb-6 sm:mb-7">
+                <h2 className="text-[20px] sm:text-[24px] lg:text-[26px] font-bold leading-tight m-0">
+                  <span className="text-[#003399]">Uttaranchal University Online</span>{" "}
+                  <span className="text-[#62B239]">Postgraduate programs</span>
+                </h2>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+                {pgPrograms.map(renderProgramCard)}
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+    );
+  }
 
   // ==========================================
   // Layout 0-Liverpool: Courses Offered in Liverpool Online MBA (#courses_offered)
@@ -214,6 +480,72 @@ export default function LandingProgrammes({
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ==========================================
+  // Layout 0-SSBM: Top Online DBA SSBM Doctorate Specializations (#whychoose)
+  // ==========================================
+  if (isSsbm) {
+    const heading = brand.programmesTitle || "TOP ONLINE DBA";
+    const highlight = brand.programmesHighlight || "SSBM DOCTORATE SPECIALIZATIONS";
+
+    return (
+      <section id="whychoose" className="py-12 sm:py-16 bg-[#ffffff] select-none scroll-mt-20">
+        <div className="max-w-[1240px] mx-auto px-4 sm:px-6">
+          <h2 className="text-center text-[22px] sm:text-[28px] lg:text-[32px] font-bold text-[#111111] mb-8 sm:mb-12 uppercase tracking-tight">
+            {heading} <span className="text-[#c11f28]">{highlight}</span>
+          </h2>
+          <div className="course-slider-wrapper">
+            <Carousel
+              autoplay
+              autoplaySpeed={3000}
+              dots={true}
+              slidesToShow={3}
+              responsive={[
+                { breakpoint: 1024, settings: { slidesToShow: 2 } },
+                { breakpoint: 640, settings: { slidesToShow: 1 } },
+              ]}
+            >
+              {programmes.map((p, idx) => (
+                <div key={idx} className="px-3 box-border outline-none py-2">
+                  <div className="bg-[#f2f2f2] rounded-[8px] overflow-hidden border border-slate-200/90 shadow-sm flex flex-col justify-between text-left h-full min-h-[360px] hover:shadow-md transition-shadow">
+                    <div className="relative w-full h-[160px] overflow-hidden bg-slate-200">
+                      <Image
+                        src={p.image}
+                        alt={p.title}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                      />
+                    </div>
+                    <div className="p-5 flex-1 flex flex-col justify-between bg-[#f2f2f2]">
+                      <div>
+                        <h3 className="text-[17px] sm:text-[18px] font-bold text-[#111111] mb-2 leading-snug">
+                          {p.title}
+                        </h3>
+                        <p className="text-[12.5px] sm:text-[13px] text-[#555555] leading-relaxed mb-4 font-normal">
+                          {p.description || p.desc}
+                        </p>
+                      </div>
+                      <div>
+                        <hr className="border-t border-slate-300 mb-4" />
+                        <button
+                          type="button"
+                          onClick={() => onOpenApply?.(p.title)}
+                          className="w-full py-2.5 px-4 bg-[#c11f28] hover:bg-[#a81a22] text-white font-bold text-[14px] rounded-[5px] transition-all border-none cursor-pointer active:scale-95 shadow-xs"
+                        >
+                          Apply Now
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </Carousel>
           </div>
         </div>
       </section>

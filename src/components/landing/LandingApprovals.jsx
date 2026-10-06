@@ -33,21 +33,215 @@ export default function LandingApprovals({
     (brand?.approvalsLayout === "rushford" || brand?.slug === "rushford");
   const isEsgciLayout = !isLiverpoolLayout && !isRushfordLayout && (brand?.approvalsLayout === "esgci" || brand?.slug === "esgci");
   const isGguLayout = !isLiverpoolLayout && !isRushfordLayout && !isEsgciLayout && (brand?.approvalsLayout === "ggu" || brand?.slug === "ggu");
-  const isSplit = !isLiverpoolLayout && !isRushfordLayout && !isEsgciLayout && !isGguLayout && brand?.approvalsLayout === "split";
-  const isVguLayout = !isLiverpoolLayout && !isRushfordLayout && !isEsgciLayout && !isGguLayout && (brand?.approvalsLayout === "vgu-badges" || brand?.slug === "vgu");
-  const isMuLayout = !isLiverpoolLayout && !isRushfordLayout && !isEsgciLayout && !isGguLayout && (brand?.approvalsLayout === "mu" || brand?.slug === "mu");
-  const isCarouselLayout = !isLiverpoolLayout && !isRushfordLayout && !isEsgciLayout && !isGguLayout && (brand?.approvalsLayout === "smu-carousel" || brand?.slug === "smu");
+  const isUuLayout =
+    !isLiverpoolLayout &&
+    !isRushfordLayout &&
+    !isEsgciLayout &&
+    !isGguLayout &&
+    (brand?.approvalsLayout === "uu" || brand?.slug === "uu");
+  const isIiitbLayout =
+    !isLiverpoolLayout &&
+    !isRushfordLayout &&
+    !isEsgciLayout &&
+    !isGguLayout &&
+    !isUuLayout &&
+    (brand?.approvalsLayout === "iiitb" || brand?.slug === "iiitb");
+  const isSsbmLayout =
+    !isLiverpoolLayout &&
+    !isRushfordLayout &&
+    !isEsgciLayout &&
+    !isGguLayout &&
+    !isUuLayout &&
+    !isIiitbLayout &&
+    (brand?.approvalsLayout === "ssbm" || brand?.slug === "ssbm");
+  const isSplit = !isLiverpoolLayout && !isRushfordLayout && !isEsgciLayout && !isGguLayout && !isUuLayout && !isIiitbLayout && !isSsbmLayout && brand?.approvalsLayout === "split";
+  const isVguLayout = !isLiverpoolLayout && !isRushfordLayout && !isEsgciLayout && !isGguLayout && !isUuLayout && !isIiitbLayout && !isSsbmLayout && (brand?.approvalsLayout === "vgu-badges" || brand?.slug === "vgu");
+  const isMuLayout = !isLiverpoolLayout && !isRushfordLayout && !isEsgciLayout && !isGguLayout && !isUuLayout && !isIiitbLayout && !isSsbmLayout && (brand?.approvalsLayout === "mu" || brand?.slug === "mu");
+  const isCarouselLayout = !isLiverpoolLayout && !isRushfordLayout && !isEsgciLayout && !isGguLayout && !isUuLayout && !isIiitbLayout && !isSsbmLayout && (brand?.approvalsLayout === "smu-carousel" || brand?.slug === "smu");
   const isSlider =
     !isLiverpoolLayout &&
     !isRushfordLayout &&
     !isEsgciLayout &&
     !isGguLayout &&
+    !isUuLayout &&
+    !isIiitbLayout &&
+    !isSsbmLayout &&
     (brand?.approvalsLayout === "slider" ||
       isCarouselLayout ||
       (!isSplit && !isVguLayout && !isMuLayout && Boolean(subtitle)));
 
   const primaryColor = brand?.approvalsHeaderColor || brand?.primaryColor || "#ee3024";
   const gridBg = brand?.approvalsBg || "#ffffff";
+
+  // ==========================================
+  // Layout 0-IIITB: Approvals & Accreditation (Left Trophy + 2x2 Grid)
+  // ==========================================
+  if (isIiitbLayout) {
+    const trophyImg =
+      brand.approvalsTrophyImage ||
+      "/assets/all_universities_images/iiitb/award-icon.webp";
+
+    return (
+      <section
+        id="approvals"
+        className="accreditation-section bg-[#2b2b2b] text-white py-14 sm:py-16 px-4 sm:px-6 select-none scroll-mt-20"
+      >
+        <div className="accreditation-container max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-[1fr_auto_2fr] gap-6 lg:gap-10 items-center">
+          {/* Left Column */}
+          <div className="accreditation-left flex flex-row lg:flex-col items-center gap-4 lg:gap-2 text-left lg:text-center justify-start lg:justify-center">
+            <div className="relative w-20 sm:w-28 lg:w-36 h-20 sm:h-28 lg:h-36 shrink-0 mb-0 lg:mb-2">
+              <Image
+                src={trophyImg}
+                alt="Approvals & Accreditation"
+                fill
+                className="trophy object-contain"
+                sizes="150px"
+              />
+            </div>
+            <h2 className="text-[22px] sm:text-[26px] lg:text-[28px] font-bold leading-tight m-0 text-white">
+              Approvals &<br />Accreditation
+            </h2>
+          </div>
+
+          {/* Divider */}
+          <div className="divider hidden lg:block w-[1px] h-full min-h-[160px] bg-[#555555]" />
+
+          {/* Right Column: 2x2 Grid / 1-col on mobile */}
+          <div className="accreditation-grid grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-8">
+            {approvals.map((item, idx) => (
+              <div
+                key={idx}
+                className="accreditation-item flex items-center gap-3.5 text-left"
+              >
+                <div className="relative w-16 h-16 shrink-0 bg-white rounded-full p-2 flex items-center justify-center overflow-hidden shadow-sm">
+                  <Image
+                    src={item.image}
+                    alt={item.title || "Approval"}
+                    fill
+                    className="object-contain p-2"
+                    sizes="70px"
+                  />
+                </div>
+                <div className="accreditation-item-content">
+                  <h4 className="text-[17px] font-bold text-white m-0 leading-snug">
+                    {item.title}
+                  </h4>
+                  <p className="text-[12.5px] text-[#cccccc] leading-relaxed mt-1 m-0 font-normal">
+                    {item.desc || item.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ==========================================
+  // Layout 0-SSBM: Accreditations & Rankings (2 Fieldset Boxes)
+  // ==========================================
+  if (isSsbmLayout) {
+    const accreditations = brand?.ssbmAccreditations || [
+      { image: "/assets/all_universities_images/ssbm/acbsp-p.png", alt: "ACBSP", isLarge: true },
+      { image: "/assets/all_universities_images/ssbm/chea-logo.png", alt: "CHEA" },
+      { image: "/assets/all_universities_images/ssbm/bac.png", alt: "BAC", isLarge: true },
+    ];
+    const rankings = brand?.ssbmRankings || [
+      { image: "/assets/all_universities_images/ssbm/ceoworld.png", alt: "CEOWorld Magazine" },
+      { image: "/assets/all_universities_images/ssbm/postg.png", alt: "Postgrad" },
+      { image: "/assets/all_universities_images/ssbm/swiss.png", alt: "Study in Switzerland" },
+    ];
+
+    return (
+      <section className="accreditation-container select-none scroll-mt-20" id="accreditations">
+        <h2 className="main-title text-[28px] sm:text-[36px] font-extrabold text-black mb-8 text-center">
+          Accreditations <span className="text-[#b32a25]">&amp; Rankings</span>
+        </h2>
+
+        <div className="content-grid flex flex-col lg:flex-row gap-8 lg:gap-8 justify-center max-w-[1200px] mx-auto px-4">
+          <fieldset className="border-box relative flex-1 border-[1.5px] border-[#c11f28] rounded-[16px] p-6 sm:p-8 bg-white shadow-xs">
+            <legend className="mx-auto px-3.5 font-bold text-[16px] sm:text-[17px] text-[#111111] bg-white text-center">
+              Accreditations
+            </legend>
+            <div className="logo-group flex flex-col lg:flex-row items-center justify-around w-full gap-7 lg:gap-5 py-4">
+              {accreditations.map((item, idx) => (
+                <div key={idx} className="relative h-[65px] sm:h-[75px] w-full max-w-[210px] flex items-center justify-center">
+                  <Image
+                    src={item.image}
+                    alt={item.alt || "Accreditation"}
+                    fill
+                    className="object-contain"
+                    sizes="210px"
+                  />
+                </div>
+              ))}
+            </div>
+          </fieldset>
+
+          <fieldset className="border-box relative flex-1 border-[1.5px] border-[#c11f28] rounded-[16px] p-6 sm:p-8 bg-white shadow-xs">
+            <legend className="mx-auto px-3.5 font-bold text-[16px] sm:text-[17px] text-[#111111] bg-white text-center">
+              Rankings
+            </legend>
+            <div className="logo-group custom_img_group flex flex-col lg:flex-row items-center justify-around w-full gap-7 lg:gap-5 py-4">
+              {rankings.map((item, idx) => (
+                <div key={idx} className="relative h-[55px] sm:h-[65px] w-full max-w-[210px] flex items-center justify-center">
+                  <Image
+                    src={item.image}
+                    alt={item.alt || "Ranking"}
+                    fill
+                    className="object-contain"
+                    sizes="210px"
+                  />
+                </div>
+              ))}
+            </div>
+          </fieldset>
+        </div>
+      </section>
+    );
+  }
+
+  // ==========================================
+  // Layout 0-UU: Online UU Approvals & Recognition (Centered with 6-Column Logos)
+  // ==========================================
+  if (isUuLayout) {
+    const heading = brand?.approvalsTitle || "Online UU";
+    const highlight = brand?.approvalsHighlight || "Approvals & Recognition";
+
+    return (
+      <section id="approvals" className="w-full py-8 sm:py-14 lg:py-16 bg-white select-none scroll-mt-20">
+        <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-[22px] sm:text-[30px] lg:text-[34px] font-bold leading-tight m-0 mb-4 sm:mb-3">
+            <span className="text-[#111111]">{heading} </span>
+            <span className="text-[#62B239]">{highlight}</span>
+          </h2>
+          {subtitle && (
+            <p className="hidden sm:block text-[12.5px] sm:text-[13.5px] text-[#444444] font-normal leading-relaxed max-w-4xl mx-auto mb-8 sm:mb-12">
+              {subtitle}
+            </p>
+          )}
+
+          <div className="grid grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-6 lg:gap-10 items-center justify-items-center max-w-[1200px] mx-auto">
+            {approvals.map((item, idx) => (
+              <div
+                key={idx}
+                className="relative w-full max-w-[110px] sm:max-w-[150px] h-[70px] sm:h-[95px] lg:h-[105px] flex items-center justify-center transition-transform hover:scale-105 duration-200"
+              >
+                <Image
+                  src={item.image || item}
+                  alt={item.name || item.title || `Approval ${idx + 1}`}
+                  fill
+                  className="object-contain"
+                  sizes="(max-width: 640px) 110px, 160px"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   // ==========================================
   // Layout 0-Liverpool: Approvals & Recognition (#certification)
@@ -175,6 +369,73 @@ export default function LandingApprovals({
                 </p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ==========================================
+  // Layout 0-SSBM: SSBM Geneva Accreditations & Rankings (#accreditations)
+  // ==========================================
+  if (isSsbmLayout) {
+    const accreditations = brand?.ssbmAccreditations || [
+      { image: "/assets/all_universities_images/ssbm/acbsp-p.png", alt: "ACBSP" },
+      { image: "/assets/all_universities_images/ssbm/chea-logo.png", alt: "CHEA" },
+      { image: "/assets/all_universities_images/ssbm/bac.png", alt: "BAC" },
+    ];
+    const rankings = brand?.ssbmRankings || [
+      { image: "/assets/all_universities_images/ssbm/ceoworld.png", alt: "CEOWorld Magazine" },
+      { image: "/assets/all_universities_images/ssbm/postg.png", alt: "Postgrad" },
+      { image: "/assets/all_universities_images/ssbm/swiss.png", alt: "Study in Switzerland" },
+    ];
+
+    return (
+      <section
+        id="accreditations"
+        className="certification w-full py-12 sm:py-16 bg-[#f9f9f9] text-center select-none scroll-mt-20"
+      >
+        <div className="max-w-[1140px] mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Box 1: Accreditations */}
+            <fieldset className="border border-slate-300 rounded-[8px] p-6 pt-4 text-center bg-white shadow-xs">
+              <legend className="px-4 text-[17px] sm:text-[19px] font-bold text-[#111111] uppercase tracking-wide">
+                Accreditations
+              </legend>
+              <div className="grid grid-cols-3 gap-4 items-center justify-center py-2">
+                {accreditations.map((item, idx) => (
+                  <div key={idx} className="relative w-full h-[65px] flex items-center justify-center">
+                    <Image
+                      src={item.image}
+                      alt={item.alt || `Accreditation ${idx + 1}`}
+                      fill
+                      className="object-contain"
+                      sizes="(max-width: 768px) 30vw, 160px"
+                    />
+                  </div>
+                ))}
+              </div>
+            </fieldset>
+
+            {/* Box 2: Rankings */}
+            <fieldset className="border border-slate-300 rounded-[8px] p-6 pt-4 text-center bg-white shadow-xs">
+              <legend className="px-4 text-[17px] sm:text-[19px] font-bold text-[#111111] uppercase tracking-wide">
+                Rankings
+              </legend>
+              <div className="grid grid-cols-3 gap-4 items-center justify-center py-2">
+                {rankings.map((item, idx) => (
+                  <div key={idx} className="relative w-full h-[65px] flex items-center justify-center">
+                    <Image
+                      src={item.image}
+                      alt={item.alt || `Ranking ${idx + 1}`}
+                      fill
+                      className="object-contain"
+                      sizes="(max-width: 768px) 30vw, 160px"
+                    />
+                  </div>
+                ))}
+              </div>
+            </fieldset>
           </div>
         </div>
       </section>

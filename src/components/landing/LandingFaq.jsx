@@ -11,23 +11,81 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
 
   if (!faqs || faqs.length === 0) return null;
 
+  const isUu =
+    brand.slug === "uu" ||
+    brand.faqLayout === "uu";
+
   const isGgu =
-    brand.slug === "ggu" ||
-    brand.faqLayout === "ggu";
+    !isUu &&
+    (brand.slug === "ggu" ||
+      brand.faqLayout === "ggu");
 
   const isMu =
-    brand.slug === "mu" ||
-    brand.faqLayout === "mu" ||
-    brand.faqLayout === "mu-cards";
+    !isUu &&
+    (brand.slug === "mu" ||
+      brand.faqLayout === "mu" ||
+      brand.faqLayout === "mu-cards");
 
   const isSmu =
-    brand.slug === "smu" ||
-    brand.name?.toLowerCase().includes("sikkim") ||
-    brand.faqLayout === "smu-cards";
+    !isUu &&
+    (brand.slug === "smu" ||
+      brand.name?.toLowerCase().includes("sikkim") ||
+      brand.faqLayout === "smu-cards");
 
   const toggleFaq = (index) => {
     setOpenIndex(openIndex === index ? null : index);
   };
+
+  // ==========================================
+  // Layout: Uttaranchal University (UU) FAQ
+  // ==========================================
+  if (isUu) {
+    const faqTitle = brand.faqTitle || "FAQ | Frequently Asked Question";
+    return (
+      <section id="faqs" aria-label="Frequently Asked Questions" className="py-10 sm:py-14 bg-white w-full select-none scroll-mt-24">
+        <div className="max-w-[1140px] mx-auto px-4 sm:px-6">
+          <h2 className="text-[22px] sm:text-[26px] lg:text-[28px] font-bold text-[#003399] text-left m-0 mb-6 sm:mb-8 tracking-tight">
+            {faqTitle}
+          </h2>
+
+          <div className="w-full divide-y divide-slate-200">
+            {faqs.map((faq, idx) => {
+              const isOpen = openIndex === idx;
+              const rawQuestion = (faq.q || faq.question || "").replace(/^Q\d+[\.\:\s]*/i, "");
+
+              return (
+                <div key={idx} className="py-3 sm:py-3.5 transition-all">
+                  <button
+                    type="button"
+                    onClick={() => toggleFaq(idx)}
+                    className="w-full text-left flex items-center justify-between gap-4 cursor-pointer bg-transparent border-none p-0 m-0"
+                    aria-expanded={isOpen}
+                  >
+                    <h3 className="text-[13.5px] sm:text-[15px] font-normal sm:font-medium text-[#222222] leading-snug m-0">
+                      {rawQuestion}
+                    </h3>
+                    <span
+                      className="w-6 h-6 rounded-[2px] bg-[#eef7ec] text-[#62B239] flex items-center justify-center font-bold text-[15px] leading-none shrink-0 ml-3 select-none"
+                    >
+                      {isOpen ? "−" : "+"}
+                    </span>
+                  </button>
+
+                  {isOpen && (
+                    <div className="pt-2.5 pb-1 text-[13px] sm:text-[13.5px] text-[#555555] leading-relaxed font-normal">
+                      <p className="m-0 leading-relaxed font-normal">
+                        {faq.a || faq.answer}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   // ==========================================
   // Layout: Golden Gate University (GGU) FAQ

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { BookOpen } from "lucide-react";
+import { BookOpen, Users, Globe, Trophy, Star } from "lucide-react";
 
 function BuildingIcon({ className }) {
   return (
@@ -68,6 +68,48 @@ export default function LandingStats({ stats = [], brand = {} }) {
     !isEsgciLayout &&
     !isRushfordLayout &&
     (brand.statsLayout === "liverpool" || brand.slug === "liverpool");
+
+  const isSsbmLayout =
+    !isEsgciLayout &&
+    !isRushfordLayout &&
+    !isLiverpoolLayout &&
+    (brand.statsLayout === "ssbm" || brand.slug === "ssbm");
+
+  const isIiitbLayout =
+    !isEsgciLayout &&
+    !isRushfordLayout &&
+    !isLiverpoolLayout &&
+    !isSsbmLayout &&
+    (brand.statsLayout === "iiitb" || brand.slug === "iiitb");
+
+  // ==========================================
+  // IIITB Layout: Dark Box with 4 Column Highlights (.HighLights #stats)
+  // ==========================================
+  if (isIiitbLayout) {
+    return (
+      <div id="stats" className="HighLights bg-[#2b2b2b] text-white py-12 px-4 sm:px-6 select-none scroll-mt-20">
+        <div className="container max-w-[1140px] mx-auto">
+          <div className="ach grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+            {stats.map((st, idx) => (
+              <div key={idx} className="ac1 flex items-center gap-3.5">
+                <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm">
+                  <StudentCapIcon className="w-6 h-6 text-[#002147]" />
+                </div>
+                <div className="inner_arc1_grid text-left">
+                  <h3 className="text-[26px] sm:text-[30px] font-bold text-white m-0 leading-tight">
+                    {st.value || st.stat}
+                  </h3>
+                  <p className="text-[13px] sm:text-[14px] text-white/90 m-0 mt-0.5 leading-snug">
+                    {st.label || st.text}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // ==========================================
   // Liverpool Layout: Grey Box with 4 Column Stats (#online-mba-details)
@@ -140,6 +182,41 @@ export default function LandingStats({ stats = [], brand = {} }) {
                     {st.value || st.desc || st.number}
                   </p>
                 </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ==========================================
+  // SSBM Layout: Black Achievement Bar with Red Numbers (#c11f28)
+  // ==========================================
+  if (isSsbmLayout) {
+    return (
+      <section id="stats" aria-label="Key Achievements" className="achievement bg-black text-white py-6 sm:py-8 select-none">
+        <div className="max-w-[1240px] mx-auto px-4 sm:px-6">
+          <div className="ach grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 text-center">
+            {stats.map((st, idx) => (
+              <div key={idx} className="ac1 p-4 flex flex-col items-center justify-center">
+                <div className="text-white mb-2 flex items-center justify-center">
+                  {st.icon === "users" ? (
+                    <Users className="w-8 h-8 text-white" />
+                  ) : st.icon === "globe" ? (
+                    <Globe className="w-8 h-8 text-white" />
+                  ) : st.icon === "trophy" ? (
+                    <Trophy className="w-8 h-8 text-white" />
+                  ) : (
+                    <Star className="w-8 h-8 text-white" />
+                  )}
+                </div>
+                <h1 className="text-[30px] sm:text-[36px] font-bold text-[#c11f28] m-0 mb-1 leading-tight">
+                  {st.value || st.number || st.stat}
+                </h1>
+                <h3 className="text-[16px] sm:text-[18px] font-normal text-white m-0 tracking-tight">
+                  {st.label || st.title}
+                </h3>
               </div>
             ))}
           </div>

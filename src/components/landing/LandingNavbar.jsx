@@ -23,8 +23,8 @@ export default function LandingNavbar({
     showCouponBtn = true,
     showCouponButton = true,
     couponButtonText = "Scholarship Coupon Code",
-    couponButtonColor,
-    couponBtnBg,
+    couponButtonColor = "#22c55e",
+    couponBtnBg = "linear-gradient(135deg, #2ecc71 0%, #27ae60 100%)",
     giftGif = "/assets/images/gift.gif",
     badgeText = "Admission Open 2026",
   } = brand;
@@ -83,71 +83,88 @@ export default function LandingNavbar({
 
         {/* ── LEFT: Logos ───────────────────────────────────────────────────── */}
         <div className="logo flex items-center min-w-0 ml-2 sm:ml-1 lg:ml-3">
-
-          {/* SODE Logo — shown when brand.showSodeLogo === true or sodeIcon provided */}
-          {shouldShowSodeLogo && (
-            <>
-              <Link
-                href="#hero"
-                onClick={handleScrollTop}
-                className="des_logo flex items-center shrink-0 cursor-pointer"
-                aria-label="Back to Top"
-              >
-                {/*
-                  Global SODE logo size: 180×92px
-                  To change globally → edit width/height below.
-                  To override per page → set brand.sodeLogoContainerStyle in that page's JSON.
-                */}
-                <div
-                  className="relative"
-                  style={{
-                    width: "90px",
-                    height: "62px",
-                    minWidth: "70px",
-                    position: "relative",
-                    ...brand.sodeLogoContainerStyle,
-                  }}
-                >
-                  <Image
-                    src={sodeIcon || "/assets/images/sode_icon.png"}
-                    alt="SODE"
-                    fill
-                    priority
-                    className="object-contain object-left"
-                    sizes="100px"
-                  />
-                </div>
-              </Link>
-
-              {/* Divider between SODE logo and university logo */}
-              {!brand.hideNavDivider &&
-                brand.showNavDivider !== false &&
-                !brand.hideMangLogo && (
-                  <div className="h-12 sm:h-14 lg:h-16 w-[1.5px] bg-[#cccccc] mx-1.5 sm:mx-2 lg:mx-3 shrink-0" />
-                )}
-            </>
-          )}
-
-          {/* University Logo — hidden when brand.hideMangLogo === true */}
-          {!brand.hideMangLogo && (
+          {brand.slug === "uu" ? (
             <Link
               href="#hero"
               onClick={handleScrollTop}
-              className={`mang_logo flex items-center min-w-0 cursor-pointer ${brand.hideNavDivider ? "ml-2.5 sm:ml-3.5" : ""
-                }`}
+              className="mang_logo flex items-center min-w-0 cursor-pointer"
               aria-label={name}
             >
-              <div className="relative w-41 sm:w-53 lg:w-65 h-11 sm:h-13 lg:h-15">
+              <div className="relative w-44 sm:w-56 lg:w-68 h-11 sm:h-13 lg:h-15">
                 <Image
                   src={logo}
                   alt={name}
                   fill
                   priority
                   className="object-contain object-left"
-                  sizes="(max-width: 640px) 140px, 240px"
+                  sizes="(max-width: 640px) 190px, 280px"
                 />
               </div>
             </Link>
+          ) : (
+            <>
+              {/* SODE Logo — shown when brand.showSodeLogo === true or sodeIcon provided */}
+              {shouldShowSodeLogo && (
+                <>
+                  <Link
+                    href="#hero"
+                    onClick={handleScrollTop}
+                    className="des_logo flex items-center shrink-0 cursor-pointer"
+                    aria-label="Back to Top"
+                  >
+                    <div
+                      className="relative"
+                      style={{
+                        width: "90px",
+                        height: "62px",
+                        minWidth: "70px",
+                        position: "relative",
+                        ...brand.sodeLogoContainerStyle,
+                      }}
+                    >
+                      <Image
+                        src={sodeIcon || "/assets/images/sode_icon.png"}
+                        alt="SODE"
+                        fill
+                        priority
+                        className="object-contain object-left"
+                        sizes="100px"
+                      />
+                    </div>
+                  </Link>
+
+                  {/* Divider between SODE logo and university logo */}
+                  {!brand.hideNavDivider &&
+                    brand.showNavDivider !== false &&
+                    !brand.hideMangLogo && (
+                      <div className="h-12 sm:h-14 lg:h-16 w-[1.5px] bg-[#cccccc] mx-1.5 sm:mx-2 lg:mx-3 shrink-0" />
+                    )}
+                </>
+              )}
+
+              {/* University Logo — hidden when brand.hideMangLogo === true */}
+              {!brand.hideMangLogo && (
+                <Link
+                  href="#hero"
+                  onClick={handleScrollTop}
+                  className={`mang_logo flex items-center min-w-0 cursor-pointer ${
+                    brand.hideNavDivider ? "ml-2.5 sm:ml-3.5" : ""
+                  }`}
+                  aria-label={name}
+                >
+                  <div className="relative w-41 sm:w-53 lg:w-65 h-11 sm:h-13 lg:h-15">
+                    <Image
+                      src={logo}
+                      alt={name}
+                      fill
+                      priority
+                      className="object-contain object-left"
+                      sizes="(max-width: 640px) 140px, 240px"
+                    />
+                  </div>
+                </Link>
+              )}
+            </>
           )}
         </div>
 
@@ -171,9 +188,25 @@ export default function LandingNavbar({
 
         {/* ── RIGHT: CTA Button or Badge ────────────────────────────────────── */}
         <div className="header_heading shrink-0 pl-2 mr-1.5 sm:mr-3 flex items-center gap-2">
-
-          {/* Condition 1: Coupon Button — shown when showCouponBtn !== false */}
-          {isCouponVisible ? (
+          {brand.slug === "uu" ? (
+            <Link
+              href="#hero"
+              onClick={handleScrollTop}
+              className="des_logo flex items-center shrink-0 cursor-pointer"
+              aria-label="Back to Top"
+            >
+              <div className="relative w-14 sm:w-18 h-10 sm:h-12">
+                <Image
+                  src={sodeIcon || "/assets/all_universities_images/uu/sode-icon.png"}
+                  alt="SODE"
+                  fill
+                  priority
+                  className="object-contain object-right"
+                  sizes="80px"
+                />
+              </div>
+            </Link>
+          ) : isCouponVisible ? (
             <div
               className={
                 brand.couponWrapperBg || brand.showCouponPillWrapper
@@ -193,11 +226,8 @@ export default function LandingNavbar({
                 onClick={handleCouponClick}
                 aria-label="Get Scholarship Coupon Code"
                 style={{
-                  ...(couponBtnBg || brand.couponBtnBg || brand.themeGradient
-                    ? { "--coupon-btn-bg": couponBtnBg || brand.couponBtnBg || brand.themeGradient }
-                    : couponButtonColor
-                      ? { backgroundColor: couponButtonColor }
-                      : { backgroundColor: "#22c55e" }),
+                  "--coupon-btn-bg": couponBtnBg || brand.couponBtnBg || "linear-gradient(135deg, #2ecc71 0%, #27ae60 100%)",
+                  backgroundColor: couponButtonColor || brand.couponButtonColor || "#22c55e",
                   "--coupon-shadow-start": brand.couponShadowColor || "rgba(46, 204, 113, 0.55)",
                   "--coupon-shadow-mid1": brand.couponShadowColorMid1 || "rgba(46, 204, 113, 0.42)",
                   "--coupon-shadow-mid2": brand.couponShadowColorMid2 || "rgba(46, 204, 113, 0.22)",
@@ -210,7 +240,7 @@ export default function LandingNavbar({
                 <span className="moving-light-green-box" />
                 <span className="relative -ml-1.5 sm:-ml-2.5 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white flex items-center justify-center shrink-0 shadow-xs z-10 p-0 overflow-hidden">
                   <Image
-                    src={giftGif || "/assets/images/gift.gif"}
+                    src={giftGif || brand.giftGif || "/assets/images/gift.gif"}
                     alt="Scholarship Gift"
                     width={26}
                     height={26}
@@ -240,14 +270,14 @@ export default function LandingNavbar({
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-slate-800 hover:text-[#003468] transition-colors focus:outline-hidden"
+              className="md:hidden w-10 h-10 rounded-[6px] bg-[#003366] text-white flex items-center justify-center transition-all focus:outline-none cursor-pointer border-none shadow-xs active:scale-95"
               aria-label="Toggle navigation menu"
             >
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 {mobileMenuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.8} d="M6 18L18 6M6 6l12 12" />
                 ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.8} d="M4 6h16M4 12h16M4 18h16" />
                 )}
               </svg>
             </button>
@@ -257,14 +287,14 @@ export default function LandingNavbar({
 
       {/* ── Mobile Dropdown Menu ──────────────────────────────────────────────── */}
       {brand.navLinks && brand.navLinks.length > 0 && mobileMenuOpen && (
-        <div className="md:hidden bg-white border-b border-slate-200 px-4 py-3 shadow-md">
-          <ul className="flex flex-col list-none gap-2.5 m-0 p-0">
+        <div className="md:hidden bg-white border-b border-slate-200 px-6 py-4 shadow-xl">
+          <ul className="flex flex-col list-none gap-3.5 m-0 p-0">
             {brand.navLinks.map((lnk, idx) => (
               <li key={idx}>
                 <a
                   href={lnk.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block py-2 text-[#002147] hover:text-[#DC520A] text-[15px] font-semibold border-b border-slate-100 last:border-none"
+                  className="block py-1 text-[#111111] hover:text-[#c11f28] text-[17px] font-bold tracking-tight no-underline transition-colors"
                 >
                   {lnk.label}
                 </a>

@@ -11,6 +11,8 @@ export default function LandingHero({
   brand = {},
   courses = [],
   onOpenBrochure,
+  onOpenApply,
+  onOpenScholarship,
   onOpenDisclaimer,
 }) {
   const hero = brand.hero || {};
@@ -39,17 +41,19 @@ export default function LandingHero({
       }}
     >
       {/* Mobile Background */}
-      <div
-        className="absolute inset-0 -z-20 bg-cover bg-center md:hidden"
-        style={{
-          backgroundImage: `url(${hero.mobileBackgroundImage ||
-            hero.backgroundImage ||
-            "/assets/images/smu_banner_bg.webp"
-            })`,
-          backgroundPosition: hero.mobileBackgroundPosition || "center 0%",
-          ...hero.mobileBgStyle,
-        }}
-      />
+      {hero.mobileBackgroundImage !== "none" && (
+        <div
+          className="absolute inset-0 -z-20 bg-cover bg-center md:hidden"
+          style={{
+            backgroundImage: `url(${hero.mobileBackgroundImage ||
+              hero.backgroundImage ||
+              "/assets/images/smu_banner_bg.webp"
+              })`,
+            backgroundPosition: hero.mobileBackgroundPosition || "center 0%",
+            ...hero.mobileBgStyle,
+          }}
+        />
+      )}
 
       {/* Desktop Background */}
       <div
@@ -85,8 +89,9 @@ export default function LandingHero({
       >
         {/* Left Column: University info, Headings, Degree Courses */}
         <div
-          className={`relative z-10 flex w-full flex-col items-center sm:items-start text-center sm:text-left lg:flex-1 lg:max-w-xl ${
-            hero.contentClassName || ""
+          className={`hero-info-col relative z-10 flex w-full flex-col ${
+            hero.contentClassName ||
+            "items-center sm:items-start text-center sm:text-left lg:flex-1 lg:max-w-xl"
           }`}
           style={hero.contentStyle}
         >
@@ -157,7 +162,9 @@ export default function LandingHero({
               ...hero.headingStyle,
             }}
           >
-            {hero.highlightTitle ? (
+            {hero.headlineHtml ? (
+              <span dangerouslySetInnerHTML={{ __html: hero.headlineHtml }} />
+            ) : hero.highlightTitle ? (
               <>
                 <span
                   className={hero.highlightTitleClassName || ""}
@@ -194,6 +201,63 @@ export default function LandingHero({
             )}
           </h1>
 
+          {/* If coursesBeforeTagline, render courses before tagline */}
+          {(hero.coursesBeforeTagline || hero.coursesFirst) && (
+            !hasCoursesStrip || hero.hideCourses || hero.coursesStrip === false ? null : hero.hideCourseBox ? (
+              <div
+                className={`my-2 space-y-0.5 text-[13.5px] sm:text-[14px] font-medium tracking-normal leading-[1.5] ${hero.courseStripClassName || ""
+                  }`}
+                style={{
+                  color:
+                    hero.coursesColor ||
+                    hero.courseTextColor ||
+                    (hero.isDarkTheme === false
+                      ? "#111827"
+                      : isDarkMode
+                        ? "#ffffff"
+                        : "#08417b"),
+                  ...hero.courseStripStyle,
+                }}
+              >
+                {courseLines.map((line, idx) => (
+                  <div key={idx}>{line}</div>
+                ))}
+              </div>
+            ) : hero.coursesStripOnly ? (
+              <div
+                className={`my-2 space-y-0.5 text-[16px] sm:text-[18px] lg:text-[19px] font-bold tracking-wide leading-snug ${hero.courseStripClassName || ""
+                  }`}
+                style={{
+                  color:
+                    hero.courseTextColor ||
+                    (hero.isDarkTheme === false ? "#111827" : "#ffffff"),
+                  ...hero.courseStripStyle,
+                }}
+              >
+                {courseLines.map((line, idx) => (
+                  <div key={idx}>{line}</div>
+                ))}
+              </div>
+            ) : (
+              <div className="relative z-20 w-full max-w-sm sm:max-w-none sm:w-fit my-2">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 sm:left-3 sm:translate-x-0 z-10 rounded-full bg-[#ffd200] px-3 py-0.5 text-[12px] sm:text-[13px] font-bold leading-normal text-[#08417b] shadow-2xs whitespace-nowrap">
+                  Online Degree Courses :
+                </span>
+                <div
+                  className="rounded-[6px] border-2 bg-white/95 px-3 sm:px-4 pb-2 pt-3.5 text-[15px] sm:text-[18px] lg:text-[20px] font-bold leading-[1.25] text-[#08417b] shadow-xs text-center sm:text-left"
+                  style={{
+                    borderColor:
+                      hero.courseBorder || brand.primaryColor || "#08417b",
+                  }}
+                >
+                  {courseLines.map((line) => (
+                    <div key={line}>{line}</div>
+                  ))}
+                </div>
+              </div>
+            )
+          )}
+
           {/* Tagline */}
           <p
             className={`${
@@ -221,8 +285,17 @@ export default function LandingHero({
             ) : null}
           </p>
 
-          {/* Highlight Callout Box (e.g. Pay-After-Placement) */}
-          {hero.highlightBox && (
+          {/* Paragraph / Description */}
+          {hero.description ? (
+            <p
+              className={`my-2 text-[13px] sm:text-[13.5px] leading-relaxed text-left max-w-[460px] text-slate-900 ${
+                hero.descriptionClassName || ""
+              }`}
+              style={hero.descriptionStyle}
+            >
+              {hero.description}
+            </p>
+          ) : hero.highlightBox ? (
             <div
               className={`my-2 sm:my-3 px-5 sm:px-6 py-2.5 sm:py-3 rounded-[8px] font-bold text-center leading-snug w-full sm:w-auto ${hero.highlightBox.className || ""
                 }`}
@@ -240,61 +313,63 @@ export default function LandingHero({
                 hero.highlightBox.text
               )}
             </div>
-          )}
+          ) : null}
 
-          {/* Online Degree Courses Strip or Course Box */}
-          {!hasCoursesStrip || hero.hideCourses || hero.coursesStrip === false ? null : hero.hideCourseBox ? (
-            <div
-              className={`my-2 space-y-0.5 text-[13.5px] sm:text-[14px] font-medium tracking-normal leading-[1.5] ${hero.courseStripClassName || ""
-                }`}
-              style={{
-                color:
-                  hero.coursesColor ||
-                  hero.courseTextColor ||
-                  (hero.isDarkTheme === false
-                    ? "#111827"
-                    : isDarkMode
-                      ? "#ffffff"
-                      : "#08417b"),
-                ...hero.courseStripStyle,
-              }}
-            >
-              {courseLines.map((line, idx) => (
-                <div key={idx}>{line}</div>
-              ))}
-            </div>
-          ) : hero.coursesStripOnly ? (
-            <div
-              className={`my-2 space-y-0.5 text-[16px] sm:text-[18px] lg:text-[19px] font-bold tracking-wide leading-snug ${hero.courseStripClassName || ""
-                }`}
-              style={{
-                color:
-                  hero.courseTextColor ||
-                  (hero.isDarkTheme === false ? "#111827" : "#ffffff"),
-                ...hero.courseStripStyle,
-              }}
-            >
-              {courseLines.map((line, idx) => (
-                <div key={idx}>{line}</div>
-              ))}
-            </div>
-          ) : (
-            <div className="relative z-20 w-full max-w-sm sm:max-w-none sm:w-fit my-2">
-              <span className="absolute -top-3 left-1/2 -translate-x-1/2 sm:left-3 sm:translate-x-0 z-10 rounded-full bg-[#ffd200] px-3 py-0.5 text-[12px] sm:text-[13px] font-bold leading-normal text-[#08417b] shadow-2xs whitespace-nowrap">
-                Online Degree Courses :
-              </span>
+          {/* Online Degree Courses Strip or Course Box (when NOT coursesBeforeTagline) */}
+          {!(hero.coursesBeforeTagline || hero.coursesFirst) && (
+            !hasCoursesStrip || hero.hideCourses || hero.coursesStrip === false ? null : hero.hideCourseBox ? (
               <div
-                className="rounded-[6px] border-2 bg-white/95 px-3 sm:px-4 pb-2 pt-3.5 text-[15px] sm:text-[18px] lg:text-[20px] font-bold leading-[1.25] text-[#08417b] shadow-xs text-center sm:text-left"
+                className={`my-2 space-y-0.5 text-[13.5px] sm:text-[14px] font-medium tracking-normal leading-[1.5] ${hero.courseStripClassName || ""
+                  }`}
                 style={{
-                  borderColor:
-                    hero.courseBorder || brand.primaryColor || "#08417b",
+                  color:
+                    hero.coursesColor ||
+                    hero.courseTextColor ||
+                    (hero.isDarkTheme === false
+                      ? "#111827"
+                      : isDarkMode
+                        ? "#ffffff"
+                        : "#08417b"),
+                  ...hero.courseStripStyle,
                 }}
               >
-                {courseLines.map((line) => (
-                  <div key={line}>{line}</div>
+                {courseLines.map((line, idx) => (
+                  <div key={idx}>{line}</div>
                 ))}
               </div>
-            </div>
+            ) : hero.coursesStripOnly ? (
+              <div
+                className={`my-2 space-y-0.5 text-[16px] sm:text-[18px] lg:text-[19px] font-bold tracking-wide leading-snug ${hero.courseStripClassName || ""
+                  }`}
+                style={{
+                  color:
+                    hero.courseTextColor ||
+                    (hero.isDarkTheme === false ? "#111827" : "#ffffff"),
+                  ...hero.courseStripStyle,
+                }}
+              >
+                {courseLines.map((line, idx) => (
+                  <div key={idx}>{line}</div>
+                ))}
+              </div>
+            ) : (
+              <div className="relative z-20 w-full max-w-sm sm:max-w-none sm:w-fit my-2">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 sm:left-3 sm:translate-x-0 z-10 rounded-full bg-[#ffd200] px-3 py-0.5 text-[12px] sm:text-[13px] font-bold leading-normal text-[#08417b] shadow-2xs whitespace-nowrap">
+                  Online Degree Courses :
+                </span>
+                <div
+                  className="rounded-[6px] border-2 bg-white/95 px-3 sm:px-4 pb-2 pt-3.5 text-[15px] sm:text-[18px] lg:text-[20px] font-bold leading-[1.25] text-[#08417b] shadow-xs text-center sm:text-left"
+                  style={{
+                    borderColor:
+                      hero.courseBorder || brand.primaryColor || "#08417b",
+                  }}
+                >
+                  {courseLines.map((line) => (
+                    <div key={line}>{line}</div>
+                  ))}
+                </div>
+              </div>
+            )
           )}
 
           {/* Download Brochure Button */}
@@ -303,7 +378,7 @@ export default function LandingHero({
             icon={<Download size={15} strokeWidth={2.5} />}
             iconPosition="right"
             onClick={() => onOpenBrochure?.()}
-            className={`${
+            className={`hero-brochure-btn ${
               hero.buttonClassName ||
               `mt-3 sm:mt-4 py-2.5 px-7 text-[14px] sm:text-[15.5px] font-bold ${
                 hero.buttonRadius || "rounded-[6px]"
@@ -331,20 +406,48 @@ export default function LandingHero({
 
         {/* Right Column: Lead Form */}
         <div
-          className={`relative z-20 w-full sm:w-[350px] lg:w-[340px] xl:w-[360px] shrink-0 flex flex-col items-center lg:items-end justify-center ${
+          className={`hero-form-col relative z-20 w-full sm:w-[350px] lg:w-[340px] xl:w-[360px] shrink-0 flex flex-col items-center lg:items-end justify-center ${
             hero.formContainerClassName || ""
           }`}
           style={hero.formContainerStyle}
         >
           {hero.mobileStudentImage && (
-            <div className="block md:hidden w-full max-w-[280px] -mt-3 mb-2 relative aspect-[16/9]">
+            <div
+              className={`hero-mobile-image-wrapper block md:hidden w-full ${
+                hero.mobileStudentImageWrapperClassName ||
+                "relative w-full h-[220px] sm:h-[260px] overflow-hidden mb-3"
+              }`}
+            >
               <Image
                 src={hero.mobileStudentImage}
                 alt={brand.name || "University"}
                 fill
-                className="object-contain"
-                sizes="280px"
+                className={`object-cover ${hero.mobileStudentImageClassName || ""}`}
+                sizes="(max-width: 768px) 100vw, 420px"
+                priority
               />
+            </div>
+          )}
+
+          {/* Scholarship Coupon Button if enabled (e.g. UU) */}
+          {(brand.showCouponBtn || brand.showCouponButton) && (
+            <div className="w-full flex justify-center mb-3">
+              <button
+                type="button"
+                onClick={() => onOpenScholarship?.()}
+                className="w-full max-w-[360px] py-2 px-4 rounded-[8px] bg-[#22c55e] hover:bg-[#16a34a] text-white font-bold text-[14px] flex items-center justify-center gap-2 shadow-sm border-none cursor-pointer transition-all active:scale-95"
+              >
+                <div className="relative w-6 h-6 rounded-full bg-white flex items-center justify-center p-0.5 shrink-0 overflow-hidden">
+                  <Image
+                    src={brand.giftGif || "/assets/images/gift.gif"}
+                    alt="Gift"
+                    fill
+                    unoptimized
+                    className="object-contain p-0.5"
+                  />
+                </div>
+                <span>{brand.couponButtonText || "Scholarship Coupon Code"}</span>
+              </button>
             </div>
           )}
           <LandingLeadForm
@@ -353,9 +456,11 @@ export default function LandingHero({
             courseList={courses}
             universityName={brand.name}
             variant={hero.formCardType === "white" ? "white-card" : "card"}
-            title={brand.enquireTitle || "Enquire Now"}
+            title={hero.enquireTitle || brand.enquireTitle || "Enquire Now"}
             subtitle={
-              brand.enquireSubtitle || "Take a step towards your success today"
+              hero.enquireSubtitle ||
+              brand.enquireSubtitle ||
+              "Take a step towards your success today"
             }
             primaryColor={hero.formBackground || brand.primaryColor || "#08417b"}
             accentColor={brand.accentColor || "#fdb913"}
