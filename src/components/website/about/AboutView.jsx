@@ -774,11 +774,15 @@ export function AboutView({ initialAboutData = null, initialReviews = [] }) {
                     </span>
                   </button>
 
-                  {isOpen && (
-                    <div className="bg-[#edf5fd] px-6 py-4 text-xs sm:text-sm text-slate-700 leading-relaxed border-t border-slate-200/50">
-                      {faq.answer}
-                    </div>
-                  )}
+                  <div
+                    className={
+                      isOpen
+                        ? "bg-[#edf5fd] px-6 py-4 text-xs sm:text-sm text-slate-700 leading-relaxed border-t border-slate-200/50"
+                        : "sr-only"
+                    }
+                  >
+                    {faq.answer}
+                  </div>
                 </div>
               );
             })}

@@ -72,13 +72,17 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
                     </span>
                   </button>
 
-                  {isOpen && (
-                    <div className="pt-2.5 pb-1 text-[13px] sm:text-[13.5px] text-[#555555] leading-relaxed font-normal">
-                      <p className="m-0 leading-relaxed font-normal">
-                        {faq.a || faq.answer}
-                      </p>
-                    </div>
-                  )}
+                  <div
+                    className={
+                      isOpen
+                        ? "pt-2.5 pb-1 text-[13px] sm:text-[13.5px] text-[#555555] leading-relaxed font-normal"
+                        : "sr-only"
+                    }
+                  >
+                    <p className="m-0 leading-relaxed font-normal">
+                      {faq.a || faq.answer}
+                    </p>
+                  </div>
                 </div>
               );
             })}
@@ -113,11 +117,12 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
                       {displayQ}
                       <span className="span">{isOpen ? "−" : "+"}</span>
                     </div>
-                    {isOpen && (
-                      <div className="accordion-content" style={{ display: "block" }}>
-                        {faq.a || faq.answer}
-                      </div>
-                    )}
+                    <div
+                      className={isOpen ? "accordion-content" : "sr-only"}
+                      style={isOpen ? { display: "block" } : undefined}
+                    >
+                      {faq.a || faq.answer}
+                    </div>
                   </div>
                 );
               })}
@@ -170,13 +175,17 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
                     </span>
                   </button>
 
-                  {isOpen && (
-                    <div className="px-5 py-3.5 sm:py-4 bg-white border-t border-[#e5e7eb] text-[13px] sm:text-[13.5px] text-[#333333] leading-relaxed font-normal">
-                      <p className="m-0 leading-relaxed font-normal">
-                        {faq.a || faq.answer}
-                      </p>
-                    </div>
-                  )}
+                  <div
+                    className={
+                      isOpen
+                        ? "px-5 py-3.5 sm:py-4 bg-white border-t border-[#e5e7eb] text-[13px] sm:text-[13.5px] text-[#333333] leading-relaxed font-normal"
+                        : "sr-only"
+                    }
+                  >
+                    <p className="m-0 leading-relaxed font-normal">
+                      {faq.a || faq.answer}
+                    </p>
+                  </div>
                 </div>
               );
             })}
@@ -280,23 +289,23 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
                     </span>
                   </button>
 
-                  {isOpen && (
-                    <div
-                      className={answerClass}
-                      style={{
-                        borderTopLeftRadius: "0px",
-                        borderTopRightRadius: "0px",
-                        borderBottomLeftRadius: "8px",
-                        borderBottomRightRadius: "8px",
-                        boxShadow:
-                          brand.faqAnswerBoxShadow ||
-                          "0 3px 6px 2px #ccc",
-                        ...brand.faqAnswerStyle,
-                      }}
-                    >
-                      {faq.a}
-                    </div>
-                  )}
+                  <div
+                    className={isOpen ? answerClass : "sr-only"}
+                    style={
+                      isOpen
+                        ? {
+                            borderTopLeftRadius: "0px",
+                            borderTopRightRadius: "0px",
+                            borderBottomLeftRadius: "8px",
+                            borderBottomRightRadius: "8px",
+                            boxShadow: brand.faqAnswerBoxShadow || "0 3px 6px 2px #ccc",
+                            ...brand.faqAnswerStyle,
+                          }
+                        : undefined
+                    }
+                  >
+                    {faq.a}
+                  </div>
                 </div>
               );
             })}
@@ -344,11 +353,15 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
                     </span>
                   </button>
 
-                  {isOpen && (
-                    <div className="px-4 sm:px-5 py-4 border-t border-[#dee2e6] bg-white text-[13px] sm:text-[13.5px] text-[#495057] leading-[1.65] font-normal">
-                      {faq.a}
-                    </div>
-                  )}
+                  <div
+                    className={
+                      isOpen
+                        ? "px-4 sm:px-5 py-4 border-t border-[#dee2e6] bg-white text-[13px] sm:text-[13.5px] text-[#495057] leading-[1.65] font-normal"
+                        : "sr-only"
+                    }
+                  >
+                    {faq.a}
+                  </div>
                 </div>
               );
             })}
@@ -402,11 +415,15 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
                   </span>
                 </button>
 
-                {isOpen && (
-                  <div className="pb-4 pt-1 text-[13.5px] sm:text-[15px] text-[#4d4d4d] leading-relaxed font-normal">
-                    {faq.a || faq.answer}
-                  </div>
-                )}
+                <div
+                  className={
+                    isOpen
+                      ? "pb-4 pt-1 text-[13.5px] sm:text-[15px] text-[#4d4d4d] leading-relaxed font-normal"
+                      : "sr-only"
+                  }
+                >
+                  {faq.a || faq.answer}
+                </div>
               </div>
             );
           })}

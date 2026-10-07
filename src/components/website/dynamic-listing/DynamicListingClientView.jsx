@@ -354,7 +354,7 @@ function RankedUniversityCard({ item, index, features }) {
             <p className="text-xs text-slate-600 leading-relaxed mb-3 font-normal">
               {!isExpanded && plainDescription.length > 170 ? (
                 <>
-                  {plainDescription.slice(0, 170).trim()}...{" "}
+                  <span>{plainDescription.slice(0, 170).trim()}... </span>
                   <button
                     type="button"
                     onClick={() => setIsExpanded(true)}
@@ -362,6 +362,7 @@ function RankedUniversityCard({ item, index, features }) {
                   >
                     Read More
                   </button>
+                  <span className="sr-only">{plainDescription.slice(170)}</span>
                 </>
               ) : (
                 <>
