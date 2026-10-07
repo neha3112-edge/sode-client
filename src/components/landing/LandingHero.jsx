@@ -188,11 +188,9 @@ export default function LandingHero({
 
                 {/* Top-Right Floating Badge: 5 Gold Stars */}
                 <div className="absolute top-3.5 sm:top-4 right-3.5 sm:right-4 bg-white/95 backdrop-blur-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-[8px] shadow-md border border-slate-100 flex items-center gap-1 text-[#f59e0b] text-xs sm:text-sm font-black">
-                  <span>★</span>
-                  <span>★</span>
-                  <span>★</span>
-                  <span>★</span>
-                  <span>★</span>
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <span key={`galgotias-star-${star}`}>★</span>
+                  ))}
                 </div>
               </div>
             </div>
@@ -616,10 +614,6 @@ export default function LandingHero({
                     <span key={`tagline-item-${idx}`}>{item}</span>
                   )
                 )
-              : React.isValidElement(hero.taglineText)
-              ? React.cloneElement(hero.taglineText, {
-                  key: hero.taglineText.key || "tagline-root",
-                })
               : hero.taglineText || brand.tagline1 || "Education that empowers your ambition"}
             {!hero.taglineText && brand.tagline2 ? (
               <>

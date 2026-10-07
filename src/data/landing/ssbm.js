@@ -558,7 +558,7 @@ export const ssbmData = {
       },
 
       taglineText: (
-        <span>
+        <span key="ssbm-tagline">
           By <u className="font-bold underline">SSBM Geneva</u> via <u className="font-bold underline">upGrad</u>
         </span>
       ),

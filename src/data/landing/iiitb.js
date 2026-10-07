@@ -707,9 +707,9 @@ export const iiitbData = {
       },
 
       taglineText: (
-        <span className="hero-byline-text text-[15px] sm:text-[15.5px] font-semibold text-black block">
-          By <span className="underline">IIIT Bangalore</span> via{" "}
-          <span className="underline">upGrad</span>
+        <span key="iiitb-tagline" className="hero-byline-text text-[15px] sm:text-[15.5px] font-semibold text-black block">
+          By <span key="iiitb-inst" className="underline">IIIT Bangalore</span> via{" "}
+          <span key="iiitb-partner" className="underline">upGrad</span>
         </span>
       ),
       taglineStyle: {
