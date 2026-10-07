@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Plus, Minus } from "lucide-react";
+import SafeHtmlRenderer from "@/components/website/SafeHtmlRenderer";
 
 export default function UniversityFaq({
   faqSection = { title: "", items: [] },
@@ -60,8 +61,8 @@ export default function UniversityFaq({
               </button>
 
               {isOpen && (
-                <div className="p-3 text-xs sm:text-[13px] text-gray-600 leading-relaxed font-normal border-t border-blue-100/60 whitespace-pre-line">
-                  {answer}
+                <div className="p-3 text-xs sm:text-[13px] text-gray-600 leading-relaxed font-normal border-t border-blue-100/60">
+                  <SafeHtmlRenderer html={answer} />
                 </div>
               )}
             </div>

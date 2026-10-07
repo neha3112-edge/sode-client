@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Carousel } from "antd";
@@ -8,6 +8,7 @@ import { Container } from "@/components/common/Container";
 import { useFormModal } from "@/hooks/useFormModal";
 import SafeHtmlRenderer from "@/components/website/SafeHtmlRenderer";
 import { getAssetPath } from "@/lib/utils";
+import { Video } from "@/components/common/Video";
 
 function getYouTubeEmbedUrl(url) {
   if (!url) return null;
@@ -17,6 +18,17 @@ function getYouTubeEmbedUrl(url) {
     return `https://www.youtube-nocookie.com/embed/${match[1]}?rel=0`;
   }
   return url;
+}
+
+function getYouTubeVideoId(url) {
+  if (!url) return null;
+  const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/))([\w-]{11})/);
+  return match && match[1] ? match[1] : null;
+}
+
+function isDirectVideoFile(url) {
+  if (!url || typeof url !== "string") return false;
+  return /\.(mp4|webm|ogg|mov|m4v)(\?.*)?$/i.test(url) || url.includes("/video/") || url.includes("/uploads/video");
 }
 
 const PAGE_CONTEXT_BADGE = {
@@ -84,10 +96,13 @@ export function Hero({ initialHeroData = null }) {
       getMediaUrl(heroData.backgroundImage);
 
     const videoUrl = heroData.video_url || heroData.videoUrl || "";
+    const isDirectVideo = isDirectVideoFile(videoUrl);
+    const ytVideoId = !isDirectVideo ? getYouTubeVideoId(videoUrl) : null;
     const embedUrl = getYouTubeEmbedUrl(videoUrl);
     const bannerUrl =
       getMediaUrl(heroData.banner_image) ||
-      getMediaUrl(heroData.bannerImage);
+      getMediaUrl(heroData.bannerImage) ||
+      (ytVideoId ? `https://i.ytimg.com/vi/${ytVideoId}/hqdefault.jpg` : null);
 
     const ctx = heroData.page_context || heroData.pageContext || "custom_page";
     const badge = PAGE_CONTEXT_BADGE[ctx] || PAGE_CONTEXT_BADGE.custom_page;
@@ -252,14 +267,17 @@ export function Hero({ initialHeroData = null }) {
             {/* Right Column: Video > BannerImage > Placeholder */}
             {showRight && (
               <div className={`${rightCols} w-full flex justify-center items-center`}>
-                <div className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10">
-                  {embedUrl ? (
-                    <iframe
-                      src={embedUrl}
-                      title="Program Overview Video"
-                      className="w-full h-full border-0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
+                <div className="w-full">
+                  {videoUrl ? (
+                    <Video
+                      src={videoUrl}
+                      poster={bannerUrl}
+                      title={title || "Program Overview Video"}
+                      preload="none"
+                      controls
+                      playsInline
+                      className="w-full h-full object-cover"
+                      containerClassName="relative w-full aspect-video rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10"
                     />
                   ) : bannerUrl ? (
                     <Image
@@ -291,7 +309,7 @@ export function Hero({ initialHeroData = null }) {
               ...universities.map((u, i) => {
                 const logoRaw = u.image?.url || u.image?.path || (typeof u.image === "string" ? u.image : null);
                 const url = u.coursePageSlug
-                  ? (u.coursePageSlug.includes("/") ? `/universities/${u.coursePageSlug}` : `/courses/${u.coursePageSlug}`)
+                  ? (u.coursePageSlug.includes("/") ? `/universities/${u.coursePageSlug}` : `/${u.coursePageSlug}`)
                   : u.slug
                     ? `/universities/${u.slug}`
                     : null;

@@ -12,7 +12,7 @@ export default async function sitemap() {
     "/universities",
     "/blogs",
   ].map((route) => ({
-    url: `${baseUrl}${route}`,
+    url: route ? `${baseUrl}${route}/` : `${baseUrl}/`,
     lastModified: new Date(),
     changeFrequency: route === "" ? "daily" : "weekly",
     priority: route === "" ? 1.0 : 0.8,
@@ -22,22 +22,24 @@ export default async function sitemap() {
   let courses = [];
   let universities = [];
   let blogs = [];
+  let coursePages = [];
 
   try {
-    const coursesRes = await request.dynamicList({
-      entity: "courses",
+    const cpRes = await request.dynamicList({
+      entity: "course-pages",
       endPoint: "v1/list",
       options: { items: 1000 },
       revalidate: 3600,
     });
-    courses = Array.isArray(coursesRes?.result)
-      ? coursesRes.result
-      : Array.isArray(coursesRes)
-      ? coursesRes
+    coursePages = Array.isArray(cpRes?.result)
+      ? cpRes.result
+      : Array.isArray(cpRes)
+      ? cpRes
       : [];
   } catch (err) {
-    console.error("Error fetching courses for sitemap:", err);
+    console.error("Error fetching course pages for sitemap:", err);
   }
+
 
   try {
     const uniRes = await request.dynamicList({
@@ -71,19 +73,19 @@ export default async function sitemap() {
     console.error("Error fetching blogs for sitemap:", err);
   }
 
-  const courseUrls = (courses || [])
-    .filter((c) => c && c.slug)
-    .map((course) => ({
-      url: `${baseUrl}/courses/${course.slug}`,
+  const coursePageUrls = (coursePages || [])
+    .filter((cp) => cp && cp.slug)
+    .map((cp) => ({
+      url: `${baseUrl}/${cp.slug}/`,
       lastModified: new Date(),
       changeFrequency: "weekly",
-      priority: 0.9,
+      priority: 0.95,
     }));
 
   const universityUrls = (universities || [])
     .filter((u) => u && u.slug)
     .map((uni) => ({
-      url: `${baseUrl}/universities/${uni.slug}`,
+      url: `${baseUrl}/universities/${uni.slug}/`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.9,
@@ -92,11 +94,11 @@ export default async function sitemap() {
   const blogUrls = (blogs || [])
     .filter((b) => b && b.slug)
     .map((blog) => ({
-      url: `${baseUrl}/blogs/${blog.slug}`,
+      url: `${baseUrl}/blogs/${blog.slug}/`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.7,
     }));
 
-  return [...staticPages, ...courseUrls, ...universityUrls, ...blogUrls];
+  return [...staticPages, ...coursePageUrls, ...universityUrls, ...blogUrls];
 }

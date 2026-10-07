@@ -1,6 +1,8 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
+import { getAssetPath } from "@/lib/utils";
 
 const STEP_COLORS = [
   { border: "#f97316", bg: "#fff7ee" },
@@ -48,6 +50,11 @@ export default function UniversityAdmissionProcess({ admissionProcess }) {
             const fallback = STEP_COLORS[idx % STEP_COLORS.length];
             const stepColor = step.color || fallback.border;
             const bgColor = fallback.bg;
+            const iconUrl = step.icon
+              ? typeof step.icon === "object"
+                ? step.icon.url || step.icon.path || null
+                : step.icon
+              : null;
 
             return (
               <div
@@ -58,15 +65,26 @@ export default function UniversityAdmissionProcess({ admissionProcess }) {
                 }}
                 className="rounded-xl p-4 sm:p-5 text-center flex flex-col items-center justify-start min-h-[175px] shadow-2xs hover:shadow-md transition-all duration-300 hover:-translate-y-1"
               >
-                {/* Number Circle Badge */}
+                {/* Icon or Number Circle Badge */}
                 <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm bg-white shadow-2xs mb-3 shrink-0"
+                  className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm bg-white shadow-2xs mb-3 shrink-0 p-1.5 overflow-hidden"
                   style={{
                     border: `2px solid ${stepColor}`,
                     color: stepColor,
                   }}
                 >
-                  {step.stepNumber || idx + 1}
+                  {iconUrl ? (
+                    <Image
+                      src={getAssetPath(iconUrl)}
+                      alt={step.title || "Step icon"}
+                      width={24}
+                      height={24}
+                      className="object-contain w-full h-full"
+                      unoptimized
+                    />
+                  ) : (
+                    step.stepNumber || idx + 1
+                  )}
                 </div>
 
                 {/* Step Title */}

@@ -2,6 +2,7 @@
 const MINIO_PUBLIC_URL = process.env.NEXT_PUBLIC_MINIO_URL || "https://new.crm.api.mysode.com/minio";
 
 const nextConfig = {
+  trailingSlash: true,
   reactStrictMode: true,
   compress: true,
   poweredByHeader: false,
@@ -45,12 +46,12 @@ const nextConfig = {
     return [
       {
         source: "/university",
-        destination: "/universities",
+        destination: "/universities/",
         permanent: true,
       },
       {
         source: "/university/:slug*",
-        destination: "/universities/:slug*",
+        destination: "/universities/:slug*/",
         permanent: true,
       },
     ];

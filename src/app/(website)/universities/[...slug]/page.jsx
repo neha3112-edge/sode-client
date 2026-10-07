@@ -151,6 +151,8 @@ export async function generateMetadata({ params }) {
   }
 }
 
+import JsonLdScript from "@/components/common/JsonLd";
+
 export default async function UniversityOrCourseDetailPage({ params }) {
   const resolvedParams = await params;
   const rawSlug = resolvedParams?.slug;
@@ -159,23 +161,37 @@ export default async function UniversityOrCourseDetailPage({ params }) {
   // 1 segment -> University Page
   if (slugArray.length <= 1) {
     const uniSlug = slugArray[0] || "";
-    const initialData = await getUniversityData(uniSlug);
-    return <UniversityClientView initialData={initialData} slug={uniSlug} />;
+    const [initialData, pageMeta] = await Promise.all([
+      getUniversityData(uniSlug),
+      getPageMetaData(`/universities/${uniSlug}`),
+    ]);
+    return (
+      <>
+        {pageMeta?.schemaMarkup && <JsonLdScript data={pageMeta.schemaMarkup} />}
+        <UniversityClientView initialData={initialData} slug={uniSlug} />
+      </>
+    );
   }
 
   // 2+ segments -> Course under University
   const slugStr = slugArray.join("/");
-  const initialData = await getCourseData(slugArray);
+  const [initialData, pageMeta] = await Promise.all([
+    getCourseData(slugArray),
+    getPageMetaData(`/universities/${slugStr}`),
+  ]);
   const initialCourses =
     Array.isArray(initialData?.topUniversities) && initialData.topUniversities.length > 0
       ? initialData.topUniversities
       : [];
 
   return (
-    <CourseClientView
-      initialData={initialData}
-      initialCourses={initialCourses}
-      slug={slugStr}
-    />
+    <>
+      {pageMeta?.schemaMarkup && <JsonLdScript data={pageMeta.schemaMarkup} />}
+      <CourseClientView
+        initialData={initialData}
+        initialCourses={initialCourses}
+        slug={slugStr}
+      />
+    </>
   );
 }

@@ -16,6 +16,7 @@ import Image from "next/image";
 import { useCompare } from "@/hooks/useCompare";
 import { getAssetPath } from "@/lib/utils";
 import Container from "@/components/common/Container";
+import { request } from "@/services/request";
 
 const AVATAR_COLORS = [
   "#1C3569", "#4F46E5", "#0369A1", "#047857", "#B45309",
@@ -178,12 +179,14 @@ function UniversityCard({ uni }) {
               icon={<SwapOutlined className={inCompare ? "text-amber-600 text-xs" : "text-xs"} />}
               onClick={() => {
                 const compareItem = {
-                  _id: uni._id,
+                  _id: uni._id || slug,
                   slug: slug,
-                  title: featuredCourse || `${name} Online Programs`,
+                  name: name,
+                  title: name,
                   uniName: name,
                   uniSlug: slug,
                   logoUrl: logoUrl,
+                  logoSrc: logoUrl,
                   university: uni,
                 };
                 toggleCompare(compareItem);

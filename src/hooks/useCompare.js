@@ -83,7 +83,7 @@ export function useCompare() {
       if (!identifier) return false;
       const targetKey = String(identifier).toLowerCase().trim();
       return (cachedList || []).some((item) => {
-        const keys = [item._id, item.id, item.slug, item.name, item.title].filter(Boolean);
+        const keys = [item._id, item.id, item.slug, item.uniSlug, item.name, item.uniName, item.title].filter(Boolean);
         return keys.some((k) => String(k).toLowerCase().trim() === targetKey);
       });
     },
@@ -92,10 +92,13 @@ export function useCompare() {
 
   const addToCompare = useCallback((university) => {
     if (!university) return;
-    const uniId = String(university._id || university.id || university.slug || university.name || university.title).toLowerCase();
+    const uniId = String(university._id || university.id || university.slug || university.uniSlug || university.name || university.uniName || university.title).toLowerCase();
     const current = cachedList || [];
     const exists = current.some(
-      (u) => String(u._id || u.id || u.slug || u.name || u.title).toLowerCase() === uniId
+      (u) => {
+        const keys = [u._id, u.id, u.slug, u.uniSlug, u.name, u.uniName, u.title].filter(Boolean);
+        return keys.some((k) => String(k).toLowerCase().trim() === uniId);
+      }
     );
     if (exists) return;
 
@@ -113,7 +116,7 @@ export function useCompare() {
     const targetKey = String(identifier).toLowerCase().trim();
     const current = cachedList || [];
     const next = current.filter((u) => {
-      const keys = [u._id, u.id, u.slug, u.name, u.title].filter(Boolean);
+      const keys = [u._id, u.id, u.slug, u.uniSlug, u.name, u.uniName, u.title].filter(Boolean);
       return !keys.some((k) => String(k).toLowerCase().trim() === targetKey);
     });
     saveListToStorage(next);
@@ -122,7 +125,7 @@ export function useCompare() {
   const toggleCompare = useCallback(
     (item) => {
       if (!item) return;
-      const key = item._id || item.id || item.slug || item.name || item.title;
+      const key = item.slug || item.uniSlug || item._id || item.id || item.name || item.title;
       if (isInCompare(key)) {
         removeFromCompare(key);
       } else {

@@ -20,7 +20,7 @@ export default function UniversityAccreditations({
       <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight mb-4">
         Rankings & Accreditations of {uniName}
       </h2>
-      <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2.5 md:gap-3 w-full">
+      <div className="flex flex-wrap items-center justify-start md:justify-center gap-1.5 sm:gap-2.5 md:gap-3 w-full">
         {accreditationsList.map((acc, idx) => (
           <div
             key={idx}

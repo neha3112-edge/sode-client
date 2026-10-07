@@ -52,7 +52,7 @@ export async function generateMetadata({ params }) {
     const blog = data?.blogId || data || {};
 
     const title = data?.headline || blog?.title || "";
-    const description = data?.metaDescription || blog?.excerpt || "";
+    const description = data?.metaDescription || blog?.subtitle || blog?.excerpt || "";
     const keywords = data?.metaKeywords || "";
     const rawImage = data?.bannerImage || blog?.coverImage;
     const ogImage = rawImage ? getAssetPath(rawImage) : null;
