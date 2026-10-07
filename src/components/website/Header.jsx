@@ -708,8 +708,8 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                             }))
                           }
                           className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-left text-[12.5px] transition-all cursor-pointer select-none ${isActive
-                              ? "bg-[#EBF3FE] text-[#0B57D0] font-bold shadow-xs"
-                              : "text-slate-700 hover:bg-slate-50 hover:text-slate-900 font-medium"
+                            ? "bg-[#EBF3FE] text-[#0B57D0] font-bold shadow-xs"
+                            : "text-slate-700 hover:bg-slate-50 hover:text-slate-900 font-medium"
                             }`}
                         >
                           <div className="flex items-center gap-2 min-w-0">
@@ -858,7 +858,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                         }
                         const unisUrl = `/universities?course=${encodeURIComponent(progSlug)}`;
 
-                        // Prioritise header_logo for header, fallback to course logo, then pastel icon
+
                         const headerLogoObj = prog.header_logo || prog.effective_logo || prog.logo;
                         const headerLogoUrl = (headerLogoObj?.url || headerLogoObj?.path || typeof headerLogoObj === "string") ? resolveImg(headerLogoObj) : null;
 
