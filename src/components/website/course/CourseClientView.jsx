@@ -402,8 +402,8 @@ export function CourseClientView({
         ...(universityName && (courseData?.universitySlug || courseData?.universityId?.slug)
           ? [{ label: universityName, href: `/university/${courseData.universitySlug || courseData.universityId?.slug}` }]
           : universityName
-          ? [{ label: universityName }]
-          : []),
+            ? [{ label: universityName }]
+            : []),
         {
           label: `${displayCourseTitle}${courseData?.fullName ? ` (${courseData.fullName})` : ""}`.trim(),
         },
@@ -527,8 +527,6 @@ export function CourseClientView({
           courseData={courseData}
           universityName={universityName}
         />
-
-        {/* 5. Specialisations */}
         <CourseSpecializations
           specializations={specializations}
           courseData={courseData}
