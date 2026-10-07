@@ -394,3 +394,32 @@ body:has(.landing-page-root)>div>main {
   z-index: 1 !important;
   display: block !important;
 }
+
+/* =========================================================
+   GLOBAL AUTO-RENDERED HTML LINK STYLING
+========================================================= */
+a.auto-rendered-link {
+  text-decoration: underline !important;
+  text-underline-offset: 3px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: opacity 0.2s ease, color 0.2s ease !important;
+  color: #0284c7 !important;
+}
+
+a.auto-rendered-link:hover {
+  opacity: 0.8 !important;
+}
+
+/* Adaptive colors for dark backgrounds (Hero, Headers, Dark Cards) */
+.text-white a.auto-rendered-link,
+.text-slate-200 a.auto-rendered-link,
+.text-slate-300 a.auto-rendered-link,
+.bg-slate-900 a.auto-rendered-link,
+.bg-slate-950 a.auto-rendered-link,
+[style*="background-color: #072C50"] a.auto-rendered-link,
+[style*="background-color: #102A45"] a.auto-rendered-link,
+[style*="backgroundColor: #072C50"] a.auto-rendered-link,
+[style*="backgroundColor: #102A45"] a.auto-rendered-link {
+  color: #F5D061 !important;
+}

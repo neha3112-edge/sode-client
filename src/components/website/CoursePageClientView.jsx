@@ -1296,9 +1296,8 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                         {/* Arrow between cards - centered vertically to the card and horizontally in the gap */}
                         {idx < admissionSteps.length - 1 && (
                           <div
-                            className={`absolute top-1/2 -translate-y-1/2 left-[calc(100%+7px)] -translate-x-1/2 z-10 text-sky-400 pointer-events-none items-center justify-center ${
-                              idx === 2 ? "hidden lg:flex" : "hidden md:flex"
-                            }`}
+                            className={`absolute top-1/2 -translate-y-1/2 left-[calc(100%+7px)] -translate-x-1/2 z-10 text-sky-400 pointer-events-none items-center justify-center ${idx === 2 ? "hidden lg:flex" : "hidden md:flex"
+                              }`}
                           >
                             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                               <polyline points="9 18 15 12 9 6" />
@@ -1956,11 +1955,15 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                             {isOpen ? <Minus size={10} /> : <Plus size={10} />}
                           </span>
                         </button>
-                        {isOpen && (
-                          <div className="p-3 text-xs sm:text-[13px] text-gray-600 leading-relaxed font-normal border-t border-blue-100/60">
-                            <SafeHtmlRenderer html={faq.answer} />
-                          </div>
-                        )}
+                        <div
+                          className={
+                            isOpen
+                              ? "p-3 text-xs sm:text-[13px] text-gray-600 leading-relaxed font-normal border-t border-blue-100/60"
+                              : "sr-only"
+                          }
+                        >
+                          <SafeHtmlRenderer html={faq.answer} />
+                        </div>
                       </div>
                     );
                   })}
