@@ -9,7 +9,7 @@ export const revalidate = 900;
 const getBlogPageData = cache(async (slug) => {
   if (!slug) return { initialData: null, initialPopularBlogs: [] };
   try {
-    const [blogRes, popularRes] = await Promise.all([
+    const [blogRes, popularRes, categoryRes] = await Promise.all([
       request.dynamicRead({
         entity: "blogs",
         endPoint: "v1/list",
@@ -22,17 +22,47 @@ const getBlogPageData = cache(async (slug) => {
         options: { items: 6 },
         revalidate: 900,
       }),
+      request.dynamicList({
+        entity: "category",
+        endPoint: "v1/list",
+        revalidate: 300,
+      }),
     ]);
 
     const initialData = blogRes?.result ?? blogRes ?? null;
     const list = popularRes?.result || popularRes?.blogs || (Array.isArray(popularRes) ? popularRes : []);
+
+    const categories = Array.isArray(categoryRes?.result)
+      ? categoryRes.result
+      : Array.isArray(categoryRes?.categories)
+      ? categoryRes.categories
+      : Array.isArray(categoryRes?.sections)
+      ? categoryRes.sections
+      : Array.isArray(categoryRes)
+      ? categoryRes
+      : [];
+
+    const toolsParent = categories.find(
+      (c) =>
+        c.featuredType === "TOOLS" ||
+        c.featuredType === "FEATURED_TOOLS" ||
+        c.sectionType === "TOOLS" ||
+        (c.name && c.name.toLowerCase().includes("tool")) ||
+        (c.title && c.title.toLowerCase().includes("tool"))
+    );
+
+    const rawTools = toolsParent && (toolsParent.children || toolsParent.items);
+    const initialTools =
+      Array.isArray(rawTools) && rawTools.length > 0 ? rawTools : [];
+
     return {
       initialData,
       initialPopularBlogs: Array.isArray(list) ? list : [],
+      initialTools,
     };
   } catch (err) {
     console.error(`[Server Component] Error pre-fetching blog ${slug}:`, err.message);
-    return { initialData: null, initialPopularBlogs: [] };
+    return { initialData: null, initialPopularBlogs: [], initialTools: [] };
   }
 });
 
@@ -74,12 +104,13 @@ export default async function BlogDetailPage({ params }) {
   const resolvedParams = await params;
   const slug = resolvedParams?.slug || "";
 
-  const { initialData, initialPopularBlogs } = await getBlogPageData(slug);
+  const { initialData, initialPopularBlogs, initialTools } = await getBlogPageData(slug);
 
   return (
     <BlogClientView
       initialData={initialData}
       initialPopularBlogs={initialPopularBlogs}
+      initialTools={initialTools}
       slug={slug}
     />
   );

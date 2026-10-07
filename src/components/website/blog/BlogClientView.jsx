@@ -1,15 +1,16 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Button, Form, Input, message, Table } from "antd";
+import { Button, Carousel, Form, Input, message, Table } from "antd";
 import { Container } from "@/components/common/Container";
 import SafeHtmlRenderer from "@/components/website/SafeHtmlRenderer";
 import FormWrapper from "@/components/forms/FormWrapper";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
 import { getAssetPath } from "@/lib/utils";
 import { CalendarIcon, Check, ChevronDown, ChevronRight, ChevronUp, Minus, Plus, ThumbsDown, ThumbsUp, User } from "lucide-react";
+import { request } from "@/services/request";
 
 // 📚 Structured Sections (Directly drives the page content & Table of Contents)
 const DUMMY_BLOG_SECTIONS = [
@@ -272,8 +273,81 @@ function formatBlogDate(dateStr) {
 export default function BlogClientView({
   initialData,
   initialPopularBlogs = [],
+  initialTools = [],
   slug: propSlug,
 }) {
+  const [toolsList, setToolsList] = useState(
+    Array.isArray(initialTools) && initialTools.length > 0 ? initialTools : []
+  );
+  const carouselRef = useRef(null);
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [slidesToShow, setSlidesToShow] = useState(3);
+
+  // Responsive slides calculation (1 card on mobile, 2 on tablet, 3 on desktop)
+  useEffect(() => {
+    const updateSlides = () => {
+      if (typeof window === "undefined") return;
+      if (window.innerWidth < 768) {
+        setSlidesToShow(1);
+      } else if (window.innerWidth < 1024) {
+        setSlidesToShow(2);
+      } else {
+        setSlidesToShow(3);
+      }
+    };
+    updateSlides();
+    window.addEventListener("resize", updateSlides);
+    return () => window.removeEventListener("resize", updateSlides);
+  }, []);
+
+  // Sync or client-side fetch dynamic tools from category entity if initialTools is empty
+  useEffect(() => {
+    if (Array.isArray(initialTools) && initialTools.length > 0) {
+      setToolsList(initialTools);
+      return;
+    }
+    let isMounted = true;
+    (async () => {
+      try {
+        const res = await request.dynamicList({
+          entity: "category",
+          endPoint: "v1/list",
+          revalidate: 300,
+        });
+        const categories = Array.isArray(res?.result)
+          ? res.result
+          : Array.isArray(res?.categories)
+            ? res.categories
+            : Array.isArray(res?.sections)
+              ? res.sections
+              : Array.isArray(res)
+                ? res
+                : [];
+        const toolsParent = categories.find(
+          (c) =>
+            c.featuredType === "TOOLS" ||
+            c.featuredType === "FEATURED_TOOLS" ||
+            c.sectionType === "TOOLS" ||
+            (c.name && c.name.toLowerCase().includes("tool")) ||
+            (c.title && c.title.toLowerCase().includes("tool"))
+        );
+        const rawTools = toolsParent && (toolsParent.children || toolsParent.items);
+        if (
+          isMounted &&
+          Array.isArray(rawTools) &&
+          rawTools.length > 0
+        ) {
+          setToolsList(rawTools);
+        }
+      } catch (err) {
+        // Fallback gracefully
+      }
+    })();
+    return () => {
+      isMounted = false;
+    };
+  }, [initialTools]);
+
   const [tocOpen, setTocOpen] = useState(true);
   const [activeHeadingId, setActiveHeadingId] = useState("");
   const [selectedPoll, setSelectedPoll] = useState("Business Analytics");
@@ -414,6 +488,116 @@ export default function BlogClientView({
     }
   }, [blog?.js]);
 
+  // 🤖 Dynamic Tools Mapping (from Category/Tools database)
+  const mappedTools = useMemo(() => {
+    if (Array.isArray(toolsList) && toolsList.length > 0) {
+      return toolsList.map((t, idx) => {
+        const fullName = (t.name || t.title || "Tool").trim();
+        const lower = fullName.toLowerCase();
+
+        // Split name into prefix and underlineWord
+        const parts = fullName.split(/\s+/);
+        const underlineWord = parts.length > 1 ? parts.pop() : fullName;
+        const prefix = parts.join(" ");
+
+        let sparkleColor = "text-[#00ACC1]";
+        let underlineClass = "border-[#00ACC1]";
+        let circleBg = "bg-[#E0F7F6]";
+        let btnText = "Suggest Me A University";
+        let linkUrl = "/tools/suggest-university";
+        let defaultDesc = "Find universities that match your goals, preferences, and career plans.";
+        let iconSvg = (
+          <svg className="w-6 h-6 sm:w-7 sm:h-7 text-[#00ACC1]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+          </svg>
+        );
+
+        if (lower.includes("eligib")) {
+          sparkleColor = "text-[#AB47BC]";
+          underlineClass = "border-[#AB47BC]";
+          circleBg = "bg-[#F3E8FF]";
+          btnText = "Check Eligibility";
+          linkUrl = "/tools/eligibility-checker";
+          defaultDesc = "Instantly check which courses and universities you're eligible for.";
+          iconSvg = (
+            <svg className="w-6 h-6 sm:w-7 sm:h-7 text-[#AB47BC]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          );
+        } else if (lower.includes("compar")) {
+          sparkleColor = "text-[#1E88E5]";
+          underlineClass = "border-[#1E88E5]";
+          circleBg = "bg-[#E0E7FF]";
+          btnText = "Compare University";
+          linkUrl = "/tools/compare-universities";
+          defaultDesc = "Compare universities, courses, fees, and key benefits side by side.";
+          iconSvg = (
+            <svg className="w-6 h-6 sm:w-7 sm:h-7 text-[#1E88E5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+            </svg>
+          );
+        } else if (lower.includes("course")) {
+          sparkleColor = "text-[#EC407A]";
+          underlineClass = "border-[#EC407A]";
+          circleBg = "bg-[#FCE4EC]";
+          btnText = "Suggest Course";
+          linkUrl = "/tools/suggest-course";
+          defaultDesc = "Discover accredited degree and diploma programs matched to your background.";
+          iconSvg = (
+            <svg className="w-6 h-6 sm:w-7 sm:h-7 text-[#EC407A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+          );
+        } else if (idx % 4 === 1) {
+          sparkleColor = "text-[#AB47BC]";
+          underlineClass = "border-[#AB47BC]";
+          circleBg = "bg-[#F3E8FF]";
+        } else if (idx % 4 === 2) {
+          sparkleColor = "text-[#1E88E5]";
+          underlineClass = "border-[#1E88E5]";
+          circleBg = "bg-[#E0E7FF]";
+        } else if (idx % 4 === 3) {
+          sparkleColor = "text-[#EC407A]";
+          underlineClass = "border-[#EC407A]";
+          circleBg = "bg-[#FCE4EC]";
+        }
+
+        const rawLogo = t.logo?.url || t.logo || t.image?.url || t.image;
+        const logoUrl = rawLogo ? getAssetPath(rawLogo) : null;
+
+        return {
+          id: t._id || t.id || String(idx),
+          name: fullName,
+          prefix,
+          underlineWord,
+          description: t.description || defaultDesc,
+          btnText:
+            t.btnText ||
+            (lower.includes("suggest") && lower.includes("univ")
+              ? "Suggest Me A University"
+              : btnText),
+          linkUrl: t.linkUrl || t.url || (t.slug ? `/tools/${t.slug}` : linkUrl),
+          sparkleColor,
+          underlineClass,
+          circleBg,
+          icon: logoUrl ? (
+            <Image
+              src={logoUrl}
+              alt={fullName}
+              width={48}
+              height={48}
+              unoptimized
+              className="w-8 h-8 sm:w-9 sm:h-9 object-contain"
+            />
+          ) : (
+            iconSvg
+          ),
+        };
+      });
+    }
+    return [];
+  }, [toolsList]);
+
   // 📑 Dynamic Table of Contents (Directly generated from the sections rendered on the page)
   const finalHeadings = useMemo(() => {
     const list = DUMMY_BLOG_SECTIONS.map((sec) => ({
@@ -426,8 +610,15 @@ export default function BlogClientView({
       text: "Frequently Asked Questions (FAQs)",
       level: 2,
     });
+    if (mappedTools && mappedTools.length > 0) {
+      list.push({
+        id: "ai-tools",
+        text: "Explore AI Powered Tools",
+        level: 2,
+      });
+    }
     return list;
-  }, []);
+  }, [mappedTools]);
 
   const allFaqs = useMemo(() => {
     if (Array.isArray(blog?.faqs) && blog.faqs.length > 0) return blog.faqs;
@@ -574,6 +765,33 @@ export default function BlogClientView({
           color: #ffffff !important;
           -webkit-text-fill-color: #ffffff !important;
           font-weight: 700 !important;
+        }
+
+        /* Ant Design Carousel for AI Tools */
+        .tools-antd-carousel .slick-slider {
+          overflow: hidden !important;
+          width: 100% !important;
+        }
+        .tools-antd-carousel .slick-list {
+          margin: 0 -10px !important;
+          overflow: hidden !important;
+        }
+        .tools-antd-carousel .slick-slide {
+          padding: 0 10px !important;
+          box-sizing: border-box !important;
+          float: left !important;
+          height: auto !important;
+        }
+        .tools-antd-carousel .slick-slide > div {
+          height: 100% !important;
+        }
+        @media (max-width: 767px) {
+          .tools-antd-carousel .slick-list {
+            margin: 0 !important;
+          }
+          .tools-antd-carousel .slick-slide {
+            padding: 0 4px !important;
+          }
         }
       `}</style>
 
@@ -842,6 +1060,7 @@ export default function BlogClientView({
           </div>
         </div>
 
+
         {/* =====================================================================
             1️⃣5️⃣ FREQUENTLY ASKED QUESTIONS (Exact Course Page Standalone Card)
         ===================================================================== */}
@@ -1050,6 +1269,118 @@ export default function BlogClientView({
             <span className="font-bold text-gray-900">Tags: </span>
             <span className="text-slate-600">{displayTags}</span>
           </div>
+
+          {/* =====================================================================
+              🤖 EXPLORE AI POWERED TOOLS (Ant Design Carousel directly below Tags)
+          ===================================================================== */}
+          {mappedTools && mappedTools.length > 0 && (
+            <div
+              id="ai-tools"
+              data-nav-label="AI Tools"
+              className="bg-[#F8FAFC] rounded-2xl border border-slate-200/80 p-5 sm:p-7 md:p-8 mt-6 scroll-mt-20"
+            >
+              {/* Top Pill Badge */}
+              <div className="flex justify-center mb-2 sm:mb-2.5">
+                <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A] text-[11px] font-bold tracking-wide uppercase shadow-2xs">
+                  <span className="text-[#D97706] text-xs">✦</span>
+                  <span>AI Powered</span>
+                </span>
+              </div>
+
+              {/* Heading */}
+              <h2 className="text-xl sm:text-2xl md:text-[26px] font-extrabold text-[#0D3B66] text-center tracking-tight mb-1">
+                Explore AI Powered Tools
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-500 text-center font-normal mb-6">
+                Make smarter education decisions with AI-powered tools
+              </p>
+
+              {/* Ant Design Carousel with infinite scrolling & autoplay */}
+              <Carousel
+                key={`tools-carousel-${slidesToShow}`}
+                ref={carouselRef}
+                autoplay={true}
+                autoplaySpeed={3000}
+                speed={600}
+                pauseOnHover={true}
+                dots={false}
+                slidesToShow={slidesToShow}
+                slidesToScroll={1}
+                infinite={mappedTools.length > slidesToShow}
+                arrows={false}
+                beforeChange={(from, to) => setActiveSlide(to % mappedTools.length)}
+                className="tools-antd-carousel"
+              >
+                {mappedTools.map((tool, idx) => (
+                  <div key={tool.id || idx} className="py-2">
+                    <div className="relative bg-white rounded-2xl p-5 sm:p-6 shadow-xs hover:shadow-xl border border-slate-100 flex flex-col items-center text-center transition-all duration-300 hover:-translate-y-1 group">
+                      {/* Top-Right Sparkle */}
+                      <span
+                        className={`absolute top-3.5 right-3.5 ${tool.sparkleColor} font-black text-xs select-none group-hover:rotate-12 transition-transform`}
+                      >
+                        ✦
+                      </span>
+
+                      {/* Round Icon with colored background */}
+                      <div
+                        className={`w-13 h-13 sm:w-14 sm:h-14 rounded-full ${tool.circleBg} flex items-center justify-center mb-3 transition-transform group-hover:scale-110 shrink-0`}
+                      >
+                        {tool.icon}
+                      </div>
+
+                      {/* Title with Underlined Word */}
+                      <div className="w-full flex items-center justify-center mb-1.5">
+                        <h3 className="text-sm sm:text-base font-bold text-[#0F172A] tracking-tight m-0 leading-tight line-clamp-1 w-full text-center">
+                          {tool.prefix ? `${tool.prefix} ` : ""}
+                          <span className={`border-b-2 ${tool.underlineClass} pb-0.5 inline-block`}>
+                            {tool.underlineWord}
+                          </span>
+                        </h3>
+                      </div>
+
+                      {/* Description */}
+                      <div className="w-full flex items-center justify-center min-h-[36px] sm:min-h-[40px]">
+                        <p className="text-[#64748B] text-xs sm:text-[13px] leading-relaxed font-normal m-0 line-clamp-2 text-center">
+                          {tool.description}
+                        </p>
+                      </div>
+
+                      {/* Button */}
+                      <div className="w-full mt-4 sm:mt-5 flex justify-center">
+                        <Link
+                          href={tool.linkUrl}
+                          className="w-full max-w-53.75 py-2 px-3.5 rounded-full bg-[#0B3B7E] hover:bg-[#072859] text-white font-bold text-xs sm:text-[12.5px] shadow-xs transition-all flex items-center justify-between cursor-pointer no-underline group-hover:shadow-md active:scale-95"
+                        >
+                          <span className="truncate">{tool.btnText}</span>
+                          <span className="w-5 h-5 rounded-full bg-white text-[#0B3B7E] flex items-center justify-center text-xs font-bold shrink-0 ml-1.5 transition-transform group-hover:translate-x-0.5">
+                            →
+                          </span>
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </Carousel>
+
+              {/* Dynamic Dots Pagination (strictly mappedTools.length, not fixed 4 dots) */}
+              {mappedTools.length > 1 && (
+                <div className="flex items-center justify-center gap-1.5 mt-5">
+                  {mappedTools.map((_, dotIdx) => (
+                    <button
+                      key={dotIdx}
+                      type="button"
+                      onClick={() => carouselRef.current?.goTo(dotIdx)}
+                      className={`transition-all rounded-full cursor-pointer border-none p-0 ${activeSlide === dotIdx
+                        ? "w-2.5 h-2.5 bg-[#0B3B7E]"
+                        : "w-2 h-2 bg-slate-300 hover:bg-slate-400"
+                        }`}
+                      aria-label={`Go to slide ${dotIdx + 1}`}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </Container>
     </div>
