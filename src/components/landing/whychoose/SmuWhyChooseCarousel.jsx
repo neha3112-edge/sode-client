@@ -5,9 +5,10 @@ import Image from "next/image";
 import { Carousel, Card, Button } from "antd";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-export default function SmuWhyChooseCarousel({ whyChoose = [], brand = {} }) {
+export default function SmuWhyChooseCarousel({ whyChoose = [], brand = {}, onOpenApply }) {
   const carouselRef = useRef(null);
   const sectionTitle = brand.whyChooseTitle || `Advantages of ${brand.name || "Sikkim Manipal University Online"}`;
+  const headerBg = brand.primaryColor || "#074a76";
 
   return (
     <section
@@ -70,7 +71,10 @@ export default function SmuWhyChooseCarousel({ whyChoose = [], brand = {} }) {
                     />
                   </div>
 
-                  <div className="bg-[#074a76] text-white flex items-center justify-center py-3.5 px-3">
+                  <div
+                    className="text-white flex items-center justify-center py-3.5 px-3"
+                    style={{ backgroundColor: headerBg }}
+                  >
                     <h3 className="font-bold text-white m-0 tracking-tight leading-snug text-[15px] sm:text-[16px]">
                       {item.title}
                     </h3>
@@ -78,7 +82,7 @@ export default function SmuWhyChooseCarousel({ whyChoose = [], brand = {} }) {
 
                   <div className="bg-white flex items-center justify-center p-4 sm:p-5">
                     <p className="text-[12.5px] sm:text-[13px] text-[#555555] leading-relaxed m-0 font-normal min-h-[58px] sm:min-h-[64px] flex items-center justify-center">
-                      {item.desc}
+                      {item.desc || item.description}
                     </p>
                   </div>
                 </Card>

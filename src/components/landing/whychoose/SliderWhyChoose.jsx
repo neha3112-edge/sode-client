@@ -6,7 +6,7 @@ import { Carousel, Card, Button } from "antd";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import LandingContainer from "../LandingContainer";
 
-export default function SliderWhyChoose({ whyChoose = [], brand = {} }) {
+export default function SliderWhyChoose({ whyChoose = [], brand = {}, onOpenApply }) {
   const carouselRef = useRef(null);
   const prefix = brand.whyChoosePrefix || "Key Features of";
   const highlight = brand.whyChooseHighlight || brand.name || "University Online";
@@ -82,7 +82,7 @@ export default function SliderWhyChoose({ whyChoose = [], brand = {} }) {
                       {item.title}
                     </h3>
                     <p className="text-[12px] sm:text-[12.5px] text-slate-700 leading-[1.4] font-normal m-0 text-center max-w-[225px] mx-auto">
-                      {item.desc}
+                      {item.desc || item.description}
                     </p>
                   </Card>
                 </div>

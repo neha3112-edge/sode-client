@@ -5,20 +5,22 @@ import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 
 export default function UuWhyChoose({ whyChoose = [], brand = {}, onOpenApply }) {
-  const title = brand.whyChooseTitle || "Uttaranchal University Benefits in the";
+  const title = brand.whyChooseTitle || `${brand.name || "Uttaranchal University"} Benefits in the`;
   const highlight = brand.whyChooseHighlight || "Online Degree Programs";
   const description =
     brand.whyChooseDescription ||
     "Uttaranchal University Online courses are UGC-Entitled offers the convenience & flexibility of online education with the equivalency of a conventional, on-campus degree. Through Uttaranchal University Online, leading international faculty, it offer world-class education in a true sense.";
   const studentImage = brand.whyChooseStudentImage || "/assets/all_universities_images/uu/image-2nd.webp";
-  const btnText = brand.whyChooseBtnText || "Apply Now";
+  const btnText = brand.whyChooseButtonText || brand.whyChooseBtnText || "Apply Now";
+  const bg = brand.whyChooseBg || brand.primaryColor || "#0A3C7D";
+  const accentColor = brand.accentColor || "#62B239";
 
   return (
     <section
       id="whychoose"
       data-section="whychoose"
       className="w-full select-none py-10 sm:py-16 lg:py-20 scroll-mt-20 text-white"
-      style={{ backgroundColor: brand.whyChooseBg || "#0A3C7D" }}
+      style={{ backgroundColor: bg }}
     >
       <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-center">
@@ -27,7 +29,7 @@ export default function UuWhyChoose({ whyChoose = [], brand = {}, onOpenApply })
             <div className="relative w-full max-w-[360px] sm:max-w-[420px] aspect-[4/4.5] rounded-[24px] sm:rounded-[32px] overflow-hidden shadow-2xl">
               <Image
                 src={studentImage}
-                alt="Uttaranchal University Benefits"
+                alt={title}
                 fill
                 className="object-cover"
                 sizes="(max-width: 1024px) 100vw, 42vw"
@@ -39,7 +41,7 @@ export default function UuWhyChoose({ whyChoose = [], brand = {}, onOpenApply })
           {/* Right: Text + 2-Column Icon Grid + Apply Button */}
           <div className="lg:col-span-7 flex flex-col justify-center text-left">
             <h2 className="text-[22px] sm:text-[28px] lg:text-[32px] font-bold text-white leading-tight m-0 mb-3">
-              {title} <span className="text-[#62B239]">{highlight}</span>
+              {title} <span style={{ color: accentColor }}>{highlight}</span>
             </h2>
 
             {description && (
@@ -48,7 +50,7 @@ export default function UuWhyChoose({ whyChoose = [], brand = {}, onOpenApply })
               </p>
             )}
 
-            {/* 2-Column Icon Grid on both mobile and desktop */}
+            {/* 2-Column Icon Grid */}
             <div className="grid grid-cols-2 gap-x-3 sm:gap-x-6 gap-y-4 sm:gap-y-5 mb-6 sm:mb-8">
               {whyChoose.map((item, idx) => (
                 <div key={idx} className="flex items-center gap-2.5 sm:gap-3">
@@ -74,7 +76,8 @@ export default function UuWhyChoose({ whyChoose = [], brand = {}, onOpenApply })
               <button
                 type="button"
                 onClick={() => onOpenApply?.()}
-                className="inline-flex items-center gap-2 px-6 py-2 sm:px-7 sm:py-2.5 bg-[#62B239] hover:bg-[#539e2e] text-white font-bold text-[13.5px] sm:text-[14.5px] rounded-[6px] transition-all border-none cursor-pointer shadow-md active:scale-95"
+                className="inline-flex items-center gap-2 px-6 py-2 sm:px-7 sm:py-2.5 text-white font-bold text-[13.5px] sm:text-[14.5px] rounded-[6px] transition-all border-none cursor-pointer shadow-md active:scale-95"
+                style={{ backgroundColor: accentColor }}
               >
                 <span>{btnText}</span>
                 <ArrowRight className="w-4 h-4 stroke-[2.5]" />

@@ -2,7 +2,7 @@
 
 import React from "react";
 
-export default function ShooliniWhyChoose({ whyChoose = [], brand = {} }) {
+export default function ShooliniWhyChoose({ whyChoose = [], brand = {}, onOpenApply }) {
   return (
     <section id="Career" className="py-10 sm:py-14 bg-white select-none">
       <div className="max-w-[1300px] mx-auto px-4 sm:px-6">

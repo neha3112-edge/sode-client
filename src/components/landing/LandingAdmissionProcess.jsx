@@ -151,9 +151,16 @@ export default function LandingAdmissionProcess({
     activeUniversity.toLowerCase().includes("smu");
 
   // Heading & subtitle logic
-  const hasEnrollmentPrefix = Boolean(
-    enrollmentProcess?.titlePrefix || brand?.enrollmentProcess?.titlePrefix
+  const hasExplicitTitle = Boolean(
+    admissionProcess?.title ||
+    brand.admissionTitle ||
+    brand.admissionProcess?.title ||
+    enrollmentProcess?.title
   );
+
+  const hasEnrollmentPrefix =
+    !hasExplicitTitle &&
+    Boolean(enrollmentProcess?.titlePrefix || brand?.enrollmentProcess?.titlePrefix);
 
   const titlePrefix =
     enrollmentProcess?.titlePrefix ||
@@ -180,6 +187,7 @@ export default function LandingAdmissionProcess({
     admissionProcess?.title ||
     brand.admissionTitle ||
     brand.admissionProcess?.title ||
+    enrollmentProcess?.title ||
     (isSmu
       ? `How To Take Admission In ${activeUniversity}?`
       : `How to Apply for ${
@@ -190,31 +198,32 @@ export default function LandingAdmissionProcess({
 
   const subtitleText =
     admissionProcess?.subtitle ||
-    enrollmentProcess?.description ||
-    brand?.enrollmentProcess?.description ||
     brand.admissionSubtitle ||
     brand.admissionProcess?.subtitle ||
-    `Students can easily enrol in ${activeUniversity} courses. Candidates can conveniently apply by selecting their desired program. Follow these steps to secure admission in the university.`;
+    enrollmentProcess?.description ||
+    brand?.enrollmentProcess?.description ||
+    `The admission process for ${activeUniversity} course admissions is very simple and user-friendly. Here's a step-by-step guide to enrolling in a degree course at the university :`;
 
   const headingColor =
+    admissionProcess?.headingColor ||
     brand.admissionHeadingColor ||
     (isSmu ? "#193579" : brand.primaryColor || "#08417b");
 
   return (
     <section
       id={brand.admissionProcessId || (brand.slug === "ggu" ? "how-to-apply" : "process")}
-      className="py-10 sm:py-14 lg:py-16 bg-white w-full select-none"
+      className={brand.admissionSectionClass || "pt-2 sm:pt-3 lg:pt-4 pb-10 sm:pb-12 lg:pb-14 bg-white w-full select-none"}
     >
-      <div className="w-full px-4 sm:px-6 md:px-8 lg:px-10 xl:px-14 2xl:px-16 mx-auto">
+      <div className="w-full px-3 sm:px-6 md:px-8 lg:px-8 xl:px-12 2xl:px-16 max-w-[1400px] mx-auto">
         {/* Heading */}
         {hasEnrollmentPrefix ? (
-          <h2 className="text-2xl sm:text-3xl lg:text-[34px] font-bold text-center tracking-tight mb-3 m-0">
+          <h2 className="text-2xl sm:text-3xl lg:text-[34px] font-bold text-center tracking-tight mb-2.5 sm:mb-3 m-0">
             <span style={{ color: prefixColor }}>{titlePrefix} </span>
             <span style={{ color: highlightColor }}>{titleHighlight}</span>
           </h2>
         ) : (
           <h2
-            className="text-[22px] sm:text-[28px] lg:text-[34px] font-bold text-center tracking-tight mb-3 m-0"
+            className="text-[22px] sm:text-[26px] lg:text-[30px] xl:text-[32px] font-bold text-center tracking-tight mb-2.5 sm:mb-3 m-0 leading-tight"
             style={{ color: headingColor }}
           >
             {headingText}
@@ -222,7 +231,7 @@ export default function LandingAdmissionProcess({
         )}
 
         {/* Subtitle */}
-        <p className="text-[13px] sm:text-[14px] text-center text-[#4b5563] mb-8 sm:mb-10 lg:mb-12 max-w-4xl mx-auto font-normal leading-relaxed m-0 px-4">
+        <p className="text-[12.5px] sm:text-[13.5px] lg:text-[14px] text-center text-[#555555] mb-5 sm:mb-6 lg:mb-7 max-w-[860px] mx-auto font-normal leading-relaxed m-0 px-2 sm:px-4">
           {subtitleText}
         </p>
 
@@ -232,7 +241,7 @@ export default function LandingAdmissionProcess({
             rawSteps.length <= 4
               ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 max-w-4xl mx-auto"
               : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-6"
-          } gap-3 sm:gap-3.5 lg:gap-4 xl:gap-5 w-full`}
+          } gap-2.5 sm:gap-3 lg:gap-2.5 xl:gap-3.5 2xl:gap-4 w-full`}
         >
           {rawSteps.map((step, idx) => {
             // Default multi-color palette cycle matching Image 2
@@ -262,7 +271,7 @@ export default function LandingAdmissionProcess({
                 key={num}
                 variant="borderless"
                 styles={{ body: { padding: 0 } }}
-                className="rounded-[16px] sm:rounded-2xl overflow-hidden p-3.5 sm:p-4 md:p-5 pt-6 pb-6 text-center flex flex-col items-center justify-start h-full min-h-[165px] sm:min-h-[175px] transition-all duration-200 hover:-translate-y-1 shadow-2xs hover:shadow-xs relative"
+                className="rounded-[14px] sm:rounded-2xl overflow-hidden px-2 py-3 sm:px-2.5 sm:py-3.5 lg:px-2 lg:py-3.5 xl:px-3 xl:py-4 text-center flex flex-col items-center justify-start h-full min-h-[160px] sm:min-h-[165px] lg:min-h-[165px] xl:min-h-[175px] transition-all duration-200 hover:-translate-y-1 shadow-2xs hover:shadow-xs relative"
                 style={{
                   backgroundColor: cardBg,
                   borderBottom: `4px solid ${borderColor}`,
@@ -270,7 +279,7 @@ export default function LandingAdmissionProcess({
               >
                 {/* Circular Number Badge */}
                 <div
-                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border-2 flex items-center justify-center font-bold text-[15px] sm:text-[16px] mb-3.5 shrink-0 shadow-2xs select-none mx-auto"
+                  className="w-9 h-9 sm:w-10 sm:h-10 lg:w-9 lg:h-9 xl:w-10 xl:h-10 rounded-full border-2 flex items-center justify-center font-bold text-[14px] sm:text-[15px] lg:text-[14px] xl:text-[15px] mb-2 sm:mb-2.5 shrink-0 shadow-2xs select-none mx-auto"
                   style={{
                     backgroundColor: circleBg,
                     borderColor: themeColor,
@@ -282,7 +291,7 @@ export default function LandingAdmissionProcess({
 
                 {/* Step Title */}
                 <h3
-                  className="text-[14px] sm:text-[15px] lg:text-[16px] font-bold mb-2 leading-snug m-0 text-center"
+                  className="text-[13px] sm:text-[14px] lg:text-[13px] xl:text-[14.5px] 2xl:text-[15px] font-bold mb-1 sm:mb-1.5 leading-snug m-0 text-center"
                   style={{ color: titleColor }}
                 >
                   {title}
@@ -291,7 +300,7 @@ export default function LandingAdmissionProcess({
                 {/* Step Description */}
                 {desc && (
                   <p
-                    className="text-[12px] sm:text-[12.5px] lg:text-[13px] leading-[1.6] font-normal m-0 text-center"
+                    className="text-[11px] sm:text-[11.5px] lg:text-[11px] xl:text-[11.5px] 2xl:text-[12px] leading-[1.35] sm:leading-[1.4] font-normal m-0 text-center line-clamp-2 max-w-[190px] mx-auto"
                     style={{ color: descColor }}
                   >
                     {desc}

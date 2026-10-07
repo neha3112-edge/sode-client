@@ -3,23 +3,24 @@
 import React from "react";
 import Image from "next/image";
 
-export default function GguWhyChoose({ whyChoose = [], brand = {} }) {
+export default function GguWhyChoose({ whyChoose = [], brand = {}, onOpenApply }) {
   const title = brand.whyChooseTitle || "LEARNING OUTCOMES";
-  const subtitle = brand.whyChooseSubtitle || "After a DBA at GGU";
+  const subtitle = brand.whyChooseSubtitle || `After a DBA at ${brand.name || "GGU"}`;
+  const bg = brand.whyChooseBg || brand.primaryColor || "#003468";
 
   return (
     <section
       id="benefits"
       data-section="whychoose"
-      className="benefits-section w-full bg-[#003468] text-white select-none overflow-hidden scroll-mt-20"
-      style={{ backgroundColor: brand.whyChooseBg || "#003468" }}
+      className="benefits-section w-full text-white select-none overflow-hidden scroll-mt-20"
+      style={{ backgroundColor: bg }}
     >
       <div className="w-full grid grid-cols-1 lg:grid-cols-12 items-stretch min-h-[460px] lg:min-h-[520px]">
         {/* Left: Full-Bleed Bridge Image */}
         <div className="lg:col-span-4 xl:col-span-4 relative w-full h-[320px] sm:h-[400px] lg:h-full min-h-[350px] lg:min-h-[520px] bg-slate-900 overflow-hidden">
           <Image
-            src={brand.benefitsImage || "/assets/all_universities_images/ggu/learning-outcome-01.webp"}
-            alt="Golden Gate Bridge"
+            src={brand.benefitsImage || brand.whyChooseImage || "/assets/all_universities_images/ggu/learning-outcome-01.webp"}
+            alt={title}
             fill
             priority
             className="object-cover object-left"
@@ -28,7 +29,10 @@ export default function GguWhyChoose({ whyChoose = [], brand = {} }) {
         </div>
 
         {/* Right: Content & 2-Column Grid */}
-        <div className="lg:col-span-8 xl:col-span-8 bg-[#003468] flex flex-col justify-center px-6 sm:px-10 md:px-12 lg:px-14 xl:px-20 py-12 sm:py-14 lg:py-16 text-white text-left">
+        <div
+          className="lg:col-span-8 xl:col-span-8 flex flex-col justify-center px-6 sm:px-10 md:px-12 lg:px-14 xl:px-20 py-12 sm:py-14 lg:py-16 text-white text-left"
+          style={{ backgroundColor: bg }}
+        >
           <h2 className="text-white text-[24px] sm:text-[28px] lg:text-[32px] font-extrabold uppercase m-0 leading-tight tracking-tight">
             {title}
           </h2>

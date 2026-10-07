@@ -43,6 +43,8 @@ export const upesData = {
     goldColor: "#f59e0b",
     badgeText: "Admissions Open 2026",
     showCouponBtn: true,
+    whyChooseLayout: "classic",
+    whyChooseTitle: "Why Choose UPES Online for Degree Courses",
     hero: {
       backgroundImage: "/assets/upes/upes-home-desktop.webp",
       mobileBackgroundImage: "/assets/upes/upes-university-mobile-img.webp",

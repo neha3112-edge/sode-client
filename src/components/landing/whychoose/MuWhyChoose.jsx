@@ -4,7 +4,7 @@ import React from "react";
 import Image from "next/image";
 import LandingContainer from "../LandingContainer";
 
-export default function MuWhyChoose({ whyChoose = [], brand = {} }) {
+export default function MuWhyChoose({ whyChoose = [], brand = {}, onOpenApply }) {
   const titleLine1 = brand.whyChooseTitle || "WHY CHOOSE";
   const titleLine2 =
     brand.whyChooseSubtitle ||
@@ -104,14 +104,14 @@ export default function MuWhyChoose({ whyChoose = [], brand = {} }) {
                     </span>
                   )}
                 </h3>
-                {showDesc && item.desc && (
+                {showDesc && (item.desc || item.description) && (
                   <p
                     className={
                       brand.whyChooseItemDescClassName ||
                       "text-[11.5px] sm:text-[12px] text-slate-600 leading-tight mt-1 m-0"
                     }
                   >
-                    {item.desc}
+                    {item.desc || item.description}
                   </p>
                 )}
               </div>

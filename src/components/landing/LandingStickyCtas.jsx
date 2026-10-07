@@ -82,21 +82,19 @@ export default function LandingStickyCtas({
     <>
       {/* Floating Action Buttons (Right Edge) - Call icon & Gift icon */}
       <div className="fixed bottom-14 sm:bottom-6 right-3 sm:right-6 z-40 flex flex-col items-center gap-2.5 sm:gap-3 pointer-events-auto">
-        {/* Top: Call / WhatsApp Icon */}
+        {/* Top: Call Icon */}
         {!brand.hideMobileCallIcon && (
           <a
-            href={brand.whatsappUrl || (rawPhone ? `https://api.whatsapp.com/send/?phone=+91${rawPhone}&text=${whatsappText}` : `tel:+91${rawPhone}`)}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={`WhatsApp / Call +91 ${rawPhone}`}
-            title={`WhatsApp / Call (+91 ${rawPhone})`}
+            href={brand.callHref || (rawPhone ? `tel:+91${rawPhone}` : "tel:07065777755")}
+            aria-label={`Call +91 ${rawPhone}`}
+            title={`Call (+91 ${rawPhone})`}
             className={`floating-call-btn ${
               isUu || brand.slug === "ssbm" ? "flex" : "hidden sm:flex"
             } relative w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full overflow-hidden shadow-2xl items-center justify-center transition-transform hover:scale-110 active:scale-95 bg-white drop-shadow-lg`}
           >
             <Image
               src={brand.callGif || brand.callIcon || "/assets/images/call_icon.gif"}
-              alt="WhatsApp / Call Expert"
+              alt="Call Expert"
               fill
               unoptimized
               className="object-cover"
@@ -131,8 +129,6 @@ export default function LandingStickyCtas({
           {/* Left: WhatsApp / Brochure Green Pill */}
           <a
             href={`https://api.whatsapp.com/send/?phone=+91${rawPhone}&text=${whatsappText}`}
-            target="_blank"
-            rel="noopener noreferrer"
             className="wp_btn flex items-center justify-center gap-1.5 py-2 px-3 rounded-full bg-[#1ea84b] text-white font-bold text-[13.5px] no-underline shadow-sm active:opacity-90"
           >
             <FaWhatsapp className="w-4 h-4 text-white shrink-0" />

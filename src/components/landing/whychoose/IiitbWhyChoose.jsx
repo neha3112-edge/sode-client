@@ -3,9 +3,9 @@
 import React from "react";
 import Image from "next/image";
 
-export default function IiitbWhyChoose({ whyChoose = [], brand = {} }) {
+export default function IiitbWhyChoose({ whyChoose = [], brand = {}, onOpenApply }) {
   const title = brand.whyChooseTitle || "WHY CHOOSE?";
-  const subtitle = brand.whyChooseSubtitle || "IIIT Bangalore Online Courses";
+  const subtitle = brand.whyChooseSubtitle || `${brand.name || "IIIT Bangalore"} Online Courses`;
 
   return (
     <section
@@ -32,15 +32,17 @@ export default function IiitbWhyChoose({ whyChoose = [], brand = {} }) {
                   isDark ? "bg-[#1b355e]" : "bg-[#1f9acb]"
                 }`}
               >
-                <div className="relative w-16 h-16 mb-4 flex items-center justify-center">
-                  <Image
-                    src={item.image}
-                    alt={item.title}
-                    fill
-                    className="object-contain"
-                    sizes="64px"
-                  />
-                </div>
+                {item.image && (
+                  <div className="relative w-16 h-16 mb-4 flex items-center justify-center">
+                    <Image
+                      src={item.image}
+                      alt={item.title}
+                      fill
+                      className="object-contain"
+                      sizes="64px"
+                    />
+                  </div>
+                )}
                 <h3 className="text-[18px] font-bold mb-3 text-white leading-snug">
                   {item.title}
                 </h3>

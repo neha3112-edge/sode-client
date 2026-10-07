@@ -18,6 +18,7 @@ export default function ProgrammesCarousel({
   const carouselRef = useRef(null);
   const isSmu = brand.programmesLayout === "smu-cards" || brand.slug === "smu";
   const isClean = brand.programmesCardStyle === "clean" || brand.programmesCardStyle === "card" || Boolean(brand.programmesPrefix);
+  const isMobileStack = Boolean(brand.programmesMobileStack ?? (brand.slug === "amity"));
 
   const displayUniversity = (universityName || brand.name || "University Online").replace(/\s+Online$/i, "").trim();
 
@@ -48,19 +49,44 @@ export default function ProgrammesCarousel({
           </h2>
         ) : (
           <div>
-            <h3 className="text-xl sm:text-2xl lg:text-[28px] font-bold m-0 tracking-tight leading-tight" style={{ color: brand.primaryColor || "#f35a06" }}>
-              {displayUniversity}
+            <h3
+              className="text-xl sm:text-2xl lg:text-[28px] font-bold m-0 tracking-tight leading-tight text-white"
+              style={{ color: brand.programmesSubtitleColor || "#ffffff" }}
+            >
+              {brand.programmesSubtitle || displayUniversity}
             </h3>
-            <h2 className="text-2xl sm:text-3xl lg:text-[36px] font-bold mt-1 m-0 tracking-tight leading-tight text-white">
-              {title}
+            <h2
+              className="text-2xl sm:text-3xl lg:text-[36px] font-bold mt-1 m-0 tracking-tight leading-tight text-white"
+              style={{ color: brand.programmesTitleColor || "#ffffff" }}
+            >
+              {brand.programmesTitle || title || "Online Degree Courses"}
             </h2>
           </div>
         )}
       </div>
 
-      {/* Ant Design Carousel */}
+      {/* Mobile Stack View: When isMobileStack is active, cards appear one below another */}
+      {isMobileStack && (
+        <div className="block sm:hidden w-full px-4 max-w-[370px] mx-auto space-y-4">
+          {programmes.map((c, idx) => (
+            <div key={`mobile-prog-${c.id || c.code}-${idx}`} className="w-full">
+              {isClean ? (
+                <CleanCard c={c} brand={brand} onSelectCourseForBrochure={onSelectCourseForBrochure} />
+              ) : isSmu ? (
+                <SmuCard c={c} brand={brand} onSelectCourseForBrochure={onSelectCourseForBrochure} onOpenApply={onOpenApply} />
+              ) : (
+                <ClassicCard c={c} brand={brand} onSelectCourseForBrochure={onSelectCourseForBrochure} isMobile />
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Ant Design Carousel (hidden on mobile when isMobileStack is active) */}
       <div
         className={`w-full mx-auto px-4 relative ${
+          isMobileStack ? "hidden sm:block" : ""
+        } ${
           isClean ? "max-w-[1140px] px-3 sm:px-6" : isSmu ? "max-w-[1200px] xl:max-w-[1240px] px-6 sm:px-10 lg:px-12" : "max-w-[1240px] xl:max-w-[1360px] sm:px-8 lg:px-10"
         }`}
       >
@@ -68,7 +94,7 @@ export default function ProgrammesCarousel({
           type="text"
           onClick={() => carouselRef.current?.prev()}
           aria-label="Previous programme"
-          className="absolute -left-2 sm:-left-4 lg:-left-5 top-1/2 -translate-y-1/2 z-20 text-[#222222] hover:!text-[#ee3024] transition-colors p-1 !bg-transparent !border-none cursor-pointer flex items-center justify-center active:scale-90 !h-auto !w-auto"
+          className="hidden sm:flex absolute -left-2 sm:-left-4 lg:-left-5 top-1/2 -translate-y-1/2 z-20 text-[#222222] hover:!text-[#ee3024] transition-colors p-1 !bg-transparent !border-none cursor-pointer items-center justify-center active:scale-90 !h-auto !w-auto"
         >
           <ChevronLeft className="w-7 h-7 sm:w-8 sm:h-8 stroke-[2.5]" />
         </Button>
@@ -77,7 +103,7 @@ export default function ProgrammesCarousel({
           type="text"
           onClick={() => carouselRef.current?.next()}
           aria-label="Next programme"
-          className="absolute -right-2 sm:-right-4 lg:-right-5 top-1/2 -translate-y-1/2 z-20 text-[#222222] hover:!text-[#ee3024] transition-colors p-1 !bg-transparent !border-none cursor-pointer flex items-center justify-center active:scale-90 !h-auto !w-auto"
+          className="hidden sm:flex absolute -right-2 sm:-right-4 lg:-right-5 top-1/2 -translate-y-1/2 z-20 text-[#222222] hover:!text-[#ee3024] transition-colors p-1 !bg-transparent !border-none cursor-pointer items-center justify-center active:scale-90 !h-auto !w-auto"
         >
           <ChevronRight className="w-7 h-7 sm:w-8 sm:h-8 stroke-[2.5]" />
         </Button>
@@ -222,7 +248,7 @@ function SmuCard({ c, brand, onSelectCourseForBrochure, onOpenApply }) {
 // -------------------------------------------------------------
 // Sub-Card: Classic Style (Amity) using Ant Design Card
 // -------------------------------------------------------------
-function ClassicCard({ c, brand, onSelectCourseForBrochure }) {
+function ClassicCard({ c, brand, onSelectCourseForBrochure, isMobile = false }) {
   const isPostGrad = c.level?.toLowerCase().includes("post") || c.title?.toLowerCase().includes("master") || c.code?.toLowerCase().startsWith("m");
   const levelText = c.level || (isPostGrad ? "Post Graduation" : "Graduation");
   const durationText = c.duration || (isPostGrad ? "24 Months" : "36 Months");
@@ -236,13 +262,13 @@ function ClassicCard({ c, brand, onSelectCourseForBrochure }) {
       <div>
         <div className="relative h-44 sm:h-44 xl:h-48 w-full bg-slate-100 overflow-hidden">
           <Image
-            src={c.image || "/assets/amitylp/MBA-amity.png"}
+            src={c.image || "/assets/all_universities_images/amity/MBA-amity.png"}
             alt={c.title}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-300"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
           />
-          <div className="absolute top-0 left-0 bg-[#009900] text-white text-[11px] sm:text-[11.5px] font-semibold px-2.5 sm:px-3 py-1 rounded-br-[4px] tracking-wide select-none shadow-xs">
+          <div className="absolute top-0 left-0 bg-[#008a00] text-white text-[11px] sm:text-[11.5px] font-semibold px-2.5 sm:px-3 py-1 rounded-br-[4px] tracking-wide select-none shadow-xs">
             {levelText}
           </div>
         </div>
@@ -254,7 +280,7 @@ function ClassicCard({ c, brand, onSelectCourseForBrochure }) {
           <p className="text-[12.5px] sm:text-[13px] font-semibold mt-1 mb-1.5 line-clamp-1" style={{ color: brand.primaryColor || "#08417b" }}>
             {c.title}
           </p>
-          <p className="text-[11.5px] sm:text-[12px] text-[#444444] leading-[1.5] line-clamp-3 sm:line-clamp-4 min-h-[54px] sm:min-h-[72px] m-0">
+          <p className={`text-[11.5px] sm:text-[12px] text-[#444444] leading-[1.5] ${isMobile ? "min-h-0" : "line-clamp-3 sm:line-clamp-4 min-h-[54px] sm:min-h-[72px]"} m-0`}>
             {c.description}
           </p>
         </div>
@@ -270,8 +296,8 @@ function ClassicCard({ c, brand, onSelectCourseForBrochure }) {
             color: brand.programmeBtnText || "#000000",
           }}
         >
-          <span>Download Brochure</span>
-          <Download className="w-3.5 h-3.5 stroke-[2.5]" />
+          <span>{c.buttonText || brand.programmeCardBtnText || "Get Brochure"}</span>
+          <FaDownload className="w-3 h-3 text-black shrink-0" />
         </Button>
 
         <div className="flex items-center gap-1 text-[11.5px] sm:text-[12px] font-medium text-[#333333] select-none shrink-0">

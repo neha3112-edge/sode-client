@@ -630,6 +630,29 @@ export const uuData = {
     ],
   },
 
+  whyChoose: [
+    {
+      title: "Engagement",
+      desc: "Uttaranchal University online offers top tier support to its students and mentorship for personalised learning",
+      image: "/assets/all_universities_images/uu/icon-uttaranchal-1.webp",
+    },
+    {
+      title: "Student-Friendly Study",
+      desc: "Uttaranchal University's online, user friendly, learner centric LMS, live and interactive sessions, and well-designed self learning materials.",
+      image: "/assets/all_universities_images/uu/icon-uttaranchal-2.webp",
+    },
+    {
+      title: "Curriculum by Experts",
+      desc: "Uttaranchal University's online research-intensive curriculum is drafted by its expert members of faculty and industry leaders.",
+      image: "/assets/all_universities_images/uu/icon-uttaranchal-3.webp",
+    },
+    {
+      title: "Globally Accepted",
+      desc: "Uttaranchal University's online programs under its curriculum are globally accepted. Uttaranchal University's fee is also affordable for all its programs.",
+      image: "/assets/all_universities_images/uu/icon-uttaranchal-4.webp",
+    },
+  ],
+
   degreeInfo: {
     highlight: "UGC Approved",
     line1: "Uttaranchal University",

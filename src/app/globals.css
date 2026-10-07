@@ -394,3 +394,36 @@ body:has(.landing-page-root)>div>main {
   z-index: 1 !important;
   display: block !important;
 }
+
+/* =========================================================
+   GLOBAL LEAD FORM MODALS (Brochure, Enquiry, Scholarship, Apply)
+   Full cover: removes Ant Design white box and inner padding
+========================================================= */
+.enquire-lead-modal .ant-modal-content,
+.scholarship-lead-modal .ant-modal-content,
+.landing-lead-modal .ant-modal-content {
+  background: transparent !important;
+  background-color: transparent !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
+  border-radius: 16px !important;
+  overflow: visible !important;
+}
+
+.enquire-lead-modal .ant-modal-body,
+.scholarship-lead-modal .ant-modal-body,
+.landing-lead-modal .ant-modal-body {
+  padding: 0 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  border-radius: 16px !important;
+}
+
+.enquire-lead-modal .ant-modal-close,
+.scholarship-lead-modal .ant-modal-close,
+.landing-lead-modal .ant-modal-close {
+  top: 10px !important;
+  right: 10px !important;
+  z-index: 50 !important;
+}

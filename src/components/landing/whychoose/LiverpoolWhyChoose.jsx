@@ -3,11 +3,11 @@
 import React from "react";
 import Image from "next/image";
 
-export default function LiverpoolWhyChoose({ whyChoose = [], brand = {} }) {
+export default function LiverpoolWhyChoose({ whyChoose = [], brand = {}, onOpenApply }) {
   const leftCards = whyChoose.slice(0, 3);
   const rightCards = whyChoose.slice(3, 6);
   const heading = brand.whyChooseTitle || "What Makes";
-  const subHeading = brand.whyChooseSubtitle || "Liverpool Business School MBA Stand Out?";
+  const subHeading = brand.whyChooseSubtitle || `${brand.name || "Liverpool Business School"} MBA Stand Out?`;
 
   return (
     <section
@@ -32,7 +32,7 @@ export default function LiverpoolWhyChoose({ whyChoose = [], brand = {} }) {
               >
                 <span className="text-[26px] text-[#1bc9a4] shrink-0">{c.icon || "🎓"}</span>
                 <p className="text-[14px] sm:text-[15px] font-semibold text-slate-900 leading-snug m-0">
-                  {c.title || c.desc}
+                  {c.title || c.desc || c.description}
                 </p>
               </div>
             ))}
@@ -60,7 +60,7 @@ export default function LiverpoolWhyChoose({ whyChoose = [], brand = {} }) {
               >
                 <span className="text-[26px] text-[#1bc9a4] shrink-0">{c.icon || "💼"}</span>
                 <p className="text-[14px] sm:text-[15px] font-semibold text-slate-900 leading-snug m-0">
-                  {c.title || c.desc}
+                  {c.title || c.desc || c.description}
                 </p>
               </div>
             ))}

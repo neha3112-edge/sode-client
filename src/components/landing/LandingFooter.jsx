@@ -303,7 +303,7 @@ export default function LandingFooter({
     brand.footerDisclaimer ||
     "SODE Counselling Services LLP act as a marketing agency. All university names, logos, and trademarks mentioned are used for informational purposes only. We are not a university or an admission authority. Users are encouraged to verify information on the official website of the University before making decisions.";
 
-  const footerBgClass = brand.footerSectionBg || (brand.slug === "ggu" ? "bg-white" : "bg-[#f6f8fa]");
+  const footerBgClass = brand.footerSectionBg || "bg-white";
   const footerLogoSrc =
     brand.footerLogo ||
     brand.desLogo ||
@@ -313,7 +313,11 @@ export default function LandingFooter({
       : "/assets/all_universities_images/ggu/new-des-logo.webp");
 
   return (
-    <footer className={`mini-footer ${footerBgClass} text-[#777777] pt-0 sm:pt-1 pb-0 relative select-none`} id="footer-v1">
+    <footer
+      className={`mini-footer ${footerBgClass} text-[#777777] pt-0 sm:pt-1 pb-0 relative select-none`}
+      style={{ backgroundColor: brand.footerSectionBgColor || "#ffffff" }}
+      id="footer-v1"
+    >
       <div className="w-full max-w-full mx-auto px-4 sm:px-8 text-center flex flex-col items-center">
         {/* SODE / Distance Education School Official Full Logo */}
         <div className="footer_sode_logo_container flex justify-center items-center mb-3 sm:mb-4">
