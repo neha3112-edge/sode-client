@@ -6,8 +6,6 @@ import { request } from "@/services/request";
 import { getPageMetaData, constructMetadata } from "@/constants/pageMetaData";
 
 export const revalidate = 60;
-
-// Dynamic Metadata for Category Page
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const [catRes, pageMeta] = await Promise.all([
@@ -44,7 +42,6 @@ export default async function CategoryDetailPage({ params }) {
     notFound();
   }
 
-  // Fetch courses under this category
   const coursesRes = await request.dynamicList({
     entity: "courses",
     endPoint: "v1/list",
