@@ -76,7 +76,7 @@ export default async function sitemap() {
   const coursePageUrls = (coursePages || [])
     .filter((cp) => cp && cp.slug)
     .map((cp) => ({
-      url: `${baseUrl}/${cp.slug}/`,
+      url: `${baseUrl}/courses/${cp.slug}/`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.95,
