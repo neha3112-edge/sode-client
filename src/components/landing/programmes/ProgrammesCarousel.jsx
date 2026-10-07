@@ -124,7 +124,7 @@ export default function ProgrammesCarousel({
 function CleanCard({ c, brand, onSelectCourseForBrochure }) {
   return (
     <Card
-      bordered={false}
+      variant="borderless"
       styles={{ body: { padding: 0 } }}
       className={brand.programmeCardClass || "bg-white rounded-[5px] shadow-[0px_3px_15px_rgba(0,0,0,0.13)] py-4 sm:py-5 px-5 sm:px-[22px] flex flex-col justify-between h-full min-h-[350px] sm:min-h-[360px] text-left"}
     >
@@ -171,7 +171,7 @@ function CleanCard({ c, brand, onSelectCourseForBrochure }) {
 function SmuCard({ c, brand, onSelectCourseForBrochure, onOpenApply }) {
   return (
     <Card
-      bordered={false}
+      variant="borderless"
       styles={{ body: { padding: 0 } }}
       className="bg-white rounded-[8px] sm:rounded-[10px] shadow-[0px_4px_20px_rgba(0,0,0,0.08)] hover:shadow-[0px_8px_28px_rgba(0,0,0,0.12)] transition-all duration-300 p-4 sm:p-5 flex flex-col justify-between h-full group text-left"
     >
@@ -229,7 +229,7 @@ function ClassicCard({ c, brand, onSelectCourseForBrochure }) {
 
   return (
     <Card
-      bordered={false}
+      variant="borderless"
       styles={{ body: { padding: 0 } }}
       className="bg-white rounded-[8px] overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col justify-between h-full group text-left border border-slate-200/80"
     >

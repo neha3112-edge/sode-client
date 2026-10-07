@@ -69,7 +69,7 @@ export default function SliderWhyChoose({ whyChoose = [], brand = {} }) {
               {whyChoose.map((item, idx) => (
                 <div key={idx} className="px-2 sm:px-3 box-border outline-none py-1">
                   <Card
-                    bordered={false}
+                    variant="borderless"
                     styles={{ body: { padding: "12px" } }}
                     className="!bg-transparent shadow-none flex flex-col items-center text-center"
                   >

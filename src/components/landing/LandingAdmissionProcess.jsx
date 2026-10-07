@@ -260,7 +260,7 @@ export default function LandingAdmissionProcess({
             return (
               <Card
                 key={num}
-                bordered={false}
+                variant="borderless"
                 styles={{ body: { padding: 0 } }}
                 className="rounded-[16px] sm:rounded-2xl overflow-hidden p-3.5 sm:p-4 md:p-5 pt-6 pb-6 text-center flex flex-col items-center justify-start h-full min-h-[165px] sm:min-h-[175px] transition-all duration-200 hover:-translate-y-1 shadow-2xs hover:shadow-xs relative"
                 style={{

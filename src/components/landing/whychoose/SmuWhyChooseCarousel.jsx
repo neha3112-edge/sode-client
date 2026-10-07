@@ -56,7 +56,7 @@ export default function SmuWhyChooseCarousel({ whyChoose = [], brand = {} }) {
             {whyChoose.map((item, idx) => (
               <div key={`${item.title}-${idx}`} className="px-2.5 sm:px-3 box-border outline-none py-2">
                 <Card
-                  bordered={false}
+                  variant="borderless"
                   styles={{ body: { padding: 0 } }}
                   className="bg-white rounded-[8px] sm:rounded-[10px] overflow-hidden shadow-[0px_4px_20px_rgba(0,0,0,0.07)] hover:shadow-[0px_8px_28px_rgba(0,0,0,0.12)] transition-all duration-300 flex flex-col text-center border border-slate-100"
                 >

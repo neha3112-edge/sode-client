@@ -101,7 +101,7 @@ export default function LandingTestimonials({
                   {isClassic ? (
                     /* Classic Card */
                     <Card
-                      bordered={false}
+                      variant="borderless"
                       styles={{ body: { padding: 0 } }}
                       className="bg-white rounded-xl p-5 sm:p-6 border border-slate-200/80 shadow-xs hover:shadow-md transition-shadow h-full flex flex-col justify-between"
                     >
@@ -143,7 +143,7 @@ export default function LandingTestimonials({
                   ) : (
                     /* Clean Card */
                     <Card
-                      bordered={false}
+                      variant="borderless"
                       styles={{ body: { padding: 0 } }}
                       className="bg-white rounded-[8px] sm:rounded-[10px] p-6 sm:p-7 border border-slate-100 shadow-md hover:shadow-lg transition-shadow h-full flex flex-col justify-start text-left"
                     >
