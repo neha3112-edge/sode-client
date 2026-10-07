@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Modal, Form, Input, Select, Checkbox, Button, message } from "antd";
 import confetti from "canvas-confetti";
 import { STATE_OPTIONS } from "@/constants/stateOptions";
 
@@ -43,12 +44,7 @@ const DEFAULT_COURSES = [
 ];
 
 /**
- * Reusable Scholarship Coupon Code Modal
- * 
- * - All structural layout, sizing, padding, and animations are built-in (CSS in component).
- * - Colors and content come dynamically from JSON (scholarshipModal or brand).
- * - Supports Light theme (e.g. Manipal: White modal, red title, grey inputs)
- * - Supports Dark theme (e.g. Amity: Navy modal, yellow title, white inputs)
+ * Reusable Scholarship Coupon Code Modal built with Ant Design Modal & Form
  */
 export default function ScholarshipModal({
   isOpen,
@@ -60,6 +56,8 @@ export default function ScholarshipModal({
   onOpenDisclaimer,
 }) {
   const router = useRouter();
+  const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
 
   // Modal Configuration from JSON
   const modalConfig = scholarshipModal || brand?.scholarshipModal || {};
@@ -81,7 +79,7 @@ export default function ScholarshipModal({
 
   const titleColor =
     modalConfig.titleColor ||
-    (isLight ? "#ee3024" : "#facc15"); // Red for light, Yellow/Gold for dark
+    (isLight ? "#ee3024" : "#facc15");
 
   const subtitleColor =
     modalConfig.subtitleColor ||
@@ -92,7 +90,6 @@ export default function ScholarshipModal({
     (isLight ? "#f4f6f8" : "#ffffff");
 
   const inputTextColor = modalConfig.inputTextColor || "#111827";
-  const inputPlaceholderColor = modalConfig.inputPlaceholderColor || "#6b7280";
 
   const disclaimerColor =
     modalConfig.disclaimerColor ||
@@ -102,24 +99,10 @@ export default function ScholarshipModal({
     modalConfig.disclaimerLinkColor ||
     (isLight ? "#0066cc" : "#ffffff");
 
-  const submitBtnBg = modalConfig.submitBtnBg || "#22c55e"; // Vibrant Green by default
+  const submitBtnBg = modalConfig.submitBtnBg || "#22c55e";
   const submitBtnText = modalConfig.submitBtnText || "Submit";
-  const closeBtnColor = modalConfig.closeBtnColor || (isLight ? "#666666" : "#22c55e");
   const phonePlaceholder = modalConfig.phonePlaceholder || "Enter Mobile Number";
   const formName = modalConfig.formName || "Scholarship Coupon Modal";
-
-  // Form State
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    course: "",
-    state: "",
-    consent: true,
-  });
-
-  const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
 
   // Normalize Courses
   const rawCourses = courses && courses.length > 0 ? courses : DEFAULT_COURSES;
@@ -127,16 +110,13 @@ export default function ScholarshipModal({
     typeof c === "string" ? { value: c, label: c } : c
   );
 
+  const stateOptions = STATE_OPTIONS.map((state) =>
+    typeof state === "string" ? { value: state, label: state } : state
+  );
+
   // Lock body scroll and fire confetti sparks on open
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = "hidden";
-      const handleKeyDown = (e) => {
-        if (e.key === "Escape") onClose?.();
-      };
-      window.addEventListener("keydown", handleKeyDown);
-
-      // Trigger celebratory sparks with canvas-confetti
       try {
         confetti({
           particleCount: 65,
@@ -165,51 +145,14 @@ export default function ScholarshipModal({
           });
         }, 180);
 
-        return () => {
-          clearTimeout(timer);
-          document.body.style.overflow = "";
-          window.removeEventListener("keydown", handleKeyDown);
-        };
+        return () => clearTimeout(timer);
       } catch (err) {
         console.error("Confetti error:", err);
       }
-
-      return () => {
-        document.body.style.overflow = "";
-        window.removeEventListener("keydown", handleKeyDown);
-      };
     }
-  }, [isOpen, onClose]);
+  }, [isOpen]);
 
-  if (!isOpen) return null;
-
-  // Validation
-  const validate = () => {
-    const newErrors = {};
-    if (!formData.name.trim()) newErrors.name = "Please enter your name";
-    if (!formData.email.trim()) {
-      newErrors.email = "Please enter your email";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
-      newErrors.email = "Please enter a valid email address";
-    }
-    const cleanPhone = formData.phone.replace(/\D/g, "");
-    if (!cleanPhone) {
-      newErrors.phone = "Please enter your mobile number";
-    } else if (cleanPhone.length !== 10) {
-      newErrors.phone = "Please enter a valid 10-digit number";
-    }
-    if (!formData.course) newErrors.course = "Please select a course";
-    if (!formData.state) newErrors.state = "Please select your state";
-    if (!formData.consent) newErrors.consent = "Please agree to the disclaimer";
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validate()) return;
-
+  const onFinish = async (values) => {
     setLoading(true);
     try {
       const searchParams =
@@ -218,11 +161,11 @@ export default function ScholarshipModal({
           : new URLSearchParams();
 
       const leadPayload = {
-        name: formData.name.trim(),
-        email: formData.email.trim(),
-        phone: formData.phone.replace(/\D/g, "").slice(-10),
-        course: formData.course,
-        state: formData.state,
+        name: values.name.trim(),
+        email: values.email.trim(),
+        phone: String(values.phone || "").replace(/\D/g, "").slice(-10),
+        course: values.course,
+        state: values.state,
         university: universityName,
         source: universityName,
         form_name: formName,
@@ -238,133 +181,113 @@ export default function ScholarshipModal({
         body: JSON.stringify(leadPayload),
       });
 
+      form.resetFields();
       onClose?.();
       router.push("/thank-you");
     } catch {
-      alert("Failed to submit enquiry. Please try again.");
+      message.error("Failed to submit enquiry. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/65 backdrop-blur-xs select-none">
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 transition-opacity"
-        onClick={onClose}
-        aria-hidden="true"
-      />
-
-      {/* Modal Box */}
-      <div
-        className="relative w-full max-w-[460px] sm:max-w-[480px] rounded-2xl sm:rounded-[22px] p-5 sm:p-7 shadow-2xl transition-all z-10 max-h-[94vh] overflow-y-auto"
-        style={{
+    <Modal
+      open={isOpen}
+      onCancel={onClose}
+      footer={null}
+      centered
+      width={480}
+      destroyOnHidden
+      styles={{
+        content: {
           backgroundColor: modalBg,
+          borderRadius: "20px",
+          padding: "24px",
           boxShadow: isLight
             ? "0 20px 50px rgba(0, 0, 0, 0.25)"
             : "0 20px 50px rgba(0, 0, 0, 0.6)",
-        }}
-      >
-        {/* Close Button (✕ Icon) */}
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Close modal"
-          className="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 z-20 w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/5 active:scale-90 bg-transparent border-none cursor-pointer p-0 transition-all"
-          style={{ color: closeBtnColor }}
+        },
+      }}
+      className="select-none"
+    >
+      {/* Modal Heading */}
+      <div className="text-center mb-4 sm:mb-5 pt-1">
+        <h2
+          className="m-0 text-[21px] sm:text-[24px] font-bold tracking-tight leading-snug"
+          style={{ color: titleColor }}
         >
-          <svg
-            className="w-5 h-5 sm:w-6 sm:h-6"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={3}
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
+          {titleText}
+        </h2>
+        <p
+          className="m-0 mt-1 sm:mt-1.5 text-[13px] sm:text-[14px] font-medium leading-normal"
+          style={{ color: subtitleColor }}
+        >
+          {subtitleText}
+        </p>
+      </div>
 
-        {/* Modal Heading */}
-        <div className="text-center mb-4 sm:mb-5">
-          <h2
-            className="m-0 text-[21px] sm:text-[24px] font-bold tracking-tight leading-snug"
-            style={{ color: titleColor }}
-          >
-            {titleText}
-          </h2>
-          <p
-            className="m-0 mt-1 sm:mt-1.5 text-[13px] sm:text-[14px] font-medium leading-normal"
-            style={{ color: subtitleColor }}
-          >
-            {subtitleText}
-          </p>
-        </div>
+      {/* Ant Design Form */}
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={onFinish}
+        initialValues={{ consent: true }}
+        className="space-y-1 [&_.ant-form-item]:!mb-3 [&_.ant-form-item-explain-error]:!text-red-500 [&_.ant-form-item-explain-error]:!text-[11px] [&_.ant-form-item-explain-error]:!pt-1"
+      >
+        {/* Name */}
+        <Form.Item
+          name="name"
+          rules={[{ required: true, message: "Please enter your name" }]}
+        >
+          <Input
+            placeholder="Enter Your Name"
+            className="w-full h-[42px] sm:h-[44px] px-3.5 rounded-[8px] text-[13.5px] sm:text-[14px]"
+            style={{
+              backgroundColor: inputBg,
+              color: inputTextColor,
+            }}
+          />
+        </Form.Item>
 
-        {/* Form Fields */}
-        <form onSubmit={handleSubmit} className="space-y-2.5 sm:space-y-3">
-          {/* Name */}
-          <div>
-            <input
-              type="text"
-              value={formData.name}
-              onChange={(e) => {
-                setFormData({ ...formData, name: e.target.value });
-                if (errors.name) setErrors({ ...errors, name: null });
-              }}
-              placeholder="Enter Your Name"
-              className="w-full h-[42px] sm:h-[44px] px-3.5 rounded-[8px] text-[13.5px] sm:text-[14px] outline-none shadow-2xs border transition-colors"
-              style={{
-                backgroundColor: inputBg,
-                color: inputTextColor,
-                borderColor: errors.name ? "#ef4444" : isLight ? "#e5e7eb" : "transparent",
-              }}
-            />
-            {errors.name && (
-              <span className="text-[11px] text-red-500 font-medium pl-1 mt-0.5 block">
-                {errors.name}
-              </span>
-            )}
-          </div>
+        {/* Email */}
+        <Form.Item
+          name="email"
+          rules={[
+            { required: true, message: "Please enter your email" },
+            { type: "email", message: "Please enter a valid email address" },
+          ]}
+        >
+          <Input
+            type="email"
+            placeholder="Enter Your Email"
+            className="w-full h-[42px] sm:h-[44px] px-3.5 rounded-[8px] text-[13.5px] sm:text-[14px]"
+            style={{
+              backgroundColor: inputBg,
+              color: inputTextColor,
+            }}
+          />
+        </Form.Item>
 
-          {/* Email */}
-          <div>
-            <input
-              type="email"
-              value={formData.email}
-              onChange={(e) => {
-                setFormData({ ...formData, email: e.target.value });
-                if (errors.email) setErrors({ ...errors, email: null });
-              }}
-              placeholder="Enter Your Email"
-              className="w-full h-[42px] sm:h-[44px] px-3.5 rounded-[8px] text-[13.5px] sm:text-[14px] outline-none shadow-2xs border transition-colors"
-              style={{
-                backgroundColor: inputBg,
-                color: inputTextColor,
-                borderColor: errors.email ? "#ef4444" : isLight ? "#e5e7eb" : "transparent",
-              }}
-            />
-            {errors.email && (
-              <span className="text-[11px] text-red-500 font-medium pl-1 mt-0.5 block">
-                {errors.email}
-              </span>
-            )}
-          </div>
-
-          {/* Phone with India Flag Dropdown */}
-          <div>
-            <div
-              className="flex items-center w-full h-[42px] sm:h-[44px] rounded-[8px] overflow-hidden shadow-2xs border transition-colors"
-              style={{
-                backgroundColor: inputBg,
-                borderColor: errors.phone ? "#ef4444" : isLight ? "#e5e7eb" : "transparent",
-              }}
-            >
-              <div
+        {/* Phone with India Flag Dropdown */}
+        <Form.Item
+          name="phone"
+          rules={[
+            { required: true, message: "Please enter your mobile number" },
+            { pattern: /^[6-9]\d{9}$/, message: "Please enter a valid 10-digit number" },
+          ]}
+        >
+          <Input
+            type="tel"
+            placeholder={phonePlaceholder}
+            maxLength={10}
+            prefix={
+              <span
                 className="flex items-center gap-1.5 h-full px-2.5 sm:px-3 border-r select-none shrink-0"
                 style={{
                   backgroundColor: isLight ? "#f0f2f5" : "#f8f9fa",
                   borderColor: isLight ? "#e5e7eb" : "#e5e7eb",
+                  margin: "-5px 10px -5px -11px",
                 }}
               >
                 <IndiaFlag />
@@ -372,149 +295,84 @@ export default function ScholarshipModal({
                   +91
                 </span>
                 <span className="text-slate-600 text-[10px] leading-none">▾</span>
-              </div>
-              <input
-                type="tel"
-                value={formData.phone}
-                onChange={(e) => {
-                  const val = e.target.value.replace(/\D/g, "").slice(0, 10);
-                  setFormData({ ...formData, phone: val });
-                  if (errors.phone) setErrors({ ...errors, phone: null });
+              </span>
+            }
+            className="w-full h-[42px] sm:h-[44px] rounded-[8px] text-[13.5px] sm:text-[14px]"
+            style={{
+              backgroundColor: inputBg,
+              color: inputTextColor,
+            }}
+          />
+        </Form.Item>
+
+        {/* Select Course */}
+        <Form.Item
+          name="course"
+          rules={[{ required: true, message: "Please select a course" }]}
+        >
+          <Select
+            placeholder="Select Your Course"
+            options={courseOptions}
+            className="w-full h-[42px] sm:h-[44px] text-[13.5px] sm:text-[14px]"
+          />
+        </Form.Item>
+
+        {/* Select State */}
+        <Form.Item
+          name="state"
+          rules={[{ required: true, message: "Please select your state" }]}
+        >
+          <Select
+            showSearch
+            placeholder="Select Your State"
+            options={stateOptions}
+            className="w-full h-[42px] sm:h-[44px] text-[13.5px] sm:text-[14px]"
+          />
+        </Form.Item>
+
+        {/* Consent Checkbox */}
+        <Form.Item
+          name="consent"
+          valuePropName="checked"
+          rules={[
+            {
+              validator: (_, value) =>
+                value ? Promise.resolve() : Promise.reject(new Error("Please agree to the disclaimer")),
+            },
+          ]}
+          className="!mb-2"
+        >
+          <Checkbox className="text-[11px] sm:text-[11.5px] leading-tight select-none">
+            <span style={{ color: disclaimerColor }}>
+              I consent to receive university updates via email and mobile number.{" "}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onOpenDisclaimer?.();
                 }}
-                placeholder={phonePlaceholder}
-                maxLength={10}
-                className="flex-1 h-full px-3 text-[13.5px] sm:text-[14px] border-none outline-none bg-transparent"
-                style={{ color: inputTextColor }}
-              />
-            </div>
-            {errors.phone && (
-              <span className="text-[11px] text-red-500 font-medium pl-1 mt-0.5 block">
-                {errors.phone}
-              </span>
-            )}
-          </div>
-
-          {/* Select Course */}
-          <div className="relative">
-            <select
-              value={formData.course}
-              onChange={(e) => {
-                setFormData({ ...formData, course: e.target.value });
-                if (errors.course) setErrors({ ...errors, course: null });
-              }}
-              className="w-full h-[42px] sm:h-[44px] px-3.5 pr-8 rounded-[8px] appearance-none cursor-pointer text-[13.5px] sm:text-[14px] outline-none shadow-2xs border transition-colors"
-              style={{
-                backgroundColor: inputBg,
-                color: formData.course ? inputTextColor : inputPlaceholderColor,
-                borderColor: errors.course ? "#ef4444" : isLight ? "#e5e7eb" : "transparent",
-              }}
-            >
-              <option value="" disabled>
-                Select Your Course
-              </option>
-              {courseOptions.map((opt) => (
-                <option key={opt.value} value={opt.value} className="text-slate-900">
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-700">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
-            {errors.course && (
-              <span className="text-[11px] text-red-500 font-medium pl-1 mt-0.5 block">
-                {errors.course}
-              </span>
-            )}
-          </div>
-
-          {/* Select State */}
-          <div className="relative">
-            <select
-              value={formData.state}
-              onChange={(e) => {
-                setFormData({ ...formData, state: e.target.value });
-                if (errors.state) setErrors({ ...errors, state: null });
-              }}
-              className="w-full h-[42px] sm:h-[44px] px-3.5 pr-8 rounded-[8px] appearance-none cursor-pointer text-[13.5px] sm:text-[14px] outline-none shadow-2xs border transition-colors"
-              style={{
-                backgroundColor: inputBg,
-                color: formData.state ? inputTextColor : inputPlaceholderColor,
-                borderColor: errors.state ? "#ef4444" : isLight ? "#e5e7eb" : "transparent",
-              }}
-            >
-              <option value="" disabled>
-                Select Your State
-              </option>
-              {STATE_OPTIONS.map((state) => (
-                <option key={state} value={state} className="text-slate-900">
-                  {state}
-                </option>
-              ))}
-            </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-700">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
-            {errors.state && (
-              <span className="text-[11px] text-red-500 font-medium pl-1 mt-0.5 block">
-                {errors.state}
-              </span>
-            )}
-          </div>
-
-          {/* Consent Checkbox */}
-          <div className="pt-0.5">
-            <label className="flex items-start gap-2 cursor-pointer select-none">
-              <input
-                type="checkbox"
-                checked={formData.consent}
-                onChange={(e) => {
-                  setFormData({ ...formData, consent: e.target.checked });
-                  if (errors.consent) setErrors({ ...errors, consent: null });
-                }}
-                className="mt-0.5 rounded-[3px] accent-[#22c55e] w-4 h-4 cursor-pointer"
-              />
-              <span
-                className="text-[11px] sm:text-[11.5px] leading-tight"
-                style={{ color: disclaimerColor }}
+                className="underline cursor-pointer font-medium p-0 border-none bg-transparent"
+                style={{ color: disclaimerLinkColor }}
               >
-                I consent to receive university updates via email and mobile number.{" "}
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    onOpenDisclaimer?.();
-                  }}
-                  className="underline cursor-pointer font-medium p-0 border-none bg-transparent"
-                  style={{ color: disclaimerLinkColor }}
-                >
-                  Disclaimer
-                </button>
-              </span>
-            </label>
-            {errors.consent && (
-              <span className="text-[11px] text-red-500 font-medium pl-1 mt-0.5 block">
-                {errors.consent}
-              </span>
-            )}
-          </div>
+                Disclaimer
+              </button>
+            </span>
+          </Checkbox>
+        </Form.Item>
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full h-[44px] sm:h-[46px] rounded-[10px] text-white font-bold text-[16px] sm:text-[17px] shadow-md hover:brightness-105 active:scale-[0.98] transition-all cursor-pointer border-none flex items-center justify-center tracking-tight mt-2"
+        {/* Submit Button */}
+        <Form.Item className="!mb-0 !mt-3">
+          <Button
+            type="primary"
+            htmlType="submit"
+            loading={loading}
+            className="w-full h-[44px] sm:h-[46px] rounded-[10px] text-white font-bold text-[16px] sm:text-[17px] shadow-md hover:!brightness-105 active:scale-[0.98] transition-all cursor-pointer border-none flex items-center justify-center tracking-tight"
             style={{ backgroundColor: submitBtnBg }}
           >
-            {loading ? "Submitting..." : submitBtnText}
-          </button>
-        </form>
-      </div>
-    </div>
+            {submitBtnText}
+          </Button>
+        </Form.Item>
+      </Form>
+    </Modal>
   );
 }

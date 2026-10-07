@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Form, message } from "antd";
+import { Form, Input, Select, Checkbox, message } from "antd";
 import { Phone } from "lucide-react";
 import { STATE_OPTIONS } from "@/constants/stateOptions";
 import LandingButton from "./LandingButton";
@@ -42,7 +42,7 @@ const IndiaFlag = () => (
   </svg>
 );
 
-// Mobile Phone Input with Grey Flag Pill
+// Mobile Phone Input with Grey Flag Pill using Ant Design Input
 const PhoneInputField = ({
   value,
   onChange,
@@ -53,72 +53,30 @@ const PhoneInputField = ({
 }) => {
   const isBordered = isWhiteCard || bordered;
   return (
-    <div
-      className={`flex items-center w-full h-[36px] sm:h-[38px] rounded-[6px] overflow-hidden ${
-        isBordered
-          ? "bg-white border border-[#cccccc] focus-within:ring-1 focus-within:ring-[#193579] focus-within:border-[#193579]"
-          : "bg-white shadow-xs focus-within:ring-2 focus-within:ring-amber-400"
-      }`}
-    >
-      <div
-        className={`flex items-center gap-1.5 h-full px-2.5 select-none shrink-0 ${
-          isBordered
-            ? "bg-[#f8fafc] border-r border-[#cccccc]"
-            : "bg-[#f0f2f5] border-r border-[#d1d5db]"
+    <Input
+      type="tel"
+      value={value || ""}
+      onChange={onChange}
+      placeholder={placeholder}
+      maxLength={maxLength}
+      prefix={
+        <span
+          className={`flex items-center gap-1.5 h-full px-2.5 select-none shrink-0 rounded-l-[5px] ${isBordered
+              ? "bg-[#f8fafc] border-r border-[#cccccc]"
+              : "bg-[#f0f2f5] border-r border-[#d1d5db]"
+            }`}
+          style={{ margin: "-5px 10px -5px -11px" }}
+        >
+          <IndiaFlag />
+          <span className="text-slate-900 font-bold text-[12.5px] tracking-tight">+91</span>
+          <span className="text-slate-500 text-[9px] leading-none">▾</span>
+        </span>
+      }
+      className={`w-full h-[36px] sm:h-[38px] text-[13px] rounded-[6px] ${isBordered
+          ? "bg-white border-[#cccccc] text-slate-800"
+          : "bg-white border-none shadow-xs text-slate-800"
         }`}
-      >
-        <IndiaFlag />
-        <span className="text-slate-900 font-bold text-[12.5px] tracking-tight">+91</span>
-        <span className="text-slate-500 text-[9px] leading-none">▾</span>
-      </div>
-      <input
-        type="tel"
-        value={value || ""}
-        onChange={onChange}
-        placeholder={placeholder}
-        maxLength={maxLength}
-        className="w-full h-full px-3 bg-white text-slate-800 placeholder:text-slate-400 border-none outline-none text-[13px] font-normal"
-      />
-    </div>
-  );
-};
-
-// Dropdown Select with Arrow
-const CustomSelectField = ({
-  value,
-  onChange,
-  placeholder,
-  options,
-  isWhiteCard = false,
-  bordered = false,
-}) => {
-  const isBordered = isWhiteCard || bordered;
-  return (
-    <div className="relative w-full">
-      <select
-        value={value || ""}
-        onChange={onChange}
-        className={`w-full h-[36px] sm:h-[38px] px-3.5 pr-8 rounded-[6px] outline-none text-[13px] font-normal appearance-none cursor-pointer ${
-          isBordered
-            ? "bg-white border border-[#cccccc] text-slate-800 focus:ring-1 focus:ring-[#193579] focus:border-[#193579]"
-            : "bg-white border-none shadow-xs focus:ring-2 focus:ring-amber-400"
-        } ${value ? "text-slate-800" : "text-slate-400"}`}
-      >
-        <option value="" disabled className="text-slate-400">
-          {placeholder}
-        </option>
-        {options.map((opt) => (
-          <option key={opt.value} value={opt.value} className="text-slate-900">
-            {opt.label}
-          </option>
-        ))}
-      </select>
-      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-600">
-        <svg className="w-3.5 h-3.5 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
-        </svg>
-      </div>
-    </div>
+    />
   );
 };
 
@@ -229,26 +187,25 @@ export default function LandingLeadForm({
 
   return (
     <div
-      className={`landing-lead-card relative w-full max-w-full sm:max-w-[360px] lg:max-w-[360px] lg:ml-auto lg:mr-0 mx-auto overflow-hidden ${
-        isWhiteCard ? "text-slate-800" : "text-white"
-      } ${isCard ? "landing-lead-card--hero" : "landing-lead-card--default"} ${className}`}
+      className={`landing-lead-card relative w-full max-w-full sm:max-w-[360px] lg:max-w-[360px] lg:ml-auto lg:mr-0 mx-auto overflow-hidden ${isWhiteCard ? "text-slate-800" : "text-white"
+        } ${isCard ? "landing-lead-card--hero" : "landing-lead-card--default"} ${className}`}
       style={{
         ...(isWhiteCard
           ? {
-              backgroundColor: "#ffffff",
-              borderRadius: "14px",
-              padding: "18px 18px",
-              boxShadow: "0 14px 32px rgba(0, 0, 0, 0.22)",
-              border: "1px solid rgba(226, 232, 240, 0.9)",
-            }
+            backgroundColor: "#ffffff",
+            borderRadius: "14px",
+            padding: "18px 18px",
+            boxShadow: "0 14px 32px rgba(0, 0, 0, 0.22)",
+            border: "1px solid rgba(226, 232, 240, 0.9)",
+          }
           : isCard
-          ? {
+            ? {
               backgroundColor: activePrimaryColor,
               borderRadius: "12px",
               padding: "14px 16px 16px",
               boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.2)",
             }
-          : {
+            : {
               backgroundColor: "#ffffff",
               padding: "14px",
             }),
@@ -269,9 +226,8 @@ export default function LandingLeadForm({
             {activeTitle}
           </h2>
           <p
-            className={`m-0 mt-0.5 text-[12.5px] sm:text-[13px] font-medium leading-normal ${
-              isWhiteCard ? "text-slate-600" : "text-white"
-            }`}
+            className={`m-0 mt-0.5 text-[12.5px] sm:text-[13px] font-medium leading-normal ${isWhiteCard ? "text-slate-600" : "text-white"
+              }`}
           >
             {activeSubtitle}
           </p>
@@ -288,9 +244,8 @@ export default function LandingLeadForm({
                 skewEffect={true}
                 icon={
                   <Phone
-                    className={`w-3.5 h-3.5 stroke-[2.5] ${
-                      isWhiteCard ? "fill-white text-white" : "fill-black text-black"
-                    }`}
+                    className={`w-3.5 h-3.5 stroke-[2.5] ${isWhiteCard ? "fill-white text-white" : "fill-black text-black"
+                      }`}
                   />
                 }
                 iconPosition="left"
@@ -333,14 +288,12 @@ export default function LandingLeadForm({
           name="full_name"
           rules={[{ required: true, message: "Please enter your name" }]}
         >
-          <input
-            type="text"
+          <Input
             placeholder={activeBrand.hero?.namePlaceholder || "Enter Your Name"}
-            className={`w-full h-[36px] sm:h-[38px] px-3.5 rounded-[6px] outline-none text-[13px] font-normal ${
-              isWhiteCard
-                ? "bg-white border border-[#cccccc] text-slate-800 placeholder:text-slate-400 focus:ring-1 focus:ring-[#193579] focus:border-[#193579]"
-                : "bg-white text-slate-800 placeholder:text-[#888888] border-none shadow-xs focus:ring-2 focus:ring-amber-400"
-            }`}
+            className={`w-full h-[36px] sm:h-[38px] px-3.5 rounded-[6px] text-[13px] font-normal ${isWhiteCard
+                ? "bg-white border-[#cccccc] text-slate-800 placeholder:text-slate-400"
+                : "bg-white text-slate-800 placeholder:text-[#888888] border-none shadow-xs"
+              }`}
           />
         </Form.Item>
 
@@ -369,14 +322,13 @@ export default function LandingLeadForm({
                 { type: "email", message: "Please enter a valid email" },
               ]}
             >
-              <input
+              <Input
                 type="email"
                 placeholder="Enter Your Email"
-                className={`w-full h-[36px] sm:h-[38px] px-3.5 rounded-[6px] outline-none text-[13px] font-normal ${
-                  isWhiteCard
-                    ? "bg-white border border-[#cccccc] text-slate-800 placeholder:text-slate-400 focus:ring-1 focus:ring-[#193579] focus:border-[#193579]"
-                    : "bg-white text-slate-800 placeholder:text-[#888888] border-none shadow-xs focus:ring-2 focus:ring-amber-400"
-                }`}
+                className={`w-full h-[36px] sm:h-[38px] px-3.5 rounded-[6px] text-[13px] font-normal ${isWhiteCard
+                    ? "bg-white border-[#cccccc] text-slate-800 placeholder:text-slate-400"
+                    : "bg-white text-slate-800 placeholder:text-[#888888] border-none shadow-xs"
+                  }`}
               />
             </Form.Item>
           </>
@@ -390,14 +342,13 @@ export default function LandingLeadForm({
                 { type: "email", message: "Please enter a valid email" },
               ]}
             >
-              <input
+              <Input
                 type="email"
                 placeholder="Enter Your Email"
-                className={`w-full h-[36px] sm:h-[38px] px-3.5 rounded-[6px] outline-none text-[13px] font-normal ${
-                  isWhiteCard
-                    ? "bg-white border border-[#cccccc] text-slate-800 placeholder:text-slate-400 focus:ring-1 focus:ring-[#193579] focus:border-[#193579]"
-                    : "bg-white text-slate-800 placeholder:text-[#888888] border-none shadow-xs focus:ring-2 focus:ring-amber-400"
-                }`}
+                className={`w-full h-[36px] sm:h-[38px] px-3.5 rounded-[6px] text-[13px] font-normal ${isWhiteCard
+                    ? "bg-white border-[#cccccc] text-slate-800 placeholder:text-slate-400"
+                    : "bg-white text-slate-800 placeholder:text-[#888888] border-none shadow-xs"
+                  }`}
               />
             </Form.Item>
 
@@ -423,10 +374,10 @@ export default function LandingLeadForm({
           name="course"
           rules={[{ required: true, message: "Please select course" }]}
         >
-          <CustomSelectField
+          <Select
             placeholder="Select Your Course"
             options={activeCourses}
-            isWhiteCard={isWhiteCard}
+            className="w-full h-[36px] sm:h-[38px] text-[13px]"
           />
         </Form.Item>
 
@@ -435,42 +386,40 @@ export default function LandingLeadForm({
           name="state"
           rules={[{ required: true, message: "Please select state" }]}
         >
-          <CustomSelectField
+          <Select
             placeholder="Select Your State"
             options={stateOptions}
-            isWhiteCard={isWhiteCard}
+            showSearch
+            className="w-full h-[36px] sm:h-[38px] text-[13px]"
           />
         </Form.Item>
 
         {/* Terms Checkbox with Disclaimer Link */}
         {!activeBrand.hero?.hideTermsCheckbox && (
           <Form.Item name="terms" valuePropName="checked" className="!mb-2 !mt-1">
-            <label className="flex items-start gap-1.5 cursor-pointer select-none">
-              <input
-                type="checkbox"
-                className="mt-0.5 w-[13px] h-[13px] rounded-[2px] bg-white border border-slate-300 accent-[#22c55e] cursor-pointer shrink-0"
-              />
+            <Checkbox className="text-[10px] sm:text-[10.5px] leading-tight select-none">
               <span
-                className={`text-[10px] sm:text-[10.5px] leading-tight font-normal ${
-                  isWhiteCard ? "text-slate-600" : isCard ? "text-white" : "text-slate-600"
-                }`}
+                className={`font-normal ${isWhiteCard ? "text-slate-600" : isCard ? "text-white" : "text-slate-600"
+                  }`}
               >
                 I consent to receive university updates via email and mobile number.{" "}
                 <button
                   type="button"
-                  onClick={() => onOpenDisclaimer?.()}
-                  className={`font-semibold underline cursor-pointer bg-transparent border-none p-0 inline ${
-                    isWhiteCard
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onOpenDisclaimer?.();
+                  }}
+                  className={`font-semibold underline cursor-pointer bg-transparent border-none p-0 inline ${isWhiteCard
                       ? "text-blue-600 hover:text-blue-700"
                       : isCard
-                      ? "text-white hover:text-amber-300"
-                      : "text-blue-600 hover:text-blue-700"
-                  }`}
+                        ? "text-white hover:text-amber-300"
+                        : "text-blue-600 hover:text-blue-700"
+                    }`}
                 >
                   Disclaimer
                 </button>
               </span>
-            </label>
+            </Checkbox>
           </Form.Item>
         )}
 

@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { Card } from "antd";
 
 /**
  * Multi-colored palette matching Image 2 permanently.
@@ -257,8 +258,10 @@ export default function LandingAdmissionProcess({
             const descColor = extractColor(step.descColor, "#4b5563");
 
             return (
-              <div
+              <Card
                 key={num}
+                bordered={false}
+                styles={{ body: { padding: 0 } }}
                 className="rounded-[16px] sm:rounded-2xl overflow-hidden p-3.5 sm:p-4 md:p-5 pt-6 pb-6 text-center flex flex-col items-center justify-start h-full min-h-[165px] sm:min-h-[175px] transition-all duration-200 hover:-translate-y-1 shadow-2xs hover:shadow-xs relative"
                 style={{
                   backgroundColor: cardBg,
@@ -267,7 +270,7 @@ export default function LandingAdmissionProcess({
               >
                 {/* Circular Number Badge */}
                 <div
-                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border-2 flex items-center justify-center font-bold text-[15px] sm:text-[16px] mb-3.5 shrink-0 shadow-2xs select-none"
+                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border-2 flex items-center justify-center font-bold text-[15px] sm:text-[16px] mb-3.5 shrink-0 shadow-2xs select-none mx-auto"
                   style={{
                     backgroundColor: circleBg,
                     borderColor: themeColor,
@@ -294,7 +297,7 @@ export default function LandingAdmissionProcess({
                     {desc}
                   </p>
                 )}
-              </div>
+              </Card>
             );
           })}
         </div>

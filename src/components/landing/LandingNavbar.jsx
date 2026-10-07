@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import confetti from "canvas-confetti";
 import { ChevronDown } from "lucide-react";
+import { Button } from "antd";
 import LandingContainer from "./LandingContainer";
 
 export default function LandingNavbar({
@@ -250,8 +251,8 @@ export default function LandingNavbar({
                     : {}
               }
             >
-              <button
-                type="button"
+              <Button
+                type="text"
                 onClick={handleCouponClick}
                 aria-label="Get Scholarship Coupon Code"
                 style={{
@@ -266,7 +267,7 @@ export default function LandingNavbar({
                   "--coupon-shadow-mid3": brand.couponShadowColorMid3 || "rgba(46, 204, 113, 0.08)",
                   "--coupon-shadow-end": "rgba(46, 204, 113, 0)",
                 }}
-                className="coupon-btn-main relative inline-flex items-center gap-2 sm:gap-2.5 pl-5 sm:pl-7 md:pl-8 pr-4.5 sm:pr-6 md:pr-7 py-1 sm:py-1.5 rounded-[8px] text-white font-bold text-[10px] sm:text-[11px] md:text-[11.5px] cursor-pointer border-none overflow-hidden select-none hover:brightness-105 active:scale-95"
+                className="coupon-btn-main relative inline-flex items-center gap-2 sm:gap-2.5 pl-5 sm:pl-7 md:pl-8 pr-4.5 sm:pr-6 md:pr-7 py-1 sm:py-1.5 rounded-[8px] !text-white font-bold text-[10px] sm:text-[11px] md:text-[11.5px] cursor-pointer !border-none overflow-hidden select-none hover:!brightness-105 active:scale-95 !h-auto"
               >
                 {/* Moving Light Green Box for gradient button */}
                 <span className="moving-light-green-box" />
@@ -287,7 +288,7 @@ export default function LandingNavbar({
                 <span className="relative z-10 tracking-wide md:tracking-wide whitespace-nowrap text-white font-bold drop-shadow-[0_1px_2px_rgba(0,0,0,0.15)] text-[14px] sm:text-[15px] md:text-[15.5px]">
                   {couponButtonText}
                 </span>
-              </button>
+              </Button>
             </div>
           ) : !brand.hideNavbarBadge && badgeText ? (
             <span

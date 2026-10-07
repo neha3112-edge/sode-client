@@ -3,6 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { Download } from "lucide-react";
+import { Button } from "antd";
 import LandingContainer from "./LandingContainer";
 import LandingLeadForm from "./LandingLeadForm";
 import LandingButton from "./LandingButton";
@@ -57,14 +58,14 @@ export default function LandingHero({
               <br />
               <p className="t1">🕒 6 Months</p>
               <br />
-              <button
-                type="button"
+              <Button
+                type="primary"
                 onClick={() => onOpenBrochure?.()}
-                className="downloadBrochureBtn"
+                className="downloadBrochureBtn !h-auto !py-2.5 !px-5"
                 data-brochure="/assets/iim/main_brochure.pdf"
               >
                 Get Brochure <Download className="inline-block w-4 h-4 ml-1.5 stroke-[2.5]" />
-              </button>
+              </Button>
             </div>
 
             <div className="col-md-3 custom_img_section" style={{ padding: "0px" }}>
@@ -143,34 +144,34 @@ export default function LandingHero({
               {/* Course Pills */}
               <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 pt-1">
                 {coursePills.map((c, idx) => (
-                  <button
+                  <Button
                     key={`galgotias-pill-${idx}`}
-                    type="button"
+                    type="text"
                     onClick={() => onOpenBrochure?.(c)}
-                    className="bg-[#dff3fd] hover:bg-[#cbeafc] text-[#006da8] font-bold text-xs sm:text-[13px] px-3.5 sm:px-4 py-1.5 rounded-[6px] transition-colors cursor-pointer border-none"
+                    className="bg-[#dff3fd] hover:!bg-[#cbeafc] text-[#006da8] hover:!text-[#006da8] !font-bold text-xs sm:text-[13px] px-3.5 sm:px-4 !h-auto py-1.5 rounded-[6px] transition-colors cursor-pointer !border-none"
                   >
                     {c}
-                  </button>
+                  </Button>
                 ))}
               </div>
 
               {/* Action Buttons: 100% Free Counseling & Add to Compare + */}
               <div className="flex flex-wrap items-center gap-3 sm:gap-4 pt-3">
-                <button
-                  type="button"
+                <Button
+                  type="primary"
                   onClick={() => onOpenBrochure?.("MBA")}
-                  className="bg-[#ff5a00] hover:bg-[#e65100] active:scale-98 text-white font-bold text-xs sm:text-[14px] px-5 sm:px-6 py-2.5 sm:py-3 rounded-[8px] shadow-sm transition-all cursor-pointer border-none"
+                  className="bg-[#ff5a00] hover:!bg-[#e65100] active:scale-98 !text-white !font-bold text-xs sm:text-[14px] px-5 sm:px-6 !h-auto py-2.5 sm:py-3 rounded-[8px] shadow-sm transition-all cursor-pointer !border-none"
                 >
                   Get 100% Free Counseling
-                </button>
+                </Button>
 
-                <button
-                  type="button"
+                <Button
+                  type="primary"
                   onClick={() => onOpenBrochure?.("MBA")}
-                  className="bg-[#058427] hover:bg-[#046e20] active:scale-98 text-white font-bold text-xs sm:text-[14px] px-5 sm:px-6 py-2.5 sm:py-3 rounded-[8px] shadow-sm transition-all cursor-pointer border-none"
+                  className="bg-[#058427] hover:!bg-[#046e20] active:scale-98 !text-white !font-bold text-xs sm:text-[14px] px-5 sm:px-6 !h-auto py-2.5 sm:py-3 rounded-[8px] shadow-sm transition-all cursor-pointer !border-none"
                 >
                   Add to Compare +
-                </button>
+                </Button>
               </div>
             </div>
 
@@ -318,16 +319,16 @@ export default function LandingHero({
                 </p>
               </div>
               <div>
-                <button
-                  type="button"
+                <Button
+                  type="primary"
                   onClick={() => {
                     const heroEl = document.getElementById("hero");
                     heroEl?.scrollIntoView({ behavior: "smooth" });
                   }}
-                  className="bg-[#f58220] hover:bg-[#e07115] text-white font-bold text-sm px-8 py-2.5 rounded-full shadow-xs cursor-pointer border-none transition-colors"
+                  className="bg-[#f58220] hover:!bg-[#e07115] !text-white !font-bold text-sm px-8 !h-auto py-2.5 rounded-full shadow-xs cursor-pointer !border-none transition-colors"
                 >
                   Apply Now
-                </button>
+                </Button>
               </div>
             </div>
           </LandingContainer>
