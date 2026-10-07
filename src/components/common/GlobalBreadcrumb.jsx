@@ -84,7 +84,7 @@ export default function GlobalBreadcrumb() {
 
   return (
     <div className="w-full bg-white border-b border-gray-200">
-      <Container className="py-2 sm:py-1.5 flex items-center justify-between gap-2 text-xs text-gray-500">
+      <Container className={`py-2 sm:py-1.5 flex items-center justify-between gap-2 text-xs text-gray-500 ${custom?.containerClassName || ""}`}>
         {/* Left Side: Breadcrumb Links with Separators */}
         <div className="flex items-center gap-1.5 whitespace-nowrap overflow-hidden min-w-0 flex-1">
           {items.map((item, idx) => {

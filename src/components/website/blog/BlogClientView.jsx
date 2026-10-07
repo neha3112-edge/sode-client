@@ -11,262 +11,20 @@ import { useBreadcrumb } from "@/context/BreadcrumbContext";
 import { getAssetPath } from "@/lib/utils";
 import { CalendarIcon, Check, ChevronDown, ChevronRight, ChevronUp, Minus, Plus, ThumbsDown, ThumbsUp, User } from "lucide-react";
 import { request } from "@/services/request";
-
-// 📚 Structured Sections (Directly drives the page content & Table of Contents)
-const DUMMY_BLOG_SECTIONS = [
-  {
-    id: "what-is-online-mba",
-    title: "What Is an Online MBA?",
-    paragraphs: [
-      "An Online MBA is a postgraduate management degree delivered primarily through online learning platforms. Students generally access lectures, study materials, assignments and other learning resources digitally. Depending on the university, students may also have access to live classes, recorded lectures, discussion forums, academic support and online examinations or other assessment methods. An Online MBA can allow learners to continue their professional or personal commitments while pursuing higher education.",
-    ],
-  },
-  {
-    id: "who-can-pursue",
-    title: "Who Can Pursue an Online MBA?",
-    intro: "An Online MBA may be considered by:",
-    checklist: [
-      "Working professionals looking to develop management skills",
-      "Graduates planning to build a career in business management",
-      "Professionals seeking career advancement",
-      "Entrepreneurs looking to strengthen business knowledge",
-      "Learners interested in management specializations",
-      "Professionals looking for flexible postgraduate education",
-    ],
-    outro: "The exact eligibility requirements depend on the university and programme.",
-  },
-  {
-    id: "eligibility",
-    title: "Online MBA Eligibility",
-    intro:
-      "In general, applicants are expected to have a bachelor's degree from a recognized institution. Some universities may have additional requirements relating to:",
-    checklist: [
-      "Minimum qualifying marks",
-      "Work experience",
-      "Entrance examinations",
-      "Specific undergraduate qualifications",
-      "English-language requirements",
-      "Other university-specific conditions",
-    ],
-    note: "Important: Eligibility should always be verified from the university's current official admission information before applying.",
-  },
-  {
-    id: "duration",
-    title: "Online MBA Duration",
-    paragraphs: [
-      "The duration of an Online MBA generally depends on the university and programme structure. Many programmes are structured around approximately 2 years, while the maximum permitted completion period may be longer depending on the university's academic regulations. Students should check the official programme structure before admission because duration and academic requirements can differ between universities.",
-    ],
-  },
-  {
-    id: "fees",
-    title: "Online MBA Fees",
-    paragraphs: [
-      "Online MBA fees vary significantly depending on the university, programme structure and specialization. When comparing fees, learners should look beyond the headline tuition fee and check whether the total cost includes:",
-    ],
-    checklist: [
-      "Tuition fees",
-      "Examination fees",
-      "Registration fees",
-      "Learning resources",
-      "Technology/platform charges",
-      "Other applicable charges",
-    ],
-    table: {
-      type: "fee",
-      headers: ["Fee Component", "Example Amount"],
-      rows: [
-        { name: "Registration Fee", amount: "₹1,000" },
-        { name: "Tuition Fee", amount: "₹75,000" },
-        { name: "Examination Fee", amount: "₹5,000" },
-        { name: "Learning Resources", amount: "Included" },
-        { name: "Estimated Total", amount: "₹81,000", isTotal: true },
-      ],
-      note: "Demo Note: The figures above are sample values for layout testing only and should not be presented as actual university fees.",
-    },
-  },
-  {
-    id: "specializations",
-    title: "Popular Online MBA Specializations",
-    intro:
-      "Students can choose a specialization based on their career interests and professional goals. Some commonly available areas include:",
-    columnsList: [
-      [
-        "Finance",
-        "Marketing",
-        "Human Resource Management",
-        "Operations Management",
-        "Business Analytics",
-      ],
-      [
-        "International Business",
-        "Information Technology",
-        "Supply Chain Management",
-        "Project Management",
-        "Healthcare Management",
-      ],
-    ],
-  },
-  {
-    id: "benefits",
-    title: "Benefits of an Online MBA",
-    intro:
-      "An Online MBA can offer several advantages for learners who need flexibility.",
-    numberedList: [
-      {
-        title: "1. Flexible Learning",
-        desc: "Students can access learning materials through online platforms and manage their studies around their schedules.",
-      },
-      {
-        title: "2. Suitable for Working Professionals",
-        desc: "Professionals may be able to continue working while pursuing their postgraduate education.",
-      },
-      {
-        title: "3. Multiple Specializations",
-        desc: "Depending on the university, learners can choose a specialization aligned with their career interests.",
-      },
-      {
-        title: "4. Digital Learning Environment",
-        desc: "Online programmes typically use digital platforms for learning materials, classes, assignments and academic communication.",
-      },
-      {
-        title: "5. Career Development",
-        desc: "Management education can help learners develop knowledge in areas such as leadership, finance, marketing, operations and business strategy.",
-      },
-    ],
-  },
-  {
-    id: "compare-factors",
-    title: "Compare Before Choosing an Online MBA",
-    intro:
-      "Before selecting an Online MBA programme, compare the following factors:",
-    twoColBullets: [
-      [
-        "University recognition and entitlement",
-        "Programme eligibility",
-        "Duration",
-        "Total fees",
-        "Curriculum",
-        "Specializations",
-      ],
-      [
-        "Learning platform",
-        "Examination process",
-        "Student support",
-        "Admission process",
-        "Career-related support",
-        "University policies",
-      ],
-    ],
-    outro:
-      "Learners should verify current programme information through the university's official sources before making an admission decision.",
-  },
-  {
-    id: "specialization-poll",
-    title: "Which Online MBA Specialization Interests You Most?",
-    poll: {
-      question: "Which Online MBA specialization are you most interested in?",
-      options: [
-        "Finance",
-        "Human Resources",
-        "Operations",
-        "Marketing",
-        "Business Analytics",
-        "International Business",
-      ],
-      footnote:
-        "*Thanks for sharing your preference. Your selection can help us understand which management areas interest you most.",
-    },
-  },
-  {
-    id: "online-mba-comparison",
-    title: "Online MBA Comparison Table",
-    table: {
-      type: "comparison",
-      headers: ["Factor", "What to Check"],
-      rows: [
-        { factor: "Eligibility", check: "Bachelor's degree and university-specific requirements" },
-        { factor: "Duration", check: "Programme duration and maximum completion period" },
-        { factor: "Fees", check: "Total programme cost and additional charges" },
-        { factor: "Specialization", check: "Available management specialization" },
-        { factor: "Learning Mode", check: "Live classes, recorded content and study materials" },
-        { factor: "Examination", check: "Examination format and assessment process" },
-        { factor: "Recognition", check: "Current university/programme status" },
-        { factor: "Student Support", check: "Academic and technical assistance" },
-        { factor: "Admission", check: "Application and document requirements" },
-      ],
-    },
-  },
-  {
-    id: "how-to-choose",
-    title: "How to Choose the Right Online MBA?",
-    paragraphs: [
-      "Choosing an Online MBA should involve more than comparing universities based only on fees. Start by identifying your career objective and preferred specialization. Then compare eligible programmes based on recognition, curriculum, duration, total cost, learning format and academic support. You should also verify the latest programme information directly through the university's official website before submitting an application.",
-    ],
-    ctaButton: {
-      text: "Compare Universities",
-      href: "/courses",
-    },
-  },
-  {
-    id: "admission-process",
-    title: "Online MBA Admission Process",
-    orderedSteps: [
-      "Select a suitable programme.",
-      "Check eligibility requirements.",
-      "Review programme fees and structure.",
-      "Complete the application form.",
-      "Submit the required documents.",
-      "Complete the applicable admission formalities.",
-      "Receive confirmation from the university.",
-      "Begin the programme according to the university's academic schedule.",
-    ],
-    importantNotice: {
-      title: "Important",
-      desc: "Degree4U / Distance Education School provides information and counselling assistance. Final admission, eligibility, registration, academic decisions, examinations and degree-related matters remain subject to the respective university's rules and official processes.",
-    },
-  },
-];
-
-const DUMMY_FAQS = [
-  {
-    question: "Is Online BA from Sikkim Manipal University valid and recognized?",
-    answer:
-      "Yes. The Online BA is valid when pursued under a programme and academic session entitled by the UGC for online delivery at Sikkim Manipal University.",
-  },
-  {
-    question: "What is the eligibility criteria for Online BA at Sikkim Manipal University?",
-    answer:
-      "Candidates should have passed 10+2 or equivalent in any stream from a recognized board/institution.",
-  },
-  {
-    question: "What learning facilities are provided to Online BA students at Sikkim Manipal University?",
-    answer:
-      "Students are provided with a dedicated learning management system (LMS), recorded video lectures, e-learning content, digital library access, and live faculty interaction.",
-  },
-  {
-    question: "What career opportunities are available after completing an Online BA from SMU?",
-    answer:
-      "Graduates can explore opportunities across media, public relations, content development, administration, corporate communications, or prepare for government exams and higher studies.",
-  },
-  {
-    question: "Does Sikkim Manipal University provide placement assistance after completing an Online BA?",
-    answer:
-      "Yes, Sikkim Manipal University provides placement assistance, career development sessions, and connects students with verified corporate job openings.",
-  },
-];
+import BlogSidebar from "./BlogSidebar";
 
 function formatBlogDate(dateStr) {
-  if (!dateStr) return "September 4, 2026";
+  if (!dateStr) return "";
   try {
     const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return "September 4, 2026";
+    if (isNaN(d.getTime())) return "";
     return d.toLocaleDateString("en-US", {
       month: "long",
       day: "numeric",
       year: "numeric",
     });
   } catch {
-    return "September 4, 2026";
+    return "";
   }
 }
 
@@ -274,14 +32,47 @@ export default function BlogClientView({
   initialData,
   initialPopularBlogs = [],
   initialTools = [],
+  initialCategories = null,
   slug: propSlug,
 }) {
   const [toolsList, setToolsList] = useState(
     Array.isArray(initialTools) && initialTools.length > 0 ? initialTools : []
   );
+  const [sidebarBlogs, setSidebarBlogs] = useState(
+    Array.isArray(initialPopularBlogs) && initialPopularBlogs.length > 0
+      ? initialPopularBlogs
+      : []
+  );
   const carouselRef = useRef(null);
   const [activeSlide, setActiveSlide] = useState(0);
   const [slidesToShow, setSlidesToShow] = useState(3);
+
+  // Sync or client-side fetch blogs for sidebar if initialPopularBlogs is small
+  useEffect(() => {
+    if (!sidebarBlogs || sidebarBlogs.length < 5) {
+      let isMounted = true;
+      (async () => {
+        try {
+          const res = await request.dynamicList({
+            entity: "blogs",
+            endPoint: "v1/list",
+            options: { items: 10 },
+            revalidate: 300,
+          });
+          const list =
+            res?.result ||
+            res?.blogs ||
+            (Array.isArray(res) ? res : []);
+          if (isMounted && Array.isArray(list) && list.length > 0) {
+            setSidebarBlogs(list);
+          }
+        } catch {}
+      })();
+      return () => {
+        isMounted = false;
+      };
+    }
+  }, []);
 
   // Responsive slides calculation (1 card on mobile, 2 on tablet, 3 on desktop)
   useEffect(() => {
@@ -348,28 +139,43 @@ export default function BlogClientView({
     };
   }, [initialTools]);
 
-  const [tocOpen, setTocOpen] = useState(true);
+  const blog = initialData?.blogId || initialData || {};
+  const pageTitle = blog?.title || blog?.headline || "";
+  const showBreadcrumbs = blog?.showBreadcrumbs !== false;
+
+  const blogSections = useMemo(() => {
+    const raw = blog?.sections || initialData?.sections || [];
+    if (!Array.isArray(raw)) return [];
+    return raw.filter((s) => s && s.enabled !== false);
+  }, [blog?.sections, initialData?.sections]);
+
+  const [tocOpen, setTocOpen] = useState(false);
   const [activeHeadingId, setActiveHeadingId] = useState("");
-  const [selectedPoll, setSelectedPoll] = useState("Business Analytics");
+  const [selectedPoll, setSelectedPoll] = useState("");
   const [openFaqIndex, setOpenFaqIndex] = useState(0);
   const [articleHelpful, setArticleHelpful] = useState("yes");
-  const [commentsList, setCommentsList] = useState([
-    {
-      id: 1,
-      name: "Pradeep Kumar",
-      text: "Yes you Are Right, MBA Scope Is Increasing Gradually. Pls post a Blog On MCA Career Scope",
-    },
-    {
-      id: 2,
-      name: "Maheshwar Singh",
-      text: "Yes you Are Right, MBA Scope Is Increasing Gradually. Pls post a Blog On MCA Career Scope",
-    },
-    {
-      id: 3,
-      name: "Aamir Khan",
-      text: "Pls post a Blog On BCA Career Opportunities",
-    },
-  ]);
+  const [commentsList, setCommentsList] = useState(
+    Array.isArray(blog?.comments) ? blog.comments : []
+  );
+
+  useEffect(() => {
+    if (Array.isArray(blog?.comments)) {
+      setCommentsList(blog.comments);
+    }
+  }, [blog?.comments]);
+
+  useEffect(() => {
+    if (selectedPoll) return;
+    const secWithPoll = blogSections.find((s) => s?.poll?.options?.length > 0);
+    if (secWithPoll) {
+      const firstOpt = secWithPoll.poll.options[0];
+      const firstTitle =
+        typeof firstOpt === "string"
+          ? firstOpt
+          : firstOpt?.option || firstOpt?.text || firstOpt?.title || "";
+      if (firstTitle) setSelectedPoll(firstTitle);
+    }
+  }, [blogSections, selectedPoll]);
 
   // ── Ant Design Comment Form State & Handler ──
   const [commentForm] = Form.useForm();
@@ -455,10 +261,6 @@ export default function BlogClientView({
     []
   );
 
-  const blog = initialData?.blogId || initialData || {};
-  const pageTitle = blog?.title || blog?.headline || "";
-  const showBreadcrumbs = blog?.showBreadcrumbs !== false;
-
   // Set up Breadcrumbs dynamically
   useBreadcrumb(
     showBreadcrumbs && pageTitle
@@ -472,6 +274,7 @@ export default function BlogClientView({
           label: "Blogs",
           href: "/blogs",
         },
+        containerClassName: "!max-w-none w-full px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16",
       }
       : { hidden: true },
     [pageTitle, showBreadcrumbs]
@@ -598,18 +401,38 @@ export default function BlogClientView({
     return [];
   }, [toolsList]);
 
+  const allFaqs = useMemo(() => {
+    if (Array.isArray(blog?.faqs) && blog.faqs.length > 0) return blog.faqs;
+    if (Array.isArray(initialData?.faqs) && initialData.faqs.length > 0) return initialData.faqs;
+    return [];
+  }, [blog?.faqs, initialData?.faqs]);
+
   // 📑 Dynamic Table of Contents (Directly generated from the sections rendered on the page)
   const finalHeadings = useMemo(() => {
-    const list = DUMMY_BLOG_SECTIONS.map((sec) => ({
-      id: sec.id,
-      text: sec.title,
-      level: 2,
-    }));
-    list.push({
-      id: "faqs",
-      text: "Frequently Asked Questions (FAQs)",
-      level: 2,
-    });
+    const list = blogSections
+      .map((sec, idx) => {
+        const headingText = (sec.poll?.title || sec.title || "").trim();
+        if (!headingText) return null;
+        const secId =
+          sec.id ||
+          (sec._id ? String(sec._id) : null) ||
+          headingText.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") ||
+          `section-${idx + 1}`;
+        return {
+          id: secId,
+          text: headingText,
+          level: 2,
+        };
+      })
+      .filter(Boolean);
+
+    if (allFaqs && allFaqs.length > 0) {
+      list.push({
+        id: "faqs",
+        text: "Frequently Asked Questions (FAQs)",
+        level: 2,
+      });
+    }
     if (mappedTools && mappedTools.length > 0) {
       list.push({
         id: "ai-tools",
@@ -618,23 +441,21 @@ export default function BlogClientView({
       });
     }
     return list;
-  }, [mappedTools]);
+  }, [blogSections, allFaqs, mappedTools]);
 
-  const allFaqs = useMemo(() => {
-    if (Array.isArray(blog?.faqs) && blog.faqs.length > 0) return blog.faqs;
-    if (Array.isArray(initialData?.faqs) && initialData.faqs.length > 0) return initialData.faqs;
-    return DUMMY_FAQS;
-  }, [blog?.faqs, initialData?.faqs]);
-
-  // 🏷️ Display Tags (from blog or fallback matching reference design)
+  // 🏷️ Display Tags (from blog only, no dummy fallback)
   const displayTags = useMemo(() => {
     if (Array.isArray(blog?.tags) && blog.tags.length > 0) {
-      return blog.tags.join(" | ");
+      return blog.tags.filter(Boolean).join(" | ");
     }
     if (typeof blog?.tags === "string" && blog.tags.trim()) {
-      return blog.tags.split(",").map((t) => t.trim()).join(" | ");
+      return blog.tags
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean)
+        .join(" | ");
     }
-    return "Online MBA | Online Education | MBA Courses | Online Degree | Management Courses | Higher Education";
+    return "";
   }, [blog?.tags]);
 
   // Scroll spy to highlight active heading in TOC like course nav
@@ -657,7 +478,7 @@ export default function BlogClientView({
     return () => window.removeEventListener("scroll", handleScroll);
   }, [finalHeadings]);
 
-  if (!blog || (!blog.content && !blog.title)) {
+  if (!blog || (!blog.title && !blog.slug && !blog.headline)) {
     return null;
   }
 
@@ -670,7 +491,9 @@ export default function BlogClientView({
 
   const formattedDate = formatBlogDate(blog.publishedAt || blog.createdAt);
   const authorName =
-    blog.author?.fullname || blog.author?.name || "Amritanjali Singh";
+    blog.author?.fullname ||
+    blog.author?.name ||
+    (typeof blog.author === "string" ? blog.author : "");
 
   return (
     <div className="min-h-screen bg-gray-100 text-gray-800 pb-16">
@@ -795,22 +618,31 @@ export default function BlogClientView({
         }
       `}</style>
 
-      <Container className="pt-6">
-        <div className="bg-white rounded-xl sm:rounded-2xl border border-gray-200/90 shadow-xs p-6">
-          <h1 className="text-2xl sm:text-3xl text-gray-900 font-bold mb-3">
-            {pageTitle}
-          </h1>
+      <div className="w-full pt-4 sm:pt-6 px-3.5 sm:px-6 lg:px-8 xl:px-10 2xl:px-12">
+        <div className="flex flex-col lg:flex-row items-start gap-6 xl:gap-8 w-full">
+          {/* ─── LEFT COLUMN: Main Blog Post Content ─── */}
+          <main className="flex-1 min-w-0 w-full">
+            <div className="bg-white rounded-xl sm:rounded-2xl border border-gray-200/90 shadow-xs p-5 sm:p-7">
+              <h1 className="text-2xl sm:text-3xl text-gray-900 font-bold mb-3">
+                {pageTitle}
+              </h1>
           {/* ✍️ Byline & Meta Bar (Written by & Published) */}
-          <div className="flex items-center justify-between flex-wrap gap-2 text-xs sm:text-[14px] text-slate-600 mb-2">
-            <div className="flex items-center gap-1">
-              <User className="size-3.5" />
-              <span className="font-normal text-xs text-slate-600">{authorName}</span>
+          {(authorName || formattedDate) && (
+            <div className="flex items-center justify-between flex-wrap gap-2 text-xs sm:text-[14px] text-slate-600 mb-2">
+              {authorName && (
+                <div className="flex items-center gap-1">
+                  <User className="size-3.5" />
+                  <span className="font-normal text-xs text-slate-600">{authorName}</span>
+                </div>
+              )}
+              {formattedDate && (
+                <div className="flex items-center gap-1">
+                  <CalendarIcon className="size-3.5" />
+                  <span className="font-normal text-xs text-slate-600">{formattedDate}</span>
+                </div>
+              )}
             </div>
-            <div className="flex items-center gap-1">
-              <CalendarIcon className="size-3.5" />
-              <span className="font-normal text-xs text-slate-600">{formattedDate}</span>
-            </div>
-          </div>
+          )}
           {/* 🖼️ Featured Cover Image Banner */}
           {blogImageUrl && (
             <div className="relative w-full h-52 sm:h-64 md:h-72 lg:h-80 rounded overflow-hidden mb-6">
@@ -824,19 +656,30 @@ export default function BlogClientView({
               />
             </div>
           )}
-          {/* 📄 Content Section 1 (Introduction & Opening Paragraphs) */}
-          <p>Welcome to the world of online learning, where education meets flexibility and accessibility. In today’s fast-paced life, acquiring knowledge and upgrading skills has become more convenient than ever before. With the rise of digital platforms, accessing quality education is just a click away. Whether you are a working professional looking to enhance your career prospects or a student seeking to pursue higher education, online learning has opened up a world of opportunities.</p>
+          {/* 📄 Intro / Subtitle from API */}
+          {blog.subtitle && (
+            <p className="text-sm sm:text-base text-slate-700 leading-relaxed mb-4">
+              {blog.subtitle}
+            </p>
+          )}
 
           {/* 📑 Table of Contents (Dynamically mapped to the sections below) */}
           {finalHeadings.length > 0 && (
             <div className="my-6 sm:my-8 rounded-2xl bg-white border border-gray-200 p-4 shadow-2xs w-full">
-              <div className="flex items-center justify-between mb-4">
+              <div
+                onClick={() => setTocOpen(!tocOpen)}
+                className={`flex items-center justify-between cursor-pointer select-none ${tocOpen ? "mb-4" : "mb-0"
+                  }`}
+              >
                 <h2 className="text-xl sm:text-xl font-bold text-[#0D3B66] m-0">
                   Table of Contents
                 </h2>
                 <button
                   type="button"
-                  onClick={() => setTocOpen(!tocOpen)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setTocOpen(!tocOpen);
+                  }}
                   className="text-[#0D3B66] hover:text-blue-700 p-1 rounded-md transition-colors cursor-pointer"
                   aria-label="Toggle Table of Contents"
                 >
@@ -848,216 +691,315 @@ export default function BlogClientView({
                 </button>
               </div>
 
-              {tocOpen && (
-                <ul className="space-y-2.5 text-sm sm:text-[14.5px] font-medium list-none p-0 m-0">
-                  {finalHeadings.map((h, i) => (
-                    <li key={h.id || i} className="flex items-start gap-2 leading-snug">
-                      <span className="text-blue-500 font-bold select-none text-[17px] leading-none shrink-0">
-                        »
-                      </span>
-                      <a
-                        href={`#${h.id}`}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          const el = document.getElementById(h.id);
-                          if (el) {
-                            const y =
-                              el.getBoundingClientRect().top +
-                              window.pageYOffset -
-                              85;
-                            window.scrollTo({ top: y, behavior: "smooth" });
-                          }
-                        }}
-                        className="text-gray-700 text-sm hover:text-blue-800 transition-colors hover:underline cursor-pointer"
-                      >
-                        {h.text}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              )}
+              <ul
+                className={`space-y-2.5 text-sm sm:text-[14.5px] font-medium list-none p-0 m-0 ${tocOpen ? "block" : "hidden"
+                  }`}
+                aria-hidden={!tocOpen}
+              >
+                {finalHeadings.map((h, i) => (
+                  <li key={h.id || i} className="flex items-start gap-2 leading-snug">
+                    <span className="text-blue-500 font-bold select-none text-[17px] leading-none shrink-0">
+                      »
+                    </span>
+                    <a
+                      href={`#${h.id}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        const el = document.getElementById(h.id);
+                        if (el) {
+                          const y =
+                            el.getBoundingClientRect().top +
+                            window.pageYOffset -
+                            85;
+                          window.scrollTo({ top: y, behavior: "smooth" });
+                        }
+                      }}
+                      className="text-gray-700 text-sm hover:text-blue-800 transition-colors hover:underline cursor-pointer"
+                    >
+                      {h.text}
+                    </a>
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
 
-          {/* 📄 Content Section 2 (Mappeable Sections as requested) */}
-          <div className="space-y-10 text-slate-700 text-sm sm:text-[15px] leading-relaxed mt-8">
-            {DUMMY_BLOG_SECTIONS.map((sec) => (
-              <section key={sec.id} id={sec.id} className="scroll-mt-24 space-y-3.5">
-                <h2 className="text-2xl sm:text-3xl font-bold text-[#0D3B66] m-0 tracking-tight">
-                  {sec.title}
-                </h2>
+          {/* 📄 Dynamic Structured Sections from API */}
+          {blogSections && blogSections.length > 0 && (
+            <div className="space-y-10 text-slate-700 text-sm sm:text-[15px] leading-relaxed mt-8">
+              {blogSections.map((sec, sIdx) => {
+                const headingText = (sec.poll?.title || sec.title || "").trim();
+                const secId =
+                  sec.id ||
+                  (sec._id ? String(sec._id) : null) ||
+                  headingText.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") ||
+                  `section-${sIdx + 1}`;
 
-                {sec.paragraphs?.map((p, idx) => (
-                  <p key={idx} className="m-0 text-slate-600 leading-relaxed">
-                    {p}
-                  </p>
-                ))}
-
-                {sec.intro && <p className="m-0 text-slate-700">{sec.intro}</p>}
-
-                {sec.checklist && (
-                  <ul className="space-y-0.5 list-none p-0 mt-2 mb-2">
-                    {sec.checklist.map((item, idx) => (
-                      <li key={idx} className="flex items-start gap-2.5 text-slate-700">
-                        <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-[3.5px] bg-[#22C55E] text-white shrink-0 mt-1 shadow-2xs">
-                          <Check size={9} strokeWidth={3} />
-                        </span>
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-
-                {sec.table && (
-                  <div className="my-4 w-full">
-                    <div className="w-full overflow-hidden border border-gray-200 shadow-2xs rounded-lg">
-                      <Table
-                        columns={
-                          sec.table.type === "comparison"
-                            ? comparisonTableColumns
-                            : feeTableColumns
-                        }
-                        dataSource={sec.table.rows.map((row, idx) => ({
-                          ...row,
-                          key: row.factor || row.name || idx,
-                        }))}
-                        pagination={false}
-                        size="small"
-                        bordered
-                        className="course-antd-table w-full"
-                      />
-                    </div>
-                    {sec.table.note && (
-                      <p className="text-xs text-slate-500 mt-2 italic m-0">
-                        {sec.table.note}
-                      </p>
+                return (
+                  <section key={sec._id || sec.id || sIdx} id={secId} className="scroll-mt-24 space-y-3.5">
+                    {headingText && (
+                      <h2 className="text-2xl sm:text-3xl font-bold text-[#0D3B66] m-0 tracking-tight">
+                        {headingText}
+                      </h2>
                     )}
-                  </div>
-                )}
 
-                {sec.columnsList && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2.5 pt-1">
-                    {sec.columnsList.map((col, cIdx) => (
-                      <ul key={cIdx} className="space-y-2 list-none p-0 m-0">
-                        {col.map((item, idx) => (
-                          <li key={idx} className="flex items-start gap-2 leading-snug">
-                            <span className="text-blue-500 font-bold select-none text-[17px] leading-none shrink-0 mt-0.5">
-                              »
-                            </span>
-                            <span className="text-gray-700 text-sm hover:text-blue-800 transition-colors">
-                              {item}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    ))}
-                  </div>
-                )}
-
-                {sec.numberedList && (
-                  <div className="space-y-3 pt-1">
-                    {sec.numberedList.map((item, idx) => (
-                      <div key={idx} className="space-y-0.5">
-                        <h4 className="font-bold text-slate-900 m-0 text-sm sm:text-base">
-                          {item.title}
-                        </h4>
-                        <p className="text-slate-600 m-0 text-sm sm:text-[14.5px]">
-                          {item.desc}
+                    {Array.isArray(sec.paragraphs) &&
+                      sec.paragraphs.map((p, idx) => (
+                        <p key={idx} className="m-0 text-slate-600 leading-relaxed">
+                          {p}
                         </p>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                      ))}
+                    {typeof sec.paragraphs === "string" && sec.paragraphs.trim() && (
+                      <p className="m-0 text-slate-600 leading-relaxed">{sec.paragraphs}</p>
+                    )}
 
-                {sec.twoColBullets && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1 pt-1">
-                    {sec.twoColBullets.map((col, cIdx) => (
-                      <ul key={cIdx} className="space-y-1 list-disc list-inside text-slate-700 p-0 m-0">
-                        {col.map((item, idx) => (
-                          <li key={idx} className="leading-snug">
+                    {sec.intro && <p className="m-0 text-slate-700">{sec.intro}</p>}
+
+                    {Array.isArray(sec.checklist) && sec.checklist.length > 0 && (
+                      <ul className="space-y-0.5 list-none p-0 mt-2 mb-2">
+                        {sec.checklist.map((item, idx) => (
+                          <li key={idx} className="flex items-start gap-2.5 text-slate-700">
+                            <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-[3.5px] bg-[#22C55E] text-white shrink-0 mt-1 shadow-2xs">
+                              <Check size={9} strokeWidth={3} />
+                            </span>
                             <span>{item}</span>
                           </li>
                         ))}
                       </ul>
-                    ))}
-                  </div>
-                )}
+                    )}
 
-                {sec.poll && (
-                  <div className="rounded-xl border border-blue-400 bg-white p-5 sm:p-6 my-4 shadow-2xs">
-                    <h3 className="text-base sm:text-lg font-bold text-[#0D3B66] mb-4 m-0">
-                      {sec.poll.question}
-                    </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                      {sec.poll.options.map((opt) => {
-                        const isSelected = selectedPoll === opt;
-                        return (
-                          <button
-                            key={opt}
-                            type="button"
-                            onClick={() => setSelectedPoll(opt)}
-                            className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-full border text-xs sm:text-sm font-medium transition-all cursor-pointer ${isSelected
-                              ? "border-blue-600 bg-blue-50/60 text-blue-900"
-                              : "border-slate-200 hover:border-slate-300 text-slate-700 bg-white"
-                              }`}
-                          >
-                            <span
-                              className={`w-3.5 h-3.5 rounded-full flex items-center justify-center shrink-0 border ${isSelected ? "border-blue-600 bg-blue-600" : "border-slate-300 bg-slate-200"
-                                }`}
+                    {sec.table && Array.isArray(sec.table.rows) && sec.table.rows.length > 0 && (
+                      <div className="my-4 w-full">
+                        <div className="w-full overflow-hidden border border-gray-200 shadow-2xs rounded-lg">
+                          <Table
+                            columns={
+                              Array.isArray(sec.table.headers) && sec.table.headers.length > 0
+                                ? sec.table.headers.map((headerText, cIdx) => {
+                                  const total = sec.table.headers.length;
+                                  const width =
+                                    total === 2
+                                      ? cIdx === 0
+                                        ? "35%"
+                                        : "65%"
+                                      : `${Math.floor(100 / total)}%`;
+                                  return {
+                                    title: headerText,
+                                    dataIndex: `col${cIdx + 1}`,
+                                    key: `col${cIdx + 1}`,
+                                    width,
+                                    align: "center",
+                                    onCell: (record) => ({
+                                      className: record?.isTotal
+                                        ? "font-bold text-gray-900 bg-slate-50 text-center"
+                                        : cIdx === 0
+                                          ? "font-bold text-gray-900 text-center"
+                                          : "font-normal text-gray-700 text-center",
+                                    }),
+                                    render: (val, record) => {
+                                      if (val !== undefined && val !== null && val !== "") return val;
+                                      if (Array.isArray(record.cols) && record.cols[cIdx] !== undefined) return record.cols[cIdx];
+                                      if (Array.isArray(record.values) && record.values[cIdx] !== undefined) return record.values[cIdx];
+                                      if (cIdx === 0) return record.factor || record.name || record.category || "";
+                                      if (cIdx === 1) return record.check || record.amount || record.details || "";
+                                      return "";
+                                    },
+                                  };
+                                })
+                                : sec.table.type === "comparison"
+                                  ? comparisonTableColumns
+                                  : feeTableColumns
+                            }
+                            dataSource={sec.table.rows.map((row, idx) => ({
+                              ...row,
+                              key: row.key || row._id || row.factor || row.name || row.col1 || idx,
+                            }))}
+                            pagination={false}
+                            size="small"
+                            bordered
+                            scroll={{ x: sec.table?.headers?.length > 3 ? "max-content" : undefined }}
+                            className="course-antd-table w-full"
+                          />
+                        </div>
+                        {sec.table.note && (
+                          <p className="text-xs text-slate-500 mt-2 italic m-0">
+                            {sec.table.note}
+                          </p>
+                        )}
+                      </div>
+                    )}
+
+                    {Array.isArray(sec.columnsList) && sec.columnsList.length > 0 && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2.5 pt-1">
+                        {sec.columnsList.map((col, cIdx) => (
+                          <ul key={cIdx} className="space-y-2 list-none p-0 m-0">
+                            {Array.isArray(col) &&
+                              col.map((item, idx) => (
+                                <li key={idx} className="flex items-start gap-2 leading-snug">
+                                  <span className="text-blue-500 font-bold select-none text-[17px] leading-none shrink-0 mt-0.5">
+                                    »
+                                  </span>
+                                  <span className="text-gray-700 text-sm hover:text-blue-800 transition-colors">
+                                    {item}
+                                  </span>
+                                </li>
+                              ))}
+                          </ul>
+                        ))}
+                      </div>
+                    )}
+
+                    {Array.isArray(sec.numberedList) && sec.numberedList.length > 0 && (
+                      <div className="space-y-3 pt-1">
+                        {sec.numberedList.map((item, idx) => (
+                          <div key={idx} className="space-y-0.5">
+                            <h4 className="font-bold text-slate-900 m-0 text-sm sm:text-base">
+                              {item.title}
+                            </h4>
+                            <p className="text-slate-600 m-0 text-sm sm:text-[14.5px]">
+                              {item.desc}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {Array.isArray(sec.twoColBullets) && sec.twoColBullets.length > 0 && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1 pt-1">
+                        {sec.twoColBullets.map((col, cIdx) => (
+                          <ul key={cIdx} className="space-y-1 list-disc list-inside text-slate-700 p-0 m-0">
+                            {Array.isArray(col) &&
+                              col.map((item, idx) => (
+                                <li key={idx} className="leading-snug">
+                                  <span>{item}</span>
+                                </li>
+                              ))}
+                          </ul>
+                        ))}
+                      </div>
+                    )}
+
+                    {sec.poll && Array.isArray(sec.poll.options) && sec.poll.options.length > 0 && (
+                      <div className="rounded-xl border border-blue-400 bg-white p-5 sm:p-6 my-4 shadow-2xs">
+                        {sec.poll.question && (
+                          <h3 className="text-base sm:text-lg font-bold text-[#0D3B66] mb-4 m-0">
+                            {sec.poll.question}
+                          </h3>
+                        )}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                          {sec.poll.options.map((optItem, optIdx) => {
+                            const optTitle =
+                              typeof optItem === "string"
+                                ? optItem
+                                : optItem?.option || optItem?.text || optItem?.title || "";
+                            const isSelected = selectedPoll === optTitle;
+                            return (
+                              <button
+                                key={optIdx}
+                                type="button"
+                                onClick={() => setSelectedPoll(optTitle)}
+                                className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-full border text-xs sm:text-sm font-medium transition-all cursor-pointer text-left ${isSelected
+                                  ? "border-blue-600 bg-blue-50/70 text-blue-900 shadow-2xs ring-1 ring-blue-500/20"
+                                  : "border-slate-200 hover:border-slate-300 text-slate-700 bg-white"
+                                  }`}
+                              >
+                                <span
+                                  className={`w-3.5 h-3.5 rounded-full flex items-center justify-center shrink-0 border ${isSelected ? "border-blue-600 bg-blue-600" : "border-slate-300 bg-slate-200"
+                                    }`}
+                                >
+                                  {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
+                                </span>
+                                <span className="truncate">{optTitle}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+
+                        {/* 💡 Selected Poll Option Text (replaces the blue box and footnote) */}
+                        {(() => {
+                          const activeOpt = sec.poll.options.find((o) => {
+                            const title =
+                              typeof o === "string"
+                                ? o
+                                : o?.option || o?.text || o?.title || "";
+                            return title === selectedPoll;
+                          });
+                          const displayText =
+                            (typeof activeOpt === "object" ? activeOpt?.answer : null) ||
+                            sec.poll.footnote ||
+                            null;
+
+                          if (!displayText) return null;
+
+                          const formattedText = displayText.startsWith("*")
+                            ? displayText
+                            : `*${displayText}`;
+
+                          return (
+                            <p className="text-xs text-slate-500 mt-4 m-0 leading-relaxed font-normal">
+                              {formattedText}
+                            </p>
+                          );
+                        })()}
+                      </div>
+                    )}
+
+                    {(() => {
+                      const buttons = Array.isArray(sec.ctaButtons) && sec.ctaButtons.length > 0
+                        ? sec.ctaButtons.filter((b) => b && b.text)
+                        : sec.ctaButton && sec.ctaButton.text
+                          ? [sec.ctaButton]
+                          : [];
+                      if (buttons.length === 0) return null;
+                      return (
+                        <div className="pt-3 flex items-center justify-center gap-3 flex-wrap">
+                          {buttons.map((btn, bIdx) => (
+                            <Link
+                              key={bIdx}
+                              href={btn.href || "/courses"}
+                              className="inline-flex items-center justify-center px-8 py-2.5 rounded-full bg-[#F4D068] hover:bg-[#ebc557] text-[#0C2B4E] text-xs sm:text-sm font-bold transition-all shadow-xs cursor-pointer no-underline active:scale-95"
                             >
-                              {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
+                              {btn.text}
+                            </Link>
+                          ))}
+                        </div>
+                      );
+                    })()}
+
+                    {Array.isArray(sec.orderedSteps) && sec.orderedSteps.length > 0 && (
+                      <ol className="space-y-1.5 list-none p-0 m-0 text-slate-700 text-sm sm:text-[14.5px]">
+                        {sec.orderedSteps.map((step, idx) => (
+                          <li key={idx} className="flex items-start gap-4 leading-relaxed">
+                            <span className="text-slate-600 font-medium select-none min-w-[20px] text-right">
+                              {idx + 1}.
                             </span>
-                            <span>{opt}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                    <p className="text-xs text-slate-500 mt-4 m-0">
-                      {sec.poll.footnote}
-                    </p>
-                  </div>
-                )}
+                            <span className="text-slate-800">{step}</span>
+                          </li>
+                        ))}
+                      </ol>
+                    )}
 
-                {sec.ctaButton && (
-                  <div className="pt-3 flex justify-center">
-                    <Link
-                      href={sec.ctaButton.href || "/courses"}
-                      className="inline-flex items-center justify-center px-8 py-2.5 rounded-full bg-[#F4D068] hover:bg-[#ebc557] text-[#0C2B4E] text-xs sm:text-sm font-bold transition-all shadow-xs cursor-pointer no-underline active:scale-95"
-                    >
-                      {sec.ctaButton.text}
-                    </Link>
-                  </div>
-                )}
+                    {sec.importantNotice && (sec.importantNotice.title || sec.importantNotice.desc) && (
+                      <div className="space-y-1.5 pt-4">
+                        {sec.importantNotice.title && (
+                          <h4 className="font-bold text-gray-900 text-sm sm:text-base m-0">
+                            {sec.importantNotice.title}
+                          </h4>
+                        )}
+                        {sec.importantNotice.desc && (
+                          <p className="text-slate-600 text-xs sm:text-[13.5px] leading-relaxed m-0">
+                            {sec.importantNotice.desc}
+                          </p>
+                        )}
+                      </div>
+                    )}
 
-                {sec.orderedSteps && (
-                  <ol className="space-y-1.5 list-none p-0 m-0 text-slate-700 text-sm sm:text-[14.5px]">
-                    {sec.orderedSteps.map((step, idx) => (
-                      <li key={idx} className="flex items-start gap-4 leading-relaxed">
-                        <span className="text-slate-600 font-medium select-none min-w-[20px] text-right">
-                          {idx + 1}.
-                        </span>
-                        <span className="text-slate-800">{step}</span>
-                      </li>
-                    ))}
-                  </ol>
-                )}
-
-                {sec.importantNotice && (
-                  <div className="space-y-1.5 pt-4">
-                    <h4 className="font-bold text-gray-900 text-sm sm:text-base m-0">
-                      {sec.importantNotice.title}
-                    </h4>
-                    <p className="text-slate-600 text-xs sm:text-[13.5px] leading-relaxed m-0">
-                      {sec.importantNotice.desc}
-                    </p>
-                  </div>
-                )}
-
-                {sec.note && <p className="text-xs text-slate-700 font-bold mt-2 m-0">{sec.note}</p>}
-                {sec.outro && <p className="text-sm text-slate-600 mt-2 m-0">{sec.outro}</p>}
-              </section>
-            ))}
-          </div>
+                    {sec.note && <p className="text-xs text-slate-700 font-bold mt-2 m-0">{sec.note}</p>}
+                    {sec.outro && <p className="text-sm text-slate-600 mt-2 m-0">{sec.outro}</p>}
+                  </section>
+                );
+              })}
+            </div>
+          )}
         </div>
 
 
@@ -1173,27 +1115,33 @@ export default function BlogClientView({
 
           <div className="bg-[#f8f9fa] rounded-2xl border border-gray-200/90 p-4 sm:p-6 space-y-4">
             {/* Scrollable list of comments */}
-            <div className="bg-white rounded-xl border border-gray-200/80 p-4 max-h-[190px] overflow-y-auto space-y-3 shadow-2xs">
-              {commentsList.map((cmt, idx) => (
-                <div
-                  key={cmt.id || idx}
-                  className={`flex items-start gap-3 ${idx !== commentsList.length - 1 ? "pb-3 border-b border-gray-100" : ""
-                    }`}
-                >
-                  <div className="w-7 h-7 rounded-full bg-blue-500 text-white flex items-center justify-center shrink-0">
-                    <User size={15} />
+            {commentsList && commentsList.length > 0 ? (
+              <div className="bg-white rounded-xl border border-gray-200/80 p-4 max-h-[190px] overflow-y-auto space-y-3 shadow-2xs">
+                {commentsList.map((cmt, idx) => (
+                  <div
+                    key={cmt._id || cmt.id || idx}
+                    className={`flex items-start gap-3 ${idx !== commentsList.length - 1 ? "pb-3 border-b border-gray-100" : ""
+                      }`}
+                  >
+                    <div className="w-7 h-7 rounded-full bg-blue-500 text-white flex items-center justify-center shrink-0">
+                      <User size={15} />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <h5 className="text-xs sm:text-[13px] font-bold text-gray-900 m-0">
+                        {cmt.name}
+                      </h5>
+                      <p className="text-[11.5px] sm:text-xs text-slate-500 mt-0.5 m-0 leading-relaxed font-normal">
+                        {cmt.text || cmt.comment}
+                      </p>
+                    </div>
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <h5 className="text-xs sm:text-[13px] font-bold text-gray-900 m-0">
-                      {cmt.name}
-                    </h5>
-                    <p className="text-[11.5px] sm:text-xs text-slate-500 mt-0.5 m-0 leading-relaxed font-normal">
-                      {cmt.text}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="bg-white rounded-xl border border-gray-200/80 p-4 text-center text-xs text-slate-500 shadow-2xs">
+                No comments yet. Be the first to share your thoughts!
+              </div>
+            )}
 
             {/* Leave a Comment Form */}
             <div className="pt-1">
@@ -1265,10 +1213,12 @@ export default function BlogClientView({
           </div>
 
           {/* Tags Bar directly below Add Comments card */}
-          <div className="mt-4 bg-[#f8f9fa] rounded-lg border border-gray-200 px-4 py-2.5 text-xs sm:text-[13px] text-slate-700">
-            <span className="font-bold text-gray-900">Tags: </span>
-            <span className="text-slate-600">{displayTags}</span>
-          </div>
+          {displayTags ? (
+            <div className="mt-4 bg-[#f8f9fa] rounded-lg border border-gray-200 px-4 py-2.5 text-xs sm:text-[13px] text-slate-700">
+              <span className="font-bold text-gray-900">Tags: </span>
+              <span className="text-slate-600">{displayTags}</span>
+            </div>
+          ) : null}
 
           {/* =====================================================================
               🤖 EXPLORE AI POWERED TOOLS (Ant Design Carousel directly below Tags)
@@ -1381,8 +1331,28 @@ export default function BlogClientView({
               )}
             </div>
           )}
+            </div>
+          </main>
+
+          {/* ─── RIGHT COLUMN: Blog Sidebar (Positioned to the right to fill desktop space) ─── */}
+          <aside className="w-full lg:w-[360px] xl:w-[390px] 2xl:w-[420px] shrink-0">
+            <div className="lg:sticky lg:top-20">
+              <BlogSidebar
+                title={pageTitle}
+                categories={initialCategories}
+                author={blog.author}
+                relatedBlogs={sidebarBlogs.slice(0, 5)}
+                recentBlogs={
+                  sidebarBlogs.length > 5
+                    ? sidebarBlogs.slice(5, 10)
+                    : sidebarBlogs.slice(0, 4)
+                }
+                currentSlug={propSlug || blog.slug}
+              />
+            </div>
+          </aside>
         </div>
-      </Container>
+      </div>
     </div>
   );
 }

@@ -59,10 +59,11 @@ const getBlogPageData = cache(async (slug) => {
       initialData,
       initialPopularBlogs: Array.isArray(list) ? list : [],
       initialTools,
+      initialCategories: categoryRes,
     };
   } catch (err) {
     console.error(`[Server Component] Error pre-fetching blog ${slug}:`, err.message);
-    return { initialData: null, initialPopularBlogs: [], initialTools: [] };
+    return { initialData: null, initialPopularBlogs: [], initialTools: [], initialCategories: null };
   }
 });
 
@@ -104,13 +105,14 @@ export default async function BlogDetailPage({ params }) {
   const resolvedParams = await params;
   const slug = resolvedParams?.slug || "";
 
-  const { initialData, initialPopularBlogs, initialTools } = await getBlogPageData(slug);
+  const { initialData, initialPopularBlogs, initialTools, initialCategories } = await getBlogPageData(slug);
 
   return (
     <BlogClientView
       initialData={initialData}
       initialPopularBlogs={initialPopularBlogs}
       initialTools={initialTools}
+      initialCategories={initialCategories}
       slug={slug}
     />
   );
