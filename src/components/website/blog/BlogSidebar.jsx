@@ -298,7 +298,7 @@ export default function BlogSidebar({
     author?.avatar || author?.image || author?.profileImage || null;
 
   return (
-    <div className="space-y-5 w-full">
+    <div className="space-y-5 w-full h-full">
       {/* ─── CARD 1: BOOK 100% FREE COUNSELING FORM ─── */}
 
       <div id="free-counseling" className="bg-white rounded-2xl border border-gray-200/90 shadow-xs p-5 sm:p-6 relative scroll-mt-24">
@@ -455,6 +455,8 @@ export default function BlogSidebar({
                 src={getAssetPath(authorAvatar)}
                 alt={authorName}
                 fill
+                sizes="40px"
+                unoptimized
                 className="object-cover"
               />
             </div>
@@ -515,6 +517,7 @@ export default function BlogSidebar({
                         src={imgUrl}
                         alt={title}
                         fill
+                        unoptimized
                         className="object-cover transition-transform duration-300 ease-out group-hover:scale-110"
                         sizes="64px"
                       />
@@ -613,6 +616,7 @@ export default function BlogSidebar({
                         src={imgUrl}
                         alt={title}
                         fill
+                        unoptimized
                         className="object-cover transition-transform duration-300 ease-out group-hover:scale-110"
                         sizes="64px"
                       />
@@ -676,6 +680,7 @@ export default function BlogSidebar({
                         src={imgUrl}
                         alt={title}
                         fill
+                        unoptimized
                         className="object-cover transition-transform duration-300 ease-out group-hover:scale-110"
                         sizes="64px"
                       />
@@ -763,8 +768,10 @@ export default function BlogSidebar({
         </div>
       )}
 
-      {/* ─── CARD 8: TOP ONLINE & DISTANCE UNIVERSITIES ─── */}
-      {uniList.length > 0 && (
+      {/* ─── STICKY BOTTOM CONTAINER: TOP UNIVERSITIES & SHARE THIS PAGE ─── */}
+      <div className="lg:sticky lg:top-3.5 space-y-3.5 max-h-[calc(100vh-1.5rem)] overflow-y-auto no-scrollbar">
+        {/* ─── CARD 8: TOP ONLINE & DISTANCE UNIVERSITIES ─── */}
+        {uniList.length > 0 && (
         <div className="bg-white rounded-2xl border border-gray-200/90 shadow-xs p-4 sm:p-5">
           {/* Header */}
           <div className="flex items-center gap-2 pb-2.5 mb-3 border-b border-gray-100">
@@ -901,5 +908,6 @@ export default function BlogSidebar({
       </div>
     </div>
   </div>
+</div>
 );
 }

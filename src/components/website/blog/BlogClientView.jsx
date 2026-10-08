@@ -423,6 +423,7 @@ export default function BlogClientView({
               alt={fullName}
               width={48}
               height={48}
+              loading="eager"
               unoptimized
               className="w-8 h-8 sm:w-9 sm:h-9 object-contain"
             />
@@ -688,7 +689,10 @@ export default function BlogClientView({
                     src={blogImageUrl}
                     alt={pageTitle}
                     fill
+                    loading="eager"
                     priority
+                    fetchPriority="high"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
                     unoptimized
                     className="object-cover"
                   />
@@ -1502,38 +1506,36 @@ export default function BlogClientView({
           </main>
 
           {/* ─── RIGHT COLUMN: Blog Sidebar (Positioned to the right to fill desktop space) ─── */}
-          <aside className="w-full lg:w-[360px] xl:w-[390px] 2xl:w-[420px] shrink-0">
-            <div className="lg:sticky lg:top-20">
-              <BlogSidebar
-                title={pageTitle}
-                categories={initialCategories}
-                author={blog.author}
-                relatedBlogs={
-                  Array.isArray(blog.related) && blog.related.length > 0
-                    ? blog.related
-                    : Array.isArray(initialData?.related) && initialData.related.length > 0
-                      ? initialData.related
+          <aside className="w-full lg:w-[360px] xl:w-[390px] 2xl:w-[420px] shrink-0 lg:self-stretch">
+            <BlogSidebar
+              title={pageTitle}
+              categories={initialCategories}
+              author={blog.author}
+              relatedBlogs={
+                Array.isArray(blog.related)
+                  ? blog.related
+                  : Array.isArray(initialData?.related)
+                    ? initialData.related
+                    : []
+              }
+              recentBlogs={
+                Array.isArray(blog.recent) && blog.recent.length > 0
+                  ? blog.recent
+                  : Array.isArray(initialData?.recent) && initialData.recent.length > 0
+                    ? initialData.recent
+                    : sidebarBlogs.length > 5
+                      ? sidebarBlogs.slice(5, 10)
                       : sidebarBlogs.slice(0, 5)
-                }
-                recentBlogs={
-                  Array.isArray(blog.recent) && blog.recent.length > 0
-                    ? blog.recent
-                    : Array.isArray(initialData?.recent) && initialData.recent.length > 0
-                      ? initialData.recent
-                      : sidebarBlogs.length > 5
-                        ? sidebarBlogs.slice(5, 10)
-                        : sidebarBlogs.slice(0, 5)
-                }
-                popularBlogs={
-                  Array.isArray(blog.popular) && blog.popular.length > 0
-                    ? blog.popular
-                    : Array.isArray(initialData?.popular) && initialData.popular.length > 0
-                      ? initialData.popular
-                      : sidebarBlogs.slice(0, 5)
-                }
-                currentSlug={propSlug || blog.slug}
-              />
-            </div>
+              }
+              popularBlogs={
+                Array.isArray(blog.popular) && blog.popular.length > 0
+                  ? blog.popular
+                  : Array.isArray(initialData?.popular) && initialData.popular.length > 0
+                    ? initialData.popular
+                    : sidebarBlogs.slice(0, 5)
+              }
+              currentSlug={propSlug || blog.slug}
+            />
           </aside>
         </div>
       </div>

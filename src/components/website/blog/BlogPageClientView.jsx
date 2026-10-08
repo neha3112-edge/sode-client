@@ -82,7 +82,7 @@ function getAuthorName(author) {
   return author.fullname || author.name || "Amritanjali Singh";
 }
 
-function BlogCard({ blog }) {
+function BlogCard({ blog, index = 0 }) {
   const [imgErr, setImgErr] = useState(false);
   const coverUrl = !imgErr ? getAssetPath(blog.coverImage || blog.featuredImage || blog.bannerImage) : null;
   const formattedDate = formatBlogDate(blog.publishedAt || blog.createdAt);
@@ -91,6 +91,7 @@ function BlogCard({ blog }) {
   const title = decodeHtml(blog.title || "");
   const subtitleText = cleanExcerpt(blog.subtitle || blog.excerpt || blog.content || "", 135);
   const blogSlug = blog.slug || blog._id;
+  const isAboveTheFold = index < 3;
 
   return (
     <div className="bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col group h-full">
@@ -105,8 +106,8 @@ function BlogCard({ blog }) {
             alt={title}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            loading="eager"
-            priority
+            loading={isAboveTheFold ? "eager" : "lazy"}
+            priority={isAboveTheFold}
             unoptimized
             className="object-cover group-hover:scale-105 transition-transform duration-500"
             onError={() => setImgErr(true)}
@@ -380,8 +381,8 @@ export default function BlogPageClientView({
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {displayedBlogs.map((blog) => (
-              <BlogCard key={blog._id || blog.slug} blog={blog} />
+            {displayedBlogs.map((blog, idx) => (
+              <BlogCard key={blog._id || blog.slug} blog={blog} index={idx} />
             ))}
           </div>
         )}
