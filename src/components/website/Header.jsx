@@ -731,107 +731,142 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                 {/* ── RIGHT CONTENT AREA: 3-COLUMN CARDS GRID ── */}
                 <div className="flex-1 p-5 bg-white overflow-y-auto max-h-[460px] scrollbar-thin [scrollbar-color:#cbd5e1_transparent]">
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3.5">
-                    {/* A. DYNAMIC UNIVERSITY CARDS (Screenshot 1) */}
-                    {currentMegaMenuData.type === "universities" &&
-                      currentMegaMenuData.currentGroup?.items?.map((uni, idx) => {
-                        const uniSlug = uni.slug || uni._id || uni.name;
-                        const logoUrl = uni.logo?.url || (typeof uni.logo === "string" ? uni.logo : null);
-                        const detailUrl = uni.url || `/universities/${encodeURIComponent(uniSlug)}`;
-                        const coursesUrl = `/courses?university=${encodeURIComponent(uniSlug)}`;
+                    {/* A. DYNAMIC UNIVERSITY / LISTING CARDS */}
+                    {currentMegaMenuData.type === "universities" && (() => {
+                      const allItems = currentMegaMenuData.currentGroup?.items || [];
+                      const dynamicListings = allItems.filter((it) => it.is_dynamic_listing);
+                      const regularUniversities = allItems.filter((it) => !it.is_dynamic_listing);
 
-                        return (
-                          <div
-                            key={uni._id || idx}
-                            className="bg-white border border-slate-200/90 rounded-xl p-3 hover:border-blue-400 hover:shadow-md transition-all flex flex-col justify-between group"
-                          >
-                            <div>
-                              <div className="flex items-start gap-2.5">
-                                {/* University Logo */}
-                                <Link
-                                  href={detailUrl}
-                                  onClick={() => setActiveMenuKey(null)}
-                                  className="relative w-10 h-10 flex items-center justify-start shrink-0 group-hover:scale-105 transition-transform"
-                                >
-                                  {logoUrl ? (
-                                    <Image
-                                      src={logoUrl}
-                                      alt={uni.name || "University Logo"}
-                                      fill
-                                      unoptimized
-                                      sizes="40px"
-                                      className="object-contain object-left"
-                                    />
-                                  ) : (
-                                    <span className="text-xs font-black text-[#072C50]">
-                                      {(uni.name || "U").charAt(0)}
+                      return (
+                        <>
+                          {/* Dynamic Listings (Clean 2-Column Bulleted List with Header Text Color) */}
+                          {dynamicListings.length > 0 && (
+                            <div className="col-span-full grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3 p-1">
+                              {dynamicListings.map((dlp, idx) => {
+                                const dlpUrl = dlp.url || `/${dlp.slug}`;
+                                return (
+                                  <Link
+                                    key={dlp._id || idx}
+                                    href={dlpUrl}
+                                    onClick={() => setActiveMenuKey(null)}
+                                    className="flex items-center gap-2.5 py-1 text-left group select-none transition-colors"
+                                  >
+                                    <span className="w-1.5 h-1.5 rounded-full bg-[#072C50] group-hover:bg-[#0B57D0] shrink-0 transition-transform group-hover:scale-125" />
+                                    <span
+                                      className="text-[13.5px] font-medium text-[#072C50] group-hover:text-[#0B57D0] transition-colors leading-snug truncate"
+                                      title={dlp.name}
+                                    >
+                                      {dlp.name}
                                     </span>
-                                  )}
-                                </Link>
+                                  </Link>
+                                );
+                              })}
+                            </div>
+                          )}
 
-                                {/* University Details */}
-                                <div className="min-w-0 flex-1">
+                          {/* Regular Universities (Standard Cards Grid) */}
+                          {regularUniversities.map((uni, idx) => {
+                            const uniSlug = uni.slug || uni._id || uni.name;
+                            const logoUrl = uni.logo?.url || uni.logo?.path || (typeof uni.logo === "string" ? uni.logo : null);
+                            const detailUrl = uni.url || `/universities/${encodeURIComponent(uniSlug)}`;
+                            const coursesUrl = `/courses?university=${encodeURIComponent(uniSlug)}`;
+
+                            return (
+                              <div
+                                key={uni._id || idx}
+                                className="bg-white border border-slate-200/90 rounded-xl p-3 hover:border-blue-400 hover:shadow-md transition-all flex flex-col justify-between group"
+                              >
+                                <div>
+                                  <div className="flex items-start gap-2.5">
+                                    {/* University Logo */}
+                                    <Link
+                                      href={detailUrl}
+                                      onClick={() => setActiveMenuKey(null)}
+                                      className="relative w-10 h-10 flex items-center justify-start shrink-0 group-hover:scale-105 transition-transform"
+                                    >
+                                      {logoUrl ? (
+                                        <Image
+                                          src={logoUrl}
+                                          alt={uni.name || "University Logo"}
+                                          fill
+                                          unoptimized
+                                          sizes="40px"
+                                          className="object-contain object-left"
+                                        />
+                                      ) : (
+                                        <span className="w-1 h-1 rounded-full bg-gray-700 group-hover:scale-125 transition-transform" />
+                                      )}
+                                    </Link>
+
+                                    {/* University Details */}
+                                    <div className="min-w-0 flex-1">
+                                      <Link
+                                        href={detailUrl}
+                                        onClick={() => setActiveMenuKey(null)}
+                                        className="block group-hover:text-[#0B57D0] transition-colors"
+                                      >
+                                        <h4
+                                          className="text-[13px] font-bold text-slate-900 leading-snug truncate m-0 group-hover:text-[#0B57D0] transition-colors"
+                                          title={uni.name}
+                                        >
+                                          {uni.name}
+                                        </h4>
+                                      </Link>
+
+                                      {/* Dynamic Badges: Approvals & Course Count */}
+                                      {(uni.approval || uni.courses_count > 0) && (
+                                        <div className="flex items-center gap-3 mt-1">
+                                          {uni.approval && (
+                                            <span className="inline-flex items-center gap-1 text-[10px] text-slate-500 font-medium">
+                                              <svg className="w-3.5 h-3.5 text-emerald-600" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                              </svg>
+                                              {uni.approval}
+                                            </span>
+                                          )}
+                                          {uni.courses_count > 0 && (
+                                            <Link
+                                              href={coursesUrl}
+                                              onClick={() => setActiveMenuKey(null)}
+                                              className="inline-flex items-center gap-1 text-[10px] text-slate-500 hover:text-[#0B57D0] font-medium transition-colors"
+                                            >
+                                              <svg className="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                              </svg>
+                                              {uni.courses_count}+ Courses
+                                            </Link>
+                                          )}
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* Action Buttons Row */}
+                                <div className="flex items-center justify-between pt-2.5 mt-2 border-t border-slate-100/80">
                                   <Link
                                     href={detailUrl}
                                     onClick={() => setActiveMenuKey(null)}
-                                    className="block group-hover:text-[#0B57D0] transition-colors"
+                                    className="px-3 py-1 text-[11px] font-semibold text-slate-700 bg-white border border-slate-300 rounded-2xl hover:bg-slate-50 hover:border-slate-400 transition inline-block select-none"
                                   >
-                                    <h4
-                                      className="text-[13px] font-bold text-slate-900 leading-snug truncate m-0 group-hover:text-[#0B57D0] transition-colors"
-                                      title={uni.name}
-                                    >
-                                      {uni.name}
-                                    </h4>
+                                    Know More
                                   </Link>
 
-                                  {/* Dynamic Badges: Approvals & Course Count */}
-                                  <div className="flex items-center gap-3 mt-1">
-                                    {uni.approval && (
-                                      <span className="inline-flex items-center gap-1 text-[10px] text-slate-500 font-medium">
-                                        <svg className="w-3.5 h-3.5 text-emerald-600" viewBox="0 0 20 20" fill="currentColor">
-                                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                        </svg>
-                                        {uni.approval}
-                                      </span>
-                                    )}
-                                    {uni.courses_count > 0 && (
-                                      <Link
-                                        href={coursesUrl}
-                                        onClick={() => setActiveMenuKey(null)}
-                                        className="inline-flex items-center gap-1 text-[10px] text-slate-500 hover:text-[#0B57D0] font-medium transition-colors"
-                                      >
-                                        <svg className="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                                        </svg>
-                                        {uni.courses_count}+ Courses
-                                      </Link>
-                                    )}
-                                  </div>
+                                  <Link
+                                    href={coursesUrl}
+                                    onClick={() => setActiveMenuKey(null)}
+                                    className="text-[11px] font-bold text-slate-900 hover:text-[#0B57D0] flex items-center gap-1 transition select-none"
+                                  >
+                                    <span>View Courses</span>
+                                    <span className="text-[12px] leading-none">→</span>
+                                  </Link>
                                 </div>
                               </div>
-                            </div>
-
-                            {/* Action Buttons Row */}
-                            <div className="flex items-center justify-between pt-2.5 mt-2 border-t border-slate-100/80">
-                              <Link
-                                href={detailUrl}
-                                onClick={() => setActiveMenuKey(null)}
-                                className="px-3 py-1 text-[11px] font-semibold text-slate-700 bg-white border border-slate-300 rounded-2xl hover:bg-slate-50 hover:border-slate-400 transition inline-block select-none"
-                              >
-                                Know More
-                              </Link>
-
-                              <Link
-                                href={coursesUrl}
-                                onClick={() => setActiveMenuKey(null)}
-                                className="text-[11px] font-bold text-slate-900 hover:text-[#0B57D0] flex items-center gap-1 transition select-none"
-                              >
-                                <span>View Courses</span>
-                                <span className="text-[12px] leading-none">→</span>
-                              </Link>
-                            </div>
-                          </div>
-                        );
-                      })}
+                            );
+                          })}
+                        </>
+                      );
+                    })()}
 
                     {/* B. DYNAMIC COURSE / PROGRAM CARDS (Screenshot 2) */}
                     {currentMegaMenuData.type === "programs" &&
@@ -1098,6 +1133,22 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                     ? `/courses?university=${encodeURIComponent(itemSlug)}`
                     : detailUrl;
 
+                  if (item.is_dynamic_listing) {
+                    return (
+                      <Link
+                        key={item._id || idx}
+                        href={detailUrl}
+                        onClick={() => closeMobile()}
+                        className="col-span-2 flex items-center gap-2.5 py-1.5 px-2 rounded-lg hover:bg-slate-50 transition-colors group select-none text-left"
+                      >
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#072C50] group-hover:bg-[#0B57D0] shrink-0 transition-transform group-hover:scale-125" />
+                        <span className="text-[12.5px] font-medium text-[#072C50] group-hover:text-[#0B57D0] transition-colors leading-snug truncate">
+                          {item.name || item.title}
+                        </span>
+                      </Link>
+                    );
+                  }
+
                   return (
                     <div
                       key={item._id || idx}
@@ -1106,13 +1157,13 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                       <div>
                         {/* Top Section: Logo Left + Title Right */}
                         <div className="flex items-center gap-2">
-                          {/* Logo */}
-                          <Link
-                            href={detailUrl}
-                            onClick={() => closeMobile()}
-                            className="relative w-8 h-8 sm:w-9 sm:h-9 shrink-0 flex items-center justify-center"
-                          >
-                            {logoSrc ? (
+                          {/* Logo or Bullet */}
+                          {logoSrc ? (
+                            <Link
+                              href={detailUrl}
+                              onClick={() => closeMobile()}
+                              className="relative w-8 h-8 sm:w-9 sm:h-9 shrink-0 flex items-center justify-center"
+                            >
                               <Image
                                 src={resolveImg(logoSrc)}
                                 alt={item.name || item.title || "Logo"}
@@ -1121,12 +1172,16 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                                 sizes="36px"
                                 className="object-contain"
                               />
-                            ) : (
-                              <span className="text-xs font-black text-[#072C50]">
-                                {(item.name || item.title || "U").charAt(0)}
-                              </span>
-                            )}
-                          </Link>
+                            </Link>
+                          ) : (
+                            <Link
+                              href={detailUrl}
+                              onClick={() => closeMobile()}
+                              className="flex items-center justify-center shrink-0 mt-0.5"
+                            >
+                              <span className="w-2 h-2 rounded-full bg-[#0B57D0]" />
+                            </Link>
+                          )}
 
                           {/* Title */}
                           <div className="flex-1 min-w-0 text-left">
@@ -1142,21 +1197,27 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                           </div>
                         </div>
 
-                        {/* Full-width Badges Row (Starts below the logo for maximum flex space) */}
-                        <div className="flex items-center gap-2 mt-1.5 text-[9.5px]">
-                          <span className="inline-flex items-center gap-1 text-slate-600 font-semibold whitespace-nowrap">
-                            <svg className="w-3 h-3 text-emerald-600 shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                            <span className="truncate">{item.approval || "UGC-DEB"}</span>
-                          </span>
-                          <span className="inline-flex items-center gap-1 text-slate-500 font-medium whitespace-nowrap">
-                            <svg className="w-3 h-3 text-blue-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
-                            </svg>
-                            <span className="truncate">{item.courses_count ? `${item.courses_count}+ Courses` : (item.duration || "10+ Courses")}</span>
-                          </span>
-                        </div>
+                        {/* Full-width Badges Row (Only for non-dynamic listing universities) */}
+                        {!item.is_dynamic_listing && (item.approval || item.courses_count || item.duration) && (
+                          <div className="flex items-center gap-2 mt-1.5 text-[9.5px]">
+                            {item.approval && (
+                              <span className="inline-flex items-center gap-1 text-slate-600 font-semibold whitespace-nowrap">
+                                <svg className="w-3 h-3 text-emerald-600 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                </svg>
+                                <span className="truncate">{item.approval}</span>
+                              </span>
+                            )}
+                            {(item.courses_count || item.duration) && (
+                              <span className="inline-flex items-center gap-1 text-slate-500 font-medium whitespace-nowrap">
+                                <svg className="w-3 h-3 text-blue-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+                                </svg>
+                                <span className="truncate">{item.courses_count ? `${item.courses_count}+ Courses` : item.duration}</span>
+                              </span>
+                            )}
+                          </div>
+                        )}
                       </div>
 
                       {/* Bottom Action Buttons */}
@@ -1168,14 +1229,16 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                         >
                           Know More
                         </Link>
-                        <Link
-                          href={viewCoursesUrl}
-                          onClick={() => closeMobile()}
-                          className="inline-flex items-center gap-0.5 text-[9.5px] font-bold text-[#072C50] hover:text-[#0B57D0] transition-colors whitespace-nowrap overflow-hidden"
-                        >
-                          <span className="truncate">View Courses</span>
-                          <RightOutlined className="text-[6.5px] shrink-0" />
-                        </Link>
+                        {!item.is_dynamic_listing && (
+                          <Link
+                            href={viewCoursesUrl}
+                            onClick={() => closeMobile()}
+                            className="inline-flex items-center gap-0.5 text-[9.5px] font-bold text-[#072C50] hover:text-[#0B57D0] transition-colors whitespace-nowrap overflow-hidden"
+                          >
+                            <span className="truncate">View Courses</span>
+                            <RightOutlined className="text-[6.5px] shrink-0" />
+                          </Link>
+                        )}
                       </div>
                     </div>
                   );
