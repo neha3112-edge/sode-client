@@ -894,20 +894,48 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                 );
                 if (!imageSrc) return null;
 
+                const rawSlug =
+                  uni.slug ||
+                  (uni.url && uni.url.includes("/universities/")
+                    ? uni.url.split("/universities/")[1]?.split("/")[0]?.split("?")[0]
+                    : null);
+                const cleanSlug = rawSlug
+                  ? String(rawSlug).replace(/^\//, "").trim()
+                  : (uni.name
+                    ? uni.name.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "")
+                    : "");
+                const targetUrl = uni.url?.startsWith("http")
+                  ? uni.url
+                  : (cleanSlug ? `/universities/${encodeURIComponent(cleanSlug)}` : null);
+
+                const logoContent = (
+                  <div className="flex items-center justify-center h-12 sm:h-14 w-full">
+                    <div className="relative w-full h-full flex items-center justify-center group-hover/partner:scale-105 transition-transform duration-200">
+                      <Image
+                        src={getAssetPath(imageSrc)}
+                        alt={uni.name || uni.title || "University Logo"}
+                        fill
+                        className="object-contain object-center"
+                        sizes="(max-width: 640px) 140px, 200px"
+                        unoptimized
+                      />
+                    </div>
+                  </div>
+                );
+
                 return (
                   <div key={`partner-${uni._id || uni.slug || idx}-${idx}`} className="py-1">
-                    <div className="flex items-center justify-center h-12 sm:h-14 w-full">
-                      <div className="relative w-full h-full flex items-center justify-center">
-                        <Image
-                          src={getAssetPath(imageSrc)}
-                          alt={uni.name || uni.title || "University Logo"}
-                          fill
-                          className="object-contain object-center"
-                          sizes="(max-width: 640px) 140px, 200px"
-                          unoptimized
-                        />
-                      </div>
-                    </div>
+                    {targetUrl ? (
+                      <Link
+                        href={targetUrl}
+                        className="block w-full h-full group/partner cursor-pointer"
+                        title={uni.name || uni.title || "University"}
+                      >
+                        {logoContent}
+                      </Link>
+                    ) : (
+                      logoContent
+                    )}
                   </div>
                 );
               })}
@@ -1393,20 +1421,46 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-1.5 sm:gap-3">
                   {specializationsList.map((spec, idx) => {
                     const isHighlighted = !!spec.highlighted;
+                    const matchedSub = (specializations.subCourses || []).find(
+                      (sc) =>
+                        (sc._id && (sc._id === spec._id || sc._id === spec.id)) ||
+                        (sc.name && sc.name.trim().toLowerCase() === (spec.name || "").trim().toLowerCase())
+                    );
+                    const specSlug =
+                      spec.slug ||
+                      matchedSub?.slug ||
+                      (spec.name ? spec.name.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") : "") ||
+                      spec._id ||
+                      "";
+
+                    const courseSlug =
+                      page?.course?.slug ||
+                      page?.courseSlug ||
+                      page?.targetCourse?.slug ||
+                      (slug && !/^[0-9a-fA-F]{24}$/.test(slug) ? slug : "") ||
+                      (page?.course?.name ? page.course.name.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") : "") ||
+                      page?.course?._id ||
+                      "";
+
+                    const queryParams = new URLSearchParams();
+                    if (courseSlug) queryParams.set("course", courseSlug);
+                    if (specSlug) queryParams.set("subcourse", specSlug);
+                    const targetHref = `/courses?${queryParams.toString()}`;
 
                     return (
-                      <div
-                        key={idx}
-                        onClick={() => handleOpenLead(`Specialization: ${spec.name}`, `Enquire for ${spec.name} in ${pageTitle}`)}
-                        className={`px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg border flex items-center transition-all cursor-pointer shadow-2xs min-h-[42px] sm:min-h-[48px] ${isHighlighted
+                      <Link
+                        key={spec._id || spec.id || idx}
+                        href={targetHref}
+                        className={`px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg border flex items-center transition-all cursor-pointer shadow-2xs min-h-[42px] sm:min-h-[48px] group hover:border-[#0B57D0] hover:shadow-xs select-none ${isHighlighted
                           ? "border-[#00BCD4] bg-cyan-50/20 text-[#00838F]"
-                          : "border-slate-200 bg-white hover:border-slate-300 text-slate-800"
+                          : "border-slate-200 bg-white hover:bg-slate-50/50 text-slate-800"
                           }`}
+                        title={`Filter courses by ${spec.name}`}
                       >
-                        <span className={`text-[11px] sm:text-xs font-bold leading-tight line-clamp-2 ${isHighlighted ? "text-[#00838F]" : "text-slate-800"}`}>
+                        <span className={`text-[11px] sm:text-xs font-bold leading-tight line-clamp-2 group-hover:text-[#0B57D0] transition-colors ${isHighlighted ? "text-[#00838F]" : "text-slate-800"}`}>
                           {spec.name}
                         </span>
-                      </div>
+                      </Link>
                     );
                   })}
                 </div>

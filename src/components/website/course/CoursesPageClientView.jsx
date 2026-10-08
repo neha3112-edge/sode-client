@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -147,7 +147,21 @@ function FilterSidebarContent({
         <Select
           showSearch
           placeholder="All Courses"
-          value={selectedCourse || "all"}
+          value={
+            (() => {
+              if (!selectedCourse || selectedCourse === "all") return "all";
+              const target = String(selectedCourse).trim().toLowerCase();
+              const targetSlug = target.replace(/[^a-z0-9]+/g, "-");
+              const found = courseSelectOptions.find(
+                (opt) =>
+                  String(opt.value).toLowerCase() === target ||
+                  String(opt.id || "").toLowerCase() === target ||
+                  String(opt.label || "").toLowerCase() === target ||
+                  String(opt.label || "").toLowerCase().replace(/[^a-z0-9]+/g, "-") === targetSlug
+              );
+              return found ? found.value : selectedCourse;
+            })()
+          }
           onChange={(val) => {
             if (setSelectedCourse) setSelectedCourse(val === "all" ? "" : val);
             if (typeof setCurrentPage === "function") setCurrentPage(1);
@@ -170,7 +184,21 @@ function FilterSidebarContent({
         <Select
           showSearch
           placeholder="All Sub Courses"
-          value={selectedSubCourse || "all"}
+          value={
+            (() => {
+              if (!selectedSubCourse || selectedSubCourse === "all") return "all";
+              const target = String(selectedSubCourse).trim().toLowerCase();
+              const targetSlug = target.replace(/[^a-z0-9]+/g, "-");
+              const found = subcourseSelectOptions.find(
+                (opt) =>
+                  String(opt.value).toLowerCase() === target ||
+                  String(opt.id || "").toLowerCase() === target ||
+                  String(opt.label || "").toLowerCase() === target ||
+                  String(opt.label || "").toLowerCase().replace(/[^a-z0-9]+/g, "-") === targetSlug
+              );
+              return found ? found.value : selectedSubCourse;
+            })()
+          }
           onChange={(val) => {
             if (setSelectedSubCourse) setSelectedSubCourse(val === "all" ? "" : val);
             if (typeof setCurrentPage === "function") setCurrentPage(1);
@@ -329,14 +357,15 @@ export default function CoursesPageClientView({
   const [subcoursesOptionsList, setSubcoursesOptionsList] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
+  const isInitialMount = useRef(true);
   const ITEMS_PER_PAGE = 10;
 
   const searchParams = useSearchParams();
   const initialCat = searchParams?.get("category") || "all";
-  const initialSubcat = searchParams?.get("subcategory") || searchParams?.get("subCategory") || searchParams?.get("subcourse") || "";
+  const initialSubcat = searchParams?.get("subcategory") || searchParams?.get("subCategory") || "";
   const initialSubcatArr = initialSubcat ? initialSubcat.split(",").map((s) => s.trim()) : [];
   const initialCourse = searchParams?.get("course") || searchParams?.get("courseId") || "";
-  const initialSubCourse = searchParams?.get("subCourse") || searchParams?.get("subcourseId") || "";
+  const initialSubCourse = searchParams?.get("subCourse") || searchParams?.get("subcourseId") || searchParams?.get("subcourse") || searchParams?.get("specialization") || searchParams?.get("specializationId") || "";
   const initialQuery = searchParams?.get("search") || "";
   const initialUnis = searchParams?.get("university") ? searchParams.get("university").split(",").map((u) => u.trim()) : [];
 
@@ -428,8 +457,9 @@ export default function CoursesPageClientView({
 
   useEffect(() => {
     const cat = searchParams?.get("category");
-    const subcat = searchParams?.get("subcategory") || searchParams?.get("subCategory") || searchParams?.get("subcourse");
+    const subcat = searchParams?.get("subcategory") || searchParams?.get("subCategory");
     const crs = searchParams?.get("course") || searchParams?.get("courseId");
+    const subCourse = searchParams?.get("subCourse") || searchParams?.get("subcourseId") || searchParams?.get("subcourse") || searchParams?.get("specialization") || searchParams?.get("specializationId");
     const q = searchParams?.get("search") || searchParams?.get("q");
     const uni = searchParams?.get("university") || searchParams?.get("universityId");
 
@@ -442,6 +472,9 @@ export default function CoursesPageClientView({
     if (crs !== null && crs !== undefined) {
       setSelectedCourse(crs || "");
     }
+    if (subCourse !== null && subCourse !== undefined) {
+      setSelectedSubCourse(subCourse || "");
+    }
     if (q !== null && q !== undefined) {
       setAppliedSearchTerm(q);
     }
@@ -452,6 +485,12 @@ export default function CoursesPageClientView({
   }, [searchParams]);
 
   useEffect(() => {
+    // Skip duplicate client-side fetch on initial page mount (SSR already loaded initialCoursesData)
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
     const isDefault =
       activeCategoryTab === "all" &&
       (!activeSubcategory || activeSubcategory.length === 0) &&
@@ -478,12 +517,12 @@ export default function CoursesPageClientView({
       const targetStr = String(val).trim().toLowerCase();
       const targetSlug = targetStr.replace(/[^a-z0-9]+/g, '-');
       const found = (list || []).find((item) => {
-        if (!item) return false;
+        const id = String(item._id || item.id || "").toLowerCase();
         const s = String(item.slug || "").trim().toLowerCase();
         const v = String(item.value || "").trim().toLowerCase();
         const n = String(item.name || item.title || item.label || "").trim().toLowerCase();
         const nSlug = n.replace(/[^a-z0-9]+/g, '-');
-        return s === targetStr || v === targetStr || n === targetStr || s === targetSlug || nSlug === targetSlug || nSlug === targetStr;
+        return id === targetStr || s === targetStr || v === targetStr || n === targetStr || s === targetSlug || nSlug === targetSlug || nSlug === targetStr;
       });
       return found?._id || found?.id || (found?.value && /^[0-9a-fA-F]{24}$/.test(found.value) ? found.value : val);
     };
