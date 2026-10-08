@@ -17,7 +17,7 @@ export default function LandingDegree({
     description = "",
     features = [],
     buttonText = "Get Your Degree",
-    image = "/assets/vgu/sample-degree-vgu.webp",
+    image = "/assets/all_universities_images/vgu/sample-degree-vgu.webp",
     images = null,
   } = degreeInfo;
 

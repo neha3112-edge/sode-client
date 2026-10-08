@@ -79,7 +79,7 @@ export default function VguGrid({ programmes, brand = {}, onSelectCourseForBroch
                 <div>
                   <div className={`relative ${imageH} w-full bg-slate-100 overflow-hidden`}>
                     <Image
-                      src={c.image || "/assets/vgu/mba-vgu.webp"}
+                      src={c.image || "/assets/all_universities_images/vgu/mba-vgu.webp"}
                       alt={c.title}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-300"

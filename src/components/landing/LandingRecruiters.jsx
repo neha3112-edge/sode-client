@@ -94,7 +94,7 @@ export default function LandingRecruiters({
   // If VGU or single image is supplied
   if (activeRecruiters.image || brand.slug === "vgu" || brand.recruitersLayout === "vgu") {
     const title = activeRecruiters.title || "Top Recruiters at VGU Online";
-    const image = activeRecruiters.image || "/assets/vgu/placement-partner-vgu.webp";
+    const image = activeRecruiters.image || "/assets/all_universities_images/vgu/placement-partner-vgu.webp";
 
     return (
       <section id="partners" className="py-12 sm:py-16 bg-white border-b border-slate-200">
