@@ -9,7 +9,7 @@ import SafeHtmlRenderer from "@/components/website/SafeHtmlRenderer";
 import FormWrapper from "@/components/forms/FormWrapper";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
 import { getAssetPath } from "@/lib/utils";
-import { CalendarIcon, Check, ChevronDown, ChevronRight, ChevronUp, Minus, Plus, ThumbsDown, ThumbsUp, User } from "lucide-react";
+import { CalendarIcon, Check, ChevronDown, ChevronRight, ChevronUp, Clock, Minus, Plus, ThumbsDown, ThumbsUp, User } from "lucide-react";
 import { request } from "@/services/request";
 import BlogSidebar from "./BlogSidebar";
 
@@ -66,7 +66,7 @@ export default function BlogClientView({
           if (isMounted && Array.isArray(list) && list.length > 0) {
             setSidebarBlogs(list);
           }
-        } catch {}
+        } catch { }
       })();
       return () => {
         isMounted = false;
@@ -148,6 +148,40 @@ export default function BlogClientView({
     if (!Array.isArray(raw)) return [];
     return raw.filter((s) => s && s.enabled !== false);
   }, [blog?.sections, initialData?.sections]);
+
+  // 📄 Group consecutive blocks under headings to prevent large disjoint gaps
+  const groupedSections = useMemo(() => {
+    if (!Array.isArray(blogSections) || blogSections.length === 0) return [];
+
+    const groups = [];
+    let currentGroup = null;
+
+    blogSections.forEach((sec) => {
+      const headingText = (sec.title || sec.poll?.title || "").trim();
+      const hasHeading = Boolean(headingText);
+
+      if (hasHeading || !currentGroup) {
+        const secId =
+          sec.id ||
+          (sec._id ? String(sec._id) : null) ||
+          (headingText ? headingText.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") : null) ||
+          `section-${groups.length + 1}`;
+
+        currentGroup = {
+          _id: sec._id || sec.id || `group-${groups.length}`,
+          id: secId,
+          headingText,
+          headingTag: sec.headingTag || "h2",
+          items: [sec],
+        };
+        groups.push(currentGroup);
+      } else {
+        currentGroup.items.push(sec);
+      }
+    });
+
+    return groups;
+  }, [blogSections]);
 
   const [tocOpen, setTocOpen] = useState(false);
   const [activeHeadingId, setActiveHeadingId] = useState("");
@@ -407,23 +441,17 @@ export default function BlogClientView({
     return [];
   }, [blog?.faqs, initialData?.faqs]);
 
-  // 📑 Dynamic Table of Contents (Directly generated from the sections rendered on the page)
+  // 📑 Dynamic Table of Contents (Directly generated from the grouped sections rendered on the page)
   const finalHeadings = useMemo(() => {
-    const list = blogSections
-      .map((sec, idx) => {
-        const headingText = (sec.poll?.title || sec.title || "").trim();
-        if (!headingText) return null;
-        const secId =
-          sec.id ||
-          (sec._id ? String(sec._id) : null) ||
-          headingText.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") ||
-          `section-${idx + 1}`;
-        const headingTagNum = sec.headingTag
-          ? parseInt(sec.headingTag.replace(/[^\d]/g, "")) || 2
+    const list = groupedSections
+      .map((group) => {
+        if (!group.headingText) return null;
+        const headingTagNum = group.headingTag
+          ? parseInt(group.headingTag.replace(/[^\d]/g, "")) || 2
           : 2;
         return {
-          id: secId,
-          text: headingText,
+          id: group.id,
+          text: group.headingText,
           level: headingTagNum,
         };
       })
@@ -444,7 +472,7 @@ export default function BlogClientView({
       });
     }
     return list;
-  }, [blogSections, allFaqs, mappedTools]);
+  }, [groupedSections, allFaqs, mappedTools]);
 
   // 🏷️ Display Tags (from blog only, no dummy fallback)
   const displayTags = useMemo(() => {
@@ -629,736 +657,848 @@ export default function BlogClientView({
               <h1 className="text-2xl sm:text-3xl text-gray-900 font-bold mb-3">
                 {pageTitle}
               </h1>
-          {/* ✍️ Byline & Meta Bar (Written by & Published) */}
-          {(authorName || formattedDate) && (
-            <div className="flex items-center justify-between flex-wrap gap-2 text-xs sm:text-[14px] text-slate-600 mb-2">
-              {authorName && (
-                <div className="flex items-center gap-1">
-                  <User className="size-3.5" />
-                  <span className="font-normal text-xs text-slate-600">{authorName}</span>
-                </div>
-              )}
-              {formattedDate && (
-                <div className="flex items-center gap-1">
-                  <CalendarIcon className="size-3.5" />
-                  <span className="font-normal text-xs text-slate-600">{formattedDate}</span>
-                </div>
-              )}
-            </div>
-          )}
-          {/* 🖼️ Featured Cover Image Banner */}
-          {blogImageUrl && (
-            <div className="relative w-full h-52 sm:h-64 md:h-72 lg:h-80 rounded overflow-hidden mb-6">
-              <Image
-                src={blogImageUrl}
-                alt={pageTitle}
-                fill
-                priority
-                unoptimized
-                className="object-cover"
-              />
-            </div>
-          )}
-          {/* 📄 Intro / Subtitle from API */}
-          {blog.subtitle && (
-            <p className="text-sm sm:text-base text-slate-700 leading-relaxed mb-4">
-              {blog.subtitle}
-            </p>
-          )}
-
-          {/* 📑 Table of Contents (Dynamically mapped to the sections below) */}
-          {finalHeadings.length > 0 && (
-            <div className="my-6 sm:my-8 rounded-2xl bg-white border border-gray-200 p-4 shadow-2xs w-full">
-              <div
-                onClick={() => setTocOpen(!tocOpen)}
-                className={`flex items-center justify-between cursor-pointer select-none ${tocOpen ? "mb-4" : "mb-0"
-                  }`}
-              >
-                <h2 className="text-xl sm:text-xl font-bold text-[#0D3B66] m-0">
-                  Table of Contents
-                </h2>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setTocOpen(!tocOpen);
-                  }}
-                  className="text-[#0D3B66] hover:text-blue-700 p-1 rounded-md transition-colors cursor-pointer"
-                  aria-label="Toggle Table of Contents"
-                >
-                  {tocOpen ? (
-                    <ChevronUp size={20} strokeWidth={2.4} />
-                  ) : (
-                    <ChevronDown size={20} strokeWidth={2.4} />
+              {/* ✍️ Byline & Meta Bar (Written by on left, Date & Read Time on right) */}
+              {(authorName || formattedDate || blog?.readTime) && (
+                <div className="flex items-center justify-between flex-wrap gap-2 text-xs sm:text-[14px] text-slate-600 mb-2">
+                  {authorName && (
+                    <div className="flex items-center gap-1">
+                      <User className="size-3.5" />
+                      <span className="font-normal text-xs text-slate-600">{authorName}</span>
+                    </div>
                   )}
-                </button>
-              </div>
+                  <div className="flex items-center gap-3 flex-wrap ml-auto">
+                    {formattedDate && (
+                      <div className="flex items-center gap-1">
+                        <CalendarIcon className="size-3.5 text-slate-500" />
+                        <span className="font-normal text-xs text-slate-600">{formattedDate}</span>
+                      </div>
+                    )}
+                    {blog?.readTime && (
+                      <div className="flex items-center gap-1">
+                        <Clock className="size-3.5 text-slate-500" />
+                        <span className="font-normal text-xs text-slate-600">{blog.readTime}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+              {/* 🖼️ Featured Cover Image Banner */}
+              {blogImageUrl && (
+                <div className="relative w-full h-52 sm:h-64 md:h-72 lg:h-80 rounded overflow-hidden mb-6">
+                  <Image
+                    src={blogImageUrl}
+                    alt={pageTitle}
+                    fill
+                    priority
+                    unoptimized
+                    className="object-cover"
+                  />
+                </div>
+              )}
+              {/* 📄 Intro / Subtitle from API */}
+              {blog.subtitle && (
+                <p className="text-sm sm:text-base text-slate-700 mb-4">
+                  {blog.subtitle}
+                </p>
+              )}
 
-              <ul
-                className={`space-y-2.5 text-sm sm:text-[14.5px] font-medium list-none p-0 m-0 ${tocOpen ? "block" : "hidden"
-                  }`}
-                aria-hidden={!tocOpen}
-              >
-                {finalHeadings.map((h, i) => (
-                  <li key={h.id || i} className="flex items-start gap-2 leading-snug">
-                    <span className="text-blue-500 font-bold select-none text-[17px] leading-none shrink-0">
-                      »
-                    </span>
-                    <a
-                      href={`#${h.id}`}
+              {/* 📑 Table of Contents (Dynamically mapped to the sections below) */}
+              {finalHeadings.length > 0 && (
+                <div className="my-6 sm:my-8 rounded-2xl bg-white border border-gray-200 p-4 shadow-2xs w-full">
+                  <div
+                    onClick={() => setTocOpen(!tocOpen)}
+                    className={`flex items-center justify-between cursor-pointer select-none ${tocOpen ? "mb-4" : "mb-0"
+                      }`}
+                  >
+                    <h2 className="text-xl sm:text-xl font-bold text-[#0D3B66] m-0">
+                      Table of Contents
+                    </h2>
+                    <button
+                      type="button"
                       onClick={(e) => {
-                        e.preventDefault();
-                        const el = document.getElementById(h.id);
-                        if (el) {
-                          const y =
-                            el.getBoundingClientRect().top +
-                            window.pageYOffset -
-                            85;
-                          window.scrollTo({ top: y, behavior: "smooth" });
-                        }
+                        e.stopPropagation();
+                        setTocOpen(!tocOpen);
                       }}
-                      className="text-gray-700 text-sm hover:text-blue-800 transition-colors hover:underline cursor-pointer"
+                      className="text-[#0D3B66] hover:text-blue-700 p-1 rounded-md transition-colors cursor-pointer"
+                      aria-label="Toggle Table of Contents"
                     >
-                      {h.text}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+                      {tocOpen ? (
+                        <ChevronUp size={20} strokeWidth={2.4} />
+                      ) : (
+                        <ChevronDown size={20} strokeWidth={2.4} />
+                      )}
+                    </button>
+                  </div>
 
-          {/* 📄 Dynamic Structured Sections from API */}
-          {blogSections && blogSections.length > 0 && (
-            <div className="space-y-10 text-slate-700 text-sm sm:text-[15px] leading-relaxed mt-8">
-              {blogSections.map((sec, sIdx) => {
-                const headingText = (sec.poll?.title || sec.title || "").trim();
-                const secId =
-                  sec.id ||
-                  (sec._id ? String(sec._id) : null) ||
-                  headingText.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") ||
-                  `section-${sIdx + 1}`;
-
-                const HeadingTag =
-                  sec.headingTag && ["h1", "h2", "h3", "h4", "h5", "h6"].includes(sec.headingTag.toLowerCase())
-                    ? sec.headingTag.toLowerCase()
-                    : "h2";
-
-                return (
-                  <section key={sec._id || sec.id || sIdx} id={secId} className="scroll-mt-24 space-y-3.5">
-                    {headingText && (
-                      <HeadingTag className="text-2xl sm:text-3xl font-bold text-[#0D3B66] m-0 tracking-tight">
-                        {headingText}
-                      </HeadingTag>
-                    )}
-
-                    {Array.isArray(sec.paragraphs) &&
-                      sec.paragraphs.map((p, idx) => (
-                        <p key={idx} className="m-0 text-slate-600 leading-relaxed">
-                          {p}
-                        </p>
-                      ))}
-                    {typeof sec.paragraphs === "string" && sec.paragraphs.trim() && (
-                      <p className="m-0 text-slate-600 leading-relaxed">{sec.paragraphs}</p>
-                    )}
-
-                    {sec.intro && <p className="m-0 text-slate-700">{sec.intro}</p>}
-
-                    {Array.isArray(sec.checklist) && sec.checklist.length > 0 && (
-                      <ul className="space-y-0.5 list-none p-0 mt-2 mb-2">
-                        {sec.checklist.map((item, idx) => (
-                          <li key={idx} className="flex items-start gap-2.5 text-slate-700">
-                            <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-[3.5px] bg-[#22C55E] text-white shrink-0 mt-1 shadow-2xs">
-                              <Check size={9} strokeWidth={3} />
-                            </span>
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-
-                    {sec.table && Array.isArray(sec.table.rows) && sec.table.rows.length > 0 && (
-                      <div className="my-4 w-full">
-                        <div className="w-full overflow-hidden border border-gray-200 shadow-2xs rounded-lg">
-                          <Table
-                            columns={
-                              Array.isArray(sec.table.headers) && sec.table.headers.length > 0
-                                ? sec.table.headers.map((headerText, cIdx) => {
-                                  const total = sec.table.headers.length;
-                                  const width =
-                                    total === 2
-                                      ? cIdx === 0
-                                        ? "35%"
-                                        : "65%"
-                                      : `${Math.floor(100 / total)}%`;
-                                  return {
-                                    title: headerText,
-                                    dataIndex: `col${cIdx + 1}`,
-                                    key: `col${cIdx + 1}`,
-                                    width,
-                                    align: "center",
-                                    onCell: (record) => ({
-                                      className: record?.isTotal
-                                        ? "font-bold text-gray-900 bg-slate-50 text-center"
-                                        : cIdx === 0
-                                          ? "font-bold text-gray-900 text-center"
-                                          : "font-normal text-gray-700 text-center",
-                                    }),
-                                    render: (val, record) => {
-                                      if (val !== undefined && val !== null && val !== "") return val;
-                                      if (Array.isArray(record.cols) && record.cols[cIdx] !== undefined) return record.cols[cIdx];
-                                      if (Array.isArray(record.values) && record.values[cIdx] !== undefined) return record.values[cIdx];
-                                      if (cIdx === 0) return record.factor || record.name || record.category || "";
-                                      if (cIdx === 1) return record.check || record.amount || record.details || "";
-                                      return "";
-                                    },
-                                  };
-                                })
-                                : sec.table.type === "comparison"
-                                  ? comparisonTableColumns
-                                  : feeTableColumns
+                  <ul
+                    className={`space-y-2.5 text-sm sm:text-[14.5px] font-medium list-none p-0 m-0 ${tocOpen ? "block" : "hidden"
+                      }`}
+                    aria-hidden={!tocOpen}
+                  >
+                    {finalHeadings.map((h, i) => (
+                      <li key={h.id || i} className="flex items-start gap-2">
+                        <span className="text-blue-500 font-bold select-none text-[17px] leading-none shrink-0">
+                          »
+                        </span>
+                        <a
+                          href={`#${h.id}`}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            const el = document.getElementById(h.id);
+                            if (el) {
+                              const y =
+                                el.getBoundingClientRect().top +
+                                window.pageYOffset -
+                                85;
+                              window.scrollTo({ top: y, behavior: "smooth" });
                             }
-                            dataSource={sec.table.rows.map((row, idx) => ({
-                              ...row,
-                              key: row.key || row._id || row.factor || row.name || row.col1 || idx,
-                            }))}
-                            pagination={false}
-                            size="small"
-                            bordered
-                            scroll={{ x: sec.table?.headers?.length > 3 ? "max-content" : undefined }}
-                            className="course-antd-table w-full"
-                          />
-                        </div>
-                        {sec.table.note && (
-                          <p className="text-xs text-slate-500 mt-2 italic m-0">
-                            {sec.table.note}
-                          </p>
+                          }}
+                          className="text-gray-700 text-sm hover:text-blue-800 transition-colors hover:underline cursor-pointer"
+                        >
+                          {h.text}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* 📄 Dynamic Structured Sections from API */}
+              {groupedSections && groupedSections.length > 0 && (
+                <div className="space-y-6 sm:space-y-7 text-slate-700 text-sm sm:text-[15px] mt-5 sm:mt-6">
+                  {groupedSections.map((group, gIdx) => {
+                    const HeadingTag =
+                      group.headingTag && ["h1", "h2", "h3", "h4", "h5", "h6"].includes(group.headingTag.toLowerCase())
+                        ? group.headingTag.toLowerCase()
+                        : "h2";
+
+                    return (
+                      <section key={group._id || group.id || gIdx} id={group.id} className="scroll-mt-24">
+                        {group.headingText && (
+                          <HeadingTag className="text-xl sm:text-2xl md:text-[25px] font-bold text-[#0D3B66] m-0 mb-1.5 tracking-tight">
+                            {group.headingText}
+                          </HeadingTag>
                         )}
-                      </div>
-                    )}
 
-                    {Array.isArray(sec.columnsList) && sec.columnsList.length > 0 && (
-                      <div
-                        className={`grid gap-x-8 gap-y-2.5 pt-1 ${
-                          sec.columnsList.length === 1
-                            ? "grid-cols-1"
-                            : sec.columnsList.length === 2
-                            ? "grid-cols-1 sm:grid-cols-2"
-                            : sec.columnsList.length === 3
-                            ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
-                            : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
-                        }`}
-                      >
-                        {sec.columnsList.map((col, cIdx) => (
-                          <ul key={cIdx} className="space-y-2 list-none p-0 m-0">
-                            {Array.isArray(col) &&
-                              col.map((item, idx) => (
-                                <li key={idx} className="flex items-start gap-2 leading-snug">
-                                  <span className="text-blue-500 font-bold select-none text-[17px] leading-none shrink-0 mt-0.5">
-                                    »
-                                  </span>
-                                  <span className="text-gray-700 text-sm hover:text-blue-800 transition-colors">
-                                    {item}
-                                  </span>
-                                </li>
-                              ))}
-                          </ul>
-                        ))}
-                      </div>
-                    )}
+                        <div className="space-y-2 text-slate-700 text-sm sm:text-[15px]">
+                          {group.items.map((sec, sIdx) => {
+                            const isTitleOnly =
+                              !sec.paragraphs &&
+                              !sec.intro &&
+                              !sec.checklist &&
+                              !sec.table &&
+                              !sec.columnsList &&
+                              !sec.numberedList &&
+                              !sec.bulletPoints &&
+                              !sec.twoColBullets &&
+                              !sec.poll &&
+                              !sec.orderedSteps &&
+                              !sec.importantNotice &&
+                              !sec.ctaButtons &&
+                              !sec.ctaButton &&
+                              !sec.outro &&
+                              !sec.note;
 
-                    {Array.isArray(sec.numberedList) && sec.numberedList.length > 0 && (
-                      <div className="space-y-3 pt-1">
-                        {sec.numberedList.map((item, idx) => (
-                          <div key={idx} className="space-y-0.5">
-                            <h4 className="font-bold text-slate-900 m-0 text-sm sm:text-base">
-                              {item.title}
-                            </h4>
-                            <p className="text-slate-600 m-0 text-sm sm:text-[14.5px]">
-                              {item.desc}
-                            </p>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                            if (isTitleOnly) return null;
 
-                    {Array.isArray(sec.bulletPoints) && sec.bulletPoints.length > 0 && (
-                      <ul className="space-y-1.5 list-disc list-outside ml-5 text-slate-700 text-sm sm:text-[14.5px] my-2 p-0">
-                        {sec.bulletPoints.map((item, idx) => (
-                          <li key={idx} className="leading-relaxed">
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-
-                    {Array.isArray(sec.twoColBullets) && sec.twoColBullets.length > 0 && (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1 pt-1">
-                        {sec.twoColBullets.map((col, cIdx) => (
-                          <ul key={cIdx} className="space-y-1 list-disc list-inside text-slate-700 p-0 m-0">
-                            {Array.isArray(col) &&
-                              col.map((item, idx) => (
-                                <li key={idx} className="leading-snug">
-                                  <span>{item}</span>
-                                </li>
-                              ))}
-                          </ul>
-                        ))}
-                      </div>
-                    )}
-
-                    {sec.poll && Array.isArray(sec.poll.options) && sec.poll.options.length > 0 && (
-                      <div className="rounded-xl border border-blue-400 bg-white p-5 sm:p-6 my-4 shadow-2xs">
-                        {sec.poll.question && (
-                          <h3 className="text-base sm:text-lg font-bold text-[#0D3B66] mb-4 m-0">
-                            {sec.poll.question}
-                          </h3>
-                        )}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                          {sec.poll.options.map((optItem, optIdx) => {
-                            const optTitle =
-                              typeof optItem === "string"
-                                ? optItem
-                                : optItem?.option || optItem?.text || optItem?.title || "";
-                            const isSelected = selectedPoll === optTitle;
                             return (
-                              <button
-                                key={optIdx}
-                                type="button"
-                                onClick={() => setSelectedPoll(optTitle)}
-                                className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-full border text-xs sm:text-sm font-medium transition-all cursor-pointer text-left ${isSelected
-                                  ? "border-blue-600 bg-blue-50/70 text-blue-900 shadow-2xs ring-1 ring-blue-500/20"
-                                  : "border-slate-200 hover:border-slate-300 text-slate-700 bg-white"
-                                  }`}
-                              >
-                                <span
-                                  className={`w-3.5 h-3.5 rounded-full flex items-center justify-center shrink-0 border ${isSelected ? "border-blue-600 bg-blue-600" : "border-slate-300 bg-slate-200"
-                                    }`}
-                                >
-                                  {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
-                                </span>
-                                <span className="truncate">{optTitle}</span>
-                              </button>
+                              <div key={sec._id || sec.id || sIdx} className="space-y-1.5">
+                                {sec.title && sec.title.trim() !== group.headingText && (
+                                  <h3 className="text-base sm:text-lg font-bold text-[#0D3B66] m-0 mb-1">
+                                    {sec.title}
+                                  </h3>
+                                )}
+
+                                {Array.isArray(sec.paragraphs) &&
+                                  sec.paragraphs.map((p, idx) => {
+                                    if (typeof p !== "string" || !p.trim()) return null;
+                                    const parts = p.split(/\n\s*\n/).filter((t) => t.trim().length > 0);
+                                    return parts.map((part, pIdx) => (
+                                      <p key={`${idx}-${pIdx}`} className="m-0 text-slate-600">
+                                        {part.trim()}
+                                      </p>
+                                    ));
+                                  })}
+                                {typeof sec.paragraphs === "string" &&
+                                  sec.paragraphs.trim() &&
+                                  sec.paragraphs.split(/\n\s*\n/).filter((t) => t.trim().length > 0).map((part, pIdx) => (
+                                    <p key={pIdx} className="m-0 text-slate-600">
+                                      {part.trim()}
+                                    </p>
+                                  ))}
+
+                                {sec.intro && <p className="m-0 text-slate-700">{sec.intro}</p>}
+
+                                {Array.isArray(sec.checklist) && sec.checklist.length > 0 && (
+                                  <ul className="space-y-1 list-none p-0 my-1">
+                                    {sec.checklist.map((item, idx) => (
+                                      <li key={idx} className="flex items-start gap-2 text-slate-700">
+                                        <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-[3.5px] bg-[#22C55E] text-white shrink-0 mt-1 shadow-2xs">
+                                          <Check size={9} strokeWidth={3} />
+                                        </span>
+                                        <span>{item}</span>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                )}
+
+                                {sec.table && Array.isArray(sec.table.rows) && sec.table.rows.length > 0 && (
+                                  <div className="my-2.5 w-full">
+                                    <div className="w-full overflow-hidden border border-gray-200 shadow-2xs rounded-lg">
+                                      <Table
+                                        columns={
+                                          Array.isArray(sec.table.headers) && sec.table.headers.length > 0
+                                            ? sec.table.headers.map((headerText, cIdx) => {
+                                              const total = sec.table.headers.length;
+                                              const width =
+                                                total === 2
+                                                  ? cIdx === 0
+                                                    ? "35%"
+                                                    : "65%"
+                                                  : `${Math.floor(100 / total)}%`;
+                                              return {
+                                                title: headerText,
+                                                dataIndex: `col${cIdx + 1}`,
+                                                key: `col${cIdx + 1}`,
+                                                width,
+                                                align: "center",
+                                                onCell: (record) => ({
+                                                  className: record?.isTotal
+                                                    ? "font-bold text-gray-900 bg-slate-50 text-center"
+                                                    : cIdx === 0
+                                                      ? "font-bold text-gray-900 text-center"
+                                                      : "font-normal text-gray-700 text-center",
+                                                }),
+                                                render: (val, record) => {
+                                                  if (val !== undefined && val !== null && val !== "") return val;
+                                                  if (Array.isArray(record.cols) && record.cols[cIdx] !== undefined) return record.cols[cIdx];
+                                                  if (Array.isArray(record.values) && record.values[cIdx] !== undefined) return record.values[cIdx];
+                                                  if (cIdx === 0) return record.factor || record.name || record.category || "";
+                                                  if (cIdx === 1) return record.check || record.amount || record.details || "";
+                                                  return "";
+                                                },
+                                              };
+                                            })
+                                            : sec.table.type === "comparison"
+                                              ? comparisonTableColumns
+                                              : feeTableColumns
+                                        }
+                                        dataSource={sec.table.rows.map((row, idx) => ({
+                                          ...row,
+                                          key: row.key || row._id || row.factor || row.name || row.col1 || idx,
+                                        }))}
+                                        pagination={false}
+                                        size="small"
+                                        bordered
+                                        scroll={{ x: sec.table?.headers?.length > 3 ? "max-content" : undefined }}
+                                        className="course-antd-table w-full"
+                                      />
+                                    </div>
+                                    {sec.table.note && (
+                                      <p className="text-xs text-slate-500 mt-1.5 italic m-0">
+                                        {sec.table.note}
+                                      </p>
+                                    )}
+                                  </div>
+                                )}
+
+                                {Array.isArray(sec.columnsList) && sec.columnsList.length > 0 && (
+                                  <div
+                                    className={`grid gap-x-8 gap-y-1.5 ${sec.columnsList.length === 1
+                                      ? "grid-cols-1"
+                                      : sec.columnsList.length === 2
+                                        ? "grid-cols-1 sm:grid-cols-2"
+                                        : sec.columnsList.length === 3
+                                          ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+                                          : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+                                      }`}
+                                  >
+                                    {sec.columnsList.map((col, cIdx) => (
+                                      <ul key={cIdx} className="space-y-1 list-none p-0 m-0">
+                                        {Array.isArray(col) &&
+                                          col.map((item, idx) => (
+                                            <li key={idx} className="flex items-start gap-2">
+                                              <span className="text-blue-500 font-bold select-none text-[16px] leading-none shrink-0 mt-0.5">
+                                                »
+                                              </span>
+                                              <span className="text-gray-700 text-sm hover:text-blue-800 transition-colors">
+                                                {item}
+                                              </span>
+                                            </li>
+                                          ))}
+                                      </ul>
+                                    ))}
+                                  </div>
+                                )}
+
+                                {Array.isArray(sec.numberedList) && sec.numberedList.length > 0 && (
+                                  <div className="space-y-2">
+                                    {sec.numberedList.map((item, idx) => {
+                                      const rawTitle = (item?.title || "").trim();
+                                      let numberStr = `${idx + 1}.`;
+                                      let titleText = rawTitle;
+
+                                      const match = rawTitle.match(/^(\d+[\.\)])\s*(.*)$/);
+                                      if (match) {
+                                        numberStr = match[1];
+                                        titleText = match[2];
+                                      }
+
+                                      return (
+                                        <div key={idx} className="flex items-start gap-2">
+                                          <span className="font-bold text-slate-900 text-sm sm:text-base select-none shrink-0">
+                                            {numberStr}
+                                          </span>
+                                          <div className="space-y-0.5 min-w-0 flex-1">
+                                            {titleText && (
+                                              <h4 className="font-bold text-slate-900 m-0 text-sm sm:text-base">
+                                                {titleText}
+                                              </h4>
+                                            )}
+                                            {item?.desc && (
+                                              <p className="text-slate-600 m-0 text-sm sm:text-[14.5px]">
+                                                {item.desc}
+                                              </p>
+                                            )}
+                                          </div>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                )}
+
+                                {Array.isArray(sec.bulletPoints) && sec.bulletPoints.length > 0 && (
+                                  Array.isArray(sec.bulletPoints[0]) ? (
+                                    <div
+                                      className={`grid gap-x-8 gap-y-1.5 ${sec.bulletPoints.length === 1
+                                        ? "grid-cols-1"
+                                        : sec.bulletPoints.length === 2
+                                          ? "grid-cols-1 sm:grid-cols-2"
+                                          : sec.bulletPoints.length === 3
+                                            ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+                                            : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+                                        }`}
+                                    >
+                                      {sec.bulletPoints.map((col, cIdx) => (
+                                        <ul key={cIdx} className="space-y-1 list-disc list-outside ml-5 text-slate-700 text-sm sm:text-[14.5px] p-0 m-0">
+                                          {Array.isArray(col) &&
+                                            col.map((item, idx) => (
+                                              <li key={idx}>
+                                                <span>{item}</span>
+                                              </li>
+                                            ))}
+                                        </ul>
+                                      ))}
+                                    </div>
+                                  ) : (
+                                    <ul className="space-y-1 list-disc list-outside ml-5 text-slate-700 text-sm sm:text-[14.5px] my-1 p-0">
+                                      {sec.bulletPoints.map((item, idx) => (
+                                        <li key={idx}>
+                                          <span>{item}</span>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  )
+                                )}
+
+                                {Array.isArray(sec.twoColBullets) && sec.twoColBullets.length > 0 && (
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1">
+                                    {sec.twoColBullets.map((col, cIdx) => (
+                                      <ul key={cIdx} className="space-y-1 list-disc list-inside text-slate-700 p-0 m-0">
+                                        {Array.isArray(col) &&
+                                          col.map((item, idx) => (
+                                            <li key={idx}>
+                                              <span>{item}</span>
+                                            </li>
+                                          ))}
+                                      </ul>
+                                    ))}
+                                  </div>
+                                )}
+
+                                {sec.poll && Array.isArray(sec.poll.options) && sec.poll.options.length > 0 && (
+                                  <div className="rounded-xl border border-blue-400 bg-white p-4 sm:p-5 my-2.5 shadow-2xs">
+                                    {sec.poll.question && (
+                                      <h3 className="text-base sm:text-lg font-bold text-[#0D3B66] mb-3 m-0">
+                                        {sec.poll.question}
+                                      </h3>
+                                    )}
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                                      {sec.poll.options.map((optItem, optIdx) => {
+                                        const optTitle =
+                                          typeof optItem === "string"
+                                            ? optItem
+                                            : optItem?.option || optItem?.text || optItem?.title || "";
+                                        const isSelected = selectedPoll === optTitle;
+                                        return (
+                                          <button
+                                            key={optIdx}
+                                            type="button"
+                                            onClick={() => setSelectedPoll(optTitle)}
+                                            className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-full border text-xs sm:text-sm font-medium transition-all cursor-pointer text-left ${isSelected
+                                              ? "border-blue-600 bg-blue-50/70 text-blue-900 shadow-2xs ring-1 ring-blue-500/20"
+                                              : "border-slate-200 hover:border-slate-300 text-slate-700 bg-white"
+                                              }`}
+                                          >
+                                            <span
+                                              className={`w-3.5 h-3.5 rounded-full flex items-center justify-center shrink-0 border ${isSelected ? "border-blue-600 bg-blue-600" : "border-slate-300 bg-slate-200"
+                                                }`}
+                                            >
+                                              {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
+                                            </span>
+                                            <span className="truncate">{optTitle}</span>
+                                          </button>
+                                        );
+                                      })}
+                                    </div>
+
+                                    {(() => {
+                                      const activeOpt = sec.poll.options.find((o) => {
+                                        const title =
+                                          typeof o === "string"
+                                            ? o
+                                            : o?.option || o?.text || o?.title || "";
+                                        return title === selectedPoll;
+                                      });
+                                      const displayText =
+                                        (typeof activeOpt === "object" ? activeOpt?.answer : null) ||
+                                        sec.poll.footnote ||
+                                        null;
+
+                                      if (!displayText) return null;
+
+                                      const formattedText = displayText.startsWith("*")
+                                        ? displayText
+                                        : `*${displayText}`;
+
+                                      return (
+                                        <p className="text-xs text-slate-500 mt-3 m-0 font-normal">
+                                          {formattedText}
+                                        </p>
+                                      );
+                                    })()}
+                                  </div>
+                                )}
+
+                                {(() => {
+                                  const buttons = Array.isArray(sec.ctaButtons) && sec.ctaButtons.length > 0
+                                    ? sec.ctaButtons.filter((b) => b && b.text)
+                                    : sec.ctaButton && sec.ctaButton.text
+                                      ? [sec.ctaButton]
+                                      : [];
+                                  if (buttons.length === 0) return null;
+                                  return (
+                                    <div className="pt-2 flex items-center justify-center gap-3 flex-wrap">
+                                      {buttons.map((btn, bIdx) => (
+                                        <Link
+                                          key={bIdx}
+                                          href={btn.href || "/courses"}
+                                          className="inline-flex items-center justify-center px-8 py-2.5 rounded-full bg-[#F4D068] hover:bg-[#ebc557] text-[#0C2B4E] text-xs sm:text-sm font-bold transition-all shadow-xs cursor-pointer no-underline active:scale-95"
+                                        >
+                                          {btn.text}
+                                        </Link>
+                                      ))}
+                                    </div>
+                                  );
+                                })()}
+
+                                {Array.isArray(sec.orderedSteps) && sec.orderedSteps.length > 0 && (
+                                  Array.isArray(sec.orderedSteps[0]) ? (
+                                    <div
+                                      className={`grid gap-x-8 gap-y-2.5 pt-1 ${sec.orderedSteps.length === 1
+                                        ? "grid-cols-1"
+                                        : sec.orderedSteps.length === 2
+                                          ? "grid-cols-1 sm:grid-cols-2"
+                                          : sec.orderedSteps.length === 3
+                                            ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+                                            : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+                                        }`}
+                                    >
+                                      {sec.orderedSteps.map((col, cIdx) => (
+                                        <ol key={cIdx} className="space-y-1.5 list-none p-0 m-0 text-slate-700 text-sm sm:text-[14.5px]">
+                                          {Array.isArray(col) &&
+                                            col.map((step, idx) => (
+                                              <li key={idx} className="flex items-start gap-3">
+                                                <span className="text-slate-600 font-medium select-none min-w-[20px] text-right">
+                                                  {idx + 1}.
+                                                </span>
+                                                <span className="text-slate-800">{step}</span>
+                                              </li>
+                                            ))}
+                                        </ol>
+                                      ))}
+                                    </div>
+                                  ) : (
+                                    <ol className="space-y-1.5 list-none p-0 m-0 text-slate-700 text-sm sm:text-[14.5px]">
+                                      {sec.orderedSteps.map((step, idx) => (
+                                        <li key={idx} className="flex items-start gap-4">
+                                          <span className="text-slate-600 font-medium select-none min-w-[20px] text-right">
+                                            {idx + 1}.
+                                          </span>
+                                          <span className="text-slate-800">{step}</span>
+                                        </li>
+                                      ))}
+                                    </ol>
+                                  )
+                                )}
+
+                                {sec.importantNotice && (sec.importantNotice.title || sec.importantNotice.desc) && (
+                                  <div className="space-y-1 pt-2">
+                                    {sec.importantNotice.title && (
+                                      <h4 className="font-bold text-gray-900 text-sm sm:text-base m-0">
+                                        {sec.importantNotice.title}
+                                      </h4>
+                                    )}
+                                    {sec.importantNotice.desc && (
+                                      <p className="text-slate-600 text-xs sm:text-[13.5px] m-0">
+                                        {sec.importantNotice.desc}
+                                      </p>
+                                    )}
+                                  </div>
+                                )}
+
+                                {sec.note && <p className="text-xs text-slate-700 font-bold m-0">{sec.note}</p>}
+                                {sec.outro && <p className="text-sm text-slate-600 m-0">{sec.outro}</p>}
+                              </div>
                             );
                           })}
                         </div>
-
-                        {/* 💡 Selected Poll Option Text (replaces the blue box and footnote) */}
-                        {(() => {
-                          const activeOpt = sec.poll.options.find((o) => {
-                            const title =
-                              typeof o === "string"
-                                ? o
-                                : o?.option || o?.text || o?.title || "";
-                            return title === selectedPoll;
-                          });
-                          const displayText =
-                            (typeof activeOpt === "object" ? activeOpt?.answer : null) ||
-                            sec.poll.footnote ||
-                            null;
-
-                          if (!displayText) return null;
-
-                          const formattedText = displayText.startsWith("*")
-                            ? displayText
-                            : `*${displayText}`;
-
-                          return (
-                            <p className="text-xs text-slate-500 mt-4 m-0 leading-relaxed font-normal">
-                              {formattedText}
-                            </p>
-                          );
-                        })()}
-                      </div>
-                    )}
-
-                    {(() => {
-                      const buttons = Array.isArray(sec.ctaButtons) && sec.ctaButtons.length > 0
-                        ? sec.ctaButtons.filter((b) => b && b.text)
-                        : sec.ctaButton && sec.ctaButton.text
-                          ? [sec.ctaButton]
-                          : [];
-                      if (buttons.length === 0) return null;
-                      return (
-                        <div className="pt-3 flex items-center justify-center gap-3 flex-wrap">
-                          {buttons.map((btn, bIdx) => (
-                            <Link
-                              key={bIdx}
-                              href={btn.href || "/courses"}
-                              className="inline-flex items-center justify-center px-8 py-2.5 rounded-full bg-[#F4D068] hover:bg-[#ebc557] text-[#0C2B4E] text-xs sm:text-sm font-bold transition-all shadow-xs cursor-pointer no-underline active:scale-95"
-                            >
-                              {btn.text}
-                            </Link>
-                          ))}
-                        </div>
-                      );
-                    })()}
-
-                    {Array.isArray(sec.orderedSteps) && sec.orderedSteps.length > 0 && (
-                      <ol className="space-y-1.5 list-none p-0 m-0 text-slate-700 text-sm sm:text-[14.5px]">
-                        {sec.orderedSteps.map((step, idx) => (
-                          <li key={idx} className="flex items-start gap-4 leading-relaxed">
-                            <span className="text-slate-600 font-medium select-none min-w-[20px] text-right">
-                              {idx + 1}.
-                            </span>
-                            <span className="text-slate-800">{step}</span>
-                          </li>
-                        ))}
-                      </ol>
-                    )}
-
-                    {sec.importantNotice && (sec.importantNotice.title || sec.importantNotice.desc) && (
-                      <div className="space-y-1.5 pt-4">
-                        {sec.importantNotice.title && (
-                          <h4 className="font-bold text-gray-900 text-sm sm:text-base m-0">
-                            {sec.importantNotice.title}
-                          </h4>
-                        )}
-                        {sec.importantNotice.desc && (
-                          <p className="text-slate-600 text-xs sm:text-[13.5px] leading-relaxed m-0">
-                            {sec.importantNotice.desc}
-                          </p>
-                        )}
-                      </div>
-                    )}
-
-                    {sec.note && <p className="text-xs text-slate-700 font-bold mt-2 m-0">{sec.note}</p>}
-                    {sec.outro && <p className="text-sm text-slate-600 mt-2 m-0">{sec.outro}</p>}
-                  </section>
-                );
-              })}
-            </div>
-          )}
-        </div>
-
-
-        {/* =====================================================================
-            1️⃣5️⃣ FREQUENTLY ASKED QUESTIONS (Exact Course Page Standalone Card)
-        ===================================================================== */}
-        {allFaqs && allFaqs.length > 0 && (
-          <div
-            id="faqs"
-            data-nav-label="FAQs"
-            className="bg-white rounded-xl shadow-xs border border-gray-200 p-4 sm:p-6 md:p-8 mt-6 scroll-mt-20 space-y-5 sm:space-y-6"
-          >
-            <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
-              Frequently Asked Questions (FAQs)
-            </h2>
-
-            <div className="space-y-2.5 sm:space-y-3 max-w-5xl mx-auto">
-              {allFaqs.map((faq, idx) => {
-                const isOpen = openFaqIndex === idx;
-                const cleanQuestion = (faq.question || faq.q || "")
-                  .replace(/^q\d*[\.\:\s]*/i, "")
-                  .trim();
-                return (
-                  <div
-                    key={idx}
-                    className={`rounded-xl border transition-all duration-200 overflow-hidden ${isOpen
-                      ? "border-blue-400 bg-blue-200/30 shadow-2xs"
-                      : "border-gray-200 bg-white hover:border-gray-300"
-                      }`}
-                  >
-                    <button
-                      type="button"
-                      onClick={() => setOpenFaqIndex(isOpen ? -1 : idx)}
-                      className="w-full flex items-center justify-between gap-3 p-2.5 sm:p-3 text-left cursor-pointer bg-transparent border-none outline-none"
-                    >
-                      <span
-                        className={`text-xs sm:text-[14px] font-semibold leading-snug ${isOpen ? "text-[#0C2B4E]" : "text-gray-900"
-                          }`}
-                      >
-                        Q{idx + 1}. {cleanQuestion}
-                      </span>
-                      <span
-                        className={`flex items-center justify-center w-4 h-4 rounded-full shrink-0 transition-colors ${isOpen
-                          ? "bg-[#0C2B4E] text-white"
-                          : "bg-gray-300 text-gray-500"
-                          }`}
-                      >
-                        {isOpen ? <Minus size={10} /> : <Plus size={10} />}
-                      </span>
-                    </button>
-                    <div
-                      className={
-                        isOpen
-                          ? "p-3 text-xs sm:text-[13px] text-gray-600 leading-relaxed font-normal border-t border-blue-100/60"
-                          : "sr-only"
-                      }
-                    >
-                      <SafeHtmlRenderer html={faq.answer || faq.a || ""} />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* =====================================================================
-            👍 WAS THIS ARTICLE HELPFUL? (Helpful Feedback Card)
-        ===================================================================== */}
-        <div className="bg-[#f0f7ff] rounded-xl border border-blue-100 p-4 sm:p-5 mt-6">
-          <h3 className="text-base sm:text-[17px] font-bold text-[#0D3B66] m-0 mb-3 tracking-tight">
-            Was This Article Helpful?
-          </h3>
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => setArticleHelpful("yes")}
-              className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs sm:text-[13px] font-semibold transition-all border cursor-pointer active:scale-95 ${articleHelpful === "yes"
-                ? "bg-white border-emerald-500 text-gray-800 shadow-2xs"
-                : "bg-white border-gray-200 text-gray-700 hover:border-gray-300"
-                }`}
-            >
-              <ThumbsUp size={14} className="text-emerald-600 fill-emerald-600" />
-              <span>Yes</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setArticleHelpful("no")}
-              className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs sm:text-[13px] font-semibold transition-all border cursor-pointer active:scale-95 ${articleHelpful === "no"
-                ? "bg-white border-slate-400 text-gray-800 shadow-2xs"
-                : "bg-white border-gray-200 text-gray-700 hover:border-gray-300"
-                }`}
-            >
-              <ThumbsDown size={14} className="text-slate-500 fill-slate-500" />
-              <span>No</span>
-            </button>
-          </div>
-          <p className="text-[11.5px] sm:text-xs text-slate-500 mt-3 m-0 font-normal">
-            {articleHelpful === "no"
-              ? "*Thanks for your feedback! We'll work to improve it."
-              : "*Thanks! We're glad this article helped."}
-          </p>
-        </div>
-
-        {/* =====================================================================
-            💬 ADD COMMENTS SECTION
-        ===================================================================== */}
-        <div id="add-comments" className="mt-6 scroll-mt-20">
-          <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight m-0 mb-3">
-            Add Comments
-          </h2>
-
-          <div className="bg-[#f8f9fa] rounded-2xl border border-gray-200/90 p-4 sm:p-6 space-y-4">
-            {/* Scrollable list of comments */}
-            {commentsList && commentsList.length > 0 ? (
-              <div className="bg-white rounded-xl border border-gray-200/80 p-4 max-h-[190px] overflow-y-auto space-y-3 shadow-2xs">
-                {commentsList.map((cmt, idx) => (
-                  <div
-                    key={cmt._id || cmt.id || idx}
-                    className={`flex items-start gap-3 ${idx !== commentsList.length - 1 ? "pb-3 border-b border-gray-100" : ""
-                      }`}
-                  >
-                    <div className="w-7 h-7 rounded-full bg-blue-500 text-white flex items-center justify-center shrink-0">
-                      <User size={15} />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <h5 className="text-xs sm:text-[13px] font-bold text-gray-900 m-0">
-                        {cmt.name}
-                      </h5>
-                      <p className="text-[11.5px] sm:text-xs text-slate-500 mt-0.5 m-0 leading-relaxed font-normal">
-                        {cmt.text || cmt.comment}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="bg-white rounded-xl border border-gray-200/80 p-4 text-center text-xs text-slate-500 shadow-2xs">
-                No comments yet. Be the first to share your thoughts!
-              </div>
-            )}
-
-            {/* Leave a Comment Form */}
-            <div className="pt-1">
-              <h4 className="text-xs sm:text-sm font-bold text-gray-900 m-0 mb-2">
-                Leave a Comment
-              </h4>
-
-              <Form
-                form={commentForm}
-                layout="vertical"
-                onFinish={handleCommentSubmit}
-                className="space-y-3"
-              >
-                <Form.Item
-                  name="comment"
-                  rules={[{ required: true, message: "Please enter your comment" }]}
-                  className="mb-3"
-                >
-                  <Input.TextArea
-                    rows={4}
-                    placeholder=""
-                    className="rounded-lg border border-gray-200 bg-white hover:border-blue-400 focus:border-blue-600 text-xs sm:text-sm p-3 resize-none shadow-2xs"
-                  />
-                </Form.Item>
-
-                <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
-                  <div className="sm:col-span-5">
-                    <Form.Item
-                      name="name"
-                      rules={[{ required: true, message: "Please enter your name" }]}
-                      className="mb-0"
-                    >
-                      <Input
-                        placeholder="Enter Your Name*"
-                        className="rounded-lg border-gray-200 h-10 text-xs sm:text-sm bg-white"
-                      />
-                    </Form.Item>
-                  </div>
-
-                  <div className="sm:col-span-4">
-                    <Form.Item
-                      name="email"
-                      rules={[
-                        { required: true, message: "Please enter your email" },
-                        { type: "email", message: "Please enter a valid email address" },
-                      ]}
-                      className="mb-0"
-                    >
-                      <Input
-                        placeholder="Enter Your Email*"
-                        className="rounded-lg border-gray-200 h-10 text-xs sm:text-sm bg-white"
-                      />
-                    </Form.Item>
-                  </div>
-
-                  <div className="sm:col-span-3">
-                    <Button
-                      type="primary"
-                      htmlType="submit"
-                      loading={commentSubmitting}
-                      className="w-full h-10 bg-[#003884] hover:bg-[#07244D] text-white font-bold rounded-lg border-none text-xs sm:text-sm shadow-xs transition-colors cursor-pointer flex items-center justify-center active:scale-95"
-                    >
-                      Submit
-                    </Button>
-                  </div>
-                </div>
-              </Form>
-            </div>
-          </div>
-
-          {/* Tags Bar directly below Add Comments card */}
-          {displayTags ? (
-            <div className="mt-4 bg-[#f8f9fa] rounded-lg border border-gray-200 px-4 py-2.5 text-xs sm:text-[13px] text-slate-700">
-              <span className="font-bold text-gray-900">Tags: </span>
-              <span className="text-slate-600">{displayTags}</span>
-            </div>
-          ) : null}
-
-          {/* =====================================================================
-              🤖 EXPLORE AI POWERED TOOLS (Ant Design Carousel directly below Tags)
-          ===================================================================== */}
-          {mappedTools && mappedTools.length > 0 && (
-            <div
-              id="ai-tools"
-              data-nav-label="AI Tools"
-              className="bg-[#F8FAFC] rounded-2xl border border-slate-200/80 p-5 sm:p-7 md:p-8 mt-6 scroll-mt-20"
-            >
-              {/* Top Pill Badge */}
-              <div className="flex justify-center mb-2 sm:mb-2.5">
-                <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A] text-[11px] font-bold tracking-wide uppercase shadow-2xs">
-                  <span className="text-[#D97706] text-xs">✦</span>
-                  <span>AI Powered</span>
-                </span>
-              </div>
-
-              {/* Heading */}
-              <h2 className="text-xl sm:text-2xl md:text-[26px] font-extrabold text-[#0D3B66] text-center tracking-tight mb-1">
-                Explore AI Powered Tools
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-500 text-center font-normal mb-6">
-                Make smarter education decisions with AI-powered tools
-              </p>
-
-              {/* Ant Design Carousel with infinite scrolling & autoplay */}
-              <Carousel
-                key={`tools-carousel-${slidesToShow}`}
-                ref={carouselRef}
-                autoplay={true}
-                autoplaySpeed={3000}
-                speed={600}
-                pauseOnHover={true}
-                dots={false}
-                slidesToShow={slidesToShow}
-                slidesToScroll={1}
-                infinite={mappedTools.length > slidesToShow}
-                arrows={false}
-                beforeChange={(from, to) => setActiveSlide(to % mappedTools.length)}
-                className="tools-antd-carousel"
-              >
-                {mappedTools.map((tool, idx) => (
-                  <div key={tool.id || idx} className="py-2">
-                    <div className="relative bg-white rounded-2xl p-5 sm:p-6 shadow-xs hover:shadow-xl border border-slate-100 flex flex-col items-center text-center transition-all duration-300 hover:-translate-y-1 group">
-                      {/* Top-Right Sparkle */}
-                      <span
-                        className={`absolute top-3.5 right-3.5 ${tool.sparkleColor} font-black text-xs select-none group-hover:rotate-12 transition-transform`}
-                      >
-                        ✦
-                      </span>
-
-                      {/* Round Icon with colored background */}
-                      <div
-                        className={`w-13 h-13 sm:w-14 sm:h-14 rounded-full ${tool.circleBg} flex items-center justify-center mb-3 transition-transform group-hover:scale-110 shrink-0`}
-                      >
-                        {tool.icon}
-                      </div>
-
-                      {/* Title with Underlined Word */}
-                      <div className="w-full flex items-center justify-center mb-1.5">
-                        <h3 className="text-sm sm:text-base font-bold text-[#0F172A] tracking-tight m-0 leading-tight line-clamp-1 w-full text-center">
-                          {tool.prefix ? `${tool.prefix} ` : ""}
-                          <span className={`border-b-2 ${tool.underlineClass} pb-0.5 inline-block`}>
-                            {tool.underlineWord}
-                          </span>
-                        </h3>
-                      </div>
-
-                      {/* Description */}
-                      <div className="w-full flex items-center justify-center min-h-[36px] sm:min-h-[40px]">
-                        <p className="text-[#64748B] text-xs sm:text-[13px] leading-relaxed font-normal m-0 line-clamp-2 text-center">
-                          {tool.description}
-                        </p>
-                      </div>
-
-                      {/* Button */}
-                      <div className="w-full mt-4 sm:mt-5 flex justify-center">
-                        <Link
-                          href={tool.linkUrl}
-                          className="w-full max-w-53.75 py-2 px-3.5 rounded-full bg-[#0B3B7E] hover:bg-[#072859] text-white font-bold text-xs sm:text-[12.5px] shadow-xs transition-all flex items-center justify-between cursor-pointer no-underline group-hover:shadow-md active:scale-95"
-                        >
-                          <span className="truncate">{tool.btnText}</span>
-                          <span className="w-5 h-5 rounded-full bg-white text-[#0B3B7E] flex items-center justify-center text-xs font-bold shrink-0 ml-1.5 transition-transform group-hover:translate-x-0.5">
-                            →
-                          </span>
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </Carousel>
-
-              {/* Dynamic Dots Pagination (strictly mappedTools.length, not fixed 4 dots) */}
-              {mappedTools.length > 1 && (
-                <div className="flex items-center justify-center gap-1.5 mt-5">
-                  {mappedTools.map((_, dotIdx) => (
-                    <button
-                      key={dotIdx}
-                      type="button"
-                      onClick={() => carouselRef.current?.goTo(dotIdx)}
-                      className={`transition-all rounded-full cursor-pointer border-none p-0 ${activeSlide === dotIdx
-                        ? "w-2.5 h-2.5 bg-[#0B3B7E]"
-                        : "w-2 h-2 bg-slate-300 hover:bg-slate-400"
-                        }`}
-                      aria-label={`Go to slide ${dotIdx + 1}`}
-                    />
-                  ))}
+                      </section>
+                    );
+                  })}
                 </div>
               )}
             </div>
-          )}
+
+
+            {/* =====================================================================
+            1️⃣5️⃣ FREQUENTLY ASKED QUESTIONS (Exact Course Page Standalone Card)
+        ===================================================================== */}
+            {allFaqs && allFaqs.length > 0 && (
+              <div
+                id="faqs"
+                data-nav-label="FAQs"
+                className="bg-white rounded-xl shadow-xs border border-gray-200 p-4 sm:p-6 md:p-8 mt-6 scroll-mt-20 space-y-5 sm:space-y-6"
+              >
+                <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
+                  Frequently Asked Questions (FAQs)
+                </h2>
+
+                <div className="space-y-2.5 sm:space-y-3 max-w-5xl mx-auto">
+                  {allFaqs.map((faq, idx) => {
+                    const isOpen = openFaqIndex === idx;
+                    const cleanQuestion = (faq.question || faq.q || "")
+                      .replace(/^q\d*[\.\:\s]*/i, "")
+                      .trim();
+                    return (
+                      <div
+                        key={idx}
+                        className={`rounded-xl border transition-all duration-200 overflow-hidden ${isOpen
+                          ? "border-blue-400 bg-blue-200/30 shadow-2xs"
+                          : "border-gray-200 bg-white hover:border-gray-300"
+                          }`}
+                      >
+                        <button
+                          type="button"
+                          onClick={() => setOpenFaqIndex(isOpen ? -1 : idx)}
+                          className="w-full flex items-center justify-between gap-3 p-2.5 sm:p-3 text-left cursor-pointer bg-transparent border-none outline-none"
+                        >
+                          <span
+                            className={`text-xs sm:text-[14px] font-semibold ${isOpen ? "text-[#0C2B4E]" : "text-gray-900"
+                              }`}
+                          >
+                            Q{idx + 1}. {cleanQuestion}
+                          </span>
+                          <span
+                            className={`flex items-center justify-center w-4 h-4 rounded-full shrink-0 transition-colors ${isOpen
+                              ? "bg-[#0C2B4E] text-white"
+                              : "bg-gray-300 text-gray-500"
+                              }`}
+                          >
+                            {isOpen ? <Minus size={10} /> : <Plus size={10} />}
+                          </span>
+                        </button>
+                        <div
+                          className={
+                            isOpen
+                              ? "p-3 text-xs sm:text-[13px] text-gray-600 font-normal border-t border-blue-100/60"
+                              : "sr-only"
+                          }
+                        >
+                          <SafeHtmlRenderer html={faq.answer || faq.a || ""} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* =====================================================================
+            👍 WAS THIS ARTICLE HELPFUL? (Helpful Feedback Card)
+        ===================================================================== */}
+            <div className="bg-[#f0f7ff] rounded-xl border border-blue-100 p-4 sm:p-5 mt-6">
+              <h3 className="text-base sm:text-[17px] font-bold text-[#0D3B66] m-0 mb-3 tracking-tight">
+                Was This Article Helpful?
+              </h3>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setArticleHelpful("yes")}
+                  className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs sm:text-[13px] font-semibold transition-all border cursor-pointer active:scale-95 ${articleHelpful === "yes"
+                    ? "bg-white border-emerald-500 text-gray-800 shadow-2xs"
+                    : "bg-white border-gray-200 text-gray-700 hover:border-gray-300"
+                    }`}
+                >
+                  <ThumbsUp size={14} className="text-emerald-600 fill-emerald-600" />
+                  <span>Yes</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setArticleHelpful("no")}
+                  className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs sm:text-[13px] font-semibold transition-all border cursor-pointer active:scale-95 ${articleHelpful === "no"
+                    ? "bg-white border-slate-400 text-gray-800 shadow-2xs"
+                    : "bg-white border-gray-200 text-gray-700 hover:border-gray-300"
+                    }`}
+                >
+                  <ThumbsDown size={14} className="text-slate-500 fill-slate-500" />
+                  <span>No</span>
+                </button>
+              </div>
+              <p className="text-[11.5px] sm:text-xs text-slate-500 mt-3 m-0 font-normal">
+                {articleHelpful === "no"
+                  ? "*Thanks for your feedback! We'll work to improve it."
+                  : "*Thanks! We're glad this article helped."}
+              </p>
+            </div>
+
+            {/* =====================================================================
+            💬 ADD COMMENTS SECTION
+        ===================================================================== */}
+            <div id="add-comments" className="mt-6 scroll-mt-20">
+              <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight m-0 mb-3">
+                Add Comments
+              </h2>
+
+              <div className="bg-[#f8f9fa] rounded-2xl border border-gray-200/90 p-4 sm:p-6 space-y-4">
+                {/* Scrollable list of comments */}
+                {commentsList && commentsList.length > 0 ? (
+                  <div className="bg-white rounded-xl border border-gray-200/80 p-4 max-h-[190px] overflow-y-auto space-y-3 shadow-2xs">
+                    {commentsList.map((cmt, idx) => (
+                      <div
+                        key={cmt._id || cmt.id || idx}
+                        className={`flex items-start gap-3 ${idx !== commentsList.length - 1 ? "pb-3 border-b border-gray-100" : ""
+                          }`}
+                      >
+                        <div className="w-7 h-7 rounded-full bg-blue-500 text-white flex items-center justify-center shrink-0">
+                          <User size={15} />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <h5 className="text-xs sm:text-[13px] font-bold text-gray-900 m-0">
+                            {cmt.name}
+                          </h5>
+                          <p className="text-[11.5px] sm:text-xs text-slate-500 mt-0.5 m-0 font-normal">
+                            {cmt.text || cmt.comment}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="bg-white rounded-xl border border-gray-200/80 p-4 text-center text-xs text-slate-500 shadow-2xs">
+                    No comments yet. Be the first to share your thoughts!
+                  </div>
+                )}
+
+                {/* Leave a Comment Form */}
+                <div className="pt-1">
+                  <h4 className="text-xs sm:text-sm font-bold text-gray-900 m-0 mb-2">
+                    Leave a Comment
+                  </h4>
+
+                  <Form
+                    form={commentForm}
+                    layout="vertical"
+                    onFinish={handleCommentSubmit}
+                    className="space-y-3"
+                  >
+                    <Form.Item
+                      name="comment"
+                      rules={[{ required: true, message: "Please enter your comment" }]}
+                      className="mb-3"
+                    >
+                      <Input.TextArea
+                        rows={4}
+                        placeholder=""
+                        className="rounded-lg border border-gray-200 bg-white hover:border-blue-400 focus:border-blue-600 text-xs sm:text-sm p-3 resize-none shadow-2xs"
+                      />
+                    </Form.Item>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+                      <div className="sm:col-span-5">
+                        <Form.Item
+                          name="name"
+                          rules={[{ required: true, message: "Please enter your name" }]}
+                          className="mb-0"
+                        >
+                          <Input
+                            placeholder="Enter Your Name*"
+                            className="rounded-lg border-gray-200 h-10 text-xs sm:text-sm bg-white"
+                          />
+                        </Form.Item>
+                      </div>
+
+                      <div className="sm:col-span-4">
+                        <Form.Item
+                          name="email"
+                          rules={[
+                            { required: true, message: "Please enter your email" },
+                            { type: "email", message: "Please enter a valid email address" },
+                          ]}
+                          className="mb-0"
+                        >
+                          <Input
+                            placeholder="Enter Your Email*"
+                            className="rounded-lg border-gray-200 h-10 text-xs sm:text-sm bg-white"
+                          />
+                        </Form.Item>
+                      </div>
+
+                      <div className="sm:col-span-3">
+                        <Button
+                          type="primary"
+                          htmlType="submit"
+                          loading={commentSubmitting}
+                          className="w-full h-10 bg-[#003884] hover:bg-[#07244D] text-white font-bold rounded-lg border-none text-xs sm:text-sm shadow-xs transition-colors cursor-pointer flex items-center justify-center active:scale-95"
+                        >
+                          Submit
+                        </Button>
+                      </div>
+                    </div>
+                  </Form>
+                </div>
+              </div>
+
+              {/* Tags Bar directly below Add Comments card */}
+              {displayTags ? (
+                <div className="mt-4 bg-[#f8f9fa] rounded-lg border border-gray-200 px-4 py-2.5 text-xs sm:text-[13px] text-slate-700">
+                  <span className="font-bold text-gray-900">Tags: </span>
+                  <span className="text-slate-600">{displayTags}</span>
+                </div>
+              ) : null}
+
+              {/* =====================================================================
+              🤖 EXPLORE AI POWERED TOOLS (Ant Design Carousel directly below Tags)
+          ===================================================================== */}
+              {mappedTools && mappedTools.length > 0 && (
+                <div
+                  id="ai-tools"
+                  data-nav-label="AI Tools"
+                  className="bg-[#F8FAFC] rounded-2xl border border-slate-200/80 p-5 sm:p-7 md:p-8 mt-6 scroll-mt-20"
+                >
+                  {/* Top Pill Badge */}
+                  <div className="flex justify-center mb-2 sm:mb-2.5">
+                    <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A] text-[11px] font-bold tracking-wide uppercase shadow-2xs">
+                      <span className="text-[#D97706] text-xs">✦</span>
+                      <span>AI Powered</span>
+                    </span>
+                  </div>
+
+                  {/* Heading */}
+                  <h2 className="text-xl sm:text-2xl md:text-[26px] font-extrabold text-[#0D3B66] text-center tracking-tight mb-1">
+                    Explore AI Powered Tools
+                  </h2>
+                  <p className="text-xs sm:text-sm text-slate-500 text-center font-normal mb-6">
+                    Make smarter education decisions with AI-powered tools
+                  </p>
+
+                  {/* Ant Design Carousel with infinite scrolling & autoplay */}
+                  <Carousel
+                    key={`tools-carousel-${slidesToShow}`}
+                    ref={carouselRef}
+                    autoplay={true}
+                    autoplaySpeed={3000}
+                    speed={600}
+                    pauseOnHover={true}
+                    dots={false}
+                    slidesToShow={slidesToShow}
+                    slidesToScroll={1}
+                    infinite={mappedTools.length > slidesToShow}
+                    arrows={false}
+                    beforeChange={(from, to) => setActiveSlide(to % mappedTools.length)}
+                    className="tools-antd-carousel"
+                  >
+                    {mappedTools.map((tool, idx) => (
+                      <div key={tool.id || idx} className="py-2">
+                        <div className="relative bg-white rounded-2xl p-5 sm:p-6 shadow-xs hover:shadow-xl border border-slate-100 flex flex-col items-center text-center transition-all duration-300 hover:-translate-y-1 group">
+                          {/* Top-Right Sparkle */}
+                          <span
+                            className={`absolute top-3.5 right-3.5 ${tool.sparkleColor} font-black text-xs select-none group-hover:rotate-12 transition-transform`}
+                          >
+                            ✦
+                          </span>
+
+                          {/* Round Icon with colored background */}
+                          <div
+                            className={`w-13 h-13 sm:w-14 sm:h-14 rounded-full ${tool.circleBg} flex items-center justify-center mb-3 transition-transform group-hover:scale-110 shrink-0`}
+                          >
+                            {tool.icon}
+                          </div>
+
+                          {/* Title with Underlined Word */}
+                          <div className="w-full flex items-center justify-center mb-1.5">
+                            <h3 className="text-sm sm:text-base font-bold text-[#0F172A] tracking-tight m-0 leading-tight line-clamp-1 w-full text-center">
+                              {tool.prefix ? `${tool.prefix} ` : ""}
+                              <span className={`border-b-2 ${tool.underlineClass} pb-0.5 inline-block`}>
+                                {tool.underlineWord}
+                              </span>
+                            </h3>
+                          </div>
+
+                          {/* Description */}
+                          <div className="w-full flex items-center justify-center min-h-[36px] sm:min-h-[40px]">
+                            <p className="text-[#64748B] text-xs sm:text-[13px] font-normal m-0 line-clamp-2 text-center">
+                              {tool.description}
+                            </p>
+                          </div>
+
+                          {/* Button */}
+                          <div className="w-full mt-4 sm:mt-5 flex justify-center">
+                            <Link
+                              href={tool.linkUrl}
+                              className="w-full max-w-53.75 py-2 px-3.5 rounded-full bg-[#0B3B7E] hover:bg-[#072859] text-white font-bold text-xs sm:text-[12.5px] shadow-xs transition-all flex items-center justify-between cursor-pointer no-underline group-hover:shadow-md active:scale-95"
+                            >
+                              <span className="truncate">{tool.btnText}</span>
+                              <span className="w-5 h-5 rounded-full bg-white text-[#0B3B7E] flex items-center justify-center text-xs font-bold shrink-0 ml-1.5 transition-transform group-hover:translate-x-0.5">
+                                →
+                              </span>
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </Carousel>
+
+                  {/* Dynamic Dots Pagination (strictly mappedTools.length, not fixed 4 dots) */}
+                  {mappedTools.length > 1 && (
+                    <div className="flex items-center justify-center gap-1.5 mt-5">
+                      {mappedTools.map((_, dotIdx) => (
+                        <button
+                          key={dotIdx}
+                          type="button"
+                          onClick={() => carouselRef.current?.goTo(dotIdx)}
+                          className={`transition-all rounded-full cursor-pointer border-none p-0 ${activeSlide === dotIdx
+                            ? "w-2.5 h-2.5 bg-[#0B3B7E]"
+                            : "w-2 h-2 bg-slate-300 hover:bg-slate-400"
+                            }`}
+                          aria-label={`Go to slide ${dotIdx + 1}`}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </main>
 
@@ -1369,11 +1509,28 @@ export default function BlogClientView({
                 title={pageTitle}
                 categories={initialCategories}
                 author={blog.author}
-                relatedBlogs={sidebarBlogs.slice(0, 5)}
+                relatedBlogs={
+                  Array.isArray(blog.related) && blog.related.length > 0
+                    ? blog.related
+                    : Array.isArray(initialData?.related) && initialData.related.length > 0
+                      ? initialData.related
+                      : sidebarBlogs.slice(0, 5)
+                }
                 recentBlogs={
-                  sidebarBlogs.length > 5
-                    ? sidebarBlogs.slice(5, 10)
-                    : sidebarBlogs.slice(0, 4)
+                  Array.isArray(blog.recent) && blog.recent.length > 0
+                    ? blog.recent
+                    : Array.isArray(initialData?.recent) && initialData.recent.length > 0
+                      ? initialData.recent
+                      : sidebarBlogs.length > 5
+                        ? sidebarBlogs.slice(5, 10)
+                        : sidebarBlogs.slice(0, 5)
+                }
+                popularBlogs={
+                  Array.isArray(blog.popular) && blog.popular.length > 0
+                    ? blog.popular
+                    : Array.isArray(initialData?.popular) && initialData.popular.length > 0
+                      ? initialData.popular
+                      : sidebarBlogs.slice(0, 5)
                 }
                 currentSlug={propSlug || blog.slug}
               />

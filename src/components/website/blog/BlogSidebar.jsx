@@ -17,6 +17,7 @@ export default function BlogSidebar({
   author,
   relatedBlogs = [],
   recentBlogs = [],
+  popularBlogs = [],
   currentSlug = "",
 }) {
   const [leadForm] = Form.useForm();
@@ -273,13 +274,17 @@ export default function BlogSidebar({
   };
 
   // Filter out current blog from lists
-  const filteredRelated = relatedBlogs
+  const filteredRelated = (relatedBlogs || [])
     .filter((b) => b && b.slug !== currentSlug)
     .slice(0, 5);
 
-  const filteredRecent = recentBlogs
+  const filteredRecent = (recentBlogs || [])
     .filter((b) => b && b.slug !== currentSlug)
-    .slice(0, 4);
+    .slice(0, 5);
+
+  const filteredPopular = (popularBlogs || [])
+    .filter((b) => b && b.slug !== currentSlug)
+    .slice(0, 5);
 
   // Author Data
   const authorName =
@@ -435,7 +440,276 @@ export default function BlogSidebar({
         </Form>
       </div>
 
-      {/* ─── CARD: POPULAR ONLINE COURSES ─── */}
+      {/* ─── CARD 2: ABOUT THE AUTHOR ─── */}
+      <div className="bg-white rounded-2xl border border-gray-200/90 shadow-xs p-5">
+        <div className="border-b border-gray-100 pb-2.5 mb-3.5">
+          <h3 className="text-sm sm:text-[14.5px] font-bold text-slate-800 m-0">
+            About the Author
+          </h3>
+        </div>
+
+        <div className="flex items-center gap-3 mb-2.5">
+          {authorAvatar ? (
+            <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 border border-slate-200 relative">
+              <Image
+                src={getAssetPath(authorAvatar)}
+                alt={authorName}
+                fill
+                className="object-cover"
+              />
+            </div>
+          ) : (
+            <div className="w-10 h-10 rounded-full bg-blue-100 text-[#0C2B4E] flex items-center justify-center font-bold text-sm shrink-0">
+              {authorName.charAt(0)}
+            </div>
+          )}
+          <div>
+            <h4 className="text-xs sm:text-[13px] font-bold text-slate-900 m-0 leading-tight">
+              {authorName}
+            </h4>
+            <span className="text-[11px] text-slate-500 font-normal">
+              Senior Education Editor
+            </span>
+          </div>
+        </div>
+
+        <p className="text-xs text-slate-600 font-normal mb-3.5 m-0">
+          {authorBio}
+        </p>
+
+        <Link
+          href="/about-us"
+          className="inline-flex items-center justify-center px-4 py-1.5 rounded-md bg-[#F4D068] hover:bg-[#ebc557] text-[#0C2B4E] text-xs font-bold transition-all shadow-2xs no-underline active:scale-95"
+        >
+          View Profile
+        </Link>
+      </div>
+
+      {/* ─── CARD 3: RELATED BLOGS ─── */}
+      {filteredRelated.length > 0 && (
+        <div className="bg-white rounded-2xl border border-gray-200/90 shadow-xs p-5">
+          <div className="border-b border-gray-100 pb-2.5 mb-3">
+            <h3 className="text-sm sm:text-[14.5px] font-bold text-slate-800 m-0">
+              Related Blogs
+            </h3>
+          </div>
+
+          <div className="space-y-3.5">
+            {filteredRelated.map((item, idx) => {
+              const coverImg = item.coverImage || item.featuredImage;
+              const imgUrl = coverImg ? getAssetPath(coverImg) : null;
+              const title = item.title || item.headline || "Online Degree Guide";
+
+              return (
+                <div
+                  key={item._id || item.slug || idx}
+                  className="flex items-start gap-3 group"
+                >
+                  {/* Thumbnail */}
+                  <Link
+                    href={`/blogs/${item.slug}`}
+                    className="w-14 h-14 sm:w-16 sm:h-16 rounded-lg bg-slate-100 overflow-hidden shrink-0 border border-slate-200/70 relative block"
+                  >
+                    {imgUrl ? (
+                      <Image
+                        src={imgUrl}
+                        alt={title}
+                        fill
+                        className="object-cover transition-transform duration-300 ease-out group-hover:scale-110"
+                        sizes="64px"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-slate-400 bg-slate-100 text-xs font-bold group-hover:scale-105 transition-transform duration-300">
+                        SODE
+                      </div>
+                    )}
+                  </Link>
+
+                  {/* Title & Link */}
+                  <div className="min-w-0 flex-1">
+                    <Link
+                      href={`/blogs/${item.slug}`}
+                      className="text-xs font-bold text-slate-800 group-hover:text-blue-700 leading-snug line-clamp-2 transition-colors no-underline block"
+                    >
+                      {title}
+                    </Link>
+                    <Link
+                      href={`/blogs/${item.slug}`}
+                      className="text-[11px] font-bold text-blue-600 hover:text-blue-800 inline-flex items-center gap-0.5 mt-1 no-underline transition-colors"
+                    >
+                      <span>Read Now</span>
+                      <ChevronRight size={12} strokeWidth={2.5} />
+                    </Link>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ─── CARD 4: GET EDUCATION UPDATES (SUBSCRIBE) ─── */}
+      <div className="bg-[#0C2B4E] text-white rounded-2xl p-5 shadow-xs">
+        <h3 className="text-sm sm:text-[15px] font-bold text-white tracking-tight m-0">
+          Get Education Updates
+        </h3>
+        <p className="text-xs text-blue-100/80 font-normal mt-1.5 mb-3.5 m-0">
+          Subscribe to receive updates about Online Degree courses, university
+          admissions, scholarships and educational opportunities.
+        </p>
+
+        <form onSubmit={handleSubscribe} className="space-y-2.5">
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+              <Mail size={15} />
+            </span>
+            <input
+              type="email"
+              value={subscribedEmail}
+              onChange={(e) => setSubscribedEmail(e.target.value)}
+              placeholder="Enter your email address"
+              required
+              className="w-full pl-9 pr-3 py-2 text-xs rounded-lg bg-white text-slate-800 placeholder-slate-400 outline-none border border-transparent focus:border-[#F4D068] transition-colors"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={subscribing}
+            className="w-full py-2 px-4 rounded-full bg-[#F4D068] hover:bg-[#ebc557] text-[#0C2B4E] text-xs font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer active:scale-95 disabled:opacity-70 border-none"
+          >
+            {subscribing ? "SUBSCRIBING..." : "SUBSCRIBE"}
+          </button>
+        </form>
+      </div>
+
+      {/* ─── CARD 5: RECENT BLOGS ─── */}
+      {filteredRecent.length > 0 && (
+        <div className="bg-white rounded-2xl border border-gray-200/90 shadow-xs p-5">
+          <div className="border-b border-gray-100 pb-2.5 mb-3">
+            <h3 className="text-sm sm:text-[14.5px] font-bold text-slate-800 m-0">
+              Recent Blogs
+            </h3>
+          </div>
+
+          <div className="space-y-3.5">
+            {filteredRecent.map((item, idx) => {
+              const coverImg = item.coverImage || item.featuredImage;
+              const imgUrl = coverImg ? getAssetPath(coverImg) : null;
+              const title = item.title || item.headline || "Recent Education Guide";
+
+              return (
+                <div
+                  key={item._id || item.slug || idx}
+                  className="flex items-start gap-3 group"
+                >
+                  {/* Thumbnail */}
+                  <Link
+                    href={`/blogs/${item.slug}`}
+                    className="w-14 h-14 sm:w-16 sm:h-16 rounded-lg bg-slate-100 overflow-hidden shrink-0 border border-slate-200/70 relative block"
+                  >
+                    {imgUrl ? (
+                      <Image
+                        src={imgUrl}
+                        alt={title}
+                        fill
+                        className="object-cover transition-transform duration-300 ease-out group-hover:scale-110"
+                        sizes="64px"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-slate-400 bg-slate-100 text-xs font-bold group-hover:scale-105 transition-transform duration-300">
+                        SODE
+                      </div>
+                    )}
+                  </Link>
+
+                  {/* Title & Link */}
+                  <div className="min-w-0 flex-1">
+                    <Link
+                      href={`/blogs/${item.slug}`}
+                      className="text-xs font-bold text-slate-800 group-hover:text-blue-700 leading-snug line-clamp-2 transition-colors no-underline block"
+                    >
+                      {title}
+                    </Link>
+                    <Link
+                      href={`/blogs/${item.slug}`}
+                      className="text-[11px] font-bold text-blue-600 hover:text-blue-800 inline-flex items-center gap-0.5 mt-1 no-underline transition-colors"
+                    >
+                      <span>Read Now</span>
+                      <ChevronRight size={12} strokeWidth={2.5} />
+                    </Link>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ─── CARD 6: POPULAR BLOGS ─── */}
+      {filteredPopular.length > 0 && (
+        <div className="bg-white rounded-2xl border border-gray-200/90 shadow-xs p-5">
+          <div className="border-b border-gray-100 pb-2.5 mb-3">
+            <h3 className="text-sm sm:text-[14.5px] font-bold text-slate-800 m-0">
+              Popular Blogs
+            </h3>
+          </div>
+
+          <div className="space-y-3.5">
+            {filteredPopular.map((item, idx) => {
+              const coverImg = item.coverImage || item.featuredImage;
+              const imgUrl = coverImg ? getAssetPath(coverImg) : null;
+              const title = item.title || item.headline || "Popular Education Guide";
+
+              return (
+                <div
+                  key={item._id || item.slug || idx}
+                  className="flex items-start gap-3 group"
+                >
+                  {/* Thumbnail */}
+                  <Link
+                    href={`/blogs/${item.slug}`}
+                    className="w-14 h-14 sm:w-16 sm:h-16 rounded-lg bg-slate-100 overflow-hidden shrink-0 border border-slate-200/70 relative block"
+                  >
+                    {imgUrl ? (
+                      <Image
+                        src={imgUrl}
+                        alt={title}
+                        fill
+                        className="object-cover transition-transform duration-300 ease-out group-hover:scale-110"
+                        sizes="64px"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-slate-400 bg-slate-100 text-xs font-bold group-hover:scale-105 transition-transform duration-300">
+                        SODE
+                      </div>
+                    )}
+                  </Link>
+
+                  {/* Title & Link */}
+                  <div className="min-w-0 flex-1">
+                    <Link
+                      href={`/blogs/${item.slug}`}
+                      className="text-xs font-bold text-slate-800 group-hover:text-blue-700 leading-snug line-clamp-2 transition-colors no-underline block"
+                    >
+                      {title}
+                    </Link>
+                    <Link
+                      href={`/blogs/${item.slug}`}
+                      className="text-[11px] font-bold text-blue-600 hover:text-blue-800 inline-flex items-center gap-0.5 mt-1 no-underline transition-colors"
+                    >
+                      <span>Read Now</span>
+                      <ChevronRight size={12} strokeWidth={2.5} />
+                    </Link>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ─── CARD 7: POPULAR ONLINE COURSES ─── */}
       {courseList.length > 0 && (
         <div className="bg-white rounded-2xl border border-gray-200/90 shadow-xs p-4 sm:p-5">
           {/* Header */}
@@ -489,7 +763,7 @@ export default function BlogSidebar({
         </div>
       )}
 
-      {/* ─── CARD: TOP ONLINE & DISTANCE UNIVERSITIES ─── */}
+      {/* ─── CARD 8: TOP ONLINE & DISTANCE UNIVERSITIES ─── */}
       {uniList.length > 0 && (
         <div className="bg-white rounded-2xl border border-gray-200/90 shadow-xs p-4 sm:p-5">
           {/* Header */}
@@ -543,213 +817,7 @@ export default function BlogSidebar({
         </div>
       )}
 
-      {/* ─── CARD 2: ABOUT THE AUTHOR ─── */}
-      <div className="bg-white rounded-2xl border border-gray-200/90 shadow-xs p-5">
-        <div className="border-b border-gray-100 pb-2.5 mb-3.5">
-          <h3 className="text-sm sm:text-[14.5px] font-bold text-slate-800 m-0">
-            About the Author
-          </h3>
-        </div>
-
-        <div className="flex items-center gap-3 mb-2.5">
-          {authorAvatar ? (
-            <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 border border-slate-200 relative">
-              <Image
-                src={getAssetPath(authorAvatar)}
-                alt={authorName}
-                fill
-                className="object-cover"
-              />
-            </div>
-          ) : (
-            <div className="w-10 h-10 rounded-full bg-blue-100 text-[#0C2B4E] flex items-center justify-center font-bold text-sm shrink-0">
-              {authorName.charAt(0)}
-            </div>
-          )}
-          <div>
-            <h4 className="text-xs sm:text-[13px] font-bold text-slate-900 m-0 leading-tight">
-              {authorName}
-            </h4>
-            <span className="text-[11px] text-slate-500 font-normal">
-              Senior Education Editor
-            </span>
-          </div>
-        </div>
-
-        <p className="text-xs text-slate-600 leading-relaxed font-normal mb-3.5 m-0">
-          {authorBio}
-        </p>
-
-        <Link
-          href="/about-us"
-          className="inline-flex items-center justify-center px-4 py-1.5 rounded-md bg-[#F4D068] hover:bg-[#ebc557] text-[#0C2B4E] text-xs font-bold transition-all shadow-2xs no-underline active:scale-95"
-        >
-          View Profile
-        </Link>
-      </div>
-
-      {/* ─── CARD 3: RELATED BLOGS ─── */}
-      {filteredRelated.length > 0 && (
-        <div className="bg-white rounded-2xl border border-gray-200/90 shadow-xs p-5">
-          <div className="border-b border-gray-100 pb-2.5 mb-3">
-            <h3 className="text-sm sm:text-[14.5px] font-bold text-slate-800 m-0">
-              Related Blogs
-            </h3>
-          </div>
-
-          <div className="space-y-3.5">
-            {filteredRelated.map((item, idx) => {
-              const coverImg = item.coverImage || item.featuredImage;
-              const imgUrl = coverImg ? getAssetPath(coverImg) : null;
-              const title = item.title || item.headline || "Online Degree Guide";
-
-              return (
-                <div
-                  key={item._id || item.slug || idx}
-                  className="flex items-start gap-3 group"
-                >
-                  {/* Thumbnail */}
-                  <Link
-                    href={`/blogs/${item.slug}`}
-                    className="w-14 h-14 sm:w-16 sm:h-16 rounded-lg bg-slate-100 overflow-hidden shrink-0 border border-slate-200/70 relative block group-hover:opacity-90 transition-opacity"
-                  >
-                    {imgUrl ? (
-                      <Image
-                        src={imgUrl}
-                        alt={title}
-                        fill
-                        className="object-cover"
-                        sizes="64px"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-slate-400 bg-slate-100 text-xs font-bold">
-                        SODE
-                      </div>
-                    )}
-                  </Link>
-
-                  {/* Title & Link */}
-                  <div className="min-w-0 flex-1">
-                    <Link
-                      href={`/blogs/${item.slug}`}
-                      className="text-xs font-bold text-slate-800 group-hover:text-blue-700 leading-snug line-clamp-2 transition-colors no-underline block"
-                    >
-                      {title}
-                    </Link>
-                    <Link
-                      href={`/blogs/${item.slug}`}
-                      className="text-[11px] font-bold text-blue-600 hover:text-blue-800 inline-flex items-center gap-0.5 mt-1 no-underline transition-colors"
-                    >
-                      <span>Read Now</span>
-                      <ChevronRight size={12} strokeWidth={2.5} />
-                    </Link>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* ─── CARD 4: RECENT BLOGS ─── */}
-      {filteredRecent.length > 0 && (
-        <div className="bg-white rounded-2xl border border-gray-200/90 shadow-xs p-5">
-          <div className="border-b border-gray-100 pb-2.5 mb-3">
-            <h3 className="text-sm sm:text-[14.5px] font-bold text-slate-800 m-0">
-              Recent Blogs
-            </h3>
-          </div>
-
-          <div className="space-y-3.5">
-            {filteredRecent.map((item, idx) => {
-              const coverImg = item.coverImage || item.featuredImage;
-              const imgUrl = coverImg ? getAssetPath(coverImg) : null;
-              const title = item.title || item.headline || "Recent Education Guide";
-
-              return (
-                <div
-                  key={item._id || item.slug || idx}
-                  className="flex items-start gap-3 group"
-                >
-                  {/* Thumbnail */}
-                  <Link
-                    href={`/blogs/${item.slug}`}
-                    className="w-14 h-14 sm:w-16 sm:h-16 rounded-lg bg-slate-100 overflow-hidden shrink-0 border border-slate-200/70 relative block group-hover:opacity-90 transition-opacity"
-                  >
-                    {imgUrl ? (
-                      <Image
-                        src={imgUrl}
-                        alt={title}
-                        fill
-                        className="object-cover"
-                        sizes="64px"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-slate-400 bg-slate-100 text-xs font-bold">
-                        SODE
-                      </div>
-                    )}
-                  </Link>
-
-                  {/* Title & Link */}
-                  <div className="min-w-0 flex-1">
-                    <Link
-                      href={`/blogs/${item.slug}`}
-                      className="text-xs font-bold text-slate-800 group-hover:text-blue-700 leading-snug line-clamp-2 transition-colors no-underline block"
-                    >
-                      {title}
-                    </Link>
-                    <Link
-                      href={`/blogs/${item.slug}`}
-                      className="text-[11px] font-bold text-blue-600 hover:text-blue-800 inline-flex items-center gap-0.5 mt-1 no-underline transition-colors"
-                    >
-                      <span>Read Now</span>
-                      <ChevronRight size={12} strokeWidth={2.5} />
-                    </Link>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* ─── CARD 5: GET EDUCATION UPDATES (SUBSCRIBE) ─── */}
-      <div className="bg-[#0C2B4E] text-white rounded-2xl p-5 shadow-xs">
-        <h3 className="text-sm sm:text-[15px] font-bold text-white tracking-tight m-0">
-          Get Education Updates
-        </h3>
-        <p className="text-xs text-blue-100/80 leading-relaxed font-normal mt-1.5 mb-3.5 m-0">
-          Subscribe to receive updates about Online Degree courses, university
-          admissions, scholarships and educational opportunities.
-        </p>
-
-        <form onSubmit={handleSubscribe} className="space-y-2.5">
-          <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-              <Mail size={15} />
-            </span>
-            <input
-              type="email"
-              value={subscribedEmail}
-              onChange={(e) => setSubscribedEmail(e.target.value)}
-              placeholder="Enter your email address"
-              required
-              className="w-full pl-9 pr-3 py-2 text-xs rounded-lg bg-white text-slate-800 placeholder-slate-400 outline-none border border-transparent focus:border-[#F4D068] transition-colors"
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={subscribing}
-            className="w-full py-2 px-4 rounded-full bg-[#F4D068] hover:bg-[#ebc557] text-[#0C2B4E] text-xs font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer active:scale-95 disabled:opacity-70 border-none"
-          >
-            {subscribing ? "SUBSCRIBING..." : "SUBSCRIBE"}
-          </button>
-        </form>
-      </div>
-
-      {/* ─── CARD 6: SHARE THIS PAGE (At the bottom, directly below Subscribe) ─── */}
+      {/* ─── CARD 9: SHARE THIS PAGE ─── */}
       <div className="bg-white rounded-2xl border border-gray-200/90 shadow-xs p-5">
         {/* Header with blue share icon */}
         <div className="flex items-center gap-2 pb-2.5 mb-3 border-b border-gray-100">
@@ -762,7 +830,7 @@ export default function BlogSidebar({
         </div>
 
         {/* Description */}
-        <p className="text-xs text-slate-500 font-normal leading-relaxed mb-4 m-0">
+        <p className="text-xs text-slate-500 font-normal mb-4 m-0">
           Share this article with someone who may find it useful.
         </p>
 
@@ -804,34 +872,34 @@ export default function BlogSidebar({
           >
             <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
               <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-            </svg>
-          </button>
+          </svg>
+        </button>
 
-          {/* Twitter / X */}
-          <button
-            type="button"
-            onClick={() => handleSocialShare("twitter")}
-            aria-label="Share on Twitter"
-            title="Twitter"
-            className="w-8 h-8 rounded-full bg-[#1877F2] hover:bg-[#188dd5] text-white flex items-center justify-center transition-transform hover:scale-110 active:scale-95 cursor-pointer border-none shadow-2xs"
-          >
-            <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-              <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.936 9.936 0 0024 4.59z" />
-            </svg>
-          </button>
+        {/* Twitter / X */}
+        <button
+          type="button"
+          onClick={() => handleSocialShare("twitter")}
+          aria-label="Share on Twitter"
+          title="Twitter"
+          className="w-8 h-8 rounded-full bg-[#1877F2] hover:bg-[#188dd5] text-white flex items-center justify-center transition-transform hover:scale-110 active:scale-95 cursor-pointer border-none shadow-2xs"
+        >
+          <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+            <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.936 9.936 0 0024 4.59z" />
+          </svg>
+        </button>
 
-          {/* Copy Link */}
-          <button
-            type="button"
-            onClick={() => handleSocialShare("copy")}
-            aria-label="Copy Page Link"
-            title="Copy Link"
-            className="w-8 h-8 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-700 flex items-center justify-center transition-transform hover:scale-110 active:scale-95 cursor-pointer border-none shadow-2xs"
-          >
-            <Link2 size={15} className="stroke-[2.5]" />
-          </button>
-        </div>
+        {/* Copy Link */}
+        <button
+          type="button"
+          onClick={() => handleSocialShare("copy")}
+          aria-label="Copy Page Link"
+          title="Copy Link"
+          className="w-8 h-8 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-700 flex items-center justify-center transition-transform hover:scale-110 active:scale-95 cursor-pointer border-none shadow-2xs"
+        >
+          <Link2 size={15} className="stroke-[2.5]" />
+        </button>
       </div>
     </div>
-  );
+  </div>
+);
 }
