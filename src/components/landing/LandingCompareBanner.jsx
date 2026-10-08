@@ -45,7 +45,10 @@ export default function LandingCompareBanner({ brand = {}, onOpenCompare }) {
       : brand.primaryColor || "#002b49");
 
   return (
-    <section className={`compare_Section ${sectionBg} pt-8 sm:pt-14 pb-14 sm:pb-16 select-none`}>
+    <section
+      className={`compare_Section ${sectionBg} pt-8 sm:pt-14 pb-14 sm:pb-16 select-none`}
+      style={{ backgroundColor: brand.compareSectionBgColor || "#ffffff" }}
+    >
       <div className={`${brand.compareBoxMaxWidth || "max-w-[1440px] 2xl:max-w-[1540px]"} mx-auto px-4 sm:px-8 lg:px-12`}>
         <div
           className="compare_box relative rounded-xl sm:rounded-2xl px-8 sm:px-16 pt-9 pb-18 sm:pt-12 sm:pb-16 text-center text-white transition-colors flex flex-col items-center justify-center shadow-md"

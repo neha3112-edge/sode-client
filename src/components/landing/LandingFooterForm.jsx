@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Form, Input, Select, Button, message } from "antd";
+import { Form, Input, Select, Button, Checkbox, message } from "antd";
 import { STATE_OPTIONS } from "@/constants/stateOptions";
 import { Phone } from "lucide-react";
 import LandingContainer from "./LandingContainer";
@@ -209,22 +209,21 @@ export default function LandingFooterForm({ brand = {}, courses = [], onOpenDisc
 
                     {/* Disclaimer Checkbox */}
                     <div className="pt-0.5">
-                      <label className="flex items-start gap-1.5 cursor-pointer select-none">
-                        <input
-                          type="checkbox"
-                          className="mt-0.5 w-[13px] h-[13px] rounded-[2px] border border-slate-400 accent-[#2cc36c] cursor-pointer shrink-0"
-                        />
-                        <span className="text-[10px] sm:text-[10.5px] text-slate-600 leading-tight">
+                      <Checkbox defaultChecked className="text-[10px] sm:text-[10.5px] text-slate-600 leading-tight select-none">
+                        <span>
                           I consent to receive university updates via email and mobile number.{" "}
                           <button
                             type="button"
-                            onClick={() => onOpenDisclaimer?.()}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onOpenDisclaimer?.();
+                            }}
                             className="font-semibold underline cursor-pointer bg-transparent border-none p-0 inline text-blue-600 hover:text-blue-800"
                           >
                             Disclaimer
                           </button>
                         </span>
-                      </label>
+                      </Checkbox>
                     </div>
 
                     {/* Submit Button */}
@@ -364,23 +363,21 @@ export default function LandingFooterForm({ brand = {}, courses = [], onOpenDisc
 
             {/* Row 3: Checkbox Disclaimer */}
             <div className="pt-1">
-              <label className="flex items-start gap-2 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  defaultChecked
-                  className="mt-0.5 w-[14px] h-[14px] rounded-[2px] bg-white border border-slate-300 accent-[#28a745] cursor-pointer shrink-0"
-                />
-                <span className="text-[11px] sm:text-[11.5px] text-white/90 leading-tight">
+              <Checkbox defaultChecked className="text-[11px] sm:text-[11.5px] [&_.ant-checkbox+span]:!text-white/90 leading-tight select-none">
+                <span>
                   I consent to receive university updates via email and mobile number.{" "}
                   <button
                     type="button"
-                    onClick={() => onOpenDisclaimer?.()}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onOpenDisclaimer?.();
+                    }}
                     className="font-bold underline cursor-pointer bg-transparent border-none p-0 inline text-white hover:text-amber-300"
                   >
                     Disclaimer
                   </button>
                 </span>
-              </label>
+              </Checkbox>
             </div>
           </Form>
         </div>

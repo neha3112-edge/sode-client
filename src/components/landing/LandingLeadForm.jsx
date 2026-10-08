@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Form, message } from "antd";
+import { Form, Input, Select, Checkbox, message } from "antd";
 import { Phone } from "lucide-react";
 import { STATE_OPTIONS } from "@/constants/stateOptions";
 import LandingButton from "./LandingButton";
@@ -19,12 +19,15 @@ const DEFAULT_COURSES = [
   { value: "BA", label: "BA" },
 ];
 
-// Clean Indian Flag SVG
+/**
+ * Clean Indian Flag SVG
+ */
 const IndiaFlag = () => (
   <svg
     className="w-[18px] h-[13px] rounded-[1px] shadow-xs shrink-0 select-none"
     viewBox="0 0 640 480"
     xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
   >
     <path fill="#FF9933" d="M0 0h640v160H0z" />
     <path fill="#FFFFFF" d="M0 160h640v160H0z" />
@@ -42,103 +45,94 @@ const IndiaFlag = () => (
   </svg>
 );
 
-// Mobile Phone Input with Grey Flag Pill
+/**
+ * Reusable Mobile Phone Input with Country Code Pill
+ */
 const PhoneInputField = ({
   value,
   onChange,
-  placeholder = "Enter your Number",
+  placeholder = "Enter Mobile Number",
   maxLength = 10,
-  isWhiteCard = false,
-  bordered = false,
+  fieldHeight = "38px",
+  fieldRadius = "6px",
+  inputBg = "#ffffff",
+  inputText = "#1e293b",
+  inputPlaceholder = "#888888",
+  inputBorder = "transparent",
+  countryCodeBg = "#f0f2f5",
+  countryCodeText = "#0f172a",
+  countryCodeBorder = "#d1d5db",
 }) => {
-  const isBordered = isWhiteCard || bordered;
+  const hasBorder = inputBorder && inputBorder !== "none" && inputBorder !== "transparent";
+
   return (
-    <div
-      className={`flex items-center w-full h-[36px] sm:h-[38px] rounded-[6px] overflow-hidden ${
-        isBordered
-          ? "bg-white border border-[#cccccc] focus-within:ring-1 focus-within:ring-[#193579] focus-within:border-[#193579]"
-          : "bg-white shadow-xs focus-within:ring-2 focus-within:ring-amber-400"
-      }`}
-    >
-      <div
-        className={`flex items-center gap-1.5 h-full px-2.5 select-none shrink-0 ${
-          isBordered
-            ? "bg-[#f8fafc] border-r border-[#cccccc]"
-            : "bg-[#f0f2f5] border-r border-[#d1d5db]"
-        }`}
-      >
-        <IndiaFlag />
-        <span className="text-slate-900 font-bold text-[12.5px] tracking-tight">+91</span>
-        <span className="text-slate-500 text-[9px] leading-none">▾</span>
-      </div>
-      <input
-        type="tel"
-        value={value || ""}
-        onChange={onChange}
-        placeholder={placeholder}
-        maxLength={maxLength}
-        className="w-full h-full px-3 bg-white text-slate-800 placeholder:text-slate-400 border-none outline-none text-[13px] font-normal"
-      />
-    </div>
+    <Input
+      type="tel"
+      value={value || ""}
+      onChange={onChange}
+      placeholder={placeholder}
+      maxLength={maxLength}
+      prefix={
+        <span
+          className="flex items-center gap-1.5 h-full px-2.5 select-none shrink-0"
+          style={{
+            margin: "-5px 10px -5px -11px",
+            backgroundColor: countryCodeBg,
+            borderRight: `1px solid ${countryCodeBorder}`,
+            borderTopLeftRadius: "5px",
+            borderBottomLeftRadius: "5px",
+          }}
+        >
+          <IndiaFlag />
+          <span
+            className="font-bold text-[12.5px] tracking-tight"
+            style={{ color: countryCodeText }}
+          >
+            +91
+          </span>
+          <span className="text-slate-400 text-[9px] leading-none">▾</span>
+        </span>
+      }
+      style={{
+        height: fieldHeight,
+        borderRadius: fieldRadius,
+        backgroundColor: inputBg,
+        color: inputText,
+        border: hasBorder ? (inputBorder.includes("px") ? inputBorder : `1px solid ${inputBorder}`) : "none",
+        boxShadow: hasBorder ? "none" : "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+      }}
+      className="w-full text-[13px] placeholder:text-[var(--input-placeholder-color)]"
+    />
   );
 };
 
-// Dropdown Select with Arrow
-const CustomSelectField = ({
-  value,
-  onChange,
-  placeholder,
-  options,
-  isWhiteCard = false,
-  bordered = false,
-}) => {
-  const isBordered = isWhiteCard || bordered;
-  return (
-    <div className="relative w-full">
-      <select
-        value={value || ""}
-        onChange={onChange}
-        className={`w-full h-[36px] sm:h-[38px] px-3.5 pr-8 rounded-[6px] outline-none text-[13px] font-normal appearance-none cursor-pointer ${
-          isBordered
-            ? "bg-white border border-[#cccccc] text-slate-800 focus:ring-1 focus:ring-[#193579] focus:border-[#193579]"
-            : "bg-white border-none shadow-xs focus:ring-2 focus:ring-amber-400"
-        } ${value ? "text-slate-800" : "text-slate-400"}`}
-      >
-        <option value="" disabled className="text-slate-400">
-          {placeholder}
-        </option>
-        {options.map((opt) => (
-          <option key={opt.value} value={opt.value} className="text-slate-900">
-            {opt.label}
-          </option>
-        ))}
-      </select>
-      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-600">
-        <svg className="w-3.5 h-3.5 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
-        </svg>
-      </div>
-    </div>
-  );
-};
-
+/**
+ * GLOBAL REUSABLE ANT DESIGN LEAD FORM COMPONENT
+ *
+ * Architecture:
+ * - Common Ant Design form structure, validation, submission, and event handlers.
+ * - Dynamic JSON-driven configuration for content, colors, placeholders, layout, and buttons.
+ * - Full backward compatibility with existing LP JSON fields and brand objects.
+ */
 export default function LandingLeadForm({
+  config,
   data,
   brand,
   courses,
   courseList,
   universityName,
   defaultCourse = "",
-  formName = "Hero Enquire Form",
+  formName,
   title,
   subtitle,
-  buttonText = "Submit",
+  buttonText,
   phoneText,
   phoneHref,
-  showPhoneBadge = true,
+  showPhoneBadge,
   primaryColor,
   accentColor,
-  variant = "card",
+  variant,
+  maxWidth,
   className = "",
   style = {},
   onSuccess,
@@ -148,45 +142,328 @@ export default function LandingLeadForm({
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  const activeBrand = brand || data?.brand || {};
-  const activeUniversity = universityName || activeBrand.name || "University Online";
-  const rawCourses = courseList || courses || data?.courses || DEFAULT_COURSES;
-  const activeCourses = (rawCourses.length > 0 ? rawCourses : DEFAULT_COURSES).map((item) =>
-    typeof item === "string" ? { value: item, label: item } : item
-  );
+  React.useEffect(() => {
+    if (defaultCourse) {
+      form.setFieldsValue({ course: defaultCourse });
+    }
+  }, [defaultCourse, form]);
 
+  /* -------------------------------------------------------------
+     1. CONFIG RESOLUTION (PRIORITY FLOW)
+     hero.form (config) -> hero -> brand -> global defaults
+  ------------------------------------------------------------- */
+  const activeBrand = brand || data?.brand || {};
+  const heroConfig = activeBrand.hero || data?.brand?.hero || {};
+  const formConfig = config || heroConfig.form || activeBrand.form || {};
+
+  const colors = formConfig.colors || formConfig.theme || {};
+  const layout = formConfig.layout || {};
+  const phoneBtnConfig = formConfig.phoneButton || {};
+  const submitBtnConfig = formConfig.submitButton || {};
+
+  /* -------------------------------------------------------------
+     2. THEME & CARD VARIANT
+  ------------------------------------------------------------- */
   const isWhiteCard =
+    formConfig.variant === "white" ||
+    formConfig.variant === "white-card" ||
     variant === "white-card" ||
     variant === "whiteCard" ||
-    activeBrand.hero?.formCardType === "white" ||
-    activeBrand.hero?.cardStyle === "white";
+    heroConfig.formCardType === "white" ||
+    heroConfig.cardStyle === "white";
 
-  const isCard = variant === "card" || variant === "hero" || isWhiteCard;
+  const isCard =
+    formConfig.variant === "card" ||
+    formConfig.variant === "hero" ||
+    variant === "card" ||
+    variant === "hero" ||
+    isWhiteCard ||
+    variant === undefined;
 
-  const activeTitle = title ?? activeBrand.enquireTitle ?? "Get 100% Free Counselling";
-  const activeSubtitle = subtitle ?? activeBrand.enquireSubtitle ?? "Academic Experts will assist you!";
+  /* -------------------------------------------------------------
+     3. CONTENT RESOLUTION
+  ------------------------------------------------------------- */
+  const activeUniversity =
+    formConfig.universityName ||
+    universityName ||
+    activeBrand.name ||
+    "University Online";
+
+  const activeTitle =
+    title ??
+    formConfig.title ??
+    heroConfig.enquireTitle ??
+    activeBrand.enquireTitle ??
+    "Get 100% Free Counselling";
+
+  const activeSubtitle =
+    subtitle ??
+    formConfig.subtitle ??
+    heroConfig.enquireSubtitle ??
+    activeBrand.enquireSubtitle ??
+    "Academic Experts will assist you!";
+
+  const namePlaceholder =
+    formConfig.namePlaceholder ||
+    heroConfig.namePlaceholder ||
+    "Enter Your Name";
+
+  const emailPlaceholder =
+    formConfig.emailPlaceholder ||
+    "Enter Your Email";
+
+  const phonePlaceholder =
+    formConfig.phonePlaceholder ||
+    "Enter Mobile Number";
+
+  const coursePlaceholder =
+    formConfig.coursePlaceholder ||
+    "Select Your Course";
+
+  const statePlaceholder =
+    formConfig.statePlaceholder ||
+    "Select Your State";
+
+  const consentText =
+    formConfig.consentText ||
+    "I consent to receive university updates via email and mobile number.";
+
+  const disclaimerText =
+    formConfig.disclaimerText ||
+    "Disclaimer";
+
+  const activeSubmitText =
+    buttonText ||
+    formConfig.submitText ||
+    submitBtnConfig.text ||
+    formConfig.buttonText ||
+    heroConfig.formButtonText ||
+    heroConfig.buttonText ||
+    "Submit";
+
+  const hasPhoneBadge =
+    formConfig.showPhoneBadge ??
+    (showPhoneBadge !== undefined
+      ? showPhoneBadge
+      : heroConfig.showPhoneBadge !== false);
+
   const activePhoneText =
+    formConfig.phoneText ||
+    phoneBtnConfig.text ||
     phoneText ||
+    heroConfig.phoneDisplay ||
     activeBrand.phoneDisplay ||
     activeBrand.phone ||
     "+91 7065 7777 55";
-  const activePhoneHref = phoneHref || activePhoneText.replace(/\D/g, "");
 
-  const activePrimaryColor =
-    primaryColor ||
-    activeBrand.hero?.formBackground ||
-    activeBrand.primaryColor ||
-    "#08417b";
-  const activeAccentColor =
-    accentColor ||
-    activeBrand.accentColor ||
-    activeBrand.goldColor ||
-    "#fdb913";
+  const activePhoneHref =
+    formConfig.phoneHref ||
+    phoneBtnConfig.href ||
+    phoneHref ||
+    heroConfig.phoneHref ||
+    activeBrand.phoneHref ||
+    activeBrand.phone ||
+    activePhoneText.replace(/\D/g, "");
+
+  const activeFormName =
+    formConfig.formName ||
+    formName ||
+    "Hero Enquire Form";
+
+  const successMessage =
+    formConfig.successMessage ||
+    "Thank you! Our expert counselor will contact you shortly.";
+
+  const errorMessage =
+    formConfig.errorMessage ||
+    "Failed to submit enquiry. Please try again.";
+
+  // Validation messages
+  const nameRequiredMsg =
+    formConfig.nameRequiredMessage || "Please enter your name";
+  const emailRequiredMsg =
+    formConfig.emailRequiredMessage || "Please enter your email";
+  const emailValidMsg =
+    formConfig.emailValidMessage || "Please enter a valid email";
+  const phoneRequiredMsg =
+    formConfig.phoneRequiredMessage || "Please enter mobile number";
+  const phonePatternMsg =
+    formConfig.phonePatternMessage || "Enter 10-digit mobile number";
+  const courseRequiredMsg =
+    formConfig.courseRequiredMessage || "Please select course";
+  const stateRequiredMsg =
+    formConfig.stateRequiredMessage || "Please select state";
+
+  const hideTerms =
+    formConfig.hideTermsCheckbox ??
+    heroConfig.hideTermsCheckbox ??
+    false;
+
+  const phoneBeforeEmail =
+    formConfig.phoneBeforeEmail ??
+    heroConfig.phoneBeforeEmail ??
+    false;
+
+  /* -------------------------------------------------------------
+     4. COLORS & STYLING RESOLUTION
+  ------------------------------------------------------------- */
+  const cardBg =
+    colors.background ||
+    (isWhiteCard
+      ? "#ffffff"
+      : primaryColor ||
+        heroConfig.formBackground ||
+        activeBrand.primaryColor ||
+        "#08417b");
+
+  const titleColor =
+    colors.title ||
+    (isWhiteCard
+      ? heroConfig.formTitleColor || heroConfig.enquireColor || "#ee3024"
+      : accentColor ||
+        heroConfig.formAccentColor ||
+        activeBrand.accentColor ||
+        activeBrand.goldColor ||
+        "#fdb913");
+
+  const subtitleColor =
+    colors.subtitle ||
+    heroConfig.formSubtitleColor ||
+    (isWhiteCard ? "#475569" : "#ffffff");
+
+  const phoneBadgeBg =
+    colors.phoneBackground ||
+    phoneBtnConfig.background ||
+    heroConfig.phoneBadgeBackground ||
+    heroConfig.formPhoneBg ||
+    (isWhiteCard
+      ? heroConfig.phoneBadgeBg || "#f78d2d"
+      : accentColor ||
+        heroConfig.formAccentColor ||
+        activeBrand.accentColor ||
+        activeBrand.goldColor ||
+        "#fdb913");
+
+  const phoneBadgeColor =
+    colors.phoneText ||
+    phoneBtnConfig.textColor ||
+    (isWhiteCard ? "#ffffff" : "#000000");
+
+  const phoneBadgeIconColor =
+    colors.phoneIcon ||
+    phoneBtnConfig.iconColor ||
+    phoneBadgeColor;
+
+  const phoneBadgeRadius =
+    phoneBtnConfig.radius ||
+    heroConfig.phoneBadgeRadius ||
+    "999px";
+
+  const inputBg = colors.inputBackground || "#ffffff";
+  const inputText = colors.inputText || "#1e293b";
+  const inputPlaceholder =
+    colors.inputPlaceholder || (isWhiteCard ? "#94a3b8" : "#888888");
+  const inputBorder =
+    colors.inputBorder || (isWhiteCard ? "#cccccc" : "transparent");
+
+  const selectBg = colors.selectBackground || inputBg;
+  const selectText = colors.selectText || inputText;
+  const selectPlaceholder =
+    colors.selectPlaceholder || colors.inputPlaceholder || inputPlaceholder;
+  const selectBorder =
+    colors.selectBorder || colors.inputBorder || inputBorder;
+
+  const countryCodeBg =
+    colors.countryCodeBackground || (isWhiteCard ? "#f8fafc" : "#f0f2f5");
+  const countryCodeText = colors.countryCodeText || "#0f172a";
+  const countryCodeBorder =
+    colors.countryCodeBorder || (isWhiteCard ? "#cccccc" : "#d1d5db");
+
+  const consentColor =
+    colors.consentText ||
+    (isWhiteCard ? "#475569" : isCard ? "#ffffff" : "#475569");
+
+  const disclaimerColor =
+    colors.disclaimer ||
+    (isWhiteCard ? "#2563eb" : isCard ? "#ffffff" : "#2563eb");
+
+  const disclaimerHoverColor =
+    colors.disclaimerHover ||
+    (isWhiteCard ? "#1d4ed8" : isCard ? "#fde047" : "#1d4ed8");
+
+  const submitBg =
+    colors.submitBackground ||
+    submitBtnConfig.background ||
+    heroConfig.submitButtonBackground ||
+    heroConfig.submitBtnBg ||
+    activeBrand.submitBtnBg ||
+    "#22c55e";
+
+  const submitTextColor =
+    colors.submitText ||
+    submitBtnConfig.textColor ||
+    heroConfig.submitButtonTextColor ||
+    "#ffffff";
+
+  const submitBorder =
+    colors.submitBorder ||
+    submitBtnConfig.border ||
+    "none";
+
+  const submitRadius =
+    layout.submitButtonRadius ||
+    submitBtnConfig.radius ||
+    heroConfig.submitButtonRadius ||
+    "8px";
+
+  /* -------------------------------------------------------------
+     5. LAYOUT & DIMENSIONS
+  ------------------------------------------------------------- */
+  const cardMaxWidth = maxWidth || layout.maxWidth || "360px";
+  const cardPadding =
+    layout.padding ||
+    (isWhiteCard ? "18px 18px" : isCard ? "14px 16px 16px" : "14px");
+  const cardRadius =
+    layout.borderRadius ||
+    (isWhiteCard ? "14px" : isCard ? "12px" : "0px");
+  const cardShadow =
+    layout.boxShadow ||
+    (isWhiteCard
+      ? "0 14px 32px rgba(0, 0, 0, 0.22)"
+      : isCard
+      ? "0 10px 25px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.2)"
+      : "none");
+  const cardBorder =
+    layout.border ||
+    (isWhiteCard ? "1px solid rgba(226, 232, 240, 0.9)" : "none");
+
+  const fieldHeight = layout.fieldHeight || "38px";
+  const fieldRadius = layout.fieldRadius || "6px";
+  const fieldGap = layout.fieldGap || "8px";
+
+  /* -------------------------------------------------------------
+     6. COURSES & STATE OPTIONS
+  ------------------------------------------------------------- */
+  const rawCourses =
+    formConfig.courseList ||
+    courseList ||
+    courses ||
+    heroConfig.formCourseList ||
+    activeBrand.courses ||
+    data?.courses ||
+    DEFAULT_COURSES;
+
+  const activeCourses = (rawCourses.length > 0 ? rawCourses : DEFAULT_COURSES).map(
+    (item) => (typeof item === "string" ? { value: item, label: item } : item)
+  );
 
   const stateOptions = STATE_OPTIONS.map((st) =>
     typeof st === "string" ? { value: st, label: st } : st
   );
 
+  /* -------------------------------------------------------------
+     7. FORM SUBMISSION HANDLER (API UNCHANGED)
+  ------------------------------------------------------------- */
   const onFinish = async (values) => {
     setLoading(true);
     try {
@@ -203,7 +480,7 @@ export default function LandingLeadForm({
         state: values.state,
         university: activeUniversity,
         source: activeUniversity,
-        form_name: formName,
+        form_name: activeFormName,
         utm_source: searchParams.get("utm_source") || `${activeUniversity}_LP`,
         utm_medium: searchParams.get("utm_medium") || "Direct",
         utm_campaign: searchParams.get("utm_campaign") || "Online_Admission_2026",
@@ -216,42 +493,240 @@ export default function LandingLeadForm({
         body: JSON.stringify(leadPayload),
       });
 
-      message.success("Thank you! Our expert counselor will contact you shortly.");
+      message.success(successMessage);
       form.resetFields();
       onSuccess?.();
       router.push("/thank-you");
     } catch {
-      message.error("Failed to submit enquiry. Please try again.");
+      message.error(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
+  /* -------------------------------------------------------------
+     8. REUSABLE FIELD RENDERERS
+  ------------------------------------------------------------- */
+  const inputCommonStyle = {
+    height: fieldHeight,
+    borderRadius: fieldRadius,
+    backgroundColor: inputBg,
+    color: inputText,
+    border:
+      inputBorder && inputBorder !== "none" && inputBorder !== "transparent"
+        ? inputBorder.includes("px")
+          ? inputBorder
+          : `1px solid ${inputBorder}`
+        : "none",
+    boxShadow:
+      inputBorder && inputBorder !== "none" && inputBorder !== "transparent"
+        ? "none"
+        : "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+  };
+
+  const renderNameField = () => (
+    <Form.Item
+      key="field-name"
+      name="full_name"
+      rules={[{ required: true, message: nameRequiredMsg }]}
+      className="!mb-0"
+    >
+      <Input
+        placeholder={namePlaceholder}
+        style={inputCommonStyle}
+        className="w-full px-3.5 text-[13px] font-normal placeholder:text-[var(--input-placeholder-color)]"
+      />
+    </Form.Item>
+  );
+
+  const renderEmailField = () => (
+    <Form.Item
+      key="field-email"
+      name="email"
+      rules={[
+        { required: true, message: emailRequiredMsg },
+        { type: "email", message: emailValidMsg },
+      ]}
+      className="!mb-0"
+    >
+      <Input
+        type="email"
+        placeholder={emailPlaceholder}
+        style={inputCommonStyle}
+        className="w-full px-3.5 text-[13px] font-normal placeholder:text-[var(--input-placeholder-color)]"
+      />
+    </Form.Item>
+  );
+
+  const renderPhoneField = () => (
+    <Form.Item
+      key="field-phone"
+      name="phone"
+      rules={[
+        { required: true, message: phoneRequiredMsg },
+        { pattern: /^[6-9]\d{9}$/, message: phonePatternMsg },
+      ]}
+      className="!mb-0"
+    >
+      <PhoneInputField
+        placeholder={phonePlaceholder}
+        maxLength={10}
+        fieldHeight={fieldHeight}
+        fieldRadius={fieldRadius}
+        inputBg={inputBg}
+        inputText={inputText}
+        inputPlaceholder={inputPlaceholder}
+        inputBorder={inputBorder}
+        countryCodeBg={countryCodeBg}
+        countryCodeText={countryCodeText}
+        countryCodeBorder={countryCodeBorder}
+      />
+    </Form.Item>
+  );
+
+  const renderCourseField = () => (
+    <Form.Item
+      key="field-course"
+      name="course"
+      rules={[{ required: true, message: courseRequiredMsg }]}
+      className="!mb-0"
+    >
+      <Select
+        placeholder={coursePlaceholder}
+        options={activeCourses}
+        className="w-full text-[13px] ant-select-custom"
+      />
+    </Form.Item>
+  );
+
+  const renderStateField = () => (
+    <Form.Item
+      key="field-state"
+      name="state"
+      rules={[{ required: true, message: stateRequiredMsg }]}
+      className="!mb-0"
+    >
+      <Select
+        placeholder={statePlaceholder}
+        options={stateOptions}
+        className="w-full text-[13px] ant-select-custom"
+      />
+    </Form.Item>
+  );
+
+  const renderConsentField = () => {
+    if (hideTerms) return null;
+    return (
+      <Form.Item
+        key="field-consent"
+        name="terms"
+        valuePropName="checked"
+        className="!mb-0 !mt-0.5"
+      >
+        <Checkbox className="text-[10px] sm:text-[10.5px] leading-tight select-none">
+          <span className="font-normal" style={{ color: consentColor }}>
+            {consentText}{" "}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpenDisclaimer?.();
+              }}
+              style={{ color: disclaimerColor }}
+              className="font-semibold underline cursor-pointer bg-transparent border-none p-0 inline hover:opacity-85"
+            >
+              {disclaimerText}
+            </button>
+          </span>
+        </Checkbox>
+      </Form.Item>
+    );
+  };
+
+  const renderPhoneButton = () => {
+    if (!hasPhoneBadge || !activePhoneText) return null;
+    return (
+      <div className="flex justify-center mt-1.5 mb-2.5">
+        <LandingButton
+          href={`tel:${activePhoneHref}`}
+          variant="phone"
+          skewEffect={true}
+          radius={phoneBadgeRadius}
+          icon={
+            <Phone
+              className="w-3.5 h-3.5 stroke-[2.5]"
+              style={{ color: phoneBadgeIconColor, fill: phoneBadgeIconColor }}
+            />
+          }
+          iconPosition="left"
+          className="px-4 py-1.5 text-[13px] shadow-xs"
+          style={{
+            background: phoneBadgeBg,
+            color: phoneBadgeColor,
+            ...heroConfig.phoneBadgeStyle,
+          }}
+        >
+          <span className="tracking-tight font-bold">{activePhoneText}</span>
+        </LandingButton>
+      </div>
+    );
+  };
+
+  const renderSubmitButton = () => (
+    <LandingButton
+      type="submit"
+      variant="submit"
+      loading={loading}
+      radius={submitRadius}
+      className="w-full text-[14px] sm:text-[15px] font-bold mt-1 shadow-sm"
+      style={{
+        height: "40px",
+        background: submitBg,
+        color: submitTextColor,
+        border: submitBorder !== "none" ? submitBorder : undefined,
+      }}
+    >
+      {activeSubmitText}
+    </LandingButton>
+  );
+
+  // Determine Field Sequence
+  const fields = phoneBeforeEmail
+    ? [renderNameField, renderPhoneField, renderEmailField, renderCourseField, renderStateField]
+    : [renderNameField, renderEmailField, renderPhoneField, renderCourseField, renderStateField];
+
+  /* -------------------------------------------------------------
+     9. RENDER
+  ------------------------------------------------------------- */
   return (
     <div
-      className={`landing-lead-card relative w-full max-w-full sm:max-w-[360px] lg:max-w-[360px] lg:ml-auto lg:mr-0 mx-auto overflow-hidden ${
+      className={`landing-lead-card relative w-full ${
+        maxWidth === "100%"
+          ? "max-w-full"
+          : `max-w-full sm:max-w-[${cardMaxWidth}] lg:max-w-[${cardMaxWidth}] lg:ml-auto lg:mr-0`
+      } mx-auto overflow-hidden ${
         isWhiteCard ? "text-slate-800" : "text-white"
       } ${isCard ? "landing-lead-card--hero" : "landing-lead-card--default"} ${className}`}
       style={{
-        ...(isWhiteCard
-          ? {
-              backgroundColor: "#ffffff",
-              borderRadius: "14px",
-              padding: "18px 18px",
-              boxShadow: "0 14px 32px rgba(0, 0, 0, 0.22)",
-              border: "1px solid rgba(226, 232, 240, 0.9)",
-            }
-          : isCard
-          ? {
-              backgroundColor: activePrimaryColor,
-              borderRadius: "12px",
-              padding: "14px 16px 16px",
-              boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.2)",
-            }
-          : {
-              backgroundColor: "#ffffff",
-              padding: "14px",
-            }),
+        maxWidth: cardMaxWidth,
+        backgroundColor: cardBg,
+        borderRadius: cardRadius,
+        padding: cardPadding,
+        boxShadow: cardShadow,
+        border: cardBorder,
+        // CSS Custom Properties for unified Input & Select placeholder styling
+        "--input-placeholder-color": inputPlaceholder,
+        "--select-placeholder-color": selectPlaceholder,
+        "--select-text-color": selectText,
+        "--select-bg": selectBg,
+        "--select-border":
+          selectBorder && selectBorder !== "none" && selectBorder !== "transparent"
+            ? selectBorder.includes("px")
+              ? selectBorder
+              : `1px solid ${selectBorder}`
+            : "none",
+        "--select-height": fieldHeight,
+        "--select-radius": fieldRadius,
         ...style,
       }}
     >
@@ -260,60 +735,26 @@ export default function LandingLeadForm({
         <div className="text-center mb-2.5">
           <h2
             className="m-0 text-[20px] sm:text-[22px] font-bold tracking-tight leading-tight"
-            style={{
-              color: isWhiteCard
-                ? activeBrand.hero?.formTitleColor || activeBrand.hero?.enquireColor || "#ee3024"
-                : activeAccentColor,
-            }}
+            style={{ color: titleColor }}
           >
             {activeTitle}
           </h2>
           <p
-            className={`m-0 mt-0.5 text-[12.5px] sm:text-[13px] font-medium leading-normal ${
-              isWhiteCard ? "text-slate-600" : "text-white"
-            }`}
+            className="m-0 mt-0.5 text-[12.5px] sm:text-[13px] font-medium leading-normal"
+            style={{ color: subtitleColor }}
           >
             {activeSubtitle}
           </p>
 
-          {activeBrand.hero?.showDividerBelowSubtitle && (
-            <hr className="border-t border-slate-200 mt-2.5 mb-1 w-full" />
+          {heroConfig.showDividerBelowSubtitle && (
+            <hr className="border-t border-slate-200/40 mt-2.5 mb-1 w-full" />
           )}
 
-          {showPhoneBadge && activeBrand.hero?.showPhoneBadge !== false && activePhoneText && (
-            <div className="flex justify-center mt-1.5 mb-2.5">
-              <LandingButton
-                href={`tel:${activePhoneHref}`}
-                variant="phone"
-                skewEffect={true}
-                icon={
-                  <Phone
-                    className={`w-3.5 h-3.5 stroke-[2.5] ${
-                      isWhiteCard ? "fill-white text-white" : "fill-black text-black"
-                    }`}
-                  />
-                }
-                iconPosition="left"
-                className="px-4 py-1.5 text-[13px] rounded-full shadow-xs"
-                style={{
-                  background:
-                    activeBrand.hero?.phoneBadgeBackground ||
-                    activeBrand.hero?.formPhoneBg ||
-                    (isWhiteCard
-                      ? activeBrand.hero?.phoneBadgeBg || "#f78d2d"
-                      : activeAccentColor),
-                  color: isWhiteCard ? "#ffffff" : "#000000",
-                  ...activeBrand.hero?.phoneBadgeStyle,
-                }}
-              >
-                <span className="tracking-tight font-bold">{activePhoneText}</span>
-              </LandingButton>
-            </div>
-          )}
+          {renderPhoneButton()}
         </div>
       ) : (
         <div className="mb-3 text-center">
-          <h2 className="m-0 text-lg font-bold" style={{ color: activePrimaryColor }}>
+          <h2 className="m-0 text-lg font-bold" style={{ color: cardBg }}>
             {activeTitle}
           </h2>
           <p className="m-0 mt-0.5 text-xs text-slate-500">{activeSubtitle}</p>
@@ -326,172 +767,12 @@ export default function LandingLeadForm({
         layout="vertical"
         onFinish={onFinish}
         initialValues={{ course: defaultCourse || undefined, terms: false }}
-        className="space-y-2 [&_.ant-form-item]:!mb-2 [&_.ant-form-item-label]:hidden [&_.ant-form-item-explain-error]:!text-red-500 [&_.ant-form-item-explain-error]:!text-[11px] [&_.ant-form-item-explain-error]:!pt-1"
+        style={{ gap: fieldGap }}
+        className="flex flex-col [&_.ant-form-item]:!mb-0 [&_.ant-form-item-label]:hidden [&_.ant-form-item-explain-error]:!text-red-500 [&_.ant-form-item-explain-error]:!text-[11px] [&_.ant-form-item-explain-error]:!pt-0.5 [&_.ant-select-custom_.ant-select-selector]:!bg-[var(--select-bg)] [&_.ant-select-custom_.ant-select-selector]:!border-[var(--select-border)] [&_.ant-select-custom_.ant-select-selector]:!h-[var(--select-height)] [&_.ant-select-custom_.ant-select-selector]:!rounded-[var(--select-radius)] [&_.ant-select-custom_.ant-select-selection-placeholder]:!text-[var(--select-placeholder-color)] [&_.ant-select-custom_.ant-select-selection-placeholder]:!leading-[var(--select-height)] [&_.ant-select-custom_.ant-select-selection-item]:!text-[var(--select-text-color)] [&_.ant-select-custom_.ant-select-selection-item]:!leading-[var(--select-height)]"
       >
-        {/* Full Name */}
-        <Form.Item
-          name="full_name"
-          rules={[{ required: true, message: "Please enter your name" }]}
-        >
-          <input
-            type="text"
-            placeholder={activeBrand.hero?.namePlaceholder || "Enter Your Name"}
-            className={`w-full h-[36px] sm:h-[38px] px-3.5 rounded-[6px] outline-none text-[13px] font-normal ${
-              isWhiteCard
-                ? "bg-white border border-[#cccccc] text-slate-800 placeholder:text-slate-400 focus:ring-1 focus:ring-[#193579] focus:border-[#193579]"
-                : "bg-white text-slate-800 placeholder:text-[#888888] border-none shadow-xs focus:ring-2 focus:ring-amber-400"
-            }`}
-          />
-        </Form.Item>
-
-        {activeBrand.hero?.phoneBeforeEmail ? (
-          <>
-            {/* Mobile Number */}
-            <Form.Item
-              name="phone"
-              rules={[
-                { required: true, message: "Please enter mobile number" },
-                { pattern: /^[6-9]\d{9}$/, message: "Enter 10-digit mobile number" },
-              ]}
-            >
-              <PhoneInputField
-                placeholder="Enter Mobile Number"
-                maxLength={10}
-                isWhiteCard={isWhiteCard}
-              />
-            </Form.Item>
-
-            {/* Email */}
-            <Form.Item
-              name="email"
-              rules={[
-                { required: true, message: "Please enter your email" },
-                { type: "email", message: "Please enter a valid email" },
-              ]}
-            >
-              <input
-                type="email"
-                placeholder="Enter Your Email"
-                className={`w-full h-[36px] sm:h-[38px] px-3.5 rounded-[6px] outline-none text-[13px] font-normal ${
-                  isWhiteCard
-                    ? "bg-white border border-[#cccccc] text-slate-800 placeholder:text-slate-400 focus:ring-1 focus:ring-[#193579] focus:border-[#193579]"
-                    : "bg-white text-slate-800 placeholder:text-[#888888] border-none shadow-xs focus:ring-2 focus:ring-amber-400"
-                }`}
-              />
-            </Form.Item>
-          </>
-        ) : (
-          <>
-            {/* Email */}
-            <Form.Item
-              name="email"
-              rules={[
-                { required: true, message: "Please enter your email" },
-                { type: "email", message: "Please enter a valid email" },
-              ]}
-            >
-              <input
-                type="email"
-                placeholder="Enter Your Email"
-                className={`w-full h-[36px] sm:h-[38px] px-3.5 rounded-[6px] outline-none text-[13px] font-normal ${
-                  isWhiteCard
-                    ? "bg-white border border-[#cccccc] text-slate-800 placeholder:text-slate-400 focus:ring-1 focus:ring-[#193579] focus:border-[#193579]"
-                    : "bg-white text-slate-800 placeholder:text-[#888888] border-none shadow-xs focus:ring-2 focus:ring-amber-400"
-                }`}
-              />
-            </Form.Item>
-
-            {/* Mobile Number */}
-            <Form.Item
-              name="phone"
-              rules={[
-                { required: true, message: "Please enter mobile number" },
-                { pattern: /^[6-9]\d{9}$/, message: "Enter 10-digit mobile number" },
-              ]}
-            >
-              <PhoneInputField
-                placeholder="Enter Mobile Number"
-                maxLength={10}
-                isWhiteCard={isWhiteCard}
-              />
-            </Form.Item>
-          </>
-        )}
-
-        {/* Course Select */}
-        <Form.Item
-          name="course"
-          rules={[{ required: true, message: "Please select course" }]}
-        >
-          <CustomSelectField
-            placeholder="Select Your Course"
-            options={activeCourses}
-            isWhiteCard={isWhiteCard}
-          />
-        </Form.Item>
-
-        {/* State Select */}
-        <Form.Item
-          name="state"
-          rules={[{ required: true, message: "Please select state" }]}
-        >
-          <CustomSelectField
-            placeholder="Select Your State"
-            options={stateOptions}
-            isWhiteCard={isWhiteCard}
-          />
-        </Form.Item>
-
-        {/* Terms Checkbox with Disclaimer Link */}
-        {!activeBrand.hero?.hideTermsCheckbox && (
-          <Form.Item name="terms" valuePropName="checked" className="!mb-2 !mt-1">
-            <label className="flex items-start gap-1.5 cursor-pointer select-none">
-              <input
-                type="checkbox"
-                className="mt-0.5 w-[13px] h-[13px] rounded-[2px] bg-white border border-slate-300 accent-[#22c55e] cursor-pointer shrink-0"
-              />
-              <span
-                className={`text-[10px] sm:text-[10.5px] leading-tight font-normal ${
-                  isWhiteCard ? "text-slate-600" : isCard ? "text-white" : "text-slate-600"
-                }`}
-              >
-                I consent to receive university updates via email and mobile number.{" "}
-                <button
-                  type="button"
-                  onClick={() => onOpenDisclaimer?.()}
-                  className={`font-semibold underline cursor-pointer bg-transparent border-none p-0 inline ${
-                    isWhiteCard
-                      ? "text-blue-600 hover:text-blue-700"
-                      : isCard
-                      ? "text-white hover:text-amber-300"
-                      : "text-blue-600 hover:text-blue-700"
-                  }`}
-                >
-                  Disclaimer
-                </button>
-              </span>
-            </label>
-          </Form.Item>
-        )}
-
-        {/* Submit Button */}
-        <LandingButton
-          type="submit"
-          variant="submit"
-          loading={loading}
-          className="w-full h-[38px] sm:h-[40px] text-[14px] sm:text-[15px] font-bold mt-1"
-          style={{
-            background:
-              activeBrand.hero?.submitButtonBackground ||
-              activeBrand.hero?.submitBtnBg ||
-              activeBrand.submitBtnBg ||
-              "#22c55e",
-            color: activeBrand.hero?.submitButtonTextColor || "#ffffff",
-            borderRadius: activeBrand.hero?.submitButtonRadius || "8px",
-          }}
-        >
-          {buttonText}
-        </LandingButton>
+        {fields.map((fieldFn) => fieldFn())}
+        {renderConsentField()}
+        {renderSubmitButton()}
       </Form>
     </div>
   );

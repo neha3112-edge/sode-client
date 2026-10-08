@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import Image from "next/image";
+import { Carousel, Card, Button } from "antd";
 import { Download, ChevronLeft, ChevronRight, Hourglass } from "lucide-react";
 import { FaDownload } from "react-icons/fa";
 
@@ -14,54 +15,14 @@ export default function ProgrammesCarousel({
   onSelectCourseForBrochure,
   onOpenApply,
 }) {
+  const carouselRef = useRef(null);
   const isSmu = brand.programmesLayout === "smu-cards" || brand.slug === "smu";
   const isClean = brand.programmesCardStyle === "clean" || brand.programmesCardStyle === "card" || Boolean(brand.programmesPrefix);
-  const total = programmes.length;
-
-  const [currentIndex, setCurrentIndex] = useState(total > 0 ? total : 0);
-  const [withTransition, setWithTransition] = useState(true);
-  const [isPaused, setIsPaused] = useState(false);
-  const [visibleCount, setVisibleCount] = useState(isClean || isSmu ? 3 : 4);
-  const touchStartXRef = useRef(0);
-  const touchEndXRef = useRef(0);
+  const isMobileStack = Boolean(brand.programmesMobileStack ?? (brand.slug === "amity"));
 
   const displayUniversity = (universityName || brand.name || "University Online").replace(/\s+Online$/i, "").trim();
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (typeof window === "undefined") return;
-      setVisibleCount(window.innerWidth < 640 ? 1 : window.innerWidth < 1024 ? 2 : (isClean || isSmu ? 3 : 4));
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [isClean, isSmu]);
-
-  const extendedList = total > 0 ? [...programmes, ...programmes, ...programmes, ...programmes] : [];
-
-  const handleTransitionEnd = () => {
-    if (currentIndex >= total * 2) {
-      setWithTransition(false);
-      setCurrentIndex(total);
-    } else if (currentIndex < total) {
-      setWithTransition(false);
-      setCurrentIndex(total + (currentIndex % total));
-    }
-  };
-
-  const slide = (dir) => {
-    setWithTransition(true);
-    setCurrentIndex((prev) => prev + dir);
-  };
-
-  useEffect(() => {
-    if (isPaused || total <= 1) return;
-    const timer = setInterval(() => {
-      setWithTransition(true);
-      setCurrentIndex((prev) => (prev >= total * 2 ? total + 1 : prev + 1));
-    }, isSmu ? 7500 : intervalTime);
-    return () => clearInterval(timer);
-  }, [isPaused, total, intervalTime, isSmu]);
+  const slidesToShow = isClean || isSmu ? 3 : 4;
 
   return (
     <section
@@ -74,22 +35,6 @@ export default function ProgrammesCarousel({
           ? { background: "linear-gradient(to bottom, #ffffff 0%, #ffffff 56%, #efefef 56%, #efefef 100%)" }
           : { backgroundColor: brand.programmesBg || (isClean ? "#f5ede7" : brand.primaryColor || "#08417b") }
       }
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
-      onTouchStart={(e) => {
-        setIsPaused(true);
-        touchStartXRef.current = e.targetTouches[0].clientX;
-      }}
-      onTouchMove={(e) => {
-        touchEndXRef.current = e.targetTouches[0].clientX;
-      }}
-      onTouchEnd={() => {
-        const deltaX = touchStartXRef.current - touchEndXRef.current;
-        if (Math.abs(deltaX) > 40 && touchEndXRef.current !== 0) slide(deltaX > 0 ? 1 : -1);
-        touchStartXRef.current = 0;
-        touchEndXRef.current = 0;
-        setTimeout(() => setIsPaused(false), 2000);
-      }}
     >
       {/* Heading */}
       <div className="text-center mb-5 sm:mb-6 px-4 max-w-4xl mx-auto">
@@ -104,54 +49,84 @@ export default function ProgrammesCarousel({
           </h2>
         ) : (
           <div>
-            <h3 className="text-xl sm:text-2xl lg:text-[28px] font-bold m-0 tracking-tight leading-tight" style={{ color: brand.primaryColor || "#f35a06" }}>
-              {displayUniversity}
+            <h3
+              className="text-xl sm:text-2xl lg:text-[28px] font-bold m-0 tracking-tight leading-tight text-white"
+              style={{ color: brand.programmesSubtitleColor || "#ffffff" }}
+            >
+              {brand.programmesSubtitle || displayUniversity}
             </h3>
-            <h2 className="text-2xl sm:text-3xl lg:text-[36px] font-bold mt-1 m-0 tracking-tight leading-tight text-white">
-              {title}
+            <h2
+              className="text-2xl sm:text-3xl lg:text-[36px] font-bold mt-1 m-0 tracking-tight leading-tight text-white"
+              style={{ color: brand.programmesTitleColor || "#ffffff" }}
+            >
+              {brand.programmesTitle || title || "Online Degree Courses"}
             </h2>
           </div>
         )}
       </div>
 
-      {/* Carousel */}
+      {/* Mobile Stack View: When isMobileStack is active, cards appear one below another */}
+      {isMobileStack && (
+        <div className="block sm:hidden w-full px-4 max-w-[370px] mx-auto space-y-4">
+          {programmes.map((c, idx) => (
+            <div key={`mobile-prog-${c.id || c.code}-${idx}`} className="w-full">
+              {isClean ? (
+                <CleanCard c={c} brand={brand} onSelectCourseForBrochure={onSelectCourseForBrochure} />
+              ) : isSmu ? (
+                <SmuCard c={c} brand={brand} onSelectCourseForBrochure={onSelectCourseForBrochure} onOpenApply={onOpenApply} />
+              ) : (
+                <ClassicCard c={c} brand={brand} onSelectCourseForBrochure={onSelectCourseForBrochure} isMobile />
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Ant Design Carousel (hidden on mobile when isMobileStack is active) */}
       <div
         className={`w-full mx-auto px-4 relative ${
+          isMobileStack ? "hidden sm:block" : ""
+        } ${
           isClean ? "max-w-[1140px] px-3 sm:px-6" : isSmu ? "max-w-[1200px] xl:max-w-[1240px] px-6 sm:px-10 lg:px-12" : "max-w-[1240px] xl:max-w-[1360px] sm:px-8 lg:px-10"
         }`}
       >
-        <button
-          type="button"
-          onClick={() => slide(-1)}
+        <Button
+          type="text"
+          onClick={() => carouselRef.current?.prev()}
           aria-label="Previous programme"
-          className="absolute -left-2 sm:-left-4 lg:-left-5 top-1/2 -translate-y-1/2 z-20 text-[#222222] hover:text-[#ee3024] transition-colors p-1 bg-transparent border-none cursor-pointer flex items-center justify-center active:scale-90"
+          className="hidden sm:flex absolute -left-2 sm:-left-4 lg:-left-5 top-1/2 -translate-y-1/2 z-20 text-[#222222] hover:!text-[#ee3024] transition-colors p-1 !bg-transparent !border-none cursor-pointer items-center justify-center active:scale-90 !h-auto !w-auto"
         >
           <ChevronLeft className="w-7 h-7 sm:w-8 sm:h-8 stroke-[2.5]" />
-        </button>
+        </Button>
 
-        <button
-          type="button"
-          onClick={() => slide(1)}
+        <Button
+          type="text"
+          onClick={() => carouselRef.current?.next()}
           aria-label="Next programme"
-          className="absolute -right-2 sm:-right-4 lg:-right-5 top-1/2 -translate-y-1/2 z-20 text-[#222222] hover:text-[#ee3024] transition-colors p-1 bg-transparent border-none cursor-pointer flex items-center justify-center active:scale-90"
+          className="hidden sm:flex absolute -right-2 sm:-right-4 lg:-right-5 top-1/2 -translate-y-1/2 z-20 text-[#222222] hover:!text-[#ee3024] transition-colors p-1 !bg-transparent !border-none cursor-pointer items-center justify-center active:scale-90 !h-auto !w-auto"
         >
           <ChevronRight className="w-7 h-7 sm:w-8 sm:h-8 stroke-[2.5]" />
-        </button>
+        </Button>
 
-        <div className="w-full overflow-hidden">
-          <div
-            onTransitionEnd={handleTransitionEnd}
-            className="flex items-stretch"
-            style={{
-              transform: `translateX(-${currentIndex * (100 / visibleCount)}%)`,
-              transition: withTransition ? "transform 500ms cubic-bezier(0.25, 1, 0.5, 1)" : "none",
-            }}
+        <div className="w-full">
+          <Carousel
+            ref={carouselRef}
+            autoplay
+            autoplaySpeed={isSmu ? 7500 : intervalTime}
+            dots={false}
+            slidesToShow={slidesToShow}
+            slidesToScroll={1}
+            infinite={programmes.length > 1}
+            responsive={[
+              { breakpoint: 1280, settings: { slidesToShow: isClean || isSmu ? 3 : 4 } },
+              { breakpoint: 1024, settings: { slidesToShow: 2 } },
+              { breakpoint: 640, settings: { slidesToShow: 1 } },
+            ]}
           >
-            {extendedList.map((c, idx) => (
+            {programmes.map((c, idx) => (
               <div
                 key={`${c.id || c.code}-${idx}`}
-                className={`shrink-0 box-border ${isClean ? "px-2 sm:px-2.5 lg:px-3" : isSmu ? "px-2.5 sm:px-3" : "px-1.5 sm:px-2 xl:px-2.5"}`}
-                style={{ width: `${100 / visibleCount}%` }}
+                className={`box-border py-2 ${isClean ? "px-2 sm:px-2.5 lg:px-3" : isSmu ? "px-2.5 sm:px-3" : "px-1.5 sm:px-2 xl:px-2.5"}`}
               >
                 {isClean ? (
                   <CleanCard c={c} brand={brand} onSelectCourseForBrochure={onSelectCourseForBrochure} />
@@ -162,7 +137,7 @@ export default function ProgrammesCarousel({
                 )}
               </div>
             ))}
-          </div>
+          </Carousel>
         </div>
       </div>
     </section>
@@ -170,11 +145,15 @@ export default function ProgrammesCarousel({
 }
 
 // -------------------------------------------------------------
-// Sub-Card: Clean Style (Manipal)
+// Sub-Card: Clean Style (Manipal) using Ant Design Card
 // -------------------------------------------------------------
 function CleanCard({ c, brand, onSelectCourseForBrochure }) {
   return (
-    <div className={brand.programmeCardClass || "bg-white rounded-[5px] shadow-[0px_3px_15px_rgba(0,0,0,0.13)] py-4 sm:py-5 px-5 sm:px-[22px] flex flex-col justify-between h-full min-h-[350px] sm:min-h-[360px] text-left"}>
+    <Card
+      variant="borderless"
+      styles={{ body: { padding: 0 } }}
+      className={brand.programmeCardClass || "bg-white rounded-[5px] shadow-[0px_3px_15px_rgba(0,0,0,0.13)] py-4 sm:py-5 px-5 sm:px-[22px] flex flex-col justify-between h-full min-h-[350px] sm:min-h-[360px] text-left"}
+    >
       <div>
         <h3 className="text-[26px] sm:text-[28px] font-bold text-[#000000] m-0 tracking-tight leading-none">
           {c.code || c.id?.toUpperCase()}
@@ -198,26 +177,30 @@ function CleanCard({ c, brand, onSelectCourseForBrochure }) {
           />
         </div>
 
-        <button
-          type="button"
+        <Button
+          type="primary"
           onClick={() => onSelectCourseForBrochure?.(c.code || c.title)}
-          className="w-full py-2 sm:py-2.5 px-4 rounded-[5px] text-white font-medium text-[13px] sm:text-[13.5px] flex items-center justify-center gap-2 border-none cursor-pointer transition-opacity hover:opacity-95 shadow-xs"
+          className="w-full h-auto py-2 sm:py-2.5 px-4 rounded-[5px] !text-white font-medium text-[13px] sm:text-[13.5px] flex items-center justify-center gap-2 !border-none cursor-pointer transition-opacity hover:!opacity-95 shadow-xs"
           style={{ background: brand.programmeBtnBg || "linear-gradient(270deg, #ff6600 0%, #ee3024 100%)" }}
         >
           <span>Download Brochure</span>
           <Download className="w-4 h-4 stroke-[2.5]" />
-        </button>
+        </Button>
       </div>
-    </div>
+    </Card>
   );
 }
 
 // -------------------------------------------------------------
-// Sub-Card: SMU Style
+// Sub-Card: SMU Style using Ant Design Card
 // -------------------------------------------------------------
 function SmuCard({ c, brand, onSelectCourseForBrochure, onOpenApply }) {
   return (
-    <div className="bg-white rounded-[8px] sm:rounded-[10px] shadow-[0px_4px_20px_rgba(0,0,0,0.08)] hover:shadow-[0px_8px_28px_rgba(0,0,0,0.12)] transition-all duration-300 p-4 sm:p-5 flex flex-col justify-between h-full group text-left">
+    <Card
+      variant="borderless"
+      styles={{ body: { padding: 0 } }}
+      className="bg-white rounded-[8px] sm:rounded-[10px] shadow-[0px_4px_20px_rgba(0,0,0,0.08)] hover:shadow-[0px_8px_28px_rgba(0,0,0,0.12)] transition-all duration-300 p-4 sm:p-5 flex flex-col justify-between h-full group text-left"
+    >
       <div>
         <div className="relative h-44 sm:h-48 md:h-[185px] w-full rounded-[6px] overflow-hidden mb-3.5 bg-slate-100">
           <Image
@@ -239,49 +222,53 @@ function SmuCard({ c, brand, onSelectCourseForBrochure, onOpenApply }) {
       </div>
 
       <div className="grid grid-cols-2 gap-2 sm:gap-2.5 mt-4 sm:mt-5">
-        <button
-          type="button"
+        <Button
+          type="primary"
           onClick={() => onSelectCourseForBrochure?.(c.code || c.title)}
-          className="active:scale-95 text-white font-semibold text-[13px] sm:text-[13.5px] py-2.5 px-2 rounded-[5px] flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer border-none"
+          className="active:scale-95 !text-white font-semibold text-[13px] sm:text-[13.5px] h-auto py-2.5 px-2 rounded-[5px] flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer !border-none"
           style={{ backgroundColor: brand.slug === "vgu" ? "#008000" : brand.hero?.buttonBackground || "#f78d2d" }}
         >
           <span>Get Brochure</span>
           <FaDownload className="w-3 h-3 text-white shrink-0" />
-        </button>
+        </Button>
 
-        <button
-          type="button"
+        <Button
+          type="primary"
           onClick={() => onOpenApply?.(c.code || c.title)}
-          className="active:scale-95 text-white font-semibold text-[13px] sm:text-[13.5px] py-2.5 px-2 rounded-[5px] flex items-center justify-center transition-all shadow-xs cursor-pointer border-none"
+          className="active:scale-95 !text-white font-semibold text-[13px] sm:text-[13.5px] h-auto py-2.5 px-2 rounded-[5px] flex items-center justify-center transition-all shadow-xs cursor-pointer !border-none"
           style={{ backgroundColor: brand.primaryColor || "#074a76" }}
         >
           <span>Apply Now</span>
-        </button>
+        </Button>
       </div>
-    </div>
+    </Card>
   );
 }
 
 // -------------------------------------------------------------
-// Sub-Card: Classic Style (Amity)
+// Sub-Card: Classic Style (Amity) using Ant Design Card
 // -------------------------------------------------------------
-function ClassicCard({ c, brand, onSelectCourseForBrochure }) {
+function ClassicCard({ c, brand, onSelectCourseForBrochure, isMobile = false }) {
   const isPostGrad = c.level?.toLowerCase().includes("post") || c.title?.toLowerCase().includes("master") || c.code?.toLowerCase().startsWith("m");
   const levelText = c.level || (isPostGrad ? "Post Graduation" : "Graduation");
   const durationText = c.duration || (isPostGrad ? "24 Months" : "36 Months");
 
   return (
-    <div className="bg-white rounded-[8px] overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col justify-between h-full group text-left border border-slate-200/80">
+    <Card
+      variant="borderless"
+      styles={{ body: { padding: 0 } }}
+      className="bg-white rounded-[8px] overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col justify-between h-full group text-left border border-slate-200/80"
+    >
       <div>
         <div className="relative h-44 sm:h-44 xl:h-48 w-full bg-slate-100 overflow-hidden">
           <Image
-            src={c.image || "/assets/amitylp/MBA-amity.png"}
+            src={c.image || "/assets/all_universities_images/amity/MBA-amity.png"}
             alt={c.title}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-300"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
           />
-          <div className="absolute top-0 left-0 bg-[#009900] text-white text-[11px] sm:text-[11.5px] font-semibold px-2.5 sm:px-3 py-1 rounded-br-[4px] tracking-wide select-none shadow-xs">
+          <div className="absolute top-0 left-0 bg-[#008a00] text-white text-[11px] sm:text-[11.5px] font-semibold px-2.5 sm:px-3 py-1 rounded-br-[4px] tracking-wide select-none shadow-xs">
             {levelText}
           </div>
         </div>
@@ -293,31 +280,31 @@ function ClassicCard({ c, brand, onSelectCourseForBrochure }) {
           <p className="text-[12.5px] sm:text-[13px] font-semibold mt-1 mb-1.5 line-clamp-1" style={{ color: brand.primaryColor || "#08417b" }}>
             {c.title}
           </p>
-          <p className="text-[11.5px] sm:text-[12px] text-[#444444] leading-[1.5] line-clamp-3 sm:line-clamp-4 min-h-[54px] sm:min-h-[72px] m-0">
+          <p className={`text-[11.5px] sm:text-[12px] text-[#444444] leading-[1.5] ${isMobile ? "min-h-0" : "line-clamp-3 sm:line-clamp-4 min-h-[54px] sm:min-h-[72px]"} m-0`}>
             {c.description}
           </p>
         </div>
       </div>
 
       <div className="px-3.5 sm:px-4 pt-2 pb-3.5 flex items-center justify-between border-t border-slate-100 mt-1">
-        <button
-          type="button"
+        <Button
+          type="primary"
           onClick={() => onSelectCourseForBrochure?.(c.code || c.title)}
-          className="active:scale-95 font-bold text-[11.5px] sm:text-[12px] px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-[4px] inline-flex items-center gap-1.5 border-none cursor-pointer transition-all shadow-xs shrink-0"
+          className="active:scale-95 font-bold text-[11.5px] sm:text-[12px] h-auto px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-[4px] inline-flex items-center gap-1.5 !border-none cursor-pointer transition-all shadow-xs shrink-0"
           style={{
             background: brand.programmeBtnBg || "#ffd200",
             color: brand.programmeBtnText || "#000000",
           }}
         >
-          <span>Download Brochure</span>
-          <Download className="w-3.5 h-3.5 stroke-[2.5]" />
-        </button>
+          <span>{c.buttonText || brand.programmeCardBtnText || "Get Brochure"}</span>
+          <FaDownload className="w-3 h-3 text-black shrink-0" />
+        </Button>
 
         <div className="flex items-center gap-1 text-[11.5px] sm:text-[12px] font-medium text-[#333333] select-none shrink-0">
           <Hourglass className="w-3.5 h-3.5 text-[#555555]" />
           <span>{durationText}</span>
         </div>
       </div>
-    </div>
+    </Card>
   );
 }

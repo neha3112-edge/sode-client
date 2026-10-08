@@ -61,6 +61,7 @@ export default function UniversityLandingView({ data = {} }) {
 
   const [isBrochureOpen, setIsBrochureOpen] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(courses[0]?.value || "MBA");
+  const [modalTitle, setModalTitle] = useState("Download Brochure");
   const [isScholarshipOpen, setIsScholarshipOpen] = useState(false);
   const [isCompareOpen, setIsCompareOpen] = useState(false);
   const [legalModalState, setLegalModalState] = useState({ isOpen: false, type: "disclaimer" });
@@ -151,19 +152,21 @@ export default function UniversityLandingView({ data = {} }) {
     return () => window.removeEventListener("scroll", checkWhyChooseReached);
   }, []);
 
-  const handleOpenBrochure = (course) => {
+  const handleOpenBrochure = (course, title) => {
     if (course) setSelectedCourse(course);
+    setModalTitle(
+      title ||
+      brand.hero?.brochureButtonText ||
+      brand.brochureButtonText ||
+      "Download Brochure"
+    );
     setIsBrochureOpen(true);
   };
 
-  const handleOpenApply = (course) => {
+  const handleOpenApply = (course, title) => {
     if (course) setSelectedCourse(course);
-    const heroEl = document.getElementById("hero") || document.getElementById("banner");
-    if (heroEl) {
-      heroEl.scrollIntoView({ behavior: "smooth", block: "start" });
-    } else {
-      setIsBrochureOpen(true);
-    }
+    setModalTitle(title || "Apply Now");
+    setIsBrochureOpen(true);
   };
 
   const handleOpenLegal = (type) => {
@@ -212,8 +215,8 @@ export default function UniversityLandingView({ data = {} }) {
       {/* 1. Header / Navbar */}
       <LandingNavbar
         brand={brand}
-        onOpenApply={() => handleOpenApply()}
-        onOpenBrochure={() => handleOpenBrochure()}
+        onOpenApply={(course, title) => handleOpenApply(course, title || "Apply Now")}
+        onOpenBrochure={(course, title) => handleOpenBrochure(course, title || "Download Brochure")}
         onOpenScholarship={() => setIsScholarshipOpen(true)}
         onScrollTop={handleSodeClickToTop}
       />
@@ -223,8 +226,8 @@ export default function UniversityLandingView({ data = {} }) {
         <LandingHero
           brand={brand}
           courses={courses}
-          onOpenBrochure={() => handleOpenBrochure()}
-          onOpenApply={() => handleOpenApply()}
+          onOpenBrochure={(course, title) => handleOpenBrochure(course, title)}
+          onOpenApply={(course, title) => handleOpenApply(course, title || "Apply Now")}
           onOpenDisclaimer={() => handleOpenLegal("disclaimer")}
         />
 
@@ -598,7 +601,7 @@ export default function UniversityLandingView({ data = {} }) {
                     brand={brand}
                     stats={stats}
                     leader={leader}
-                    onOpenApply={() => handleOpenApply()}
+                    onOpenApply={() => handleOpenApply(null, "Apply Now")}
                   />
                 );
               case "whyChoose":
@@ -793,8 +796,8 @@ export default function UniversityLandingView({ data = {} }) {
       {/* Floating Sticky CTAs */}
       <LandingStickyCtas
         brand={brand}
-        onOpenApply={() => handleOpenApply()}
-        onOpenBrochure={() => handleOpenBrochure()}
+        onOpenApply={() => handleOpenApply(null, "Apply Now")}
+        onOpenBrochure={() => handleOpenBrochure(null, "Download Brochure")}
         onOpenScholarship={() => setIsScholarshipOpen(true)}
         onOpenCompare={() => setIsCompareOpen(true)}
       />
@@ -806,6 +809,7 @@ export default function UniversityLandingView({ data = {} }) {
         universityName={brand.name}
         courses={courses}
         selectedCourse={selectedCourse}
+        title={modalTitle}
         brand={brand}
         onOpenDisclaimer={() => handleOpenLegal("disclaimer")}
       />

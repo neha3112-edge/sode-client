@@ -6,8 +6,9 @@ import { ArrowRight } from "lucide-react";
 
 export default function RushfordWhyChoose({ whyChoose = [], brand = {}, onOpenApply }) {
   const title = brand.whyChooseTitle || "Endless Benefits of the online DBA program";
-  const subtitle = brand.whyChooseSubtitle || "at Rushford Business School";
+  const subtitle = brand.whyChooseSubtitle || `at ${brand.name || "Rushford Business School"}`;
   const leftImage = brand.whyChooseImage || "/assets/all_universities_images/rushford/whychosse.webp";
+  const btnText = brand.whyChooseButtonText || brand.whyChooseBtnText || "Enroll & Get Your DBA Degree";
 
   return (
     <section
@@ -22,7 +23,7 @@ export default function RushfordWhyChoose({ whyChoose = [], brand = {}, onOpenAp
             <div className="relative w-full aspect-[4/3] rounded-[8px] overflow-hidden">
               <Image
                 src={leftImage}
-                alt="Rushford Benefits"
+                alt={title}
                 fill
                 className="object-contain"
                 sizes="(max-width: 1024px) 100vw, 42vw"
@@ -42,20 +43,22 @@ export default function RushfordWhyChoose({ whyChoose = [], brand = {}, onOpenAp
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-8">
               {whyChoose.map((item, idx) => (
                 <div key={idx} className="flex items-start gap-3.5">
-                  <div className="relative w-12 h-12 shrink-0">
-                    <Image
-                      src={item.image}
-                      alt={item.title}
-                      fill
-                      className="object-contain"
-                      sizes="48px"
-                    />
-                  </div>
+                  {item.image && (
+                    <div className="relative w-12 h-12 shrink-0">
+                      <Image
+                        src={item.image}
+                        alt={item.title}
+                        fill
+                        className="object-contain"
+                        sizes="48px"
+                      />
+                    </div>
+                  )}
                   <div>
                     <h3 className="text-[15px] sm:text-[16px] font-bold text-[#111111] m-0 mb-1 leading-snug">
                       {item.title}
                     </h3>
-                    <p className="text-[13px] text-[#555555] leading-relaxed m-0">
+                    <p className="text-[13px] text-[#555555] leading-relaxed m-0 font-normal">
                       {item.desc || item.description}
                     </p>
                   </div>
@@ -68,7 +71,7 @@ export default function RushfordWhyChoose({ whyChoose = [], brand = {}, onOpenAp
               onClick={() => onOpenApply?.()}
               className="inline-flex items-center gap-2 px-8 py-3.5 bg-black hover:bg-neutral-900 text-white font-bold text-[14.5px] sm:text-[15px] rounded-[5px] transition-all border-none cursor-pointer shadow-md active:scale-95"
             >
-              <span>Enroll &amp; Get Your DBA Degree</span>
+              <span>{btnText}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>

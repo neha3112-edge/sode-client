@@ -1,29 +1,28 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useRef } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
-import { Carousel } from "antd";
+import { Carousel, Card, Button } from "antd";
 import LandingContainer from "./LandingContainer";
 
 /**
  * Reusable Testimonials Carousel Section (#testimonials)
- * Supports:
- * 1. Clean Card Style (Manipal - 3 cards, square photo, vertical stack, clean chevrons, no quote icon)
- * 2. Classic Style (Amity - circular avatar with orange ring, quote icon)
+ * Built using Ant Design Carousel, Card, and Button.
  */
 export default function LandingTestimonials({
   testimonials = [],
   universityName,
   brand = {},
 }) {
+  const carouselRef = useRef(null);
+
   if (!testimonials || testimonials.length === 0) return null;
 
   const isClassic = brand.testimonialsCardStyle === "classic";
   const items = testimonials;
   const primaryColor = brand?.primaryColor || "#ee3024";
   const university = universityName || brand?.name || "Manipal University Online";
-  const carouselRef = useRef(null);
 
   return (
     <section
@@ -47,22 +46,23 @@ export default function LandingTestimonials({
         {/* Carousel Container */}
         <div className="relative max-w-6xl mx-auto px-4 sm:px-8">
           {/* Controls */}
-          <button
-            type="button"
+          <Button
+            type="text"
             onClick={() => carouselRef.current?.prev()}
-            className="absolute left-0 sm:-left-3 top-1/2 -translate-y-1/2 z-20 text-slate-800 hover:text-[#ee3024] transition-colors p-1 bg-transparent border-none cursor-pointer flex items-center justify-center active:scale-90"
+            className="absolute left-0 sm:-left-3 top-1/2 -translate-y-1/2 z-20 text-slate-800 hover:!text-[#ee3024] transition-colors p-1 !bg-transparent !border-none cursor-pointer flex items-center justify-center active:scale-90 !h-auto !w-auto"
             aria-label="Previous testimonial"
           >
             <ChevronLeft className="w-6 h-6 sm:w-8 sm:h-8 stroke-[2.5]" />
-          </button>
-          <button
-            type="button"
+          </Button>
+
+          <Button
+            type="text"
             onClick={() => carouselRef.current?.next()}
-            className="absolute right-0 sm:-right-3 top-1/2 -translate-y-1/2 z-20 text-slate-800 hover:text-[#ee3024] transition-colors p-1 bg-transparent border-none cursor-pointer flex items-center justify-center active:scale-90"
+            className="absolute right-0 sm:-right-3 top-1/2 -translate-y-1/2 z-20 text-slate-800 hover:!text-[#ee3024] transition-colors p-1 !bg-transparent !border-none cursor-pointer flex items-center justify-center active:scale-90 !h-auto !w-auto"
             aria-label="Next testimonial"
           >
             <ChevronRight className="w-6 h-6 sm:w-8 sm:h-8 stroke-[2.5]" />
-          </button>
+          </Button>
 
           {/* Ant Design Carousel Viewport */}
           <div className="overflow-hidden">
@@ -100,7 +100,11 @@ export default function LandingTestimonials({
                 <div key={idx} className="px-2.5 sm:px-3.5 py-2 outline-none h-full">
                   {isClassic ? (
                     /* Classic Card */
-                    <div className="bg-white rounded-xl p-5 sm:p-6 border border-slate-200/80 shadow-xs hover:shadow-md transition-shadow h-full flex flex-col justify-between">
+                    <Card
+                      variant="borderless"
+                      styles={{ body: { padding: 0 } }}
+                      className="bg-white rounded-xl p-5 sm:p-6 border border-slate-200/80 shadow-xs hover:shadow-md transition-shadow h-full flex flex-col justify-between"
+                    >
                       <div>
                         <div className="flex items-center gap-3.5 mb-3.5">
                           <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-orange-400 shrink-0">
@@ -135,10 +139,14 @@ export default function LandingTestimonials({
                       <div className="mt-4 flex justify-end">
                         <Quote className="w-6 h-6 text-orange-200" />
                       </div>
-                    </div>
+                    </Card>
                   ) : (
-                    /* Clean Card (Exact match to Image 1) */
-                    <div className="bg-white rounded-[8px] sm:rounded-[10px] p-6 sm:p-7 border border-slate-100 shadow-md hover:shadow-lg transition-shadow h-full flex flex-col justify-start text-left">
+                    /* Clean Card */
+                    <Card
+                      variant="borderless"
+                      styles={{ body: { padding: 0 } }}
+                      className="bg-white rounded-[8px] sm:rounded-[10px] p-6 sm:p-7 border border-slate-100 shadow-md hover:shadow-lg transition-shadow h-full flex flex-col justify-start text-left"
+                    >
                       {/* Square Photo */}
                       <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-[4px] overflow-hidden mb-3.5 shrink-0 bg-slate-100 shadow-2xs">
                         <Image
@@ -164,7 +172,7 @@ export default function LandingTestimonials({
                       <p className="text-[12.5px] sm:text-[13px] text-slate-700 leading-relaxed font-normal m-0">
                         {item.text}
                       </p>
-                    </div>
+                    </Card>
                   )}
                 </div>
               ))}

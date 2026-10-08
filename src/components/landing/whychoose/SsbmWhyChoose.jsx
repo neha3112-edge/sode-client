@@ -6,7 +6,8 @@ import { ArrowRight } from "lucide-react";
 
 export default function SsbmWhyChoose({ whyChoose = [], brand = {}, onOpenApply }) {
   const title = brand.whyChooseTitle || "Global Doctor of";
-  const subtitle = brand.whyChooseSubtitle || "Business Administration with SSBM";
+  const subtitle = brand.whyChooseSubtitle || `Business Administration with ${brand.name || "SSBM"}`;
+  const btnText = brand.whyChooseButtonText || brand.whyChooseBtnText || "Enroll & Get Your DBA Degree";
 
   return (
     <section
@@ -37,15 +38,17 @@ export default function SsbmWhyChoose({ whyChoose = [], brand = {}, onOpenApply 
                   key={idx}
                   className="bnf1 bg-white text-black p-3.5 rounded-[10px] flex items-center gap-3 shadow-md"
                 >
-                  <div className="relative w-10 h-10 shrink-0">
-                    <Image
-                      src={item.image}
-                      alt={item.title}
-                      fill
-                      className="object-contain"
-                      sizes="40px"
-                    />
-                  </div>
+                  {item.image && (
+                    <div className="relative w-10 h-10 shrink-0">
+                      <Image
+                        src={item.image}
+                        alt={item.title}
+                        fill
+                        className="object-contain"
+                        sizes="40px"
+                      />
+                    </div>
+                  )}
                   <h3 className="text-[13px] sm:text-[14px] font-semibold text-[#111111] leading-snug m-0">
                     {item.title}
                   </h3>
@@ -58,7 +61,7 @@ export default function SsbmWhyChoose({ whyChoose = [], brand = {}, onOpenApply 
               onClick={() => onOpenApply?.()}
               className="inline-flex items-center gap-2.5 px-8 py-3.5 bg-black hover:bg-neutral-900 text-white font-bold text-[14px] sm:text-[15px] rounded-[5px] transition-all border-none cursor-pointer shadow-md active:scale-95"
             >
-              <span>Enroll &amp; Get Your DBA Degree</span>
+              <span>{btnText}</span>
               <ArrowRight className="w-4 h-4 text-white" />
             </button>
           </div>

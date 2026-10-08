@@ -8,9 +8,10 @@ import LandingContainer from "../LandingContainer";
 export default function ClassicWhyChoose({ whyChoose = [], brand = {}, onOpenApply }) {
   const universityName = brand.name || "University Online";
   const studentImg = brand.whyChooseStudentImage || "/assets/amitylp/Why-choose-amity.png";
+  const btnText = brand.whyChooseButtonText || brand.whyChooseBtnText || "Apply Now";
 
   return (
-    <section id="whychoose" className="py-8 sm:py-12 bg-white">
+    <section id="whychoose" className={brand.whyChooseSectionClass || "pt-8 pb-3 sm:pt-10 sm:pb-4 lg:pb-5 bg-white select-none"}>
       <LandingContainer>
         <h2 className="text-xl sm:text-2xl lg:text-[32px] font-bold text-slate-900 tracking-tight m-0 text-center sm:text-left mb-6 sm:mb-8">
           {brand.whyChooseTitle || `Why Choose ${universityName} for Degree Courses`}
@@ -34,7 +35,7 @@ export default function ClassicWhyChoose({ whyChoose = [], brand = {}, onOpenApp
                       {pt.title}
                     </h3>
                     <p className="text-[12px] sm:text-[12.5px] text-gray-600 leading-relaxed font-normal m-0 max-w-sm">
-                      {pt.desc}
+                      {pt.desc || pt.description}
                     </p>
                   </div>
                 </div>
@@ -51,20 +52,20 @@ export default function ClassicWhyChoose({ whyChoose = [], brand = {}, onOpenApp
                   color: brand.primaryColor || "#08417b",
                 }}
               >
-                <span>Apply Now</span>
+                <span>{btnText}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           </div>
 
-          <div className="lg:col-span-4 order-1 lg:order-2 flex justify-center">
-            <div className="relative w-full max-w-[240px] sm:max-w-[300px] h-[240px] sm:h-[300px]">
+          <div className="lg:col-span-4 order-1 lg:order-2 flex justify-center lg:justify-end">
+            <div className={brand.whyChooseImageWrapperClassName || "relative w-full max-w-[320px] sm:max-w-[380px] lg:max-w-[440px] h-[300px] sm:h-[360px] lg:h-[410px] overflow-visible"}>
               <Image
                 src={studentImg}
                 alt={`Why choose ${universityName}`}
                 fill
-                className="object-contain object-bottom"
-                sizes="(max-width: 1024px) 260px, 340px"
+                className={brand.whyChooseImageClassName || "object-contain object-bottom scale-105 sm:scale-110 lg:scale-115 origin-bottom transition-transform duration-300"}
+                sizes="(max-width: 1024px) 360px, 480px"
                 priority
               />
             </div>
