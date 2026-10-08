@@ -657,7 +657,6 @@ export default function BlogClientView({
               <h1 className="text-2xl sm:text-3xl text-gray-900 font-bold mb-3">
                 {pageTitle}
               </h1>
-              {/* ✍️ Byline & Meta Bar (Written by on left, Date & Read Time on right) */}
               {(authorName || formattedDate || blog?.readTime) && (
                 <div className="flex items-center justify-between flex-wrap gap-2 text-xs sm:text-[14px] text-slate-600 mb-2">
                   {authorName && (
