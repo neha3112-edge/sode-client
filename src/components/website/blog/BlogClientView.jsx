@@ -418,10 +418,13 @@ export default function BlogClientView({
           (sec._id ? String(sec._id) : null) ||
           headingText.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") ||
           `section-${idx + 1}`;
+        const headingTagNum = sec.headingTag
+          ? parseInt(sec.headingTag.replace(/[^\d]/g, "")) || 2
+          : 2;
         return {
           id: secId,
           text: headingText,
-          level: 2,
+          level: headingTagNum,
         };
       })
       .filter(Boolean);
@@ -735,12 +738,17 @@ export default function BlogClientView({
                   headingText.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") ||
                   `section-${sIdx + 1}`;
 
+                const HeadingTag =
+                  sec.headingTag && ["h1", "h2", "h3", "h4", "h5", "h6"].includes(sec.headingTag.toLowerCase())
+                    ? sec.headingTag.toLowerCase()
+                    : "h2";
+
                 return (
                   <section key={sec._id || sec.id || sIdx} id={secId} className="scroll-mt-24 space-y-3.5">
                     {headingText && (
-                      <h2 className="text-2xl sm:text-3xl font-bold text-[#0D3B66] m-0 tracking-tight">
+                      <HeadingTag className="text-2xl sm:text-3xl font-bold text-[#0D3B66] m-0 tracking-tight">
                         {headingText}
-                      </h2>
+                      </HeadingTag>
                     )}
 
                     {Array.isArray(sec.paragraphs) &&
@@ -829,7 +837,17 @@ export default function BlogClientView({
                     )}
 
                     {Array.isArray(sec.columnsList) && sec.columnsList.length > 0 && (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2.5 pt-1">
+                      <div
+                        className={`grid gap-x-8 gap-y-2.5 pt-1 ${
+                          sec.columnsList.length === 1
+                            ? "grid-cols-1"
+                            : sec.columnsList.length === 2
+                            ? "grid-cols-1 sm:grid-cols-2"
+                            : sec.columnsList.length === 3
+                            ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+                            : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+                        }`}
+                      >
                         {sec.columnsList.map((col, cIdx) => (
                           <ul key={cIdx} className="space-y-2 list-none p-0 m-0">
                             {Array.isArray(col) &&
@@ -861,6 +879,16 @@ export default function BlogClientView({
                           </div>
                         ))}
                       </div>
+                    )}
+
+                    {Array.isArray(sec.bulletPoints) && sec.bulletPoints.length > 0 && (
+                      <ul className="space-y-1.5 list-disc list-outside ml-5 text-slate-700 text-sm sm:text-[14.5px] my-2 p-0">
+                        {sec.bulletPoints.map((item, idx) => (
+                          <li key={idx} className="leading-relaxed">
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
                     )}
 
                     {Array.isArray(sec.twoColBullets) && sec.twoColBullets.length > 0 && (

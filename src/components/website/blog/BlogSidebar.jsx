@@ -296,7 +296,7 @@ export default function BlogSidebar({
     <div className="space-y-5 w-full">
       {/* ─── CARD 1: BOOK 100% FREE COUNSELING FORM ─── */}
 
-      <div className="bg-white rounded-2xl border border-gray-200/90 shadow-xs p-5 sm:p-6 relative">
+      <div id="free-counseling" className="bg-white rounded-2xl border border-gray-200/90 shadow-xs p-5 sm:p-6 relative scroll-mt-24">
         {/* Header */}
         <div className="text-center mb-4">
           <h3 className="text-base sm:text-lg font-extrabold text-[#0C2B4E] tracking-tight m-0">
