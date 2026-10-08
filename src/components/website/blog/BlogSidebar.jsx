@@ -301,7 +301,7 @@ export default function BlogSidebar({
     <div className="space-y-5 w-full h-full">
       {/* ─── CARD 1: BOOK 100% FREE COUNSELING FORM ─── */}
 
-      <div id="free-counseling" className="bg-white rounded-2xl border border-gray-200/90 shadow-xs p-5 sm:p-6 relative scroll-mt-24">
+      <div id="free-counseling" className="bg-white rounded-2xl border border-gray-200/90 shadow-xs p-3.5 sm:p-6 relative scroll-mt-24">
         {/* Header */}
         <div className="text-center mb-4">
           <h3 className="text-base sm:text-lg font-extrabold text-[#0C2B4E] tracking-tight m-0">
@@ -825,7 +825,7 @@ export default function BlogSidebar({
       )}
 
       {/* ─── CARD 9: SHARE THIS PAGE ─── */}
-      <div className="bg-white rounded-2xl border border-gray-200/90 shadow-xs p-5">
+      <div className="bg-white rounded-2xl border border-gray-200/90 shadow-xs p-3.5 sm:p-5">
         {/* Header with blue share icon */}
         <div className="flex items-center gap-2 pb-2.5 mb-3 border-b border-gray-100">
           <div className="w-6 h-6 rounded-md bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">

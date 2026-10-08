@@ -650,23 +650,23 @@ export default function BlogClientView({
         }
       `}</style>
 
-      <div className="w-full pt-4 sm:pt-6 px-3.5 sm:px-6 lg:px-8 xl:px-10 2xl:px-12">
-        <div className="flex flex-col lg:flex-row items-start gap-6 xl:gap-8 w-full">
+      <div className="w-full pt-2.5 sm:pt-6 px-2.5 sm:px-6 lg:px-8 xl:px-10 2xl:px-12">
+        <div className="flex flex-col lg:flex-row items-start gap-4 sm:gap-6 xl:gap-8 w-full">
           {/* ─── LEFT COLUMN: Main Blog Post Content ─── */}
           <main className="flex-1 min-w-0 w-full">
-            <div className="bg-white rounded-xl sm:rounded-2xl border border-gray-200/90 shadow-xs p-5 sm:p-7">
-              <h1 className="text-2xl sm:text-3xl text-gray-900 font-bold mb-3">
+            <div className="bg-white rounded-xl sm:rounded-2xl border border-gray-200/90 shadow-xs p-3.5 sm:p-7">
+              <h1 className="text-lg sm:text-2xl md:text-3xl text-gray-900 font-bold leading-snug sm:leading-tight mb-2 sm:mb-3">
                 {pageTitle}
               </h1>
               {(authorName || formattedDate || blog?.readTime) && (
-                <div className="flex items-center justify-between flex-wrap gap-2 text-xs sm:text-[14px] text-slate-600 mb-2">
+                <div className="flex items-center justify-between flex-wrap gap-1.5 sm:gap-2 text-xs sm:text-[14px] text-slate-600 mb-2.5 sm:mb-3">
                   {authorName && (
                     <div className="flex items-center gap-1">
                       <User className="size-3.5" />
                       <span className="font-normal text-xs text-slate-600">{authorName}</span>
                     </div>
                   )}
-                  <div className="flex items-center gap-3 flex-wrap ml-auto">
+                  <div className="flex items-center gap-2 sm:gap-3 flex-wrap ml-auto">
                     {formattedDate && (
                       <div className="flex items-center gap-1">
                         <CalendarIcon className="size-3.5 text-slate-500" />
@@ -684,7 +684,7 @@ export default function BlogClientView({
               )}
               {/* 🖼️ Featured Cover Image Banner */}
               {blogImageUrl && (
-                <div className="relative w-full h-52 sm:h-64 md:h-72 lg:h-80 rounded overflow-hidden mb-6">
+                <div className="relative w-full h-44 sm:h-64 md:h-72 lg:h-80 rounded overflow-hidden mb-4 sm:mb-6">
                   <Image
                     src={blogImageUrl}
                     alt={pageTitle}
@@ -700,7 +700,7 @@ export default function BlogClientView({
               )}
               {/* 📄 Intro / Subtitle from API */}
               {blog.subtitle && (
-                <p className="text-sm sm:text-base text-slate-700 mb-4">
+                <p className="text-xs sm:text-base text-slate-700 leading-relaxed mb-3 sm:mb-4">
                   {blog.subtitle}
                 </p>
               )}
@@ -713,7 +713,7 @@ export default function BlogClientView({
                     className={`flex items-center justify-between cursor-pointer select-none ${tocOpen ? "mb-4" : "mb-0"
                       }`}
                   >
-                    <h2 className="text-xl sm:text-xl font-bold text-[#0D3B66] m-0">
+                    <h2 className="text-base sm:text-xl font-bold text-[#0D3B66] m-0">
                       Table of Contents
                     </h2>
                     <button
@@ -778,7 +778,7 @@ export default function BlogClientView({
                     return (
                       <section key={group._id || group.id || gIdx} id={group.id} className="scroll-mt-24">
                         {group.headingText && (
-                          <HeadingTag className="text-xl sm:text-2xl md:text-[25px] font-bold text-[#0D3B66] m-0 mb-1.5 tracking-tight">
+                          <HeadingTag className="text-base sm:text-xl md:text-[23px] font-bold text-[#0D3B66] m-0 mb-1 tracking-tight leading-snug">
                             {group.headingText}
                           </HeadingTag>
                         )}
@@ -807,7 +807,7 @@ export default function BlogClientView({
                             return (
                               <div key={sec._id || sec.id || sIdx} className="space-y-1.5">
                                 {sec.title && sec.title.trim() !== group.headingText && (
-                                  <h3 className="text-base sm:text-lg font-bold text-[#0D3B66] m-0 mb-1">
+                                  <h3 className="text-[14.5px] sm:text-lg font-bold text-[#0D3B66] m-0 mb-1 leading-snug">
                                     {sec.title}
                                   </h3>
                                 )}
@@ -1183,7 +1183,7 @@ export default function BlogClientView({
                 data-nav-label="FAQs"
                 className="bg-white rounded-xl shadow-xs border border-gray-200 p-4 sm:p-6 md:p-8 mt-6 scroll-mt-20 space-y-5 sm:space-y-6"
               >
-                <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
+                <h2 className="text-base sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
                   Frequently Asked Questions (FAQs)
                 </h2>
 
