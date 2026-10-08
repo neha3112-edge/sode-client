@@ -356,11 +356,21 @@ body:has(.landing-page-root)>div>main {
 
 @keyframes couponOuterShadow {
   0% {
-    box-shadow: 0 0 0 0.1px rgba(46, 204, 113, 0.75);
+    box-shadow: 
+      0 0 0 0.1px var(--coupon-shadow-start, rgba(46, 204, 113, 0.75)),
+      0 0 8px var(--coupon-shadow-start, rgba(46, 204, 113, 0.6));
+  }
+
+  50% {
+    box-shadow: 
+      0 0 0 6px var(--coupon-shadow-mid1, rgba(46, 204, 113, 0.45)),
+      0 0 16px var(--coupon-shadow-mid2, rgba(46, 204, 113, 0.35));
   }
 
   100% {
-    box-shadow: 0 0 0 20px rgba(46, 204, 113, 0);
+    box-shadow: 
+      0 0 0 16px var(--coupon-shadow-end, rgba(46, 204, 113, 0)),
+      0 0 24px var(--coupon-shadow-end, rgba(46, 204, 113, 0));
   }
 }
 

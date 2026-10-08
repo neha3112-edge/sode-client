@@ -91,7 +91,7 @@ export default function UuProgrammes({
         {/* 1. Undergraduate Programs Section */}
         {ugPrograms.length > 0 && (
           <div className="mb-10 sm:mb-12">
-            <div className="text-center mb-6 sm:mb-7">
+            <div className="text-left mb-6 sm:mb-7">
               <h2 className="text-[20px] sm:text-[24px] lg:text-[26px] font-bold leading-tight m-0">
                 <span className="text-[#003399]">{uniName}</span>{" "}
                 <span className="text-[#62B239]">{ugTitle}</span>
@@ -106,7 +106,7 @@ export default function UuProgrammes({
         {/* 2. Postgraduate Programs Section */}
         {pgPrograms.length > 0 && (
           <div>
-            <div className="text-center mb-6 sm:mb-7">
+            <div className="text-left mb-6 sm:mb-7">
               <h2 className="text-[20px] sm:text-[24px] lg:text-[26px] font-bold leading-tight m-0">
                 <span className="text-[#003399]">{uniName}</span>{" "}
                 <span className="text-[#62B239]">{pgTitle}</span>

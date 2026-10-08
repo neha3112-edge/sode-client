@@ -24,3 +24,7 @@ export { default as ScholarshipModal } from "./modals/ScholarshipModal";
 export { default as CompareModal } from "./modals/CompareModal";
 export { default as LegalModal } from "./modals/LegalModal";
 export { default as LandingButton } from "./LandingButton";
+export { default as FooterClassic } from "./footer/FooterClassic";
+export { default as FooterMedia } from "./footer/FooterMedia";
+export { default as FooterLeadForm } from "./forms/FooterLeadForm";
+export { default as IndiaFlag } from "./forms/IndiaFlag";

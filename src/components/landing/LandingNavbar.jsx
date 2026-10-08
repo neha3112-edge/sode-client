@@ -304,7 +304,7 @@ export default function LandingNavbar({
 
       <LandingContainer
         className="
-          h-16
+          h-[80px]
           sm:h-20
           lg:h-22
           flex
@@ -390,7 +390,8 @@ export default function LandingNavbar({
                   relative
                   shrink-0
                   ${navbar.logoWrapperClassName ||
-                  "w-36 sm:w-48 lg:w-60 h-9 sm:h-11 lg:h-12"
+                  brand.logoWrapperClassName ||
+                  "w-48 sm:w-52 lg:w-60 h-12 sm:h-12 lg:h-13"
                   }
                 `}
                 style={navbar.logoWrapperStyle}
@@ -405,7 +406,7 @@ export default function LandingNavbar({
                     object-left
                     ${navbar.logoClassName || ""}
                   `}
-                  sizes="(max-width: 640px) 180px, 320px"
+                  sizes="(max-width: 640px) 210px, 320px"
                   style={navbar.logoStyle}
                 />
               </div>
@@ -456,14 +457,14 @@ export default function LandingNavbar({
               className="des_logo flex md:hidden items-center shrink-0 cursor-pointer"
               aria-label="Distance Education School"
             >
-              <div className="relative w-12 sm:w-14 h-9 sm:h-11">
+              <div className="relative w-16 sm:w-16 h-12 sm:h-12">
                 <Image
                   src={activeSodeIcon}
                   alt="SODE"
                   fill
                   priority
                   className="object-contain object-right"
-                  sizes="80px"
+                  sizes="100px"
                 />
               </div>
             </Link>

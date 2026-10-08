@@ -229,6 +229,7 @@ export default function UniversityLandingView({ data = {} }) {
           onOpenBrochure={(course, title) => handleOpenBrochure(course, title)}
           onOpenApply={(course, title) => handleOpenApply(course, title || "Apply Now")}
           onOpenDisclaimer={() => handleOpenLegal("disclaimer")}
+          onOpenScholarship={() => setIsScholarshipOpen(true)}
         />
 
         {/* 2.5 Sub-Navigation Sticky Bar */}
@@ -795,7 +796,7 @@ export default function UniversityLandingView({ data = {} }) {
 
       {/* Floating Sticky CTAs */}
       <LandingStickyCtas
-        brand={brand}
+        brand={{ ...brand, slug: brand.slug || slug || data?.slug }}
         onOpenApply={() => handleOpenApply(null, "Apply Now")}
         onOpenBrochure={() => handleOpenBrochure(null, "Download Brochure")}
         onOpenScholarship={() => setIsScholarshipOpen(true)}

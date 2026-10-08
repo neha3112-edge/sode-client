@@ -58,28 +58,51 @@ export const uuData = {
 
       .landing-page--uu #hero h1 {
         font-family: 'Anton', 'Oswald', sans-serif !important;
-        letter-spacing: 0.5px !important;
+        letter-spacing: 1.2px !important;
+        word-spacing: 3px !important;
         text-transform: uppercase !important;
         font-weight: 700 !important;
-        font-size: 26px !important;
-        line-height: 1.1 !important;
+        font-size: 30px !important;
+        line-height: 1.15 !important;
         white-space: nowrap !important;
       }
 
-      @media (max-width: 639px) {
-        .landing-page--uu #hero h1 {
-          font-size: 20px !important;
-          white-space: normal !important;
-        }
+      .landing-page--uu #hero h1 span {
+        font-family: inherit !important;
+        font-size: inherit !important;
+        font-weight: inherit !important;
+        letter-spacing: inherit !important;
+        line-height: inherit !important;
       }
 
       .landing-page--uu .sp {
         color: #62B239 !important;
       }
 
+      .landing-page--uu #about .about-subtitle {
+        color: #62B239 !important;
+        font-family: 'Montserrat', sans-serif !important;
+        font-size: 28px !important;
+        font-weight: 500 !important;
+        line-height: 1.2 !important;
+        margin-bottom: 6px !important;
+        display: block !important;
+      }
+
+      .landing-page--uu #about h2,
+      .landing-page--uu #about .about-title {
+        color: #222222 !important;
+        font-family: 'Montserrat', sans-serif !important;
+        font-size: 28px !important;
+        font-weight: 500 !important;
+        line-height: 1.2 !important;
+        margin-bottom: 16px !important;
+      }
+
       .landing-page--uu #program h2 {
         color: #003399 !important;
         font-weight: 700 !important;
+        text-align: left !important;
       }
 
       .landing-page--uu #program .card-box-cnt h2,
@@ -142,10 +165,14 @@ export const uuData = {
           max-width: 100% !important;
         }
         .landing-page--uu #hero h1 {
+          font-family: 'Oswald', sans-serif !important;
+          font-weight: 600 !important;
           font-size: 26px !important;
           line-height: 1.15 !important;
           text-align: left !important;
           margin-bottom: 6px !important;
+          word-spacing: 4px !important;
+          letter-spacing: 0.5px !important;
         }
         .landing-page--uu .hero-info-col p {
           text-align: left !important;
@@ -164,10 +191,11 @@ export const uuData = {
         }
         .landing-page--uu .hero-mobile-image-wrapper {
           width: 100% !important;
-          height: 200px !important;
+          height: auto !important;
+          aspect-ratio: 926 / 433 !important;
           border-radius: 16px !important;
           overflow: hidden !important;
-          margin-bottom: 14px !important;
+          margin-bottom: 12px !important;
           position: relative !important;
           z-index: 10 !important;
           box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
@@ -215,7 +243,12 @@ export const uuData = {
           padding: 40px 16px !important;
         }
         .landing-page--uu #whychoose h2 {
-          font-size: 22px !important;
+          font-size: 21px !important;
+          line-height: 1.25 !important;
+          text-align: left !important;
+        }
+        .landing-page--uu #whychoose p {
+          text-align: left !important;
         }
         .landing-page--uu #whychoose .grid {
           gap: 14px !important;
@@ -227,8 +260,25 @@ export const uuData = {
         .landing-page--uu #about {
           padding: 40px 16px !important;
         }
-        .landing-page--uu #about h2 {
+        .landing-page--uu #about .about-subtitle {
+          color: #62B239 !important;
+          font-family: 'Montserrat', sans-serif !important;
           font-size: 22px !important;
+          font-weight: 600 !important;
+          line-height: 1.25 !important;
+          margin-bottom: 4px !important;
+          display: block !important;
+          text-align: left !important;
+        }
+        .landing-page--uu #about h2,
+        .landing-page--uu #about .about-title {
+          color: #222222 !important;
+          font-family: 'Montserrat', sans-serif !important;
+          font-size: 22px !important;
+          font-weight: 600 !important;
+          line-height: 1.25 !important;
+          margin-bottom: 14px !important;
+          text-align: left !important;
         }
       }
 
@@ -238,8 +288,13 @@ export const uuData = {
           padding: 36px 16px !important;
         }
         .landing-page--uu #degree h2 {
-          font-size: 20px !important;
+          font-size: 26px !important;
+          line-height: 1.25 !important;
           white-space: normal !important;
+          text-align: center !important;
+        }
+        .landing-page--uu #degree p {
+          text-align: center !important;
         }
       }
 
@@ -319,7 +374,10 @@ export const uuData = {
       backgroundColor: "#0A3C7D",
       backgroundImage: "/assets/all_universities_images/uu/UTTRANCHAL-BG.webp",
       mobileBackgroundImage: "none",
+      mobileImage: "/assets/all_universities_images/uu/university.webp",
       mobileStudentImage: "/assets/all_universities_images/uu/university.webp",
+      mobileImageWrapperClassName: "aspect-[926/433] !h-auto",
+      mobileImageClassName: "object-cover",
       backgroundPosition: "60% center",
       backgroundSize: "cover",
       desktopBgStyle: {
@@ -329,6 +387,7 @@ export const uuData = {
       isDarkTheme: true,
       darkOverlay: false,
       noOverlay: true,
+      mobileAlign: "left",
 
       // 2. 📏 HERO SECTION HEIGHT & PADDING (Height kam/zyada karne ke liye)
       minHeight: "390px", // Total Hero Section Minimum Height
@@ -339,21 +398,21 @@ export const uuData = {
       },
 
       // 3. 🔤 HEADING TEXT SIZE & FONT (Title / Heading Style)
-      headlineHtml: 'UTTARANCHAL UNIVERSITY <span style="color: #62B239;">ONLINE</span>',
+      titleHtml: 'UTTARANCHAL UNIVERSITY <span style="color: #62B239;" class="text-[#62B239] block sm:inline">ONLINE</span>',
+      headlineHtml: 'UTTARANCHAL UNIVERSITY <span style="color: #62B239;" class="text-[#62B239] block sm:inline">ONLINE</span>',
       headlineText: "UTTARANCHAL UNIVERSITY ONLINE",
       headingFont: "'Anton', sans-serif",
-      headingClassName: "text-[20px] sm:text-[22px] md:text-[24px] lg:text-[26px] font-bold leading-tight tracking-wide text-white whitespace-normal md:whitespace-nowrap uppercase mt-0 mb-1",
+      headingClassName: "text-[20px] sm:text-[24px] md:text-[28px] lg:text-[30px] font-bold leading-tight tracking-wide text-white uppercase mt-0 mb-1",
       headingStyle: {
         fontFamily: "'Anton', sans-serif",
         color: "#ffffff",
-        fontSize: "26px", // Heading Text Size (reduced to fit on single line)
-        lineHeight: "1.1",
+        fontSize: "30px", // Heading Text Size
+        lineHeight: "1.15",
         fontWeight: "700",
-        letterSpacing: "0.5px",
+        letterSpacing: "1.2px",
         marginTop: "0px",
         marginBottom: "5px",
         textTransform: "uppercase",
-        whiteSpace: "nowrap",
       },
 
       // 4. 📚 COURSES STRIP (BBA | BCA | BA | MBA | MCA)
@@ -363,6 +422,8 @@ export const uuData = {
         "BBA | BCA | BA | MBA | MCA",
       ],
       hideCourseBox: true,
+      coursesColor: "#ffffff",
+      courseTextColor: "#ffffff",
       courseStripClassName: "text-[17px] sm:text-[19px] lg:text-[21px] font-bold text-white tracking-normal leading-tight",
       courseStripStyle: {
         color: "#ffffff",
@@ -375,7 +436,7 @@ export const uuData = {
 
       // 5. 📝 TAGLINE TEXT & SIZE
       taglineText:
-        "Enhance your skills and pursue your passion with Uttaranchal University Online's diverse online education programs designed for success.",
+        "Enhance your skills and pursue your passion with our diverse online education programs designed for success.",
       taglineClassName: "text-[12px] sm:text-[12.5px] text-white/95 font-normal leading-snug max-w-[390px]",
       taglineStyle: {
         color: "#ffffff",
@@ -390,6 +451,8 @@ export const uuData = {
       // 6. 🔴 GET BROCHURE BUTTON STYLING (Global Button used in other LPs)
       brochureButtonText: "Get Brochure",
       buttonGradient: "linear-gradient(270deg, #ff6600 0%, #ee3024 100%)",
+      buttonTextColor: "#ffffff",
+      buttonBorder: "none",
       buttonRadius: "rounded-[6px]",
 
       // 7. 📋 ENQUIRE LEAD FORM STYLING
@@ -630,28 +693,6 @@ export const uuData = {
     ],
   },
 
-  whyChoose: [
-    {
-      title: "Engagement",
-      desc: "Uttaranchal University online offers top tier support to its students and mentorship for personalised learning",
-      image: "/assets/all_universities_images/uu/icon-uttaranchal-1.webp",
-    },
-    {
-      title: "Student-Friendly Study",
-      desc: "Uttaranchal University's online, user friendly, learner centric LMS, live and interactive sessions, and well-designed self learning materials.",
-      image: "/assets/all_universities_images/uu/icon-uttaranchal-2.webp",
-    },
-    {
-      title: "Curriculum by Experts",
-      desc: "Uttaranchal University's online research-intensive curriculum is drafted by its expert members of faculty and industry leaders.",
-      image: "/assets/all_universities_images/uu/icon-uttaranchal-3.webp",
-    },
-    {
-      title: "Globally Accepted",
-      desc: "Uttaranchal University's online programs under its curriculum are globally accepted. Uttaranchal University's fee is also affordable for all its programs.",
-      image: "/assets/all_universities_images/uu/icon-uttaranchal-4.webp",
-    },
-  ],
 
   degreeInfo: {
     highlight: "UGC Approved",

@@ -22,13 +22,16 @@ export default function LandingHero({
   courses = [],
   onOpenBrochure,
   onOpenDisclaimer,
+  onOpenApply,
+  onOpenScholarship,
 }) {
   const hero = brand?.hero || {};
   const isLeftAligned =
     hero.mobileAlign === "left" ||
     hero.alignLeftMobile ||
     brand.slug === "manipal" ||
-    brand.slug === "amity";
+    brand.slug === "amity" ||
+    brand.slug === "uu";
 
   /* ----------------------------- Helpers ----------------------------- */
 
@@ -176,11 +179,13 @@ export default function LandingHero({
       brand.primaryColor ||
       "#004172",
     color:
+      hero.courseStripStyle?.color ||
       hero.coursesColor ||
       hero.courseTextColor ||
       hero.headingColor ||
       "#004172",
     ...hero.courseBoxStyle,
+    ...hero.courseStripStyle,
   };
 
   const renderCourseContent = () => {
@@ -391,7 +396,7 @@ export default function LandingHero({
           iconPosition={hero.brochureIconPosition || "right"}
           onClick={() => onOpenBrochure?.(null, buttonLabel)}
           disabled={hero.brochureButtonDisabled}
-          className={joinClassNames(hero.buttonClassName, isLeftAligned ? "self-start" : "")}
+          className={joinClassNames("hero-brochure-btn", hero.buttonClassName, isLeftAligned ? "self-start" : "")}
           style={hero.buttonStyle}
           skewEffect={hero.brochureButtonSkewEffect || false}
         >
@@ -460,7 +465,7 @@ export default function LandingHero({
           {/* ------------------------- LEFT CONTENT ------------------------- */}
           <div
             className={joinClassNames(
-              "relative z-10 flex w-full flex-col lg:flex-1",
+              "hero-info-col relative z-10 flex w-full flex-col lg:flex-1",
               isLeftAligned
                 ? "items-start text-left"
                 : "items-center sm:items-start text-center sm:text-left",
@@ -494,14 +499,14 @@ export default function LandingHero({
               </p>
             )}
 
-            {hero.titleHtml ? (
+            {(hero.titleHtml || hero.headlineHtml) ? (
               <h1
                 className={
                   hero.headingClassName ||
                   "mt-1 mb-1 text-[30px] sm:text-[36px] lg:text-[42px] font-extrabold leading-[1.12] tracking-tight whitespace-pre-line"
                 }
                 style={headingStyle}
-                dangerouslySetInnerHTML={{ __html: hero.titleHtml }}
+                dangerouslySetInnerHTML={{ __html: hero.titleHtml || hero.headlineHtml }}
               />
             ) : headingText ? (
               <h1
@@ -737,6 +742,61 @@ export default function LandingHero({
                     />
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* Mobile Scholarship Coupon Button */}
+            {(brand.showCouponBtn || brand.showCouponButton || hero.showCouponBtn || hero.showCouponButton) && (
+              <div className="w-full flex justify-center md:hidden mb-3">
+                <button
+                  type="button"
+                  onClick={onOpenScholarship}
+                  style={{
+                    background:
+                      hero.couponBtnBg ||
+                      brand.couponBtnBg ||
+                      "linear-gradient(135deg, #2ecc71 0%, #27ae60 100%)",
+                    backgroundColor:
+                      hero.couponBtnBg ||
+                      brand.couponBtnBg ||
+                      "#22c55e",
+                    "--coupon-btn-bg":
+                      hero.couponBtnBg ||
+                      brand.couponBtnBg ||
+                      "linear-gradient(135deg, #2ecc71 0%, #27ae60 100%)",
+                    "--coupon-shadow-start":
+                      hero.couponShadowColor ||
+                      brand.couponShadowColor ||
+                      "rgba(46, 204, 113, 0.75)",
+                    "--coupon-shadow-mid1":
+                      hero.couponShadowColorMid1 ||
+                      brand.couponShadowColorMid1 ||
+                      "rgba(46, 204, 113, 0.45)",
+                    "--coupon-shadow-mid2":
+                      hero.couponShadowColorMid2 ||
+                      brand.couponShadowColorMid2 ||
+                      "rgba(46, 204, 113, 0.25)",
+                    "--coupon-shadow-mid3":
+                      hero.couponShadowColorMid3 ||
+                      brand.couponShadowColorMid3 ||
+                      "rgba(46, 204, 113, 0.1)",
+                    "--coupon-shadow-end":
+                      "rgba(46, 204, 113, 0)",
+                  }}
+                  className="coupon-btn-main relative w-[80%] max-w-[290px] mx-auto inline-flex items-center justify-center gap-2.5 py-1.5 px-4 rounded-[10px] !text-white font-bold text-[14px] sm:text-[15px] cursor-pointer !border-none overflow-hidden select-none hover:!brightness-105 active:scale-95"
+                >
+                  <span className="moving-light-green-box" />
+                  <span className="relative w-7 h-7 rounded-full bg-white flex items-center justify-center shrink-0 shadow-xs z-10 overflow-hidden p-0.5">
+                    <img
+                      src={brand.giftGif || hero.giftGif || "/assets/images/gift.gif"}
+                      alt="Scholarship"
+                      className="w-5 h-5 object-contain"
+                    />
+                  </span>
+                  <span className="relative z-10 font-bold tracking-wide">
+                    {hero.couponButtonText || brand.couponButtonText || "Scholarship Coupon Code"}
+                  </span>
+                </button>
               </div>
             )}
 

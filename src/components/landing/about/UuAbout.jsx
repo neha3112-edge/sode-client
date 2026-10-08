@@ -25,10 +25,10 @@ export default function UuAbout({ about = {}, brand = {}, onOpenApply }) {
         {/* Top: About Text + Campus Image */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center mb-12 sm:mb-16">
           <div className="lg:col-span-7 text-left">
-            <span className="text-[#62B239] font-semibold text-[20px] sm:text-[24px] block mb-1">
+            <span className="about-subtitle text-[#62B239] font-semibold text-[22px] sm:text-[26px] lg:text-[28px] block mb-1">
               {subtitleText}
             </span>
-            <h2 className="text-[24px] sm:text-[30px] lg:text-[34px] font-bold text-[#111111] leading-tight m-0 mb-4">
+            <h2 className="about-title text-[22px] sm:text-[26px] lg:text-[28px] font-semibold lg:font-medium text-[#222222] leading-tight m-0 mb-4">
               {mainTitle}
             </h2>
             {paragraphs.length > 0 && (

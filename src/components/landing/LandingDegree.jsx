@@ -143,11 +143,10 @@ export default function LandingDegree({
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             {/* Left: Text Info + Button */}
             <div className="lg:col-span-6 flex flex-col items-center lg:items-start text-center lg:text-left">
-              <h2 className="text-[26px] sm:text-[34px] lg:text-[38px] font-bold leading-tight m-0 mb-4 text-slate-900">
+              <h2 className="text-[24px] xs:text-[26px] sm:text-[34px] lg:text-[38px] font-bold leading-tight m-0 mb-4 text-slate-900">
                 <span className="text-[#62B239] block mb-1">{subtitleGreen}</span>
-                <span>{line1}</span>
-                <br />
-                <span>{line2}</span>
+                <span className="block whitespace-nowrap sm:whitespace-normal">{line1}</span>
+                <span className="block">{line2}</span>
               </h2>
 
               {description && (
