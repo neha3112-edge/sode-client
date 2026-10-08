@@ -19,7 +19,7 @@ export default function GalgotiasGrid({ programmes, brand = {}, onSelectCourseFo
     <section id="program" className="py-12 sm:py-16 bg-white select-none">
       <div className="max-w-[1360px] mx-auto px-6 sm:px-12 md:px-16 lg:px-24 xl:px-28">
         <h2 className="text-2xl sm:text-3xl lg:text-[32px] font-black text-[#002b49] text-center tracking-tight leading-tight m-0 mb-6 sm:mb-8">
-          {brand.programmesTitle || "Courses Offered by Galgotias University Online"}
+          {brand.programmesTitle || (brand.name ? `Courses Offered by ${brand.name}` : "Courses Offered")}
         </h2>
 
         {/* Tab Switcher */}

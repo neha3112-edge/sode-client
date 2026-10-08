@@ -18,7 +18,7 @@ export default function ClassicWhyChoose({ whyChoose = [], brand = {}, onOpenApp
         </h2>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
-          <div className="lg:col-span-8 order-2 lg:order-1">
+          <div className="lg:col-span-8 order-1 lg:order-1">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 sm:gap-x-8 gap-y-4 sm:gap-y-6">
               {whyChoose.map((pt, idx) => (
                 <div key={idx} className="flex items-start gap-3 text-left">
@@ -42,11 +42,11 @@ export default function ClassicWhyChoose({ whyChoose = [], brand = {}, onOpenApp
               ))}
             </div>
 
-            <div className="mt-6 sm:mt-8 text-center sm:text-left">
+            <div className="hidden lg:block mt-6 sm:mt-8 text-left">
               <button
                 type="button"
                 onClick={() => onOpenApply?.()}
-                className="inline-flex items-center justify-center gap-1.5 font-bold text-[14px] px-6 py-2.5 rounded-md shadow-2xs transition-colors cursor-pointer border-none w-full sm:w-fit active:scale-95 hover:opacity-95"
+                className="inline-flex items-center justify-center gap-1.5 font-bold text-[14px] px-6 py-2.5 rounded-md shadow-2xs transition-colors cursor-pointer border-none w-fit active:scale-95 hover:opacity-95"
                 style={{
                   background: brand.accentColor || "#ffc107",
                   color: brand.primaryColor || "#08417b",
@@ -58,7 +58,7 @@ export default function ClassicWhyChoose({ whyChoose = [], brand = {}, onOpenApp
             </div>
           </div>
 
-          <div className="lg:col-span-4 order-1 lg:order-2 flex justify-center lg:justify-end">
+          <div className="lg:col-span-4 order-2 lg:order-2 flex flex-col items-center lg:items-end justify-center">
             <div className={brand.whyChooseImageWrapperClassName || "relative w-full max-w-[320px] sm:max-w-[380px] lg:max-w-[440px] h-[300px] sm:h-[360px] lg:h-[410px] overflow-visible"}>
               <Image
                 src={studentImg}
@@ -68,6 +68,22 @@ export default function ClassicWhyChoose({ whyChoose = [], brand = {}, onOpenApp
                 sizes="(max-width: 1024px) 360px, 480px"
                 priority
               />
+            </div>
+
+            {/* Mobile-only Apply Now button below the image */}
+            <div className="mt-4 sm:mt-6 text-center lg:hidden w-full flex justify-center">
+              <button
+                type="button"
+                onClick={() => onOpenApply?.()}
+                className="inline-flex items-center justify-center gap-1.5 font-bold text-[14px] px-6 py-2.5 rounded-md shadow-2xs transition-colors cursor-pointer border-none active:scale-95 hover:opacity-95"
+                style={{
+                  background: brand.accentColor || "#ffc107",
+                  color: brand.primaryColor || "#08417b",
+                }}
+              >
+                <span>{btnText}</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
             </div>
           </div>
         </div>

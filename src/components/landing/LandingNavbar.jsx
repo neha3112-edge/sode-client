@@ -75,16 +75,16 @@ export default function LandingNavbar({
     navbar.hideUniversityLogo !== true &&
     Boolean(logo);
 
+  const activeSodeIcon =
+    sodeIcon ||
+    navbar.sodeIcon ||
+    brand.sodeIcon ||
+    "/assets/images/sode_icon.png";
+
   const shouldShowSodeLogo =
-    showSodeLogo === true ||
-    (
-      showSodeLogo !== false &&
-      Boolean(
-        navbar.sodeIcon ||
-        slug === "manipal" ||
-        slug === "shoolini"
-      )
-    );
+    showSodeLogo !== false &&
+    navbar.hideSodeLogo !== true &&
+    Boolean(activeSodeIcon);
 
   const isCouponVisible =
     showCouponBtn !== false &&
@@ -320,14 +320,14 @@ export default function LandingNavbar({
             Positioning remains reusable/fixed.
         ================================================= */}
 
-        <div className="flex items-center min-w-0 shrink-0 ml-4">
+        <div className="flex items-center min-w-0 shrink-0 ml-1 sm:ml-4">
 
-          {/* SODE ICON */}
+          {/* SODE ICON on DESKTOP */}
           {shouldShowSodeLogo && (
             <Link
               href="#hero"
               onClick={handleScrollTop}
-              className="flex items-center shrink-0 cursor-pointer lg:translate-x-8"
+              className="hidden md:flex items-center shrink-0 cursor-pointer lg:translate-x-8"
               aria-label="Distance Education School"
             >
               <div
@@ -344,8 +344,7 @@ export default function LandingNavbar({
               >
                 <Image
                   src={
-                    sodeIcon ||
-                    "/assets/images/sode_icon.png"
+                    activeSodeIcon
                   }
                   alt="SODE"
                   fill
@@ -357,13 +356,14 @@ export default function LandingNavbar({
             </Link>
           )}
 
-          {/* DIVIDER */}
+          {/* DIVIDER on DESKTOP */}
           {shouldShowSodeLogo &&
             shouldShowUniversityLogo &&
             !navbar.hideNavDivider &&
             navbar.showNavDivider !== false && (
               <div
                 className="
+                  hidden md:block
                   h-7
                   sm:h-9
                   lg:h-11
@@ -448,20 +448,17 @@ export default function LandingNavbar({
             </ul>
           )}
 
-          {/* UU MOBILE SODE LOGO */}
-          {slug === "uu" && (
+          {/* MOBILE SODE LOGO (Global across all landing pages) */}
+          {shouldShowSodeLogo && (
             <Link
               href="#hero"
               onClick={handleScrollTop}
               className="des_logo flex md:hidden items-center shrink-0 cursor-pointer"
-              aria-label="Back to Top"
+              aria-label="Distance Education School"
             >
-              <div className="relative w-14 sm:w-18 h-10 sm:h-12">
+              <div className="relative w-12 sm:w-14 h-9 sm:h-11">
                 <Image
-                  src={
-                    sodeIcon ||
-                    "/assets/all_universities_images/uu/sode-icon.png"
-                  }
+                  src={activeSodeIcon}
                   alt="SODE"
                   fill
                   priority
@@ -472,14 +469,11 @@ export default function LandingNavbar({
             </Link>
           )}
 
-          {/* SCHOLARSHIP COUPON / BADGE */}
+          {/* SCHOLARSHIP COUPON / BADGE (Desktop only) */}
           {isCouponVisible ? (
             <div
               className={`
-                ${slug === "uu"
-                  ? "hidden md:inline-flex"
-                  : "inline-flex"
-                }
+                hidden md:inline-flex
                 ${navbar.couponWrapperBg ||
                   navbar.showCouponPillWrapper
                   ? "p-1.5 sm:p-2 rounded-[12px] sm:rounded-[14px] items-center justify-center transition-all"
@@ -637,7 +631,7 @@ export default function LandingNavbar({
             badgeText && (
               <span
                 className="
-                  inline-block
+                  hidden md:inline-block
                   text-[12px]
                   sm:text-base
                   md:text-xl

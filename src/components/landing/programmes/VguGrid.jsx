@@ -60,7 +60,7 @@ export default function VguGrid({ programmes, brand = {}, onSelectCourseForBroch
     <section id="program" className="w-full py-10 sm:py-14 bg-[#f7f9fa] border-b border-slate-200">
       <div className={containerClass}>
         <h2 className="text-center text-[22px] sm:text-[26px] lg:text-[28px] font-bold text-[#203061] tracking-tight mb-6 sm:mb-8">
-          {brand.programmesTitle || "VGU Online | Vivekananda Global University Online Courses"}
+          {brand.programmesTitle || (brand.name ? `${brand.name} Online Courses` : "Online Degree Courses")}
         </h2>
 
         <div className={gridClass}>
@@ -79,7 +79,7 @@ export default function VguGrid({ programmes, brand = {}, onSelectCourseForBroch
                 <div>
                   <div className={`relative ${imageH} w-full bg-slate-100 overflow-hidden`}>
                     <Image
-                      src={c.image || "/assets/vgu/mba-vgu.webp"}
+                      src={c.image || brand.defaultProgrammeImage || "/assets/images/default-course.webp"}
                       alt={c.title}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-300"

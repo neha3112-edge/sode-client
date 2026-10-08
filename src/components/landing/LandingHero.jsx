@@ -24,6 +24,11 @@ export default function LandingHero({
   onOpenDisclaimer,
 }) {
   const hero = brand?.hero || {};
+  const isLeftAligned =
+    hero.mobileAlign === "left" ||
+    hero.alignLeftMobile ||
+    brand.slug === "manipal" ||
+    brand.slug === "amity";
 
   /* ----------------------------- Helpers ----------------------------- */
 
@@ -216,7 +221,9 @@ export default function LandingHero({
     return (
       <div
         className={joinClassNames(
-          "relative z-20 w-full sm:w-fit my-2",
+          isLeftAligned
+            ? "relative z-20 w-[318px] max-w-full self-start my-2 sm:w-fit"
+            : "relative z-20 w-full sm:w-fit my-2",
           hero.courseWrapperClassName
         )}
         style={hero.courseWrapperStyle}
@@ -225,7 +232,12 @@ export default function LandingHero({
           <span
             className={
               hero.courseLabelClassName ||
-              "absolute -top-3 left-1/2 -translate-x-1/2 sm:left-3 sm:translate-x-0 z-10 rounded-full px-3.5 py-0.5 text-[12px] sm:text-[13px] font-bold leading-normal shadow-sm whitespace-nowrap"
+              joinClassNames(
+                "absolute -top-3 z-10 rounded-full px-3.5 py-0.5 text-[12px] sm:text-[13px] font-bold leading-normal shadow-sm whitespace-nowrap",
+                isLeftAligned
+                  ? "left-3 translate-x-0"
+                  : "left-1/2 -translate-x-1/2 sm:left-3 sm:translate-x-0"
+              )
             }
             style={courseLabelStyle}
           >
@@ -236,7 +248,10 @@ export default function LandingHero({
         <div
           className={
             hero.courseBoxClassName ||
-            "rounded-[6px] border-2 bg-white/95 px-3 sm:px-4 pb-2 pt-3.5 text-[15px] sm:text-[18px] lg:text-[20px] font-bold leading-[1.25] shadow-sm text-center sm:text-left"
+            joinClassNames(
+              "rounded-[6px] border-2 bg-white/95 px-3 sm:px-4 pb-2 pt-3.5 text-[15px] sm:text-[18px] lg:text-[20px] font-bold leading-[1.25] shadow-sm w-full",
+              isLeftAligned ? "text-left" : "text-center sm:text-left"
+            )
           }
           style={courseBoxStyle}
         >
@@ -376,7 +391,7 @@ export default function LandingHero({
           iconPosition={hero.brochureIconPosition || "right"}
           onClick={() => onOpenBrochure?.(null, buttonLabel)}
           disabled={hero.brochureButtonDisabled}
-          className={hero.buttonClassName}
+          className={joinClassNames(hero.buttonClassName, isLeftAligned ? "self-start" : "")}
           style={hero.buttonStyle}
           skewEffect={hero.brochureButtonSkewEffect || false}
         >
@@ -445,7 +460,10 @@ export default function LandingHero({
           {/* ------------------------- LEFT CONTENT ------------------------- */}
           <div
             className={joinClassNames(
-              "relative z-10 flex w-full flex-col items-center sm:items-start text-center sm:text-left lg:flex-1",
+              "relative z-10 flex w-full flex-col lg:flex-1",
+              isLeftAligned
+                ? "items-start text-left"
+                : "items-center sm:items-start text-center sm:text-left",
               hero.contentClassName
             )}
             style={hero.contentStyle}
@@ -656,26 +674,29 @@ export default function LandingHero({
           </div>
 
           {/* -------------------- CENTER STUDENT / IMAGE ------------------- */}
-          {(hero.studentImage || hero.centerImage || brand.heroStudentImage) && (
+          {(hero.image || hero.desktopImage || hero.studentImage || hero.centerImage || brand.heroStudentImage) && (
             <div
               className={joinClassNames(
                 "hidden lg:flex lg:flex-1 justify-center items-end self-end pointer-events-none -mb-4 sm:-mb-6 lg:-mb-6 z-10",
-                hero.studentImageWrapperClassName
+                hero.imageWrapperClassName || hero.studentImageWrapperClassName
               )}
-              style={hero.studentImageWrapperStyle}
+              style={hero.imageWrapperStyle || hero.studentImageWrapperStyle}
             >
               <img
                 src={
+                  hero.image ||
+                  hero.desktopImage ||
                   hero.studentImage ||
                   hero.centerImage ||
                   brand.heroStudentImage
                 }
-                alt={hero.studentImageAlt || brand.name || "Student"}
+                alt={hero.imageAlt || hero.studentImageAlt || brand.name || "University"}
                 className={
+                  hero.imageClassName ||
                   hero.studentImageClassName ||
                   "max-h-[380px] xl:max-h-[430px] w-auto object-contain object-bottom drop-shadow-md"
                 }
-                style={hero.studentImageStyle}
+                style={hero.imageStyle || hero.studentImageStyle}
               />
             </div>
           )}
@@ -688,24 +709,34 @@ export default function LandingHero({
             )}
             style={hero.formContainerStyle}
           >
-            {hero.mobileStudentImage && (
+            {(hero.mobileImage || hero.mobileStudentImage) && (
               <div
                 className={joinClassNames(
-                  "hero-mobile-image-wrapper block md:hidden w-full relative w-full h-[220px] sm:h-[260px] overflow-hidden mb-3",
-                  hero.mobileStudentImageWrapperClassName
+                  "hero-mobile-image-wrapper block md:hidden w-full relative aspect-[926/433] overflow-hidden rounded-2xl mb-3 shadow-md",
+                  hero.mobileImageWrapperClassName || hero.mobileStudentImageWrapperClassName
                 )}
+                style={hero.mobileImageWrapperStyle}
               >
                 <Image
-                  src={hero.mobileStudentImage}
+                  src={hero.mobileImage || hero.mobileStudentImage}
                   alt={brand.name || "University"}
                   fill
                   className={joinClassNames(
                     "object-cover",
-                    hero.mobileStudentImageClassName
+                    hero.mobileImageClassName || hero.mobileStudentImageClassName
                   )}
                   sizes="(max-width: 768px) 100vw, 420px"
                   priority
                 />
+                {(hero.mobileImageBadge || hero.imageBadge) && (
+                  <div className="absolute top-2.5 right-2.5 bg-white/95 px-2.5 py-1.5 rounded-lg shadow z-10 flex items-center justify-center">
+                    <img
+                      src={hero.mobileImageBadge || hero.imageBadge}
+                      alt={brand.name || "Badge"}
+                      className="h-6 w-auto object-contain"
+                    />
+                  </div>
+                )}
               </div>
             )}
 

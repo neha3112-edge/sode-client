@@ -4,7 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { Download } from "lucide-react";
 
-export default function LpuGrids({ programmes, onSelectCourseForBrochure }) {
+export default function LpuGrids({ programmes, brand = {}, onSelectCourseForBrochure }) {
   const isPost = (c) =>
     c.category?.toLowerCase().includes("post") ||
     c.level?.toLowerCase().includes("post") ||
@@ -14,6 +14,18 @@ export default function LpuGrids({ programmes, onSelectCourseForBrochure }) {
   const ugList = programmes.filter(
     (c) => !isPost(c) || c.category?.toLowerCase().includes("under") || ["BBA", "BA", "BCA"].includes(c.code)
   );
+
+  const pgTitle =
+    brand.programmesPgSubtitle ||
+    brand.programmesPgTitle ||
+    (brand.name ? `Post-Graduate Programs of ${brand.name}` : "Post-Graduate Programs");
+
+  const ugTitle =
+    brand.programmesUgSubtitle ||
+    brand.programmesUgTitle ||
+    (brand.name ? `Undergraduate Programs of ${brand.name}` : "Undergraduate Programs");
+
+  const mainHeader = brand.programmesMainTitle || brand.programmesTitle || "Explore Program";
 
   const renderGroup = (list, subTitle, mainTitle) => (
     <div>
@@ -65,8 +77,8 @@ export default function LpuGrids({ programmes, onSelectCourseForBrochure }) {
   return (
     <section id="program" className="py-12 sm:py-16 bg-white">
       <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-        {renderGroup(pgList, "Post-Graduate Programs of LPU Online", "Explore Program")}
-        {renderGroup(ugList, "Undergraduate Programs of LPU Online")}
+        {renderGroup(pgList, pgTitle, mainHeader)}
+        {renderGroup(ugList, ugTitle)}
       </div>
     </section>
   );

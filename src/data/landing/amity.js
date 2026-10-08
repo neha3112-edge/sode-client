@@ -152,6 +152,7 @@ export const amityData = {
        PROGRAMMES CONFIGURATION
     ===================================================== */
     programmesMobileStack: true,
+    stickyBrochureIcon: "whatsapp",
 
     /* =====================================================
        ABOUT & WHY CHOOSE CONFIGURATION
@@ -202,9 +203,13 @@ export const amityData = {
       mobileBackgroundSize:
         "cover",
 
+      mobileImage:
+        "/assets/all_universities_images/amity/university.webp",
+
       studentImage: null,
 
       noOverlay: true,
+      mobileAlign: "left",
 
       backgroundColor: "#ffffff",
 
@@ -293,8 +298,8 @@ export const amityData = {
     ===================================================== */
 
     coursesStrip: [
-      "MBA | MCA | MCOM | MA | MSC",
-      "| BBA | BCA | BCOM | BA",
+      "MBA | MCA | MCOM | MA | MSC |",
+      "BBA | BCA | BCOM | BA",
     ],
 
     /* =====================================================
@@ -607,7 +612,7 @@ export const amityData = {
     imagePosition: "left",
     buttonText: "Apply Now",
     backgroundColor: "#ffffff",
-    titleColor: "#111827",
+    titleColor: "#08417b",
     textColor: "#333333",
     buttonColor: "#08417b",
     buttonTextColor: "#08417b",

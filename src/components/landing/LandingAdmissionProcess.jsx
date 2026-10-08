@@ -211,8 +211,8 @@ export default function LandingAdmissionProcess({
 
   return (
     <section
-      id={brand.admissionProcessId || (brand.slug === "ggu" ? "how-to-apply" : "process")}
-      className={brand.admissionSectionClass || "pt-2 sm:pt-3 lg:pt-4 pb-10 sm:pb-12 lg:pb-14 bg-white w-full select-none"}
+      id={brand.admissionProcessId || (brand.slug === "manipal" ? "apply" : brand.slug === "ggu" ? "how-to-apply" : "process")}
+      className={`apply-section ${brand.admissionSectionClass || "pt-2 sm:pt-3 lg:pt-4 pb-10 sm:pb-12 lg:pb-14 bg-white w-full select-none"}`}
     >
       <div className="w-full px-3 sm:px-6 md:px-8 lg:px-8 xl:px-12 2xl:px-16 max-w-[1400px] mx-auto">
         {/* Heading */}
@@ -237,11 +237,15 @@ export default function LandingAdmissionProcess({
 
         {/* Responsive Step Cards Grid */}
         <div
-          className={`grid ${
-            rawSteps.length <= 4
-              ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 max-w-4xl mx-auto"
-              : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-6"
-          } gap-2.5 sm:gap-3 lg:gap-2.5 xl:gap-3.5 2xl:gap-4 w-full`}
+          className={
+            (brand.admissionGridClass ? brand.admissionGridClass.replace(/\bgrid-cols-1\b/, "grid-cols-2") : null) ||
+            (enrollmentProcess?.gridClass ? enrollmentProcess.gridClass.replace(/\bgrid-cols-1\b/, "grid-cols-2") : null) ||
+            `grid ${
+              rawSteps.length <= 4
+                ? "grid-cols-2 lg:grid-cols-4 max-w-4xl mx-auto"
+                : "grid-cols-2 md:grid-cols-3 lg:grid-cols-6"
+            } gap-2.5 sm:gap-3 lg:gap-2.5 xl:gap-3.5 2xl:gap-4 w-full`
+          }
         >
           {rawSteps.map((step, idx) => {
             // Default multi-color palette cycle matching Image 2
@@ -300,7 +304,7 @@ export default function LandingAdmissionProcess({
                 {/* Step Description */}
                 {desc && (
                   <p
-                    className="text-[11px] sm:text-[11.5px] lg:text-[11px] xl:text-[11.5px] 2xl:text-[12px] leading-[1.35] sm:leading-[1.4] font-normal m-0 text-center line-clamp-2 max-w-[190px] mx-auto"
+                    className="text-[11px] sm:text-[11.5px] lg:text-[11px] xl:text-[11.5px] 2xl:text-[12px] leading-[1.35] sm:leading-[1.4] font-normal m-0 text-center line-clamp-3 max-w-[190px] mx-auto"
                     style={{ color: descColor }}
                   >
                     {desc}

@@ -285,7 +285,7 @@ export default function LandingFooter({
         <div
           className={
             brand.footerBottomClassName ||
-            "mini-footer-bottom bg-[#0b3c66] text-white text-center py-0 px-4 text-[13px] sm:text-[14px] font-normal tracking-wide"
+            "mini-footer-bottom bg-[#0b3c66] text-white text-center pt-2.5 pb-[76px] lg:pb-2.5 px-4 text-[12px] sm:text-[14px] font-normal tracking-wide"
           }
           style={{ backgroundColor: brand.footerBottomBg || "#0b3c66" }}
         >
@@ -378,7 +378,7 @@ export default function LandingFooter({
       {/* Brand Navy Copyright Bar (reusable across all landing pages) */}
       {!brand.hideFooterCopyright && (
         <div
-          className="mini-footer-bottom mt-4 sm:mt-5 text-white py-2.5 px-4 sm:px-8 text-[13px] sm:text-[14px] tracking-wide font-normal transition-colors"
+          className="mini-footer-bottom mt-3 sm:mt-5 text-white pt-2.5 pb-[76px] lg:pb-2.5 px-4 sm:px-8 text-[12px] sm:text-[14px] tracking-wide font-normal transition-colors"
           style={{
             backgroundColor:
               brand.footerBottomBg ||

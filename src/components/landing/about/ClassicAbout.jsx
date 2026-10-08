@@ -80,11 +80,11 @@ export default function ClassicAbout({ about = {}, brand = {}, onOpenApply }) {
             } ${about.contentClassName || ""}`}
           >
             <h2
-              className={`text-2xl sm:text-[28px] lg:text-[32px] font-bold tracking-tight m-0 leading-tight ${
-                about.titleClassName || "text-slate-900"
+              className={`text-2xl sm:text-[28px] lg:text-[32px] font-bold tracking-tight m-0 leading-tight text-center sm:text-left ${
+                about.titleClassName || ""
               }`}
               style={{
-                color: about.titleColor || "#0f172a",
+                color: about.titleColor || brand.primaryColor || "#08417b",
                 ...about.titleStyle,
               }}
             >
@@ -128,7 +128,7 @@ export default function ClassicAbout({ about = {}, brand = {}, onOpenApply }) {
             )}
 
             {showApplyButton && (
-              <div className="pt-2 sm:pt-3">
+              <div className="pt-2 sm:pt-3 flex justify-center sm:justify-start">
                 <LandingButton
                   variant="outline"
                   onClick={onOpenApply}

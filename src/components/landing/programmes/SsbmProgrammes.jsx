@@ -10,7 +10,9 @@ export default function SsbmProgrammes({
   onOpenApply,
 }) {
   const heading = brand.programmesTitle || "TOP ONLINE DBA";
-  const highlight = brand.programmesHighlight || "SSBM DOCTORATE SPECIALIZATIONS";
+  const highlight =
+    brand.programmesHighlight ||
+    (brand.name ? `${brand.name.toUpperCase()} SPECIALIZATIONS` : "DOCTORATE SPECIALIZATIONS");
 
   return (
     <section id="whychoose" className="py-12 sm:py-16 bg-[#ffffff] select-none scroll-mt-20">

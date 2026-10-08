@@ -8,13 +8,14 @@ export default function EsgciProgrammes({
   brand = {},
   onOpenApply,
 }) {
-  const heading = brand.programmesTitle || "Who Can Apply for the ESGCI Online DBA";
+  const heading = brand.programmesTitle || "Who Can Apply for the";
+  const highlight = brand.programmesHighlight || (brand.name ? `${brand.name}` : "Online Program");
 
   return (
     <section id="whocanapply" className="py-12 sm:py-16 bg-[#ffffff] select-none scroll-mt-20">
       <div className="max-w-[1240px] mx-auto px-4 sm:px-6">
         <h2 className="text-center text-[24px] sm:text-[30px] lg:text-[34px] font-bold text-[#111111] mb-8 sm:mb-12">
-          Who Can Apply for the <span className="text-[#04903c]">ESGCI Online DBA</span>
+          {heading} <span className="text-[#04903c]">{highlight}</span>
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
           {programmes.map((p, idx) => (

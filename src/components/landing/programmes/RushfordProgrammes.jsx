@@ -8,8 +8,8 @@ export default function RushfordProgrammes({
   brand = {},
   onOpenApply,
 }) {
-  const heading = brand.programmesTitle || "DBA Specialisations At";
-  const subHeading = brand.programmesSubtitle || "Rushford Business School";
+  const heading = brand.programmesTitle || "Specialisations At";
+  const subHeading = brand.programmesSubtitle || brand.name || "";
 
   return (
     <section id="courses" className="py-12 sm:py-16 bg-[#ffffff] select-none scroll-mt-20">

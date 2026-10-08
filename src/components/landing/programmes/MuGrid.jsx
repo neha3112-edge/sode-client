@@ -12,7 +12,9 @@ export default function MuGrid({
 }) {
   const [activeCategory, setActiveCategory] = useState("Master");
 
-  const titleLine1 = brand.programmesTitle || "MANGALAYATAN UNIVERSITY ONLINE COURSES";
+  const titleLine1 =
+    brand.programmesTitle ||
+    (brand.name ? `${brand.name.toUpperCase()} ONLINE COURSES` : "ONLINE DEGREE COURSES");
   const titleLine2 = brand.programmesSubtitle || null;
 
   const filtered = programmes.filter((c) => {

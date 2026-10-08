@@ -89,7 +89,7 @@ export default function LandingStickyCtas({
             aria-label={`Call +91 ${rawPhone}`}
             title={`Call (+91 ${rawPhone})`}
             className={`floating-call-btn ${
-              isUu || brand.slug === "ssbm" ? "flex" : "hidden sm:flex"
+              isUu || brand.slug === "ssbm" || brand.showFloatingCallOnMobile || brand.slug === "manipal" ? "flex" : "hidden sm:flex"
             } relative w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full overflow-hidden shadow-2xl items-center justify-center transition-transform hover:scale-110 active:scale-95 bg-white drop-shadow-lg`}
           >
             <Image
@@ -154,9 +154,13 @@ export default function LandingStickyCtas({
           <button
             type="button"
             onClick={() => onOpenBrochure?.()}
-            className="wp_btn flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-[#25d366] text-white font-bold text-[13.5px] sm:text-sm border-none cursor-pointer shadow-sm active:opacity-90"
+            className="wp_btn flex items-center justify-center gap-1.5 sm:gap-2 py-2 px-3 rounded-full bg-[#25d366] text-white font-bold text-[13.5px] sm:text-sm border-none cursor-pointer shadow-sm active:opacity-90"
           >
-            <Download className="w-4 h-4" />
+            {brand.slug === "amity" || brand.stickyBrochureIcon === "whatsapp" ? (
+              <FaWhatsapp className="w-4 h-4 text-white shrink-0" />
+            ) : (
+              <Download className="w-4 h-4" />
+            )}
             <span>Get Brochure</span>
           </button>
 

@@ -11,7 +11,7 @@ export default function IiitbProgrammes({
   onOpenApply,
 }) {
   const heading = brand.programmesTitle || "Courses Offered";
-  const subHeading = brand.programmesSubtitle || "By IIIT Bangalore";
+  const subHeading = brand.programmesSubtitle || (brand.name ? `By ${brand.name}` : "");
 
   return (
     <section

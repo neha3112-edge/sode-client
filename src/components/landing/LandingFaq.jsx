@@ -364,12 +364,16 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
   return (
     <section id="faqs" className="py-10 sm:py-16 bg-white">
       <LandingContainer>
-        <h2
-          className="text-2xl sm:text-3xl font-semibold tracking-tight mb-6 sm:mb-8 text-left m-0"
-          style={{ color: headingColor }}
-        >
-          Frequently Asked Questions
-        </h2>
+        {brand.faqTitleHtml ? (
+          <div className="mb-6 sm:mb-8" dangerouslySetInnerHTML={{ __html: brand.faqTitleHtml }} />
+        ) : (
+          <h2
+            className="text-2xl sm:text-3xl font-semibold tracking-tight mb-6 sm:mb-8 text-left m-0"
+            style={{ color: headingColor }}
+          >
+            {brand.faqTitle || "Frequently Asked Questions"}
+          </h2>
+        )}
 
         {/* Clean Accordion List */}
         <div className="w-full divide-y divide-slate-200 border-t border-slate-200">

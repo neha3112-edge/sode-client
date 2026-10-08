@@ -35,6 +35,8 @@ export const APPROVAL_LAYOUTS = {
   "vgu-badges": VguApprovals,
   "smu-carousel": SmuApprovals,
   slider: ApprovalsSlider,
+  "circle-carousel": ApprovalsSlider,
+  "circle-slider": ApprovalsSlider,
 
   // Fallbacks by legacy slug (for zero-downtime backward compatibility)
   galgotias: GalgotiasApprovals,

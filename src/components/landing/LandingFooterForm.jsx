@@ -249,138 +249,261 @@ export default function LandingFooterForm({ brand = {}, courses = [], onOpenDisc
 
   return (
     <section
-      id="ftr-frm"
-      className="py-8 sm:py-10 text-white transition-colors"
+      id={brand.footerFormId || "enroll-frm"}
+      className="py-10 sm:py-12 lg:py-14 text-white transition-colors select-none"
       style={{ background: brand.footerFormBg || brand.primaryColor || "#08417b" }}
     >
       <LandingContainer>
-        {/* Header */}
-        <div className="mb-5 text-center sm:text-left">
-          <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-[#fbcb12] m-0">
-            {brand.footerFormTitle || "Have Questions?"}
-          </h3>
-          <p className="text-xs sm:text-sm text-white/90 mt-1 m-0 font-normal">
-            {brand.footerFormSubtitle || "Don't hesitate to contact us. Our academic experts are here to assist you!"}
-          </p>
-        </div>
-
-        {/* Responsive Form */}
-        <div id="form-ftr">
-          <Form
-            form={form}
-            layout="vertical"
-            onFinish={onFinish}
-            initialValues={{ terms: true }}
-            className="space-y-3.5 [&_.ant-form-item-label_label]:text-white [&_.ant-form-item-label_label]:text-xs sm:[&_.ant-form-item-label_label]:text-sm [&_.ant-form-item-label_label]:font-medium [&_.ant-form-item-label]:pb-1"
-          >
-            {/* Row 1: Name, Email, Phone */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-              <Form.Item
-                label="Full Name"
-                name="full_name"
-                rules={[{ required: true, message: "Please enter your name" }]}
-                className="mb-0"
-              >
-                <Input placeholder="Enter Your Name" className="h-[40px] text-[13.5px] rounded-[6px]" />
-              </Form.Item>
-
-              <Form.Item
-                label="Email Address"
-                name="email"
-                rules={[{ required: true, type: "email", message: "Please enter your email" }]}
-                className="mb-0"
-              >
-                <Input placeholder="Enter Your Email" className="h-[40px] text-[13.5px] rounded-[6px]" />
-              </Form.Item>
-
-              <Form.Item
-                label="Mobile Number"
-                name="phone"
-                rules={[{ required: true, pattern: /^[6-9]\d{9}$/, message: "Enter 10-digit mobile" }]}
-                className="mb-0 sm:col-span-2 md:col-span-1"
-              >
-                <Input
-                  prefix={
-                    <span className="flex items-center text-slate-700 text-xs font-semibold mr-1.5 select-none">
-                      <IndiaFlag />
-                      <span>+91</span>
-                    </span>
-                  }
-                  placeholder="Enter 10-digit Mobile Number"
-                  maxLength={10}
-                  className="h-[40px] text-[13.5px] rounded-[6px]"
-                />
-              </Form.Item>
+        {brand.footerFormLayout === "split" ? (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center max-w-6xl mx-auto">
+            {/* Left Header */}
+            <div className="lg:col-span-4 text-center lg:text-left">
+              <h2 className="text-2xl sm:text-3xl lg:text-[34px] font-bold tracking-tight text-white m-0">
+                {brand.footerFormTitle || "Get Expert Guidance"}
+              </h2>
+              <p className="text-xs sm:text-[13.5px] text-white/90 mt-2 m-0 font-normal leading-relaxed whitespace-pre-line">
+                {brand.footerFormSubtitle ||
+                  "Confused about courses or universities?\nShare your details, and our education experts will guide you with the right information."}
+              </p>
             </div>
 
-            {/* Row 2: Course, State, Submit */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 items-end">
-              <Form.Item
-                label="Course"
-                name="course"
-                rules={[{ required: true, message: "Please select course" }]}
-                className="mb-0"
-              >
-                <Select
-                  placeholder="Select Your Course"
-                  options={courses}
-                  className="w-full h-[40px] text-[13.5px]"
-                />
-              </Form.Item>
-
-              <Form.Item
-                label="State"
-                name="state"
-                rules={[{ required: true, message: "Please select state" }]}
-                className="mb-0"
-              >
-                <Select
-                  placeholder="Select Your State"
-                  options={stateOptions}
-                  showSearch
-                  className="w-full h-[40px] text-[13.5px]"
-                />
-              </Form.Item>
-
-              <Form.Item
-                className="mb-0 sm:col-span-2 md:col-span-1"
-              >
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  loading={loading}
-                  id="frm-submit"
-                  className="font-bold text-[15px] border-none shadow-none w-full h-[40px] cursor-pointer rounded-[6px] hover:opacity-95"
-                  style={{
-                    background: brand.footerSubmitBtnBg || "#28a745",
-                    color: brand.footerSubmitBtnText || "#ffffff",
-                  }}
+            {/* Right Form */}
+            <div className="lg:col-span-8">
+              <div id="form-ftr">
+                <Form
+                  form={form}
+                  layout="vertical"
+                  onFinish={onFinish}
+                  initialValues={{ terms: true }}
+                  className="space-y-3"
                 >
-                  Submit
-                </Button>
-              </Form.Item>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 sm:gap-3">
+                    <Form.Item
+                      name="full_name"
+                      rules={[{ required: true, message: "Please enter your name" }]}
+                      className="mb-0"
+                    >
+                      <Input placeholder="Enter Your Name" className="h-[40px] text-[13px] rounded-[5px]" />
+                    </Form.Item>
+
+                    <Form.Item
+                      name="email"
+                      rules={[{ required: true, type: "email", message: "Please enter your email" }]}
+                      className="mb-0"
+                    >
+                      <Input placeholder="Enter Your Email" className="h-[40px] text-[13px] rounded-[5px]" />
+                    </Form.Item>
+
+                    <Form.Item
+                      name="phone"
+                      rules={[{ required: true, pattern: /^[6-9]\d{9}$/, message: "Enter 10-digit mobile" }]}
+                      className="mb-0"
+                    >
+                      <Input
+                        prefix={
+                          <span className="flex items-center text-slate-700 text-xs font-semibold mr-1.5 select-none">
+                            <IndiaFlag />
+                            <span>+91</span>
+                          </span>
+                        }
+                        placeholder="Enter 10-digit Mobile Number"
+                        maxLength={10}
+                        className="h-[40px] text-[13px] rounded-[5px]"
+                      />
+                    </Form.Item>
+
+                    <Form.Item
+                      name="course"
+                      rules={[{ required: true, message: "Please select course" }]}
+                      className="mb-0"
+                    >
+                      <Select
+                        placeholder="Select Your Course"
+                        options={courses}
+                        className="w-full h-[40px] text-[13px]"
+                      />
+                    </Form.Item>
+
+                    <Form.Item
+                      name="state"
+                      rules={[{ required: true, message: "Please select state" }]}
+                      className="mb-0"
+                    >
+                      <Select
+                        placeholder="Select Your State"
+                        options={stateOptions}
+                        showSearch
+                        className="w-full h-[40px] text-[13px]"
+                      />
+                    </Form.Item>
+
+                    <Form.Item className="mb-0">
+                      <Button
+                        type="primary"
+                        htmlType="submit"
+                        loading={loading}
+                        className="font-bold text-[15px] border-none shadow-none w-full h-[40px] cursor-pointer rounded-[5px] hover:opacity-95"
+                        style={{
+                          background: brand.footerSubmitBtnBg || "#f7b314",
+                          color: brand.footerSubmitBtnText || "#000000",
+                        }}
+                      >
+                        Submit
+                      </Button>
+                    </Form.Item>
+                  </div>
+
+                  <div className="pt-1">
+                    <Checkbox defaultChecked className="text-[11px] sm:text-[11.5px] [&_.ant-checkbox+span]:!text-white/90 leading-tight select-none">
+                      <span>
+                        I consent to receive university updates via email and mobile number.{" "}
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onOpenDisclaimer?.();
+                          }}
+                          className="font-bold underline cursor-pointer bg-transparent border-none p-0 inline text-white hover:text-amber-300"
+                        >
+                          Disclaimer
+                        </button>
+                      </span>
+                    </Checkbox>
+                  </div>
+                </Form>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* Header */}
+            <div className="mb-5 text-center sm:text-left">
+              <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-[#fbcb12] m-0">
+                {brand.footerFormTitle || "Have Questions?"}
+              </h3>
+              <p className="text-xs sm:text-sm text-white/90 mt-1 m-0 font-normal">
+                {brand.footerFormSubtitle ||
+                  "Don't hesitate to contact us. Our academic experts are here to assist you!"}
+              </p>
             </div>
 
-            {/* Row 3: Checkbox Disclaimer */}
-            <div className="pt-1">
-              <Checkbox defaultChecked className="text-[11px] sm:text-[11.5px] [&_.ant-checkbox+span]:!text-white/90 leading-tight select-none">
-                <span>
-                  I consent to receive university updates via email and mobile number.{" "}
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onOpenDisclaimer?.();
-                    }}
-                    className="font-bold underline cursor-pointer bg-transparent border-none p-0 inline text-white hover:text-amber-300"
+            {/* Responsive Form */}
+            <div id="form-ftr">
+              <Form
+                form={form}
+                layout="vertical"
+                onFinish={onFinish}
+                initialValues={{ terms: true }}
+                className="space-y-3.5 [&_.ant-form-item-label_label]:text-white [&_.ant-form-item-label_label]:text-xs sm:[&_.ant-form-item-label_label]:text-sm [&_.ant-form-item-label_label]:font-medium [&_.ant-form-item-label]:pb-1"
+              >
+                {/* Row 1: Name, Email, Phone */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                  <Form.Item
+                    label="Full Name"
+                    name="full_name"
+                    rules={[{ required: true, message: "Please enter your name" }]}
+                    className="mb-0"
                   >
-                    Disclaimer
-                  </button>
-                </span>
-              </Checkbox>
+                    <Input placeholder="Enter Your Name" className="h-[40px] text-[13.5px] rounded-[6px]" />
+                  </Form.Item>
+
+                  <Form.Item
+                    label="Email Address"
+                    name="email"
+                    rules={[{ required: true, type: "email", message: "Please enter your email" }]}
+                    className="mb-0"
+                  >
+                    <Input placeholder="Enter Your Email" className="h-[40px] text-[13.5px] rounded-[6px]" />
+                  </Form.Item>
+
+                  <Form.Item
+                    label="Mobile Number"
+                    name="phone"
+                    rules={[{ required: true, pattern: /^[6-9]\d{9}$/, message: "Enter 10-digit mobile" }]}
+                    className="mb-0 sm:col-span-2 md:col-span-1"
+                  >
+                    <Input
+                      prefix={
+                        <span className="flex items-center text-slate-700 text-xs font-semibold mr-1.5 select-none">
+                          <IndiaFlag />
+                          <span>+91</span>
+                        </span>
+                      }
+                      placeholder="Enter 10-digit Mobile Number"
+                      maxLength={10}
+                      className="h-[40px] text-[13.5px] rounded-[6px]"
+                    />
+                  </Form.Item>
+                </div>
+
+                {/* Row 2: Course, State, Submit */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 items-end">
+                  <Form.Item
+                    label="Course"
+                    name="course"
+                    rules={[{ required: true, message: "Please select course" }]}
+                    className="mb-0"
+                  >
+                    <Select
+                      placeholder="Select Your Course"
+                      options={courses}
+                      className="w-full h-[40px] text-[13.5px]"
+                    />
+                  </Form.Item>
+
+                  <Form.Item
+                    label="State"
+                    name="state"
+                    rules={[{ required: true, message: "Please select state" }]}
+                    className="mb-0"
+                  >
+                    <Select
+                      placeholder="Select Your State"
+                      options={stateOptions}
+                      showSearch
+                      className="w-full h-[40px] text-[13.5px]"
+                    />
+                  </Form.Item>
+
+                  <Form.Item className="mb-0 sm:col-span-2 md:col-span-1">
+                    <Button
+                      type="primary"
+                      htmlType="submit"
+                      loading={loading}
+                      id="frm-submit"
+                      className="font-bold text-[15px] border-none shadow-none w-full h-[40px] cursor-pointer rounded-[6px] hover:opacity-95"
+                      style={{
+                        background: brand.footerSubmitBtnBg || "#28a745",
+                        color: brand.footerSubmitBtnText || "#ffffff",
+                      }}
+                    >
+                      Submit
+                    </Button>
+                  </Form.Item>
+                </div>
+
+                {/* Row 3: Checkbox Disclaimer */}
+                <div className="pt-1">
+                  <Checkbox defaultChecked className="text-[11px] sm:text-[11.5px] [&_.ant-checkbox+span]:!text-white/90 leading-tight select-none">
+                    <span>
+                      I consent to receive university updates via email and mobile number.{" "}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onOpenDisclaimer?.();
+                        }}
+                        className="font-bold underline cursor-pointer bg-transparent border-none p-0 inline text-white hover:text-amber-300"
+                      >
+                        Disclaimer
+                      </button>
+                    </span>
+                  </Checkbox>
+                </div>
+              </Form>
             </div>
-          </Form>
-        </div>
+          </>
+        )}
       </LandingContainer>
     </section>
   );
