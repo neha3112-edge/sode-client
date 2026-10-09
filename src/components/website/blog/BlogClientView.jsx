@@ -7,7 +7,7 @@ import { Button, Carousel, Form, Input, message, Table } from "antd";
 import SafeHtmlRenderer from "@/components/website/SafeHtmlRenderer";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
 import { getAssetPath } from "@/lib/utils";
-import { CalendarIcon, Check, ChevronDown, ChevronRight, ChevronUp, Clock, Minus, Plus, ThumbsDown, ThumbsUp, User } from "lucide-react";
+import { CalendarIcon, Check, ChevronDown, ChevronRight, ChevronUp, Clock, Eye, Minus, Plus, ThumbsDown, ThumbsUp, User } from "lucide-react";
 import { request } from "@/services/request";
 import BlogSidebar from "./BlogSidebar";
 
@@ -24,6 +24,24 @@ function formatBlogDate(dateStr) {
   } catch {
     return "";
   }
+}
+
+function formatViewsCount(views, readTime) {
+  const count = views !== undefined && views !== null && views !== "" ? Number(views) : null;
+  if (count !== null && !isNaN(count) && count > 0) {
+    if (count >= 1000) {
+      const formatted = (count / 1000).toFixed(1).replace(/\.0$/, "");
+      return `${formatted}k Read`;
+    }
+    return `${count} Read`;
+  }
+  if (readTime && typeof readTime === "string") {
+    return readTime.toLowerCase().includes("read") ? readTime : `${readTime} Read`;
+  }
+  if (views) {
+    return `${views} Read`;
+  }
+  return null;
 }
 
 export default function BlogClientView({
@@ -520,10 +538,14 @@ export default function BlogClientView({
   const blogImageUrl = rawImage ? getAssetPath(rawImage) : null;
 
   const formattedDate = formatBlogDate(blog.publishedAt || blog.createdAt);
+  const viewsText = formatViewsCount(blog.viewsCount ?? blog.views, blog.readTime);
   const authorName =
     blog.author?.fullname ||
     blog.author?.name ||
     (typeof blog.author === "string" ? blog.author : "");
+
+  // 🌟 Common Tailwind Typography (Ek hi jagah se pura text size & color change kar sakte hain)
+  const BLOG_BODY_TYPOGRAPHY = "[&_p]:text-xs sm:[&_p]:text-sm [&_p]:text-slate-700 [&_li]:text-xs sm:[&_li]:text-sm [&_li]:text-gray-700";
 
   return (
     <div className="min-h-screen bg-gray-100 text-gray-800 pb-16">
@@ -651,7 +673,7 @@ export default function BlogClientView({
       <div className="w-full pt-2.5 sm:pt-6 px-2.5 sm:px-6 lg:px-8 xl:px-10 2xl:px-12">
         <div className="flex flex-col lg:flex-row items-start gap-4 sm:gap-6 xl:gap-8 w-full">
           {/* ─── LEFT COLUMN: Main Blog Post Content ─── */}
-          <main className="flex-1 min-w-0 w-full">
+          <main className={`flex-1 min-w-0 w-full ${BLOG_BODY_TYPOGRAPHY}`}>
             <div className="bg-white rounded-xl sm:rounded-2xl border border-gray-200/90 shadow-xs p-3.5 sm:p-7">
               <h1 className="text-lg sm:text-2xl text-gray-900 font-bold leading-snug sm:leading-tight mb-2 sm:mb-3">
                 {pageTitle}
@@ -660,21 +682,21 @@ export default function BlogClientView({
                 <div className="flex items-center justify-between flex-wrap gap-1.5 sm:gap-2 text-xs sm:text-sm text-slate-600 mb-2.5 sm:mb-3">
                   {authorName && (
                     <div className="flex items-center gap-1">
-                      <User className="size-3.5" />
-                      <span className="font-normal text-xs sm:text-sm text-slate-600">{authorName}</span>
+                      <User className="size-3" />
+                      <span className="font-normal text-xs text-slate-600">{authorName}</span>
                     </div>
                   )}
                   <div className="flex items-center gap-2 sm:gap-3 flex-wrap ml-auto">
                     {formattedDate && (
                       <div className="flex items-center gap-1">
-                        <CalendarIcon className="size-3.5 text-slate-500" />
-                        <span className="font-normal text-xs sm:text-sm text-slate-600">{formattedDate}</span>
+                        <CalendarIcon className="size-3 text-slate-500" />
+                        <span className="font-normal text-xs text-slate-600">{formattedDate}</span>
                       </div>
                     )}
-                    {blog?.readTime && (
+                    {viewsText && (
                       <div className="flex items-center gap-1">
-                        <Clock className="size-3.5 text-slate-500" />
-                        <span className="font-normal text-xs sm:text-sm text-slate-600">{blog.readTime}</span>
+                        <Eye className="size-3 text-slate-500" />
+                        <span className="font-normal text-xs text-slate-600">{viewsText}</span>
                       </div>
                     )}
                   </div>
@@ -698,7 +720,7 @@ export default function BlogClientView({
               )}
               {/* 📄 Intro / Subtitle from API */}
               {blog.subtitle && (
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed mb-3 sm:mb-4">
+                <p className="text-xs sm:text-sm text-gray-700 leading-relaxed mb-3 sm:mb-4">
                   {blog.subtitle}
                 </p>
               )}
@@ -766,7 +788,7 @@ export default function BlogClientView({
 
               {/* 📄 Dynamic Structured Sections from API */}
               {groupedSections && groupedSections.length > 0 && (
-                <div className="space-y-6 sm:space-y-7 text-slate-700 text-xs sm:text-sm mt-5 sm:mt-6">
+                <div className="space-y-6 sm:space-y-7 text-gray-700 text-xs sm:text-sm mt-5 sm:mt-6">
                   {groupedSections.map((group, gIdx) => {
                     const HeadingTag =
                       group.headingTag && ["h1", "h2", "h3", "h4", "h5", "h6"].includes(group.headingTag.toLowerCase())
@@ -781,7 +803,7 @@ export default function BlogClientView({
                           </HeadingTag>
                         )}
 
-                        <div className="space-y-2 text-slate-700 text-xs sm:text-sm">
+                        <div className="space-y-2 text-gray-700 text-xs sm:text-sm">
                           {group.items.map((sec, sIdx) => {
                             const isTitleOnly =
                               !sec.paragraphs &&
@@ -815,7 +837,7 @@ export default function BlogClientView({
                                     if (typeof p !== "string" || !p.trim()) return null;
                                     const parts = p.split(/\n\s*\n/).filter((t) => t.trim().length > 0);
                                     return parts.map((part, pIdx) => (
-                                      <p key={`${idx}-${pIdx}`} className="m-0 text-slate-600 text-xs sm:text-sm">
+                                      <p key={`${idx}-${pIdx}`} className="m-0 text-gray-700 text-xs sm:text-sm">
                                         {part.trim()}
                                       </p>
                                     ));
@@ -823,17 +845,17 @@ export default function BlogClientView({
                                 {typeof sec.paragraphs === "string" &&
                                   sec.paragraphs.trim() &&
                                   sec.paragraphs.split(/\n\s*\n/).filter((t) => t.trim().length > 0).map((part, pIdx) => (
-                                    <p key={pIdx} className="m-0 text-slate-600 text-xs sm:text-sm">
+                                    <p key={pIdx} className="m-0 text-gray-700 text-xs sm:text-sm">
                                       {part.trim()}
                                     </p>
                                   ))}
 
-                                {sec.intro && <p className="m-0 text-slate-700 text-xs sm:text-sm">{sec.intro}</p>}
+                                {sec.intro && <p className="m-0 text-gray-700 text-xs sm:text-sm">{sec.intro}</p>}
 
                                 {Array.isArray(sec.checklist) && sec.checklist.length > 0 && (
                                   <ul className="space-y-0.5 list-none p-0">
                                     {sec.checklist.map((item, idx) => (
-                                      <li key={idx} className="flex items-start gap-2 text-slate-700 text-xs sm:text-sm">
+                                      <li key={idx} className="flex items-start gap-2 text-gray-700 text-xs sm:text-sm">
                                         <span className="inline-flex items-center justify-center w-3 h-3 rounded bg-[#22C55E] text-white shrink-0 mt-1 shadow-2xs">
                                           <Check size={9} strokeWidth={4} />
                                         </span>
@@ -957,7 +979,7 @@ export default function BlogClientView({
                                               </h4>
                                             )}
                                             {item?.desc && (
-                                              <p className="text-slate-600 m-0 text-xs sm:text-sm">
+                                              <p className="text-gray-700 m-0 text-xs sm:text-sm">
                                                 {item.desc}
                                               </p>
                                             )}
@@ -981,7 +1003,7 @@ export default function BlogClientView({
                                         }`}
                                     >
                                       {sec.bulletPoints.map((col, cIdx) => (
-                                        <ul key={cIdx} className="space-y-1 list-disc list-outside ml-5 text-slate-700 text-xs sm:text-sm p-0 m-0">
+                                        <ul key={cIdx} className="space-y-1 list-disc list-outside ml-5 text-gray-700 text-xs sm:text-sm p-0 m-0">
                                           {Array.isArray(col) &&
                                             col.map((item, idx) => (
                                               <li key={idx}>
@@ -992,7 +1014,7 @@ export default function BlogClientView({
                                       ))}
                                     </div>
                                   ) : (
-                                    <ul className="space-y-1 list-disc list-outside ml-5 text-slate-700 text-xs sm:text-sm my-1 p-0">
+                                    <ul className="space-y-1 list-disc list-outside ml-5 text-gray-700 text-xs sm:text-sm my-1 p-0">
                                       {sec.bulletPoints.map((item, idx) => (
                                         <li key={idx}>
                                           <span>{item}</span>
@@ -1005,7 +1027,7 @@ export default function BlogClientView({
                                 {Array.isArray(sec.twoColBullets) && sec.twoColBullets.length > 0 && (
                                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1">
                                     {sec.twoColBullets.map((col, cIdx) => (
-                                      <ul key={cIdx} className="space-y-1 list-disc list-inside text-slate-700 text-xs sm:text-sm p-0 m-0">
+                                      <ul key={cIdx} className="space-y-1 list-disc list-inside text-gray-700 text-xs sm:text-sm p-0 m-0">
                                         {Array.isArray(col) &&
                                           col.map((item, idx) => (
                                             <li key={idx}>
@@ -1038,7 +1060,7 @@ export default function BlogClientView({
                                             onClick={() => setSelectedPoll(optTitle)}
                                             className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-full border text-xs sm:text-sm font-medium transition-all cursor-pointer text-left ${isSelected
                                               ? "border-blue-600 bg-blue-50/70 text-blue-900 shadow-2xs ring-1 ring-blue-500/20"
-                                              : "border-slate-200 hover:border-slate-300 text-slate-700 bg-white"
+                                              : "border-slate-200 hover:border-slate-300 text-gray-700 bg-white"
                                               }`}
                                           >
                                             <span
@@ -1116,27 +1138,27 @@ export default function BlogClientView({
                                         }`}
                                     >
                                       {sec.orderedSteps.map((col, cIdx) => (
-                                        <ol key={cIdx} className="space-y-1.5 list-none p-0 m-0 text-slate-700 text-xs sm:text-sm">
+                                        <ol key={cIdx} className="space-y-1.5 list-none p-0 m-0 text-gray-700 text-xs sm:text-sm">
                                           {Array.isArray(col) &&
                                             col.map((step, idx) => (
                                               <li key={idx} className="flex items-start gap-3">
-                                                <span className="text-slate-600 font-medium select-none min-w-[20px] text-right">
+                                                <span className="text-gray-500 font-medium select-none min-w-[20px] text-right">
                                                   {idx + 1}.
                                                 </span>
-                                                <span className="text-slate-800">{step}</span>
+                                                <span className="text-gray-700">{step}</span>
                                               </li>
                                             ))}
                                         </ol>
                                       ))}
                                     </div>
                                   ) : (
-                                    <ol className="space-y-1.5 list-none p-0 m-0 text-slate-700 text-xs sm:text-sm">
+                                    <ol className="space-y-1.5 list-none p-0 m-0 text-gray-700 text-xs sm:text-sm">
                                       {sec.orderedSteps.map((step, idx) => (
                                         <li key={idx} className="flex items-start gap-4">
-                                          <span className="text-slate-600 font-medium select-none min-w-[20px] text-right">
+                                          <span className="text-gray-500 font-medium select-none min-w-[20px] text-right">
                                             {idx + 1}.
                                           </span>
-                                          <span className="text-slate-800">{step}</span>
+                                          <span className="text-gray-700">{step}</span>
                                         </li>
                                       ))}
                                     </ol>
@@ -1151,15 +1173,15 @@ export default function BlogClientView({
                                       </h4>
                                     )}
                                     {sec.importantNotice.desc && (
-                                      <p className="text-slate-600 text-xs sm:text-sm m-0">
+                                      <p className="text-gray-700 text-xs sm:text-sm m-0">
                                         {sec.importantNotice.desc}
                                       </p>
                                     )}
                                   </div>
                                 )}
 
-                                {sec.note && <p className="text-xs sm:text-sm text-slate-700 font-bold m-0">{sec.note}</p>}
-                                {sec.outro && <p className="text-xs sm:text-sm text-slate-600 m-0">{sec.outro}</p>}
+                                {sec.note && <p className="text-xs sm:text-sm text-gray-700 font-bold m-0">{sec.note}</p>}
+                                {sec.outro && <p className="text-xs sm:text-sm text-gray-700 m-0">{sec.outro}</p>}
                               </div>
                             );
                           })}
@@ -1222,7 +1244,7 @@ export default function BlogClientView({
                         <div
                           className={
                             isOpen
-                              ? "p-3 text-xs sm:text-sm text-gray-600 font-normal border-t border-blue-100/60"
+                              ? "p-3 text-xs sm:text-sm text-gray-700 font-normal border-t border-blue-100/60"
                               : "sr-only"
                           }
                         >
@@ -1383,9 +1405,9 @@ export default function BlogClientView({
 
               {/* Tags Bar directly below Add Comments card */}
               {displayTags ? (
-                <div className="mt-4 bg-[#f8f9fa] rounded-lg border border-gray-200 px-4 py-2.5 text-xs sm:text-sm text-slate-700">
+                <div className="mt-4 bg-[#f8f9fa] rounded-lg border border-gray-200 px-4 py-2.5 text-xs sm:text-sm text-gray-700">
                   <span className="font-bold text-gray-900">Tags: </span>
-                  <span className="text-slate-600">{displayTags}</span>
+                  <span className="text-gray-700">{displayTags}</span>
                 </div>
               ) : null}
 
