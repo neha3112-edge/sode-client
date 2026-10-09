@@ -7,7 +7,7 @@ import { Button, Carousel, Form, Input, message, Table } from "antd";
 import SafeHtmlRenderer from "@/components/website/SafeHtmlRenderer";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
 import { getAssetPath } from "@/lib/utils";
-import { CalendarIcon, Check, ChevronDown, ChevronRight, ChevronUp, Clock, Eye, Minus, Plus, ThumbsDown, ThumbsUp, User } from "lucide-react";
+import { CalendarIcon, Check, ChevronDown, ChevronRight, ChevronUp, Clock, Eye, Image as ImageIcon, Minus, Play, Plus, ThumbsDown, ThumbsUp, User, Video } from "lucide-react";
 import { request } from "@/services/request";
 import BlogSidebar from "./BlogSidebar";
 
@@ -41,6 +41,24 @@ function formatViewsCount(views, readTime) {
   if (views) {
     return `${views} Read`;
   }
+  return null;
+}
+
+function getYouTubeEmbedUrl(url) {
+  if (!url || typeof url !== "string") return null;
+  const cleanUrl = url.trim();
+
+  if (cleanUrl.includes("youtube.com/embed/")) {
+    return cleanUrl;
+  }
+
+  const regExp = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=|shorts\/)|youtu\.be\/)([^"&?\/\s]{11})/;
+  const match = cleanUrl.match(regExp);
+
+  if (match && match[1]) {
+    return `https://www.youtube-nocookie.com/embed/${match[1]}?rel=0&modestbranding=1`;
+  }
+
   return null;
 }
 
@@ -798,6 +816,25 @@ export default function BlogClientView({
 
                         <div className="space-y-2 text-gray-700 text-xs sm:text-sm">
                           {group.items.map((sec, sIdx) => {
+                            const hasImage = Boolean(
+                              sec.image ||
+                              sec.imageUrl ||
+                              sec.media ||
+                              sec.blockType === "image"
+                            );
+
+                            const hasVideo = Boolean(
+                              sec.video ||
+                              sec.videoUrl ||
+                              sec.youtubeUrl ||
+                              sec.blockType === "video"
+                            );
+
+                            const hasPdf = Boolean(
+                              sec.pdf ||
+                              sec.blockType === "pdf"
+                            );
+
                             const isTitleOnly =
                               !sec.paragraphs &&
                               !sec.intro &&
@@ -813,7 +850,10 @@ export default function BlogClientView({
                               !sec.ctaButtons &&
                               !sec.ctaButton &&
                               !sec.outro &&
-                              !sec.note;
+                              !sec.note &&
+                              !hasImage &&
+                              !hasVideo &&
+                              !hasPdf;
 
                             if (isTitleOnly) return null;
 
@@ -844,6 +884,243 @@ export default function BlogClientView({
                                   ))}
 
                                 {sec.intro && <p className="m-0 text-gray-700 text-xs sm:text-sm">{sec.intro}</p>}
+
+                                {/* 🖼️ Image Section / Banner (1041 x 585 px / 16:9) */}
+                                {hasImage && (
+                                  <div className="my-3 sm:my-4 w-full">
+                                    {(() => {
+                                      const rawImg = sec.image || sec.imageUrl || sec.media;
+                                      const imgUrl =
+                                        typeof rawImg === "string"
+                                          ? rawImg
+                                          : rawImg?.url || rawImg?.path || rawImg?.fileName
+                                            ? getAssetPath(rawImg)
+                                            : null;
+                                      const altText =
+                                        (typeof rawImg === "object" ? rawImg?.alt : null) ||
+                                        sec.title ||
+                                        "Blog image";
+                                      const captionText =
+                                        (typeof rawImg === "object" ? rawImg?.caption : null) ||
+                                        sec.imageCaption ||
+                                        "";
+
+                                      if (imgUrl) {
+                                        return (
+                                          <div className="w-full">
+                                            <div className="relative w-full h-44 sm:h-64 md:h-72 lg:h-80 rounded overflow-hidden bg-slate-100 border border-slate-200/80 shadow-xs">
+                                              <Image
+                                                src={getAssetPath(imgUrl)}
+                                                alt={altText}
+                                                fill
+                                                unoptimized
+                                                className="object-cover"
+                                                sizes="(max-width: 768px) 100vw, 900px"
+                                              />
+                                            </div>
+                                            {captionText && (
+                                              <p className="text-center text-[11px] sm:text-xs text-slate-500 mt-1.5 font-medium italic m-0">
+                                                {captionText}
+                                              </p>
+                                            )}
+                                          </div>
+                                        );
+                                      }
+
+                                      // Exact placeholder matching screenshot (1041 x 585 px with image icon)
+                                      return (
+                                        <div className="w-full">
+                                          <div className="relative w-full h-44 sm:h-64 md:h-72 lg:h-80 rounded bg-[#737373] flex flex-col items-center justify-center text-white shadow-xs select-none">
+                                            <div className="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center text-white/90 mb-2">
+                                              <ImageIcon size={64} strokeWidth={1.5} className="text-white/90" />
+                                            </div>
+                                            <span className="text-sm sm:text-base font-semibold text-white tracking-wide">
+                                              {captionText || "1041 x 585 px"}
+                                            </span>
+                                          </div>
+                                          {captionText && (
+                                            <p className="text-center text-[11px] sm:text-xs text-slate-500 mt-1.5 font-medium italic m-0">
+                                              {captionText}
+                                            </p>
+                                          )}
+                                        </div>
+                                      );
+                                    })()}
+                                  </div>
+                                )}
+
+                                {/* 🎥 Video Section (YouTube Embed / Video Player 16:9) */}
+                                {hasVideo && (
+                                  <div className="my-3 sm:my-4 w-full">
+                                    {(() => {
+                                      const rawVideo = sec.video || sec.videoUrl || sec.youtubeUrl;
+                                      const videoUrl = typeof rawVideo === "string" ? rawVideo : rawVideo?.url || "";
+                                      const videoTitle =
+                                        (typeof rawVideo === "object" ? rawVideo?.title : null) ||
+                                        sec.title ||
+                                        "Educational Video";
+                                      const captionText =
+                                        (typeof rawVideo === "object" ? rawVideo?.caption : null) ||
+                                        sec.videoCaption ||
+                                        "";
+
+                                      const embedUrl = getYouTubeEmbedUrl(videoUrl);
+                                      const isDirectVideo =
+                                        !embedUrl && videoUrl && /\.(mp4|webm|ogg|mov)($|\?)/i.test(videoUrl);
+
+                                      if (embedUrl) {
+                                        return (
+                                          <div className="w-full">
+                                            <div className="relative w-full aspect-video rounded overflow-hidden bg-black border border-slate-200/80 shadow-xs">
+                                              <iframe
+                                                src={embedUrl}
+                                                title={videoTitle}
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                                allowFullScreen
+                                                className="w-full h-full border-0 absolute inset-0"
+                                              />
+                                            </div>
+                                            {captionText && (
+                                              <p className="text-center text-[11px] sm:text-xs text-slate-500 mt-1.5 font-medium italic m-0">
+                                                {captionText}
+                                              </p>
+                                            )}
+                                          </div>
+                                        );
+                                      }
+
+                                      if (isDirectVideo) {
+                                        return (
+                                          <div className="w-full">
+                                            <div className="relative w-full aspect-video rounded overflow-hidden bg-black border border-slate-200/80 shadow-xs">
+                                              <video
+                                                controls
+                                                playsInline
+                                                className="w-full h-full object-cover"
+                                                src={getAssetPath(videoUrl)}
+                                              />
+                                            </div>
+                                            {captionText && (
+                                              <p className="text-center text-[11px] sm:text-xs text-slate-500 mt-1.5 font-medium italic m-0">
+                                                {captionText}
+                                              </p>
+                                            )}
+                                          </div>
+                                        );
+                                      }
+
+                                      // Video Player Placeholder (matching Screenshot 2 & 3)
+                                      return (
+                                        <div className="w-full">
+                                          <div className="relative w-full aspect-video rounded bg-gradient-to-br from-slate-900 to-slate-800 border border-slate-700/80 flex flex-col items-center justify-center text-white shadow-xs overflow-hidden group">
+                                            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-red-600/90 hover:bg-red-600 text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                                              <Play size={26} className="fill-current translate-x-0.5 text-white" />
+                                            </div>
+                                            <span className="text-xs sm:text-sm font-semibold text-slate-300 mt-3 tracking-wide">
+                                              {videoTitle && videoTitle !== "Educational Video"
+                                                ? videoTitle
+                                                : "Video Player (16:9)"}
+                                            </span>
+                                          </div>
+                                          {captionText && (
+                                            <p className="text-center text-[11px] sm:text-xs text-slate-500 mt-1.5 font-medium italic m-0">
+                                              {captionText}
+                                            </p>
+                                          )}
+                                        </div>
+                                      );
+                                    })()}
+                                  </div>
+                                )}
+
+                                {/* 📄 PDF Document Button/Card (matching Screenshot) */}
+                                {hasPdf && (
+                                  <div className="my-3 w-full">
+                                    {(() => {
+                                      const rawPdf = sec.pdf;
+                                      const pdfUrl =
+                                        typeof rawPdf === "string"
+                                          ? rawPdf
+                                          : rawPdf?.url || rawPdf?.path || "";
+                                      const pdfName =
+                                        (typeof rawPdf === "object"
+                                          ? rawPdf?.fileName || rawPdf?.name
+                                          : null) ||
+                                        (typeof rawPdf === "string" && rawPdf.includes(".pdf")
+                                          ? rawPdf.split("/").pop()
+                                          : null) ||
+                                        sec.title ||
+                                        "Online MBA Admission Process.pdf";
+
+                                      const href = pdfUrl ? getAssetPath(pdfUrl) : "#";
+
+                                      return (
+                                        <a
+                                          href={href}
+                                          target={pdfUrl ? "_blank" : undefined}
+                                          rel={pdfUrl ? "noopener noreferrer" : undefined}
+                                          onClick={(e) => {
+                                            if (!pdfUrl) e.preventDefault();
+                                          }}
+                                          className="inline-flex items-center gap-3 bg-[#EAEBED] hover:bg-[#E2E4E7] border border-slate-300/60 px-3.5 py-2.5 rounded-lg transition-colors shadow-2xs group no-underline text-left cursor-pointer max-w-sm"
+                                        >
+                                          {/* PDF Icon with red border, ribbon, and PDF text */}
+                                          <div className="shrink-0 w-8 h-10 relative flex items-center justify-center">
+                                            <svg
+                                              className="w-8 h-10"
+                                              viewBox="0 0 32 40"
+                                              fill="none"
+                                              xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                              <path
+                                                d="M4 2C2.89543 2 2 2.89543 2 4V36C2 37.1046 2.89543 38 4 38H28C29.1046 38 30 37.1046 30 36V12L20 2H4Z"
+                                                fill="white"
+                                                stroke="#E11D48"
+                                                strokeWidth="1.8"
+                                                strokeLinejoin="round"
+                                              />
+                                              <path
+                                                d="M20 2V12H30"
+                                                stroke="#E11D48"
+                                                strokeWidth="1.8"
+                                                strokeLinejoin="round"
+                                              />
+                                              <path
+                                                d="M12.5 21C13 18 14.5 15.5 16 15.5C17 15.5 17 17.5 16 19.5C14.8 22 11 25.5 8.5 26C7.5 26.2 7 25.5 7.5 24.5C8.5 22.5 11 22 12.5 21ZM12.5 21C15 20.5 19.5 21 22 23C23 23.8 22.5 24.5 21 24C19 23.5 15.5 21.8 12.5 21Z"
+                                                stroke="#E11D48"
+                                                strokeWidth="1.3"
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                              />
+                                              <text
+                                                x="16"
+                                                y="34.5"
+                                                textAnchor="middle"
+                                                fill="#1E293B"
+                                                fontSize="6.5"
+                                                fontWeight="800"
+                                                fontFamily="sans-serif"
+                                                letterSpacing="0.5"
+                                              >
+                                                PDF
+                                              </text>
+                                            </svg>
+                                          </div>
+
+                                          {/* PDF Details */}
+                                          <div className="flex-1 min-w-0">
+                                            <span className="text-xs sm:text-[13px] font-semibold text-slate-800 leading-snug line-clamp-1 block">
+                                              {pdfName}
+                                            </span>
+                                            <span className="text-[11px] sm:text-xs font-semibold text-[#1a73e8] group-hover:underline flex items-center gap-1 mt-0.5">
+                                              View PDF
+                                            </span>
+                                          </div>
+                                        </a>
+                                      );
+                                    })()}
+                                  </div>
+                                )}
 
                                 {Array.isArray(sec.checklist) && sec.checklist.length > 0 && (
                                   <ul className="space-y-0.5 list-none p-0">
