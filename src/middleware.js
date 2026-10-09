@@ -28,11 +28,25 @@ async function getRedirects(backendUrl) {
   return cachedRedirects || [];
 }
 
-function normalizePath(p) {
-  if (!p) return '/';
-  const clean = String(p).trim().toLowerCase();
-  const withoutTrailing = clean.replace(/\/+$/, '');
-  return withoutTrailing.startsWith('/') ? withoutTrailing : `/${withoutTrailing}`;
+function parseUrlDetails(urlString) {
+  const trimmed = String(urlString || '').trim().toLowerCase();
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+    try {
+      const u = new URL(trimmed);
+      const cleanPath = (u.pathname || '/').replace(/\/+$/, '') || '/';
+      return {
+        hasHost: true,
+        host: u.hostname.replace(/^www\./, ''),
+        path: cleanPath.startsWith('/') ? cleanPath : `/${cleanPath}`,
+      };
+    } catch {}
+  }
+  const cleanPath = trimmed.replace(/\/+$/, '') || '/';
+  return {
+    hasHost: false,
+    host: '',
+    path: cleanPath.startsWith('/') ? cleanPath : `/${cleanPath}`,
+  };
 }
 
 export async function middleware(req) {
@@ -58,11 +72,24 @@ export async function middleware(req) {
     return NextResponse.next();
   }
 
-  const currentPath = normalizePath(pathname);
+  const requestHost = (req.headers.get('host') || req.nextUrl.hostname || '')
+    .toLowerCase()
+    .split(':')[0]
+    .replace(/^www\./, '');
+
+  const requestPath = (pathname || '/').toLowerCase().replace(/\/+$/, '') || '/';
 
   const matched = redirects.find((r) => {
     if (!r.sourceUrl) return false;
-    return normalizePath(r.sourceUrl) === currentPath;
+    const redirectSource = parseUrlDetails(r.sourceUrl);
+
+    if (redirectSource.hasHost) {
+      if (redirectSource.host !== requestHost) {
+        return false;
+      }
+    }
+
+    return redirectSource.path === requestPath;
   });
 
   if (!matched) {
