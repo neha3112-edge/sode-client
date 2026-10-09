@@ -28,3 +28,4 @@ export { default as FooterClassic } from "./footer/FooterClassic";
 export { default as FooterMedia } from "./footer/FooterMedia";
 export { default as FooterLeadForm } from "./forms/FooterLeadForm";
 export { default as IndiaFlag } from "./forms/IndiaFlag";
+export { default as LiverpoolLandingView } from "./LiverpoolLandingView";

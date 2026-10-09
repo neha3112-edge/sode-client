@@ -136,8 +136,8 @@ export default function LandingAdmissionProcess({
     admissionSteps && admissionSteps.length > 0
       ? admissionSteps
       : brand.admissionSteps && brand.admissionSteps.length > 0
-      ? brand.admissionSteps
-      : GLOBAL_ADMISSION_STEPS;
+        ? brand.admissionSteps
+        : GLOBAL_ADMISSION_STEPS;
 
   const activeUniversity =
     universityName ||
@@ -190,11 +190,10 @@ export default function LandingAdmissionProcess({
     enrollmentProcess?.title ||
     (isSmu
       ? `How To Take Admission In ${activeUniversity}?`
-      : `How to Apply for ${
-          activeUniversity.toLowerCase().includes("course")
-            ? activeUniversity
-            : `${activeUniversity} Courses`
-        }`);
+      : `How to Apply for ${activeUniversity.toLowerCase().includes("course")
+        ? activeUniversity
+        : `${activeUniversity} Courses`
+      }`);
 
   const subtitleText =
     admissionProcess?.subtitle ||
@@ -240,10 +239,9 @@ export default function LandingAdmissionProcess({
           className={
             (brand.admissionGridClass ? brand.admissionGridClass.replace(/\bgrid-cols-1\b/, "grid-cols-2") : null) ||
             (enrollmentProcess?.gridClass ? enrollmentProcess.gridClass.replace(/\bgrid-cols-1\b/, "grid-cols-2") : null) ||
-            `grid ${
-              rawSteps.length <= 4
-                ? "grid-cols-2 lg:grid-cols-4 max-w-4xl mx-auto"
-                : "grid-cols-2 md:grid-cols-3 lg:grid-cols-6"
+            `grid ${rawSteps.length <= 4
+              ? "grid-cols-2 lg:grid-cols-4 max-w-4xl mx-auto"
+              : "grid-cols-2 md:grid-cols-3 lg:grid-cols-6"
             } gap-2.5 sm:gap-3 lg:gap-2.5 xl:gap-3.5 2xl:gap-4 w-full`
           }
         >

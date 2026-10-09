@@ -28,8 +28,13 @@ import BrochureModal from "./modals/BrochureModal";
 import ScholarshipModal from "./modals/ScholarshipModal";
 import CompareModal from "./modals/CompareModal";
 import LegalModal from "./modals/LegalModal";
+import LiverpoolLandingView from "./LiverpoolLandingView";
 
 export default function UniversityLandingView({ data = {} }) {
+  if (data?.slug === "liverpool" || data?.brand?.slug === "liverpool") {
+    return <LiverpoolLandingView data={data} />;
+  }
+
   const {
     slug = "university",
     brand = {},
