@@ -254,10 +254,6 @@ export default function BlogSidebar({
   // Handle Newsletter Subscribe
   const handleSubscribe = async (e) => {
     e.preventDefault();
-    if (!subscribedEmail || !subscribedEmail.includes("@")) {
-      message.warning("Please enter a valid email address.");
-      return;
-    }
     setSubscribing(true);
     try {
       await new Promise((r) => setTimeout(r, 600));
@@ -803,25 +799,11 @@ export default function BlogSidebar({
           admissions, scholarships and educational opportunities.
         </p>
 
-        <form onSubmit={handleSubscribe} className="space-y-2.5">
-          <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-              <Mail size={15} />
-            </span>
-            <input
-              type="email"
-              value={subscribedEmail}
-              onChange={(e) => setSubscribedEmail(e.target.value)}
-              placeholder="Enter your email address"
-              required
-              className="w-full pl-9 pr-3 py-2 text-xs rounded-lg bg-white text-slate-800 placeholder-slate-400 outline-none border border-transparent focus:border-[#F4D068] transition-colors"
-            />
-          </div>
-
+        <form onSubmit={handleSubscribe} className="mt-3">
           <button
             type="submit"
             disabled={subscribing}
-            className="w-full py-2 px-4 rounded-full bg-[#F4D068] hover:bg-[#ebc557] text-[#0C2B4E] text-xs font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer active:scale-95 disabled:opacity-70 border-none"
+            className="w-full py-2.5 px-4 rounded-full bg-[#F4D068] hover:bg-[#ebc557] text-[#0C2B4E] text-xs font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer active:scale-95 disabled:opacity-70 border-none"
           >
             {subscribing ? "SUBSCRIBING..." : "SUBSCRIBE"}
           </button>
