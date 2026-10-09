@@ -438,53 +438,6 @@ export default function BlogSidebar({
         </Form>
       </div>
 
-      {/* ─── CARD 2: ABOUT THE AUTHOR ─── */}
-      <div className="bg-white rounded-2xl border border-gray-200/90 shadow-xs p-5">
-        <div className="border-b border-gray-100 pb-2.5 mb-3.5">
-          <h3 className="text-sm sm:text-[14.5px] font-bold text-slate-800 m-0">
-            About the Author
-          </h3>
-        </div>
-
-        <div className="flex items-center gap-3 mb-2.5">
-          {authorAvatar ? (
-            <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 border border-slate-200 relative">
-              <Image
-                src={getAssetPath(authorAvatar)}
-                alt={authorName}
-                fill
-                sizes="40px"
-                unoptimized
-                className="object-cover"
-              />
-            </div>
-          ) : (
-            <div className="w-10 h-10 rounded-full bg-blue-100 text-[#0C2B4E] flex items-center justify-center font-bold text-sm shrink-0">
-              {authorName.charAt(0)}
-            </div>
-          )}
-          <div>
-            <h4 className="text-xs sm:text-[13px] font-bold text-slate-900 m-0 leading-tight">
-              {authorName}
-            </h4>
-            <span className="text-[11px] text-slate-500 font-normal">
-              Senior Education Editor
-            </span>
-          </div>
-        </div>
-
-        <p className="text-xs text-slate-600 font-normal mb-3.5 m-0">
-          {authorBio}
-        </p>
-
-        <Link
-          href="/about-us"
-          className="inline-flex items-center justify-center px-4 py-1.5 rounded-md bg-[#F4D068] hover:bg-[#ebc557] text-[#0C2B4E] text-xs font-bold transition-all shadow-2xs no-underline active:scale-95"
-        >
-          View Profile
-        </Link>
-      </div>
-
       {/* ─── CARD 3: RELATED BLOGS ─── */}
       {filteredRelated.length > 0 && (
         <div className="bg-white rounded-2xl border border-gray-200/90 shadow-xs p-5">
@@ -819,6 +772,53 @@ export default function BlogSidebar({
             )}
           </div>
         )}
+
+        {/* ─── ABOUT THE AUTHOR ─── */}
+        <div className="bg-white rounded-2xl border border-gray-200/90 shadow-xs p-5">
+          <div className="border-b border-gray-100 pb-2.5 mb-3.5">
+            <h3 className="text-sm sm:text-[14.5px] font-bold text-slate-800 m-0">
+              About the Author
+            </h3>
+          </div>
+
+          <div className="flex items-center gap-3 mb-2.5">
+            {authorAvatar ? (
+              <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 border border-slate-200 relative">
+                <Image
+                  src={getAssetPath(authorAvatar)}
+                  alt={authorName}
+                  fill
+                  sizes="40px"
+                  unoptimized
+                  className="object-cover"
+                />
+              </div>
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-blue-100 text-[#0C2B4E] flex items-center justify-center font-bold text-sm shrink-0">
+                {authorName.charAt(0)}
+              </div>
+            )}
+            <div>
+              <h4 className="text-xs sm:text-[13px] font-bold text-slate-900 m-0 leading-tight">
+                {authorName}
+              </h4>
+              <span className="text-[11px] text-slate-500 font-normal">
+                Senior Education Editor
+              </span>
+            </div>
+          </div>
+
+          <p className="text-xs text-slate-600 font-normal mb-3.5 m-0">
+            {authorBio}
+          </p>
+
+          <Link
+            href="/about-us"
+            className="inline-flex items-center justify-center px-4 py-1.5 rounded-md bg-[#F4D068] hover:bg-[#ebc557] text-[#0C2B4E] text-xs font-bold transition-all shadow-2xs no-underline active:scale-95"
+          >
+            View Profile
+          </Link>
+        </div>
 
         {/* ─── CARD 9: SHARE THIS PAGE ─── */}
         <div className="bg-white rounded-2xl border border-gray-200/90 shadow-xs p-3.5 sm:p-5">
