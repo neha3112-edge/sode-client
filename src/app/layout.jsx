@@ -26,6 +26,14 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata = {
+  robots: {
+    index: false,
+    follow: false,
+    googleBot: {
+      index: false,
+      follow: false,
+    },
+  },
   icons: {
     icon: [
       { url: "/favicon.ico" },

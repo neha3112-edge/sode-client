@@ -1,8 +1,8 @@
 import { API_BASE_URL, getFetchCacheOptions } from "@/config";
 import { getAssetPath } from "@/lib/utils";
 
-export const SITE_NAME = "SODE";
-export const SITE_URL = "https://sode.co.in";
+export const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || "";
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "";
 
 export function ensureTrailingSlash(url) {
   if (!url || typeof url !== "string") return url;
@@ -23,52 +23,8 @@ export async function getPageMetaData(path = "/") {
     if (!res.ok) return null;
 
     const data = await res.json();
-    if (data && data.success && data.result) {
-      const item = data.result;
-      const title = item.metaTitle || item.title || "";
-      const description = item.metaDescription || item.description || "";
-      const keywords = item.metaKeywords || item.keywords || "";
-      const rawImage =
-        item.ogImage?.url ||
-        item.ogImage?.path ||
-        (typeof item.ogImage === "string" ? item.ogImage : null);
-      const ogImage = rawImage ? (rawImage.startsWith("http") ? rawImage : getAssetPath(rawImage)) : null;
-      const ogImageAlt = item.ogImage?.alt || item.ogImage?.name || title || "Distance Education School image";
-
-      const rawTwitterImage =
-        item.twitterImage?.url ||
-        item.twitterImage?.path ||
-        (typeof item.twitterImage === "string" ? item.twitterImage : null) ||
-        rawImage;
-      const twitterImage = rawTwitterImage ? (rawTwitterImage.startsWith("http") ? rawTwitterImage : getAssetPath(rawTwitterImage)) : null;
-
-      return {
-        title,
-        metaTitle: title,
-        description,
-        metaDescription: description,
-        keywords,
-        metaKeywords: keywords,
-        canonicalUrl: ensureTrailingSlash(item.canonicalUrl || item.ogUrl || `${SITE_URL}${cleanPath}`),
-        authorName: item.authorName || "Distance Education School",
-        publisher: item.publisher || "Distance Education School",
-        publisherUrl: item.publisherUrl || "https://distanceeducationschool.com/",
-        ogType: item.ogType || "website",
-        ogSiteName: item.ogSiteName || "Distance Education School",
-        ogTitle: item.ogTitle || title || "",
-        ogDescription: item.ogDescription || description || "",
-        ogImage,
-        ogImageAlt,
-        twitterCard: item.twitterCard || "summary_large_image",
-        twitterTitle: item.twitterTitle || item.ogTitle || title || "",
-        twitterDescription: item.twitterDescription || item.ogDescription || description || "",
-        twitterImage,
-        twitterSite: item.twitterSite || "@distanceeduschl",
-        twitterCreator: item.twitterCreator || "@distanceeduschl",
-        robots: item.robots || "index, follow",
-        schemaMarkup: item.schemaMarkup || item.script || null,
-        script: item.script || item.schemaMarkup || null,
-      };
+    if (data?.success && data?.result) {
+      return data.result;
     }
 
     return null;
@@ -78,85 +34,120 @@ export async function getPageMetaData(path = "/") {
   }
 }
 
-export function constructMetadata(pageMeta, fallback = {}) {
-  const title = pageMeta?.metaTitle || pageMeta?.title || fallback.title || "";
-  const description = pageMeta?.metaDescription || pageMeta?.description || fallback.description || "";
-  const keywords = pageMeta?.metaKeywords || pageMeta?.keywords || fallback.keywords || "";
-  const canonical = ensureTrailingSlash(
-    pageMeta?.canonicalUrl || fallback.canonicalUrl || fallback.canonical || `${SITE_URL}/`
+export function constructMetadata(pageMeta) {
+  // If NO pageMeta exists in backend for this path, strictly return noindex, nofollow
+  if (!pageMeta) {
+    return {
+      robots: {
+        index: false,
+        follow: false,
+        googleBot: {
+          index: false,
+          follow: false,
+        },
+      },
+    };
+  }
+
+  // 🔒 STRICT SEO: Only index if PageMeta explicitly enables "index" (and NOT "noindex")
+  const rawRobots = pageMeta.robots ? String(pageMeta.robots).trim().toLowerCase() : "";
+  const isExplicitlyIndexed = Boolean(
+    rawRobots &&
+    rawRobots.includes("index") &&
+    !rawRobots.includes("noindex")
   );
-  const authorName = pageMeta?.authorName || fallback.author || "Distance Education School";
-  const publisherName = pageMeta?.publisher || fallback.publisher || "Distance Education School";
-  const publisherUrl = pageMeta?.publisherUrl || fallback.publisherUrl || "https://distanceeducationschool.com/";
+  const isNoFollow = rawRobots.includes("nofollow") || !isExplicitlyIndexed;
 
-  const ogTitle = pageMeta?.ogTitle || title;
-  const ogDescription = pageMeta?.ogDescription || description;
-  const ogSiteName = pageMeta?.ogSiteName || fallback.siteName || "Distance Education School";
-  const ogType = pageMeta?.ogType || fallback.ogType || "website";
-  const ogImage = pageMeta?.ogImage || fallback.ogImage || fallback.image || null;
-  const ogImageAlt = pageMeta?.ogImageAlt || fallback.ogImageAlt || title || ogSiteName;
-
-  const twitterCard = pageMeta?.twitterCard || "summary_large_image";
-  const twitterTitle = pageMeta?.twitterTitle || ogTitle || title;
-  const twitterDescription = pageMeta?.twitterDescription || ogDescription || description;
-  const twitterImage = pageMeta?.twitterImage || ogImage;
-  const twitterSite = pageMeta?.twitterSite || "@distanceeduschl";
-  const twitterCreator = pageMeta?.twitterCreator || "@distanceeduschl";
-
-  const robots = pageMeta?.robots || fallback.robots || "index, follow";
-
-  const metadata = {
-    authors: [{ name: authorName }],
-    creator: authorName,
-    publisher: publisherName,
-    robots,
-    alternates: {
-      canonical,
-    },
-    openGraph: {
-      title: ogTitle || title,
-      description: ogDescription || description,
-      url: canonical,
-      siteName: ogSiteName,
-      type: ogType,
-    },
-    twitter: {
-      card: twitterCard,
-      title: twitterTitle || title,
-      description: twitterDescription || description,
-      site: twitterSite,
-      creator: twitterCreator,
-    },
-    other: {
-      publisher: publisherUrl,
+  const robots = {
+    index: isExplicitlyIndexed,
+    follow: !isNoFollow,
+    googleBot: {
+      index: isExplicitlyIndexed,
+      follow: !isNoFollow,
     },
   };
 
-  if (title) {
-    metadata.title = title;
+  const title = pageMeta.metaTitle || pageMeta.title;
+  const description = pageMeta.metaDescription || pageMeta.description;
+  const keywords = pageMeta.metaKeywords || pageMeta.keywords;
+  const rawCanonical = pageMeta.canonicalUrl || pageMeta.ogUrl;
+  const canonical = rawCanonical ? ensureTrailingSlash(rawCanonical) : undefined;
+
+  const authorName = pageMeta.authorName;
+  const publisherName = pageMeta.publisher;
+  const publisherUrl = pageMeta.publisherUrl;
+
+  const ogTitle = pageMeta.ogTitle || pageMeta.metaTitle || pageMeta.title;
+  const ogDescription = pageMeta.ogDescription || pageMeta.metaDescription || pageMeta.description;
+  const ogSiteName = pageMeta.ogSiteName;
+  const ogType = pageMeta.ogType;
+
+  const rawOg = pageMeta.ogImage;
+  const ogUrl = typeof rawOg === "string" ? rawOg : rawOg?.url || rawOg?.path;
+  const ogImageUrl = ogUrl ? getAssetPath(ogUrl) : undefined;
+  const ogImageAlt = rawOg?.alt || rawOg?.name || ogTitle || title;
+
+  const twitterCard = pageMeta.twitterCard;
+  const twitterTitle = pageMeta.twitterTitle || ogTitle || title;
+  const twitterDescription = pageMeta.twitterDescription || ogDescription || description;
+
+  const rawTwitter = pageMeta.twitterImage || pageMeta.ogImage;
+  const twitterUrl = typeof rawTwitter === "string" ? rawTwitter : rawTwitter?.url || rawTwitter?.path;
+  const twitterImageUrl = twitterUrl ? getAssetPath(twitterUrl) : undefined;
+
+  const twitterSite = pageMeta.twitterSite;
+  const twitterCreator = pageMeta.twitterCreator;
+
+  const metadata = {
+    robots,
+  };
+
+  if (title) metadata.title = title;
+  if (description) metadata.description = description;
+  if (keywords) metadata.keywords = keywords;
+  if (canonical) metadata.alternates = { canonical };
+
+  if (authorName) {
+    metadata.authors = [{ name: authorName }];
+    metadata.creator = authorName;
+  }
+  if (publisherName) {
+    metadata.publisher = publisherName;
   }
 
-  if (description) {
-    metadata.description = description;
+  if (ogTitle || ogDescription || ogImageUrl || ogSiteName || ogType) {
+    metadata.openGraph = {};
+    if (ogTitle) metadata.openGraph.title = ogTitle;
+    if (ogDescription) metadata.openGraph.description = ogDescription;
+    if (canonical) metadata.openGraph.url = canonical;
+    if (ogSiteName) metadata.openGraph.siteName = ogSiteName;
+    if (ogType) metadata.openGraph.type = ogType;
+    if (ogImageUrl) {
+      metadata.openGraph.images = [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          ...(ogImageAlt ? { alt: ogImageAlt } : {}),
+        },
+      ];
+    }
   }
 
-  if (keywords) {
-    metadata.keywords = keywords;
+  if (twitterTitle || twitterDescription || twitterImageUrl || twitterSite || twitterCreator || twitterCard) {
+    metadata.twitter = {};
+    if (twitterCard) metadata.twitter.card = twitterCard;
+    if (twitterTitle) metadata.twitter.title = twitterTitle;
+    if (twitterDescription) metadata.twitter.description = twitterDescription;
+    if (twitterSite) metadata.twitter.site = twitterSite;
+    if (twitterCreator) metadata.twitter.creator = twitterCreator;
+    if (twitterImageUrl) metadata.twitter.images = [twitterImageUrl];
   }
 
-  if (ogImage) {
-    metadata.openGraph.images = [
-      {
-        url: ogImage,
-        width: 1200,
-        height: 630,
-        alt: ogImageAlt,
-      },
-    ];
-  }
-
-  if (twitterImage) {
-    metadata.twitter.images = [twitterImage];
+  if (publisherUrl) {
+    metadata.other = {
+      publisher: publisherUrl,
+    };
   }
 
   return metadata;
