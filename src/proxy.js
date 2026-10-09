@@ -14,6 +14,7 @@ async function getRedirects(backendUrl) {
     const res = await fetch(`${backendUrl}/api/url-redirects/public/all`, {
       headers: { Accept: 'application/json' },
       next: { revalidate: 30 },
+      signal: AbortSignal.timeout(1500),
     });
     if (!res.ok) return cachedRedirects || [];
     const data = await res.json();
@@ -133,6 +134,21 @@ export async function proxy(req) {
     } else {
       if (!target.startsWith('/')) target = `/${target}`;
       redirectUrl = new URL(target, req.url);
+    }
+
+    // Ensure trailing slash for internal routes because next.config.mjs has trailingSlash: true
+    if (!target.startsWith('http://') && !target.startsWith('https://')) {
+      if (!redirectUrl.pathname.endsWith('/') && !redirectUrl.pathname.includes('.')) {
+        redirectUrl.pathname = `${redirectUrl.pathname}/`;
+      }
+    }
+
+    // Guard against infinite redirect loops (if target path matches current path)
+    const matchedSource = parseUrlDetails(matched.sourceUrl);
+    const targetPath = (redirectUrl.pathname || '/').toLowerCase().replace(/\/+$/, '') || '/';
+    const targetHost = (redirectUrl.hostname || '').toLowerCase().replace(/^www\./, '');
+    if (targetPath === requestPath && (!matchedSource.hasHost || targetHost === requestHost)) {
+      return NextResponse.next();
     }
 
     if (req.nextUrl.search) {
