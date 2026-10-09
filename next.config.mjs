@@ -13,7 +13,6 @@ const nextConfig = {
     "localhost",
     "127.0.0.1",
   ],
-
   images: {
     unoptimized: true,
     formats: ["image/avif", "image/webp"],
@@ -40,31 +39,6 @@ const nextConfig = {
         destination: `${MINIO_PUBLIC_URL}/:path*`,
       },
     ];
-  },
-
-  async redirects() {
-    return [
-      {
-        source: "/university",
-        destination: "/universities/",
-        permanent: true,
-      },
-      {
-        source: "/university/:slug*",
-        destination: "/universities/:slug*/",
-        permanent: true,
-      },
-    ];
-  },
-
-  experimental: {
-    optimizePackageImports: [
-      "lucide-react",
-      "antd",
-      "@ant-design/icons",
-      "lottie-react",
-      "react-icons",
-    ],
   },
 };
 

@@ -49,7 +49,7 @@ function parseUrlDetails(urlString) {
   };
 }
 
-export async function middleware(req) {
+export async function proxy(req) {
   const { pathname } = req.nextUrl;
 
   if (
@@ -147,6 +147,8 @@ export async function middleware(req) {
 
   return NextResponse.next();
 }
+
+export default proxy;
 
 export const config = {
   matcher: [
