@@ -1042,15 +1042,18 @@ export default function BlogClientView({
                                         typeof rawPdf === "string"
                                           ? rawPdf
                                           : rawPdf?.url || rawPdf?.path || "";
-                                      const pdfName =
+                                      let pdfName =
                                         (typeof rawPdf === "object"
-                                          ? rawPdf?.fileName || rawPdf?.name
-                                          : null) ||
-                                        (typeof rawPdf === "string" && rawPdf.includes(".pdf")
-                                          ? rawPdf.split("/").pop()
+                                          ? rawPdf?.name || rawPdf?.alt || rawPdf?.fileName
                                           : null) ||
                                         sec.title ||
-                                        "Online MBA Admission Process.pdf";
+                                        (typeof rawPdf === "string" && rawPdf.includes(".pdf")
+                                          ? rawPdf.split("/").pop()
+                                          : "Document.pdf");
+
+                                      if (pdfName && typeof pdfName === "string" && !/\.pdf$/i.test(pdfName)) {
+                                        pdfName = `${pdfName}.pdf`;
+                                      }
 
                                       const href = pdfUrl ? getAssetPath(pdfUrl) : "#";
 
