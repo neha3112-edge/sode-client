@@ -222,16 +222,50 @@ function MuRecruitersCarousel({ activeRecruiters, brand }) {
           )}
         </div>
 
-        {/* Ant Design Carousel Window */}
-        <div className="overflow-hidden w-full max-w-[1180px] mx-auto px-1 py-1">
+        {/* Mobile View: Exactly 2 Cards per slide, 3 circular dots (matching Image 1) */}
+        <div className="block sm:hidden w-full max-w-[540px] mx-auto px-1 py-1 [&_.slick-dots]:!relative [&_.slick-dots]:!mt-5 [&_.slick-dots]:!mb-0 [&_.slick-dots_li]:!w-2.5 [&_.slick-dots_li]:!h-2.5 [&_.slick-dots_li]:!mx-1.5 [&_.slick-dots_li_button]:!w-2.5 [&_.slick-dots_li_button]:!h-2.5 [&_.slick-dots_li_button]:!rounded-full [&_.slick-dots_li_button]:!bg-[#b8b8b8] [&_.slick-dots_li.slick-active_button]:!bg-black">
+          <Carousel
+            slidesToShow={2}
+            slidesToScroll={2}
+            autoplay
+            autoplaySpeed={brand.recruitersInterval || 2500}
+            infinite={logos.length > 2}
+            dots={true}
+            arrows={false}
+            pauseOnHover
+            draggable
+          >
+            {logos.map((logo, idx) => (
+              <div key={`m-${idx}`} className="px-1.5 outline-none py-1">
+                <div
+                  className={
+                    brand.recruitersCardClassName ||
+                    "bg-white rounded-[8px] h-[74px] w-full px-3 py-2 flex items-center justify-center shadow-xs border border-slate-200 hover:shadow-md transition-all group overflow-hidden"
+                  }
+                  style={brand.recruitersCardStyle}
+                >
+                  <img
+                    src={logo}
+                    alt={`Partner ${(idx % logos.length) + 1}`}
+                    className="max-h-[46px] max-w-[85%] w-auto h-auto object-contain mx-auto transition-transform duration-200 group-hover:scale-105"
+                    loading="eager"
+                  />
+                </div>
+              </div>
+            ))}
+          </Carousel>
+        </div>
+
+        {/* Desktop / Tablet View: 5 Cards (matching live website and Image 2) */}
+        <div className="hidden sm:block overflow-hidden w-full max-w-[1180px] mx-auto px-1 py-1 [&_.slick-dots]:!relative [&_.slick-dots]:!mt-5 [&_.slick-dots]:!mb-0 [&_.slick-dots_li]:!w-2.5 [&_.slick-dots_li]:!h-2.5 [&_.slick-dots_li]:!mx-1.5 [&_.slick-dots_li_button]:!w-2.5 [&_.slick-dots_li_button]:!h-2.5 [&_.slick-dots_li_button]:!rounded-full [&_.slick-dots_li_button]:!bg-[#b8b8b8] [&_.slick-dots_li.slick-active_button]:!bg-black">
           <Carousel
             ref={carouselRef}
             slidesToShow={brand.recruitersVisibleCount || 5}
             slidesToScroll={1}
             autoplay
-            autoplaySpeed={brand.recruitersInterval || 2200}
+            autoplaySpeed={brand.recruitersInterval || 2500}
             infinite={logos.length > (brand.recruitersVisibleCount || 5)}
-            dots={{ className: "!mt-5" }}
+            dots={true}
             arrows={false}
             pauseOnHover
             draggable
@@ -244,18 +278,10 @@ function MuRecruitersCarousel({ activeRecruiters, brand }) {
                   infinite: logos.length > 3,
                 },
               },
-              {
-                breakpoint: 640,
-                settings: {
-                  slidesToShow: 2,
-                  slidesToScroll: 1,
-                  infinite: logos.length > 2,
-                },
-              },
             ]}
           >
             {logos.map((logo, idx) => (
-              <div key={idx} className="px-2 sm:px-2.5 outline-none py-1">
+              <div key={`d-${idx}`} className="px-2 sm:px-2.5 outline-none py-1">
                 <div
                   className={
                     brand.recruitersCardClassName ||

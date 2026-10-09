@@ -31,7 +31,8 @@ export default function LandingHero({
     hero.alignLeftMobile ||
     brand.slug === "manipal" ||
     brand.slug === "amity" ||
-    brand.slug === "uu";
+    brand.slug === "uu" ||
+    brand.slug === "mu";
 
   /* ----------------------------- Helpers ----------------------------- */
 
@@ -475,13 +476,21 @@ export default function LandingHero({
           >
             {renderLogo()}
 
-            {hero.welcomeText && (
-              <div
-                className={hero.welcomeClassName || "mb-2 sm:mb-3"}
-                style={hero.welcomeStyle}
-              >
-                {hero.welcomeText}
-              </div>
+            {(hero.welcomeHtml || hero.welcomeText) && (
+              hero.welcomeHtml ? (
+                <div
+                  className={hero.welcomeClassName || "mb-2 sm:mb-3"}
+                  style={hero.welcomeStyle}
+                  dangerouslySetInnerHTML={{ __html: hero.welcomeHtml }}
+                />
+              ) : (
+                <div
+                  className={hero.welcomeClassName || "mb-2 sm:mb-3"}
+                  style={hero.welcomeStyle}
+                >
+                  {hero.welcomeText}
+                </div>
+              )
             )}
 
             {(hero.hashtagText || brand.hashtag) && (
@@ -717,19 +726,23 @@ export default function LandingHero({
             {(hero.mobileImage || hero.mobileStudentImage) && (
               <div
                 className={joinClassNames(
-                  "hero-mobile-image-wrapper block md:hidden w-full relative aspect-[926/433] overflow-hidden rounded-2xl mb-3 shadow-md",
+                  "hero-mobile-image-wrapper block md:hidden relative",
+                  hero.mobileStudentImage
+                    ? "w-full overflow-visible"
+                    : "w-full aspect-[926/433] overflow-hidden rounded-2xl mb-3 shadow-md",
                   hero.mobileImageWrapperClassName || hero.mobileStudentImageWrapperClassName
                 )}
-                style={hero.mobileImageWrapperStyle}
+                style={hero.mobileStudentImageWrapperStyle || hero.mobileImageWrapperStyle}
               >
                 <Image
                   src={hero.mobileImage || hero.mobileStudentImage}
                   alt={brand.name || "University"}
                   fill
                   className={joinClassNames(
-                    "object-cover",
+                    hero.mobileStudentImage ? "object-contain object-bottom" : "object-cover",
                     hero.mobileImageClassName || hero.mobileStudentImageClassName
                   )}
+                  style={hero.mobileStudentImageStyle || hero.mobileImageStyle}
                   sizes="(max-width: 768px) 100vw, 420px"
                   priority
                 />

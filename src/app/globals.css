@@ -437,3 +437,17 @@ body:has(.landing-page-root)>div>main {
   right: 10px !important;
   z-index: 50 !important;
 }
+
+/* Hide Next.js dev overlay indicator badge covering bottom-left mobile buttons */
+nextjs-portal,
+[data-nextjs-dev-tools-button],
+[data-nextjs-toast],
+div[data-nextjs-dev-tools-button],
+button[data-nextjs-dev-tools-button],
+#nextjs-dev-tools,
+div:has(> #nextjs-dev-tools) {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}

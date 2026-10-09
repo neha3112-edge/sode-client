@@ -425,11 +425,16 @@ export default function LandingLeadForm({
     (isWhiteCard ? "18px 18px" : isCard ? "14px 16px 16px" : "14px");
   const cardRadius =
     layout.borderRadius ||
-    (isWhiteCard ? "14px" : isCard ? "12px" : "0px");
+    heroConfig.formCardRadius ||
+    heroConfig.formRadius ||
+    heroConfig.formBorderRadius ||
+    (isWhiteCard ? "16px" : isCard ? "12px" : "0px");
   const cardShadow =
     layout.boxShadow ||
+    heroConfig.formShadow ||
+    heroConfig.formCardShadow ||
     (isWhiteCard
-      ? "0 14px 32px rgba(0, 0, 0, 0.22)"
+      ? "0 10px 25px -5px rgba(0, 0, 0, 0.16), 0 8px 10px -6px rgba(0, 0, 0, 0.1)"
       : isCard
       ? "0 10px 25px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.2)"
       : "none");

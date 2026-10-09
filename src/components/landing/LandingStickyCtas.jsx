@@ -148,30 +148,39 @@ export default function LandingStickyCtas({
       ) : (
         <div
           className="footer_sticky_buttons lg:hidden fixed bottom-0 left-0 right-0 z-50 px-3 py-2.5 grid grid-cols-2 gap-2.5 shadow-2xl transition-colors pb-[max(10px,env(safe-area-inset-bottom))]"
-          style={{ backgroundColor: brand.primaryColor || "#08417b" }}
+          style={{
+            backgroundColor:
+              brand.stickyBarBg ||
+              (brand.slug === "mu" ? "#f97316" : brand.primaryColor || "#08417b"),
+          }}
         >
           {/* Left: Get Brochure Green Pill */}
           <button
             type="button"
             onClick={() => onOpenBrochure?.()}
-            className="wp_btn flex items-center justify-center gap-1.5 sm:gap-2 py-2 px-3 rounded-full bg-[#25d366] text-white font-bold text-[13.5px] sm:text-sm border-none cursor-pointer shadow-sm active:opacity-90"
+            className="wp_btn flex items-center justify-center gap-1.5 sm:gap-2 py-2 px-3 rounded-full bg-[#25d366] text-white font-bold text-[13.5px] sm:text-sm border-none cursor-pointer shadow-sm active:opacity-90 relative z-10"
           >
             {brand.slug === "amity" ||
             brand.slug?.toLowerCase().includes("amity") ||
+            brand.slug === "mu" ||
             brand.name?.toLowerCase().includes("amity") ||
             brand.stickyBrochureIcon === "whatsapp" ? (
-              <FaWhatsapp className="w-4 h-4 text-white shrink-0" />
+              <FaWhatsapp className="w-[18px] h-[18px] text-white shrink-0" />
             ) : (
               <Download className="w-4 h-4" />
             )}
             <span>Get Brochure</span>
           </button>
 
-          {/* Right: Apply Now Yellow Pill */}
+          {/* Right: Apply Now Pill */}
           <button
             type="button"
             onClick={() => onOpenApply?.()}
-            className="apply_btn flex items-center justify-center gap-1.5 py-2 px-3 rounded-full bg-[#ffd508] text-black font-bold text-[13.5px] sm:text-sm border-none shadow-sm cursor-pointer active:opacity-90"
+            className={`apply_btn flex items-center justify-center gap-1.5 py-2 px-3 rounded-full ${
+              brand.slug === "mu"
+                ? "bg-white text-[#f97316]"
+                : "bg-[#ffd508] text-black"
+            } font-bold text-[13.5px] sm:text-sm border-none shadow-sm cursor-pointer active:opacity-90`}
           >
             <span>Apply Now</span>
             <span className="text-base leading-none">»</span>

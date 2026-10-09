@@ -24,9 +24,9 @@ export const muData = {
     phone: "+91 7065 7777 55",
     phoneDisplay: "+91 7065 7777 55",
     enquireTitle: "Enquire Now",
-    enquireSubtitle: "Academic Experts will assist you!",
+    enquireSubtitle: "Take a step towards your success today",
     officialUrl: "https://distanceeducationschool.com/mu/",
-    logo: "/assets/mu/mang-logo.webp",
+    logo: "/assets/all_universities_images/all_universities_images/mu/mang-logo.webp",
     sodeIcon: "/assets/images/sode_icon.png",
     sodeLogo: "/assets/images/new-des-logo.webp",
     showSodeLogo: true,
@@ -39,13 +39,15 @@ export const muData = {
     couponButtonColor: "#22c55e",
     giftGif: "/assets/images/gift.gif",
     callGif: "/assets/manipal_v1_images/call_icon.gif",
-    showFloatingGift: false,
+    showFloatingGift: true,
+    showFloatingCallOnMobile: true,
     primaryColor: "#193579",
     secondaryColor: "#F97316",
     accentColor: "#F97316",
     themeBg: "bg-[#193579]",
     themeBorder: "border-[#193579]",
     goldColor: "#F97316",
+    fontFamily: "Montserrat",
     badgeText: "Admission Open 2026",
     footerBg: "#010d2a",
     footerLayout: "footer2",
@@ -56,25 +58,441 @@ export const muData = {
 
     footerDisclaimer:
       "This information is provided by SODE Counselling Services LLP. All university names, logos, and trademarks mentioned are used for informational purposes only. We are not a university or an admission authority. Users are encouraged to verify information on the official website of Mangalayatan University before making decisions.",
+    stickyBarBg: "#f97316",
+    stickyBrochureIcon: "whatsapp",
     showFooterForm: false,
 
-    // Custom CSS Overrides specifically for Mangalayatan University (loaded from JSON)
+    // Custom CSS Overrides specifically for Mangalayatan University (Matching distanceeducationschool.com/mu/)
     customCss: `
-      /* Mangalayatan University Custom Styles & Overrides */
-      #about,
-      .landing-about-mu {
-        background-image: url('/assets/mu/about-bg.webp') !important;
+      /* =========================================================
+         MANGALAYATAN UNIVERSITY (MU) EXACT LIVE SPEC MATCH
+         https://distanceeducationschool.com/mu/
+      ========================================================= */
+      @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap');
+
+      .landing-page--mu {
+        font-family: 'Montserrat', sans-serif !important;
+      }
+
+      /* ── HERO / TOP-BANNER ── */
+      .landing-page--mu #hero,
+      .landing-page--mu .top-banner {
+        background-image: url('/assets/mu/front-desktop-image-mangalayatan-final.webp') !important;
+        background-size: cover !important;
+        background-position: center top !important;
+      }
+      .landing-page--mu .welcome {
+        width: fit-content !important;
+        padding: 6px 20px !important;
+        background: #ffffff !important;
+        font-size: 15px !important;
+        border-radius: 7px !important;
+        color: #f97316 !important;
+        font-weight: 700 !important;
+        margin-bottom: 8px !important;
+        letter-spacing: 0.3px !important;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.06) !important;
+      }
+      .landing-page--mu .sode_content {
+        color: #ffffff !important;
+        font-size: 15px !important;
+        font-weight: 500 !important;
+        margin-top: 0 !important;
+        margin-bottom: 14px !important;
+      }
+      .landing-page--mu .yellow {
+        color: #f97316 !important;
+      }
+      .landing-page--mu #hero h1 {
+        font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif !important;
+        font-size: 38px !important;
+        font-weight: 400 !important;
+        letter-spacing: 0.4px !important;
+        line-height: 1.08 !important;
+        color: #ffffff !important;
+        margin-top: 0 !important;
+        margin-bottom: 12px !important;
+      }
+      .landing-page--mu #hero h1 .yellow {
+        color: #f97316 !important;
+        font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif !important;
+        white-space: nowrap !important;
+        display: inline-block !important;
+      }
+      .landing-page--mu #hero h1 .white-text {
+        color: #ffffff !important;
+        font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif !important;
+        white-space: nowrap !important;
+        display: inline-block !important;
+      }
+      .landing-page--mu .banner_content,
+      .landing-page--mu #hero .hero-montserrat-paragraph {
+        color: #ffffff !important;
+        font-size: 14px !important;
+        line-height: 1.55 !important;
+        max-width: 380px !important;
+        font-weight: 400 !important;
+        margin-bottom: 22px !important;
+      }
+      .landing-page--mu #hero button.hero-brochure-btn,
+      .landing-page--mu .topbtn {
+        background-color: #f97316 !important;
+        color: #ffffff !important;
+        padding: 10px 28px !important;
+        border-radius: 6px !important;
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        border: none !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.12) !important;
+      }
+      .landing-page--mu .topbtn:hover,
+      .landing-page--mu #hero button.hero-brochure-btn:hover {
+        background-color: #ea580c !important;
+      }
+
+
+      /* ── HERO MOBILE RESPONSIVE (MATCHING IMAGE 1) ── */
+      @media (max-width: 767px) {
+        .landing-page--mu #hero,
+        .landing-page--mu .top-banner {
+          background-image: url('/assets/all_universities_images/all_universities_images/mu/bg-mobile.webp') !important;
+          background-size: cover !important;
+          background-position: center top !important;
+        }
+        .landing-page--mu .hero-info-col {
+          align-items: flex-start !important;
+          text-align: left !important;
+        }
+        .landing-page--mu .welcome {
+          margin-left: 0 !important;
+          margin-right: auto !important;
+          text-align: left !important;
+        }
+        .landing-page--mu .sode_content {
+          text-align: left !important;
+          margin-left: 0 !important;
+          margin-right: auto !important;
+        }
+        .landing-page--mu #hero h1 {
+          text-align: left !important;
+          margin-left: 0 !important;
+          margin-right: auto !important;
+        }
+        .landing-page--mu .banner_content,
+        .landing-page--mu #hero .hero-montserrat-paragraph {
+          text-align: left !important;
+          margin-left: 0 !important;
+          margin-right: auto !important;
+        }
+        .landing-page--mu #hero button.hero-brochure-btn,
+        .landing-page--mu .topbtn {
+          margin-left: 0 !important;
+          margin-right: auto !important;
+          align-self: flex-start !important;
+        }
+        .landing-page--mu .hero-mobile-image-wrapper {
+          position: relative !important;
+          width: 280px !important;
+          max-width: 100% !important;
+          height: 355px !important;
+          aspect-ratio: 507 / 644 !important;
+          margin-left: auto !important;
+          margin-right: auto !important;
+          margin-top: 8px !important;
+          margin-bottom: 0px !important;
+          border-radius: 0 !important;
+          box-shadow: none !important;
+          background: transparent !important;
+          overflow: visible !important;
+        }
+        .landing-page--mu .hero-mobile-image-wrapper img {
+          object-fit: contain !important;
+          object-position: bottom center !important;
+        }
+      }
+
+      /* ── APPROVALS SECTION ── */
+      .landing-page--mu #approvals {
+        background-color: #193579 !important;
+        text-align: center !important;
+        border-radius: 0 !important;
+        padding-top: 36px !important;
+        padding-bottom: 36px !important;
+      }
+      .landing-page--mu #approvals h1 {
+        font-size: 22px !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        color: #ffffff !important;
+        margin-bottom: 4px !important;
+      }
+      .landing-page--mu #approvals h3 {
+        color: #ffffff !important;
+        text-transform: uppercase !important;
+        font-weight: 400 !important;
+        font-size: 18px !important;
+        margin-bottom: 24px !important;
+      }
+
+      .landing-page--mu .footer_sticky_buttons .wp_btn svg {
+        display: inline-block !important;
+        width: 18px !important;
+        height: 18px !important;
+        min-width: 18px !important;
+        fill: #ffffff !important;
+        color: #ffffff !important;
+        flex-shrink: 0 !important;
+        margin-right: 4px !important;
+      }
+
+      /* ── PROGRAMMES SECTION ── */
+      .landing-page--mu #program {
+        background-color: #FFF6F0 !important;
+      }
+      .landing-page--mu #pro-hd,
+      .landing-page--mu #program h2 {
+        text-align: center !important;
+        color: #193579 !important;
+        text-transform: uppercase !important;
+        font-weight: 700 !important;
+      }
+      .landing-page--mu .tablinks.active {
+        background-color: #f97316 !important;
+        color: #ffffff !important;
+      }
+
+      /* ── ABOUT SECTION ── */
+      .landing-page--mu #about,
+      .landing-page--mu .landing-about-mu {
         background-position: bottom center !important;
         background-size: contain !important;
         background-repeat: no-repeat !important;
       }
-      @media (max-width: 639px) {
-        #about,
-        .landing-about-mu {
-          background-image: url('/assets/mu/about-bg-mobile.webp') !important;
-          background-position: bottom center !important;
-          background-size: 100% auto !important;
-          background-repeat: no-repeat !important;
+      @media (min-width: 769px) {
+        .landing-page--mu #about,
+        .landing-page--mu .landing-about-mu {
+          background-image: url('/assets/mu/about-bg.webp') !important;
+          padding-bottom: 420px !important;
+        }
+      }
+      .landing-page--mu #about h2 {
+        color: #f97316 !important;
+        text-align: center !important;
+        text-transform: uppercase !important;
+        font-size: 30px !important;
+        font-weight: 700 !important;
+      }
+      .landing-page--mu #about p {
+        text-align: center !important;
+        font-size: 14.5px !important;
+        line-height: 1.65 !important;
+        color: #2c3e50 !important;
+      }
+      .landing-page--mu #about .btn2 {
+        background-color: #f97316 !important;
+        color: #ffffff !important;
+        border-radius: 50px !important;
+        font-weight: 700 !important;
+      }
+
+      /* ── WHY CHOOSE / ADVANTAGE ── */
+      .landing-page--mu #whychoose,
+      .landing-page--mu #Advantage {
+        background-color: #193579 !important;
+      }
+      .landing-page--mu #whychoose h2,
+      .landing-page--mu #Advantage h2 {
+        color: #ffffff !important;
+        text-transform: uppercase !important;
+        font-size: 30px !important;
+        font-weight: 700 !important;
+      }
+      .landing-page--mu .adv-b {
+        background-color: #ffffff !important;
+        border-radius: 6px !important;
+        color: #000000 !important;
+        min-height: 80px !important;
+      }
+
+      /* ── HIRING PARTNERS / RECRUITERS ── */
+      .landing-page--mu #placement,
+      .landing-page--mu #recruiters {
+        background-color: #f7f7f7 !important;
+        text-align: center !important;
+      }
+      .landing-page--mu #placement h2,
+      .landing-page--mu #recruiters h2 {
+        font-size: 30px !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        color: #193579 !important;
+      }
+
+      /* ── ABOUT SODE ── */
+      .landing-page--mu #sode_about {
+        background: #19347b !important;
+        text-align: center !important;
+      }
+      .landing-page--mu #sode_about h1 {
+        color: #ffffff !important;
+        text-transform: uppercase !important;
+        font-size: 30px !important;
+        font-weight: 700 !important;
+      }
+      .landing-page--mu #sode_about p {
+        color: #ffffff !important;
+        font-size: 13px !important;
+        line-height: 1.6 !important;
+        max-width: 850px !important;
+        margin: 0 auto 20px !important;
+      }
+      .landing-page--mu .sode_about_button .get_help_btn {
+        background: #f97316 !important;
+        color: #ffffff !important;
+        border-radius: 50px !important;
+      }
+      .landing-page--mu .sode_about_button .compare_btn {
+        background: #2bbf6a !important;
+        color: #ffffff !important;
+        border-radius: 50px !important;
+      }
+
+      /* ── ADMISSION PROCESS ── */
+      .landing-page--mu .apply-section,
+      .landing-page--mu #admissionProcess {
+        background-color: #ffffff !important;
+        text-align: center !important;
+      }
+      .landing-page--mu .apply-section h2,
+      .landing-page--mu #admissionProcess h2 {
+        font-size: 30px !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        color: #193579 !important;
+      }
+
+      /* ── FAQ ── */
+      .landing-page--mu #faq,
+      .landing-page--mu #faqs {
+        background: #ffffff !important;
+      }
+      .landing-page--mu #faq h2,
+      .landing-page--mu #faqs h2 {
+        text-align: center !important;
+        color: #193579 !important;
+        font-weight: 700 !important;
+        font-size: 30px !important;
+      }
+      .landing-page--mu #faq h2 span,
+      .landing-page--mu #faqs h2 span {
+        color: #f97316 !important;
+      }
+
+      /* ── MOBILE RESPONSIVE OVERRIDES (max-width: 768px) ── */
+      @media (max-width: 768px) {
+        .landing-page--mu #hero,
+        .landing-page--mu .top-banner {
+          background-image: url('/assets/mu/bg-mobile.webp') !important;
+          background-size: cover !important;
+          padding: 18px 12px 28px !important;
+        }
+        .landing-page--mu #hero h1 {
+          font-size: 22px !important;
+          line-height: 1.15 !important;
+        }
+        .landing-page--mu #hero h1 .yellow,
+        .landing-page--mu #hero h1 .white-text {
+          white-space: nowrap !important;
+          display: inline-block !important;
+        }
+        .landing-page--mu .welcome {
+          font-size: 13px !important;
+          padding: 5px 14px !important;
+          margin-bottom: 6px !important;
+        }
+        .landing-page--mu .sode_content {
+          font-size: 13px !important;
+          margin-bottom: 10px !important;
+        }
+        .landing-page--mu .banner_content,
+        .landing-page--mu #hero .hero-montserrat-paragraph {
+          font-size: 13px !important;
+          margin-bottom: 16px !important;
+        }
+        .landing-page--mu #hero button.hero-brochure-btn,
+        .landing-page--mu .topbtn {
+          font-size: 14px !important;
+          padding: 8px 22px !important;
+          margin-bottom: 16px !important;
+        }
+        .landing-page--mu #approvals {
+          padding: 26px 12px !important;
+        }
+        .landing-page--mu #approvals h1 {
+          font-size: 18px !important;
+          margin-bottom: 3px !important;
+        }
+        .landing-page--mu #approvals h3 {
+          font-size: 15px !important;
+          padding-bottom: 0px !important;
+          margin-bottom: 18px !important;
+        }
+        .landing-page--mu #pro-hd,
+        .landing-page--mu #program h2 {
+          font-size: 22px !important;
+        }
+        .landing-page--mu #about,
+        .landing-page--mu .landing-about-mu {
+          background-image: none !important;
+          padding-top: 32px !important;
+          padding-bottom: 0px !important;
+          margin-bottom: 0px !important;
+        }
+        .landing-page--mu #about h2 {
+          font-size: 22px !important;
+          line-height: 1.25 !important;
+          margin-bottom: 16px !important;
+        }
+        .landing-page--mu #about p {
+          font-size: 13.5px !important;
+          line-height: 1.6 !important;
+        }
+        .landing-page--mu #whychoose h2,
+        .landing-page--mu #Advantage h2 {
+          font-size: 22px !important;
+        }
+        .landing-page--mu #placement h2,
+        .landing-page--mu #recruiters h2 {
+          font-size: 20px !important;
+        }
+        .landing-page--mu #sode_about {
+          padding: 40px 14px !important;
+        }
+        .landing-page--mu #sode_about h1 {
+          font-size: 22px !important;
+        }
+        .landing-page--mu .apply-section h2,
+        .landing-page--mu #admissionProcess h2 {
+          font-size: 20px !important;
+        }
+        .landing-page--mu #faq h2,
+        .landing-page--mu #faqs h2 {
+          font-size: 22px !important;
+        }
+
+        /* ── FOOTER STICKY BOTTOM BAR (MOBILE VIEW) ── */
+        .landing-page--mu .footer_sticky_buttons {
+          background-color: #f97316 !important;
+        }
+        .landing-page--mu .footer_sticky_buttons .apply_btn {
+          background-color: #ffffff !important;
+          color: #f97316 !important;
+        }
+        .landing-page--mu .footer_sticky_buttons .apply_btn span {
+          color: #f97316 !important;
         }
       }
     `,
@@ -93,64 +511,46 @@ export const muData = {
 
     // Hero Section Configuration
     hero: {
-      backgroundImage: "/assets/mu/front-desktop-image-mangalayatan-final.webp",
-      mobileBackgroundImage: "/assets/mu/bg-mobile.webp",
-      mobileStudentImage: "/assets/mu/mu-mobile.webp",
+      backgroundImage: "/assets/all_universities_images/all_universities_images/mu/front-desktop-image-mangalayatan-final.webp",
+      mobileBackgroundImage: "/assets/all_universities_images/all_universities_images/mu/bg-mobile.webp",
+      mobileStudentImage: "/assets/all_universities_images/all_universities_images/mu/mu-mobile.webp",
       backgroundPosition: "center top",
       backgroundSize: "cover",
       isDarkTheme: false,
       noOverlay: true,
       sectionBg: "#1b1e23",
+      mobileAlign: "left",
+      alignLeftMobile: true,
       containerClassName: "max-w-[1240px]",
-      contentClassName: "w-full lg:max-w-[560px] xl:max-w-[580px] shrink-0",
-      mobileStudentImage: "/assets/mu/mu-mobile.webp",
-      welcomeText: "Welcome to SODE",
-      welcomeSubtext: "(School of Online & Distance Education)",
-      welcomeContainerClassName: "mb-0",
-      welcomeBadgeClassName: "inline-block bg-white text-[#f97316] font-semibold text-[13px] sm:text-[15px] px-3 py-1 min-w-[190px] sm:min-w-[200px] text-center rounded-[7px] shadow-sm mb-2 mt-2 sm:mt-6 lg:mt-12 tracking-[0.3px] select-none",
-      welcomeSubtextClassName: "text-[13px] sm:text-[15px] lg:text-[16px] text-white font-medium block tracking-[0.2px] whitespace-normal sm:whitespace-nowrap",
-      highlightTitle: "Mangalayatan University",
-      highlightTitleColor: "#f97316",
-      highlightTitleClassName: "text-[24px] sm:text-[30px] lg:text-[36px] font-bold leading-tight whitespace-normal sm:whitespace-nowrap",
-      highlightTitleStyle: {
-        fontWeight: "bold",
-        lineHeight: "1.1",
-        letterSpacing: "0.3px",
+      contentClassName: "w-full lg:max-w-[460px] xl:max-w-[480px] shrink-0 items-start text-left",
+      mobileStudentImageWrapperClassName: "!aspect-[507/644] !w-[280px] !max-w-full !h-[355px] !rounded-none !shadow-none !bg-transparent !overflow-visible !mb-0",
+      mobileStudentImageClassName: "!object-contain !object-bottom",
+      mobileStudentImageWrapperStyle: {
+        position: "relative",
+        width: "280px",
+        maxWidth: "100%",
+        height: "355px",
+        aspectRatio: "507 / 644",
+        borderRadius: "0",
+        boxShadow: "none",
+        background: "transparent",
+        overflow: "visible",
+        margin: "8px auto 0 auto",
       },
+      mobileStudentImageStyle: {
+        objectFit: "contain",
+        objectPosition: "bottom center",
+      },
+      welcomeHtml: '<h5 class="welcome">Welcome to SODE</h5><p class="sode_content">(School of Online & Distance Education)</p>',
+      titleHtml: '<span class="yellow">Mangalayatan University</span><br><span class="white-text">Online Degree Courses</span>',
       headlineText: "Online Degree Courses",
       headlineColor: "#ffffff",
-      headlineTextClassName: "text-[24px] sm:text-[30px] lg:text-[36px] font-bold leading-tight whitespace-normal sm:whitespace-nowrap",
-      headlineTextStyle: {
-        fontWeight: "bold",
-        lineHeight: "1.1",
-        letterSpacing: "0.3px",
-      },
       headingFont: "inherit",
       headingClassName: "mt-0 mb-3 leading-[1.1] tracking-normal",
-      headingStyle: {
-        color: "#ffffff",
-        lineHeight: "1.1",
-        fontWeight: "bold",
-        fontFamily: "inherit",
-        letterSpacing: "0.3px",
-        marginTop: "0px",
-        marginBottom: "12px",
-      },
       taglineText:
         "Students can advance their higher education goals with Mangalayatan University Online from the comfort of their home. They can enhance their career with industry-relevant courses and expert guidance from experienced faculty.",
       taglineColor: "#ffffff",
       taglineClassName: "hero-montserrat-paragraph mt-0 mb-4 text-white/95",
-      taglineStyle: {
-        color: "#ffffff",
-        fontSize: "15px",
-        lineHeight: "1.35",
-        fontWeight: "400",
-        maxWidth: "465px",
-        letterSpacing: "0.2px",
-        wordSpacing: "0.5px",
-        marginTop: "0px",
-        marginBottom: "20px",
-      },
       hideCourses: true,
       coursesStrip: false,
       hideCourseBox: true,
@@ -158,13 +558,13 @@ export const muData = {
       buttonBackground: "#f97316",
       buttonTextColor: "#ffffff",
       buttonRadius: "rounded-[6px]",
-      buttonClassName: "mt-3 sm:mt-4",
+      buttonClassName: "mt-3 sm:mt-4 hero-brochure-btn",
       buttonStyle: {
         backgroundColor: "#f97316",
         color: "#ffffff",
         borderRadius: "6px",
         fontWeight: "600",
-        padding: "8px 28px",
+        padding: "10px 28px",
         fontSize: "16px",
         letterSpacing: "0.4px",
         boxShadow: "0 2px 4px rgba(0,0,0,0.12)",
@@ -172,12 +572,15 @@ export const muData = {
       formCardType: "white",
       formBackground: "#ffffff",
       formTitleColor: "#193579",
-      phoneBadgeBackground: "#f97316",
-      formPhoneBg: "#f97316",
+      enquireTitle: "Enquire Now",
+      enquireSubtitle: "Academic Experts will assist you!",
+      phonePlaceholder: "Enter your Number",
+      phoneBadgeBackground: "linear-gradient(180deg, #ff6600 0%, #e65100 100%)",
+      formPhoneBg: "linear-gradient(180deg, #ff6600 0%, #e65100 100%)",
       formPhoneColor: "#ffffff",
-      submitButtonBackground: "#28a745",
-      submitBtnBg: "#28a745",
-      submitButtonRadius: "5px",
+      submitButtonBackground: "#22c55e",
+      submitBtnBg: "#22c55e",
+      submitButtonRadius: "8px",
     },
 
     // Approvals Configuration (Matching distanceeducationschool.com/mu/ and Image 1)
@@ -233,7 +636,7 @@ export const muData = {
     // About Configuration (Matching distanceeducationschool.com/mu/ and Image 1)
     aboutLayout: "mu",
     aboutBackgroundImage: "/assets/mu/about-bg.webp",
-    aboutSectionClassName: "landing-about-mu pt-6 sm:pt-8 md:pt-10 pb-[190px] sm:pb-[260px] md:pb-[380px] lg:pb-[480px]",
+    aboutSectionClassName: "landing-about-mu pt-6 sm:pt-8 md:pt-10 pb-0 sm:pb-[260px] md:pb-[380px] lg:pb-[480px]",
     aboutContainerClassName: "max-w-[1140px] mx-auto px-4 sm:px-6 text-center",
     aboutTitleClassName: "text-[22px] sm:text-[26px] lg:text-[28px] font-extrabold text-[#F97316] uppercase tracking-wide mb-2 sm:mb-3",
     aboutTextClassName: "space-y-2 sm:space-y-2.5 text-[14px] sm:text-[15px] lg:text-[15.5px] text-[#2c3e50] leading-[1.5] sm:leading-[1.55] font-light mb-3 sm:mb-4 max-w-[1100px] mx-auto",
