@@ -138,13 +138,13 @@ function BlogCard({ blog, index = 0 }) {
 
         {/* Title */}
         <Link href={`/blogs/${blogSlug}`} className="block group-hover:text-blue-600 transition-colors">
-          <h3 className="text-[16px] sm:text-base font-bold text-[#072C50] m-0 line-clamp-2">
+          <h3 className="text-[16px] sm:text-base font-semibold text-[#072C50] m-0 line-clamp-2 leading-snug">
             {title}
           </h3>
         </Link>
 
         {/* Subtitle */}
-        <p className="text-xs sm:text-[13px] text-slate-500 line-clamp-2 m-0 mt-1 mb-3">
+        <p className="text-xs text-slate-500 line-clamp-2 m-0 mt-1 mb-3">
           {subtitleText}
         </p>
 

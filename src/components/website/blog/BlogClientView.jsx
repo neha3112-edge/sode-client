@@ -244,11 +244,11 @@ export default function BlogClientView({
         dataIndex: "name",
         key: "name",
         width: "50%",
-        align: "center",
+        align: "left",
         onCell: (record) => ({
           className: record?.isTotal
-            ? "font-bold text-gray-900 bg-slate-50 text-center"
-            : "font-semibold text-gray-900 text-center",
+            ? "font-bold text-gray-900 bg-slate-50 text-left text-xs sm:text-sm"
+            : "font-semibold text-gray-900 text-left text-xs sm:text-sm",
         }),
       },
       {
@@ -256,11 +256,11 @@ export default function BlogClientView({
         dataIndex: "amount",
         key: "amount",
         width: "50%",
-        align: "center",
+        align: "left",
         onCell: (record) => ({
           className: record?.isTotal
-            ? "font-bold text-[#0F2A4A] bg-slate-50 text-center"
-            : "font-medium text-gray-800 text-center",
+            ? "font-bold text-[#0F2A4A] bg-slate-50 text-left text-xs sm:text-sm"
+            : "font-medium text-gray-800 text-left text-xs sm:text-sm",
         }),
       },
     ],
@@ -274,9 +274,9 @@ export default function BlogClientView({
         dataIndex: "factor",
         key: "factor",
         width: "35%",
-        align: "center",
+        align: "left",
         onCell: () => ({
-          className: "font-bold text-gray-900 text-center",
+          className: "font-bold text-gray-900 text-left text-xs sm:text-sm",
         }),
       },
       {
@@ -284,9 +284,9 @@ export default function BlogClientView({
         dataIndex: "check",
         key: "check",
         width: "65%",
-        align: "center",
+        align: "left",
         onCell: () => ({
-          className: "text-gray-700 font-normal text-center",
+          className: "text-gray-700 font-normal text-left text-xs sm:text-sm",
         }),
       },
     ],
@@ -559,7 +559,7 @@ export default function BlogClientView({
           color: #ffffff !important;
           -webkit-text-fill-color: #ffffff !important;
           font-weight: 700 !important;
-          font-size: 11px !important;
+          font-size: 12px !important;
           line-height: 1.35 !important;
           letter-spacing: 0.025em !important;
           font-family: inherit !important;
@@ -578,7 +578,7 @@ export default function BlogClientView({
           .course-antd-table .ant-table-thead > tr > th.ant-table-cell,
           .course-antd-table .ant-table-thead > tr > th *,
           .course-antd-table .ant-table-thead th .ant-table-cell-content {
-            font-size: 13px !important;
+            font-size: 14px !important;
           }
           .course-antd-table .ant-table-thead > tr > th {
             padding: 10px 14px !important;
@@ -592,7 +592,7 @@ export default function BlogClientView({
         }
         .course-antd-table .ant-table-tbody > tr > td {
           padding: 6px 7px !important;
-          font-size: 10.5px !important;
+          font-size: 12px !important;
           white-space: normal !important;
           word-break: break-word !important;
           vertical-align: middle !important;
@@ -602,7 +602,7 @@ export default function BlogClientView({
         @media (min-width: 640px) {
           .course-antd-table .ant-table-tbody > tr > td {
             padding: 8px 14px !important;
-            font-size: 12.5px !important;
+            font-size: 14px !important;
           }
         }
         .course-antd-table .ant-table-tbody > tr > td:last-child {
@@ -653,28 +653,28 @@ export default function BlogClientView({
           {/* ─── LEFT COLUMN: Main Blog Post Content ─── */}
           <main className="flex-1 min-w-0 w-full">
             <div className="bg-white rounded-xl sm:rounded-2xl border border-gray-200/90 shadow-xs p-3.5 sm:p-7">
-              <h1 className="text-lg sm:text-2xl md:text-3xl text-gray-900 font-bold leading-snug sm:leading-tight mb-2 sm:mb-3">
+              <h1 className="text-lg sm:text-2xl text-gray-900 font-bold leading-snug sm:leading-tight mb-2 sm:mb-3">
                 {pageTitle}
               </h1>
               {(authorName || formattedDate || blog?.readTime) && (
-                <div className="flex items-center justify-between flex-wrap gap-1.5 sm:gap-2 text-xs sm:text-[14px] text-slate-600 mb-2.5 sm:mb-3">
+                <div className="flex items-center justify-between flex-wrap gap-1.5 sm:gap-2 text-xs sm:text-sm text-slate-600 mb-2.5 sm:mb-3">
                   {authorName && (
                     <div className="flex items-center gap-1">
                       <User className="size-3.5" />
-                      <span className="font-normal text-xs text-slate-600">{authorName}</span>
+                      <span className="font-normal text-xs sm:text-sm text-slate-600">{authorName}</span>
                     </div>
                   )}
                   <div className="flex items-center gap-2 sm:gap-3 flex-wrap ml-auto">
                     {formattedDate && (
                       <div className="flex items-center gap-1">
                         <CalendarIcon className="size-3.5 text-slate-500" />
-                        <span className="font-normal text-xs text-slate-600">{formattedDate}</span>
+                        <span className="font-normal text-xs sm:text-sm text-slate-600">{formattedDate}</span>
                       </div>
                     )}
                     {blog?.readTime && (
                       <div className="flex items-center gap-1">
                         <Clock className="size-3.5 text-slate-500" />
-                        <span className="font-normal text-xs text-slate-600">{blog.readTime}</span>
+                        <span className="font-normal text-xs sm:text-sm text-slate-600">{blog.readTime}</span>
                       </div>
                     )}
                   </div>
@@ -698,7 +698,7 @@ export default function BlogClientView({
               )}
               {/* 📄 Intro / Subtitle from API */}
               {blog.subtitle && (
-                <p className="text-xs sm:text-base text-slate-700 leading-relaxed mb-3 sm:mb-4">
+                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed mb-3 sm:mb-4">
                   {blog.subtitle}
                 </p>
               )}
@@ -711,7 +711,7 @@ export default function BlogClientView({
                     className={`flex items-center justify-between cursor-pointer select-none ${tocOpen ? "mb-4" : "mb-0"
                       }`}
                   >
-                    <h2 className="text-[18px] sm:text-xl font-bold text-[#0D3B66] m-0">
+                    <h2 className="text-base sm:text-lg font-bold text-[#0D3B66] m-0">
                       Table of Contents
                     </h2>
                     <button
@@ -732,7 +732,7 @@ export default function BlogClientView({
                   </div>
 
                   <ul
-                    className={`space-y-2.5 text-sm sm:text-[14.5px] font-medium list-none p-0 m-0 ${tocOpen ? "block" : "hidden"
+                    className={`space-y-2.5 text-xs sm:text-sm font-medium list-none p-0 m-0 ${tocOpen ? "block" : "hidden"
                       }`}
                     aria-hidden={!tocOpen}
                   >
@@ -754,7 +754,7 @@ export default function BlogClientView({
                               window.scrollTo({ top: y, behavior: "smooth" });
                             }
                           }}
-                          className="text-gray-700 text-sm hover:text-blue-800 transition-colors hover:underline cursor-pointer"
+                          className="text-gray-700 text-xs sm:text-sm hover:text-blue-800 transition-colors hover:underline cursor-pointer"
                         >
                           {h.text}
                         </a>
@@ -766,7 +766,7 @@ export default function BlogClientView({
 
               {/* 📄 Dynamic Structured Sections from API */}
               {groupedSections && groupedSections.length > 0 && (
-                <div className="space-y-6 sm:space-y-7 text-slate-700 text-sm sm:text-[15px] mt-5 sm:mt-6">
+                <div className="space-y-6 sm:space-y-7 text-slate-700 text-xs sm:text-sm mt-5 sm:mt-6">
                   {groupedSections.map((group, gIdx) => {
                     const HeadingTag =
                       group.headingTag && ["h1", "h2", "h3", "h4", "h5", "h6"].includes(group.headingTag.toLowerCase())
@@ -781,7 +781,7 @@ export default function BlogClientView({
                           </HeadingTag>
                         )}
 
-                        <div className="space-y-2 text-slate-700 text-sm sm:text-[15px]">
+                        <div className="space-y-2 text-slate-700 text-xs sm:text-sm">
                           {group.items.map((sec, sIdx) => {
                             const isTitleOnly =
                               !sec.paragraphs &&
@@ -805,7 +805,7 @@ export default function BlogClientView({
                             return (
                               <div key={sec._id || sec.id || sIdx} className="space-y-1.5">
                                 {sec.title && sec.title.trim() !== group.headingText && (
-                                  <h3 className="text-[16.5px] sm:text-lg font-bold text-[#0D3B66] m-0 mb-1">
+                                  <h3 className="text-base sm:text-lg font-bold text-[#0D3B66] m-0 mb-1">
                                     {sec.title}
                                   </h3>
                                 )}
@@ -815,7 +815,7 @@ export default function BlogClientView({
                                     if (typeof p !== "string" || !p.trim()) return null;
                                     const parts = p.split(/\n\s*\n/).filter((t) => t.trim().length > 0);
                                     return parts.map((part, pIdx) => (
-                                      <p key={`${idx}-${pIdx}`} className="m-0 text-slate-600">
+                                      <p key={`${idx}-${pIdx}`} className="m-0 text-slate-600 text-xs sm:text-sm">
                                         {part.trim()}
                                       </p>
                                     ));
@@ -823,19 +823,19 @@ export default function BlogClientView({
                                 {typeof sec.paragraphs === "string" &&
                                   sec.paragraphs.trim() &&
                                   sec.paragraphs.split(/\n\s*\n/).filter((t) => t.trim().length > 0).map((part, pIdx) => (
-                                    <p key={pIdx} className="m-0 text-slate-600">
+                                    <p key={pIdx} className="m-0 text-slate-600 text-xs sm:text-sm">
                                       {part.trim()}
                                     </p>
                                   ))}
 
-                                {sec.intro && <p className="m-0 text-slate-700">{sec.intro}</p>}
+                                {sec.intro && <p className="m-0 text-slate-700 text-xs sm:text-sm">{sec.intro}</p>}
 
                                 {Array.isArray(sec.checklist) && sec.checklist.length > 0 && (
-                                  <ul className="space-y-1 list-none p-0 my-1">
+                                  <ul className="space-y-0.5 list-none p-0">
                                     {sec.checklist.map((item, idx) => (
-                                      <li key={idx} className="flex items-start gap-2 text-slate-700">
-                                        <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-[3.5px] bg-[#22C55E] text-white shrink-0 mt-1 shadow-2xs">
-                                          <Check size={9} strokeWidth={3} />
+                                      <li key={idx} className="flex items-start gap-2 text-slate-700 text-xs sm:text-sm">
+                                        <span className="inline-flex items-center justify-center w-3 h-3 rounded bg-[#22C55E] text-white shrink-0 mt-1 shadow-2xs">
+                                          <Check size={9} strokeWidth={4} />
                                         </span>
                                         <span>{item}</span>
                                       </li>
@@ -862,13 +862,13 @@ export default function BlogClientView({
                                                 dataIndex: `col${cIdx + 1}`,
                                                 key: `col${cIdx + 1}`,
                                                 width,
-                                                align: "center",
+                                                align: "left",
                                                 onCell: (record) => ({
                                                   className: record?.isTotal
-                                                    ? "font-bold text-gray-900 bg-slate-50 text-center"
+                                                    ? "font-bold text-gray-900 bg-slate-50 text-left text-xs sm:text-sm"
                                                     : cIdx === 0
-                                                      ? "font-bold text-gray-900 text-center"
-                                                      : "font-normal text-gray-700 text-center",
+                                                      ? "font-bold text-gray-900 text-left text-xs sm:text-sm"
+                                                      : "font-normal text-gray-700 text-left text-xs sm:text-sm",
                                                 }),
                                                 render: (val, record) => {
                                                   if (val !== undefined && val !== null && val !== "") return val;
@@ -896,7 +896,7 @@ export default function BlogClientView({
                                       />
                                     </div>
                                     {sec.table.note && (
-                                      <p className="text-xs text-slate-500 mt-1.5 italic m-0">
+                                      <p className="text-xs sm:text-sm text-slate-500 mt-1.5 italic m-0">
                                         {sec.table.note}
                                       </p>
                                     )}
@@ -922,7 +922,7 @@ export default function BlogClientView({
                                               <span className="text-blue-500 font-bold select-none text-[16px] leading-none shrink-0 mt-0.5">
                                                 »
                                               </span>
-                                              <span className="text-gray-700 text-sm hover:text-blue-800 transition-colors">
+                                              <span className="text-gray-700 text-xs sm:text-sm hover:text-blue-800 transition-colors">
                                                 {item}
                                               </span>
                                             </li>
@@ -947,17 +947,17 @@ export default function BlogClientView({
 
                                       return (
                                         <div key={idx} className="flex items-start gap-2">
-                                          <span className="font-bold text-slate-900 text-sm sm:text-base select-none shrink-0">
+                                          <span className="font-bold text-slate-900 text-xs sm:text-sm select-none shrink-0">
                                             {numberStr}
                                           </span>
                                           <div className="space-y-0.5 min-w-0 flex-1">
                                             {titleText && (
-                                              <h4 className="font-bold text-slate-900 m-0 text-sm sm:text-base">
+                                              <h4 className="font-bold text-slate-900 m-0 text-xs sm:text-sm">
                                                 {titleText}
                                               </h4>
                                             )}
                                             {item?.desc && (
-                                              <p className="text-slate-600 m-0 text-sm sm:text-[14.5px]">
+                                              <p className="text-slate-600 m-0 text-xs sm:text-sm">
                                                 {item.desc}
                                               </p>
                                             )}
@@ -981,7 +981,7 @@ export default function BlogClientView({
                                         }`}
                                     >
                                       {sec.bulletPoints.map((col, cIdx) => (
-                                        <ul key={cIdx} className="space-y-1 list-disc list-outside ml-5 text-slate-700 text-sm sm:text-[14.5px] p-0 m-0">
+                                        <ul key={cIdx} className="space-y-1 list-disc list-outside ml-5 text-slate-700 text-xs sm:text-sm p-0 m-0">
                                           {Array.isArray(col) &&
                                             col.map((item, idx) => (
                                               <li key={idx}>
@@ -992,7 +992,7 @@ export default function BlogClientView({
                                       ))}
                                     </div>
                                   ) : (
-                                    <ul className="space-y-1 list-disc list-outside ml-5 text-slate-700 text-sm sm:text-[14.5px] my-1 p-0">
+                                    <ul className="space-y-1 list-disc list-outside ml-5 text-slate-700 text-xs sm:text-sm my-1 p-0">
                                       {sec.bulletPoints.map((item, idx) => (
                                         <li key={idx}>
                                           <span>{item}</span>
@@ -1005,7 +1005,7 @@ export default function BlogClientView({
                                 {Array.isArray(sec.twoColBullets) && sec.twoColBullets.length > 0 && (
                                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1">
                                     {sec.twoColBullets.map((col, cIdx) => (
-                                      <ul key={cIdx} className="space-y-1 list-disc list-inside text-slate-700 p-0 m-0">
+                                      <ul key={cIdx} className="space-y-1 list-disc list-inside text-slate-700 text-xs sm:text-sm p-0 m-0">
                                         {Array.isArray(col) &&
                                           col.map((item, idx) => (
                                             <li key={idx}>
@@ -1020,7 +1020,7 @@ export default function BlogClientView({
                                 {sec.poll && Array.isArray(sec.poll.options) && sec.poll.options.length > 0 && (
                                   <div className="rounded-xl border border-blue-400 bg-white p-4 sm:p-5 my-2.5 shadow-2xs">
                                     {sec.poll.question && (
-                                      <h3 className="text-[18px] sm:text-lg font-bold text-[#0D3B66] mb-3 m-0">
+                                      <h3 className="text-base sm:text-lg font-bold text-[#0D3B66] mb-3 m-0">
                                         {sec.poll.question}
                                       </h3>
                                     )}
@@ -1073,7 +1073,7 @@ export default function BlogClientView({
                                         : `*${displayText}`;
 
                                       return (
-                                        <p className="text-xs text-slate-500 mt-3 m-0 font-normal">
+                                        <p className="text-xs sm:text-sm text-slate-500 mt-3 m-0 font-normal">
                                           {formattedText}
                                         </p>
                                       );
@@ -1116,7 +1116,7 @@ export default function BlogClientView({
                                         }`}
                                     >
                                       {sec.orderedSteps.map((col, cIdx) => (
-                                        <ol key={cIdx} className="space-y-1.5 list-none p-0 m-0 text-slate-700 text-sm sm:text-[14.5px]">
+                                        <ol key={cIdx} className="space-y-1.5 list-none p-0 m-0 text-slate-700 text-xs sm:text-sm">
                                           {Array.isArray(col) &&
                                             col.map((step, idx) => (
                                               <li key={idx} className="flex items-start gap-3">
@@ -1130,7 +1130,7 @@ export default function BlogClientView({
                                       ))}
                                     </div>
                                   ) : (
-                                    <ol className="space-y-1.5 list-none p-0 m-0 text-slate-700 text-sm sm:text-[14.5px]">
+                                    <ol className="space-y-1.5 list-none p-0 m-0 text-slate-700 text-xs sm:text-sm">
                                       {sec.orderedSteps.map((step, idx) => (
                                         <li key={idx} className="flex items-start gap-4">
                                           <span className="text-slate-600 font-medium select-none min-w-[20px] text-right">
@@ -1146,20 +1146,20 @@ export default function BlogClientView({
                                 {sec.importantNotice && (sec.importantNotice.title || sec.importantNotice.desc) && (
                                   <div className="space-y-1 pt-2">
                                     {sec.importantNotice.title && (
-                                      <h4 className="font-bold text-gray-900 text-sm sm:text-base m-0">
+                                      <h4 className="font-bold text-gray-900 text-xs sm:text-sm m-0">
                                         {sec.importantNotice.title}
                                       </h4>
                                     )}
                                     {sec.importantNotice.desc && (
-                                      <p className="text-slate-600 text-xs sm:text-[13.5px] m-0">
+                                      <p className="text-slate-600 text-xs sm:text-sm m-0">
                                         {sec.importantNotice.desc}
                                       </p>
                                     )}
                                   </div>
                                 )}
 
-                                {sec.note && <p className="text-xs text-slate-700 font-bold m-0">{sec.note}</p>}
-                                {sec.outro && <p className="text-sm text-slate-600 m-0">{sec.outro}</p>}
+                                {sec.note && <p className="text-xs sm:text-sm text-slate-700 font-bold m-0">{sec.note}</p>}
+                                {sec.outro && <p className="text-xs sm:text-sm text-slate-600 m-0">{sec.outro}</p>}
                               </div>
                             );
                           })}
@@ -1181,7 +1181,7 @@ export default function BlogClientView({
                 data-nav-label="FAQs"
                 className="bg-white rounded-xl shadow-xs border border-gray-200 p-4 sm:p-6 md:p-8 mt-6 scroll-mt-20 space-y-5 sm:space-y-6"
               >
-                <h2 className="text-[18px] sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
+                <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
                   Frequently Asked Questions (FAQs)
                 </h2>
 
@@ -1205,7 +1205,7 @@ export default function BlogClientView({
                           className="w-full flex items-center justify-between gap-3 p-2.5 sm:p-3 text-left cursor-pointer bg-transparent border-none outline-none"
                         >
                           <span
-                            className={`text-xs sm:text-[14px] font-semibold ${isOpen ? "text-[#0C2B4E]" : "text-gray-900"
+                            className={`text-xs sm:text-sm font-semibold ${isOpen ? "text-[#0C2B4E]" : "text-gray-900"
                               }`}
                           >
                             Q{idx + 1}. {cleanQuestion}
@@ -1222,7 +1222,7 @@ export default function BlogClientView({
                         <div
                           className={
                             isOpen
-                              ? "p-3 text-xs sm:text-[13px] text-gray-600 font-normal border-t border-blue-100/60"
+                              ? "p-3 text-xs sm:text-sm text-gray-600 font-normal border-t border-blue-100/60"
                               : "sr-only"
                           }
                         >
@@ -1239,14 +1239,14 @@ export default function BlogClientView({
             👍 WAS THIS ARTICLE HELPFUL? (Helpful Feedback Card)
         ===================================================================== */}
             <div className="bg-[#f0f7ff] rounded-xl border border-blue-100 p-4 sm:p-5 mt-6">
-              <h3 className="text-[18px] sm:text-[17px] font-bold text-[#0D3B66] m-0 mb-3 tracking-tight">
+              <h3 className="text-base sm:text-lg font-bold text-[#0D3B66] m-0 mb-3 tracking-tight">
                 Was This Article Helpful?
               </h3>
               <div className="flex items-center gap-3">
                 <button
                   type="button"
                   onClick={() => setArticleHelpful("yes")}
-                  className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs sm:text-[13px] font-semibold transition-all border cursor-pointer active:scale-95 ${articleHelpful === "yes"
+                  className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all border cursor-pointer active:scale-95 ${articleHelpful === "yes"
                     ? "bg-white border-emerald-500 text-gray-800 shadow-2xs"
                     : "bg-white border-gray-200 text-gray-700 hover:border-gray-300"
                     }`}
@@ -1258,7 +1258,7 @@ export default function BlogClientView({
                 <button
                   type="button"
                   onClick={() => setArticleHelpful("no")}
-                  className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs sm:text-[13px] font-semibold transition-all border cursor-pointer active:scale-95 ${articleHelpful === "no"
+                  className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all border cursor-pointer active:scale-95 ${articleHelpful === "no"
                     ? "bg-white border-slate-400 text-gray-800 shadow-2xs"
                     : "bg-white border-gray-200 text-gray-700 hover:border-gray-300"
                     }`}
@@ -1267,7 +1267,7 @@ export default function BlogClientView({
                   <span>No</span>
                 </button>
               </div>
-              <p className="text-[11.5px] sm:text-xs text-slate-500 mt-3 m-0 font-normal">
+              <p className="text-xs sm:text-sm text-slate-500 mt-3 m-0 font-normal">
                 {articleHelpful === "no"
                   ? "*Thanks for your feedback! We'll work to improve it."
                   : "*Thanks! We're glad this article helped."}
@@ -1296,10 +1296,10 @@ export default function BlogClientView({
                           <User size={15} />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <h5 className="text-xs sm:text-[13px] font-bold text-gray-900 m-0">
+                          <h5 className="text-xs sm:text-sm font-bold text-gray-900 m-0">
                             {cmt.name}
                           </h5>
-                          <p className="text-[11.5px] sm:text-xs text-slate-500 mt-0.5 m-0 font-normal">
+                          <p className="text-xs sm:text-sm text-slate-500 mt-0.5 m-0 font-normal">
                             {cmt.text || cmt.comment}
                           </p>
                         </div>
@@ -1307,7 +1307,7 @@ export default function BlogClientView({
                     ))}
                   </div>
                 ) : (
-                  <div className="bg-white rounded-xl border border-gray-200/80 p-4 text-center text-xs text-slate-500 shadow-2xs">
+                  <div className="bg-white rounded-xl border border-gray-200/80 p-4 text-center text-xs sm:text-sm text-slate-500 shadow-2xs">
                     No comments yet. Be the first to share your thoughts!
                   </div>
                 )}
@@ -1383,7 +1383,7 @@ export default function BlogClientView({
 
               {/* Tags Bar directly below Add Comments card */}
               {displayTags ? (
-                <div className="mt-4 bg-[#f8f9fa] rounded-lg border border-gray-200 px-4 py-2.5 text-xs sm:text-[13px] text-slate-700">
+                <div className="mt-4 bg-[#f8f9fa] rounded-lg border border-gray-200 px-4 py-2.5 text-xs sm:text-sm text-slate-700">
                   <span className="font-bold text-gray-900">Tags: </span>
                   <span className="text-slate-600">{displayTags}</span>
                 </div>
@@ -1407,7 +1407,7 @@ export default function BlogClientView({
                   </div>
 
                   {/* Heading */}
-                  <h2 className="text-xl sm:text-2xl md:text-[26px] font-extrabold text-[#0D3B66] text-center tracking-tight mb-1">
+                  <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] text-center tracking-tight mb-1">
                     Explore AI Powered Tools
                   </h2>
                   <p className="text-xs sm:text-sm text-slate-500 text-center font-normal mb-6">
@@ -1459,7 +1459,7 @@ export default function BlogClientView({
 
                           {/* Description */}
                           <div className="w-full flex items-center justify-center min-h-[36px] sm:min-h-[40px]">
-                            <p className="text-[#64748B] text-xs sm:text-[13px] font-normal m-0 line-clamp-2 text-center">
+                            <p className="text-[#64748B] text-xs sm:text-sm font-normal m-0 line-clamp-2 text-center">
                               {tool.description}
                             </p>
                           </div>
@@ -1468,7 +1468,7 @@ export default function BlogClientView({
                           <div className="w-full mt-4 sm:mt-5 flex justify-center">
                             <Link
                               href={tool.linkUrl}
-                              className="w-full max-w-53.75 py-2 px-3.5 rounded-full bg-[#0B3B7E] hover:bg-[#072859] text-white font-bold text-xs sm:text-[12.5px] shadow-xs transition-all flex items-center justify-between cursor-pointer no-underline group-hover:shadow-md active:scale-95"
+                              className="w-full max-w-53.75 py-2 px-3.5 rounded-full bg-[#0B3B7E] hover:bg-[#072859] text-white font-bold text-xs sm:text-sm shadow-xs transition-all flex items-center justify-between cursor-pointer no-underline group-hover:shadow-md active:scale-95"
                             >
                               <span className="truncate">{tool.btnText}</span>
                               <span className="w-5 h-5 rounded-full bg-white text-[#0B3B7E] flex items-center justify-center text-xs font-bold shrink-0 ml-1.5 transition-transform group-hover:translate-x-0.5">
