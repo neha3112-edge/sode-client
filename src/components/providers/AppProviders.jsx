@@ -13,6 +13,7 @@ import { BreadcrumbProvider } from "@/context/BreadcrumbContext";
 const CompareDrawerWidget = dynamic(() => import("@/components/website/CompareDrawerWidget"), { ssr: false });
 const AutoEngineToolModal = dynamic(() => import("@/components/tool/AutoEngineToolModal"), { ssr: false });
 const GlobalHtmlAutoRenderer = dynamic(() => import("@/components/providers/GlobalHtmlAutoRenderer"), { ssr: false });
+const ModalOTP = dynamic(() => import("@/components/website/ModalOTP"), { ssr: false });
 
 /**
  * AppProviders - Consolidated System Wrapper for SODE Application
@@ -37,6 +38,7 @@ export default function AppProviders({ children }) {
                 {children}
                 <CompareDrawerWidget />
                 <AutoEngineToolModal />
+                <ModalOTP />
               </ToolWizardProvider>
             </BreadcrumbProvider>
           </SWRProvider>

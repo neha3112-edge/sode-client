@@ -1,0 +1,128 @@
+import { NextResponse } from 'next/server';
+
+let cachedRedirects = null;
+let lastFetchTime = 0;
+const CACHE_TTL_MS = 30 * 1000;
+
+async function getRedirects(backendUrl) {
+  const now = Date.now();
+  if (cachedRedirects && now - lastFetchTime < CACHE_TTL_MS) {
+    return cachedRedirects;
+  }
+
+  try {
+    const res = await fetch(`${backendUrl}/api/url-redirects/public/all`, {
+      headers: { Accept: 'application/json' },
+      next: { revalidate: 30 },
+    });
+    if (!res.ok) return cachedRedirects || [];
+    const data = await res.json();
+    if (data?.success && Array.isArray(data.result)) {
+      cachedRedirects = data.result;
+      lastFetchTime = now;
+      return cachedRedirects;
+    }
+  } catch {
+    return cachedRedirects || [];
+  }
+  return cachedRedirects || [];
+}
+
+function normalizePath(p) {
+  if (!p) return '/';
+  const clean = String(p).trim().toLowerCase();
+  const withoutTrailing = clean.replace(/\/+$/, '');
+  return withoutTrailing.startsWith('/') ? withoutTrailing : `/${withoutTrailing}`;
+}
+
+export async function middleware(req) {
+  const { pathname } = req.nextUrl;
+
+  if (
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/api') ||
+    pathname.startsWith('/media') ||
+    pathname.startsWith('/static') ||
+    pathname.includes('.')
+  ) {
+    return NextResponse.next();
+  }
+
+  const backendUrl =
+    process.env.NEXT_PUBLIC_DEV_REMOTE === 'remote' || process.env.NODE_ENV === 'production'
+      ? (process.env.NEXT_PUBLIC_REMOTE_BACKEND_SERVER || 'https://new.crm.api.mysode.com')
+      : (process.env.NEXT_PUBLIC_LOCAL_BACKEND_SERVER || 'http://localhost:3000');
+
+  const redirects = await getRedirects(backendUrl);
+  if (!redirects || redirects.length === 0) {
+    return NextResponse.next();
+  }
+
+  const currentPath = normalizePath(pathname);
+
+  const matched = redirects.find((r) => {
+    if (!r.sourceUrl) return false;
+    return normalizePath(r.sourceUrl) === currentPath;
+  });
+
+  if (!matched) {
+    return NextResponse.next();
+  }
+
+  fetch(`${backendUrl}/api/url-redirects/public/hit`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sourceUrl: matched.sourceUrl }),
+  }).catch(() => {});
+
+  const statusCode = Number(matched.status_code) || 301;
+
+  if (statusCode === 410) {
+    return new NextResponse(
+      `<!DOCTYPE html><html><head><title>410 Gone</title></head><body style="font-family:sans-serif;text-align:center;padding:50px;"><h1>410 - Content Deleted</h1><p>The requested page has been permanently removed.</p></body></html>`,
+      {
+        status: 410,
+        headers: { 'content-type': 'text/html; charset=utf-8' },
+      }
+    );
+  }
+
+  if (statusCode === 451) {
+    return new NextResponse(
+      `<!DOCTYPE html><html><head><title>451 Unavailable For Legal Reasons</title></head><body style="font-family:sans-serif;text-align:center;padding:50px;"><h1>451 - Unavailable For Legal Reasons</h1><p>Access to this resource is restricted for legal reasons.</p></body></html>`,
+      {
+        status: 451,
+        headers: { 'content-type': 'text/html; charset=utf-8' },
+      }
+    );
+  }
+
+  if (matched.targetUrl) {
+    let target = matched.targetUrl.trim();
+    let redirectUrl;
+
+    if (target.startsWith('http://') || target.startsWith('https://')) {
+      redirectUrl = new URL(target);
+    } else {
+      if (!target.startsWith('/')) target = `/${target}`;
+      redirectUrl = new URL(target, req.url);
+    }
+
+    if (req.nextUrl.search) {
+      const existingParams = new URLSearchParams(req.nextUrl.search);
+      for (const [key, value] of existingParams.entries()) {
+        redirectUrl.searchParams.set(key, value);
+      }
+    }
+
+    return NextResponse.redirect(redirectUrl, 301);
+  }
+
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: [
+    '/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|media).*)',
+  ],
+};

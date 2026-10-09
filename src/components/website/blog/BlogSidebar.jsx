@@ -765,8 +765,8 @@ export default function BlogSidebar({
         </div>
       )}
 
-      {/* ─── STICKY BOTTOM CONTAINER: TOP UNIVERSITIES & SHARE THIS PAGE ─── */}
-      <div className="lg:sticky lg:top-3.5 space-y-3.5 max-h-[calc(100vh-1.5rem)] overflow-y-auto no-scrollbar">
+      {/* ─── CONTAINER: TOP UNIVERSITIES & SHARE THIS PAGE ─── */}
+      <div className="space-y-3.5">
         {/* ─── CARD 8: TOP ONLINE & DISTANCE UNIVERSITIES ─── */}
         {uniList.length > 0 && (
           <div className="bg-white rounded-2xl border border-gray-200/90 shadow-xs p-4 sm:p-5">

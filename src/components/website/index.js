@@ -18,3 +18,4 @@ export { ApprovalUniversityDirectory, AccreditationsView } from "./accreditation
 export { CareerExpertsSection } from "./counselor";
 export { ToolsView } from "./tools";
 export { Video } from "@/components/common/Video";
+export { default as ModalOTP } from "./ModalOTP";
