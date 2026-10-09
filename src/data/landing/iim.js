@@ -1316,6 +1316,7 @@ export const iimData = {
     admissionLayout: "iim",
     faqLayout: "iim",
     compareLayout: "iim",
+    stickyCtaLayout: "iim",
     faqAccentColor: "#17479E",
     faqTitle: "FAQ | Frequently Asked Questions",
     compareSubtitle: "Compare IIM Kozhikode University with Top World Renowned Universities",

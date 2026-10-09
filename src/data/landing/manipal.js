@@ -65,6 +65,7 @@ export const manipalData = {
       "footerForm",
       "compareBanner",
     ],
+    stickyCtaLayout: "default",
     showFloatingCallOnMobile: true,
     approvalsId: "approvals",
     programmesSectionId: "programs",

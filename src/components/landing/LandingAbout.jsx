@@ -15,6 +15,7 @@ import MuAbout from "./about/MuAbout";
 import VguAbout from "./about/VguAbout";
 import SmuAbout from "./about/SmuAbout";
 import ManipalAbout from "./about/ManipalAbout";
+import ShooliniAbout from "./about/ShooliniAbout";
 
 /**
  * Reusable Registry of About Section Layouts.
@@ -23,6 +24,7 @@ import ManipalAbout from "./about/ManipalAbout";
 const ABOUT_LAYOUTS = {
   classic: ClassicAbout,
   imageRight: ClassicAbout,
+  shoolini: ShooliniAbout,
   lpu: LpuAbout,
   galgotias: GalgotiasAbout,
   iim: IimAbout,

@@ -79,8 +79,9 @@ export default function LandingHero({
     "";
 
   const mobileBackgroundImage =
-    hero.mobileBackgroundImage ||
-    backgroundImage;
+    hero.mobileBackgroundImage !== undefined
+      ? (hero.mobileBackgroundImage === "none" ? "" : hero.mobileBackgroundImage)
+      : backgroundImage;
 
   const sectionStyle = {
     ...hero.sectionStyle,
@@ -392,7 +393,14 @@ export default function LandingHero({
           variant="brochure"
           background={hero.buttonBackground || hero.buttonGradient}
           textColor={hero.buttonTextColor}
-          border={hero.buttonBorder}
+          border={
+            hero.buttonBorder ||
+            (hero.buttonStyle?.border !== undefined
+              ? hero.buttonStyle.border
+              : (hero.buttonBackground || hero.buttonGradient || hero.buttonStyle?.background)
+                ? "none"
+                : undefined)
+          }
           icon={hero.brochureIcon}
           iconPosition={hero.brochureIconPosition || "right"}
           onClick={() => onOpenBrochure?.(null, buttonLabel)}

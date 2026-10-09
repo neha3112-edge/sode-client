@@ -58,8 +58,11 @@ export const muData = {
 
     footerDisclaimer:
       "This information is provided by SODE Counselling Services LLP. All university names, logos, and trademarks mentioned are used for informational purposes only. We are not a university or an admission authority. Users are encouraged to verify information on the official website of Mangalayatan University before making decisions.",
+    stickyCtaLayout: "default",
     stickyBarBg: "#f97316",
     stickyBrochureIcon: "whatsapp",
+    stickyBrochureAction: "modal",
+    stickyApplyStyle: "white-accent",
     showFooterForm: false,
 
     // Custom CSS Overrides specifically for Mangalayatan University (Matching distanceeducationschool.com/mu/)

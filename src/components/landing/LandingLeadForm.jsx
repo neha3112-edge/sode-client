@@ -101,7 +101,9 @@ const PhoneInputField = ({
         border: hasBorder ? (inputBorder.includes("px") ? inputBorder : `1px solid ${inputBorder}`) : "none",
         boxShadow: hasBorder ? "none" : "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
       }}
-      className="w-full text-[13px] placeholder:text-[var(--input-placeholder-color)]"
+      className={`w-full text-[13px] placeholder:text-[var(--input-placeholder-color)] ${
+        !hasBorder ? "!border-none !shadow-none" : ""
+      }`}
     />
   );
 };
@@ -210,18 +212,22 @@ export default function LandingLeadForm({
 
   const emailPlaceholder =
     formConfig.emailPlaceholder ||
+    heroConfig.emailPlaceholder ||
     "Enter Your Email";
 
   const phonePlaceholder =
     formConfig.phonePlaceholder ||
+    heroConfig.phonePlaceholder ||
     "Enter Mobile Number";
 
   const coursePlaceholder =
     formConfig.coursePlaceholder ||
+    heroConfig.coursePlaceholder ||
     "Select Your Course";
 
   const statePlaceholder =
     formConfig.statePlaceholder ||
+    heroConfig.statePlaceholder ||
     "Select Your State";
 
   const consentText =
@@ -329,6 +335,8 @@ export default function LandingLeadForm({
   const subtitleColor =
     colors.subtitle ||
     heroConfig.formSubtitleColor ||
+    heroConfig.enquireSubtitleColor ||
+    activeBrand.enquireSubtitleColor ||
     (isWhiteCard ? "#475569" : "#ffffff");
 
   const phoneBadgeBg =
@@ -347,11 +355,13 @@ export default function LandingLeadForm({
   const phoneBadgeColor =
     colors.phoneText ||
     phoneBtnConfig.textColor ||
+    heroConfig.phoneBadgeColor ||
     (isWhiteCard ? "#ffffff" : "#000000");
 
   const phoneBadgeIconColor =
     colors.phoneIcon ||
     phoneBtnConfig.iconColor ||
+    heroConfig.phoneBadgeIconColor ||
     phoneBadgeColor;
 
   const phoneBadgeRadius =
@@ -359,25 +369,65 @@ export default function LandingLeadForm({
     heroConfig.phoneBadgeRadius ||
     "999px";
 
-  const inputBg = colors.inputBackground || "#ffffff";
-  const inputText = colors.inputText || "#1e293b";
-  const inputPlaceholder =
-    colors.inputPlaceholder || (isWhiteCard ? "#94a3b8" : "#888888");
-  const inputBorder =
-    colors.inputBorder || (isWhiteCard ? "#cccccc" : "transparent");
+  const isFilled =
+    formConfig.inputStyle === "filled" ||
+    heroConfig.inputStyle === "filled";
 
-  const selectBg = colors.selectBackground || inputBg;
-  const selectText = colors.selectText || inputText;
+  const inputBg =
+    colors.inputBackground ||
+    heroConfig.inputBackground ||
+    (isFilled ? "#eeeeee" : "#ffffff");
+
+  const inputText = colors.inputText || heroConfig.inputText || "#1e293b";
+
+  const inputPlaceholder =
+    colors.inputPlaceholder ||
+    heroConfig.inputPlaceholder ||
+    (isFilled ? "#71717a" : isWhiteCard ? "#94a3b8" : "#888888");
+
+  const inputBorder =
+    colors.inputBorder ||
+    heroConfig.inputBorder ||
+    (isFilled ? "none" : isWhiteCard ? "#cccccc" : "transparent");
+
+  const selectBg =
+    colors.selectBackground ||
+    heroConfig.selectBackground ||
+    inputBg;
+
+  const selectText =
+    colors.selectText ||
+    heroConfig.selectText ||
+    inputText;
+
   const selectPlaceholder =
-    colors.selectPlaceholder || colors.inputPlaceholder || inputPlaceholder;
+    colors.selectPlaceholder ||
+    heroConfig.selectPlaceholder ||
+    colors.inputPlaceholder ||
+    heroConfig.inputPlaceholder ||
+    inputPlaceholder;
+
   const selectBorder =
-    colors.selectBorder || colors.inputBorder || inputBorder;
+    colors.selectBorder ||
+    heroConfig.selectBorder ||
+    colors.inputBorder ||
+    heroConfig.inputBorder ||
+    inputBorder;
 
   const countryCodeBg =
-    colors.countryCodeBackground || (isWhiteCard ? "#f8fafc" : "#f0f2f5");
-  const countryCodeText = colors.countryCodeText || "#0f172a";
+    colors.countryCodeBackground ||
+    heroConfig.countryCodeBackground ||
+    (isFilled ? inputBg : isWhiteCard ? "#f8fafc" : "#f0f2f5");
+
+  const countryCodeText =
+    colors.countryCodeText ||
+    heroConfig.countryCodeText ||
+    "#0f172a";
+
   const countryCodeBorder =
-    colors.countryCodeBorder || (isWhiteCard ? "#cccccc" : "#d1d5db");
+    colors.countryCodeBorder ||
+    heroConfig.countryCodeBorder ||
+    (isFilled ? "#d1d5db" : isWhiteCard ? "#cccccc" : "#d1d5db");
 
   const consentColor =
     colors.consentText ||
@@ -539,7 +589,9 @@ export default function LandingLeadForm({
       <Input
         placeholder={namePlaceholder}
         style={inputCommonStyle}
-        className="w-full px-3.5 text-[13px] font-normal placeholder:text-[var(--input-placeholder-color)]"
+        className={`w-full px-3.5 text-[13px] font-normal placeholder:text-[var(--input-placeholder-color)] ${
+          !inputBorder || inputBorder === "none" || inputBorder === "transparent" ? "!border-none !shadow-none" : ""
+        }`}
       />
     </Form.Item>
   );
@@ -558,7 +610,9 @@ export default function LandingLeadForm({
         type="email"
         placeholder={emailPlaceholder}
         style={inputCommonStyle}
-        className="w-full px-3.5 text-[13px] font-normal placeholder:text-[var(--input-placeholder-color)]"
+        className={`w-full px-3.5 text-[13px] font-normal placeholder:text-[var(--input-placeholder-color)] ${
+          !inputBorder || inputBorder === "none" || inputBorder === "transparent" ? "!border-none !shadow-none" : ""
+        }`}
       />
     </Form.Item>
   );

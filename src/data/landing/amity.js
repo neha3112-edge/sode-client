@@ -152,7 +152,9 @@ export const amityData = {
        PROGRAMMES CONFIGURATION
     ===================================================== */
     programmesMobileStack: true,
+    stickyCtaLayout: "default",
     stickyBrochureIcon: "whatsapp",
+    stickyApplyStyle: "yellow",
     showFloatingCallOnMobile: true,
 
     /* =====================================================

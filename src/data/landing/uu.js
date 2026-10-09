@@ -47,6 +47,13 @@ export const uuData = {
     showSodeLogo: true,
     footerBg: "#010d2a",
 
+    // Sticky CTA configuration
+    stickyCtaLayout: "default",
+    stickyBarBg: "#d32f2f",
+    stickyBrochureAction: "whatsapp",
+    stickyApplyStyle: "white-red",
+    showFloatingCallOnMobile: true,
+
     // Custom CSS Overrides specifically for Uttaranchal University (loaded from JSON)
     customCss: `
       /* Uttaranchal University Custom Styles & Overrides (JSON Configured) */

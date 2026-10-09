@@ -480,6 +480,8 @@ export const ssbmData = {
     callGif: "/assets/all_universities_images/ssbm/call_icon.gif",
     giftGif: "/assets/all_universities_images/ssbm/gift.gif",
     arrowGif: "/assets/all_universities_images/ssbm/arrow.gif",
+    stickyCtaLayout: "default",
+    showFloatingCallOnMobile: true,
     desLogo: "/assets/all_universities_images/ssbm/new-des-logo.webp",
     footerLogo: "/assets/all_universities_images/ssbm/new-des-logo.webp",
     footerBottomBg: "#c11f28",

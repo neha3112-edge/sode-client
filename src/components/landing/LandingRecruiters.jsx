@@ -141,28 +141,43 @@ export default function LandingRecruiters({
     brand.recruitersMobileImage ||
     "/assets/shoolini/partner-mobile.webp";
 
+  const isShoolini = brand.slug === "shoolini";
+  const titleColor = brand.recruitersTitleColor || brand.accentColor || "#fd2954";
+  const highlightColor = isShoolini
+    ? titleColor
+    : (brand.recruitersHighlightColor || "#000000");
+
   return (
     <section id="placement" className="py-10 sm:py-14 bg-white text-center select-none">
-      <LandingContainer>
-        <h2 className="text-2xl sm:text-3xl lg:text-[34px] font-bold text-[#fd2954] mb-6 sm:mb-8 tracking-tight">
-          Top Recruiters of <span className="font-extrabold text-[#000000]">{brand.name || "Shoolini University Online"}</span>
+      <div className="w-full max-w-[1320px] mx-auto px-4 sm:px-6">
+        <h2
+          className="text-2xl sm:text-3xl lg:text-[34px] font-bold mb-6 sm:mb-8 tracking-tight"
+          style={{ color: titleColor }}
+        >
+          Top Recruiters of{" "}
+          <span
+            className="font-extrabold"
+            style={{ color: highlightColor }}
+          >
+            {brand.name || "Shoolini University Online"}
+          </span>
         </h2>
 
-        <div className="max-w-5xl mx-auto px-2">
+        <div className="w-full max-w-[1300px] mx-auto px-2">
           {/* Desktop Partner Image */}
           <div className="hidden sm:block relative w-full">
             <Image
               src={desktopImg}
               alt={heading}
-              width={1100}
-              height={380}
+              width={1300}
+              height={450}
               className="w-full h-auto object-contain mx-auto"
               priority
             />
           </div>
 
           {/* Mobile Partner Image */}
-          <div className="block sm:hidden relative w-full">
+          <div className="block sm:hidden relative w-full max-w-[500px] mx-auto">
             <Image
               src={mobileImg}
               alt={heading}
@@ -173,7 +188,7 @@ export default function LandingRecruiters({
             />
           </div>
         </div>
-      </LandingContainer>
+      </div>
     </section>
   );
 }
