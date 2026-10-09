@@ -1,15 +1,30 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Form, Input, Select, Button, Checkbox, message } from "antd";
-import { ArrowRight, Building2, CheckCircle2, ChevronDown, ChevronRight, FileText, GraduationCap, Link2, Mail, Share2, User, UserCheck, X } from "lucide-react";
+import { Form, Input, Select, Button, Checkbox, message, Modal, Carousel } from "antd";
+import { ArrowRight, Building2, Calendar, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, Eye, FileText, GraduationCap, Link2, Mail, Share2, User, UserCheck, X } from "lucide-react";
 import { getAssetPath } from "@/lib/utils";
 import { STATE_OPTIONS } from "@/constants/stateOptions";
 import { DEFAULT_COURSE_OPTIONS } from "@/constants/courseOptions";
 import { PartnerLogoIcon, CourseIcon, getItemSlug, isObjectId } from "@/components/website/category/CategoryIcons";
+
+function formatCardDate(dateStr) {
+  if (!dateStr) return "8 Oct 2026";
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return "8 Oct 2026";
+    return d.toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  } catch {
+    return "8 Oct 2026";
+  }
+}
 
 export default function BlogSidebar({
   title = "",
@@ -27,6 +42,27 @@ export default function BlogSidebar({
   const [subscribing, setSubscribing] = useState(false);
   const [coursesExpanded, setCoursesExpanded] = useState(false);
   const [unisExpanded, setUnisExpanded] = useState(false);
+  const [authorModalOpen, setAuthorModalOpen] = useState(false);
+  const [selectedAuthorCat, setSelectedAuthorCat] = useState("All");
+  const [modalSlidesToShow, setModalSlidesToShow] = useState(3);
+  const carouselRef = useRef(null);
+
+  // Responsive slide count for Author Articles Carousel (1 on mobile, 2 on tablet, 3 on desktop)
+  useEffect(() => {
+    const updateModalSlides = () => {
+      if (typeof window === "undefined") return;
+      if (window.innerWidth < 768) {
+        setModalSlidesToShow(1);
+      } else if (window.innerWidth < 1024) {
+        setModalSlidesToShow(2);
+      } else {
+        setModalSlidesToShow(3);
+      }
+    };
+    updateModalSlides();
+    window.addEventListener("resize", updateModalSlides);
+    return () => window.removeEventListener("resize", updateModalSlides);
+  }, []);
 
   // Extract Course List and University List directly from server props
   const { courseList, uniList } = useMemo(() => {
@@ -290,16 +326,183 @@ export default function BlogSidebar({
   const authorName =
     author?.fullname ||
     author?.name ||
-    (typeof author === "string" ? author : "Amritanjali Singh");
+    (typeof author === "string" ? author : "Admin");
   const authorBio =
+    author?.about ||
     author?.bio ||
     "Our editorial team creates educational guides covering Online Degrees, Distance Education, university programmes, admissions and career-related topics.";
   const authorAvatar =
-    author?.avatar || author?.image || author?.profileImage || null;
+    author?.photo || author?.avatar || author?.image || author?.profileImage || null;
   const authorArticles =
-    author?.articlesCount || author?.blogsCount || author?.totalArticles || "126";
+    author?.totalArticles != null
+      ? author.totalArticles
+      : author?.articlesCount || author?.blogsCount || "126";
   const authorExperience =
     author?.experience || author?.yearsOfExperience || "3+ Years";
+
+  // Dynamic categories extracted ONLY from this author's articles
+  const authorCategories = useMemo(() => {
+    const cats = new Set();
+    const source =
+      Array.isArray(author?.articles) && author.articles.length > 0
+        ? author.articles
+        : [
+            ...(Array.isArray(relatedBlogs) ? relatedBlogs : []),
+            ...(Array.isArray(popularBlogs) ? popularBlogs : []),
+            ...(Array.isArray(recentBlogs) ? recentBlogs : []),
+          ];
+
+    source.forEach((b) => {
+      const cName =
+        b?.category?.name ||
+        b?.category?.title ||
+        (typeof b?.category === "string" ? b.category : null);
+      if (cName && typeof cName === "string" && cName.trim()) {
+        cats.add(cName.trim());
+      }
+    });
+
+    if (cats.size === 0) return [];
+    return ["All", ...Array.from(cats)];
+  }, [author?.articles, relatedBlogs, popularBlogs, recentBlogs]);
+
+  // Real dynamic blogs for author modal display (author articles)
+  const authorModalArticles = useMemo(() => {
+    const sourceList =
+      Array.isArray(author?.articles) && author.articles.length > 0
+        ? author.articles
+        : [
+            ...(Array.isArray(relatedBlogs) ? relatedBlogs : []),
+            ...(Array.isArray(popularBlogs) ? popularBlogs : []),
+            ...(Array.isArray(recentBlogs) ? recentBlogs : []),
+          ];
+
+    const unique = [];
+    const seen = new Set();
+    for (const b of sourceList) {
+      if (!b) continue;
+      const key = String(b.slug || b._id || "");
+      if (key && !seen.has(key)) {
+        seen.add(key);
+        unique.push(b);
+      }
+    }
+
+    if (unique.length === 0) return [];
+
+    if (selectedAuthorCat === "All") {
+      return unique;
+    }
+
+    const targetCat = selectedAuthorCat.trim().toLowerCase();
+    const filtered = unique.filter((b) => {
+      const catName = String(
+        b.category?.name ||
+        b.category?.title ||
+        (typeof b.category === "string" ? b.category : "") ||
+        b.categoryName ||
+        ""
+      ).trim().toLowerCase();
+      const catSlug = String(b.category?.slug || "").trim().toLowerCase();
+      return catName === targetCat || catSlug === targetCat;
+    });
+
+    return filtered;
+  }, [author?.articles, relatedBlogs, popularBlogs, recentBlogs, selectedAuthorCat]);
+
+  const renderArticleCard = (item) => {
+    const coverImg =
+      item.coverImage ||
+      item.featuredImage ||
+      item.bannerImage ||
+      item.image;
+    const imgUrl = coverImg ? getAssetPath(coverImg) : null;
+    const itemTitle = item.title || item.headline || "Education Guide";
+    const dateStr = item.createdAt || item.date || item.publishedAt;
+    const viewsStr =
+      item.viewsCount != null
+        ? `${item.viewsCount} Read`
+        : item.views
+        ? `${item.views} Read`
+        : "Read";
+    const excerptStr =
+      item.subtitle ||
+      item.excerpt ||
+      item.meta_description ||
+      item.description ||
+      "";
+
+    return (
+      <div className="bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-md transition-all flex flex-col group h-full">
+        {/* Thumbnail */}
+        <Link
+          href={`/blogs/${item.slug || ""}`}
+          onClick={() => setAuthorModalOpen(false)}
+          className="w-full h-36 sm:h-40 relative bg-slate-100 overflow-hidden block"
+        >
+          {imgUrl ? (
+            <Image
+              src={imgUrl}
+              alt={itemTitle}
+              fill
+              unoptimized
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              sizes="(max-width: 640px) 100vw, 320px"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-slate-400 bg-slate-100 text-xs font-bold">
+              SODE
+            </div>
+          )}
+        </Link>
+
+        {/* Card Body */}
+        <div className="p-2.5 sm:p-3.5 flex flex-col flex-1">
+          {/* Meta */}
+          <div className="flex items-center justify-between text-[11px] text-slate-400 font-medium mb-1.5">
+            <span className="flex items-center gap-1 text-blue-600 font-semibold">
+              <Calendar size={12} />
+              <span>{formatCardDate(dateStr)}</span>
+            </span>
+            <span className="flex items-center gap-1 text-slate-400">
+              <Eye size={12} />
+              <span>{viewsStr}</span>
+            </span>
+          </div>
+
+          {/* Title */}
+          <Link
+            href={`/blogs/${item.slug || ""}`}
+            onClick={() => setAuthorModalOpen(false)}
+            className="text-xs sm:text-[13px] font-bold text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-2 leading-snug mb-1.5 no-underline block"
+          >
+            {itemTitle}
+          </Link>
+
+          {/* Excerpt */}
+          <p className="text-[11px] sm:text-xs text-slate-500 line-clamp-2 leading-relaxed mb-3 m-0 flex-1">
+            {excerptStr}
+          </p>
+
+          {/* Footer */}
+          <div className="flex items-center justify-between pt-2 border-t border-slate-100 mt-auto text-xs">
+            <div className="flex items-center gap-1 text-slate-600 font-medium text-[11px]">
+              <User size={12} className="text-slate-400" />
+              <span className="line-clamp-1">{authorName}</span>
+            </div>
+            <Link
+              href={`/blogs/${item.slug || ""}`}
+              onClick={() => setAuthorModalOpen(false)}
+              className="text-blue-600 font-bold text-[11px] inline-flex items-center gap-0.5 no-underline hover:text-blue-800 transition-colors"
+            >
+              <span>Read More</span>
+              <span className="group-hover:translate-x-0.5 transition-transform">→</span>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="space-y-5 w-full h-full">
@@ -915,15 +1118,194 @@ export default function BlogSidebar({
             </div>
           </div>
 
-          <Link
-            href="/about-us"
-            className="inline-flex items-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-xl bg-[#1877F2] hover:bg-[#0d65d9] text-white text-xs sm:text-[13px] font-semibold transition-all shadow-xs no-underline active:scale-95"
+          <button
+            type="button"
+            onClick={() => {
+              setSelectedAuthorCat("All");
+              setAuthorModalOpen(true);
+            }}
+            className="inline-flex items-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-xl bg-[#1877F2] hover:bg-[#0d65d9] text-white text-xs sm:text-[13px] font-semibold transition-all shadow-xs cursor-pointer active:scale-95 border-none"
           >
             <span>View All Articles</span>
             <ArrowRight size={14} strokeWidth={2.2} />
-          </Link>
+          </button>
         </div>
       </div>
+
+      {/* ─── AUTHOR ARTICLES MODAL ─── */}
+      <Modal
+        open={authorModalOpen}
+        onCancel={() => setAuthorModalOpen(false)}
+        footer={null}
+        width={1040}
+        centered
+        destroyOnHidden={true}
+        afterOpenChange={(open) => {
+          if (open) {
+            setTimeout(() => {
+              window.dispatchEvent(new Event("resize"));
+            }, 100);
+          }
+        }}
+        className="author-articles-modal [&_.ant-modal-content]:p-3! sm:[&_.ant-modal-content]:p-6! [&_.ant-modal-close]:top-3! [&_.ant-modal-close]:right-3!"
+      >
+        <div>
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4 pb-2.5 sm:pb-4 border-b border-gray-100">
+            {/* Author info */}
+            <div className="flex items-center gap-3">
+              {authorAvatar ? (
+                <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-full overflow-hidden shrink-0 border border-slate-200 relative">
+                  <Image
+                    src={getAssetPath(authorAvatar)}
+                    alt={authorName}
+                    fill
+                    sizes="52px"
+                    unoptimized
+                    className="object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-blue-100 text-[#0C2B4E] flex items-center justify-center font-bold text-base sm:text-lg shrink-0">
+                  {authorName.charAt(0)}
+                </div>
+              )}
+              <div>
+                <span className="text-[11px] sm:text-xs text-slate-500 font-semibold block leading-tight">
+                  Articles Written By
+                </span>
+                <h3 className="text-sm sm:text-lg font-bold text-slate-900 m-0 leading-snug">
+                  {authorName}
+                </h3>
+              </div>
+            </div>
+
+            {/* Badges */}
+            <div className="flex items-center gap-2 sm:gap-4 text-xs text-center sm:text-xs font-medium text-slate-600 overflow-x-auto no-scrollbar whitespace-nowrap pt-0 sm:pt-0">
+              <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+                <UserCheck size={13} className="text-[#1877F2] shrink-0" />
+                <span>{authorExperience.includes("Experience") ? authorExperience : `${authorExperience} Experience`}</span>
+              </div>
+              <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+                <FileText size={13} className="text-[#1877F2] shrink-0" />
+                <span>{authorArticles} Articles</span>
+              </div>
+              <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+                <CheckCircle2 size={13} className="fill-[#1877F2] text-white shrink-0" />
+                <span className="text-slate-600 font-medium">Verified Author</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Browse by Categories */}
+          {authorCategories.length > 1 && (
+            <div className="py-2.5 sm:py-4">
+              <span className="text-[11px] sm:text-xs font-bold text-slate-800 uppercase tracking-wider block mb-1.5 sm:mb-2.5">
+                Browse By Categories
+              </span>
+              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+                {authorCategories.map((cat) => {
+                  const isActive = selectedAuthorCat === cat;
+                  return (
+                    <button
+                      key={cat}
+                      type="button"
+                      onClick={() => setSelectedAuthorCat(cat)}
+                      className={`px-3 py-0.5 sm:px-3.5 sm:py-1 text-[11px] sm:text-xs rounded-full border transition-all cursor-pointer select-none whitespace-nowrap ${isActive
+                        ? "bg-[#1877F2] text-white border-[#1877F2] font-semibold shadow-xs"
+                        : "bg-white text-slate-600 border-slate-200 hover:border-blue-400 hover:text-blue-600 font-medium"
+                        }`}
+                    >
+                      {cat}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Articles Section */}
+          {authorModalArticles.length === 0 ? (
+            <div className="py-12 text-center text-slate-500 text-xs sm:text-sm bg-slate-50 rounded-xl border border-dashed border-slate-200">
+              No articles found in this category.
+            </div>
+          ) : authorModalArticles.length <= modalSlidesToShow ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 w-full">
+              {authorModalArticles.map((item, idx) => (
+                <div key={item._id || item.slug || idx} className="h-full">
+                  {renderArticleCard(item)}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex items-center gap-1 sm:gap-3">
+              {/* Left Chevron */}
+              <button
+                type="button"
+                onClick={() => carouselRef.current?.prev()}
+                aria-label="Previous articles"
+                className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 flex items-center justify-center shadow-xs cursor-pointer hover:border-blue-400 hover:text-blue-600 active:scale-95 transition-all shrink-0 z-10"
+              >
+                <ChevronLeft size={15} />
+              </button>
+
+              {/* Antd Carousel Container */}
+              <div className="flex-1 min-w-0 overflow-hidden">
+                <Carousel
+                  key={`author-modal-carousel-${selectedAuthorCat}-${modalSlidesToShow}`}
+                  ref={carouselRef}
+                  autoplay={true}
+                  autoplaySpeed={2500}
+                  speed={700}
+                  infinite={true}
+                  pauseOnHover={true}
+                  pauseOnFocus={false}
+                  swipeToSlide={true}
+                  draggable={true}
+                  dots={false}
+                  slidesToShow={modalSlidesToShow}
+                  slidesToScroll={1}
+                  className="[&_.slick-track]:flex [&_.slick-track]:items-stretch"
+                  responsive={[
+                    {
+                      breakpoint: 1024,
+                      settings: {
+                        slidesToShow: 2,
+                        slidesToScroll: 1,
+                        infinite: true,
+                      },
+                    },
+                    {
+                      breakpoint: 768,
+                      settings: {
+                        slidesToShow: 1,
+                        slidesToScroll: 1,
+                        infinite: true,
+                      },
+                    },
+                  ]}
+                >
+                  {authorModalArticles.map((item, idx) => (
+                    <div key={item._id || item.slug || idx} className="p-0.5 sm:p-2">
+                      {renderArticleCard(item)}
+                    </div>
+                  ))}
+                </Carousel>
+              </div>
+
+              {/* Right Chevron */}
+              <button
+                type="button"
+                onClick={() => carouselRef.current?.next()}
+                aria-label="Next articles"
+                className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 flex items-center justify-center shadow-xs cursor-pointer hover:border-blue-400 hover:text-blue-600 active:scale-95 transition-all shrink-0 z-10"
+              >
+                <ChevronRight size={16} />
+              </button>
+            </div>
+          )}
+        </div>
+      </Modal>
     </div>
   );
 }
