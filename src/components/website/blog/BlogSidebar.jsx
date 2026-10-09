@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Form, Input, Select, Button, Checkbox, message } from "antd";
-import { Building2, ChevronDown, ChevronRight, GraduationCap, Link2, Mail, Share2, User, X } from "lucide-react";
+import { ArrowRight, Building2, CheckCircle2, ChevronDown, ChevronRight, FileText, GraduationCap, Link2, Mail, Share2, User, UserCheck, X } from "lucide-react";
 import { getAssetPath } from "@/lib/utils";
 import { STATE_OPTIONS } from "@/constants/stateOptions";
 import { DEFAULT_COURSE_OPTIONS } from "@/constants/courseOptions";
@@ -296,6 +296,10 @@ export default function BlogSidebar({
     "Our editorial team creates educational guides covering Online Degrees, Distance Education, university programmes, admissions and career-related topics.";
   const authorAvatar =
     author?.avatar || author?.image || author?.profileImage || null;
+  const authorArticles =
+    author?.articlesCount || author?.blogsCount || author?.totalArticles || "126";
+  const authorExperience =
+    author?.experience || author?.yearsOfExperience || "3+ Years";
 
   return (
     <div className="space-y-5 w-full h-full">
@@ -860,47 +864,63 @@ export default function BlogSidebar({
         {/* ─── ABOUT THE AUTHOR ─── */}
         <div className="bg-white rounded-2xl border border-gray-200/90 shadow-xs p-5">
           <div className="border-b border-gray-100 pb-2.5 mb-3.5">
-            <h3 className="text-sm sm:text-[14.5px] font-bold text-slate-800 m-0">
+            <h3 className="text-sm sm:text-[15px] font-bold text-slate-800 m-0">
               About the Author
             </h3>
           </div>
 
-          <div className="flex items-center gap-3 mb-2.5">
+          <div className="flex items-center gap-3 mb-3">
             {authorAvatar ? (
-              <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 border border-slate-200 relative">
+              <div className="w-12 h-12 rounded-full overflow-hidden shrink-0 border border-slate-200 relative">
                 <Image
                   src={getAssetPath(authorAvatar)}
                   alt={authorName}
                   fill
-                  sizes="40px"
+                  sizes="48px"
                   unoptimized
                   className="object-cover"
                 />
               </div>
             ) : (
-              <div className="w-10 h-10 rounded-full bg-blue-100 text-[#0C2B4E] flex items-center justify-center font-bold text-sm shrink-0">
+              <div className="w-12 h-12 rounded-full bg-blue-100 text-[#0C2B4E] flex items-center justify-center font-bold text-base shrink-0">
                 {authorName.charAt(0)}
               </div>
             )}
             <div>
-              <h4 className="text-xs sm:text-[13px] font-bold text-slate-900 m-0 leading-tight">
+              <h4 className="text-[14.5px] sm:text-[15px] font-bold text-slate-900 m-0 leading-tight">
                 {authorName}
               </h4>
-              <span className="text-[11px] text-slate-500 font-normal">
-                Senior Education Editor
-              </span>
+              <div className="flex items-center gap-1.5 mt-1">
+                <CheckCircle2 size={13.5} className="fill-[#1877F2] text-white shrink-0" />
+                <span className="text-xs text-slate-500 font-medium">
+                  Verified Author
+                </span>
+              </div>
             </div>
           </div>
 
-          <p className="text-xs text-slate-600 font-normal mb-3.5 m-0">
+          <p className="text-xs text-slate-600 font-normal leading-relaxed mb-3.5 m-0">
             {authorBio}
           </p>
 
+          {/* Stats Row */}
+          <div className="flex items-center gap-5 sm:gap-6 mb-4 text-xs text-slate-600 font-medium">
+            <div className="flex items-center gap-1.5">
+              <FileText size={15} className="text-[#1877F2] shrink-0" />
+              <span>{authorArticles} Articles</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <UserCheck size={15} className="text-[#1877F2] shrink-0" />
+              <span>{authorExperience.includes("Experience") ? authorExperience : `${authorExperience} Experience`}</span>
+            </div>
+          </div>
+
           <Link
             href="/about-us"
-            className="inline-flex items-center justify-center px-4 py-1.5 rounded-md bg-[#F4D068] hover:bg-[#ebc557] text-[#0C2B4E] text-xs font-bold transition-all shadow-2xs no-underline active:scale-95"
+            className="inline-flex items-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-xl bg-[#1877F2] hover:bg-[#0d65d9] text-white text-xs sm:text-[13px] font-semibold transition-all shadow-xs no-underline active:scale-95"
           >
-            View Profile
+            <span>View All Articles</span>
+            <ArrowRight size={14} strokeWidth={2.2} />
           </Link>
         </div>
       </div>
