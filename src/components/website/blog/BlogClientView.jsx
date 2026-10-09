@@ -481,15 +481,8 @@ export default function BlogClientView({
         level: 2,
       });
     }
-    if (mappedTools && mappedTools.length > 0) {
-      list.push({
-        id: "ai-tools",
-        text: "Explore AI Powered Tools",
-        level: 2,
-      });
-    }
     return list;
-  }, [groupedSections, allFaqs, mappedTools]);
+  }, [groupedSections, allFaqs]);
 
   // 🏷️ Display Tags (from blog only, no dummy fallback)
   const displayTags = useMemo(() => {
