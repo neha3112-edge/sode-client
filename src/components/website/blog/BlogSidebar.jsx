@@ -433,7 +433,7 @@ export default function BlogSidebar({
       "";
 
     return (
-      <div className="bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-md transition-all flex flex-col group h-full">
+      <div className="bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-md transition-shadow duration-200 flex flex-col group h-full">
         {/* Thumbnail */}
         <Link
           href={`/blogs/${item.slug || ""}`}
@@ -1260,33 +1260,15 @@ export default function BlogSidebar({
                   infinite={true}
                   pauseOnHover={true}
                   pauseOnFocus={false}
-                  swipeToSlide={true}
+                  swipeToSlide={false}
                   draggable={true}
                   dots={false}
                   slidesToShow={modalSlidesToShow}
                   slidesToScroll={1}
-                  className="[&_.slick-track]:flex [&_.slick-track]:items-stretch"
-                  responsive={[
-                    {
-                      breakpoint: 1024,
-                      settings: {
-                        slidesToShow: 2,
-                        slidesToScroll: 1,
-                        infinite: true,
-                      },
-                    },
-                    {
-                      breakpoint: 768,
-                      settings: {
-                        slidesToShow: 1,
-                        slidesToScroll: 1,
-                        infinite: true,
-                      },
-                    },
-                  ]}
+                  className="author-modal-carousel [&_.slick-slide>div]:h-full [&_.slick-slide]:px-1.5 sm:[&_.slick-slide]:px-2"
                 >
                   {authorModalArticles.map((item, idx) => (
-                    <div key={item._id || item.slug || idx} className="p-0.5 sm:p-2">
+                    <div key={item._id || item.slug || idx} className="h-full">
                       {renderArticleCard(item)}
                     </div>
                   ))}
