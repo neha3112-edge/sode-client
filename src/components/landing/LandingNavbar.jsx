@@ -327,7 +327,9 @@ export default function LandingNavbar({
             <Link
               href="#hero"
               onClick={handleScrollTop}
-              className="flex items-center shrink-0 cursor-pointer lg:translate-x-8"
+              className={`flex items-center shrink-0 cursor-pointer lg:translate-x-8 ${
+                slug === "vgu" || slug === "uu" ? "hidden md:flex" : ""
+              }`}
               aria-label="Distance Education School"
             >
               <div
@@ -363,7 +365,7 @@ export default function LandingNavbar({
             !navbar.hideNavDivider &&
             navbar.showNavDivider !== false && (
               <div
-                className="
+                className={`
                   h-7
                   sm:h-9
                   lg:h-11
@@ -373,7 +375,8 @@ export default function LandingNavbar({
                   sm:mx-3
                   lg:mx-4
                   shrink-0
-                "
+                  ${slug === "vgu" || slug === "uu" ? "hidden md:block" : ""}
+                `}
               />
             )}
 
@@ -390,7 +393,9 @@ export default function LandingNavbar({
                   relative
                   shrink-0
                   ${navbar.logoWrapperClassName ||
-                  "w-36 sm:w-48 lg:w-60 h-9 sm:h-11 lg:h-12"
+                  (slug === "vgu"
+                    ? "w-48 sm:w-56 lg:w-60 h-9 sm:h-11 lg:h-12"
+                    : "w-36 sm:w-48 lg:w-60 h-9 sm:h-11 lg:h-12")
                   }
                 `}
                 style={navbar.logoWrapperStyle}
@@ -405,7 +410,7 @@ export default function LandingNavbar({
                     object-left
                     ${navbar.logoClassName || ""}
                   `}
-                  sizes="(max-width: 640px) 180px, 320px"
+                  sizes="(max-width: 640px) 200px, 320px"
                   style={navbar.logoStyle}
                 />
               </div>
@@ -448,25 +453,27 @@ export default function LandingNavbar({
             </ul>
           )}
 
-          {/* UU MOBILE SODE LOGO */}
-          {slug === "uu" && (
+          {/* VGU & UU MOBILE SODE LOGO (RIGHT SIDE) */}
+          {(slug === "vgu" || slug === "uu") && (
             <Link
               href="#hero"
               onClick={handleScrollTop}
-              className="des_logo flex md:hidden items-center shrink-0 cursor-pointer"
+              className="des_logo flex md:hidden items-center shrink-0 cursor-pointer mr-0.5"
               aria-label="Back to Top"
             >
-              <div className="relative w-14 sm:w-18 h-10 sm:h-12">
+              <div className="relative w-11 sm:w-16 h-10 sm:h-12">
                 <Image
                   src={
                     sodeIcon ||
-                    "/assets/all_universities_images/uu/sode-icon.png"
+                    (slug === "vgu"
+                      ? "/assets/all_universities_images/vgu/sode-icon.png"
+                      : "/assets/all_universities_images/uu/sode-icon.png")
                   }
                   alt="SODE"
                   fill
                   priority
                   className="object-contain object-right"
-                  sizes="80px"
+                  sizes="64px"
                 />
               </div>
             </Link>
@@ -476,7 +483,7 @@ export default function LandingNavbar({
           {isCouponVisible ? (
             <div
               className={`
-                ${slug === "uu"
+                ${slug === "uu" || slug === "vgu"
                   ? "hidden md:inline-flex"
                   : "inline-flex"
                 }

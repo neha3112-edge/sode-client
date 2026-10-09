@@ -16,7 +16,7 @@ import VguAbout from "./about/VguAbout";
 import SmuAbout from "./about/SmuAbout";
 import ManipalAbout from "./about/ManipalAbout";
 
-/**
+/**-
  * Reusable Registry of About Section Layouts.
  * Decouples university brand identity (slug) from visual layout rendering.
  */

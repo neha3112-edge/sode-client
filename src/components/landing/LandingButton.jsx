@@ -120,27 +120,27 @@ export default function LandingButton({
       break;
   }
 
+  const hasBgClass = Boolean(className && /\bbg-/.test(className));
+  const hasBorderClass = Boolean(className && /\bborder-/.test(className));
+  const hasTextClass = Boolean(className && /\btext-/.test(className));
+
   // Resolved colors & radius: LP JSON data props override default styles
   const resolvedBg =
     background ||
     bgColor ||
     bg ||
     style.background ||
-    style.backgroundColor ||
-    defaultStyle.background ||
-    defaultStyle.backgroundColor;
+    style.backgroundColor;
 
   const resolvedColor =
     textColor ||
     color ||
-    style.color ||
-    defaultStyle.color;
+    style.color;
 
   const resolvedBorder =
     border ||
     (borderColor ? `2px solid ${borderColor}` : undefined) ||
-    style.border ||
-    defaultStyle.border;
+    style.border;
 
   const resolvedRadius =
     props.radius ||
@@ -149,7 +149,15 @@ export default function LandingButton({
     style.radius;
 
   const mergedStyle = {
-    ...defaultStyle,
+    ...(!hasBgClass && !resolvedBg && (defaultStyle.background || defaultStyle.backgroundColor)
+      ? { background: defaultStyle.background, backgroundColor: defaultStyle.backgroundColor }
+      : {}),
+    ...(!hasTextClass && !resolvedColor && defaultStyle.color
+      ? { color: defaultStyle.color }
+      : {}),
+    ...(!hasBorderClass && resolvedBorder === undefined && defaultStyle.border
+      ? { border: defaultStyle.border }
+      : {}),
     ...style,
     ...(resolvedBg ? { background: resolvedBg, backgroundColor: resolvedBg } : {}),
     ...(resolvedColor ? { color: resolvedColor } : {}),

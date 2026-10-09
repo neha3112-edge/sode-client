@@ -378,7 +378,7 @@ export default function LandingFooter({
       {/* Brand Navy Copyright Bar (reusable across all landing pages) */}
       {!brand.hideFooterCopyright && (
         <div
-          className="mini-footer-bottom mt-4 sm:mt-5 text-white py-2.5 px-4 sm:px-8 text-[13px] sm:text-[14px] tracking-wide font-normal transition-colors"
+          className="mini-footer-bottom mt-4 sm:mt-5 text-white py-2.5 pb-16 lg:pb-2.5 px-4 sm:px-8 text-[13px] sm:text-[14px] tracking-wide font-normal transition-colors"
           style={{
             backgroundColor:
               brand.footerBottomBg ||

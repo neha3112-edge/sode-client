@@ -94,29 +94,48 @@ export default function LandingRecruiters({
   // If VGU or single image is supplied
   if (activeRecruiters.image || brand.slug === "vgu" || brand.recruitersLayout === "vgu") {
     const title = activeRecruiters.title || "Top Recruiters at VGU Online";
-    const image = activeRecruiters.image || "/assets/all_universities_images/vgu/placement-partner-vgu.webp";
+    const desktopImage =
+      activeRecruiters.desktopImage ||
+      activeRecruiters.image ||
+      "/assets/all_universities_images/vgu/placement-partner-vgu.webp";
+    const mobileImage =
+      activeRecruiters.mobileImage ||
+      "/assets/all_universities_images/vgu/hairing-partner-vgu-mobile.webp";
 
     return (
-      <section id="partners" className="py-12 sm:py-16 bg-white border-b border-slate-200">
+      <section id="partners" className={`${activeRecruiters.sectionPadding || "py-10 sm:py-16"} bg-white select-none`}>
         <LandingContainer>
           {/* Centered Maroon Badge */}
-          <div className="flex justify-center mb-8 sm:mb-12">
-            <div className="bg-[#811811] text-white px-8 sm:px-10 py-2.5 sm:py-3 rounded-[8px] text-center shadow-xs">
-              <h2 className="text-[17px] sm:text-[20px] font-bold text-white tracking-tight leading-tight m-0">
+          <div className="flex justify-center mb-6 sm:mb-12">
+            <div className="bg-[#811811] text-white px-8 sm:px-14 py-2.5 sm:py-3.5 rounded-[8px] sm:rounded-[10px] text-center shadow-xs min-w-[270px] sm:min-w-[340px]">
+              <h2 className="text-[17px] sm:text-[20px] font-bold text-white tracking-tight leading-[1.25] whitespace-pre-line m-0">
                 {title}
               </h2>
             </div>
           </div>
 
           {/* Recruiters Logos Image */}
-          <div className="max-w-[1020px] mx-auto px-2">
-            <div className="relative w-full aspect-[2.6/1] sm:aspect-[2.8/1] flex items-center justify-center">
+          <div className="max-w-[1100px] mx-auto px-1 sm:px-2">
+            {/* Desktop / Tablet View */}
+            <div className="hidden sm:flex relative w-full aspect-[1392/394] items-center justify-center">
               <Image
-                src={image}
+                src={desktopImage}
                 alt={title}
                 fill
                 className="object-contain"
-                sizes="(max-width: 1024px) 100vw, 1020px"
+                sizes="(max-width: 1024px) 100vw, 1100px"
+              />
+            </div>
+
+            {/* Mobile View */}
+            <div className="flex sm:hidden relative w-full max-w-[440px] mx-auto aspect-[719/777] items-center justify-center">
+              <Image
+                src={mobileImage}
+                alt={title}
+                fill
+                priority
+                className="object-contain"
+                sizes="(max-width: 640px) 100vw, 440px"
               />
             </div>
           </div>

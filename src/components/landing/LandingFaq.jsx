@@ -4,7 +4,16 @@ import React, { useState } from "react";
 import LandingContainer from "./LandingContainer";
 
 export default function LandingFaq({ faqs = [], universityName = "University Online", brand = {} }) {
-  const defaultOpen = brand.faqDefaultOpenIndex !== undefined ? brand.faqDefaultOpenIndex : 0;
+  const isVgu =
+    brand.slug === "vgu" ||
+    brand.faqLayout === "vgu";
+
+  const defaultOpen =
+    brand.faqDefaultOpenIndex !== undefined
+      ? brand.faqDefaultOpenIndex
+      : isVgu
+      ? null
+      : 0;
   const [openIndex, setOpenIndex] = useState(defaultOpen); // default active index or null
   const headingColor = brand.faqHeaderColor || brand.primaryColor || "#08417b";
   const iconColor = brand.faqIconColor || brand.primaryColor || "#fd202a";
@@ -36,6 +45,81 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
   const isIim =
     brand.slug === "iim" ||
     brand.faqLayout === "iim";
+
+  // ==========================================
+  // Layout: VGU (Vivekananda Global University) FAQ
+  // ==========================================
+  if (isVgu) {
+    const cfg = brand.faqConfig || {};
+    const titleColor = cfg.titleColor || brand.primaryColor || "#811811";
+    const iconBg = cfg.iconBg || "#103863";
+    const iconColor = cfg.iconColor || "#ffffff";
+    const prefix = cfg.questionPrefix || "» ";
+    const activeColor = cfg.activeQuestionColor || titleColor;
+    const faqTitle = brand.faqTitle || "Frequently Asked\nQuestions";
+
+    return (
+      <section
+        id="faqs"
+        aria-label="Frequently Asked Questions"
+        className="py-8 sm:py-12 lg:py-16 bg-[#f4f7fb] w-full select-none scroll-mt-20 sm:scroll-mt-24"
+      >
+        <div className={cfg.containerClassName || "max-w-[1140px] mx-auto px-3.5 sm:px-6 lg:px-8"}>
+          <h2
+            className="text-[22px] sm:text-[26px] md:text-[30px] font-bold text-center m-0 mb-5 sm:mb-8 md:mb-10 tracking-tight leading-[1.25] whitespace-pre-line"
+            style={{ color: titleColor }}
+          >
+            {faqTitle}
+          </h2>
+
+          <div className="space-y-2.5 sm:space-y-3.5 w-full">
+            {faqs.map((faq, idx) => {
+              const isOpen = openIndex === idx;
+              const rawQuestion = (faq.q || faq.question || "").replace(/^Q\d+[\.\:\s]*/i, "").trim();
+              const questionNumber = `Q${idx + 1}.`;
+
+              return (
+                <div
+                  key={idx}
+                  className="rounded-[5px] sm:rounded-[6px] overflow-hidden bg-white shadow-2xs border border-slate-100 transition-all"
+                >
+                  <button
+                    type="button"
+                    onClick={() => toggleFaq(idx)}
+                    className="w-full px-3.5 sm:px-5 md:px-6 py-3 sm:py-3.5 md:py-4 text-left flex items-center justify-between gap-3 sm:gap-4 cursor-pointer bg-white hover:bg-slate-50/50 active:bg-slate-50 transition-colors border-none m-0"
+                    aria-expanded={isOpen}
+                  >
+                    <span
+                      className={`text-[12.5px] sm:text-[14px] md:text-[15px] font-normal leading-snug transition-colors flex-1 ${
+                        isOpen ? "" : "text-[#1e293b]"
+                      }`}
+                      style={{ color: isOpen ? activeColor : undefined }}
+                    >
+                      <span className="text-slate-500 font-normal mr-1 sm:mr-1.5 select-none">{prefix}</span>
+                      <span className="font-medium sm:font-normal">{questionNumber} </span>
+                      <span>{rawQuestion}</span>
+                    </span>
+                    <span
+                      className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px] md:w-[24px] md:h-[24px] rounded-full flex items-center justify-center font-bold text-[12px] sm:text-[13px] md:text-[14px] leading-none shrink-0 ml-2.5 sm:ml-3 select-none transition-transform"
+                      style={{ backgroundColor: iconBg, color: iconColor }}
+                    >
+                      {isOpen ? "−" : "+"}
+                    </span>
+                  </button>
+
+                  {isOpen && (
+                    <div className="px-3.5 sm:px-5 md:px-6 pb-3.5 sm:pb-4 pt-1.5 border-t border-slate-100 bg-white text-[12px] sm:text-[13px] md:text-[13.5px] text-[#4b5563] leading-[1.6] sm:leading-[1.65] font-normal">
+                      <p className="m-0">{faq.a || faq.answer}</p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   // ==========================================
   // Layout: Uttaranchal University (UU) FAQ

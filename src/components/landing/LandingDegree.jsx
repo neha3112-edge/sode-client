@@ -301,20 +301,37 @@ export default function LandingDegree({
     brand.degreeLayout === "imageLeft" ||
     isGgu;
 
-  const titleColor = brand.degreeTitleColor || (isGgu ? "#003468" : "#811811");
-  const btnBg = brand.degreeBtnBg || (isGgu ? "#DC520A" : "#ffc107");
-  const btnTextColor = brand.degreeBtnTextColor || (isGgu ? "#ffffff" : "#020617");
+  const titleColor = degreeInfo.titleColor || brand.degreeTitleColor || (isGgu ? "#003468" : "#811811");
+  const btnBg = degreeInfo.buttonBg || brand.degreeBtnBg || (isGgu ? "#DC520A" : "#ffc107");
+  const btnTextColor = degreeInfo.buttonTextColor || brand.degreeBtnTextColor || (isGgu ? "#ffffff" : "#020617");
+
+  const isTransparentCard =
+    degreeInfo.cardBackground === "transparent" ||
+    degreeInfo.transparentCard ||
+    brand.slug === "vgu";
 
   return (
     <section
       id="degree"
       className={`select-none ${
-        isGgu ? "bg-[#F6F6F6] pt-2 pb-14 sm:pb-16" : "py-12 sm:py-16 bg-[#f4f7fb]"
+        isGgu ? "bg-[#F6F6F6] pt-2 pb-14 sm:pb-16" : "py-10 sm:py-14 bg-[#F3F3F8]"
       }`}
+      style={degreeInfo.sectionBg ? { backgroundColor: degreeInfo.sectionBg } : {}}
     >
       <LandingContainer>
-        <div className="bg-white rounded-[20px] sm:rounded-[24px] shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-slate-100/80 p-6 sm:p-10 lg:p-12 max-w-[1140px] mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+        <div
+          className={`max-w-[1140px] mx-auto ${
+            isTransparentCard
+              ? "bg-transparent px-5 sm:px-8 lg:px-10 py-2 shadow-none border-none"
+              : "bg-white rounded-[16px] sm:rounded-[24px] shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-slate-100/80 p-4 sm:p-8 lg:p-12"
+          }`}
+          style={
+            !isTransparentCard && degreeInfo.cardBackground
+              ? { backgroundColor: degreeInfo.cardBackground }
+              : {}
+          }
+        >
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-12 items-center">
             {/* Image Column */}
             <div
               className={`lg:col-span-5 flex justify-center ${
@@ -325,26 +342,40 @@ export default function LandingDegree({
                 <div className="w-full max-w-[340px] sm:max-w-[420px]">
                   <Carousel autoplay autoplaySpeed={3000} dots={true}>
                     {images.map((imgSrc, idx) => (
-                      <div key={idx} className="relative w-full h-[250px] sm:h-[300px] rounded-[10px] overflow-hidden shadow-lg border border-slate-200 bg-white">
+                      <div
+                        key={idx}
+                        className={`relative w-full ${
+                          isTransparentCard
+                            ? "max-w-[360px] sm:max-w-[420px] aspect-square mx-auto"
+                            : "h-[250px] sm:h-[300px] rounded-[10px] overflow-hidden shadow-lg border border-slate-200 bg-white"
+                        }`}
+                      >
                         <Image
                           src={imgSrc}
                           alt={`Sample Degree ${idx + 1}`}
                           fill
-                          className="object-contain p-2"
-                          sizes="(max-width: 1024px) 340px, 420px"
+                          className="object-contain"
+                          sizes="(max-width: 1024px) 360px, 420px"
                         />
                       </div>
                     ))}
                   </Carousel>
                 </div>
               ) : (
-                <div className="relative w-full max-w-[340px] sm:max-w-[420px] h-[250px] sm:h-[300px] rounded-[10px] overflow-hidden shadow-lg border border-slate-200 bg-white">
+                <div
+                  className={`relative w-full ${
+                    isTransparentCard
+                      ? "max-w-[360px] sm:max-w-[420px] aspect-square mx-auto"
+                      : "max-w-[340px] sm:max-w-[420px] h-[250px] sm:h-[300px] rounded-[10px] overflow-hidden shadow-lg border border-slate-200 bg-white"
+                  }`}
+                >
                   <Image
                     src={image}
                     alt="Sample Degree"
                     fill
-                    className="object-contain p-2"
-                    sizes="(max-width: 1024px) 340px, 420px"
+                    priority
+                    className="object-contain"
+                    sizes="(max-width: 1024px) 360px, 420px"
                   />
                 </div>
               )}

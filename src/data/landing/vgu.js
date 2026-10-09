@@ -20,7 +20,7 @@ export const vguData = {
     name: "Vivekananda Global University Online",
     shortName: "VGU Online",
     hashtag: "",
-    headline: "Vivekananda Global University\nOnline Degree Programs",
+    headline: "Vivekananda Global\nUniversity\nOnline Degree Programs",
     tagline1:
       "Empowering professionals with career-focused education, modern curriculum, and industry-aligned learning at Vivekananda Global University.",
     tagline2: "",
@@ -53,7 +53,10 @@ export const vguData = {
     badgeText: "Admissions Open 2026",
     hero: {
       backgroundImage: "/assets/all_universities_images/vgu/vgu-desktop.webp",
-      mobileBackgroundImage: "/assets/all_universities_images/vgu/university.webp",
+      mobileBackgroundImage: "",
+      mobileStudentImage: "/assets/all_universities_images/vgu/university.webp",
+      mobileStudentImageWrapperClassName: "block lg:hidden w-full max-w-full rounded-[16px] sm:rounded-[20px] overflow-hidden my-3 shadow-md border border-white/20",
+      showMobileCouponButton: true,
       noOverlay: true,
       backgroundColor: "#811811",
       titleColor: "#ffffff",
@@ -62,13 +65,12 @@ export const vguData = {
       hashtagColor: "#ffffff",
       hideCourseBox: true,
       contentClassName: "lg:max-w-[580px] xl:max-w-[620px]",
-      headingClassName: "text-[24px] sm:text-[28px] md:text-[31px] lg:text-[33px] xl:text-[35px] font-extrabold text-white leading-[1.18] tracking-tight whitespace-pre-line",
-      taglineClassName: "mt-2.5 mb-2 text-[13.5px] sm:text-[14.5px] font-normal leading-relaxed text-white/95 max-w-[490px]",
-      courseStripClassName: "my-2.5 space-y-0.5 text-[17px] sm:text-[19px] lg:text-[20.5px] font-extrabold text-white tracking-wide leading-snug",
-      buttonBackground: "#008000",
+      headingClassName: "text-[23px] sm:text-[28px] md:text-[31px] lg:text-[33px] xl:text-[35px] font-extrabold text-white leading-[1.18] tracking-tight whitespace-pre-line text-left",
+      taglineClassName: "mt-3 mb-2.5 text-[12.5px] sm:text-[14px] font-normal leading-[1.55] text-white/95 max-w-[490px] text-left",
+      courseStripClassName: "my-3 space-y-0.5 text-[16px] sm:text-[18px] lg:text-[20px] font-black text-white tracking-wide leading-snug text-left",
       buttonRadius: "rounded-full",
       buttonTextColor: "#ffffff",
-      buttonClassName: "mt-3.5 py-2.5 px-7 rounded-full text-white font-bold text-[14px] bg-[#008000] hover:bg-[#006e00] inline-flex items-center gap-2 shadow-md transition-all border-none",
+      buttonClassName: "mt-2 mb-3.5 py-2 px-6 sm:px-7 rounded-full text-white font-semibold text-[13px] sm:text-[14px] bg-[#811811] sm:bg-[#008000] border-2 border-white sm:border-none inline-flex items-center gap-2 shadow-md transition-all self-start",
       formCardType: "white",
       formBackground: "#ffffff",
       formTitleColor: "#811811",
@@ -82,7 +84,7 @@ export const vguData = {
       hideTermsCheckbox: true,
       minHeight: "440px",
       backgroundPosition: "center top",
-      containerClassName: "max-w-[1400px] px-6 sm:px-10 lg:px-12 py-5 lg:py-6",
+      containerClassName: "max-w-[1400px] !px-6 sm:!px-10 lg:!px-12 py-4 sm:py-5 lg:py-6",
       headingFont: "'Plus Jakarta Sans', sans-serif",
       form: {
         layout: {
@@ -95,35 +97,36 @@ export const vguData = {
       },
     },
     coursesStrip: [
-      "MBA | MSC | MA | MCA |",
-      "MA-JMC | BBA | BCA | BA",
+      "MBA | MSC | MA | MCA | MA-",
+      "JMC | BBA | BCA | BA",
     ],
-    approvalsTitle: "Vivekananda Global University Online Accreditation & Approval",
+    approvalsTitle:
+      "Vivekananda Global\nUniversity Online\nAccreditation & Approval",
     approvalsDescription:
-      "Vivekananda Global University Online Courses are UGC-recognised and have top accreditations and approvals from the country's recognised statutory bodies.",
+      "Vivekananda Global University Online\nCourses are UGC-recognised and have\ntop accreditations and approvals from\nthe country's recognised statutory\nbodies.",
     approvalsLayout: "vgu-badges",
     approvalsConfig: {
       containerClassName: "max-w-[1340px] mx-auto px-6 sm:px-12 md:px-16 lg:px-24 xl:px-32",
-      titleClassName: "text-[22px] sm:text-[26px] lg:text-[28px] font-normal text-[#811811] leading-tight tracking-tight m-0",
-      buttonBg: "#ffc107",
+      titleClassName: "text-[21px] sm:text-[28px] lg:text-[35px] font-bold text-[#811811] leading-[1.2] tracking-tight m-0",
+      buttonBg: "#ffd508",
       buttonTextColor: "#000000",
       buttonText: "Enquire Now",
     },
-    programmesTitle: "VGU Online | Vivekananda Global University Online Courses",
+    programmesTitle:
+      "VGU Online |\nVivekananda Global University\nOnline Courses",
     programmesLayout: "vgu-cards",
-    cardSize: "small",
+    cardSize: "medium",
     programmesConfig: {
-      containerClassName: "max-w-[1160px] mx-auto px-4 sm:px-6 lg:px-8",
-      gridClassName: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5",
-      cardClassName: "bg-white rounded-[12px] overflow-hidden shadow-[0_4px_16px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] transition-all duration-300 flex flex-col justify-between group",
-      imageHeight: "h-32 sm:h-36",
-      titleClassName: "text-[20px] sm:text-[22px] font-extrabold m-0 tracking-tight leading-tight",
-      subtitleClassName: "text-[11px] sm:text-[11.5px] font-semibold text-slate-800 mt-1 mb-1.5 line-clamp-1",
-      descClassName: "text-[10px] sm:text-[10.5px] text-slate-600 leading-[1.45] line-clamp-3 min-h-[46px] m-0",
-      padding: "p-3 sm:p-3.5",
-      buttonClassName: "font-bold text-[10.5px] sm:text-[11px] py-1.5 px-2 rounded-full inline-flex items-center justify-center gap-1 shadow-xs transition-all cursor-pointer border-none",
+      containerClassName: "max-w-[1280px] mx-auto px-8 sm:px-10 lg:px-8",
+      gridClassName: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-7",
+      cardClassName: "bg-white rounded-[20px] overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.08)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)] transition-all duration-300 flex flex-col justify-between group max-w-[340px] sm:max-w-none mx-auto w-full border border-slate-100/80",
+      imageHeight: "h-[185px] sm:h-[190px]",
+      titleClassName: "text-[26px] sm:text-[28px] font-extrabold text-black m-0 tracking-tight leading-none mb-2",
+      subtitleClassName: "text-[13px] sm:text-[13.5px] font-bold text-[#1f2937] mt-0 mb-3 leading-snug line-clamp-1",
+      descClassName: "max-w-[270px] mx-auto text-[11.5px] sm:text-[12px] text-[#475569] leading-[1.65] font-normal m-0 line-clamp-5",
     },
-    whyChooseTitle: "Why Vivekananda Global University Online is a Smart Choice for learners?",
+    whyChooseTitle:
+      "Why Vivekananda Global University\nOnline is a Smart Choice\nfor learners?",
     whyChooseDescription:
       "Vivekananda Global University Online is the most trusted university by students because of its recognised approvals and job-ready curriculum. VGU University courses are offered online with expert faculty, helpful resources like LMS that help students get strong knowledge and necessary skills, and a smooth Vivekananda Global University course admissions process.",
     whyChooseLayout: "vgu-grid",
@@ -136,6 +139,7 @@ export const vguData = {
       containerClassName: "max-w-[1280px] mx-auto px-6 sm:px-10 lg:px-12",
     },
     faqLayout: "vgu",
+    faqTitle: "Frequently Asked\nQuestions",
     faqConfig: {
       titleColor: "#811811",
       itemBg: "#f8f9fa",
@@ -160,22 +164,42 @@ export const vguData = {
   approvals: [
     {
       image: "/assets/all_universities_images/vgu/ugc-1.webp",
-      text: "Recognised by the University Grants Commission of India (UGC)",
+      text: "Recognised by the\nUniversity Grants Commission\nof India (UGC)",
+      lines: [
+        "Recognised by the",
+        "University Grants Commission",
+        "of India (UGC)",
+      ],
       tag: "UGC",
     },
     {
       image: "/assets/all_universities_images/vgu/naac-a-1.webp",
-      text: "Accredited by the National Assessment and Accreditation Council (NAAC)",
+      text: "Accredited by the\nNational Assessment and\nAccreditation Council (NAAC)",
+      lines: [
+        "Accredited by the",
+        "National Assessment and",
+        "Accreditation Council (NAAC)",
+      ],
       tag: "NAAC A+",
     },
     {
       image: "/assets/all_universities_images/vgu/aicte-1.webp",
-      text: "Approved by the All India Council for Technical Education (AICTE)",
+      text: "Approved by the\nAll India Council for\nTechnical Education (AICTE)",
+      lines: [
+        "Approved by the",
+        "All India Council for",
+        "Technical Education (AICTE)",
+      ],
       tag: "AICTE",
     },
     {
       image: "/assets/all_universities_images/vgu/qs.webp",
-      text: "Globally ranked by QS World University Rankings",
+      text: "Globally ranked\nby QS World\nUniversity Rankings",
+      lines: [
+        "Globally ranked",
+        "by QS World",
+        "University Rankings",
+      ],
       tag: "QS Ranked",
     },
   ],
@@ -264,6 +288,7 @@ export const vguData = {
   ],
   about: {
     title: "About Vivekananda Global University Online",
+    titleColor: "#ffd508",
     text1:
       "Vivekananda Global University Online is one of the most preferred universities for online courses. With the NAAC A+ accreditation and UGC entitlement, the VGU online degree is valued and recognised worldwide. It provides a wide range of flexible and affordable online UG and PG courses for students interested in higher education. The Vivekananda Global University course admissions are fully online and accessible to all.",
     text2:
@@ -305,11 +330,12 @@ export const vguData = {
   ],
   degreeInfo: {
     title: "Globally Accepted\nOnline Vivekananda Global University\nDegree",
-    cardBackground: "#f2f5fa",
-    buttonBg: "#fec810",
+    cardBackground: "transparent",
+    sectionBg: "#F3F3F8",
+    buttonBg: "#ffd508",
     buttonTextColor: "#000000",
     sectionPadding: "py-6 sm:py-8",
-    cardPadding: "p-5 sm:p-7 lg:p-8",
+    cardPadding: "p-0",
     features: [
       {
         title: "UGC Entitled",
@@ -336,17 +362,20 @@ export const vguData = {
     image: "/assets/all_universities_images/vgu/sample-degree-vgu.webp",
   },
   recruiters: {
-    title: "Top Recruiters at VGU Online",
+    title: "Top Recruiters at VGU\nOnline",
     image: "/assets/all_universities_images/vgu/placement-partner-vgu.webp",
+    desktopImage: "/assets/all_universities_images/vgu/placement-partner-vgu.webp",
+    mobileImage: "/assets/all_universities_images/vgu/hairing-partner-vgu-mobile.webp",
     containerClassName: "max-w-[1280px] mx-auto px-4 sm:px-6",
     aspectRatio: "aspect-[2.4/1] sm:aspect-[2.6/1]",
     imageClassName: "scale-110 sm:scale-115 md:scale-120",
     sectionPadding: "pt-7 pb-4 sm:pt-9 sm:pb-6",
   },
   admissionProcess: {
-    title: "How to Apply for Vivekananda Global University Online Courses",
-    titleColor: "#203061",
-    sectionPadding: "pt-7 pb-10 sm:pt-9 sm:pb-12",
+    title:
+      "How to Apply for\nVivekananda Global University\nOnline Courses",
+    titleColor: "#172b4d",
+    sectionPadding: "pt-10 sm:pt-14 lg:pt-16 pb-10 sm:pb-12 lg:pb-14",
     subtitle:
       "Students can easily enrol in Vivekananda Global University Online courses. Candidates can conveniently apply by selecting their desired program. Follow these steps to secure admission in the university.",
   },

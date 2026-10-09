@@ -228,6 +228,7 @@ export default function UniversityLandingView({ data = {} }) {
           courses={courses}
           onOpenBrochure={(course, title) => handleOpenBrochure(course, title)}
           onOpenApply={(course, title) => handleOpenApply(course, title || "Apply Now")}
+          onOpenScholarship={() => setIsScholarshipOpen(true)}
           onOpenDisclaimer={() => handleOpenLegal("disclaimer")}
         />
 

@@ -2,6 +2,8 @@
 
 import React from "react";
 import Image from "next/image";
+import { Button } from "antd";
+import confetti from "canvas-confetti";
 
 import LandingContainer from "./LandingContainer";
 import LandingLeadForm from "./LandingLeadForm";
@@ -21,7 +23,9 @@ export default function LandingHero({
   brand = {},
   courses = [],
   onOpenBrochure,
+  onOpenApply,
   onOpenDisclaimer,
+  onOpenScholarship,
 }) {
   const hero = brand?.hero || {};
 
@@ -70,8 +74,9 @@ export default function LandingHero({
     "";
 
   const mobileBackgroundImage =
-    hero.mobileBackgroundImage ||
-    backgroundImage;
+    hero.mobileBackgroundImage !== undefined
+      ? hero.mobileBackgroundImage
+      : backgroundImage;
 
   const sectionStyle = {
     ...hero.sectionStyle,
@@ -434,8 +439,8 @@ export default function LandingHero({
 
         <LandingContainer
           className={joinClassNames(
-            "relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6 sm:gap-8 lg:gap-8 px-4 sm:px-6 lg:px-8 py-4 sm:py-7 lg:py-6",
-            hero.containerClassName
+            "relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6 sm:gap-8 lg:gap-8 py-4 sm:py-7 lg:py-6",
+            hero.containerClassName || "px-4 sm:px-6 lg:px-8"
           )}
           style={{
             minHeight: hero.minHeight,
@@ -445,7 +450,10 @@ export default function LandingHero({
           {/* ------------------------- LEFT CONTENT ------------------------- */}
           <div
             className={joinClassNames(
-              "relative z-10 flex w-full flex-col items-center sm:items-start text-center sm:text-left lg:flex-1",
+              "relative z-10 flex w-full flex-col lg:flex-1",
+              hero.alignLeftMobile || brand.slug === "vgu"
+                ? "items-start text-left"
+                : "items-center sm:items-start text-center sm:text-left",
               hero.contentClassName
             )}
             style={hero.contentStyle}
@@ -691,7 +699,7 @@ export default function LandingHero({
             {hero.mobileStudentImage && (
               <div
                 className={joinClassNames(
-                  "hero-mobile-image-wrapper block md:hidden w-full relative w-full h-[220px] sm:h-[260px] overflow-hidden mb-3",
+                  "hero-mobile-image-wrapper block lg:hidden w-full relative aspect-[2.14/1] overflow-hidden mb-3",
                   hero.mobileStudentImageWrapperClassName
                 )}
               >
@@ -706,6 +714,158 @@ export default function LandingHero({
                   sizes="(max-width: 768px) 100vw, 420px"
                   priority
                 />
+              </div>
+            )}
+
+            {(hero.showMobileCouponButton || brand.slug === "vgu") && (
+              <div className="w-full block lg:hidden my-2 mb-3.5 flex justify-center">
+                <Button
+                  type="text"
+                  onClick={(e) => {
+                    try {
+                      if (typeof window !== "undefined") {
+                        const rect = e?.currentTarget?.getBoundingClientRect();
+                        const x = rect ? (rect.left + rect.width / 2) / window.innerWidth : 0.5;
+                        const y = rect ? (rect.top + rect.height / 2) / window.innerHeight : 0.5;
+                        confetti({
+                          particleCount: 55,
+                          spread: 60,
+                          origin: { x, y },
+                          zIndex: 99999,
+                          colors: ["#2ecc71", "#27ae60", "#f1c40f", "#e67e22", "#e74c3c"],
+                        });
+                      }
+                    } catch {}
+                    if (onOpenScholarship) {
+                      onOpenScholarship();
+                    } else if (onOpenApply) {
+                      onOpenApply();
+                    }
+                  }}
+                  aria-label="Get Scholarship Coupon Code"
+                  style={{
+                    ...(brand.couponBtnBg || hero.couponBtnBg || brand.themeGradient
+                      ? {
+                        "--coupon-btn-bg":
+                          brand.couponBtnBg ||
+                          hero.couponBtnBg ||
+                          brand.themeGradient,
+                      }
+                      : brand.couponButtonColor
+                        ? {
+                          backgroundColor:
+                            brand.couponButtonColor,
+                        }
+                        : {
+                          backgroundColor:
+                            "#22c55e",
+                        }),
+
+                    "--coupon-shadow-start":
+                      brand.couponShadowColor ||
+                      "rgba(46, 204, 113, 0.65)",
+
+                    "--coupon-shadow-mid1":
+                      brand.couponShadowColorMid1 ||
+                      "rgba(46, 204, 113, 0.42)",
+
+                    "--coupon-shadow-mid2":
+                      brand.couponShadowColorMid2 ||
+                      "rgba(46, 204, 113, 0.22)",
+
+                    "--coupon-shadow-mid3":
+                      brand.couponShadowColorMid3 ||
+                      "rgba(46, 204, 113, 0.08)",
+
+                    "--coupon-shadow-end":
+                      "rgba(46, 204, 113, 0)",
+                  }}
+                  className="
+                    coupon-btn-main
+                    relative
+                    inline-flex
+                    items-center
+                    gap-2
+                    sm:gap-2.5
+                    pl-5
+                    sm:pl-7
+                    md:pl-8
+                    pr-4.5
+                    sm:pr-6
+                    md:pr-7
+                    py-1
+                    sm:py-1.5
+                    rounded-[8px]
+                    !text-white
+                    font-bold
+                    text-[10px]
+                    sm:text-[11px]
+                    md:text-[11.5px]
+                    cursor-pointer
+                    !border-none
+                    overflow-hidden
+                    select-none
+                    hover:!brightness-105
+                    active:scale-95
+                    !h-auto
+                  "
+                >
+                  {/* Moving Light Green Box */}
+                  <span className="moving-light-green-box" />
+
+                  {/* Gift Icon */}
+                  <span
+                    className="
+                      relative
+                      -ml-1.5
+                      sm:-ml-2.5
+                      w-6
+                      h-6
+                      sm:w-7
+                      sm:h-7
+                      rounded-full
+                      bg-white
+                      flex
+                      items-center
+                      justify-center
+                      shrink-0
+                      shadow-xs
+                      z-10
+                      p-0
+                      overflow-hidden
+                    "
+                  >
+                    <Image
+                      src={
+                        brand.giftGif ||
+                        "/assets/images/gift.gif"
+                      }
+                      alt="Scholarship Gift"
+                      width={26}
+                      height={26}
+                      unoptimized
+                      className="w-5 h-5 sm:w-6 sm:h-6 object-contain"
+                    />
+                  </span>
+
+                  {/* Coupon Text */}
+                  <span
+                    className="
+                      relative
+                      z-10
+                      tracking-wide
+                      whitespace-nowrap
+                      text-white
+                      font-bold
+                      drop-shadow-[0_1px_2px_rgba(0,0,0,0.15)]
+                      text-[14px]
+                      sm:text-[15px]
+                      md:text-[15.5px]
+                    "
+                  >
+                    {brand.couponButtonText || "Scholarship Coupon Code"}
+                  </span>
+                </Button>
               </div>
             )}
 

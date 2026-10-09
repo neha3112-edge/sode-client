@@ -206,24 +206,30 @@ export default function LandingAdmissionProcess({
 
   const headingColor =
     admissionProcess?.headingColor ||
+    admissionProcess?.titleColor ||
     brand.admissionHeadingColor ||
-    (isSmu ? "#193579" : brand.primaryColor || "#08417b");
+    (isSmu ? "#193579" : "#1a365d");
+
+  const sectionPadding =
+    admissionProcess?.sectionPadding ||
+    brand.admissionSectionClass ||
+    "pt-9 sm:pt-12 lg:pt-16 pb-10 sm:pb-12 lg:pb-14";
 
   return (
     <section
       id={brand.admissionProcessId || (brand.slug === "ggu" ? "how-to-apply" : "process")}
-      className={brand.admissionSectionClass || "pt-2 sm:pt-3 lg:pt-4 pb-10 sm:pb-12 lg:pb-14 bg-white w-full select-none"}
+      className={`${sectionPadding} bg-white w-full select-none`}
     >
       <div className="w-full px-3 sm:px-6 md:px-8 lg:px-8 xl:px-12 2xl:px-16 max-w-[1400px] mx-auto">
         {/* Heading */}
         {hasEnrollmentPrefix ? (
-          <h2 className="text-2xl sm:text-3xl lg:text-[34px] font-bold text-center tracking-tight mb-2.5 sm:mb-3 m-0">
+          <h2 className="text-xl sm:text-3xl lg:text-[34px] font-bold text-center tracking-tight mb-2 sm:mb-3 m-0">
             <span style={{ color: prefixColor }}>{titlePrefix} </span>
             <span style={{ color: highlightColor }}>{titleHighlight}</span>
           </h2>
         ) : (
           <h2
-            className="text-[22px] sm:text-[26px] lg:text-[30px] xl:text-[32px] font-bold text-center tracking-tight mb-2.5 sm:mb-3 m-0 leading-tight"
+            className="text-[21px] sm:text-[26px] lg:text-[30px] xl:text-[32px] font-bold text-center tracking-tight mb-2.5 sm:mb-3.5 m-0 leading-[1.25] whitespace-pre-line"
             style={{ color: headingColor }}
           >
             {headingText}
@@ -231,7 +237,7 @@ export default function LandingAdmissionProcess({
         )}
 
         {/* Subtitle */}
-        <p className="text-[12.5px] sm:text-[13.5px] lg:text-[14px] text-center text-[#555555] mb-5 sm:mb-6 lg:mb-7 max-w-[860px] mx-auto font-normal leading-relaxed m-0 px-2 sm:px-4">
+        <p className="text-[12px] sm:text-[13.5px] lg:text-[14px] text-center text-[#555555] mb-4.5 sm:mb-6 lg:mb-7 max-w-[860px] mx-auto font-normal leading-relaxed m-0 px-2 sm:px-4">
           {subtitleText}
         </p>
 
@@ -271,7 +277,7 @@ export default function LandingAdmissionProcess({
                 key={num}
                 variant="borderless"
                 styles={{ body: { padding: 0 } }}
-                className="rounded-[14px] sm:rounded-2xl overflow-hidden px-2 py-3 sm:px-2.5 sm:py-3.5 lg:px-2 lg:py-3.5 xl:px-3 xl:py-4 text-center flex flex-col items-center justify-start h-full min-h-[160px] sm:min-h-[165px] lg:min-h-[165px] xl:min-h-[175px] transition-all duration-200 hover:-translate-y-1 shadow-2xs hover:shadow-xs relative"
+                className="rounded-[14px] sm:rounded-2xl overflow-hidden px-2 py-2.5 sm:px-2.5 sm:py-3.5 lg:px-2 lg:py-3.5 xl:px-3 xl:py-4 text-center flex flex-col items-center justify-start h-full min-h-[148px] sm:min-h-[165px] lg:min-h-[165px] xl:min-h-[175px] transition-all duration-200 hover:-translate-y-1 shadow-2xs hover:shadow-xs relative"
                 style={{
                   backgroundColor: cardBg,
                   borderBottom: `4px solid ${borderColor}`,

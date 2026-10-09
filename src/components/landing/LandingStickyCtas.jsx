@@ -77,6 +77,7 @@ export default function LandingStickyCtas({
   }
 
   const isUu = brand.slug === "uu";
+  const isVgu = brand.slug === "vgu" || brand.stickyLayout === "vgu";
 
   return (
     <>
@@ -89,7 +90,7 @@ export default function LandingStickyCtas({
             aria-label={`Call +91 ${rawPhone}`}
             title={`Call (+91 ${rawPhone})`}
             className={`floating-call-btn ${
-              isUu || brand.slug === "ssbm" ? "flex" : "hidden sm:flex"
+              isUu || brand.slug === "ssbm" || isVgu ? "flex" : "hidden sm:flex"
             } relative w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full overflow-hidden shadow-2xl items-center justify-center transition-transform hover:scale-110 active:scale-95 bg-white drop-shadow-lg`}
           >
             <Image
@@ -124,7 +125,30 @@ export default function LandingStickyCtas({
       </div>
 
       {/* Sticky Bottom Bar on Mobile/Tablet */}
-      {isUu ? (
+      {isVgu ? (
+        <div className="footer_sticky_buttons lg:hidden fixed bottom-0 left-0 right-0 z-50 px-3 py-2 bg-[#d11c1f] grid grid-cols-2 gap-2.5 shadow-2xl pb-[max(8px,env(safe-area-inset-bottom))]">
+          {/* Left: WhatsApp / Brochure Green Pill */}
+          <a
+            href={`https://api.whatsapp.com/send/?phone=+91${rawPhone}&text=${whatsappText}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="wp_btn flex items-center justify-center gap-1.5 py-2 px-3 rounded-full bg-[#25d366] text-white font-bold text-[13.5px] no-underline shadow-sm active:opacity-90"
+          >
+            <FaWhatsapp className="w-4 h-4 text-white shrink-0" />
+            <span>Get Brochure</span>
+          </a>
+
+          {/* Right: Apply Now White Pill */}
+          <button
+            type="button"
+            onClick={() => onOpenApply?.()}
+            className="apply_btn flex items-center justify-center gap-1 py-2 px-3 rounded-full bg-white text-[#d11c1f] font-bold text-[13.5px] border-none shadow-sm cursor-pointer active:opacity-90"
+          >
+            <span>Apply Now</span>
+            <span className="text-[16px] leading-none font-bold">»</span>
+          </button>
+        </div>
+      ) : isUu ? (
         <div className="footer_sticky_buttons lg:hidden fixed bottom-0 left-0 right-0 z-50 px-3 py-2 bg-[#d32f2f] grid grid-cols-2 gap-2.5 shadow-2xl pb-[max(8px,env(safe-area-inset-bottom))]">
           {/* Left: WhatsApp / Brochure Green Pill */}
           <a
