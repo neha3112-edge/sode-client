@@ -4,9 +4,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button, Carousel, Form, Input, message, Table } from "antd";
-import { Container } from "@/components/common/Container";
 import SafeHtmlRenderer from "@/components/website/SafeHtmlRenderer";
-import FormWrapper from "@/components/forms/FormWrapper";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
 import { getAssetPath } from "@/lib/utils";
 import { CalendarIcon, Check, ChevronDown, ChevronRight, ChevronUp, Clock, Minus, Plus, ThumbsDown, ThumbsUp, User } from "lucide-react";
@@ -713,7 +711,7 @@ export default function BlogClientView({
                     className={`flex items-center justify-between cursor-pointer select-none ${tocOpen ? "mb-4" : "mb-0"
                       }`}
                   >
-                    <h2 className="text-base sm:text-xl font-bold text-[#0D3B66] m-0">
+                    <h2 className="text-[18px] sm:text-xl font-bold text-[#0D3B66] m-0">
                       Table of Contents
                     </h2>
                     <button
@@ -778,7 +776,7 @@ export default function BlogClientView({
                     return (
                       <section key={group._id || group.id || gIdx} id={group.id} className="scroll-mt-24">
                         {group.headingText && (
-                          <HeadingTag className="text-base sm:text-xl md:text-[23px] font-bold text-[#0D3B66] m-0 mb-1 tracking-tight leading-snug">
+                          <HeadingTag className="text-xl sm:text-2xl font-bold text-[#0D3B66] m-0 mb-1 tracking-tight">
                             {group.headingText}
                           </HeadingTag>
                         )}
@@ -807,7 +805,7 @@ export default function BlogClientView({
                             return (
                               <div key={sec._id || sec.id || sIdx} className="space-y-1.5">
                                 {sec.title && sec.title.trim() !== group.headingText && (
-                                  <h3 className="text-[14.5px] sm:text-lg font-bold text-[#0D3B66] m-0 mb-1 leading-snug">
+                                  <h3 className="text-[16.5px] sm:text-lg font-bold text-[#0D3B66] m-0 mb-1">
                                     {sec.title}
                                   </h3>
                                 )}
@@ -1022,7 +1020,7 @@ export default function BlogClientView({
                                 {sec.poll && Array.isArray(sec.poll.options) && sec.poll.options.length > 0 && (
                                   <div className="rounded-xl border border-blue-400 bg-white p-4 sm:p-5 my-2.5 shadow-2xs">
                                     {sec.poll.question && (
-                                      <h3 className="text-base sm:text-lg font-bold text-[#0D3B66] mb-3 m-0">
+                                      <h3 className="text-[18px] sm:text-lg font-bold text-[#0D3B66] mb-3 m-0">
                                         {sec.poll.question}
                                       </h3>
                                     )}
@@ -1183,7 +1181,7 @@ export default function BlogClientView({
                 data-nav-label="FAQs"
                 className="bg-white rounded-xl shadow-xs border border-gray-200 p-4 sm:p-6 md:p-8 mt-6 scroll-mt-20 space-y-5 sm:space-y-6"
               >
-                <h2 className="text-base sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
+                <h2 className="text-[18px] sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
                   Frequently Asked Questions (FAQs)
                 </h2>
 
@@ -1241,7 +1239,7 @@ export default function BlogClientView({
             👍 WAS THIS ARTICLE HELPFUL? (Helpful Feedback Card)
         ===================================================================== */}
             <div className="bg-[#f0f7ff] rounded-xl border border-blue-100 p-4 sm:p-5 mt-6">
-              <h3 className="text-base sm:text-[17px] font-bold text-[#0D3B66] m-0 mb-3 tracking-tight">
+              <h3 className="text-[18px] sm:text-[17px] font-bold text-[#0D3B66] m-0 mb-3 tracking-tight">
                 Was This Article Helpful?
               </h3>
               <div className="flex items-center gap-3">

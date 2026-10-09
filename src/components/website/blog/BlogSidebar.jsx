@@ -782,7 +782,7 @@ export default function BlogSidebar({
 
             {/* 3 Columns University Grid */}
             <div className="grid grid-cols-3 gap-2">
-              {(unisExpanded ? uniList : uniList.slice(0, 12)).map((uni, idx) => (
+              {(unisExpanded ? uniList : uniList.slice(0, 9)).map((uni, idx) => (
                 <div
                   key={uni._id || uni.slug || idx}
                   onClick={() => handleUniClick(uni)}
@@ -801,7 +801,7 @@ export default function BlogSidebar({
             </div>
 
             {/* View More / View Less */}
-            {uniList.length > 12 && (
+            {uniList.length > 9 && (
               <div className="flex justify-center mt-3 pt-1 border-t border-gray-50">
                 <button
                   type="button"

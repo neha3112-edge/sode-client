@@ -138,13 +138,13 @@ function BlogCard({ blog, index = 0 }) {
 
         {/* Title */}
         <Link href={`/blogs/${blogSlug}`} className="block group-hover:text-blue-600 transition-colors">
-          <h3 className="text-sm sm:text-base font-bold text-[#072C50] m-0 leading-snug line-clamp-2 min-h-[2.5rem] sm:min-h-[2.8rem]">
+          <h3 className="text-[16px] sm:text-base font-bold text-[#072C50] m-0 line-clamp-2">
             {title}
           </h3>
         </Link>
 
         {/* Subtitle */}
-        <p className="text-xs sm:text-[13px] text-slate-500 line-clamp-2 leading-relaxed m-0 mt-2 mb-4">
+        <p className="text-xs sm:text-[13px] text-slate-500 line-clamp-2 m-0 mt-1 mb-3">
           {subtitleText}
         </p>
 
@@ -281,10 +281,10 @@ export default function BlogPageClientView({
       {/* 🔷 Compact Full-Bleed Dark Blue Hero Section */}
       <section className="w-full bg-[#072C50] text-white py-5 sm:py-6 md:py-7 px-4 sm:px-6 shadow-inner">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-[#F3CE7F] tracking-tight mb-1.5 sm:mb-2">
+          <h1 className="text-[22px] sm:text-2xl md:text-3xl font-extrabold text-[#F3CE7F] tracking-tight mb-1.5 sm:mb-2">
             Blogs & Articles
           </h1>
-          <p className="text-blue-100/90 text-[11px] sm:text-xs md:text-sm font-normal max-w-2xl sm:max-w-3xl mx-auto leading-relaxed">
+          <p className="text-blue-100/90 text-[11px] sm:text-xs md:text-sm font-normal max-w-2xl sm:max-w-3xl mx-auto">
             Distance & Online education blogs and articles, featuring top courses and the best UGC universities according to facilities, support, & recognitions. Get the career guidance on the latest trends and updates in online/distance learning to help you achieve your academic & career goals.
           </p>
 
@@ -320,7 +320,7 @@ export default function BlogPageClientView({
         {categoryList.length > 0 && (
           <div className="w-full">
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight m-0">
+              <h2 className="text-[18px] sm:text-lg font-bold text-slate-900 tracking-tight m-0">
                 Browse By Categories
               </h2>
               <button
