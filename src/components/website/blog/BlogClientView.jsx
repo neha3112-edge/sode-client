@@ -986,19 +986,20 @@ export default function BlogClientView({
                   </div>
                 </div>
               )}
-              {/* 🖼️ Featured Cover Image Banner */}
+              {/* 🖼️ Featured Cover Image Banner (Auto adjusts height to image aspect ratio without cropping) */}
               {blogImageUrl && (
-                <div className="relative w-full h-44 sm:h-64 md:h-72 lg:h-80 rounded overflow-hidden mb-4 sm:mb-6">
+                <div className="w-full rounded-lg sm:rounded-xl overflow-hidden mb-4 sm:mb-6 bg-slate-50 border border-slate-200/60 shadow-xs">
                   <Image
                     src={blogImageUrl}
                     alt={pageTitle}
-                    fill
+                    width={1200}
+                    height={500}
                     loading="eager"
                     priority
                     fetchPriority="high"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
                     unoptimized
-                    className="object-cover"
+                    className="w-full h-auto object-contain block"
                   />
                 </div>
               )}
@@ -1176,13 +1177,14 @@ export default function BlogClientView({
                                       if (imgUrl) {
                                         return (
                                           <div className="w-full">
-                                            <div className="relative w-full h-44 sm:h-64 md:h-72 lg:h-80 rounded overflow-hidden bg-slate-100 border border-slate-200/80 shadow-xs">
+                                            <div className="w-full rounded-lg sm:rounded-xl overflow-hidden bg-slate-50 border border-slate-200/80 shadow-xs">
                                               <Image
                                                 src={imgUrl}
                                                 alt={altText}
-                                                fill
+                                                width={1041}
+                                                height={585}
                                                 unoptimized
-                                                className="object-cover"
+                                                className="w-full h-auto object-contain block"
                                                 sizes="(max-width: 768px) 100vw, 900px"
                                               />
                                             </div>
@@ -1195,10 +1197,10 @@ export default function BlogClientView({
                                         );
                                       }
 
-                                      // Exact placeholder matching screenshot (1041 x 585 px with image icon)
+                                      // Placeholder (16:9 aspect ratio when no image uploaded)
                                       return (
                                         <div className="w-full">
-                                          <div className="relative w-full h-44 sm:h-64 md:h-72 lg:h-80 rounded bg-[#737373] flex flex-col items-center justify-center text-white shadow-xs select-none">
+                                          <div className="relative w-full aspect-[16/9] max-h-[420px] rounded-lg sm:rounded-xl bg-[#737373] flex flex-col items-center justify-center text-white shadow-xs select-none">
                                             <div className="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center text-white/90 mb-2">
                                               <ImageIcon size={64} strokeWidth={1.5} className="text-white/90" />
                                             </div>
@@ -1217,9 +1219,9 @@ export default function BlogClientView({
                                   </div>
                                 )}
 
-                                {/* 🎥 Video Section (YouTube Embed / Video Player 16:9) */}
+                                {/* 🎥 Video Section (YouTube Embed / Video Player 16:9 - Centered & Reduced Width) */}
                                 {hasVideo && (
-                                  <div className="my-3 sm:my-4 w-full">
+                                  <div className="my-3 sm:my-4 w-full flex flex-col items-center">
                                     {(() => {
                                       const rawVideo = sec.video || sec.videoUrl || sec.youtubeUrl;
                                       const videoUrl = typeof rawVideo === "string" ? rawVideo : rawVideo?.url || "";
@@ -1238,8 +1240,8 @@ export default function BlogClientView({
 
                                       if (embedUrl) {
                                         return (
-                                          <div className="w-full">
-                                            <div className="relative w-full aspect-video rounded overflow-hidden bg-black border border-slate-200/80 shadow-xs">
+                                          <div className="w-full max-w-[560px] sm:max-w-[600px] mx-auto">
+                                            <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black border border-slate-200/80 shadow-xs">
                                               <iframe
                                                 src={embedUrl}
                                                 title={videoTitle}
@@ -1259,8 +1261,8 @@ export default function BlogClientView({
 
                                       if (isDirectVideo) {
                                         return (
-                                          <div className="w-full">
-                                            <div className="relative w-full aspect-video rounded overflow-hidden bg-black border border-slate-200/80 shadow-xs">
+                                          <div className="w-full max-w-[560px] sm:max-w-[600px] mx-auto">
+                                            <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black border border-slate-200/80 shadow-xs">
                                               <video
                                                 controls
                                                 playsInline
@@ -1279,8 +1281,8 @@ export default function BlogClientView({
 
                                       // Video Player Placeholder (matching Screenshot 2 & 3)
                                       return (
-                                        <div className="w-full">
-                                          <div className="relative w-full aspect-video rounded bg-gradient-to-br from-slate-900 to-slate-800 border border-slate-700/80 flex flex-col items-center justify-center text-white shadow-xs overflow-hidden group">
+                                        <div className="w-full max-w-[560px] sm:max-w-[600px] mx-auto">
+                                          <div className="relative w-full aspect-video rounded-xl bg-gradient-to-br from-slate-900 to-slate-800 border border-slate-700/80 flex flex-col items-center justify-center text-white shadow-xs overflow-hidden group">
                                             <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-red-600/90 hover:bg-red-600 text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                                               <Play size={26} className="fill-current translate-x-0.5 text-white" />
                                             </div>
