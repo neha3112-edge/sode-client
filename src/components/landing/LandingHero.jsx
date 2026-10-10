@@ -196,7 +196,13 @@ export default function LandingHero({
           style={courseBoxStyle}
         >
           {courseLines.map((line, index) => (
-            <div key={`course-line-${index}`}>{line}</div>
+            <div
+              key={`course-line-${index}`}
+              className={hero.courseStripItemClassName}
+              style={hero.courseStripItemStyle}
+            >
+              {line}
+            </div>
           ))}
         </div>
       );
@@ -451,7 +457,7 @@ export default function LandingHero({
           <div
             className={joinClassNames(
               "relative z-10 flex w-full flex-col lg:flex-1",
-              hero.alignLeftMobile || brand.slug === "vgu"
+              hero.alignLeftMobile || brand.slug === "vgu" || brand.slug === "lpu"
                 ? "items-start text-left"
                 : "items-center sm:items-start text-center sm:text-left",
               hero.contentClassName
@@ -597,12 +603,18 @@ export default function LandingHero({
               </div>
             )}
 
+            {/* Courses before pricing stats if configured */}
+            {hero.coursesBeforePricingStats &&
+              !hero.coursesBeforeTagline &&
+              !hero.coursesFirst &&
+              renderCourseContent()}
+
             {/* Dynamic Pricing Stats (from LP JSON) */}
             {Array.isArray(hero.pricingStats) && hero.pricingStats.length > 0 && (
               <div
                 className={
                   hero.pricingStatsClassName ||
-                  "flex items-center justify-center sm:justify-start gap-6 pt-2 my-2"
+                  "flex items-center justify-start gap-6 pt-1 my-2.5"
                 }
                 style={hero.pricingStatsStyle}
               >
@@ -611,7 +623,10 @@ export default function LandingHero({
                     {idx > 0 && <div className="h-9 w-[1px] bg-slate-300" />}
                     <div>
                       <p
-                        className="text-xs font-semibold uppercase tracking-wider m-0"
+                        className={
+                          hero.pricingStatLabelClassName ||
+                          "text-xs font-semibold uppercase tracking-wider m-0"
+                        }
                         style={{
                           color:
                             hero.pricingStatLabelColor ||
@@ -621,7 +636,13 @@ export default function LandingHero({
                       >
                         {stat.label}
                       </p>
-                      <h3 className="text-xl sm:text-2xl font-black text-slate-900 mt-0.5 m-0">
+                      <h3
+                        className={
+                          hero.pricingStatValueClassName ||
+                          "text-xl sm:text-2xl font-black text-slate-900 mt-0.5 m-0"
+                        }
+                        style={hero.pricingStatValueStyle}
+                      >
                         {stat.value}
                       </h3>
                     </div>
@@ -653,7 +674,8 @@ export default function LandingHero({
             )}
 
             {/* Courses after tagline/description */}
-            {!hero.coursesBeforeTagline &&
+            {!hero.coursesBeforePricingStats &&
+              !hero.coursesBeforeTagline &&
               !hero.coursesFirst &&
               renderCourseContent()}
 
@@ -702,22 +724,24 @@ export default function LandingHero({
                   "hero-mobile-image-wrapper block lg:hidden w-full relative aspect-[2.14/1] overflow-hidden mb-3",
                   hero.mobileStudentImageWrapperClassName
                 )}
+                style={hero.mobileStudentImageWrapperStyle}
               >
                 <Image
                   src={hero.mobileStudentImage}
                   alt={brand.name || "University"}
                   fill
                   className={joinClassNames(
-                    "object-cover",
+                    hero.mobileStudentImageObjectFit || "object-cover",
                     hero.mobileStudentImageClassName
                   )}
+                  style={hero.mobileStudentImageStyle}
                   sizes="(max-width: 768px) 100vw, 420px"
                   priority
                 />
               </div>
             )}
 
-            {(hero.showMobileCouponButton || brand.slug === "vgu") && (
+            {(hero.showMobileCouponButton || brand.slug === "vgu") && brand.slug !== "lpu" && (
               <div className="w-full block lg:hidden my-2 mb-3.5 flex justify-center">
                 <Button
                   type="text"

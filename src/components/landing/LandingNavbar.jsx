@@ -320,7 +320,7 @@ export default function LandingNavbar({
             Positioning remains reusable/fixed.
         ================================================= */}
 
-        <div className="flex items-center min-w-0 shrink-0 ml-4">
+        <div className={`flex items-center min-w-0 shrink-0 ${slug === "lpu" ? "ml-0 sm:ml-4" : "ml-4"}`}>
 
           {/* SODE ICON */}
           {shouldShowSodeLogo && (
@@ -328,7 +328,7 @@ export default function LandingNavbar({
               href="#hero"
               onClick={handleScrollTop}
               className={`flex items-center shrink-0 cursor-pointer lg:translate-x-8 ${
-                slug === "vgu" || slug === "uu" ? "hidden md:flex" : ""
+                slug === "vgu" || slug === "uu" || slug === "lpu" ? "hidden md:flex" : ""
               }`}
               aria-label="Distance Education School"
             >
@@ -375,7 +375,7 @@ export default function LandingNavbar({
                   sm:mx-3
                   lg:mx-4
                   shrink-0
-                  ${slug === "vgu" || slug === "uu" ? "hidden md:block" : ""}
+                  ${slug === "vgu" || slug === "uu" || slug === "lpu" ? "hidden md:block" : ""}
                 `}
               />
             )}
@@ -395,6 +395,8 @@ export default function LandingNavbar({
                   ${navbar.logoWrapperClassName ||
                   (slug === "vgu"
                     ? "w-48 sm:w-56 lg:w-60 h-9 sm:h-11 lg:h-12"
+                    : slug === "lpu"
+                    ? "w-44 sm:w-52 lg:w-60 h-10 sm:h-11 lg:h-12"
                     : "w-36 sm:w-48 lg:w-60 h-9 sm:h-11 lg:h-12")
                   }
                 `}
@@ -453,20 +455,22 @@ export default function LandingNavbar({
             </ul>
           )}
 
-          {/* VGU & UU MOBILE SODE LOGO (RIGHT SIDE) */}
-          {(slug === "vgu" || slug === "uu") && (
+          {/* VGU, UU & LPU MOBILE SODE LOGO (RIGHT SIDE) */}
+          {(slug === "vgu" || slug === "uu" || slug === "lpu") && (
             <Link
               href="#hero"
               onClick={handleScrollTop}
               className="des_logo flex md:hidden items-center shrink-0 cursor-pointer mr-0.5"
               aria-label="Back to Top"
             >
-              <div className="relative w-11 sm:w-16 h-10 sm:h-12">
+              <div className="relative w-12 sm:w-16 h-11 sm:h-12">
                 <Image
                   src={
                     sodeIcon ||
                     (slug === "vgu"
                       ? "/assets/all_universities_images/vgu/sode-icon.png"
+                      : slug === "lpu"
+                      ? "/assets/all_universities_images/lpu/sode-icon.png"
                       : "/assets/all_universities_images/uu/sode-icon.png")
                   }
                   alt="SODE"
@@ -483,7 +487,7 @@ export default function LandingNavbar({
           {isCouponVisible ? (
             <div
               className={`
-                ${slug === "uu" || slug === "vgu"
+                ${slug === "uu" || slug === "vgu" || slug === "lpu"
                   ? "hidden md:inline-flex"
                   : "inline-flex"
                 }
@@ -809,6 +813,7 @@ const NAV_TABS = [
     targets: [
       "approvals",
       "recognition",
+      "approval",
     ],
   },
   {
@@ -818,6 +823,7 @@ const NAV_TABS = [
       "recruiters",
       "placement",
       "partners",
+      "hiring-partner",
     ],
   },
   {
@@ -835,6 +841,7 @@ const NAV_TABS = [
       "admission",
       "admissionProcess",
       "enrollment",
+      "admission-process",
     ],
   },
   {
@@ -851,6 +858,7 @@ const NAV_TABS = [
     targets: [
       "faqs",
       "faq",
+      "fAQ",
     ],
   },
 ];

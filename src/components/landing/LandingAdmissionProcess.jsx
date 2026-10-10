@@ -220,12 +220,22 @@ export default function LandingAdmissionProcess({
       id={brand.admissionProcessId || (brand.slug === "ggu" ? "how-to-apply" : "process")}
       className={`${sectionPadding} bg-white w-full select-none`}
     >
-      <div className="w-full px-3 sm:px-6 md:px-8 lg:px-8 xl:px-12 2xl:px-16 max-w-[1400px] mx-auto">
+      <div className={`w-full px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 max-w-full mx-auto ${brand.admissionContainerClass || ""}`}>
         {/* Heading */}
         {hasEnrollmentPrefix ? (
-          <h2 className="text-xl sm:text-3xl lg:text-[34px] font-bold text-center tracking-tight mb-2 sm:mb-3 m-0">
-            <span style={{ color: prefixColor }}>{titlePrefix} </span>
-            <span style={{ color: highlightColor }}>{titleHighlight}</span>
+          <h2 className="text-[22px] sm:text-[28px] lg:text-[32px] font-bold text-center tracking-tight mb-2.5 sm:mb-3.5 m-0 leading-[1.25]">
+            <span
+              style={{ color: prefixColor }}
+              className={enrollmentProcess?.breakLine ? "block" : "inline"}
+            >
+              {titlePrefix}
+            </span>{" "}
+            <span
+              style={{ color: highlightColor }}
+              className={enrollmentProcess?.breakLine ? "block" : "inline"}
+            >
+              {titleHighlight}
+            </span>
           </h2>
         ) : (
           <h2
@@ -237,17 +247,23 @@ export default function LandingAdmissionProcess({
         )}
 
         {/* Subtitle */}
-        <p className="text-[12px] sm:text-[13.5px] lg:text-[14px] text-center text-[#555555] mb-4.5 sm:mb-6 lg:mb-7 max-w-[860px] mx-auto font-normal leading-relaxed m-0 px-2 sm:px-4">
+        <p className="text-[13px] sm:text-[14px] lg:text-[14.5px] text-center text-[#555555] mb-5 sm:mb-7 lg:mb-8 max-w-[720px] mx-auto font-normal leading-[1.65] m-0 px-3 sm:px-4">
           {subtitleText}
         </p>
 
         {/* Responsive Step Cards Grid */}
         <div
-          className={`grid ${
-            rawSteps.length <= 4
-              ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 max-w-4xl mx-auto"
-              : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-6"
-          } gap-2.5 sm:gap-3 lg:gap-2.5 xl:gap-3.5 2xl:gap-4 w-full`}
+          className={
+            enrollmentProcess?.gridClass ||
+            brand?.admissionGridClass ||
+            `grid ${
+              rawSteps.length <= 4
+                ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 max-w-5xl mx-auto"
+                : brand.slug === "lpu"
+                ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6"
+                : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-6"
+            } gap-3.5 sm:gap-4 lg:gap-3.5 xl:gap-4.5 2xl:gap-5 w-full`
+          }
         >
           {rawSteps.map((step, idx) => {
             // Default multi-color palette cycle matching Image 2
@@ -268,7 +284,14 @@ export default function LandingAdmissionProcess({
               step.cardBg || step.bgColor || step.background,
               defaultPalette.cardBg
             );
-            const circleBg = extractColor(step.circleBg, "#ffffff");
+            const circleBg = extractColor(
+              step.circleBg,
+              "#ffffff"
+            );
+            const circleTextColor = extractColor(
+              step.circleColor || step.circleTextColor,
+              themeColor
+            );
             const titleColor = extractColor(step.titleColor, "#111827");
             const descColor = extractColor(step.descColor, "#4b5563");
 
@@ -277,19 +300,18 @@ export default function LandingAdmissionProcess({
                 key={num}
                 variant="borderless"
                 styles={{ body: { padding: 0 } }}
-                className="rounded-[14px] sm:rounded-2xl overflow-hidden px-2 py-2.5 sm:px-2.5 sm:py-3.5 lg:px-2 lg:py-3.5 xl:px-3 xl:py-4 text-center flex flex-col items-center justify-start h-full min-h-[148px] sm:min-h-[165px] lg:min-h-[165px] xl:min-h-[175px] transition-all duration-200 hover:-translate-y-1 shadow-2xs hover:shadow-xs relative"
+                className="rounded-[14px] sm:rounded-2xl overflow-hidden px-2.5 py-3 sm:px-3 sm:py-3.5 lg:px-2.5 lg:py-3.5 xl:px-3.5 xl:py-4 text-center flex flex-col items-center justify-start h-full min-h-[148px] sm:min-h-[165px] lg:min-h-[165px] xl:min-h-[175px] transition-all duration-200 hover:-translate-y-1 shadow-2xs hover:shadow-xs relative w-full"
                 style={{
                   backgroundColor: cardBg,
                   borderBottom: `4px solid ${borderColor}`,
                 }}
               >
-                {/* Circular Number Badge */}
+                {/* Circular Number / Color Badge */}
                 <div
-                  className="w-9 h-9 sm:w-10 sm:h-10 lg:w-9 lg:h-9 xl:w-10 xl:h-10 rounded-full border-2 flex items-center justify-center font-bold text-[14px] sm:text-[15px] lg:text-[14px] xl:text-[15px] mb-2 sm:mb-2.5 shrink-0 shadow-2xs select-none mx-auto"
+                  className="w-8 h-8 sm:w-9 sm:h-9 lg:w-8.5 lg:h-8.5 xl:w-9 xl:h-9 rounded-full flex items-center justify-center font-bold text-[13.5px] sm:text-[14px] lg:text-[13.5px] xl:text-[14px] mb-2 sm:mb-2.5 shrink-0 shadow-xs select-none mx-auto"
                   style={{
                     backgroundColor: circleBg,
-                    borderColor: themeColor,
-                    color: themeColor,
+                    color: circleTextColor,
                   }}
                 >
                   {num}
@@ -306,7 +328,7 @@ export default function LandingAdmissionProcess({
                 {/* Step Description */}
                 {desc && (
                   <p
-                    className="text-[11px] sm:text-[11.5px] lg:text-[11px] xl:text-[11.5px] 2xl:text-[12px] leading-[1.35] sm:leading-[1.4] font-normal m-0 text-center line-clamp-2 max-w-[190px] mx-auto"
+                    className="text-[11px] sm:text-[11.5px] lg:text-[11px] xl:text-[11.5px] 2xl:text-[12px] leading-[1.35] sm:leading-[1.4] font-normal m-0 text-center w-full px-1"
                     style={{ color: descColor }}
                   >
                     {desc}

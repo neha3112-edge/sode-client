@@ -8,10 +8,15 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
     brand.slug === "vgu" ||
     brand.faqLayout === "vgu";
 
+  const isLpu =
+    brand.slug === "lpu" ||
+    brand.faqLayout === "lpu" ||
+    brand.faqLayout === "sidebar";
+
   const defaultOpen =
     brand.faqDefaultOpenIndex !== undefined
       ? brand.faqDefaultOpenIndex
-      : isVgu
+      : isVgu || isLpu
       ? null
       : 0;
   const [openIndex, setOpenIndex] = useState(defaultOpen); // default active index or null
@@ -45,6 +50,66 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
   const isIim =
     brand.slug === "iim" ||
     brand.faqLayout === "iim";
+
+  if (isLpu) {
+    const primaryColor = brand.primaryColor || "#f58220";
+    return (
+      <section
+        id="faqs"
+        className="py-12 sm:py-16 md:py-20 bg-white select-none border-b border-slate-200 scroll-mt-20"
+      >
+        <LandingContainer className="max-w-[1140px] px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 lg:gap-10 items-stretch">
+            {/* Left Column: FAQ Highlight Box */}
+            <div className="md:col-span-4 flex">
+              <div className="w-full bg-[#fff9f4] p-6 sm:p-8 md:p-10 flex flex-col justify-center text-left">
+                <h2
+                  className="text-5xl sm:text-6xl lg:text-[62px] font-black tracking-tight m-0 leading-none"
+                  style={{ color: primaryColor }}
+                >
+                  FAQ
+                </h2>
+                <div className="mt-3.5 sm:mt-4 text-xl sm:text-2xl font-bold text-slate-900 leading-tight">
+                  <div>Frequently Asked</div>
+                  <div>Question</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column: Question bars with left orange border */}
+            <div className="md:col-span-8 flex flex-col justify-center space-y-3">
+              {faqs.map((faq, idx) => {
+                const isOpen = openIndex === idx;
+                const questionText = faq.question || faq.q || "";
+                const answerText = faq.answer || faq.a || "";
+
+                return (
+                  <div
+                    key={idx}
+                    className="w-full transition-all"
+                    style={{ borderLeft: `4px solid ${primaryColor}` }}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => toggleFaq(idx)}
+                      className="w-full bg-[#eeeeee] hover:bg-[#e4e4e4] py-3.5 sm:py-4 px-4 sm:px-5 text-left font-medium text-[15px] sm:text-[16px] text-[#222222] border-none cursor-pointer transition-colors block leading-snug"
+                    >
+                      {questionText}
+                    </button>
+                    {isOpen && (
+                      <div className="bg-[#fcfcfc] px-4 sm:px-5 py-3.5 sm:py-4 text-slate-700 text-[14px] sm:text-[15px] leading-relaxed border-t border-slate-200/80">
+                        <p className="m-0 font-normal leading-[1.65]">{answerText}</p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </LandingContainer>
+      </section>
+    );
+  }
 
   // ==========================================
   // Layout: VGU (Vivekananda Global University) FAQ

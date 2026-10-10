@@ -1,73 +1,117 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 
 const DEFAULT_PEDAGOGY_CARDS = [
   {
     title: "Live Lectures",
-    desc: "The university provides interactive live sessions that create a real-time virtual classroom. It benefits the students pursuing LPU MBA online and LPU MCA online to interact with faculty, clear their doubts instantly, and collaborate with peers.",
-    path: "M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z",
+    desc: "The university provides Interactive live sessions that create a real-time virtual classroom. It benefits the students pursuing LPU MBA online and LPU MCA online to interact with faculty, clear their doubts instantly, and collaborate with peers.",
+    image: "/assets/all_universities_images/lpu/online-lecture.webp",
   },
   {
     title: "Recorded Videos",
     desc: "Learners get access to recorded lectures for flexible learning. This facility is ideal for working professionals pursuing LPU MBA Online or LPU BCA Online, as it enables them to revise anytime and anywhere.",
-    path: "M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z",
+    image: "/assets/all_universities_images/lpu/exam-1.webp",
   },
   {
     title: "Assignments & Projects",
     desc: "The LMS of LPU online includes digital assignment submission and project work. Students from LPU online MCA and LPU MBA online tracks monitor progress and gain practical exposure throughout the course.",
-    path: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z",
+    image: "/assets/all_universities_images/lpu/exam-1.webp",
   },
 ];
 
-export default function LpuWhyChoose({ whyChoose = [], brand = {}, onOpenApply }) {
+const DEFAULT_PLACEMENT_SERVICES = [
+  {
+    title: "Professional Enhancement Programme",
+    desc: "The Placement Enhancement Programme (PEP) trains students in aptitude, soft skills, and interview preparation. It is beneficial for LPU MBA online and LPU online MCA learners.",
+    image: "/assets/all_universities_images/lpu/p1.png",
+  },
+  {
+    title: "Mock Interviews & Workshops",
+    desc: "Mock interviews and industry-oriented online workshops are used to provide students of Lovely Professional University Online courses with communication skills, confidence, and real-life insights.",
+    image: "/assets/all_universities_images/lpu/p1.png",
+  },
+];
+
+export default function LpuWhyChoose({ whyChoose = [], brand = {} }) {
   const cards = whyChoose?.length ? whyChoose : DEFAULT_PEDAGOGY_CARDS;
   const primaryColor = brand?.primaryColor || "#f58220";
   const title = brand?.whyChooseTitle || `Learning Pedagogy at ${brand?.name || "LPU Online"}`;
   const description =
     brand?.whyChooseDescription ||
     "The learning model at Lovely Professional University Online (LPU Online) is tailored to offer flexibility and an engaging experience to all the students who are enrolled in programs such as LPU MBA Online, LPU MCA Online, and LPU Online BCA.";
-  const placementTitle = brand?.placementTitle || `Placement Support Services at ${brand?.name || "LPU Online"}`;
+
+  const placementTitle =
+    brand?.placementTitle || `Placement Support Services at ${brand?.name || "LPU Online"}`;
   const placementDescription =
     brand?.placementDescription ||
     "Lovely Professional University online admission also offers structured placement support to prepare students and professionals for real-world careers and job sectors.";
+  const placementServices =
+    brand?.placementServices?.length ? brand.placementServices : DEFAULT_PLACEMENT_SERVICES;
 
   return (
     <>
-      {/* Learning Pedagogy Section */}
-      <section id="pedagogy" className="py-12 sm:py-16 bg-white border-b border-slate-100 select-none">
+      {/* 1. Learning Pedagogy Section (White Background) */}
+      <section id="pedagogy" className="py-12 sm:py-16 md:py-20 bg-white select-none">
         <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-4xl mx-auto mb-8 sm:mb-10">
-            <h2 className="text-2xl sm:text-3xl lg:text-[32px] font-black text-slate-900 tracking-tight leading-tight m-0">
-              {title}
+          {/* Header (Left Aligned matching reference screenshot) */}
+          <div className="text-left max-w-5xl">
+            <h2 className="text-[26px] sm:text-3xl lg:text-[34px] font-bold text-slate-600 tracking-wide leading-tight m-0">
+              {brand?.whyChooseTitle ? (
+                brand.whyChooseTitle
+              ) : (
+                <>
+                  Learning Pedagogy at <br className="sm:hidden" />
+                  {brand?.name || "LPU Online"}
+                </>
+              )}
             </h2>
-            <p className="text-xs sm:text-[13px] text-slate-600 mt-2.5 leading-relaxed font-normal m-0 max-w-3xl mx-auto">
+            <p className="text-[13px] sm:text-[14px] text-slate-700 mt-2.5 sm:mt-3 leading-relaxed font-normal m-0">
               {description}
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* 3 Pedagogy Cards with Floated Icon, Wrapped Text, and Bottom Orange Border */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6 lg:gap-7 mt-8 sm:mt-10">
             {cards.map((card, idx) => {
-              const iconPath = card.path || DEFAULT_PEDAGOGY_CARDS[idx]?.path || DEFAULT_PEDAGOGY_CARDS[0].path;
+              const imgSrc = card.image || DEFAULT_PEDAGOGY_CARDS[idx]?.image;
               return (
                 <div
                   key={idx}
-                  className="bg-white rounded-[8px] p-6 sm:p-7 shadow-[0_4px_20px_rgba(0,0,0,0.06)] border border-slate-200/80 border-b-4 flex flex-col items-start text-left space-y-3"
-                  style={{ borderBottomColor: primaryColor }}
+                  className="bg-white rounded-none p-5 sm:p-6 border border-slate-200 border-b-2 border-b-[#f58220] shadow-[0_4px_20px_rgba(0,0,0,0.08)] hover:shadow-[0_10px_28px_rgba(0,0,0,0.13)] transition-all duration-300 text-left relative h-full overflow-hidden"
+                  style={{
+                    borderBottomColor: primaryColor || "#f58220",
+                    borderBottomWidth: "2px",
+                    borderBottomStyle: "solid",
+                    boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
+                  }}
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 shrink-0 relative flex items-center justify-center">
-                      <svg className="w-10 h-10" style={{ color: primaryColor }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d={iconPath} />
-                      </svg>
+                  <div className="flow-root">
+                    <div className="float-left mr-3.5 mb-1.5 w-[50px] h-[50px] sm:w-[54px] sm:h-[54px] relative">
+                      <Image
+                        src={imgSrc}
+                        alt={card.title}
+                        fill
+                        className="object-contain"
+                        sizes="56px"
+                      />
                     </div>
-                    <h3 className="text-base sm:text-lg font-black m-0" style={{ color: primaryColor }}>
+                    <h3
+                      className="text-base sm:text-[17px] font-bold m-0 pt-0.5 leading-snug text-[#f58220]"
+                      style={{ color: primaryColor || "#f58220" }}
+                    >
                       {card.title}
                     </h3>
+                    <p className="text-[12px] sm:text-[12.5px] text-slate-600 leading-relaxed font-normal mt-1.5 m-0">
+                      {card.desc || card.description}
+                    </p>
                   </div>
-                  <p className="text-[11.5px] sm:text-[12px] text-slate-600 leading-relaxed m-0 font-normal">
-                    {card.desc || card.description}
-                  </p>
+                  {/* Solid Orange Bottom Line */}
+                  <div
+                    className="absolute bottom-0 left-0 right-0 h-[2px] pointer-events-none"
+                    style={{ backgroundColor: primaryColor || "#f58220" }}
+                  />
                 </div>
               );
             })}
@@ -75,52 +119,48 @@ export default function LpuWhyChoose({ whyChoose = [], brand = {}, onOpenApply }
         </div>
       </section>
 
-      {/* Placement Support Services Section */}
-      <section id="placement-services" className="py-12 sm:py-16 bg-[#f9f9f9] border-b border-slate-200 select-none">
+      {/* 2. Placement Support Services Section (Light Gray Background) */}
+      <section id="placement-support" className="py-12 sm:py-16 md:py-20 bg-[#f8f9fa] select-none text-center">
         <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-4xl mx-auto mb-10 sm:mb-12">
-            <h2 className="text-2xl sm:text-3xl lg:text-[32px] font-black text-slate-900 tracking-tight leading-tight m-0">
+          <div className="max-w-3xl mx-auto px-2">
+            <h2 className="text-[24px] sm:text-[30px] lg:text-[34px] font-bold text-slate-700 tracking-tight leading-tight m-0">
               {placementTitle}
             </h2>
-            <p className="text-xs sm:text-[13px] text-slate-600 mt-2.5 leading-relaxed font-normal m-0 max-w-3xl mx-auto">
+            <p className="text-[13px] sm:text-[14px] text-slate-600 mt-2.5 sm:mt-3.5 leading-relaxed font-normal m-0 max-w-2xl mx-auto">
               {placementDescription}
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <div className="flex flex-col items-center text-center space-y-3">
-              <div
-                className="w-16 h-16 rounded-full flex items-center justify-center text-white shadow-md"
-                style={{ backgroundColor: primaryColor }}
-              >
-                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-              </div>
-              <h3 className="text-base sm:text-lg font-extrabold text-slate-900 m-0">
-                Professional Enhancement Programme
-              </h3>
-              <p className="text-[11.5px] sm:text-[12px] text-slate-600 leading-relaxed m-0 font-normal max-w-md">
-                The Placement Enhancement Programme (PEP) trains students in aptitude, soft skills, and interview preparation. It is beneficial for LPU MBA online and LPU MCA online learners.
-              </p>
-            </div>
-
-            <div className="flex flex-col items-center text-center space-y-3">
-              <div
-                className="w-16 h-16 rounded-full flex items-center justify-center text-white shadow-md"
-                style={{ backgroundColor: primaryColor }}
-              >
-                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                </svg>
-              </div>
-              <h3 className="text-base sm:text-lg font-extrabold text-slate-900 m-0">
-                Mock Interviews & Workshops
-              </h3>
-              <p className="text-[11.5px] sm:text-[12px] text-slate-600 leading-relaxed m-0 font-normal max-w-md">
-                Mock interviews and industry-oriented online workshops are used to provide students of Lovely Professional University Online courses with communication skills, confidence, and real-life insights.
-              </p>
-            </div>
+          <div
+            className={`grid grid-cols-1 ${
+              placementServices.length <= 2
+                ? "md:grid-cols-2 max-w-3xl sm:max-w-4xl"
+                : "md:grid-cols-3 max-w-5xl"
+            } gap-8 sm:gap-10 lg:gap-12 mt-10 sm:mt-12 mx-auto`}
+          >
+            {placementServices.map((item, idx) => {
+              const iconSrc =
+                item.image || item.icon || "/assets/all_universities_images/lpu/p1.png";
+              return (
+                <div key={idx} className="flex flex-col items-center text-center group px-3">
+                  <div className="relative w-16 h-16 sm:w-[72px] sm:h-[72px] mb-3.5 sm:mb-4 flex items-center justify-center shrink-0">
+                    <Image
+                      src={iconSrc}
+                      alt={item.title}
+                      fill
+                      className="object-contain group-hover:scale-105 transition-transform duration-300"
+                      sizes="80px"
+                    />
+                  </div>
+                  <h3 className="text-[16px] sm:text-[17.5px] font-bold text-slate-900 m-0 tracking-tight leading-snug mb-2">
+                    {item.title}
+                  </h3>
+                  <p className="text-[12.5px] sm:text-[13px] text-slate-600 leading-relaxed font-normal m-0 max-w-[340px]">
+                    {item.desc || item.description}
+                  </p>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>

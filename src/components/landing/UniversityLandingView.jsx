@@ -651,6 +651,7 @@ export default function UniversityLandingView({ data = {} }) {
                     key="recruiters"
                     brand={brand}
                     recruiters={activeRecruiters || brand.recruiters}
+                    onOpenApply={handleOpenApply}
                   />
                 ) : null;
               case "offersAndPlacement":

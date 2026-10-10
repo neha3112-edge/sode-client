@@ -12,8 +12,101 @@ import LandingContainer from "./LandingContainer";
 export default function LandingRecruiters({
   recruiters = {},
   brand = {},
+  onOpenApply,
 }) {
   const activeRecruiters = recruiters || brand.recruiters || {};
+
+  // If LPU layout
+  if (brand.slug === "lpu" || brand.recruitersLayout === "lpu") {
+    const titlePrefix = activeRecruiters.titlePrefix || "Placement";
+    const titleHighlight = activeRecruiters.titleHighlight || "& Hiring Partners at LPU Online";
+    const desc =
+      activeRecruiters.desc ||
+      activeRecruiters.description ||
+      "At LPU Online, Students and Professionals get an opportunity to enhance their career truly nurture their ambitions. The Lovely Professional University Online Admission supports students and has a dedicated placement support and a strong network of hiring partners. They create real opportunities for professional growth, whether you're pursuing an LPU MBA Online or an LPU Online MCA program.";
+
+    const desktopImage =
+      activeRecruiters.desktopImage ||
+      "/assets/all_universities_images/lpu/placement-desktop.webp";
+    const mobileImage =
+      activeRecruiters.mobileImage ||
+      "/assets/all_universities_images/lpu/placement-mobile.webp";
+
+    return (
+      <section id="recruiters" className="py-12 sm:py-16 md:py-20 bg-white select-none border-b border-slate-200">
+        <LandingContainer>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            {/* Left: Text & Apply Button */}
+            <div className="lg:col-span-5 text-left space-y-4 pl-4 sm:pl-6 lg:pl-0">
+              <h2 className="text-3xl sm:text-4xl lg:text-[40px] font-bold text-[#b0b7c3] tracking-wide m-0 leading-tight">
+                {titlePrefix}
+              </h2>
+              <h3 className="text-2xl sm:text-3xl lg:text-[30px] font-extrabold text-[#f58220] tracking-wide m-0 leading-tight">
+                & Hiring Partners at LPU <br className="sm:hidden" />
+                Online
+              </h3>
+              <p className="text-[14px] sm:text-[15px] text-slate-700 leading-[1.65] font-normal tracking-wide m-0 pt-1">
+                {typeof desc === "string" && desc.includes("At LPU Online, Students and Professionals") ? (
+                  <>
+                    At LPU Online, Students and Professionals get <br className="sm:hidden" />
+                    an opportunity to enhance their career truly <br className="sm:hidden" />
+                    nurture their ambitions. The Lovely <br className="sm:hidden" />
+                    Professional University Online Admission <br className="sm:hidden" />
+                    supports students and has a dedicated <br className="sm:hidden" />
+                    placement support and a strong network of <br className="sm:hidden" />
+                    hiring partners. They create real opportunities <br className="sm:hidden" />
+                    for professional growth, whether you're <br className="sm:hidden" />
+                    pursuing an LPU MBA Online or an LPU Online <br className="sm:hidden" />
+                    MCA program.
+                  </>
+                ) : (
+                  desc
+                )}
+              </p>
+              <div className="w-full h-px bg-slate-200 my-4" />
+              <div>
+                <button
+                  type="button"
+                  onClick={() => onOpenApply?.()}
+                  className="bg-black hover:bg-neutral-800 text-white font-bold text-[14px] px-6 py-2.5 rounded-[6px] shadow-sm transition-all cursor-pointer border-none active:scale-95 inline-flex items-center gap-1.5"
+                >
+                  <span>Apply Now</span>
+                  <span className="text-[13px] font-black tracking-tighter">&gt;&gt;</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Right: Partner Infographic Image */}
+            <div className="lg:col-span-7 flex justify-center w-full">
+              {/* Desktop */}
+              <div className="hidden sm:block relative w-full aspect-[800/303]">
+                <Image
+                  src={desktopImage}
+                  alt="LPU Hiring Partners"
+                  fill
+                  className="object-contain"
+                  sizes="(max-width: 1024px) 100vw, 58vw"
+                  priority
+                />
+              </div>
+              {/* Mobile: Full-width with subtle left-right padding, larger size */}
+              <div className="block sm:hidden -mx-3.5 sm:mx-0 w-[calc(100%+1.75rem)] sm:w-full px-2.5 sm:px-0">
+                <Image
+                  src={mobileImage}
+                  alt="LPU Hiring Partners"
+                  width={600}
+                  height={906}
+                  className="w-full h-auto object-contain block mx-auto"
+                  sizes="100vw"
+                  priority
+                />
+              </div>
+            </div>
+          </div>
+        </LandingContainer>
+      </section>
+    );
+  }
 
   // If list of partner logos is provided (e.g. MU Top-Tier Hiring Partners)
   if (activeRecruiters.logos && activeRecruiters.logos.length > 0) {

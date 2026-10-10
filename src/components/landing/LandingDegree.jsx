@@ -125,6 +125,113 @@ export default function LandingDegree({
     );
   }
 
+  const isLpu =
+    brand.degreeLayout === "lpu" ||
+    brand.slug === "lpu";
+
+  if (isLpu) {
+    const certImage =
+      image ||
+      degreeInfo.image ||
+      brand.degreeImage ||
+      "/assets/all_universities_images/lpu/sample-certificate-lpu.webp";
+
+    const titleH2 = degreeInfo.title || "Get UGC Entitled\nOnline Degree";
+    const subtitleH3 = degreeInfo.subtitle || "Which Enhance Your Career";
+    const descriptionText =
+      description ||
+      degreeInfo.desc ||
+      "Lovely Professional University Online (LPU Online) is one of the most trusted and credible institutions in India that offers flexible and affordable education in digital mode.";
+
+    const defaultFeatures = [
+      {
+        title: "Top University Degree",
+        desc: "Students earn a recognised qualification from Lovely Professional University. It offers valid degree for all career-focused programs like LPU MBA Online, LPU MCA Online, and LPU Online BCA.",
+      },
+      {
+        title: "Universally Accepted Degree",
+        desc: "Professionals can upgrade themselves through a globally recognised, UGC-approved degree. These online degrees are accepted worldwide by all employers and academic institutions.",
+      },
+      {
+        title: "Equivalent to Campus Programs",
+        desc: "LPU Online degrees are officially equivalent to regular classroom degrees. These degrees meet all academic standards requirements and offer crucial job-ready skills.",
+      },
+      {
+        title: "Top-Tier Degree Achievement",
+        desc: "Graduates from a UGC-approved LPU online university join the strong alumni network globally. The degrees hold relevance in India and beyond.",
+      },
+    ];
+
+    const activeFeatures =
+      features && features.length > 0 ? features : defaultFeatures;
+
+    return (
+      <section
+        id="Degreeinfo"
+        className="py-12 sm:py-16 md:py-20 bg-[#fff8f2] select-none scroll-mt-20 border-b border-slate-200"
+      >
+        <div className="max-w-[1240px] mx-auto px-8 sm:px-8 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-8 lg:gap-12 items-center">
+            {/* Left: Certificate Image (Matching Image Ratio) */}
+            <div className="lg:col-span-5 flex justify-center">
+              <div className="relative w-full max-w-[340px] sm:max-w-[380px] lg:max-w-[420px] aspect-[666/825] rounded-[4px] overflow-hidden shadow-md bg-white border border-slate-200/90">
+                <Image
+                  src={certImage}
+                  alt="LPU Online Degree"
+                  fill
+                  className="object-contain"
+                  sizes="(max-width: 640px) 340px, (max-width: 1024px) 380px, 420px"
+                  priority
+                />
+              </div>
+            </div>
+
+            {/* Right: Info & 2x2 Feature Boxes */}
+            <div className="lg:col-span-7 text-left space-y-4">
+              <div>
+                <h2 className="text-[30px] sm:text-[34px] lg:text-[38px] font-semibold text-[#f58220] tracking-wide m-0 leading-tight whitespace-pre-line text-center lg:text-left">
+                  {titleH2}
+                </h2>
+                <h3 className="text-xl sm:text-2xl lg:text-[26px] font-bold text-slate-900 tracking-wide m-0 mt-2 leading-tight">
+                  {subtitleH3}
+                </h3>
+                <p className="text-[13px] sm:text-[14px] text-slate-700 leading-relaxed font-normal mt-2.5 sm:mt-3 m-0 max-w-2xl">
+                  {descriptionText}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-4.5 pt-1.5 text-left">
+                {activeFeatures.map((feat, idx) => (
+                  <div
+                    key={idx}
+                    className="bg-transparent rounded-[8px] p-4 sm:p-5 border-2 border-[#f58220] flex flex-col items-start text-left"
+                  >
+                    <h4 className="text-[15px] sm:text-[15.5px] font-bold text-slate-900 m-0 mb-1.5 leading-snug">
+                      {feat.title}
+                    </h4>
+                    <p className="text-[12px] sm:text-[12.5px] text-slate-600 leading-relaxed m-0 font-normal">
+                      {feat.desc || feat.description}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="pt-2 flex justify-start">
+                <button
+                  type="button"
+                  onClick={() => onOpenApply?.()}
+                  className="bg-black hover:bg-slate-800 text-white font-bold text-[13.5px] sm:text-[14px] px-8 py-3 rounded-[4px] shadow-xs transition-all cursor-pointer border-none active:scale-95 inline-flex items-center"
+                >
+                  <span>Get FREE Career Assistance</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   const isUu =
     brand.degreeLayout === "uu" ||
     brand.slug === "uu";
@@ -313,18 +420,16 @@ export default function LandingDegree({
   return (
     <section
       id="degree"
-      className={`select-none ${
-        isGgu ? "bg-[#F6F6F6] pt-2 pb-14 sm:pb-16" : "py-10 sm:py-14 bg-[#F3F3F8]"
-      }`}
+      className={`select-none ${isGgu ? "bg-[#F6F6F6] pt-2 pb-14 sm:pb-16" : "py-10 sm:py-14 bg-[#F3F3F8]"
+        }`}
       style={degreeInfo.sectionBg ? { backgroundColor: degreeInfo.sectionBg } : {}}
     >
       <LandingContainer>
         <div
-          className={`max-w-[1140px] mx-auto ${
-            isTransparentCard
+          className={`max-w-[1140px] mx-auto ${isTransparentCard
               ? "bg-transparent px-5 sm:px-8 lg:px-10 py-2 shadow-none border-none"
               : "bg-white rounded-[16px] sm:rounded-[24px] shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-slate-100/80 p-4 sm:p-8 lg:p-12"
-          }`}
+            }`}
           style={
             !isTransparentCard && degreeInfo.cardBackground
               ? { backgroundColor: degreeInfo.cardBackground }
@@ -334,9 +439,8 @@ export default function LandingDegree({
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-12 items-center">
             {/* Image Column */}
             <div
-              className={`lg:col-span-5 flex justify-center ${
-                isImageLeft ? "order-1 lg:order-1" : "order-2 lg:order-2"
-              }`}
+              className={`lg:col-span-5 flex justify-center ${isImageLeft ? "order-1 lg:order-1" : "order-2 lg:order-2"
+                }`}
             >
               {images && images.length > 1 ? (
                 <div className="w-full max-w-[340px] sm:max-w-[420px]">
@@ -344,11 +448,10 @@ export default function LandingDegree({
                     {images.map((imgSrc, idx) => (
                       <div
                         key={idx}
-                        className={`relative w-full ${
-                          isTransparentCard
+                        className={`relative w-full ${isTransparentCard
                             ? "max-w-[360px] sm:max-w-[420px] aspect-square mx-auto"
                             : "h-[250px] sm:h-[300px] rounded-[10px] overflow-hidden shadow-lg border border-slate-200 bg-white"
-                        }`}
+                          }`}
                       >
                         <Image
                           src={imgSrc}
@@ -363,11 +466,10 @@ export default function LandingDegree({
                 </div>
               ) : (
                 <div
-                  className={`relative w-full ${
-                    isTransparentCard
+                  className={`relative w-full ${isTransparentCard
                       ? "max-w-[360px] sm:max-w-[420px] aspect-square mx-auto"
                       : "max-w-[340px] sm:max-w-[420px] h-[250px] sm:h-[300px] rounded-[10px] overflow-hidden shadow-lg border border-slate-200 bg-white"
-                  }`}
+                    }`}
                 >
                   <Image
                     src={image}
@@ -383,9 +485,8 @@ export default function LandingDegree({
 
             {/* Text / Features Column */}
             <div
-              className={`lg:col-span-7 text-left ${
-                isImageLeft ? "order-2 lg:order-2" : "order-1 lg:order-1"
-              }`}
+              className={`lg:col-span-7 text-left ${isImageLeft ? "order-2 lg:order-2" : "order-1 lg:order-1"
+                }`}
             >
               <h2
                 className="text-[22px] sm:text-[26px] lg:text-[29px] font-bold leading-tight tracking-tight whitespace-pre-line m-0 mb-3"
