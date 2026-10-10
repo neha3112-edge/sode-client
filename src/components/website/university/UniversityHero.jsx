@@ -143,7 +143,7 @@ export default function UniversityHero({
                           openFormModal({
                             title: `Download Brochure - ${uniName}`,
                             subtitle: "Fill details to receive instant digital brochure",
-                            defaultCourse: uniName,
+                            university: uniName,
                             submitButtonText: "Get Brochure",
                           });
                       }}
@@ -160,7 +160,7 @@ export default function UniversityHero({
                           openFormModal({
                             title: `Get Counseling - ${uniName}`,
                             subtitle: "Speak directly with academic counselors",
-                            defaultCourse: uniName,
+                            university: uniName,
                             submitButtonText: "Get Counseling",
                           });
                       }}
@@ -194,7 +194,7 @@ export default function UniversityHero({
                     openFormModal({
                       title: `Download Brochure - ${uniName}`,
                       subtitle: "Fill details to receive instant digital brochure",
-                      defaultCourse: uniName,
+                      university: uniName,
                       submitButtonText: "Get Brochure",
                     });
                 }}
@@ -211,7 +211,7 @@ export default function UniversityHero({
                     openFormModal({
                       title: `Get Counseling - ${uniName}`,
                       subtitle: "Speak directly with academic counselors",
-                      defaultCourse: uniName,
+                      university: uniName,
                       submitButtonText: "Get Counseling",
                     });
                 }}

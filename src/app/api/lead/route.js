@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { API_BASE_URL } from "@/config/api";
 
 /*
 |--------------------------------------------------------------------------
@@ -72,6 +71,8 @@ export async function POST(req) {
       email,
       phone,
       course,
+      university,
+      university_name,
       state,
       form_name,
       source,
@@ -81,6 +82,8 @@ export async function POST(req) {
       utm_term,
       utm_campaign,
       utm_content,
+      utm_adgroup,
+      gclid,
       page_url,
     } = body;
 
@@ -90,11 +93,11 @@ export async function POST(req) {
     |--------------------------------------------------------------------------
     */
 
-    if (!name || !phone) {
+    if (!phone) {
       return NextResponse.json(
         {
           success: false,
-          message: "Name and phone number are required",
+          message: "Phone number is required",
         },
         {
           status: 400,
@@ -172,14 +175,24 @@ export async function POST(req) {
     |--------------------------------------------------------------------------
     */
 
+    const leadName = name ? String(name).trim() : "";
+    const resolvedUni = String(university_name || university || "").trim();
+    const resolvedState =
+      req.headers.get("x-vercel-ip-country-region") ||
+      req.headers.get("cf-region") ||
+      body.state ||
+      body.user_state ||
+      state ||
+      "";
+
     const finalPayload = {
-      full_name: String(name).trim(),
-      name: String(name).trim(),
+      name: leadName,
       email: email ? String(email).trim() : "",
       phone: cleanPhone,
       course: course || "",
-      state: state || "",
-      form_name: form_name || "Default Form",
+      university_name: resolvedUni,
+      state: resolvedState,
+      form_name: form_name || "Get 100% FREE Counseling",
       source: source || "SODE",
       sub_source: sub_source || "",
       utm_source: finalUtmSource,
@@ -187,33 +200,58 @@ export async function POST(req) {
       utm_term: finalUtmTerm,
       utm_campaign: finalUtmCampaign,
       utm_content: finalUtmContent,
+      utm_adgroup: urlParams.utm_adgroup || utm_adgroup || "",
+      gclid: urlParams.gclid || gclid || "",
       page_url: page_url || "Unknown",
       ip_address: userIp,
+      city: req.headers.get("x-vercel-ip-city") || req.headers.get("cf-ipcity") || body.city || "",
+      country: req.headers.get("x-vercel-ip-country") || req.headers.get("cf-ipcountry") || body.country || "India",
     };
+
+    console.log("📥 [LEAD CAPTURED] Payload:", JSON.stringify(finalPayload, null, 2));
 
     /*
     |--------------------------------------------------------------------------
-    | Send to backend ApiConfig Executor
+    | Send to backend CRM Lead API (/api/lead/apicreated)
     |--------------------------------------------------------------------------
     */
 
-    const backendEndpoint = `${API_BASE_URL}apiconfig/trigger`;
+    const crmLeadUrl =
+      process.env.CRM_LEAD_API_URL ||
+      "https://new.crm.api.mysode.com/api/lead/apicreated";
+    const crmApiKey =
+      process.env.CRM_API_KEY ||
+      "a04b4291461f8b060559dfc965864c2c2590e6edd2f5aa7a49388484a1953f22";
 
-    const backendResponse = await fetch(backendEndpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ event: "lead_submission", payload: finalPayload }),
-      cache: "no-store",
-    });
+    try {
+      console.log(`🚀 [CRM API] Sending Lead to ${crmLeadUrl}:`, finalPayload);
 
-    if (!backendResponse.ok) {
-      const errorText = await backendResponse.text();
-      console.error(`Backend ApiConfig Trigger Error:`, errorText);
-      throw new Error(`Failed to trigger APIs: ${backendResponse.status}`);
+      const backendResponse = await fetch(crmLeadUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": crmApiKey,
+        },
+        body: JSON.stringify(finalPayload),
+        cache: "no-store",
+      });
+
+      const responseText = await backendResponse.text();
+      let responseData = null;
+      try {
+        responseData = JSON.parse(responseText);
+      } catch {
+        responseData = responseText;
+      }
+
+      if (!backendResponse.ok) {
+        console.warn(`⚠️ [CRM Lead API Status ${backendResponse.status}]:`, responseData);
+      } else {
+        console.log("✅ [CRM Lead API Success]:", responseData);
+      }
+    } catch (apiErr) {
+      console.error("❌ [CRM Lead API Fetch Error]:", apiErr.message);
     }
-
-    const results = await backendResponse.json();
-    console.log("Lead execution results:", results);
 
     /*
     |--------------------------------------------------------------------------
@@ -225,6 +263,7 @@ export async function POST(req) {
       {
         success: true,
         message: "Lead submitted successfully",
+        data: finalPayload,
       },
       {
         status: 200,

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useFormModal } from "@/hooks/useFormModal";
 import { getAssetPath, formatAdmissionDeadline } from "@/lib/utils";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
@@ -380,10 +380,26 @@ export function CourseClientView({
 
     openFormModal({
       course: courseTitleForLead,
-      university: universityName || "Partner University",
+      university: universityName || "UPES",
+      university_name: universityName || "UPES",
       action: actionType,
+      title: actionType,
     });
   };
+
+  useEffect(() => {
+    const pageCourseName = courseData?.name || courseData?.title || "";
+    if (typeof window !== "undefined") {
+      window.__CURRENT_PAGE_COURSE__ = pageCourseName;
+      window.__CURRENT_PAGE_UNIVERSITY__ = universityName || "";
+    }
+    return () => {
+      if (typeof window !== "undefined") {
+        window.__CURRENT_PAGE_COURSE__ = null;
+        window.__CURRENT_PAGE_UNIVERSITY__ = null;
+      }
+    };
+  }, [courseData?.name, courseData?.title, universityName]);
 
   useBreadcrumb(
     {

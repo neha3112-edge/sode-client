@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
 import { useCompare } from "@/hooks/useCompare";
 import { useFormModal } from "@/hooks/useFormModal";
@@ -272,6 +272,44 @@ export function UniversityClientView({ initialData, slug }) {
     setIsCompareDrawerOpen(true);
   };
 
+  const extractedCourses = useMemo(() => {
+    return Array.from(
+      new Set(
+        (coursesList || [])
+          .map((c) => {
+            const raw = c.rawName || c.title || c.name || "";
+            return raw
+              .replace(/\b(online|distance|hybrid|regular|open|executive|odl)\b/gi, "")
+              .replace(/\s+/g, " ")
+              .trim();
+          })
+          .filter(Boolean)
+      )
+    );
+  }, [coursesList]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.__CURRENT_PAGE_COURSES__ = extractedCourses;
+      window.__CURRENT_PAGE_UNIVERSITY__ = uniName;
+    }
+    return () => {
+      if (typeof window !== "undefined") {
+        window.__CURRENT_PAGE_COURSES__ = null;
+        window.__CURRENT_PAGE_UNIVERSITY__ = null;
+      }
+    };
+  }, [extractedCourses, uniName]);
+
+  const handleOpenUniversityForm = (customPayload = {}) => {
+    openFormModal({
+      university: uniName,
+      university_name: uniName,
+      courses: extractedCourses,
+      ...customPayload,
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 text-gray-800 antialiased font-sans pb-16 overflow-x-hidden">
       {/* Hero Header Section */}
@@ -283,7 +321,7 @@ export function UniversityClientView({ initialData, slug }) {
         starRatingValue={starRatingValue}
         displayRatingText={displayRatingText}
         coursePills={coursePills}
-        openFormModal={openFormModal}
+        openFormModal={handleOpenUniversityForm}
         handleUniversityCompare={handleUniversityCompare}
         isInCompare={isInCompare(uni._id || data._id || slug)}
         locationText={locationText}
@@ -333,7 +371,7 @@ export function UniversityClientView({ initialData, slug }) {
           uni={uni}
           logoUrl={logoUrl}
           heroBannerUrl={heroBannerUrl}
-          openFormModal={openFormModal}
+          openFormModal={handleOpenUniversityForm}
         />
 
         {/* Why Choose Section */}
@@ -346,7 +384,7 @@ export function UniversityClientView({ initialData, slug }) {
         <UniversitySampleDegree
           sampleDegreeData={sampleDegreeData}
           uniName={uniName}
-          openFormModal={openFormModal}
+          openFormModal={handleOpenUniversityForm}
         />
 
         {/* Top Recruiters Section */}
@@ -360,7 +398,7 @@ export function UniversityClientView({ initialData, slug }) {
         {/* Top Peer Universities Section */}
         <UniversityPeerUniversities
           topUniversities={topPeerUniversities}
-          openFormModal={openFormModal}
+          openFormModal={handleOpenUniversityForm}
         />
 
         {/* Admission Process Section (Above FAQ) */}
