@@ -62,6 +62,9 @@ function getYouTubeEmbedUrl(url) {
   return null;
 }
 
+// In-memory cache for parsed PDF documents to open in 0ms on repeat clicks
+const pdfDocCache = new Map();
+
 function PdfCanvasViewer({ url, title }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -115,12 +118,17 @@ function PdfCanvasViewer({ url, title }) {
 
         if (isCancelled) return;
 
-        const loadingTask = window.pdfjsLib.getDocument({
-          url,
-          withCredentials: false,
-        });
+        // Retrieve from memory cache or fetch document
+        let pdfDoc = pdfDocCache.get(url);
+        if (!pdfDoc) {
+          const loadingTask = window.pdfjsLib.getDocument({
+            url,
+            withCredentials: false,
+          });
+          pdfDoc = await loadingTask.promise;
+          pdfDocCache.set(url, pdfDoc);
+        }
 
-        const pdfDoc = await loadingTask.promise;
         if (isCancelled) return;
 
         setNumPages(pdfDoc.numPages);
@@ -132,6 +140,9 @@ function PdfCanvasViewer({ url, title }) {
         const containerWidth =
           (containerRef.current?.clientWidth || window.innerWidth) - 24;
 
+        // Optimize: Cap outputScale at 1.5x max (prevents 3x-4x mobile RAM lag while keeping text sharp)
+        const outputScale = Math.min(window.devicePixelRatio || 1, 1.5);
+
         for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
           if (isCancelled) break;
 
@@ -139,13 +150,12 @@ function PdfCanvasViewer({ url, title }) {
           const initialViewport = page.getViewport({ scale: 1 });
           const autoScale = Math.min(
             (containerWidth / initialViewport.width) * scale,
-            2.5
+            2.0
           );
           const viewport = page.getViewport({ scale: Math.max(autoScale, 0.6) });
 
-          const outputScale = window.devicePixelRatio || 1;
           const canvas = document.createElement("canvas");
-          const context = canvas.getContext("2d");
+          const context = canvas.getContext("2d", { alpha: false }); // alpha: false enables fast GPU rendering
 
           canvas.width = Math.floor(viewport.width * outputScale);
           canvas.height = Math.floor(viewport.height * outputScale);
@@ -168,6 +178,16 @@ function PdfCanvasViewer({ url, title }) {
             transform,
             viewport,
           }).promise;
+
+          // FAST: Dismiss loading indicator as soon as Page 1 is ready!
+          if (pageNum === 1 && !isCancelled) {
+            setLoading(false);
+          }
+
+          // Non-blocking yield: keeps scroll and UI running at 120fps
+          if (pageNum < pdfDoc.numPages) {
+            await new Promise((r) => setTimeout(r, 10));
+          }
         }
 
         if (!isCancelled) {
@@ -433,6 +453,30 @@ export default function BlogClientView({
     return `${activePdf.url}#toolbar=1&navpanes=0`;
   }, [activePdf.url]);
 
+  // 🚀 Background Preload PDF.js so clicking 'View PDF' opens instantly with 0ms waiting
+  useEffect(() => {
+    if (typeof window === "undefined" || window.pdfjsLib) return;
+    const hasPdfDoc = blogSections?.some((s) => Boolean(s?.pdf || s?.blockType === "pdf"));
+    if (!hasPdfDoc) return;
+
+    const timer = setTimeout(() => {
+      if (!window.pdfjsLib && !document.getElementById("pdfjs-engine-script")) {
+        const script = document.createElement("script");
+        script.id = "pdfjs-engine-script";
+        script.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+        script.onload = () => {
+          if (window.pdfjsLib) {
+            window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+              "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+          }
+        };
+        document.head.appendChild(script);
+      }
+    }, 1500); // Low-priority background load after initial page paint
+
+    return () => clearTimeout(timer);
+  }, [blogSections]);
+
   useEffect(() => {
     if (Array.isArray(blog?.comments)) {
       setCommentsList(blog.comments);
@@ -459,7 +503,7 @@ export default function BlogClientView({
   const handleCommentSubmit = async (values) => {
     setCommentSubmitting(true);
     try {
-      await new Promise((res) => setTimeout(res, 600));
+      await new Promise((res) => setTimeout(res, 200));
       if (values?.name && values?.comment) {
         setCommentsList((prev) => [
           {
