@@ -47,25 +47,48 @@ export function getAssetPath(path = "", fallback = DEFAULT_SVG_LOGO) {
     const rawUrl = path.url || path.src || path.path || "";
     let originalName = path.name || path.alt || path.fileName || "";
 
-    if (originalName && rawUrl) {
-      const extMatch = rawUrl.match(/\.([a-zA-Z0-9]+)(?:\?|$)/);
-      const ext = extMatch ? extMatch[1] : "";
-      if (ext && !originalName.toLowerCase().endsWith(`.${ext.toLowerCase()}`)) {
-        originalName = `${originalName}.${ext}`;
+    if (rawUrl) {
+      if (rawUrl.includes("/minio/") || rawUrl.includes(":9000/")) {
+        const delimiter = rawUrl.includes("/minio/") ? "/minio/" : ":9000/";
+        const relPath = rawUrl.substring(rawUrl.indexOf(delimiter) + delimiter.length).replace(/^\/+/, "");
+
+        if (originalName) {
+          const extMatch = rawUrl.match(/\.([a-zA-Z0-9]+)(?:\?|$)/);
+          const ext = extMatch ? extMatch[1] : "";
+          if (ext && !originalName.toLowerCase().endsWith(`.${ext.toLowerCase()}`)) {
+            originalName = `${originalName}.${ext}`;
+          }
+          const safeName = originalName.trim().replace(/[\s/\\?%*:|"<>]+/g, "-");
+          const lastFile = relPath.split("/").pop();
+
+          registerMediaMapping(originalName, rawUrl);
+          registerMediaMapping(safeName, rawUrl);
+          registerMediaMapping(lastFile, rawUrl);
+
+          // If safeName is a distinct friendly name (not just raw hash), embed it cleanly for SEO
+          const isJustHash =
+            safeName.toLowerCase() === lastFile.toLowerCase() ||
+            safeName.replace(/\.[^/.]+$/, "").length === 32;
+
+          if (!isJustHash && safeName) {
+            return `/image/${relPath}/${encodeURIComponent(safeName)}`;
+          }
+        }
+
+        registerMediaMapping(relPath.split("/").pop(), rawUrl);
+        return `/image/${relPath}`;
       }
 
-      const safeName = originalName.trim().replace(/\s+/g, "-");
-      registerMediaMapping(originalName, rawUrl);
-      registerMediaMapping(safeName, rawUrl);
-      if (path.fileName) {
-        registerMediaMapping(path.fileName, rawUrl);
+      // Check if static asset in mediaMap
+      const staticName = originalName || rawUrl.split("/").pop();
+      if (mediaMap[staticName] || mediaMap[staticName?.toLowerCase()]) {
+        return `/image/${encodeURIComponent(staticName)}`;
       }
 
-      return `/image/${encodeURIComponent(safeName)}`;
+      path = rawUrl;
+    } else {
+      return fallback;
     }
-
-    if (!rawUrl) return fallback;
-    path = rawUrl;
   }
 
   if (typeof path !== "string") return fallback;
@@ -97,13 +120,13 @@ export function getAssetPath(path = "", fallback = DEFAULT_SVG_LOGO) {
 
   // 5. MinIO URLs (domain or port) -> convert to /image/... proxy path
   if (targetPath.includes("/minio/")) {
-    const relativeMedia = targetPath.substring(targetPath.indexOf("/minio/") + 7);
+    const relativeMedia = targetPath.substring(targetPath.indexOf("/minio/") + 7).replace(/^\/+/, "");
     const lastFile = relativeMedia.split("/").pop();
     registerMediaMapping(lastFile, targetPath);
     return `/image/${relativeMedia}`;
   }
   if (targetPath.includes(":9000/")) {
-    const relativeMedia = targetPath.substring(targetPath.indexOf(":9000/") + 6);
+    const relativeMedia = targetPath.substring(targetPath.indexOf(":9000/") + 6).replace(/^\/+/, "");
     const lastFile = relativeMedia.split("/").pop();
     registerMediaMapping(lastFile, targetPath);
     return `/image/${relativeMedia}`;

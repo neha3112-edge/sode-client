@@ -19,39 +19,74 @@ export async function GET(request, context) {
     const fullPath = slugArray.map((s) => decodeURIComponent(s)).join("/");
     const filename = decodeURIComponent(slugArray[slugArray.length - 1]);
 
-    // 1. Resolve MinIO URL from in-memory registry or static mediaMap
-    let minioTargetUrl =
-      resolveMediaMapping(filename) ||
-      resolveMediaMapping(fullPath) ||
-      mediaMap[filename] ||
-      mediaMap[filename.toLowerCase()] ||
-      mediaMap[fullPath] ||
-      mediaMap[fullPath.toLowerCase()] ||
-      mediaMap[`/assets/images/${filename}`] ||
-      mediaMap[`/assets/pdf/${filename}`];
+    // Check query params for explicit src fallback (?src=... or ?u=...)
+    const { searchParams } = new URL(request.url);
+    const explicitSrc = searchParams.get("src") || searchParams.get("u");
 
-    // 2. Check if slugArray is a direct MinIO path (crm-media/..., images/..., etc.)
-    if (!minioTargetUrl) {
-      if (
-        fullPath.startsWith("crm-media/") ||
-        fullPath.startsWith("images/") ||
-        fullPath.startsWith("uploads/") ||
-        slugArray.length >= 2
-      ) {
-        minioTargetUrl = `${MINIO_PUBLIC_URL}/${fullPath}`;
-      } else {
-        // Fallback: search values in mediaMap that end with this filename
-        const lowerName = filename.toLowerCase();
-        for (const [key, val] of Object.entries(mediaMap)) {
-          if (typeof val === "string" && val.toLowerCase().endsWith(lowerName)) {
-            minioTargetUrl = val;
-            break;
-          }
+    let minioTargetUrl = null;
+
+    if (explicitSrc) {
+      minioTargetUrl = explicitSrc.startsWith("http")
+        ? explicitSrc
+        : `${MINIO_PUBLIC_URL}/${explicitSrc.replace(/^\/+/, "")}`;
+    }
+
+    // 1. Check if slugArray has an embedded MinIO path followed by a friendly SEO filename
+    // e.g. /image/crm-media/2026/09/21/hash.webp/Hero-Slide-1.webp
+    // or /image/images/2026/08/11/hash.webp/sode-logo.webp
+    if (!minioTargetUrl && slugArray.length >= 2) {
+      for (let i = 0; i < slugArray.length - 1; i++) {
+        const seg = slugArray[i];
+        if (
+          /\.(webp|png|jpe?g|svg|pdf|ico|gif)$/i.test(seg) ||
+          /^[a-f0-9]{32}$/i.test(seg)
+        ) {
+          const subPath = slugArray.slice(0, i + 1).join("/");
+          const finalSubPath = subPath.includes(".")
+            ? subPath
+            : `${subPath}.${filename.split(".").pop()}`;
+          minioTargetUrl = `${MINIO_PUBLIC_URL}/${finalSubPath}`;
+          break;
         }
       }
     }
 
-    // 3. Last fallback: try direct MinIO URL with filename
+    // 2. Direct MinIO path: /image/crm-media/... or /image/images/...
+    if (!minioTargetUrl) {
+      if (
+        fullPath.startsWith("crm-media/") ||
+        fullPath.startsWith("images/") ||
+        fullPath.startsWith("uploads/")
+      ) {
+        minioTargetUrl = `${MINIO_PUBLIC_URL}/${fullPath}`;
+      }
+    }
+
+    // 3. Resolve MinIO URL from in-memory registry or static mediaMap
+    if (!minioTargetUrl) {
+      minioTargetUrl =
+        resolveMediaMapping(filename) ||
+        resolveMediaMapping(fullPath) ||
+        mediaMap[filename] ||
+        mediaMap[filename.toLowerCase()] ||
+        mediaMap[fullPath] ||
+        mediaMap[fullPath.toLowerCase()] ||
+        mediaMap[`/assets/images/${filename}`] ||
+        mediaMap[`/assets/pdf/${filename}`];
+    }
+
+    // 4. Fallback: search values in mediaMap that end with this filename
+    if (!minioTargetUrl) {
+      const lowerName = filename.toLowerCase();
+      for (const [key, val] of Object.entries(mediaMap)) {
+        if (typeof val === "string" && val.toLowerCase().endsWith(lowerName)) {
+          minioTargetUrl = val;
+          break;
+        }
+      }
+    }
+
+    // 5. Last fallback: try direct MinIO URL with fullPath
     if (!minioTargetUrl) {
       minioTargetUrl = `${MINIO_PUBLIC_URL}/${fullPath}`;
     }
