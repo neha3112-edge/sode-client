@@ -7,7 +7,7 @@ import { Button, Carousel, Form, Input, message, Modal, Table } from "antd";
 import SafeHtmlRenderer from "@/components/website/SafeHtmlRenderer";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
 import { getAssetPath } from "@/lib/utils";
-import { CalendarIcon, Check, ChevronDown, ChevronRight, ChevronUp, Clock, Download, Eye, Image as ImageIcon, Minus, Play, Plus, ThumbsDown, ThumbsUp, User, Video } from "lucide-react";
+import { CalendarIcon, Check, ChevronDown, ChevronRight, ChevronUp, Clock, Eye, Image as ImageIcon, Minus, Play, Plus, ThumbsDown, ThumbsUp, User, Video } from "lucide-react";
 import { request } from "@/services/request";
 import BlogSidebar from "./BlogSidebar";
 
@@ -227,6 +227,28 @@ export default function BlogClientView({
   );
   const [pdfModalOpen, setPdfModalOpen] = useState(false);
   const [activePdf, setActivePdf] = useState({ url: "", title: "" });
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      if (typeof window !== "undefined") {
+        setIsMobile(
+          window.innerWidth < 768 ||
+          /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+            navigator.userAgent
+          )
+        );
+      }
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  const viewerUrl = useMemo(() => {
+    if (!activePdf.url) return "";
+    return `${activePdf.url}#toolbar=1&navpanes=0`;
+  }, [activePdf.url]);
 
   useEffect(() => {
     if (Array.isArray(blog?.comments)) {
@@ -681,6 +703,28 @@ export default function BlogClientView({
             padding: 0 4px !important;
           }
         }
+
+        /* PDF Preview Modal Mobile Responsive */
+        .pdf-preview-modal {
+          max-width: calc(100vw - 16px) !important;
+          margin: 0 auto !important;
+        }
+        .pdf-preview-modal .ant-modal-content {
+          padding: 14px 14px 10px 14px !important;
+          border-radius: 14px !important;
+          overflow: hidden !important;
+        }
+        @media (max-width: 767px) {
+          .pdf-preview-modal {
+            max-width: calc(100vw - 12px) !important;
+            width: calc(100vw - 12px) !important;
+            top: 10px !important;
+            padding-bottom: 10px !important;
+          }
+          .pdf-preview-modal .ant-modal-content {
+            padding: 12px 10px 8px 10px !important;
+          }
+        }
       `}</style>
 
       <div className="w-full pt-2.5 sm:pt-6 px-2.5 sm:px-6 lg:px-8 xl:px-10 2xl:px-12">
@@ -1071,7 +1115,7 @@ export default function BlogClientView({
                                               setPdfModalOpen(true);
                                             }
                                           }}
-                                          className="inline-flex items-center gap-3 bg-[#EAEBED] hover:bg-[#E2E4E7] border border-slate-300/60 px-3.5 py-2.5 rounded-lg transition-colors shadow-2xs group no-underline text-left cursor-pointer max-w-sm"
+                                          className="inline-flex items-center gap-3 bg-[#EAEBED] hover:bg-[#E2E4E7] active:bg-[#D9DCDE] border border-slate-300/60 px-3.5 py-2.5 rounded-lg transition-colors shadow-2xs group text-left cursor-pointer max-w-sm w-full sm:w-auto"
                                         >
                                           {/* PDF Icon with red border, ribbon, and PDF text */}
                                           <div className="shrink-0 w-8 h-10 relative flex items-center justify-center">
@@ -1839,74 +1883,77 @@ export default function BlogClientView({
         </div>
       </div>
 
-      {/* ── PDF Preview Modal ── */}
+      {/* ── PDF Preview Modal (Mobile & Desktop Responsive) ── */}
       <Modal
         open={pdfModalOpen}
         onCancel={() => setPdfModalOpen(false)}
         footer={null}
-        width={960}
+        width={isMobile ? "96vw" : 920}
         centered
-        destroyOnClose
+        destroyOnHidden
+        className="pdf-preview-modal"
+        style={{
+          maxWidth: "calc(100vw - 16px)",
+          margin: "0 auto",
+          top: isMobile ? 10 : 24,
+        }}
         title={
-          <div className="flex items-center justify-between gap-3 pr-8">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="shrink-0 w-6 h-7 relative flex items-center justify-center">
-                <svg className="w-6 h-7" viewBox="0 0 32 40" fill="none">
-                  <path
-                    d="M4 2C2.89543 2 2 2.89543 2 4V36C2 37.1046 2.89543 38 4 38H28C29.1046 38 30 37.1046 30 36V12L20 2H4Z"
-                    fill="white"
-                    stroke="#E11D48"
-                    strokeWidth="2"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M20 2V12H30"
-                    stroke="#E11D48"
-                    strokeWidth="2"
-                    strokeLinejoin="round"
-                  />
-                  <text
-                    x="16"
-                    y="34.5"
-                    textAnchor="middle"
-                    fill="#E11D48"
-                    fontSize="7"
-                    fontWeight="800"
-                    fontFamily="sans-serif"
-                  >
-                    PDF
-                  </text>
-                </svg>
-              </div>
-              <span className="font-bold text-slate-900 text-sm sm:text-base truncate">
-                {activePdf.title || "PDF Document"}
-              </span>
+          <div className="flex items-center gap-2 pr-7 sm:pr-8">
+            <div className="shrink-0 w-5 h-6 sm:w-6 sm:h-7 relative flex items-center justify-center">
+              <svg className="w-5 h-6 sm:w-6 sm:h-7" viewBox="0 0 32 40" fill="none">
+                <path
+                  d="M4 2C2.89543 2 2 2.89543 2 4V36C2 37.1046 2.89543 38 4 38H28C29.1046 38 30 37.1046 30 36V12L20 2H4Z"
+                  fill="white"
+                  stroke="#E11D48"
+                  strokeWidth="2"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M20 2V12H30"
+                  stroke="#E11D48"
+                  strokeWidth="2"
+                  strokeLinejoin="round"
+                />
+                <text
+                  x="16"
+                  y="34.5"
+                  textAnchor="middle"
+                  fill="#E11D48"
+                  fontSize="7"
+                  fontWeight="800"
+                  fontFamily="sans-serif"
+                >
+                  PDF
+                </text>
+              </svg>
             </div>
-            {activePdf.url && (
-              <a
-                href={activePdf.url}
-                download={activePdf.title || "document.pdf"}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold shrink-0 transition-colors no-underline cursor-pointer"
-              >
-                <Download size={14} />
-                <span className="hidden sm:inline">Download</span>
-              </a>
-            )}
+            <span className="font-bold text-slate-900 text-xs sm:text-base truncate">
+              {activePdf.title || "PDF Document"}
+            </span>
           </div>
         }
         styles={{
-          body: { padding: 0, height: "78vh", display: "flex", flexDirection: "column" },
+          body: {
+            padding: 0,
+            height: isMobile ? "74vh" : "78vh",
+            display: "flex",
+            flexDirection: "column",
+          },
         }}
       >
         <div className="w-full h-full bg-slate-100 rounded-b-lg overflow-hidden flex flex-col">
           {activePdf.url ? (
-            <iframe
-              src={`${activePdf.url}#toolbar=1&navpanes=0`}
-              title={activePdf.title || "PDF Viewer"}
-              className="w-full h-full border-0 flex-1"
-            />
+            <object
+              data={viewerUrl}
+              type="application/pdf"
+              className="w-full h-full border-0 flex-1 bg-white"
+            >
+              <iframe
+                src={viewerUrl}
+                title={activePdf.title || "PDF Viewer"}
+                className="w-full h-full border-0 flex-1 bg-white"
+              />
+            </object>
           ) : (
             <div className="flex items-center justify-center h-full text-slate-400 text-sm">
               No document available
