@@ -325,8 +325,8 @@ function RankedUniversityCard({ item, index, features, isStatePage = false }) {
   const hasCardMedia = Boolean(desktopImageUrl || mobileBannerUrl);
   const location = [uni.city?.name, uni.state?.name].filter(Boolean).join(", ");
   const approvalsJoined = uni.approvals?.map((a) => a.code || a.name).filter(Boolean).join(" | ");
-  const semFee = item.customFeeText || item.fees?.formattedSemesterFees || item.fees?.formattedPerSemesterPayable || "";
   const eligibilityText = item.eligibility;
+
   const coursesList = item.offeredCourses || item.coursesOffered || [];
   const coursesJoined = Array.isArray(coursesList)
     ? coursesList
@@ -388,15 +388,7 @@ function RankedUniversityCard({ item, index, features, isStatePage = false }) {
           )}
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-2.5 gap-x-4 sm:gap-x-6 text-xs text-slate-700 mb-4">
-            {semFee && (
-              <div>
-                <div className="font-bold text-slate-900 flex items-center gap-1 mb-0.5">
-                  <span className="font-black text-slate-800 text-xs">₹</span>
-                  <span>Course Fee :</span>
-                </div>
-                <div className="text-slate-600 text-xs font-medium">{semFee}</div>
-              </div>
-            )}
+
 
             {location && (
               <div>
