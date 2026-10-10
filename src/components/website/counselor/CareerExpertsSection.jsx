@@ -3,9 +3,11 @@
 import React, { useRef } from "react";
 import Image from "next/image";
 import { Carousel } from "antd";
+import { getAssetPath } from "@/lib/utils";
 
 function CounselorCard({ counselor, isMobile = false }) {
-  const avatarUrl = counselor.image || counselor.photo;
+  const rawAvatar = counselor.image || counselor.photo;
+  const avatarUrl = rawAvatar ? getAssetPath(rawAvatar) : null;
   const whatsappUrl = counselor.whatsapp || (counselor.whatsappNumber ? `https://wa.me/${counselor.whatsappNumber}` : null);
   const counselorName = counselor.name || counselor.fullname || "Academic Counselor";
   const counselorInitial = counselorName.trim().charAt(0).toUpperCase() || "C";

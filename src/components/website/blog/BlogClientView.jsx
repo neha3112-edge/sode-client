@@ -684,7 +684,7 @@ export default function BlogClientView({
           circleBg = "bg-[#FCE4EC]";
         }
 
-        const rawLogo = t.logo?.url || t.logo || t.image?.url || t.image;
+        const rawLogo = t.logo || t.image;
         const logoUrl = rawLogo ? getAssetPath(rawLogo) : null;
 
         return {
@@ -1163,12 +1163,7 @@ export default function BlogClientView({
                                   <div className="my-3 sm:my-4 w-full">
                                     {(() => {
                                       const rawImg = sec.image || sec.imageUrl || sec.media;
-                                      const imgUrl =
-                                        typeof rawImg === "string"
-                                          ? rawImg
-                                          : rawImg?.url || rawImg?.path || rawImg?.fileName
-                                            ? getAssetPath(rawImg)
-                                            : null;
+                                      const imgUrl = rawImg ? getAssetPath(rawImg) : null;
                                       const altText =
                                         (typeof rawImg === "object" ? rawImg?.alt : null) ||
                                         sec.title ||
@@ -1183,7 +1178,7 @@ export default function BlogClientView({
                                           <div className="w-full">
                                             <div className="relative w-full h-44 sm:h-64 md:h-72 lg:h-80 rounded overflow-hidden bg-slate-100 border border-slate-200/80 shadow-xs">
                                               <Image
-                                                src={getAssetPath(imgUrl)}
+                                                src={imgUrl}
                                                 alt={altText}
                                                 fill
                                                 unoptimized
@@ -1328,7 +1323,7 @@ export default function BlogClientView({
                                         pdfName = `${pdfName}.pdf`;
                                       }
 
-                                      const href = pdfUrl ? getAssetPath(pdfUrl) : "";
+                                      const href = rawPdf ? getAssetPath(rawPdf) : (pdfUrl ? getAssetPath(pdfUrl) : "");
 
                                       return (
                                         <button

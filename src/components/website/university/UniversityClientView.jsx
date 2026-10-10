@@ -64,11 +64,11 @@ export function UniversityClientView({ initialData, slug }) {
     [uniName]
   );
 
-  const rawBanner = uni.bannerImg?.url || null;
+  const rawBanner = uni.bannerImg || null;
   const heroBannerUrl = rawBanner ? getAssetPath(rawBanner) : null;
-  const rawMobileBanner = uni.mobileBannerImg?.url || null;
+  const rawMobileBanner = uni.mobileBannerImg || null;
   const mobileHeroBannerUrl = rawMobileBanner ? getAssetPath(rawMobileBanner) : heroBannerUrl;
-  const rawLogo = data.logo?.url || null;
+  const rawLogo = data.logo || uni.logo || null;
   const logoUrl = rawLogo ? getAssetPath(rawLogo) : null;
 
   const numericRating = useMemo(() => {
@@ -125,7 +125,7 @@ export function UniversityClientView({ initialData, slug }) {
     if (Array.isArray(uni.accreditations) && uni.accreditations.length > 0) {
       return uni.accreditations.map((acc) => ({
         title: acc.name,
-        logo: acc.logo?.url || (typeof acc.logo === "string" ? acc.logo : null),
+        logo: acc.logo ? getAssetPath(acc.logo) : null,
         description: acc.description || "",
       }));
     }
@@ -202,7 +202,7 @@ export function UniversityClientView({ initialData, slug }) {
         items: (first.items || []).map((item) => ({
           title: item.title,
           description: item.description,
-          iconUrl: item.icon?.url || (typeof item.icon === "string" ? item.icon : null),
+          iconUrl: item.icon || null,
         })),
       };
     }
@@ -223,7 +223,7 @@ export function UniversityClientView({ initialData, slug }) {
       return {
         title: deg.title || "",
         description: deg.description || "",
-        imageUrl: deg.image?.url || (typeof deg.image === "string" ? deg.image : null),
+        imageUrl: deg.image || null,
         points: points,
         ctaText: deg.cta_text || "Get Degree",
         ctaLink: deg.cta_link || null,

@@ -29,7 +29,7 @@ export default function UniversityPeerUniversities({
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
         {topUniversities.slice(0, visibleTopUnis).map((peer, index) => {
           const inCmp = isInCompare(peer._id || peer.slug || peer.name);
-          const peerLogo = peer.logo?.url || peer.logoUrl;
+          const peerLogo = peer.logo || peer.logoUrl;
           const providerName = peer.viaPartner || (peer.partner && peer.partner[0]?.name) || null;
           const coursesOfferedText = `${peer.coursesCount || peer.programsCount || 10}+ Programs`;
           const rawSlug = peer.slug || encodeURIComponent((peer.name || "").toLowerCase());

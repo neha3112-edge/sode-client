@@ -57,6 +57,7 @@ export async function proxy(req) {
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api') ||
     pathname.startsWith('/media') ||
+    pathname.startsWith('/image') ||
     pathname.startsWith('/static') ||
     pathname.includes('.')
   ) {
@@ -168,6 +169,6 @@ export default proxy;
 
 export const config = {
   matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|media).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|media|image).*)',
   ],
 };

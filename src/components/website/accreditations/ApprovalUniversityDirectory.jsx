@@ -71,7 +71,7 @@ function SmoothExpandedCard({
                 <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-lg shrink-0 flex items-center justify-center overflow-hidden">
                   {record.logo ? (
                     <Image
-                      src={record.logo}
+                      src={getAssetPath(record.logo)}
                       alt={record.name}
                       width={46}
                       height={46}
@@ -474,7 +474,7 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
             <div className="w-10 h-10 sm:w-9 sm:h-9 rounded-lg shrink-0 flex items-center justify-center overflow-hidden">
               {record.logo ? (
                 <Image
-                  src={record.logo}
+                  src={getAssetPath(record.logo)}
                   alt={name}
                   width={40}
                   height={40}

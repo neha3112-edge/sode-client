@@ -38,8 +38,7 @@ function getYouTubeEmbedUrl(url) {
 
 function getMediaUrl(media) {
   if (!media) return null;
-  if (typeof media === "string") return media;
-  return media.url || media.path || null;
+  return getAssetPath(media, null);
 }
 
 function DynamicHero({ hero, pageTitle, targetCourseName }) {
@@ -265,8 +264,8 @@ function DynamicHero({ hero, pageTitle, targetCourseName }) {
               className="w-full partner-antd-carousel"
             >
               {universities.map((uni, idx) => {
-                const imageSrc =
-                  uni.logo?.url || uni.image?.url || uni.coursepageimage?.url || (typeof uni.logo === "string" ? uni.logo : null);
+                const rawMedia = uni.logo || uni.image || uni.coursepageimage || null;
+                const imageSrc = rawMedia ? getAssetPath(rawMedia) : null;
                 if (!imageSrc) return null;
 
                 const url = uni.courseSlug

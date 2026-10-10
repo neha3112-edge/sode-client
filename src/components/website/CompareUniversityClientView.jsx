@@ -529,12 +529,7 @@ export default function CompareUniversityClientView({
   // Rich Select Options with Logos for the in-slot university picker
   const universitySelectOptions = useMemo(() => {
     return availableUniversities.map((u) => {
-      const rawLogo =
-        (typeof u.image === "object" ? u.image?.url : u.image) ||
-        (typeof u.logoSrc === "object" ? u.logoSrc?.url : u.logoSrc) ||
-        (typeof u.logo === "object" ? u.logo?.url : u.logo) ||
-        u.logoUrl ||
-        null;
+      const rawLogo = u.logo || u.logoSrc || u.image || u.logoUrl || null;
 
       return {
         value: String(u._id || u.slug),
@@ -696,11 +691,7 @@ export default function CompareUniversityClientView({
         height: 50,
       };
 
-      const rawLogo =
-        (typeof uni.logoSrc === "object" ? uni.logoSrc?.url : uni.logoSrc) ||
-        (typeof uni.logo === "object" ? uni.logo?.url : uni.logo) ||
-        uni.logoUrl ||
-        null;
+      const rawLogo = uni.logo || uni.logoSrc || uni.image || uni.logoUrl || null;
 
       setFlyingLogo({
         logo: rawLogo,
@@ -1680,12 +1671,7 @@ export default function CompareUniversityClientView({
                     const isOffering = uni.isCourseOffering || uni.type === "course_offering";
                     const displayTitle = isOffering ? uni.title : uni.name;
                     const displaySubTitle = isOffering ? (uni.uniName || uni.name) : null;
-                    const rawLogo =
-                      (typeof uni.logoSrc === "object" ? uni.logoSrc?.url : uni.logoSrc) ||
-                      (typeof uni.image === "object" ? uni.image?.url : uni.image) ||
-                      (typeof uni.logo === "object" ? uni.logo?.url : uni.logo) ||
-                      uni.logoUrl ||
-                      null;
+                    const rawLogo = uni.logo || uni.logoSrc || uni.image || uni.logoUrl || null;
                     const getCleanVal = (val) => {
                       if (!val) return "";
                       if (typeof val === "object") return val.name || val.title || val.label || "";
@@ -1827,7 +1813,7 @@ export default function CompareUniversityClientView({
                     const borderColors = ["#DCE7F9", "#FDE8B5", "#FCDADA", "#D0F4E2"];
                     const cardBg = bgColors[idx % bgColors.length];
                     const cardBorder = borderColors[idx % borderColors.length];
-                    const rawLogo = cat.logo?.url || cat.logo?.path || (typeof cat.logo === "string" ? cat.logo : null);
+                    const rawLogo = cat.logo || null;
 
                     return (
                       <div
@@ -2133,7 +2119,7 @@ export default function CompareUniversityClientView({
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-3.5 p-1">
                 {trendingUniversitiesList.map((uni) => {
-                  const rawLogo = uni.logo?.url || uni.logo?.path || (typeof uni.logo === "string" ? uni.logo : null);
+                  const rawLogo = uni.logo || null;
                   const isAdded = isUniAdded(uni);
                   return (
                     <div
@@ -2260,7 +2246,7 @@ export default function CompareUniversityClientView({
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-3.5 p-1">
                 {recommendedUniversitiesList.map((uni) => {
-                  const rawLogo = uni.logo?.url || uni.logo?.path || (typeof uni.logo === "string" ? uni.logo : null);
+                  const rawLogo = uni.logo || null;
                   const isAdded = isUniAdded(uni);
                   return (
                     <div
@@ -2417,7 +2403,7 @@ export default function CompareUniversityClientView({
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-3.5 p-1">
                   {stateUniversitiesList.map((uni) => {
-                    const rawLogo = uni.logo?.url || uni.logo?.path || (typeof uni.logo === "string" ? uni.logo : null);
+                    const rawLogo = uni.logo || null;
                     const isAdded = isUniAdded(uni);
                     return (
                       <div
@@ -2474,7 +2460,7 @@ export default function CompareUniversityClientView({
               ) : (
                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5 sm:gap-3 p-1">
                   {computedStatesList.map((st) => {
-                    const rawLogo = st.logo?.url || st.logo?.path || (typeof st.logo === "string" ? st.logo : null);
+                    const rawLogo = st.logo || null;
                     return (
                       <div
                         key={st._id}
@@ -2619,7 +2605,7 @@ export default function CompareUniversityClientView({
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-3.5 p-1">
                   {accreditationUniversitiesList.map((uni) => {
-                    const rawLogo = uni.logo?.url || uni.logo?.path || (typeof uni.logo === "string" ? uni.logo : null);
+                    const rawLogo = uni.logo || null;
                     const isAdded = isUniAdded(uni);
                     return (
                       <div
@@ -2671,7 +2657,7 @@ export default function CompareUniversityClientView({
             >
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-3.5 p-1">
                 {dynamicAccreditationList.map((acc) => {
-                  const rawLogo = acc.logo?.url || acc.logo?.path || (typeof acc.logo === "string" ? acc.logo : null);
+                  const rawLogo = acc.logo || null;
                   return (
                     <div
                       key={acc._id || acc.id}
@@ -2793,7 +2779,7 @@ export default function CompareUniversityClientView({
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-3.5 p-1">
                 {modalUniversitiesList.map((uni) => {
-                  const rawLogo = uni.logo?.url || uni.logo?.path || (typeof uni.logo === "string" ? uni.logo : null);
+                  const rawLogo = uni.logo || null;
                   const isAdded = isUniAdded(uni);
                   return (
                     <div

@@ -15,8 +15,7 @@ export function AccreditationsView({ initialAccreditations = [] }) {
     if (!Array.isArray(initialAccreditations)) return [];
 
     return initialAccreditations.map((item, idx) => {
-      const logo =
-        item.logo?.url || item.logo || item.image?.url || item.image || null;
+      const logo = item.logo || item.image || null;
       const title = item.title || item.name || item.code || "Accreditation";
       const description = item.description || item.name || "";
       const slug = item.slug || (Array.isArray(item.slugs) ? item.slugs[0] : "") || "";

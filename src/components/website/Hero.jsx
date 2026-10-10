@@ -59,9 +59,7 @@ export function Hero({ initialHeroData = null }) {
 
   const getMediaUrl = (mediaObj) => {
     if (!mediaObj) return null;
-    if (typeof mediaObj === "string") return mediaObj;
-    if (typeof mediaObj === "object" && mediaObj.url) return mediaObj.url;
-    return null;
+    return getAssetPath(mediaObj);
   };
 
   const heroType = heroData.hero_type || heroData.heroType || "carousel";
@@ -321,7 +319,7 @@ export function Hero({ initialHeroData = null }) {
                 };
               }),
               ...(heroData.partner_logos || heroData.partnerLogos || []).map((pl, i) => {
-                const logoRaw = pl.logo?.url || pl.logo?.path || pl.image?.url || pl.image?.path;
+                const logoRaw = pl.logo || pl.image;
                 return {
                   id: pl._id || `partner-${i}`,
                   title: pl.title || "Partner",

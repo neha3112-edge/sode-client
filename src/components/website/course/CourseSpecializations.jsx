@@ -272,21 +272,20 @@ export default function CourseSpecializations({
 
         const specDesktopBannerRaw =
           selectedSpecModal?.bannerImage ||
-          selectedSpecModal?.bannerImg?.url ||
+          selectedSpecModal?.bannerImg ||
           selectedSpecModal?.banner ||
           selectedSpecModal?.image ||
           courseData?.bannerImage ||
-          courseData?.universityId?.bannerImg?.url ||
+          courseData?.universityId?.bannerImg ||
           heroBannerSrc ||
           "";
         const specDesktopBanner = specDesktopBannerRaw ? getAssetPath(specDesktopBannerRaw) : "";
 
         const specMobileBannerRaw =
           selectedSpecModal?.bannerImageMobile ||
-          selectedSpecModal?.mobileBannerImg?.url ||
           selectedSpecModal?.mobileBannerImg ||
           courseData?.mobileBannerImage ||
-          courseData?.universityId?.mobileBannerImg?.url ||
+          courseData?.universityId?.mobileBannerImg ||
           specDesktopBannerRaw;
         const specMobileBanner = specMobileBannerRaw ? getAssetPath(specMobileBannerRaw) : specDesktopBanner;
 

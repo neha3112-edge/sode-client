@@ -101,17 +101,17 @@ export function CourseClientView({
     courseData?.coursepageimage ||
     courseData?.bannerImage ||
     courseData?.banner ||
-    courseData?.universityId?.coursepageimage?.url ||
-    courseData?.universityId?.bannerImg?.url
+    courseData?.universityId?.coursepageimage ||
+    courseData?.universityId?.bannerImg
   );
   const mobileHeroBannerSrc = getAssetPath(
     courseData?.bannerImageMobile ||
     courseData?.mobileBannerImage ||
-    courseData?.universityId?.mobileBannerImg?.url ||
+    courseData?.universityId?.mobileBannerImg ||
     courseData?.coursepageimage ||
     courseData?.bannerImage ||
     courseData?.banner ||
-    courseData?.universityId?.bannerImg?.url
+    courseData?.universityId?.bannerImg
   );
   const universityLogoSrc = courseData?.logo
     ? getAssetPath(courseData.logo)
@@ -268,16 +268,7 @@ export function CourseClientView({
       );
       const providerName = isPartnerActive ? partnerObj.name : null;
 
-      const rawLogo =
-        uni.logo?.url ||
-        uni.logo?.path ||
-        (typeof uni.logo === "string" ? uni.logo : null) ||
-        uni.logoSrc?.url ||
-        uni.logoSrc ||
-        item.logo?.url ||
-        item.logo?.path ||
-        (typeof item.logo === "string" ? item.logo : null) ||
-        item.logoUrl;
+      const rawLogo = uni.logo || uni.logoSrc || item.logo || item.logoUrl || null;
       const logoUrl = rawLogo ? getAssetPath(rawLogo, null) : null;
 
       let durationText = null;

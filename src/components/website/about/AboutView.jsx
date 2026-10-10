@@ -363,9 +363,9 @@ export function AboutView({ initialAboutData = null, initialReviews = [] }) {
                   key={idx}
                   className="group relative aspect-[9/13] sm:aspect-[9/12] rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 bg-slate-900 flex flex-col justify-end p-3 cursor-pointer"
                 >
-                  {item.thumbnailUrl && (
+                  {(item.thumbnail || item.thumbnailUrl) && (
                     <Image
-                      src={getAssetPath(item.thumbnailUrl)}
+                      src={getAssetPath(item.thumbnail || item.thumbnailUrl)}
                       alt={item.studentName || "Student"}
                       fill
                       sizes="(max-width: 768px) 50vw, 25vw"

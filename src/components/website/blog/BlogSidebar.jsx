@@ -228,7 +228,7 @@ export default function BlogSidebar({
         utm_medium: "Organic",
       };
 
-      const res = await fetch(getAssetPath("/api/lead"), {
+      const res = await fetch("/api/lead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

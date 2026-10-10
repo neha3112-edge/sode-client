@@ -75,8 +75,7 @@ export default function UniversityCoursesSection({
             : `/universities/${slug || uni.slug || ""}/${rawCourseSlug}`;
           const specCount = item.specializationsCount || item.subcourses?.length || 0;
           const inCmp = isInCompare(item._id || item.slug || cardTitle);
-          const courseRawLogo = item.logo?.url || item.logo?.path || (typeof item.logo === "string" ? item.logo : null);
-          const courseLogoUrl = courseRawLogo ? getAssetPath(courseRawLogo) : null;
+          const courseLogoUrl = item.logo ? getAssetPath(item.logo) : null;
           const displayCourseLogo = courseLogoUrl || logoUrl;
 
           return (
@@ -262,8 +261,7 @@ export default function UniversityCoursesSection({
             ? selectedCourseSpec.subCourses
             : [];
 
-        const courseRawLogo = selectedCourseSpec.logo?.url || selectedCourseSpec.logo?.path || (typeof selectedCourseSpec.logo === "string" ? selectedCourseSpec.logo : null);
-        const uniLogoSrc = logoUrl || (courseRawLogo ? getAssetPath(courseRawLogo) : null);
+        const uniLogoSrc = logoUrl || (selectedCourseSpec.logo ? getAssetPath(selectedCourseSpec.logo) : null);
 
         const rawCourseSlug = selectedCourseSpec.slug || encodeURIComponent(cTitle.toLowerCase());
         const baseCourseDetailHref = rawCourseSlug.includes("/")

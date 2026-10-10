@@ -21,9 +21,7 @@ const goldBtnStyle = {
 
 function resolveImg(mediaObj, fallback = "/assets/images/new_sode_tm_logo.png") {
   if (!mediaObj) return getAssetPath(fallback);
-  if (typeof mediaObj === "string") return mediaObj.startsWith("http") ? mediaObj : getAssetPath(mediaObj, fallback);
-  if (mediaObj.url) return mediaObj.url.startsWith("http") ? mediaObj.url : getAssetPath(mediaObj.url);
-  return getAssetPath(fallback);
+  return getAssetPath(mediaObj, fallback);
 }
 
 // ✦ AI Tools Button with Sparkling Effect & NEW Badge
@@ -767,7 +765,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                           {/* Regular Universities (Standard Cards Grid) */}
                           {regularUniversities.map((uni, idx) => {
                             const uniSlug = uni.slug || uni._id || uni.name;
-                            const logoUrl = uni.logo?.url || uni.logo?.path || (typeof uni.logo === "string" ? uni.logo : null);
+                            const logoUrl = uni.logo ? getAssetPath(uni.logo) : null;
                             const detailUrl = uni.url || `/universities/${encodeURIComponent(uniSlug)}`;
                             const coursesUrl = `/courses?university=${encodeURIComponent(uniSlug)}`;
 
@@ -1125,7 +1123,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                 {selectedMobileCategory.items.map((item, idx) => {
                   const itemSlug = item.slug || item._id || item.name;
                   const isUni = selectedMobileCategory.type === "universities" || !!item.location || item.courses_count !== undefined;
-                  const logoSrc = item.header_logo?.url || item.header_logo?.path || (typeof item.header_logo === "string" ? item.header_logo : null) || item.logo?.url || (typeof item.logo === "string" ? item.logo : null) || item.image?.url || (typeof item.image === "string" ? item.image : null);
+                  const logoSrc = item.header_logo || item.logo || item.image || null;
                   const detailUrl = isUni
                     ? (item.url || `/universities/${encodeURIComponent(itemSlug)}`)
                     : (item.url || `/courses?course=${encodeURIComponent(itemSlug)}`);

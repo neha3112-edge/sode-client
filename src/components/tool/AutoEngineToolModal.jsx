@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { useToolWizard } from "./ToolWizardContext";
 import { dynamicRead, dynamicPost } from "@/services/request";
+import { getAssetPath } from "@/lib/utils";
 import {
   X,
   ArrowLeft,
@@ -599,7 +600,7 @@ export default function AutoEngineToolModal() {
                         <div className="w-16 h-16 rounded-xl bg-slate-50 border border-slate-100 p-2 flex items-center justify-center shrink-0">
                           {uni.logo ? (
                             <img
-                              src={uni.logo}
+                              src={getAssetPath(uni.logo)}
                               alt={uni.name}
                               className="w-full h-full object-contain"
                             />

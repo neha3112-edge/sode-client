@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Container } from "@/components/common/Container";
 import { useToolWizard } from "@/components/tool/ToolWizardContext";
 import { CareerExpertsSection } from "@/components/website/counselor";
+import { getAssetPath } from "@/lib/utils";
 
 export default function AiToolsAndScholarship({ block, bIdx, counselors = [] }) {
   const { openTool } = useToolWizard();
@@ -105,9 +106,9 @@ export default function AiToolsAndScholarship({ block, bIdx, counselors = [] }) 
 
                   <Link href={linkUrl} className="flex flex-col items-center space-y-2 sm:space-y-3 w-full no-underline">
                     <div className="w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center group-hover:scale-110 transition-transform">
-                      {child.logo?.url || (typeof child.logo === "string" && child.logo) ? (
+                      {child.logo ? (
                         <Image
-                          src={child.logo?.url || child.logo}
+                          src={getAssetPath(child.logo)}
                           alt={child.name || "Tool icon"}
                           width={48}
                           height={48}

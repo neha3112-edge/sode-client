@@ -140,7 +140,7 @@ export function ContactView({
   const registeredOffice = tenant?.registeredOffice || tenant?.address || "";
   const tenantName = tenant?.name || "";
   const tenantSubtitle = tenant?.subtitle || "";
-  const bannerImgUrl = tenant?.bannerImage?.url || null;
+  const bannerImgUrl = tenant?.bannerImage ? getAssetPath(tenant.bannerImage) : null;
 
   const contactHeroTitle = tenant?.contactHeroTitle || "";
   const contactHeroDescription = tenant?.contactHeroDescription || "";

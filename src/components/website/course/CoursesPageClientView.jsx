@@ -634,12 +634,7 @@ export default function CoursesPageClientView({
         const isPartnerActive = Boolean(partnerObj && partnerObj.name && (partnerObj.show === true || partnerObj.showOnWebsite === true));
         const providerName = isPartnerActive ? partnerObj.name : null;
 
-        const rawLogo =
-          uni.logo?.url ||
-          uni.logo?.path ||
-          uni.logoSrc?.url ||
-          uni.logoSrc ||
-          uni.logo;
+        const rawLogo = uni.logo || uni.logoSrc || null;
         const logoUrl = getAssetPath(rawLogo, null);
 
         let durationText = null;

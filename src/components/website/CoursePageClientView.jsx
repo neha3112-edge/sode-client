@@ -65,8 +65,7 @@ function isDirectVideoFile(url) {
 
 function resolveMediaUrl(media) {
   if (!media) return null;
-  if (typeof media === "string") return media;
-  return media.url || media.path || media.link || media.fileUrl || null;
+  return getAssetPath(media);
 }
 
 export default function CoursePageClientView({ page, slug, heroData = null }) {

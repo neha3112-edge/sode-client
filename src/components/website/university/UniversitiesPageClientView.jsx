@@ -71,9 +71,9 @@ function UniversityCard({ uni }) {
   const featuredCourse = uni?.featuredCourse || coursesList[0] || "";
   const programsText = coursesList.length > 0 ? coursesList.join(" | ") : "";
 
-  const logoUrl = !logoErr ? resolveMediaUrl(uni?.image || uni?.logoSrc || uni?.logo) : null;
+  const logoUrl = !logoErr ? resolveMediaUrl(uni?.logo || uni?.logoSrc || uni?.image) : null;
   const imageSrc = !imgErr ? resolveMediaUrl(uni?.bannerImg || uni?.imageSrc || uni?.image) : null;
-  const logoAlt = uni?.image?.name || uni?.logoSrc?.name || uni?.logo?.name || name;
+  const logoAlt = uni?.logo?.name || uni?.logoSrc?.name || uni?.image?.name || name;
   const imgAlt = uni?.bannerImg?.name || uni?.imageSrc?.name || name;
 
   const avatarBg = getAvatarColor(name);

@@ -127,10 +127,7 @@ export function ToolsView({ initialTools = [] }) {
           );
         }
 
-        const logoUrl = getAssetPath(
-          t.logo?.url || t.logo || t.image?.url || t.image,
-          ""
-        );
+        const logoUrl = getAssetPath(t.logo || t.image, "");
 
         return {
           id: t._id || t.id || String(idx),

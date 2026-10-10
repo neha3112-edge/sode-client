@@ -83,8 +83,7 @@ export function constructMetadata(pageMeta) {
   const ogType = pageMeta.ogType;
 
   const rawOg = pageMeta.ogImage;
-  const ogUrl = typeof rawOg === "string" ? rawOg : rawOg?.url || rawOg?.path;
-  const ogImageUrl = ogUrl ? getAssetPath(ogUrl) : undefined;
+  const ogImageUrl = rawOg ? getAssetPath(rawOg) : undefined;
   const ogImageAlt = rawOg?.alt || rawOg?.name || ogTitle || title;
 
   const twitterCard = pageMeta.twitterCard;
@@ -92,8 +91,7 @@ export function constructMetadata(pageMeta) {
   const twitterDescription = pageMeta.twitterDescription || ogDescription || description;
 
   const rawTwitter = pageMeta.twitterImage || pageMeta.ogImage;
-  const twitterUrl = typeof rawTwitter === "string" ? rawTwitter : rawTwitter?.url || rawTwitter?.path;
-  const twitterImageUrl = twitterUrl ? getAssetPath(twitterUrl) : undefined;
+  const twitterImageUrl = rawTwitter ? getAssetPath(rawTwitter) : undefined;
 
   const twitterSite = pageMeta.twitterSite;
   const twitterCreator = pageMeta.twitterCreator;
