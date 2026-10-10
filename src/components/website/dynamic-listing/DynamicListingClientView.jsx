@@ -309,14 +309,14 @@ function DynamicHero({ hero, pageTitle, targetCourseName }) {
   );
 }
 
-function RankedUniversityCard({ item, index, features }) {
+function RankedUniversityCard({ item, index, features, isStatePage = false }) {
   const { openFormModal } = useFormModal();
   const [isExpanded, setIsExpanded] = useState(false);
 
   const uni = item?.university;
   if (!uni) return null;
 
-  const rank = item.rank || index + 1;
+  const rank = index + 1;
   const name = uni.name;
   const slug = uni.slug;
   const logoUrl = getMediaUrl(uni.logo) || getMediaUrl(uni.image);
@@ -327,6 +327,13 @@ function RankedUniversityCard({ item, index, features }) {
   const approvalsJoined = uni.approvals?.map((a) => a.code || a.name).filter(Boolean).join(" | ");
   const semFee = item.customFeeText || item.fees?.formattedSemesterFees || item.fees?.formattedPerSemesterPayable || "";
   const eligibilityText = item.eligibility;
+  const coursesList = item.offeredCourses || item.coursesOffered || [];
+  const coursesJoined = Array.isArray(coursesList)
+    ? coursesList
+        .map((c) => c.code || c.name || c.displayName)
+        .filter(Boolean)
+        .join(", ")
+    : "";
   const advantageText = item.highlightReason || item.advantage;
   const cardLink = item.courseSlug
     ? (item.courseSlug.includes("/") ? `/universities/${item.courseSlug}` : `/${item.courseSlug}`)
@@ -441,6 +448,18 @@ function RankedUniversityCard({ item, index, features }) {
                 </div>
                 <div className="text-slate-600 text-xs font-medium break-words line-clamp-3 leading-snug" title={eligibilityText}>
                   {eligibilityText}
+                </div>
+              </div>
+            )}
+
+            {(isStatePage || item.isStateListing) && coursesJoined && (
+              <div>
+                <div className="font-bold text-slate-900 flex items-center gap-1 mb-0.5">
+                  <GraduationCap className="w-3.5 h-3.5 text-slate-800 shrink-0" />
+                  <span>Courses :</span>
+                </div>
+                <div className="text-slate-600 text-xs font-medium break-words line-clamp-3 leading-snug" title={coursesJoined}>
+                  {coursesJoined}
                 </div>
               </div>
             )}
@@ -634,9 +653,7 @@ export function DynamicListingClientView({ page }) {
   const pageSize = 10;
 
   const rankedList = useMemo(() => {
-    return (page?.rankedUniversities || []).filter(
-      (item) => item?.university && item.university?.showOnWebsite !== false
-    );
+    return (page?.rankedUniversities || []).filter((item) => Boolean(item?.university));
   }, [page?.rankedUniversities]);
 
   const displayedUniversities = useMemo(() => {
@@ -688,6 +705,7 @@ export function DynamicListingClientView({ page }) {
                     item={item}
                     index={startIndex + index}
                     features={page?.features}
+                    isStatePage={Boolean(page?.state || page?.isStateListing)}
                   />
                 ))}
               </div>

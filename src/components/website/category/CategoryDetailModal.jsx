@@ -145,12 +145,42 @@ export default function CategoryDetailModal({
                         onClick={() => {
                           onClose();
                           const uniSlug = getItemSlug(modalData.category);
-                          const crsSlug = getItemSlug(crs);
-                          if (crs.isSubCourse || crs.itemType === "subcourse") {
-                            const parentSlug = crs.parentCourseSlug || getItemSlug({ name: crs.parentCourseName, slug: crs.parentCourseSlug }) || crsSlug;
-                            router.push(`/courses?university=${encodeURIComponent(uniSlug)}&course=${encodeURIComponent(parentSlug)}&subcourse=${encodeURIComponent(crsSlug)}`);
+
+                          // 1. Use direct targetUrl if provided from API and clean
+                          if (crs.targetUrl && crs.targetUrl.startsWith("/universities/")) {
+                            const lastPart = crs.targetUrl.split("/universities/")[1]?.split("?")[0]?.split("/").filter(Boolean).pop();
+                            if (lastPart && !isObjectId(lastPart)) {
+                              router.push(crs.targetUrl);
+                              return;
+                            }
+                          }
+
+                          // 2. Use coursePageSlug if present
+                          if (crs.coursePageSlug && !isObjectId(crs.coursePageSlug)) {
+                            const cleanPageSlug = crs.coursePageSlug.startsWith("/") ? crs.coursePageSlug : `/universities/${crs.coursePageSlug}`;
+                            router.push(cleanPageSlug);
+                            return;
+                          }
+
+                          // 3. Clean course slug (strictly non-ObjectId)
+                          let crsSlug = "";
+                          if (crs.slug && !isObjectId(crs.slug)) {
+                            crsSlug = crs.slug;
+                          } else if (crs.courseSlug && !isObjectId(crs.courseSlug)) {
+                            crsSlug = crs.courseSlug;
                           } else {
-                            router.push(`/courses?university=${encodeURIComponent(uniSlug)}&course=${encodeURIComponent(crsSlug)}`);
+                            crsSlug = getItemSlug(crs);
+                          }
+
+                          if (crsSlug && crsSlug.includes("/")) {
+                            router.push(`/universities/${crsSlug}`);
+                          } else if (crs.isSubCourse || crs.itemType === "subcourse") {
+                            const parentSlug = (!isObjectId(crs.parentCourseSlug) ? crs.parentCourseSlug : "") ||
+                              getItemSlug({ name: crs.parentCourseName, slug: crs.parentCourseSlug }) ||
+                              crsSlug;
+                            router.push(`/universities/${encodeURIComponent(uniSlug)}/${encodeURIComponent(parentSlug)}/${encodeURIComponent(crsSlug)}`);
+                          } else {
+                            router.push(`/universities/${encodeURIComponent(uniSlug)}/${encodeURIComponent(crsSlug)}`);
                           }
                         }}
                         className="bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl p-1.5 min-[360px]:p-2 aspect-square flex flex-col items-center justify-between text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group min-w-0 w-full shadow-2xs overflow-hidden"
@@ -177,11 +207,11 @@ export default function CategoryDetailModal({
                       type="button"
                       onClick={() => {
                         onClose();
-                        router.push(`/courses?university=${encodeURIComponent(getItemSlug(modalData.category))}`);
+                        router.push(`/universities/${encodeURIComponent(getItemSlug(modalData.category))}`);
                       }}
                       className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors cursor-pointer border-0"
                     >
-                      Explore University Courses
+                      Explore University Page
                     </button>
                   </div>
                 )}

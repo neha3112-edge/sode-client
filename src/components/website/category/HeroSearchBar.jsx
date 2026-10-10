@@ -185,6 +185,7 @@ export default function HeroSearchBar({
           {/* Main Search Input Box */}
           <form
             onSubmit={handleSearchSubmit}
+            suppressHydrationWarning
             className={`relative flex items-center bg-white rounded-full border overflow-hidden transition-all duration-200 h-10 sm:h-11 shadow-xs ${
               isFocused
                 ? "border-[#0B3B7E] ring-2 ring-[#0B3B7E]/10"
@@ -202,6 +203,11 @@ export default function HeroSearchBar({
             <input
               type="text"
               value={searchTerm}
+              suppressHydrationWarning
+              data-gramm="false"
+              data-gramm_editor="false"
+              data-enable-grammarly="false"
+              autoComplete="off"
               onChange={(e) => {
                 setSearchTerm(e.target.value);
                 setSelectedIndex(-1);
