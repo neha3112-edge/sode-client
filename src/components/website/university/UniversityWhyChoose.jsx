@@ -23,24 +23,26 @@ export default function UniversityWhyChoose({
       </h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        {items.map((item, idx) => (
-          <div
-            key={idx}
-            className="rounded-xl border border-blue-100/80 bg-blue-50/20 p-5 text-center hover:border-blue-300 hover:shadow-md transition-all duration-200 flex flex-col items-center space-y-3 shadow-2xs"
-          >
-            <div className="w-14 h-14 rounded-2xl bg-white text-[#0D5CAD] flex items-center justify-center shrink-0 border border-blue-100 shadow-2xs relative overflow-hidden">
-              {item.iconUrl ? (
-                <Image
-                  src={getAssetPath(item.iconUrl)}
-                  alt={item.title}
-                  fill
-                  sizes="56px"
-                  className="object-contain p-2.5"
-                />
-              ) : (
-                <CheckCircle2 size={26} className="text-[#0077B6]" />
-              )}
-            </div>
+        {items.map((item, idx) => {
+          const iconAsset = item.icon || item.iconUrl;
+          return (
+            <div
+              key={idx}
+              className="rounded-xl border border-blue-100/80 bg-blue-50/20 p-5 text-center hover:border-blue-300 hover:shadow-md transition-all duration-200 flex flex-col items-center space-y-3 shadow-2xs"
+            >
+              <div className="w-14 h-14 rounded-2xl bg-white text-[#0D5CAD] flex items-center justify-center shrink-0 border border-blue-100 shadow-2xs relative overflow-hidden">
+                {iconAsset ? (
+                  <Image
+                    src={getAssetPath(iconAsset)}
+                    alt={item.title}
+                    fill
+                    sizes="56px"
+                    className="object-contain p-2.5"
+                  />
+                ) : (
+                  <CheckCircle2 size={26} className="text-[#0077B6]" />
+                )}
+              </div>
 
             <div className="space-y-1.5">
               <h3 className="text-base font-bold text-gray-900 leading-snug">
@@ -51,7 +53,8 @@ export default function UniversityWhyChoose({
               </p>
             </div>
           </div>
-        ))}
+        );
+      })}
       </div>
     </div>
   );

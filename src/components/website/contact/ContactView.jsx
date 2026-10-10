@@ -111,7 +111,7 @@ export function ContactView({
         page_url: typeof window !== "undefined" ? window.location.href : "",
       };
 
-      const response = await fetch(getAssetPath("/api/lead"), {
+      const response = await fetch("/api/lead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

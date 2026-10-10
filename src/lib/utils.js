@@ -2,7 +2,6 @@
 
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import mediaMap from "@/constants/mediaMap.json";
 
 export function cn(...inputs) {
   return twMerge(clsx(inputs));
@@ -35,54 +34,168 @@ export function resolveMediaMapping(key) {
   return null;
 }
 
+export function slugifyFileName(name = "", fallbackExt = "webp") {
+  if (!name) return "";
+  let baseName = String(name).trim();
+  let ext = "";
+  const extMatch = baseName.match(/\.([a-zA-Z0-9]+)$/);
+  if (extMatch) {
+    ext = extMatch[1].toLowerCase();
+    baseName = baseName.replace(/\.[a-zA-Z0-9]+$/, "");
+  } else {
+    ext = fallbackExt;
+  }
+  const slug = baseName
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/[\s_]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+  return `${slug || "image"}.${ext}`;
+}
+
 /**
- * Resolves an image/asset path to the correct clean URL (/image/filename)
- * Supports string URLs, static filenames from mediaMap, and populated Media objects ({ _id, url, name, fileName }).
+ * Formats image alt text cleanly into human-readable text.
+ * Example: 'data-data' -> 'Data Data'
+ *          'data_data.webp' -> 'Data Data'
+ *          'Manipal University Jaipur' -> 'Manipal University Jaipur'
  */
-export function getAssetPath(path = "", fallback = DEFAULT_SVG_LOGO) {
+export function formatAltText(text = "") {
+  if (!text || typeof text !== "string") return "";
+
+  // 1. Remove file extensions (.webp, .png, .jpg, .jpeg, .svg, .gif, .pdf, etc.)
+  let clean = text.replace(/\.(webp|png|jpe?g|svg|gif|avif|bmp|pdf|ico)$/i, "").trim();
+
+  // 2. Replace hyphens and underscores with spaces (e.g. data-data -> data data, data_data -> data data)
+  if (/[-_]/.test(clean)) {
+    clean = clean.replace(/[-_]+/g, " ");
+  }
+
+  // 3. Normalize multiple whitespace
+  clean = clean.replace(/\s+/g, " ").trim();
+  if (!clean) return "";
+
+  // 4. Title case each word: 'data data' -> 'Data Data'
+  // If a word is already an all-caps abbreviation/acronym like 'MBA', 'MCA', 'AI', 'IIT', keep it.
+  return clean
+    .split(" ")
+    .map((word) => {
+      if (!word) return "";
+      // Acronym check (e.g., MBA, MCA, AI, IIT, IIM)
+      if (word === word.toUpperCase() && word.length > 1 && !/^[0-9]+$/.test(word)) {
+        return word;
+      }
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(" ");
+}
+
+/**
+ * Returns image alt text dynamically based on media object { name, alt } or fallback.
+ * Prioritizes the image's name, and cleans formatted slugs (e.g. 'data-data' -> 'Data Data').
+ */
+export function getAssetAlt(media, fallbackAlt = "") {
+  if (!media) return formatAltText(fallbackAlt);
+
+  let target = "";
+  if (typeof media === "object" && media !== null) {
+    // 1. Prioritize image's name first!
+    target = media.name || media.alt || media.title || fallbackAlt || "";
+    if (!target && media.fileName) {
+      target = media.fileName;
+    }
+  } else if (typeof media === "string") {
+    if (fallbackAlt && !media.includes("/")) {
+      target = media || fallbackAlt;
+    } else if (media.startsWith("http") || media.startsWith("/")) {
+      target = fallbackAlt || media.split("/").pop().split("?")[0];
+    } else {
+      target = media || fallbackAlt;
+    }
+  }
+
+  return formatAltText(target);
+}
+
+function extractMinioRelPath(rawPath, mediaObj = null) {
+  if (!rawPath && !mediaObj) return "";
+  const str = typeof rawPath === "string" ? rawPath.trim() : "";
+
+  if (str.includes("/minio/")) {
+    return str.substring(str.indexOf("/minio/") + 7).replace(/^\/+/, "");
+  }
+  if (str.includes(":9000/")) {
+    return str.substring(str.indexOf(":9000/") + 6).replace(/^\/+/, "");
+  }
+  if (
+    str.startsWith("crm-media/") ||
+    str.startsWith("images/") ||
+    str.startsWith("uploads/")
+  ) {
+    return str.replace(/^\/+/, "");
+  }
+  if (mediaObj && typeof mediaObj === "object") {
+    if (mediaObj.bucket && mediaObj.key) {
+      return `${mediaObj.bucket}/${mediaObj.key}`.replace(/^\/+/, "");
+    }
+    if (mediaObj.path && typeof mediaObj.path === "string") {
+      const p = mediaObj.path.trim().replace(/^\/+/, "");
+      if (
+        p.startsWith("crm-media/") ||
+        p.startsWith("images/") ||
+        p.startsWith("uploads/")
+      ) {
+        return p;
+      }
+    }
+  }
+  return "";
+}
+
+/**
+ * Resolves an image/asset path to the correct clean URL (/image/:name)
+ * Dynamically builds SEO-friendly URLs based on media name (NOT fileName).
+ */
+export function getAssetPath(path = "", fallback = DEFAULT_SVG_LOGO, customName = "") {
   if (!path) return fallback;
 
-  // 1. Populated Media object ({ name, url, fileName, ... })
+  // 1. Populated Media object ({ name, url, fileName, alt, ... })
   if (typeof path === "object" && path !== null) {
     const rawUrl = path.url || path.src || path.path || "";
-    let originalName = path.name || path.alt || path.fileName || "";
+    const name = path.name || path.title || path.imageName || customName || path.alt || "";
 
     if (rawUrl) {
-      if (rawUrl.includes("/minio/") || rawUrl.includes(":9000/")) {
-        const delimiter = rawUrl.includes("/minio/") ? "/minio/" : ":9000/";
-        const relPath = rawUrl.substring(rawUrl.indexOf(delimiter) + delimiter.length).replace(/^\/+/, "");
+      const urlExtMatch = rawUrl.match(/\.([a-zA-Z0-9]+)(?:\?|$)/);
+      const ext = urlExtMatch ? urlExtMatch[1] : (path.fileName?.split(".").pop() || "webp");
+      const relPath = extractMinioRelPath(rawUrl, path);
 
-        if (originalName) {
-          const extMatch = rawUrl.match(/\.([a-zA-Z0-9]+)(?:\?|$)/);
-          const ext = extMatch ? extMatch[1] : "";
-          if (ext && !originalName.toLowerCase().endsWith(`.${ext.toLowerCase()}`)) {
-            originalName = `${originalName}.${ext}`;
-          }
-          const safeName = originalName.trim().replace(/[\s/\\?%*:|"<>]+/g, "-");
-          const lastFile = relPath.split("/").pop();
-
-          registerMediaMapping(originalName, rawUrl);
-          registerMediaMapping(safeName, rawUrl);
-          registerMediaMapping(lastFile, rawUrl);
-
-          // If safeName is a distinct friendly name (not just raw hash), embed it cleanly for SEO
-          const isJustHash =
-            safeName.toLowerCase() === lastFile.toLowerCase() ||
-            safeName.replace(/\.[^/.]+$/, "").length === 32;
-
-          if (!isJustHash && safeName) {
-            return `/image/${relPath}/${encodeURIComponent(safeName)}`;
-          }
+      // Use the image's name (NOT fileName!)
+      if (name) {
+        const cleanName = slugifyFileName(name, ext);
+        registerMediaMapping(cleanName, rawUrl);
+        registerMediaMapping(name, rawUrl);
+        registerMediaMapping(encodeURIComponent(cleanName), rawUrl);
+        const baseSlug = cleanName.replace(/\.[^/.]+$/, "");
+        if (baseSlug) {
+          registerMediaMapping(baseSlug, rawUrl);
+        }
+        if (path.fileName) {
+          registerMediaMapping(path.fileName, rawUrl);
         }
 
-        registerMediaMapping(relPath.split("/").pop(), rawUrl);
-        return `/image/${relPath}`;
+        return `/image/${encodeURIComponent(cleanName)}`;
       }
 
-      // Check if static asset in mediaMap
-      const staticName = originalName || rawUrl.split("/").pop();
-      if (mediaMap[staticName] || mediaMap[staticName?.toLowerCase()]) {
-        return `/image/${encodeURIComponent(staticName)}`;
+      // If no name is provided, fallback to fileName only if fileName exists
+      if (path.fileName) {
+        registerMediaMapping(path.fileName, rawUrl);
+        return `/image/${encodeURIComponent(path.fileName)}`;
+      }
+
+      const relMinio = extractMinioRelPath(rawUrl, path);
+      if (relMinio) {
+        registerMediaMapping(relMinio.split("/").pop(), rawUrl);
+        return `/image/${relMinio}`;
       }
 
       path = rawUrl;
@@ -95,41 +208,30 @@ export function getAssetPath(path = "", fallback = DEFAULT_SVG_LOGO) {
   let targetPath = path.trim();
   if (!targetPath) return fallback;
 
+  // If customName is provided for a string URL
+  if (customName && (targetPath.startsWith("http") || targetPath.includes("/minio/"))) {
+    const urlExtMatch = targetPath.match(/\.([a-zA-Z0-9]+)(?:\?|$)/);
+    const ext = urlExtMatch ? urlExtMatch[1] : "webp";
+    const cleanName = slugifyFileName(customName, ext);
+    registerMediaMapping(cleanName, targetPath);
+    registerMediaMapping(customName, targetPath);
+    registerMediaMapping(encodeURIComponent(cleanName), targetPath);
+
+    return `/image/${encodeURIComponent(cleanName)}`;
+  }
+
   // 2. Data URIs → pass through as-is
   if (targetPath.startsWith("data:image")) return targetPath;
 
   // 3. Relative /image/ or /media/ paths -> return as-is
   if (targetPath.startsWith("/image/") || targetPath.startsWith("/media/")) return targetPath;
 
-  // 4. Static asset lookup in mediaMap (e.g. "sode-logo.png", "/assets/images/...")
-  const lookup = targetPath.toLowerCase();
-  const filename = targetPath.split("/").pop();
-  const filenameLookup = filename ? filename.toLowerCase() : "";
-
-  const mappedMinioUrl =
-    mediaMap[targetPath] ||
-    mediaMap[lookup] ||
-    (filename ? mediaMap[filename] : null) ||
-    (filenameLookup ? mediaMap[filenameLookup] : null);
-
-  if (mappedMinioUrl) {
-    const cleanFilename = filename || targetPath;
-    registerMediaMapping(cleanFilename, mappedMinioUrl);
-    return `/image/${encodeURIComponent(cleanFilename)}`;
-  }
-
-  // 5. MinIO URLs (domain or port) -> convert to /image/... proxy path
-  if (targetPath.includes("/minio/")) {
-    const relativeMedia = targetPath.substring(targetPath.indexOf("/minio/") + 7).replace(/^\/+/, "");
-    const lastFile = relativeMedia.split("/").pop();
+  // 4. MinIO URLs (domain or port) -> convert to /image/... proxy path
+  const relMinio = extractMinioRelPath(targetPath);
+  if (relMinio) {
+    const lastFile = relMinio.split("/").pop();
     registerMediaMapping(lastFile, targetPath);
-    return `/image/${relativeMedia}`;
-  }
-  if (targetPath.includes(":9000/")) {
-    const relativeMedia = targetPath.substring(targetPath.indexOf(":9000/") + 6).replace(/^\/+/, "");
-    const lastFile = relativeMedia.split("/").pop();
-    registerMediaMapping(lastFile, targetPath);
-    return `/image/${relativeMedia}`;
+    return `/image/${relMinio}`;
   }
 
   // 6. Generic relative paths

@@ -187,8 +187,8 @@ export default function UniversityCoursesSection({
                     setIsCompareDrawerOpen(true);
                   }}
                   className={`w-full py-1 text-[11px] sm:text-xs font-medium flex items-center justify-center gap-1 transition-all cursor-pointer mt-1 border-none bg-transparent min-h-[22px] ${inCmp
-                      ? "text-[#08AEAA] font-bold"
-                      : "text-gray-600 hover:text-[#0D3B66]"
+                    ? "text-[#08AEAA] font-bold"
+                    : "text-gray-600 hover:text-[#0D3B66]"
                     }`}
                 >
                   {inCmp ? (
@@ -233,8 +233,8 @@ export default function UniversityCoursesSection({
             </span>
             <ChevronDown
               className={`w-3.5 h-3.5 transition-transform duration-200 ${visibleCoursesCount >= filteredCourses.length
-                  ? "rotate-180"
-                  : "group-hover:translate-y-0.5"
+                ? "rotate-180"
+                : "group-hover:translate-y-0.5"
                 }`}
             />
           </button>

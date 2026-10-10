@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { resolveMediaMapping } from "@/lib/utils";
-import mediaMap from "@/constants/mediaMap.json";
 
 const MINIO_PUBLIC_URL = (
   process.env.NEXT_PUBLIC_MINIO_URL || "https://new.crm.api.mysode.com/minio"
@@ -32,8 +31,6 @@ export async function GET(request, context) {
     }
 
     // 1. Check if slugArray has an embedded MinIO path followed by a friendly SEO filename
-    // e.g. /image/crm-media/2026/09/21/hash.webp/Hero-Slide-1.webp
-    // or /image/images/2026/08/11/hash.webp/sode-logo.webp
     if (!minioTargetUrl && slugArray.length >= 2) {
       for (let i = 0; i < slugArray.length - 1; i++) {
         const seg = slugArray[i];
@@ -62,33 +59,28 @@ export async function GET(request, context) {
       }
     }
 
-    // 3. Resolve MinIO URL from in-memory registry or static mediaMap
+    // 3. Resolve MinIO URL from in-memory media registry
     if (!minioTargetUrl) {
       minioTargetUrl =
         resolveMediaMapping(filename) ||
+        resolveMediaMapping(filename.toLowerCase()) ||
         resolveMediaMapping(fullPath) ||
-        mediaMap[filename] ||
-        mediaMap[filename.toLowerCase()] ||
-        mediaMap[fullPath] ||
-        mediaMap[fullPath.toLowerCase()] ||
-        mediaMap[`/assets/images/${filename}`] ||
-        mediaMap[`/assets/pdf/${filename}`];
+        resolveMediaMapping(fullPath.toLowerCase());
     }
 
-    // 4. Fallback: search values in mediaMap that end with this filename
+    // 5. Fallback for valid direct paths
     if (!minioTargetUrl) {
-      const lowerName = filename.toLowerCase();
-      for (const [key, val] of Object.entries(mediaMap)) {
-        if (typeof val === "string" && val.toLowerCase().endsWith(lowerName)) {
-          minioTargetUrl = val;
-          break;
-        }
+      if (
+        fullPath.startsWith("crm-media/") ||
+        fullPath.startsWith("images/") ||
+        fullPath.startsWith("uploads/")
+      ) {
+        minioTargetUrl = `${MINIO_PUBLIC_URL}/${fullPath}`;
       }
     }
 
-    // 5. Last fallback: try direct MinIO URL with fullPath
     if (!minioTargetUrl) {
-      minioTargetUrl = `${MINIO_PUBLIC_URL}/${fullPath}`;
+      return new NextResponse("File Not Found", { status: 404 });
     }
 
     if (minioTargetUrl.startsWith("//")) {
@@ -101,7 +93,7 @@ export async function GET(request, context) {
     });
 
     if (!res.ok) {
-      return new NextResponse("File Not Found", { status: res.status });
+      return new NextResponse("File Not Found", { status: 404 });
     }
 
     let contentType = res.headers.get("content-type");
