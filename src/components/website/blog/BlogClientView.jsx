@@ -62,6 +62,189 @@ function getYouTubeEmbedUrl(url) {
   return null;
 }
 
+function PdfCanvasViewer({ url, title }) {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [numPages, setNumPages] = useState(0);
+  const [scale, setScale] = useState(1.0);
+  const containerRef = useRef(null);
+  const pagesContainerRef = useRef(null);
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    if (!url) {
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    const loadAndRender = async () => {
+      try {
+        if (typeof window === "undefined") return;
+
+        // Ensure PDF.js library is loaded
+        if (!window.pdfjsLib) {
+          await new Promise((resolve, reject) => {
+            const existingScript = document.getElementById("pdfjs-engine-script");
+            if (existingScript) {
+              if (window.pdfjsLib) {
+                resolve();
+                return;
+              }
+              existingScript.addEventListener("load", () => resolve());
+              existingScript.addEventListener("error", (e) => reject(e));
+              return;
+            }
+            const script = document.createElement("script");
+            script.id = "pdfjs-engine-script";
+            script.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+            script.onload = () => {
+              if (window.pdfjsLib) {
+                window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+                  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+              }
+              resolve();
+            };
+            script.onerror = () => reject(new Error("Unable to load PDF engine"));
+            document.head.appendChild(script);
+          });
+        }
+
+        if (isCancelled) return;
+
+        const loadingTask = window.pdfjsLib.getDocument({
+          url,
+          withCredentials: false,
+        });
+
+        const pdfDoc = await loadingTask.promise;
+        if (isCancelled) return;
+
+        setNumPages(pdfDoc.numPages);
+
+        const pagesEl = pagesContainerRef.current;
+        if (!pagesEl) return;
+        pagesEl.innerHTML = "";
+
+        const containerWidth =
+          (containerRef.current?.clientWidth || window.innerWidth) - 24;
+
+        for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
+          if (isCancelled) break;
+
+          const page = await pdfDoc.getPage(pageNum);
+          const initialViewport = page.getViewport({ scale: 1 });
+          const autoScale = Math.min(
+            (containerWidth / initialViewport.width) * scale,
+            2.5
+          );
+          const viewport = page.getViewport({ scale: Math.max(autoScale, 0.6) });
+
+          const outputScale = window.devicePixelRatio || 1;
+          const canvas = document.createElement("canvas");
+          const context = canvas.getContext("2d");
+
+          canvas.width = Math.floor(viewport.width * outputScale);
+          canvas.height = Math.floor(viewport.height * outputScale);
+          canvas.style.width = `${Math.floor(viewport.width)}px`;
+          canvas.style.height = `${Math.floor(viewport.height)}px`;
+          canvas.style.maxWidth = "100%";
+          canvas.style.display = "block";
+
+          const pageWrapper = document.createElement("div");
+          pageWrapper.className =
+            "mb-3 shadow-md rounded-md overflow-hidden bg-white border border-slate-200 flex items-center justify-center";
+          pageWrapper.appendChild(canvas);
+          pagesEl.appendChild(pageWrapper);
+
+          const transform =
+            outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : null;
+
+          await page.render({
+            canvasContext: context,
+            transform,
+            viewport,
+          }).promise;
+        }
+
+        if (!isCancelled) {
+          setLoading(false);
+        }
+      } catch (err) {
+        console.error("PDF preview error:", err);
+        if (!isCancelled) {
+          setError(err.message || "Failed to render document preview");
+          setLoading(false);
+        }
+      }
+    };
+
+    loadAndRender();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [url, scale]);
+
+  return (
+    <div
+      ref={containerRef}
+      className="w-full h-full bg-slate-200/90 overflow-y-auto flex flex-col items-center relative select-none"
+    >
+      {numPages > 0 && !loading && (
+        <div className="sticky top-2 z-10 flex items-center gap-2 bg-slate-900/85 backdrop-blur text-white px-3 py-1 rounded-full text-xs shadow-md mb-2">
+          <span>{numPages} {numPages === 1 ? "page" : "pages"}</span>
+          <span className="opacity-40">|</span>
+          <button
+            type="button"
+            onClick={() => setScale((s) => Math.max(s - 0.2, 0.6))}
+            className="px-1.5 py-0.5 hover:bg-white/20 rounded font-bold cursor-pointer"
+          >
+            -
+          </button>
+          <span>{Math.round(scale * 100)}%</span>
+          <button
+            type="button"
+            onClick={() => setScale((s) => Math.min(s + 0.2, 2.0))}
+            className="px-1.5 py-0.5 hover:bg-white/20 rounded font-bold cursor-pointer"
+          >
+            +
+          </button>
+        </div>
+      )}
+
+      {loading && (
+        <div className="flex flex-col items-center justify-center h-full min-h-[300px] text-slate-500 gap-2.5">
+          <div className="w-8 h-8 border-3 border-blue-600 border-t-transparent rounded-full animate-spin" />
+          <span className="text-xs font-semibold text-slate-600">Loading document...</span>
+        </div>
+      )}
+
+      {error && !loading && (
+        <div className="flex flex-col items-center justify-center h-full min-h-[300px] text-slate-600 p-6 text-center gap-3">
+          <p className="text-xs text-red-500 font-semibold">{error}</p>
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg text-xs font-bold no-underline"
+          >
+            Open Document
+          </a>
+        </div>
+      )}
+
+      <div
+        ref={pagesContainerRef}
+        className="w-full flex flex-col items-center py-2 px-1"
+      />
+    </div>
+  );
+}
+
 export default function BlogClientView({
   initialData,
   initialPopularBlogs = [],
@@ -1943,17 +2126,15 @@ export default function BlogClientView({
       >
         <div className="w-full h-full bg-slate-100 rounded-b-lg overflow-hidden flex flex-col">
           {activePdf.url ? (
-            <object
-              data={viewerUrl}
-              type="application/pdf"
-              className="w-full h-full border-0 flex-1 bg-white"
-            >
+            isMobile ? (
+              <PdfCanvasViewer url={activePdf.url} title={activePdf.title} />
+            ) : (
               <iframe
                 src={viewerUrl}
                 title={activePdf.title || "PDF Viewer"}
                 className="w-full h-full border-0 flex-1 bg-white"
               />
-            </object>
+            )
           ) : (
             <div className="flex items-center justify-center h-full text-slate-400 text-sm">
               No document available
