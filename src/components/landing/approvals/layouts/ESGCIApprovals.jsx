@@ -10,8 +10,8 @@ export default function ESGCIApprovals({ approvals = [], brand = {} }) {
   return (
     <section
       id="certification"
-      className="certification w-full py-12 sm:py-16 bg-white text-center select-none scroll-mt-20"
-      style={{ backgroundColor: brand?.approvalsBg || "#ffffff" }}
+      className="certification w-full py-12 sm:py-16  text-center select-none scroll-mt-20"
+      style={{ backgroundColor: brand?.approvalsBg }}
     >
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6">
         <h2

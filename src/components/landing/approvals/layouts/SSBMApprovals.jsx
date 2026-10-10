@@ -1,59 +1,104 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 
 export default function SSBMApprovals({ brand = {} }) {
   const accreditations = brand?.ssbmAccreditations || [
-    { image: "/assets/all_universities_images/ssbm/acbsp-p.png", alt: "ACBSP" },
-    { image: "/assets/all_universities_images/ssbm/chea-logo.png", alt: "CHEA" },
-    { image: "/assets/all_universities_images/ssbm/bac.png", alt: "BAC" },
+    {
+      image: "/assets/all_universities_images/ssbm/acbsp-p.png",
+      alt: "ACBSP",
+      desktopMaxHeight: "54px",
+      mobileMaxHeight: "78px",
+    },
+    {
+      image: "/assets/all_universities_images/ssbm/chea-logo.png",
+      alt: "CHEA",
+      desktopMaxHeight: "40px",
+      mobileMaxHeight: "52px",
+    },
+    {
+      image: "/assets/all_universities_images/ssbm/bac.png",
+      alt: "BAC",
+      desktopMaxHeight: "48px",
+      mobileMaxHeight: "64px",
+    },
   ];
   const rankings = brand?.ssbmRankings || [
-    { image: "/assets/all_universities_images/ssbm/ceoworld.png", alt: "CEOWorld Magazine" },
-    { image: "/assets/all_universities_images/ssbm/postg.png", alt: "Postgrad" },
-    { image: "/assets/all_universities_images/ssbm/swiss.png", alt: "Study in Switzerland" },
+    {
+      image: "/assets/all_universities_images/ssbm/ceoworld.png",
+      alt: "CEOWorld Magazine",
+      desktopMaxHeight: "36px",
+      mobileMaxHeight: "48px",
+    },
+    {
+      image: "/assets/all_universities_images/ssbm/postg.png",
+      alt: "Postgrad",
+      desktopMaxHeight: "26px",
+      mobileMaxHeight: "36px",
+    },
+    {
+      image: "/assets/all_universities_images/ssbm/swiss.png",
+      alt: "Study in Switzerland",
+      desktopMaxHeight: "38px",
+      mobileMaxHeight: "52px",
+    },
   ];
 
   return (
     <section
       id="accreditations"
-      className="certification w-full py-12 sm:py-16 bg-[#f9f9f9] text-center select-none scroll-mt-20"
+      className="accreditation-container w-full py-10 sm:py-16 bg-[#f1f1f1] text-center select-none scroll-mt-20"
     >
       <div className="max-w-[1140px] mx-auto px-4 sm:px-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <fieldset className="border border-slate-300 rounded-[8px] p-6 pt-4 text-center bg-white shadow-xs">
-            <legend className="px-4 text-[17px] sm:text-[19px] font-bold text-[#111111] uppercase tracking-wide">
+        <h2 className="main-title text-[28px] sm:text-[34px] lg:text-[40px] font-extrabold text-[#000000] mb-7 sm:mb-9 tracking-tight">
+          Accreditations <span className="text-[#b32a25]">&</span>
+          <br className="block sm:hidden" />
+          <span className="text-[#b32a25]"> Rankings</span>
+        </h2>
+
+        <div className="content-grid grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 max-w-[340px] md:max-w-none mx-auto">
+          {/* Accreditations Box */}
+          <fieldset className="border-box border-[1.5px] border-[#b32a25] rounded-[18px]  px-5 sm:px-8 py-7 sm:py-6 relative">
+            <legend className="px-3.5 text-[16px] sm:text-[16px] font-bold text-[#111111] capitalize tracking-normal mx-auto ">
               Accreditations
             </legend>
-            <div className="grid grid-cols-3 gap-4 items-center justify-center py-2">
+            <div className="logo-group flex flex-col md:flex-row items-center justify-center md:justify-around gap-7 md:gap-6 h-auto md:h-[80px]">
               {accreditations.map((item, idx) => (
-                <div key={item.alt || idx} className="relative w-full h-[65px] flex items-center justify-center">
-                  <Image
+                <div
+                  key={item.alt || idx}
+                  className="w-full md:flex-1 flex items-center justify-center h-auto md:h-full py-1 md:py-0"
+                >
+                  <img
                     src={item.image}
                     alt={item.alt || `Accreditation ${idx + 1}`}
-                    fill
-                    className="object-contain"
-                    sizes="(max-width: 768px) 30vw, 160px"
+                    style={{
+                      maxHeight: item.mobileMaxHeight || item.desktopMaxHeight || "54px",
+                    }}
+                    className="max-w-[85%] md:max-w-full w-auto object-contain"
                   />
                 </div>
               ))}
             </div>
           </fieldset>
 
-          <fieldset className="border border-slate-300 rounded-[8px] p-6 pt-4 text-center bg-white shadow-xs">
-            <legend className="px-4 text-[17px] sm:text-[19px] font-bold text-[#111111] uppercase tracking-wide">
+          {/* Rankings Box */}
+          <fieldset className="border-box border-[1.5px] border-[#b32a25] rounded-[18px] px-5 sm:px-8 py-7 sm:py-6 relative">
+            <legend className="px-3.5 text-[16px] sm:text-[16px] font-bold text-[#111111] capitalize tracking-normal mx-auto ">
               Rankings
             </legend>
-            <div className="grid grid-cols-3 gap-4 items-center justify-center py-2">
+            <div className="logo-group custom_img_group flex flex-col md:flex-row items-center justify-center md:justify-around gap-7 md:gap-6 h-auto md:h-[80px]">
               {rankings.map((item, idx) => (
-                <div key={item.alt || idx} className="relative w-full h-[65px] flex items-center justify-center">
-                  <Image
+                <div
+                  key={item.alt || idx}
+                  className="w-full md:flex-1 flex items-center justify-center h-auto md:h-full py-1 md:py-0"
+                >
+                  <img
                     src={item.image}
                     alt={item.alt || `Ranking ${idx + 1}`}
-                    fill
-                    className="object-contain"
-                    sizes="(max-width: 768px) 30vw, 160px"
+                    style={{
+                      maxHeight: item.mobileMaxHeight || item.desktopMaxHeight || "40px",
+                    }}
+                    className="max-w-[85%] md:max-w-full w-auto object-contain"
                   />
                 </div>
               ))}

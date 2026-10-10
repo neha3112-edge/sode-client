@@ -9,6 +9,8 @@ import { FaWhatsapp } from "react-icons/fa";
  */
 function getApplyButtonClasses(applyStyle) {
   switch (applyStyle) {
+    case "red":
+      return "bg-[#c11f28] text-white";
     case "white-red":
       return "bg-white text-[#d32f2f]";
     case "white-accent":

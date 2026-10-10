@@ -12,29 +12,29 @@ export default function SsbmProgrammes({
   const heading = brand.programmesTitle || "TOP ONLINE DBA";
   const highlight =
     brand.programmesHighlight ||
-    (brand.name ? `${brand.name.toUpperCase()} SPECIALIZATIONS` : "DOCTORATE SPECIALIZATIONS");
+    (brand.name ? `${brand.name.toUpperCase()} SPECIALIZATIONS` : "SSBM DOCTORATE SPECIALIZATIONS");
 
   return (
-    <section id="whychoose" className="py-12 sm:py-16 bg-[#ffffff] select-none scroll-mt-20">
+    <section id="whychoose" className="py-10 sm:py-14 bg-[#ffffff] select-none scroll-mt-20">
       <div className="max-w-[1240px] mx-auto px-4 sm:px-6">
-        <h2 className="text-center text-[22px] sm:text-[28px] lg:text-[32px] font-bold text-[#111111] mb-8 sm:mb-12 uppercase tracking-tight">
+        <h2 className="text-center text-[24px] sm:text-[28px] lg:text-[32px] font-extrabold text-[#111111] mb-6 sm:mb-8 tracking-tight uppercase">
           {heading} <span className="text-[#c11f28]">{highlight}</span>
         </h2>
-        <div className="course-slider-wrapper">
+        {/* Mobile View: Single card carousel (block md:hidden) */}
+        <div className="course-slider-wrapper block md:hidden max-w-[340px] xs:max-w-[360px] mx-auto">
           <Carousel
             autoplay
-            autoplaySpeed={3000}
+            autoplaySpeed={3200}
             dots={true}
-            slidesToShow={3}
-            responsive={[
-              { breakpoint: 1024, settings: { slidesToShow: 2 } },
-              { breakpoint: 640, settings: { slidesToShow: 1 } },
-            ]}
+            slidesToShow={1}
+            slidesToScroll={1}
+            infinite={programmes.length > 1}
           >
             {programmes.map((p, idx) => (
-              <div key={idx} className="px-3 box-border outline-none py-2">
-                <div className="bg-[#f2f2f2] rounded-[8px] overflow-hidden border border-slate-200/90 shadow-sm flex flex-col justify-between text-left h-full min-h-[360px] hover:shadow-md transition-shadow">
-                  <div className="relative w-full h-[160px] overflow-hidden bg-slate-200">
+              <div key={idx} className="px-1 box-border outline-none py-1">
+                <div className="bg-[#F2F2F2] rounded-none sm:rounded-[2px] overflow-hidden border border-[#e5e5e5] flex flex-col justify-between text-left h-full transition-shadow">
+                  {/* Card Image */}
+                  <div className="relative w-full h-[190px] overflow-hidden bg-slate-200">
                     <Image
                       src={p.image}
                       alt={p.title}
@@ -43,21 +43,77 @@ export default function SsbmProgrammes({
                       sizes="(max-width: 768px) 100vw, 33vw"
                     />
                   </div>
-                  <div className="p-5 flex-1 flex flex-col justify-between bg-[#f2f2f2]">
+
+                  {/* Card Content */}
+                  <div className="p-5 flex-1 flex flex-col justify-between bg-[#F2F2F2]">
                     <div>
-                      <h3 className="text-[17px] sm:text-[18px] font-bold text-[#111111] mb-2 leading-snug">
+                      <h3 className="text-[17px] sm:text-[18px] font-bold text-[#111111] mb-2 leading-[1.3] line-clamp-1">
                         {p.title}
                       </h3>
-                      <p className="text-[12.5px] sm:text-[13px] text-[#555555] leading-relaxed mb-4 font-normal">
+                      <p className="text-[13px] sm:text-[13.5px] text-[#444444] leading-[1.5] mb-3 min-h-[40px] line-clamp-2 font-normal">
                         {p.description || p.desc}
                       </p>
                     </div>
                     <div>
-                      <hr className="border-t border-slate-300 mb-4" />
+                      <hr className="border-t border-[#d8d8d8] my-3.5" />
                       <button
                         type="button"
                         onClick={() => onOpenApply?.(p.title)}
-                        className="w-full py-2.5 px-4 bg-[#c11f28] hover:bg-[#a81a22] text-white font-bold text-[14px] rounded-[5px] transition-all border-none cursor-pointer active:scale-95 shadow-xs"
+                        className="py-2 px-5 bg-[#c11f28] hover:bg-[#a81a22] text-white font-bold text-[14px] rounded-[4px] transition-all border-none cursor-pointer active:scale-95 shadow-none inline-block w-fit"
+                      >
+                        Apply Now
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </Carousel>
+        </div>
+
+        {/* Desktop View: Multi-card carousel (hidden md:block) */}
+        <div className="course-slider-wrapper hidden md:block">
+          <Carousel
+            autoplay
+            autoplaySpeed={3200}
+            dots={true}
+            slidesToShow={3}
+            slidesToScroll={1}
+            responsive={[
+              { breakpoint: 1024, settings: { slidesToShow: 2 } },
+            ]}
+            infinite={programmes.length > 3}
+          >
+            {programmes.map((p, idx) => (
+              <div key={idx} className="px-2.5 sm:px-3 box-border outline-none py-1">
+                <div className="bg-[#F2F2F2] rounded-none sm:rounded-[2px] overflow-hidden border border-[#e5e5e5] flex flex-col justify-between text-left h-full transition-shadow">
+                  {/* Card Image */}
+                  <div className="relative w-full h-[180px] sm:h-[195px] overflow-hidden bg-slate-200">
+                    <Image
+                      src={p.image}
+                      alt={p.title}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    />
+                  </div>
+
+                  {/* Card Content */}
+                  <div className="p-5 sm:p-5 flex-1 flex flex-col justify-between bg-[#F2F2F2]">
+                    <div>
+                      <h3 className="text-[17px] sm:text-[18px] font-bold text-[#111111] mb-2 leading-[1.3] line-clamp-1">
+                        {p.title}
+                      </h3>
+                      <p className="text-[13px] sm:text-[13.5px] text-[#444444] leading-[1.5] mb-3 min-h-[40px] line-clamp-2 font-normal">
+                        {p.description || p.desc}
+                      </p>
+                    </div>
+                    <div>
+                      <hr className="border-t border-[#d8d8d8] my-3.5" />
+                      <button
+                        type="button"
+                        onClick={() => onOpenApply?.(p.title)}
+                        className="py-2 px-5 bg-[#c11f28] hover:bg-[#a81a22] text-white font-bold text-[14px] rounded-[4px] transition-all border-none cursor-pointer active:scale-95 shadow-none inline-block w-fit"
                       >
                         Apply Now
                       </button>

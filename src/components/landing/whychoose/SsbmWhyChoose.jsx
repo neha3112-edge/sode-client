@@ -13,7 +13,7 @@ export default function SsbmWhyChoose({ whyChoose = [], brand = {}, onOpenApply 
     <section
       id="benefits"
       data-section="whychoose"
-      className="benefits-section w-full select-none py-10 sm:py-16 scroll-mt-20 text-white relative bg-cover bg-center"
+      className="benefits-section w-full select-none scroll-mt-20 text-white relative bg-cover"
       style={{
         backgroundImage: `url(${brand.whyChooseBgImage || "/assets/all_universities_images/ssbm/Global.webp"})`,
       }}
@@ -24,32 +24,32 @@ export default function SsbmWhyChoose({ whyChoose = [], brand = {}, onOpenApply 
           <div className="hidden lg:block lg:col-span-4" />
 
           {/* Right Content */}
-          <div className="lg:col-span-8 p-4 sm:p-8 text-left">
-            <h2 className="text-[26px] sm:text-[34px] lg:text-[38px] font-extrabold text-white leading-tight uppercase m-0">
+          <div className="lg:col-span-8 py-8 sm:py-8 text-left">
+            <h2 className="text-[25px] sm:text-[34px] lg:text-[38px] font-extrabold text-white leading-[1.1] uppercase m-0">
               {title}
             </h2>
-            <p className="text-[20px] sm:text-[24px] lg:text-[26px] text-white font-medium mt-1 mb-6 leading-snug">
+            <p className="text-[25px] sm:text-[24px] lg:text-[26px] text-white font-normal sm:font-medium mt-1 mb-6 leading-tight sm:leading-snug">
               {subtitle}
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4 mb-8">
+            <div className="bnf-data grid grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4 mb-6 sm:mb-8 max-w-[360px] sm:max-w-none">
               {whyChoose.map((item, idx) => (
                 <div
                   key={idx}
-                  className="bnf1 bg-white text-black p-3.5 rounded-[10px] flex items-center gap-3 shadow-md"
+                  className="bnf1 bg-white text-black p-2.5 sm:p-3.5 rounded-[10px] flex flex-col items-center justify-center text-center gap-1.5 shadow-none sm:shadow-md min-h-[135px]"
                 >
                   {item.image && (
-                    <div className="relative w-10 h-10 shrink-0">
+                    <div className="relative w-[50px] h-[50px] shrink-0 mb-1">
                       <Image
                         src={item.image}
                         alt={item.title}
                         fill
                         className="object-contain"
-                        sizes="40px"
+                        sizes="50px"
                       />
                     </div>
                   )}
-                  <h3 className="text-[13px] sm:text-[14px] font-semibold text-[#111111] leading-snug m-0">
+                  <h3 className="text-[14px] sm:text-[14px] font-bold text-[#111111] leading-tight m-0 text-center">
                     {item.title}
                   </h3>
                 </div>
@@ -59,7 +59,7 @@ export default function SsbmWhyChoose({ whyChoose = [], brand = {}, onOpenApply 
             <button
               type="button"
               onClick={() => onOpenApply?.()}
-              className="inline-flex items-center gap-2.5 px-8 py-3.5 bg-black hover:bg-neutral-900 text-white font-bold text-[14px] sm:text-[15px] rounded-[5px] transition-all border-none cursor-pointer shadow-md active:scale-95"
+              className="inline-flex items-center gap-2.5 px-6 sm:px-8 py-3.5 bg-black hover:bg-neutral-900 text-white font-bold text-[15px] sm:text-[15px] rounded-[5px] transition-all border-none cursor-pointer shadow-md active:scale-95"
             >
               <span>{btnText}</span>
               <ArrowRight className="w-4 h-4 text-white" />

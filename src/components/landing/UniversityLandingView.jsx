@@ -181,7 +181,7 @@ export default function UniversityLandingView({ data = {} }) {
   const isSmu = slug === "smu" || brand.slug === "smu";
   const isVgu = slug === "vgu" || brand.slug === "vgu";
 
-  const activeCustomCss = customCss || brand.customCss || data.css || "";
+  const activeCustomCss = customCss || brand.customCss || data.css || data.customCss || "";
   const pageSlug = brand.slug || slug || "university";
 
   const requestedFont = (brand.fontFamily || brand.font || data?.fontFamily || "Roboto").toLowerCase();
@@ -360,7 +360,7 @@ export default function UniversityLandingView({ data = {} }) {
                         </div>
                       )}
 
-                      <div className="flex flex-wrap items-center justify-center gap-3 mt-4">
+                      <div className="overview-cta-row flex flex-wrap items-center justify-center gap-3 mt-4">
                         <button
                           type="button"
                           onClick={() => handleOpenBrochure()}
@@ -384,7 +384,7 @@ export default function UniversityLandingView({ data = {} }) {
                                 handleOpenApply();
                               }
                             }}
-                            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-[5px] bg-black text-white font-bold text-[15px] hover:brightness-125 transition-all cursor-pointer border-none shadow-xs active:scale-95"
+                            className="overviewKnowMoreBtn inline-flex items-center gap-2 px-6 py-2.5 rounded-[5px] bg-black text-white font-bold text-[15px] hover:brightness-125 transition-all cursor-pointer border-none shadow-xs active:scale-95"
                           >
                             <span>{brand.overviewSecondaryBtnText}</span>
                             <span className="text-[14px]">▼</span>

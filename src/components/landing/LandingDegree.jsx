@@ -102,10 +102,10 @@ export default function LandingDegree({
 
             {/* Certificate content */}
             <div className="degree-info text-left">
-              <h2 className="text-[24px] sm:text-[30px] lg:text-[34px] font-bold text-[#111111] leading-tight m-0 mb-4 uppercase">
-                {degreeInfo.title1 || "PWC DIRECTORSHIP &"}{" "}
+              <h2 className="text-[21px] sm:text-[30px] lg:text-[34px] font-bold text-[#c11f28] leading-tight m-0 mb-4 uppercase">
+                {degreeInfo.title1 || "PWC DIRECTORSHIP & BOARD"}{" "}
                 <span className="text-[#c11f28] block">
-                  {degreeInfo.title2 || "BOARD ADVISORY CERTIFICATE"}
+                  {degreeInfo.title2 || "ADVISORY CERTIFICATE"}
                 </span>
               </h2>
               <p className="text-[13.5px] sm:text-[14.5px] text-[#444444] leading-relaxed mb-6 font-normal">

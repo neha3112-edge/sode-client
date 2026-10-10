@@ -12,7 +12,7 @@ export default function GGUApprovals({ approvals = [], brand = {} }) {
   return (
     <section
       id="accreditations"
-      className="certification w-full pt-12 sm:pt-16 pb-8 sm:pb-10 bg-[#F6F6F6] text-center select-none scroll-mt-20"
+      className="certification w-full pt-12 sm:pt-16 pb-8 sm:pb-10  text-center select-none scroll-mt-20"
       style={{ backgroundColor: brand?.approvalsBg || "#F6F6F6" }}
     >
       <div className="max-w-[1140px] mx-auto px-4 sm:px-6">
