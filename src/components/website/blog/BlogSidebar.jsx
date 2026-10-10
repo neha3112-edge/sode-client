@@ -122,8 +122,9 @@ export default function BlogSidebar({
           if (
             !foundUnis.some(
               (u) =>
-                (u._id && u._id === item._id) ||
-                (u.slug && u.slug === item.slug)
+                (u._id && item._id && u._id === item._id) ||
+                (u.slug && item.slug && u.slug === item.slug) ||
+                (u.name && item.name && u.name.trim().toLowerCase() === item.name.trim().toLowerCase())
             )
           ) {
             foundUnis.push(item);
@@ -145,8 +146,9 @@ export default function BlogSidebar({
             if (
               !foundUnis.some(
                 (u) =>
-                  (u._id && u._id === item._id) ||
-                  (u.slug && u.slug === item.slug)
+                  (u._id && item._id && u._id === item._id) ||
+                  (u.slug && item.slug && u.slug === item.slug) ||
+                  (u.name && item.name && u.name.trim().toLowerCase() === item.name.trim().toLowerCase())
               )
             ) {
               foundUnis.push(item);
@@ -742,7 +744,7 @@ export default function BlogSidebar({
 
               return (
                 <div
-                  key={item._id || item.slug || idx}
+                  key={`related-${item._id || item.slug || idx}-${idx}`}
                   className="flex items-start gap-3 group"
                 >
                   {/* Thumbnail */}
@@ -827,7 +829,7 @@ export default function BlogSidebar({
 
               return (
                 <div
-                  key={item._id || item.slug || idx}
+                  key={`recent-${item._id || item.slug || idx}-${idx}`}
                   className="flex items-start gap-3 group"
                 >
                   {/* Thumbnail */}
@@ -891,7 +893,7 @@ export default function BlogSidebar({
 
               return (
                 <div
-                  key={item._id || item.slug || idx}
+                  key={`popular-${item._id || item.slug || idx}-${idx}`}
                   className="flex items-start gap-3 group"
                 >
                   {/* Thumbnail */}
@@ -955,7 +957,7 @@ export default function BlogSidebar({
           <div className="grid grid-cols-3 gap-2">
             {(coursesExpanded ? courseList : courseList.slice(0, 9)).map((course, idx) => (
               <div
-                key={course._id || course.slug || idx}
+                key={`course-${course._id || course.slug || idx}-${idx}`}
                 onClick={() => handleCourseClick(course)}
                 className="w-full aspect-square bg-white hover:bg-slate-50 border border-slate-200/90 hover:border-blue-400 rounded-xl p-1.5 min-[360px]:p-2 flex flex-col items-center justify-center text-center cursor-pointer transition-all hover:shadow-2xs group min-w-0"
               >
@@ -1010,7 +1012,7 @@ export default function BlogSidebar({
             <div className="grid grid-cols-3 gap-2">
               {(unisExpanded ? uniList : uniList.slice(0, 9)).map((uni, idx) => (
                 <div
-                  key={uni._id || uni.slug || idx}
+                  key={`uni-${uni._id || uni.slug || uni.name || idx}-${idx}`}
                   onClick={() => handleUniClick(uni)}
                   className="w-full aspect-square bg-white hover:bg-slate-50 border border-slate-200/90 hover:border-blue-400 rounded-xl p-1.5 min-[360px]:p-2 flex flex-col items-center justify-center text-center cursor-pointer transition-all hover:shadow-2xs group min-w-0"
                 >
@@ -1186,11 +1188,11 @@ export default function BlogSidebar({
                 Browse By Categories
               </span>
               <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-                {authorCategories.map((cat) => {
+                {authorCategories.map((cat, catIdx) => {
                   const isActive = selectedAuthorCat === cat;
                   return (
                     <button
-                      key={cat}
+                      key={`author-cat-${cat}-${catIdx}`}
                       type="button"
                       onClick={() => setSelectedAuthorCat(cat)}
                       className={`px-3 py-0.5 sm:px-3.5 sm:py-1 text-[11px] sm:text-xs rounded-full border transition-all cursor-pointer select-none whitespace-nowrap ${isActive
@@ -1214,7 +1216,7 @@ export default function BlogSidebar({
           ) : authorModalArticles.length <= modalSlidesToShow ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 w-full">
               {authorModalArticles.map((item, idx) => (
-                <div key={item._id || item.slug || idx} className="h-full">
+                <div key={`author-art-${item._id || item.slug || idx}-${idx}`} className="h-full">
                   {renderArticleCard(item)}
                 </div>
               ))}
@@ -1250,7 +1252,7 @@ export default function BlogSidebar({
                   className="author-modal-carousel [&_.slick-slide>div]:h-full [&_.slick-slide]:px-1.5 sm:[&_.slick-slide]:px-2"
                 >
                   {authorModalArticles.map((item, idx) => (
-                    <div key={item._id || item.slug || idx} className="h-full">
+                    <div key={`author-modal-art-${item._id || item.slug || idx}-${idx}`} className="h-full">
                       {renderArticleCard(item)}
                     </div>
                   ))}

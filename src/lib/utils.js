@@ -152,6 +152,16 @@ function extractMinioRelPath(rawPath, mediaObj = null) {
   return "";
 }
 
+function isHashOrFileName(str, fileName = "") {
+  if (!str) return true;
+  const s = String(str).trim();
+  if (fileName && s.toLowerCase() === fileName.toLowerCase()) return true;
+  const base = s.replace(/\.[a-zA-Z0-9]+$/, "");
+  if (/^[a-f0-9]{24,64}$/i.test(base)) return true;
+  if (/^[0-9a-fA-F-]{36}$/.test(base)) return true;
+  return false;
+}
+
 /**
  * Resolves an image/asset path to the correct clean URL (/image/:name)
  * Dynamically builds SEO-friendly URLs based on media name (NOT fileName).
@@ -167,10 +177,12 @@ export function getAssetPath(path = "", fallback = DEFAULT_SVG_LOGO, customName 
     if (rawUrl) {
       const urlExtMatch = rawUrl.match(/\.([a-zA-Z0-9]+)(?:\?|$)/);
       const ext = urlExtMatch ? urlExtMatch[1] : (path.fileName?.split(".").pop() || "webp");
-      const relPath = extractMinioRelPath(rawUrl, path);
+      const relMinio = extractMinioRelPath(rawUrl, path);
 
-      // Use the image's name (NOT fileName!)
-      if (name) {
+      const hasRealName = Boolean(name && !isHashOrFileName(name, path.fileName));
+
+      // Use the image's name if it's a real human SEO name (NOT a hash/fileName!)
+      if (hasRealName) {
         const cleanName = slugifyFileName(name, ext);
         registerMediaMapping(cleanName, rawUrl);
         registerMediaMapping(name, rawUrl);
@@ -179,23 +191,27 @@ export function getAssetPath(path = "", fallback = DEFAULT_SVG_LOGO, customName 
         if (baseSlug) {
           registerMediaMapping(baseSlug, rawUrl);
         }
-        if (path.fileName) {
-          registerMediaMapping(path.fileName, rawUrl);
+
+        if (relMinio) {
+          const lastFile = relMinio.split("/").pop();
+          if (lastFile.toLowerCase() === cleanName.toLowerCase()) {
+            return `/image/${relMinio}`;
+          }
+          return `/image/${relMinio}/${encodeURIComponent(cleanName)}`;
         }
 
         return `/image/${encodeURIComponent(cleanName)}`;
       }
 
-      // If no name is provided, fallback to fileName only if fileName exists
-      if (path.fileName) {
-        registerMediaMapping(path.fileName, rawUrl);
-        return `/image/${encodeURIComponent(path.fileName)}`;
-      }
-
-      const relMinio = extractMinioRelPath(rawUrl, path);
+      // If no human name (or name is just the hash/filename), use MinIO path directly!
       if (relMinio) {
         registerMediaMapping(relMinio.split("/").pop(), rawUrl);
         return `/image/${relMinio}`;
+      }
+
+      if (path.fileName) {
+        registerMediaMapping(path.fileName, rawUrl);
+        return `/image/${encodeURIComponent(path.fileName)}`;
       }
 
       path = rawUrl;
@@ -216,6 +232,15 @@ export function getAssetPath(path = "", fallback = DEFAULT_SVG_LOGO, customName 
     registerMediaMapping(cleanName, targetPath);
     registerMediaMapping(customName, targetPath);
     registerMediaMapping(encodeURIComponent(cleanName), targetPath);
+
+    const relMinio = extractMinioRelPath(targetPath);
+    if (relMinio) {
+      const lastFile = relMinio.split("/").pop();
+      if (lastFile.toLowerCase() === cleanName.toLowerCase()) {
+        return `/image/${relMinio}`;
+      }
+      return `/image/${relMinio}/${encodeURIComponent(cleanName)}`;
+    }
 
     return `/image/${encodeURIComponent(cleanName)}`;
   }

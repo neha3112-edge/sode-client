@@ -68,14 +68,22 @@ export async function GET(request, context) {
         resolveMediaMapping(fullPath.toLowerCase());
     }
 
-    // 5. Fallback for valid direct paths
-    if (!minioTargetUrl) {
-      if (
-        fullPath.startsWith("crm-media/") ||
-        fullPath.startsWith("images/") ||
-        fullPath.startsWith("uploads/")
-      ) {
-        minioTargetUrl = `${MINIO_PUBLIC_URL}/${fullPath}`;
+    // 4. If single slug without bucket prefix, try standard public buckets
+    if (!minioTargetUrl && slugArray.length === 1) {
+      const candidates = [
+        `${MINIO_PUBLIC_URL}/images/${filename}`,
+        `${MINIO_PUBLIC_URL}/uploads/${filename}`,
+      ];
+      for (const candidate of candidates) {
+        try {
+          const testRes = await fetch(candidate, { method: "HEAD", cache: "force-cache" });
+          if (testRes.ok) {
+            minioTargetUrl = candidate;
+            break;
+          }
+        } catch {
+          // ignore
+        }
       }
     }
 

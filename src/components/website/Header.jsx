@@ -356,13 +356,13 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
           ),
           children: (
             <div className="space-y-4 pt-1">
-              {item.mega_menu.map((grp) => (
-                <div key={grp.category?._id || grp.category?.name} className="space-y-2">
+              {item.mega_menu.map((grp, gIdx) => (
+                <div key={grp.category?._id ? `${grp.category._id}-${gIdx}` : `${grp.category?.name || "cat"}-${gIdx}`} className="space-y-2">
                   <span className="text-[12px] font-extrabold uppercase text-[#0B57D0] tracking-wider block">
                     {grp.category?.name}
                   </span>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    {grp.items?.map((subItem) => {
+                    {grp.items?.map((subItem, sIdx) => {
                       const isUni = !!subItem.location || subItem.courses_count !== undefined;
                       const subSlug = (subItem.slug && !/^[0-9a-fA-F]{24}$/.test(subItem.slug))
                         ? subItem.slug
@@ -379,7 +379,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                       }
                       return (
                         <Link
-                          key={subItem._id || subItem.slug}
+                          key={subItem._id ? `${subItem._id}-${sIdx}` : `${subItem.slug || subItem.name || sIdx}-${sIdx}`}
                           href={subUrl}
                           onClick={() => closeMobile()}
                           className="p-2.5 rounded-lg border border-slate-200 bg-white flex items-center justify-between cursor-pointer hover:border-blue-300 transition-colors"
@@ -744,7 +744,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                                 const dlpUrl = dlp.url || `/${dlp.slug}`;
                                 return (
                                   <Link
-                                    key={dlp._id || idx}
+                                    key={dlp._id ? `${dlp._id}-${idx}` : `dlp-${idx}`}
                                     href={dlpUrl}
                                     onClick={() => setActiveMenuKey(null)}
                                     className="flex items-center gap-2.5 py-1 text-left group select-none transition-colors"
@@ -771,7 +771,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
 
                             return (
                               <div
-                                key={uni._id || idx}
+                                key={uni._id ? `${uni._id}-${idx}` : `uni-${uni.slug || uni.name || idx}-${idx}`}
                                 className="bg-white border border-slate-200/90 rounded-xl p-3 hover:border-blue-400 hover:shadow-md transition-all flex flex-col justify-between group"
                               >
                                 <div>

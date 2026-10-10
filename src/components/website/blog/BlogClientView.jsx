@@ -1043,7 +1043,7 @@ export default function BlogClientView({
                     aria-hidden={!tocOpen}
                   >
                     {finalHeadings.map((h, i) => (
-                      <li key={h.id || i} className="flex items-start gap-2">
+                      <li key={`toc-${h.id || i}-${i}`} className="flex items-start gap-2">
                         <span className="text-blue-500 font-bold select-none text-[17px] leading-none shrink-0">
                           »
                         </span>
@@ -1080,7 +1080,7 @@ export default function BlogClientView({
                         : "h2";
 
                     return (
-                      <section key={group._id || group.id || gIdx} id={group.id} className="scroll-mt-24">
+                      <section key={`sec-grp-${group._id || group.id || gIdx}-${gIdx}`} id={group.id} className="scroll-mt-24">
                         {group.headingText && (
                           <HeadingTag className="text-xl sm:text-2xl font-bold text-[#0D3B66] m-0 mb-1 tracking-tight">
                             {group.headingText}
@@ -1131,7 +1131,7 @@ export default function BlogClientView({
                             if (isTitleOnly) return null;
 
                             return (
-                              <div key={sec._id || sec.id || sIdx} className="space-y-1.5">
+                              <div key={`sec-item-${sec._id || sec.id || sIdx}-${sIdx}`} className="space-y-1.5">
                                 {sec.title && sec.title.trim() !== group.headingText && (
                                   <h3 className="text-base sm:text-lg font-bold text-[#0D3B66] m-0 mb-1">
                                     {sec.title}
@@ -1855,7 +1855,7 @@ export default function BlogClientView({
                   <div className="bg-white rounded-xl border border-gray-200/80 p-4 max-h-[190px] overflow-y-auto space-y-3 shadow-2xs">
                     {commentsList.map((cmt, idx) => (
                       <div
-                        key={cmt._id || cmt.id || idx}
+                        key={`comment-${cmt._id || cmt.id || idx}-${idx}`}
                         className={`flex items-start gap-3 ${idx !== commentsList.length - 1 ? "pb-3 border-b border-gray-100" : ""
                           }`}
                       >
@@ -1998,7 +1998,7 @@ export default function BlogClientView({
                     className="tools-antd-carousel"
                   >
                     {mappedTools.map((tool, idx) => (
-                      <div key={tool.id || idx} className="py-2">
+                      <div key={`tool-${tool.id || idx}-${idx}`} className="py-2">
                         <div className="relative bg-white rounded-2xl p-5 sm:p-6 shadow-xs hover:shadow-xl border border-slate-100 flex flex-col items-center text-center transition-all duration-300 hover:-translate-y-1 group">
                           {/* Top-Right Sparkle */}
                           <span
