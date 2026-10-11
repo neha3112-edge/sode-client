@@ -3,8 +3,7 @@ import { request } from "@/services/request";
 import { getPageMetaData, constructMetadata } from "@/constants/pageMetaData";
 import { CoursesPageClientView } from "@/components/website";
 
-export const revalidate = 0;
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export async function generateMetadata() {
   const pageMeta = await getPageMetaData("/courses");
@@ -48,7 +47,7 @@ export default async function CoursesPage({ searchParams }) {
         entity: "courses",
         endPoint: "v1/list",
         options: queryOptions,
-        revalidate: 0, // search results always fresh
+        revalidate: 300, // ISR cached 5 mins
       }),
     ]);
 

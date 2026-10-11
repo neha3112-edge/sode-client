@@ -86,6 +86,7 @@ export function MobileBottomNav() {
           <Link
             key={idx}
             href={item.href}
+            prefetch={true}
             className={`flex flex-col items-center justify-center gap-0.5 cursor-pointer focus:outline-none transition-colors duration-150 ${item.active ? "text-[#EEC471]" : "text-white/80 hover:text-[#EEC471]"
               }`}
           >
