@@ -619,7 +619,26 @@ export function Hero({ initialHeroData = null }) {
           </div>
         )}
 
-        <Container className="relative z-10 w-full pointer-events-auto">
+        {/* Mobile slide click target (if slide has a primary button/action) */}
+        {primaryBtn?.enabled !== false && (
+          primaryBtn?.is_modal ? (
+            <button
+              type="button"
+              onClick={handlePrimaryClick}
+              aria-label={primaryBtn.text || "Hero action"}
+              className="md:hidden absolute inset-0 z-20 w-full h-full bg-transparent border-0 cursor-pointer p-0 m-0"
+            />
+          ) : primaryBtn?.url ? (
+            <Link
+              href={primaryBtn.url}
+              aria-label={primaryBtn.text || "Hero action"}
+              className="md:hidden absolute inset-0 z-20 w-full h-full cursor-pointer"
+            />
+          ) : null
+        )}
+
+        {/* Desktop-only: database text, headings, badges & CTA buttons */}
+        <Container className="hidden md:block relative z-10 w-full pointer-events-auto">
           <div className="w-full max-w-[70%] sm:max-w-[50%] md:max-w-[46%] lg:max-w-[44%] flex flex-col items-start space-y-1.5 sm:space-y-2 md:space-y-2.5">
             {renderSlideBadge(badgeText, isLight)}
             {renderSlideHeading(title, highlightText, isLight, titleColor)}
