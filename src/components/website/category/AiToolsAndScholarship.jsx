@@ -149,7 +149,7 @@ export default function AiToolsAndScholarship({ block, bIdx, counselors = [] }) 
               return (
                 <div
                   key={child._id || child.slug || cIdx}
-                  className="relative bg-white rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 shadow-xs hover:shadow-xl border border-slate-100 flex flex-col items-center text-center justify-between transition-all duration-300 hover:-translate-y-1 group"
+                  className="relative bg-white rounded-xl sm:rounded-2xl p-2.5 sm:p-5 md:p-6 shadow-xs hover:shadow-xl border border-slate-100 flex flex-col items-center text-center justify-between transition-all duration-300 hover:-translate-y-1 group"
                 >
                   {/* Top-Right Sparkle */}
                   <span
@@ -158,7 +158,7 @@ export default function AiToolsAndScholarship({ block, bIdx, counselors = [] }) 
                     ✦
                   </span>
 
-                  <Link href={linkUrl} className="flex flex-col items-center space-y-2 sm:space-y-3 w-full no-underline">
+                  <Link href={linkUrl} className="flex flex-col items-center space-y-1.5 sm:space-y-3 w-full no-underline">
                     {/* Round Icon with colored background (matching blog page) */}
                     <div
                       className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center mb-1 transition-transform group-hover:scale-110 shrink-0`}
@@ -193,26 +193,26 @@ export default function AiToolsAndScholarship({ block, bIdx, counselors = [] }) 
                   </Link>
 
                   {/* Button with circular arrow badge */}
-                  <div className="w-full pt-3">
+                  <div className="w-full pt-2.5 sm:pt-3">
                     {isLink ? (
                       <Link
                         href={linkUrl}
-                        className="w-full py-2 px-3 sm:px-4 rounded-full bg-[#0B3B7E] hover:bg-[#072859] text-white font-bold text-[10px] sm:text-xs shadow-xs transition-all flex items-center justify-center cursor-pointer truncate no-underline group-hover:shadow-md active:scale-95"
+                        className="w-full py-1.5 sm:py-2 px-2 sm:px-4 rounded-full bg-[#0B3B7E] hover:bg-[#072859] text-white font-bold text-[9.5px] sm:text-xs shadow-xs transition-all flex items-center justify-center cursor-pointer no-underline group-hover:shadow-md active:scale-95"
                       >
-                        <span>{child.btnText || btnText}</span>
-                        <span className="w-2 h-2 sm:w-4 sm:h-4 rounded-full bg-white text-[#0B3B7E] flex items-center justify-center text-[10px] sm:text-xs font-bold shrink-0 ml-1.5 transition-transform group-hover:translate-x-0.5">
-                          <ArrowRight size={15} />
+                        <span className="truncate min-w-0">{child.btnText || btnText}</span>
+                        <span className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-white text-[#0B3B7E] flex items-center justify-center shrink-0 ml-1 sm:ml-1.5 transition-transform group-hover:translate-x-0.5">
+                          <ArrowRight className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                         </span>
                       </Link>
                     ) : (
                       <button
                         type="button"
                         onClick={() => openTool(linkUrl)}
-                        className="w-full py-2 px-3 sm:px-4 rounded-full bg-[#0B3B7E] hover:bg-[#072859] text-white font-bold text-[10px] sm:text-xs shadow-xs transition-all flex items-center justify-center cursor-pointer border-0 group-hover:shadow-md active:scale-95"
+                        className="w-full py-1.5 sm:py-2 px-2 sm:px-4 rounded-full bg-[#0B3B7E] hover:bg-[#072859] text-white font-bold text-[9.5px] sm:text-xs shadow-xs transition-all flex items-center justify-center cursor-pointer border-0 group-hover:shadow-md active:scale-95"
                       >
-                        <span>{child.btnText || btnText}</span>
-                        <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-white text-[#0B3B7E] flex items-center justify-center text-[10px] sm:text-xs font-bold shrink-0 ml-1.5 transition-transform group-hover:translate-x-0.5">
-                          →
+                        <span className="truncate min-w-0">{child.btnText || btnText}</span>
+                        <span className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-white text-[#0B3B7E] flex items-center justify-center shrink-0 ml-1 sm:ml-1.5 transition-transform group-hover:translate-x-0.5">
+                          <ArrowRight className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                         </span>
                       </button>
                     )}

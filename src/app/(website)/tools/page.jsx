@@ -17,10 +17,10 @@ export default async function ToolsPage() {
     const categories = Array.isArray(res?.result)
       ? res.result
       : Array.isArray(res?.categories)
-      ? res.categories
-      : Array.isArray(res)
-      ? res
-      : [];
+        ? res.categories
+        : Array.isArray(res)
+          ? res
+          : [];
 
     const toolsParent = categories.find(
       (c) =>
