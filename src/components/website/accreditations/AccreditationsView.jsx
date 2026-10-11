@@ -4,7 +4,8 @@ import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Search, Award, Info } from "lucide-react";
-import { getAssetPath } from "@/lib/utils";
+
+const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 import { Container } from "@/components/common/Container";
 
 export function AccreditationsView({ initialAccreditations = [] }) {
@@ -163,7 +164,7 @@ export function AccreditationsView({ initialAccreditations = [] }) {
                     <div className="flex-1 min-h-0 max-h-14 sm:max-h-16 md:max-h-20 w-full relative flex items-center justify-center">
                       {acc.logo ? (
                         <Image
-                          src={getAssetPath(acc.logo)}
+                          src={getMediaUrl(acc.logo)}
                           alt={acc.title}
                           fill
                           sizes="(max-width: 768px) 64px, 80px"

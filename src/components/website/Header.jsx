@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import { Button, Layout, Dropdown, Drawer, Collapse } from "antd";
 import { DownOutlined, MenuOutlined, CloseOutlined, RightOutlined, LeftOutlined } from "@ant-design/icons";
 import { Container } from "@/components/common/Container";
-import { getAssetPath } from "@/lib/utils";
 
 const { Header: AntHeader } = Layout;
 
@@ -20,8 +19,9 @@ const goldBtnStyle = {
 };
 
 function resolveImg(mediaObj, fallback = "/assets/images/new_sode_tm_logo.png") {
-  if (!mediaObj) return getAssetPath(fallback);
-  return getAssetPath(mediaObj, fallback);
+  if (!mediaObj) return fallback;
+  if (typeof mediaObj === "string") return mediaObj;
+  return mediaObj.url || mediaObj.src || mediaObj.path || fallback;
 }
 
 // ✦ AI Tools Button with Sparkling Effect & NEW Badge
@@ -765,7 +765,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                           {/* Regular Universities (Standard Cards Grid) */}
                           {regularUniversities.map((uni, idx) => {
                             const uniSlug = uni.slug || uni._id || uni.name;
-                            const logoUrl = uni.logo ? getAssetPath(uni.logo) : null;
+                            const logoUrl = uni.logo ? (typeof uni.logo === "string" ? uni.logo : (uni.logo.url || uni.logo.src || uni.logo.path || null)) : null;
                             const detailUrl = uni.url || `/universities/${encodeURIComponent(uniSlug)}`;
                             const coursesUrl = `/courses?university=${encodeURIComponent(uniSlug)}`;
 

@@ -5,7 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { Search, Sparkles, Info } from "lucide-react";
 import { ArrowRightOutlined } from "@ant-design/icons";
-import { getAssetPath } from "@/lib/utils";
 
 // --- Standard Suite of Educational AI Tools ---
 const DEFAULT_TOOLS = [
@@ -127,7 +126,8 @@ export function ToolsView({ initialTools = [] }) {
           );
         }
 
-        const logoUrl = getAssetPath(t.logo || t.image, "");
+        const rawImg = t.logo || t.image;
+        const logoUrl = typeof rawImg === "string" ? rawImg : rawImg?.url || rawImg?.path || "";
 
         return {
           id: t._id || t.id || String(idx),

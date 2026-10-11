@@ -2,7 +2,8 @@
 
 import React from "react";
 import Image from "next/image";
-import { getAssetPath } from "@/lib/utils";
+
+const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 
 export default function UniversityTopRecruiters({
   recruiters = [],
@@ -28,7 +29,7 @@ export default function UniversityTopRecruiters({
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2.5 sm:gap-3.5">
         {recruiters.map((r, idx) => {
-          const logoSrc = r.logo ? getAssetPath(r.logo) : null;
+          const logoSrc = r.logo ? getMediaUrl(r.logo) : null;
           return (
             <div
               key={r._id || idx}

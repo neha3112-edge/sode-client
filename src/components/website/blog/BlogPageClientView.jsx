@@ -12,7 +12,7 @@ import {
 } from "@ant-design/icons";
 import Link from "next/link";
 import Image from "next/image";
-import { getAssetPath } from "@/lib/utils";
+const getAssetPath = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 import WebsiteLayout from "@/components/layout/WebsiteLayout";
 import Container from "@/components/common/Container";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";

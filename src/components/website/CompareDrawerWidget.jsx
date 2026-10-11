@@ -7,7 +7,8 @@ import { usePathname } from "next/navigation";
 import { Button } from "antd";
 import { CloseOutlined, RightOutlined } from "@ant-design/icons";
 import { useCompare } from "@/hooks/useCompare";
-import { getAssetPath } from "@/lib/utils";
+
+const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 
 export default function CompareDrawerWidget() {
   const pathname = usePathname();
@@ -61,7 +62,7 @@ export default function CompareDrawerWidget() {
               >
                 {logo ? (
                   <Image
-                    src={getAssetPath(logo)}
+                    src={getMediaUrl(logo)}
                     alt={displayName}
                     width={16}
                     height={16}
@@ -129,7 +130,7 @@ export default function CompareDrawerWidget() {
                   >
                     {logo ? (
                       <Image
-                        src={getAssetPath(logo)}
+                        src={getMediaUrl(logo)}
                         alt={displayName}
                         width={24}
                         height={24}

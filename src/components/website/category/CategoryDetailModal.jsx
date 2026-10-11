@@ -42,6 +42,8 @@ export default function CategoryDetailModal({
               <div className="w-10 h-10 flex items-center justify-center shrink-0">
                 {modalData.isUniversity ? (
                   <PartnerLogoIcon partner={activeCategory} />
+                ) : modalData.isCourseSubcategoriesModal || activeCategory.isCourse ? (
+                  <CourseIcon course={activeCategory} />
                 ) : (
                   <CategoryIcon cat={activeCategory} />
                 )}
@@ -53,7 +55,11 @@ export default function CategoryDetailModal({
                 <span className="text-xs text-slate-500 block mt-0.5 truncate">
                   {modalData.isUniversity
                     ? "Programs & Degrees Offered"
-                    : (activeCategory.title || "Online Programs & Degrees")}
+                    : modalData.isCourseSubcategoriesModal
+                      ? "Choose Specialization / Subcategory"
+                      : modalData.isCoursesModal
+                        ? "Available Courses & Programs"
+                        : (activeCategory.title || "Online Programs & Degrees")}
                 </span>
               </div>
             </div>
@@ -70,7 +76,7 @@ export default function CategoryDetailModal({
 
           {/* Modal Body */}
           <div className="flex-1 overflow-y-auto max-h-[64vh] overscroll-contain pr-1 space-y-4 scrollbar-thin [scrollbar-color:#cbd5e1_transparent]">
-            {/* 1. Category Sub-categories or Universities Grid */}
+            {/* 1. Category Sub-categories, Courses, or Universities Grid */}
             {!modalData.isUniversity && (
               <div>
                 {modalData.items && modalData.items.length > 0 ? (
@@ -85,6 +91,11 @@ export default function CategoryDetailModal({
 
                           if (modalData.isUniversitiesModal) {
                             router.push(`/courses?university=${encodeURIComponent(itemSlug)}`);
+                          } else if (modalData.isCourseSubcategoriesModal) {
+                            const courseSlug = getItemSlug(activeCategory);
+                            router.push(it.targetUrl || `/courses?course=${encodeURIComponent(courseSlug)}&subcategory=${encodeURIComponent(itemSlug)}`);
+                          } else if (modalData.isCoursesModal || it.isCourse || it.itemType === "course") {
+                            router.push(it.targetUrl || `/courses?course=${encodeURIComponent(itemSlug)}`);
                           } else if (parentCatSlug && parentCatSlug !== "all") {
                             router.push(`/courses?category=${encodeURIComponent(parentCatSlug)}&subcategory=${encodeURIComponent(itemSlug)}`);
                           } else if (it.targetUrl && !/[0-9a-fA-F]{24}/.test(it.targetUrl)) {
@@ -101,6 +112,10 @@ export default function CategoryDetailModal({
                           <div className="group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
                             {modalData.isUniversitiesModal ? (
                               <PartnerLogoIcon partner={it} />
+                            ) : modalData.isCourseSubcategoriesModal ? (
+                              <CategoryIcon cat={it} />
+                            ) : modalData.isCoursesModal || it.isCourse || it.itemType === "course" ? (
+                              <CourseIcon course={it} />
                             ) : (
                               <CategoryIcon cat={it} />
                             )}

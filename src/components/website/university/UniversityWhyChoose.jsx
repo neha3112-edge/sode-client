@@ -3,7 +3,8 @@
 import React from "react";
 import Image from "next/image";
 import { CheckCircle2 } from "lucide-react";
-import { getAssetPath } from "@/lib/utils";
+
+const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 
 export default function UniversityWhyChoose({
   whyChooseSection = { title: "", items: [] },
@@ -33,7 +34,7 @@ export default function UniversityWhyChoose({
               <div className="w-14 h-14 rounded-2xl bg-white text-[#0D5CAD] flex items-center justify-center shrink-0 border border-blue-100 shadow-2xs relative overflow-hidden">
                 {iconAsset ? (
                   <Image
-                    src={getAssetPath(iconAsset)}
+                    src={getMediaUrl(iconAsset)}
                     alt={item.title}
                     fill
                     sizes="56px"

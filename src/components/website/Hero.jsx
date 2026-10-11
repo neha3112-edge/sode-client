@@ -7,7 +7,6 @@ import { Carousel } from "antd";
 import { Container } from "@/components/common/Container";
 import { useFormModal } from "@/hooks/useFormModal";
 import SafeHtmlRenderer from "@/components/website/SafeHtmlRenderer";
-import { getAssetPath } from "@/lib/utils";
 import { Video } from "@/components/common/Video";
 
 function getYouTubeEmbedUrl(url) {
@@ -59,7 +58,8 @@ export function Hero({ initialHeroData = null }) {
 
   const getMediaUrl = (mediaObj) => {
     if (!mediaObj) return null;
-    return getAssetPath(mediaObj);
+    if (typeof mediaObj === "string") return mediaObj;
+    return mediaObj.url || mediaObj.src || mediaObj.path || null;
   };
 
   const heroType = heroData.hero_type || heroData.heroType || "carousel";
@@ -143,7 +143,7 @@ export function Hero({ initialHeroData = null }) {
         style={{
           backgroundColor: bgCol,
           ...(bgImgUrl
-            ? { backgroundImage: `url(${getAssetPath(bgImgUrl)})`, backgroundSize: "cover", backgroundPosition: "center" }
+            ? { backgroundImage: `url(${bgImgUrl})`, backgroundSize: "cover", backgroundPosition: "center" }
             : {}),
         }}
         className="w-full py-8 sm:py-12 lg:py-16 px-4 sm:px-6 lg:px-10 border-b border-slate-800 relative overflow-hidden"
@@ -164,7 +164,7 @@ export function Hero({ initialHeroData = null }) {
                 <span className={`inline-flex items-center gap-1.5 px-3 py-1 ${badge.bg} ${badge.text} text-xs font-bold rounded-full border ${badge.border} tracking-wide`}>
                   {badgeIconUrl && (
                     <span className="relative w-4 h-4 shrink-0 inline-block">
-                      <Image src={getAssetPath(badgeIconUrl)} alt="" fill sizes="16px" className="object-contain" />
+                      <Image src={badgeIconUrl} alt="" fill sizes="16px" className="object-contain" />
                     </span>
                   )}
                   {heroData.badge_text}
@@ -279,7 +279,7 @@ export function Hero({ initialHeroData = null }) {
                     />
                   ) : bannerUrl ? (
                     <Image
-                      src={getAssetPath(bannerUrl)}
+                      src={bannerUrl}
                       alt={title || "Hero Banner"}
                       fill
                       sizes="(max-width: 768px) 100vw, 50vw"
@@ -314,7 +314,7 @@ export function Hero({ initialHeroData = null }) {
                 return {
                   id: u._id || `uni-${i}`,
                   title: u.name || "University",
-                  logoUrl: logoRaw ? getAssetPath(logoRaw) : null,
+                  logoUrl: logoRaw,
                   url,
                 };
               }),
@@ -323,7 +323,7 @@ export function Hero({ initialHeroData = null }) {
                 return {
                   id: pl._id || `partner-${i}`,
                   title: pl.title || "Partner",
-                  logoUrl: logoRaw ? getAssetPath(logoRaw) : null,
+                  logoUrl: typeof logoRaw === "string" ? logoRaw : (logoRaw?.url || logoRaw?.path || null),
                   url: pl.url || null,
                 };
               }),

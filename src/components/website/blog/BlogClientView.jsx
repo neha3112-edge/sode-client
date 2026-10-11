@@ -6,7 +6,8 @@ import Link from "next/link";
 import { Button, Carousel, Form, Input, message, Modal, Table } from "antd";
 import SafeHtmlRenderer from "@/components/website/SafeHtmlRenderer";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
-import { getAssetPath } from "@/lib/utils";
+
+const getAssetPath = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || "");
 import { CalendarIcon, Check, ChevronDown, ChevronRight, ChevronUp, Clock, Eye, Image as ImageIcon, Minus, Play, Plus, ThumbsDown, ThumbsUp, User, Video } from "lucide-react";
 import { request } from "@/services/request";
 import BlogSidebar from "./BlogSidebar";

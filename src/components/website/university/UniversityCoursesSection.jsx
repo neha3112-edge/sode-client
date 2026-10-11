@@ -7,7 +7,9 @@ import { Modal } from "antd";
 import { Clock, Plus, Check, ChevronDown, Download, Briefcase, GraduationCap, Award, BookOpen, Database, UserCog, ShoppingCart, CheckCircle2 } from "lucide-react";
 import { FaCalendar, FaClock } from "react-icons/fa";
 import { useCompare } from "@/hooks/useCompare";
-import { getAssetPath, formatAdmissionDeadline } from "@/lib/utils";
+import { formatAdmissionDeadline } from "@/lib/utils";
+
+const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 
 const SPEC_ICONS = [Briefcase, BookOpen, GraduationCap, Award, Database, UserCog, ShoppingCart];
 
@@ -75,7 +77,7 @@ export default function UniversityCoursesSection({
             : `/universities/${slug || uni.slug || ""}/${rawCourseSlug}`;
           const specCount = item.specializationsCount || item.subcourses?.length || 0;
           const inCmp = isInCompare(item._id || item.slug || cardTitle);
-          const courseLogoUrl = item.logo ? getAssetPath(item.logo) : null;
+          const courseLogoUrl = item.logo ? getMediaUrl(item.logo) : null;
           const displayCourseLogo = courseLogoUrl || logoUrl;
 
           return (
@@ -261,7 +263,7 @@ export default function UniversityCoursesSection({
             ? selectedCourseSpec.subCourses
             : [];
 
-        const uniLogoSrc = logoUrl || (selectedCourseSpec.logo ? getAssetPath(selectedCourseSpec.logo) : null);
+        const uniLogoSrc = logoUrl || (selectedCourseSpec.logo ? getMediaUrl(selectedCourseSpec.logo) : null);
 
         const rawCourseSlug = selectedCourseSpec.slug || encodeURIComponent(cTitle.toLowerCase());
         const baseCourseDetailHref = rawCourseSlug.includes("/")
@@ -284,7 +286,7 @@ export default function UniversityCoursesSection({
               <div className="relative w-full md:w-80 lg:w-88 shrink-0 h-36 sm:h-44 md:h-auto min-h-36 sm:min-h-44 md:min-h-[350px] md:max-h-[460px] rounded-xl sm:rounded-2xl overflow-hidden bg-slate-900 shadow-xs flex items-stretch">
                 {bannerSrc ? (
                   <Image
-                    src={getAssetPath(bannerSrc)}
+                    src={getMediaUrl(bannerSrc)}
                     alt={cTitle}
                     fill
                     sizes="(max-width: 768px) 100vw, 360px"

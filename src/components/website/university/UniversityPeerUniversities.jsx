@@ -5,7 +5,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { Plus, Check, ChevronDown } from "lucide-react";
 import { useCompare } from "@/hooks/useCompare";
-import { getAssetPath } from "@/lib/utils";
+
+const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 
 export default function UniversityPeerUniversities({
   topUniversities = [],
@@ -55,7 +56,7 @@ export default function UniversityPeerUniversities({
               <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-full p-1 flex items-center justify-center bg-white relative my-0.5 shrink-0 overflow-hidden">
                 {peerLogo ? (
                   <Image
-                    src={getAssetPath(peerLogo)}
+                    src={getMediaUrl(peerLogo)}
                     alt={peer.name}
                     fill
                     sizes="56px"

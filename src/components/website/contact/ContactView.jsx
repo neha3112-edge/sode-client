@@ -9,7 +9,6 @@ import {
   MailOutlined,
   EnvironmentOutlined,
 } from "@ant-design/icons";
-import { getAssetPath } from "@/lib/utils";
 
 // Social Media SVGs
 function FacebookIcon({ className = "w-5 h-5 fill-white" }) {
@@ -140,7 +139,7 @@ export function ContactView({
   const registeredOffice = tenant?.registeredOffice || tenant?.address || "";
   const tenantName = tenant?.name || "";
   const tenantSubtitle = tenant?.subtitle || "";
-  const bannerImgUrl = tenant?.bannerImage ? getAssetPath(tenant.bannerImage) : null;
+  const bannerImgUrl = tenant?.bannerImage ? (typeof tenant.bannerImage === "string" ? tenant.bannerImage : tenant.bannerImage?.url || tenant.bannerImage?.path || null) : null;
 
   const contactHeroTitle = tenant?.contactHeroTitle || "";
   const contactHeroDescription = tenant?.contactHeroDescription || "";

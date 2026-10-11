@@ -14,8 +14,9 @@ import {
   Download,
   ChevronRight,
 } from "lucide-react";
-import { FaClock, FaCalendar } from "react-icons/fa";
-import { getAssetPath, formatAdmissionDeadline } from "@/lib/utils";
+import { formatAdmissionDeadline } from "@/lib/utils";
+
+const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 
 const SPEC_ICONS = [Briefcase, BookOpen, GraduationCap, Award, Database, UserCog, ShoppingCart];
 
@@ -233,7 +234,7 @@ export default function CourseSpecializations({
               {item.logo ? (
                 <div className="relative w-5 h-5 sm:w-6 sm:h-6 shrink-0">
                   <Image
-                    src={getAssetPath(item.logo)}
+                    src={getMediaUrl(item.logo)}
                     alt={cleanSpecTitle}
                     fill
                     sizes="24px"
@@ -279,7 +280,7 @@ export default function CourseSpecializations({
           courseData?.universityId?.bannerImg ||
           heroBannerSrc ||
           "";
-        const specDesktopBanner = specDesktopBannerRaw ? getAssetPath(specDesktopBannerRaw) : "";
+        const specDesktopBanner = specDesktopBannerRaw ? (getMediaUrl(specDesktopBannerRaw) || "") : "";
 
         const specMobileBannerRaw =
           selectedSpecModal?.bannerImageMobile ||
@@ -287,9 +288,9 @@ export default function CourseSpecializations({
           courseData?.mobileBannerImage ||
           courseData?.universityId?.mobileBannerImg ||
           specDesktopBannerRaw;
-        const specMobileBanner = specMobileBannerRaw ? getAssetPath(specMobileBannerRaw) : specDesktopBanner;
+        const specMobileBanner = specMobileBannerRaw ? (getMediaUrl(specMobileBannerRaw) || specDesktopBanner) : specDesktopBanner;
 
-        const specLogo = selectedSpecModal?.logo ? getAssetPath(selectedSpecModal.logo) : null;
+        const specLogo = selectedSpecModal?.logo ? getMediaUrl(selectedSpecModal.logo) : null;
 
         const specCurriculum = (() => {
           if (Array.isArray(selectedSpecModal?.curriculum) && selectedSpecModal.curriculum.length > 0) {

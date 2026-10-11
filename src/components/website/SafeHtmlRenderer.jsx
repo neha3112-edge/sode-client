@@ -3,7 +3,6 @@
 import React, { useSyncExternalStore } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { getAssetPath } from "@/lib/utils";
 
 // Helper function to parse raw CSS style strings into React style objects
 function parseStyleString(styleStr) {
@@ -209,7 +208,7 @@ export default function SafeHtmlRenderer({
       const { src, alt, width, height, style, ...restImgAttr } = attributes;
       if (!src) return null;
 
-      const finalSrc = getAssetPath(src);
+      const finalSrc = src;
       const w = parseInt(width, 10);
       const h = parseInt(height, 10);
 

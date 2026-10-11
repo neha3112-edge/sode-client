@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Form, Input, Select, Button, Checkbox, message, Modal, Carousel } from "antd";
 import { ArrowRight, Building2, Calendar, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, Eye, FileText, GraduationCap, Link2, Mail, Share2, User, UserCheck, X } from "lucide-react";
-import { getAssetPath } from "@/lib/utils";
+const getAssetPath = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 import { STATE_OPTIONS } from "@/constants/stateOptions";
 import { DEFAULT_COURSE_OPTIONS } from "@/constants/courseOptions";
 import { PartnerLogoIcon, CourseIcon, getItemSlug, isObjectId } from "@/components/website/category/CategoryIcons";

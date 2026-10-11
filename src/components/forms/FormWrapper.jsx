@@ -4,7 +4,6 @@ import React, { useEffect, useMemo, useRef, useState, useSyncExternalStore } fro
 import { useRouter } from "next/navigation";
 import { Form, Input, Select, Button, Modal, message } from "antd";
 import { X } from "lucide-react";
-import { getAssetPath } from "@/lib/utils";
 import { STATE_OPTIONS } from "@/constants/stateOptions";
 import { DEFAULT_COURSE_OPTIONS } from "@/constants/courseOptions";
 
@@ -251,7 +250,7 @@ export default function FormWrapper({
         ...getUTMParams(),
       };
 
-      const response = await fetch(getAssetPath("/api/lead"), {
+      const response = await fetch("/api/lead", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -285,7 +284,7 @@ export default function FormWrapper({
 
           // Initiate instant file download
           const link = document.createElement("a");
-          link.href = getAssetPath(finalBrochureUrl);
+          link.href = finalBrochureUrl;
           link.download = "";
           document.body.appendChild(link);
           link.click();

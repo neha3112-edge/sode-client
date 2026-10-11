@@ -5,8 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Rate } from "antd";
 import { Download, BadgeCheck, GraduationCap } from "lucide-react";
+import { formatAdmissionDeadline } from "@/lib/utils";
 import { FaBuilding, FaCalendar, FaMapMarkerAlt } from "react-icons/fa";
-import { getAssetPath, formatAdmissionDeadline } from "@/lib/utils";
 
 export default function UniversityHero({
   uniName,
@@ -172,11 +172,10 @@ export default function UniversityHero({
                     <button
                       type="button"
                       onClick={handleUniversityCompare}
-                      className={`whitespace-nowrap font-semibold text-xs sm:text-sm px-4 py-2 rounded-full cursor-pointer flex items-center gap-1.5 transition-all active:scale-95 shrink-0 ${
-                        isInCompare
-                          ? "bg-emerald-600 hover:bg-emerald-700 text-white border-none shadow-xs"
-                          : "bg-transparent hover:bg-white/10 text-white border border-white"
-                      }`}
+                      className={`whitespace-nowrap font-semibold text-xs sm:text-sm px-4 py-2 rounded-full cursor-pointer flex items-center gap-1.5 transition-all active:scale-95 shrink-0 ${isInCompare
+                        ? "bg-emerald-600 hover:bg-emerald-700 text-white border-none shadow-xs"
+                        : "bg-transparent hover:bg-white/10 text-white border border-white"
+                        }`}
                     >
                       <span>{isInCompare ? "In Compare" : "+ Add to Compare"}</span>
                     </button>
@@ -223,11 +222,10 @@ export default function UniversityHero({
               <button
                 type="button"
                 onClick={handleUniversityCompare}
-                className={`whitespace-nowrap font-semibold text-[10.5px] sm:text-sm px-2 sm:px-5 py-2 sm:py-2.5 rounded-full cursor-pointer flex items-center justify-center gap-1 transition-all active:scale-95 ${
-                  isInCompare
-                    ? "bg-emerald-600 hover:bg-emerald-700 text-white border-none shadow-xs"
-                    : "bg-transparent hover:bg-white/10 text-white border border-white/80"
-                }`}
+                className={`whitespace-nowrap font-semibold text-[10.5px] sm:text-sm px-2 sm:px-5 py-2 sm:py-2.5 rounded-full cursor-pointer flex items-center justify-center gap-1 transition-all active:scale-95 ${isInCompare
+                  ? "bg-emerald-600 hover:bg-emerald-700 text-white border-none shadow-xs"
+                  : "bg-transparent hover:bg-white/10 text-white border border-white/80"
+                  }`}
               >
                 <span className="truncate">{isInCompare ? "In Compare" : "+ Compare"}</span>
               </button>

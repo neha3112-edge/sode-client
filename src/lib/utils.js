@@ -163,112 +163,21 @@ function isHashOrFileName(str, fileName = "") {
 }
 
 /**
- * Resolves an image/asset path to the correct clean URL (/image/:name)
- * Dynamically builds SEO-friendly URLs based on media name (NOT fileName).
+ * Returns the real raw image/asset URL directly from backend.
+ * No proxying or slug transformation.
  */
 export function getAssetPath(path = "", fallback = DEFAULT_SVG_LOGO, customName = "") {
   if (!path) return fallback;
 
-  // 1. Populated Media object ({ name, url, fileName, alt, ... })
   if (typeof path === "object" && path !== null) {
-    const rawUrl = path.url || path.src || path.path || "";
-    const name = path.name || path.title || path.imageName || customName || path.alt || "";
-
-    if (rawUrl) {
-      const urlExtMatch = rawUrl.match(/\.([a-zA-Z0-9]+)(?:\?|$)/);
-      const ext = urlExtMatch ? urlExtMatch[1] : (path.fileName?.split(".").pop() || "webp");
-      const relMinio = extractMinioRelPath(rawUrl, path);
-
-      const hasRealName = Boolean(name && !isHashOrFileName(name, path.fileName));
-
-      // Use the image's name if it's a real human SEO name (NOT a hash/fileName!)
-      if (hasRealName) {
-        const cleanName = slugifyFileName(name, ext);
-        registerMediaMapping(cleanName, rawUrl);
-        registerMediaMapping(name, rawUrl);
-        registerMediaMapping(encodeURIComponent(cleanName), rawUrl);
-        const baseSlug = cleanName.replace(/\.[^/.]+$/, "");
-        if (baseSlug) {
-          registerMediaMapping(baseSlug, rawUrl);
-        }
-
-        if (relMinio) {
-          const lastFile = relMinio.split("/").pop();
-          if (lastFile.toLowerCase() === cleanName.toLowerCase()) {
-            return `/image/${relMinio}`;
-          }
-          return `/image/${relMinio}/${encodeURIComponent(cleanName)}`;
-        }
-
-        return `/image/${encodeURIComponent(cleanName)}`;
-      }
-
-      // If no human name (or name is just the hash/filename), use MinIO path directly!
-      if (relMinio) {
-        registerMediaMapping(relMinio.split("/").pop(), rawUrl);
-        return `/image/${relMinio}`;
-      }
-
-      if (path.fileName) {
-        registerMediaMapping(path.fileName, rawUrl);
-        return `/image/${encodeURIComponent(path.fileName)}`;
-      }
-
-      path = rawUrl;
-    } else {
-      return fallback;
-    }
+    return path.url || path.src || path.path || fallback;
   }
 
   if (typeof path !== "string") return fallback;
-  let targetPath = path.trim();
+  const targetPath = path.trim();
   if (!targetPath) return fallback;
 
-  // If customName is provided for a string URL
-  if (customName && (targetPath.startsWith("http") || targetPath.includes("/minio/"))) {
-    const urlExtMatch = targetPath.match(/\.([a-zA-Z0-9]+)(?:\?|$)/);
-    const ext = urlExtMatch ? urlExtMatch[1] : "webp";
-    const cleanName = slugifyFileName(customName, ext);
-    registerMediaMapping(cleanName, targetPath);
-    registerMediaMapping(customName, targetPath);
-    registerMediaMapping(encodeURIComponent(cleanName), targetPath);
-
-    const relMinio = extractMinioRelPath(targetPath);
-    if (relMinio) {
-      const lastFile = relMinio.split("/").pop();
-      if (lastFile.toLowerCase() === cleanName.toLowerCase()) {
-        return `/image/${relMinio}`;
-      }
-      return `/image/${relMinio}/${encodeURIComponent(cleanName)}`;
-    }
-
-    return `/image/${encodeURIComponent(cleanName)}`;
-  }
-
-  // 2. Data URIs → pass through as-is
-  if (targetPath.startsWith("data:image")) return targetPath;
-
-  // 3. Relative /image/ or /media/ paths -> return as-is
-  if (targetPath.startsWith("/image/") || targetPath.startsWith("/media/")) return targetPath;
-
-  // 4. MinIO URLs (domain or port) -> convert to /image/... proxy path
-  const relMinio = extractMinioRelPath(targetPath);
-  if (relMinio) {
-    const lastFile = relMinio.split("/").pop();
-    registerMediaMapping(lastFile, targetPath);
-    return `/image/${relMinio}`;
-  }
-
-  // 6. Generic relative paths
-  if (targetPath.startsWith("/")) return targetPath;
-
-  // 7. External URLs
-  if (targetPath.startsWith("http://")) {
-    return targetPath.replace(/^http:\/\//i, "https://");
-  }
-  if (targetPath.startsWith("https://")) return targetPath;
-
-  return fallback;
+  return targetPath;
 }
 
 const SHORT_MONTHS = [

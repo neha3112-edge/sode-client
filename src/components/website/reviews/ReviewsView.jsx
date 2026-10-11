@@ -4,7 +4,8 @@ import React, { useState, useRef } from "react";
 import Image from "next/image";
 import { Pagination } from "antd";
 import { request } from "@/services/request";
-import { getAssetPath } from "@/lib/utils";
+
+const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 
 // Google "G" Logo SVG
 function GoogleIcon({ className = "w-3.5 h-3.5" }) {
@@ -75,7 +76,7 @@ function UserAvatar({ name = "User", avatarUrl = "" }) {
     return (
       <div className="relative w-9 h-9 rounded-full overflow-hidden shrink-0 ring-1 ring-slate-200/80 bg-slate-100">
         <Image
-          src={getAssetPath(avatarUrl)}
+          src={getMediaUrl(avatarUrl)}
           alt={name}
           width={36}
           height={36}

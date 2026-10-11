@@ -4,7 +4,8 @@ import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { dynamicRead, dynamicPost } from "@/services/request";
-import { getAssetPath } from "@/lib/utils";
+
+const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 import {
   ArrowLeft,
   Sparkles,
@@ -557,7 +558,7 @@ export default function AutoEngineToolPage({
                               {uni.logo ? (
                                 <div className="relative w-12 h-12 rounded-xl bg-white border border-slate-200 p-1 flex items-center justify-center shrink-0">
                                   <Image
-                                    src={getAssetPath(uni.logo)}
+                                    src={getMediaUrl(uni.logo)}
                                     alt={uni.name}
                                     fill
                                     className="object-contain p-0.5"

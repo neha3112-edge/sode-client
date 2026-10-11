@@ -2,12 +2,12 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { getAssetPath } from "@/lib/utils";
+const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 
 // Category Icon Component - Renders MinIO Media Asset image/SVG from backend using Next.js Image
 export function CategoryIcon({ cat }) {
   const [imgError, setImgError] = useState(false);
-  const iconUrl = getAssetPath(cat?.logo, null);
+  const iconUrl = getMediaUrl(cat?.logo);
 
   if (iconUrl && !imgError) {
     return (
@@ -34,7 +34,7 @@ export function CategoryIcon({ cat }) {
 // Course Icon Component - Renders logo/image or circular badge with initial
 export function CourseIcon({ course }) {
   const [imgError, setImgError] = useState(false);
-  const iconUrl = getAssetPath(course?.logo, null);
+  const iconUrl = getMediaUrl(course?.logo);
 
   if (iconUrl && !imgError) {
     return (
@@ -61,7 +61,7 @@ export function CourseIcon({ course }) {
 // Helper component to render backend logo/icon or fallback letter badge
 export function PartnerLogoIcon({ partner }) {
   const [imgError, setImgError] = useState(false);
-  const logoUrl = getAssetPath(partner?.logo, null);
+  const logoUrl = getMediaUrl(partner?.logo);
 
   if (logoUrl && !imgError) {
     return (

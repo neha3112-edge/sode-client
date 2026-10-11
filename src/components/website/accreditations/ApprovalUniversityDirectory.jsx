@@ -19,8 +19,9 @@ import {
 } from "lucide-react";
 import { useFormModal } from "@/hooks/useFormModal";
 import { useCompare } from "@/hooks/useCompare";
-import { getAssetPath } from "@/lib/utils";
 import { Container } from "@/components/common/Container";
+
+const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 
 const { Option } = Select;
 
@@ -71,7 +72,7 @@ function SmoothExpandedCard({
                 <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-lg shrink-0 flex items-center justify-center overflow-hidden">
                   {record.logo ? (
                     <Image
-                      src={getAssetPath(record.logo)}
+                      src={getMediaUrl(record.logo)}
                       alt={record.name}
                       width={46}
                       height={46}
@@ -474,7 +475,7 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
             <div className="w-10 h-10 sm:w-9 sm:h-9 rounded-lg shrink-0 flex items-center justify-center overflow-hidden">
               {record.logo ? (
                 <Image
-                  src={getAssetPath(record.logo)}
+                  src={getMediaUrl(record.logo)}
                   alt={name}
                   width={40}
                   height={40}

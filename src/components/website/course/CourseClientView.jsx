@@ -2,8 +2,10 @@
 
 import React, { useState, useMemo, useEffect } from "react";
 import { useFormModal } from "@/hooks/useFormModal";
-import { getAssetPath, formatAdmissionDeadline } from "@/lib/utils";
+import { formatAdmissionDeadline } from "@/lib/utils";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
+
+const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 import CourseHero from "./CourseHero";
 import CourseQuickFacts from "./CourseQuickFacts";
 import CourseAbout from "./CourseAbout";
@@ -97,14 +99,14 @@ export function CourseClientView({
     courseData?.university?.name ||
     "";
   const displayCourseTitle = courseData?.name || "Course Details";
-  const heroBannerSrc = getAssetPath(
+  const heroBannerSrc = getMediaUrl(
     courseData?.coursepageimage ||
     courseData?.bannerImage ||
     courseData?.banner ||
     courseData?.universityId?.coursepageimage ||
     courseData?.universityId?.bannerImg
   );
-  const mobileHeroBannerSrc = getAssetPath(
+  const mobileHeroBannerSrc = getMediaUrl(
     courseData?.bannerImageMobile ||
     courseData?.mobileBannerImage ||
     courseData?.universityId?.mobileBannerImg ||
@@ -114,9 +116,9 @@ export function CourseClientView({
     courseData?.universityId?.bannerImg
   );
   const universityLogoSrc = courseData?.logo
-    ? getAssetPath(courseData.logo)
+    ? getMediaUrl(courseData.logo)
     : courseData?.universityId?.logo
-      ? getAssetPath(courseData.universityId.logo)
+      ? getMediaUrl(courseData.universityId.logo)
       : null;
 
   const approvalsList = useMemo(() => {
@@ -269,7 +271,7 @@ export function CourseClientView({
       const providerName = isPartnerActive ? partnerObj.name : null;
 
       const rawLogo = uni.logo || uni.logoSrc || item.logo || item.logoUrl || null;
-      const logoUrl = rawLogo ? getAssetPath(rawLogo, null) : null;
+      const logoUrl = rawLogo ? getMediaUrl(rawLogo) : null;
 
       let durationText = null;
       if (typeof duration === "string" && duration.trim()) {

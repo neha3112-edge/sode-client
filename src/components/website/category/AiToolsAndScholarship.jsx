@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Container } from "@/components/common/Container";
 import { useToolWizard } from "@/components/tool/ToolWizardContext";
 import { CareerExpertsSection } from "@/components/website/counselor";
-import { getAssetPath } from "@/lib/utils";
+import { ArrowRight } from "lucide-react";
 
 const DEFAULT_TOOLS = [
   {
@@ -49,7 +49,7 @@ export default function AiToolsAndScholarship({ block, bIdx, counselors = [] }) 
       className="w-full relative py-8 sm:py-12 md:py-14 bg-[#F1F5F9] text-center"
       suppressHydrationWarning
     >
-      <Container className="relative z-10 !max-w-7xl">
+      <Container className="relative z-10 max-w-7xl">
         <div className="w-full mx-auto text-center">
           {/* Top Badge */}
           <div className="flex justify-center mb-1.5 sm:mb-3">
@@ -148,7 +148,7 @@ export default function AiToolsAndScholarship({ block, bIdx, counselors = [] }) 
               }
 
               const rawLogo = child.logo || child.image;
-              const logoUrl = rawLogo ? getAssetPath(rawLogo) : null;
+              const logoUrl = rawLogo ? (typeof rawLogo === "string" ? rawLogo : rawLogo?.url || rawLogo?.path || null) : null;
 
               return (
                 <div
@@ -182,40 +182,40 @@ export default function AiToolsAndScholarship({ block, bIdx, counselors = [] }) 
                     </div>
 
                     {/* Title with Underlined Word */}
-                    <h3 className="text-xs sm:text-base font-bold text-[#0F172A] tracking-tight m-0 pt-0.5 leading-tight">
+                    <h3 className="text-xs sm:text-base font-semibold text-[#0F172A] tracking-tight m-0 pt-0.5 leading-tight">
                       {prefix ? `${prefix} ` : ""}
-                      <span className={`border-b-2 ${underlineClass} pb-0.5 inline-block`}>
+                      <span className={`border-b-2 ${underlineClass}`}>
                         {underlineWord}
                       </span>
                     </h3>
 
                     {/* Description */}
-                    <div className="w-full flex items-center justify-center min-h-[30px] sm:min-h-[38px]">
-                      <p className="text-[#64748B] text-[10px] sm:text-xs md:text-[12.5px] leading-snug sm:leading-relaxed font-normal m-0 line-clamp-2 sm:line-clamp-3 text-center">
+                    <div className="w-full flex items-center justify-center mt-1">
+                      <p className="text-[#64748B] text-[10px] sm:text-[11px] leading-snug font-normal m-0 text-center">
                         {child.description || desc}
                       </p>
                     </div>
                   </Link>
 
                   {/* Button with circular arrow badge */}
-                  <div className="w-full pt-3 sm:pt-4">
+                  <div className="w-full pt-3 sm:pt-2">
                     {isLink ? (
                       <Link
                         href={linkUrl}
-                        className="w-full py-2 px-3 sm:px-4 rounded-full bg-[#0B3B7E] hover:bg-[#072859] text-white font-bold text-[10px] sm:text-xs shadow-xs transition-all flex items-center justify-between cursor-pointer truncate no-underline group-hover:shadow-md active:scale-95"
+                        className="w-full py-2 px-3 sm:px-4 rounded-full bg-[#0B3B7E] hover:bg-[#072859] text-white font-bold text-[10px] sm:text-xs shadow-xs transition-all flex items-center justify-center cursor-pointer truncate no-underline group-hover:shadow-md active:scale-95"
                       >
-                        <span className="truncate">{child.btnText || btnText}</span>
-                        <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-white text-[#0B3B7E] flex items-center justify-center text-[10px] sm:text-xs font-bold shrink-0 ml-1.5 transition-transform group-hover:translate-x-0.5">
-                          →
+                        <span>{child.btnText || btnText}</span>
+                        <span className="w-2 h-2 sm:w-4 sm:h-4 rounded-full bg-white text-[#0B3B7E] flex items-center justify-center text-[10px] sm:text-xs font-bold shrink-0 ml-1.5 transition-transform group-hover:translate-x-0.5">
+                          <ArrowRight size={15} />
                         </span>
                       </Link>
                     ) : (
                       <button
                         type="button"
                         onClick={() => openTool(linkUrl)}
-                        className="w-full py-2 px-3 sm:px-4 rounded-full bg-[#0B3B7E] hover:bg-[#072859] text-white font-bold text-[10px] sm:text-xs shadow-xs transition-all flex items-center justify-between cursor-pointer truncate border-0 group-hover:shadow-md active:scale-95"
+                        className="w-full py-2 px-3 sm:px-4 rounded-full bg-[#0B3B7E] hover:bg-[#072859] text-white font-bold text-[10px] sm:text-xs shadow-xs transition-all flex items-center justify-center cursor-pointer border-0 group-hover:shadow-md active:scale-95"
                       >
-                        <span className="truncate">{child.btnText || btnText}</span>
+                        <span>{child.btnText || btnText}</span>
                         <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-white text-[#0B3B7E] flex items-center justify-center text-[10px] sm:text-xs font-bold shrink-0 ml-1.5 transition-transform group-hover:translate-x-0.5">
                           →
                         </span>
@@ -242,6 +242,6 @@ export default function AiToolsAndScholarship({ block, bIdx, counselors = [] }) 
           <CareerExpertsSection counselors={counselors} />
         </div>
       </Container>
-    </section>
+    </section >
   );
 }

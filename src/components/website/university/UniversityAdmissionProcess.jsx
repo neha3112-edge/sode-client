@@ -2,7 +2,8 @@
 
 import React from "react";
 import Image from "next/image";
-import { getAssetPath } from "@/lib/utils";
+
+const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 
 const STEP_COLORS = [
   { border: "#f97316", bg: "#fff7ee" },
@@ -71,7 +72,7 @@ export default function UniversityAdmissionProcess({ admissionProcess }) {
                 >
                   {iconAsset ? (
                     <Image
-                      src={getAssetPath(iconAsset)}
+                      src={getMediaUrl(iconAsset)}
                       alt={step.title || "Step icon"}
                       width={24}
                       height={24}

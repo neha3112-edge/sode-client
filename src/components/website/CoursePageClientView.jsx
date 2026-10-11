@@ -7,7 +7,8 @@ import { Carousel, Table } from "antd";
 import { Container } from "@/components/common/Container";
 import SafeHtmlRenderer from "@/components/website/SafeHtmlRenderer";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
-import { getAssetPath } from "@/lib/utils";
+
+const getAssetPath = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || "");
 import { useFormModal } from "@/hooks/useFormModal";
 import { useCompare } from "@/hooks/useCompare";
 import Hero from "@/components/website/Hero";
@@ -1179,8 +1180,8 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                             <Image
                               src={getAssetPath(iconSrc)}
                               alt={card.title || "Icon"}
-                              width={28}
-                              height={28}
+                              width={40}
+                              height={40}
                               className="object-contain"
                               unoptimized
                             />
@@ -1233,8 +1234,8 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                             <Image
                               src={getAssetPath(iconSrc)}
                               alt={card.title || "Icon"}
-                              width={28}
-                              height={28}
+                              width={40}
+                              height={40}
                               className="object-contain"
                               unoptimized
                             />

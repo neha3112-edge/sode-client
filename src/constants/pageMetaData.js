@@ -1,5 +1,6 @@
 import { API_BASE_URL, getFetchCacheOptions } from "@/config";
-import { getAssetPath } from "@/lib/utils";
+
+const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || undefined);
 
 export const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || "";
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "";
@@ -83,7 +84,7 @@ export function constructMetadata(pageMeta) {
   const ogType = pageMeta.ogType;
 
   const rawOg = pageMeta.ogImage;
-  const ogImageUrl = rawOg ? getAssetPath(rawOg) : undefined;
+  const ogImageUrl = rawOg ? getMediaUrl(rawOg) : undefined;
   const ogImageAlt = rawOg?.alt || rawOg?.name || ogTitle || title;
 
   const twitterCard = pageMeta.twitterCard;
@@ -91,7 +92,7 @@ export function constructMetadata(pageMeta) {
   const twitterDescription = pageMeta.twitterDescription || ogDescription || description;
 
   const rawTwitter = pageMeta.twitterImage || pageMeta.ogImage;
-  const twitterImageUrl = rawTwitter ? getAssetPath(rawTwitter) : undefined;
+  const twitterImageUrl = rawTwitter ? getMediaUrl(rawTwitter) : undefined;
 
   const twitterSite = pageMeta.twitterSite;
   const twitterCreator = pageMeta.twitterCreator;

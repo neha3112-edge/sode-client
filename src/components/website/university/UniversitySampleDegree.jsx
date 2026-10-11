@@ -4,7 +4,8 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { Modal } from "antd";
 import { Eye, Check } from "lucide-react";
-import { getAssetPath } from "@/lib/utils";
+
+const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 
 export default function UniversitySampleDegree({
   sampleDegreeData,
@@ -31,7 +32,7 @@ export default function UniversitySampleDegree({
               className="w-full max-w-115 aspect-460/340 rounded-xl overflow-hidden cursor-pointer hover:shadow-md transition-all duration-200 bg-white relative shadow-md shadow-gray-300 group"
             >
               <Image
-                src={getAssetPath(sampleDegreeData.imageUrl)}
+                src={getMediaUrl(sampleDegreeData.imageUrl)}
                 alt={sampleDegreeData.title || `Sample Degree ${uniName}`}
                 fill
                 priority
@@ -129,7 +130,7 @@ export default function UniversitySampleDegree({
             )}
             <div className="relative w-full h-[380px] sm:h-[520px] max-h-[75vh] flex items-center justify-center mt-2">
               <Image
-                src={getAssetPath(sampleDegreeData.imageUrl)}
+                src={getMediaUrl(sampleDegreeData.imageUrl)}
                 alt={sampleDegreeData.title || `Sample Degree Certificate - ${uniName}`}
                 fill
                 sizes="(max-width: 768px) 100vw, 700px"

@@ -25,7 +25,9 @@ import { PlusOutlined, CheckOutlined } from "@ant-design/icons";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useFormModal } from "@/hooks/useFormModal";
 import { useCompare } from "@/hooks/useCompare";
-import { getAssetPath, formatAdmissionDeadline } from "@/lib/utils";
+import { formatAdmissionDeadline } from "@/lib/utils";
+
+const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 import WebsiteLayout from "@/components/layout/WebsiteLayout";
 import { request } from "@/services/request";
 
@@ -635,7 +637,7 @@ export default function CoursesPageClientView({
         const providerName = isPartnerActive ? partnerObj.name : null;
 
         const rawLogo = uni.logo || uni.logoSrc || null;
-        const logoUrl = getAssetPath(rawLogo, null);
+        const logoUrl = getMediaUrl(rawLogo);
 
         let durationText = null;
         if (typeof duration === "string" && duration.trim()) {
@@ -708,7 +710,7 @@ export default function CoursesPageClientView({
           uni.bannerImg ||
           uni.image ||
           null;
-        const courseImageUrl = getAssetPath(rawCourseImage, null);
+        const courseImageUrl = getMediaUrl(rawCourseImage);
 
         const overviewText =
           item.overview ||
@@ -1468,12 +1470,12 @@ export default function CoursesPageClientView({
 
           const modalCourseImage =
             specializationModalData.courseImageUrl ||
-            getAssetPath(specializationModalData.courseImage) ||
-            getAssetPath(specializationModalData.coursepageimage) ||
-            getAssetPath(specializationModalData.uniObj?.courseImage) ||
-            getAssetPath(specializationModalData.uniObj?.coursepageimage) ||
-            getAssetPath(specializationModalData.uniObj?.bannerImg) ||
-            getAssetPath(specializationModalData.uniObj?.image) ||
+            getMediaUrl(specializationModalData.courseImage) ||
+            getMediaUrl(specializationModalData.coursepageimage) ||
+            getMediaUrl(specializationModalData.uniObj?.courseImage) ||
+            getMediaUrl(specializationModalData.uniObj?.coursepageimage) ||
+            getMediaUrl(specializationModalData.uniObj?.bannerImg) ||
+            getMediaUrl(specializationModalData.uniObj?.image) ||
             null;
 
           const modalBadgeText = (() => {

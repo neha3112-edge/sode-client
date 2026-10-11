@@ -1,6 +1,5 @@
 import { cache } from "react";
 import { request } from "@/services/request";
-import { getAssetPath } from "@/lib/utils";
 import { getPageMetaData, constructMetadata } from "@/constants/pageMetaData";
 import { BlogClientView } from "@/components/website";
 
@@ -86,7 +85,7 @@ export async function generateMetadata({ params }) {
     const description = data?.metaDescription || blog?.subtitle || blog?.excerpt || "";
     const keywords = data?.metaKeywords || "";
     const rawImage = data?.bannerImage || blog?.coverImage;
-    const ogImage = rawImage ? getAssetPath(rawImage) : null;
+    const ogImage = rawImage ? (typeof rawImage === "string" ? rawImage : rawImage?.url || rawImage?.path || null) : null;
 
     return constructMetadata(pageMeta, {
       title,

@@ -2,7 +2,6 @@
 
 import React, { useState, useRef } from "react";
 import Image from "next/image";
-import { getAssetPath } from "@/lib/utils";
 
 /**
  * 🎬 Helper: Extract clean YouTube Autoplay Embed URL (Guarantees 1-click playback)
@@ -98,8 +97,8 @@ export function Video({
     poster ||
     (ytVideoId ? `https://i.ytimg.com/vi/${ytVideoId}/hqdefault.jpg` : null);
 
-  const resolvedPosterSrc = posterUrl ? getAssetPath(posterUrl) : undefined;
-  const resolvedVideoSrc = src ? getAssetPath(src) : undefined;
+  const resolvedPosterSrc = posterUrl ? (typeof posterUrl === "string" ? posterUrl : posterUrl?.url || posterUrl?.src || undefined) : undefined;
+  const resolvedVideoSrc = src ? (typeof src === "string" ? src : src?.url || src?.src || undefined) : undefined;
 
   // Handle 1-click play for direct video files
   const handleStartDirectVideo = () => {

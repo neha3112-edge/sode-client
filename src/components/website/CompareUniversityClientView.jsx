@@ -31,7 +31,8 @@ import {
 import { useCompare } from "@/hooks/useCompare";
 import { useFormModal as useAppDrawer } from "@/hooks/useFormModal";
 import { request } from "@/services/request";
-import { getAssetPath } from "@/lib/utils";
+
+const getAssetPath = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || "");
 
 export default function CompareUniversityClientView({
   initialComparedData = [],

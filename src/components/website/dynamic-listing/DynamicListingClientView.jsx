@@ -7,7 +7,6 @@ import { Carousel, Pagination } from "antd";
 import { Container } from "@/components/common/Container";
 import SafeHtmlRenderer from "@/components/website/SafeHtmlRenderer";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
-import { getAssetPath } from "@/lib/utils";
 import { useFormModal } from "@/hooks/useFormModal";
 import { Hero } from "@/components/website/Hero";
 import {
@@ -38,7 +37,8 @@ function getYouTubeEmbedUrl(url) {
 
 function getMediaUrl(media) {
   if (!media) return null;
-  return getAssetPath(media, null);
+  if (typeof media === "string") return media;
+  return media.url || media.path || media.src || null;
 }
 
 function DynamicHero({ hero, pageTitle, targetCourseName }) {
@@ -91,7 +91,7 @@ function DynamicHero({ hero, pageTitle, targetCourseName }) {
         {bgImgUrl && (
           <div className="absolute inset-0 w-full h-full pointer-events-none select-none overflow-hidden z-0">
             <Image
-              src={getAssetPath(bgImgUrl)}
+              src={bgImgUrl}
               alt=""
               fill
               priority
@@ -215,7 +215,7 @@ function DynamicHero({ hero, pageTitle, targetCourseName }) {
                     }
                   >
                     <Image
-                      src={getAssetPath(bannerUrl)}
+                      src={bannerUrl}
                       alt={title}
                       fill
                       priority
@@ -265,7 +265,7 @@ function DynamicHero({ hero, pageTitle, targetCourseName }) {
             >
               {universities.map((uni, idx) => {
                 const rawMedia = uni.logo || uni.image || uni.coursepageimage || null;
-                const imageSrc = rawMedia ? getAssetPath(rawMedia) : null;
+                const imageSrc = getMediaUrl(rawMedia);
                 if (!imageSrc) return null;
 
                 const url = uni.courseSlug
@@ -278,7 +278,7 @@ function DynamicHero({ hero, pageTitle, targetCourseName }) {
                   <div className="flex items-center justify-center h-12 sm:h-14 w-full">
                     <div className="relative w-full h-full flex items-center justify-center">
                       <Image
-                        src={getAssetPath(imageSrc)}
+                        src={imageSrc}
                         alt={uni.name || "University Logo"}
                         fill
                         className="object-contain object-center"
@@ -500,7 +500,7 @@ function RankedUniversityCard({ item, index, features, isStatePage = false }) {
           {/* Desktop Image (Course Image) */}
           {desktopImageUrl && (
             <Image
-              src={getAssetPath(desktopImageUrl)}
+              src={desktopImageUrl}
               alt={name}
               fill
               priority={index < 2}
@@ -513,7 +513,7 @@ function RankedUniversityCard({ item, index, features, isStatePage = false }) {
           {/* Mobile Image (Banner Image - Specialization modal style) */}
           {mobileBannerUrl && (
             <Image
-              src={getAssetPath(mobileBannerUrl)}
+              src={mobileBannerUrl}
               alt={name}
               fill
               priority={index < 2}
@@ -527,7 +527,7 @@ function RankedUniversityCard({ item, index, features, isStatePage = false }) {
             <div className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 md:top-3.5 md:right-3.5 z-10 bg-white rounded-xl sm:rounded-2xl shadow-md p-1.5 sm:p-2 flex items-center justify-center">
               <div className="relative w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14">
                 <Image
-                  src={getAssetPath(logoUrl)}
+                  src={logoUrl}
                   alt={name}
                   fill
                   priority={index < 2}

@@ -4,7 +4,8 @@ import React, { useState, useMemo, useEffect } from "react";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
 import { useCompare } from "@/hooks/useCompare";
 import { useFormModal } from "@/hooks/useFormModal";
-import { getAssetPath } from "@/lib/utils";
+
+const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 
 import UniversityHero from "./UniversityHero";
 import UniversityAbout from "./UniversityAbout";
@@ -65,11 +66,11 @@ export function UniversityClientView({ initialData, slug }) {
   );
 
   const rawBanner = uni.bannerImg || null;
-  const heroBannerUrl = rawBanner ? getAssetPath(rawBanner) : null;
+  const heroBannerUrl = rawBanner ? getMediaUrl(rawBanner) : null;
   const rawMobileBanner = uni.mobileBannerImg || null;
-  const mobileHeroBannerUrl = rawMobileBanner ? getAssetPath(rawMobileBanner) : heroBannerUrl;
+  const mobileHeroBannerUrl = rawMobileBanner ? getMediaUrl(rawMobileBanner) : heroBannerUrl;
   const rawLogo = data.logo || uni.logo || null;
-  const logoUrl = rawLogo ? getAssetPath(rawLogo) : null;
+  const logoUrl = rawLogo ? getMediaUrl(rawLogo) : null;
 
   const numericRating = useMemo(() => {
     const raw = uni?.avg_rating ?? data?.avg_rating ?? uni?.rating ?? data?.rating ?? 4.8;
@@ -125,7 +126,7 @@ export function UniversityClientView({ initialData, slug }) {
     if (Array.isArray(uni.accreditations) && uni.accreditations.length > 0) {
       return uni.accreditations.map((acc) => ({
         title: acc.name,
-        logo: acc.logo ? getAssetPath(acc.logo) : null,
+        logo: acc.logo ? getMediaUrl(acc.logo) : null,
         description: acc.description || "",
       }));
     }

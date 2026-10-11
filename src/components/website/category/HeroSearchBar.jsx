@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Container } from "@/components/common/Container";
-import { getAssetPath } from "@/lib/utils";
 import { API_BASE_URL } from "@/config";
 import {
   Search,
@@ -18,6 +17,8 @@ import {
   Building2,
 } from "lucide-react";
 import { getItemSlug, isObjectId } from "./CategoryIcons";
+
+const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 
 export default function HeroSearchBar({
   allCourses = [],
@@ -369,7 +370,7 @@ export default function HeroSearchBar({
                               <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-700 font-bold flex items-center justify-center shrink-0 border border-amber-100 relative overflow-hidden p-0.5">
                                 {cat.logo ? (
                                   <Image
-                                    src={getAssetPath(cat.logo, null)}
+                                    src={getMediaUrl(cat.logo)}
                                     alt={cat.name}
                                     fill
                                     sizes="32px"
@@ -416,7 +417,7 @@ export default function HeroSearchBar({
                               <div className="w-8 h-8 rounded-lg bg-sky-50 text-sky-700 font-bold flex items-center justify-center shrink-0 border border-sky-100 relative overflow-hidden p-0.5">
                                 {scat.logo ? (
                                   <Image
-                                    src={getAssetPath(scat.logo, null)}
+                                    src={getMediaUrl(scat.logo)}
                                     alt={scat.name}
                                     fill
                                     sizes="32px"
@@ -463,7 +464,7 @@ export default function HeroSearchBar({
                               <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 font-bold flex items-center justify-center shrink-0 border border-blue-100/60 p-1 relative overflow-hidden">
                                 {c.logo ? (
                                   <Image
-                                    src={getAssetPath(c.logo, null)}
+                                    src={getMediaUrl(c.logo)}
                                     alt={c.name}
                                     fill
                                     sizes="32px"
@@ -553,7 +554,7 @@ export default function HeroSearchBar({
                               <div className="w-8 h-8 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center shrink-0 relative overflow-hidden p-0.5">
                                 {u.logo ? (
                                   <Image
-                                    src={getAssetPath(u.logo, null)}
+                                    src={getMediaUrl(u.logo)}
                                     alt={u.name}
                                     fill
                                     sizes="32px"

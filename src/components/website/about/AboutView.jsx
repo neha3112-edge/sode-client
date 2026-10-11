@@ -12,7 +12,6 @@ import {
   RightOutlined,
   LeftOutlined,
 } from "@ant-design/icons";
-import { getAssetPath } from "@/lib/utils";
 
 // --- Vector SVGs for Perfect Visual Alignment with Screenshot ---
 
@@ -190,7 +189,7 @@ export function AboutView({ initialAboutData = null, initialReviews = [] }) {
   const [reviewSliderIndex, setReviewSliderIndex] = useState(0);
   const [hoveredStepIdx, setHoveredStepIdx] = useState(null);
 
-  const bannerImgUrl = getAssetPath(about?.bannerImage, "");
+  const bannerImgUrl = typeof about?.bannerImage === "string" ? about.bannerImage : (about?.bannerImage?.url || about?.bannerImage?.path || "");
 
   const stats = Array.isArray(about?.stats) ? about.stats : [];
   const videoReviews = Array.isArray(about?.videoReviews) ? about.videoReviews : [];
@@ -365,7 +364,7 @@ export function AboutView({ initialAboutData = null, initialReviews = [] }) {
                 >
                   {(item.thumbnail || item.thumbnailUrl) && (
                     <Image
-                      src={getAssetPath(item.thumbnail || item.thumbnailUrl)}
+                      src={typeof (item.thumbnail || item.thumbnailUrl) === "string" ? (item.thumbnail || item.thumbnailUrl) : ((item.thumbnail || item.thumbnailUrl)?.url || (item.thumbnail || item.thumbnailUrl)?.path || "")}
                       alt={item.studentName || "Student"}
                       fill
                       sizes="(max-width: 768px) 50vw, 25vw"

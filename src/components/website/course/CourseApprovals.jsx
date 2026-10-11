@@ -3,7 +3,8 @@
 import React from "react";
 import Image from "next/image";
 import { Award } from "lucide-react";
-import { getAssetPath } from "@/lib/utils";
+
+const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 
 export default function CourseApprovals({
   approvalsList,
@@ -23,7 +24,7 @@ export default function CourseApprovals({
       </h2>
       <div className="flex flex-wrap items-center justify-start md:justify-center gap-1.5 sm:gap-2.5 md:gap-3 w-full">
         {approvalsList.map((item, idx) => {
-          const logoSrc = item.logo || item.image ? getAssetPath(item.logo || item.image) : null;
+          const logoSrc = item.logo || item.image ? getMediaUrl(item.logo || item.image) : null;
           const title = item.name || item.code || "Accredited";
           const desc = item.description || `Approved by ${title}`;
 

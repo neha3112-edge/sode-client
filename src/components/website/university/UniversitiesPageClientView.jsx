@@ -14,7 +14,6 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { useCompare } from "@/hooks/useCompare";
-import { getAssetPath } from "@/lib/utils";
 import Container from "@/components/common/Container";
 import { request } from "@/services/request";
 
@@ -30,7 +29,8 @@ function getAvatarColor(name = "") {
 
 function resolveMediaUrl(media) {
   if (!media) return null;
-  return getAssetPath(media, null);
+  if (typeof media === "string") return media;
+  return media.url || media.path || media.src || null;
 }
 
 function UniversityCard({ uni }) {

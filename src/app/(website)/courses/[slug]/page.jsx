@@ -1,7 +1,6 @@
 import { cache } from "react";
 import { notFound } from "next/navigation";
 import { request } from "@/services/request";
-import { getAssetPath } from "@/lib/utils";
 import { getPageMetaData, constructMetadata } from "@/constants/pageMetaData";
 import { CoursePageClientView } from "@/components/website";
 
@@ -47,7 +46,7 @@ export async function generateMetadata({ params }) {
 
     const pageMeta = pageMetaCourses || pageMetaDirect;
     const rawImage = page?.ogImage || page?.bannerImage || page?.featuredImage;
-    const ogImage = rawImage ? getAssetPath(rawImage) : null;
+    const ogImage = rawImage ? (typeof rawImage === "string" ? rawImage : rawImage?.url || rawImage?.path || null) : null;
 
     return constructMetadata(pageMeta, {
       title: page?.metaTitle || (page?.pageTitle || page?.title ? `${page.pageTitle || page.title} | SODE` : ""),

@@ -2,7 +2,7 @@
    DEFAULT COURSE OPTIONS WITH BROCHURES
    Brochure URLs resolved via getAssetPath → MinIO
 ========================================================= */
-import { getAssetPath } from "@/lib/utils";
+const getAssetPath = (path) => path;
 
 export const DEFAULT_COURSE_OPTIONS = [
   /* =========================

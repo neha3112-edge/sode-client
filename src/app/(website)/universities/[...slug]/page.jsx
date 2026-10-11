@@ -1,6 +1,5 @@
 import { cache } from "react";
 import { request } from "@/services/request";
-import { getAssetPath } from "@/lib/utils";
 import { getPageMetaData, constructMetadata } from "@/constants/pageMetaData";
 import { UniversityClientView, CourseClientView } from "@/components/website";
 
@@ -122,7 +121,7 @@ export async function generateMetadata({ params }) {
       return constructMetadata(pageMeta, {
         title: uniName,
         canonicalUrl: `https://sode.co.in/universities/${data?.slug || uniSlug}`,
-        ogImage: rawImage ? getAssetPath(rawImage) : null,
+        ogImage: rawImage ? (typeof rawImage === "string" ? rawImage : rawImage?.url || rawImage?.path || null) : null,
       });
     } catch (error) {
       return {};
@@ -144,7 +143,7 @@ export async function generateMetadata({ params }) {
     return constructMetadata(pageMeta, {
       title: cleanTitle ? `${cleanTitle}${uniName ? ` from ${uniName}` : ""}` : "",
       canonicalUrl: `https://sode.co.in/universities/${course?.slug || slugStr}`,
-      ogImage: uniBannerImage ? getAssetPath(uniBannerImage) : null,
+      ogImage: uniBannerImage ? (typeof uniBannerImage === "string" ? uniBannerImage : uniBannerImage?.url || uniBannerImage?.path || null) : null,
     });
   } catch (error) {
     return {};
