@@ -165,16 +165,15 @@ export default function AiToolsAndScholarship({ block, bIdx, counselors = [] }) 
                   <Link href={linkUrl} className="flex flex-col items-center space-y-2 sm:space-y-3 w-full no-underline">
                     {/* Round Icon with colored background (matching blog page) */}
                     <div
-                      className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full ${circleBg} flex items-center justify-center mb-1 transition-transform group-hover:scale-110 shrink-0`}
+                      className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center mb-1 transition-transform group-hover:scale-110 shrink-0`}
                     >
                       {logoUrl ? (
                         <Image
                           src={logoUrl}
                           alt={fullName}
-                          width={48}
-                          height={48}
+                          width={55}
+                          height={55}
                           unoptimized
-                          className="w-7 h-7 sm:w-8 sm:h-8 object-contain"
                         />
                       ) : (
                         iconSvg
