@@ -444,7 +444,7 @@ function RankedUniversityCard({ item, index, features, isStatePage = false }) {
               </div>
             )}
 
-            {(isStatePage || item.isStateListing) && coursesJoined && (
+            {(isStatePage || item.isStateListing || item.isGeneralListing || !item.courseId) && coursesJoined && (
               <div>
                 <div className="font-bold text-slate-900 flex items-center gap-1 mb-0.5">
                   <GraduationCap className="w-3.5 h-3.5 text-slate-800 shrink-0" />
@@ -697,7 +697,7 @@ export function DynamicListingClientView({ page }) {
                     item={item}
                     index={startIndex + index}
                     features={page?.features}
-                    isStatePage={Boolean(page?.state || page?.isStateListing)}
+                    isStatePage={Boolean(!page?.targetCourse || page?.state || page?.city || page?.mode || page?.isStateListing)}
                   />
                 ))}
               </div>
