@@ -183,6 +183,13 @@ export function resolveStickyCtaConfig(brand = {}) {
     legacy.applyStyle ||
     "yellow";
 
+  const isSplit = Boolean(
+    brand.stickySplit ||
+    brand.stickyBarSplit ||
+    brand.stickyBarPill === false ||
+    brand.stickyPill === false
+  );
+
   // 6. Labels
   const labels = {
     brochure:
@@ -224,6 +231,7 @@ export function resolveStickyCtaConfig(brand = {}) {
       brochureAction,
       brochureIcon,
       applyStyle,
+      isSplit,
     },
     labels,
   };

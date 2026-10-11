@@ -15,6 +15,9 @@ function getApplyButtonClasses(applyStyle) {
       return "bg-white text-[#d32f2f]";
     case "white-accent":
       return "bg-white text-[#f97316]";
+    case "blue":
+    case "iiitb":
+      return "bg-[#01519a] text-white";
     case "yellow":
     default:
       return "bg-[#ffd508] text-black";
@@ -33,6 +36,53 @@ export default function StickyBottomBar({
 
   if (!stickyBar.enabled) {
     return null;
+  }
+
+  const isSplit = Boolean(stickyBar.isSplit);
+
+  if (isSplit) {
+    return (
+      <div
+        className="footer_sticky_buttons lg:hidden fixed bottom-0 left-0 right-0 z-50 grid grid-cols-2 w-full p-0 gap-0 shadow-2xl pb-[max(0px,env(safe-area-inset-bottom))]"
+        style={{ backgroundColor: stickyBar.background || "transparent" }}
+      >
+        {/* Left CTA: Get Brochure */}
+        {stickyBar.brochureAction === "whatsapp" ? (
+          <a
+            href={whatsappUrl}
+            className="wp_btn flex items-center justify-center gap-2 h-[48px] bg-[#20c968] text-white font-bold text-[14.5px] no-underline border-none rounded-none cursor-pointer active:opacity-90"
+          >
+            <FaWhatsapp className="w-[18px] h-[18px] text-white shrink-0" />
+            <span>{labels.brochure}</span>
+          </a>
+        ) : (
+          <button
+            type="button"
+            onClick={() => onOpenBrochure?.()}
+            className="wp_btn flex items-center justify-center gap-2 h-[48px] bg-[#20c968] text-white font-bold text-[14.5px] border-none rounded-none cursor-pointer active:opacity-90"
+          >
+            {stickyBar.brochureIcon === "whatsapp" ? (
+              <FaWhatsapp className="w-[18px] h-[18px] text-white shrink-0" />
+            ) : (
+              <Download className="w-4 h-4 text-white" />
+            )}
+            <span>{labels.brochure}</span>
+          </button>
+        )}
+
+        {/* Right CTA: Apply Now Button */}
+        <button
+          type="button"
+          onClick={() => onOpenApply?.()}
+          className={`apply_btn flex items-center justify-center gap-1.5 h-[48px] rounded-none ${getApplyButtonClasses(
+            stickyBar.applyStyle
+          )} font-bold text-[14.5px] border-none cursor-pointer active:opacity-90`}
+        >
+          <span>{labels.apply}</span>
+          <span className="text-[17px] leading-none font-bold">»</span>
+        </button>
+      </div>
+    );
   }
 
   const isWhiteRed = stickyBar.applyStyle === "white-red";

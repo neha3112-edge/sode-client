@@ -92,13 +92,13 @@ export default function LandingStats({ stats = [], brand = {} }) {
   // ==========================================
   if (isIiitbLayout) {
     return (
-      <div id="stats" className="HighLights bg-[#2b2b2b] text-white py-12 px-4 sm:px-6 select-none scroll-mt-20">
+      <div id="stats" className="HighLights bg-[#2b2b2b] text-white py-12 px-4 sm:px-6 select-none scroll-mt-20 mt-0" style={{ marginTop: 0 }}>
         <div className="container max-w-[1140px] mx-auto">
           <div className="ach grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
             {stats.map((st, idx) => (
               <div key={idx} className="ac1 flex items-center gap-3.5">
-                <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm">
-                  <StudentCapIcon className="w-6 h-6 text-[#002147]" />
+                <div className="w-12 h-12 min-w-[48px] min-h-[48px] aspect-square rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm">
+                  <StudentCapIcon className="w-6 h-6 text-[#002147] shrink-0" />
                 </div>
                 <div className="inner_arc1_grid text-left">
                   <h3 className="text-[26px] sm:text-[30px] font-bold text-white m-0 leading-tight">

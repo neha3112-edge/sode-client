@@ -51,96 +51,11 @@ export const iiitbCustomCss = `
     position: relative !important;
   }
 
-  @media (max-width: 768px) {
-    .landing-page--iiitb #hero {
-      background-image: url(/assets/all_universities_images/iiitb/mobile_new_bg_main.png) !important;
-      background-position: center top !important;
-      background-size: 100% auto !important;
-      padding: 16px 12px 30px !important;
-    }
 
-    .landing-page--iiitb .hero-info-col {
-      display: flex !important;
-      flex-direction: column !important;
-      align-items: center !important;
-      text-align: center !important;
-      width: 100% !important;
-      max-width: 100% !important;
-    }
-
-    .landing-page--iiitb .hero-desktop-logo {
-      display: none !important;
-    }
-
-    .landing-page--iiitb .hero-eyebrow-text {
-      text-align: center !important;
-      font-size: 18px !important;
-      line-height: 1.35 !important;
-      margin-bottom: 4px !important;
-      color: #000000 !important;
-    }
-
-    .landing-page--iiitb #hero h1,
-    .landing-page--iiitb #hero h1 span {
-      font-size: 46px !important;
-      text-align: center !important;
-      line-height: 1.05 !important;
-      color: #004792 !important;
-      margin: 4px 0 6px !important;
-    }
-
-    .landing-page--iiitb .hero-byline-text {
-      text-align: center !important;
-      font-size: 15px !important;
-      margin-bottom: 8px !important;
-    }
-
-    .landing-page--iiitb .banner_lists {
-      margin: 4px auto 10px !important;
-      width: fit-content !important;
-    }
-
-    .landing-page--iiitb .banner_lists ul {
-      display: flex !important;
-      flex-direction: column !important;
-      align-items: flex-start !important;
-      gap: 4px !important;
-    }
-
-    .landing-page--iiitb .hero-brochure-btn {
-      display: none !important;
-    }
-
-    .landing-page--iiitb .hero-mobile-image-wrapper {
-      width: calc(100% + 24px) !important;
-      margin-left: -12px !important;
-      margin-right: -12px !important;
-      height: 380px !important;
-      margin-bottom: -50px !important;
-      position: relative !important;
-      z-index: 10 !important;
-    }
-
-    .landing-page--iiitb .hero-form-col {
-      width: 100% !important;
-      align-items: center !important;
-      z-index: 20 !important;
-      position: relative !important;
-    }
-
-    .landing-page--iiitb .hero-form-col .landing-card,
-    .landing-page--iiitb .hero-form-col .landing-lead-card {
-      width: 100% !important;
-      max-width: 360px !important;
-      border-radius: 14px !important;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12) !important;
-      background: #ffffff !important;
-    }
-  }
 
   /* Approvals Section */
   .landing-page--iiitb .accreditation-section {
-    background: #2b2b2b !important;
+    background: #212121 !important;
     color: #ffffff !important;
   }
 
@@ -210,17 +125,111 @@ export const iiitbCustomCss = `
   }
 
   /* Why Choose Section */
-  .landing-page--iiitb .why-card.dark {
-    background: #1b355e !important;
+
+/* Why Choose Section */
+.landing-page--iiitb .why-section {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  margin-bottom: 0 !important;
+  padding: 36px 0 0 !important;
+  padding-bottom: 0 !important;
+  overflow: hidden !important;
+  border-bottom: 1px solid #ffffff !important;
+}
+
+.landing-page--iiitb .why-grid {
+  width: 100% !important;
+  max-width: 100% !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 0 !important;
+  margin: 0 !important;
+  margin-bottom: 0 !important;
+  padding: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.landing-page--iiitb .why-card {
+  padding: 36px 24px !important;
+  border-radius: 0 !important;
+}
+
+.landing-page--iiitb .why-card.dark {
+  background: #1b355e !important;
+}
+
+.landing-page--iiitb .why-card.light {
+  background: #1f9acb !important;
+}
+
+  /* About Section - Desktop */
+  .landing-page--iiitb .about-section {
+    background: #005a8d !important;
+    padding: 0px 20px 0px 0px !important;
+    color: #ffffff !important;
+    margin: 0px !important;
   }
-  .landing-page--iiitb .why-card.light {
-    background: #1f9acb !important;
+  .landing-page--iiitb .about-container {
+    max-width: 1200px !important;
+    margin: auto !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1.5fr !important;
+    gap: 40px !important;
+    align-items: center !important;
+    margin-left: 0px !important;
+  }
+  .landing-page--iiitb .about-image {
+    width: 100% !important;
+  }
+  .landing-page--iiitb .about-image > div {
+    width: 100% !important;
+    height: 500px !important;
+    border-radius: 0px !important;
+  }
+  .landing-page--iiitb .about-content h2 {
+    font-size: 36px !important;
+    font-weight: 800 !important;
+    line-height: 1.2 !important;
+    margin-bottom: 10px !important;
+    color: #ffffff !important;
+  }
+  .landing-page--iiitb .about-content .underline {
+    display: block !important;
+    width: 80% !important;
+    height: 1px !important;
+    background: #ffffff !important;
+    margin-bottom: 20px !important;
+  }
+  .landing-page--iiitb .about-content p {
+    font-size: 15px !important;
+    line-height: 1.6 !important;
+    color: #e8f1f8 !important;
+    margin-bottom: 15px !important;
+  }
+  .landing-page--iiitb .about-actions .btn.red {
+    background: #ba0000 !important;
+    color: #ffffff !important;
+    padding: 12px 20px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    border-radius: 6px !important;
+  }
+  .landing-page--iiitb .about-actions .btn.outline {
+    background: transparent !important;
+    border: 1px solid #ffffff !important;
+    color: #ffffff !important;
+    padding: 12px 20px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    border-radius: 6px !important;
   }
 
   /* Stats / Highlights */
   .landing-page--iiitb .HighLights {
     background-color: #2b2b2b !important;
     color: #ffffff !important;
+    margin-top: 0 !important;
   }
 
   /* Certificate Slider Section */
@@ -267,9 +276,10 @@ export const iiitbCustomCss = `
   @media (max-width: 768px) {
     .landing-page--iiitb #hero {
       background-image: url(/assets/all_universities_images/iiitb/mobile_new_bg_main.png) !important;
-      background-size: 100% auto !important;
+      background-size: 90% auto !important;
       background-position: center top !important;
       padding: 16px 12px 35px !important;
+      overflow-x: clip !important;
     }
 
     /* Left info column centered on mobile */
@@ -287,7 +297,7 @@ export const iiitbCustomCss = `
     }
 
     .landing-page--iiitb .hero-eyebrow-text {
-      font-size: 17px !important;
+      font-size: 21px !important;
       font-weight: 700 !important;
       color: #000000 !important;
       text-align: center !important;
@@ -298,7 +308,7 @@ export const iiitbCustomCss = `
     .landing-page--iiitb #hero h1,
     .landing-page--iiitb #hero h1 span {
       font-family: 'Anton', sans-serif !important;
-      font-size: 44px !important;
+      font-size: 46px !important;
       color: #01519a !important;
       text-align: center !important;
       line-height: 1.12 !important;
@@ -316,38 +326,74 @@ export const iiitbCustomCss = `
     .landing-page--iiitb .banner_lists {
       margin: 0 auto 10px !important;
       text-align: center !important;
-      width: fit-content !important;
+      width: 100% !important;
+    }
+
+    .landing-page--iiitb .banner_lists ul {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      width: 100% !important;
+      margin: 0 auto !important;
+      padding: 0 !important;
+      gap: 6px !important;
     }
 
     .landing-page--iiitb .banner_lists ul li {
-      justify-content: flex-start !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      text-align: center !important;
       font-size: 14.5px !important;
       font-weight: 700 !important;
       font-style: italic !important;
       color: #000000 !important;
+      gap: 6px !important;
+      width: 100% !important;
     }
 
-    .landing-page--iiitb .hero-mobile-logo {
-      display: flex !important;
-      justify-content: center !important;
-      margin: 12px auto 16px !important;
-      width: 250px !important;
-    }
+  .landing-page--iiitb .hero-mobile-logo {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
 
-    /* Hide hero brochure button on mobile */
-    .landing-page--iiitb .hero-brochure-btn {
-      display: none !important;
-    }
+  width: 100% !important;
+  max-width: 100% !important;
+    margin: 12px auto 16px !important;
+}
 
-    /* Building image full-width on mobile */
+.landing-page--iiitb .hero-mobile-logo img {
+  width: 160px !important;
+  max-width: 160px !important;
+  height: auto !important;
+  object-fit: contain !important;
+  transform: none !important;
+}
+   /* Hide Download Brochure button ONLY in Hero on Mobile */
+@media (max-width: 768px) {
+  .landing-page--iiitb #hero .hero-brochure-btn,
+  .landing-page--iiitb #hero .downloadBrochureBtn,
+  .landing-page--iiitb #hero button[class*="brochure"],
+  .landing-page--iiitb #hero a[class*="brochure"] {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+}
+    /* Building image full-width on mobile scaled 150% */
     .landing-page--iiitb .hero-mobile-image-wrapper {
-      width: calc(100% + 24px) !important;
-      margin-left: -12px !important;
-      margin-right: -12px !important;
-      height: 250px !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      height: 330px !important;
       margin-bottom: -32px !important;
       position: relative !important;
-      z-index: 10 !important;
+      z-index: 5 !important;
+    }
+
+    .landing-page--iiitb .hero-mobile-image-wrapper img {
+      transform: scale(1.3) !important;
+      transform-origin: center bottom !important;
     }
 
     /* Form card slightly overlapping building image */
@@ -358,7 +404,10 @@ export const iiitbCustomCss = `
       position: relative !important;
     }
 
+    .landing-page--iiitb .hero-form-col .landing-lead-card,
     .landing-page--iiitb .hero-form-col .landing-card {
+      position: relative !important;
+      z-index: 40 !important;
       width: 100% !important;
       max-width: 360px !important;
       border-radius: 12px !important;
@@ -368,7 +417,7 @@ export const iiitbCustomCss = `
 
     /* Accreditation: stack left-right on mobile matching Image 3 */
     .landing-page--iiitb .accreditation-section {
-      background-color: #2b2b2b !important;
+      background-color: #212121 !important;
       padding: 32px 16px !important;
     }
     .landing-page--iiitb .accreditation-container {
@@ -383,16 +432,27 @@ export const iiitbCustomCss = `
       gap: 16px !important;
       text-align: left !important;
       margin-bottom: 6px !important;
+      border-right: none !important;
+      padding-right: 0 !important;
+    }
+    .landing-page--iiitb .accreditation-left .trophy-wrapper {
+      width: 115px !important;
+      height: 125px !important;
+      min-width: 115px !important;
+      margin-bottom: 0 !important;
+      position: relative !important;
     }
     .landing-page--iiitb .accreditation-left .trophy {
-      width: 90px !important;
-      height: 90px !important;
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: contain !important;
     }
     .landing-page--iiitb .accreditation-left h2 {
-      font-size: 24px !important;
+      font-size: 28px !important;
       font-weight: 800 !important;
       color: #ffffff !important;
-      line-height: 1.15 !important;
+      line-height: 1.12 !important;
+      letter-spacing: -0.02em !important;
     }
     .landing-page--iiitb .accreditation-grid {
       display: flex !important;
@@ -405,12 +465,12 @@ export const iiitbCustomCss = `
       gap: 16px !important;
     }
     .landing-page--iiitb .accreditation-item > div:first-child {
-      width: 64px !important;
-      height: 64px !important;
-      min-width: 64px !important;
+      width: 72px !important;
+      height: 72px !important;
+      min-width: 72px !important;
       background: #ffffff !important;
       border-radius: 50% !important;
-      padding: 6px !important;
+      padding: 7px !important;
     }
     .landing-page--iiitb .accreditation-item-content h4 {
       color: #ffffff !important;
@@ -480,12 +540,13 @@ export const iiitbCustomCss = `
     }
     .landing-page--iiitb .course-card .btn.apply {
       width: 100% !important;
-      background: #01519a !important;
+      background: #00284d !important;
+      background-color: #00284d !important;
       color: #ffffff !important;
       font-size: 14px !important;
       font-weight: 700 !important;
       height: 44px !important;
-      border-radius: 6px !important;
+      border-radius: 8px !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
@@ -507,21 +568,21 @@ export const iiitbCustomCss = `
     .landing-page--iiitb .about-image > div {
       width: 100% !important;
       max-width: 100% !important;
-      height: 250px !important;
+      height: 350px !important;
       border-radius: 6px !important;
     }
     .landing-page--iiitb .about-content h2 {
-      font-size: 26px !important;
+      font-size: 30px !important;
       font-weight: 800 !important;
       color: #ffffff !important;
-      line-height: 1.2 !important;
+      line-height: 1.15 !important;
     }
     .landing-page--iiitb .about-content .underline {
       display: block !important;
       width: 100% !important;
-      height: 2px !important;
+      height: 1px !important;
       background: #ffffff !important;
-      margin: 12px 0 16px !important;
+      margin: 10px 0 16px !important;
     }
     .landing-page--iiitb .about-content p {
       color: #ffffff !important;
@@ -529,35 +590,91 @@ export const iiitbCustomCss = `
       line-height: 1.6 !important;
     }
     .landing-page--iiitb .about-actions {
-      display: none !important;
+      display: flex !important;
+      flex-direction: row !important;
+      flex-wrap: nowrap !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 8px !important;
+      margin-top: 14px !important;
+      width: 100% !important;
+    }
+    .landing-page--iiitb .about-actions > button {
+      flex: 1 1 0% !important;
+      white-space: nowrap !important;
+      padding: 9px 6px !important;
+      font-size: 11.5px !important;
+      justify-content: center !important;
+      text-align: center !important;
     }
 
-    /* Why Choose: cards 1-col on phone */
-    .landing-page--iiitb .why-section {
-      padding: 36px 12px !important;
-    }
-    .landing-page--iiitb .why-section h2 {
-      font-size: 22px !important;
-    }
-    .landing-page--iiitb .why-grid {
-      grid-template-columns: 1fr !important;
-    }
-    .landing-page--iiitb .why-card {
-      padding: 24px 16px !important;
-    }
+   /* Why Choose: Mobile */
+.landing-page--iiitb .why-section {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  margin-bottom: 0 !important;
+  padding: 24px 0 0 !important;
+  padding-bottom: 0 !important;
+  overflow: hidden !important;
+  border-bottom: 1px solid #ffffff !important;
+}
+
+.landing-page--iiitb .why-section h2 {
+  font-size: 24px !important;
+  font-weight: 800 !important;
+}
+
+.landing-page--iiitb .why-grid {
+  width: 100% !important;
+  max-width: 100% !important;
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 0 !important;
+  margin: 12px 0 0 !important;
+  margin-bottom: 0 !important;
+  padding: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.landing-page--iiitb .why-card {
+  width: 100% !important;
+  padding: 32px 20px !important;
+  border-radius: 0 !important;
+}
 
     /* Stats / Highlights: 2-col grid on phone */
     .landing-page--iiitb .HighLights {
-      padding: 28px 12px !important;
+      margin-top: 0 !important;
+      padding: 28px 16px !important;
     }
-    .landing-page--iiitb .HighLights .flex {
-      flex-wrap: wrap !important;
+    .landing-page--iiitb .HighLights .ach {
+      display: grid !important;
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 20px 16px !important;
+    }
+    .landing-page--iiitb .HighLights .ac1 {
+      display: flex !important;
+      align-items: center !important;
+      gap: 12px !important;
+    }
+    .landing-page--iiitb .HighLights .ac1 > div:first-child {
+      width: 48px !important;
+      height: 48px !important;
+      min-width: 48px !important;
+      min-height: 48px !important;
+      max-width: 48px !important;
+      max-height: 48px !important;
+      border-radius: 50% !important;
+      flex: 0 0 48px !important;
+      display: flex !important;
+      align-items: center !important;
       justify-content: center !important;
-      gap: 16px !important;
+      background-color: #ffffff !important;
     }
-    .landing-page--iiitb .HighLights .flex > div {
-      flex: 0 0 calc(50% - 10px) !important;
-      text-align: center !important;
+    .landing-page--iiitb .HighLights .inner_arc1_grid {
+      flex: 1 1 auto !important;
+      text-align: left !important;
     }
 
     /* Certificate / Degree Slider */
@@ -567,9 +684,12 @@ export const iiitbCustomCss = `
     .landing-page--iiitb .certificate-content h2 {
       font-size: 20px !important;
     }
-    .landing-page--iiitb .get-degree-btn {
-      width: 100% !important;
-    }
+  .landing-page--iiitb .get-degree-btn {
+  width: 53% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  display: block !important;
+}
 
     /* Apply Steps */
     .landing-page--iiitb .apply-section {
@@ -585,6 +705,51 @@ export const iiitbCustomCss = `
     }
     .landing-page--iiitb .faq-header h2 {
       font-size: 20px !important;
+    }
+
+    /* Footer Sticky Bar (50/50 Split Flush Full Width) */
+    .landing-page--iiitb .footer_sticky_buttons {
+      gap: 0px !important;
+      padding: 0px !important;
+      padding-bottom: max(0px, env(safe-area-inset-bottom)) !important;
+      background: transparent !important;
+      grid-template-columns: 1fr 1fr !important;
+      width: 100% !important;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.15) !important;
+    }
+    .landing-page--iiitb .footer_sticky_buttons a,
+    .landing-page--iiitb .footer_sticky_buttons button,
+    .landing-page--iiitb .footer_sticky_buttons .wp_btn,
+    .landing-page--iiitb .footer_sticky_buttons .apply_btn {
+      border-radius: 0px !important;
+      padding: 12px 6px !important;
+      font-size: 14.5px !important;
+      font-weight: 700 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      border: none !important;
+      height: 48px !important;
+      box-shadow: none !important;
+      width: 100% !important;
+    }
+    .landing-page--iiitb .footer_sticky_buttons .wp_btn {
+      background: #20c968 !important;
+      background-color: #20c968 !important;
+      color: #ffffff !important;
+      gap: 7px !important;
+    }
+    .landing-page--iiitb .footer_sticky_buttons .apply_btn {
+      background: #01519a !important;
+      background-color: #01519a !important;
+      color: #ffffff !important;
+      gap: 6px !important;
+    }
+    .landing-page--iiitb .footer_sticky_buttons .wp_btn svg {
+      width: 18px !important;
+      height: 18px !important;
+      fill: #ffffff !important;
+      color: #ffffff !important;
     }
   }
 `;
@@ -677,12 +842,12 @@ export const iiitbData = {
               src="/assets/all_universities_images/iiitb/iiitb_new_logo_main.png"
               alt="IIIT Bangalore"
               width={200}
-              height={55}
+              height={56}
               className="w-[180px] sm:w-[200px] h-auto object-contain"
               priority
             />
           </div>
-          <h2 className="hero-eyebrow-text text-[17px] sm:text-[20px] font-bold text-black m-0 leading-snug">
+          <h2 className="hero-eyebrow-text text-[21px] sm:text-[21px] font-bold text-black m-0 leading-snug">
             Build Leadership quality<br /> with AI Generative courses from
           </h2>
         </div>
@@ -724,30 +889,34 @@ export const iiitbData = {
 
       coursesStripOnly: true,
       coursesStrip: [
-        <div key="iiitb-checklist-wrap" className="w-full flex flex-col items-center sm:items-start">
+        <div key="iiitb-checklist-wrap" className="w-full flex flex-col items-center sm:items-start -translate-y-2 sm:translate-y-0">
           <div className="banner_lists text-left my-1.5 sm:my-2">
             <ul className="space-y-1.5 p-0 m-0 list-none font-semibold italic text-black text-[13.5px] sm:text-[14.5px]">
               <li key="naac" className="flex items-center gap-2">
-                <svg className="w-4 h-4 text-[#00cc00] shrink-0 fill-current" viewBox="0 0 24 24">
-                  <path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                <svg className="w-[17px] h-[17px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="#00cc00" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 11 12 14 22 4" />
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
                 </svg>
                 <span key="naac-text">NAAC A+ accredited</span>
               </li>
               <li key="cert" className="flex items-center gap-2">
-                <svg className="w-4 h-4 text-[#00cc00] shrink-0 fill-current" viewBox="0 0 24 24">
-                  <path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                <svg className="w-[17px] h-[17px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="#00cc00" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 11 12 14 22 4" />
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
                 </svg>
                 <span key="cert-text">6+ Certification courses</span>
               </li>
               <li key="collab" className="flex items-center gap-2">
-                <svg className="w-4 h-4 text-[#00cc00] shrink-0 fill-current" viewBox="0 0 24 24">
-                  <path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                <svg className="w-[17px] h-[17px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="#00cc00" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 11 12 14 22 4" />
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
                 </svg>
                 <span key="collab-text">Partnership of IIIT &amp; IIM Udaipur</span>
               </li>
               <li key="duration" className="flex items-center gap-2">
-                <svg className="w-4 h-4 text-[#00cc00] shrink-0 fill-current" viewBox="0 0 24 24">
-                  <path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                <svg className="w-[17px] h-[17px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="#00cc00" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 11 12 14 22 4" />
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
                 </svg>
                 <span key="dur-text">5-14 Months</span>
               </li>
@@ -796,8 +965,18 @@ export const iiitbData = {
       submitButtonTextColor: "#ffffff",
     },
 
+    // Sticky Bottom Bar
+    stickyCtaLayout: "default",
+    stickySplit: true,
+    stickyBrochureIcon: "whatsapp",
+    stickyBrochureAction: "modal",
+    stickyApplyStyle: "blue",
+    stickyBarBg: "transparent",
+
     // Approvals Layout
     approvalsLayout: "iiitb",
+    approvalsTitle: "Approvals & Accreditation",
+    approvalsBg: "#212121",
     approvalsTrophyImage: "/assets/all_universities_images/iiitb/award-icon.webp",
 
     // Programmes Layout
@@ -807,6 +986,7 @@ export const iiitbData = {
 
     // About Layout
     aboutLayout: "iiitb",
+    aboutBg: "#005a8d",
     campusImage: "/assets/all_universities_images/iiitb/iiit-b-about-image.webp",
 
     // Why Choose Layout

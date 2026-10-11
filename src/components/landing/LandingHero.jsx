@@ -388,7 +388,7 @@ export default function LandingHero({
     // 2. Single Brochure Button: color & text come from LP JSON
     if (hero.showBrochureButton !== false) {
       const buttonLabel = hero.brochureButtonText || hero.buttonText || "Download Brochure";
-      return (
+      const buttonNode = (
         <LandingButton
           variant="brochure"
           background={hero.buttonBackground || hero.buttonGradient}
@@ -412,6 +412,16 @@ export default function LandingHero({
           {buttonLabel}
         </LandingButton>
       );
+
+      if (hero.hideBrochureOnMobile || hero.hideBrochureButtonMobile) {
+        return (
+          <div className="hidden md:block">
+            {buttonNode}
+          </div>
+        );
+      }
+
+      return buttonNode;
     }
 
     return null;

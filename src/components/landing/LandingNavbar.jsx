@@ -86,6 +86,10 @@ export default function LandingNavbar({
     navbar.hideSodeLogo !== true &&
     Boolean(activeSodeIcon);
 
+  const shouldShowSodeLogoOnLeftOnMobile =
+    !shouldShowUniversityLogo ||
+    navbar.sodeOnLeftMobile === true;
+
   const isCouponVisible =
     showCouponBtn !== false &&
     showCouponButton !== false;
@@ -322,25 +326,31 @@ export default function LandingNavbar({
 
         <div className="flex items-center min-w-0 shrink-0 ml-1 sm:ml-4">
 
-          {/* SODE ICON on DESKTOP */}
+          {/* SODE ICON */}
           {shouldShowSodeLogo && (
             <Link
               href="#hero"
               onClick={handleScrollTop}
-              className="hidden md:flex items-center shrink-0 cursor-pointer lg:translate-x-8"
+              className={`
+                items-center shrink-0 cursor-pointer
+                ${
+                  shouldShowSodeLogoOnLeftOnMobile
+                    ? "flex"
+                    : "hidden md:flex lg:translate-x-8"
+                }
+              `}
               aria-label="Distance Education School"
             >
               <div
-                className="
+                className={`
                   relative
-                  w-9
-                  sm:w-11
-                  lg:w-20
-                  h-9
-                  sm:h-11
-                  lg:h-12
                   shrink-0
-                "
+                  ${
+                    shouldShowSodeLogoOnLeftOnMobile
+                      ? "w-11 sm:w-14 lg:w-20 h-11 sm:h-12 lg:h-12"
+                      : "w-9 sm:w-11 lg:w-20 h-9 sm:h-11 lg:h-12"
+                  }
+                `}
               >
                 <Image
                   src={
@@ -350,7 +360,7 @@ export default function LandingNavbar({
                   fill
                   priority
                   className="object-contain object-left"
-                  sizes="(max-width: 640px) 36px, 80px"
+                  sizes="(max-width: 640px) 48px, 80px"
                 />
               </div>
             </Link>
@@ -450,7 +460,7 @@ export default function LandingNavbar({
           )}
 
           {/* MOBILE SODE LOGO (Global across all landing pages) */}
-          {shouldShowSodeLogo && (
+          {shouldShowSodeLogo && !shouldShowSodeLogoOnLeftOnMobile && (
             <Link
               href="#hero"
               onClick={handleScrollTop}
@@ -657,15 +667,25 @@ export default function LandingNavbar({
           {navbar.navLinks?.length > 0 && (
             <button
               type="button"
-              className="
+              className={`
                 md:hidden
                 p-2
-                rounded-md
-                text-slate-700
-                hover:text-slate-900
-                hover:bg-slate-100
+                rounded-lg
                 transition-colors
-              "
+                ${
+                  navbar.mobileMenuBtnBg || navbar.slug === "iiitb"
+                    ? "text-white"
+                    : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
+                }
+              `}
+              style={
+                navbar.mobileMenuBtnBg || navbar.slug === "iiitb"
+                  ? {
+                      backgroundColor:
+                        navbar.mobileMenuBtnBg || primaryColor || "#002147",
+                    }
+                  : {}
+              }
               onClick={() =>
                 setIsMobileNavOpen(
                   !isMobileNavOpen
@@ -684,14 +704,14 @@ export default function LandingNavbar({
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    strokeWidth={2}
+                    strokeWidth={2.5}
                     d="M6 18L18 6M6 6l12 12"
                   />
                 ) : (
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    strokeWidth={2}
+                    strokeWidth={2.5}
                     d="M4 6h16M4 12h16M4 18h16"
                   />
                 )}

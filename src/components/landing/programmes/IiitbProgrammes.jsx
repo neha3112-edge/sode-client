@@ -65,7 +65,7 @@ export default function IiitbProgrammes({
                 <button
                   type="button"
                   onClick={() => onSelectCourseForBrochure?.(c.title)}
-                  className="btn brochure flex-1 h-[42px] px-2.5 sm:px-3 bg-[#01519a] hover:bg-[#003f7a] text-white font-bold text-[12px] sm:text-[13px] rounded-[8px] border-none cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap transition-all active:scale-95 shadow-xs"
+                  className="btn brochure hidden sm:flex flex-1 h-[42px] px-2.5 sm:px-3 bg-[#01519a] hover:bg-[#003f7a] text-white font-bold text-[12px] sm:text-[13px] rounded-[8px] border-none cursor-pointer items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap transition-all active:scale-95 shadow-xs"
                 >
                   <span className="whitespace-nowrap">Download Brochure</span>
                   <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current shrink-0 text-white" viewBox="0 0 24 24">
@@ -75,7 +75,7 @@ export default function IiitbProgrammes({
                 <button
                   type="button"
                   onClick={() => onOpenApply?.(c.title)}
-                  className="btn apply flex-1 h-[42px] px-2.5 sm:px-3 bg-[#00284d] hover:bg-[#001c38] text-white font-bold text-[12px] sm:text-[13px] rounded-[8px] border-none cursor-pointer flex items-center justify-center gap-1 whitespace-nowrap transition-all active:scale-95 shadow-xs"
+                  className="btn apply w-full sm:flex-1 h-[44px] sm:h-[42px] px-4 sm:px-3 bg-[#00284d] hover:bg-[#001c38] text-white font-bold text-[14px] sm:text-[13px] rounded-[8px] border-none cursor-pointer flex items-center justify-center gap-1 whitespace-nowrap transition-all active:scale-95 shadow-xs"
                 >
                   <span className="whitespace-nowrap">Apply now</span>
                 </button>
