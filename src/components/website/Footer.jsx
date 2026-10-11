@@ -480,17 +480,14 @@ export function Footer({
               3. LEGAL NOTICE SECTION (Centered)
           ====================================================== */}
           {legal?.show_legal_notice !== false && legal?.disclaimer_text && (
-            <div className="mt-6 sm:mt-3 mb-4 pt-2 sm:pt-0 text-center max-w-full mx-auto px-2">
+            <div className="mt-5 sm:mt-4 mb-4 pt-2 sm:pt-0 max-w-4xl mx-auto px-4 sm:px-6">
               <h5
-                className="text-[12px] sm:text-[13px] font-bold uppercase tracking-normal mb-1"
+                className="text-[12px] sm:text-[13px] font-bold uppercase tracking-wider mb-2 text-center"
                 style={{ color: accentColor }}
               >
-                {legal?.legal_notice_heading || "LEGAL NOTICE"}
+                {(legal?.legal_notice_heading || "LEGAL NOTICE").replace(/LEAGAL/gi, "LEGAL")}
               </h5>
-              <p
-                className="text-[11px] sm:text-[12px] leading-relaxed text-justify text-gray-300 font-normal"
-                style={{ textAlign: "justify", textJustify: "inter-word" }}
-              >
+              <p className="text-[11px] sm:text-[12px] leading-normal text-left sm:text-center text-gray-300/90 font-normal">
                 {legal.disclaimer_text}
               </p>
             </div>
