@@ -417,11 +417,13 @@ export function Hero({ initialHeroData = null }) {
   const isCarousel = Boolean(
     heroData?.is_carousel && Array.isArray(heroData?.slides) && heroData.slides.length > 0
   );
-  const carouselSettings = heroData?.carousel_settings || {};
+  const carouselSettings = heroData?.carousel_settings || heroData?.carouselSettings || {};
   const isAutoplay = carouselSettings.autoplay !== false;
-  const autoplayInterval = Number(carouselSettings.autoplay_interval) || 5000;
-  const showDots = carouselSettings.show_dots !== false;
-  const showArrows = Boolean(carouselSettings.show_arrows);
+  const autoplayInterval = Number(carouselSettings.autoplay_interval || carouselSettings.autoplayInterval) || 5000;
+  const showDots = carouselSettings.show_dots !== false && carouselSettings.showDots !== false;
+  const showArrows = Boolean(
+    carouselSettings.show_arrows ?? carouselSettings.showArrows ?? heroData?.show_arrows ?? heroData?.showArrows
+  );
 
   const renderSlideHeading = (rawTitle, highlightText, isLight, titleColor) => {
     if (!rawTitle) return null;
@@ -712,7 +714,7 @@ export function Hero({ initialHeroData = null }) {
     >
       {isCarousel ? (
         <div className="relative w-full h-full group/hero">
-          {heroData.slides.length > 1 && (
+          {showArrows && heroData.slides.length > 1 && (
             <button
               type="button"
               onClick={() => carouselRef.current?.prev()}
@@ -741,7 +743,7 @@ export function Hero({ initialHeroData = null }) {
             {heroData.slides.map((slide, idx) => renderHeroContent(slide, true, idx))}
           </Carousel>
 
-          {heroData.slides.length > 1 && (
+          {showArrows && heroData.slides.length > 1 && (
             <button
               type="button"
               onClick={() => carouselRef.current?.next()}

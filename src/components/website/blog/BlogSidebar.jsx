@@ -431,12 +431,12 @@ export default function BlogSidebar({
       "";
 
     return (
-      <div className="bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-md transition-shadow duration-200 flex flex-col group h-full">
+      <div className="bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-md transition-shadow duration-200 flex flex-col group h-full w-full">
         {/* Thumbnail */}
         <Link
           href={`/blogs/${item.slug || ""}`}
           onClick={() => setAuthorModalOpen(false)}
-          className="w-full h-36 sm:h-40 relative bg-slate-100 overflow-hidden block"
+          className="w-full h-36 sm:h-40 relative bg-slate-100 overflow-hidden block shrink-0"
         >
           {imgUrl ? (
             <Image
@@ -457,7 +457,7 @@ export default function BlogSidebar({
         {/* Card Body */}
         <div className="p-2.5 sm:p-3.5 flex flex-col flex-1">
           {/* Meta */}
-          <div className="flex items-center justify-between text-[11px] text-slate-400 font-medium mb-1.5">
+          <div className="flex items-center justify-between text-[11px] text-slate-400 font-medium mb-1.5 shrink-0">
             <span className="flex items-center gap-1 text-blue-600 font-semibold">
               <Calendar size={12} />
               <span>{formatCardDate(dateStr)}</span>
@@ -468,22 +468,22 @@ export default function BlogSidebar({
             </span>
           </div>
 
-          {/* Title */}
+          {/* Title - Fixed min-height for 2 lines so cards align identically */}
           <Link
             href={`/blogs/${item.slug || ""}`}
             onClick={() => setAuthorModalOpen(false)}
-            className="text-xs sm:text-[13px] font-bold text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-2 leading-snug mb-1.5 no-underline block"
+            className="text-xs sm:text-[13px] font-bold text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-2 leading-snug mb-1.5 no-underline block min-h-[34px] sm:min-h-[36px]"
           >
             {itemTitle}
           </Link>
 
-          {/* Excerpt */}
-          <p className="text-[11px] sm:text-xs text-slate-500 line-clamp-2 leading-relaxed mb-3 m-0 flex-1">
+          {/* Excerpt - Fixed min-height for 2 lines */}
+          <p className="text-[11px] sm:text-xs text-slate-500 line-clamp-2 leading-relaxed mb-3 m-0 min-h-[34px] sm:min-h-[36px] flex-1">
             {excerptStr}
           </p>
 
-          {/* Footer */}
-          <div className="flex items-center justify-between pt-2 border-t border-slate-100 mt-auto text-xs">
+          {/* Footer - Pinned to bottom */}
+          <div className="flex items-center justify-between pt-2 border-t border-slate-100 mt-auto text-xs shrink-0">
             <div className="flex items-center gap-1 text-slate-600 font-medium text-[11px]">
               <User size={12} className="text-slate-400" />
               <span className="line-clamp-1">{authorName}</span>
@@ -1214,9 +1214,9 @@ export default function BlogSidebar({
               No articles found in this category.
             </div>
           ) : authorModalArticles.length <= modalSlidesToShow ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 w-full">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 w-full items-stretch">
               {authorModalArticles.map((item, idx) => (
-                <div key={`author-art-${item._id || item.slug || idx}-${idx}`} className="h-full">
+                <div key={`author-art-${item._id || item.slug || idx}-${idx}`} className="h-full flex flex-col">
                   {renderArticleCard(item)}
                 </div>
               ))}
@@ -1249,10 +1249,10 @@ export default function BlogSidebar({
                   dots={false}
                   slidesToShow={modalSlidesToShow}
                   slidesToScroll={1}
-                  className="author-modal-carousel [&_.slick-slide>div]:h-full [&_.slick-slide]:px-1.5 sm:[&_.slick-slide]:px-2"
+                  className="author-modal-carousel [&_.slick-track]:flex! [&_.slick-track]:items-stretch! [&_.slick-slide]:h-auto! [&_.slick-slide]:flex! [&_.slick-slide>div]:h-full! [&_.slick-slide>div]:w-full! [&_.slick-slide>div]:flex! [&_.slick-slide>div]:flex-col! [&_.slick-slide]:px-1.5 sm:[&_.slick-slide]:px-2"
                 >
                   {authorModalArticles.map((item, idx) => (
-                    <div key={`author-modal-art-${item._id || item.slug || idx}-${idx}`} className="h-full">
+                    <div key={`author-modal-art-${item._id || item.slug || idx}-${idx}`} className="h-full flex flex-col">
                       {renderArticleCard(item)}
                     </div>
                   ))}
