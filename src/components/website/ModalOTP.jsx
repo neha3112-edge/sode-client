@@ -585,6 +585,7 @@ export default function ModalOTP({
       footer={null}
       mask={{ closable: true }}
       closable={true}
+      focusable={{ focusTriggerAfterClose: false, autoFocusButton: null }}
     >
       <div className="pt-2 pb-1">
         <h3 className="text-xl font-bold text-[#0C2B4E] mb-1">
@@ -624,7 +625,6 @@ export default function ModalOTP({
                   prefix={<Phone size={15} className="text-gray-400 mr-1" />}
                   maxLength={10}
                   disabled={loading}
-                  autoFocus
                 />
               </Form.Item>
 
@@ -673,7 +673,6 @@ export default function ModalOTP({
                   placeholder="Enter 6-digit OTP"
                   maxLength={6}
                   disabled={loading}
-                  autoFocus
                   prefix={<ShieldCheck size={15} className="text-gray-400 mr-1" />}
                 />
               </Form.Item>
@@ -750,7 +749,6 @@ export default function ModalOTP({
                   placeholder="Full Name"
                   prefix={<User size={15} className="text-gray-400 mr-1" />}
                   disabled={loading}
-                  autoFocus={isCoursePreSelected}
                 />
               </Form.Item>
 

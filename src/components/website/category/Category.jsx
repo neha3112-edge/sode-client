@@ -314,10 +314,10 @@ export function Category({ categories = [], universities = [], programs = [], co
           box-shadow: none !important;
         }
         .ant-carousel .slick-prev {
-          left: -10px !important;
+          left: -12px !important;
         }
         .ant-carousel .slick-next {
-          right: -10px !important;
+          right: -12px !important;
         }
         .ant-carousel .slick-prev::before,
         .ant-carousel .slick-next::before {
