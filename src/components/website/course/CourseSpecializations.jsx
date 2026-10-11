@@ -15,6 +15,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { formatAdmissionDeadline } from "@/lib/utils";
+import { FaCalendar, FaClock } from "react-icons/fa";
 
 const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 
@@ -225,11 +226,10 @@ export default function CourseSpecializations({
             <div
               key={item._id || idx}
               onClick={() => handleOpenSpecModal(item)}
-              className={`bg-white rounded-xl border p-2.5 sm:p-3.5 md:p-4 flex items-center gap-2 sm:gap-3.5 cursor-pointer transition-all group ${
-                isHighlighted
-                  ? "border-[#08AEAA] ring-2 ring-[#08AEAA]/20 shadow-xs bg-teal-50/15"
-                  : "border-gray-200 hover:border-[#08AEAA] hover:shadow-xs"
-              }`}
+              className={`bg-white rounded-xl border p-2.5 sm:p-3.5 md:p-4 flex items-center gap-2 sm:gap-3.5 cursor-pointer transition-all group ${isHighlighted
+                ? "border-[#08AEAA] ring-2 ring-[#08AEAA]/20 shadow-xs bg-teal-50/15"
+                : "border-gray-200 hover:border-[#08AEAA] hover:shadow-xs"
+                }`}
             >
               {item.logo ? (
                 <div className="relative w-5 h-5 sm:w-6 sm:h-6 shrink-0">
@@ -242,13 +242,11 @@ export default function CourseSpecializations({
                   />
                 </div>
               ) : (
-                <IconComponent className={`shrink-0 w-4.5 h-4.5 sm:w-5.5 sm:h-5.5 transition-colors ${
-                  isHighlighted ? "text-[#08AEAA]" : "text-[#0C3A66] group-hover:text-[#08AEAA]"
-                }`} />
+                <IconComponent className={`shrink-0 w-4.5 h-4.5 sm:w-5.5 sm:h-5.5 transition-colors ${isHighlighted ? "text-[#08AEAA]" : "text-[#0C3A66] group-hover:text-[#08AEAA]"
+                  }`} />
               )}
-              <span className={`text-[11px] sm:text-xs md:text-[13.5px] font-bold tracking-tight leading-snug transition-colors ${
-                isHighlighted ? "text-[#08AEAA]" : "text-gray-900 group-hover:text-[#08AEAA]"
-              }`}>
+              <span className={`text-[11px] sm:text-xs md:text-[13.5px] font-bold tracking-tight leading-snug transition-colors ${isHighlighted ? "text-[#08AEAA]" : "text-gray-900 group-hover:text-[#08AEAA]"
+                }`}>
                 {cleanSpecTitle}
               </span>
             </div>
@@ -324,9 +322,8 @@ export default function CourseSpecializations({
                     alt={modalTitle}
                     fill
                     sizes="(max-width: 768px) 100vw, 370px"
-                    className={`object-cover object-center ${
-                      specMobileBanner && specMobileBanner !== specDesktopBanner ? "hidden md:block" : "block"
-                    }`}
+                    className={`object-cover object-center ${specMobileBanner && specMobileBanner !== specDesktopBanner ? "hidden md:block" : "block"
+                      }`}
                   />
                 )}
 
@@ -409,11 +406,10 @@ export default function CourseSpecializations({
                               key={sIdx}
                               type="button"
                               onClick={() => setActiveSpecSem(sIdx)}
-                              className={`w-full py-1.5 px-3 rounded-full text-xs font-semibold transition-all cursor-pointer border-none ${
-                                isActive
-                                  ? "bg-[#0C2B4E] text-white shadow-sm md:w-full"
-                                  : "bg-[#EEF3FA] text-[#475569] hover:bg-[#dde7f5] md:w-[88%]"
-                              }`}
+                              className={`w-full py-1.5 px-3 rounded-full text-xs font-semibold transition-all cursor-pointer border-none ${isActive
+                                ? "bg-[#0C2B4E] text-white shadow-sm md:w-full"
+                                : "bg-[#EEF3FA] text-[#475569] hover:bg-[#dde7f5] md:w-[88%]"
+                                }`}
                             >
                               <span className="flex items-center justify-between w-full">
                                 <span>{sem.semester}</span>

@@ -171,7 +171,11 @@ export function Category({ categories = [], universities = [], programs = [], co
         setActiveCategory(null);
       }
       const courseSlug = getItemSlug(item);
-      router.push(item.targetUrl || `/courses?course=${encodeURIComponent(courseSlug)}`);
+      if (item.targetUrl && !/[0-9a-fA-F]{24}/.test(item.targetUrl)) {
+        router.push(item.targetUrl);
+      } else {
+        router.push(`/courses?course=${encodeURIComponent(courseSlug)}`);
+      }
       return;
     }
 

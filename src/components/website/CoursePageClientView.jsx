@@ -1290,13 +1290,13 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                       <div key={idx} className="relative flex flex-col h-full">
                         <div className="w-full h-full rounded-xl p-2.5 sm:p-3.5 text-center flex flex-col items-center justify-start bg-white shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300 hover:-translate-y-1">
                           {/* Large icon circle */}
-                          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center shrink-0 bg-sky-50 border-2 border-sky-300 mb-2 sm:mb-3">
+                          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center shrink-0 mb-2 sm:mb-3">
                             {iconUrl ? (
                               <Image
                                 src={getAssetPath(iconUrl)}
                                 alt={stepTitle || "Step"}
-                                width={24}
-                                height={24}
+                                width={65}
+                                height={55}
                                 className="object-contain"
                                 unoptimized
                               />

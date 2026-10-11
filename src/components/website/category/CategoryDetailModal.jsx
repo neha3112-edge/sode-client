@@ -93,9 +93,19 @@ export default function CategoryDetailModal({
                             router.push(`/courses?university=${encodeURIComponent(itemSlug)}`);
                           } else if (modalData.isCourseSubcategoriesModal) {
                             const courseSlug = getItemSlug(activeCategory);
-                            router.push(it.targetUrl || `/courses?course=${encodeURIComponent(courseSlug)}&subcategory=${encodeURIComponent(itemSlug)}`);
+                            const subSlug = getItemSlug(it);
+                            if (it.targetUrl && !/[0-9a-fA-F]{24}/.test(it.targetUrl)) {
+                              router.push(it.targetUrl);
+                            } else {
+                              router.push(`/courses?course=${encodeURIComponent(courseSlug)}&subcategory=${encodeURIComponent(subSlug)}`);
+                            }
                           } else if (modalData.isCoursesModal || it.isCourse || it.itemType === "course") {
-                            router.push(it.targetUrl || `/courses?course=${encodeURIComponent(itemSlug)}`);
+                            const courseSlug = getItemSlug(it);
+                            if (it.targetUrl && !/[0-9a-fA-F]{24}/.test(it.targetUrl)) {
+                              router.push(it.targetUrl);
+                            } else {
+                              router.push(`/courses?course=${encodeURIComponent(courseSlug)}`);
+                            }
                           } else if (parentCatSlug && parentCatSlug !== "all") {
                             router.push(`/courses?category=${encodeURIComponent(parentCatSlug)}&subcategory=${encodeURIComponent(itemSlug)}`);
                           } else if (it.targetUrl && !/[0-9a-fA-F]{24}/.test(it.targetUrl)) {

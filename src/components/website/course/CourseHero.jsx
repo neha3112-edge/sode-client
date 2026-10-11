@@ -45,9 +45,8 @@ export default function CourseHero({
                     ? "(min-width: 768px) 50vw, 1px"
                     : "(max-width: 768px) 100vw, 50vw"
                 }
-                className={`object-cover object-center ${
-                  mobileHeroBannerSrc && mobileHeroBannerSrc !== heroBannerSrc ? "hidden md:block" : "block"
-                }`}
+                className={`object-cover object-center ${mobileHeroBannerSrc && mobileHeroBannerSrc !== heroBannerSrc ? "hidden md:block" : "block"
+                  }`}
                 priority
                 loading="eager"
               />
