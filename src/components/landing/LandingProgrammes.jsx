@@ -13,6 +13,7 @@ import GguProgrammes from "./programmes/GguProgrammes";
 import IiitbProgrammes from "./programmes/IiitbProgrammes";
 import UuProgrammes from "./programmes/UuProgrammes";
 import SsbmProgrammes from "./programmes/SsbmProgrammes";
+import CuProgrammes from "./programmes/CuProgrammes";
 import ProgrammesCarousel from "./programmes/ProgrammesCarousel";
 
 /**
@@ -31,6 +32,16 @@ export default function LandingProgrammes({
   if (!programmes?.length) return null;
 
   const layout = brand.programmesLayout || brand.slug;
+
+  if (layout === "cu" || brand.slug === "cu") {
+    return (
+      <CuProgrammes
+        programmes={programmes}
+        brand={brand}
+        onSelectCourseForBrochure={onSelectCourseForBrochure}
+      />
+    );
+  }
 
   if (layout === "galgotias" || layout === "galgotias-grid" || brand.slug === "galgotias") {
     return (

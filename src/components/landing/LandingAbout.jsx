@@ -16,11 +16,14 @@ import VguAbout from "./about/VguAbout";
 import SmuAbout from "./about/SmuAbout";
 import ManipalAbout from "./about/ManipalAbout";
 
+import CuAbout from "./about/CuAbout";
+
 /**-
  * Reusable Registry of About Section Layouts.
  * Decouples university brand identity (slug) from visual layout rendering.
  */
 const ABOUT_LAYOUTS = {
+  cu: CuAbout,
   classic: ClassicAbout,
   imageRight: ClassicAbout,
   lpu: LpuAbout,
@@ -58,7 +61,7 @@ export default function LandingAbout({
   }
 
   // 2. Resolve layout from JSON configuration
-  const layout = brand?.aboutLayout || about?.layout || "classic";
+  const layout = brand?.aboutLayout || about?.layout || brand?.slug || "classic";
   const AboutComponent = ABOUT_LAYOUTS[layout] || ClassicAbout;
 
   // 3. Render matched layout component

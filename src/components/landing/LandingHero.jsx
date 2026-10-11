@@ -181,6 +181,7 @@ export default function LandingHero({
       hero.headingColor ||
       "#004172",
     ...hero.courseBoxStyle,
+    ...hero.courseStripStyle,
   };
 
   const renderCourseContent = () => {
@@ -457,7 +458,7 @@ export default function LandingHero({
           <div
             className={joinClassNames(
               "relative z-10 flex w-full flex-col lg:flex-1",
-              hero.alignLeftMobile || brand.slug === "vgu" || brand.slug === "lpu"
+              hero.alignLeftMobile || brand.slug === "vgu" || brand.slug === "lpu" || brand.slug === "cu"
                 ? "items-start text-left"
                 : "items-center sm:items-start text-center sm:text-left",
               hero.contentClassName
@@ -689,8 +690,8 @@ export default function LandingHero({
           {(hero.studentImage || hero.centerImage || brand.heroStudentImage) && (
             <div
               className={joinClassNames(
-                "hidden lg:flex lg:flex-1 justify-center items-end self-end pointer-events-none -mb-4 sm:-mb-6 lg:-mb-6 z-10",
-                hero.studentImageWrapperClassName
+                hero.studentImageWrapperClassName ||
+                "hidden lg:flex lg:flex-1 justify-center items-end self-end pointer-events-none -mb-4 sm:-mb-6 lg:-mb-6 z-10"
               )}
               style={hero.studentImageWrapperStyle}
             >
@@ -721,8 +722,8 @@ export default function LandingHero({
             {hero.mobileStudentImage && (
               <div
                 className={joinClassNames(
-                  "hero-mobile-image-wrapper block lg:hidden w-full relative aspect-[2.14/1] overflow-hidden mb-3",
-                  hero.mobileStudentImageWrapperClassName
+                  hero.mobileStudentImageWrapperClassName ||
+                  "hero-mobile-image-wrapper block lg:hidden w-full relative aspect-[2.14/1] overflow-hidden mb-3"
                 )}
                 style={hero.mobileStudentImageWrapperStyle}
               >
@@ -759,7 +760,7 @@ export default function LandingHero({
                           colors: ["#2ecc71", "#27ae60", "#f1c40f", "#e67e22", "#e74c3c"],
                         });
                       }
-                    } catch {}
+                    } catch { }
                     if (onOpenScholarship) {
                       onOpenScholarship();
                     } else if (onOpenApply) {
@@ -804,35 +805,12 @@ export default function LandingHero({
                     "--coupon-shadow-end":
                       "rgba(46, 204, 113, 0)",
                   }}
-                  className="
-                    coupon-btn-main
-                    relative
-                    inline-flex
-                    items-center
-                    gap-2
-                    sm:gap-2.5
-                    pl-5
-                    sm:pl-7
-                    md:pl-8
-                    pr-4.5
-                    sm:pr-6
-                    md:pr-7
-                    py-1
-                    sm:py-1.5
-                    rounded-[8px]
-                    !text-white
-                    font-bold
-                    text-[10px]
-                    sm:text-[11px]
-                    md:text-[11.5px]
-                    cursor-pointer
-                    !border-none
-                    overflow-hidden
-                    select-none
-                    hover:!brightness-105
-                    active:scale-95
-                    !h-auto
-                  "
+                  className={joinClassNames(
+                    "coupon-btn-main relative inline-flex items-center gap-2 sm:gap-2.5 !text-white font-bold cursor-pointer !border-none overflow-hidden select-none hover:!brightness-105 active:scale-95 !h-auto",
+                    brand.slug === "cu"
+                      ? "w-full max-w-[390px] justify-center py-2.5 px-4 rounded-[10px] text-[14px] sm:text-[15px]"
+                      : "pl-5 sm:pl-7 md:pl-8 pr-4.5 sm:pr-6 md:pr-7 py-1 sm:py-1.5 rounded-[8px] text-[10px] sm:text-[11px] md:text-[11.5px]"
+                  )}
                 >
                   {/* Moving Light Green Box */}
                   <span className="moving-light-green-box" />

@@ -36,6 +36,48 @@ export default function LandingStickyCtas({
     onOpenScholarship?.();
   };
 
+  const isCu = brand.slug === "cu" || brand.stickyLayout === "cu";
+  if (isCu) {
+    return (
+      <>
+        <div className="sticky_btn_Section block md:hidden">
+          <div className="footer_sticky_buttons">
+            <a
+              href={`https://api.whatsapp.com/send/?phone=+91${rawPhone}&text=${whatsappText}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="wp_btn cursor-pointer flex items-center justify-center gap-1.5"
+            >
+              <FaWhatsapp className="w-4 h-4 mr-0.5 inline" /> Get Brochure
+            </a>
+            <button
+              type="button"
+              className="apply_btn enquireNowBtn flex items-center justify-center gap-1 cursor-pointer"
+              onClick={() => onOpenApply?.()}
+            >
+              Apply Now &raquo;
+            </button>
+          </div>
+        </div>
+
+        <a className="call_fix_image" href={`tel:${phone}`} aria-label="Call Expert">
+          <img src={brand.callGif || "/assets/cu/call_icon.gif"} alt="Call Now" />
+        </a>
+
+        {brand.showFloatingGift !== false && (
+          <button
+            type="button"
+            className="coupon-btn"
+            onClick={handleGiftClick}
+            aria-label="Get Scholarship Coupon Code"
+          >
+            <img src={brand.giftGif || "/assets/cu/gift.gif"} alt="Scholarship Coupon" />
+          </button>
+        )}
+      </>
+    );
+  }
+
   if (brand.slug === "iim") {
     return (
       <>

@@ -21,6 +21,69 @@ export default function LandingDegree({
     images = null,
   } = degreeInfo;
 
+  const isCu =
+    brand.degreeLayout === "cu" || brand.slug === "cu";
+
+  if (isCu) {
+    const certImage =
+      image || brand.degreeImage || "/assets/cu/CU-sample-degree.png";
+    return (
+      <section
+        id="certificate"
+        className="py-14 sm:py-20 bg-white select-none scroll-mt-20"
+      >
+        <div className="max-w-[1260px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            {/* Left Degree Image */}
+            <div className="lg:col-span-6 flex justify-center lg:justify-start">
+              <div className="relative w-full max-w-[620px] lg:max-w-[640px] h-[260px] sm:h-[400px] lg:h-[480px]">
+                <Image
+                  src={certImage}
+                  alt="Sample Degree"
+                  fill
+                  priority
+                  className="object-contain object-center lg:object-left"
+                  sizes="(max-width: 1024px) 100vw, 640px"
+                />
+              </div>
+            </div>
+
+            {/* Right Content */}
+            <div className="lg:col-span-6 text-left space-y-4">
+              <p className="text-sm sm:text-base font-bold text-slate-800 m-0">
+                Launch Your Career with an Online Degree From
+              </p>
+              <h2 className="text-[28px] sm:text-[34px] lg:text-[40px] font-bold text-[#d11c1f] m-0 leading-tight">
+                Chandigarh University Online Learning Platform
+              </h2>
+              <p className="text-[13px] sm:text-[14px] text-slate-600 leading-relaxed m-0 font-normal max-w-[520px]">
+                Choose from a wide range of UGC-approved online degrees designed to
+                provide you with in-demand skills for today&apos;s dynamic work
+                environment.
+              </p>
+              <ul className="space-y-2.5 text-[13px] sm:text-[14px] text-slate-700 font-medium list-disc pl-5 m-0 pt-1">
+                <li>Industry-expert faculty</li>
+                <li>Flexible scheduling</li>
+                <li>Future-ready curriculum</li>
+                <li>Globally recognized degree</li>
+              </ul>
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={() => onOpenApply?.()}
+                  className="bg-[#d11c1f] hover:bg-[#b51619] text-white font-bold text-sm sm:text-base px-8 py-3 rounded-[8px] shadow-sm inline-flex items-center gap-2 cursor-pointer border-none transition-all active:scale-95"
+                >
+                  <span>Know More</span>
+                  <span className="text-[16px]">→</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   const isIiitb =
     brand.degreeLayout === "iiitb" || brand.slug === "iiitb";
 

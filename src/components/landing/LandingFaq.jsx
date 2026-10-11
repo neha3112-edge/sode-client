@@ -51,6 +51,53 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
     brand.slug === "iim" ||
     brand.faqLayout === "iim";
 
+  const isCu =
+    brand.slug === "cu" ||
+    brand.faqLayout === "cu";
+
+  if (isCu) {
+    return (
+      <section id="faqs" className="py-12 sm:py-16 bg-white select-none scroll-mt-20">
+        <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
+          <h2
+            className="text-[26px] sm:text-[32px] font-semibold text-[#d11c1f] tracking-tight mb-6 sm:mb-8 m-0"
+            style={{ color: brand.faqHeadingColor || brand.faqTitleColor || "#d11c1f" }}
+          >
+            {brand.faqTitle || "Frequently Asked Questions"}
+          </h2>
+
+          <div className="w-full divide-y divide-slate-200 border-t border-slate-200">
+            {faqs.map((faq, idx) => {
+              const isOpen = openIndex === idx;
+              const questionText = faq.q || faq.question || "";
+              const answerText = faq.a || faq.answer || "";
+
+              return (
+                <div key={idx} className="w-full">
+                  <button
+                    type="button"
+                    onClick={() => toggleFaq(idx)}
+                    className="w-full py-4 sm:py-5 px-1 sm:px-2 flex items-center justify-between text-left text-[15px] sm:text-[16px] font-medium text-slate-900 bg-transparent border-none cursor-pointer transition-colors hover:text-[#d11c1f]"
+                  >
+                    <span className="pr-4 leading-snug">{questionText}</span>
+                    <span className="text-[#d11c1f] text-sm sm:text-base shrink-0 font-bold">
+                      {isOpen ? "▲" : "▼"}
+                    </span>
+                  </button>
+                  {isOpen && (
+                    <div className="pb-5 pt-1 px-1 sm:px-2 text-xs sm:text-[14px] text-slate-600 leading-relaxed font-normal">
+                      <p className="m-0">{answerText}</p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   if (isLpu) {
     const primaryColor = brand.primaryColor || "#f58220";
     return (

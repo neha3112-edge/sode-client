@@ -20,7 +20,7 @@ export default function LpuGrids({ programmes, onSelectCourseForBrochure }) {
             {mainTitle}
           </h2>
         )}
-        <p className="text-[25px] sm:text-[29px] lg:text-[32px] text-[#f58220] font-semibold tracking-tight leading-[1.25] mt-2 m-0">
+        <p className="text-[19px] sm:text-[22px] lg:text-[24px] text-[#f58220] font-semibold tracking-tight leading-[1.25] mt-1.5 sm:mt-2 m-0">
           {subTitle}
         </p>
       </div>

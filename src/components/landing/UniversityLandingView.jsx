@@ -793,6 +793,7 @@ export default function UniversityLandingView({ data = {} }) {
         onOpenDisclaimer={() => handleOpenLegal("disclaimer")}
         onOpenTerms={() => handleOpenLegal("terms")}
         onOpenPrivacy={() => handleOpenLegal("privacy")}
+        onOpenCompare={() => setIsCompareOpen(true)}
       />
 
       {/* Floating Sticky CTAs */}

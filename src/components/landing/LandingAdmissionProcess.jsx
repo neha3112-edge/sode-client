@@ -207,6 +207,8 @@ export default function LandingAdmissionProcess({
   const headingColor =
     admissionProcess?.headingColor ||
     admissionProcess?.titleColor ||
+    enrollmentProcess?.headingColor ||
+    enrollmentProcess?.titleColor ||
     brand.admissionHeadingColor ||
     (isSmu ? "#193579" : "#1a365d");
 
@@ -215,12 +217,23 @@ export default function LandingAdmissionProcess({
     brand.admissionSectionClass ||
     "pt-9 sm:pt-12 lg:pt-16 pb-10 sm:pb-12 lg:pb-14";
 
+  const isCu =
+    brand.slug === "cu" ||
+    brand.admissionLayout === "cu" ||
+    activeUniversity.toLowerCase().includes("chandigarh");
+
+  const containerClass =
+    brand.admissionContainerClass ||
+    (isCu || brand.admissionFullWidth
+      ? "w-full px-4 sm:px-6 lg:px-8 xl:px-10 max-w-none"
+      : "w-full px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 max-w-[1280px] mx-auto");
+
   return (
     <section
       id={brand.admissionProcessId || (brand.slug === "ggu" ? "how-to-apply" : "process")}
       className={`${sectionPadding} bg-white w-full select-none`}
     >
-      <div className={`w-full px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 max-w-full mx-auto ${brand.admissionContainerClass || ""}`}>
+      <div className={containerClass}>
         {/* Heading */}
         {hasEnrollmentPrefix ? (
           <h2 className="text-[22px] sm:text-[28px] lg:text-[32px] font-bold text-center tracking-tight mb-2.5 sm:mb-3.5 m-0 leading-[1.25]">
@@ -247,7 +260,15 @@ export default function LandingAdmissionProcess({
         )}
 
         {/* Subtitle */}
-        <p className="text-[13px] sm:text-[14px] lg:text-[14.5px] text-center text-[#555555] mb-5 sm:mb-7 lg:mb-8 max-w-[720px] mx-auto font-normal leading-[1.65] m-0 px-3 sm:px-4">
+        <p
+          className={
+            enrollmentProcess?.subtitleClassName ||
+            admissionProcess?.subtitleClassName ||
+            brand.admissionSubtitleClass ||
+            "text-[13px] sm:text-[13.5px] lg:text-[14px] text-center text-black tracking-[0.3px] mb-5 sm:mb-7 lg:mb-8 max-w-[1150px] mx-auto font-normal leading-[1.65] m-0 px-3 sm:px-4 whitespace-pre-line"
+          }
+          style={enrollmentProcess?.subtitleStyle}
+        >
           {subtitleText}
         </p>
 
@@ -259,7 +280,7 @@ export default function LandingAdmissionProcess({
             `grid ${
               rawSteps.length <= 4
                 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 max-w-5xl mx-auto"
-                : brand.slug === "lpu"
+                : isCu || brand.slug === "lpu"
                 ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6"
                 : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-6"
             } gap-3.5 sm:gap-4 lg:gap-3.5 xl:gap-4.5 2xl:gap-5 w-full`
@@ -296,11 +317,9 @@ export default function LandingAdmissionProcess({
             const descColor = extractColor(step.descColor, "#4b5563");
 
             return (
-              <Card
+              <div
                 key={num}
-                variant="borderless"
-                styles={{ body: { padding: 0 } }}
-                className="rounded-[14px] sm:rounded-2xl overflow-hidden px-2.5 py-3 sm:px-3 sm:py-3.5 lg:px-2.5 lg:py-3.5 xl:px-3.5 xl:py-4 text-center flex flex-col items-center justify-start h-full min-h-[148px] sm:min-h-[165px] lg:min-h-[165px] xl:min-h-[175px] transition-all duration-200 hover:-translate-y-1 shadow-2xs hover:shadow-xs relative w-full"
+                className="rounded-[10px] overflow-hidden pt-5 pb-6 px-3 sm:px-3.5 text-center flex flex-col items-center justify-start h-full min-h-[170px] sm:min-h-[185px] transition-all duration-200 hover:-translate-y-1 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-md relative w-full"
                 style={{
                   backgroundColor: cardBg,
                   borderBottom: `4px solid ${borderColor}`,
@@ -308,10 +327,11 @@ export default function LandingAdmissionProcess({
               >
                 {/* Circular Number / Color Badge */}
                 <div
-                  className="w-8 h-8 sm:w-9 sm:h-9 lg:w-8.5 lg:h-8.5 xl:w-9 xl:h-9 rounded-full flex items-center justify-center font-bold text-[13.5px] sm:text-[14px] lg:text-[13.5px] xl:text-[14px] mb-2 sm:mb-2.5 shrink-0 shadow-xs select-none mx-auto"
+                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center font-bold text-[15px] sm:text-[16px] mb-3 sm:mb-3.5 shrink-0 select-none mx-auto bg-white"
                   style={{
-                    backgroundColor: circleBg,
-                    color: circleTextColor,
+                    backgroundColor: circleBg || "#ffffff",
+                    border: `2px solid ${circleTextColor || themeColor}`,
+                    color: circleTextColor || themeColor,
                   }}
                 >
                   {num}
@@ -319,8 +339,8 @@ export default function LandingAdmissionProcess({
 
                 {/* Step Title */}
                 <h3
-                  className="text-[13px] sm:text-[14px] lg:text-[13px] xl:text-[14.5px] 2xl:text-[15px] font-bold mb-1 sm:mb-1.5 leading-snug m-0 text-center"
-                  style={{ color: titleColor }}
+                  className="text-[13.5px] sm:text-[14.5px] lg:text-[14px] xl:text-[15px] font-bold mb-1.5 sm:mb-2 leading-snug m-0 text-center"
+                  style={{ color: titleColor || "#000000" }}
                 >
                   {title}
                 </h3>
@@ -328,13 +348,13 @@ export default function LandingAdmissionProcess({
                 {/* Step Description */}
                 {desc && (
                   <p
-                    className="text-[11px] sm:text-[11.5px] lg:text-[11px] xl:text-[11.5px] 2xl:text-[12px] leading-[1.35] sm:leading-[1.4] font-normal m-0 text-center w-full px-1"
+                    className="text-[11px] sm:text-[11.5px] lg:text-[11px] xl:text-[12px] leading-[1.45] font-normal m-0 text-center w-full px-0.5 text-slate-600"
                     style={{ color: descColor }}
                   >
                     {desc}
                   </p>
                 )}
-              </Card>
+              </div>
             );
           })}
         </div>

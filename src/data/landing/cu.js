@@ -1,24 +1,27 @@
 export const cuData = {
   slug: "cu",
   meta: {
-    title: "Chandigarh University Online Degree Course Fees & Admission 2026",
+    title: "Chandigarh University Online Degree Courses Fees & Admission Open 2026",
     description:
-      "Chandigarh University Online Degree Courses & Fees 2026. Online MBA, MCA, M.Com, MA, BBA, BCA, BA. NAAC A+ Accredited, QS Ranked & UGC-DEB Entitled.",
+      "Chandigarh University Online Degree Courses Fees & Admission open 2026 July Batch. MBA MCA MA BCA BBA BJMC Find UGC Approved Porgams Syllabus, Eligibility.",
     keywords: [
-      "Chandigarh University Online",
-      "CU Online",
-      "CU Online MBA",
-      "CU Online MCA",
-      "Chandigarh University Admission 2026",
+      "Chandigarh University",
+      "Chandigarh University Distance Education",
+      "CU for MBA",
+      "CU Distance MBA",
+      "CU MBA",
     ],
   },
   brand: {
+    slug: "cu",
     name: "Chandigarh University Online",
     shortName: "CU Online",
     hashtag: "#Discover.Learn.Empower",
     headline: "Chandigarh University Online",
     tagline1: "Redefine your future and elevate your potential with CU Online.",
     tagline2: "",
+    font: "Poppins",
+    fontFamily: "Poppins",
     phone: "+91 7065 7777 55",
     phoneDisplay: "+91 7065 7777 55",
     enquireTitle: "Free Counseling",
@@ -28,94 +31,266 @@ export const cuData = {
     sodeLogo: "/assets/cu/new-des-logo.webp",
     sodeIcon: "/assets/cu/sode-icon.png",
     showSodeLogo: true,
+    giftGif: "/assets/cu/gift.gif",
+    callGif: "/assets/cu/call_icon.gif",
+    arrowGif: "/assets/cu/arrow.gif",
     campusImage: "/assets/cu/CU-about-image1.png",
     buildingAboutImage: "/assets/cu/CU-about-image1.png",
-    whyChooseStudentImage: "/assets/cu/university.webp",
-    primaryColor: "#b91c1c",
-    themeBg: "bg-[#b91c1c]",
-    themeBorder: "border-[#b91c1c]",
-    accentColor: "#b91c1c",
-    goldColor: "#b91c1c",
+    primaryColor: "#d11c1f",
+    themeBg: "bg-[#d11c1f]",
+    themeBorder: "border-[#d11c1f]",
+    accentColor: "#d11c1f",
+    goldColor: "#d11c1f",
     badgeText: "Admissions Open 2026",
     showCouponBtn: true,
-    couponBtnBg: "#22c55e",
+    showCouponButton: true,
+    couponButtonText: "Scholarship Coupon Code",
+    couponBtnBg: "linear-gradient(135deg, #2ecc71, #27ae60)",
     showCouponPillWrapper: false,
-    whyChooseLayout: "classic",
-    whyChooseTitle: "Why Choose Chandigarh University Online for Degree Courses",
+    programmesLayout: "cu",
+    whyChooseLayout: "cu",
+    aboutLayout: "cu",
+    approvalsLayout: "cu",
+    degreeLayout: "cu",
+    statsLayout: "cu",
+    compareLayout: "cu",
+    faqLayout: "cu",
+    faqTitleColor: "#d11c1f",
+    stickyLayout: "cu",
+    showFooterForm: false,
+    hideStickyApply: true,
+    admissionFullWidth: true,
+    footerBottomBg: "#0b3c66",
+    footerDisclaimer:
+      "SODE Counselling Services LLP act as a marketing agency. All university names, logos, and trademarks mentioned are used for informational purposes only. We are not a university or an admission authority. Users are encouraged to verify information on official website of the University before making decisions.",
 
-    // Hero Section Configuration (styles passed via JSON as requested)
+    // Section sequence exactly matching distanceeducationschool.com/cu
+    sectionOrder: [
+      "stats",
+      "programmes",
+      "whyChoose",
+      "about",
+      "approvals",
+      "degree",
+      "admissionProcess",
+      "faqs",
+      "compareBanner",
+    ],
+
+    // Hero Section Configuration
     hero: {
       backgroundImage: "/assets/cu/CU-ODC.webp",
-      mobileBackgroundImage: "/assets/cu/CU-ODC.webp",
+      mobileBackgroundImage: "",
+      showMobileCouponButton: true,
+      mobileStudentImage: "/assets/cu/university.webp",
+      mobileStudentImageWrapperClassName: "block lg:hidden w-full max-w-[390px] mx-auto relative aspect-[925/433] rounded-[18px] overflow-hidden my-3 shadow-sm",
       noOverlay: true,
-      backgroundPosition: "52% top",
+      backgroundPosition: "53% top",
       backgroundSize: "cover",
+      backgroundRepeat: "no-repeat",
       isDarkTheme: false,
-      sectionBg: "#ffffff",
-      contentClassName: "lg:max-w-[560px] xl:max-w-[600px]",
+      sectionBg: "#f3f4f6",
+      backgroundColor: "#f3f4f6",
+      contentClassName: "lg:max-w-[410px] xl:max-w-[420px]",
 
       hashtagText: "#Discover.Learn.Empower",
+      hashtagClassName: "m-0 text-left font-medium",
       hashtagStyle: {
         color: "#222222",
-        fontSize: "14px",
-        fontWeight: "700",
-        letterSpacing: "0.2px",
+        fontSize: "15px",
+        fontWeight: "500",
+        letterSpacing: "0.5px",
         marginBottom: "4px",
       },
 
-      headlineText: "Chandigarh University\nOnline",
-      headingFont: "var(--font-roboto), Roboto, sans-serif",
-      headingClassName: "text-[28px] sm:text-[34px] lg:text-[38px] xl:text-[42px] font-extrabold text-[#b91c1c] leading-[1.14] tracking-tight mt-1 mb-2 whitespace-pre-line sm:whitespace-pre",
+      headlineText: "Chandigarh\nUniversity\nOnline",
+      headingFont: "var(--font-poppins), 'Poppins', sans-serif",
+      headingClassName: "mt-1 mb-2 whitespace-pre-line text-left",
       headingStyle: {
-        color: "#b91c1c",
-        lineHeight: "1.14",
+        color: "#d11c1f",
+        fontSize: "clamp(34px, 4.4vw, 42px)",
+        fontWeight: "800",
+        lineHeight: "1.12",
+        letterSpacing: "-0.5px",
       },
 
-      taglineText: "Redefine your future and elevate your potential with CU\nOnline.",
-      taglineClassName: "whitespace-pre-line text-slate-800 font-medium text-[14px] sm:text-[15px] leading-relaxed my-2 max-w-[480px]",
+      taglineText: "Redefine your future and elevate your potential with CU Online.",
+      taglineClassName: "my-2 max-w-[360px] text-left",
       taglineStyle: {
-        color: "#222222",
+        color: "#2e2a2aff",
+        fontSize: "14.5px",
+        fontWeight: "400",
+        lineHeight: "1.5",
       },
 
       hideCourseBox: true,
       coursesStrip: [
-        "BBA | BCA | BA-JMC | MBA | MCA | MA-",
-        "JMC | MSC | MA",
+        "BBA | BCA | BA-JMC | MBA |\nMCA | MA-JMC | MSC | MA",
       ],
-      courseStripClassName: "my-2.5 sm:my-3 text-[14.5px] sm:text-[16px] lg:text-[17.5px] xl:text-[18.5px] font-bold text-[#111111] tracking-wide space-y-0.5 whitespace-nowrap",
+      courseStripClassName: "my-2.5 sm:my-3 max-w-[340px] leading-snug text-left whitespace-pre-line font-semibold",
       courseStripStyle: {
         color: "#111111",
-        fontWeight: "800",
+        fontSize: "clamp(18px, 2.3vw, 22px)",
+        fontWeight: "600",
+        letterSpacing: "0.2px",
       },
 
       brochureButtonText: "Download Brochure",
+      buttonBorder: "none",
       buttonStyle: {
-        background: "#b91c1c",
-        backgroundColor: "#b91c1c",
+        background: "#d11c1f",
+        backgroundColor: "#d11c1f",
         color: "#ffffff",
-        borderRadius: "6px",
+        border: "none",
+        outline: "none",
+        borderRadius: "8px",
         fontSize: "14px",
         fontWeight: "700",
         padding: "10px 22px",
-        boxShadow: "0 4px 12px rgba(185, 28, 28, 0.35)",
+        boxShadow: "0 4px 12px rgba(209, 28, 31, 0.35)",
       },
 
       cardStyle: "white",
       formCardType: "white",
       formBackground: "#ffffff",
-      enquireColor: "#b91c1c",
-      formTitleColor: "#b91c1c",
+      enquireColor: "#d11c1f",
+      formTitleColor: "#d11c1f",
       enquireSubtitleColor: "#333333",
-      phoneBadgeBg: "#b91c1c",
+      showPhoneBadge: true,
+      phoneDisplay: "+91 7065 7777 55",
+      phoneBadgeText: "+91 7065 7777 55",
+      phoneBadgeLink: "tel:07065777755",
+      phoneBadgeBg: "#d11c1f",
+      phoneBadgeColor: "#ffffff",
+      phoneBadgeIconColor: "#ffffff",
       phonePlaceholder: "Enter Your Number",
       statePlaceholder: "Select State",
-      submitBtnBg: "#b91c1c",
-      submitButtonBackground: "#b91c1c",
+      submitBtnBg: "#d11c1f",
+      submitButtonBackground: "#d11c1f",
+      submitButtonRadius: "8px",
     },
     coursesStrip: [
-      "BBA | BCA | BA-JMC | MBA | MCA | MA-",
-      "JMC | MSC | MA",
+      "BBA | BCA | BA-JMC | MBA | MCA | MA-JMC | MSC | MA",
     ],
+    customCss: `
+      /* Pulse & Shine Animations for CU */
+      @keyframes cuPulse {
+        0% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.6); }
+        70% { box-shadow: 0 0 0 16px rgba(46, 204, 113, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
+      }
+      @keyframes cuShine {
+        0% { left: -75%; }
+        100% { left: 125%; }
+      }
+      .coupon-btn-main {
+        position: relative;
+        overflow: hidden;
+        animation: cuPulse 2s infinite;
+      }
+      .coupon-btn-main::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -75%;
+        width: 50%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.4);
+        transform: skewX(-25deg);
+        animation: cuShine 2.5s infinite;
+      }
+      .coupon-btn {
+        position: fixed;
+        right: 12px;
+        bottom: 85px;
+        border: none;
+        background: transparent;
+        z-index: 9999;
+        cursor: pointer;
+      }
+      .coupon-btn img {
+        width: 58px;
+        height: 58px;
+        border-radius: 50%;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.3), 0 0 20px rgba(46, 204, 113, 0.6);
+        transition: transform 0.3s ease;
+      }
+      .coupon-btn img:hover {
+        transform: scale(1.1);
+      }
+      .call_fix_image {
+        position: fixed;
+        bottom: 18px;
+        right: 12px;
+        z-index: 9999;
+      }
+      .call_fix_image img {
+        width: 58px;
+        height: 58px;
+        border-radius: 50%;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.3), 0 0 25px rgba(46, 204, 113, 0.8);
+        transition: transform 0.3s ease;
+      }
+      .call_fix_image img:hover {
+        transform: scale(1.1);
+      }
+      .sticky_btn_Section {
+        display: none !important;
+      }
+      @media (max-width: 768px) {
+        .coupon-btn { bottom: 60px !important; right: 12px !important; }
+        .coupon-btn img { width: 54px !important; height: 54px !important; border-radius: 50% !important; box-shadow: 0 10px 25px rgba(0,0,0,0.3) !important; }
+        .call_fix_image { bottom: 124px !important; right: 12px !important; }
+        .call_fix_image img { width: 54px !important; height: 54px !important; border-radius: 50% !important; box-shadow: 0 12px 30px rgba(0,0,0,0.3) !important; }
+        .sticky_btn_Section {
+          display: block !important;
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          z-index: 99999;
+          background: #d11c1f;
+          padding: 8px 12px;
+        }
+        .footer_sticky_buttons {
+          display: grid !important;
+          grid-template-columns: 1fr 1fr !important;
+          gap: 10px !important;
+          align-items: center;
+          width: 100%;
+        }
+        .footer_sticky_buttons .wp_btn {
+          background: #25d366;
+          color: #fff;
+          font-weight: 700;
+          border-radius: 999px;
+          padding: 8px 12px;
+          font-size: 15px;
+          text-align: center;
+          text-decoration: none;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+          border: none;
+        }
+        .footer_sticky_buttons .apply_btn {
+          background: #ffffff;
+          color: #d11c1f;
+          font-weight: 700;
+          border-radius: 999px;
+          padding: 8px 12px;
+          font-size: 15px;
+          text-align: center;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+          border: none;
+          cursor: pointer;
+        }
+      }
+    `,
   },
   courses: [
     { value: "BBA", label: "BBA" },
@@ -127,188 +302,271 @@ export const cuData = {
     { value: "MSC", label: "MSC" },
     { value: "MA", label: "MA" },
   ],
-  approvals: [
+  stats: [
     {
-      image: "/assets/images/approvals/ugc_approval.png",
-      text: "Entitled by University Grants Commission (UGC-DEB)",
-      tag: "UGC-DEB",
+      number: "2400+",
+      label: "Patents Filed by Students & Faculty",
     },
     {
-      image: "/assets/images/approvals/naac_a_plus.png",
-      text: "NAAC A+ Accredited University",
+      number: "300+",
+      label: "International Hiring Partners with MNCs & Top Companies",
+    },
+    {
+      number: "16+",
+      label: "Specializations in MBA & Other Degree Programs",
+    },
+    {
+      number: "24x7",
+      label: "Support & Assistance with Top Level Faculty",
+    },
+  ],
+  approvals: [
+    {
+      image: "/assets/cu/naac-approvals.png",
+      title: "National Assessment and Accreditation Council (NAAC A+)",
       tag: "NAAC A+",
     },
     {
-      image: "/assets/images/approvals/nirf_ranking.png",
-      text: "Ranked Among Top Universities in NIRF Rankings",
-      tag: "NIRF Top Ranked",
+      image: "/assets/cu/ugc-approvals.png",
+      title: "University Grants Commission (UGC)",
+      tag: "UGC",
     },
     {
-      image: "/assets/images/approvals/qs_ranking.png",
-      text: "Ranked #1 Private University in India by QS Asia",
-      tag: "QS #1 Private",
+      image: "/assets/cu/nirf-approvals.png",
+      title: "National Institutional Ranking Framework (NIRF)",
+      tag: "NIRF",
     },
     {
-      image: "/assets/images/approvals/aicte_approval.png",
-      text: "Approved by AICTE for Professional Technical Programs",
-      tag: "AICTE",
-    },
-  ],
-  stats: [
-    {
-      number: "#1",
-      label: "Private University in India (QS)",
-      iconType: "building",
-      circleBg: "bg-[#c0392b]",
-    },
-    {
-      number: "900+",
-      label: "Hiring Companies",
-      iconType: "graduation",
-      circleBg: "bg-[#2196f3]",
-    },
-    {
-      number: "50K+",
-      label: "Active Students",
-      iconType: "users",
-      circleBg: "bg-[#4caf50]",
-    },
-    {
-      number: "20+",
-      label: "Industry Specializations",
-      iconType: "book",
-      circleBg: "bg-[#e91e63]",
+      image: "/assets/cu/WES-approvals.png",
+      title: "World Education Services (WES)",
+      tag: "WES",
     },
   ],
   programmes: [
     {
-      id: "cu-mba",
-      code: "MBA",
-      title: "Master of Business Administration",
-      level: "Post Graduation",
-      image: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=800&auto=format&fit=crop",
-      description:
-        "CU Online MBA equips students with contemporary leadership skills, data analytics for managers, marketing strategies, and venture capital management.",
-    },
-    {
-      id: "cu-mca",
-      code: "MCA",
-      title: "Master of Computer Application",
-      level: "Post Graduation",
-      image: "https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=800&auto=format&fit=crop",
-      description:
-        "Specialized tracks in Cloud Computing, AI, Data Science, and Full-Stack Engineering with hands-on capstone industry projects.",
-    },
-    {
-      id: "cu-bba",
       code: "BBA",
       title: "Bachelor of Business Administration",
       level: "Graduation",
-      image: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=800&auto=format&fit=crop",
-      description:
-        "Foundational managerial concepts in digital marketing, corporate law, organizational dynamics, and financial systems.",
+      category: "under-graduate",
+      duration: "3 Years",
+      image: "/assets/cu/bba-cu.png",
+      desc: "Kickstart your management career with Chandigarh University BBA in Marketing, HR, Finance, and more.",
     },
     {
-      id: "cu-bca",
       code: "BCA",
       title: "Bachelor of Computer Application",
       level: "Graduation",
-      image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=800&auto=format&fit=crop",
-      description:
-        "Solid 3-year curriculum focusing on core programming, modern software testing, database management, and mobile apps.",
+      category: "under-graduate",
+      duration: "3 Years",
+      image: "/assets/cu/bca-cu.png",
+      desc: "Develop IT and programming skills via Chandigarh online University’s adaptable Online BCA program.",
+    },
+    {
+      code: "BA-JMC",
+      title: "Journalism & Mass Communication",
+      level: "Graduation",
+      category: "under-graduate",
+      duration: "3 Years",
+      image: "/assets/cu/bjmc-cu.png",
+      desc: "Learn digital media, reporting, and communication with CU’s Online BA-JMC course.",
+    },
+    {
+      code: "MBA",
+      title: "Master of Business Administration",
+      level: "Post Graduation",
+      category: "post-graduate",
+      duration: "2 Years",
+      image: "/assets/cu/mba-cu.png",
+      desc: "Learner can earn an online MBA from Chandigarh online University MBA with specialisations in HR, Finance, or Marketing.",
+    },
+    {
+      code: "MCA",
+      title: "Master of Computer Application",
+      level: "Post Graduation",
+      category: "post-graduate",
+      duration: "2 Years",
+      image: "/assets/cu/mca-cu.png",
+      desc: "Students can enhance tech expertise with Chandigarh University's MCA, covering programming, AI, and data systems.",
+    },
+    {
+      code: "MA-JMC",
+      title: "Journalism & Mass Communication",
+      level: "Post Graduation",
+      category: "post-graduate",
+      duration: "2 Years",
+      image: "/assets/cu/mjmc-cu.png",
+      desc: "This course opens doors to go into journalism and digital storytelling through Chandigarh Online University's online MA-JMC.",
+    },
+    {
+      code: "MSC",
+      title: "Master of Science",
+      level: "Post Graduation",
+      category: "post-graduate",
+      duration: "2 Years",
+      image: "/assets/cu/msc-cu.png",
+      desc: "Learners can expand scientific expertise with CU’s flexible and industry-aligned Online MSc programs.",
+    },
+    {
+      code: "MA",
+      title: "Master of Arts",
+      level: "Post Graduation",
+      category: "post-graduate",
+      duration: "2 Years",
+      image: "/assets/cu/ma-cu.png",
+      desc: "Dive into the humanities with CU Online MA degrees in English, Psychology, and other disciplines.",
+    },
+  ],
+  whyChoose: [
+    {
+      title: "Affordable Fee Structure",
+      desc: "The Chandigarh University fee structure provides each of its online programs remains affordable.",
+      icon: "/assets/cu/afforadable.png",
+      borderSide: "right",
+    },
+    {
+      title: "Globally Recognized Courses:",
+      desc: "The curriculum of Chandigarh Online University is up to the market standard, setting global benchmarks.",
+      icon: "/assets/cu/global.png",
+      borderSide: "right",
+    },
+    {
+      title: "24/7 Support:",
+      desc: "Chandigarh University has situated a 24/7support team, and their only work is to take care of the students' queries.",
+      icon: "/assets/cu/support.png",
+      borderSide: "left",
+    },
+    {
+      title: "Career Placement Assistance:",
+      desc: "The Chandigarh Online University has its duties related to placement through its career placement assistance.",
+      icon: "/assets/cu/placement.png",
+      borderSide: "left",
+    },
+    {
+      title: "Flexible Study Options:",
+      desc: "Chandigarh Online University understands every student's learning pace and offers its live and recorded classes.",
+      icon: "/assets/cu/lms.png",
+      borderSide: "right",
+    },
+    {
+      title: "Innovative Learning Platform:",
+      desc: "Chandigarh University offers its learners cutting-edge knowledge with LMS, delivering a better digital learning experience.",
+      icon: "/assets/cu/self.png",
+      borderSide: "right",
     },
   ],
   about: {
     title: "About Chandigarh University Online",
     text1:
-      "Chandigarh University (CU) is recognized by QS Asia Rankings as one of the fastest-growing and premier private universities in India.",
-    text2:
-      "CU Online bridges the gap between academia and top multinational recruiters with industry-vetted curriculums, live classes by global faculty, and cutting-edge digital learning resources.",
-    text3:
-      "Degrees awarded by Chandigarh University Online are entitled by UGC-DEB, ensuring full academic and career credibility.",
+      "Chandigarh university is one of the leading Indian Institute offering its professional and academic excellence in online also for the students and working professionals as well. Chandigarh Unviersity holds 19th rank in NIRF rank, UGC entitled, No.1 private university rank in QS Asia university ranking 2026 and A+ accreditation by NAAC in the first cycle itself and many more. This university offers courses in fields such as management, computers, arts, and science and many more. Chandigarh online University focus on the top-quality education while giving learn from anywhere, anytime concept.",
   },
-  whyChoose: [
-    {
-      title: "QS Asia Top Ranked University",
-      desc: "Study from one of the highest-rated universities in India with global accreditation standards.",
-    },
-    {
-      title: "High Placement Track Record",
-      desc: "900+ recruitment partners including Microsoft, Google, Amazon, and IBM hiring CU graduates.",
-    },
-    {
-      title: "Affordable Fees & 0% EMI",
-      desc: "Low-cost semester fees with flexible monthly payment plans designed for working professionals.",
-    },
-    {
-      title: "Cutting-Edge LMS & Mentorship",
-      desc: "Interactive webinars, discussion forums, 24/7 student support, and dedicated project supervisors.",
-    },
-  ],
+  degree: {
+    title: "Chandigarh University Online Learning Platform",
+    subtitle: "Launch Your Career with an Online Degree From",
+    image: "/assets/cu/CU-sample-degree.png",
+  },
   admissionSteps: [
     {
       num: 1,
-      title: "Fill Application",
-      desc: "Submit your online enquiry details",
-      themeColor: "text-[#c0392b]",
-      borderColor: "border-[#c0392b]",
-      bottomBorder: "border-b-[4px] border-[#c0392b]",
-      cardBg: "bg-[#fff5f5]",
+      title: "Submit Form",
+      desc: "Fill in and submit your application form online",
+      themeColor: "#ff8c32",
+      borderColor: "#ff8c32",
+      bottomBorder: "border-b-[4px] border-[#ff8c32]",
+      cardBg: "#fff4e9",
+      circleBg: "#ffffff",
+      circleColor: "#ff8c32",
     },
     {
       num: 2,
-      title: "Counseling",
-      desc: "Speak with CU admission mentors",
-      themeColor: "text-[#0066cc]",
-      borderColor: "border-[#0066cc]",
-      bottomBorder: "border-b-[4px] border-[#0066cc]",
-      cardBg: "bg-[#f0f7ff]",
+      title: "Expert's Counseling",
+      desc: "You will receive a call from our expert counselor",
+      themeColor: "#0b5ed7",
+      borderColor: "#0b5ed7",
+      bottomBorder: "border-b-[4px] border-[#0b5ed7]",
+      cardBg: "#f2f8ff",
+      circleBg: "#ffffff",
+      circleColor: "#0b5ed7",
     },
     {
       num: 3,
-      title: "Course Selection",
-      desc: "Select program and specialization",
-      themeColor: "text-[#e91e63]",
-      borderColor: "border-[#e91e63]",
-      bottomBorder: "border-b-[4px] border-[#e91e63]",
-      cardBg: "bg-[#fff0f5]",
+      title: "Choose University",
+      desc: "Select the course & university according to your interest",
+      themeColor: "#ff2d6f",
+      borderColor: "#ff2d6f",
+      bottomBorder: "border-b-[4px] border-[#ff2d6f]",
+      cardBg: "#fff1f6",
+      circleBg: "#ffffff",
+      circleColor: "#ff2d6f",
     },
     {
       num: 4,
-      title: "Document Review",
-      desc: "Upload academic credentials online",
-      themeColor: "text-[#10b981]",
-      borderColor: "border-[#10b981]",
-      bottomBorder: "border-b-[4px] border-[#10b981]",
-      cardBg: "bg-[#f0fff4]",
+      title: "Online Payment",
+      desc: "You need to make a smooth online fee submission",
+      themeColor: "#1faa59",
+      borderColor: "#1faa59",
+      bottomBorder: "border-b-[4px] border-[#1faa59]",
+      cardBg: "#effff5",
+      circleBg: "#ffffff",
+      circleColor: "#1faa59",
     },
     {
       num: 5,
-      title: "Fee Payment",
-      desc: "Pay fee securely via netbanking/cards/EMI",
-      themeColor: "text-[#8b5cf6]",
-      borderColor: "border-[#8b5cf6]",
-      bottomBorder: "border-b-[4px] border-[#8b5cf6]",
-      cardBg: "bg-[#f8f4ff]",
+      title: "Document Submit",
+      desc: "You need to upload all the required verified documents.",
+      themeColor: "#8e2de2",
+      borderColor: "#8e2de2",
+      bottomBorder: "border-b-[4px] border-[#8e2de2]",
+      cardBg: "#f9f0ff",
+      circleBg: "#ffffff",
+      circleColor: "#8e2de2",
     },
     {
       num: 6,
-      title: "Welcome to CU",
-      desc: "Get Student ID & start LMS classes",
-      themeColor: "text-[#c0392b]",
-      borderColor: "border-[#c0392b]",
-      bottomBorder: "border-b-[4px] border-[#c0392b]",
-      cardBg: "bg-[#fff5f5]",
+      title: "Admission Confirm",
+      desc: "Get Confirmation on your Email & Whatsapp",
+      themeColor: "#ff8c32",
+      borderColor: "#ff8c32",
+      bottomBorder: "border-b-[4px] border-[#ff8c32]",
+      cardBg: "#fff4e9",
+      circleBg: "#ffffff",
+      circleColor: "#ff8c32",
     },
   ],
+  enrollmentProcess: {
+    title: "How to Apply for Chandigarh University Online Courses",
+    titleColor: "#d11c1f",
+    headingColor: "#d11c1f",
+    subtitleStyle: {
+      color: "#000000",
+      letterSpacing: "0.3px",
+    },
+    description:
+      "The admission process for Chandigarh University course admissions is very simple and user-friendly. Here’s a step-by-step\nguide to enrolling in a degree course at the university :",
+  },
   faqs: [
     {
-      q: "Q1. Are exams conducted online at Chandigarh University Online?",
-      a: "Yes, semester examinations are conducted online via AI-proctored systems. You can take your exams from anywhere with a computer and internet connection.",
+      q: "Q1. How does CU provide top-quality education online course while offering flexibility?",
+      a: "Chandigarh University aim to provide top-notch education quality content offering learn from anywhere, anytime mantra through both live and recorded classes.",
     },
     {
-      q: "Q2. Are CU Online degrees UGC entitled?",
-      a: "Yes, Chandigarh University Online programs are fully entitled by UGC-DEB and recognized for all competitive exams and government posts.",
+      q: "Q2. What qualification needs to enroll at Chandigarh online University?",
+      a: "Chandigarh University does not take any entrance exam. The entire chandigarh university admission process is in online mode. Students need minimum 50% marks in the bachelors for MBA, for online BCA minimum eligibility is 10+2 in any stream.",
+    },
+    {
+      q: "Q3. How can Students apply for the CU online program?",
+      a: "The entire Chandigarh University admission process is online. Students can visit the official CU website and Student can simply fill out the Chandigarh University admission form to apply for the desired course submitting required documents.",
+    },
+    {
+      q: "Q4. Do Chandigarh University offers other same certificate to the online students as regular students?",
+      a: "Yes, the Chandigarh online University certificate is similar to the regular but it mentions “Online Mode” as per UGC norms. It includes the university’s seal and is valid for higher studies/jobs.",
+    },
+    {
+      q: "Q5. Can students get EMI or any kind of scholarship from Chandigarh University?",
+      a: "Yes, Chandigarh University Online offers both EMI payment plans and merit-based scholarships in their all courses but there is eligibility criteria for all.",
+    },
+    {
+      q: "Q6. How can a student get more information about Chandigarh Online University?",
+      a: "Learners can check the official website portal or visit DistanceEducationSchool.com.",
     },
   ],
 };

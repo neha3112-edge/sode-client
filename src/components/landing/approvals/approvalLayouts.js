@@ -13,6 +13,8 @@ import VguApprovals from "./layouts/VguApprovals";
 import SmuApprovals from "./layouts/SmuApprovals";
 import ApprovalsSlider from "./layouts/ApprovalsSlider";
 
+import CuApprovals from "./layouts/CuApprovals";
+
 /**
  * Layout Registry Mapping
  * All university layouts are registered here.
@@ -20,6 +22,7 @@ import ApprovalsSlider from "./layouts/ApprovalsSlider";
  */
 export const APPROVAL_LAYOUTS = {
   // Standard Layout Names
+  cu: CuApprovals,
   classic: ClassicApprovals,
   amity: AmityApprovals,
   table: GalgotiasApprovals,
