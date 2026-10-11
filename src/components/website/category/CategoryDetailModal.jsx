@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Modal } from "antd";
-import { X } from "lucide-react";
+import { X, ChevronRight } from "lucide-react";
 import { CategoryIcon, PartnerLogoIcon, CourseIcon, formatTwoLineText, getItemSlug, isObjectId } from "./CategoryIcons";
 
 export default function CategoryDetailModal({
@@ -11,6 +11,37 @@ export default function CategoryDetailModal({
   onClose,
   router,
 }) {
+  const isCourseModal = Boolean(
+    modalData?.isCourseSubcategoriesModal ||
+    activeCategory?.isCourse ||
+    activeCategory?.itemType === "course"
+  );
+
+  const isUniModal = Boolean(
+    modalData?.isUniversity ||
+    activeCategory?.isUniversity ||
+    activeCategory?.itemType === "university"
+  );
+
+  const exploreButtonText = isCourseModal
+    ? "Explore"
+    : isUniModal
+      ? "Explore"
+      : modalData?.isCoursesModal
+        ? "Explore"
+        : modalData?.isUniversitiesModal
+          ? "Explore"
+          : "Explore";
+
+  const handleExploreClick = () => {
+    onClose();
+    if (isUniModal || modalData?.isUniversitiesModal) {
+      router.push("/universities");
+      return;
+    }
+    router.push("/courses");
+  };
+
   return (
     <Modal
       open={Boolean(activeCategory)}
@@ -64,14 +95,25 @@ export default function CategoryDetailModal({
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={onClose}
-              className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-900 transition-colors flex items-center justify-center cursor-pointer border-0"
-              aria-label="Close modal"
-            >
-              <X className="w-4 h-4" />
-            </button>
+            <div className="flex items-center gap-2 shrink-0 ml-auto">
+              <button
+                type="button"
+                onClick={handleExploreClick}
+                className="inline-flex items-center justify-center gap-1 py-1 px-2 rounded-full text-xs font-bold text-[#0B3B7E] bg-blue-50/80 hover:bg-blue-100 border border-blue-200/80 transition-all cursor-pointer shadow-none group shrink-0"
+              >
+                <span className="leading-none">{exploreButtonText}</span>
+                <ChevronRight className="w-3.5 h-3.5 shrink-0 transition-transform duration-200 group-hover:translate-x-0.5" />
+              </button>
+
+              <button
+                type="button"
+                onClick={onClose}
+                className="w-8 h-8 flex items-center justify-center cursor-pointer shrink-0 rounded-full hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-colors"
+                aria-label="Close modal"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
           {/* Modal Body */}

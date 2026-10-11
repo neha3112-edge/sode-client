@@ -56,8 +56,7 @@ export default function RootLayout({ children }) {
     <html
       lang="en-IN"
       suppressHydrationWarning
-      data-scroll-behavior="smooth"
-      className={`${roboto.variable} ${poppins.variable} ${jakarta.variable} font-sans h-full antialiased scroll-smooth`}
+      className={`${roboto.variable} ${poppins.variable} ${jakarta.variable} font-sans h-full antialiased`}
     >
       <head>
         <link rel="preconnect" href="https://new.crm.api.mysode.com" crossOrigin="anonymous" />

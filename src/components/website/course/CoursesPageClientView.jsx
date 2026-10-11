@@ -19,6 +19,7 @@ import {
   CheckCircle2,
   Download,
   Calendar,
+  ChevronRight,
 } from "lucide-react";
 import { Select, Drawer, Pagination, Modal, Slider, ConfigProvider } from "antd";
 import { PlusOutlined, CheckOutlined } from "@ant-design/icons";
@@ -26,8 +27,43 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useFormModal } from "@/hooks/useFormModal";
 import { useCompare } from "@/hooks/useCompare";
 import { formatAdmissionDeadline } from "@/lib/utils";
+import { FaCalendar, FaClock } from "react-icons/fa";
+import { getFullSpecName, getCleanSpecName } from "./CourseSpecializations";
 
 const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
+
+const extractFeeText = (val) => {
+  if (!val) return "";
+  if (typeof val === "string") return val;
+  if (typeof val === "number") return `₹ ${Number(val).toLocaleString("en-IN")}`;
+  if (typeof val === "object") {
+    if (val.formattedSemesterFees) return String(val.formattedSemesterFees);
+    if (val.semesterFees) return `₹ ${Number(val.semesterFees).toLocaleString("en-IN")} / Semester`;
+    if (val.formattedPerSemesterPayable) return String(val.formattedPerSemesterPayable);
+    if (val.perSemesterPayable) return `₹ ${Number(val.perSemesterPayable).toLocaleString("en-IN")} / Semester`;
+    if (val.formattedNetPayable) return String(val.formattedNetPayable);
+    if (val.netPayable) return `₹ ${Number(val.netPayable).toLocaleString("en-IN")}`;
+    if (val.formattedBasePayable) return String(val.formattedBasePayable);
+    if (val.basePayable) return `₹ ${Number(val.basePayable).toLocaleString("en-IN")}`;
+    if (val.formattedActualFees) return String(val.formattedActualFees);
+    if (val.actualFees) return `₹ ${Number(val.actualFees).toLocaleString("en-IN")}`;
+    if (val.amount) return `₹ ${Number(val.amount).toLocaleString("en-IN")}`;
+    if (val.name) return String(val.name);
+  }
+  return "";
+};
+
+const extractDurationText = (val) => {
+  if (!val) return "";
+  if (typeof val === "string") return val;
+  if (typeof val === "number") return `${val} Months`;
+  if (typeof val === "object") {
+    if (val.name) return String(val.name);
+    if (val.months) return `${val.months} Months`;
+  }
+  return "";
+};
+
 import WebsiteLayout from "@/components/layout/WebsiteLayout";
 import { request } from "@/services/request";
 
@@ -383,6 +419,90 @@ export default function CoursesPageClientView({
   const [selectedFee, setSelectedFee] = useState("all");
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
   const [specializationModalData, setSpecializationModalData] = useState(null);
+  const [selectedSpecDetail, setSelectedSpecDetail] = useState(null);
+  const [specFullData, setSpecFullData] = useState(null);
+  const [loadingSpecDetail, setLoadingSpecDetail] = useState(false);
+  const [activeSpecSem, setActiveSpecSem] = useState(0);
+
+  const handleOpenSpecDetail = async (sc, parentData) => {
+    setSelectedSpecDetail(sc);
+    setSpecFullData(null);
+    setLoadingSpecDetail(true);
+    setActiveSpecSem(0);
+
+    try {
+      let slugPath = "";
+      if (parentData?.courseDetailHref && parentData.courseDetailHref.startsWith("/universities/")) {
+        slugPath = parentData.courseDetailHref.replace(/^\/universities\//, "").split("#")[0].split("?")[0];
+      } else if (parentData?.coursePageSlug) {
+        slugPath = parentData.coursePageSlug.split("#")[0].split("?")[0];
+      } else if (parentData?.uniSlug && parentData?.courseSlug) {
+        slugPath = `${parentData.uniSlug}/${parentData.courseSlug}`;
+      } else if (parentData?.slug && parentData.slug.includes("/")) {
+        slugPath = parentData.slug;
+      }
+
+      let detailResult = null;
+      if (slugPath) {
+        const res = await request.dynamicRead({
+          entity: "courses",
+          endPoint: "v1/list",
+          id: slugPath,
+          revalidate: 300,
+        });
+        detailResult = res?.result || res;
+      }
+
+      if (!detailResult || !Array.isArray(detailResult.subCourses)) {
+        const uSlug = parentData?.uniSlug || parentData?.uniObj?.slug || parentData?.universitySlug;
+        const cSlug = parentData?.courseSlug || parentData?.courseObj?.slug;
+        if (uSlug && cSlug) {
+          const res2 = await request.dynamicRead({
+            entity: "courses",
+            endPoint: "v1/list",
+            id: `${uSlug}/${cSlug}`,
+            revalidate: 300,
+          });
+          detailResult = res2?.result || res2;
+        }
+      }
+
+      if (detailResult && Array.isArray(detailResult.subCourses)) {
+        const subSlug = (sc.slug || sc.name || "").toLowerCase().trim();
+        const scIdStr = String(sc._id || sc.id || "");
+        const matched = detailResult.subCourses.find((item) => {
+          if (!item) return false;
+          if (scIdStr && (String(item._id) === scIdStr || String(item.id) === scIdStr)) return true;
+          if (item.slug && item.slug.toLowerCase().trim() === subSlug) return true;
+          const iName = (item.name || "").toLowerCase().trim();
+          if (iName === subSlug || iName.includes(subSlug) || subSlug.includes(iName)) return true;
+          return false;
+        });
+        if (matched) {
+          setSpecFullData(matched);
+        }
+      }
+    } catch (e) {
+      console.error("Error fetching course detail curriculum:", e);
+    } finally {
+      setLoadingSpecDetail(false);
+    }
+  };
+
+  const handleCloseSpecModal = () => {
+    setSpecializationModalData(null);
+    setSelectedSpecDetail(null);
+    setSpecFullData(null);
+    setLoadingSpecDetail(false);
+    setActiveSpecSem(0);
+  };
+
+  const handleBackToSpecList = () => {
+    setSelectedSpecDetail(null);
+    setSpecFullData(null);
+    setLoadingSpecDetail(false);
+    setActiveSpecSem(0);
+  };
 
   // Mobile Filter Draft State
   const [draftCategoryTab, setDraftCategoryTab] = useState(initialCat);
@@ -639,35 +759,9 @@ export default function CoursesPageClientView({
         const rawLogo = uni.logo || uni.logoSrc || null;
         const logoUrl = getMediaUrl(rawLogo);
 
-        let durationText = null;
-        if (typeof duration === "string" && duration.trim()) {
-          durationText = duration;
-        } else if (duration?.name) {
-          durationText = duration.name;
-        } else if (duration?.months) {
-          durationText = `${duration.months} Months`;
-        } else if (item.duration) {
-          durationText = typeof item.duration === "string" ? item.duration : (item.duration.name || (item.duration.months ? `${item.duration.months} Months` : null));
-        } else if (item.durationMonths) {
-          durationText = `${item.durationMonths} Months`;
-        }
+        let durationText = extractDurationText(duration) || extractDurationText(item.duration) || (item.durationMonths ? `${item.durationMonths} Months` : null);
 
-        let feeText = null;
-        if (fees?.semesterFees) {
-          feeText = `₹ ${Number(fees.semesterFees).toLocaleString("en-IN")} / Semester`;
-        } else if (fees?.formattedSemesterFees) {
-          feeText = fees.formattedSemesterFees;
-        } else if (fees?.perSemesterPayable) {
-          feeText = `₹ ${Number(fees.perSemesterPayable).toLocaleString("en-IN")} / Semester`;
-        } else if (fees?.amount) {
-          feeText = `₹ ${Number(fees.amount).toLocaleString("en-IN")} INR`;
-        } else if (fees?.name) {
-          feeText = fees.name.includes("₹") ? `${fees.name} INR` : `₹ ${fees.name} INR`;
-        } else if (item.fullFee) {
-          feeText = item.fullFee.includes("₹") ? `${item.fullFee} INR` : `₹ ${item.fullFee} INR`;
-        } else if (item.amount) {
-          feeText = `₹ ${Number(item.amount).toLocaleString("en-IN")} INR`;
-        }
+        let feeText = extractFeeText(fees) || (item.fullFee ? (typeof item.fullFee === "string" && item.fullFee.includes("₹") ? `${item.fullFee} INR` : `₹ ${item.fullFee} INR`) : (item.amount ? `₹ ${Number(item.amount).toLocaleString("en-IN")} INR` : null));
 
         const slugify = (text) =>
           (text || "")
@@ -746,6 +840,9 @@ export default function CoursesPageClientView({
           durationText,
           feeText,
           courseDetailHref,
+          courseSlug,
+          uniSlug,
+          universitySlug: uniSlug,
         });
       } else {
         list.push({
@@ -1127,7 +1224,11 @@ export default function CoursesPageClientView({
                           {Array.isArray(item.subcourses) && item.subcourses.length > 0 && (
                             <button
                               type="button"
-                              onClick={() => setSpecializationModalData(item)}
+                              onClick={() => {
+                                setSelectedSpecDetail(null);
+                                setSpecFullData(null);
+                                setSpecializationModalData(item);
+                              }}
                               className="bg-blue-50 hover:bg-blue-100 text-[#0B3B7E] border border-blue-200 text-xs font-bold px-3.5 py-1.5 rounded-lg transition-colors inline-flex items-center gap-1.5 cursor-pointer"
                             >
                               <BookOpen className="w-3.5 h-3.5" />
@@ -1285,7 +1386,11 @@ export default function CoursesPageClientView({
                         {Array.isArray(item.subcourses) && item.subcourses.length > 0 && (
                           <button
                             type="button"
-                            onClick={() => setSpecializationModalData(item)}
+                            onClick={() => {
+                              setSelectedSpecDetail(null);
+                              setSpecFullData(null);
+                              setSpecializationModalData(item);
+                            }}
                             className="flex-1 min-w-0 bg-blue-50 hover:bg-blue-100 text-[#0B3B7E] border border-blue-200 text-[11px] font-bold py-2 px-2 rounded-lg transition-colors flex items-center justify-center cursor-pointer whitespace-nowrap"
                           >
                             <span>Specializations ({item.specializationsCount || item.subcourses.length})</span>
@@ -1441,9 +1546,9 @@ export default function CoursesPageClientView({
       {/* ── SPECIALIZATIONS MODAL ── */}
       <Modal
         open={Boolean(specializationModalData)}
-        onCancel={() => setSpecializationModalData(null)}
+        onCancel={handleCloseSpecModal}
         footer={null}
-        width={940}
+        width={selectedSpecDetail ? 1150 : 940}
         centered
         closable={false}
         destroyOnHidden
@@ -1454,6 +1559,7 @@ export default function CoursesPageClientView({
             border: "1px solid #e2e8f0",
             boxShadow: "0 25px 50px -12px rgba(15, 23, 42, 0.25)",
             overflow: "hidden",
+            maxHeight: "88vh",
           },
           body: {
             padding: 0,
@@ -1477,15 +1583,6 @@ export default function CoursesPageClientView({
             getMediaUrl(specializationModalData.uniObj?.bannerImg) ||
             getMediaUrl(specializationModalData.uniObj?.image) ||
             null;
-
-          const modalBadgeText = (() => {
-            const name = specializationModalData.uniName || "";
-            const mode = specializationModalData.mode || "ONLINE";
-            if (name.toUpperCase().includes(mode.toUpperCase())) {
-              return name.toUpperCase();
-            }
-            return `${name} ${mode}`.toUpperCase();
-          })();
 
           const rawOverview =
             specializationModalData.overview ||
@@ -1511,12 +1608,288 @@ export default function CoursesPageClientView({
             : [];
           const specCount = specializationModalData.specializationsCount || subcourses.length;
 
+          if (selectedSpecDetail) {
+            // ── VIEW 2: FULL SPECIALIZATION DETAILS WITH CURRICULUM (EXACT COURSE PAGE MODAL) ──
+            const cleanSpecTitle = getCleanSpecName(selectedSpecDetail.name, modalCourseTitle);
+            const detailTitle = getFullSpecName(selectedSpecDetail.name, modalCourseTitle);
+
+            const itemDuration =
+              extractDurationText(specFullData?.duration) ||
+              extractDurationText(selectedSpecDetail?.duration) ||
+              extractDurationText(specializationModalData.durationText) ||
+              "";
+
+            const rawDeadline =
+              specFullData?.admissionDeadline ||
+              selectedSpecDetail?.admissionDeadline ||
+              specializationModalData.admissionDeadline ||
+              "";
+            const itemDeadline = rawDeadline ? formatAdmissionDeadline(rawDeadline) : "";
+
+            const rawDesc =
+              specFullData?.description ||
+              selectedSpecDetail?.description ||
+              modalOverview;
+            const itemDesc = typeof rawDesc === "string" ? rawDesc.trim() : "";
+
+            const itemFeesFormatted =
+              extractFeeText(specFullData?.fees) ||
+              extractFeeText(specFullData?.fee) ||
+              extractFeeText(selectedSpecDetail?.fees) ||
+              extractFeeText(selectedSpecDetail?.fee) ||
+              extractFeeText(specializationModalData.feeText) ||
+              "";
+
+            const specDesktopBannerRaw =
+              specFullData?.bannerImage ||
+              specFullData?.bannerImg ||
+              specFullData?.banner ||
+              specFullData?.image ||
+              selectedSpecDetail?.bannerImage ||
+              selectedSpecDetail?.bannerImg ||
+              selectedSpecDetail?.banner ||
+              selectedSpecDetail?.image ||
+              specializationModalData.courseImageUrl ||
+              specializationModalData.courseImage ||
+              specializationModalData.coursepageimage ||
+              specializationModalData.uniObj?.bannerImg ||
+              specializationModalData.uniObj?.image ||
+              modalCourseImage ||
+              "";
+            const specDesktopBanner = specDesktopBannerRaw ? (getMediaUrl(specDesktopBannerRaw) || "") : "";
+
+            const specMobileBannerRaw =
+              specFullData?.bannerImageMobile ||
+              specFullData?.mobileBannerImg ||
+              selectedSpecDetail?.bannerImageMobile ||
+              selectedSpecDetail?.mobileBannerImg ||
+              specializationModalData.mobileBannerImage ||
+              specializationModalData.mobileBannerImg ||
+              specializationModalData.uniObj?.mobileBannerImg ||
+              specializationModalData.uniObj?.mobileBannerImage ||
+              specDesktopBannerRaw;
+            const specMobileBanner = specMobileBannerRaw ? (getMediaUrl(specMobileBannerRaw) || specDesktopBanner) : specDesktopBanner;
+
+            const specCurriculum = (() => {
+              if (Array.isArray(specFullData?.curriculum) && specFullData.curriculum.length > 0) {
+                return specFullData.curriculum
+                  .filter((c) => c && Array.isArray(c.subjects) && c.subjects.length > 0)
+                  .map((c, idx) => ({
+                    semester: c.semesterName || `Semester ${idx + 1}`,
+                    subjects: c.subjects,
+                  }));
+              }
+              return [];
+            })();
+
+            const activeCurriculum = specCurriculum[activeSpecSem] || specCurriculum[0];
+
+            return (
+              <div className="relative text-left max-h-[82vh] overflow-y-auto pr-1 scrollbar-thin [scrollbar-color:#cbd5e1_transparent]">
+                {/* Top Bar with Back Button & Close Button */}
+                <div className="flex items-center justify-between pb-3 mb-2 border-b border-slate-100 gap-2">
+                  <button
+                    type="button"
+                    onClick={handleBackToSpecList}
+                    className="inline-flex items-center gap-1.5 py-1.5 px-3.5 rounded-full text-xs font-bold text-[#0B2546] bg-slate-100 hover:bg-slate-200 transition-colors cursor-pointer border-0 shrink-0"
+                  >
+                    <ArrowLeft className="w-3.5 h-3.5" />
+                    <span>Back to Specializations</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleCloseSpecModal}
+                    className="w-8 h-8 rounded-full bg-slate-100/90 hover:bg-slate-200 text-slate-500 hover:text-slate-900 transition-colors flex items-center justify-center cursor-pointer border-0 ml-auto shrink-0"
+                    aria-label="Close modal"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <div className="flex flex-col md:flex-row items-stretch gap-5 sm:gap-6">
+                  {/* Left Column: Portrait Banner Card */}
+                  <div className="relative w-full md:w-80 lg:w-88 shrink-0 h-36 sm:h-44 md:h-auto min-h-36 sm:min-h-44 md:min-h-[350px] md:max-h-[460px] rounded-xl sm:rounded-2xl overflow-hidden bg-slate-900 shadow-xs flex items-stretch">
+                    {specDesktopBanner && (
+                      <Image
+                        src={specDesktopBanner}
+                        alt={detailTitle}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 370px"
+                        className={`object-cover object-center ${
+                          specMobileBanner && specMobileBanner !== specDesktopBanner ? "hidden md:block" : "block"
+                        }`}
+                      />
+                    )}
+
+                    {specMobileBanner && specMobileBanner !== specDesktopBanner && (
+                      <Image
+                        src={specMobileBanner}
+                        alt={detailTitle}
+                        fill
+                        sizes="100vw"
+                        className="object-cover object-center block md:hidden"
+                      />
+                    )}
+
+                    {!specDesktopBanner && !specMobileBanner && (
+                      <div className="w-full h-full bg-gradient-to-br from-slate-200 to-slate-300 flex items-center justify-center">
+                        <span className="text-slate-400 font-bold text-sm">No Image</span>
+                      </div>
+                    )}
+
+                    {(selectedSpecDetail?.logo || (modalLogoUrl && !modalUniName?.toLowerCase().includes("manipal"))) && (
+                      <div className="absolute top-2.5 left-2.5 sm:top-3.5 sm:left-3.5 z-10 bg-white rounded-xl shadow-md p-1.5 sm:p-2.5 flex flex-col items-center justify-center text-center min-w-[64px] sm:min-w-[74px] max-w-[80px] sm:max-w-[90px]">
+                        <div className="relative w-7 h-7 sm:w-9 sm:h-9 flex items-center justify-center">
+                          <Image
+                            src={getMediaUrl(selectedSpecDetail?.logo) || modalLogoUrl}
+                            alt={selectedSpecDetail?.logo ? cleanSpecTitle : (modalUniName || "University")}
+                            fill
+                            sizes="36px"
+                            className="object-contain"
+                          />
+                        </div>
+                        <span className="text-[8.5px] sm:text-[9.5px] font-bold text-gray-900 leading-tight mt-0.5 sm:mt-1 line-clamp-1 sm:line-clamp-2">
+                          {selectedSpecDetail?.logo ? cleanSpecTitle : modalUniName}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Right Column: Content */}
+                  <div className="flex-1 flex flex-col justify-start text-left gap-3 sm:gap-3.5">
+                    <div>
+                      <h3 className="text-xl sm:text-2xl lg:text-[25px] font-black text-[#0C2B4E] tracking-tight leading-tight mb-2.5">
+                        {detailTitle}
+                      </h3>
+
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-gray-500 font-medium mb-2.5">
+                        {itemDuration && (
+                          <div className="flex items-center gap-1.5">
+                            <FaClock className="w-3 h-3 text-[#072C50] shrink-0" />
+                            <span>{itemDuration}</span>
+                          </div>
+                        )}
+                        {itemFeesFormatted && (
+                          <span className="font-bold text-gray-500">{itemFeesFormatted}</span>
+                        )}
+                        {itemDeadline && (
+                          <div className="flex items-center gap-1.5">
+                            <FaCalendar className="w-3 h-3 text-[#072C50] shrink-0" />
+                            <span className="text-red-500">
+                              Admission Deadline : <strong className="font-semibold text-gray-500">{itemDeadline}</strong>
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      <p className="text-xs sm:text-[13px] text-gray-600 leading-relaxed mb-0 font-normal">
+                        {itemDesc}
+                      </p>
+                    </div>
+
+                    {/* Course Curriculum Section */}
+                    {specCurriculum.length > 0 && (
+                      <div>
+                        <div className="flex items-center gap-3 mb-2.5">
+                          <h4 className="text-sm sm:text-base font-bold text-[#0C2B4E] m-0 tracking-tight shrink-0">
+                            Course Curriculum
+                          </h4>
+                          <div className="flex-1 h-px bg-gray-200" />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-4 items-stretch">
+                          <div className="col-span-12 md:col-span-3 grid grid-cols-3 md:flex md:flex-col gap-2">
+                            {specCurriculum.map((sem, sIdx) => {
+                              const isActive = activeSpecSem === sIdx;
+                              return (
+                                <button
+                                  key={sIdx}
+                                  type="button"
+                                  onClick={() => setActiveSpecSem(sIdx)}
+                                  className={`w-full py-1.5 px-3 rounded-full text-xs font-semibold transition-all cursor-pointer border-none ${
+                                    isActive
+                                      ? "bg-[#0C2B4E] text-white shadow-sm md:w-full"
+                                      : "bg-[#EEF3FA] text-[#475569] hover:bg-[#dde7f5] md:w-[88%]"
+                                  }`}
+                                >
+                                  <span className="flex items-center justify-between w-full">
+                                    <span>{sem.semester}</span>
+                                    {isActive && <ChevronRight className="w-3.5 h-3.5 shrink-0 stroke-[2.5]" />}
+                                  </span>
+                                </button>
+                              );
+                            })}
+                          </div>
+
+                          <div className="col-span-12 md:col-span-9 bg-gradient-to-br from-blue-50/50 via-blue-50/30 to-slate-50/40 border border-blue-100/80 rounded-2xl p-3.5 sm:p-4 min-h-[135px] flex items-start">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 w-full">
+                              {(activeCurriculum?.subjects || []).map((sub, subIdx) => (
+                                <div key={subIdx} className="flex items-start gap-2 text-xs text-gray-700 leading-snug">
+                                  <span className="text-gray-900 font-bold shrink-0 leading-none mt-0.5">•</span>
+                                  <span className="font-medium text-gray-800 line-clamp-1">
+                                    {typeof sub === "string" ? sub : sub.name || ""}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Bottom Action Buttons */}
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const title = detailTitle;
+                          handleCloseSpecModal();
+                          openFormModal({
+                            title: "Download Brochure",
+                            subtitle: title,
+                            defaultCourse: title,
+                            formNameOverride: `BrochureModal_${specializationModalData.slug || modalUniName}_${selectedSpecDetail.slug || selectedSpecDetail.name}`,
+                            submitButtonText: "Download Brochure",
+                          });
+                        }}
+                        className="flex-1 min-w-0 bg-[#0C2B4E] hover:bg-[#071c33] text-white text-[11px] sm:text-xs md:text-sm font-bold py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all cursor-pointer shadow-sm border-none active:scale-95"
+                      >
+                        <span className="truncate">Download Brochure</span>
+                        <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const title = detailTitle;
+                          handleCloseSpecModal();
+                          openFormModal({
+                            title: "Get 100% FREE Counseling",
+                            subtitle: title,
+                            defaultCourse: title,
+                            formNameOverride: `CounselingModal_${specializationModalData.slug || modalUniName}_${selectedSpecDetail.slug || selectedSpecDetail.name}`,
+                            submitButtonText: "Get 100% FREE Counseling",
+                          });
+                        }}
+                        className="flex-1 min-w-0 bg-white hover:bg-gray-50 text-[#0C2B4E] border border-[#0C2B4E] text-[10.5px] min-[380px]:text-[11.5px] sm:text-xs md:text-sm font-bold py-2.5 sm:py-3 px-1.5 sm:px-4 rounded-xl flex items-center justify-center text-center transition-all cursor-pointer shadow-sm active:scale-95"
+                      >
+                        <span className="truncate">Get 100% FREE Counseling</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          }
+
+          // ── VIEW 1: SPECIALIZATIONS GRID OVERVIEW (INITIAL MODAL STATE) ──
           return (
             <div className="relative text-left">
               {/* Close Button Top-Right */}
               <button
                 type="button"
-                onClick={() => setSpecializationModalData(null)}
+                onClick={handleCloseSpecModal}
                 className="absolute top-0 right-0 z-20 w-8 h-8 rounded-full bg-slate-100/90 hover:bg-slate-200 text-slate-500 hover:text-slate-900 transition-colors flex items-center justify-center cursor-pointer border-0"
                 aria-label="Close modal"
               >
@@ -1584,12 +1957,12 @@ export default function CoursesPageClientView({
                       {specializationModalData.durationText && (
                         <div className="flex items-center gap-1.5">
                           <Clock className="w-3.5 h-3.5 text-gray-500 shrink-0" />
-                          <span className="font-normal text-gray-800">{specializationModalData.durationText}</span>
+                          <span className="font-normal text-gray-800">{extractDurationText(specializationModalData.durationText)}</span>
                         </div>
                       )}
                       {specializationModalData.feeText && (
                         <div className="flex items-center gap-1">
-                          <span className="font-normal text-gray-800">{specializationModalData.feeText}</span>
+                          <span className="font-normal text-gray-800">{extractFeeText(specializationModalData.feeText)}</span>
                         </div>
                       )}
                       {modalDeadline && (
@@ -1618,44 +1991,8 @@ export default function CoursesPageClientView({
                               key={sc._id || idx}
                               type="button"
                               onClick={() => {
-                                let baseHref =
-                                  specializationModalData.courseDetailHref ||
-                                  (specializationModalData.coursePageSlug ? `/universities/${specializationModalData.coursePageSlug}` : "") ||
-                                  (specializationModalData.slug?.includes("/") ? `/universities/${specializationModalData.slug}` : "");
-
-                                if (baseHref && baseHref.startsWith("/courses/")) {
-                                  baseHref = baseHref.replace("/courses/", "/universities/");
-                                }
-
-                                const subSlug =
-                                  sc.slug ||
-                                  (sc.name || "")
-                                    .toLowerCase()
-                                    .replace(/^online\s+[a-z0-9+-]+\s+in\s+/i, "")
-                                    .replace(/^distance\s+[a-z0-9+-]+\s+in\s+/i, "")
-                                    .replace(/[^a-z0-9]+/g, "-")
-                                    .replace(/^-|-$/g, "");
-
-                                setSpecializationModalData(null);
-
-                                if (baseHref && subSlug) {
-                                  router.push(`${baseHref}/${encodeURIComponent(subSlug)}#specializations`);
-                                } else {
-                                  const uniSlug =
-                                    specializationModalData.uniObj?.slug ||
-                                    specializationModalData.universitySlug ||
-                                    specializationModalData.uniName?.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-                                  const courseSlug =
-                                    specializationModalData.courseSlug ||
-                                    specializationModalData.courseObj?.slug ||
-                                    specializationModalData.cardTitle?.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-
-                                  if (uniSlug && courseSlug && subSlug) {
-                                    router.push(`/universities/${encodeURIComponent(uniSlug)}/${encodeURIComponent(courseSlug)}/${encodeURIComponent(subSlug)}#specializations`);
-                                  } else if (uniSlug && subSlug) {
-                                    router.push(`/universities/${encodeURIComponent(uniSlug)}?subcategory=${encodeURIComponent(subSlug)}`);
-                                  }
-                                }
+                                // Transition in-place inside the modal without leaving the page!
+                                handleOpenSpecDetail(sc, specializationModalData);
                               }}
                               className="group bg-[#F4F9FD] hover:bg-[#EAF3FA] border border-[#DCEDF9] hover:border-sky-300 rounded-full px-2.5 sm:px-3 py-1.5 flex items-center gap-1.5 sm:gap-2 text-left cursor-pointer transition-all duration-150 min-w-0 w-full"
                             >
@@ -1675,7 +2012,7 @@ export default function CoursesPageClientView({
                     <button
                       type="button"
                       onClick={() => {
-                        setSpecializationModalData(null);
+                        handleCloseSpecModal();
                         openFormModal({
                           title: "Download Brochure",
                           subtitle: modalCourseTitle,
@@ -1693,7 +2030,7 @@ export default function CoursesPageClientView({
                     <button
                       type="button"
                       onClick={() => {
-                        setSpecializationModalData(null);
+                        handleCloseSpecModal();
                         openFormModal({
                           title: "Get 100% FREE Counseling",
                           subtitle: modalCourseTitle,
