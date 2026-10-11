@@ -9,6 +9,7 @@ import { useFormModal } from "@/hooks/useFormModal";
 const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 import {
   ArrowLeft,
+  ArrowRight,
   Sparkles,
   School,
   GraduationCap,
