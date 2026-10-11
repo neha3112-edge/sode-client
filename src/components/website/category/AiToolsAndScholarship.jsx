@@ -46,7 +46,7 @@ export default function AiToolsAndScholarship({ block, bIdx, counselors = [] }) 
   return (
     <section
       key={block?._id || block?.slug || bIdx}
-      className="w-full relative py-8 sm:py-12 md:py-14 bg-[#F1F5F9] text-center"
+      className="w-full relative py-8 sm:py-10 bg-[#F1F5F9] text-center"
       suppressHydrationWarning
     >
       <Container className="relative z-10 max-w-7xl">

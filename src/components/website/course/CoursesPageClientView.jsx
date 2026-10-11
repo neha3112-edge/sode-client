@@ -1716,9 +1716,8 @@ export default function CoursesPageClientView({
                         alt={detailTitle}
                         fill
                         sizes="(max-width: 768px) 100vw, 370px"
-                        className={`object-cover object-center ${
-                          specMobileBanner && specMobileBanner !== specDesktopBanner ? "hidden md:block" : "block"
-                        }`}
+                        className={`object-cover object-center ${specMobileBanner && specMobileBanner !== specDesktopBanner ? "hidden md:block" : "block"
+                          }`}
                       />
                     )}
 
@@ -1807,11 +1806,10 @@ export default function CoursesPageClientView({
                                   key={sIdx}
                                   type="button"
                                   onClick={() => setActiveSpecSem(sIdx)}
-                                  className={`w-full py-1.5 px-3 rounded-full text-xs font-semibold transition-all cursor-pointer border-none ${
-                                    isActive
+                                  className={`w-full py-1.5 px-3 rounded-full text-xs font-semibold transition-all cursor-pointer border-none ${isActive
                                       ? "bg-[#0C2B4E] text-white shadow-sm md:w-full"
                                       : "bg-[#EEF3FA] text-[#475569] hover:bg-[#dde7f5] md:w-[88%]"
-                                  }`}
+                                    }`}
                                 >
                                   <span className="flex items-center justify-between w-full">
                                     <span>{sem.semester}</span>
