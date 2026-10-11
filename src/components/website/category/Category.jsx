@@ -48,13 +48,9 @@ export function Category({ categories = [], universities = [], programs = [], co
       if (w < 640) {
         setSlidesToShowCount(4);
       } else if (w < 768) {
-        setSlidesToShowCount(5);
-      } else if (w < 1024) {
         setSlidesToShowCount(6);
-      } else if (w < 1280) {
-        setSlidesToShowCount(8);
       } else {
-        setSlidesToShowCount(9);
+        setSlidesToShowCount(8);
       }
     };
 

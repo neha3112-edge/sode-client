@@ -48,7 +48,7 @@ export default function CategorySectionBlock({
 
           {/* Content: Course Grid OR University Carousel */}
           {isCourse || isExpanded ? (
-            <div className="grid grid-cols-4 md:grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-1.5 sm:gap-2.5 w-full mx-auto items-stretch animate-in fade-in duration-200">
+            <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-1.5 sm:gap-2.5 w-full mx-auto items-stretch animate-in fade-in duration-200">
               {block.children.slice(0, currentVisibleCount).map((child, idx) => {
                 const isUni = !isCourse;
 

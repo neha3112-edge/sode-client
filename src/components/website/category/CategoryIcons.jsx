@@ -92,7 +92,7 @@ export function formatTwoLineText(text = "") {
   // Custom smart splits for common education domains & institutions
   if (/^business\s*&\s*entrepr/i.test(cleaned)) {
     return (
-      <span className="flex flex-col items-center justify-center leading-tight text-center w-full min-w-0">
+      <span className="flex flex-col items-center justify-center leading-[1.1] text-center w-full min-w-0">
         <span className="block text-center w-full font-semibold truncate">Business &</span>
         <span className="block text-center w-full font-semibold truncate text-[8.5px] min-[360px]:text-[9px] sm:text-[10px]">Entrepreneurship</span>
       </span>
@@ -100,7 +100,7 @@ export function formatTwoLineText(text = "") {
   }
   if (/^data science\s*&\s*analytics/i.test(cleaned)) {
     return (
-      <span className="flex flex-col items-center justify-center leading-tight text-center w-full min-w-0">
+      <span className="flex flex-col items-center justify-center leading-[1.1] text-center w-full min-w-0">
         <span className="block text-center w-full font-semibold truncate">Data Science &</span>
         <span className="block text-center w-full font-semibold truncate">Analytics</span>
       </span>
@@ -108,7 +108,7 @@ export function formatTwoLineText(text = "") {
   }
   if (/^ai\s*&\s*machine learning/i.test(cleaned)) {
     return (
-      <span className="flex flex-col items-center justify-center leading-tight text-center w-full min-w-0">
+      <span className="flex flex-col items-center justify-center leading-[1.1] text-center w-full min-w-0">
         <span className="block text-center w-full font-semibold truncate">AI & Machine</span>
         <span className="block text-center w-full font-semibold truncate">Learning</span>
       </span>
@@ -116,7 +116,7 @@ export function formatTwoLineText(text = "") {
   }
   if (/^energy\s*&\s*infrastructure/i.test(cleaned)) {
     return (
-      <span className="flex flex-col items-center justify-center leading-tight text-center w-full min-w-0">
+      <span className="flex flex-col items-center justify-center leading-[1.1] text-center w-full min-w-0">
         <span className="block text-center w-full font-semibold truncate">Energy &</span>
         <span className="block text-center w-full font-semibold truncate text-[8.5px] min-[360px]:text-[9px] sm:text-[10px]">Infrastructure</span>
       </span>
@@ -124,7 +124,7 @@ export function formatTwoLineText(text = "") {
   }
   if (/^logistics\s*&\s*supply chain/i.test(cleaned)) {
     return (
-      <span className="flex flex-col items-center justify-center leading-tight text-center w-full min-w-0">
+      <span className="flex flex-col items-center justify-center leading-[1.1] text-center w-full min-w-0">
         <span className="block text-center w-full font-semibold truncate">Logistics &</span>
         <span className="block text-center w-full font-semibold truncate">Supply Chain</span>
       </span>
@@ -132,7 +132,7 @@ export function formatTwoLineText(text = "") {
   }
   if (/^journalism\s*&\s*mass/i.test(cleaned)) {
     return (
-      <span className="flex flex-col items-center justify-center leading-tight text-center w-full min-w-0">
+      <span className="flex flex-col items-center justify-center leading-[1.1] text-center w-full min-w-0">
         <span className="block text-center w-full font-semibold truncate">Journalism &</span>
         <span className="block text-center w-full font-semibold truncate text-[8.5px] min-[360px]:text-[9px] sm:text-[10px]">Mass Comm.</span>
       </span>
@@ -141,14 +141,14 @@ export function formatTwoLineText(text = "") {
 
   const words = cleaned.split(/\s+/);
   if (words.length === 1) {
-    return <span className="block text-center w-full leading-tight font-semibold truncate">{cleaned}</span>;
+    return <span className="block text-center w-full leading-[1.1] font-semibold truncate">{cleaned}</span>;
   }
 
   if (words.length === 2) {
     return (
-      <span className="flex flex-col items-center justify-center leading-tight text-center w-full min-w-0">
-        <span className="block text-center w-full font-semibold truncate">{words[0]}</span>
-        <span className="block text-center w-full font-semibold truncate mt-0.5">{words[1]}</span>
+      <span className="flex flex-col items-center justify-center leading-[1.1] text-center w-full min-w-0">
+        <span className="block text-center w-full font-semibold truncate leading-[1.1]">{words[0]}</span>
+        <span className="block text-center w-full font-semibold truncate leading-[1.1]">{words[1]}</span>
       </span>
     );
   }
@@ -158,9 +158,9 @@ export function formatTwoLineText(text = "") {
   const line2 = words.slice(mid).join(" ");
 
   return (
-    <span className="flex flex-col items-center justify-center leading-tight text-center w-full min-w-0">
-      <span className="block text-center w-full font-semibold truncate">{line1}</span>
-      <span className="block text-center w-full font-semibold truncate mt-0.5">{line2}</span>
+    <span className="flex flex-col items-center justify-center leading-[1.1] text-center w-full min-w-0">
+      <span className="block text-center w-full font-semibold truncate leading-[1.1]">{line1}</span>
+      <span className="block text-center w-full font-semibold truncate leading-[1.1]">{line2}</span>
     </span>
   );
 }

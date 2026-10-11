@@ -75,10 +75,6 @@ export default function AiToolsAndScholarship({ block, bIdx, counselors = [] }) 
               const fullName = (child.name || child.title || "Tool").trim();
               const cName = fullName.toLowerCase();
 
-              // Split name into prefix and underlineWord (like blog tools)
-              const parts = fullName.split(/\s+/);
-              const underlineWord = parts.length > 1 ? parts.pop() : fullName;
-              const prefix = parts.join(" ");
 
               let sparkleColor = "text-[#00ACC1]";
               let underlineClass = "border-[#00ACC1]";
@@ -180,13 +176,13 @@ export default function AiToolsAndScholarship({ block, bIdx, counselors = [] }) 
                       )}
                     </div>
 
-                    {/* Title with Underlined Word */}
-                    <h3 className="text-xs sm:text-base font-semibold text-[#0F172A] tracking-tight m-0 pt-0.5 leading-tight">
-                      {prefix ? `${prefix} ` : ""}
-                      <span className={`border-b-2 ${underlineClass}`}>
-                        {underlineWord}
-                      </span>
-                    </h3>
+                    {/* Title with Centered Short Accent Line */}
+                    <div className="w-full flex flex-col items-center justify-center mb-1">
+                      <h3 className="text-xs sm:text-base font-semibold text-[#0F172A] tracking-tight m-0 pt-0.5 leading-tight text-center">
+                        {fullName}
+                      </h3>
+                      <span className={`w-7 sm:w-8 border-b-2 ${underlineClass} mt-1 inline-block`} />
+                    </div>
 
                     {/* Description */}
                     <div className="w-full flex items-center justify-center mt-1">
@@ -197,7 +193,7 @@ export default function AiToolsAndScholarship({ block, bIdx, counselors = [] }) 
                   </Link>
 
                   {/* Button with circular arrow badge */}
-                  <div className="w-full pt-3 sm:pt-2">
+                  <div className="w-full pt-3">
                     {isLink ? (
                       <Link
                         href={linkUrl}
@@ -225,18 +221,6 @@ export default function AiToolsAndScholarship({ block, bIdx, counselors = [] }) 
               );
             })}
           </div>
-
-          {/* Link to view all tools */}
-          <div className="mt-6 flex justify-center">
-            <Link
-              href="/tools"
-              className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-[#0B3B7E] hover:text-[#072859] bg-white hover:bg-slate-50 border border-slate-200 px-4 py-1.5 rounded-full shadow-2xs transition-colors no-underline"
-            >
-              <span>Explore All AI Tools</span>
-              <span className="text-xs">→</span>
-            </Link>
-          </div>
-
           {/* ── MEET OUR CAREER EXPERTS (INSIDE SAME TOOLS SECTION) ── */}
           <CareerExpertsSection counselors={counselors} />
         </div>

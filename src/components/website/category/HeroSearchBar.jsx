@@ -180,18 +180,17 @@ export default function HeroSearchBar({
   }, []);
 
   return (
-    <section className="pt-2 pb-1.5 bg-white relative" ref={searchContainerRef}>
+    <section className="pt-4 pb-1.5 bg-white relative" ref={searchContainerRef}>
       <Container>
         <div className="max-w-2xl mx-auto w-full relative">
           {/* Main Search Input Box */}
           <form
             onSubmit={handleSearchSubmit}
             suppressHydrationWarning
-            className={`relative flex items-center bg-white rounded-full border overflow-hidden transition-all duration-200 h-10 sm:h-11 shadow-xs ${
-              isFocused
+            className={`relative flex items-center bg-white rounded-full border overflow-hidden transition-all duration-200 h-10 sm:h-11 shadow-xs ${isFocused
                 ? "border-[#0B3B7E] ring-2 ring-[#0B3B7E]/10"
                 : "border-slate-300 hover:border-slate-400"
-            }`}
+              }`}
           >
             <div className="pl-3.5 sm:pl-4 text-slate-400 flex items-center justify-center shrink-0">
               {loading ? (
