@@ -704,9 +704,9 @@ export default function CompareUniversityClientView({
       dataIndex: "featureTitle",
       key: "featureTitle",
       width: fw,
-      className: "bg-slate-50/80 font-medium text-slate-700 text-xs px-2.5 py-1.5",
+      className: "bg-slate-50/80 font-medium text-slate-700 text-xs px-2 py-1",
       render: (_, record) => (
-        <span className="font-medium text-slate-700 text-xs leading-snug">
+        <span className="font-medium text-slate-700 text-xs">
           {record.featureTitle}
         </span>
       ),
@@ -729,11 +729,11 @@ export default function CompareUniversityClientView({
             )}
           </div>
           <div className="max-w-[180px]">
-            <h3 className="text-xs sm:text-[13px] font-semibold text-[#0C3058] m-0 line-clamp-2 leading-tight">
+            <h3 className="text-xs sm:text-[13px] font-semibold text-[#0C3058] m-0 line-clamp-2">
               {uni.isCourseOffering ? uni.title : uni.name}
             </h3>
             {uni.isCourseOffering && uni.uniName && (
-              <p className="text-[10px] font-medium text-teal-700 m-0 leading-tight mt-0.5">{uni.uniName}</p>
+              <p className="text-[10px] font-medium text-teal-700 m-0 mt-0.5">{uni.uniName}</p>
             )}
           </div>
         </div>
@@ -742,7 +742,7 @@ export default function CompareUniversityClientView({
       key: uni._id || uni.slug || `col-${idx}`,
       align: "center",
       width: uw,
-      className: "text-center text-xs md:text-sm font-medium align-middle py-2.5 px-1.5 md:px-3.5",
+      className: "text-center text-xs md:text-sm font-medium align-middle py-1 px-1.5 md:px-2",
       render: (_, record) => record.renderCell(uni, idx),
     }));
 
@@ -767,13 +767,13 @@ export default function CompareUniversityClientView({
         (arr || []).map((s) => typeof s === "object" ? s.name || s.title : s).filter(Boolean)
       ));
       return uniqueArr.length
-        ? <span className="text-[11px] text-slate-600 font-medium leading-relaxed max-w-[280px] inline-block text-center">{uniqueArr.join(", ")}</span>
+        ? <span className="text-[11px] text-slate-600 font-medium max-w-[280px] inline-block text-center">{uniqueArr.join(", ")}</span>
         : <span className="text-slate-400 text-[11px]">-</span>;
     };
 
     const bulletList = (arr, icon, iconClass) =>
       arr?.length
-        ? <ul className="space-y-1.5 m-0 p-0 list-none text-[11px] text-slate-600 inline-block text-left max-w-70">
+        ? <ul className="space-y-0.5 m-0 p-0 list-none text-[11px] text-slate-600 inline-block text-left max-w-70">
           {arr.map((item, i) => (
             <li key={i} className="flex items-center gap-2">
               {icon ? (
@@ -796,7 +796,7 @@ export default function CompareUniversityClientView({
           renderCell: (uni) => {
             const off = findCourseOffering(uni, cName);
             return off?.course_name ? (
-              <span className="font-semibold text-[#0C3058] text-[11px] leading-snug">{off.course_name}</span>
+              <span className="font-semibold text-[#0C3058] text-[11px]">{off.course_name}</span>
             ) : (
               <span className="text-slate-600 font-medium text-[11px]">{cName.toUpperCase()}</span>
             );
@@ -892,7 +892,7 @@ export default function CompareUniversityClientView({
           renderCell: (uni) => {
             const off = findCourseOffering(uni, cName);
             return off?.eligibility ? (
-              <span className="text-slate-600 font-medium text-[11px] leading-snug">{off.eligibility}</span>
+              <span className="text-slate-600 font-medium text-[11px]">{off.eligibility}</span>
             ) : (
               <span className="text-slate-600 font-medium text-[11px]">{off ? "10+2 / Graduation from recognized board" : "-"}</span>
             );
@@ -989,7 +989,7 @@ export default function CompareUniversityClientView({
                   <div
                     key={i}
                     title={name}
-                    className="relative w-12 h-8 sm:w-14 sm:h-9 flex items-center justify-center shrink-0"
+                    className="relative w-12 h-6 sm:w-14 sm:h-7 flex items-center justify-center shrink-0"
                   >
                     <Image
                       src={logo}
@@ -1004,7 +1004,7 @@ export default function CompareUniversityClientView({
               {textApps.map((text, i) => (
                 <span
                   key={i}
-                  className="inline-flex items-center justify-center h-8 sm:h-9 px-2 text-[10px]"
+                  className="inline-flex items-center justify-center py-0.5 px-2 text-[10px]"
                 >
                   {text}
                 </span>
@@ -1042,7 +1042,7 @@ export default function CompareUniversityClientView({
         <div className="relative z-10 max-w-5xl mx-auto">
           {/* Header Title & Search Input */}
           <div className="max-w-2xl mx-auto text-center text-white space-y-4 p-6">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold m-0 tracking-tight leading-[1.1]">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold m-0 tracking-tight">
               <span className="text-[#FFB800] block">Compare Universities &amp;</span>
               <span className="text-white block">Choose Best For You!</span>
             </h1>
@@ -1096,8 +1096,8 @@ export default function CompareUniversityClientView({
                               <span className="text-xs sm:text-sm font-semibold text-[#0C3058]">{displayTitle}</span>
                             )}
                           </div>
-                          <h4 className="text-[10px] sm:text-xs font-semibold text-[#0C3058] m-0 leading-snug text-center w-full px-0.5 break-words">{displayTitle}</h4>
-                          {isOffering && uni.uniName && <p className="text-[9px] sm:text-[10px] font-medium text-teal-700 m-0 leading-snug text-center w-full px-0.5 mt-0.5 break-words">{uni.uniName}</p>}
+                          <h4 className="text-[10px] sm:text-xs font-semibold text-[#0C3058] m-0 text-center w-full px-0.5 break-words">{displayTitle}</h4>
+                          {isOffering && uni.uniName && <p className="text-[9px] sm:text-[10px] font-medium text-teal-700 m-0 text-center w-full px-0.5 mt-0.5 break-words">{uni.uniName}</p>}
                         </div>
                       );
                     }
@@ -1151,10 +1151,10 @@ export default function CompareUniversityClientView({
                       </svg>
                     </div>
                     <div>
-                      <h4 className="text-[11px] sm:text-sm font-bold text-[#0C3058] group-hover:text-blue-700 tracking-wide m-0 mb-1 leading-tight">
+                      <h4 className="text-[11px] sm:text-sm font-bold text-[#0C3058] group-hover:text-blue-700 tracking-wide m-0 mb-1">
                         TRENDING UNIVERSITIES
                       </h4>
-                      <p className="text-[9.5px] sm:text-[11px] text-slate-400 m-0 leading-tight">
+                      <p className="text-[9.5px] sm:text-[11px] text-slate-400 m-0">
                         Compare with popular and in-demand universities.
                       </p>
                     </div>
@@ -1174,10 +1174,10 @@ export default function CompareUniversityClientView({
                       </svg>
                     </div>
                     <div>
-                      <h4 className="text-[11px] sm:text-sm font-bold text-[#0C3058] group-hover:text-amber-700 tracking-wide m-0 mb-1 leading-tight">
+                      <h4 className="text-[11px] sm:text-sm font-bold text-[#0C3058] group-hover:text-amber-700 tracking-wide m-0 mb-1">
                         RECOMMENDED UNIVERSITIES
                       </h4>
-                      <p className="text-[9.5px] sm:text-[11px] text-slate-400 m-0 leading-tight">
+                      <p className="text-[9.5px] sm:text-[11px] text-slate-400 m-0">
                         Compare with popular and in-demand universities.
                       </p>
                     </div>
@@ -1195,10 +1195,10 @@ export default function CompareUniversityClientView({
                       </svg>
                     </div>
                     <div>
-                      <h4 className="text-[11px] sm:text-sm font-bold text-[#0C3058] group-hover:text-rose-700 tracking-wide m-0 mb-1 leading-tight">
+                      <h4 className="text-[11px] sm:text-sm font-bold text-[#0C3058] group-hover:text-rose-700 tracking-wide m-0 mb-1">
                         STATE WISE UNIVERSITIES
                       </h4>
-                      <p className="text-[9.5px] sm:text-[11px] text-slate-400 m-0 leading-tight">
+                      <p className="text-[9.5px] sm:text-[11px] text-slate-400 m-0">
                         Compare with popular and in-demand universities.
                       </p>
                     </div>
@@ -1216,10 +1216,10 @@ export default function CompareUniversityClientView({
                       </svg>
                     </div>
                     <div>
-                      <h4 className="text-[11px] sm:text-sm font-bold text-[#0C3058] group-hover:text-emerald-700 tracking-wide m-0 mb-1 leading-tight">
+                      <h4 className="text-[11px] sm:text-sm font-bold text-[#0C3058] group-hover:text-emerald-700 tracking-wide m-0 mb-1">
                         ACCREDITATION WISE UNIVERSITIES
                       </h4>
-                      <p className="text-[9.5px] sm:text-[11px] text-slate-400 m-0 leading-tight">
+                      <p className="text-[9.5px] sm:text-[11px] text-slate-400 m-0">
                         Compare with popular and in-demand universities.
                       </p>
                     </div>
@@ -1254,7 +1254,7 @@ export default function CompareUniversityClientView({
           <div>
             {/* Desktop Table */}
             <div className="hidden md:block bg-white rounded-2xl overflow-hidden shadow-md">
-              <Table columns={tableColumns} dataSource={tableDataSource} pagination={false} bordered size="small" scroll={{ x: "max-content" }} rowKey="key" className="w-full" />
+              <Table columns={tableColumns} dataSource={tableDataSource} pagination={false} bordered size="small" scroll={{ x: "max-content" }} rowKey="key" className="w-full [&_.ant-table-cell]:py-1! [&_.ant-table-cell]:px-2!" />
               {/* Single Centered Footer Row of Buttons */}
               <div className="flex items-center justify-center gap-2 py-3 px-4 bg-slate-50 border-t border-slate-200">
                 <Button
@@ -1282,26 +1282,26 @@ export default function CompareUniversityClientView({
             <div className="block md:hidden bg-white rounded-2xl border border-slate-200/90 overflow-hidden">
               <div className={`grid grid-cols-${comparedData.length} divide-x divide-slate-200 bg-white border-b border-slate-200`}>
                 {comparedData.map((uni, idx) => (
-                  <div key={idx} className="p-2 flex flex-col items-center text-center relative min-h-[85px] gap-1">
+                  <div key={idx} className="p-1 flex flex-col items-center text-center relative gap-0.5">
                     <button onClick={() => handleRemoveUniversity(uni.slug || uni._id)} className="absolute top-1 right-1 w-4 h-4 rounded-full bg-slate-100 hover:bg-red-500 text-slate-500 hover:text-white flex items-center justify-center transition-colors cursor-pointer border-none z-10">
                       <CloseOutlined className="text-[7px]" />
                     </button>
                     <div className="w-8 h-8 rounded-lg border border-slate-200 bg-white p-0.5 flex items-center justify-center relative">
                       {uni.logo ? <Image src={getAssetPath(uni.logo)} alt={uni.name || "Logo"} fill unoptimized className="object-contain p-0.5" /> : <span className="text-xs font-bold text-[#1C3569]">{(uni.name || "U")[0]}</span>}
                     </div>
-                    <h4 className="text-[11px] font-bold text-[#1C3569] m-0 line-clamp-2 leading-tight">{uni.isCourseOffering ? uni.title : uni.name}</h4>
+                    <h4 className="text-[11px] font-bold text-[#1C3569] m-0 line-clamp-2">{uni.isCourseOffering ? uni.title : uni.name}</h4>
                   </div>
                 ))}
               </div>
               <div className="divide-y divide-slate-100">
                 {tableDataSource.map((row) => (
                   <div key={row.key}>
-                    <div className="bg-[#f0f5ff] py-2 px-3 text-center border-t border-b border-slate-200 text-slate-700 font-medium text-[11px] tracking-wider uppercase">
+                    <div className="bg-[#f0f5ff] py-1 px-2 text-center border-t border-b border-slate-200 text-slate-700 font-medium text-[11px] tracking-wider uppercase">
                       <span>{row.featureTitle}</span>
                     </div>
                     <div className={`grid grid-cols-${comparedData.length} divide-x divide-slate-200 bg-white text-center text-xs font-bold text-slate-800`}>
                       {comparedData.map((uni, idx) => (
-                        <div key={idx} className="p-2.5 flex items-center justify-center min-h-[48px] overflow-hidden">
+                        <div key={idx} className="py-1 px-1.5 flex items-center justify-center overflow-hidden">
                           {row.renderCell ? row.renderCell(uni, idx) : "-"}
                         </div>
                       ))}
@@ -1514,7 +1514,7 @@ export default function CompareUniversityClientView({
                           </div>
                         )}
                       </div>
-                      <h4 className="text-[11px] sm:text-xs font-semibold text-[#0C3058] group-hover:text-blue-600 text-center line-clamp-2 leading-snug px-1 min-h-[28px] sm:min-h-[32px] flex items-center justify-center m-0 mt-1">
+                      <h4 className="text-[11px] sm:text-xs font-semibold text-[#0C3058] group-hover:text-blue-600 text-center line-clamp-2 px-1 min-h-[28px] sm:min-h-[32px] flex items-center justify-center m-0 mt-1">
                         {st.name}
                       </h4>
                       <div className="w-full border-t border-slate-100 my-1" />
@@ -1553,7 +1553,7 @@ export default function CompareUniversityClientView({
                           </span>
                         )}
                       </div>
-                      <h4 className="text-[11px] sm:text-xs font-semibold text-[#0C3058] group-hover:text-blue-600 text-center line-clamp-2 leading-snug px-1 min-h-[28px] sm:min-h-[32px] flex items-center justify-center m-0 mt-1">
+                      <h4 className="text-[11px] sm:text-xs font-semibold text-[#0C3058] group-hover:text-blue-600 text-center line-clamp-2 px-1 min-h-[28px] sm:min-h-[32px] flex items-center justify-center m-0 mt-1">
                         {app.code || app.name}
                       </h4>
                       <div className="w-full border-t border-slate-100 my-1" />
@@ -1599,7 +1599,7 @@ export default function CompareUniversityClientView({
                         )}
                       </div>
                       {/* University Name */}
-                      <h4 className="text-[11px] sm:text-xs font-semibold text-[#0C3058] text-center line-clamp-2 leading-snug px-1 min-h-[28px] sm:min-h-[32px] flex items-center justify-center m-0 mt-1">
+                      <h4 className="text-[11px] sm:text-xs font-semibold text-[#0C3058] text-center line-clamp-2 px-1 min-h-[28px] sm:min-h-[32px] flex items-center justify-center m-0 mt-1">
                         {uni.name}
                       </h4>
 
