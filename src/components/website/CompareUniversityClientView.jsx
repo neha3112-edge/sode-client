@@ -704,7 +704,7 @@ export default function CompareUniversityClientView({
       dataIndex: "featureTitle",
       key: "featureTitle",
       width: fw,
-      className: "bg-slate-50/80 font-medium text-slate-700 text-xs px-2 py-1",
+      className: "bg-slate-50/80 font-medium text-slate-700 text-xs px-2.5 py-2",
       render: (_, record) => (
         <span className="font-medium text-slate-700 text-xs">
           {record.featureTitle}
@@ -714,7 +714,7 @@ export default function CompareUniversityClientView({
 
     const uniCols = comparedData.map((uni, idx) => ({
       title: (
-        <div className="relative group flex flex-col items-center text-center gap-1 py-0.5 px-1">
+        <div className="relative group flex flex-col items-center text-center gap-1 py-1 px-1">
           <button
             onClick={() => handleRemoveUniversity(uni.slug || uni._id)}
             className="absolute -top-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-slate-200 hover:bg-red-500 text-slate-600 hover:text-white flex items-center justify-center transition-colors cursor-pointer border-none z-10"
@@ -742,7 +742,7 @@ export default function CompareUniversityClientView({
       key: uni._id || uni.slug || `col-${idx}`,
       align: "center",
       width: uw,
-      className: "text-center text-xs md:text-sm font-medium align-middle py-1 px-1.5 md:px-2",
+      className: "text-center text-xs md:text-sm font-medium align-middle py-2 px-2 md:px-3",
       render: (_, record) => record.renderCell(uni, idx),
     }));
 
@@ -1254,7 +1254,7 @@ export default function CompareUniversityClientView({
           <div>
             {/* Desktop Table */}
             <div className="hidden md:block bg-white rounded-2xl overflow-hidden shadow-md">
-              <Table columns={tableColumns} dataSource={tableDataSource} pagination={false} bordered size="small" scroll={{ x: "max-content" }} rowKey="key" className="w-full [&_.ant-table-cell]:py-1! [&_.ant-table-cell]:px-2!" />
+              <Table columns={tableColumns} dataSource={tableDataSource} pagination={false} bordered size="small" scroll={{ x: "max-content" }} rowKey="key" className="w-full [&_.ant-table-cell]:py-2! [&_.ant-table-cell]:px-2.5!" />
               {/* Single Centered Footer Row of Buttons */}
               <div className="flex items-center justify-center gap-2 py-3 px-4 bg-slate-50 border-t border-slate-200">
                 <Button
@@ -1282,7 +1282,7 @@ export default function CompareUniversityClientView({
             <div className="block md:hidden bg-white rounded-2xl border border-slate-200/90 overflow-hidden">
               <div className={`grid grid-cols-${comparedData.length} divide-x divide-slate-200 bg-white border-b border-slate-200`}>
                 {comparedData.map((uni, idx) => (
-                  <div key={idx} className="p-1 flex flex-col items-center text-center relative gap-0.5">
+                  <div key={idx} className="p-2 flex flex-col items-center text-center relative gap-1 min-h-[72px]">
                     <button onClick={() => handleRemoveUniversity(uni.slug || uni._id)} className="absolute top-1 right-1 w-4 h-4 rounded-full bg-slate-100 hover:bg-red-500 text-slate-500 hover:text-white flex items-center justify-center transition-colors cursor-pointer border-none z-10">
                       <CloseOutlined className="text-[7px]" />
                     </button>
@@ -1296,12 +1296,12 @@ export default function CompareUniversityClientView({
               <div className="divide-y divide-slate-100">
                 {tableDataSource.map((row) => (
                   <div key={row.key}>
-                    <div className="bg-[#f0f5ff] py-1 px-2 text-center border-t border-b border-slate-200 text-slate-700 font-medium text-[11px] tracking-wider uppercase">
+                    <div className="bg-[#f0f5ff] py-1.5 px-3 text-center border-t border-b border-slate-200 text-slate-700 font-medium text-[11px] tracking-wider uppercase">
                       <span>{row.featureTitle}</span>
                     </div>
                     <div className={`grid grid-cols-${comparedData.length} divide-x divide-slate-200 bg-white text-center text-xs font-bold text-slate-800`}>
                       {comparedData.map((uni, idx) => (
-                        <div key={idx} className="py-1 px-1.5 flex items-center justify-center overflow-hidden">
+                        <div key={idx} className="py-2.5 px-2 flex items-center justify-center min-h-[38px] overflow-hidden">
                           {row.renderCell ? row.renderCell(uni, idx) : "-"}
                         </div>
                       ))}
