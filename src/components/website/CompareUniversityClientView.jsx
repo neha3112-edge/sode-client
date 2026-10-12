@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -61,6 +61,7 @@ export default function CompareUniversityClientView({
   const allStates = initialAllStates?.length > 0 ? initialAllStates : rawAllStates || [];
   const allApprovals = initialAllApprovals?.length > 0 ? initialAllApprovals : rawAllApprovals || [];
 
+  const [availableCourses, setAvailableCourses] = useState(allCourses);
   const [comparedData, setComparedData] = useState(initialComparedData);
   const [selectedCourse, setSelectedCourse] = useState(initialSelectedCourse || null);
   const [courseBasedUniversities, setCourseBasedUniversities] = useState(initialCourseUniversities);
@@ -80,10 +81,124 @@ export default function CompareUniversityClientView({
   }, [initialComparedData]);
 
   useEffect(() => {
-    if (initialCourseUniversities?.length > 0 && modalUniversities?.length === 0) {
-      setModalUniversities(initialCourseUniversities);
+    if (initialAllCourses?.length > 0) {
+      setAvailableCourses(initialAllCourses);
+    } else {
+      request.dynamicRead({
+        entity: "universities",
+        endPoint: "v1/compare",
+      }).then((res) => {
+        if (Array.isArray(res?.courses) && res.courses.length > 0) {
+          setAvailableCourses(res.courses);
+        }
+      }).catch((e) => console.error("Failed to load compare courses:", e));
     }
-  }, [initialCourseUniversities]);
+  }, [initialAllCourses]);
+
+  const handleCourseChange = (val) => {
+    const newCourse = val || null;
+    setSelectedCourse(newCourse);
+
+    if (newCourse) {
+      // Clear previously selected universities so slots and options refresh for this course
+      clearCompare();
+      setComparedData([]);
+      setModalSelectedUnis([]);
+
+      const targetUrl = `/tools/compare-universities?course=${encodeURIComponent(newCourse.toLowerCase())}`;
+      router.replace(targetUrl, { scroll: false });
+      window.history.replaceState(null, "", targetUrl);
+
+      setModalLoading(true);
+      request.dynamicRead({
+        entity: "universities",
+        endPoint: "v1/compare",
+        options: { course: newCourse, refresh: true },
+      }).then((res) => {
+        const unis = Array.isArray(res?.universities) ? res.universities : [];
+        setCourseBasedUniversities(unis);
+        setModalUniversities(unis);
+      }).catch((err) => {
+        console.error("Failed to load course universities:", err);
+      }).finally(() => {
+        setModalLoading(false);
+      });
+    } else {
+      router.replace("/tools/compare-universities", { scroll: false });
+      window.history.replaceState(null, "", "/tools/compare-universities");
+      request.dynamicRead({
+        entity: "universities",
+        endPoint: "v1/compare",
+        options: { refresh: true },
+      }).then((res) => {
+        const unis = Array.isArray(res?.universities) ? res.universities : [];
+        setCourseBasedUniversities(unis);
+        setModalUniversities(unis);
+      }).catch((e) => console.error(e));
+    }
+  };
+
+  const isFirstMount = useRef(true);
+  useEffect(() => {
+    if (isFirstMount.current) {
+      isFirstMount.current = false;
+      if (initialCourseUniversities?.length > 0) {
+        if (modalUniversities?.length === 0) setModalUniversities(initialCourseUniversities);
+        return;
+      }
+    }
+
+    let isCancelled = false;
+    const syncCourseData = async () => {
+      setModalLoading(true);
+      try {
+        const options = selectedCourse && selectedCourse !== "all"
+          ? { course: selectedCourse, refresh: true }
+          : { refresh: true };
+
+        const res = await request.dynamicRead({
+          entity: "universities",
+          endPoint: "v1/compare",
+          options,
+        });
+
+        if (!isCancelled) {
+          const unis = Array.isArray(res?.universities) ? res.universities : [];
+          setCourseBasedUniversities(unis);
+          setModalUniversities(unis);
+        }
+      } catch (err) {
+        console.error("Failed to sync course universities:", err);
+      } finally {
+        if (!isCancelled) setModalLoading(false);
+      }
+    };
+
+    syncCourseData();
+
+    // If universities are already in comparison, re-evaluate compare data with the new course
+    if (comparedData.length > 0) {
+      const slugs = comparedData.map((u) => u.slug || u._id || u.id).filter(Boolean);
+      if (slugs.length > 0) {
+        const compOptions = { university: slugs.join(",") };
+        if (selectedCourse && selectedCourse !== "all") compOptions.course = selectedCourse;
+        request.dynamicRead({
+          entity: "universities",
+          endPoint: "v1/compare",
+          options: compOptions,
+        }).then((res) => {
+          if (!isCancelled) {
+            const data = Array.isArray(res?.result) ? res.result : [];
+            if (data.length > 0) setComparedData(data);
+          }
+        }).catch((e) => console.error(e));
+      }
+    }
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [selectedCourse]);
 
   const currentIdentifiers = useMemo(() => {
     if (compareList?.length > 0)
@@ -97,10 +212,10 @@ export default function CompareUniversityClientView({
   }, [searchParams, compareList]);
 
   const courseSelectOptions = useMemo(() => {
-    return (allCourses || [])
+    return (availableCourses || [])
       .filter((c) => c?.name)
       .map((c) => ({ value: c.name, label: c.name }));
-  }, [allCourses]);
+  }, [availableCourses]);
 
   const slotSelectOptions = useMemo(() => {
     const pool = courseBasedUniversities.length > 0
@@ -176,7 +291,10 @@ export default function CompareUniversityClientView({
           options: selectedCourse && selectedCourse !== "all" ? { course: selectedCourse, refresh: true } : { refresh: true },
         });
         const unis = Array.isArray(res?.universities) ? res.universities : [];
-        if (unis.length > 0) setModalUniversities(unis);
+        if (unis.length > 0) {
+          setCourseBasedUniversities(unis);
+          setModalUniversities(unis);
+        }
       } catch (err) {
         console.error("Failed to load universities for modal:", err);
       } finally {
@@ -350,8 +468,9 @@ export default function CompareUniversityClientView({
         ...st,
         count: countMap.get(st.name.toLowerCase()) || 0,
       }))
+      .filter((st) => (selectedCourse ? st.count > 0 : true))
       .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
-  }, [allStates, modalUniversities, courseBasedUniversities]);
+  }, [allStates, modalUniversities, courseBasedUniversities, selectedCourse]);
 
   const approvalList = useMemo(() => {
     const map = new Map();
@@ -431,8 +550,9 @@ export default function CompareUniversityClientView({
         ...app,
         count: countMap.get(app.name.toLowerCase()) || countMap.get((app.code || "").toLowerCase()) || 0,
       }))
+      .filter((app) => (selectedCourse ? app.count > 0 : true))
       .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
-  }, [allApprovals, modalUniversities, courseBasedUniversities]);
+  }, [allApprovals, modalUniversities, courseBasedUniversities, selectedCourse]);
 
   const filteredStates = useMemo(() => {
     if (!modalSearch) return stateList;
@@ -511,51 +631,96 @@ export default function CompareUniversityClientView({
 
   const findCourseOffering = (uni, courseName) => {
     if (!uni) return null;
+
     if (uni.isCourseOffering || uni.type === "course_offering") {
+      const firstSub = (uni.courses || [])[0];
       return {
-        course_name: uni.course_name || uni.title,
-        fee_per_semester: uni.fee_per_semester,
+        course_name: uni.course_name || uni.title || firstSub?.name || "Selected Program",
+        fee_per_semester: uni.fee_per_semester || firstSub?.fee_per_semester || null,
+        full_course_fee: uni.full_course_fee || firstSub?.full_course_fee || null,
         fee_discount: uni.fee_discount || "Upto 20%",
         rating: uni.rating || 4.5,
-        duration: uni.duration || "2 Years",
-        eligibility: uni.eligibility || "Graduation / 10+2 from recognized board",
-        specializations: uni.specializations || [],
+        duration: uni.duration || firstSub?.duration || "2–3 Years",
+        eligibility: uni.eligibility || firstSub?.eligibility || "Graduation / 10+2 from recognized board",
+        specializations: uni.specializations?.length ? uni.specializations : (firstSub?.specializations || []),
       };
     }
-    if (!courseName || courseName === "all") return (uni.courseOfferings || [])[0] || null;
+
+    const coursesList = Array.isArray(uni.courses) && uni.courses.length > 0
+      ? uni.courses
+      : Array.isArray(uni.courseOfferings) && uni.courseOfferings.length > 0
+        ? uni.courseOfferings
+        : [];
+
+    if (!courseName || courseName === "all") {
+      const first = coursesList[0];
+      if (first) {
+        return {
+          course_name: first.name || first.course_name || "General Program",
+          fee_per_semester: first.fee_per_semester || null,
+          full_course_fee: first.full_course_fee || null,
+          fee_discount: first.fee_discount || "Upto 20%",
+          rating: first.rating || uni.rating || 4.5,
+          duration: first.duration || "2–3 Years",
+          eligibility: first.eligibility || "Graduation / 10+2",
+          specializations: first.specializations || [],
+        };
+      }
+      return null;
+    }
+
     const target = courseName.trim().toLowerCase();
-    const match = (uni.courseOfferings || []).find((o) => {
+    const wordRegex = new RegExp(`(^|[^a-z0-9])${target}([^a-z0-9]|$)`, "i");
+
+    const match = coursesList.find((o) => {
       if (!o) return false;
-      const cn = (o.course_name || "").toLowerCase();
-      const slug = (o.course_slug || o.course_master_slug || "").toLowerCase();
-      const code = (o.course_code || "").toLowerCase();
-      if (cn === target || code === target) return true;
-      if (slug.endsWith(`/${target}`) || slug.endsWith(`-${target}`)) return true;
-      if (cn.includes(`(${target})`) || cn.endsWith(` ${target}`)) return true;
+      const cn = String(o.name || o.course_name || o.title || "").toLowerCase().trim();
+      const slug = String(o.slug || o.course_slug || o.course_master_slug || "").toLowerCase().trim();
+      const code = String(o.code || o.course_code || "").toLowerCase().trim();
+
+      if (cn === target || slug === target || code === target) return true;
+      if (slug.endsWith(`/${target}`) || slug.endsWith(`-${target}`) || slug.includes(`-${target}-`)) return true;
+      if (cn.includes(`(${target})`) || wordRegex.test(cn)) return true;
+
       const words = cn.split(/[\s-]+/).filter(Boolean);
       const acronym = words.map((w) => w[0]).join("").toLowerCase();
       if (acronym === target) return true;
       const meaningful = words.filter((w) => !["of", "and", "in", "&"].includes(w)).map((w) => w[0]).join("").toLowerCase();
       if (meaningful === target) return true;
-      return cn.includes(target);
+      return false;
     });
-    if (match) return match;
-    const inList = (uni.coursesOffered || []).some((c) => {
-      const cl = (c || "").toLowerCase();
-      return cl === target || cl.includes(`(${target})`) || cl.endsWith(` ${target}`);
-    });
-    if (inList) {
-      const firstOffering = (uni.courseOfferings || [])[0];
+
+    if (match) {
       return {
-        course_name: courseName,
-        fee_per_semester: uni.fee_per_semester || firstOffering?.fee_per_semester || null,
-        fee_discount: uni.fee_discount || firstOffering?.fee_discount || "Upto 20%",
-        rating: uni.rating || firstOffering?.rating || 4.5,
-        duration: uni.duration || firstOffering?.duration || "2–3 Years",
-        eligibility: uni.eligibility || firstOffering?.eligibility || "Graduation / 10+2 from recognized board",
-        specializations: firstOffering?.specializations || [],
+        course_name: match.name || match.course_name || courseName,
+        fee_per_semester: match.fee_per_semester || null,
+        full_course_fee: match.full_course_fee || null,
+        fee_discount: match.fee_discount || "Upto 20%",
+        rating: match.rating || uni.rating || 4.5,
+        duration: match.duration || "2–3 Years",
+        eligibility: match.eligibility || "Graduation / 10+2",
+        specializations: match.specializations || [],
       };
     }
+
+    const inOffered = (uni.coursesOffered || []).some((c) => {
+      const cl = String(typeof c === "object" ? c.name : c || "").toLowerCase();
+      return cl === target || cl.includes(`(${target})`) || wordRegex.test(cl);
+    });
+    if (inOffered && coursesList[0]) {
+      const first = coursesList[0];
+      return {
+        course_name: courseName,
+        fee_per_semester: first?.fee_per_semester || null,
+        full_course_fee: first?.full_course_fee || null,
+        fee_discount: first?.fee_discount || "Upto 20%",
+        rating: first?.rating || uni.rating || 4.5,
+        duration: first?.duration || "2–3 Years",
+        eligibility: first?.eligibility || "Graduation / 10+2",
+        specializations: first?.specializations || [],
+      };
+    }
+
     return null;
   };
 
@@ -566,48 +731,42 @@ export default function CompareUniversityClientView({
     const uw = count <= 2 ? `${80 / count}%` : `${83 / count}%`;
 
     const featureCol = {
-      title: <span className="font-extrabold text-xs md:text-sm uppercase tracking-wider text-slate-700">Feature / Criteria</span>,
+      title: <span className="font-semibold text-xs uppercase tracking-wider text-slate-700">Feature / Criteria</span>,
       dataIndex: "featureTitle",
       key: "featureTitle",
       width: fw,
-      className: "bg-slate-50/80 font-bold text-slate-700 text-xs md:text-sm px-2.5 md:px-3.5",
+      className: "bg-slate-50/80 font-medium text-slate-700 text-xs px-2.5 py-1.5",
       render: (_, record) => (
-        <div className="flex items-center gap-1.5 font-bold text-slate-800 text-xs md:text-sm py-0.5">
-          <span className="shrink-0">{record.icon}</span>
-          <span className="leading-snug">{record.featureTitle}</span>
-        </div>
+        <span className="font-medium text-slate-700 text-xs leading-snug">
+          {record.featureTitle}
+        </span>
       ),
     };
 
     const uniCols = comparedData.map((uni, idx) => ({
       title: (
-        <div className="relative group flex flex-col items-center text-center space-y-1.5 py-1 px-1">
+        <div className="relative group flex flex-col items-center text-center gap-1 py-0.5 px-1">
           <button
             onClick={() => handleRemoveUniversity(uni.slug || uni._id)}
-            className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-slate-200 hover:bg-red-500 text-slate-600 hover:text-white flex items-center justify-center transition-colors cursor-pointer border-none z-10"
+            className="absolute -top-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-slate-200 hover:bg-red-500 text-slate-600 hover:text-white flex items-center justify-center transition-colors cursor-pointer border-none z-10"
           >
-            <CloseOutlined className="text-[9px]" />
+            <CloseOutlined className="text-[8px] sm:text-[9px]" />
           </button>
-          <div className="w-12 h-12 rounded-xl border border-gray-200 bg-white p-1.5 flex items-center justify-center relative">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg border border-gray-200 bg-white p-1 flex items-center justify-center relative">
             {uni.logo ? (
               <Image src={getAssetPath(uni.logo)} alt={uni.name || "Logo"} fill unoptimized className="object-contain p-0.5" />
             ) : (
-              <span className="text-base font-semibold text-[#0C3058]">{(uni.name || "U")[0]}</span>
+              <span className="text-sm font-semibold text-[#0C3058]">{(uni.name || "U")[0]}</span>
             )}
           </div>
-          <div className="space-y-0.5 max-w-[200px]">
-            <h3 className="text-xs md:text-sm font-semibold text-[#0C3058] m-0 line-clamp-2 leading-tight">
+          <div className="max-w-[180px]">
+            <h3 className="text-xs sm:text-[13px] font-semibold text-[#0C3058] m-0 line-clamp-2 leading-tight">
               {uni.isCourseOffering ? uni.title : uni.name}
             </h3>
             {uni.isCourseOffering && uni.uniName && (
-              <p className="text-[11px] font-medium text-teal-700 m-0">{uni.uniName}</p>
+              <p className="text-[10px] font-medium text-teal-700 m-0 leading-tight mt-0.5">{uni.uniName}</p>
             )}
           </div>
-          {uni.location && (
-            <span className="text-[9px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
-              {uni.location}
-            </span>
-          )}
         </div>
       ),
       dataIndex: uni._id || uni.slug || `col-${idx}`,
@@ -626,20 +785,22 @@ export default function CompareUniversityClientView({
     const cName = selectedCourse && selectedCourse !== "all" ? selectedCourse : null;
 
     const boolCell = (val) =>
-      val === true ? <Tag color="success" className="font-bold text-[10px] m-0">Yes</Tag>
-        : val === false ? <Tag color="error" className="font-bold text-[10px] m-0">No</Tag>
-          : <span className="text-slate-400">-</span>;
+      val === true ? <span className="text-[11px] text-emerald-600 font-semibold">Yes</span>
+        : val === false ? <span className="text-[11px] text-slate-500 font-medium">No</span>
+          : <span className="text-slate-400 text-[11px]">-</span>;
 
-    const tagCell = (val, color = "blue") =>
-      val ? <Tag color={color} className="font-bold text-[11px] px-2.5 py-0.5 rounded-full m-0">{val}</Tag>
-        : <span className="text-slate-400">-</span>;
+    const tagCell = (val) =>
+      val ? <span className="text-[11px] text-slate-600 font-medium">{val}</span>
+        : <span className="text-slate-400 text-[11px]">-</span>;
 
-    const listTags = (arr, color = "purple") =>
-      arr?.length
-        ? <div className="flex flex-wrap justify-center gap-1 max-w-[260px] mx-auto">
-          {arr.map((s, i) => <Tag key={i} color={color} className="font-bold text-[10px] m-0">{typeof s === "object" ? s.name || s.title : s}</Tag>)}
-        </div>
-        : <span className="text-slate-400">-</span>;
+    const listTags = (arr) => {
+      const uniqueArr = Array.from(new Set(
+        (arr || []).map((s) => typeof s === "object" ? s.name || s.title : s).filter(Boolean)
+      ));
+      return uniqueArr.length
+        ? <span className="text-[11px] text-slate-600 font-medium leading-relaxed max-w-[280px] inline-block text-center">{uniqueArr.join(", ")}</span>
+        : <span className="text-slate-400 text-[11px]">-</span>;
+    };
 
     const bulletList = (arr, icon, iconClass) =>
       arr?.length
@@ -656,84 +817,243 @@ export default function CompareUniversityClientView({
     const courseRows = cName
       ? [
         {
-          key: `crs_avail`, icon: <BookOutlined className="text-[#009F93]" />, featureTitle: "Course Availability",
-          renderCell: (uni) => { const off = findCourseOffering(uni, cName); return off ? <Tag color="success" className="font-bold text-xs px-2.5 py-0.5 rounded-full m-0">Offered</Tag> : <Tag color="default" className="text-slate-400 font-semibold text-xs px-2.5 py-0.5 rounded-full m-0">Not Offered</Tag>; }
+          key: `crs_name`,
+          icon: <BookOutlined className="text-blue-600" />,
+          featureTitle: `Selected Course`,
+          renderCell: (uni) => {
+            const off = findCourseOffering(uni, cName);
+            return off?.course_name ? (
+              <span className="font-semibold text-[#0C3058] text-[11px] leading-snug">{off.course_name}</span>
+            ) : (
+              <span className="text-slate-600 font-medium text-[11px]">{cName.toUpperCase()}</span>
+            );
+          },
         },
         {
-          key: `crs_fees`, icon: <DollarOutlined className="text-emerald-600" />, featureTitle: "Fees per Semester",
-          renderCell: (uni) => { const off = findCourseOffering(uni, cName); return off?.fee_per_semester ? <Tag color="success" className="font-extrabold text-xs px-2.5 py-0.5 rounded-full m-0">{off.fee_per_semester}</Tag> : <span className="text-slate-400">{off ? "Contact for Fees" : "-"}</span>; }
+          key: `crs_avail`,
+          icon: <CheckCircleFilled className="text-emerald-500" />,
+          featureTitle: "Course Availability",
+          renderCell: (uni) => {
+            const off = findCourseOffering(uni, cName);
+            return off ? (
+              <span className="text-[11px] text-emerald-600 font-semibold">Offered</span>
+            ) : (
+              <span className="text-[11px] text-slate-400 font-medium">Not Offered</span>
+            );
+          },
         },
         {
-          key: `crs_disc`, icon: <DollarOutlined className="text-orange-500" />, featureTitle: "Fees Discount",
-          renderCell: (uni) => { const off = findCourseOffering(uni, cName); return off ? <Tag color="orange" className="font-bold text-[11px] px-2.5 py-0.5 rounded-full m-0">{off.fee_discount || "Upto 20%"}</Tag> : <span className="text-slate-400">-</span>; }
+          key: `crs_fees`,
+          icon: <DollarOutlined className="text-emerald-600" />,
+          featureTitle: "Fees per Semester",
+          renderCell: (uni) => {
+            const off = findCourseOffering(uni, cName);
+            if (off?.fee_per_semester) {
+              return <span className="text-[11px] text-emerald-700 font-semibold">{off.fee_per_semester}</span>;
+            }
+            if (off?.full_course_fee) {
+              return <span className="text-[11px] text-emerald-700 font-semibold">{off.full_course_fee}</span>;
+            }
+            return <span className="text-slate-400 font-medium text-[11px]">{off ? "Available on Inquiry" : "-"}</span>;
+          },
         },
         {
-          key: `crs_rating`, icon: <TrophyOutlined className="text-amber-500" />, featureTitle: "Course Rating",
-          renderCell: (uni) => { const off = findCourseOffering(uni, cName); return off ? <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-0.5 rounded-full font-bold text-xs">★ {off.rating || "4.5"} / 5</span> : <span className="text-slate-400">-</span>; }
+          key: `crs_full_fees`,
+          icon: <CreditCardOutlined className="text-blue-600" />,
+          featureTitle: "Total / Full Course Fee",
+          renderCell: (uni) => {
+            const off = findCourseOffering(uni, cName);
+            return off?.full_course_fee ? (
+              <span className="text-slate-600 font-medium text-[11px]">{off.full_course_fee}</span>
+            ) : (
+              <span className="text-slate-400 font-medium text-[11px]">{off ? "Available on Inquiry" : "-"}</span>
+            );
+          },
         },
         {
-          key: `crs_dur`, icon: <ClockCircleOutlined className="text-blue-600" />, featureTitle: "Course Duration",
-          renderCell: (uni) => { const off = findCourseOffering(uni, cName); return off ? <span className="font-bold text-slate-700">{off.duration || "2 Years"}</span> : <span className="text-slate-400">-</span>; }
+          key: `crs_disc`,
+          icon: <DollarOutlined className="text-orange-500" />,
+          featureTitle: "Fees Discount & Scholarships",
+          renderCell: (uni) => {
+            const off = findCourseOffering(uni, cName);
+            return off ? (
+              <span className="text-[11px] text-slate-600 font-medium">
+                {off.fee_discount || "Upto 20% Available"}
+              </span>
+            ) : (
+              <span className="text-slate-400 text-[11px]">-</span>
+            );
+          },
         },
         {
-          key: `crs_elig`, icon: <SafetyCertificateOutlined className="text-blue-600" />, featureTitle: "Course Eligibility",
-          renderCell: (uni) => { const off = findCourseOffering(uni, cName); return off ? <span className="text-slate-600 font-semibold text-[11px]">{off.eligibility || "Graduation / 10+2"}</span> : <span className="text-slate-400">-</span>; }
+          key: `crs_spec`,
+          icon: <BookOutlined className="text-purple-600" />,
+          featureTitle: "Specializations Offered",
+          renderCell: (uni) => {
+            const off = findCourseOffering(uni, cName);
+            if (!off) return <span className="text-slate-400 text-[11px]">-</span>;
+            return off.specializations?.length ? (
+              listTags(off.specializations)
+            ) : (
+              <span className="text-slate-600 font-medium text-[11px]">Standard / Core Specialization</span>
+            );
+          },
         },
         {
-          key: `crs_spec`, icon: <BookOutlined className="text-purple-600" />, featureTitle: "Course Specializations",
-          renderCell: (uni) => { const off = findCourseOffering(uni, cName); if (!off) return <span className="text-slate-400">-</span>; return off.specializations?.length ? listTags(off.specializations) : <span className="text-slate-500 font-medium">Standard / General</span>; }
+          key: `crs_dur`,
+          icon: <ClockCircleOutlined className="text-blue-600" />,
+          featureTitle: "Course Duration",
+          renderCell: (uni) => {
+            const off = findCourseOffering(uni, cName);
+            return off?.duration ? (
+              <span className="font-medium text-slate-600 text-[11px]">{off.duration}</span>
+            ) : (
+              <span className="text-slate-600 font-medium text-[11px]">{off ? "2–3 Years" : "-"}</span>
+            );
+          },
+        },
+        {
+          key: `crs_elig`,
+          icon: <SafetyCertificateOutlined className="text-blue-600" />,
+          featureTitle: "Eligibility Criteria",
+          renderCell: (uni) => {
+            const off = findCourseOffering(uni, cName);
+            return off?.eligibility ? (
+              <span className="text-slate-600 font-medium text-[11px] leading-snug">{off.eligibility}</span>
+            ) : (
+              <span className="text-slate-600 font-medium text-[11px]">{off ? "10+2 / Graduation from recognized board" : "-"}</span>
+            );
+          },
+        },
+        {
+          key: `crs_rating`,
+          icon: <TrophyOutlined className="text-amber-500" />,
+          featureTitle: "Course Rating",
+          renderCell: (uni) => {
+            const off = findCourseOffering(uni, cName);
+            return off ? (
+              <span className="text-[11px] text-amber-600 font-semibold">
+                ★ {off.rating || "4.5"} / 5
+              </span>
+            ) : (
+              <span className="text-slate-400 text-[11px]">-</span>
+            );
+          },
         },
       ]
-      : [];
+      : [
+        {
+          key: `courses_offered`,
+          icon: <BookOutlined className="text-blue-600" />,
+          featureTitle: "Courses Offered",
+          renderCell: (u) => {
+            const coursesList = (u.courses || []).map((c) => c?.name || c).filter(Boolean);
+            const fallback = Array.isArray(u.coursesOffered) ? u.coursesOffered : [];
+            const allC = coursesList.length > 0 ? coursesList : fallback;
+            return allC.length > 0 ? listTags(allC) : <span className="text-slate-400 text-[11px]">-</span>;
+          },
+        },
+      ];
 
     const uniRows = [
-      { key: "ownership", icon: <BankOutlined className="text-blue-600" />, featureTitle: "Ownership Type", renderCell: (u) => listTags(Array.isArray(u.ownership_type) ? u.ownership_type : u.ownership_type ? [u.ownership_type] : [], "blue") },
-      { key: "location", icon: <GlobalOutlined className="text-blue-600" />, featureTitle: "University Location", renderCell: (u) => <span className="text-slate-600 font-semibold">{u.location || "-"}</span> },
-      { key: "est_year", icon: <ClockCircleOutlined className="text-blue-600" />, featureTitle: "Year of Establishment", renderCell: (u) => <span className="font-bold text-slate-700">{u.established_year || "-"}</span> },
-      { key: "rating", icon: <TrophyOutlined className="text-amber-500" />, featureTitle: "Overall University Rating", renderCell: (u) => { const r = u.rating || u.avg_rating || 4.5; return <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-0.5 rounded-full font-bold text-xs">★ {r} / 5</span>; } },
-      { key: "nirf", icon: <TrophyOutlined className="text-purple-600" />, featureTitle: "NIRF Ranking", renderCell: (u) => tagCell(u.nirf_rank, "purple") },
-      { key: "placement_pkg", icon: <DollarOutlined className="text-emerald-600" />, featureTitle: "Average Placement Package", renderCell: (u) => tagCell(u.avg_placement_package, "success") },
+      { key: "ownership", icon: <BankOutlined className="text-blue-600" />, featureTitle: "Ownership Type", renderCell: (u) => listTags(Array.isArray(u.ownership_type) ? u.ownership_type : u.ownership_type ? [u.ownership_type] : []) },
+      { key: "location", icon: <GlobalOutlined className="text-blue-600" />, featureTitle: "University Location", renderCell: (u) => <span className="text-slate-600 font-medium text-[11px]">{u.location || "-"}</span> },
+      { key: "est_year", icon: <ClockCircleOutlined className="text-blue-600" />, featureTitle: "Year of Establishment", renderCell: (u) => <span className="font-medium text-slate-600 text-[11px]">{u.established_year || "-"}</span> },
+      { key: "rating", icon: <TrophyOutlined className="text-amber-500" />, featureTitle: "Overall University Rating", renderCell: (u) => { const r = u.rating || u.avg_rating || 4.5; return <span className="text-[11px] text-amber-600 font-semibold">★ {r} / 5</span>; } },
+      {
+        key: "naac",
+        icon: <SafetyCertificateOutlined className="text-blue-600" />,
+        featureTitle: "NAAC Grade",
+        renderCell: (u) => {
+          const naac = u.naac_rating;
+          const grade = typeof naac === "object" ? naac?.grade || naac?.name : naac;
+          return grade ? (
+            <span className="text-[11px] text-slate-700 font-semibold">{grade}</span>
+          ) : (
+            <span className="text-slate-400 text-[11px]">-</span>
+          );
+        },
+      },
+      {
+        key: "nirf",
+        icon: <TrophyOutlined className="text-purple-600" />,
+        featureTitle: "NIRF Ranking",
+        renderCell: (u) => {
+          const nirf = u.nirf_rank;
+          const rank = typeof nirf === "object" ? nirf?.rank || nirf?.name : nirf;
+          return rank ? (
+            <span className="text-[11px] text-slate-700 font-semibold">{rank}</span>
+          ) : (
+            <span className="text-slate-400 text-[11px]">-</span>
+          );
+        },
+      },
+      { key: "placement_pkg", icon: <DollarOutlined className="text-emerald-600" />, featureTitle: "Average Placement Package", renderCell: (u) => tagCell(u.avg_placement_package) },
       { key: "placement", icon: <TrophyOutlined className="text-blue-600" />, featureTitle: "Placement Assistance", renderCell: (u) => boolCell(u.placement_assistance) },
       { key: "emi", icon: <CreditCardOutlined className="text-blue-600" />, featureTitle: "EMI Facility", renderCell: (u) => boolCell(u.emi_available) },
       { key: "scholarship", icon: <DollarOutlined className="text-blue-600" />, featureTitle: "Scholarship Opportunities", renderCell: (u) => boolCell(u.scholarship_available) },
-      { key: "mode", icon: <BookOutlined className="text-blue-600" />, featureTitle: "Mode of Education", renderCell: (u) => <span className="text-slate-700 font-semibold">{(typeof u.mode === "object" ? u.mode?.name : u.mode) || "-"}</span> },
-      { key: "exam_mode", icon: <LaptopOutlined className="text-blue-600" />, featureTitle: "Examination Mode", renderCell: (u) => listTags(Array.isArray(u.exam_mode) ? u.exam_mode : u.exam_mode ? [u.exam_mode] : [], "default") },
+      { key: "mode", icon: <BookOutlined className="text-blue-600" />, featureTitle: "Mode of Education", renderCell: (u) => <span className="text-slate-600 font-medium text-[11px]">{(typeof u.mode === "object" ? u.mode?.name : u.mode) || "-"}</span> },
+      { key: "exam_mode", icon: <LaptopOutlined className="text-blue-600" />, featureTitle: "Examination Mode", renderCell: (u) => listTags(Array.isArray(u.exam_mode) ? u.exam_mode : u.exam_mode ? [u.exam_mode] : []) },
       {
-        key: "approvals", icon: <SafetyCertificateOutlined className="text-blue-600" />, featureTitle: "Accreditations & Approvals",
+        key: "approvals",
+        icon: <SafetyCertificateOutlined className="text-blue-600" />,
+        featureTitle: "Accreditations & Approvals",
         renderCell: (u) => {
-          const naac = u.naac_rating; const nirf = u.nirf_rank;
           const apps = (Array.isArray(u.approvals) ? u.approvals : []).filter(Boolean);
-          if (!naac && !nirf && !apps.length) return <span className="text-slate-400">-</span>;
+          if (!apps.length) return <span className="text-slate-400 text-[11px]">-</span>;
+          const logoApps = apps.filter((a) => typeof a === "object" && getAssetPath(a.logo));
+          const textApps = apps
+            .filter((a) => typeof a !== "object" || !getAssetPath(a.logo))
+            .map((a) => (typeof a === "object" ? a.name || a.code || a.title : a))
+            .filter(Boolean);
+
           return (
-            <div className="flex flex-wrap items-center justify-center gap-1 w-full py-1">
-              {naac && <Tag color="gold" className="font-bold text-[10px] m-0">NAAC {typeof naac === "object" ? naac.grade || naac.name : naac}</Tag>}
-              {nirf && <Tag color="blue" className="font-bold text-[10px] m-0">NIRF {typeof nirf === "object" ? nirf.rank || nirf.name : nirf}</Tag>}
-              {apps.map((a, i) => {
-                const name = typeof a === "object" ? a.name || a.code || a.title : a;
-                const logo = typeof a === "object" ? getAssetPath(a.logo) : null;
-                return logo
-                  ? <div key={i} title={name} className="relative w-14 h-8 sm:w-20 sm:h-11 flex items-center justify-center hover:scale-105 shrink-0"><Image src={logo} alt={name} fill unoptimized className="object-contain" /></div>
-                  : <Tag key={i} color="blue" className="font-bold text-[10px] m-0">{name}</Tag>;
+            <div className="flex flex-wrap items-center justify-center">
+              {logoApps.map((a, i) => {
+                const name = a.name || a.code || a.title;
+                const logo = getAssetPath(a.logo);
+                return (
+                  <div
+                    key={i}
+                    title={name}
+                    className="relative w-12 h-8 sm:w-14 sm:h-9 flex items-center justify-center shrink-0"
+                  >
+                    <Image
+                      src={logo}
+                      alt={name}
+                      fill
+                      unoptimized
+                      className="object-contain"
+                    />
+                  </div>
+                );
               })}
+              {textApps.map((text, i) => (
+                <span
+                  key={i}
+                  className="inline-flex items-center justify-center h-8 sm:h-9 px-2 text-[10px]"
+                >
+                  {text}
+                </span>
+              ))}
             </div>
           );
-        }
+        },
       },
       { key: "highlights", icon: <CheckCircleFilled className="text-emerald-600" />, featureTitle: "Key University Highlights", renderCell: (u) => bulletList(u.highlights, CheckOutlined, "text-emerald-500") },
       { key: "advantages", icon: <LikeOutlined className="text-emerald-600" />, featureTitle: "Advantages (Pros)", renderCell: (u) => bulletList(u.advantages, CheckOutlined, "text-emerald-500") },
       { key: "disadvantages", icon: <DislikeOutlined className="text-rose-500" />, featureTitle: "Disadvantages (Cons)", renderCell: (u) => bulletList(u.disadvantages, CloseOutlined, "text-rose-500") },
-      { key: "courses", icon: <BookOutlined className="text-blue-600" />, featureTitle: "Courses Offered", renderCell: (u) => listTags(u.coursesOffered, "purple") },
       { key: "lms", icon: <LaptopOutlined className="text-blue-600" />, featureTitle: "Learning Platform - LMS", renderCell: (u) => boolCell(u.lms_available) },
       { key: "live_cls", icon: <VideoCameraOutlined className="text-blue-600" />, featureTitle: "Live Classes Available", renderCell: (u) => boolCell(u.live_classes) },
-      { key: "study_mat", icon: <BookOutlined className="text-blue-600" />, featureTitle: "Study Material", renderCell: (u) => <span className="text-slate-700 font-semibold">{u.study_material === "Both" ? "Digital & Printed" : (u.study_material || "-")}</span> },
+      { key: "study_mat", icon: <BookOutlined className="text-blue-600" />, featureTitle: "Study Material", renderCell: (u) => <span className="text-slate-600 font-medium text-[11px]">{u.study_material === "Both" ? "Digital & Printed" : (u.study_material || "-")}</span> },
       { key: "recorded", icon: <VideoCameraOutlined className="text-purple-600" />, featureTitle: "Recorded Lectures", renderCell: (u) => boolCell(u.recorded_lectures) },
-      { key: "placement_p", icon: <TeamOutlined className="text-emerald-600" />, featureTitle: "Placement Partners", renderCell: (u) => listTags(u.placement_partners, "geekblue") },
+      { key: "placement_p", icon: <TeamOutlined className="text-emerald-600" />, featureTitle: "Placement Partners", renderCell: (u) => listTags(u.placement_partners) },
       {
         key: "actions", icon: <CheckCircleFilled className="text-blue-600" />, featureTitle: "Actions & Next Steps",
         renderCell: (uni) => (
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-1.5 w-full max-w-[240px] mx-auto px-1">
-            <Button type="primary" onClick={() => openFormModal({ title: `Apply Now - ${uni.name}`, subtitle: "Fill your details to get free expert 1:1 counseling", defaultCourse: selectedCourse || uni.name })} className="bg-[#00B4D8] hover:bg-[#0096C7] border-none font-semibold text-[11px] sm:text-xs rounded-xl h-7 sm:h-8 px-2.5 w-full sm:w-auto cursor-pointer">Apply Now</Button>
-            {uni.slug && <Link href={`/universities/${uni.slug}`} className="w-full sm:w-auto"><Button className="bg-[#0C3058] text-white hover:bg-[#0a2540] border-none font-semibold text-[11px] sm:text-xs rounded-xl h-7 sm:h-8 px-2.5 w-full cursor-pointer">View Details</Button></Link>}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2">
+            <Button size="small" type="primary" onClick={() => openFormModal({ title: `Apply Now - ${uni.name}`, subtitle: "Fill your details to get free expert 1:1 counseling", defaultCourse: selectedCourse || uni.name })} className="bg-[#00B4D8] hover:bg-[#0096C7] border-none font-semibold text-[11px] sm:text-xs rounded-xl w-full sm:w-auto cursor-pointer">Apply Now</Button>
+            {uni.slug && <Link href={`/universities/${uni.slug}`} className="w-full sm:w-auto"><Button size="small" className="bg-[#0C3058] text-white hover:bg-[#0a2540] border-none font-semibold text-[11px] sm:text-xs rounded-xl w-full cursor-pointer">View Details</Button></Link>}
           </div>
         ),
       },
@@ -746,30 +1066,30 @@ export default function CompareUniversityClientView({
 
   // ── JSX ──────────────────────────────────────────────────────────────────
   const currentSlots = compareList?.length > 0 ? compareList : comparedData;
-  const hasSlots = currentIdentifiers.length > 0 || comparedData.length > 0;
+  const hasSlots = Boolean(currentSlots?.length > 0 && currentSlots.some(Boolean));
 
   return (
-    <div className="bg-[#F1F4F9] min-h-screen text-gray-800">
+    <div className="bg-gray-100 min-h-screen text-gray-800">
       {/* ── HERO & SELECTOR GROUP ── */}
-      <div className="relative pb-6 sm:pb-10">
+      <div className="relative">
         {/* Dark Blue Curved Backdrop */}
         <div className="absolute inset-x-0 top-0 h-60 sm:h-65 bg-[#0F3759] border-b border-gray-200" />
         {/* Content Container (Natural Flow - No -mt needed) */}
-        <div className="relative z-10 max-w-5xl mx-auto px-3 sm:px-4 pt-8 sm:pt-10">
+        <div className="relative z-10 max-w-5xl mx-auto">
           {/* Header Title & Search Input */}
-          <div className="max-w-2xl mx-auto text-center text-white mb-6 sm:mb-8 space-y-4">
+          <div className="max-w-2xl mx-auto text-center text-white space-y-4 p-6">
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold m-0 tracking-tight leading-[1.1]">
               <span className="text-[#FFB800] block">Compare Universities &amp;</span>
               <span className="text-white block">Choose Best For You!</span>
             </h1>
             {/* Course Selector */}
-            <div className="max-w-2xl mx-auto pt-2">
+            <div className="max-w-2xl mx-auto mt-2">
               <Select
                 showSearch
                 size="large"
                 allowClear
                 value={selectedCourse}
-                onChange={(val) => setSelectedCourse(val || null)}
+                onChange={handleCourseChange}
                 placeholder="Select Course to Compare.... MBA, MCA..."
                 className="w-full rounded-4xl text-left font-normal text-gray-500 bg-white"
                 options={courseSelectOptions}
@@ -826,7 +1146,7 @@ export default function CompareUniversityClientView({
                             placeholder="Select"
                             value={null}
                             onChange={(_, option) => { if (option?.itemObj) triggerFlyAnimation(option.itemObj, slotIdx); }}
-                            className="w-full max-w-[90px] sm:max-w-[200px] text-left font-medium [&_.ant-select-selector]:rounded-xl! text-[10px] sm:text-sm"
+                            className="w-full max-w-[90px] sm:max-w-50 text-left font-medium [&_.ant-select-selector]:rounded-xl! text-[10px] sm:text-sm"
                             options={slotSelectOptions}
                             optionFilterProp="searchValue"
                             filterOption={(input, opt) => (opt?.searchValue ?? "").toLowerCase().includes(input.toLowerCase())}
@@ -839,7 +1159,7 @@ export default function CompareUniversityClientView({
                 </div>
 
                 {/* Show Me All Universities to Compare button */}
-                <div className="mt-4 flex items-center justify-center">
+                <div className="flex items-center justify-center">
                   <button
                     type="button"
                     onClick={openUniversityModal}
@@ -968,30 +1288,24 @@ export default function CompareUniversityClientView({
       </div>
 
       {/* ── COMPARISON MATRIX ── */}
-      <div id="comparison-matrix-section" className="max-w-[1440px] mx-auto px-3 sm:px-5 md:px-6 py-6 space-y-4">
+      <div id="comparison-matrix-section" className="max-w-7xl mx-auto p-5">
         {comparedData.length > 0 ? (
           <div>
             {/* Desktop Table */}
-            <div className="hidden md:block">
-              <style>{`
-                .cmp-table .ant-table-thead > tr > th { font-size:14px!important; font-weight:700!important; padding:10px 14px!important; }
-                .cmp-table .ant-table-tbody > tr > td { padding:8px 14px!important; font-size:14px!important; vertical-align:middle!important; white-space:normal!important; word-break:break-word!important; }
-                .cmp-table .ant-table-tbody > tr > td .ant-tag { font-size:12px!important; padding:2px 8px!important; }
-                .cmp-table .ant-table-tbody > tr > td .ant-btn { font-size:13px!important; height:32px!important; }
-              `}</style>
-              <Table columns={tableColumns} dataSource={tableDataSource} pagination={false} bordered size="small" scroll={{ x: "max-content" }} rowKey="key" className="cmp-table w-full" />
+            <div className="hidden md:block bg-white rounded-2xl overflow-hidden shadow-md">
+              <Table columns={tableColumns} dataSource={tableDataSource} pagination={false} bordered size="small" scroll={{ x: "max-content" }} rowKey="key" className="w-full" />
             </div>
 
             {/* Mobile Cards */}
             <div className="block md:hidden bg-white rounded-2xl border border-slate-200/90 overflow-hidden">
               <div className={`grid grid-cols-${comparedData.length} divide-x divide-slate-200 bg-white border-b border-slate-200`}>
                 {comparedData.map((uni, idx) => (
-                  <div key={idx} className="p-3 flex flex-col items-center text-center relative min-h-[120px]">
-                    <button onClick={() => handleRemoveUniversity(uni.slug || uni._id)} className="absolute top-1 right-1 w-5 h-5 rounded-full bg-slate-100 hover:bg-red-500 text-slate-500 hover:text-white flex items-center justify-center transition-colors cursor-pointer border-none z-10">
-                      <CloseOutlined className="text-[8px]" />
+                  <div key={idx} className="p-2 flex flex-col items-center text-center relative min-h-[85px] gap-1">
+                    <button onClick={() => handleRemoveUniversity(uni.slug || uni._id)} className="absolute top-1 right-1 w-4 h-4 rounded-full bg-slate-100 hover:bg-red-500 text-slate-500 hover:text-white flex items-center justify-center transition-colors cursor-pointer border-none z-10">
+                      <CloseOutlined className="text-[7px]" />
                     </button>
-                    <div className="w-11 h-11 rounded-xl border border-slate-200 bg-white p-1 flex items-center justify-center relative mb-1">
-                      {uni.logo ? <Image src={getAssetPath(uni.logo)} alt={uni.name || "Logo"} fill unoptimized className="object-contain p-0.5" /> : <span className="text-sm font-black text-[#1C3569]">{(uni.name || "U")[0]}</span>}
+                    <div className="w-8 h-8 rounded-lg border border-slate-200 bg-white p-0.5 flex items-center justify-center relative">
+                      {uni.logo ? <Image src={getAssetPath(uni.logo)} alt={uni.name || "Logo"} fill unoptimized className="object-contain p-0.5" /> : <span className="text-xs font-bold text-[#1C3569]">{(uni.name || "U")[0]}</span>}
                     </div>
                     <h4 className="text-[11px] font-bold text-[#1C3569] m-0 line-clamp-2 leading-tight">{uni.isCourseOffering ? uni.title : uni.name}</h4>
                   </div>
@@ -1000,8 +1314,7 @@ export default function CompareUniversityClientView({
               <div className="divide-y divide-slate-100">
                 {tableDataSource.map((row) => (
                   <div key={row.key}>
-                    <div className="bg-[#f0f5ff] py-2 px-3 text-center border-t border-b border-slate-200 flex items-center justify-center gap-1.5 text-blue-600 font-extrabold text-[11px] tracking-wider uppercase">
-                      <span className="shrink-0">{row.icon}</span>
+                    <div className="bg-[#f0f5ff] py-2 px-3 text-center border-t border-b border-slate-200 text-slate-700 font-medium text-[11px] tracking-wider uppercase">
                       <span>{row.featureTitle}</span>
                     </div>
                     <div className={`grid grid-cols-${comparedData.length} divide-x divide-slate-200 bg-white text-center text-xs font-bold text-slate-800`}>
