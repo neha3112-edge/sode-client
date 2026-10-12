@@ -773,10 +773,14 @@ export default function CompareUniversityClientView({
 
     const bulletList = (arr, icon, iconClass) =>
       arr?.length
-        ? <ul className="space-y-1.5 m-0 p-0 list-none text-[11px] text-slate-600 inline-block text-left max-w-[280px]">
+        ? <ul className="space-y-1.5 m-0 p-0 list-none text-[11px] text-slate-600 inline-block text-left max-w-70">
           {arr.map((item, i) => (
-            <li key={i} className="flex items-start gap-1.5">
-              {React.createElement(icon, { className: `${iconClass} text-[10px] mt-0.5 shrink-0` })}
+            <li key={i} className="flex items-center gap-2">
+              {icon ? (
+                React.createElement(icon, { className: `${iconClass} text-[10px] shrink-0` })
+              ) : (
+                <span className={`w-1 h-1 rounded-full ${iconClass || "bg-slate-600"} shrink-0`} />
+              )}
               <span>{item}</span>
             </li>
           ))}
@@ -1009,7 +1013,7 @@ export default function CompareUniversityClientView({
           );
         },
       },
-      { key: "highlights", icon: <CheckCircleFilled className="text-emerald-600" />, featureTitle: "Key University Highlights", renderCell: (u) => bulletList(u.highlights, CheckOutlined, "text-emerald-500") },
+      { key: "highlights", icon: <CheckCircleFilled className="text-emerald-600" />, featureTitle: "Key University Highlights", renderCell: (u) => bulletList(u.highlights) },
       { key: "advantages", icon: <LikeOutlined className="text-emerald-600" />, featureTitle: "Advantages", renderCell: (u) => bulletList(u.advantages, CheckOutlined, "text-emerald-500") },
       { key: "disadvantages", icon: <DislikeOutlined className="text-rose-500" />, featureTitle: "Disadvantages", renderCell: (u) => bulletList(u.disadvantages, CloseOutlined, "text-rose-500") },
       { key: "lms", icon: <LaptopOutlined className="text-blue-600" />, featureTitle: "Learning Platform - LMS", renderCell: (u) => boolCell(u.lms_available) },
@@ -1098,21 +1102,18 @@ export default function CompareUniversityClientView({
                       );
                     }
                     return (
-                      <div key={slotIdx} id={`uni-slot-${slotIdx}`} className="border border-dashed border-blue-200/90 rounded-xl sm:rounded-2xl p-1.5 sm:p-4 flex flex-col items-center justify-center text-gray-400 bg-white transition-all min-h-[90px] sm:min-h-[140px] gap-1 sm:gap-2.5">
-                        <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-xs sm:text-base">+</div>
-                        {slotSelectOptions.length > 0 && (
-                          <Select
-                            showSearch
-                            placeholder="Select"
-                            value={null}
-                            onChange={(_, option) => { if (option?.itemObj) triggerFlyAnimation(option.itemObj, slotIdx); }}
-                            className="w-full max-w-[90px] sm:max-w-50 text-left font-medium [&_.ant-select-selector]:rounded-xl! text-[10px] sm:text-sm"
-                            options={slotSelectOptions}
-                            optionFilterProp="searchValue"
-                            filterOption={(input, opt) => (opt?.searchValue ?? "").toLowerCase().includes(input.toLowerCase())}
-                            styles={{ popup: { root: { maxHeight: 300, overflowY: "auto", borderRadius: 16, padding: 4 } } }}
-                          />
-                        )}
+                      <div
+                        key={slotIdx}
+                        id={`uni-slot-${slotIdx}`}
+                        onClick={() => openUniversityModal("all")}
+                        className="border border-dashed border-blue-200/90 hover:border-blue-400 hover:bg-blue-50/20 rounded-xl sm:rounded-2xl p-1.5 sm:p-4 flex flex-col items-center justify-center text-gray-400 bg-white transition-all min-h-[90px] sm:min-h-[140px] gap-1 sm:gap-2 cursor-pointer group"
+                      >
+                        <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-blue-50 group-hover:bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs sm:text-base transition-colors">
+                          +
+                        </div>
+                        <span className="text-[10px] sm:text-xs font-semibold text-slate-500 group-hover:text-blue-600 transition-colors">
+                          Add University
+                        </span>
                       </div>
                     );
                   })}
