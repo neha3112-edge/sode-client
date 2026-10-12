@@ -232,68 +232,7 @@ export default function ModalOTP({
     isDismissedRef.current = false;
   }, [pathname]);
 
-  // Auto-open modal on 45% page scroll
-  useEffect(() => {
-    if (typeof window === "undefined") return;
 
-    // Do not auto-trigger on thank-you or admin pages
-    if (pathname && (pathname.includes("/thank-you") || pathname.startsWith("/admin"))) {
-      return;
-    }
-
-    let ticking = false;
-
-    const checkScrollProgress = () => {
-      // If modal is currently open or has already triggered or was dismissed on this page, do nothing
-      if (isOpen || hasAutoTriggeredRef.current || isDismissedRef.current) {
-        return;
-      }
-
-      const scrollTop =
-        window.pageYOffset ||
-        document.documentElement.scrollTop ||
-        document.body.scrollTop ||
-        0;
-
-      const scrollHeight = Math.max(
-        document.documentElement.scrollHeight,
-        document.body.scrollHeight
-      );
-
-      const clientHeight =
-        window.innerHeight ||
-        document.documentElement.clientHeight ||
-        0;
-
-      const totalScrollable = scrollHeight - clientHeight;
-
-      if (totalScrollable > 120) {
-        const scrollPercent = (scrollTop / totalScrollable) * 100;
-        if (scrollPercent >= 45) {
-          hasAutoTriggeredRef.current = true;
-          setIsOpen(true);
-        }
-      }
-    };
-
-    const handleScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          checkScrollProgress();
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    // Check initial position in case page was reloaded when already scrolled
-    handleScroll();
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [pathname, isOpen]);
 
   useEffect(() => {
     if (controlledOpen !== undefined) {
