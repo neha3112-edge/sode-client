@@ -1051,7 +1051,7 @@ export default function CompareUniversityClientView({
       {
         key: "actions", icon: <CheckCircleFilled className="text-blue-600" />, featureTitle: "Actions & Next Steps",
         renderCell: (uni) => (
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-2">
+          <div className="flex items-center justify-center gap-2">
             <Button size="small" type="primary" onClick={() => openFormModal({ title: `Apply Now - ${uni.name}`, subtitle: "Fill your details to get free expert 1:1 counseling", defaultCourse: selectedCourse || uni.name })} className="bg-[#00B4D8] hover:bg-[#0096C7] border-none font-semibold text-[11px] sm:text-xs rounded-xl w-full sm:w-auto cursor-pointer">Apply Now</Button>
             {uni.slug && <Link href={`/universities/${uni.slug}`} className="w-full sm:w-auto"><Button size="small" className="bg-[#0C3058] text-white hover:bg-[#0a2540] border-none font-semibold text-[11px] sm:text-xs rounded-xl w-full cursor-pointer">View Details</Button></Link>}
           </div>
