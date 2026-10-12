@@ -1011,15 +1011,6 @@ export default function CompareUniversityClientView({
       { key: "study_mat", icon: <BookOutlined className="text-blue-600" />, featureTitle: "Study Material", renderCell: (u) => <span className="text-slate-600 font-medium text-[11px]">{u.study_material === "Both" ? "Digital & Printed" : (u.study_material || "-")}</span> },
       { key: "recorded", icon: <VideoCameraOutlined className="text-purple-600" />, featureTitle: "Recorded Lectures", renderCell: (u) => boolCell(u.recorded_lectures) },
       { key: "placement_p", icon: <TeamOutlined className="text-emerald-600" />, featureTitle: "Placement Partners", renderCell: (u) => listTags(u.placement_partners) },
-      {
-        key: "actions", icon: <CheckCircleFilled className="text-blue-600" />, featureTitle: "Actions & Next Steps",
-        renderCell: (uni) => (
-          <div className="flex items-center justify-center gap-2">
-            <Button size="small" type="primary" onClick={() => openFormModal({ title: `Apply Now - ${uni.name}`, subtitle: "Fill your details to get free expert 1:1 counseling", defaultCourse: selectedCourse || uni.name })} className="bg-[#00B4D8] hover:bg-[#0096C7] border-none font-semibold text-[11px] sm:text-xs rounded-xl w-full sm:w-auto cursor-pointer">Apply Now</Button>
-            {uni.slug && <Link href={`/universities/${uni.slug}`} className="w-full sm:w-auto"><Button size="small" className="bg-[#0C3058] text-white hover:bg-[#0a2540] border-none font-semibold text-[11px] sm:text-xs rounded-xl w-full cursor-pointer">View Details</Button></Link>}
-          </div>
-        ),
-      },
     ];
 
     return [...courseRows, ...uniRows];
@@ -1257,6 +1248,27 @@ export default function CompareUniversityClientView({
             {/* Desktop Table */}
             <div className="hidden md:block bg-white rounded-2xl overflow-hidden shadow-md">
               <Table columns={tableColumns} dataSource={tableDataSource} pagination={false} bordered size="small" scroll={{ x: "max-content" }} rowKey="key" className="w-full" />
+              {/* Single Centered Footer Row of Buttons */}
+              <div className="flex items-center justify-center gap-2 py-3 px-4 bg-slate-50 border-t border-slate-200">
+                <Button
+                  size="small"
+                  type="primary"
+                  onClick={() => openFormModal({ title: `Apply Now - ${comparedData.map((u) => u.name).filter(Boolean).join(" vs ")}`, subtitle: "Fill your details to get free expert 1:1 counseling", defaultCourse: selectedCourse || "General Counseling" })}
+                  className="bg-[#00B4D8] hover:bg-[#0096C7] border-none font-semibold text-[11px] sm:text-xs rounded-xl cursor-pointer"
+                >
+                  Apply Now
+                </Button>
+                {comparedData[0]?.slug && (
+                  <Link href={`/universities/${comparedData[0].slug}`}>
+                    <Button
+                      size="small"
+                      className="bg-[#0C3058] text-white hover:bg-[#0a2540] border-none font-semibold text-[11px] sm:text-xs rounded-xl cursor-pointer"
+                    >
+                      View Details
+                    </Button>
+                  </Link>
+                )}
+              </div>
             </div>
 
             {/* Mobile Cards */}
@@ -1289,6 +1301,27 @@ export default function CompareUniversityClientView({
                     </div>
                   </div>
                 ))}
+              </div>
+              {/* Single Centered Footer Row of Buttons on Mobile */}
+              <div className="flex items-center justify-center gap-2 py-3 px-4 bg-slate-50 border-t border-slate-200">
+                <Button
+                  size="small"
+                  type="primary"
+                  onClick={() => openFormModal({ title: `Apply Now - ${comparedData.map((u) => u.name).filter(Boolean).join(" vs ")}`, subtitle: "Fill your details to get free expert 1:1 counseling", defaultCourse: selectedCourse || "General Counseling" })}
+                  className="bg-[#00B4D8] hover:bg-[#0096C7] border-none font-semibold text-[11px] sm:text-xs rounded-xl cursor-pointer"
+                >
+                  Apply Now
+                </Button>
+                {comparedData[0]?.slug && (
+                  <Link href={`/universities/${comparedData[0].slug}`}>
+                    <Button
+                      size="small"
+                      className="bg-[#0C3058] text-white hover:bg-[#0a2540] border-none font-semibold text-[11px] sm:text-xs rounded-xl cursor-pointer"
+                    >
+                      View Details
+                    </Button>
+                  </Link>
+                )}
               </div>
             </div>
           </div>
