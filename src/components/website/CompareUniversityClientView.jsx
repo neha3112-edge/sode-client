@@ -795,8 +795,8 @@ export default function CompareUniversityClientView({
                       const displayTitle = isOffering ? uni.title : uni.name;
                       const rawImage = uni.image || uni.imageUrl || uni.imageSrc || uni.coursepageimage || uni.bannerImg || null;
                       return (
-                        <div key={slotIdx} id={`uni-slot-${slotIdx}`} className="bg-white rounded-xl sm:rounded-2xl border-none p-1.5 pt-4 sm:p-4 sm:pt-4 flex flex-col items-center justify-center relative group transition-all">
-                          <button onClick={() => handleRemoveUniversity(uni.slug || uni._id || uni.id)} className="absolute top-0.5 right-0.5 sm:top-1.5 sm:right-1.5 w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-full bg-slate-100 hover:bg-red-500 text-slate-500 hover:text-white flex items-center justify-center transition-colors cursor-pointer border-none z-10" title="Remove">
+                        <div key={slotIdx} id={`uni-slot-${slotIdx}`} className="bg-white rounded-xl sm:rounded-2xl border border-slate-200 p-1.5 pt-4 sm:p-4 sm:pt-4 flex flex-col items-center justify-center relative group transition-all">
+                          <button onClick={() => handleRemoveUniversity(uni.slug || uni._id || uni.id)} className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-slate-100 hover:bg-red-500 text-slate-500 hover:text-white flex items-center justify-center transition-colors cursor-pointer border-none z-10" title="Remove">
                             <CloseOutlined className="text-[7px] sm:text-[9px]" />
                           </button>
                           <div className="relative w-full max-w-[75px] sm:max-w-40 md:max-w-45 h-8 sm:h-12 md:h-14 flex items-center justify-center mb-1 sm:mb-2">
@@ -812,8 +812,8 @@ export default function CompareUniversityClientView({
                               <span className="text-xs sm:text-sm font-semibold text-[#0C3058]">{displayTitle}</span>
                             )}
                           </div>
-                          <h4 className="text-[10px] sm:text-xs font-semibold text-[#0C3058] m-0 line-clamp-1 text-center w-full px-0.5">{displayTitle}</h4>
-                          {isOffering && uni.uniName && <p className="text-[9px] sm:text-[10px] font-medium text-teal-700 m-0 line-clamp-1 text-center w-full px-0.5">{uni.uniName}</p>}
+                          <h4 className="text-[10px] sm:text-xs font-semibold text-[#0C3058] m-0 leading-snug text-center w-full px-0.5 break-words">{displayTitle}</h4>
+                          {isOffering && uni.uniName && <p className="text-[9px] sm:text-[10px] font-medium text-teal-700 m-0 leading-snug text-center w-full px-0.5 mt-0.5 break-words">{uni.uniName}</p>}
                         </div>
                       );
                     }
