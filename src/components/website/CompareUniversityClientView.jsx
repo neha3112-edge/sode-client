@@ -9,6 +9,10 @@ import {
   RightOutlined,
   SearchOutlined,
   ArrowRightOutlined,
+  ArrowLeftOutlined,
+  EnvironmentOutlined,
+  RiseOutlined,
+  StarOutlined,
   CheckCircleFilled,
   CloseOutlined,
   PhoneOutlined,
@@ -50,39 +54,37 @@ export default function CompareUniversityClientView({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { compareList, removeFromCompare, clearCompare, addToCompare } = useCompare();
+  const { compareList, removeFromCompare, clearCompare, addToCompare, updateCompareList } = useCompare();
   const { openFormModal } = useAppDrawer();
 
-  // ── State ────────────────────────────────────────────────────────────────
   const allCourses = initialAllCourses?.length > 0 ? initialAllCourses : rawAllCourses || [];
   const allStates = initialAllStates?.length > 0 ? initialAllStates : rawAllStates || [];
+  const allApprovals = initialAllApprovals?.length > 0 ? initialAllApprovals : rawAllApprovals || [];
 
   const [comparedData, setComparedData] = useState(initialComparedData);
   const [selectedCourse, setSelectedCourse] = useState(initialSelectedCourse || null);
   const [courseBasedUniversities, setCourseBasedUniversities] = useState(initialCourseUniversities);
   const [flyingLogo, setFlyingLogo] = useState(null);
 
-  // ── Modal State ──────────────────────────────────────────────────────────
   const [isUniModalOpen, setIsUniModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState("all");
+  const [selectedModalState, setSelectedModalState] = useState(null);
+  const [selectedModalApproval, setSelectedModalApproval] = useState(null);
   const [modalUniversities, setModalUniversities] = useState(initialCourseUniversities || []);
   const [modalLoading, setModalLoading] = useState(false);
   const [modalSearch, setModalSearch] = useState("");
+  const [modalSelectedUnis, setModalSelectedUnis] = useState([]);
 
-  // Sync server-delivered comparedData
   useEffect(() => {
     if (initialComparedData?.length > 0) setComparedData(initialComparedData);
   }, [initialComparedData]);
 
-  // Keep modalUniversities synced if initialCourseUniversities provided
   useEffect(() => {
     if (initialCourseUniversities?.length > 0 && modalUniversities?.length === 0) {
       setModalUniversities(initialCourseUniversities);
     }
   }, [initialCourseUniversities]);
 
-
-
-  // ── Identifiers ──────────────────────────────────────────────────────────
   const currentIdentifiers = useMemo(() => {
     if (compareList?.length > 0)
       return compareList.map((u) => u.slug || u._id || u.id).filter(Boolean);
@@ -94,14 +96,12 @@ export default function CompareUniversityClientView({
     return urlIds ? urlIds.split(",").map((s) => s.trim()).filter(Boolean) : [];
   }, [searchParams, compareList]);
 
-  // ── Course Select options (from API) ─────────────────────────────────────
   const courseSelectOptions = useMemo(() => {
     return (allCourses || [])
       .filter((c) => c?.name)
       .map((c) => ({ value: c.name, label: c.name }));
   }, [allCourses]);
 
-  // ── Slot university options (from courseBasedUniversities) ───────────────
   const slotSelectOptions = useMemo(() => {
     const pool = courseBasedUniversities.length > 0
       ? courseBasedUniversities
@@ -119,8 +119,6 @@ export default function CompareUniversityClientView({
         itemObj: u,
       }));
   }, [courseBasedUniversities, compareList, comparedData]);
-
-  // ── Helpers ──────────────────────────────────────────────────────────────
 
 
   const syncCompareUrl = (slugs) => {
@@ -158,19 +156,27 @@ export default function CompareUniversityClientView({
     syncCompareUrl(remaining.map((u) => u.slug || u._id || u.id).filter(Boolean));
   };
 
-  // ── Modal Handlers ───────────────────────────────────────────────────────
-  const openUniversityModal = async () => {
+  const openUniversityModal = async (mode = "all") => {
+    setModalMode(mode);
+    setSelectedModalState(null);
+    setSelectedModalApproval(null);
+    setModalSearch("");
+    const currentActive = compareList?.length > 0 ? compareList : comparedData;
+    setModalSelectedUnis([...currentActive]);
     setIsUniModalOpen(true);
-    if (!modalUniversities || modalUniversities.length === 0) {
+    const hasApprovalsLoaded = (modalUniversities || []).some(
+      (u) => (Array.isArray(u.approvals) && u.approvals.length > 0) || u.naac_rating || u.nirf_rank
+    );
+    if (!modalUniversities || modalUniversities.length === 0 || !hasApprovalsLoaded) {
       setModalLoading(true);
       try {
         const res = await request.dynamicRead({
           entity: "universities",
           endPoint: "v1/compare",
-          options: selectedCourse && selectedCourse !== "all" ? { course: selectedCourse } : {},
+          options: selectedCourse && selectedCourse !== "all" ? { course: selectedCourse, refresh: true } : { refresh: true },
         });
         const unis = Array.isArray(res?.universities) ? res.universities : [];
-        setModalUniversities(unis);
+        if (unis.length > 0) setModalUniversities(unis);
       } catch (err) {
         console.error("Failed to load universities for modal:", err);
       } finally {
@@ -179,13 +185,12 @@ export default function CompareUniversityClientView({
     }
   };
 
-  const isUniSelected = (uni) => {
+  const isModalUniSelected = (uni) => {
     if (!uni) return false;
     const targetKeys = [uni._id, uni.id, uni.slug, uni.uniSlug, uni.name]
       .filter(Boolean)
       .map((k) => String(k).toLowerCase().trim());
-    const pool = [...(compareList || []), ...(comparedData || [])];
-    return pool.some((u) => {
+    return modalSelectedUnis.some((u) => {
       const uKeys = [u._id, u.id, u.slug, u.uniSlug, u.name]
         .filter(Boolean)
         .map((k) => String(k).toLowerCase().trim());
@@ -194,25 +199,34 @@ export default function CompareUniversityClientView({
   };
 
   const handleToggleFromModal = (uni) => {
-    const uniId = uni.slug || uni._id || uni.id;
-    if (isUniSelected(uni)) {
-      handleRemoveUniversity(uniId);
+    if (!uni) return;
+    const targetKeys = [uni._id, uni.id, uni.slug, uni.uniSlug, uni.name]
+      .filter(Boolean)
+      .map((k) => String(k).toLowerCase().trim());
+
+    if (isModalUniSelected(uni)) {
+      setModalSelectedUnis((prev) =>
+        prev.filter((u) => {
+          const uKeys = [u._id, u.id, u.slug, u.uniSlug, u.name]
+            .filter(Boolean)
+            .map((k) => String(k).toLowerCase().trim());
+          return !targetKeys.some((tk) => uKeys.includes(tk));
+        })
+      );
     } else {
-      const activeCount = Math.max(compareList?.length || 0, comparedData?.length || 0);
-      if (activeCount >= 3) return;
-      addToCompare(uni);
-      const remaining = [
-        ...(compareList || []).map((u) => u.slug || u._id || u.id),
-        uniId,
-      ].filter(Boolean);
-      syncCompareUrl(remaining);
+      if (modalSelectedUnis.length >= 3) return;
+      setModalSelectedUnis((prev) => [...prev, uni]);
     }
   };
 
   const handleApplyCompareFromModal = async () => {
     setIsUniModalOpen(false);
-    const activeList = compareList?.length > 0 ? compareList : comparedData;
-    const slugs = activeList.map((u) => u.slug || u._id || u.id).filter(Boolean);
+    if (!modalSelectedUnis || modalSelectedUnis.length === 0) return;
+
+    updateCompareList(modalSelectedUnis);
+    setComparedData(modalSelectedUnis);
+
+    const slugs = modalSelectedUnis.map((u) => u.slug || u._id || u.id).filter(Boolean);
     if (slugs.length > 0) {
       syncCompareUrl(slugs);
       try {
@@ -234,21 +248,231 @@ export default function CompareUniversityClientView({
     }
   };
 
-  const filteredModalUniversities = useMemo(() => {
-    if (!modalSearch) return modalUniversities || [];
+  const doesUniMatchState = (uni, state) => {
+    if (!uni || !state) return false;
+    const sId = String(state._id || state.id || "").toLowerCase();
+    const sSlug = String(state.slug || "").toLowerCase();
+    const sName = String(state.name || state.title || state).toLowerCase().trim();
+
+    const uStateObj = uni.state;
+    const uStateId = String(typeof uStateObj === "object" ? uStateObj?._id || uStateObj?.id : uStateObj || "").toLowerCase();
+    const uStateSlug = String(typeof uStateObj === "object" ? uStateObj?.slug : "").toLowerCase();
+    const uStateName = String(typeof uStateObj === "object" ? uStateObj?.name : uStateObj || "").toLowerCase().trim();
+    const uLoc = String(uni.location || "").toLowerCase().trim();
+
+    if (sId && (uStateId === sId || uStateId.includes(sId))) return true;
+    if (sSlug && (uStateSlug === sSlug || uLoc.includes(sSlug))) return true;
+    if (sName && (uStateName === sName || uLoc.includes(sName) || uStateName.includes(sName))) return true;
+    return false;
+  };
+
+  const doesUniMatchApproval = (uni, approval) => {
+    if (!uni || !approval) return false;
+    const aId = String(approval._id || approval.id || "").toLowerCase().trim();
+    const aCode = String(approval.code || "").toLowerCase().trim();
+    const aName = String(approval.name || approval.title || approval).toLowerCase().trim();
+    const aSlug = String(approval.slug || "").toLowerCase().trim();
+
+    const apps = Array.isArray(uni.approvals) ? uni.approvals : (uni.approvals ? [uni.approvals] : []);
+    const hasInApprovals = apps.some((app) => {
+      if (!app) return false;
+      const isStr = typeof app === "string";
+      const isHex = isStr && /^[0-9a-fA-F]{24}$/.test(app);
+
+      const curId = String((!isStr ? app._id || app.id : isHex ? app : "") || "").toLowerCase().trim();
+      const curCode = String((!isStr ? app.code : "") || "").toLowerCase().trim();
+      const curName = String((!isStr ? app.name || app.title || app.code : !isHex ? app : "") || "").toLowerCase().trim();
+      const curSlug = String((!isStr ? app.slug : "") || "").toLowerCase().trim();
+
+      if (aId && curId && (curId === aId || curId.includes(aId) || aId.includes(curId))) return true;
+      if (aCode && (curCode === aCode || curName === aCode || curName.includes(aCode) || aCode.includes(curName))) return true;
+      if (aName && (curName === aName || curCode === aName || curName.includes(aName) || aName.includes(curName))) return true;
+      if (aSlug && curSlug && curSlug === aSlug) return true;
+      return false;
+    });
+
+    if (hasInApprovals) return true;
+
+    if (aCode.includes("naac") || aName.includes("naac")) {
+      const naacVal = String(typeof uni.naac_rating === "object" ? uni.naac_rating?.grade || uni.naac_rating?.name : uni.naac_rating || "").toLowerCase().trim();
+      if (naacVal && naacVal !== "na") return true;
+    }
+    if (aCode.includes("nirf") || aName.includes("nirf")) {
+      const nirfVal = String(typeof uni.nirf_rank === "object" ? uni.nirf_rank?.rank || uni.nirf_rank?.name : uni.nirf_rank || "").toLowerCase().trim();
+      if (nirfVal && nirfVal !== "na") return true;
+    }
+    return false;
+  };
+
+  const stateList = useMemo(() => {
+    const map = new Map();
+    (allStates || []).forEach((st) => {
+      const name = typeof st === "object" ? st?.name : st;
+      const id = typeof st === "object" ? st?._id || st?.id || st?.slug : st;
+      if (name && !map.has(name.toLowerCase())) {
+        map.set(name.toLowerCase(), {
+          _id: id,
+          name: name,
+          slug: (typeof st === "object" ? st?.slug : "") || name.toLowerCase().replace(/\s+/g, "-"),
+        });
+      }
+    });
+
+    const uniPool = modalUniversities?.length > 0 ? modalUniversities : courseBasedUniversities;
+    const countMap = new Map();
+
+    uniPool.forEach((u) => {
+      let stName = "";
+      if (typeof u.state === "object" && u.state?.name) {
+        stName = u.state.name;
+      } else if (typeof u.state === "string" && u.state.trim() && !/^[0-9a-fA-F]{24}$/.test(u.state)) {
+        stName = u.state.trim();
+      } else if (u.location && !/^[0-9a-fA-F]{24}$/.test(u.location)) {
+        const parts = u.location.split(",").map((s) => s.trim());
+        stName = parts[parts.length - 1] || parts[0];
+      }
+
+      if (stName) {
+        const key = stName.toLowerCase();
+        countMap.set(key, (countMap.get(key) || 0) + 1);
+        if (!map.has(key)) {
+          map.set(key, {
+            _id: key,
+            name: stName,
+            slug: key.replace(/\s+/g, "-"),
+          });
+        }
+      }
+    });
+
+    return Array.from(map.values())
+      .map((st) => ({
+        ...st,
+        count: countMap.get(st.name.toLowerCase()) || 0,
+      }))
+      .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+  }, [allStates, modalUniversities, courseBasedUniversities]);
+
+  const approvalList = useMemo(() => {
+    const map = new Map();
+    (allApprovals || []).forEach((app) => {
+      const name = typeof app === "object" ? app?.name || app?.title || app?.code : app;
+      const code = typeof app === "object" ? app?.code || app?.name : app;
+      const id = typeof app === "object" ? app?._id || app?.id : app;
+      const logo = typeof app === "object" ? app?.logo || app?.image : null;
+      if (name && !map.has(name.toLowerCase())) {
+        map.set(name.toLowerCase(), {
+          _id: id,
+          name: name,
+          code: code || name,
+          logo: logo ? getAssetPath(logo) : null,
+          slug: (typeof app === "object" ? app?.slug : "") || name.toLowerCase().replace(/\s+/g, "-"),
+        });
+      }
+    });
+
+    const uniPool = modalUniversities?.length > 0 ? modalUniversities : courseBasedUniversities;
+    const countMap = new Map();
+
+    uniPool.forEach((u) => {
+      const apps = Array.isArray(u.approvals) ? u.approvals : [];
+      apps.forEach((a) => {
+        const aName = typeof a === "object" ? a?.name || a?.title || a?.code : a;
+        const aCode = typeof a === "object" ? a?.code : "";
+        const aLogo = typeof a === "object" ? getAssetPath(a?.logo) : null;
+        if (aName) {
+          const key = aName.toLowerCase();
+          countMap.set(key, (countMap.get(key) || 0) + 1);
+          if (!map.has(key)) {
+            map.set(key, {
+              _id: typeof a === "object" ? a?._id || a?.id : key,
+              name: aName,
+              code: aCode || aName,
+              logo: aLogo,
+              slug: key.replace(/\s+/g, "-"),
+            });
+          } else if (!map.get(key).logo && aLogo) {
+            map.get(key).logo = aLogo;
+          }
+        }
+      });
+      if (u.naac_rating) {
+        countMap.set("naac", (countMap.get("naac") || 0) + 1);
+        if (!map.has("naac")) {
+          map.set("naac", {
+            _id: "naac",
+            name: "NAAC Accredited",
+            code: "NAAC",
+            slug: "naac",
+            logo: u.naac_rating_logo || null,
+          });
+        } else if (!map.get("naac").logo && u.naac_rating_logo) {
+          map.get("naac").logo = u.naac_rating_logo;
+        }
+      }
+      if (u.nirf_rank) {
+        countMap.set("nirf", (countMap.get("nirf") || 0) + 1);
+        if (!map.has("nirf")) {
+          map.set("nirf", {
+            _id: "nirf",
+            name: "NIRF Ranked",
+            code: "NIRF",
+            slug: "nirf",
+            logo: u.nirf_rank_logo || null,
+          });
+        } else if (!map.get("nirf").logo && u.nirf_rank_logo) {
+          map.get("nirf").logo = u.nirf_rank_logo;
+        }
+      }
+    });
+
+    return Array.from(map.values())
+      .map((app) => ({
+        ...app,
+        count: countMap.get(app.name.toLowerCase()) || countMap.get((app.code || "").toLowerCase()) || 0,
+      }))
+      .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+  }, [allApprovals, modalUniversities, courseBasedUniversities]);
+
+  const filteredStates = useMemo(() => {
+    if (!modalSearch) return stateList;
     const q = modalSearch.toLowerCase().trim();
-    return (modalUniversities || []).filter((u) => {
+    return stateList.filter((st) => st.name.toLowerCase().includes(q));
+  }, [stateList, modalSearch]);
+
+  const filteredApprovals = useMemo(() => {
+    if (!modalSearch) return approvalList;
+    const q = modalSearch.toLowerCase().trim();
+    return approvalList.filter((app) =>
+      app.name.toLowerCase().includes(q) || (app.code || "").toLowerCase().includes(q)
+    );
+  }, [approvalList, modalSearch]);
+
+  const displayedModalUniversities = useMemo(() => {
+    let pool = modalUniversities || [];
+
+    if (modalMode === "trending") {
+      pool = pool.filter((u) => u.is_trending || u.trending || u.isPopular || u.popular || (u.rating >= 4.3));
+      if (pool.length === 0) pool = (modalUniversities || []).slice(0, 16);
+    } else if (modalMode === "recommended") {
+      pool = pool.filter((u) => u.is_recommended || u.recommended || (u.rating >= 4.4));
+      if (pool.length === 0) pool = (modalUniversities || []).slice(0, 16);
+    } else if (modalMode === "state" && selectedModalState) {
+      pool = pool.filter((u) => doesUniMatchState(u, selectedModalState));
+    } else if (modalMode === "accreditation" && selectedModalApproval) {
+      pool = pool.filter((u) => doesUniMatchApproval(u, selectedModalApproval));
+    }
+
+    if (!modalSearch) return pool;
+    const q = modalSearch.toLowerCase().trim();
+    return pool.filter((u) => {
       const name = (u.name || "").toLowerCase();
       const city = (u.city || "").toLowerCase();
       const state = (typeof u.state === "object" ? u.state?.name : u.state || "").toLowerCase();
       return name.includes(q) || city.includes(q) || state.includes(q);
     });
-  }, [modalUniversities, modalSearch]);
+  }, [modalUniversities, modalMode, selectedModalState, selectedModalApproval, modalSearch]);
 
-
-
-
-  // Fly-to-slot animation
   const triggerFlyAnimation = (uni, slotIdx) => {
     if (!uni) return;
     const uniId = String(uni._id || uni.slug || uni.id);
@@ -285,7 +509,6 @@ export default function CompareUniversityClientView({
     }
   };
 
-  // ── Find course offering for a university ────────────────────────────────
   const findCourseOffering = (uni, courseName) => {
     if (!uni) return null;
     if (uni.isCourseOffering || uni.type === "course_offering") {
@@ -336,7 +559,6 @@ export default function CompareUniversityClientView({
     return null;
   };
 
-  // ── Table Columns ────────────────────────────────────────────────────────
   const tableColumns = useMemo(() => {
     if (!comparedData?.length) return [];
     const count = comparedData.length;
@@ -399,12 +621,10 @@ export default function CompareUniversityClientView({
     return [featureCol, ...uniCols];
   }, [comparedData]);
 
-  // ── Table Rows ───────────────────────────────────────────────────────────
   const tableDataSource = useMemo(() => {
     if (!comparedData?.length) return [];
     const cName = selectedCourse && selectedCourse !== "all" ? selectedCourse : null;
 
-    // Helper renderers
     const boolCell = (val) =>
       val === true ? <Tag color="success" className="font-bold text-[10px] m-0">Yes</Tag>
         : val === false ? <Tag color="error" className="font-bold text-[10px] m-0">No</Tag>
@@ -433,7 +653,6 @@ export default function CompareUniversityClientView({
         </ul>
         : <span className="text-slate-400">-</span>;
 
-    // Course-specific rows (only when a course is selected)
     const courseRows = cName
       ? [
         {
@@ -530,130 +749,221 @@ export default function CompareUniversityClientView({
   const hasSlots = currentIdentifiers.length > 0 || comparedData.length > 0;
 
   return (
-    <div className="bg-[#F1F4F9] min-h-screen font-sans text-gray-800">
-
-      {/* ── HERO ── */}
-      <div className="bg-[#0F3759] pt-8 pb-14 sm:pb-20 overflow-hidden relative border-b border-gray-200 text-center text-white rounded-b-3xl">
-        <div className="max-w-2xl mx-auto px-4 space-y-4 relative z-10">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold m-0 tracking-tight leading-[1.1]">
-            <span className="text-[#FFB800] block">Compare Universities &amp;</span>
-            <span className="text-white block">Choose Best For You!</span>
-          </h1>
-
-          {/* Course Selector */}
-          <div className="max-w-2xl mx-auto pt-3">
-            <Select
-              showSearch
-              size="large"
-              allowClear
-              value={selectedCourse}
-              onChange={(val) => setSelectedCourse(val || null)}
-              placeholder="Select Course to Compare.... MBA, MCA..."
-              className="w-full rounded-4xl text-left font-normal text-gray-500 bg-white"
-              options={courseSelectOptions}
-              optionFilterProp="label"
-              filterOption={(input, opt) => (opt?.label ?? "").toLowerCase().includes(input.toLowerCase())}
-            />
+    <div className="bg-[#F1F4F9] min-h-screen text-gray-800">
+      {/* ── HERO & SELECTOR GROUP ── */}
+      <div className="relative pb-6 sm:pb-10">
+        {/* Dark Blue Curved Backdrop */}
+        <div className="absolute inset-x-0 top-0 h-60 sm:h-65 bg-[#0F3759] border-b border-gray-200" />
+        {/* Content Container (Natural Flow - No -mt needed) */}
+        <div className="relative z-10 max-w-5xl mx-auto px-3 sm:px-4 pt-8 sm:pt-10">
+          {/* Header Title & Search Input */}
+          <div className="max-w-2xl mx-auto text-center text-white mb-6 sm:mb-8 space-y-4">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold m-0 tracking-tight leading-[1.1]">
+              <span className="text-[#FFB800] block">Compare Universities &amp;</span>
+              <span className="text-white block">Choose Best For You!</span>
+            </h1>
+            {/* Course Selector */}
+            <div className="max-w-2xl mx-auto pt-2">
+              <Select
+                showSearch
+                size="large"
+                allowClear
+                value={selectedCourse}
+                onChange={(val) => setSelectedCourse(val || null)}
+                placeholder="Select Course to Compare.... MBA, MCA..."
+                className="w-full rounded-4xl text-left font-normal text-gray-500 bg-white"
+                options={courseSelectOptions}
+                optionFilterProp="label"
+                filterOption={(input, opt) => (opt?.label ?? "").toLowerCase().includes(input.toLowerCase())}
+              />
+            </div>
           </div>
 
-        </div>
-      </div>
-
-      {/* ── SELECTOR CARD ── */}
-      <div className="max-w-4xl mx-auto relative z-20">
-        <div className="bg-white rounded-2xl sm:rounded-3xl border border-gray-200 p-3.5 sm:p-5 md:p-6 text-center">
-          <p className="text-[11px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider m-0 mb-3 text-center">
-            CHOOSE WHAT YOU WANT TO COMPARE
-          </p>
-          {hasSlots ? (
-            <div>
-              {/* 3 Slots */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
-                {[0, 1, 2].map((slotIdx) => {
-                  const uni = currentSlots[slotIdx];
-                  if (uni) {
-                    const isOffering = uni.isCourseOffering || uni.type === "course_offering";
-                    const displayTitle = isOffering ? uni.title : uni.name;
-                    const rawLogo = uni.logo || uni.logoSrc || uni.image || null;
-                    const getClean = (val) => {
-                      if (!val) return "";
-                      if (typeof val === "object") return val.name || val.title || "";
-                      const s = String(val).trim();
-                      if (/^[0-9a-fA-F]{24}$/.test(s)) {
-                        const found = allStates.find((st) => String(st._id || st.value) === s);
-                        return found ? (found.name || "") : "";
-                      }
-                      return s;
-                    };
-                    const locStr = uni.location && !/^[0-9a-fA-F]{24}$/.test(uni.location)
-                      ? uni.location
-                      : [getClean(uni.city), getClean(uni.state)].filter(Boolean).join(", ");
-                    return (
-                      <div key={slotIdx} id={`uni-slot-${slotIdx}`} className="bg-white rounded-2xl border border-gray-200 p-4 flex flex-col items-center justify-center relative min-h-[140px] group transition-all">
-                        <button onClick={() => handleRemoveUniversity(uni.slug || uni._id || uni.id)} className="absolute top-2 right-2 w-6 h-6 rounded-full bg-slate-100 hover:bg-red-500 text-slate-500 hover:text-white flex items-center justify-center transition-colors cursor-pointer border-none z-10" title="Remove">
-                          <CloseOutlined className="text-[10px]" />
-                        </button>
-                        <div className="relative w-32 h-12 rounded-lg border border-gray-200 bg-white p-1 flex items-center justify-center mb-2 overflow-hidden">
-                          {rawLogo ? <Image src={getAssetPath(rawLogo)} alt={displayTitle || "Logo"} fill unoptimized className="object-contain" /> : <span className="text-sm font-semibold text-[#0C3058]">{displayTitle}</span>}
+          {/* Selector Card (Clean card with normal padding and margin) */}
+          <div className="bg-white rounded-2xl sm:rounded-3xl border border-gray-200 p-2 sm:p-4 text-center">
+            <p className="text-[11px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider m-0 text-center">
+              CHOOSE WHAT YOU WANT TO COMPARE
+            </p>
+            {hasSlots ? (
+              <div>
+                {/* 3 Slots */}
+                <div className="grid grid-cols-3 gap-1.5 sm:gap-4 my-2 sm:my-4">
+                  {[0, 1, 2].map((slotIdx) => {
+                    const uni = currentSlots[slotIdx];
+                    if (uni) {
+                      const isOffering = uni.isCourseOffering || uni.type === "course_offering";
+                      const displayTitle = isOffering ? uni.title : uni.name;
+                      const rawImage = uni.image || uni.imageUrl || uni.imageSrc || uni.coursepageimage || uni.bannerImg || null;
+                      return (
+                        <div key={slotIdx} id={`uni-slot-${slotIdx}`} className="bg-white rounded-xl sm:rounded-2xl border-none p-1.5 pt-4 sm:p-4 sm:pt-4 flex flex-col items-center justify-center relative group transition-all">
+                          <button onClick={() => handleRemoveUniversity(uni.slug || uni._id || uni.id)} className="absolute top-0.5 right-0.5 sm:top-1.5 sm:right-1.5 w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-full bg-slate-100 hover:bg-red-500 text-slate-500 hover:text-white flex items-center justify-center transition-colors cursor-pointer border-none z-10" title="Remove">
+                            <CloseOutlined className="text-[7px] sm:text-[9px]" />
+                          </button>
+                          <div className="relative w-full max-w-[75px] sm:max-w-40 md:max-w-45 h-8 sm:h-12 md:h-14 flex items-center justify-center mb-1 sm:mb-2">
+                            {rawImage ? (
+                              <Image
+                                src={getAssetPath(rawImage)}
+                                alt={displayTitle || "Image"}
+                                fill
+                                unoptimized
+                                className="object-contain"
+                              />
+                            ) : (
+                              <span className="text-xs sm:text-sm font-semibold text-[#0C3058]">{displayTitle}</span>
+                            )}
+                          </div>
+                          <h4 className="text-[10px] sm:text-xs font-semibold text-[#0C3058] m-0 line-clamp-1 text-center w-full px-0.5">{displayTitle}</h4>
+                          {isOffering && uni.uniName && <p className="text-[9px] sm:text-[10px] font-medium text-teal-700 m-0 line-clamp-1 text-center w-full px-0.5">{uni.uniName}</p>}
                         </div>
-                        <h4 className="text-xs font-semibold text-[#0C3058] m-0 line-clamp-1">{displayTitle}</h4>
-                        {isOffering && uni.uniName && <p className="text-[10px] font-medium text-teal-700 m-0 line-clamp-1">{uni.uniName}</p>}
-                        {locStr && <span className="text-[9px] bg-slate-100 text-slate-500 font-medium px-2 py-0.5 rounded-full mt-1.5 line-clamp-1">{locStr}</span>}
+                      );
+                    }
+                    return (
+                      <div key={slotIdx} id={`uni-slot-${slotIdx}`} className="border border-dashed border-blue-200/90 rounded-xl sm:rounded-2xl p-1.5 sm:p-4 flex flex-col items-center justify-center text-gray-400 bg-white transition-all min-h-[90px] sm:min-h-[140px] gap-1 sm:gap-2.5">
+                        <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-xs sm:text-base">+</div>
+                        {slotSelectOptions.length > 0 && (
+                          <Select
+                            showSearch
+                            placeholder="Select"
+                            value={null}
+                            onChange={(_, option) => { if (option?.itemObj) triggerFlyAnimation(option.itemObj, slotIdx); }}
+                            className="w-full max-w-[90px] sm:max-w-[200px] text-left font-medium [&_.ant-select-selector]:rounded-xl! text-[10px] sm:text-sm"
+                            options={slotSelectOptions}
+                            optionFilterProp="searchValue"
+                            filterOption={(input, opt) => (opt?.searchValue ?? "").toLowerCase().includes(input.toLowerCase())}
+                            styles={{ popup: { root: { maxHeight: 300, overflowY: "auto", borderRadius: 16, padding: 4 } } }}
+                          />
+                        )}
                       </div>
                     );
-                  }
-                  return (
-                    <div key={slotIdx} id={`uni-slot-${slotIdx}`} className="border-2 border-dashed border-blue-200/90 rounded-2xl p-4 flex flex-col items-center justify-center text-gray-400 bg-white transition-all min-h-[140px] gap-2.5">
-                      <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-base">+</div>
-                      {slotSelectOptions.length > 0 && (
-                        <Select
-                          showSearch
-                          placeholder="Select University"
-                          value={null}
-                          onChange={(_, option) => { if (option?.itemObj) triggerFlyAnimation(option.itemObj, slotIdx); }}
-                          className="w-full max-w-[200px] text-left font-medium [&_.ant-select-selector]:rounded-xl!"
-                          options={slotSelectOptions}
-                          optionFilterProp="searchValue"
-                          filterOption={(input, opt) => (opt?.searchValue ?? "").toLowerCase().includes(input.toLowerCase())}
-                          styles={{ popup: { root: { maxHeight: 300, overflowY: "auto", borderRadius: 16, padding: 4 } } }}
-                        />
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
+                  })}
+                </div>
 
-              {/* Show Me All Universities to Compare button */}
-              <div className="mt-4 flex items-center justify-center">
-                <button
-                  type="button"
-                  onClick={openUniversityModal}
-                  className="inline-flex items-center gap-1.5 text-sm md:text-base text-slate-700 hover:text-blue-600 transition-colors font-normal cursor-pointer bg-transparent border-none py-1.5 px-3 group"
-                >
-                  <span className="text-slate-600 group-hover:text-blue-600">
-                    Show Me <strong className="font-bold text-[#0C3058] group-hover:text-blue-700">All Universities</strong> to Compare
-                  </span>
-                  <RightOutlined className="text-xs text-slate-500 group-hover:text-blue-600 transition-transform group-hover:translate-x-0.5" />
-                </button>
+                {/* Show Me All Universities to Compare button */}
+                <div className="mt-4 flex items-center justify-center">
+                  <button
+                    type="button"
+                    onClick={openUniversityModal}
+                    className="inline-flex items-center gap-1.5 text-sm md:text-base text-slate-700 hover:text-blue-600 transition-colors font-normal cursor-pointer bg-transparent border-none py-1.5 px-3 group"
+                  >
+                    <span className="text-slate-600 group-hover:text-blue-600">
+                      Show Me <strong className="font-bold text-[#0C3058] group-hover:text-blue-700">All Universities</strong> to Compare
+                    </span>
+                    <RightOutlined className="text-xs text-slate-500 group-hover:text-blue-600 transition-transform group-hover:translate-x-0.5" />
+                  </button>
+                </div>
               </div>
-            </div>
-          ) : (
-            <div className="py-8 text-center space-y-3">
-              <p className="text-slate-500 text-sm m-0">Pick up to 3 universities to compare features, fees, and rankings.</p>
-              <div>
-                <button
-                  type="button"
-                  onClick={openUniversityModal}
-                  className="inline-flex items-center gap-1.5 text-sm md:text-base text-slate-700 hover:text-blue-600 transition-colors font-normal cursor-pointer bg-transparent border-none py-1.5 px-3 group"
-                >
-                  <span className="text-slate-600 group-hover:text-blue-600">
-                    Show Me <strong className="font-bold text-[#0C3058] group-hover:text-blue-700">All Universities</strong> to Compare
-                  </span>
-                  <RightOutlined className="text-xs text-slate-500 group-hover:text-blue-600 transition-transform group-hover:translate-x-0.5" />
-                </button>
+            ) : (
+              <div className="pt-2 pb-1">
+                {/* 4 Category Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 my-4">
+                  {/* 1. Trending Universities */}
+                  <div
+                    onClick={() => openUniversityModal("trending")}
+                    className="p-4 sm:p-5 rounded-2xl border border-blue-200 bg-blue-50/20 hover:border-blue-500 hover:bg-blue-50/40 hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-between text-center group min-h-[160px]"
+                  >
+                    <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-2">
+                      <svg className="w-10 h-10 text-blue-500 group-hover:scale-105 transition-transform" viewBox="0 0 48 48" fill="none">
+                        <rect x="6" y="26" width="8" height="16" rx="2" stroke="currentColor" strokeWidth="2.5" />
+                        <rect x="20" y="18" width="8" height="24" rx="2" stroke="currentColor" strokeWidth="2.5" />
+                        <rect x="34" y="10" width="8" height="32" rx="2" stroke="currentColor" strokeWidth="2.5" />
+                        <path d="M8 20L22 10L36 4M36 4H26M36 4V14" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h4 className="text-xs sm:text-sm font-bold text-[#0C3058] group-hover:text-blue-700 tracking-wide m-0 mb-1">
+                        TRENDING UNIVERSITIES
+                      </h4>
+                      <p className="text-[11px] text-slate-400 m-0 leading-tight">
+                        Compare with popular and in-demand universities.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* 2. Recommended Universities */}
+                  <div
+                    onClick={() => openUniversityModal("recommended")}
+                    className="p-4 sm:p-5 rounded-2xl border border-amber-200 bg-amber-50/20 hover:border-amber-500 hover:bg-amber-50/40 hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-between text-center group min-h-[160px]"
+                  >
+                    <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-2">
+                      <svg className="w-10 h-10 text-amber-500 group-hover:scale-105 transition-transform" viewBox="0 0 48 48" fill="none">
+                        <path d="M12 14l1.2 2.5 2.8.4-2 2 .5 2.8-2.5-1.3-2.5 1.3.5-2.8-2-2 2.8-.4L12 14z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+                        <path d="M24 7l1.5 3 3.5.5-2.5 2.5.6 3.5-3.1-1.6-3.1 1.6.6-3.5-2.5-2.5 3.5-.5L24 7z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+                        <path d="M36 14l1.2 2.5 2.8.4-2 2 .5 2.8-2.5-1.3-2.5 1.3.5-2.8-2-2 2.8-.4L36 14z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+                        <path d="M14 26v16h-6a2 2 0 01-2-2V28a2 2 0 012-2h6zm4 16h16a3 3 0 003-2.6l2-10a3 3 0 00-3-3.4H28v-6a4 4 0 00-4-4l-6 10v16z" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h4 className="text-xs sm:text-sm font-bold text-[#0C3058] group-hover:text-amber-700 tracking-wide m-0 mb-1">
+                        RECOMMENDED UNIVERSITIES
+                      </h4>
+                      <p className="text-[11px] text-slate-400 m-0 leading-tight">
+                        Compare with popular and in-demand universities.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* 3. State Wise Universities */}
+                  <div
+                    onClick={() => openUniversityModal("state")}
+                    className="p-4 sm:p-5 rounded-2xl border border-rose-200 bg-rose-50/20 hover:border-rose-500 hover:bg-rose-50/40 hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-between text-center group min-h-[160px]"
+                  >
+                    <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-2">
+                      <svg className="w-10 h-10 text-rose-500 group-hover:scale-105 transition-transform" viewBox="0 0 48 48" fill="none">
+                        <path d="M24 6C16.268 6 10 12.268 10 20c0 9.844 12.7 20.563 13.234 21.027a1.167 1.167 0 001.532 0C25.3 40.563 38 29.844 38 20c0-7.732-6.268-14-14-14z" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                        <circle cx="24" cy="20" r="5" stroke="currentColor" strokeWidth="2.5" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h4 className="text-xs sm:text-sm font-bold text-[#0C3058] group-hover:text-rose-700 tracking-wide m-0 mb-1">
+                        STATE WISE UNIVERSITIES
+                      </h4>
+                      <p className="text-[11px] text-slate-400 m-0 leading-tight">
+                        Compare with popular and in-demand universities.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* 4. Accreditation Wise Universities */}
+                  <div
+                    onClick={() => openUniversityModal("accreditation")}
+                    className="p-4 sm:p-5 rounded-2xl border border-emerald-200 bg-emerald-50/20 hover:border-emerald-500 hover:bg-emerald-50/40 hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-between text-center group min-h-[160px]"
+                  >
+                    <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-2">
+                      <svg className="w-10 h-10 text-emerald-500 group-hover:scale-105 transition-transform" viewBox="0 0 48 48" fill="none">
+                        <path d="M24 6l3 3 4.2-.8 1.6 4 4.1 1.2.2 4.3 3.4 2.6-1.3 4.1 2.1 3.7-2.6 3.4.8 4.2-3.8 2.1-.7 4.2-4.3.7-2.1 3.7-4.1-1.3-3.4 2.7-.2-4.3-4.1-1.2-1.6-4-4.2.8-3-3 .8-4.2-2.1-3.7 2.6-3.4-.8-4.2 3.8-2.1.7-4.2 4.3-.7 2.1-3.7 4.1 1.3 3.4-2.7z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+                        <path d="M17 24l5 5 10-10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h4 className="text-xs sm:text-sm font-bold text-[#0C3058] group-hover:text-emerald-700 tracking-wide m-0 mb-1">
+                        ACCREDITATION WISE UNIVERSITIES
+                      </h4>
+                      <p className="text-[11px] text-slate-400 m-0 leading-tight">
+                        Compare with popular and in-demand universities.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Divider */}
+                <div className="w-full border-t border-slate-100 my-4" />
+
+                {/* Show Me All Universities to Compare button */}
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => openUniversityModal("all")}
+                    className="inline-flex items-center gap-1.5 text-sm md:text-base text-slate-700 hover:text-blue-600 transition-colors font-normal cursor-pointer bg-transparent border-none py-1.5 px-3 group"
+                  >
+                    <span className="text-slate-600 group-hover:text-blue-600">
+                      Show Me <strong className="font-bold text-[#0C3058] group-hover:text-blue-700">All Universities</strong> to Compare
+                    </span>
+                    <RightOutlined className="text-xs text-slate-500 group-hover:text-blue-600 transition-transform group-hover:translate-x-0.5" />
+                  </button>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
 
@@ -754,40 +1064,100 @@ export default function CompareUniversityClientView({
       <Modal
         open={isUniModalOpen}
         onCancel={() => setIsUniModalOpen(false)}
-        footer={null}
         width={960}
         centered
-        destroyOnClose={false}
+        destroyOnHidden={false}
         closable={false}
+        footer={
+          <div className="flex items-center justify-end w-full">
+            <button
+              type="button"
+              onClick={handleApplyCompareFromModal}
+              disabled={modalSelectedUnis.length === 0}
+              className={`font-medium rounded-2xl py-1.5 px-3 border-none text-xs sm:text-sm inline-flex items-center gap-1.5 transition-all ${modalSelectedUnis.length > 0
+                ? "bg-blue-500 hover:bg-blue-600 text-white cursor-pointer"
+                : "bg-blue-100 text-blue-700 cursor-not-allowed"
+                }`}
+            >
+              Compare Now <ArrowRightOutlined className="text-[10px]" />
+            </button>
+          </div>
+        }
       >
-        {/* Header (Matching Screenshot) */}
-        <div className="text-center pt-1 pb-2 relative">
+        {/* Header */}
+        <div className="flex items-center justify-between gap-2 pb-2">
+          {modalMode === "state" && selectedModalState ? (
+            <button
+              type="button"
+              onClick={() => { setSelectedModalState(null); setModalSearch(""); }}
+              className="inline-flex items-center gap-1 text-xs font-semibold text-slate-700 hover:text-rose-600 bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded-xl border-none cursor-pointer transition-colors"
+            >
+              <ArrowLeftOutlined className="text-[10px]" /> Back to States
+            </button>
+          ) : modalMode === "accreditation" && selectedModalApproval ? (
+            <button
+              type="button"
+              onClick={() => { setSelectedModalApproval(null); setModalSearch(""); }}
+              className="inline-flex items-center gap-1 text-xs font-semibold text-slate-700 hover:text-emerald-600 bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded-xl border-none cursor-pointer transition-colors"
+            >
+              <ArrowLeftOutlined className="text-[10px]" /> Back to Accreditations
+            </button>
+          ) : (
+            <div className="w-7 shrink-0" />
+          )}
+
+          <div className="flex items-center justify-center gap-2 flex-1 max-w-sm mx-auto text-center">
+            {modalMode === "state" && selectedModalState ? (
+              <span className="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-[#0C3058] truncate">
+                Universities in {selectedModalState.name}
+              </span>
+            ) : modalMode === "accreditation" && selectedModalApproval ? (
+              <span className="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-[#0C3058] truncate">
+                Universities with {selectedModalApproval.code || selectedModalApproval.name}
+              </span>
+            ) : (
+              <>
+                <div className="h-px bg-slate-200 flex-1" />
+                <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                  {modalMode === "state"
+                    ? "SELECT STATE TO COMPARE"
+                    : modalMode === "accreditation"
+                      ? "SELECT ACCREDITATION TO COMPARE"
+                      : modalMode === "trending"
+                        ? "TRENDING UNIVERSITIES"
+                        : modalMode === "recommended"
+                          ? "RECOMMENDED UNIVERSITIES"
+                          : "SELECT ANY UNIVERSITY TO COMPARE"}
+                </span>
+                <div className="h-px bg-slate-200 flex-1" />
+              </>
+            )}
+          </div>
+
           <button
+            type="button"
             onClick={() => setIsUniModalOpen(false)}
-            className="absolute top-0 right-0 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors border-none cursor-pointer"
+            className="w-7 h-7 text-gray-700 hover:text-slate-900 flex items-center justify-center transition-colors border-none bg-transparent cursor-pointer p-0 shrink-0"
             title="Close"
           >
-            <CloseOutlined className="text-[11px]" />
+            <CloseOutlined className="text-sm" />
           </button>
-          <p className="text-[11px] sm:text-xs font-bold tracking-widest text-slate-500 uppercase m-0">
-            COMPARE TOP UNIVERSITIES WITH
-          </p>
-          <h2 className="text-xl sm:text-2xl font-extrabold text-[#0C3058] tracking-tight mt-1 mb-2">
-            ALL UNIVERSITIES
-          </h2>
-          <div className="flex items-center justify-center gap-3 w-full max-w-sm mx-auto mb-2">
-            <div className="h-px bg-slate-200 flex-1" />
-            <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400">
-              SELECT ANY UNIVERSITY TO COMPARE
-            </span>
-            <div className="h-px bg-slate-200 flex-1" />
-          </div>
         </div>
 
         {/* Quick Search Input */}
         <div className="pb-3 px-1">
           <Input.Search
-            placeholder="Search universities..."
+            placeholder={
+              modalMode === "state" && !selectedModalState
+                ? "Search states (e.g. Delhi, Maharashtra)..."
+                : modalMode === "accreditation" && !selectedModalApproval
+                  ? "Search accreditations (e.g. UGC, NAAC, AICTE)..."
+                  : modalMode === "state" && selectedModalState
+                    ? `Search universities in ${selectedModalState.name}...`
+                    : modalMode === "accreditation" && selectedModalApproval
+                      ? `Search universities with ${selectedModalApproval.code || selectedModalApproval.name}...`
+                      : "Search universities..."
+            }
             value={modalSearch}
             onChange={(e) => setModalSearch(e.target.value)}
             onSearch={(val) => setModalSearch(val)}
@@ -796,80 +1166,142 @@ export default function CompareUniversityClientView({
           />
         </div>
 
-        {/* Universities List Grid (2 cols mobile, 4 cols desktop) */}
+        {/* Modal Body: States, Accreditations, or Universities */}
         <div className="max-h-[55vh] overflow-y-auto px-1 py-1">
           {modalLoading ? (
             <div className="flex items-center justify-center py-16 text-slate-400 text-sm gap-2">
               <span className="inline-block w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-              Loading universities...
+              Loading...
             </div>
-          ) : filteredModalUniversities.length === 0 ? (
-            <div className="py-12 text-center text-slate-400 text-sm">
-              No universities found matching "{modalSearch}"
-            </div>
+          ) : modalMode === "state" && !selectedModalState ? (
+            /* States Selection Grid */
+            filteredStates.length === 0 ? (
+              <div className="py-12 text-center text-slate-400 text-sm">
+                No states found matching "{modalSearch}"
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 sm:gap-3">
+                {filteredStates.map((st) => {
+                  const rawLogo = st.logo || null;
+                  return (
+                    <div
+                      key={st._id || st.slug || st.name}
+                      onClick={() => { setSelectedModalState(st); setModalSearch(""); }}
+                      className="p-2 sm:p-2.5 rounded-2xl border border-slate-200 hover:border-blue-400 hover:shadow-sm transition-all flex flex-col items-center justify-between min-h-36.25 sm:min-h-38.75 cursor-pointer bg-white relative group"
+                    >
+                      <div className="relative w-full h-14 sm:h-16 flex items-center justify-center p-1">
+                        {rawLogo ? (
+                          <Image src={getAssetPath(rawLogo)} alt={st.name} fill unoptimized className="object-contain" />
+                        ) : (
+                          <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-500">
+                            <EnvironmentOutlined className="text-lg" />
+                          </div>
+                        )}
+                      </div>
+                      <h4 className="text-[11px] sm:text-xs font-semibold text-[#0C3058] group-hover:text-blue-600 text-center line-clamp-2 leading-snug px-1 min-h-[28px] sm:min-h-[32px] flex items-center justify-center m-0 mt-1">
+                        {st.name}
+                      </h4>
+                      <div className="w-full border-t border-slate-100 my-1" />
+                      <div className="text-center w-full">
+                        <span className="text-[11px] sm:text-xs font-semibold text-blue-500 group-hover:text-blue-600 transition-colors">
+                          {st.count > 0 ? `${st.count} Universities` : "Explore"}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )
+          ) : modalMode === "accreditation" && !selectedModalApproval ? (
+            /* Accreditations Selection Grid */
+            filteredApprovals.length === 0 ? (
+              <div className="py-12 text-center text-slate-400 text-sm">
+                No accreditations found matching "{modalSearch}"
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 sm:gap-3">
+                {filteredApprovals.map((app) => {
+                  const rawLogo = app.logo || app.image || null;
+                  return (
+                    <div
+                      key={app._id || app.slug || app.name}
+                      onClick={() => { setSelectedModalApproval(app); setModalSearch(""); }}
+                      className="p-2 sm:p-2.5 rounded-2xl border border-slate-200 hover:border-blue-400 hover:shadow-sm transition-all flex flex-col items-center justify-between min-h-36.25 sm:min-h-38.75 cursor-pointer bg-white relative group"
+                    >
+                      <div className="relative w-full h-14 sm:h-16 flex items-center justify-center p-1">
+                        {rawLogo ? (
+                          <Image src={getAssetPath(rawLogo)} alt={app.name || app.code} fill unoptimized className="object-contain" />
+                        ) : (
+                          <span className="text-base sm:text-lg font-bold text-[#0C3058] bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1">
+                            {app.code || (app.name || "A").slice(0, 4)}
+                          </span>
+                        )}
+                      </div>
+                      <h4 className="text-[11px] sm:text-xs font-semibold text-[#0C3058] group-hover:text-blue-600 text-center line-clamp-2 leading-snug px-1 min-h-[28px] sm:min-h-[32px] flex items-center justify-center m-0 mt-1">
+                        {app.code || app.name}
+                      </h4>
+                      <div className="w-full border-t border-slate-100 my-1" />
+                      <div className="text-center w-full">
+                        <span className="text-[11px] sm:text-xs font-semibold text-blue-500 group-hover:text-blue-600 transition-colors">
+                          {app.count > 0 ? `${app.count} Universities` : "Explore"}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 sm:gap-3">
-              {filteredModalUniversities.map((uni) => {
-                const selected = isUniSelected(uni);
-                const disabled = !selected && currentSlots.length >= 3;
-                const rawLogo = uni.logo || uni.image || null;
-                return (
-                  <div
-                    key={uni._id || uni.slug}
-                    onClick={() => { if (!disabled) handleToggleFromModal(uni); }}
-                    className={`p-2.5 sm:p-3 rounded-2xl border transition-all flex flex-col items-center justify-between min-h-[145px] sm:min-h-[155px] cursor-pointer bg-white relative group ${selected
-                      ? "border-blue-500 shadow-sm"
-                      : disabled
-                        ? "border-slate-200 opacity-40 cursor-not-allowed"
-                        : "border-slate-200 hover:border-blue-400 hover:shadow-sm"
-                      }`}
-                  >
-                    {/* Logo */}
-                    <div className="relative w-full h-14 sm:h-16 flex items-center justify-center p-1">
-                      {rawLogo ? (
-                        <Image src={getAssetPath(rawLogo)} alt={uni.name || "University Logo"} fill unoptimized className="object-contain" />
-                      ) : (
-                        <span className="text-xl font-bold text-[#0C3058]">{(uni.name || "U")[0]}</span>
-                      )}
+            /* Universities Grid (State Universities, Accreditation Universities, Trending, Recommended, All) */
+            displayedModalUniversities.length === 0 ? (
+              <div className="py-12 text-center text-slate-400 text-sm">
+                No universities found {modalSearch ? `matching "${modalSearch}"` : "for this category"}
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 sm:gap-3">
+                {displayedModalUniversities.map((uni) => {
+                  const selected = isModalUniSelected(uni);
+                  const disabled = !selected && modalSelectedUnis.length >= 3;
+                  const rawLogo = uni.logo || uni.image || null;
+                  return (
+                    <div
+                      key={uni._id || uni.slug}
+                      onClick={() => { if (!disabled) handleToggleFromModal(uni); }}
+                      className={`p-2 sm:p-2.5 rounded-2xl border transition-all flex flex-col items-center justify-between min-h-36.25 sm:min-h-38.75 cursor-pointer bg-white relative group ${selected
+                        ? "border-blue-500 shadow-sm"
+                        : disabled
+                          ? "border-slate-200 opacity-40 cursor-not-allowed"
+                          : "border-slate-200 hover:border-blue-400 hover:shadow-sm"
+                        }`}
+                    >
+                      {/* Logo */}
+                      <div className="relative w-full h-14 sm:h-16 flex items-center justify-center p-1">
+                        {rawLogo ? (
+                          <Image src={getAssetPath(rawLogo)} alt={uni.name || "University Logo"} fill unoptimized className="object-contain" />
+                        ) : (
+                          <span className="text-xl font-bold text-[#0C3058]">{(uni.name || "U")[0]}</span>
+                        )}
+                      </div>
+                      {/* University Name */}
+                      <h4 className="text-[11px] sm:text-xs font-semibold text-[#0C3058] text-center line-clamp-2 leading-snug px-1 min-h-[28px] sm:min-h-[32px] flex items-center justify-center m-0 mt-1">
+                        {uni.name}
+                      </h4>
+
+                      {/* Divider */}
+                      <div className="w-full border-t border-slate-100 my-1" />
+
+                      {/* Bottom Action Text */}
+                      <div className="text-center w-full">
+                        <span className={`text-[11px] sm:text-xs font-semibold transition-colors ${selected ? "text-green-700" : "text-blue-500 group-hover:text-blue-600"}`}>
+                          {selected ? "✓ Added to Compare" : "+ Add to Compare"}
+                        </span>
+                      </div>
                     </div>
-
-                    {/* University Name */}
-                    <h4 className="text-[11px] sm:text-xs font-semibold text-[#0C3058] text-center line-clamp-2 leading-snug px-1 min-h-[28px] sm:min-h-[32px] flex items-center justify-center m-0 mt-1">
-                      {uni.name}
-                    </h4>
-
-                    {/* Divider */}
-                    <div className="w-full border-t border-slate-100 my-1" />
-
-                    {/* Bottom Action Text */}
-                    <div className="pt-1 pb-0.5 text-center w-full">
-                      <span className={`text-[11px] sm:text-xs font-bold transition-colors ${selected ? "text-[#009F93]" : "text-[#0C3058] group-hover:text-[#103D6D]"}`}>
-                        {selected ? "✓ Added to Compare" : "+ Add to Compare"}
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            )
           )}
-        </div>
-
-        {/* Modal Footer (Matching Screenshot) */}
-        <div className="bg-[#F8FAFC] rounded-2xl p-4 flex items-center justify-between mt-4 border border-slate-100">
-          <span className="text-xs sm:text-sm text-slate-700 font-medium">
-            <strong className="font-extrabold text-slate-900">{currentSlots.length}</strong> universities selected
-          </span>
-          <button
-            type="button"
-            onClick={handleApplyCompareFromModal}
-            disabled={currentSlots.length === 0}
-            className={`font-semibold rounded-2xl h-10 px-6 border-none text-xs sm:text-sm inline-flex items-center gap-2 transition-all ${currentSlots.length > 0
-              ? "bg-[#72CBE8] hover:bg-[#5bbad8] text-white cursor-pointer shadow-sm"
-              : "bg-[#72CBE8]/50 text-white/80 cursor-not-allowed"
-              }`}
-          >
-            Compare Now <ArrowRightOutlined className="text-xs" />
-          </button>
         </div>
       </Modal>
     </div>
