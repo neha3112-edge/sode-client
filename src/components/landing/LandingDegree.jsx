@@ -21,6 +21,75 @@ export default function LandingDegree({
     images = null,
   } = degreeInfo;
 
+  const isRushford =
+    brand.degreeLayout === "rushford" || brand.slug === "rushford";
+
+  if (isRushford) {
+    const certImages = images && images.length > 0 ? images : [image || "/assets/all_universities_images/rushford/certificate.webp"];
+
+    return (
+      <section
+        id="sample-degree"
+        className="degree-section pt-0 pb-12 sm:pb-16 bg-white select-none scroll-mt-20"
+      >
+        <div className="max-w-[1140px] mx-auto px-4 sm:px-6">
+          <div className="degree grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
+            {/* Degree display */}
+            <div className="flex justify-center">
+              {certImages.length > 1 ? (
+                <div className="w-full max-w-[380px] sm:max-w-[420px]">
+                  <Carousel autoplay autoplaySpeed={3500} dots={false}>
+                    {certImages.map((imgSrc, idx) => (
+                      <div key={idx} className="relative w-full h-[240px] sm:h-[280px]">
+                        <Image
+                          src={imgSrc}
+                          alt={title || `Certificate ${idx + 1}`}
+                          fill
+                          className="object-contain"
+                          sizes="(max-width: 768px) 380px, 420px"
+                          priority={idx === 0}
+                        />
+                      </div>
+                    ))}
+                  </Carousel>
+                </div>
+              ) : (
+                <div className="relative w-full max-w-[380px] sm:max-w-[420px] h-[240px] sm:h-[280px]">
+                  <Image
+                    src={certImages[0]}
+                    alt={title || "Certificate"}
+                    fill
+                    className="object-contain"
+                    sizes="(max-width: 768px) 380px, 420px"
+                    priority
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Degree info */}
+            <div className="degree-info text-center md:text-left">
+              <h2 className="text-[22px] sm:text-[28px] lg:text-[32px] font-bold text-[#17479e] leading-tight m-0 mb-3 sm:mb-4">
+                {title}
+              </h2>
+              <p className="text-[13.5px] sm:text-[14px] text-[#333333] leading-relaxed mb-6 font-normal">
+                {description}
+              </p>
+              <button
+                type="button"
+                onClick={() => onOpenApply?.()}
+                className="enquireNowBtn inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-[#FF0066] hover:bg-[#e0005a] text-white font-semibold text-[14px] sm:text-[15px] rounded-[5px] transition-all border-none cursor-pointer active:scale-95 shadow-sm"
+              >
+                <span>{buttonText || "Get Degree"}</span>
+                <span className="text-[15px] leading-none">➔</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   const isEsgci =
     brand.degreeLayout === "esgci" || brand.slug === "esgci";
 

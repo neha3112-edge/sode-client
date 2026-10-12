@@ -11,40 +11,40 @@ export default function RushfordApprovals({ approvals = [], brand = {} }) {
   return (
     <section
       id="accreditations"
-      className="certification w-full py-12 sm:py-16 bg-white text-center select-none scroll-mt-20"
+      className="certification w-full pt-10 sm:pt-14 pb-6 sm:pb-8 bg-white text-center select-none scroll-mt-20"
       style={{ backgroundColor: brand?.approvalsBg || "#ffffff" }}
     >
-      <div className="max-w-[1240px] mx-auto px-4 sm:px-6">
-        <h2 className="text-[#111111] text-[24px] sm:text-[30px] lg:text-[34px] font-bold text-center m-0 tracking-tight mb-2">
+      <div className="max-w-[1140px] mx-auto px-4 sm:px-6">
+        <h2 className="text-[#111111] text-[26px] sm:text-[32px] font-bold text-center m-0 tracking-tight mb-1.5">
           {sectionTitle}
         </h2>
         {sectionSubtitle && (
-          <p className="text-[15px] sm:text-[17px] text-[#555555] mb-8 font-medium">
+          <p className="text-[14px] sm:text-[15px] text-[#444444] mb-8 sm:mb-10 font-normal">
             {sectionSubtitle}
           </p>
         )}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 text-left">
           {approvals.map((item, idx) => {
             const data = normalizeApprovalItem(item, idx);
             return (
               <div
                 key={data.id}
-                className="bg-white p-5 rounded-[10px] border-2 border-slate-200 shadow-sm flex items-start gap-4 transition-all hover:shadow-md"
+                className="bg-white p-3.5 sm:p-4 rounded-[10px] border-2 border-[#cccccc] flex items-center gap-3 sm:gap-4.5"
               >
-                <div className="relative w-20 h-20 shrink-0 flex items-center justify-center">
+                <div className="relative w-[105px] sm:w-[130px] md:w-[145px] h-[58px] sm:h-[65px] md:h-[72px] shrink-0 flex items-center justify-center">
                   <Image
                     src={data.image}
                     alt={data.title || "Approval"}
                     fill
                     className="object-contain"
-                    sizes="80px"
+                    sizes="(max-width: 640px) 105px, 145px"
                   />
                 </div>
-                <div>
-                  <h3 className="text-[#111111] text-[16px] font-bold mb-1.5 leading-snug">
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-[#17479e] text-[15px] sm:text-[17px] md:text-[18px] font-bold mb-1 leading-snug">
                     {data.title}
                   </h3>
-                  <p className="text-[#555555] text-[13px] leading-relaxed m-0">
+                  <p className="text-[#444444] text-[12px] sm:text-[12.5px] md:text-[13px] leading-snug m-0">
                     {data.description}
                   </p>
                 </div>

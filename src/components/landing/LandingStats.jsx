@@ -236,33 +236,59 @@ export default function LandingStats({ stats = [], brand = {} }) {
     return (
       <section id="stats" aria-label="Key Highlights" className="achievement text-white select-none">
         <div className="w-full">
-          <div className="ach grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="ach grid grid-cols-2 lg:grid-cols-4">
             {stats.map((st, idx) => (
               <div
                 key={idx}
-                className="p-6 sm:p-8 flex items-center gap-4 text-white"
+                className="p-4 sm:p-5 lg:py-6 lg:px-7 text-white"
                 style={{ backgroundColor: st.bg || bgColors[idx % bgColors.length] }}
               >
-                <div className="shrink-0">
-                  {st.icon === "user" ? (
-                    <svg className="w-8 h-8 fill-current" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                  ) : st.icon === "clock" ? (
-                    <svg className="w-8 h-8 fill-current" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
-                  ) : st.icon === "graduation" ? (
-                    <svg className="w-8 h-8 fill-current" viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM3.45 13.47L12 18.12l8.55-4.65V18l-8.55 4.67L3.45 18v-4.53z"/></svg>
-                  ) : st.icon === "rupee" ? (
-                    <span className="text-[32px] font-bold">₹</span>
-                  ) : (
-                    <span className="text-[32px] font-bold">★</span>
-                  )}
-                </div>
-                <div>
-                  <h3 className="text-[20px] font-bold text-white m-0 mb-1 leading-snug">
-                    {st.label || st.title}
-                  </h3>
-                  <p className="text-[13.5px] text-white/95 leading-snug m-0 font-normal">
+                {/* Mobile: 2x2 cards with Icon + Title row and text below */}
+                <div className="flex flex-col sm:hidden">
+                  <div className="flex items-center gap-2 mb-1.5">
+                    {st.icon === "user" ? (
+                      <FaUser className="w-[18px] h-[18px] text-white shrink-0" />
+                    ) : st.icon === "clock" ? (
+                      <FaClock className="w-[18px] h-[18px] text-white shrink-0" />
+                    ) : st.icon === "graduation" ? (
+                      <FaGraduationCap className="w-[20px] h-[20px] text-white shrink-0" />
+                    ) : st.icon === "rupee" ? (
+                      <FaIndianRupeeSign className="w-[18px] h-[18px] text-white shrink-0" />
+                    ) : (
+                      <span className="text-[20px] font-bold">★</span>
+                    )}
+                    <h3 className="text-[17px] font-bold text-white m-0 leading-tight">
+                      {st.label || st.title}
+                    </h3>
+                  </div>
+                  <p className="text-[12px] text-white/95 leading-snug m-0 font-normal">
                     {st.value || st.desc || st.number}
                   </p>
+                </div>
+
+                {/* Desktop: Icon on left, Title + text on right */}
+                <div className="hidden sm:flex items-start gap-3.5 lg:gap-4">
+                  <div className="shrink-0 pt-0.5">
+                    {st.icon === "user" ? (
+                      <FaUser className="w-[20px] h-[20px] text-white" />
+                    ) : st.icon === "clock" ? (
+                      <FaClock className="w-[20px] h-[20px] text-white" />
+                    ) : st.icon === "graduation" ? (
+                      <FaGraduationCap className="w-[24px] h-[24px] text-white" />
+                    ) : st.icon === "rupee" ? (
+                      <FaIndianRupeeSign className="w-[20px] h-[20px] text-white" />
+                    ) : (
+                      <span className="text-[24px] font-bold">★</span>
+                    )}
+                  </div>
+                  <div>
+                    <h3 className="text-[19px] lg:text-[20px] font-bold text-white m-0 mb-1 leading-snug tracking-tight">
+                      {st.label || st.title}
+                    </h3>
+                    <p className="text-[12.5px] lg:text-[13px] text-white/95 leading-snug m-0 font-normal">
+                      {st.value || st.desc || st.number}
+                    </p>
+                  </div>
                 </div>
               </div>
             ))}

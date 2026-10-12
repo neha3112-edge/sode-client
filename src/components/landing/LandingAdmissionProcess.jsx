@@ -211,7 +211,7 @@ export default function LandingAdmissionProcess({
   return (
     <section
       id={brand.admissionProcessId || (brand.slug === "manipal" ? "apply" : brand.slug === "ggu" ? "how-to-apply" : "process")}
-      className={`apply-section ${brand.admissionSectionClass || "pt-2 sm:pt-3 lg:pt-4 pb-10 sm:pb-12 lg:pb-14 bg-white w-full select-none"}`}
+      className={`apply-section ${brand.admissionSectionClass || "pt-10 sm:pt-3 lg:pt-4 pb-10 sm:pb-12 lg:pb-14 bg-white w-full select-none"}`}
     >
       <div className="w-full px-3 sm:px-6 md:px-8 lg:px-8 xl:px-12 2xl:px-16 max-w-[1400px] mx-auto">
         {/* Heading */}
@@ -222,7 +222,7 @@ export default function LandingAdmissionProcess({
           </h2>
         ) : (
           <h2
-            className="text-[22px] sm:text-[26px] lg:text-[30px] xl:text-[32px] font-bold text-center tracking-tight mb-2.5 sm:mb-3 m-0 leading-tight"
+            className="text-[22px] sm:text-[26px] lg:text-[30px] xl:text-[32px] font-medium text-center tracking-tight mb-2.5 sm:mb-3 m-0 leading-tight"
             style={{ color: headingColor }}
           >
             {headingText}

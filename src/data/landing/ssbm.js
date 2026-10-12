@@ -169,14 +169,19 @@ export const ssbmCustomCss = `
       margin-bottom: -50px !important;
       z-index: 10 !important;
       display: block !important;
+      overflow: hidden !important;
     }
 
-    .landing-page--ssbm .hero-mobile-image-wrapper img {
-      width: 100% !important;
-      height: 100% !important;
-      object-fit: cover !important;
-      display: block !important;
-    }
+ .landing-page--ssbm .hero-mobile-image-wrapper img {
+  width: 100% !important;
+  max-width: none !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center top !important;
+  display: block !important;
+  transform: scaleX(1.15) !important;
+  transform-origin: center center !important;
+}
 
     .landing-page--ssbm .hero-form-col {
       width: 100% !important;
@@ -970,8 +975,8 @@ export const ssbmData = {
       desktopBackgroundSize: "155% auto",
       mobileBackgroundImage: "/assets/all_universities_images/ssbm/mobile_new_bg_main.png",
       mobileStudentImage: "/assets/all_universities_images/ssbm/ssbm_new_mobile_img.png",
-      mobileStudentImageWrapperClassName: "!w-full !aspect-[801/687] !relative !overflow-visible",
-      mobileStudentImageClassName: "!object-cover !object-top",
+      mobileStudentImageWrapperClassName: "!w-full !aspect-[801/687] !relative !overflow-hidden",
+      mobileStudentImageClassName: "!w-full !max-w-none !object-cover !object-top",
       noOverlay: true,
       minHeight: "570px",
       containerClassName: "!py-3 lg:!py-5 !min-h-[500px]",

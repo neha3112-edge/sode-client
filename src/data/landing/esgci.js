@@ -207,14 +207,28 @@ export const esgciCustomCss = `
     }
 
     .landing-page--esgci #hero .hero-form-col {
-      padding: 0 15px !important;
-      margin-top: 15px !important;
-      width: 100% !important;
+  width: 100% !important;
+      max-width: 100% !important;
+      display: flex !important;
+      justify-content: center !important;
+      align-items: center !important;
+      z-index: 20 !important;
+      position: relative !important;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
     }
 
     .landing-page--esgci .hero-mobile-image-wrapper img {
-      transform: none !important;
-      transform-origin: center center !important;
+      width: 100% !important;
+  max-width: none !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center top !important;
+  display: block !important;
+  transform: scaleX(1.15) !important;
+  transform-origin: center center !important;
     }
 
 
@@ -230,7 +244,7 @@ export const esgciCustomCss = `
   background-repeat: no-repeat !important;
   padding-top: 36px !important;
   padding-bottom: 45px !important;
-  min-height: 900px !important;
+  min-height: 1000px !important;
 }
 
     .landing-page--esgci .call_fix_image img {
@@ -350,7 +364,7 @@ export const esgciData = {
       backgroundImage: "/assets/all_universities_images/esgci/esgci_new_desktop_bg.png",
       mobileBackgroundImage: "/assets/all_universities_images/esgci/mobile_new_bg_main.png",
       mobileStudentImage: "/assets/all_universities_images/esgci/esgci_new_mobile.png",
-      mobileStudentImageWrapperClassName: "w-full max-w-[390px] aspect-[496/520] mx-auto relative mb-3",
+      mobileStudentImageWrapperClassName: "w-full max-w-[390px] aspect-[496/520] mx-auto relative mb-0",
       mobileStudentImageClassName: "w-full h-full object-contain object-bottom",
       mobileStudentImageStyle: {
         transform: "none",
