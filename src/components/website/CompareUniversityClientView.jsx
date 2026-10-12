@@ -490,6 +490,8 @@ export default function CompareUniversityClientView({
       }
     });
 
+    if (map.size === 0) return [];
+
     const uniPool = modalUniversities?.length > 0 ? modalUniversities : courseBasedUniversities;
     const countMap = new Map();
 
@@ -497,52 +499,13 @@ export default function CompareUniversityClientView({
       const apps = Array.isArray(u.approvals) ? u.approvals : [];
       apps.forEach((a) => {
         const aName = typeof a === "object" ? a?.name || a?.title || a?.code : a;
-        const aCode = typeof a === "object" ? a?.code : "";
-        const aLogo = typeof a === "object" ? getAssetPath(a?.logo) : null;
         if (aName) {
           const key = aName.toLowerCase();
-          countMap.set(key, (countMap.get(key) || 0) + 1);
-          if (!map.has(key)) {
-            map.set(key, {
-              _id: typeof a === "object" ? a?._id || a?.id : key,
-              name: aName,
-              code: aCode || aName,
-              logo: aLogo,
-              slug: key.replace(/\s+/g, "-"),
-            });
-          } else if (!map.get(key).logo && aLogo) {
-            map.get(key).logo = aLogo;
+          if (map.has(key)) {
+            countMap.set(key, (countMap.get(key) || 0) + 1);
           }
         }
       });
-      if (u.naac_rating) {
-        countMap.set("naac", (countMap.get("naac") || 0) + 1);
-        if (!map.has("naac")) {
-          map.set("naac", {
-            _id: "naac",
-            name: "NAAC Accredited",
-            code: "NAAC",
-            slug: "naac",
-            logo: u.naac_rating_logo || null,
-          });
-        } else if (!map.get("naac").logo && u.naac_rating_logo) {
-          map.get("naac").logo = u.naac_rating_logo;
-        }
-      }
-      if (u.nirf_rank) {
-        countMap.set("nirf", (countMap.get("nirf") || 0) + 1);
-        if (!map.has("nirf")) {
-          map.set("nirf", {
-            _id: "nirf",
-            name: "NIRF Ranked",
-            code: "NIRF",
-            slug: "nirf",
-            logo: u.nirf_rank_logo || null,
-          });
-        } else if (!map.get("nirf").logo && u.nirf_rank_logo) {
-          map.get("nirf").logo = u.nirf_rank_logo;
-        }
-      }
     });
 
     return Array.from(map.values())
@@ -1529,7 +1492,7 @@ export default function CompareUniversityClientView({
             /* Accreditations Selection Grid */
             filteredApprovals.length === 0 ? (
               <div className="py-12 text-center text-slate-400 text-sm">
-                No accreditations found matching "{modalSearch}"
+                {modalSearch ? `No accreditations found matching "${modalSearch}"` : "No accreditations available for comparison."}
               </div>
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 sm:gap-3">
