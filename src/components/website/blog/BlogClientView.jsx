@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Button, Carousel, Form, Input, message, Modal, Table } from "antd";
+import { Button, Carousel, Form, Input, message as staticMessage, Modal, Table, App } from "antd";
 import SafeHtmlRenderer from "@/components/website/SafeHtmlRenderer";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
 
@@ -273,6 +273,8 @@ export default function BlogClientView({
   initialCategories = null,
   slug: propSlug,
 }) {
+  const antdApp = App.useApp();
+  const message = antdApp?.message || staticMessage;
   const [toolsList, setToolsList] = useState(
     Array.isArray(initialTools) && initialTools.length > 0 ? initialTools : []
   );
@@ -429,6 +431,12 @@ export default function BlogClientView({
   const [commentsList, setCommentsList] = useState(
     Array.isArray(blog?.comments) ? blog.comments : []
   );
+
+  useEffect(() => {
+    if (Array.isArray(blog?.comments)) {
+      setCommentsList(blog.comments);
+    }
+  }, [blog?.comments]);
   const [pdfModalOpen, setPdfModalOpen] = useState(false);
   const [activePdf, setActivePdf] = useState({ url: "", title: "" });
   const [isMobile, setIsMobile] = useState(false);
@@ -504,21 +512,35 @@ export default function BlogClientView({
   const handleCommentSubmit = async (values) => {
     setCommentSubmitting(true);
     try {
-      await new Promise((res) => setTimeout(res, 200));
-      if (values?.name && values?.comment) {
-        setCommentsList((prev) => [
-          {
-            id: Date.now(),
-            name: values.name,
-            text: values.comment,
-          },
-          ...prev,
-        ]);
+      const res = await request.dynamicPost({
+        entity: "blogs",
+        endPoint: "v1/comment",
+        body: {
+          name: values?.name,
+          email: values?.email,
+          comment: values?.comment,
+        },
+      });
+
+      if (res && res.success !== false) {
+        const newCmt = res.result || {
+          _id: Date.now(),
+          name: values.name,
+          comment: values.comment,
+          text: values.comment,
+          createdAt: new Date().toISOString(),
+        };
+
+        setCommentsList((prev) => [newCmt, ...(Array.isArray(prev) ? prev : [])]);
+        message.success(
+          res?.message || "Thank you! Your comment has been submitted successfully."
+        );
+        commentForm.resetFields();
+      } else {
+        message.error(res?.message || "Failed to submit comment. Please try again.");
       }
-      message.success("Thank you! Your comment has been submitted successfully.");
-      commentForm.resetFields();
-    } catch {
-      message.error("Failed to submit comment. Please try again.");
+    } catch (err) {
+      message.error(err?.message || "Failed to submit comment. Please try again.");
     } finally {
       setCommentSubmitting(false);
     }
