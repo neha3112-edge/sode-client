@@ -489,18 +489,19 @@ export const ssbmCustomCss = `
     background-size: cover !important;
     background-position: center !important;
   }
-  @media (max-width: 768px) {
-    .landing-page--ssbm #benefits {
-      background-image: url(/assets/all_universities_images/ssbm/Global-mobile.webp) !important;
-      background-position: 0% 0% !important;
-      background-size: cover !important;
-      background-repeat: no-repeat !important;
-      padding-top: 30px !important;
-      padding-bottom: 350px !important;
-      padding-left: 15px !important;
-      padding-right: 15px !important;
-    }
+@media (max-width: 768px) {
+  .landing-page--ssbm #benefits {
+    background-image: url(/assets/all_universities_images/ssbm/Global-mobile.webp) !important;
+    background-size: 100% 100% !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+    padding-top: 30px !important;
+    padding-bottom: 350px !important;
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+    min-height: 1000px !important;
   }
+}
 
   /* About */
   .landing-page--ssbm #about {
