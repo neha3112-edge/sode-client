@@ -53,7 +53,7 @@ export default function CuWhyChoose({ whyChoose = [], brand = {}, onOpenApply })
           <h2 className="text-[26px] sm:text-[32px] lg:text-[36px] font-bold text-black tracking-tight leading-tight m-0">
             Why Choose CU Online University?
           </h2>
-          <p className="text-[13px] sm:text-[13.5px] lg:text-[14px] text-black mt-2.5 leading-relaxed m-0 font-normal">
+          <p className="text-[13px] sm:text-[13.5px] lg:text-[14px] text-slate-600 mt-2.5 leading-relaxed m-0 font-semibold">
             <span className="md:block">
               Chandigarh University is a UGC- DEB approved university ranked 19th. It offers flexibility, industry-oriented courses crafted for students across India. Students can earn a
             </span>
@@ -71,11 +71,10 @@ export default function CuWhyChoose({ whyChoose = [], brand = {}, onOpenApply })
             return (
               <div
                 key={idx}
-                className={`bg-white p-5 sm:p-7 shadow-[0_2px_12px_rgba(0,0,0,0.06)] rounded-none flex items-start gap-4 sm:gap-5 transition-transform hover:-translate-y-0.5 ${
-                  isRight
-                    ? "border-r-[5px] border-[#56698F]"
-                    : "border-l-[5px] border-[#56698F]"
-                }`}
+                className={`bg-white p-5 sm:p-7 shadow-[0_2px_12px_rgba(0,0,0,0.06)] rounded-none flex items-start gap-4 sm:gap-5 transition-transform hover:-translate-y-0.5 ${isRight
+                    ? "border-r-[5px] border-[#4b5563]"
+                    : "border-l-[5px] border-[#4b5563]"
+                  }`}
               >
                 <div className="relative w-14 h-14 shrink-0">
                   <Image

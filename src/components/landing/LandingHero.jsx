@@ -807,9 +807,11 @@ export default function LandingHero({
                   }}
                   className={joinClassNames(
                     "coupon-btn-main relative inline-flex items-center gap-2 sm:gap-2.5 !text-white font-bold cursor-pointer !border-none overflow-hidden select-none hover:!brightness-105 active:scale-95 !h-auto",
-                    brand.slug === "cu"
-                      ? "w-full max-w-[390px] justify-center py-2.5 px-4 rounded-[10px] text-[14px] sm:text-[15px]"
-                      : "pl-5 sm:pl-7 md:pl-8 pr-4.5 sm:pr-6 md:pr-7 py-1 sm:py-1.5 rounded-[8px] text-[10px] sm:text-[11px] md:text-[11.5px]"
+                    hero.couponButtonClassName ||
+                    brand.couponButtonClassName ||
+                    (brand.slug === "cu"
+                      ? "w-full max-w-[290px] sm:max-w-[310px] mx-auto justify-center py-2.5 px-4 rounded-[8px]"
+                      : "pl-5 sm:pl-7 md:pl-8 pr-4.5 sm:pr-6 md:pr-7 py-1 sm:py-1.5 rounded-[8px] text-[10px] sm:text-[11px] md:text-[11.5px]")
                   )}
                 >
                   {/* Moving Light Green Box */}
@@ -817,25 +819,12 @@ export default function LandingHero({
 
                   {/* Gift Icon */}
                   <span
-                    className="
-                      relative
-                      -ml-1.5
-                      sm:-ml-2.5
-                      w-6
-                      h-6
-                      sm:w-7
-                      sm:h-7
-                      rounded-full
-                      bg-white
-                      flex
-                      items-center
-                      justify-center
-                      shrink-0
-                      shadow-xs
-                      z-10
-                      p-0
-                      overflow-hidden
-                    "
+                    className={joinClassNames(
+                      "relative rounded-full bg-white flex items-center justify-center shrink-0 shadow-xs z-10 p-0 overflow-hidden",
+                      brand.slug === "cu"
+                        ? "-ml-1 w-6 h-6 sm:w-6.5 sm:h-6.5"
+                        : "-ml-1.5 sm:-ml-2.5 w-6 h-6 sm:w-7 sm:h-7"
+                    )}
                   >
                     <Image
                       src={
@@ -843,27 +832,27 @@ export default function LandingHero({
                         "/assets/images/gift.gif"
                       }
                       alt="Scholarship Gift"
-                      width={26}
-                      height={26}
+                      width={24}
+                      height={24}
                       unoptimized
-                      className="w-5 h-5 sm:w-6 sm:h-6 object-contain"
+                      className={
+                        brand.slug === "cu"
+                          ? "w-5 h-5 sm:w-5.5 sm:h-5.5 object-contain"
+                          : "w-5 h-5 sm:w-6 sm:h-6 object-contain"
+                      }
                     />
                   </span>
 
                   {/* Coupon Text */}
                   <span
-                    className="
-                      relative
-                      z-10
-                      tracking-wide
-                      whitespace-nowrap
-                      text-white
-                      font-bold
-                      drop-shadow-[0_1px_2px_rgba(0,0,0,0.15)]
-                      text-[14px]
-                      sm:text-[15px]
-                      md:text-[15.5px]
-                    "
+                    className={joinClassNames(
+                      "relative z-10 tracking-wide whitespace-nowrap text-white font-bold drop-shadow-[0_1px_2px_rgba(0,0,0,0.15)]",
+                      hero.couponButtonTextClassName ||
+                      brand.couponButtonTextClassName ||
+                      (brand.slug === "cu"
+                        ? "text-[13.5px] sm:text-[14px]"
+                        : "text-[14px] sm:text-[15px] md:text-[15.5px]")
+                    )}
                   >
                     {brand.couponButtonText || "Scholarship Coupon Code"}
                   </span>

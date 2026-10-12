@@ -84,10 +84,10 @@ export default function CuProgrammes({
 
   return (
     <section id="programs" className="py-12 sm:py-16 bg-white select-none scroll-mt-20">
-      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1240px] mx-auto px-5 sm:px-6 lg:px-8">
         {/* Title */}
         <div className="text-center mb-8 sm:mb-12">
-          <h2 className="text-[26px] sm:text-[32px] lg:text-[36px] font-bold text-black tracking-tight leading-tight m-0">
+          <h2 className="text-[22px] sm:text-[26px] lg:text-[30px] font-bold text-gray-700 tracking-tight leading-tight m-0">
             Chandigarh University <br />
             Online Degree Programs
           </h2>
@@ -97,22 +97,20 @@ export default function CuProgrammes({
             <button
               type="button"
               onClick={() => setActiveTab("PG")}
-              className={`px-7 py-3 rounded-[10px] font-medium text-sm sm:text-base cursor-pointer border-none transition-all ${
-                activeTab === "PG"
-                  ? "bg-[#d11c1f] text-white shadow-md font-semibold"
-                  : "bg-[#e6e6e6] text-slate-800 hover:bg-[#dedede]"
-              }`}
+              className={`px-7 py-3 rounded-[10px] font-medium text-sm sm:text-base cursor-pointer border-none transition-all ${activeTab === "PG"
+                ? "bg-[#d11c1f] text-white shadow-md font-semibold"
+                : "bg-[#e6e6e6] text-slate-800 hover:bg-[#dedede]"
+                }`}
             >
               Post Graduate
             </button>
             <button
               type="button"
               onClick={() => setActiveTab("UG")}
-              className={`px-7 py-3 rounded-[10px] font-medium text-sm sm:text-base cursor-pointer border-none transition-all ${
-                activeTab === "UG"
-                  ? "bg-[#d11c1f] text-white shadow-md font-semibold"
-                  : "bg-[#e6e6e6] text-slate-800 hover:bg-[#dedede]"
-              }`}
+              className={`px-7 py-3 rounded-[10px] font-medium text-sm sm:text-base cursor-pointer border-none transition-all ${activeTab === "UG"
+                ? "bg-[#d11c1f] text-white shadow-md font-semibold"
+                : "bg-[#e6e6e6] text-slate-800 hover:bg-[#dedede]"
+                }`}
             >
               Under Graduate
             </button>
@@ -124,10 +122,10 @@ export default function CuProgrammes({
           {displayList.map((prog) => (
             <div
               key={prog.code}
-              className="bg-white rounded-[12px] overflow-hidden border border-slate-200/90 shadow-[0_4px_16px_rgba(0,0,0,0.06)] hover:shadow-[0_10px_28px_rgba(0,0,0,0.12)] transition-all flex flex-col justify-between"
+              className="bg-white rounded-[14px] overflow-hidden border border-slate-200/80 shadow-[0_4px_22px_rgba(0,0,0,0.11)] hover:shadow-[0_10px_32px_rgba(0,0,0,0.16)] transition-all flex flex-col justify-between w-full max-w-[335px] sm:max-w-[345px] md:max-w-none mx-auto"
             >
               <div>
-                <div className="relative w-full h-48 sm:h-52 bg-slate-100">
+                <div className="relative w-full h-44 sm:h-48 bg-slate-100">
                   <Image
                     src={prog.image}
                     alt={prog.title}
@@ -136,18 +134,18 @@ export default function CuProgrammes({
                     sizes="(max-width: 768px) 100vw, 380px"
                   />
                 </div>
-                <div className="p-5 sm:p-6">
-                  <h3 className="text-3xl sm:text-[38px] font-black text-slate-900 m-0 leading-none">
+                <div className="p-4 sm:p-5">
+                  <h3 className="text-[28px] sm:text-[36px] lg:text-[38px] font-semibold text-slate-900 m-0 leading-none">
                     {prog.code}
                   </h3>
-                  <p className="text-sm font-semibold text-slate-700 mt-1.5 mb-2 m-0 leading-tight">
+                  <p className="text-sm font-semibold text-slate-700 mt-2 mb-2 m-0 leading-tight">
                     {prog.title}
                   </p>
-                  <hr className="my-3 border-slate-200" />
-                  <p className="text-xs sm:text-[13.5px] text-slate-600 leading-relaxed m-0 min-h-[54px]">
+                  <hr className="my-2.5 border-slate-200" />
+                  <p className="text-xs sm:text-[13px] text-slate-600 leading-relaxed m-0 min-h-[48px]">
                     {prog.desc}
                   </p>
-                  <div className="flex items-center gap-1.5 text-xs sm:text-[13px] text-slate-700 mt-3 pt-2.5 border-t border-slate-100">
+                  <div className="flex items-center gap-1.5 text-xs sm:text-[13px] text-slate-700 mt-2.5 pt-2 border-t border-slate-100">
                     <Clock className="w-3.5 h-3.5 text-[#d11c1f]" />
                     <span>
                       <b>Duration :</b> {prog.duration}
@@ -156,11 +154,11 @@ export default function CuProgrammes({
                 </div>
               </div>
 
-              <div className="p-5 sm:p-6 pt-0">
+              <div className="p-4 sm:p-5 pt-0">
                 <button
                   type="button"
                   onClick={() => onSelectCourseForBrochure?.(prog.code, `Download ${prog.code} Brochure`)}
-                  className="w-full bg-[#d11c1f] hover:bg-[#b51619] text-white font-bold text-sm sm:text-base py-3 px-4 rounded-[6px] shadow-sm flex items-center justify-center gap-2 cursor-pointer border-none transition-all active:scale-95"
+                  className="w-full bg-[#d11c1f] hover:bg-[#b51619] text-white font-bold text-sm sm:text-base py-2.5 px-4 rounded-[6px] shadow-sm flex items-center justify-center gap-2 cursor-pointer border-none transition-all active:scale-95"
                 >
                   <span>Download Brochure</span>
                   <Download className="w-4 h-4" />

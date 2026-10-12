@@ -26,10 +26,9 @@ export default function CuAbout({
           {/* Left Text */}
           <div className="lg:col-span-6 space-y-4 text-left">
             <h2 className="text-[28px] sm:text-[33px] lg:text-[36px] font-bold text-white tracking-tight leading-[1.2] m-0">
-              <span className="block">About Chandigarh University</span>
-              <span className="block">Online</span>
+              <span className="block">About Chandigarh University Online</span>
             </h2>
-            <p className="text-[12.5px] sm:text-[13px] text-slate-200/90 leading-[1.65] font-normal m-0 max-w-[480px]">
+            <p className="text-[13px] sm:text-[13px] text-white leading-[1.65] font-normal m-1  mt-2 max-w-[480px]">
               {text}
             </p>
             <div className="pt-2 sm:pt-3">
@@ -46,7 +45,7 @@ export default function CuAbout({
 
           {/* Right Campus Artwork */}
           <div className="lg:col-span-6 flex justify-center lg:justify-end">
-            <div className="relative w-full max-w-[600px] lg:max-w-[650px] h-[260px] sm:h-[400px] lg:h-[500px]">
+            <div className="relative w-full max-w-[600px] lg:max-w-[650px] h-[330px] sm:h-[420px] lg:h-[500px]">
               <Image
                 src={campusImage}
                 alt="About Chandigarh University Online"

@@ -83,15 +83,26 @@ export const cuData = {
       mobileBackgroundImage: "",
       showMobileCouponButton: true,
       mobileStudentImage: "/assets/cu/university.webp",
-      mobileStudentImageWrapperClassName: "block lg:hidden w-full max-w-[390px] mx-auto relative aspect-[925/433] rounded-[18px] overflow-hidden my-3 shadow-sm",
+      mobileStudentImageWrapperClassName: "block lg:hidden w-full max-w-[365px] mx-auto relative aspect-[925/433] rounded-[16px] overflow-hidden my-3 shadow-sm",
       noOverlay: true,
       backgroundPosition: "53% top",
       backgroundSize: "cover",
       backgroundRepeat: "no-repeat",
       isDarkTheme: false,
-      sectionBg: "#f3f4f6",
-      backgroundColor: "#f3f4f6",
-      contentClassName: "lg:max-w-[410px] xl:max-w-[420px]",
+      sectionBg: "#ffffff",
+      backgroundColor: "#ffffff",
+      containerClassName: "px-4 sm:px-6 lg:px-8",
+      formContainerClassName: "w-full max-w-[365px] sm:max-w-[350px] mx-auto px-1 sm:px-0",
+      formStyle: {
+        maxWidth: "340px",
+        margin: "0 auto",
+      },
+      form: {
+        layout: {
+          maxWidth: "340px",
+        },
+      },
+      contentClassName: "lg:max-w-[450px] xl:max-w-[470px]",
 
       hashtagText: "#Discover.Learn.Empower",
       hashtagClassName: "m-0 text-left font-medium",
@@ -103,36 +114,40 @@ export const cuData = {
         marginBottom: "4px",
       },
 
-      headlineText: "Chandigarh\nUniversity\nOnline",
+      headlineText: "Chandigarh\nUniversity Online",
       headingFont: "var(--font-poppins), 'Poppins', sans-serif",
       headingClassName: "mt-1 mb-2 whitespace-pre-line text-left",
       headingStyle: {
         color: "#d11c1f",
-        fontSize: "clamp(34px, 4.4vw, 42px)",
+        fontSize: "clamp(32px, 4.4vw, 42px)",
         fontWeight: "800",
-        lineHeight: "1.12",
-        letterSpacing: "-0.5px",
+        lineHeight: "1.14",
+        letterSpacing: "0.5px",
       },
 
       taglineText: "Redefine your future and elevate your potential with CU Online.",
-      taglineClassName: "my-2 max-w-[360px] text-left",
+      taglineClassName: "my-2 max-w-[365px] text-left",
       taglineStyle: {
         color: "#2e2a2aff",
         fontSize: "14.5px",
         fontWeight: "400",
         lineHeight: "1.5",
+        letterSpacing: "0.2px",
       },
 
       hideCourseBox: true,
       coursesStrip: [
-        "BBA | BCA | BA-JMC | MBA |\nMCA | MA-JMC | MSC | MA",
+        "BBA  |  BCA  |  BA-JMC  |  MBA  |  MCA  |",
+        "MA-JMC  |  MSC  |  MA",
       ],
-      courseStripClassName: "my-2.5 sm:my-3 max-w-[340px] leading-snug text-left whitespace-pre-line font-semibold",
+      courseStripClassName: "my-2 sm:my-2.5 max-w-full text-left font-bold space-y-1",
+      courseStripItemClassName: "whitespace-nowrap",
       courseStripStyle: {
-        color: "#111111",
-        fontSize: "clamp(18px, 2.3vw, 22px)",
-        fontWeight: "600",
-        letterSpacing: "0.2px",
+        color: "#2b2727ff",
+        fontSize: "clamp(18px, 2.3vw, 19px)",
+        fontWeight: "800",
+        letterSpacing: "0.1px",
+        wordSpacing: "2px",
       },
 
       brochureButtonText: "Download Brochure",
@@ -170,7 +185,7 @@ export const cuData = {
       submitButtonRadius: "8px",
     },
     coursesStrip: [
-      "BBA | BCA | BA-JMC | MBA | MCA | MA-JMC | MSC | MA",
+      "BBA  |  BCA  |  BA-JMC  |  MBA  |  MCA  |  MA-JMC  |  MSC  |  MA",
     ],
     customCss: `
       /* Pulse & Shine Animations for CU */
@@ -533,12 +548,15 @@ export const cuData = {
     },
   ],
   enrollmentProcess: {
-    title: "How to Apply for Chandigarh University Online Courses",
+    title: "How to Apply for Chandigarh\nUniversity Online Courses",
     titleColor: "#d11c1f",
     headingColor: "#d11c1f",
+    headingClassName: "text-[26px] sm:text-[32px] lg:text-[36px] font-bold text-center tracking-tight mb-3 sm:mb-4 m-0 leading-[1.2] whitespace-pre-line",
+    subtitleClassName: "text-[13px] sm:text-[14px] text-center text-slate-900 font-medium tracking-[0.2px] mb-6 sm:mb-8 max-w-[950px] mx-auto leading-[1.65] m-0 px-3 sm:px-4 whitespace-pre-line",
     subtitleStyle: {
-      color: "#000000",
-      letterSpacing: "0.3px",
+      color: "#222222",
+      fontWeight: "500",
+      letterSpacing: "0.2px",
     },
     description:
       "The admission process for Chandigarh University course admissions is very simple and user-friendly. Here’s a step-by-step\nguide to enrolling in a degree course at the university :",

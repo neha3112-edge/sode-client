@@ -252,7 +252,12 @@ export default function LandingAdmissionProcess({
           </h2>
         ) : (
           <h2
-            className="text-[21px] sm:text-[26px] lg:text-[30px] xl:text-[32px] font-bold text-center tracking-tight mb-2.5 sm:mb-3.5 m-0 leading-[1.25] whitespace-pre-line"
+            className={
+              enrollmentProcess?.headingClassName ||
+              admissionProcess?.headingClassName ||
+              brand.admissionHeadingClass ||
+              "text-[26px] sm:text-[32px] lg:text-[36px] xl:text-[38px] font-bold text-center tracking-tight mb-2.5 sm:mb-3.5 m-0 leading-[1.2] whitespace-pre-line"
+            }
             style={{ color: headingColor }}
           >
             {headingText}

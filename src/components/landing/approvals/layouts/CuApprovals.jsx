@@ -32,13 +32,13 @@ export default function CuApprovals({ approvals = [], brand = {} }) {
           CU Online <span className="text-black font-bold">Awards & Recognition</span>
         </h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-md sm:max-w-none mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-[310px] sm:max-w-none mx-auto">
           {list.map((item, idx) => (
             <div
               key={idx}
-              className="bg-white rounded-[22px] p-4 sm:p-5 lg:p-6 shadow-[0_4px_18px_rgba(0,0,0,0.06)] flex flex-col items-center justify-center text-center min-h-[195px] sm:min-h-[215px] lg:min-h-[230px] transition-transform duration-200 hover:-translate-y-1"
+              className="bg-white rounded-[16px] sm:rounded-[20px] p-3.5 sm:p-5 shadow-[0_4px_16px_rgba(0,0,0,0.06)] flex flex-col items-center justify-center text-center min-h-[160px] sm:min-h-[195px] lg:min-h-[210px] transition-transform duration-200 hover:-translate-y-1"
             >
-              <div className="relative w-full h-24 sm:h-28 lg:h-[105px] flex items-center justify-center">
+              <div className="relative w-full h-18 sm:h-22 lg:h-[90px] flex items-center justify-center">
                 <Image
                   src={item.image}
                   alt={item.title || item.text || "Approval"}
@@ -47,7 +47,7 @@ export default function CuApprovals({ approvals = [], brand = {} }) {
                   sizes="(max-width: 768px) 50vw, 25vw"
                 />
               </div>
-              <p className="text-xs sm:text-[13.5px] font-medium text-slate-800 m-0 mt-2 sm:mt-2.5 leading-snug max-w-[220px]">
+              <p className="text-[11.5px] sm:text-[13px] font-medium text-slate-800 m-0 mt-2 sm:mt-2.5 leading-snug max-w-[200px]">
                 {item.title || item.text}
               </p>
             </div>

@@ -30,13 +30,13 @@ export default function LandingDegree({
     return (
       <section
         id="certificate"
-        className="py-14 sm:py-20 bg-white select-none scroll-mt-20"
+        className="py-16 sm:py-24 bg-white select-none scroll-mt-20"
       >
-        <div className="max-w-[1260px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+        <div className="max-w-[1260px] mx-auto px-5 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
             {/* Left Degree Image */}
             <div className="lg:col-span-6 flex justify-center lg:justify-start">
-              <div className="relative w-full max-w-[620px] lg:max-w-[640px] h-[260px] sm:h-[400px] lg:h-[480px]">
+              <div className="relative w-full max-w-[620px] lg:max-w-[640px] h-[280px] sm:h-[400px] lg:h-[480px]">
                 <Image
                   src={certImage}
                   alt="Sample Degree"
@@ -49,32 +49,33 @@ export default function LandingDegree({
             </div>
 
             {/* Right Content */}
-            <div className="lg:col-span-6 text-left space-y-4">
-              <p className="text-sm sm:text-base font-bold text-slate-800 m-0">
+            <div className="lg:col-span-6 text-left">
+              <p className="text-[13.5px] sm:text-[14.5px] font-bold text-slate-900 m-0 mb-2">
                 Launch Your Career with an Online Degree From
               </p>
-              <h2 className="text-[28px] sm:text-[34px] lg:text-[40px] font-bold text-[#d11c1f] m-0 leading-tight">
-                Chandigarh University Online Learning Platform
+              <h2 className="text-[25px] sm:text-[32px] lg:text-[36px] font-bold text-[#d11c1f] m-0 leading-[1.2] mb-3.5">
+                <span className="block">Chandigarh University</span>
+                <span className="block">Online Learning Platform</span>
               </h2>
-              <p className="text-[13px] sm:text-[14px] text-slate-600 leading-relaxed m-0 font-normal max-w-[520px]">
+              <p className="text-[12.5px] sm:text-[13px] text-slate-600 leading-[1.65] m-0 font-normal max-w-[490px] mb-3.5">
                 Choose from a wide range of UGC-approved online degrees designed to
                 provide you with in-demand skills for today&apos;s dynamic work
                 environment.
               </p>
-              <ul className="space-y-2.5 text-[13px] sm:text-[14px] text-slate-700 font-medium list-disc pl-5 m-0 pt-1">
+              <ul className="space-y-1.5 text-[12.5px] sm:text-[13px] text-slate-700 font-normal list-disc pl-4 m-0 mb-5">
                 <li>Industry-expert faculty</li>
                 <li>Flexible scheduling</li>
                 <li>Future-ready curriculum</li>
                 <li>Globally recognized degree</li>
               </ul>
-              <div className="pt-2">
+              <div className="pt-1 pb-4">
                 <button
                   type="button"
                   onClick={() => onOpenApply?.()}
-                  className="bg-[#d11c1f] hover:bg-[#b51619] text-white font-bold text-sm sm:text-base px-8 py-3 rounded-[8px] shadow-sm inline-flex items-center gap-2 cursor-pointer border-none transition-all active:scale-95"
+                  className="bg-[#d11c1f] hover:bg-[#b51619] text-white font-bold text-[13px] sm:text-[14px] px-6 py-2.5 rounded-[6px] shadow-sm inline-flex items-center gap-2 cursor-pointer border-none transition-all active:scale-95"
                 >
                   <span>Know More</span>
-                  <span className="text-[16px]">→</span>
+                  <span className="text-[14px] leading-none">➔</span>
                 </button>
               </div>
             </div>

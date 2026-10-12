@@ -89,16 +89,16 @@ export default function LandingStats({ stats = [], brand = {} }) {
     return (
       <section
         id="achievements"
-        className="w-full bg-[#d11c1f] text-white py-8 sm:py-10 select-none scroll-mt-20"
+        className="w-full bg-[#d11c1f] text-white py-6 sm:py-8 select-none scroll-mt-20"
       >
         <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 text-center items-center">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-5 sm:gap-7 text-left items-start">
             {stats.map((st, idx) => (
-              <div key={idx} className="flex flex-col items-center justify-center">
-                <h3 className="text-3xl sm:text-4xl lg:text-[44px] font-bold tracking-wider text-white m-0 leading-none">
+              <div key={idx} className="flex flex-col items-start justify-start text-left">
+                <h3 className="text-[26px] sm:text-[32px] lg:text-[36px] font-bold tracking-wider text-white m-0 leading-none text-left">
                   {st.number || st.value || st.stat}
                 </h3>
-                <p className="text-xs sm:text-[13px] lg:text-[14px] text-white/95 mt-2.5 m-0 max-w-[240px] leading-snug font-medium">
+                <p className="text-[11.5px] sm:text-[12.5px] lg:text-[13px] text-white/90 mt-2 m-0 max-w-[220px] leading-snug font-medium text-left">
                   {st.label || st.text}
                 </p>
               </div>
