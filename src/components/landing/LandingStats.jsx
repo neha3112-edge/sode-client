@@ -1,7 +1,9 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { BookOpen, Users, Globe, Trophy, Star } from "lucide-react";
+import { FaUser, FaClock, FaGraduationCap, FaIndianRupeeSign } from "react-icons/fa6";
 
 function BuildingIcon({ className }) {
   return (
@@ -171,9 +173,12 @@ export default function LandingStats({ stats = [], brand = {} }) {
             {stats.map((st, idx) => (
               <div key={idx} className="ac1">
                 {st.icon && (
-                  <img
+                  <Image
                     src={st.icon}
                     alt={st.label}
+                    width={40}
+                    height={40}
+                    className="object-contain"
                   />
                 )}
                 <div>
@@ -272,26 +277,28 @@ export default function LandingStats({ stats = [], brand = {} }) {
   // ==========================================
   if (isEsgciLayout) {
     return (
-      <section id="stats" aria-label="Key Highlights" className="achievement bg-black text-white py-6 sm:py-8 select-none">
+      <section id="stats" aria-label="Key Highlights" className="achievement bg-black text-white py-8 sm:py-10 select-none">
         <div className="max-w-[1240px] mx-auto px-4 sm:px-6">
-          <div className="ach grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 text-center">
+          <div className="ach grid grid-cols-2 lg:grid-cols-4 gap-y-7 gap-x-4 sm:gap-6 lg:gap-8 text-center items-start">
             {stats.map((st, idx) => (
-              <div key={idx} className="ac1 p-4 flex flex-col items-center justify-center">
-                {st.icon === "user" ? (
-                  <svg className="w-7 h-7 text-[#04903c] mb-2 fill-current" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                ) : st.icon === "clock" ? (
-                  <svg className="w-7 h-7 text-[#04903c] mb-2 fill-current" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
-                ) : st.icon === "graduation" ? (
-                  <svg className="w-7 h-7 text-[#04903c] mb-2 fill-current" viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM3.45 13.47L12 18.12l8.55-4.65V18l-8.55 4.67L3.45 18v-4.53z"/></svg>
-                ) : st.icon === "rupee" ? (
-                  <span className="text-[26px] font-bold text-[#04903c] mb-1">₹</span>
-                ) : (
-                  <span className="text-[26px] font-bold text-[#04903c] mb-1">★</span>
-                )}
-                <h3 className="text-[18px] sm:text-[19px] font-bold text-[#04903c] m-0 mb-1 tracking-tight">
+              <div key={idx} className="ac1 p-2 sm:p-3 flex flex-col items-center justify-start">
+                <div className="mb-2 sm:mb-2.5 flex items-center justify-center">
+                  {st.icon === "user" ? (
+                    <FaUser className="w-7 h-7 sm:w-8 sm:h-8 lg:w-9 lg:h-9 text-[#fff000]" />
+                  ) : st.icon === "clock" ? (
+                    <FaClock className="w-7 h-7 sm:w-8 sm:h-8 lg:w-9 lg:h-9 text-[#fff000]" />
+                  ) : st.icon === "graduation" ? (
+                    <FaGraduationCap className="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 text-[#fff000]" />
+                  ) : st.icon === "rupee" ? (
+                    <FaIndianRupeeSign className="w-7 h-7 sm:w-8 sm:h-8 lg:w-8 lg:h-8 text-[#fff000]" />
+                  ) : (
+                    <span className="text-[32px] font-bold text-[#fff000]">★</span>
+                  )}
+                </div>
+                <h3 className="text-[20px] sm:text-[22px] lg:text-[24px] font-black text-[#04903c] m-0 mb-1.5 tracking-tight font-outfit">
                   {st.label || st.title}
                 </h3>
-                <p className="text-[13px] sm:text-[13.5px] text-white/90 leading-snug m-0 font-normal">
+                <p className="text-[13.5px] sm:text-[14px] lg:text-[14.5px] text-white leading-snug sm:leading-[1.4] m-0 font-semibold max-w-[210px] sm:max-w-[240px] mx-auto">
                   {st.value || st.desc || st.number}
                 </p>
               </div>

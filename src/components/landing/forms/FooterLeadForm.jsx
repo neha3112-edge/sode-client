@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { Form } from "antd";
 import { Phone } from "lucide-react";
 import LandingContainer from "../LandingContainer";
@@ -72,13 +73,13 @@ export default function FooterLeadForm({
 
                   {/* Orange Call Pill Button */}
                   <div className="flex justify-center mb-3">
-                    <a
+                    <Link
                       href={`tel:${phoneHref}`}
                       className="inline-flex items-center gap-1.5 bg-[#f78d2d] hover:bg-[#ea7d1d] text-white font-bold text-[12.5px] sm:text-[13px] px-4 py-1.5 rounded-full shadow-xs transition-colors cursor-pointer no-underline"
                     >
                       <Phone className="w-3.5 h-3.5 fill-current" />
                       <span>{config.phoneDisplay || "+91 7065 7777 55"}</span>
-                    </a>
+                    </Link>
                   </div>
 
                   {/* Form Fields */}

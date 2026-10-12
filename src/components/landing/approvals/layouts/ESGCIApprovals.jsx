@@ -10,37 +10,37 @@ export default function ESGCIApprovals({ approvals = [], brand = {} }) {
   return (
     <section
       id="certification"
-      className="certification w-full py-12 sm:py-16  text-center select-none scroll-mt-20"
-      style={{ backgroundColor: brand?.approvalsBg }}
+      className="certification w-full py-10 sm:py-14 lg:py-16 text-center select-none scroll-mt-20 bg-white"
+      style={{ backgroundColor: brand?.approvalsBg || "#ffffff" }}
     >
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6">
         <h2
-          className="text-[#111111] text-[24px] sm:text-[30px] lg:text-[34px] font-bold text-center m-0 uppercase tracking-tight mb-8"
+          className="text-[#111111] text-[22px] sm:text-[28px] lg:text-[32px] font-bold text-center m-0 uppercase tracking-tight mb-8 sm:mb-10 lg:mb-12"
           style={{ color: brand?.approvalsHeaderColor || "#111111" }}
         >
           {sectionTitle}
         </h2>
-        <div className="b2-info grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 sm:gap-x-6 lg:gap-x-8 gap-y-8 sm:gap-y-10 items-start max-w-[1140px] mx-auto">
           {approvals.map((item, idx) => {
             const data = normalizeApprovalItem(item, idx);
             return (
               <div
                 key={data.id}
-                className="b1 bg-white p-6 rounded-[8px] border border-slate-200/90 shadow-[0_2px_12px_rgba(0,0,0,0.05)] flex flex-col items-center text-center transition-all hover:-translate-y-1"
+                className="flex flex-col items-center text-center px-1 sm:px-2"
               >
-                <div className="relative w-full h-20 mb-4 flex items-center justify-center">
+                <div className="relative w-full h-12 sm:h-14 lg:h-16 max-w-[170px] mb-3 sm:mb-4 flex items-center justify-center">
                   <Image
                     src={data.image}
                     alt={data.title || "Approval"}
                     fill
                     className="object-contain"
-                    sizes="180px"
+                    sizes="(max-width: 768px) 140px, 170px"
                   />
                 </div>
-                <h3 className="text-[#111111] text-[16px] font-bold mb-2 leading-snug">
+                <h3 className="text-[#04903c] text-[13.5px] sm:text-[15px] lg:text-[16px] font-bold mb-1.5 leading-snug">
                   {data.title}
                 </h3>
-                <p className="text-[#555555] text-[13px] leading-relaxed m-0 font-normal">
+                <p className="text-[#555555] text-[11px] sm:text-[12px] lg:text-[12.5px] leading-relaxed m-0 font-normal max-w-[240px]">
                   {data.description}
                 </p>
               </div>

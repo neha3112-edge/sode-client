@@ -21,6 +21,53 @@ export default function LandingDegree({
     images = null,
   } = degreeInfo;
 
+  const isEsgci =
+    brand.degreeLayout === "esgci" || brand.slug === "esgci";
+
+  if (isEsgci) {
+    return (
+      <section
+        id="sample-degree"
+        className="degree-section py-10 sm:py-16 bg-white select-none scroll-mt-20"
+      >
+        <div className="max-w-[1140px] mx-auto px-4 sm:px-6">
+          <div className="degree grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
+            {/* Degree display */}
+            <div className="flex justify-center">
+              <div className="relative w-full max-w-[440px] shadow-[0_0_5px_2px_#ccc] rounded-[4px] overflow-hidden bg-white">
+                <Image
+                  src={image || "/assets/all_universities_images/esgci/degree-ESGCI.webp"}
+                  alt={title || "ESGCI Online DBA Degree"}
+                  width={600}
+                  height={420}
+                  className="w-full h-auto object-contain"
+                  priority
+                />
+              </div>
+            </div>
+
+            {/* Degree info */}
+            <div className="degree-info text-left">
+              <h2 className="text-[22px] sm:text-[30px] lg:text-[35px] font-bold text-[#04903c] leading-tight m-0 mb-3">
+                {title || "ESGCI Online DBA Degree"}
+              </h2>
+              <p className="text-[13.5px] sm:text-[14px] text-[#333333] leading-relaxed mb-6 font-normal">
+                {description}
+              </p>
+              <button
+                type="button"
+                onClick={() => onOpenApply?.()}
+                className="enquireNowBtn px-7 py-2.5 bg-[#fff000] hover:bg-[#ebd800] text-black font-bold text-[15px] sm:text-[16px] rounded-[5px] transition-all border-none cursor-pointer active:scale-95 shadow-sm"
+              >
+                {buttonText || "Get Degree"}
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   const isIiitb =
     brand.degreeLayout === "iiitb" || brand.slug === "iiitb";
 
@@ -263,10 +310,12 @@ export default function LandingDegree({
         <div className="container">
           <div className="degree">
             <center>
-              <img
+              <Image
                 src={image || "/assets/iim/sample-certificate.webp"}
                 alt="sample-degree"
-                className="img-responsive"
+                width={500}
+                height={350}
+                className="img-responsive object-contain"
               />
             </center>
             <div className="degree-info">

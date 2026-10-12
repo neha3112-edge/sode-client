@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import Image from "next/image";
 import { triggerGiftConfetti } from "./stickyCtaUtils";
 
@@ -22,7 +23,7 @@ export default function StickyFloatingActions({
     <div className="fixed bottom-14 sm:bottom-6 right-3 sm:right-6 z-40 flex flex-col items-center gap-2.5 sm:gap-3 pointer-events-auto">
       {/* Top: Call Icon */}
       {floatingCall.enabled && (
-        <a
+        <Link
           href={callHref}
           aria-label={labels.callAria}
           title={labels.callAria}
@@ -38,7 +39,7 @@ export default function StickyFloatingActions({
             className="object-cover"
             sizes="64px"
           />
-        </a>
+        </Link>
       )}
 
       {/* Bottom: Gift Icon */}

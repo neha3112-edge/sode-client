@@ -44,13 +44,6 @@ export const esgciCustomCss = `
     position: relative !important;
   }
 
-  @media (max-width: 768px) {
-    .landing-page--esgci #hero {
-      background-position: center top !important;
-      padding: 20px 10px !important;
-    }
-  }
-
   .landing-page--esgci #hero > div.absolute {
     display: none !important;
   }
@@ -65,18 +58,35 @@ export const esgciCustomCss = `
     margin: 8px 0 !important;
   }
 
-  @media (max-width: 640px) {
-    .landing-page--esgci #hero h1 {
-      font-size: 44px !important;
-    }
-  }
-
   /* Achievement Bar */
   .landing-page--esgci .achievement {
     background-color: #000000 !important;
+    padding: 28px 12px !important;
   }
   .landing-page--esgci .ac1 h3 {
     color: #04903c !important;
+    font-size: 21px !important;
+    font-weight: 800 !important;
+    margin-bottom: 6px !important;
+    font-family: 'Outfit', sans-serif !important;
+  }
+  .landing-page--esgci .ac1 p {
+    color: #ffffff !important;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    line-height: 1.35 !important;
+    font-family: 'Outfit', sans-serif !important;
+  }
+  @media (min-width: 1024px) {
+    .landing-page--esgci .achievement {
+      padding: 38px 20px !important;
+    }
+    .landing-page--esgci .ac1 h3 {
+      font-size: 24px !important;
+    }
+    .landing-page--esgci .ac1 p {
+      font-size: 14.5px !important;
+    }
   }
 
   /* Buttons */
@@ -99,18 +109,54 @@ export const esgciCustomCss = `
   }
 
   /* Overview */
-  .landing-page--esgci #overview h2 span {
+ .landing-page--esgci #overview h2 span {
+  color: #04903c !important;
+  background-color: #e9f8ef !important;
+  padding: 2px 5px !important;
+}
+
+  /* Who Can Apply (Programmes Section) */
+  .landing-page--esgci #whocanapply h2 span {
     color: #04903c !important;
+    background-color: #e9f8ef !important;
+    padding: 2px 6px !important;
+    border-radius: 3px !important;
+  }
+  .landing-page--esgci #whocanapply .programme-card {
+    background-color: #f5f5f5 !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  .landing-page--esgci #whocanapply .programme-apply-btn {
+    background-color: #04903c !important;
+    color: #ffffff !important;
+    border-radius: 4px !important;
+    padding: 8px 20px !important;
+    font-weight: 700 !important;
+    width: auto !important;
+    display: inline-block !important;
+    border: none !important;
+  }
+  .landing-page--esgci #whocanapply .programme-apply-btn:hover {
+    background-color: #037c34 !important;
   }
 
   /* Benefits / Why Choose */
   .landing-page--esgci #benefits {
     background-color: #04903c !important;
+    background-image: url(/assets/all_universities_images/esgci/benifits.webp) !important;
+    background-size: cover !important;
+    background-position: left center !important;
+    background-repeat: no-repeat !important;
   }
 
   /* About */
   .landing-page--esgci #about {
-    background-color: #04903c !important;
+    background-color: #000000 !important;
+    background-image: url(/assets/all_universities_images/esgci/about-us.webp) !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
   }
 
   /* Compare section */
@@ -121,6 +167,122 @@ export const esgciCustomCss = `
   /* Footer bottom */
   .landing-page--esgci .mini-footer-bottom {
     background-color: #04903c !important;
+  }
+
+  /* Mobile Specific Styles matching live https://distanceeducationschool.com/esgci/ */
+  @media (max-width: 768px) {
+    .landing-page--esgci #hero {
+      background-image: url(/assets/all_universities_images/esgci/mobile_new_bg_main.png) !important;
+      background-size: cover !important;
+      background-position: center top !important;
+      background-repeat: no-repeat !important;
+      padding: 20px 0px !important;
+    }
+
+    .landing-page--esgci #hero .hero-info-col {
+      align-items: center !important;
+      text-align: center !important;
+      padding: 0 15px !important;
+    }
+
+    .landing-page--esgci #hero .hero-info-col p,
+    .landing-page--esgci #hero .hero-info-col h1,
+    .landing-page--esgci #hero .hero-info-col h2,
+    .landing-page--esgci #hero .hero-info-col .tagline {
+      text-align: center !important;
+    }
+
+    .landing-page--esgci #hero h1 {
+      font-size: 58px !important;
+      margin: 4px 0px !important;
+      line-height: 1 !important;
+    }
+
+    .landing-page--esgci #hero .hero-info-col > div:first-child {
+      display: none !important;
+    }
+
+    .landing-page--esgci #hero .hero-brochure-btn {
+      display: none !important;
+    }
+
+    .landing-page--esgci #hero .hero-form-col {
+      padding: 0 15px !important;
+      margin-top: 15px !important;
+      width: 100% !important;
+    }
+
+    .landing-page--esgci .hero-mobile-image-wrapper img {
+      transform: none !important;
+      transform-origin: center center !important;
+    }
+
+
+     /* About - Mobile */
+  .landing-page--esgci #about {
+    background-color: #000000 !important;
+    background-image: none !important;
+  }
+    .landing-page--esgci #benefits {
+  background-image: url(/assets/all_universities_images/esgci/benefits-mobile.webp) !important;
+  background-size: 100% 100% !important;
+  background-position: center center !important;
+  background-repeat: no-repeat !important;
+  padding-top: 36px !important;
+  padding-bottom: 45px !important;
+  min-height: 900px !important;
+}
+
+    .landing-page--esgci .call_fix_image img {
+      width: 60px !important;
+      bottom: 140px !important;
+      right: 9px !important;
+    }
+
+    /* Footer Sticky Bar (50/50 Split Flush Full Width) */
+    .landing-page--esgci .footer_sticky_buttons {
+      gap: 0px !important;
+      padding: 0px !important;
+      padding-bottom: max(0px, env(safe-area-inset-bottom)) !important;
+      background: transparent !important;
+      grid-template-columns: 1fr 1fr !important;
+      width: 100% !important;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.15) !important;
+    }
+    .landing-page--esgci .footer_sticky_buttons a,
+    .landing-page--esgci .footer_sticky_buttons button,
+    .landing-page--esgci .footer_sticky_buttons .wp_btn,
+    .landing-page--esgci .footer_sticky_buttons .apply_btn {
+      border-radius: 0px !important;
+      padding: 12px 6px !important;
+      font-size: 14.5px !important;
+      font-weight: 700 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      border: none !important;
+      height: 48px !important;
+      box-shadow: none !important;
+      width: 100% !important;
+      font-family: 'Outfit', sans-serif !important;
+    }
+    .landing-page--esgci .footer_sticky_buttons .wp_btn {
+      background: #20c968 !important;
+      background-color: #20c968 !important;
+      color: #ffffff !important;
+      gap: 7px !important;
+    }
+    .landing-page--esgci .footer_sticky_buttons .apply_btn {
+      background: #fff000 !important;
+      background-color: #fff000 !important;
+      color: #000000 !important;
+      gap: 6px !important;
+    }
+    .landing-page--esgci .footer_sticky_buttons .wp_btn svg {
+      width: 18px !important;
+      height: 18px !important;
+      color: #ffffff !important;
+    }
   }
 `;
 
@@ -146,6 +308,9 @@ export const esgciData = {
     hideMangLogo: true, // Only SODE logo in navbar on ESGCI live site
     showCouponBtn: false, // No scholarship pill in navbar on ESGCI live site
     hideNavbarBadge: true,
+    mobileMenuBtnBg: "#08417b",
+    showFloatingCallOnMobile: true,
+    compareLayout: "esgci",
     sodeLogoContainerStyle: {
       width: "160px",
       height: "56px",
@@ -153,6 +318,9 @@ export const esgciData = {
     },
     callGif: "/assets/all_universities_images/esgci/call_icon.gif",
     giftGif: "/assets/all_universities_images/esgci/gift.gif",
+    compareSubtitle: "Compare ESCGI Online University with Top World Renowned Universities",
+    compareBannerBg: "#04903c",
+    arrowGif: "/assets/all_universities_images/esgci/arrow.gif",
 
     // Navbar Links
     navLinks: [
@@ -180,8 +348,15 @@ export const esgciData = {
     // Hero Section Configuration
     hero: {
       backgroundImage: "/assets/all_universities_images/esgci/esgci_new_desktop_bg.png",
-      mobileBackgroundImage: "/assets/all_universities_images/esgci/esgci_new_desktop_bg.png",
+      mobileBackgroundImage: "/assets/all_universities_images/esgci/mobile_new_bg_main.png",
       mobileStudentImage: "/assets/all_universities_images/esgci/esgci_new_mobile.png",
+      mobileStudentImageWrapperClassName: "w-full max-w-[390px] aspect-[496/520] mx-auto relative mb-3",
+      mobileStudentImageClassName: "w-full h-full object-contain object-bottom",
+      mobileStudentImageStyle: {
+        transform: "none",
+        transformOrigin: "center center",
+      },
+      hideBrochureOnMobile: true,
       noOverlay: true,
       minHeight: "480px",
 
@@ -194,7 +369,7 @@ export const esgciData = {
           className="h-[36px] sm:h-[46px] w-auto object-contain"
         />
       ),
-      welcomeContainerClassName: "!mb-2 !mt-0 !text-left",
+      welcomeContainerClassName: "!mb-2 !mt-0 !text-left hidden md:block",
       welcomeBadgeClassName: "!bg-transparent !p-0 !min-w-0 !shadow-none !border-none !rounded-none !block",
 
       hashtagText: "Doctoral Program for Global Leaders",
@@ -204,7 +379,7 @@ export const esgciData = {
         fontSize: "15px",
         fontWeight: "600",
         letterSpacing: "0.1px",
-        marginTop: "6px",
+        marginTop: "2px",
         marginBottom: "2px",
       },
 
@@ -214,11 +389,11 @@ export const esgciData = {
       headingStyle: {
         fontFamily: "'Anton', sans-serif",
         color: "#04903c",
-        fontSize: "62px",
+        fontSize: "60px",
         lineHeight: "1",
         fontWeight: "900",
-        marginTop: "4px",
-        marginBottom: "6px",
+        marginTop: "2px",
+        marginBottom: "4px",
       },
 
       taglineText: (
@@ -229,45 +404,51 @@ export const esgciData = {
       taglineStyle: {
         fontFamily: "'Outfit', sans-serif",
         color: "#000000",
-        fontSize: "16px",
+        fontSize: "15.5px",
         fontWeight: "500",
         lineHeight: "1.3",
-        marginTop: "2px",
-        marginBottom: "8px",
+        marginTop: "0px",
+        marginBottom: "4px",
       },
 
       highlightBox: {
         text: "Doctor of Business Administration",
-        className: "!w-full !p-0 !bg-transparent !text-black !text-[20px] sm:text-[22px] !font-bold !text-left !shadow-none !m-0",
+        className: "!w-full !p-0 !bg-transparent !text-black !text-[19px] sm:text-[22px] !font-bold text-center sm:!text-left !shadow-none !m-0",
         style: {
           fontFamily: "'Outfit', sans-serif",
           backgroundColor: "transparent",
           color: "#000000",
           border: "none",
           padding: 0,
-          fontSize: "21px",
-          fontWeight: "700",
-          textAlign: "left",
+          fontSize: "19px",
+          fontWeight: "800",
+          textAlign: "center",
           lineHeight: "1.2",
           display: "block",
-          marginTop: "6px",
-          marginBottom: "6px",
+          marginTop: "4px",
+          marginBottom: "4px",
         },
       },
 
+      hideCourseBox: true,
+      coursesStripOnly: true,
       coursesStrip: [
         "Earn a prestigious Online DBA from Paris-based ESGCI while advancing your career from anywhere in the world.",
       ],
-      courseStripClassName: "!text-[13.5px] sm:text-[14px] !text-[#222222] !leading-relaxed !max-w-[460px] !font-normal !mb-4",
+      courseStripClassName: "!text-[13.5px] sm:text-[14px] !text-[#222222] !leading-[1.4] !max-w-[360px] !font-normal !mb-3 !border-none !p-0 !bg-transparent text-center mx-auto",
       courseStripStyle: {
         fontFamily: "'Outfit', sans-serif",
         color: "#222222",
         fontSize: "13.5px",
-        lineHeight: "1.55",
+        lineHeight: "1.4",
         fontWeight: "400",
-        maxWidth: "460px",
-        marginTop: "4px",
-        marginBottom: "14px",
+        maxWidth: "360px",
+        marginTop: "2px",
+        marginBottom: "8px",
+        textAlign: "center",
+        border: "none",
+        background: "transparent",
+        boxShadow: "none",
       },
 
       brochureButtonText: "Download Brochure",
@@ -316,7 +497,8 @@ export const esgciData = {
 
     // Who Can Apply (Programmes Section)
     programmesLayout: "esgci",
-    programmesTitle: "Who Can Apply for the ESGCI Online DBA",
+    programmesTitle: "Who Can Apply for the",
+    programmesHighlight: "ESGCI Online DBA",
 
     // Professional Advantages (Benefits Section)
     whyChooseLayout: "esgci",
@@ -325,8 +507,8 @@ export const esgciData = {
     whyChooseBg: "#04903c",
 
     // Degree Layout
-    degreeLayout: "imageLeft",
-    degreeTitleColor: "#111111",
+    degreeLayout: "esgci",
+    degreeTitleColor: "#04903c",
     degreeBtnBg: "#fff000",
     degreeBtnTextColor: "#000000",
 
@@ -337,7 +519,7 @@ export const esgciData = {
     // About Section
     aboutLayout: "esgci",
     aboutTitle: "ABOUT US",
-    aboutBg: "#04903c",
+    aboutBg: "#000000",
 
     // Why Choose Carousel
     whyChooseCarouselTitle: "Why Choose ESGCI Online DBA Program",
@@ -403,6 +585,17 @@ export const esgciData = {
     phoneDisplay: "+91 7065 7777 55",
     whatsappNumber: "917065777755",
     whatsappText: "I want to download the ESGCI Online Program brochure",
+
+    // Sticky Bottom Bar (50/50 Split CTA)
+    stickyCtaLayout: "default",
+    stickySplit: true,
+    stickyBrochureIcon: "whatsapp",
+    stickyBrochureAction: "whatsapp",
+    stickyApplyStyle: "esgci",
+    stickyBarBg: "transparent",
+    stickyHideApplyArrow: true,
+    stickyBrochureLabel: "Get Brochure",
+    stickyApplyLabel: "Apply Now",
   },
 
   // Key Statistics / Highlights (Bar under hero)
@@ -477,7 +670,7 @@ export const esgciData = {
       image: "/assets/all_universities_images/esgci/no-code-prototyping.webp",
     },
     {
-      title: "Secure IP Globally",
+      title: "Secure Intellectual Property Globally",
       desc: "Protect your intellectual property worldwide",
       image: "/assets/all_universities_images/esgci/global-ip-protection.webp",
     },

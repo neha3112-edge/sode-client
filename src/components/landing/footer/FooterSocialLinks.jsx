@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { DEFAULT_SOCIAL_LINKS } from "./footerDefaults";
 
 /**
@@ -10,7 +11,7 @@ export default function FooterSocialLinks({ socialLinks = DEFAULT_SOCIAL_LINKS }
   return (
     <div className="social-icons flex items-center justify-center gap-3.5 sm:gap-4 mb-2">
       {socialLinks.map((item, idx) => (
-        <a
+        <Link
           key={idx}
           href={item.href || "#"}
           target="_blank"
@@ -21,7 +22,7 @@ export default function FooterSocialLinks({ socialLinks = DEFAULT_SOCIAL_LINKS }
           <span className="flex items-center justify-center [&>svg]:w-5 [&>svg]:h-5 sm:[&>svg]:w-5 sm:[&>svg]:h-5">
             {item.icon}
           </span>
-        </a>
+        </Link>
       ))}
     </div>
   );

@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { DEFAULT_NAV_LINKS } from "./footerDefaults";
 
 /**
@@ -36,7 +37,7 @@ export default function FooterNavigation({
         const isAction = Boolean(handleClick);
 
         return (
-          <a
+          <Link
             key={idx}
             href={link.href || "#"}
             onClick={handleClick}
@@ -45,7 +46,7 @@ export default function FooterNavigation({
             className="text-[#1e90ff] hover:text-[#60a5fa] hover:underline font-normal transition-colors"
           >
             {link.label}
-          </a>
+          </Link>
         );
       })}
     </nav>

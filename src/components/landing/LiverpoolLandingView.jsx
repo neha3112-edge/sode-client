@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import confetti from "canvas-confetti";
 import { Download, ChevronLeft, ChevronRight, Phone, Check } from "lucide-react";
 import BrochureModal from "./modals/BrochureModal";
@@ -100,6 +102,7 @@ const STATES = [
 ];
 
 export default function LiverpoolLandingView({ data = {} }) {
+  const router = useRouter();
   const brand = data.brand || {};
 
   // Interactive Modal States
@@ -223,9 +226,7 @@ export default function LiverpoolLandingView({ data = {} }) {
         setFormSuccess(true);
         triggerConfetti();
         setTimeout(() => {
-          if (typeof window !== "undefined") {
-            window.location.href = "/thank-you";
-          }
+          router.push("/thank-you");
         }, 1200);
       } else {
         // Fallback thank you
@@ -625,7 +626,7 @@ export default function LiverpoolLandingView({ data = {} }) {
       <header className="navbar fixed top-0 left-0 w-full z-[1049] bg-white shadow-[0px_5px_20px_rgba(0,0,0,0.14)]">
         <div className="top-navbar max-w-[1150px] mx-auto h-[55px] px-4 flex items-center justify-between">
           <div className="logo flex items-center">
-            <a
+            <Link
               href="#hero-section"
               onClick={(e) => {
                 e.preventDefault();
@@ -633,20 +634,22 @@ export default function LiverpoolLandingView({ data = {} }) {
               }}
               className="des_logo flex items-end cursor-pointer"
             >
-              <img
+              <Image
                 src={`${ASSET_BASE}/new_sode_tm_logo.png`}
                 alt="SODE Logo"
+                width={160}
+                height={45}
                 className="h-[40px] sm:h-[45px] w-auto object-contain"
-                loading="eager"
+                priority
               />
-            </a>
+            </Link>
           </div>
 
           {/* Desktop Menu */}
           <nav className="header_menu hidden md:flex items-center">
             <ul className="header_menu_list flex list-none gap-8 m-0 p-0 items-center">
               <li>
-                <a
+                <Link
                   href="#courses_offered"
                   onClick={(e) => {
                     e.preventDefault();
@@ -655,10 +658,10 @@ export default function LiverpoolLandingView({ data = {} }) {
                   className="font-semibold text-[15px] text-[#1e293b] hover:text-[#00408d] transition-colors"
                 >
                   Courses
-                </a>
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="#certification"
                   onClick={(e) => {
                     e.preventDefault();
@@ -667,10 +670,10 @@ export default function LiverpoolLandingView({ data = {} }) {
                   className="font-semibold text-[15px] text-[#1e293b] hover:text-[#00408d] transition-colors"
                 >
                   Approvals
-                </a>
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="#about"
                   onClick={(e) => {
                     e.preventDefault();
@@ -679,10 +682,10 @@ export default function LiverpoolLandingView({ data = {} }) {
                   className="font-semibold text-[15px] text-[#1e293b] hover:text-[#00408d] transition-colors"
                 >
                   About
-                </a>
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="#faqs"
                   onClick={(e) => {
                     e.preventDefault();
@@ -691,7 +694,7 @@ export default function LiverpoolLandingView({ data = {} }) {
                   className="font-semibold text-[15px] text-[#1e293b] hover:text-[#00408d] transition-colors"
                 >
                   FAQ
-                </a>
+                </Link>
               </li>
             </ul>
           </nav>
@@ -717,7 +720,7 @@ export default function LiverpoolLandingView({ data = {} }) {
           <div className="mobile-dropdown md:hidden bg-white border-t border-slate-200 px-5 py-4 shadow-lg">
             <ul className="mobile-menu-list flex flex-col gap-3.5 list-none m-0 p-0 text-left">
               <li>
-                <a
+                <Link
                   href="#courses_offered"
                   onClick={(e) => {
                     e.preventDefault();
@@ -726,10 +729,10 @@ export default function LiverpoolLandingView({ data = {} }) {
                   className="block font-semibold text-[15px] text-[#1e293b] hover:text-[#00408d]"
                 >
                   Courses
-                </a>
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="#certification"
                   onClick={(e) => {
                     e.preventDefault();
@@ -738,10 +741,10 @@ export default function LiverpoolLandingView({ data = {} }) {
                   className="block font-semibold text-[15px] text-[#1e293b] hover:text-[#00408d]"
                 >
                   Approvals
-                </a>
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="#about"
                   onClick={(e) => {
                     e.preventDefault();
@@ -750,10 +753,10 @@ export default function LiverpoolLandingView({ data = {} }) {
                   className="block font-semibold text-[15px] text-[#1e293b] hover:text-[#00408d]"
                 >
                   About
-                </a>
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="#faqs"
                   onClick={(e) => {
                     e.preventDefault();
@@ -762,16 +765,13 @@ export default function LiverpoolLandingView({ data = {} }) {
                   className="block font-semibold text-[15px] text-[#1e293b] hover:text-[#00408d]"
                 >
                   FAQ
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
         )}
       </header>
 
-      {/* ─────────────────────────────────────────────────────────────
-          2. HERO SECTION (#hero-section)
-      ───────────────────────────────────────────────────────────── */}
       {/* ─────────────────────────────────────────────────────────────
           2. HERO SECTION (#hero-section)
       ───────────────────────────────────────────────────────────── */}
@@ -782,12 +782,16 @@ export default function LiverpoolLandingView({ data = {} }) {
             <div className="banner-info">
               {/* Partner Logo (Desktop only) */}
               <div className="un_image_container">
-                <a href="#hero-section">
-                  <img
+                <Link href="#hero-section">
+                  <Image
                     src={`${ASSET_BASE}/logo_for_liverpool_upgrade.png`}
                     alt="Liverpool Business School - IIM Udaipur - upGrad"
+                    width={320}
+                    height={55}
+                    className="w-auto h-auto object-contain"
+                    priority
                   />
-                </a>
+                </Link>
               </div>
 
               <p className="t1">
@@ -826,7 +830,7 @@ export default function LiverpoolLandingView({ data = {} }) {
                 </div>
                 <div className="banner_item">
                   <svg className="w-[18px] h-[18px] text-[#2ad4c3] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="9.5" />
+                    <circle cx="12" cy="9.5" r="9.5" />
                     <polyline points="12 6.5 12 12 16 12" />
                   </svg>
                   <p>18 Months</p>
@@ -850,9 +854,13 @@ export default function LiverpoolLandingView({ data = {} }) {
 
             {/* Mobile Student Image */}
             <div className="custom_img_section">
-              <img
+              <Image
                 src={`${ASSET_BASE}/liverpool_mobile_new_img.png`}
                 alt="Liverpool Online MBA Student"
+                width={360}
+                height={260}
+                className="w-full h-auto object-contain"
+                priority
               />
             </div>
 
@@ -865,10 +873,10 @@ export default function LiverpoolLandingView({ data = {} }) {
                 </div>
 
                 <div className="call_fix_text_section">
-                  <a href="tel:07065777755" className="call_fix_text">
+                  <Link href="tel:07065777755" className="call_fix_text">
                     <Phone className="w-3.5 h-3.5 fill-white" />
                     <span>+91 7065 7777 55</span>
-                  </a>
+                  </Link>
                 </div>
 
                 {formSuccess ? (
@@ -1128,10 +1136,12 @@ export default function LiverpoolLandingView({ data = {} }) {
             </span>
             <div className="pathway-inner">
               <div className="h-[45px] flex items-center mb-4">
-                <img
+                <Image
                   src={`${ASSET_BASE}/IIMU icon.webp`}
                   alt="IIM Udaipur Icon"
-                  className="max-h-[42px] max-w-[120px] object-contain"
+                  width={120}
+                  height={42}
+                  className="max-h-[42px] max-w-[120px] w-auto h-auto object-contain"
                 />
               </div>
               <h3 className="pathway-title text-[15px] sm:text-[16px] font-extrabold text-[#111111] leading-snug mb-1 m-0">
@@ -1158,10 +1168,12 @@ export default function LiverpoolLandingView({ data = {} }) {
             </span>
             <div className="pathway-inner">
               <div className="h-[45px] flex items-center mb-4">
-                <img
+                <Image
                   src={`${ASSET_BASE}/lbs-logo-696b29d4429b8.webp`}
                   alt="Liverpool Business School"
-                  className="max-h-[38px] max-w-[120px] object-contain"
+                  width={120}
+                  height={38}
+                  className="max-h-[38px] max-w-[120px] w-auto h-auto object-contain"
                 />
               </div>
               <h3 className="pathway-title text-[15px] sm:text-[16px] font-extrabold text-[#111111] leading-snug mb-1 m-0">
@@ -1188,10 +1200,12 @@ export default function LiverpoolLandingView({ data = {} }) {
             </span>
             <div className="pathway-inner">
               <div className="h-[45px] flex items-center mb-4">
-                <img
+                <Image
                   src={`${ASSET_BASE}/lbs-logo-696b29d4429b8.webp`}
                   alt="Liverpool Business School"
-                  className="max-h-[38px] max-w-[120px] object-contain"
+                  width={120}
+                  height={38}
+                  className="max-h-[38px] max-w-[120px] w-auto h-auto object-contain"
                 />
               </div>
               <h3 className="pathway-title text-[15px] sm:text-[16px] font-extrabold text-[#111111] leading-snug mb-1 m-0">
@@ -1218,10 +1232,12 @@ export default function LiverpoolLandingView({ data = {} }) {
             </span>
             <div className="pathway-inner">
               <div className="h-[45px] flex items-center mb-4">
-                <img
+                <Image
                   src={`${ASSET_BASE}/lbs-logo-696b29d4429b8.webp`}
                   alt="Liverpool Business School"
-                  className="max-h-[38px] max-w-[120px] object-contain"
+                  width={120}
+                  height={38}
+                  className="max-h-[38px] max-w-[120px] w-auto h-auto object-contain"
                 />
               </div>
               <h3 className="pathway-title text-[15px] sm:text-[16px] font-extrabold text-[#111111] leading-snug mb-1 m-0">
@@ -1272,9 +1288,11 @@ export default function LiverpoolLandingView({ data = {} }) {
 
               {/* Certificate Image */}
               <div className="flex items-center justify-center min-h-[290px] sm:min-h-[330px] px-2 sm:px-4">
-                <img
+                <Image
                   src={certImages[certIndex]}
                   alt={`Certificate ${certIndex + 1}`}
+                  width={400}
+                  height={300}
                   className="max-h-[290px] sm:max-h-[330px] w-auto max-w-[75vw] sm:max-w-[380px] object-contain shadow-2xl rounded-[3px] bg-white transition-opacity duration-300"
                 />
               </div>
@@ -1338,9 +1356,11 @@ export default function LiverpoolLandingView({ data = {} }) {
               >
                 <div>
                   <div className="relative w-full aspect-[16/10] overflow-hidden bg-slate-100">
-                    <img
+                    <Image
                       src={c.image}
                       alt={c.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       className="w-full h-full object-cover"
                     />
                   </div>
@@ -1391,23 +1411,29 @@ export default function LiverpoolLandingView({ data = {} }) {
 
           <div className="b2-info grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 items-center justify-center max-w-[850px] mx-auto mt-8">
             <div className="b1 p-4 bg-white flex items-center justify-center">
-              <img
+              <Image
                 src={`${ASSET_BASE}/Layer-36.png`}
                 alt="LJMU Recognition"
+                width={180}
+                height={85}
                 className="max-h-[85px] w-auto object-contain"
               />
             </div>
             <div className="b1 p-4 bg-white flex items-center justify-center">
-              <img
+              <Image
                 src={`${ASSET_BASE}/Layer-37.png`}
                 alt="WES Recognition"
+                width={180}
+                height={85}
                 className="max-h-[85px] w-auto object-contain"
               />
             </div>
             <div className="b1 p-4 bg-white flex items-center justify-center">
-              <img
+              <Image
                 src={`${ASSET_BASE}/Layer-39-1.png`}
                 alt="AACSB Member"
+                width={180}
+                height={85}
                 className="max-h-[85px] w-auto object-contain"
               />
             </div>
@@ -1701,7 +1727,7 @@ export default function LiverpoolLandingView({ data = {} }) {
       ───────────────────────────────────────────────────────────── */}
       <div className="sticky_btn_Section block md:hidden fixed bottom-0 left-0 w-full z-[99999]">
         <div className="footer_sticky_buttons grid grid-cols-2 w-full shadow-2xl">
-          <a
+          <Link
             href="https://api.whatsapp.com/send/?phone=917065777755&text=I%20want%20to%20download%20the%20Liverpool%20Business%20School%20Online%20Program%20brochure"
             target="_blank"
             rel="noopener noreferrer"
@@ -1715,7 +1741,7 @@ export default function LiverpoolLandingView({ data = {} }) {
               <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z" />
             </svg>
             <span>Get Brochure</span>
-          </a>
+          </Link>
 
           <button
             type="button"
@@ -1733,13 +1759,16 @@ export default function LiverpoolLandingView({ data = {} }) {
       ───────────────────────────────────────────────────────────── */}
       {/* Floating Call Button */}
       <div className="call_fix_image fixed right-3 bottom-[85px] z-[99999]">
-        <a href="tel:07065777755" aria-label="Call Now">
-          <img
+        <Link href="tel:07065777755" aria-label="Call Now">
+          <Image
             src={`${ASSET_BASE}/call_icon.gif`}
             alt="Call Us"
+            width={65}
+            height={65}
+            unoptimized
             className="w-[60px] sm:w-[65px] h-auto rounded-full shadow-[0_15px_35px_rgba(0,0,0,0.4),0_0_35px_rgba(46,204,113,0.9)] cursor-pointer hover:scale-105 active:scale-95 transition-transform"
           />
-        </a>
+        </Link>
       </div>
 
       {/* Floating Coupon Button */}
@@ -1752,9 +1781,12 @@ export default function LiverpoolLandingView({ data = {} }) {
         className="coupon-btn fixed right-3 bottom-4 z-[99999] border-none bg-transparent cursor-pointer transition-transform hover:scale-110 active:scale-95 drop-shadow-[0_10px_25px_rgba(0,0,0,0.3)]"
         aria-label="Get Scholarship Coupon Code"
       >
-        <img
+        <Image
           src={`${ASSET_BASE}/gift.gif`}
           alt="Scholarship Gift"
+          width={60}
+          height={60}
+          unoptimized
           className="w-[55px] sm:w-[60px] h-[55px] sm:h-[60px] rounded-full object-contain"
         />
       </button>

@@ -714,7 +714,7 @@ export default function LandingHero({
               )}
               style={hero.imageWrapperStyle || hero.studentImageWrapperStyle}
             >
-              <img
+              <Image
                 src={
                   hero.image ||
                   hero.desktopImage ||
@@ -723,12 +723,15 @@ export default function LandingHero({
                   brand.heroStudentImage
                 }
                 alt={hero.imageAlt || hero.studentImageAlt || brand.name || "University"}
+                width={500}
+                height={430}
                 className={
                   hero.imageClassName ||
                   hero.studentImageClassName ||
                   "max-h-[380px] xl:max-h-[430px] w-auto object-contain object-bottom drop-shadow-md"
                 }
                 style={hero.imageStyle || hero.studentImageStyle}
+                priority
               />
             </div>
           )}
@@ -766,9 +769,11 @@ export default function LandingHero({
                 />
                 {(hero.mobileImageBadge || hero.imageBadge) && (
                   <div className="absolute top-2.5 right-2.5 bg-white/95 px-2.5 py-1.5 rounded-lg shadow z-10 flex items-center justify-center">
-                    <img
+                    <Image
                       src={hero.mobileImageBadge || hero.imageBadge}
                       alt={brand.name || "Badge"}
+                      width={60}
+                      height={24}
                       className="h-6 w-auto object-contain"
                     />
                   </div>
@@ -818,9 +823,12 @@ export default function LandingHero({
                 >
                   <span className="moving-light-green-box" />
                   <span className="relative w-7 h-7 rounded-full bg-white flex items-center justify-center shrink-0 shadow-xs z-10 overflow-hidden p-0.5">
-                    <img
+                    <Image
                       src={brand.giftGif || hero.giftGif || "/assets/images/gift.gif"}
                       alt="Scholarship"
+                      width={20}
+                      height={20}
+                      unoptimized
                       className="w-5 h-5 object-contain"
                     />
                   </span>

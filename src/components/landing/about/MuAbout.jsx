@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import LandingButton from "../LandingButton";
 
 export default function MuAbout({ about = {}, brand = {}, onOpenApply }) {
@@ -65,11 +66,12 @@ export default function MuAbout({ about = {}, brand = {}, onOpenApply }) {
 
       {/* Mobile edge-to-edge campus image positioned below the button (Images 1, 2, 3) */}
       <div className="block md:hidden w-full mt-3 mb-0 p-0 leading-none select-none pointer-events-none">
-        <img
+        <Image
           src="/assets/mu/about-bg-mobile.webp"
           alt="Mangalayatan University Campus"
+          width={500}
+          height={300}
           className="w-full h-auto block select-none pointer-events-none m-0 p-0"
-          loading="lazy"
         />
       </div>
     </section>

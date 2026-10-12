@@ -1,7 +1,8 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import React from "react";
+import Link from "next/link";
+import Image from "next/image";
 import { Download } from "lucide-react";
 import { triggerGiftConfetti } from "./stickyCtaUtils";
 
@@ -50,9 +51,15 @@ export default function IimStickyCta({
 
       {/* Floating Call Image Link */}
       {floatingCall.enabled && (
-        <a className="call_fix_image" href={callHref} aria-label={labels.callAria}>
-          <img src={floatingCall.image} alt={floatingCall.alt || "Call Now"} />
-        </a>
+        <Link className="call_fix_image" href={callHref} aria-label={labels.callAria}>
+          <Image
+            src={floatingCall.image}
+            alt={floatingCall.alt || "Call Now"}
+            width={60}
+            height={60}
+            unoptimized
+          />
+        </Link>
       )}
 
       {/* Floating Scholarship Coupon Button */}
@@ -63,7 +70,13 @@ export default function IimStickyCta({
           onClick={handleGiftClick}
           aria-label={labels.giftAria}
         >
-          <img src={floatingGift.image} alt={floatingGift.alt || "Scholarship Coupon"} />
+          <Image
+            src={floatingGift.image}
+            alt={floatingGift.alt || "Scholarship Coupon"}
+            width={60}
+            height={60}
+            unoptimized
+          />
         </button>
       )}
     </>

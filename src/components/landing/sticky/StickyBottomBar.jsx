@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { Download } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 
@@ -18,6 +19,9 @@ function getApplyButtonClasses(applyStyle) {
     case "blue":
     case "iiitb":
       return "bg-[#01519a] text-white";
+    case "esgci":
+    case "yellow-esgci":
+      return "bg-[#fff000] text-black";
     case "yellow":
     default:
       return "bg-[#ffd508] text-black";
@@ -48,13 +52,13 @@ export default function StickyBottomBar({
       >
         {/* Left CTA: Get Brochure */}
         {stickyBar.brochureAction === "whatsapp" ? (
-          <a
+          <Link
             href={whatsappUrl}
             className="wp_btn flex items-center justify-center gap-2 h-[48px] bg-[#20c968] text-white font-bold text-[14.5px] no-underline border-none rounded-none cursor-pointer active:opacity-90"
           >
             <FaWhatsapp className="w-[18px] h-[18px] text-white shrink-0" />
             <span>{labels.brochure}</span>
-          </a>
+          </Link>
         ) : (
           <button
             type="button"
@@ -79,7 +83,9 @@ export default function StickyBottomBar({
           )} font-bold text-[14.5px] border-none cursor-pointer active:opacity-90`}
         >
           <span>{labels.apply}</span>
-          <span className="text-[17px] leading-none font-bold">»</span>
+          {!stickyBar.hideApplyArrow && (
+            <span className="text-[17px] leading-none font-bold">»</span>
+          )}
         </button>
       </div>
     );
@@ -97,13 +103,13 @@ export default function StickyBottomBar({
     >
       {/* Left CTA: Get Brochure (WhatsApp Link or Modal Button) */}
       {stickyBar.brochureAction === "whatsapp" ? (
-        <a
+        <Link
           href={whatsappUrl}
           className="wp_btn flex items-center justify-center gap-1.5 py-2 px-3 rounded-full bg-[#1ea84b] text-white font-bold text-[13.5px] no-underline shadow-sm active:opacity-90"
         >
           <FaWhatsapp className="w-4 h-4 text-white shrink-0" />
           <span>{labels.brochure}</span>
-        </a>
+        </Link>
       ) : (
         <button
           type="button"
@@ -128,9 +134,11 @@ export default function StickyBottomBar({
         )} font-bold text-[13.5px] sm:text-sm border-none shadow-sm cursor-pointer active:opacity-90`}
       >
         <span>{labels.apply}</span>
-        <span className={isWhiteRed ? "text-[16px] leading-none font-bold" : "text-base leading-none"}>
-          »
-        </span>
+        {!stickyBar.hideApplyArrow && (
+          <span className={isWhiteRed ? "text-[16px] leading-none font-bold" : "text-base leading-none"}>
+            »
+          </span>
+        )}
       </button>
     </div>
   );

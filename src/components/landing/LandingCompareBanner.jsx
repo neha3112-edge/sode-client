@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import Image from "next/image";
 
 export default function LandingCompareBanner({ brand = {}, onOpenCompare }) {
@@ -15,6 +16,7 @@ export default function LandingCompareBanner({ brand = {}, onOpenCompare }) {
       : brand.shortName ||
         (brand.name ? brand.name.replace(/\s*Online\s*$/i, "") : "Amity University"));
 
+
   const isIim =
     brand.slug === "iim" ||
     brand.compareLayout === "iim";
@@ -25,13 +27,22 @@ export default function LandingCompareBanner({ brand = {}, onOpenCompare }) {
         <div className="compare_box">
           <h2>Still Confused?</h2>
           <h4>{brand.compareSubtitle || "Compare IIM Kozhikode University with Top World Renowned Universities"}</h4>
-          <a
-            href="javascript:void(0);"
+          <Link
+            href="#compare-universities"
             className="compare_btn"
-            onClick={() => onOpenCompare?.()}
+            onClick={(e) => {
+              e.preventDefault();
+              onOpenCompare?.();
+            }}
           >
-            <img src={brand.arrowGif || "/assets/iim/arrow.gif"} alt="Compare universities" />
-          </a>
+            <Image
+              src={brand.arrowGif || "/assets/iim/arrow.gif"}
+              alt="Compare universities"
+              width={60}
+              height={30}
+              unoptimized
+            />
+          </Link>
         </div>
       </div>
     );

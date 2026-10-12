@@ -45,11 +45,13 @@ export default function LandingRecruiters({
           <div className="placement-section">
             <h2><strong>PLACEMENTS</strong> PARTNERS</h2>
             {partners.map((p, idx) => (
-              <img
+              <Image
                 key={idx}
                 src={p.image}
                 alt={p.name || `p${idx + 1}`}
-                className="placement-img"
+                width={120}
+                height={40}
+                className="placement-img object-contain"
               />
             ))}
           </div>
@@ -259,11 +261,13 @@ function MuRecruitersCarousel({ activeRecruiters, brand }) {
                   }
                   style={brand.recruitersCardStyle}
                 >
-                  <img
+                  <Image
                     src={logo}
                     alt={`Partner ${(idx % logos.length) + 1}`}
+                    width={160}
+                    height={50}
                     className="max-h-[46px] max-w-[85%] w-auto h-auto object-contain mx-auto transition-transform duration-200 group-hover:scale-105"
-                    loading="eager"
+                    priority
                   />
                 </div>
               </div>
@@ -304,11 +308,13 @@ function MuRecruitersCarousel({ activeRecruiters, brand }) {
                   }
                   style={brand.recruitersCardStyle}
                 >
-                  <img
+                  <Image
                     src={logo}
                     alt={`Partner ${(idx % logos.length) + 1}`}
+                    width={180}
+                    height={60}
                     className="max-h-[48px] sm:max-h-[56px] max-w-[85%] w-auto h-auto object-contain mx-auto transition-transform duration-200 group-hover:scale-105"
-                    loading="eager"
+                    priority
                   />
                 </div>
               </div>

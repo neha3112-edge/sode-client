@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 
 export default function SSBMApprovals({ brand = {} }) {
   const accreditations = brand?.ssbmAccreditations || [
@@ -68,9 +69,11 @@ export default function SSBMApprovals({ brand = {} }) {
                   key={item.alt || idx}
                   className="w-full md:flex-1 flex items-center justify-center h-auto md:h-full py-1 md:py-0"
                 >
-                  <img
+                  <Image
                     src={item.image}
                     alt={item.alt || `Accreditation ${idx + 1}`}
+                    width={140}
+                    height={54}
                     style={{
                       maxHeight: item.mobileMaxHeight || item.desktopMaxHeight || "54px",
                     }}
@@ -92,9 +95,11 @@ export default function SSBMApprovals({ brand = {} }) {
                   key={item.alt || idx}
                   className="w-full md:flex-1 flex items-center justify-center h-auto md:h-full py-1 md:py-0"
                 >
-                  <img
+                  <Image
                     src={item.image}
                     alt={item.alt || `Ranking ${idx + 1}`}
+                    width={140}
+                    height={40}
                     style={{
                       maxHeight: item.mobileMaxHeight || item.desktopMaxHeight || "40px",
                     }}

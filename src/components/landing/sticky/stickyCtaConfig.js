@@ -49,9 +49,9 @@ export function normalizePhoneNumber(phone) {
 /**
  * Builds the official WhatsApp click-to-chat URL for brochure download.
  */
-export function buildWhatsAppBrochureUrl(phone, brandName = "University") {
+export function buildWhatsAppBrochureUrl(phone, brandName = "University", customText) {
   const rawPhone = normalizePhoneNumber(phone);
-  const text = encodeURIComponent(`I want to Download ${brandName || "University"} Online Brochure`);
+  const text = encodeURIComponent(customText || `I want to Download ${brandName || "University"} Online Brochure`);
   return `https://api.whatsapp.com/send/?phone=+91${rawPhone}&text=${text}`;
 }
 
@@ -122,7 +122,14 @@ export function resolveStickyCtaConfig(brand = {}) {
   // 1. Phone & Links
   const rawPhone = normalizePhoneNumber(brand.phone);
   const callHref = brand.callHref || legacy.callHref || buildCallHref(null, rawPhone);
-  const whatsappUrl = buildWhatsAppBrochureUrl(rawPhone, brand.name);
+  const customWhatsappText = brand.whatsappText || brand.whatsappMsg;
+  const whatsappUrl =
+    brand.whatsappUrl ||
+    (brand.whatsappNumber
+      ? `https://api.whatsapp.com/send/?phone=+${normalizePhoneNumber(brand.whatsappNumber)}&text=${encodeURIComponent(
+          customWhatsappText || `I want to Download ${brand.name || "University"} Online Brochure`
+        )}`
+      : buildWhatsAppBrochureUrl(rawPhone, brand.name, customWhatsappText));
 
   // 2. Layout Variant
   const layout =
@@ -190,6 +197,13 @@ export function resolveStickyCtaConfig(brand = {}) {
     brand.stickyPill === false
   );
 
+  const hideApplyArrow = Boolean(
+    brand.stickyHideApplyArrow ??
+    brand.stickyBar?.hideApplyArrow ??
+    brand.hideStickyArrow ??
+    false
+  );
+
   // 6. Labels
   const labels = {
     brochure:
@@ -232,6 +246,7 @@ export function resolveStickyCtaConfig(brand = {}) {
       brochureIcon,
       applyStyle,
       isSplit,
+      hideApplyArrow,
     },
     labels,
   };

@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 
 /**
  * Systematic Custom CSS for Golden Gate University (GGU) Landing Page
@@ -444,9 +445,11 @@ export const gguData = {
 
       // Top logo in Hero matching Image 2
       welcomeText: (
-        <img
+        <Image
           src="/assets/all_universities_images/ggu/new_ggu_logo_main.png"
           alt="Golden Gate University | upGrad"
+          width={180}
+          height={32}
           className="h-[28px] sm:h-[32px] w-auto object-contain"
         />
       ),

@@ -9,35 +9,47 @@ export default function EsgciProgrammes({
   onOpenApply,
 }) {
   const heading = brand.programmesTitle || "Who Can Apply for the";
-  const highlight = brand.programmesHighlight || (brand.name ? `${brand.name}` : "Online Program");
+  const highlight = brand.programmesHighlight || "ESGCI Online DBA";
 
   return (
     <section id="whocanapply" className="py-12 sm:py-16 bg-[#ffffff] select-none scroll-mt-20">
       <div className="max-w-[1240px] mx-auto px-4 sm:px-6">
         <h2 className="text-center text-[24px] sm:text-[30px] lg:text-[34px] font-bold text-[#111111] mb-8 sm:mb-12">
-          {heading} <span className="text-[#04903c]">{highlight}</span>
+          {heading}{" "}
+          <span className="text-[#04903c] bg-[#e9f8ef] px-2 py-0.5 rounded-[3px]">
+            {highlight}
+          </span>
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-7">
           {programmes.map((p, idx) => (
-            <div key={idx} className="bg-white rounded-[8px] overflow-hidden border border-slate-200/90 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div
+              key={idx}
+              className="programme-card bg-[#f5f5f5] rounded-[4px] overflow-hidden border-none shadow-none flex flex-col justify-between text-left"
+            >
               <div className="relative w-full aspect-[16/10] overflow-hidden bg-slate-100">
-                <Image src={p.image} alt={p.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 33vw" />
+                <Image
+                  src={p.image}
+                  alt={p.title}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                />
               </div>
-              <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between text-left">
+              <div className="p-5 flex-1 flex flex-col justify-between text-left">
                 <div>
-                  <h2 className="text-[18px] sm:text-[20px] font-bold text-[#111111] mb-2 leading-snug">
+                  <h3 className="text-[17px] sm:text-[18px] font-bold text-[#111111] mb-2 leading-snug">
                     {p.title}
-                  </h2>
-                  <p className="text-[13px] sm:text-[13.5px] text-[#555555] leading-relaxed mb-4">
+                  </h3>
+                  <p className="text-[13px] sm:text-[13.5px] text-[#222222] leading-relaxed mb-4">
                     {p.description}
                   </p>
                 </div>
                 <div>
-                  <hr className="border-t border-slate-200 mb-4" />
+                  <hr className="border-t border-[#d8d8d8] mb-4" />
                   <button
                     type="button"
                     onClick={() => onOpenApply?.(p.title)}
-                    className="w-full py-2.5 px-4 bg-[#fff000] text-black font-bold text-[14px] rounded-[5px] hover:brightness-95 transition-all border-none cursor-pointer"
+                    className="programme-apply-btn py-2 px-5 bg-[#04903c] text-white font-bold text-[14px] rounded-[4px] hover:bg-[#037c34] transition-all border-none cursor-pointer w-auto inline-block"
                   >
                     Apply Now
                   </button>
