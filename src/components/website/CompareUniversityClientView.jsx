@@ -1338,8 +1338,8 @@ export default function CompareUniversityClientView({
         )}
       </div>
       {/* ── CTA ── */}
-      <div className="max-w-5xl mx-auto my-12 px-4">
-        <div className="bg-gradient-to-r from-[#0F3759] via-[#103D6D] to-[#154E8A] text-white rounded-2xl sm:rounded-3xl p-8 md:p-12 text-center relative overflow-hidden border border-gray-200">
+      {/* <div className="max-w-5xl mx-auto">
+        <div className="bg-gradient-to-r from-[#0F3759] via-[#103D6D] to-[#154E8A] text-white rounded-2xl sm:rounded-3xl p-8 md:p-6 text-center relative overflow-hidden border border-gray-200">
           <div className="relative z-10 space-y-3">
             <h2 className="text-2xl md:text-3xl font-semibold m-0 text-white">Still Have Confusion?</h2>
             <p className="text-sm md:text-base text-blue-100 max-w-xl mx-auto m-0 font-normal">You Need A Career Expert Who Will Guide You to choose Best fit for you</p>
@@ -1351,7 +1351,7 @@ export default function CompareUniversityClientView({
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* ── FLY ANIMATION ── */}
       {flyingLogo && (
