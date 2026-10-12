@@ -3,7 +3,7 @@ import { request } from "@/services/request";
 import { getPageMetaData, constructMetadata } from "@/constants/pageMetaData";
 import { CompareUniversityClientView } from "@/components/website";
 
-export const revalidate = 1800;
+export const revalidate = 900;
 
 export async function generateMetadata({ searchParams }) {
   const resolvedParams = searchParams ? await searchParams : {};
@@ -51,7 +51,7 @@ export default async function CompareUniversitiesToolPage({ searchParams }) {
       entity: "universities",
       endPoint: "v1/compare",
       options,
-      revalidate: 1800,
+      revalidate: 900,
     });
   } catch (err) {
     console.error("[CompareUniversitiesToolPage] Compare API error:", err);

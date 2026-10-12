@@ -87,6 +87,7 @@ export default function CompareUniversityClientView({
       request.dynamicRead({
         entity: "universities",
         endPoint: "v1/compare",
+        revalidate: 900,
       }).then((res) => {
         if (Array.isArray(res?.courses) && res.courses.length > 0) {
           setAvailableCourses(res.courses);
@@ -113,7 +114,8 @@ export default function CompareUniversityClientView({
       request.dynamicRead({
         entity: "universities",
         endPoint: "v1/compare",
-        options: { course: newCourse, refresh: true },
+        options: { course: newCourse },
+        revalidate: 900,
       }).then((res) => {
         const unis = Array.isArray(res?.universities) ? res.universities : [];
         setCourseBasedUniversities(unis);
@@ -129,7 +131,7 @@ export default function CompareUniversityClientView({
       request.dynamicRead({
         entity: "universities",
         endPoint: "v1/compare",
-        options: { refresh: true },
+        revalidate: 900,
       }).then((res) => {
         const unis = Array.isArray(res?.universities) ? res.universities : [];
         setCourseBasedUniversities(unis);
@@ -153,13 +155,14 @@ export default function CompareUniversityClientView({
       setModalLoading(true);
       try {
         const options = selectedCourse && selectedCourse !== "all"
-          ? { course: selectedCourse, refresh: true }
-          : { refresh: true };
+          ? { course: selectedCourse }
+          : {};
 
         const res = await request.dynamicRead({
           entity: "universities",
           endPoint: "v1/compare",
           options,
+          revalidate: 900,
         });
 
         if (!isCancelled) {
@@ -186,6 +189,7 @@ export default function CompareUniversityClientView({
           entity: "universities",
           endPoint: "v1/compare",
           options: compOptions,
+          revalidate: 900,
         }).then((res) => {
           if (!isCancelled) {
             const data = Array.isArray(res?.result) ? res.result : [];
@@ -288,7 +292,8 @@ export default function CompareUniversityClientView({
         const res = await request.dynamicRead({
           entity: "universities",
           endPoint: "v1/compare",
-          options: selectedCourse && selectedCourse !== "all" ? { course: selectedCourse, refresh: true } : { refresh: true },
+          options: selectedCourse && selectedCourse !== "all" ? { course: selectedCourse } : {},
+          revalidate: 900,
         });
         const unis = Array.isArray(res?.universities) ? res.universities : [];
         if (unis.length > 0) {
@@ -354,6 +359,7 @@ export default function CompareUniversityClientView({
           entity: "universities",
           endPoint: "v1/compare",
           options,
+          revalidate: 900,
         });
         const data = Array.isArray(res?.result) ? res.result : [];
         if (data.length > 0) setComparedData(data);
