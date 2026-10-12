@@ -4,12 +4,14 @@ import React, { useState, useMemo, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Form, Input, Select, Button, Checkbox, message, Modal, Carousel } from "antd";
+import { Form, Input, Select, Button, Checkbox, message as staticMessage, Modal, Carousel, App } from "antd";
 import { ArrowRight, Building2, Calendar, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, Eye, FileText, GraduationCap, Link2, Mail, Share2, User, UserCheck, X } from "lucide-react";
 const getAssetPath = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 import { STATE_OPTIONS } from "@/constants/stateOptions";
 import { DEFAULT_COURSE_OPTIONS } from "@/constants/courseOptions";
 import { PartnerLogoIcon, CourseIcon, getItemSlug, isObjectId } from "@/components/website/category/CategoryIcons";
+import { subscribeToBlogPushNotifications, isBlogSubscribed } from "@/services/fcm";
+import { request } from "@/services/request";
 
 function formatCardDate(dateStr) {
   if (!dateStr) return "8 Oct 2026";
@@ -35,17 +37,24 @@ export default function BlogSidebar({
   popularBlogs = [],
   currentSlug = "",
 }) {
+  const antdApp = App.useApp();
+  const message = antdApp?.message || staticMessage;
   const [leadForm] = Form.useForm();
   const [submitting, setSubmitting] = useState(false);
   const router = useRouter();
   const [subscribedEmail, setSubscribedEmail] = useState("");
   const [subscribing, setSubscribing] = useState(false);
+  const [isSubscribed, setIsSubscribed] = useState(false);
   const [coursesExpanded, setCoursesExpanded] = useState(false);
   const [unisExpanded, setUnisExpanded] = useState(false);
   const [authorModalOpen, setAuthorModalOpen] = useState(false);
   const [selectedAuthorCat, setSelectedAuthorCat] = useState("All");
   const [modalSlidesToShow, setModalSlidesToShow] = useState(3);
   const carouselRef = useRef(null);
+
+  useEffect(() => {
+    setIsSubscribed(isBlogSubscribed());
+  }, []);
 
   // Responsive slide count for Author Articles Carousel (1 on mobile, 2 on tablet, 3 on desktop)
   useEffect(() => {
@@ -253,14 +262,25 @@ export default function BlogSidebar({
     }
   };
 
-  // Handle Newsletter Subscribe
+  // Handle Web Push Notification Subscribe
   const handleSubscribe = async (e) => {
     e.preventDefault();
+    if (isSubscribed) {
+      message.info("You are already subscribed to education updates!");
+      return;
+    }
     setSubscribing(true);
     try {
-      await new Promise((r) => setTimeout(r, 600));
-      message.success("Thank you for subscribing to education updates!");
-      setSubscribedEmail("");
+      const res = await subscribeToBlogPushNotifications(subscribedEmail);
+      if (res.success) {
+        setIsSubscribed(true);
+        message.success(
+          res.message || "Thank you for subscribing! You will receive push notifications when new blogs are published."
+        );
+        setSubscribedEmail("");
+      } else {
+        message.warning(res.message || "Could not complete subscription.");
+      }
     } catch {
       message.error("Failed to subscribe. Please try again.");
     } finally {
@@ -268,11 +288,12 @@ export default function BlogSidebar({
     }
   };
 
-  // Handle Social Sharing
+  // Handle Social Sharing & Analytics Tracking
   const handleSocialShare = (platform) => {
     const url = typeof window !== "undefined" ? window.location.href : "";
     const shareText = title || "Check out this article on SODE";
 
+    // 1. Perform Platform Action
     if (platform === "facebook") {
       window.open(
         `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
@@ -304,6 +325,20 @@ export default function BlogSidebar({
       } else {
         message.info(url);
       }
+    }
+
+    // 2. Record Share Event in Blog Model (silently in backend)
+    if (currentSlug) {
+      request
+        .dynamicPost({
+          entity: "blogs",
+          endPoint: "v1/share",
+          body: {
+            slug: currentSlug,
+            platform,
+          },
+        })
+        .catch(() => {});
     }
   };
 
@@ -804,10 +839,22 @@ export default function BlogSidebar({
         <form onSubmit={handleSubscribe} className="mt-3">
           <button
             type="submit"
-            disabled={subscribing}
-            className="w-full py-2.5 px-4 rounded-full bg-[#F4D068] hover:bg-[#ebc557] text-[#0C2B4E] text-xs font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer active:scale-95 disabled:opacity-70 border-none"
+            disabled={subscribing || isSubscribed}
+            className={`w-full py-2.5 px-4 rounded-full text-xs font-bold uppercase tracking-wider transition-all shadow-xs border-none flex items-center justify-center gap-1.5 ${
+              isSubscribed
+                ? "bg-emerald-600 text-white cursor-default"
+                : "bg-[#F4D068] hover:bg-[#ebc557] text-[#0C2B4E] cursor-pointer active:scale-95 disabled:opacity-70"
+            }`}
           >
-            {subscribing ? "SUBSCRIBING..." : "SUBSCRIBE"}
+            {subscribing ? (
+              "SUBSCRIBING..."
+            ) : isSubscribed ? (
+              <>
+                <CheckCircle2 className="w-3.5 h-3.5 text-white" /> SUBSCRIBED
+              </>
+            ) : (
+              "SUBSCRIBE"
+            )}
           </button>
         </form>
       </div>
