@@ -4,6 +4,7 @@ import React, { useState, useRef } from "react";
 import Image from "next/image";
 import { Pagination } from "antd";
 import { request } from "@/services/request";
+import { Container } from "@/components/common/Container";
 
 const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 
@@ -284,21 +285,23 @@ export default function ReviewsView({ data = null }) {
   return (
     <div className="w-full bg-[#F8FAFC] text-slate-800 font-sans min-h-screen">
       {/* ─── 1. HERO BANNER (Deep Midnight Navy #11233E) ─── */}
-      <div className="w-full bg-[#11233E] text-white pt-8 sm:pt-12 pb-12 sm:pb-14 px-4 sm:px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-2.5 sm:mb-3">
-            {title}
-          </h1>
+      <div className="w-full bg-[#11233E] text-white pt-8 sm:pt-12 pb-14 sm:pb-16">
+        <Container className="text-center">
+          <div className="max-w-4xl mx-auto">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-2.5 sm:mb-3">
+              {title}
+            </h1>
 
-          <p className="text-xs sm:text-[13.5px] text-slate-200/90 leading-relaxed font-normal">
-            {introText}
-          </p>
-        </div>
+            <p className="text-xs sm:text-[13.5px] text-slate-200/90 leading-relaxed font-normal">
+              {introText}
+            </p>
+          </div>
+        </Container>
       </div>
 
       {/* ─── 2. FLOATING GOOGLE OVERVIEW CARD (Compact Padding) ─── */}
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 -mt-8 sm:-mt-9 relative z-10">
-        <div className="bg-white rounded-xl sm:rounded-2xl px-4 sm:px-5 py-3 sm:py-3.5 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+      <Container className="-mt-8 sm:-mt-9 relative z-10">
+        <div className="bg-white rounded-xl sm:rounded-2xl px-4 sm:px-5 py-3 sm:py-3.5 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 shadow-xs">
           {/* Left: Google G in rounded-full circular badge + Excellent + Name + Stars */}
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full border border-slate-200 bg-white flex items-center justify-center shrink-0">
@@ -348,10 +351,10 @@ export default function ReviewsView({ data = null }) {
             </a>
           </div>
         </div>
-      </div>
+      </Container>
 
       {/* ─── 3. MAIN CONTENT AREA (Filter Tabs, Search, and 3-Col Review Cards) ─── */}
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8 pb-12">
+      <Container className="pt-6 sm:pt-8 pb-12">
         {/* Controls: Filter Pills & Search Bar inside white container box */}
         <div className="bg-white rounded-xl sm:rounded-2xl border border-slate-200 p-2.5 sm:p-3 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-6">
           {/* Filter Pills */}
@@ -479,7 +482,7 @@ export default function ReviewsView({ data = null }) {
             </a>
           </div>
         </div>
-      </div>
+      </Container>
 
       {/* ─── 4. FULL REVIEW MODAL POPUP ─── */}
       {activeModalReview && (
