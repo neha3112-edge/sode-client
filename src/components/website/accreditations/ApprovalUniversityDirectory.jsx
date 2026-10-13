@@ -24,8 +24,6 @@ import { Container } from "@/components/common/Container";
 const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 
 const { Option } = Select;
-
-// Smooth Accordion Card Component for Expanded Details
 function SmoothExpandedCard({
   record,
   isClosing,
