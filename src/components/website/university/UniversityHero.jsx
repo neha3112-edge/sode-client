@@ -61,29 +61,29 @@ export default function UniversityHero({
           <div className="bg-[#0C3A66] text-white px-3.5 py-3.5 sm:px-7 sm:py-5.5">
             <div className="flex flex-row items-center gap-2.5 sm:gap-4">
               {/* Logo */}
-              <div className="w-16 h-16 sm:w-24 sm:h-24 rounded-xl sm:rounded-3xl bg-white p-1 sm:p-1 flex flex-col items-center justify-center text-center shrink-0">
+              <div className="w-18 min-h-[76px] sm:w-22 sm:min-h-[96px] rounded-xl sm:rounded-2xl bg-white p-1 flex flex-col items-center justify-center text-center shrink-0 shadow-xs">
                 {logoUrl ? (
-                  <div className="relative w-full h-10 sm:h-16">
+                  <div className="w-full h-8 sm:h-11 relative shrink-0 flex items-center justify-center">
                     <Image
                       src={logoUrl}
                       alt={uniName}
                       fill
-                      sizes="96px"
+                      sizes="64px"
                       className="object-contain"
                     />
                   </div>
                 ) : (
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-amber-500/20 text-amber-800 flex items-center justify-center font-bold text-base sm:text-lg">
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-amber-500/20 text-amber-800 flex items-center justify-center font-bold text-xs sm:text-sm shrink-0">
                     🎓
                   </div>
                 )}
-                <span className="hidden sm:block text-[10px] font-medium text-gray-800 leading-tight line-clamp-2">
+                <span className="block text-[8.5px] sm:text-[9.5px] font-semibold text-gray-800 leading-tight text-center w-full min-w-0 line-clamp-2 px-0.5 mt-0.5">
                   {uniName}
                 </span>
               </div>
 
               {/* Info Column */}
-              <div className="flex-1 min-w-0 flex flex-col justify-center gap-1 sm:gap-1.5">
+              <div className="flex-1 min-w-0 flex flex-col justify-center gap-0.5 sm:gap-1">
                 <h1 className="text-base sm:text-2xl md:text-[28px] font-extrabold text-white tracking-tight leading-tight m-0 truncate sm:whitespace-normal">
                   {uniName}
                 </h1>
@@ -113,7 +113,7 @@ export default function UniversityHero({
                   </div>
                 </div>
 
-                <div className="flex items-start justify-between gap-3 mt-1.5">
+                <div className="flex items-start justify-between gap-3 mt-1 sm:mt-1.5">
                   {coursePills.length > 0 && (
                     <div className="overflow-x-auto no-scrollbar py-0.5 max-w-full">
                       <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
