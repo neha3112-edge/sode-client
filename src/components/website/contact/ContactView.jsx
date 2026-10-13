@@ -257,7 +257,7 @@ export function ContactView({
               {(counselingFormTitle || counselingFormSubtitle || counselingPhone) && (
                 <div className="text-center mb-5">
                   {counselingFormTitle && (
-                    <h2 className="text-xl sm:text-2xl font-black text-[#E03E19] tracking-tight m-0">
+                    <h2 className="text-xl sm:text-2xl font-black text-[#072C50] tracking-tight m-0">
                       {counselingFormTitle}
                     </h2>
                   )}
@@ -410,7 +410,7 @@ export function ContactView({
                     type="primary"
                     htmlType="submit"
                     loading={loading}
-                    className="w-full h-11 sm:h-12 bg-[#E03E19] hover:bg-[#c43210]! text-white font-bold rounded-lg border-none shadow-md text-sm sm:text-base cursor-pointer transition-all"
+                    className="w-full h-11 sm:h-12 bg-[#072C50] hover:bg-[#0c3966]! text-white font-bold rounded-lg border-none shadow-md text-sm sm:text-base cursor-pointer transition-all"
                   >
                     {contactSubmitButtonText || "Submit"}
                   </Button>

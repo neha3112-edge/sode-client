@@ -1166,7 +1166,7 @@ export default function BlogSidebar({
               setSelectedAuthorCat("All");
               setAuthorModalOpen(true);
             }}
-            className="inline-flex items-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-xl bg-[#1877F2] hover:bg-[#0d65d9] text-white text-xs sm:text-[13px] font-semibold transition-all shadow-xs cursor-pointer active:scale-95 border-none"
+            className="inline-flex items-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-xl bg-[#072C50] hover:bg-[#0c3966] text-white text-xs sm:text-[13px] font-semibold transition-all shadow-xs cursor-pointer active:scale-95 border-none"
           >
             <span>View All Articles</span>
             <ArrowRight size={14} strokeWidth={2.2} />
@@ -1254,8 +1254,8 @@ export default function BlogSidebar({
                       type="button"
                       onClick={() => setSelectedAuthorCat(cat)}
                       className={`px-3 py-0.5 sm:px-3.5 sm:py-1 text-[11px] sm:text-xs rounded-full border transition-all cursor-pointer select-none whitespace-nowrap ${isActive
-                        ? "bg-[#1877F2] text-white border-[#1877F2] font-semibold shadow-xs"
-                        : "bg-white text-slate-600 border-slate-200 hover:border-blue-400 hover:text-blue-600 font-medium"
+                        ? "bg-[#072C50] text-white border-[#072C50] font-semibold shadow-xs"
+                        : "bg-white text-slate-600 border-slate-200 hover:border-[#072C50] hover:text-[#072C50] font-medium"
                         }`}
                     >
                       {cat}
