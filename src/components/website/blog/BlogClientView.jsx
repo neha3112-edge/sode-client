@@ -32,15 +32,15 @@ function formatViewsCount(views, readTime) {
   if (count !== null && !isNaN(count) && count > 0) {
     if (count >= 1000) {
       const formatted = (count / 1000).toFixed(1).replace(/\.0$/, "");
-      return `${formatted}k Read`;
+      return `${formatted}k Reads`;
     }
-    return `${count} Read`;
+    return `${count} Reads`;
   }
   if (readTime && typeof readTime === "string") {
-    return readTime.toLowerCase().includes("read") ? readTime : `${readTime} Read`;
+    return readTime.toLowerCase().includes("read") ? readTime : `${readTime} Reads`;
   }
   if (views) {
-    return `${views} Read`;
+    return `${views} Reads`;
   }
   return null;
 }
@@ -370,6 +370,53 @@ export default function BlogClientView({
   }, [initialTools]);
 
   const blog = initialData?.blogId || initialData || {};
+  const [viewsCount, setViewsCount] = useState(
+    blog?.viewsCount ?? blog?.views ?? 0
+  );
+
+  // Sync state if initialData changes
+  useEffect(() => {
+    if (blog?.viewsCount !== undefined && blog?.viewsCount !== null) {
+      setViewsCount(blog.viewsCount);
+    }
+  }, [blog?.viewsCount]);
+
+  // 👁️ Increment viewcount whenever blog is opened
+  useEffect(() => {
+    const targetSlug = propSlug || blog?.slug;
+    const targetId = blog?._id;
+    if (!targetSlug && !targetId) return;
+
+    let isMounted = true;
+    request
+      .dynamicPost({
+        entity: "blogs",
+        endPoint: "v1/view",
+        body: {
+          slug: targetSlug,
+          id: targetId,
+        },
+      })
+      .then((res) => {
+        if (isMounted) {
+          if (res?.result?.viewsCount != null) {
+            setViewsCount(res.result.viewsCount);
+          } else {
+            setViewsCount((prev) => (Number(prev) || 0) + 1);
+          }
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setViewsCount((prev) => (Number(prev) || 0) + 1);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [propSlug, blog?._id, blog?.slug]);
+
   const pageTitle = blog?.title || blog?.headline || "";
   const showBreadcrumbs = blog?.showBreadcrumbs !== false;
 
@@ -826,7 +873,7 @@ export default function BlogClientView({
   const blogImageUrl = rawImage ? getAssetPath(rawImage) : null;
 
   const formattedDate = formatBlogDate(blog.publishedAt || blog.createdAt);
-  const viewsText = formatViewsCount(blog.viewsCount ?? blog.views, blog.readTime);
+  const viewsText = formatViewsCount(viewsCount, blog.readTime);
   const authorName =
     blog.author?.fullname ||
     blog.author?.name ||
@@ -978,7 +1025,7 @@ export default function BlogClientView({
               <h1 className="text-lg sm:text-2xl text-gray-900 font-bold leading-snug sm:leading-tight mb-2 sm:mb-3">
                 {pageTitle}
               </h1>
-              {(authorName || formattedDate || blog?.readTime) && (
+              {(authorName || formattedDate || viewsText) && (
                 <div className="flex items-center justify-between flex-wrap gap-1.5 sm:gap-2 text-xs sm:text-sm text-slate-600 mb-2.5 sm:mb-3">
                   {authorName && (
                     <div className="flex items-center gap-1">
@@ -995,7 +1042,11 @@ export default function BlogClientView({
                     )}
                     {viewsText && (
                       <div className="flex items-center gap-1">
-                        <Eye className="size-3 text-slate-500" />
+                        {viewsText.toLowerCase().includes("min") ? (
+                          <Clock className="size-3 text-slate-500" />
+                        ) : (
+                          <Eye className="size-3 text-slate-500" />
+                        )}
                         <span className="font-normal text-xs text-slate-600">{viewsText}</span>
                       </div>
                     )}

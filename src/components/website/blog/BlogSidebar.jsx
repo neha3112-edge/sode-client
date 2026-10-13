@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Form, Input, Select, Button, Checkbox, message as staticMessage, Modal, Carousel, App } from "antd";
-import { ArrowRight, Building2, Calendar, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, Eye, FileText, GraduationCap, Link2, Mail, Share2, User, UserCheck, X } from "lucide-react";
+import { ArrowRight, Building2, Calendar, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, Clock, Eye, FileText, GraduationCap, Link2, Mail, Share2, User, UserCheck, X } from "lucide-react";
 const getAssetPath = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 import { STATE_OPTIONS } from "@/constants/stateOptions";
 import { DEFAULT_COURSE_OPTIONS } from "@/constants/courseOptions";
@@ -462,10 +462,10 @@ export default function BlogSidebar({
     const dateStr = item.createdAt || item.date || item.publishedAt;
     const viewsStr =
       item.viewsCount != null
-        ? `${item.viewsCount} Read`
+        ? `${item.viewsCount} Reads`
         : item.views
-          ? `${item.views} Read`
-          : "Read";
+          ? `${item.views} Reads`
+          : "Reads";
     const excerptStr =
       item.subtitle ||
       item.excerpt ||
@@ -506,7 +506,11 @@ export default function BlogSidebar({
               <span>{formatCardDate(dateStr)}</span>
             </span>
             <span className="flex items-center gap-1 text-slate-400">
-              <Eye size={12} />
+              {viewsStr?.toLowerCase().includes("min") ? (
+                <Clock size={12} />
+              ) : (
+                <Eye size={12} />
+              )}
               <span>{viewsStr}</span>
             </span>
           </div>

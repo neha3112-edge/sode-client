@@ -131,8 +131,12 @@ export default function CategoryDetailModal({
                           const parentCatSlug = getItemSlug(activeCategory);
                           const itemSlug = getItemSlug(it);
 
-                          if (modalData.isUniversitiesModal) {
-                            router.push(`/courses?university=${encodeURIComponent(itemSlug)}`);
+                          if (modalData.isUniversitiesModal || it.isUniversity || it.itemType === "university") {
+                            if (it.targetUrl && it.targetUrl.startsWith("/universities/")) {
+                              router.push(it.targetUrl);
+                            } else {
+                              router.push(`/universities/${encodeURIComponent(itemSlug)}`);
+                            }
                           } else if (modalData.isCourseSubcategoriesModal) {
                             const courseSlug = getItemSlug(activeCategory);
                             const subSlug = getItemSlug(it);

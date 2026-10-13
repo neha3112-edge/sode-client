@@ -6,6 +6,7 @@ import {
   CalendarOutlined,
   ArrowRightOutlined,
   EyeOutlined,
+  ClockCircleOutlined,
   SearchOutlined,
   BookOutlined,
   UserOutlined,
@@ -67,13 +68,13 @@ function formatBlogDate(dateStr) {
 
 function formatReadViews(views, readTime) {
   if (views && typeof views === "number" && views > 0) {
-    if (views >= 1000) return `${(views / 1000).toFixed(1)}k Read`;
-    return `${views} Read`;
+    if (views >= 1000) return `${(views / 1000).toFixed(1)}k Reads`;
+    return `${views} Reads`;
   }
   if (readTime && typeof readTime === "string") {
-    return readTime.includes("Read") || readTime.includes("read") ? readTime : `${readTime} Read`;
+    return readTime.includes("Read") || readTime.includes("read") ? readTime : `${readTime} Reads`;
   }
-  return "1.4k Read";
+  return "1.4k Reads";
 }
 
 function getAuthorName(author) {
@@ -131,7 +132,11 @@ function BlogCard({ blog, index = 0 }) {
             {formattedDate}
           </span>
           <span className="flex items-center gap-1.5 font-medium text-slate-500">
-            <EyeOutlined className="text-slate-400 text-[11px]" />
+            {viewsText?.toLowerCase().includes("min") ? (
+              <ClockCircleOutlined className="text-slate-400 text-[11px]" />
+            ) : (
+              <EyeOutlined className="text-slate-400 text-[11px]" />
+            )}
             {viewsText}
           </span>
         </div>
