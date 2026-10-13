@@ -465,7 +465,66 @@ export default function BlogClientView({
   const [activeHeadingId, setActiveHeadingId] = useState("");
   const [selectedPoll, setSelectedPoll] = useState("");
   const [openFaqIndex, setOpenFaqIndex] = useState(0);
-  const [articleHelpful, setArticleHelpful] = useState("yes");
+  const [articleHelpful, setArticleHelpful] = useState(null);
+  const [likesCount, setLikesCount] = useState(blog?.likesCount ?? 0);
+  const [unlikesCount, setUnlikesCount] = useState(blog?.unlikesCount ?? 0);
+
+  useEffect(() => {
+    if (blog?.likesCount !== undefined) setLikesCount(blog.likesCount);
+    if (blog?.unlikesCount !== undefined) setUnlikesCount(blog.unlikesCount);
+  }, [blog?.likesCount, blog?.unlikesCount]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const targetSlug = propSlug || blog?.slug;
+      const targetId = blog?._id;
+      const saved = sessionStorage.getItem(`blog_helpful_${targetSlug || targetId}`);
+      if (saved === "yes" || saved === "no") {
+        setArticleHelpful(saved);
+      }
+    }
+  }, [propSlug, blog?._id, blog?.slug]);
+
+  const handleFeedbackClick = async (reactionType) => {
+    const targetSlug = propSlug || blog?.slug;
+    const targetId = blog?._id;
+    if (articleHelpful === reactionType) return;
+
+    const prevReaction = articleHelpful;
+    setArticleHelpful(reactionType);
+
+    if (reactionType === "yes") {
+      setLikesCount((prev) => (Number(prev) || 0) + 1);
+      if (prevReaction === "no") {
+        setUnlikesCount((prev) => Math.max(0, (Number(prev) || 0) - 1));
+      }
+    } else if (reactionType === "no") {
+      setUnlikesCount((prev) => (Number(prev) || 0) + 1);
+      if (prevReaction === "yes") {
+        setLikesCount((prev) => Math.max(0, (Number(prev) || 0) - 1));
+      }
+    }
+
+    try {
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem(`blog_helpful_${targetSlug || targetId}`, reactionType);
+      }
+      const res = await request.dynamicPost({
+        entity: "blogs",
+        endPoint: "v1/reaction",
+        body: {
+          slug: targetSlug,
+          id: targetId,
+          reaction: reactionType,
+          previousReaction: prevReaction,
+        },
+      });
+      if (res?.result) {
+        if (res.result.likesCount != null) setLikesCount(res.result.likesCount);
+        if (res.result.unlikesCount != null) setUnlikesCount(res.result.unlikesCount);
+      }
+    } catch (_) {}
+  };
   const [commentsList, setCommentsList] = useState(
     Array.isArray(blog?.comments) ? blog.comments : []
   );
@@ -561,17 +620,8 @@ export default function BlogClientView({
       });
 
       if (res && res.success !== false) {
-        const newCmt = res.result || {
-          _id: Date.now(),
-          name: values.name,
-          comment: values.comment,
-          text: values.comment,
-          createdAt: new Date().toISOString(),
-        };
-
-        setCommentsList((prev) => [newCmt, ...(Array.isArray(prev) ? prev : [])]);
         message.success(
-          res?.message || "Thank you! Your comment has been submitted successfully."
+          res?.message || "Thank you! Your comment has been submitted and will be visible after admin approval."
         );
         commentForm.resetFields();
       } else {
@@ -1898,33 +1948,49 @@ export default function BlogClientView({
               <div className="flex items-center gap-3">
                 <button
                   type="button"
-                  onClick={() => setArticleHelpful("yes")}
+                  onClick={() => handleFeedbackClick("yes")}
                   className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all border cursor-pointer active:scale-95 ${articleHelpful === "yes"
-                    ? "bg-white border-emerald-500 text-gray-800 shadow-2xs"
+                    ? "bg-white border-emerald-500 text-emerald-700 shadow-2xs"
                     : "bg-white border-gray-200 text-gray-700 hover:border-gray-300"
                     }`}
                 >
-                  <ThumbsUp size={14} className="text-emerald-600 fill-emerald-600" />
+                  <ThumbsUp
+                    size={14}
+                    className={
+                      articleHelpful === "yes"
+                        ? "text-emerald-600 fill-emerald-600"
+                        : "text-gray-400"
+                    }
+                  />
                   <span>Yes</span>
                 </button>
 
                 <button
                   type="button"
-                  onClick={() => setArticleHelpful("no")}
+                  onClick={() => handleFeedbackClick("no")}
                   className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all border cursor-pointer active:scale-95 ${articleHelpful === "no"
-                    ? "bg-white border-slate-400 text-gray-800 shadow-2xs"
+                    ? "bg-white border-emerald-500 text-emerald-700 shadow-2xs"
                     : "bg-white border-gray-200 text-gray-700 hover:border-gray-300"
                     }`}
                 >
-                  <ThumbsDown size={14} className="text-slate-500 fill-slate-500" />
+                  <ThumbsDown
+                    size={14}
+                    className={
+                      articleHelpful === "no"
+                        ? "text-emerald-600 fill-emerald-600"
+                        : "text-gray-400"
+                    }
+                  />
                   <span>No</span>
                 </button>
               </div>
-              <p className="text-xs sm:text-sm text-slate-500 mt-3 m-0 font-normal">
-                {articleHelpful === "no"
-                  ? "*Thanks for your feedback! We'll work to improve it."
-                  : "*Thanks! We're glad this article helped."}
-              </p>
+              {articleHelpful && (
+                <p className="text-xs sm:text-sm text-slate-500 mt-3 m-0 font-normal">
+                  {articleHelpful === "no"
+                    ? "*Thanks for your feedback! We'll work to improve it."
+                    : "*Thanks! We're glad this article helped."}
+                </p>
+              )}
             </div>
 
             {/* =====================================================================
