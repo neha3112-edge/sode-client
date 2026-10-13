@@ -428,7 +428,7 @@ export function CourseClientView({
   const availableSections = useMemo(() => {
     const list = [];
     if (courseData?.overview || courseData?.description) {
-      list.push({ id: "about", label: "Overview" });
+      list.push({ id: "overview", label: "Overview" });
     }
     if (highlightsList && highlightsList.length > 0) {
       list.push({ id: "key-highlights", label: "Highlights" });
@@ -443,7 +443,7 @@ export function CourseClientView({
       list.push({ id: "approvals", label: "Accreditations" });
     }
     if (specializations && specializations.length > 0) {
-      list.push({ id: "specializations", label: "Specialisations" });
+      list.push({ id: "specializations", label: "Specializations" });
     }
     if (
       courseData?.careerOpportunity &&
@@ -451,7 +451,7 @@ export function CourseClientView({
         courseData.careerOpportunity.highlights?.highestPackage ||
         courseData.careerOpportunity.highlights?.averagePackage)
     ) {
-      list.push({ id: "career-opportunities", label: "Career & Scope" });
+      list.push({ id: "career-opportunities", label: "Career Opportunities" });
     }
     if (processedPrograms && processedPrograms.length > 0) {
       list.push({ id: "alternative", label: "Alternative Universities" });

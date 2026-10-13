@@ -105,6 +105,12 @@ export default function UniversityStickyNav({
     setActiveKey(key);
     isManualScrollRef.current = true;
 
+    if (typeof window !== "undefined" && key) {
+      if (window.location.hash !== `#${key}`) {
+        window.history.pushState(null, "", `#${key}`);
+      }
+    }
+
     const targetEl = document.getElementById(key);
     if (targetEl) {
       const navEl = containerRef.current;
@@ -127,22 +133,64 @@ export default function UniversityStickyNav({
     }, 800);
   };
 
+  // Scroll to hash target on initial load or browser back/forward (hashchange)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const scrollToHash = () => {
+      const hash = window.location.hash ? window.location.hash.replace("#", "") : "";
+      if (!hash) return;
+
+      const targetEl = document.getElementById(hash);
+      if (targetEl) {
+        setActiveKey(hash);
+        const navEl = containerRef.current;
+        const navHeight = navEl ? navEl.offsetHeight : 54;
+        const rect = targetEl.getBoundingClientRect();
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const targetY = rect.top + scrollTop - navHeight - 16;
+
+        window.scrollTo({
+          top: Math.max(0, targetY),
+          behavior: "smooth",
+        });
+      }
+    };
+
+    const timer = setTimeout(scrollToHash, 350);
+    window.addEventListener("hashchange", scrollToHash);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("hashchange", scrollToHash);
+    };
+  }, [detectedSections]);
+
   // Scroll spy to toggle visibility and highlight the section currently in view
   useEffect(() => {
     if (!detectedSections || detectedSections.length === 0) return;
 
     const handleScroll = () => {
       const firstSecEl = document.getElementById(detectedSections[0]?.id);
-      const triggerTop = firstSecEl ? firstSecEl.offsetTop - 120 : 400;
-      const shouldShow = window.scrollY >= triggerTop;
-      setIsVisible(shouldShow);
+      const navEl = containerRef.current;
+      const navHeight = navEl ? navEl.offsetHeight : 54;
+
+      // Hero threshold: user is considered past hero only when first section approaches top
+      const heroThreshold = firstSecEl ? Math.max(0, firstSecEl.offsetTop - navHeight - 80) : 500;
+      const isPastHero = window.scrollY >= heroThreshold;
+      setIsVisible(isPastHero);
 
       if (isManualScrollRef.current) return;
 
-      const navEl = containerRef.current;
-      const navHeight = navEl ? navEl.offsetHeight : 54;
-      const scrollPos = window.scrollY + navHeight + 60;
+      if (!isPastHero) {
+        // User is viewing the Hero section — ensure NO hash in URL!
+        if (typeof window !== "undefined" && window.location.hash) {
+          window.history.replaceState(null, "", window.location.pathname + window.location.search);
+        }
+        return;
+      }
 
+      const scrollPos = window.scrollY + navHeight + 80;
       let currentId = detectedSections[0]?.id;
 
       for (let i = 0; i < detectedSections.length; i++) {
@@ -165,6 +213,11 @@ export default function UniversityStickyNav({
 
       if (currentId) {
         setActiveKey(currentId);
+        if (typeof window !== "undefined") {
+          if (window.location.hash !== `#${currentId}`) {
+            window.history.replaceState(null, "", `#${currentId}`);
+          }
+        }
       }
     };
 
@@ -227,6 +280,7 @@ export default function UniversityStickyNav({
             <Tabs
               activeKey={activeKey}
               onChange={handleTabChange}
+              onTabClick={handleTabChange}
               items={tabItems}
               tabBarStyle={{
                 marginBottom: 0,

@@ -17,8 +17,9 @@ export default function CourseApprovals({
     <div
       id="approvals"
       data-nav-label="Accreditations"
-      className="scroll-mt-20 bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 text-center"
+      className="scroll-mt-20 bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 text-center relative"
     >
+      <span id="accreditations" className="sr-only" />
       <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight mb-4">
         {courseData?.approvalsTitle || (universityName ? `Rankings & Accreditations of ${universityName}` : "Rankings & Accreditations")}
       </h2>

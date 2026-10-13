@@ -205,13 +205,13 @@ export default function CourseSpecializations({
   return (
     <div
       id="specializations"
-      data-nav-label="Specialisations"
+      data-nav-label="Specializations"
       ref={specializationSectionRef}
       className="scroll-mt-20 bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8 relative transition-all"
     >
       <span id="admission" className="sr-only" />
       <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-5 sm:mb-7 m-0">
-        {universityName ? `${universityName} ` : ""}{courseData?.name || "Course"} Specialisations
+        {universityName ? `${universityName} ` : ""}{courseData?.name || "Course"} Specializations
       </h2>
 
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3.5 md:gap-4">

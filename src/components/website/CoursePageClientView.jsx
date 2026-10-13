@@ -521,7 +521,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
       list.push({ id: "accreditations", label: "Accreditations" });
     }
     if (overview.enabled !== false && (Boolean(overview.description) || overviewTable.length > 0)) {
-      list.push({ id: "overview", label: "Highlights" });
+      list.push({ id: "key-highlights", label: "Highlights" });
     }
     if (whyChoose.enabled !== false && whyChooseCards && whyChooseCards.length > 0) {
       list.push({ id: "why-choose", label: "Why Choose Us" });
@@ -536,7 +536,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
       list.push({ id: "mode-comparison", label: "Mode Comparison" });
     }
     if (specializations.enabled !== false && specializationsList && specializationsList.length > 0) {
-      list.push({ id: "specializations", label: "Specialisations" });
+      list.push({ id: "specializations", label: "Specializations" });
     }
     if (syllabus.enabled !== false && syllabusData && syllabusData.length > 0) {
       list.push({ id: "syllabus", label: "Syllabus" });
@@ -551,7 +551,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
         Boolean(careerScope.jobRolesDescription) ||
         Boolean(careerScope.salaryTrend))
     ) {
-      list.push({ id: "career-scope", label: "Career & Scope" });
+      list.push({ id: "career-opportunities", label: "Career Opportunities" });
     }
     if (recruitersSection.enabled !== false && recruitersList && recruitersList.length > 0) {
       list.push({ id: "recruiters", label: "Top Recruiters" });
@@ -1080,10 +1080,11 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
           ===================================================================== */}
             {overview.enabled !== false && (Boolean(overview.description) || overviewTable.length > 0) && (
               <div
-                id="overview"
+                id="key-highlights"
                 data-nav-label="Highlights"
-                className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-4 sm:p-6 md:p-8 mb-6 scroll-mt-20"
+                className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-4 sm:p-6 md:p-8 mb-6 scroll-mt-20 relative"
               >
+                <span id="overview" className="sr-only" />
                 <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
                   {overview.title || "Overview & Key Highlights"}
                 </h2>
@@ -1406,7 +1407,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
             {specializations.enabled !== false && specializationsList && specializationsList.length > 0 && (
               <div
                 id="specializations"
-                data-nav-label="Specialisations"
+                data-nav-label="Specializations"
                 className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-3 sm:p-6 mb-5 sm:mb-6 scroll-mt-20"
               >
                 <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-1.5 sm:mb-2">
@@ -1737,10 +1738,11 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                 Boolean(careerScope.jobRolesDescription) ||
                 Boolean(careerScope.salaryTrend)) && (
                 <div
-                  id="career-scope"
-                  data-nav-label="Career & Scope"
-                  className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-4 sm:p-6 md:p-8 mb-6 scroll-mt-20"
+                  id="career-opportunities"
+                  data-nav-label="Career Opportunities"
+                  className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-4 sm:p-6 md:p-8 mb-6 scroll-mt-20 relative"
                 >
+                  <span id="career-scope" className="sr-only" />
                   <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
                     {careerScope.title || "Career Scope & Salary Expectations"}
                   </h2>

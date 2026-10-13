@@ -188,8 +188,8 @@ export default function HeroSearchBar({
             onSubmit={handleSearchSubmit}
             suppressHydrationWarning
             className={`relative flex items-center bg-white rounded-full border overflow-hidden transition-all duration-200 h-10 sm:h-11 shadow-xs ${isFocused
-                ? "border-[#0B3B7E] ring-2 ring-[#0B3B7E]/10"
-                : "border-slate-300 hover:border-slate-400"
+              ? "border-[#0B3B7E] ring-2 ring-[#0B3B7E]/10"
+              : "border-slate-300 hover:border-slate-400"
               }`}
           >
             <div className="pl-3.5 sm:pl-4 text-slate-400 flex items-center justify-center shrink-0">

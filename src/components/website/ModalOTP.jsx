@@ -129,7 +129,7 @@ function getAvailableCourses(contextPayload, currentUni = "") {
   if (typeof document !== "undefined") {
     document
       .querySelectorAll(
-        "#university-courses-section a, #university-courses-section h3, #university-courses-section h4, [data-nav-label='Courses'] a, .university-courses-grid a"
+        "#programs a, #programs h3, #programs h4, [data-nav-label='Programs'] a, #university-courses-section a, #university-courses-section h3, #university-courses-section h4, [data-nav-label='Courses'] a, .university-courses-grid a"
       )
       .forEach((el) => {
         const text = el.innerText?.trim();

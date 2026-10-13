@@ -13,8 +13,9 @@ export default function UniversityAbout({
     <div
       id="about"
       data-nav-label="About"
-      className="scroll-mt-20 bg-white rounded-2xl shadow-xs border border-gray-200 p-6 sm:p-8 space-y-4 text-center"
+      className="scroll-mt-20 bg-white rounded-2xl shadow-xs border border-gray-200 p-6 sm:p-8 space-y-4 text-center relative"
     >
+      <span id="overview" className="sr-only" />
       <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight mb-4 text-center">
         {aboutTitle || `About ${uniName}`}
       </h2>

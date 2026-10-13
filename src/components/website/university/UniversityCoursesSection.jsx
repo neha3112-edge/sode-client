@@ -35,10 +35,12 @@ export default function UniversityCoursesSection({
 
   return (
     <div
-      id="university-courses-section"
-      data-nav-label="Courses"
-      className="bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8 scroll-mt-20"
+      id="programs"
+      data-nav-label="Programs"
+      className="bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8 scroll-mt-20 relative"
     >
+      <span id="courses" className="sr-only" />
+      <span id="university-courses-section" className="sr-only" />
       <div className="flex flex-col items-center justify-center mb-3 sm:mb-5">
         <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight text-center m-0">
           {uniName} Courses
@@ -218,7 +220,7 @@ export default function UniversityCoursesSection({
             onClick={() => {
               if (visibleCoursesCount >= filteredCourses.length) {
                 setVisibleCoursesCount(5);
-                const section = document.getElementById("university-courses-section");
+                const section = document.getElementById("programs") || document.getElementById("university-courses-section");
                 if (section) {
                   const yOffset = -70;
                   const y = section.getBoundingClientRect().top + window.pageYOffset + yOffset;
