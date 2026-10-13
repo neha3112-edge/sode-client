@@ -1,6 +1,24 @@
 import { API_BASE_URL, getFetchCacheOptions } from "@/config";
 
-const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || undefined);
+const getMediaUrl = (obj) => {
+  if (!obj) return undefined;
+  const raw = typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || undefined;
+  if (!raw || typeof raw !== "string") return undefined;
+  const trimmed = raw.trim();
+  if (!trimmed) return undefined;
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+    return trimmed;
+  }
+  if (trimmed.startsWith("//")) {
+    return `https:${trimmed}`;
+  }
+  const base = (
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    SITE_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://mysode.com")
+  ).replace(/\/+$/, "");
+  return trimmed.startsWith("/") ? `${base}${trimmed}` : `${base}/${trimmed}`;
+};
 
 export const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || "";
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "";
@@ -36,8 +54,11 @@ export async function getPageMetaData(path = "/") {
 }
 
 export function constructMetadata(pageMeta, fallbacks = {}) {
-  // If NO pageMeta exists in backend for this path, strictly return noindex, nofollow
-  if (!pageMeta) {
+  const hasPageMeta = Boolean(pageMeta);
+  const metaObj = pageMeta || {};
+
+  // If NO pageMeta exists and NO fallbacks provided, return noindex
+  if (!hasPageMeta && (!fallbacks || Object.keys(fallbacks).length === 0)) {
     return {
       robots: {
         index: false,
@@ -51,13 +72,12 @@ export function constructMetadata(pageMeta, fallbacks = {}) {
   }
 
   // 🔒 STRICT SEO: Only index if PageMeta explicitly enables "index" (and NOT "noindex")
-  const rawRobots = pageMeta.robots ? String(pageMeta.robots).trim().toLowerCase() : "";
-  const isExplicitlyIndexed = Boolean(
-    rawRobots &&
-    rawRobots.includes("index") &&
-    !rawRobots.includes("noindex")
-  );
-  const isNoFollow = rawRobots.includes("nofollow") || !isExplicitlyIndexed;
+  // If pageMeta doesn't exist but dynamic page fallbacks exist (e.g. blog post), default to indexed
+  const rawRobots = metaObj.robots ? String(metaObj.robots).trim().toLowerCase() : "";
+  const isExplicitlyIndexed = hasPageMeta
+    ? Boolean(rawRobots && rawRobots.includes("index") && !rawRobots.includes("noindex"))
+    : true;
+  const isNoFollow = hasPageMeta ? (rawRobots.includes("nofollow") || !isExplicitlyIndexed) : false;
 
   const robots = {
     index: isExplicitlyIndexed,
@@ -68,35 +88,37 @@ export function constructMetadata(pageMeta, fallbacks = {}) {
     },
   };
 
-  const title = pageMeta.metaTitle || pageMeta.title || fallbacks.title;
-  const description = pageMeta.metaDescription || pageMeta.description || fallbacks.description;
-  const keywords = pageMeta.metaKeywords || pageMeta.keywords || fallbacks.keywords;
-  const rawCanonical = pageMeta.canonicalUrl || pageMeta.ogUrl || fallbacks.canonicalUrl;
+  const title = metaObj.metaTitle || metaObj.title || fallbacks.title;
+  const description = metaObj.metaDescription || metaObj.description || fallbacks.description;
+  const keywords = metaObj.metaKeywords || metaObj.keywords || fallbacks.keywords;
+  const rawCanonical = metaObj.canonicalUrl || metaObj.ogUrl || fallbacks.canonicalUrl;
   const canonical = rawCanonical ? ensureTrailingSlash(rawCanonical) : undefined;
 
-  const authorName = pageMeta.authorName || fallbacks.authorName;
-  const publisherName = pageMeta.publisher || fallbacks.publisher;
-  const publisherUrl = pageMeta.publisherUrl || fallbacks.publisherUrl;
+  const authorName = metaObj.authorName || fallbacks.authorName;
+  const publisherName = metaObj.publisher || fallbacks.publisher;
+  const publisherUrl = metaObj.publisherUrl || fallbacks.publisherUrl;
 
-  const ogTitle = pageMeta.ogTitle || pageMeta.metaTitle || pageMeta.title || fallbacks.ogTitle || title;
-  const ogDescription = pageMeta.ogDescription || pageMeta.metaDescription || pageMeta.description || fallbacks.ogDescription || description;
-  const ogSiteName = pageMeta.ogSiteName || fallbacks.ogSiteName;
-  const ogType = pageMeta.ogType || fallbacks.ogType;
+  const ogTitle = metaObj.ogTitle || metaObj.metaTitle || metaObj.title || fallbacks.ogTitle || title;
+  const ogDescription = metaObj.ogDescription || metaObj.metaDescription || metaObj.description || fallbacks.ogDescription || description;
+  const ogSiteName = metaObj.ogSiteName || fallbacks.ogSiteName || SITE_NAME;
+  const ogType = metaObj.ogType || fallbacks.ogType || "article";
 
-  // Fallback to ogImage or coverImage from fallbacks if pageMeta.ogImage is not set
-  const rawOg = pageMeta.ogImage || fallbacks.ogImage || fallbacks.coverImage;
+  // OG Image logic:
+  // 1. Agar meta se ogImage aayi hai -> meta wali show hogi
+  // 2. Agar meta se nahi aayi -> blog ki coverImage show hogi
+  const rawOg = metaObj.ogImage || fallbacks.ogImage || fallbacks.coverImage;
   const ogImageUrl = rawOg ? getMediaUrl(rawOg) : undefined;
   const ogImageAlt = rawOg?.alt || rawOg?.name || ogTitle || title;
 
-  const twitterCard = pageMeta.twitterCard || fallbacks.twitterCard;
-  const twitterTitle = pageMeta.twitterTitle || ogTitle || title;
-  const twitterDescription = pageMeta.twitterDescription || ogDescription || description;
+  const twitterCard = metaObj.twitterCard || fallbacks.twitterCard || "summary_large_image";
+  const twitterTitle = metaObj.twitterTitle || ogTitle || title;
+  const twitterDescription = metaObj.twitterDescription || ogDescription || description;
 
-  const rawTwitter = pageMeta.twitterImage || pageMeta.ogImage || fallbacks.twitterImage || fallbacks.ogImage || fallbacks.coverImage;
+  const rawTwitter = metaObj.twitterImage || metaObj.ogImage || fallbacks.twitterImage || fallbacks.ogImage || fallbacks.coverImage;
   const twitterImageUrl = rawTwitter ? getMediaUrl(rawTwitter) : undefined;
 
-  const twitterSite = pageMeta.twitterSite;
-  const twitterCreator = pageMeta.twitterCreator;
+  const twitterSite = metaObj.twitterSite || fallbacks.twitterSite;
+  const twitterCreator = metaObj.twitterCreator || fallbacks.twitterCreator;
 
   const metadata = {
     robots,
@@ -116,32 +138,36 @@ export function constructMetadata(pageMeta, fallbacks = {}) {
   }
 
   if (ogTitle || ogDescription || ogImageUrl || ogSiteName || ogType) {
-    metadata.openGraph = {};
-    if (ogTitle) metadata.openGraph.title = ogTitle;
-    if (ogDescription) metadata.openGraph.description = ogDescription;
-    if (canonical) metadata.openGraph.url = canonical;
-    if (ogSiteName) metadata.openGraph.siteName = ogSiteName;
-    if (ogType) metadata.openGraph.type = ogType;
-    if (ogImageUrl) {
-      metadata.openGraph.images = [
-        {
-          url: ogImageUrl,
-          width: 1200,
-          height: 630,
-          ...(ogImageAlt ? { alt: ogImageAlt } : {}),
-        },
-      ];
-    }
+    metadata.openGraph = {
+      ...(ogTitle ? { title: ogTitle } : {}),
+      ...(ogDescription ? { description: ogDescription } : {}),
+      ...(canonical ? { url: canonical } : {}),
+      ...(ogSiteName ? { siteName: ogSiteName } : {}),
+      ...(ogType ? { type: ogType } : {}),
+      ...(ogImageUrl
+        ? {
+            images: [
+              {
+                url: ogImageUrl,
+                width: 1200,
+                height: 630,
+                ...(ogImageAlt ? { alt: ogImageAlt } : {}),
+              },
+            ],
+          }
+        : {}),
+    };
   }
 
   if (twitterTitle || twitterDescription || twitterImageUrl || twitterSite || twitterCreator || twitterCard) {
-    metadata.twitter = {};
-    if (twitterCard) metadata.twitter.card = twitterCard;
-    if (twitterTitle) metadata.twitter.title = twitterTitle;
-    if (twitterDescription) metadata.twitter.description = twitterDescription;
-    if (twitterSite) metadata.twitter.site = twitterSite;
-    if (twitterCreator) metadata.twitter.creator = twitterCreator;
-    if (twitterImageUrl) metadata.twitter.images = [twitterImageUrl];
+    metadata.twitter = {
+      card: twitterCard,
+      ...(twitterTitle ? { title: twitterTitle } : {}),
+      ...(twitterDescription ? { description: twitterDescription } : {}),
+      ...(twitterSite ? { site: twitterSite } : {}),
+      ...(twitterCreator ? { creator: twitterCreator } : {}),
+      ...(twitterImageUrl ? { images: [twitterImageUrl] } : {}),
+    };
   }
 
   if (publisherUrl) {

@@ -84,20 +84,24 @@ export async function generateMetadata({ params }) {
     const title = data?.headline || blog?.title || "";
     const description = data?.metaDescription || blog?.subtitle || blog?.excerpt || "";
     const keywords = data?.metaKeywords || "";
-    const rawCover = blog?.coverImage || data?.coverImage || data?.bannerImage || blog?.bannerImage;
-    const coverImageUrl = rawCover ? (typeof rawCover === "string" ? rawCover : rawCover?.url || rawCover?.path || null) : null;
+    const rawCover =
+      blog?.coverImage ||
+      blog?.featuredImage ||
+      blog?.bannerImage ||
+      blog?.hero?.bannerImage ||
+      data?.coverImage ||
+      data?.bannerImage;
 
-    // Agar pageMeta me ogImage nahi lagi hai, to coverImage chali jaye pageMeta ke og me
-    if (pageMeta && !pageMeta.ogImage && coverImageUrl) {
-      pageMeta.ogImage = rawCover;
-    }
+    // Agar pageMeta me ogImage lagi hai to wahi use hogi, warna blog ki coverImage
+    const finalOg = pageMeta?.ogImage || rawCover;
 
     return constructMetadata(pageMeta, {
       title,
       description,
       keywords,
       canonicalUrl: `https://distanceeducationschool.com/blogs/${blog?.slug || slug}`,
-      ogImage: pageMeta?.ogImage || coverImageUrl,
+      ogImage: finalOg,
+      coverImage: rawCover,
       ogType: "article",
     });
   } catch (error) {
