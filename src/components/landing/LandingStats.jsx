@@ -340,22 +340,18 @@ export default function LandingStats({ stats = [], brand = {} }) {
   // ==========================================
   if (isGguLayout) {
     return (
-      <section id="stats" aria-label="Key Statistics" className="achievement py-8 sm:py-12 bg-white select-none">
-        <div className="max-w-[1140px] mx-auto px-4 sm:px-6">
-          <div className="ach bg-[#003468] rounded-[8px] sm:rounded-[10px] py-6 sm:py-7 px-2 sm:px-4 text-white grid grid-cols-2 md:grid-cols-4 shadow-md items-center">
+      <section id="stats" aria-label="Key Statistics" className="achievement py-5 sm:py-10 bg-white select-none">
+        <div className="max-w-[1140px] mx-auto px-3.5 sm:px-6">
+          <div className="ach bg-[#003468] rounded-[10px] py-8 sm:py-7 px-3 sm:px-4 text-white grid grid-cols-2 md:grid-cols-4 gap-y-8 sm:gap-y-0 shadow-md items-center">
             {stats.map((st, idx) => (
               <div
                 key={idx}
-                className={`ac1 relative px-3 sm:px-5 py-3 sm:py-4 text-center flex flex-col items-center justify-center ${
-                  idx % 2 === 0 ? "border-r border-white/20 md:border-r-0" : ""
-                } ${
-                  idx < 2 ? "border-b border-white/20 md:border-b-0" : ""
-                }`}
+                className="ac1 relative px-2 sm:px-5 py-2 sm:py-4 text-center flex flex-col items-center justify-center"
               >
-                <span className="block text-[32px] sm:text-[40px] lg:text-[46px] font-bold text-white tracking-tight leading-none">
+                <span className="block text-[40px] sm:text-[44px] lg:text-[48px] font-bold text-white tracking-tight leading-none">
                   {st.value || st.number}
                 </span>
-                <p className="text-[12px] sm:text-[13px] lg:text-[13.5px] text-white/90 font-medium mt-2 leading-snug m-0">
+                <p className="text-[13px] sm:text-[13px] lg:text-[13.5px] text-white font-medium mt-2.5 leading-[1.3] m-0 max-w-[145px] sm:max-w-none mx-auto">
                   {st.label}
                 </p>
 

@@ -167,7 +167,9 @@ export function resolveStickyCtaConfig(brand = {}) {
     brand.stickyBar?.enabled !== false;
   const barBackground =
     brand.stickyBarBg ||
+    brand.stickyBarBackground ||
     brand.stickyBar?.background ||
+    brand.stickyBar?.bg ||
     legacy.stickyBarBg ||
     brand.primaryColor ||
     "#08417b";
@@ -182,13 +184,37 @@ export function resolveStickyCtaConfig(brand = {}) {
     brand.stickyBrochureIcon ||
     brand.stickyBar?.brochureIcon ||
     legacy.brochureIcon ||
-    "download";
+    "whatsapp";
+
+  const brochureBg =
+    brand.stickyBrochureBg ||
+    brand.stickyBar?.brochureBg ||
+    brand.stickyBrochureBackground ||
+    null;
+
+  const brochureTextColor =
+    brand.stickyBrochureTextColor ||
+    brand.stickyBar?.brochureTextColor ||
+    brand.stickyBrochureColor ||
+    null;
 
   const applyStyle =
     brand.stickyApplyStyle ||
     brand.stickyBar?.applyStyle ||
     legacy.applyStyle ||
     "yellow";
+
+  const applyBg =
+    brand.stickyApplyBg ||
+    brand.stickyBar?.applyBg ||
+    brand.stickyApplyBackground ||
+    null;
+
+  const applyTextColor =
+    brand.stickyApplyTextColor ||
+    brand.stickyBar?.applyTextColor ||
+    brand.stickyApplyColor ||
+    null;
 
   const isSplit = Boolean(
     brand.stickySplit ||
@@ -244,7 +270,12 @@ export function resolveStickyCtaConfig(brand = {}) {
       background: barBackground,
       brochureAction,
       brochureIcon,
+      brochureBg,
+      brochureTextColor,
       applyStyle,
+      applyBg,
+      applyTextColor,
+      brandColor: brand.primaryColor,
       isSplit,
       hideApplyArrow,
     },

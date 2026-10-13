@@ -12,47 +12,42 @@ export default function GGUApprovals({ approvals = [], brand = {} }) {
   return (
     <section
       id="accreditations"
-      className="certification w-full pt-12 sm:pt-16 pb-8 sm:pb-10  text-center select-none scroll-mt-20"
+      className="certification w-full pt-7 sm:pt-7 md:pt-[28px] pb-8 sm:pb-10 text-center select-none scroll-mt-20"
       style={{ backgroundColor: brand?.approvalsBg || "#F6F6F6" }}
     >
       <div className="max-w-[1140px] mx-auto px-4 sm:px-6">
         <h2
-          className="text-[#111111] text-2xl sm:text-3xl lg:text-[30px] font-bold text-center m-0 leading-tight tracking-tight"
+          className="text-[#111111] text-[22px] sm:text-[26px] md:text-[28px] font-bold text-center m-0 leading-tight tracking-tight"
           style={{ color: brand?.approvalsHeaderColor || "#111111" }}
         >
           {sectionTitle}
         </h2>
         {sectionSubtitle && (
-          <p className="text-[#555555] text-[15px] sm:text-[16px] mt-1.5 mb-8 sm:mb-10 text-center m-0">
+          <p className="sub-pp text-[#111111] text-[17px] sm:text-[16.5px] font-medium sm:font-medium mt-1.5 sm:mt-2 mb-6 sm:mb-7 md:mb-8 text-center m-0 max-w-[275px] sm:max-w-none mx-auto leading-snug">
             {sectionSubtitle}
           </p>
         )}
 
-        <div className="b2-info grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 justify-center max-w-[1040px] mx-auto text-left">
+        <div className="b2-info grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5 lg:gap-6 justify-center max-w-[1100px] mx-auto text-center">
           {approvals.map((item, idx) => {
             const data = normalizeApprovalItem(item, idx);
             return (
               <div
                 key={data.id}
-                className="b1 bg-white p-6 rounded-[12px] shadow-[0_4px_16px_rgba(0,0,0,0.06)] border border-slate-200/80 flex items-start gap-4 transition-all hover:shadow-md"
+                className="b1 bg-white p-4 sm:p-5 rounded-[8px] shadow-[0_3px_12px_rgba(0,0,0,0.04)] border border-slate-200/70 border-b-[3px] border-b-[#DC520A] flex flex-col items-center justify-between h-[165px] sm:h-[175px] transition-all hover:shadow-md hover:-translate-y-0.5"
               >
-                <div className="relative w-16 h-16 sm:w-18 sm:h-18 shrink-0 flex items-center justify-center">
+                <div className="relative w-full h-[85px] sm:h-[95px] flex items-center justify-center my-auto">
                   <Image
                     src={data.image}
                     alt={data.title || "Accreditation"}
                     fill
-                    className="object-contain"
-                    sizes="72px"
+                    className="object-contain object-center p-1"
+                    sizes="(max-width: 768px) 50vw, 25vw"
                   />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-[15px] sm:text-[16px] font-bold text-[#111111] leading-snug m-0 mb-1.5">
-                    {data.title}
-                  </h3>
-                  <p className="text-[12px] sm:text-[12.5px] text-[#444444] leading-relaxed m-0 font-normal">
-                    {data.description}
-                  </p>
-                </div>
+                <span className="text-[12.5px] sm:text-[13px] md:text-[13.5px] font-bold text-[#111111] text-center tracking-tight mt-auto block">
+                  {data.title}
+                </span>
               </div>
             );
           })}

@@ -230,7 +230,7 @@ export default function LandingAdmissionProcess({
         )}
 
         {/* Subtitle */}
-        <p className="text-[12.5px] sm:text-[13.5px] lg:text-[14px] text-center text-[#555555] mb-5 sm:mb-6 lg:mb-7 max-w-[860px] mx-auto font-normal leading-relaxed m-0 px-2 sm:px-4">
+        <p className="text-[14.5px] sm:text-[13.5px] lg:text-[14px] text-center text-[#555555] mb-5 sm:mb-6 lg:mb-7 max-w-[860px] mx-auto font-normal leading-relaxed m-0 px-2 sm:px-4">
           {subtitleText}
         </p>
 

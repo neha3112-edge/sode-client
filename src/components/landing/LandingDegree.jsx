@@ -425,43 +425,53 @@ export default function LandingDegree({
   return (
     <section
       id="degree"
-      className={`select-none ${
-        isGgu ? "bg-[#F6F6F6] pt-2 pb-14 sm:pb-16" : "py-12 sm:py-16 bg-[#f4f7fb]"
-      }`}
+      className={`select-none ${isGgu ? "bg-[#F6F6F6] pt-2 pb-14 sm:pb-16" : "py-12 sm:py-16 bg-[#f4f7fb]"
+        }`}
     >
       <LandingContainer>
-        <div className="bg-white rounded-[20px] sm:rounded-[24px] shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-slate-100/80 p-6 sm:p-10 lg:p-12 max-w-[1140px] mx-auto">
+        <div className="bg-white rounded-[8px] sm:rounded-[12px] shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-slate-100/80 p-6 sm:p-10 lg:p-12 max-w-[1140px] mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             {/* Image Column */}
             <div
-              className={`lg:col-span-5 flex justify-center ${
-                isImageLeft ? "order-1 lg:order-1" : "order-2 lg:order-2"
-              }`}
+              className={`lg:col-span-5 flex justify-center ${isImageLeft ? "order-1 lg:order-1" : "order-2 lg:order-2"
+                }`}
             >
               {images && images.length > 1 ? (
                 <div className="w-full max-w-[340px] sm:max-w-[420px]">
                   <Carousel autoplay autoplaySpeed={3000} dots={true}>
                     {images.map((imgSrc, idx) => (
-                      <div key={idx} className="relative w-full h-[250px] sm:h-[300px] rounded-[10px] overflow-hidden shadow-lg border border-slate-200 bg-white">
+                      <div
+                        key={idx}
+                        className={`relative w-full ${isGgu
+                          ? "max-w-[380px] sm:max-w-[440px] aspect-[583/499]"
+                          : "h-[250px] sm:h-[300px] rounded-[10px] overflow-hidden shadow-lg border border-slate-200 bg-white"
+                          }`}
+                      >
                         <Image
                           src={imgSrc}
                           alt={`Sample Degree ${idx + 1}`}
                           fill
-                          className="object-contain p-2"
-                          sizes="(max-width: 1024px) 340px, 420px"
+                          className={isGgu ? "object-contain" : "object-contain p-2"}
+                          sizes="(max-width: 1024px) 380px, 440px"
                         />
                       </div>
                     ))}
                   </Carousel>
                 </div>
               ) : (
-                <div className="relative w-full max-w-[340px] sm:max-w-[420px] h-[250px] sm:h-[300px] rounded-[10px] overflow-hidden shadow-lg border border-slate-200 bg-white">
+                <div
+                  className={`relative w-full ${isGgu
+                    ? "max-w-[360px] sm:max-w-[410px] aspect-[583/499]"
+                    : "max-w-[340px] sm:max-w-[420px] h-[250px] sm:h-[300px] rounded-[10px] overflow-hidden shadow-lg border border-slate-200 bg-white"
+                    }`}
+                >
                   <Image
                     src={image}
                     alt="Sample Degree"
                     fill
-                    className="object-contain p-2"
-                    sizes="(max-width: 1024px) 340px, 420px"
+                    className={isGgu ? "object-contain" : "object-contain p-2"}
+                    sizes="(max-width: 1024px) 360px, 410px"
+                    priority
                   />
                 </div>
               )}
@@ -469,19 +479,18 @@ export default function LandingDegree({
 
             {/* Text / Features Column */}
             <div
-              className={`lg:col-span-7 text-left ${
-                isImageLeft ? "order-2 lg:order-2" : "order-1 lg:order-1"
-              }`}
+              className={`lg:col-span-7 text-left ${isImageLeft ? "order-2 lg:order-2" : "order-1 lg:order-1"
+                }`}
             >
               <h2
-                className="text-[22px] sm:text-[26px] lg:text-[29px] font-bold leading-tight tracking-tight whitespace-pre-line m-0 mb-3"
+                className="text-[24px] sm:text-[28px] lg:text-[31px] font-bold leading-tight tracking-wide whitespace-pre-line m-0 mb-3"
                 style={{ color: titleColor }}
               >
                 {title}
               </h2>
 
               {description && (
-                <p className="text-[13px] sm:text-[14px] text-slate-600 leading-relaxed font-normal mb-5">
+                <p className="text-[13px] sm:text-[14px] text-slate-600 leading-relaxed font-medium mb-5">
                   {description}
                 </p>
               )}
@@ -494,7 +503,7 @@ export default function LandingDegree({
                         <span className="w-[18px] h-[18px] rounded-[3px] bg-[#DC520A] text-white flex items-center justify-center shrink-0 mt-0.5 text-[11px] font-black select-none">
                           ✓
                         </span>
-                        <p className="text-[12.5px] sm:text-[13.5px] text-[#222222] font-semibold leading-relaxed m-0">
+                        <p className="text-[12.5px] sm:text-[13.5px] text-[#222222] font-medium leading-relaxed m-0">
                           {feat.desc || feat.title}
                         </p>
                       </div>
