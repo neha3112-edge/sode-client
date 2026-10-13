@@ -55,7 +55,10 @@ export default function UniversityPeerUniversities({
               )}
 
               {/* Circular Logo Container without border */}
-              <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-full p-1 flex items-center justify-center bg-white relative my-0.5 shrink-0 overflow-hidden">
+              <Link
+                href={uniDetailHref}
+                className="w-11 h-11 sm:w-14 sm:h-14 rounded-full p-1 flex items-center justify-center bg-white relative my-0.5 shrink-0 overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+              >
                 {peerLogo ? (
                   <Image
                     src={getMediaUrl(peerLogo)}
@@ -69,7 +72,7 @@ export default function UniversityPeerUniversities({
                     {peer.initial || (peer.name && peer.name.charAt(0)) || "U"}
                   </div>
                 )}
-              </div>
+              </Link>
 
               {/* University Name & Courses Count */}
               <div className="w-full space-y-0.5 my-0.5">

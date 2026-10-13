@@ -496,7 +496,10 @@ function RankedUniversityCard({ item, index, features, isStatePage = false }) {
       </div>
 
       {hasCardMedia && (
-        <div className="w-full md:w-[340px] lg:w-[390px] xl:w-[420px] shrink-0 relative h-36 sm:h-44 md:h-auto md:min-h-full overflow-hidden border-b md:border-b-0 md:border-l border-slate-200/90 bg-slate-100 order-1 md:order-2">
+        <Link
+          href={cardLink}
+          className="w-full md:w-[340px] lg:w-[390px] xl:w-[420px] shrink-0 relative h-36 sm:h-44 md:h-auto md:min-h-full overflow-hidden border-b md:border-b-0 md:border-l border-slate-200/90 bg-slate-100 order-1 md:order-2 block group/media cursor-pointer"
+        >
           {/* Desktop Image (Course Image) */}
           {desktopImageUrl && (
             <Image
@@ -506,7 +509,7 @@ function RankedUniversityCard({ item, index, features, isStatePage = false }) {
               priority={index < 2}
               loading={index < 2 ? "eager" : "lazy"}
               sizes="(min-width: 768px) 420px, 1px"
-              className="object-cover object-center hidden md:block"
+              className="object-cover object-center hidden md:block group-hover/media:scale-105 transition-transform duration-500"
               unoptimized
             />
           )}
@@ -519,7 +522,7 @@ function RankedUniversityCard({ item, index, features, isStatePage = false }) {
               priority={index < 2}
               loading={index < 2 ? "eager" : "lazy"}
               sizes="(max-width: 767px) 100vw, 1px"
-              className="object-cover object-center block md:hidden"
+              className="object-cover object-center block md:hidden group-hover/media:scale-105 transition-transform duration-500"
               unoptimized
             />
           )}
@@ -539,7 +542,7 @@ function RankedUniversityCard({ item, index, features, isStatePage = false }) {
               </div>
             </div>
           )}
-        </div>
+        </Link>
       )}
     </div>
   );
