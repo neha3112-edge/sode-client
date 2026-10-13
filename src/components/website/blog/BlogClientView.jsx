@@ -943,13 +943,29 @@ export default function BlogClientView({
             padding: 12px 10px 8px 10px !important;
           }
         }
+
+        /* AI Tools Carousel Default Dots - Dark Blue (#0B3B7E) */
+        .ai-tools-carousel .slick-dots li button,
+        .ai-tools-carousel .slick-dots li button::after {
+          background: #0B3B7E !important;
+          opacity: 0.28 !important;
+        }
+        .ai-tools-carousel .slick-dots li:hover button,
+        .ai-tools-carousel .slick-dots li:hover button::after {
+          opacity: 0.65 !important;
+        }
+        .ai-tools-carousel .slick-dots li.slick-active button,
+        .ai-tools-carousel .slick-dots li.slick-active button::after {
+          background: #0B3B7E !important;
+          opacity: 1 !important;
+        }
       `}</style>
 
       <div className="w-full pt-2.5 sm:pt-6 px-2.5 sm:px-6 lg:px-8 xl:px-10 2xl:px-12">
         <div className="flex flex-col lg:flex-row items-start gap-4 sm:gap-6 xl:gap-8 w-full">
           {/* ─── LEFT COLUMN: Main Blog Post Content ─── */}
-          <main className={`flex-1 min-w-0 w-full ${BLOG_BODY_TYPOGRAPHY}`}>
-            <div className="bg-white rounded-xl sm:rounded-2xl border border-gray-200/90 shadow-xs p-3.5 sm:p-7">
+          <main className="flex-1 min-w-0 w-full">
+            <div className={`bg-white rounded-xl sm:rounded-2xl border border-gray-200/90 shadow-xs p-3.5 sm:p-7 ${BLOG_BODY_TYPOGRAPHY}`}>
               <h1 className="text-lg sm:text-2xl text-gray-900 font-bold leading-snug sm:leading-tight mb-2 sm:mb-3">
                 {pageTitle}
               </h1>
@@ -2010,7 +2026,7 @@ export default function BlogClientView({
                           },
                         },
                       ]}
-                      className="[&_.slick-list]:-mx-1.5! sm:[&_.slick-list]:-mx-2! [&_.slick-track]:flex [&_.slick-track]:items-stretch [&_.slick-slide]:h-auto [&_.slick-slide>div]:h-full [&_.slick-dots]:relative! [&_.slick-dots]:mt-5! [&_.slick-dots]:mb-0! [&_.slick-dots_li]:w-2! [&_.slick-dots_li]:h-2! [&_.slick-dots_li]:mx-1! [&_.slick-dots_li_button]:w-2! [&_.slick-dots_li_button]:h-2! [&_.slick-dots_li_button]:rounded-full! [&_.slick-dots_li_button]:bg-slate-300! [&_.slick-dots_li.slick-active]:w-5! [&_.slick-dots_li.slick-active_button]:w-5! [&_.slick-dots_li.slick-active_button]:rounded-full! [&_.slick-dots_li.slick-active_button]:bg-[#0B3B7E]!"
+                      className="ai-tools-carousel [&_.slick-list]:-mx-1.5! sm:[&_.slick-list]:-mx-2! [&_.slick-track]:flex [&_.slick-track]:items-stretch [&_.slick-slide]:h-auto [&_.slick-slide>div]:h-full pb-8"
                     >
                       {mappedTools.map((tool, idx) => (
                         <div key={`tool-${tool.id || idx}-${idx}`} className="px-1.5 sm:px-2 py-1.5 h-full">
@@ -2026,9 +2042,9 @@ export default function BlogClientView({
                               href={tool.linkUrl}
                               className="flex flex-col items-center space-y-1.5 sm:space-y-3 w-full no-underline"
                             >
-                              {/* Round Icon with colored background (matching home page) */}
+                              {/* Round Icon with colored background (exact home page match) */}
                               <div
-                                className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center mb-1 transition-transform group-hover:scale-110 shrink-0"
+                                className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center mb-1 transition-transform group-hover:scale-110 shrink-0 ${tool.circleBg}`}
                               >
                                 {tool.logoUrl ? (
                                   <Image
