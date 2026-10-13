@@ -35,7 +35,7 @@ export async function getPageMetaData(path = "/") {
   }
 }
 
-export function constructMetadata(pageMeta) {
+export function constructMetadata(pageMeta, fallbacks = {}) {
   // If NO pageMeta exists in backend for this path, strictly return noindex, nofollow
   if (!pageMeta) {
     return {
@@ -68,30 +68,31 @@ export function constructMetadata(pageMeta) {
     },
   };
 
-  const title = pageMeta.metaTitle || pageMeta.title;
-  const description = pageMeta.metaDescription || pageMeta.description;
-  const keywords = pageMeta.metaKeywords || pageMeta.keywords;
-  const rawCanonical = pageMeta.canonicalUrl || pageMeta.ogUrl;
+  const title = pageMeta.metaTitle || pageMeta.title || fallbacks.title;
+  const description = pageMeta.metaDescription || pageMeta.description || fallbacks.description;
+  const keywords = pageMeta.metaKeywords || pageMeta.keywords || fallbacks.keywords;
+  const rawCanonical = pageMeta.canonicalUrl || pageMeta.ogUrl || fallbacks.canonicalUrl;
   const canonical = rawCanonical ? ensureTrailingSlash(rawCanonical) : undefined;
 
-  const authorName = pageMeta.authorName;
-  const publisherName = pageMeta.publisher;
-  const publisherUrl = pageMeta.publisherUrl;
+  const authorName = pageMeta.authorName || fallbacks.authorName;
+  const publisherName = pageMeta.publisher || fallbacks.publisher;
+  const publisherUrl = pageMeta.publisherUrl || fallbacks.publisherUrl;
 
-  const ogTitle = pageMeta.ogTitle || pageMeta.metaTitle || pageMeta.title;
-  const ogDescription = pageMeta.ogDescription || pageMeta.metaDescription || pageMeta.description;
-  const ogSiteName = pageMeta.ogSiteName;
-  const ogType = pageMeta.ogType;
+  const ogTitle = pageMeta.ogTitle || pageMeta.metaTitle || pageMeta.title || fallbacks.ogTitle || title;
+  const ogDescription = pageMeta.ogDescription || pageMeta.metaDescription || pageMeta.description || fallbacks.ogDescription || description;
+  const ogSiteName = pageMeta.ogSiteName || fallbacks.ogSiteName;
+  const ogType = pageMeta.ogType || fallbacks.ogType;
 
-  const rawOg = pageMeta.ogImage;
+  // Fallback to ogImage or coverImage from fallbacks if pageMeta.ogImage is not set
+  const rawOg = pageMeta.ogImage || fallbacks.ogImage || fallbacks.coverImage;
   const ogImageUrl = rawOg ? getMediaUrl(rawOg) : undefined;
   const ogImageAlt = rawOg?.alt || rawOg?.name || ogTitle || title;
 
-  const twitterCard = pageMeta.twitterCard;
+  const twitterCard = pageMeta.twitterCard || fallbacks.twitterCard;
   const twitterTitle = pageMeta.twitterTitle || ogTitle || title;
   const twitterDescription = pageMeta.twitterDescription || ogDescription || description;
 
-  const rawTwitter = pageMeta.twitterImage || pageMeta.ogImage;
+  const rawTwitter = pageMeta.twitterImage || pageMeta.ogImage || fallbacks.twitterImage || fallbacks.ogImage || fallbacks.coverImage;
   const twitterImageUrl = rawTwitter ? getMediaUrl(rawTwitter) : undefined;
 
   const twitterSite = pageMeta.twitterSite;
