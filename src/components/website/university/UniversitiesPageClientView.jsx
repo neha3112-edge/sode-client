@@ -73,9 +73,9 @@ function UniversityCard({ uni }) {
   const featuredCourse = uni?.featuredCourse || coursesList[0] || "";
   const programsText = coursesList.length > 0 ? coursesList.join(" | ") : "";
 
-  const logoUrl = !logoErr ? resolveMediaUrl(uni?.logo || uni?.logoSrc || uni?.image) : null;
+  const logoUrl = !logoErr ? resolveMediaUrl(uni?.image) : null;
   const imageSrc = !imgErr ? resolveMediaUrl(uni?.bannerImg || uni?.imageSrc || uni?.image) : null;
-  const logoAlt = uni?.logo?.name || uni?.logoSrc?.name || uni?.image?.name || name;
+  const logoAlt = uni?.image?.name || name;
   const imgAlt = uni?.bannerImg?.name || uni?.imageSrc?.name || name;
 
   const avatarBg = getAvatarColor(name);
@@ -114,8 +114,8 @@ function UniversityCard({ uni }) {
           </span>
         )}
 
-        <div className="absolute -bottom-3 left-0 h-9 sm:h-12 w-24 sm:w-26 bg-white rounded-md rounded-tl-none flex items-center justify-center p-1 z-10 overflow-hidden">
-          {logoUrl ? (
+        {logoUrl && (
+          <div className="absolute bottom-2.5 left-2.5 sm:bottom-3 sm:left-3 h-9 sm:h-11 w-24 sm:w-28 flex items-center justify-center z-10">
             <div className="relative w-full h-full">
               <Image
                 src={logoUrl}
@@ -127,13 +127,11 @@ function UniversityCard({ uni }) {
                 onError={() => setLogoErr(true)}
               />
             </div>
-          ) : (
-            <span className="text-[#072C50] text-[11px] font-black truncate px-1">{name}</span>
-          )}
-        </div>
+          </div>
+        )}
       </Link>
 
-      <div className="pt-4.5 px-3.5 pb-3 flex flex-col flex-1">
+      <div className="pt-3.5 px-3.5 pb-3 flex flex-col flex-1">
         <Link href={`/universities/${slug}`} className="block group-hover:text-blue-600 transition-colors">
           <h3 className="text-sm sm:text-[15px] font-bold text-[#072C50] m-0 leading-tight line-clamp-1">
             {name}
