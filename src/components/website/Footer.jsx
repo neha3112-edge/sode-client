@@ -405,9 +405,9 @@ export function Footer({
               ))}
 
               {/* Mobile-only: Social links (1 row) + Review / Google Rating card placed in the 4th cell next to GET STARTED */}
-              <div className="flex flex-col sm:hidden justify-start pt-1.5">
+              <div className="flex flex-col sm:hidden justify-start pt-1.5 w-full max-w-40">
                 {/* 1 Row for all 5 social icons without wrapping */}
-                <div className="flex items-center gap-1.5 flex-nowrap">
+                <div className="flex items-center justify-between w-full">
                   {socialLinksToRender.map((s, idx) => (
                     <a
                       key={s?._id || idx}
@@ -428,7 +428,7 @@ export function Footer({
                 {mediaBar?.show_rating !== false && (
                   <Link
                     href="/distance-education-school-reviews"
-                    className="mt-2.5 flex items-center gap-2 rounded-lg bg-white p-2 shadow-xs hover:shadow-sm transition cursor-pointer"
+                    className="mt-2.5 flex items-center gap-2 rounded-lg bg-white p-2 shadow-xs hover:shadow-sm transition cursor-pointer w-full"
                   >
                     <div className="shrink-0">
                       <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
