@@ -158,10 +158,10 @@ export function AccreditationsView({ initialAccreditations = [] }) {
                   <CardWrapper
                     key={acc.id || idx}
                     {...cardProps}
-                    className="bg-white rounded-xl border border-gray-200 flex flex-col p-1.5 sm:p-2.5 md:p-3 items-center justify-between text-center aspect-[4/5] sm:aspect-square shadow-2xs hover:border-blue-300 transition-colors overflow-hidden shrink-0 w-[calc((100%-12px)/3)] sm:w-[calc((100%-20px)/3)] md:w-[calc((100%-48px)/5)] cursor-pointer no-underline group"
+                    className="bg-white rounded-xl border border-gray-200 flex flex-col p-1 sm:p-2.5 md:p-3 items-center justify-between text-center aspect-square shadow-2xs hover:border-blue-300 transition-colors overflow-hidden shrink-0 w-[calc((100%-12px)/3)] sm:w-[calc((100%-20px)/3)] md:w-[calc((100%-48px)/5)] cursor-pointer no-underline group"
                   >
                     {/* Top: Logo with University page scale (64px mobile, 80px desktop) */}
-                    <div className="flex-1 min-h-0 max-h-14 sm:max-h-16 md:max-h-20 w-full relative flex items-center justify-center">
+                    <div className="flex-1 min-h-0 max-h-11 sm:max-h-16 md:max-h-20 w-full relative flex items-center justify-center">
                       {acc.logo ? (
                         <Image
                           src={getMediaUrl(acc.logo)}
@@ -172,19 +172,19 @@ export function AccreditationsView({ initialAccreditations = [] }) {
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <Award className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-blue-600" />
+                          <Award className="w-5 h-5 sm:w-7 sm:h-7 md:w-8 md:h-8 text-blue-600" />
                         </div>
                       )}
                     </div>
 
                     {/* Middle: Title with exact University page typography */}
-                    <div className="w-full shrink-0 flex items-center justify-center text-center my-0.5 sm:my-1.5 min-h-[26px] sm:min-h-[32px]">
+                    <div className="w-full shrink-0 flex items-center justify-center text-center my-0.5 sm:my-1.5 min-h-[22px] sm:min-h-[32px]">
                       {renderedTitle}
                     </div>
 
                     {/* Bottom: Warm Golden-Sand Capsule Button */}
                     <div className="w-full shrink-0 flex items-center justify-center mb-0.5">
-                      <span className="bg-[#E4BE75] group-hover:bg-[#dbb15f] text-[#351C00] text-[9px] sm:text-[10px] md:text-[11px] font-bold px-2 sm:px-3 py-1 sm:py-1 rounded-full transition-colors inline-flex items-center justify-center text-center whitespace-nowrap shadow-2xs leading-none">
+                      <span className="bg-[#E4BE75] group-hover:bg-[#dbb15f] text-[#351C00] text-[8.5px] sm:text-[10px] md:text-[11px] font-bold px-1.5 sm:px-3 py-0.5 sm:py-1 rounded-full transition-colors inline-flex items-center justify-center text-center whitespace-nowrap shadow-2xs leading-none">
                         <span className="hidden sm:inline">View Updated List {currentYear}</span>
                         <span className="sm:hidden">Updated List {currentYear}</span>
                       </span>
