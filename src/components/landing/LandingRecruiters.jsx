@@ -237,6 +237,59 @@ export default function LandingRecruiters({
     );
   }
 
+  // UPES Dedicated Recruiters Section
+  if (brand.slug === "upes" || brand.recruitersLayout === "upes") {
+    const title =
+      activeRecruiters.title ||
+      brand.recruitersTitle ||
+      "UPES University Online Placement Opportunities After Degree";
+
+    const desktopImage =
+      activeRecruiters.desktopImage ||
+      "/assets/upes/desktop-logos.webp";
+    const mobileImage =
+      activeRecruiters.mobileImage ||
+      "/assets/upes/mobile-logos.png";
+
+    return (
+      <section id="recruiters" className="py-8 sm:py-12 bg-white text-center select-none border-b border-slate-100">
+        <LandingContainer>
+          <div className="mb-6 sm:mb-8 max-w-4xl mx-auto px-2">
+            <h2 className="text-[20px] sm:text-[24px] lg:text-[28px] font-bold text-[#003399] tracking-tight leading-snug m-0">
+              <strong>{title}</strong>
+            </h2>
+          </div>
+
+          <div className="max-w-5xl mx-auto px-2">
+            {/* Desktop View */}
+            <div className="hidden sm:block relative w-full">
+              <Image
+                src={desktopImage}
+                alt={title}
+                width={1200}
+                height={400}
+                className="w-full h-auto object-contain mx-auto"
+                priority
+              />
+            </div>
+
+            {/* Mobile View */}
+            <div className="block sm:hidden relative w-full">
+              <Image
+                src={mobileImage}
+                alt={title}
+                width={600}
+                height={550}
+                className="w-full h-auto object-contain mx-auto"
+                priority
+              />
+            </div>
+          </div>
+        </LandingContainer>
+      </section>
+    );
+  }
+
   // Shoolini and generic desktop/mobile responsive recruiters
   const heading =
     activeRecruiters.title ||

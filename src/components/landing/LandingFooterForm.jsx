@@ -86,21 +86,43 @@ export default function LandingFooterForm({ brand = {}, courses = [], onOpenDisc
   // SMU Layout: Horizontal Blue Band with Card Floating Over Top and Bottom into White Space
   // ==========================================
   if (isSmu) {
+    const defaultCourses = [
+      { value: "MBA", label: "Master of Business Administration (MBA)" },
+      { value: "MCA", label: "Master of Computer Applications (MCA)" },
+      { value: "MCOM", label: "Master of Commerce (M.Com)" },
+      { value: "MA", label: "Master of Arts (MA)" },
+      { value: "BBA", label: "Bachelor of Business Administration (BBA)" },
+      { value: "BCA", label: "Bachelor of Computer Applications (BCA)" },
+      { value: "BCOM", label: "Bachelor of Commerce (B.Com)" },
+      { value: "BA", label: "Bachelor of Arts (BA)" },
+    ];
+
+    const courseOptions =
+      Array.isArray(courses) && courses.length > 0
+        ? courses.map((c) => {
+            if (typeof c === "string") return { value: c, label: c };
+            return {
+              value: c.code || c.value || c.title || c.name,
+              label: c.title || c.label || c.name || c.code,
+            };
+          })
+        : defaultCourses;
+
     return (
       <section
         id="ftr-frm"
-        className="w-full bg-white pt-14 sm:pt-20 pb-14 sm:pb-20 relative overflow-visible select-none"
+        className="w-full bg-white pt-6 sm:pt-10 lg:pt-32 pb-3 sm:pb-5 lg:pb-36 relative select-none scroll-mt-24 overflow-visible"
       >
-        {/* Navy Blue Horizontal Band */}
-        <div className="w-full bg-[#074a76] relative overflow-visible">
-          <div className="max-w-[1240px] xl:max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center min-h-[190px] sm:min-h-[220px]">
+        {/* Full-Width Navy Blue Horizontal Band */}
+        <div className="w-full bg-[#074a76] relative py-12 sm:py-14 lg:py-16">
+          <div className="max-w-[1240px] xl:max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center min-h-[260px] lg:min-h-[300px]">
               {/* Left Column: Heading & Subtitle */}
-              <div className="lg:col-span-7 text-left text-white py-8 sm:py-10 space-y-2.5">
-                <h2 className="text-[28px] sm:text-[34px] lg:text-[38px] font-bold text-white tracking-tight leading-[1.2] m-0">
+              <div className="lg:col-span-7 text-left text-white">
+                <h2 className="text-[36px] sm:text-[42px] lg:text-[46px] xl:text-[50px] font-semibold text-white tracking-tight leading-[1.18] mb-3 sm:mb-4 m-0">
                   Get Expert Guidance
                 </h2>
-                <div className="space-y-0.5 text-[13.5px] sm:text-[14.5px] text-white/95 leading-[1.6] font-normal max-w-lg">
+                <div className="space-y-1.5 text-[16px] sm:text-[18px] lg:text-[19.5px] text-white leading-[1.6] font-normal max-w-2xl">
                   <p className="m-0">Confused about courses or universities?</p>
                   <p className="m-0">
                     Share your details, and our education experts will guide you with the right information.
@@ -108,22 +130,22 @@ export default function LandingFooterForm({ brand = {}, courses = [], onOpenDisc
                 </div>
               </div>
 
-              {/* Right Column: Floating White Card Overlapping Top and Bottom */}
-              <div className="lg:col-span-5 flex justify-center lg:justify-end -my-14 sm:-my-20 lg:-my-24 relative z-20">
-                <div className="w-full max-w-[420px] bg-white rounded-[16px] sm:rounded-[20px] p-5 sm:p-6 shadow-[0_12px_45px_rgba(0,0,0,0.16)] border border-slate-200/90 text-slate-900">
+              {/* Right Column: Floating Form Card matching user's reference image */}
+              <div className="lg:col-span-5 flex justify-center lg:justify-end relative">
+                <div className="w-full max-w-[440px] bg-[#faf9f5] rounded-[20px] px-6 sm:px-7 pt-9 sm:pt-10 pb-8 sm:pb-9 shadow-[0_14px_45px_rgba(0,0,0,0.14)] border-2 border-[#cfcfc6] text-slate-900 lg:-my-28 xl:-my-32 relative z-20">
                   {/* Card Title */}
-                  <h3 className="text-[20px] sm:text-[22px] font-bold text-[#074a76] text-center tracking-tight m-0">
+                  <h3 className="text-[22px] sm:text-[24px] font-bold text-[#074a76] text-center tracking-tight m-0 leading-tight">
                     Get 100% Free Counselling
                   </h3>
-                  <p className="text-[12px] sm:text-[13px] text-slate-600 text-center mt-1 mb-2 font-normal">
+                  <p className="text-[13px] sm:text-[13.5px] text-slate-700 text-center mt-1.5 mb-3.5 font-normal leading-normal">
                     Academic Experts will assist you!
                   </p>
 
                   {/* Orange Call Pill Button */}
-                  <div className="flex justify-center mb-3">
+                  <div className="flex justify-center mb-4">
                     <a
                       href={`tel:${(brand.phone || "+91 7065 7777 55").replace(/\s+/g, "")}`}
-                      className="inline-flex items-center gap-1.5 bg-[#f78d2d] hover:bg-[#ea7d1d] text-white font-bold text-[12.5px] sm:text-[13px] px-4 py-1.5 rounded-full shadow-xs transition-colors cursor-pointer no-underline"
+                      className="inline-flex items-center gap-2 bg-[#f37021] hover:bg-[#e46316] text-white font-bold text-[13px] sm:text-[13.5px] px-6 py-2 rounded-full shadow-xs transition-colors cursor-pointer no-underline tracking-wide"
                     >
                       <Phone className="w-3.5 h-3.5 fill-current" />
                       <span>{brand.phoneDisplay || "+91 7065 7777 55"}</span>
@@ -135,7 +157,7 @@ export default function LandingFooterForm({ brand = {}, courses = [], onOpenDisc
                     form={form}
                     layout="vertical"
                     onFinish={onFinish}
-                    className="space-y-2.5"
+                    className="space-y-3.5"
                   >
                     {/* Name */}
                     <Form.Item
@@ -145,7 +167,7 @@ export default function LandingFooterForm({ brand = {}, courses = [], onOpenDisc
                     >
                       <Input
                         placeholder="Enter Your Name"
-                        className="h-[38px] text-[13px] rounded-[6px] border-slate-300 hover:border-slate-400 focus:border-[#074a76]"
+                        className="h-[44px] text-[14px] rounded-[7px] border-[#c5c5be] hover:border-slate-400 focus:border-[#074a76] bg-white placeholder:text-slate-400"
                       />
                     </Form.Item>
 
@@ -157,7 +179,7 @@ export default function LandingFooterForm({ brand = {}, courses = [], onOpenDisc
                     >
                       <Input
                         placeholder="Enter Your Email"
-                        className="h-[38px] text-[13px] rounded-[6px] border-slate-300 hover:border-slate-400 focus:border-[#074a76]"
+                        className="h-[44px] text-[14px] rounded-[7px] border-[#c5c5be] hover:border-slate-400 focus:border-[#074a76] bg-white placeholder:text-slate-400"
                       />
                     </Form.Item>
 
@@ -171,12 +193,14 @@ export default function LandingFooterForm({ brand = {}, courses = [], onOpenDisc
                         prefix={
                           <span className="flex items-center text-slate-700 text-xs font-semibold mr-1.5 select-none">
                             <IndiaFlag />
-                            <span>+91 ▾</span>
+                            <span className="ml-1 text-[13.5px] font-medium text-slate-800">+91</span>
+                            <span className="ml-1 text-[9px] text-slate-500">▾</span>
+                            <span className="mx-2 h-4.5 w-[1px] bg-slate-200" />
                           </span>
                         }
                         placeholder="Enter Your Number"
                         maxLength={10}
-                        className="h-[38px] text-[13px] rounded-[6px] border-slate-300 hover:border-slate-400 focus:border-[#074a76]"
+                        className="h-[44px] text-[14px] rounded-[7px] border-[#c5c5be] hover:border-slate-400 focus:border-[#074a76] bg-white placeholder:text-slate-400"
                       />
                     </Form.Item>
 
@@ -188,8 +212,8 @@ export default function LandingFooterForm({ brand = {}, courses = [], onOpenDisc
                     >
                       <Select
                         placeholder="Select Your Course"
-                        options={courses}
-                        className="w-full h-[38px] text-[13px]"
+                        options={courseOptions}
+                        className="w-full h-[44px] text-[14px] [&_.ant-select-selector]:!h-[44px] [&_.ant-select-selector]:!items-center [&_.ant-select-selector]:!rounded-[7px] [&_.ant-select-selector]:!border-[#c5c5be] [&_.ant-select-selection-placeholder]:!text-slate-400 [&_.ant-select-selection-placeholder]:!text-[14px]"
                       />
                     </Form.Item>
 
@@ -203,13 +227,16 @@ export default function LandingFooterForm({ brand = {}, courses = [], onOpenDisc
                         placeholder="Select Your State"
                         options={stateOptions}
                         showSearch
-                        className="w-full h-[38px] text-[13px]"
+                        className="w-full h-[44px] text-[14px] [&_.ant-select-selector]:!h-[44px] [&_.ant-select-selector]:!items-center [&_.ant-select-selector]:!rounded-[7px] [&_.ant-select-selector]:!border-[#c5c5be] [&_.ant-select-selection-placeholder]:!text-slate-400 [&_.ant-select-selection-placeholder]:!text-[14px]"
                       />
                     </Form.Item>
 
                     {/* Disclaimer Checkbox */}
                     <div className="pt-0.5">
-                      <Checkbox defaultChecked className="text-[10px] sm:text-[10.5px] text-slate-600 leading-tight select-none">
+                      <Checkbox
+                        defaultChecked
+                        className="text-[10px] sm:text-[10.5px] text-slate-600 leading-tight select-none"
+                      >
                         <span>
                           I consent to receive university updates via email and mobile number.{" "}
                           <button
@@ -218,7 +245,7 @@ export default function LandingFooterForm({ brand = {}, courses = [], onOpenDisc
                               e.stopPropagation();
                               onOpenDisclaimer?.();
                             }}
-                            className="font-semibold underline cursor-pointer bg-transparent border-none p-0 inline text-blue-600 hover:text-blue-800"
+                            className="font-medium underline cursor-pointer bg-transparent border-none p-0 inline text-blue-600 hover:text-blue-800"
                           >
                             Disclaimer
                           </button>
@@ -227,12 +254,12 @@ export default function LandingFooterForm({ brand = {}, courses = [], onOpenDisc
                     </div>
 
                     {/* Submit Button */}
-                    <div className="pt-1">
+                    <div className="pt-1.5">
                       <Button
                         type="primary"
                         htmlType="submit"
                         loading={loading}
-                        className="bg-[#2cc36c] hover:bg-[#25ab5e] text-white font-bold text-[15px] border-none shadow-none w-full h-[40px] sm:h-[42px] cursor-pointer rounded-lg transition-colors"
+                        className="bg-[#2cc36c] hover:bg-[#25ab5e] text-white font-bold text-[16px] border-none shadow-none w-full h-[46px] sm:h-[48px] cursor-pointer rounded-[8px] transition-colors"
                       >
                         Submit
                       </Button>

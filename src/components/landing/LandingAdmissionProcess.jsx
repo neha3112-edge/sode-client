@@ -131,6 +131,113 @@ export default function LandingAdmissionProcess({
     );
   }
 
+  // UPES Dedicated Layout
+  if (brand.slug === "upes" || brand.admissionLayout === "upes") {
+    const steps = [
+      {
+        num: 1,
+        title: "Submit Form",
+        desc: "Fill in and submit your application form online",
+        themeColor: "#ff8c32",
+        cardBg: "#fff4e9",
+      },
+      {
+        num: 2,
+        title: "Expert's Counseling",
+        desc: "You will receive a call from our expert counselor",
+        themeColor: "#0b5ed7",
+        cardBg: "#eaf2ff",
+      },
+      {
+        num: 3,
+        title: "Choose University",
+        desc: "Select the course & university according to your interest",
+        themeColor: "#ff2d6f",
+        cardBg: "#ffeaf1",
+      },
+      {
+        num: 4,
+        title: "Online Payment",
+        desc: "You need to make a smooth online fee submission",
+        themeColor: "#1faa59",
+        cardBg: "#e9f8ef",
+      },
+      {
+        num: 5,
+        title: "Document Submit",
+        desc: "You need to upload all the required verified documents",
+        themeColor: "#7e22ce",
+        cardBg: "#f5ebff",
+      },
+      {
+        num: 6,
+        title: "Admission Confirm",
+        desc: "Get Confirmation on your Email & Whatsapp",
+        themeColor: "#ff8c32",
+        cardBg: "#fff4e9",
+      },
+    ];
+
+    const title =
+      admissionProcess?.title ||
+      brand.admissionTitle ||
+      brand.admissionProcess?.title ||
+      "How to Apply for UPES University Online Courses";
+
+    const subtitle =
+      admissionProcess?.subtitle ||
+      brand.admissionSubtitle ||
+      brand.admissionProcess?.subtitle ||
+      "The admission process for UPES University course admissions is very simple and user-friendly. Here’s a step-by-step guide to enrolling in a degree course at the university :";
+
+    return (
+      <section className="py-12 sm:py-16 bg-white text-center select-none border-b border-slate-100" id="admission-process">
+        <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-[20px] sm:text-[26px] lg:text-[30px] font-semibold text-[#193579] capitalize tracking-tight m-0 mb-3">
+            {title}
+          </h2>
+          <p className="max-w-[900px] mx-auto text-[13px] sm:text-[14px] text-[#555555] leading-relaxed mb-8 sm:mb-12 font-normal m-0">
+            {subtitle}
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-5">
+            {steps.map((st) => (
+              <div
+                key={st.num}
+                className="relative p-5 rounded-[14px] shadow-[0_10px_30px_rgba(0,0,0,0.05)] overflow-hidden flex flex-col items-center text-center transition-transform hover:-translate-y-1"
+                style={{ backgroundColor: st.cardBg }}
+              >
+                {/* Number Circle */}
+                <div
+                  className="w-12 h-12 rounded-full flex items-center justify-center text-[20px] font-bold bg-white mb-4"
+                  style={{
+                    border: `3px solid ${st.themeColor}`,
+                    color: st.themeColor,
+                  }}
+                >
+                  {st.num}
+                </div>
+
+                <h4 className="text-[16px] font-semibold text-black mb-2 m-0 leading-snug">
+                  {st.title}
+                </h4>
+                <p className="text-[12px] text-[#444444] leading-relaxed m-0 font-normal">
+                  {st.desc}
+                </p>
+
+                {/* Colored Bottom Accent Bar */}
+                <div
+                  className="absolute bottom-0 left-0 w-full h-[5px] rounded-b-[14px]"
+                  style={{ backgroundColor: st.themeColor }}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   // Active steps with fallback to global 6 steps
   const rawSteps =
     admissionSteps && admissionSteps.length > 0
@@ -224,7 +331,8 @@ export default function LandingAdmissionProcess({
 
   const containerClass =
     brand.admissionContainerClass ||
-    (isCu || brand.admissionFullWidth
+    admissionProcess?.containerClass ||
+    (isCu || isSmu || brand.admissionFullWidth || admissionProcess?.fullWidth
       ? "w-full px-4 sm:px-6 lg:px-8 xl:px-10 max-w-none"
       : "w-full px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 max-w-[1280px] mx-auto");
 
@@ -256,11 +364,22 @@ export default function LandingAdmissionProcess({
               enrollmentProcess?.headingClassName ||
               admissionProcess?.headingClassName ||
               brand.admissionHeadingClass ||
-              "text-[26px] sm:text-[32px] lg:text-[36px] xl:text-[38px] font-bold text-center tracking-tight mb-2.5 sm:mb-3.5 m-0 leading-[1.2] whitespace-pre-line"
+              (isSmu
+                ? "text-[17.5px] min-[360px]:text-[18.5px] min-[390px]:text-[20px] sm:text-[24px] lg:text-[28px] font-semibold text-center tracking-tight mb-2.5 sm:mb-3.5 m-0 leading-snug whitespace-pre-line"
+                : "text-[26px] sm:text-[32px] lg:text-[36px] xl:text-[38px] font-bold text-center tracking-tight mb-2.5 sm:mb-3.5 m-0 leading-[1.2] whitespace-pre-line")
             }
             style={{ color: headingColor }}
           >
-            {headingText}
+            {isSmu && !hasExplicitTitle ? (
+              <>
+                <span className="block sm:inline">How To Take Admission In</span>{" "}
+                <span className="block sm:inline whitespace-nowrap sm:whitespace-normal">
+                  {activeUniversity}?
+                </span>
+              </>
+            ) : (
+              headingText
+            )}
           </h2>
         )}
 
@@ -285,7 +404,7 @@ export default function LandingAdmissionProcess({
             `grid ${
               rawSteps.length <= 4
                 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 max-w-5xl mx-auto"
-                : isCu || brand.slug === "lpu"
+                : isCu || brand.slug === "lpu" || brand.slug === "upes"
                 ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6"
                 : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-6"
             } gap-3.5 sm:gap-4 lg:gap-3.5 xl:gap-4.5 2xl:gap-5 w-full`

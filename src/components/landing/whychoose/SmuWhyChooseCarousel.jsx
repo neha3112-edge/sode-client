@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Image from "next/image";
-import { Carousel, Card, Button } from "antd";
+import { Carousel } from "antd";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function SmuWhyChooseCarousel({ whyChoose = [], brand = {}, onOpenApply }) {
@@ -10,69 +10,176 @@ export default function SmuWhyChooseCarousel({ whyChoose = [], brand = {}, onOpe
   const sectionTitle = brand.whyChooseTitle || `Advantages of ${brand.name || "Sikkim Manipal University Online"}`;
   const headerBg = brand.primaryColor || "#074a76";
 
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(typeof window !== "undefined" && window.innerWidth < 768);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  if (!whyChoose || whyChoose.length === 0) return null;
+
   return (
     <section
       id="whychoose"
-      className="w-full py-10 sm:py-14 lg:py-16 bg-white overflow-hidden relative select-none"
+      className="w-full pt-10 sm:pt-14 lg:pt-16 pb-4 sm:pb-6 lg:pb-6 bg-white overflow-hidden relative select-none"
     >
-      <div className="text-center mb-8 sm:mb-10 px-4 max-w-4xl mx-auto">
-        <h2 className="text-[24px] sm:text-[28px] lg:text-[32px] font-bold text-[#212529] m-0 tracking-tight leading-tight">
+      {/* Dynamic Scoped CSS for Butter-Smooth Center-Scale Carousel */}
+      <style>{`
+        .smu-adv-carousel .slick-slider {
+          position: relative;
+        }
+        .smu-adv-carousel .slick-track {
+          display: flex !important;
+          align-items: center !important;
+          padding: 40px 0 !important;
+        }
+        .smu-adv-carousel .slick-slide {
+          padding: 0 14px;
+          box-sizing: border-box;
+          outline: none;
+          transition: transform 0.65s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.65s ease;
+          transform: scale(0.86);
+          opacity: 0.82;
+          cursor: pointer;
+        }
+        .smu-adv-carousel .slick-slide.slick-center {
+          transform: scale(1.1);
+          opacity: 1;
+          z-index: 20;
+          cursor: default;
+        }
+        .smu-adv-carousel .slick-slide.slick-center .smu-adv-card {
+          box-shadow: 0 20px 45px rgba(0, 0, 0, 0.16) !important;
+          border-color: rgba(7, 74, 118, 0.15) !important;
+        }
+        .smu-adv-carousel .slick-slide.slick-center .smu-adv-header {
+          min-height: 56px !important;
+        }
+        .smu-adv-carousel .slick-slide.slick-center .smu-adv-header h3 {
+          font-size: 17.5px !important;
+        }
+        .smu-adv-carousel .slick-slide.slick-center .smu-adv-body {
+          min-height: 110px !important;
+        }
+        .smu-adv-carousel .slick-slide.slick-center .smu-adv-body p {
+          font-size: 14px !important;
+        }
+        @media (max-width: 767px) {
+          .smu-adv-carousel .slick-track {
+            padding: 16px 0 !important;
+          }
+          .smu-adv-carousel .slick-slide {
+            transform: none !important;
+            opacity: 1 !important;
+            padding: 0 6px !important;
+            cursor: default !important;
+          }
+          .smu-adv-carousel .slick-slide.slick-center {
+            transform: none !important;
+            opacity: 1 !important;
+          }
+          .smu-adv-carousel .slick-slide.slick-center .smu-adv-card {
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.1) !important;
+          }
+          .smu-adv-carousel .smu-adv-header {
+            min-height: 48px !important;
+          }
+          .smu-adv-carousel .smu-adv-body {
+            min-height: 85px !important;
+          }
+        }
+      `}</style>
+
+      {/* Heading */}
+      <div className="text-center mb-6 sm:mb-8 px-4 max-w-5xl mx-auto">
+        <h2 className="text-[24px] sm:text-[30px] lg:text-[34px] font-bold text-[#1a202c] m-0 tracking-tight leading-tight">
           {sectionTitle}
         </h2>
       </div>
 
-      <div className="w-full max-w-[1140px] xl:max-w-[1200px] mx-auto px-6 sm:px-10 lg:px-12 relative">
-        <Button
-          type="text"
+      {/* Full-width container */}
+      <div className="w-full px-6 sm:px-10 md:px-12 lg:px-16 xl:px-20 relative">
+        {/* Previous Navigation Button */}
+        <button
+          type="button"
           onClick={() => carouselRef.current?.prev()}
           aria-label="Previous advantage"
-          className="absolute -left-1 sm:-left-3 lg:-left-5 top-1/2 -translate-y-1/2 z-20 text-[#212529] hover:!text-black transition-all cursor-pointer p-2 !border-none !bg-transparent flex items-center justify-center active:scale-90 !h-auto !w-auto"
+          className="absolute left-0 sm:left-2 lg:left-3 xl:left-4 top-1/2 -translate-y-1/2 z-30 text-[#1a202c] hover:text-[#074a76] hover:scale-110 active:scale-95 transition-all p-1.5 sm:p-2 bg-white/70 sm:bg-transparent rounded-full border-none cursor-pointer flex items-center justify-center outline-none shadow-sm sm:shadow-none"
         >
-          <ChevronLeft className="w-7 h-7 sm:w-8 sm:h-8 stroke-[3]" />
-        </Button>
+          <ChevronLeft className="w-7 h-7 sm:w-10 sm:h-10 lg:w-11 lg:h-11 stroke-[2.5]" />
+        </button>
 
-        <Button
-          type="text"
+        {/* Next Navigation Button */}
+        <button
+          type="button"
           onClick={() => carouselRef.current?.next()}
           aria-label="Next advantage"
-          className="absolute -right-1 sm:-right-3 lg:-right-5 top-1/2 -translate-y-1/2 z-20 text-[#212529] hover:!text-black transition-all cursor-pointer p-2 !border-none !bg-transparent flex items-center justify-center active:scale-90 !h-auto !w-auto"
+          className="absolute right-0 sm:right-2 lg:right-3 xl:right-4 top-1/2 -translate-y-1/2 z-30 text-[#1a202c] hover:text-[#074a76] hover:scale-110 active:scale-95 transition-all p-1.5 sm:p-2 bg-white/70 sm:bg-transparent rounded-full border-none cursor-pointer flex items-center justify-center outline-none shadow-sm sm:shadow-none"
         >
-          <ChevronRight className="w-7 h-7 sm:w-8 sm:h-8 stroke-[3]" />
-        </Button>
+          <ChevronRight className="w-7 h-7 sm:w-10 sm:h-10 lg:w-11 lg:h-11 stroke-[2.5]" />
+        </button>
 
-        <div className="w-full py-5">
+        {/* Smooth Scrolling Carousel */}
+        <div className="w-full smu-adv-carousel">
           <Carousel
+            key={isMobile ? "mobile" : "desktop"}
             ref={carouselRef}
             autoplay
-            autoplaySpeed={5000}
+            autoplaySpeed={3000}
+            speed={650}
+            cssEase="cubic-bezier(0.25, 1, 0.5, 1)"
             dots={false}
-            slidesToShow={3}
+            centerMode={!isMobile}
+            centerPadding="0px"
+            slidesToShow={isMobile ? 1 : 3}
             slidesToScroll={1}
-            infinite={whyChoose.length > 1}
+            initialSlide={isMobile ? 0 : 1}
+            infinite
+            pauseOnHover
             responsive={[
-              { breakpoint: 1024, settings: { slidesToShow: 2 } },
-              { breakpoint: 640, settings: { slidesToShow: 1 } },
+              {
+                breakpoint: 1024,
+                settings: {
+                  slidesToShow: 3,
+                  centerMode: true,
+                  centerPadding: "0px",
+                },
+              },
+              {
+                breakpoint: 768,
+                settings: {
+                  slidesToShow: 1,
+                  slidesToScroll: 1,
+                  centerMode: false,
+                  centerPadding: "0px",
+                },
+              },
             ]}
           >
             {whyChoose.map((item, idx) => (
-              <div key={`${item.title}-${idx}`} className="px-2.5 sm:px-3 box-border outline-none py-2">
-                <Card
-                  variant="borderless"
-                  styles={{ body: { padding: 0 } }}
-                  className="bg-white rounded-[8px] sm:rounded-[10px] overflow-hidden shadow-[0px_4px_20px_rgba(0,0,0,0.07)] hover:shadow-[0px_8px_28px_rgba(0,0,0,0.12)] transition-all duration-300 flex flex-col text-center border border-slate-100"
-                >
-                  <div className="relative w-full overflow-hidden bg-slate-100 h-44 sm:h-48 md:h-[195px]">
+              <div
+                key={`${item.title}-${idx}`}
+                onClick={() => carouselRef.current?.goTo(idx)}
+                className="box-border outline-none py-2"
+              >
+                <div className="smu-adv-card bg-white rounded-[10px] overflow-hidden shadow-[0px_4px_22px_rgba(0,0,0,0.07)] border border-slate-100 flex flex-col text-center transition-all duration-500 max-w-[300px] sm:max-w-[360px] md:max-w-none mx-auto">
+                  <div className="relative w-full h-[210px] sm:h-[230px] lg:h-[250px] bg-slate-100 overflow-hidden">
                     <Image
-                      src={item.image || "/assets/images/smu_advantage_legacy.jpg"}
+                      src={item.image}
                       alt={item.title}
                       fill
                       className="object-cover"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      sizes="(max-width: 768px) 100vw, 33vw"
                     />
                   </div>
 
                   <div
-                    className="text-white flex items-center justify-center py-3.5 px-3"
+                    className="smu-adv-header py-3 px-3 text-white flex items-center justify-center min-h-[48px] transition-all duration-500"
                     style={{ backgroundColor: headerBg }}
                   >
                     <h3 className="font-bold text-white m-0 tracking-tight leading-snug text-[15px] sm:text-[16px]">
@@ -80,12 +187,12 @@ export default function SmuWhyChooseCarousel({ whyChoose = [], brand = {}, onOpe
                     </h3>
                   </div>
 
-                  <div className="bg-white flex items-center justify-center p-4 sm:p-5">
-                    <p className="text-[12.5px] sm:text-[13px] text-[#555555] leading-relaxed m-0 font-normal min-h-[58px] sm:min-h-[64px] flex items-center justify-center">
+                  <div className="smu-adv-body bg-white p-4 sm:p-5 flex items-center justify-center min-h-[95px] transition-all duration-500">
+                    <p className="text-[13px] text-[#555555] leading-relaxed m-0 font-normal">
                       {item.desc || item.description}
                     </p>
                   </div>
-                </Card>
+                </div>
               </div>
             ))}
           </Carousel>

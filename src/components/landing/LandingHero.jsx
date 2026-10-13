@@ -451,6 +451,7 @@ export default function LandingHero({
           )}
           style={{
             minHeight: hero.minHeight,
+            maxWidth: hero.contentMaxWidth,
             ...hero.containerStyle,
           }}
         >
@@ -458,7 +459,7 @@ export default function LandingHero({
           <div
             className={joinClassNames(
               "relative z-10 flex w-full flex-col lg:flex-1",
-              hero.alignLeftMobile || brand.slug === "vgu" || brand.slug === "lpu" || brand.slug === "cu"
+              hero.alignLeftMobile || brand.slug === "vgu" || brand.slug === "lpu" || brand.slug === "cu" || brand.slug === "smu" || brand.slug === "upes"
                 ? "items-start text-left"
                 : "items-center sm:items-start text-center sm:text-left",
               hero.contentClassName

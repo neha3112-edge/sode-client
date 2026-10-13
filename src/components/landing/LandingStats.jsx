@@ -366,19 +366,23 @@ export default function LandingStats({ stats = [], brand = {} }) {
   // SMU Layout: Clean Gold Numbers on White Background
   // ==========================================
   if (isSmuLayout) {
+    const numberColor = brand.statsNumberColor || "#ffb100";
     return (
-      <section className="w-full bg-white py-10 sm:py-14 lg:py-16 select-none">
-        <div className="max-w-[1240px] xl:max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 lg:gap-12 text-center">
+      <section className="w-full bg-[#f7f7f7] py-10 sm:py-12 lg:py-14 select-none">
+        <div className="w-full max-w-[1536px] 2xl:max-w-[1680px] mx-auto px-4 sm:px-8 lg:px-12 xl:px-16">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-10 lg:gap-16 text-center">
             {stats.map((st, idx) => (
               <div
                 key={idx}
-                className="flex flex-col items-center justify-center space-y-1.5"
+                className="flex flex-col items-center justify-center space-y-1 sm:space-y-2"
               >
-                <div className="text-[32px] sm:text-[38px] lg:text-[44px] font-bold text-[#ffb100] tracking-tight leading-none">
+                <div
+                  className="text-[34px] sm:text-[44px] lg:text-[54px] font-bold text-[#ffb100] tracking-tight leading-none"
+                  style={{ color: numberColor }}
+                >
                   {st.number}
                 </div>
-                <p className="text-[13px] sm:text-[14px] text-[#212529] font-medium leading-snug m-0">
+                <p className="text-[13.5px] sm:text-[14.5px] lg:text-[15.5px] text-[#212529] font-semibold leading-snug m-0">
                   {st.label}
                 </p>
               </div>

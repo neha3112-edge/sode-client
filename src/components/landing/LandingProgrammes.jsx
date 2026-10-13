@@ -14,6 +14,7 @@ import IiitbProgrammes from "./programmes/IiitbProgrammes";
 import UuProgrammes from "./programmes/UuProgrammes";
 import SsbmProgrammes from "./programmes/SsbmProgrammes";
 import CuProgrammes from "./programmes/CuProgrammes";
+import UpesProgrammes from "./programmes/UpesProgrammes";
 import ProgrammesCarousel from "./programmes/ProgrammesCarousel";
 
 /**
@@ -32,6 +33,17 @@ export default function LandingProgrammes({
   if (!programmes?.length) return null;
 
   const layout = brand.programmesLayout || brand.slug;
+
+  if (layout === "upes" || brand.slug === "upes") {
+    return (
+      <UpesProgrammes
+        programmes={programmes}
+        brand={brand}
+        onSelectCourseForBrochure={onSelectCourseForBrochure}
+        onOpenApply={onOpenApply}
+      />
+    );
+  }
 
   if (layout === "cu" || brand.slug === "cu") {
     return (

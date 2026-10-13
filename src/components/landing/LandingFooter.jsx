@@ -334,13 +334,13 @@ export default function LandingFooter({
             className="inline-block cursor-pointer bg-transparent border-none p-0 transition-opacity hover:opacity-90"
             aria-label="Distance Education School"
           >
-            <div className="relative w-[380px] sm:w-[540px] md:w-[650px] lg:w-[760px] xl:w-[840px] h-[95px] sm:h-[135px] md:h-[162px] lg:h-[190px] xl:h-[210px]">
+            <div className="relative w-[440px] sm:w-[620px] md:w-[740px] lg:w-[860px] xl:w-[960px] h-[110px] sm:h-[155px] md:h-[185px] lg:h-[215px] xl:h-[240px]">
               <Image
                 src={footerLogoSrc}
                 alt="Distance Education School - SODE School of Online & Distance Education"
                 fill
                 className="object-contain"
-                sizes="(max-width: 640px) 380px, (max-width: 768px) 540px, (max-width: 1024px) 760px, 840px"
+                sizes="(max-width: 640px) 440px, (max-width: 768px) 620px, (max-width: 1024px) 860px, 960px"
                 priority
               />
             </div>

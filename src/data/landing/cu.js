@@ -34,8 +34,9 @@ export const cuData = {
     giftGif: "/assets/cu/gift.gif",
     callGif: "/assets/cu/call_icon.gif",
     arrowGif: "/assets/cu/arrow.gif",
-    campusImage: "/assets/cu/CU-about-image1.png",
-    buildingAboutImage: "/assets/cu/CU-about-image1.png",
+    campusImage: "/assets/all_universities_images/all_universities_images/cu/CU-about-image1.png",
+    buildingAboutImage: "/assets/all_universities_images/all_universities_images/cu/CU-about-image1.png",
+    aboutImage: "/assets/all_universities_images/all_universities_images/cu/CU-about-image1.png",
     primaryColor: "#d11c1f",
     themeBg: "bg-[#d11c1f]",
     themeBorder: "border-[#d11c1f]",
@@ -298,10 +299,12 @@ export const cuData = {
           font-size: 15px;
           text-align: center;
           display: flex;
+ 
           align-items: center;
           justify-content: center;
           width: 100%;
           border: none;
+
           cursor: pointer;
         }
       }
@@ -471,6 +474,7 @@ export const cuData = {
   ],
   about: {
     title: "About Chandigarh University Online",
+    image: "/assets/all_universities_images/all_universities_images/cu/CU-about-image1.png",
     text1:
       "Chandigarh university is one of the leading Indian Institute offering its professional and academic excellence in online also for the students and working professionals as well. Chandigarh Unviersity holds 19th rank in NIRF rank, UGC entitled, No.1 private university rank in QS Asia university ranking 2026 and A+ accreditation by NAAC in the first cycle itself and many more. This university offers courses in fields such as management, computers, arts, and science and many more. Chandigarh online University focus on the top-quality education while giving learn from anywhere, anytime concept.",
   },

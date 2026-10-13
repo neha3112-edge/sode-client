@@ -17,12 +17,14 @@ import SmuAbout from "./about/SmuAbout";
 import ManipalAbout from "./about/ManipalAbout";
 
 import CuAbout from "./about/CuAbout";
+import UpesAbout from "./about/UpesAbout";
 
 /**-
  * Reusable Registry of About Section Layouts.
  * Decouples university brand identity (slug) from visual layout rendering.
  */
 const ABOUT_LAYOUTS = {
+  upes: UpesAbout,
   cu: CuAbout,
   classic: ClassicAbout,
   imageRight: ClassicAbout,

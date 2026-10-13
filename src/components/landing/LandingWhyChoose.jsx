@@ -17,6 +17,7 @@ import IiitbWhyChoose from "./whychoose/IiitbWhyChoose";
 import UuWhyChoose from "./whychoose/UuWhyChoose";
 import SsbmWhyChoose from "./whychoose/SsbmWhyChoose";
 import CuWhyChoose from "./whychoose/CuWhyChoose";
+import UpesWhyChoose from "./whychoose/UpesWhyChoose";
 import ClassicWhyChoose from "./whychoose/ClassicWhyChoose";
 
 /**
@@ -24,6 +25,7 @@ import ClassicWhyChoose from "./whychoose/ClassicWhyChoose";
  * Separates layout rendering strategy from university identity (slug).
  */
 const WHY_CHOOSE_LAYOUTS = {
+  upes: UpesWhyChoose,
   cu: CuWhyChoose,
   lpu: LpuWhyChoose,
   iim: IimWhyChoose,

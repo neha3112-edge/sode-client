@@ -301,6 +301,14 @@ export default function LandingNavbar({
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-slate-200/80 shadow-[0px_2px_10px_rgba(0,0,0,0.06)]">
+      {Boolean(navbar.topbarText) && (
+        <div
+          className="w-full text-center py-2 px-3 text-[10.5px] sm:text-[13px] md:text-[14px] font-medium text-white select-none leading-snug"
+          style={{ backgroundColor: navbar.topbarBg || "#5a359d" }}
+        >
+          <p className="m-0 p-0">{navbar.topbarText}</p>
+        </div>
+      )}
 
       <LandingContainer
         className="
@@ -491,7 +499,7 @@ export default function LandingNavbar({
           {isCouponVisible ? (
             <div
               className={`
-                ${slug === "uu" || slug === "vgu" || slug === "lpu" || slug === "cu"
+                ${slug === "uu" || slug === "vgu" || slug === "lpu" || slug === "cu" || slug === "smu" || slug === "upes"
                   ? "hidden md:inline-flex"
                   : "inline-flex"
                 }

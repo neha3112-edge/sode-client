@@ -104,6 +104,7 @@ export default function UniversityLandingView({ data = {} }) {
 
       // If user is currently in the middle of smooth-scrolling upwards to top from SODE click, ignore
       if (isScrollingToTopFromSodeRef.current) return;
+      if (brand.disableAutoScholarshipPopup) return;
 
       // Only trigger if:
       // A) First time on page load (!initialTriggeredRef.current)
