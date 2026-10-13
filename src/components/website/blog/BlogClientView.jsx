@@ -8,7 +8,7 @@ import SafeHtmlRenderer from "@/components/website/SafeHtmlRenderer";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
 
 const getAssetPath = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || "");
-import { CalendarIcon, Check, ChevronDown, ChevronRight, ChevronUp, Clock, Eye, Image as ImageIcon, Minus, Play, Plus, ThumbsDown, ThumbsUp, User, Video } from "lucide-react";
+import { ArrowRight, CalendarIcon, Check, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Clock, Eye, Image as ImageIcon, Minus, Play, Plus, ThumbsDown, ThumbsUp, User, Video } from "lucide-react";
 import { request } from "@/services/request";
 import BlogSidebar from "./BlogSidebar";
 
@@ -283,9 +283,7 @@ export default function BlogClientView({
       ? initialPopularBlogs
       : []
   );
-  const carouselRef = useRef(null);
-  const [activeSlide, setActiveSlide] = useState(0);
-  const [slidesToShow, setSlidesToShow] = useState(3);
+  const toolsCarouselRef = useRef(null);
 
   // Sync or client-side fetch blogs for sidebar if initialPopularBlogs is small
   useEffect(() => {
@@ -314,22 +312,6 @@ export default function BlogClientView({
     }
   }, []);
 
-  // Responsive slides calculation (1 card on mobile, 2 on tablet, 3 on desktop)
-  useEffect(() => {
-    const updateSlides = () => {
-      if (typeof window === "undefined") return;
-      if (window.innerWidth < 768) {
-        setSlidesToShow(1);
-      } else if (window.innerWidth < 1024) {
-        setSlidesToShow(2);
-      } else {
-        setSlidesToShow(3);
-      }
-    };
-    updateSlides();
-    window.addEventListener("resize", updateSlides);
-    return () => window.removeEventListener("resize", updateSlides);
-  }, []);
 
   // Sync or client-side fetch dynamic tools from category entity if initialTools is empty
   useEffect(() => {
@@ -633,115 +615,127 @@ export default function BlogClientView({
     }
   }, [blog?.js]);
 
-  // 🤖 Dynamic Tools Mapping (from Category/Tools database)
+  // 🤖 Dynamic Tools Mapping (from Category/Tools database with default fallback)
   const mappedTools = useMemo(() => {
-    if (Array.isArray(toolsList) && toolsList.length > 0) {
-      return toolsList.map((t, idx) => {
-        const fullName = (t.name || t.title || "Tool").trim();
-        const lower = fullName.toLowerCase();
+    const DEFAULT_TOOLS = [
+      {
+        name: "Suggest University",
+        description: "Find universities that match your goals, preferences, and career plans.",
+        linkUrl: "/tools/suggest-university",
+        btnText: "Suggest University",
+      },
+      {
+        name: "Check Eligibility",
+        description: "Instantly check which courses and universities you are eligible for.",
+        linkUrl: "/tools/eligibility-checker",
+        btnText: "Check Eligibility",
+      },
+      {
+        name: "Compare University",
+        description: "Compare universities, courses, fees, and key benefits side by side.",
+        linkUrl: "/tools/compare-universities",
+        btnText: "Compare University",
+      },
+      {
+        name: "Suggest Course",
+        description: "Find the best online and distance programs aligned with your aspirations.",
+        linkUrl: "/tools/suggest-course",
+        btnText: "Suggest Course",
+      },
+    ];
 
-        // Split name into prefix and underlineWord
-        const parts = fullName.split(/\s+/);
-        const underlineWord = parts.length > 1 ? parts.pop() : fullName;
-        const prefix = parts.join(" ");
+    const sourceList =
+      Array.isArray(toolsList) && toolsList.length > 0
+        ? toolsList
+        : DEFAULT_TOOLS;
 
-        let sparkleColor = "text-[#00ACC1]";
-        let underlineClass = "border-[#00ACC1]";
-        let circleBg = "bg-[#E0F7F6]";
-        let btnText = "Suggest Me A University";
-        let linkUrl = "/tools/suggest-university";
-        let defaultDesc = "Find universities that match your goals, preferences, and career plans.";
-        let iconSvg = (
-          <svg className="w-6 h-6 sm:w-7 sm:h-7 text-[#00ACC1]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+    return sourceList.map((child, cIdx) => {
+      const fullName = (child.name || child.title || "Tool").trim();
+      const cName = fullName.toLowerCase();
+
+      let sparkleColor = "text-[#00ACC1]";
+      let underlineClass = "border-[#00ACC1]";
+      let circleBg = "bg-[#E0F7F6]";
+      let btnText = "Suggest University";
+      let desc = "Find universities that match your goals, preferences, and career plans.";
+      let isLink = true;
+      let linkUrl = child.linkUrl || child.url || "/tools/suggest-university";
+
+      let iconSvg = (
+        <svg className="w-6 h-6 sm:w-7 sm:h-7 text-[#00ACC1]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+        </svg>
+      );
+
+      if (cName.includes("eligib")) {
+        sparkleColor = "text-[#AB47BC]";
+        underlineClass = "border-[#AB47BC]";
+        circleBg = "bg-[#F3E8FF]";
+        btnText = "Check Eligibility";
+        desc = "Instantly check which courses and universities you're eligible for.";
+        isLink = true;
+        linkUrl = child.linkUrl || child.url || "/tools/eligibility-checker";
+        iconSvg = (
+          <svg className="w-6 h-6 sm:w-7 sm:h-7 text-[#AB47BC]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
           </svg>
         );
+      } else if (cName.includes("compar")) {
+        sparkleColor = "text-[#1E88E5]";
+        underlineClass = "border-[#1E88E5]";
+        circleBg = "bg-[#E0E7FF]";
+        btnText = "Compare University";
+        desc = "Compare universities, courses, fees, and key benefits side by side.";
+        isLink = true;
+        linkUrl = child.linkUrl || child.url || "/tools/compare-universities";
+        iconSvg = (
+          <svg className="w-6 h-6 sm:w-7 sm:h-7 text-[#1E88E5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+          </svg>
+        );
+      } else if (cName.includes("course")) {
+        sparkleColor = "text-[#EC407A]";
+        underlineClass = "border-[#EC407A]";
+        circleBg = "bg-[#FCE4EC]";
+        btnText = "Suggest Course";
+        desc = "Discover accredited degree and diploma programs matched to your background.";
+        isLink = true;
+        linkUrl = child.linkUrl || child.url || "/tools/suggest-course";
+        iconSvg = (
+          <svg className="w-6 h-6 sm:w-7 sm:h-7 text-[#EC407A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+          </svg>
+        );
+      } else if (cIdx % 4 === 1) {
+        sparkleColor = "text-[#AB47BC]";
+        underlineClass = "border-[#AB47BC]";
+        circleBg = "bg-[#F3E8FF]";
+      } else if (cIdx % 4 === 2) {
+        sparkleColor = "text-[#1E88E5]";
+        underlineClass = "border-[#1E88E5]";
+        circleBg = "bg-[#E0E7FF]";
+      } else if (cIdx % 4 === 3) {
+        sparkleColor = "text-[#EC407A]";
+        underlineClass = "border-[#EC407A]";
+        circleBg = "bg-[#FCE4EC]";
+      }
 
-        if (lower.includes("eligib")) {
-          sparkleColor = "text-[#AB47BC]";
-          underlineClass = "border-[#AB47BC]";
-          circleBg = "bg-[#F3E8FF]";
-          btnText = "Check Eligibility";
-          linkUrl = "/tools/eligibility-checker";
-          defaultDesc = "Instantly check which courses and universities you're eligible for.";
-          iconSvg = (
-            <svg className="w-6 h-6 sm:w-7 sm:h-7 text-[#AB47BC]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
-          );
-        } else if (lower.includes("compar")) {
-          sparkleColor = "text-[#1E88E5]";
-          underlineClass = "border-[#1E88E5]";
-          circleBg = "bg-[#E0E7FF]";
-          btnText = "Compare University";
-          linkUrl = "/tools/compare-universities";
-          defaultDesc = "Compare universities, courses, fees, and key benefits side by side.";
-          iconSvg = (
-            <svg className="w-6 h-6 sm:w-7 sm:h-7 text-[#1E88E5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
-            </svg>
-          );
-        } else if (lower.includes("course")) {
-          sparkleColor = "text-[#EC407A]";
-          underlineClass = "border-[#EC407A]";
-          circleBg = "bg-[#FCE4EC]";
-          btnText = "Suggest Course";
-          linkUrl = "/tools/suggest-course";
-          defaultDesc = "Discover accredited degree and diploma programs matched to your background.";
-          iconSvg = (
-            <svg className="w-6 h-6 sm:w-7 sm:h-7 text-[#EC407A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-            </svg>
-          );
-        } else if (idx % 4 === 1) {
-          sparkleColor = "text-[#AB47BC]";
-          underlineClass = "border-[#AB47BC]";
-          circleBg = "bg-[#F3E8FF]";
-        } else if (idx % 4 === 2) {
-          sparkleColor = "text-[#1E88E5]";
-          underlineClass = "border-[#1E88E5]";
-          circleBg = "bg-[#E0E7FF]";
-        } else if (idx % 4 === 3) {
-          sparkleColor = "text-[#EC407A]";
-          underlineClass = "border-[#EC407A]";
-          circleBg = "bg-[#FCE4EC]";
-        }
+      const rawLogo = child.logo || child.image;
+      const logoUrl = rawLogo ? (typeof rawLogo === "string" ? rawLogo : rawLogo?.url || rawLogo?.path || null) : null;
 
-        const rawLogo = t.logo || t.image;
-        const logoUrl = rawLogo ? getAssetPath(rawLogo) : null;
-
-        return {
-          id: t._id || t.id || String(idx),
-          name: fullName,
-          prefix,
-          underlineWord,
-          description: t.description || defaultDesc,
-          btnText:
-            t.btnText ||
-            (lower.includes("suggest") && lower.includes("univ")
-              ? "Suggest Me A University"
-              : btnText),
-          linkUrl: t.linkUrl || t.url || (t.slug ? `/tools/${t.slug}` : linkUrl),
-          sparkleColor,
-          underlineClass,
-          circleBg,
-          icon: logoUrl ? (
-            <Image
-              src={logoUrl}
-              alt={fullName}
-              width={48}
-              height={48}
-              loading="eager"
-              unoptimized
-              className="w-8 h-8 sm:w-9 sm:h-9 object-contain"
-            />
-          ) : (
-            iconSvg
-          ),
-        };
-      });
-    }
-    return [];
+      return {
+        id: child._id || child.slug || cIdx,
+        fullName,
+        description: child.description || desc,
+        btnText: child.btnText || btnText,
+        linkUrl,
+        sparkleColor,
+        underlineClass,
+        circleBg,
+        logoUrl,
+        iconSvg,
+      };
+    });
   }, [toolsList]);
 
   const allFaqs = useMemo(() => {
@@ -927,32 +921,6 @@ export default function BlogClientView({
           font-weight: 700 !important;
         }
 
-        /* Ant Design Carousel for AI Tools */
-        .tools-antd-carousel .slick-slider {
-          overflow: hidden !important;
-          width: 100% !important;
-        }
-        .tools-antd-carousel .slick-list {
-          margin: 0 -10px !important;
-          overflow: hidden !important;
-        }
-        .tools-antd-carousel .slick-slide {
-          padding: 0 10px !important;
-          box-sizing: border-box !important;
-          float: left !important;
-          height: auto !important;
-        }
-        .tools-antd-carousel .slick-slide > div {
-          height: 100% !important;
-        }
-        @media (max-width: 767px) {
-          .tools-antd-carousel .slick-list {
-            margin: 0 !important;
-          }
-          .tools-antd-carousel .slick-slide {
-            padding: 0 4px !important;
-          }
-        }
 
         /* PDF Preview Modal Mobile Responsive */
         .pdf-preview-modal {
@@ -1982,114 +1950,132 @@ export default function BlogClientView({
               ) : null}
 
               {/* =====================================================================
-              🤖 EXPLORE AI POWERED TOOLS (Ant Design Carousel directly below Tags)
+              🤖 EXPLORE AI POWERED TOOLS (Exact Home Page CSS & Mobile Responsive)
           ===================================================================== */}
               {mappedTools && mappedTools.length > 0 && (
                 <div
                   id="ai-tools"
                   data-nav-label="AI Tools"
-                  className="bg-[#F8FAFC] rounded-2xl border border-slate-200/80 p-5 sm:p-7 md:p-8 mt-6 scroll-mt-20"
+                  className="w-full relative py-6 sm:py-8 md:py-10 px-3 sm:px-6 md:px-8 bg-[#F1F5F9] rounded-2xl sm:rounded-3xl border border-slate-200/80 my-8 text-center scroll-mt-20"
                 >
-                  {/* Top Pill Badge */}
-                  <div className="flex justify-center mb-2 sm:mb-2.5">
-                    <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A] text-[11px] font-bold tracking-wide uppercase shadow-2xs">
-                      <span className="text-[#D97706] text-xs">✦</span>
-                      <span>AI Powered</span>
-                    </span>
+                  <div className="relative mb-2">
+                    {/* Top Badge (Exact Home Page Match) */}
+                    <div className="flex justify-center mb-1.5 sm:mb-3">
+                      <div className="inline-flex items-center gap-1.5 px-3 py-0.5 sm:px-4 sm:py-1 rounded-full bg-[#F5E5BA] text-[#8C6228] border border-[#E9D195] text-[10px] sm:text-xs font-bold shadow-none">
+                        <span className="text-[#8C6228] text-xs sm:text-sm font-extrabold">✦</span>
+                        <span className="tracking-wider uppercase text-[10px] sm:text-[11px]">AI POWERED</span>
+                      </div>
+                    </div>
+
+                    {/* Heading */}
+                    <h2 className="text-lg sm:text-2xl md:text-3xl font-extrabold text-[#0F172A] tracking-tight m-0 mb-1 text-center">
+                      Explore AI Powered Tools
+                    </h2>
+
+                    {/* Subtitle */}
+                    <p className="text-[#64748B] text-[11px] sm:text-sm md:text-base font-normal max-w-xl mx-auto m-0 mb-4 sm:mb-6 text-center">
+                      Make smarter education decisions with AI-powered tools
+                    </p>
                   </div>
+                  {/* ── Ant Design Carousel (3 Cards per row on Desktop, 2 on Tablet, 1 on Mobile) ── */}
+                  <div className="w-full relative mt-2">
+                    <Carousel
+                      ref={toolsCarouselRef}
+                      autoplay={true}
+                      autoplaySpeed={3500}
+                      infinite={mappedTools.length > 3}
+                      pauseOnHover={true}
+                      draggable={true}
+                      swipeToSlide={true}
+                      dots={mappedTools.length > 3}
+                      slidesToShow={Math.min(mappedTools.length, 3)}
+                      slidesToScroll={1}
+                      responsive={[
+                        {
+                          breakpoint: 1024,
+                          settings: {
+                            slidesToShow: 2,
+                            slidesToScroll: 1,
+                            infinite: mappedTools.length > 2,
+                            dots: mappedTools.length > 2,
+                          },
+                        },
+                        {
+                          breakpoint: 640,
+                          settings: {
+                            slidesToShow: 1,
+                            slidesToScroll: 1,
+                            infinite: mappedTools.length > 1,
+                            dots: mappedTools.length > 1,
+                          },
+                        },
+                      ]}
+                      className="[&_.slick-list]:-mx-1.5! sm:[&_.slick-list]:-mx-2! [&_.slick-track]:flex [&_.slick-track]:items-stretch [&_.slick-slide]:h-auto [&_.slick-slide>div]:h-full [&_.slick-dots]:relative! [&_.slick-dots]:mt-5! [&_.slick-dots]:mb-0! [&_.slick-dots_li]:w-2! [&_.slick-dots_li]:h-2! [&_.slick-dots_li]:mx-1! [&_.slick-dots_li_button]:w-2! [&_.slick-dots_li_button]:h-2! [&_.slick-dots_li_button]:rounded-full! [&_.slick-dots_li_button]:bg-slate-300! [&_.slick-dots_li.slick-active]:w-5! [&_.slick-dots_li.slick-active_button]:w-5! [&_.slick-dots_li.slick-active_button]:rounded-full! [&_.slick-dots_li.slick-active_button]:bg-[#0B3B7E]!"
+                    >
+                      {mappedTools.map((tool, idx) => (
+                        <div key={`tool-${tool.id || idx}-${idx}`} className="px-1.5 sm:px-2 py-1.5 h-full">
+                          <div className="relative bg-white rounded-xl sm:rounded-2xl p-2.5 sm:p-5 md:p-6 shadow-xs hover:shadow-xl border border-slate-100 flex flex-col items-center text-center justify-between transition-all duration-300 hover:-translate-y-1 group h-full select-none">
+                            {/* Top-Right Sparkle */}
+                            <span
+                              className={`absolute top-2.5 right-2.5 sm:top-3.5 sm:right-3.5 ${tool.sparkleColor} font-black text-xs select-none group-hover:rotate-12 transition-transform`}
+                            >
+                              ✦
+                            </span>
 
-                  {/* Heading */}
-                  <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] text-center tracking-tight mb-1">
-                    Explore AI Powered Tools
-                  </h2>
-                  <p className="text-xs sm:text-sm text-slate-500 text-center font-normal mb-6">
-                    Make smarter education decisions with AI-powered tools
-                  </p>
-
-                  {/* Ant Design Carousel with infinite scrolling & autoplay */}
-                  <Carousel
-                    key={`tools-carousel-${slidesToShow}`}
-                    ref={carouselRef}
-                    autoplay={true}
-                    autoplaySpeed={3000}
-                    speed={600}
-                    pauseOnHover={true}
-                    dots={false}
-                    slidesToShow={slidesToShow}
-                    slidesToScroll={1}
-                    infinite={mappedTools.length > slidesToShow}
-                    arrows={false}
-                    beforeChange={(from, to) => setActiveSlide(to % mappedTools.length)}
-                    className="tools-antd-carousel"
-                  >
-                    {mappedTools.map((tool, idx) => (
-                      <div key={`tool-${tool.id || idx}-${idx}`} className="py-2">
-                        <div className="relative bg-white rounded-2xl p-5 sm:p-6 shadow-xs hover:shadow-xl border border-slate-100 flex flex-col items-center text-center transition-all duration-300 hover:-translate-y-1 group">
-                          {/* Top-Right Sparkle */}
-                          <span
-                            className={`absolute top-3.5 right-3.5 ${tool.sparkleColor} font-black text-xs select-none group-hover:rotate-12 transition-transform`}
-                          >
-                            ✦
-                          </span>
-
-                          {/* Round Icon with colored background */}
-                          <div
-                            className={`w-13 h-13 sm:w-14 sm:h-14 rounded-full ${tool.circleBg} flex items-center justify-center mb-3 transition-transform group-hover:scale-110 shrink-0`}
-                          >
-                            {tool.icon}
-                          </div>
-
-                          {/* Title with Underlined Word */}
-                          <div className="w-full flex items-center justify-center mb-1.5">
-                            <h3 className="text-sm sm:text-base font-bold text-[#0F172A] tracking-tight m-0 leading-tight line-clamp-1 w-full text-center">
-                              {tool.prefix ? `${tool.prefix} ` : ""}
-                              <span className={`border-b-2 ${tool.underlineClass} pb-0.5 inline-block`}>
-                                {tool.underlineWord}
-                              </span>
-                            </h3>
-                          </div>
-
-                          {/* Description */}
-                          <div className="w-full flex items-center justify-center min-h-[36px] sm:min-h-[40px]">
-                            <p className="text-[#64748B] text-xs sm:text-sm font-normal m-0 line-clamp-2 text-center">
-                              {tool.description}
-                            </p>
-                          </div>
-
-                          {/* Button */}
-                          <div className="w-full mt-4 sm:mt-5 flex justify-center">
                             <Link
                               href={tool.linkUrl}
-                              className="w-full max-w-53.75 py-2 px-3.5 rounded-full bg-[#0B3B7E] hover:bg-[#072859] text-white font-bold text-xs sm:text-sm shadow-xs transition-all flex items-center justify-between cursor-pointer no-underline group-hover:shadow-md active:scale-95"
+                              className="flex flex-col items-center space-y-1.5 sm:space-y-3 w-full no-underline"
                             >
-                              <span className="truncate">{tool.btnText}</span>
-                              <span className="w-5 h-5 rounded-full bg-white text-[#0B3B7E] flex items-center justify-center text-xs font-bold shrink-0 ml-1.5 transition-transform group-hover:translate-x-0.5">
-                                →
-                              </span>
+                              {/* Round Icon with colored background (matching home page) */}
+                              <div
+                                className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center mb-1 transition-transform group-hover:scale-110 shrink-0"
+                              >
+                                {tool.logoUrl ? (
+                                  <Image
+                                    src={tool.logoUrl}
+                                    alt={tool.fullName}
+                                    width={55}
+                                    height={55}
+                                    unoptimized
+                                  />
+                                ) : (
+                                  tool.iconSvg
+                                )}
+                              </div>
+
+                              {/* Title with Centered Short Accent Line */}
+                              <div className="w-full flex flex-col items-center justify-center mb-1">
+                                <h3 className="text-xs sm:text-base font-semibold text-[#0F172A] tracking-tight m-0 pt-0.5 leading-tight text-center">
+                                  {tool.fullName}
+                                </h3>
+                                <span className={`w-7 sm:w-8 border-b-2 ${tool.underlineClass} mt-1 inline-block`} />
+                              </div>
+
+                              {/* Description */}
+                              <div className="w-full flex items-center justify-center mt-1">
+                                <p className="text-[#64748B] text-[10px] sm:text-[11px] leading-snug font-normal m-0 text-center">
+                                  {tool.description}
+                                </p>
+                              </div>
                             </Link>
+
+                            {/* Button with circular arrow badge */}
+                            <div className="w-full pt-2.5 sm:pt-3">
+                              <Link
+                                href={tool.linkUrl}
+                                className="w-full py-1.5 sm:py-2 px-2 sm:px-4 rounded-full bg-[#0B3B7E] hover:bg-[#072859] text-white font-bold text-[9.5px] sm:text-xs shadow-xs transition-all flex items-center justify-center cursor-pointer no-underline group-hover:shadow-md active:scale-95"
+                              >
+                                <span className="truncate min-w-0">{tool.btnText}</span>
+                                <span className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-white text-[#0B3B7E] flex items-center justify-center shrink-0 ml-1 sm:ml-1.5 transition-transform group-hover:translate-x-0.5">
+                                  <ArrowRight className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                                </span>
+                              </Link>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
-                  </Carousel>
-
-                  {/* Dynamic Dots Pagination (strictly mappedTools.length, not fixed 4 dots) */}
-                  {mappedTools.length > 1 && (
-                    <div className="flex items-center justify-center gap-1.5 mt-5">
-                      {mappedTools.map((_, dotIdx) => (
-                        <button
-                          key={dotIdx}
-                          type="button"
-                          onClick={() => carouselRef.current?.goTo(dotIdx)}
-                          className={`transition-all rounded-full cursor-pointer border-none p-0 ${activeSlide === dotIdx
-                            ? "w-2.5 h-2.5 bg-[#0B3B7E]"
-                            : "w-2 h-2 bg-slate-300 hover:bg-slate-400"
-                            }`}
-                          aria-label={`Go to slide ${dotIdx + 1}`}
-                        />
                       ))}
-                    </div>
-                  )}
+                    </Carousel>
+                  </div>
                 </div>
               )}
             </div>

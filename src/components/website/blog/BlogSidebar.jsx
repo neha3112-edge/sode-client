@@ -338,7 +338,7 @@ export default function BlogSidebar({
             platform,
           },
         })
-        .catch(() => {});
+        .catch(() => { });
     }
   };
 
@@ -380,10 +380,10 @@ export default function BlogSidebar({
       Array.isArray(author?.articles) && author.articles.length > 0
         ? author.articles
         : [
-            ...(Array.isArray(relatedBlogs) ? relatedBlogs : []),
-            ...(Array.isArray(popularBlogs) ? popularBlogs : []),
-            ...(Array.isArray(recentBlogs) ? recentBlogs : []),
-          ];
+          ...(Array.isArray(relatedBlogs) ? relatedBlogs : []),
+          ...(Array.isArray(popularBlogs) ? popularBlogs : []),
+          ...(Array.isArray(recentBlogs) ? recentBlogs : []),
+        ];
 
     source.forEach((b) => {
       const cName =
@@ -405,10 +405,10 @@ export default function BlogSidebar({
       Array.isArray(author?.articles) && author.articles.length > 0
         ? author.articles
         : [
-            ...(Array.isArray(relatedBlogs) ? relatedBlogs : []),
-            ...(Array.isArray(popularBlogs) ? popularBlogs : []),
-            ...(Array.isArray(recentBlogs) ? recentBlogs : []),
-          ];
+          ...(Array.isArray(relatedBlogs) ? relatedBlogs : []),
+          ...(Array.isArray(popularBlogs) ? popularBlogs : []),
+          ...(Array.isArray(recentBlogs) ? recentBlogs : []),
+        ];
 
     const unique = [];
     const seen = new Set();
@@ -456,8 +456,8 @@ export default function BlogSidebar({
       item.viewsCount != null
         ? `${item.viewsCount} Read`
         : item.views
-        ? `${item.views} Read`
-        : "Read";
+          ? `${item.views} Read`
+          : "Read";
     const excerptStr =
       item.subtitle ||
       item.excerpt ||
@@ -840,11 +840,10 @@ export default function BlogSidebar({
           <button
             type="submit"
             disabled={subscribing || isSubscribed}
-            className={`w-full py-2.5 px-4 rounded-full text-xs font-bold uppercase tracking-wider transition-all shadow-xs border-none flex items-center justify-center gap-1.5 ${
-              isSubscribed
+            className={`w-full py-2.5 px-4 rounded-full text-xs font-bold uppercase tracking-wider transition-all shadow-xs border-none flex items-center justify-center gap-1.5 ${isSubscribed
                 ? "bg-emerald-600 text-white cursor-default"
                 : "bg-[#F4D068] hover:bg-[#ebc557] text-[#0C2B4E] cursor-pointer active:scale-95 disabled:opacity-70"
-            }`}
+              }`}
           >
             {subscribing ? (
               "SUBSCRIBING..."
