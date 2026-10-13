@@ -1,7 +1,7 @@
 "use client";
 
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getMessaging, getToken, isSupported } from "firebase/messaging";
+import { getMessaging, getToken, isSupported, onMessage } from "firebase/messaging";
 import { request } from "@/services/request";
 
 const firebaseConfig = {
@@ -137,3 +137,63 @@ export function isBlogSubscribed() {
     localStorage.getItem("blog_fcm_subscribed") === "true"
   );
 }
+
+/**
+ * Listen to foreground push notifications (when user is active on the website)
+ * and trigger native Notification + callback
+ */
+export function listenToForegroundNotifications(callback) {
+  if (typeof window === "undefined") return () => {};
+  try {
+    const messaging = getFirebaseMessaging();
+    if (!messaging) return () => {};
+
+    return onMessage(messaging, (payload) => {
+      console.log("🔔 [Foreground FCM] Notification received:", payload);
+      const title =
+        payload.notification?.title ||
+        payload.data?.title ||
+        "New Educational Article Published";
+      const body =
+        payload.notification?.body ||
+        payload.data?.body ||
+        "Read our latest insights on Distance Education School.";
+      const icon =
+        payload.notification?.icon || "/android-chrome-192x192.png";
+      const url =
+        payload.data?.url ||
+        (payload.fcmOptions && payload.fcmOptions.link) ||
+        "/blogs";
+
+      // Native browser notification if permission is granted
+      if (typeof Notification !== "undefined" && Notification.permission === "granted") {
+        try {
+          const notif = new Notification(title, {
+            body,
+            icon,
+            image: payload.notification?.image || payload.data?.imageUrl || undefined,
+            data: { url },
+          });
+
+          notif.onclick = (e) => {
+            e.preventDefault();
+            window.focus();
+            if (url) {
+              window.location.href = url;
+            }
+          };
+        } catch (notifErr) {
+          console.warn("Could not display native notification:", notifErr);
+        }
+      }
+
+      if (typeof callback === "function") {
+        callback(payload);
+      }
+    });
+  } catch (err) {
+    console.warn("Could not setup foreground notification listener:", err);
+    return () => {};
+  }
+}
+

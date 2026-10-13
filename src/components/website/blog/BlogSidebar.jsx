@@ -9,8 +9,7 @@ import { ArrowRight, Building2, Calendar, CheckCircle2, ChevronDown, ChevronLeft
 const getAssetPath = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 import { STATE_OPTIONS } from "@/constants/stateOptions";
 import { DEFAULT_COURSE_OPTIONS } from "@/constants/courseOptions";
-import { PartnerLogoIcon, CourseIcon, getItemSlug, isObjectId } from "@/components/website/category/CategoryIcons";
-import { subscribeToBlogPushNotifications, isBlogSubscribed } from "@/services/fcm";
+import { subscribeToBlogPushNotifications, isBlogSubscribed, listenToForegroundNotifications } from "@/services/fcm";
 import { request } from "@/services/request";
 
 function formatCardDate(dateStr) {
@@ -54,7 +53,15 @@ export default function BlogSidebar({
 
   useEffect(() => {
     setIsSubscribed(isBlogSubscribed());
-  }, []);
+    const unsubscribe = listenToForegroundNotifications((payload) => {
+      const msgTitle = payload.notification?.title || payload.data?.title || "New Blog Published!";
+      const msgBody = payload.notification?.body || payload.data?.body || "";
+      message.info(`${msgTitle}: ${msgBody}`, 6);
+    });
+    return () => {
+      if (typeof unsubscribe === "function") unsubscribe();
+    };
+  }, [message]);
 
   // Responsive slide count for Author Articles Carousel (1 on mobile, 2 on tablet, 3 on desktop)
   useEffect(() => {
