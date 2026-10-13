@@ -83,7 +83,7 @@ export function AccreditationsView({ initialAccreditations = [] }) {
             </div>
           )}
 
-          {/* ─── 3. ACCREDITATIONS CARDS (3 cols on mobile starting from left, 5 cols on desktop centered) ─── */}
+          {/* ─── 3. ACCREDITATIONS CARDS (3 cols on mobile starting from left, 6 cols on desktop centered) ─── */}
           {filteredAccreditations.length > 0 ? (
             <div className="flex flex-wrap items-center justify-start md:justify-center gap-1.5 sm:gap-2.5 md:gap-3 w-full">
               {filteredAccreditations.map((acc, idx) => {
@@ -158,7 +158,7 @@ export function AccreditationsView({ initialAccreditations = [] }) {
                   <CardWrapper
                     key={acc.id || idx}
                     {...cardProps}
-                    className="bg-white rounded-xl border border-gray-200 flex flex-col p-1.5 sm:p-2.5 md:p-3 items-center justify-between text-center aspect-square shadow-2xs hover:border-blue-300 transition-colors overflow-hidden shrink-0 w-[calc((100%-12px)/3)] sm:w-[calc((100%-20px)/3)] md:w-[calc((100%-48px)/5)] cursor-pointer no-underline group"
+                    className="bg-white rounded-xl border border-gray-200 flex flex-col p-1.5 sm:p-2.5 md:p-3 items-center justify-between text-center aspect-square shadow-2xs hover:border-blue-300 transition-colors overflow-hidden shrink-0 w-[calc((100%-12px)/3)] sm:w-[calc((100%-20px)/3)] md:w-[calc((100%-60px)/6)] cursor-pointer no-underline group"
                   >
                     {/* Top: Logo with University page scale (64px mobile, 80px desktop) */}
                     <div className="flex-1 min-h-0 max-h-12 sm:max-h-16 md:max-h-20 w-full relative flex items-center justify-center">
