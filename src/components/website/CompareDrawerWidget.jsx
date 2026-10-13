@@ -14,6 +14,37 @@ export default function CompareDrawerWidget() {
   const pathname = usePathname();
   const { compareList, removeFromCompare, clearCompare, triggerExecuteCompare } = useCompare();
 
+  const getCleanUniSlug = (u) => {
+    const raw = u?.uniSlug || (u?.slug && !u?.slug.includes("/") ? u.slug : null) || u?.universitySlug || u?.slug || u?._id || u?.id;
+    if (typeof raw === "string" && raw.includes("/")) {
+      return raw.split("/")[0];
+    }
+    return raw;
+  };
+
+  const compareUrl = React.useMemo(() => {
+    if (!compareList || compareList.length === 0) return "/tools/compare-universities";
+    const uniSlugs = Array.from(new Set(compareList.map(getCleanUniSlug).filter(Boolean))).join(",");
+    let url = `/tools/compare-universities?university=${encodeURIComponent(uniSlugs)}`;
+    const rawCrs =
+      compareList.find((u) => u.courseName || u.course)?.courseName ||
+      compareList.find((u) => u.courseName || u.course)?.course ||
+      (typeof window !== "undefined" && window.__CURRENT_PAGE_COURSES__?.[0]) ||
+      null;
+    const crs = rawCrs
+      ? String(rawCrs)
+          .replace(/^online\s+/i, "")
+          .replace(/\s+course$/i, "")
+          .replace(/\s+program(?:me)?$/i, "")
+          .replace(/\s+degree$/i, "")
+          .trim()
+      : null;
+    if (crs) {
+      url += `&course=${encodeURIComponent(crs)}`;
+    }
+    return url;
+  }, [compareList]);
+
   // Do not show the floating widget on the dedicated compare page
   if (
     pathname === "/tools/compare-universities" ||
@@ -27,14 +58,6 @@ export default function CompareDrawerWidget() {
   if (!compareList || compareList.length === 0) {
     return null;
   }
-
-  const compareUrl =
-    compareList.length > 0
-      ? `/tools/compare-universities?university=${compareList
-          .map((u) => u.uniSlug || u.slug || u._id || u.id)
-          .filter(Boolean)
-          .join(",")}`
-      : "/tools/compare-universities";
 
   return (
     <div className="fixed bottom-20 sm:bottom-4 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-4xl bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-2xl rounded-2xl p-3 transition-all animate-in fade-in slide-in-from-bottom-5 duration-300">
@@ -54,7 +77,6 @@ export default function CompareDrawerWidget() {
             const displayName = uni.name || uni.uniName || uni.title || "University";
             const logo = uni.logoSrc || uni.logoUrl || uni.logo || null;
             const itemKey = uni.slug || uni._id || uni.id || `item-${idx}`;
-
             return (
               <div
                 key={itemKey}

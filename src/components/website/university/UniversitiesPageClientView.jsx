@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useCompare } from "@/hooks/useCompare";
 import Container from "@/components/common/Container";
 import { request } from "@/services/request";
@@ -34,7 +35,8 @@ function resolveMediaUrl(media) {
 }
 
 function UniversityCard({ uni }) {
-  const { toggleCompare, isInCompare } = useCompare();
+  const router = useRouter();
+  const { toggleCompare, compareList, isInCompare, setIsCompareDrawerOpen } = useCompare();
   const [logoErr, setLogoErr] = useState(false);
   const [imgErr, setImgErr] = useState(false);
 
@@ -189,14 +191,24 @@ function UniversityCard({ uni }) {
                   logoSrc: logoUrl,
                   university: uni,
                 };
-                toggleCompare(compareItem);
+                if (inCompare) {
+                  const slugs = (compareList || [])
+                    .map((u) => u.slug || u.uniSlug || u._id || u.id)
+                    .filter(Boolean);
+                  const combinedSlugs = Array.from(new Set([...slugs, slug])).slice(0, 3);
+                  const activeCourse = (typeof window !== "undefined" && window.__CURRENT_PAGE_COURSES__?.[0]) || "";
+                  router.push(`/tools/compare-universities?university=${encodeURIComponent(combinedSlugs.join(","))}${activeCourse ? `&course=${encodeURIComponent(activeCourse)}` : ""}`);
+                } else {
+                  toggleCompare(compareItem);
+                  setIsCompareDrawerOpen(true);
+                }
               }}
               className={`font-semibold rounded-md h-7 px-2 text-[11px] cursor-pointer ${inCompare
-                ? "border-amber-500 bg-amber-50 text-amber-700"
+                ? "border-amber-500 bg-amber-50 text-amber-700 hover:bg-amber-100"
                 : "border-slate-300 text-slate-600 hover:border-slate-400"
                 }`}
             >
-              {inCompare ? "✓ Comparing" : "+ Compare"}
+              {inCompare ? "Compare Now" : "+ Compare"}
             </Button>
 
             <Link href={`/universities/${slug}`}>

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
 import { useCompare } from "@/hooks/useCompare";
 import { useFormModal } from "@/hooks/useFormModal";
@@ -35,8 +36,9 @@ const getSafeText = (val, fallback = "") => {
 };
 
 export function UniversityClientView({ initialData, slug }) {
+  const router = useRouter();
   const { openFormModal } = useFormModal();
-  const { toggleCompare, isInCompare, setIsCompareDrawerOpen } = useCompare();
+  const { addToCompare, compareList, isInCompare, setIsCompareDrawerOpen } = useCompare();
 
   const [activeCourseFilter, setActiveCourseFilter] = useState("ALL");
   const [visibleCoursesCount, setVisibleCoursesCount] = useState(5);
@@ -257,11 +259,14 @@ export function UniversityClientView({ initialData, slug }) {
   }, [uni.faqs, uniName]);
 
   const handleUniversityCompare = () => {
+    const currentSlug = slug || uni.slug || data.slug || uni._id || data._id;
     const uniPayload = {
-      _id: uni._id || data._id || slug,
+      _id: uni._id || data._id || currentSlug,
       name: uniName,
-      slug: slug || uni.slug || data.slug,
+      slug: currentSlug,
       logo: rawLogo,
+      logoUrl: rawLogo,
+      logoSrc: rawLogo,
       city: locationText,
       state: "",
       naac_rating: { grade: "" },
@@ -269,8 +274,16 @@ export function UniversityClientView({ initialData, slug }) {
       established_year: establishedText,
       approvals: (accreditationsList || []).map((a) => ({ name: a.title })),
     };
-    toggleCompare(uniPayload);
-    setIsCompareDrawerOpen(true);
+    addToCompare(uniPayload);
+
+    const cleanUniSlug = (currentSlug && !currentSlug.includes("/")) ? currentSlug : (currentSlug?.split("/")[0]);
+    const existingSlugs = (compareList || [])
+      .map((u) => u.uniSlug || (u.slug && !u.slug.includes("/") ? u.slug : null) || u.slug?.split("/")[0] || u._id || u.id)
+      .filter(Boolean);
+    const combinedSlugs = Array.from(new Set([...existingSlugs, cleanUniSlug])).filter(Boolean).slice(0, 3);
+    const activeCourse = (activeCourseFilter && activeCourseFilter !== "ALL" ? activeCourseFilter : "") ||
+                         (typeof window !== "undefined" && window.__CURRENT_PAGE_COURSES__?.[0]) || "";
+    router.push(`/tools/compare-universities?university=${encodeURIComponent(combinedSlugs.join(","))}${activeCourse ? `&course=${encodeURIComponent(activeCourse)}` : ""}`);
   };
 
   const extractedCourses = useMemo(() => {

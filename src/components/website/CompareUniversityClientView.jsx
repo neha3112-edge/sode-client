@@ -77,8 +77,35 @@ export default function CompareUniversityClientView({
   const [modalSelectedUnis, setModalSelectedUnis] = useState([]);
 
   useEffect(() => {
-    if (initialComparedData?.length > 0) setComparedData(initialComparedData);
-  }, [initialComparedData]);
+    if (initialComparedData?.length > 0) {
+      setComparedData(initialComparedData);
+      updateCompareList(initialComparedData);
+    }
+  }, [initialComparedData, updateCompareList]);
+
+  useEffect(() => {
+    if ((!comparedData || comparedData.length === 0) && compareList?.length > 0) {
+      const slugs = Array.from(new Set(
+        compareList.map((u) => u.uniSlug || (u.slug && !u.slug.includes("/") ? u.slug : null) || u.slug?.split("/")[0] || u._id || u.id).filter(Boolean)
+      ));
+      if (slugs.length > 0) {
+        syncCompareUrl(slugs);
+        const options = { university: slugs.join(",") };
+        if (selectedCourse && selectedCourse !== "all") options.course = selectedCourse;
+        request.dynamicRead({
+          entity: "universities",
+          endPoint: "v1/compare",
+          options,
+          revalidate: 900,
+        }).then((res) => {
+          const data = Array.isArray(res?.result) ? res.result : [];
+          if (data.length > 0) {
+            setComparedData(data);
+          }
+        }).catch((err) => console.error("Failed to load compare data from compareList:", err));
+      }
+    }
+  }, [compareList, comparedData, selectedCourse]);
 
   useEffect(() => {
     if (initialAllCourses?.length > 0) {
@@ -95,6 +122,66 @@ export default function CompareUniversityClientView({
       }).catch((e) => console.error("Failed to load compare courses:", e));
     }
   }, [initialAllCourses]);
+
+  // If no course is selected yet but compareList has a course attached, adopt it
+  useEffect(() => {
+    if (!selectedCourse && compareList?.length > 0) {
+      const crsFromList =
+        compareList.find((u) => u.courseName || u.course)?.courseName ||
+        compareList.find((u) => u.courseName || u.course)?.course;
+      if (crsFromList) {
+        setSelectedCourse(crsFromList);
+      }
+    }
+  }, [compareList, selectedCourse]);
+
+  // Normalize selected course to match available courses list
+  useEffect(() => {
+    if (selectedCourse && availableCourses?.length > 0) {
+      const target = selectedCourse.trim().toLowerCase();
+      const cleanTarget = target
+        .replace(/^[()]/g, "")
+        .replace(/[()]$/g, "")
+        .replace(/^(online|distance|hybrid|regular|open|executive|odl)\s+/i, "")
+        .replace(/\s+(course|program|programme|degree)$/i, "")
+        .trim();
+
+      const words = cleanTarget.split(/[\s-]+/).filter(Boolean);
+      const meaningfulAcronym = words
+        .filter((w) => !["of", "and", "in", "&"].includes(w))
+        .map((w) => w[0])
+        .join("")
+        .toLowerCase();
+
+      const matched = availableCourses.find((c) => {
+        const cName = c?.name?.trim().toLowerCase();
+        const cleanCName = cName
+          ?.replace(/^(online|distance|hybrid|regular|open|executive|odl)\s+/i, "")
+          ?.replace(/\s+(course|program|programme|degree)$/i, "")
+          ?.trim();
+        const cSlug = c?.slug?.trim().toLowerCase();
+        return (
+          cName === target ||
+          cleanCName === cleanTarget ||
+          cName === cleanTarget ||
+          cleanCName === target ||
+          cSlug === target ||
+          cSlug === cleanTarget ||
+          (meaningfulAcronym && (cName === meaningfulAcronym || cSlug === meaningfulAcronym))
+        );
+      });
+      if (matched && matched.name !== selectedCourse) {
+        setSelectedCourse(matched.name);
+        if (typeof window !== "undefined") {
+          const currentUrl = new URL(window.location.href);
+          if (currentUrl.searchParams.get("course")) {
+            currentUrl.searchParams.set("course", matched.name);
+            window.history.replaceState(null, "", currentUrl.toString());
+          }
+        }
+      }
+    }
+  }, [availableCourses, selectedCourse]);
 
   const handleCourseChange = (val) => {
     const newCourse = val || null;
@@ -639,7 +726,12 @@ export default function CompareUniversityClientView({
     }
 
     const target = courseName.trim().toLowerCase();
+    const cleanTarget = target
+      .replace(/^(online|distance|hybrid|regular|open|executive|odl)\s+/i, "")
+      .replace(/\s+(course|program|programme|degree)$/i, "")
+      .trim();
     const wordRegex = new RegExp(`(^|[^a-z0-9])${target}([^a-z0-9]|$)`, "i");
+    const cleanRegex = cleanTarget ? new RegExp(`(^|[^a-z0-9])${cleanTarget}([^a-z0-9]|$)`, "i") : wordRegex;
 
     const match = coursesList.find((o) => {
       if (!o) return false;
@@ -648,14 +740,17 @@ export default function CompareUniversityClientView({
       const code = String(o.code || o.course_code || "").toLowerCase().trim();
 
       if (cn === target || slug === target || code === target) return true;
+      if (cleanTarget && (cn === cleanTarget || slug === cleanTarget || code === cleanTarget)) return true;
       if (slug.endsWith(`/${target}`) || slug.endsWith(`-${target}`) || slug.includes(`-${target}-`)) return true;
+      if (cleanTarget && (slug.endsWith(`/${cleanTarget}`) || slug.endsWith(`-${cleanTarget}`) || slug.includes(`-${cleanTarget}-`))) return true;
       if (cn.includes(`(${target})`) || wordRegex.test(cn)) return true;
+      if (cleanTarget && (cn.includes(`(${cleanTarget})`) || cleanRegex.test(cn) || cn.includes(cleanTarget) || cleanTarget.includes(cn))) return true;
 
       const words = cn.split(/[\s-]+/).filter(Boolean);
       const acronym = words.map((w) => w[0]).join("").toLowerCase();
-      if (acronym === target) return true;
+      if (acronym === target || acronym === cleanTarget) return true;
       const meaningful = words.filter((w) => !["of", "and", "in", "&"].includes(w)).map((w) => w[0]).join("").toLowerCase();
-      if (meaningful === target) return true;
+      if (meaningful === target || meaningful === cleanTarget) return true;
       return false;
     });
 
@@ -674,7 +769,7 @@ export default function CompareUniversityClientView({
 
     const inOffered = (uni.coursesOffered || []).some((c) => {
       const cl = String(typeof c === "object" ? c.name : c || "").toLowerCase();
-      return cl === target || cl.includes(`(${target})`) || wordRegex.test(cl);
+      return cl === target || (cleanTarget && cl === cleanTarget) || cl.includes(`(${target})`) || wordRegex.test(cl);
     });
     if (inOffered && coursesList[0]) {
       const first = coursesList[0];
@@ -687,6 +782,21 @@ export default function CompareUniversityClientView({
         duration: first?.duration || "2–3 Years",
         eligibility: first?.eligibility || "Graduation / 10+2",
         specializations: first?.specializations || [],
+      };
+    }
+
+    // Reliable fallback: If university has offerings, use first course so comparison cells are never empty dashes
+    const fallbackCourse = coursesList[0];
+    if (fallbackCourse) {
+      return {
+        course_name: fallbackCourse.name || fallbackCourse.course_name || courseName,
+        fee_per_semester: fallbackCourse.fee_per_semester || null,
+        full_course_fee: fallbackCourse.full_course_fee || null,
+        fee_discount: fallbackCourse.fee_discount || "Upto 20%",
+        rating: fallbackCourse.rating || uni.rating || 4.5,
+        duration: fallbackCourse.duration || "2–3 Years",
+        eligibility: fallbackCourse.eligibility || "Graduation / 10+2",
+        specializations: fallbackCourse.specializations || [],
       };
     }
 
@@ -1029,7 +1139,7 @@ export default function CompareUniversityClientView({
 
 
   // ── JSX ──────────────────────────────────────────────────────────────────
-  const currentSlots = compareList?.length > 0 ? compareList : comparedData;
+  const currentSlots = comparedData?.length > 0 ? comparedData : compareList;
   const hasSlots = Boolean(currentSlots?.length > 0 && currentSlots.some(Boolean));
 
   return (
@@ -1077,7 +1187,7 @@ export default function CompareUniversityClientView({
                     if (uni) {
                       const isOffering = uni.isCourseOffering || uni.type === "course_offering";
                       const displayTitle = isOffering ? uni.title : uni.name;
-                      const rawImage = uni.image || uni.imageUrl || uni.imageSrc || uni.coursepageimage || uni.bannerImg || null;
+                      const rawImage = uni.image || uni.imageUrl || uni.imageSrc || uni.coursepageimage || uni.bannerImg || uni.logo || uni.logoSrc || uni.logoUrl || null;
                       return (
                         <div key={slotIdx} id={`uni-slot-${slotIdx}`} className="bg-white rounded-xl sm:rounded-2xl border border-slate-200 p-1.5 pt-4 sm:p-4 sm:pt-4 flex flex-col items-center justify-center relative group transition-all">
                           <button onClick={() => handleRemoveUniversity(uni.slug || uni._id || uni.id)} className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-slate-100 hover:bg-red-500 text-slate-500 hover:text-white flex items-center justify-center transition-colors cursor-pointer border-none z-10" title="Remove">

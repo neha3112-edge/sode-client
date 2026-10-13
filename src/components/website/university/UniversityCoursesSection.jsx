@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Modal } from "antd";
 import { Clock, Plus, Check, ChevronDown, Download, Briefcase, GraduationCap, Award, BookOpen, Database, UserCog, ShoppingCart, CheckCircle2 } from "lucide-react";
@@ -27,7 +28,8 @@ export default function UniversityCoursesSection({
   heroBannerUrl,
   openFormModal,
 }) {
-  const { toggleCompare, isInCompare, setIsCompareDrawerOpen } = useCompare();
+  const router = useRouter();
+  const { toggleCompare, isInCompare, setIsCompareDrawerOpen, compareList } = useCompare();
   const [selectedCourseSpec, setSelectedCourseSpec] = useState(null);
   const brandColor = uni?.color_code || "#08AEAA";
 
@@ -178,27 +180,44 @@ export default function UniversityCoursesSection({
                 <button
                   type="button"
                   onClick={() => {
-                    const targetItem = {
-                      _id: item._id || item.slug,
-                      slug: item.slug || item._id,
-                      title: cardTitle,
-                      uniName: uniName,
-                      logoUrl: displayCourseLogo || logoUrl,
-                      feeText: feeText,
-                      durationText: durationText,
-                    };
-                    toggleCompare(targetItem);
-                    setIsCompareDrawerOpen(true);
+                    const cleanSlug = slug || uni?.slug || (item.slug && !item.slug.includes("/") ? item.slug : null) || item.slug?.split("/")[0] || item._id;
+                    if (inCmp) {
+                      const slugs = (compareList || [])
+                        .map((u) => u.uniSlug || (u.slug && !u.slug.includes("/") ? u.slug : null) || u.slug?.split("/")[0] || u._id || u.id)
+                        .filter(Boolean);
+                      const combinedSlugs = Array.from(new Set([...slugs, cleanSlug])).filter(Boolean).slice(0, 3);
+                      const crsParam = cardTitle || item.rawName || "";
+                      router.push(
+                        `/tools/compare-universities?university=${encodeURIComponent(combinedSlugs.join(","))}${crsParam ? `&course=${encodeURIComponent(crsParam)}` : ""}`
+                      );
+                    } else {
+                      const targetItem = {
+                        _id: item._id || cleanSlug,
+                        slug: cleanSlug,
+                        uniSlug: cleanSlug,
+                        name: uniName,
+                        uniName: uniName,
+                        title: cardTitle,
+                        courseName: cardTitle,
+                        course: cardTitle,
+                        logoUrl: displayCourseLogo || logoUrl,
+                        logoSrc: displayCourseLogo || logoUrl,
+                        feeText: feeText,
+                        durationText: durationText,
+                      };
+                      toggleCompare(targetItem);
+                      setIsCompareDrawerOpen(true);
+                    }
                   }}
-                  className={`w-full py-1 text-[11px] sm:text-xs font-medium flex items-center justify-center gap-1 transition-all cursor-pointer mt-1 border-none bg-transparent min-h-[22px] ${inCmp
-                    ? "text-[#08AEAA] font-bold"
+                  className={`w-full py-1 text-[11px] sm:text-xs font-semibold flex items-center justify-center gap-1 transition-all cursor-pointer mt-1 border-none bg-transparent min-h-[22px] ${inCmp
+                    ? "text-[#08AEAA] font-bold hover:underline"
                     : "text-gray-600 hover:text-[#0D3B66]"
                     }`}
                 >
                   {inCmp ? (
                     <>
                       <Check className="w-3.5 h-3.5 text-[#08AEAA] shrink-0 stroke-[2.5]" />
-                      <span>Added to Compare</span>
+                      <span>Compare Now</span>
                     </>
                   ) : (
                     <>

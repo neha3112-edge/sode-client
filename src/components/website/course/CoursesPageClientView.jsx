@@ -548,7 +548,7 @@ export default function CoursesPageClientView({
   };
 
   const { openFormModal } = useFormModal();
-  const { toggleCompare, isInCompare, setIsCompareDrawerOpen } = useCompare();
+  const { toggleCompare, isInCompare, setIsCompareDrawerOpen, compareList } = useCompare();
 
   const router = useRouter();
   const pathname = usePathname();
@@ -1259,35 +1259,76 @@ export default function CoursesPageClientView({
                             Apply Now
                           </button>
 
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const targetItem = {
-                                _id: item._id || item.slug,
-                                slug: item.slug || item._id,
-                                title: cardTitle,
-                                uniName: uniName,
-                                logoUrl: logoUrl,
-                                feeText: feeText,
-                                durationText: durationText,
-                              };
-                              toggleCompare(targetItem);
-                              setIsCompareDrawerOpen(true);
-                            }}
-                            className="border border-gray-200 hover:border-gray-300 hover:bg-gray-50 bg-white text-xs font-semibold text-gray-800 px-3 py-1.5 rounded-lg transition-colors inline-flex items-center justify-center gap-1.5 cursor-pointer ml-1"
-                          >
-                            {isInCompare(item._id || item.slug || cardTitle) ? (
-                              <>
-                                <CheckOutlined className="text-teal-600 text-xs" />
-                                <span className="text-teal-600">Added</span>
-                              </>
-                            ) : (
-                              <>
-                                <PlusOutlined className="text-gray-700 text-xs" />
-                                <span>Add to Compare</span>
-                              </>
-                            )}
-                          </button>
+                          {(() => {
+                            const rawSlug = item.uniSlug || item.universitySlug || item.slug || item._id;
+                            const uniIdentifier = typeof rawSlug === "string" && rawSlug.includes("/") ? rawSlug.split("/")[0] : rawSlug;
+                            const inCmp = (compareList || []).some((cmp) => {
+                              const cmpKeys = [cmp._id, cmp.id, cmp.slug, cmp.uniSlug, cmp.universitySlug, cmp.name, cmp.uniName]
+                                .map((k) => String(k || "").toLowerCase().trim())
+                                .filter(Boolean);
+                              const cardKeys = [item._id, item.id, item.slug, item.uniSlug, uniIdentifier, uniName]
+                                .map((k) => String(k || "").toLowerCase().trim())
+                                .filter(Boolean);
+                              return cmpKeys.some((ck) => cardKeys.includes(ck));
+                            });
+
+                            return (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (inCmp) {
+                                    const slugs = (compareList || [])
+                                      .map((u) => u.uniSlug || (u.slug && !u.slug.includes("/") ? u.slug : null) || u.slug?.split("/")[0] || u._id || u.id)
+                                      .filter(Boolean);
+                                    const currentSlug = uniIdentifier;
+                                    const combinedSlugs = Array.from(new Set([...slugs, currentSlug])).filter(Boolean).slice(0, 3);
+                                    const cleanCrs = (cardTitle || item.name || "")
+                                      .replace(/^online\s+/i, "")
+                                      .replace(/\s+course$/i, "")
+                                      .trim();
+                                    router.push(
+                                      `/tools/compare-universities?university=${encodeURIComponent(combinedSlugs.join(","))}${cleanCrs ? `&course=${encodeURIComponent(cleanCrs)}` : ""}`
+                                    );
+                                  } else {
+                                    const targetItem = {
+                                      _id: uniIdentifier || item._id,
+                                      id: uniIdentifier || item._id,
+                                      slug: uniIdentifier,
+                                      uniSlug: uniIdentifier,
+                                      name: uniName,
+                                      title: cardTitle,
+                                      uniName: uniName,
+                                      courseName: cardTitle,
+                                      course: cardTitle,
+                                      logoUrl: logoUrl,
+                                      logoSrc: logoUrl,
+                                      feeText: feeText,
+                                      durationText: durationText,
+                                    };
+                                    toggleCompare(targetItem);
+                                    setIsCompareDrawerOpen(true);
+                                  }
+                                }}
+                                className={`border text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors inline-flex items-center justify-center gap-1.5 cursor-pointer ml-1 ${
+                                  inCmp
+                                    ? "bg-teal-50 border-teal-500 text-teal-700 hover:bg-teal-100 font-bold"
+                                    : "border-gray-200 hover:border-gray-300 hover:bg-gray-50 bg-white text-gray-800"
+                                }`}
+                              >
+                                {inCmp ? (
+                                  <>
+                                    <CheckOutlined className="text-teal-600 text-xs" />
+                                    <span className="text-teal-700">Compare Now</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <PlusOutlined className="text-gray-700 text-xs" />
+                                    <span>Add to Compare</span>
+                                  </>
+                                )}
+                              </button>
+                            );
+                          })()}
                         </div>
                       </div>
                     </div>
@@ -1350,35 +1391,76 @@ export default function CoursesPageClientView({
                         </div>
 
                         {/* Mobile Compare Button - In Line With Fee & Duration */}
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const targetItem = {
-                              _id: item._id || item.slug,
-                              slug: item.slug || item._id,
-                              title: cardTitle,
-                              uniName: uniName,
-                              logoUrl: logoUrl,
-                              feeText: feeText,
-                              durationText: durationText,
-                            };
-                            toggleCompare(targetItem);
-                            setIsCompareDrawerOpen(true);
-                          }}
-                          className="border border-gray-200 hover:border-gray-300 hover:bg-gray-50 bg-white text-[11px] font-semibold text-gray-700 px-2.5 py-1 rounded-lg transition-colors inline-flex items-center justify-center gap-1 cursor-pointer shrink-0 self-center"
-                        >
-                          {isInCompare(item._id || item.slug || cardTitle) ? (
-                            <>
-                              <CheckOutlined className="text-teal-600 text-[10px]" />
-                              <span className="text-teal-600 font-semibold">Added</span>
-                            </>
-                          ) : (
-                            <>
-                              <PlusOutlined className="text-gray-600 text-[10px]" />
-                              <span>Compare</span>
-                            </>
-                          )}
-                        </button>
+                        {(() => {
+                          const rawSlug = item.uniSlug || item.universitySlug || item.slug || item._id;
+                          const uniIdentifier = typeof rawSlug === "string" && rawSlug.includes("/") ? rawSlug.split("/")[0] : rawSlug;
+                          const inCmp = (compareList || []).some((cmp) => {
+                            const cmpKeys = [cmp._id, cmp.id, cmp.slug, cmp.uniSlug, cmp.universitySlug, cmp.name, cmp.uniName]
+                              .map((k) => String(k || "").toLowerCase().trim())
+                              .filter(Boolean);
+                            const cardKeys = [item._id, item.id, item.slug, item.uniSlug, uniIdentifier, uniName]
+                              .map((k) => String(k || "").toLowerCase().trim())
+                              .filter(Boolean);
+                            return cmpKeys.some((ck) => cardKeys.includes(ck));
+                          });
+
+                          return (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (inCmp) {
+                                  const slugs = (compareList || [])
+                                    .map((u) => u.uniSlug || (u.slug && !u.slug.includes("/") ? u.slug : null) || u.slug?.split("/")[0] || u._id || u.id)
+                                    .filter(Boolean);
+                                  const currentSlug = uniIdentifier;
+                                  const combinedSlugs = Array.from(new Set([...slugs, currentSlug])).filter(Boolean).slice(0, 3);
+                                  const cleanCrs = (cardTitle || item.name || "")
+                                    .replace(/^online\s+/i, "")
+                                    .replace(/\s+course$/i, "")
+                                    .trim();
+                                  router.push(
+                                    `/tools/compare-universities?university=${encodeURIComponent(combinedSlugs.join(","))}${cleanCrs ? `&course=${encodeURIComponent(cleanCrs)}` : ""}`
+                                  );
+                                } else {
+                                  const targetItem = {
+                                    _id: uniIdentifier || item._id,
+                                    id: uniIdentifier || item._id,
+                                    slug: uniIdentifier,
+                                    uniSlug: uniIdentifier,
+                                    name: uniName,
+                                    title: cardTitle,
+                                    uniName: uniName,
+                                    courseName: cardTitle,
+                                    course: cardTitle,
+                                    logoUrl: logoUrl,
+                                    logoSrc: logoUrl,
+                                    feeText: feeText,
+                                    durationText: durationText,
+                                  };
+                                  toggleCompare(targetItem);
+                                  setIsCompareDrawerOpen(true);
+                                }
+                              }}
+                              className={`border text-[11px] font-semibold px-2.5 py-1 rounded-lg transition-colors inline-flex items-center justify-center gap-1 cursor-pointer shrink-0 self-center ${
+                                inCmp
+                                  ? "bg-teal-50 border-teal-500 text-teal-700 hover:bg-teal-100 font-bold"
+                                  : "border-gray-200 hover:border-gray-300 hover:bg-gray-50 bg-white text-gray-700"
+                              }`}
+                            >
+                              {inCmp ? (
+                                <>
+                                  <CheckOutlined className="text-teal-600 text-[10px]" />
+                                  <span className="text-teal-700 font-semibold">Compare Now</span>
+                                </>
+                              ) : (
+                                <>
+                                  <PlusOutlined className="text-gray-600 text-[10px]" />
+                                  <span>Compare</span>
+                                </>
+                              )}
+                            </button>
+                          );
+                        })()}
                       </div>
 
                       {/* Mobile Action Buttons - Single Row */}

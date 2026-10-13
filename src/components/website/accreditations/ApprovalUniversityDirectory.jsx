@@ -4,6 +4,7 @@ import React, { useState, useMemo, useEffect, useRef } from "react";
 import { request } from "@/services/request";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Table, Select, Input } from "antd";
 import {
   Search,
@@ -218,7 +219,7 @@ function SmoothExpandedCard({
                 {compared ? (
                   <>
                     <Check size={11} className="text-emerald-600 shrink-0" />
-                    <span className="truncate">Added</span>
+                    <span className="truncate">Compare Now</span>
                   </>
                 ) : (
                   <>
@@ -236,8 +237,9 @@ function SmoothExpandedCard({
 }
 
 export default function ApprovalUniversityDirectory({ initialData = null, className = "" }) {
+  const router = useRouter();
   const { openFormModal } = useFormModal();
-  const { toggleCompare, isInCompare } = useCompare();
+  const { toggleCompare, isInCompare, compareList, setIsCompareDrawerOpen } = useCompare();
 
   // ─── State ────────────────────────────────────────────────────
   const [apiData, setApiData] = useState(initialData);
@@ -409,7 +411,29 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
 
   const handleCompareClick = (u, e) => {
     e?.stopPropagation();
-    toggleCompare(u.rawUni || u);
+    const uniRecord = u.rawUni || u;
+    const targetSlug = uniRecord.slug || uniRecord._id || u.slug || u._id;
+    const isAlreadyIn = isInCompare(targetSlug);
+    if (isAlreadyIn) {
+      const slugs = (compareList || [])
+        .map((item) => item.slug || item.uniSlug || item._id || item.id)
+        .filter(Boolean);
+      const combinedSlugs = Array.from(new Set([...slugs, targetSlug])).filter(Boolean).slice(0, 3);
+      const crsParam = selectedCourse && selectedCourse !== "all" ? selectedCourse : "";
+      router.push(`/tools/compare-universities?university=${encodeURIComponent(combinedSlugs.join(","))}${crsParam ? `&course=${encodeURIComponent(crsParam)}` : ""}`);
+    } else {
+      toggleCompare({
+        _id: uniRecord._id || targetSlug,
+        slug: targetSlug,
+        uniSlug: targetSlug,
+        name: uniRecord.name || u.name,
+        uniName: uniRecord.name || u.name,
+        logo: uniRecord.logo || u.logo,
+        logoUrl: getMediaUrl(uniRecord.logo || u.logo),
+        location: uniRecord.location || u.location || "",
+      });
+      setIsCompareDrawerOpen?.(true);
+    }
   };
 
   // Format University Name: Breaks onto two lines on mobile, single line on desktop

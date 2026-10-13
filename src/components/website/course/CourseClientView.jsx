@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useFormModal } from "@/hooks/useFormModal";
+import { useCompare } from "@/hooks/useCompare";
 import { formatAdmissionDeadline } from "@/lib/utils";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
 
@@ -24,7 +26,9 @@ export function CourseClientView({
   initialCourses = [],
   slug = "",
 }) {
+  const router = useRouter();
   const { openFormModal } = useFormModal();
+  const { toggleCompare, addToCompare, compareList, isInCompare, setIsCompareDrawerOpen } = useCompare();
   const [selectedPlanTab, setSelectedPlanTab] = useState("semester");
   const courseData = initialData || {};
 
@@ -120,6 +124,35 @@ export function CourseClientView({
     : courseData?.universityId?.logo
       ? getMediaUrl(courseData.universityId.logo)
       : null;
+
+  const currentUniSlug = useMemo(() => {
+    return (
+      courseData?.universitySlug ||
+      courseData?.universityId?.slug ||
+      courseData?.university?.slug ||
+      (typeof slug === "string" ? slug.split("/")[0] : "") ||
+      ""
+    ).toLowerCase().trim();
+  }, [courseData, slug]);
+
+  const currentCourseName = useMemo(() => {
+    return courseData?.name || courseData?.title || displayCourseTitle || "";
+  }, [courseData, displayCourseTitle]);
+
+
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.__CURRENT_PAGE_COURSES__ = [currentCourseName];
+      window.__CURRENT_PAGE_UNIVERSITY__ = universityName;
+    }
+    return () => {
+      if (typeof window !== "undefined") {
+        window.__CURRENT_PAGE_COURSES__ = null;
+        window.__CURRENT_PAGE_UNIVERSITY__ = null;
+      }
+    };
+  }, [currentCourseName, universityName]);
 
   const approvalsList = useMemo(() => {
     return Array.isArray(courseData?.approvals) ? courseData.approvals : [];
@@ -348,11 +381,14 @@ export function CourseClientView({
 
       list.push({
         ...item,
-        _uniqueKey: `${item._id || item.slug || cardTitle || "program"}-${index}`,
+        _uniqueKey: `${item._id || uniSlug || cardTitle || "program"}-${index}`,
         title: cardTitle,
         cardTitle,
         displayName,
         uniName: uName,
+        uniSlug: uniSlug,
+        slug: uniSlug,
+        universitySlug: uniSlug,
         logoUrl,
         location: uniLocation,
         providerName,
@@ -559,6 +595,9 @@ export function CourseClientView({
         <CourseAlternativeUniversities
           processedPrograms={processedPrograms}
           courseData={courseData}
+          currentUniSlug={currentUniSlug}
+          currentUniName={universityName}
+          currentUniLogo={universityLogoSrc}
         />
 
         {/* 8. FAQs */}

@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Plus, Check, ChevronDown } from "lucide-react";
 import { useCompare } from "@/hooks/useCompare";
@@ -12,9 +13,13 @@ const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.p
 export default function CourseAlternativeUniversities({
   processedPrograms,
   courseData,
+  currentUniSlug = "",
+  currentUniName = "",
+  currentUniLogo = null,
 }) {
+  const router = useRouter();
   const [visibleCount, setVisibleCount] = useState(5);
-  const { toggleCompare, isInCompare, setIsCompareDrawerOpen } = useCompare();
+  const { toggleCompare, addToCompare, isInCompare, setIsCompareDrawerOpen, compareList } = useCompare();
   const { openFormModal } = useFormModal();
 
   if (!processedPrograms || processedPrograms.length === 0) return null;
@@ -41,7 +46,15 @@ export default function CourseAlternativeUniversities({
             rawHref.startsWith("/courses/") && rawHref.split("/").length > 3
               ? rawHref.replace("/courses/", "/universities/")
               : rawHref;
-          const inCmp = isInCompare(item._id || item.slug || cardTitle || uName);
+          const targetUniSlug =
+            item.uniSlug ||
+            (item.slug && !item.slug.includes("/") ? item.slug : null) ||
+            item.universitySlug ||
+            item.university?.slug ||
+            item.universityId?.slug ||
+            uName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+
+          const inCmp = isInCompare(targetUniSlug || item._id || uName);
 
           return (
             <div
@@ -99,27 +112,62 @@ export default function CourseAlternativeUniversities({
               <button
                 type="button"
                 onClick={() => {
-                  const targetItem = {
-                    _id: item._id || item.slug,
-                    slug: item.slug || item._id,
-                    title: cardTitle,
-                    uniName: uName,
-                    logoUrl: logoUrl,
-                    feeText: item.feeText,
-                    durationText: item.durationText,
-                  };
-                  toggleCompare(targetItem);
-                  setIsCompareDrawerOpen(true);
+                  if (inCmp) {
+                    const existingSlugs = (compareList || [])
+                      .map((u) => u.uniSlug || u.slug || u._id || u.id)
+                      .filter(Boolean);
+                    const allSlugs = currentUniSlug && !existingSlugs.includes(currentUniSlug)
+                      ? [currentUniSlug, ...existingSlugs, targetUniSlug]
+                      : [...existingSlugs, targetUniSlug];
+                    const combinedSlugs = Array.from(new Set(allSlugs)).filter(Boolean).slice(0, 3);
+                    const crsParam = courseData?.name || cardTitle || "";
+                    router.push(
+                      `/tools/compare-universities?university=${encodeURIComponent(combinedSlugs.join(","))}${crsParam ? `&course=${encodeURIComponent(crsParam)}` : ""}`
+                    );
+                  } else {
+                    // Also include current details page university if not already in compare
+                    if (currentUniSlug && !isInCompare(currentUniSlug)) {
+                      addToCompare({
+                        _id: currentUniSlug,
+                        slug: currentUniSlug,
+                        uniSlug: currentUniSlug,
+                        name: currentUniName || "University",
+                        uniName: currentUniName || "University",
+                        title: courseData?.name || "Program",
+                        courseName: courseData?.name || "",
+                        course: courseData?.name || "",
+                        logoUrl: currentUniLogo,
+                        logoSrc: currentUniLogo,
+                      });
+                    }
+
+                    const targetItem = {
+                      _id: targetUniSlug || item._id,
+                      slug: targetUniSlug,
+                      uniSlug: targetUniSlug,
+                      name: uName,
+                      title: cardTitle,
+                      uniName: uName,
+                      logoUrl: logoUrl,
+                      logoSrc: logoUrl,
+                      courseName: courseData?.name || cardTitle || "",
+                      course: courseData?.name || cardTitle || "",
+                      feeText: item.feeText,
+                      durationText: item.durationText,
+                    };
+                    addToCompare(targetItem);
+                    setIsCompareDrawerOpen(true);
+                  }
                 }}
                 className={`w-full py-1 px-2 rounded-lg text-[10px] sm:text-[11px] font-semibold transition-all flex items-center justify-center gap-1 border cursor-pointer mt-1 ${inCmp
-                    ? "bg-teal-50 text-teal-700 border-teal-600 shadow-2xs"
+                    ? "bg-teal-50 text-teal-700 border-teal-600 shadow-2xs hover:bg-teal-100"
                     : "bg-white text-[#0a2540] border-gray-200 hover:bg-gray-50 hover:border-gray-300"
                   }`}
               >
                 {inCmp ? (
                   <>
                     <Check className="w-3.5 h-3.5 text-teal-600 shrink-0 stroke-2" />
-                    <span>Added to Compare</span>
+                    <span>Compare Now</span>
                   </>
                 ) : (
                   <>

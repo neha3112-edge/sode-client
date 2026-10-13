@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Carousel, Table } from "antd";
 import { Container } from "@/components/common/Container";
 import SafeHtmlRenderer from "@/components/website/SafeHtmlRenderer";
@@ -70,8 +71,9 @@ function resolveMediaUrl(media) {
 }
 
 export default function CoursePageClientView({ page, slug, heroData = null }) {
+  const router = useRouter();
   const { openFormModal } = useFormModal();
-  const { isInCompare, toggleCompare, setIsCompareDrawerOpen } = useCompare();
+  const { isInCompare, toggleCompare, addToCompare, compareList, setIsCompareDrawerOpen } = useCompare();
 
   // Active Semester Tab State
   const [activeSemester, setActiveSemester] = useState(1);
@@ -99,7 +101,20 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
 
   // Core identifiers
   const pageTitle = page?.pageTitle || page?.title || "";
-  const cleanCourseName = pageTitle.replace(/^online\s+/i, "");
+  const rawCandidate =
+    page?.course?.name ||
+    page?.course?.code ||
+    page?.degreeName ||
+    (page?.shortTitle && !page.shortTitle.startsWith("(") ? page.shortTitle : null) ||
+    pageTitle;
+  const cleanCourseName = rawCandidate
+    .replace(/^[()]/g, "")
+    .replace(/[()]$/g, "")
+    .replace(/^online\s+/i, "")
+    .replace(/\s+course$/i, "")
+    .replace(/\s+program(?:me)?$/i, "")
+    .replace(/\s+degree$/i, "")
+    .trim();
   const cleanOnlineTitle = pageTitle
     ? pageTitle.toLowerCase().startsWith("online")
       ? pageTitle
@@ -123,6 +138,17 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
     },
     [pageTitle]
   );
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.__CURRENT_PAGE_COURSES__ = [cleanCourseName || pageTitle];
+    }
+    return () => {
+      if (typeof window !== "undefined") {
+        window.__CURRENT_PAGE_COURSES__ = null;
+      }
+    };
+  }, [cleanCourseName, pageTitle]);
 
   // Execute custom JavaScript if present
   useEffect(() => {
@@ -1646,18 +1672,50 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                         <button
                           type="button"
                           onClick={() => {
-                            toggleCompare(uni);
-                            setIsCompareDrawerOpen && setIsCompareDrawerOpen(true);
+                            if (inCmp) {
+                              const existingSlugs = (compareList || [])
+                                .map((u) => u.uniSlug || u.slug || u._id || u.id)
+                                .filter(Boolean);
+                              const cleanUniSlug = (uni.slug && !uni.slug.includes("/")) ? uni.slug : (uni.slug?.split("/")[0] || uni._id || uni.id);
+                              const combinedSlugs = Array.from(new Set([...existingSlugs, cleanUniSlug])).filter(Boolean).slice(0, 3);
+                              const targetCourse = cleanCourseName || pageTitle || "";
+                              router.push(
+                                `/tools/compare-universities?university=${encodeURIComponent(combinedSlugs.join(","))}${targetCourse ? `&course=${encodeURIComponent(targetCourse)}` : ""}`
+                              );
+                            } else {
+                              const cleanUniSlug = (uni.slug && !uni.slug.includes("/")) ? uni.slug : (uni.slug?.split("/")[0] || uni._id || uni.id);
+                              const comparePayload = {
+                                _id: uni._id || uni.id || cleanUniSlug,
+                                slug: cleanUniSlug,
+                                uniSlug: cleanUniSlug,
+                                name: uni.name,
+                                title: uni.name,
+                                uniName: uni.name,
+                                logoUrl: uniLogo,
+                                logoSrc: uniLogo,
+                                logo: uni.logo || uni.image,
+                                location: uni.location || "",
+                                courseName: cleanCourseName || pageTitle || "",
+                                course: cleanCourseName || pageTitle || "",
+                                feeText: uni.feeText || uni.customFee || "",
+                              };
+                              if (typeof addToCompare === "function") {
+                                addToCompare(comparePayload);
+                              } else {
+                                toggleCompare(comparePayload);
+                              }
+                              setIsCompareDrawerOpen && setIsCompareDrawerOpen(true);
+                            }
                           }}
                           className={`w-full py-1 px-2 rounded-lg text-[10px] sm:text-[11px] font-semibold transition-all flex items-center justify-center gap-1 border cursor-pointer mt-1 ${inCmp
-                            ? "bg-teal-50 text-teal-700 border-teal-600 shadow-2xs"
+                            ? "bg-teal-50 text-teal-700 border-teal-600 shadow-2xs hover:bg-teal-100"
                             : "bg-white text-[#0a2540] border-gray-200 hover:bg-gray-50 hover:border-gray-300"
                             }`}
                         >
                           {inCmp ? (
                             <>
                               <Check className="w-3.5 h-3.5 text-teal-600 shrink-0 stroke-2" />
-                              <span>Added to Compare</span>
+                              <span>Compare Now</span>
                             </>
                           ) : (
                             <>

@@ -177,7 +177,7 @@ export default function UniversityHero({
                         : "bg-transparent hover:bg-white/10 text-white border border-white"
                         }`}
                     >
-                      <span>{isInCompare ? "In Compare" : "+ Add to Compare"}</span>
+                      <span>{isInCompare ? "Compare Now" : "+ Compare"}</span>
                     </button>
                   </div>
                 </div>
@@ -227,7 +227,7 @@ export default function UniversityHero({
                   : "bg-transparent hover:bg-white/10 text-white border border-white/80"
                   }`}
               >
-                <span className="truncate">{isInCompare ? "In Compare" : "+ Compare"}</span>
+                <span className="truncate">{isInCompare ? "Compare Now" : "+ Compare"}</span>
               </button>
             </div>
           </div>

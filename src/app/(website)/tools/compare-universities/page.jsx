@@ -35,7 +35,17 @@ export default async function CompareUniversitiesToolPage({ searchParams }) {
     resolvedSearchParams.universities ||
     "";
 
-  const courseParam = resolvedSearchParams.course || "";
+  const rawCourseParam = resolvedSearchParams.course || "";
+  let courseParam = rawCourseParam
+    ? rawCourseParam
+        .replace(/^[()]/g, "")
+        .replace(/[()]$/g, "")
+        .replace(/^(online|distance|hybrid|regular|open|executive|odl)\s+/i, "")
+        .replace(/\s+(course|program|programme|degree)$/i, "")
+        .trim()
+    : "";
+
+
 
   // ── Single API call to /api/universities/v1/compare ──────────────────────
   // - With university=X,Y → returns result (comparison data)
@@ -45,7 +55,7 @@ export default async function CompareUniversitiesToolPage({ searchParams }) {
   try {
     const options = {};
     if (urlIds) options.university = urlIds;
-    else if (courseParam) options.course = courseParam;
+    if (courseParam) options.course = courseParam;
 
     compareRes = await request.dynamicRead({
       entity: "universities",
