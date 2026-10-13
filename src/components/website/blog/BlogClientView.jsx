@@ -45,6 +45,14 @@ function formatViewsCount(views, readTime) {
   return null;
 }
 
+function formatFontSize(size) {
+  if (!size) return undefined;
+  const s = String(size).trim();
+  if (!s) return undefined;
+  if (/^\d+(\.\d+)?$/.test(s)) return `${s}px`;
+  return s;
+}
+
 function getYouTubeEmbedUrl(url) {
   if (!url || typeof url !== "string") return null;
   const cleanUrl = url.trim();
@@ -394,6 +402,7 @@ export default function BlogClientView({
           id: secId,
           headingText,
           headingTag: sec.headingTag || "h2",
+          fontSize: sec.fontSize || "",
           items: [sec],
         };
         groups.push(currentGroup);
@@ -1012,7 +1021,7 @@ export default function BlogClientView({
               )}
               {/* 📄 Intro / Subtitle from API */}
               {blog.subtitle && (
-                <p className="text-xs sm:text-sm text-gray-700 leading-relaxed mb-3 sm:mb-4">
+                <p className="text-xs sm:text-sm text-gray-700 mb-3 sm:mb-4">
                   {blog.subtitle}
                 </p>
               )}
@@ -1090,7 +1099,10 @@ export default function BlogClientView({
                     return (
                       <section key={`sec-grp-${group._id || group.id || gIdx}-${gIdx}`} id={group.id} className="scroll-mt-24">
                         {group.headingText && (
-                          <HeadingTag className="text-xl sm:text-2xl font-bold text-[#0D3B66] m-0 mb-1 tracking-tight">
+                          <HeadingTag
+                            style={group.fontSize ? { fontSize: formatFontSize(group.fontSize) } : undefined}
+                            className="text-xl sm:text-2xl font-bold text-[#0D3B66] m-0 mb-1 tracking-tight"
+                          >
                             {group.headingText}
                           </HeadingTag>
                         )}
@@ -1141,7 +1153,10 @@ export default function BlogClientView({
                             return (
                               <div key={`sec-item-${sec._id || sec.id || sIdx}-${sIdx}`} className="space-y-1.5">
                                 {sec.title && sec.title.trim() !== group.headingText && (
-                                  <h3 className="text-base sm:text-lg font-bold text-[#0D3B66] m-0 mb-1">
+                                  <h3
+                                    style={sec.fontSize ? { fontSize: formatFontSize(sec.fontSize) } : undefined}
+                                    className="text-base sm:text-lg font-bold text-[#0D3B66] m-0 mb-1"
+                                  >
                                     {sec.title}
                                   </h3>
                                 )}
@@ -1149,22 +1164,33 @@ export default function BlogClientView({
                                 {Array.isArray(sec.paragraphs) &&
                                   sec.paragraphs.map((p, idx) => {
                                     if (typeof p !== "string" || !p.trim()) return null;
-                                    const parts = p.split(/\n\s*\n/).filter((t) => t.trim().length > 0);
-                                    return parts.map((part, pIdx) => (
-                                      <p key={`${idx}-${pIdx}`} className="m-0 text-gray-700 text-xs sm:text-sm">
-                                        {part.trim()}
+                                    return (
+                                      <p
+                                        key={idx}
+                                        style={sec.fontSize ? { fontSize: formatFontSize(sec.fontSize) } : undefined}
+                                        className="m-0 mb-3.5 last:mb-0 text-gray-700 text-xs sm:text-sm whitespace-pre-line"
+                                      >
+                                        {p}
                                       </p>
-                                    ));
+                                    );
                                   })}
-                                {typeof sec.paragraphs === "string" &&
-                                  sec.paragraphs.trim() &&
-                                  sec.paragraphs.split(/\n\s*\n/).filter((t) => t.trim().length > 0).map((part, pIdx) => (
-                                    <p key={pIdx} className="m-0 text-gray-700 text-xs sm:text-sm">
-                                      {part.trim()}
-                                    </p>
-                                  ))}
+                                {typeof sec.paragraphs === "string" && sec.paragraphs.trim() && (
+                                  <p
+                                    style={sec.fontSize ? { fontSize: formatFontSize(sec.fontSize) } : undefined}
+                                    className="m-0 mb-3.5 last:mb-0 text-gray-700 text-xs sm:text-sm whitespace-pre-line"
+                                  >
+                                    {sec.paragraphs}
+                                  </p>
+                                )}
 
-                                {sec.intro && <p className="m-0 text-gray-700 text-xs sm:text-sm">{sec.intro}</p>}
+                                {sec.intro && (
+                                  <p
+                                    style={sec.fontSize ? { fontSize: formatFontSize(sec.fontSize) } : undefined}
+                                    className="m-0 mb-3.5 last:mb-0 text-gray-700 text-xs sm:text-sm whitespace-pre-line"
+                                  >
+                                    {sec.intro}
+                                  </p>
+                                )}
 
                                 {/* 🖼️ Image Section / Banner (1041 x 585 px / 16:9) */}
                                 {hasImage && (
@@ -1533,7 +1559,7 @@ export default function BlogClientView({
                                               </h4>
                                             )}
                                             {item?.desc && (
-                                              <p className="text-gray-700 m-0 text-xs sm:text-sm">
+                                              <p className="text-gray-700 m-0 text-xs sm:text-sm whitespace-pre-line">
                                                 {item.desc}
                                               </p>
                                             )}
@@ -1727,15 +1753,15 @@ export default function BlogClientView({
                                       </h4>
                                     )}
                                     {sec.importantNotice.desc && (
-                                      <p className="text-gray-700 text-xs sm:text-sm m-0">
+                                      <p className="text-gray-700 text-xs sm:text-sm m-0 whitespace-pre-line">
                                         {sec.importantNotice.desc}
                                       </p>
                                     )}
                                   </div>
                                 )}
 
-                                {sec.note && <p className="text-xs sm:text-sm text-gray-700 font-bold m-0">{sec.note}</p>}
-                                {sec.outro && <p className="text-xs sm:text-sm text-gray-700 m-0">{sec.outro}</p>}
+                                {sec.note && <p className="text-xs sm:text-sm text-gray-700 font-bold m-0 whitespace-pre-line">{sec.note}</p>}
+                                {sec.outro && <p className="text-xs sm:text-sm text-gray-700 m-0 whitespace-pre-line">{sec.outro}</p>}
                               </div>
                             );
                           })}

@@ -1142,13 +1142,14 @@ export default function CompareUniversityClientView({
                     onClick={() => openUniversityModal("trending")}
                     className="p-3 sm:p-5 rounded-2xl border border-blue-200 bg-blue-50/20 hover:border-blue-500 hover:bg-blue-50/40 hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-between text-center group min-h-[140px] sm:min-h-[160px]"
                   >
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center mb-1 sm:mb-2">
-                      <svg className="w-8 h-8 sm:w-10 sm:h-10 text-blue-500 group-hover:scale-105 transition-transform" viewBox="0 0 48 48" fill="none">
-                        <rect x="6" y="26" width="8" height="16" rx="2" stroke="currentColor" strokeWidth="2.5" />
-                        <rect x="20" y="18" width="8" height="24" rx="2" stroke="currentColor" strokeWidth="2.5" />
-                        <rect x="34" y="10" width="8" height="32" rx="2" stroke="currentColor" strokeWidth="2.5" />
-                        <path d="M8 20L22 10L36 4M36 4H26M36 4V14" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center mb-1 sm:mb-2 relative">
+                      <Image
+                        src="/assets/compare-icon/trending-universities-icon.webp"
+                        alt="Trending Universities"
+                        width={44}
+                        height={44}
+                        className="w-9 h-9 sm:w-11 sm:h-11 object-contain group-hover:scale-105 transition-transform"
+                      />
                     </div>
                     <div>
                       <h4 className="text-[11px] sm:text-sm font-bold text-[#0C3058] group-hover:text-blue-700 tracking-wide m-0 mb-1">
@@ -1165,13 +1166,14 @@ export default function CompareUniversityClientView({
                     onClick={() => openUniversityModal("recommended")}
                     className="p-3 sm:p-5 rounded-2xl border border-amber-200 bg-amber-50/20 hover:border-amber-500 hover:bg-amber-50/40 hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-between text-center group min-h-[140px] sm:min-h-[160px]"
                   >
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center mb-1 sm:mb-2">
-                      <svg className="w-8 h-8 sm:w-10 sm:h-10 text-amber-500 group-hover:scale-105 transition-transform" viewBox="0 0 48 48" fill="none">
-                        <path d="M12 14l1.2 2.5 2.8.4-2 2 .5 2.8-2.5-1.3-2.5 1.3.5-2.8-2-2 2.8-.4L12 14z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-                        <path d="M24 7l1.5 3 3.5.5-2.5 2.5.6 3.5-3.1-1.6-3.1 1.6.6-3.5-2.5-2.5 3.5-.5L24 7z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-                        <path d="M36 14l1.2 2.5 2.8.4-2 2 .5 2.8-2.5-1.3-2.5 1.3.5-2.8-2-2 2.8-.4L36 14z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-                        <path d="M14 26v16h-6a2 2 0 01-2-2V28a2 2 0 012-2h6zm4 16h16a3 3 0 003-2.6l2-10a3 3 0 00-3-3.4H28v-6a4 4 0 00-4-4l-6 10v16z" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center mb-1 sm:mb-2 relative">
+                      <Image
+                        src="/assets/compare-icon/recomended-universities-icon.webp"
+                        alt="Recommended Universities"
+                        width={44}
+                        height={44}
+                        className="w-9 h-9 sm:w-11 sm:h-11 object-contain group-hover:scale-105 transition-transform"
+                      />
                     </div>
                     <div>
                       <h4 className="text-[11px] sm:text-sm font-bold text-[#0C3058] group-hover:text-amber-700 tracking-wide m-0 mb-1">
@@ -1188,11 +1190,14 @@ export default function CompareUniversityClientView({
                     onClick={() => openUniversityModal("state")}
                     className="p-3 sm:p-5 rounded-2xl border border-rose-200 bg-rose-50/20 hover:border-rose-500 hover:bg-rose-50/40 hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-between text-center group min-h-[140px] sm:min-h-[160px]"
                   >
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center mb-1 sm:mb-2">
-                      <svg className="w-8 h-8 sm:w-10 sm:h-10 text-rose-500 group-hover:scale-105 transition-transform" viewBox="0 0 48 48" fill="none">
-                        <path d="M24 6C16.268 6 10 12.268 10 20c0 9.844 12.7 20.563 13.234 21.027a1.167 1.167 0 001.532 0C25.3 40.563 38 29.844 38 20c0-7.732-6.268-14-14-14z" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                        <circle cx="24" cy="20" r="5" stroke="currentColor" strokeWidth="2.5" />
-                      </svg>
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center mb-1 sm:mb-2 relative">
+                      <Image
+                        src="/assets/compare-icon/state-wise-university-icon.webp"
+                        alt="State Wise Universities"
+                        width={44}
+                        height={44}
+                        className="w-9 h-9 sm:w-11 sm:h-11 object-contain group-hover:scale-105 transition-transform"
+                      />
                     </div>
                     <div>
                       <h4 className="text-[11px] sm:text-sm font-bold text-[#0C3058] group-hover:text-rose-700 tracking-wide m-0 mb-1">
@@ -1209,11 +1214,14 @@ export default function CompareUniversityClientView({
                     onClick={() => openUniversityModal("accreditation")}
                     className="p-3 sm:p-5 rounded-2xl border border-emerald-200 bg-emerald-50/20 hover:border-emerald-500 hover:bg-emerald-50/40 hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-between text-center group min-h-[140px] sm:min-h-[160px]"
                   >
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center mb-1 sm:mb-2">
-                      <svg className="w-8 h-8 sm:w-10 sm:h-10 text-emerald-500 group-hover:scale-105 transition-transform" viewBox="0 0 48 48" fill="none">
-                        <path d="M24 6l3 3 4.2-.8 1.6 4 4.1 1.2.2 4.3 3.4 2.6-1.3 4.1 2.1 3.7-2.6 3.4.8 4.2-3.8 2.1-.7 4.2-4.3.7-2.1 3.7-4.1-1.3-3.4 2.7-.2-4.3-4.1-1.2-1.6-4-4.2.8-3-3 .8-4.2-2.1-3.7 2.6-3.4-.8-4.2 3.8-2.1.7-4.2 4.3-.7 2.1-3.7 4.1 1.3 3.4-2.7z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-                        <path d="M17 24l5 5 10-10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center mb-1 sm:mb-2 relative">
+                      <Image
+                        src="/assets/compare-icon/accreditation-wise-icon.webp"
+                        alt="Accreditation Wise Universities"
+                        width={44}
+                        height={44}
+                        className="w-9 h-9 sm:w-11 sm:h-11 object-contain group-hover:scale-105 transition-transform"
+                      />
                     </div>
                     <div>
                       <h4 className="text-[11px] sm:text-sm font-bold text-[#0C3058] group-hover:text-emerald-700 tracking-wide m-0 mb-1">
