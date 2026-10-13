@@ -1993,105 +1993,112 @@ export default function BlogClientView({
                       Make smarter education decisions with AI-powered tools
                     </p>
                   </div>
-                  {/* ── Ant Design Carousel (3 Cards per row on Desktop, 2 on Tablet, 1 on Mobile) ── */}
-                  <div className="w-full relative mt-2">
-                    <Carousel
-                      ref={toolsCarouselRef}
-                      autoplay={true}
-                      autoplaySpeed={3500}
-                      infinite={mappedTools.length > 3}
-                      pauseOnHover={true}
-                      draggable={true}
-                      swipeToSlide={true}
-                      dots={mappedTools.length > 3}
-                      slidesToShow={Math.min(mappedTools.length, 3)}
-                      slidesToScroll={1}
-                      responsive={[
-                        {
-                          breakpoint: 1024,
-                          settings: {
-                            slidesToShow: 2,
-                            slidesToScroll: 1,
-                            infinite: mappedTools.length > 2,
-                            dots: mappedTools.length > 2,
-                          },
-                        },
-                        {
-                          breakpoint: 640,
-                          settings: {
-                            slidesToShow: 1,
-                            slidesToScroll: 1,
-                            infinite: mappedTools.length > 1,
-                            dots: mappedTools.length > 1,
-                          },
-                        },
-                      ]}
-                      className="ai-tools-carousel [&_.slick-list]:-mx-1.5! sm:[&_.slick-list]:-mx-2! [&_.slick-track]:flex [&_.slick-track]:items-stretch [&_.slick-slide]:h-auto [&_.slick-slide>div]:h-full pb-8"
-                    >
-                      {mappedTools.map((tool, idx) => (
-                        <div key={`tool-${tool.id || idx}-${idx}`} className="px-1.5 sm:px-2 py-1.5 h-full">
-                          <div className="relative bg-white rounded-xl sm:rounded-2xl p-2.5 sm:p-5 md:p-6 shadow-xs hover:shadow-xl border border-slate-100 flex flex-col items-center text-center justify-between transition-all duration-300 hover:-translate-y-1 group h-full select-none">
-                            {/* Top-Right Sparkle */}
-                            <span
-                              className={`absolute top-2.5 right-2.5 sm:top-3.5 sm:right-3.5 ${tool.sparkleColor} font-black text-xs select-none group-hover:rotate-12 transition-transform`}
-                            >
-                              ✦
-                            </span>
+                  {/* ── Helper Tool Card Render ── */}
+                  {(() => {
+                    const renderToolCard = (tool, idx) => (
+                      <div key={`tool-${tool.id || idx}-${idx}`} className="px-1.5 sm:px-2 py-1.5 h-full">
+                        <div className="relative bg-white rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 shadow-xs hover:shadow-xl border border-slate-100 flex flex-col items-center text-center justify-between transition-all duration-300 hover:-translate-y-1 group h-full select-none">
+                          {/* Top-Right Sparkle */}
+                          <span
+                            className={`absolute top-2.5 right-2.5 sm:top-3.5 sm:right-3.5 ${tool.sparkleColor} font-black text-xs select-none group-hover:rotate-12 transition-transform`}
+                          >
+                            ✦
+                          </span>
 
+                          <Link
+                            href={tool.linkUrl}
+                            className="flex flex-col items-center space-y-2 sm:space-y-3 w-full no-underline"
+                          >
+                            {/* Round Icon with colored background (exact home page match) */}
+                            <div
+                              className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center mb-1 transition-transform group-hover:scale-110 shrink-0 ${tool.circleBg}`}
+                            >
+                              {tool.logoUrl ? (
+                                <Image
+                                  src={tool.logoUrl}
+                                  alt={tool.fullName}
+                                  width={55}
+                                  height={55}
+                                  unoptimized
+                                />
+                              ) : (
+                                tool.iconSvg
+                              )}
+                            </div>
+
+                            {/* Title with Centered Short Accent Line */}
+                            <div className="w-full flex flex-col items-center justify-center mb-1">
+                              <h3 className="text-sm sm:text-base font-semibold text-[#0F172A] tracking-tight m-0 pt-0.5 leading-tight text-center">
+                                {tool.fullName}
+                              </h3>
+                              <span className={`w-7 sm:w-8 border-b-2 ${tool.underlineClass} mt-1.5 inline-block`} />
+                            </div>
+
+                            {/* Description */}
+                            <div className="w-full flex items-center justify-center mt-1">
+                              <p className="text-[#64748B] text-xs sm:text-[11px] leading-relaxed sm:leading-snug font-normal m-0 text-center max-w-[280px] sm:max-w-none">
+                                {tool.description}
+                              </p>
+                            </div>
+                          </Link>
+
+                          {/* Button with circular arrow badge */}
+                          <div className="w-full pt-3">
                             <Link
                               href={tool.linkUrl}
-                              className="flex flex-col items-center space-y-1.5 sm:space-y-3 w-full no-underline"
+                              className="w-full py-2 sm:py-2 px-4 rounded-full bg-[#0B3B7E] hover:bg-[#072859] text-white font-bold text-xs shadow-xs transition-all flex items-center justify-center cursor-pointer no-underline group-hover:shadow-md active:scale-95"
                             >
-                              {/* Round Icon with colored background (exact home page match) */}
-                              <div
-                                className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center mb-1 transition-transform group-hover:scale-110 shrink-0 ${tool.circleBg}`}
-                              >
-                                {tool.logoUrl ? (
-                                  <Image
-                                    src={tool.logoUrl}
-                                    alt={tool.fullName}
-                                    width={55}
-                                    height={55}
-                                    unoptimized
-                                  />
-                                ) : (
-                                  tool.iconSvg
-                                )}
-                              </div>
-
-                              {/* Title with Centered Short Accent Line */}
-                              <div className="w-full flex flex-col items-center justify-center mb-1">
-                                <h3 className="text-xs sm:text-base font-semibold text-[#0F172A] tracking-tight m-0 pt-0.5 leading-tight text-center">
-                                  {tool.fullName}
-                                </h3>
-                                <span className={`w-7 sm:w-8 border-b-2 ${tool.underlineClass} mt-1 inline-block`} />
-                              </div>
-
-                              {/* Description */}
-                              <div className="w-full flex items-center justify-center mt-1">
-                                <p className="text-[#64748B] text-[10px] sm:text-[11px] leading-snug font-normal m-0 text-center">
-                                  {tool.description}
-                                </p>
-                              </div>
+                              <span className="truncate min-w-0">{tool.btnText}</span>
+                              <span className="w-4 h-4 rounded-full bg-white text-[#0B3B7E] flex items-center justify-center shrink-0 ml-1.5 transition-transform group-hover:translate-x-0.5">
+                                <ArrowRight className="w-3 h-3" />
+                              </span>
                             </Link>
-
-                            {/* Button with circular arrow badge */}
-                            <div className="w-full pt-2.5 sm:pt-3">
-                              <Link
-                                href={tool.linkUrl}
-                                className="w-full py-1.5 sm:py-2 px-2 sm:px-4 rounded-full bg-[#0B3B7E] hover:bg-[#072859] text-white font-bold text-[9.5px] sm:text-xs shadow-xs transition-all flex items-center justify-center cursor-pointer no-underline group-hover:shadow-md active:scale-95"
-                              >
-                                <span className="truncate min-w-0">{tool.btnText}</span>
-                                <span className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-white text-[#0B3B7E] flex items-center justify-center shrink-0 ml-1 sm:ml-1.5 transition-transform group-hover:translate-x-0.5">
-                                  <ArrowRight className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-                                </span>
-                              </Link>
-                            </div>
                           </div>
                         </div>
-                      ))}
-                    </Carousel>
-                  </div>
+                      </div>
+                    );
+
+                    return (
+                      <div className="w-full relative mt-2">
+                        {/* ── MOBILE: EXACTLY 1 CARD ONLY PER ROW ── */}
+                        <div className="w-full relative block md:hidden">
+                          <Carousel
+                            autoplay={true}
+                            autoplaySpeed={3500}
+                            infinite={mappedTools.length > 1}
+                            pauseOnHover={true}
+                            draggable={true}
+                            swipeToSlide={true}
+                            dots={mappedTools.length > 1}
+                            slidesToShow={1}
+                            slidesToScroll={1}
+                            className="ai-tools-carousel [&_.slick-track]:flex [&_.slick-track]:items-stretch [&_.slick-slide]:h-auto [&_.slick-slide>div]:h-full pb-8"
+                          >
+                            {mappedTools.map(renderToolCard)}
+                          </Carousel>
+                        </div>
+
+                        {/* ── DESKTOP: 3 CARDS PER ROW ── */}
+                        <div className="w-full relative hidden md:block">
+                          <Carousel
+                            ref={toolsCarouselRef}
+                            autoplay={true}
+                            autoplaySpeed={3500}
+                            infinite={mappedTools.length > 3}
+                            pauseOnHover={true}
+                            draggable={true}
+                            swipeToSlide={true}
+                            dots={mappedTools.length > 3}
+                            slidesToShow={Math.min(mappedTools.length, 3)}
+                            slidesToScroll={1}
+                            className="ai-tools-carousel [&_.slick-list]:-mx-1.5! sm:[&_.slick-list]:-mx-2! [&_.slick-track]:flex [&_.slick-track]:items-stretch [&_.slick-slide]:h-auto [&_.slick-slide>div]:h-full pb-8"
+                          >
+                            {mappedTools.map(renderToolCard)}
+                          </Carousel>
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </div>
               )}
             </div>
