@@ -11,7 +11,7 @@ export default function LiverpoolProgrammes({
   onOpenApply,
 }) {
   const heading = brand.programmesTitle || "Courses Offered in";
-  const subHeading = brand.programmesSubtitle || "Liverpool Online MBA";
+  const subHeading = brand.programmesSubtitle || (brand.name ? `${brand.name} Courses` : "Online Courses");
 
   return (
     <section id="courses_offered" className="py-12 sm:py-16 bg-[#ffffff] select-none scroll-mt-20">

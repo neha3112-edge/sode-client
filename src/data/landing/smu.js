@@ -17,6 +17,7 @@ export const smuData = {
   brand: {
     slug: "smu",
     statsLayout: "smu-clean",
+    footerFormLayout: "smu-split",
     name: "Sikkim Manipal University Online",
     shortName: "SMU Online",
     hashtag: "#WhereAmbitionsFindTheirWings",

@@ -19,89 +19,54 @@ import SsbmWhyChoose from "./whychoose/SsbmWhyChoose";
 import ClassicWhyChoose from "./whychoose/ClassicWhyChoose";
 
 /**
- * Reusable Why Choose / Key Features Section Router
- * Delegates rendering to modular sub-components based on brand layout.
+ * Registry of available Why Choose layouts.
+ * Separates layout rendering strategy from university identity (slug).
+ */
+const WHY_CHOOSE_LAYOUTS = {
+  lpu: LpuWhyChoose,
+  iim: IimWhyChoose,
+  uu: UuWhyChoose,
+  iiitb: IiitbWhyChoose,
+  ssbm: SsbmWhyChoose,
+  galgotias: GalgotiasWhyChoose,
+  "galgotias-grid": GalgotiasWhyChoose,
+  liverpool: LiverpoolWhyChoose,
+  rushford: RushfordWhyChoose,
+  esgci: EsgciWhyChoose,
+  ggu: GguWhyChoose,
+  mu: MuWhyChoose,
+  "mu-cards": MuWhyChoose,
+  vgu: VguWhyChoose,
+  "vgu-grid": VguWhyChoose,
+  checkerboard: ShooliniWhyChoose,
+  shoolini: ShooliniWhyChoose,
+  "smu-advantages": SmuWhyChooseCarousel,
+  smu: SmuWhyChooseCarousel,
+  slider: SliderWhyChoose,
+  manipal: SliderWhyChoose,
+  classic: ClassicWhyChoose,
+};
+
+/**
+ * Reusable Why Choose / Key Features Section Router & Container
+ * Validates data, looks up layout from registry, and delegates rendering to modular layout component.
  */
 export default function LandingWhyChoose({ whyChoose = [], brand = {}, onOpenApply }) {
-  const layout = brand.whyChooseLayout || brand.slug;
-
-  // 1. LPU Pedagogy & Support Services
-  if (layout === "lpu" || brand.slug === "lpu") {
-    return <LpuWhyChoose whyChoose={whyChoose} brand={brand} />;
+  // 1. Guard against empty data before layout resolution
+  if (!Array.isArray(whyChoose) || whyChoose.length === 0) {
+    return null;
   }
 
-  // IIM Kozhikode Eligibility / Benefits
-  if (layout === "iim" || brand.slug === "iim") {
-    return <IimWhyChoose whyChoose={whyChoose} brand={brand} onOpenApply={onOpenApply} />;
-  }
+  // 2. Resolve layout purely from configuration
+  const layout = brand?.whyChooseLayout || "classic";
+  const WhyChooseComponent = WHY_CHOOSE_LAYOUTS[layout] || ClassicWhyChoose;
 
-  // UU Benefits
-  if (layout === "uu" || brand.slug === "uu") {
-    return <UuWhyChoose whyChoose={whyChoose} brand={brand} onOpenApply={onOpenApply} />;
-  }
-
-  // IIIT Bangalore Why Choose
-  if (layout === "iiitb" || brand.slug === "iiitb") {
-    return <IiitbWhyChoose whyChoose={whyChoose} brand={brand} />;
-  }
-
-  // SSBM Global DBA Benefits
-  if (layout === "ssbm" || brand.slug === "ssbm") {
-    return <SsbmWhyChoose whyChoose={whyChoose} brand={brand} onOpenApply={onOpenApply} />;
-  }
-
-  if (!whyChoose?.length) return null;
-
-  // 2. Galgotias Advantages Grid
-  if (layout === "galgotias" || layout === "galgotias-grid" || brand.slug === "galgotias") {
-    return <GalgotiasWhyChoose whyChoose={whyChoose} brand={brand} />;
-  }
-
-  // 3. Liverpool Stand Out
-  if (layout === "liverpool" || brand.slug === "liverpool") {
-    return <LiverpoolWhyChoose whyChoose={whyChoose} brand={brand} />;
-  }
-
-  // 4. Rushford Endless Benefits
-  if (layout === "rushford" || brand.slug === "rushford") {
-    return <RushfordWhyChoose whyChoose={whyChoose} brand={brand} onOpenApply={onOpenApply} />;
-  }
-
-  // 5. ESGCI Professional Advantages
-  if (layout === "esgci" || brand.slug === "esgci") {
-    return <EsgciWhyChoose whyChoose={whyChoose} brand={brand} onOpenApply={onOpenApply} />;
-  }
-
-  // 6. GGU Learning Outcomes
-  if (layout === "ggu" || brand.slug === "ggu") {
-    return <GguWhyChoose whyChoose={whyChoose} brand={brand} />;
-  }
-
-  // 7. Mangalayatan University (MU) Cards
-  if (layout === "mu" || layout === "mu-cards" || brand.slug === "mu") {
-    return <MuWhyChoose whyChoose={whyChoose} brand={brand} />;
-  }
-
-  // 8. VGU 3x2 Icons Grid
-  if (layout === "vgu" || layout === "vgu-grid" || brand.slug === "vgu") {
-    return <VguWhyChoose whyChoose={whyChoose} brand={brand} />;
-  }
-
-  // 9. Shoolini Checkerboard Grid
-  if (layout === "checkerboard" || brand.slug === "shoolini") {
-    return <ShooliniWhyChoose whyChoose={whyChoose} brand={brand} />;
-  }
-
-  // 10. SMU 3-Card Interactive Carousel
-  if (layout === "smu-advantages" || brand.slug === "smu") {
-    return <SmuWhyChooseCarousel whyChoose={whyChoose} brand={brand} />;
-  }
-
-  // 11. Manipal Infinite Slider
-  if (layout === "slider" || brand.slug === "manipal") {
-    return <SliderWhyChoose whyChoose={whyChoose} brand={brand} />;
-  }
-
-  // 12. Classic 2-Column with Student Image (Amity, etc.)
-  return <ClassicWhyChoose whyChoose={whyChoose} brand={brand} onOpenApply={onOpenApply} />;
+  // 3. Render matched layout component
+  return (
+    <WhyChooseComponent
+      whyChoose={whyChoose}
+      brand={brand}
+      onOpenApply={onOpenApply}
+    />
+  );
 }

@@ -40,7 +40,7 @@ export const liverpoolCustomCss = `
     background-position: center top !important;
     background-size: cover !important;
     background-repeat: no-repeat !important;
-    padding: 30px 15px !important;
+    padding: 60px 15px 30px !important;
     min-height: auto !important;
     position: relative !important;
   }
@@ -178,6 +178,10 @@ export const liverpoolData = {
       mobileStudentImage: "/assets/all_universities_images/liverpool/liverpool_mobile_new_img.png",
       noOverlay: true,
       minHeight: "480px",
+
+      containerStyle: {
+        paddingTop: "55px",
+      },
 
       welcomeText: (
         <Image

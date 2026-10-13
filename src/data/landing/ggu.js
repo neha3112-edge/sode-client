@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 
 /**
  * Systematic Custom CSS for Golden Gate University (GGU) Landing Page
@@ -8,7 +9,7 @@ export const gguCustomCss = `
   /* =========================================================
      1. TYPOGRAPHY & BASE RESET
      ========================================================= */
-  @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,700;1,800&family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;0,900;1,700;1,800&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,700;1,800&family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;0,900;1,700;1,800&display=swap');
 
   .landing-page--ggu {
     font-family: 'Montserrat', sans-serif !important;
@@ -73,65 +74,206 @@ export const gguCustomCss = `
      3. HERO SECTION (#hero)
      ========================================================= */
   .landing-page--ggu #hero {
-    background-image: url(/assets/ggu/ggu_desktop_new_bg.png) !important;
+    background-image: url(/assets/all_universities_images/ggu/ggu_desktop_new_bg.png) !important;
     background-position: center top !important;
     background-size: cover !important;
     background-repeat: no-repeat !important;
-    padding: 24px 15px !important;
+    padding: 0px 20px !important;
     min-height: auto !important;
     position: relative !important;
     display: flex !important;
     align-items: center !important;
   }
-  @media (max-width: 768px) {
-    .landing-page--ggu #hero {
-      background-image: url(/assets/ggu/mobile_new_bg_main.png) !important;
-      background-position: center top !important;
-      padding: 20px 12px !important;
-    }
-  }
   .landing-page--ggu #hero > div.absolute {
     display: none !important;
   }
+  .landing-page--ggu #hero .hero-info-col {
+    max-width: 540px !important;
+  }
   .landing-page--ggu #hero h1 {
-    font-family: 'Montserrat', sans-serif !important;
-    font-weight: 800 !important;
-    letter-spacing: -0.2px !important;
+    font-family: 'Anton', sans-serif !important;
+    font-weight: 500 !important;
+    letter-spacing: normal !important;
     color: #003468 !important;
-    font-size: 40px !important;
-    line-height: 1.12 !important;
-    margin: 4px 0 6px 0 !important;
+    font-size: 42px !important;
+    line-height: 1 !important;
+    margin: 15px 0 !important;
     white-space: pre-line !important;
   }
-  @media (max-width: 640px) {
-    .landing-page--ggu #hero h1 {
-      font-size: 28px !important;
-      line-height: 1.15 !important;
-    }
+  .landing-page--ggu #hero .hero-hashtag {
+    font-family: 'Montserrat', sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: #000000 !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    margin-bottom: 5px !important;
+  }
+  .landing-page--ggu #hero .hero-tagline {
+    font-family: 'Montserrat', sans-serif !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    color: #000000 !important;
+    padding: 5px 0 10px 0 !important;
+    margin: 0 !important;
   }
   .landing-page--ggu #hero .hero-highlight-pill {
     display: inline-block !important;
     width: fit-content !important;
     border: 2px solid #DC520A !important;
-    border-radius: 9999px !important;
-    background-color: #ffffff !important;
+    border-radius: 20px !important;
+    background-color: transparent !important;
+    background: transparent !important;
     color: #003468 !important;
     font-family: 'Montserrat', sans-serif !important;
     font-style: italic !important;
     font-weight: 800 !important;
-    font-size: 19px !important;
-    padding: 4px 24px !important;
-    margin: 6px 0 10px 0 !important;
+    font-size: 20px !important;
+    line-height: 1.2 !important;
+    padding: 10px 20px !important;
+    margin: 10px 0 !important;
   }
   .landing-page--ggu #hero .hero-course-strip {
     font-family: 'Montserrat', sans-serif !important;
     font-weight: 600 !important;
-    font-size: 13.5px !important;
-    line-height: 1.55 !important;
-    color: #222222 !important;
-    max-width: 450px !important;
-    margin: 6px 0 12px 0 !important;
+    font-size: 14px !important;
+    line-height: 22px !important;
+    color: #000000 !important;
+    max-width: 480px !important;
+    margin: 10px 0 !important;
   }
+  .landing-page--ggu #hero .hero-brochure-btn {
+    font-family: 'Montserrat', sans-serif !important;
+    background-color: #DC520A !important;
+    color: #ffffff !important;
+    border-radius: 5px !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    padding: 10px 20px !important;
+    border: none !important;
+    margin-top: 5px !important;
+  }
+  @media (max-width: 768px) {
+    .landing-page--ggu #hero {
+      background-image: url(/assets/all_universities_images/ggu/mobile_new_bg_main.png) !important;
+      background-position: center top !important;
+      background-size: cover !important;
+      background-repeat: no-repeat !important;
+      padding: 24px 0 30px 0 !important;
+      min-height: auto !important;
+      display: block !important;
+    }
+    .landing-page--ggu #hero .hero-info-col {
+      align-items: center !important;
+      text-align: center !important;
+      max-width: 420px !important;
+      width: 100% !important;
+      margin: 0 auto !important;
+      padding: 0 20px !important;
+    }
+    .landing-page--ggu #hero .hero-hashtag {
+      text-align: center !important;
+      font-size: 14px !important;
+      font-weight: 600 !important;
+      color: #000000 !important;
+      margin-bottom: 5px !important;
+    }
+    .landing-page--ggu #hero h1 {
+      font-size: 35px !important;
+      line-height: 1.1 !important;
+      text-align: center !important;
+      font-weight: 500 !important;
+      color: #003468 !important;
+      margin: 15px 0 !important;
+    }
+    .landing-page--ggu #hero .hero-tagline {
+      text-align: center !important;
+      font-size: 16px !important;
+      font-weight: 600 !important;
+      color: #000000 !important;
+      padding: 0 0 10px 0 !important;
+      margin: 0 !important;
+    }
+    .landing-page--ggu #hero .hero-highlight-pill {
+      font-size: 22px !important;
+      padding: 10px 20px !important;
+      border-radius: 20px !important;
+      margin: 5px auto 10px auto !important;
+      display: inline-block !important;
+    }
+    .landing-page--ggu #hero .hero-course-strip {
+      text-align: center !important;
+      font-size: 12px !important;
+      line-height: 18px !important;
+      color: #000000 !important;
+      width: 100% !important;
+      max-width: 360px !important;
+      padding: 10px 15px !important;
+      margin: 0 auto !important;
+      white-space: normal !important;
+    }
+    .landing-page--ggu #hero .hero-brochure-btn {
+      display: none !important;
+    }
+    .landing-page--ggu .hero-mobile-image-wrapper {
+      width: 100% !important;
+      max-width: 100% !important;
+      position: relative !important;
+      left: 0 !important;
+      right: 0 !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+      aspect-ratio: 800 / 649 !important;
+      height: auto !important;
+      margin-top: 6px !important;
+      margin-bottom: -30px !important;
+      z-index: 10 !important;
+      display: block !important;
+      overflow: hidden !important;
+    }
+
+    .landing-page--ggu .hero-mobile-image-wrapper img {
+      width: 100% !important;
+      max-width: none !important;
+      height: 100% !important;
+      object-fit: cover !important;
+      object-position: center top !important;
+      display: block !important;
+      transform: scaleX(1.15) !important;
+      transform-origin: center center !important;
+    }
+
+    .landing-page--ggu .hero-form-col {
+      width: 100% !important;
+      max-width: 100% !important;
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: center !important;
+      align-items: center !important;
+      z-index: 20 !important;
+      position: relative !important;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+      margin-top: 0 !important;
+      margin-bottom: 25px !important;
+    }
+
+    .landing-page--ggu .hero-form-col .landing-card,
+    .landing-page--ggu #hero .landing-lead-card {
+      width: calc(100% - 32px) !important;
+      max-width: 360px !important;
+      border-radius: 12px !important;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12) !important;
+      background: #ffffff !important;
+      position: relative !important;
+      z-index: 20 !important;
+      margin: 0 auto !important;
+    }
+  }
+
+
 
   /* =========================================================
      4. LEAD FORM CARD
@@ -241,24 +383,47 @@ export const gguCustomCss = `
     color: #ffffff !important;
   }
 
+  
+
   /* =========================================================
      8. ACCREDITATIONS & ASSOCIATIONS (#accreditations)
      ========================================================= */
   .landing-page--ggu #accreditations {
     background-color: #F6F6F6 !important;
-    padding-top: 48px !important;
+    padding-top: 28px !important;
     padding-bottom: 24px !important;
   }
   .landing-page--ggu #accreditations h2 {
     color: #111111 !important;
-    font-weight: 800 !important;
+    font-weight: 700 !important;
     font-size: 28px !important;
   }
   .landing-page--ggu #accreditations .sub-pp {
-    color: #444444 !important;
-    font-size: 15.5px !important;
-    font-weight: 500 !important;
+    color: #111111 !important;
+    font-size: 16.5px !important;
+    font-weight: 600 !important;
     margin-top: 4px !important;
+  }
+  @media (max-width: 768px) {
+    .landing-page--ggu #accreditations {
+      padding-top: 36px !important;
+      padding-bottom: 20px !important;
+    }
+    .landing-page--ggu #accreditations h2 {
+      font-size: 22px !important;
+      font-weight: 700 !important;
+      line-height: 1.25 !important;
+      margin-bottom: 6px !important;
+    }
+    .landing-page--ggu #accreditations .sub-pp {
+      font-size: 15px !important;
+      font-weight: 400 !important;
+      color: #111111 !important;
+      max-width: 275px !important;
+      margin: 4px auto 24px auto !important;
+      line-height: 1.35 !important;
+      text-align: center !important;
+    }
   }
   .landing-page--ggu #accreditations .b1 {
     background: #ffffff !important;
@@ -304,6 +469,7 @@ export const gguCustomCss = `
   .landing-page--ggu #benefits {
     background-color: #003468 !important;
     color: #ffffff !important;
+    
   }
 
   /* =========================================================
@@ -404,6 +570,34 @@ export const gguData = {
     faqHeaderColor: "#003468",
     footerBg: "#1a2530",
 
+    // Global Sticky Mobile Bottom Bar (Split 50/50 Flush Bar)
+    showFloatingCallOnMobile: true,
+    stickySplit: true,
+    stickyBarSplit: true,
+    stickyBarBg: "transparent",
+    stickyBrochureAction: "modal",
+    stickyBrochureIcon: "whatsapp",
+    stickyBrochureBg: "#25d366",
+    stickyBrochureTextColor: "#ffffff",
+    stickyApplyStyle: "orange",
+    stickyApplyBg: "#DC520A",
+    stickyApplyTextColor: "#ffffff",
+    stickyHideApplyArrow: true,
+
+    stickyBar: {
+      enabled: true,
+      isSplit: true,
+      background: "transparent",
+      applyStyle: "orange",
+      applyBg: "#DC520A",
+      applyTextColor: "#ffffff",
+      hideApplyArrow: true,
+      brochureAction: "modal",
+      brochureIcon: "whatsapp",
+      brochureBg: "#25d366",
+      brochureTextColor: "#ffffff",
+    },
+
     // Scholarship Popup Trigger Requirement:
     // Triggers when user reaches "Advance Your Career with GGU Online Courses" (LandingDegree #degree)
     scholarshipTriggerId: "degree",
@@ -444,13 +638,15 @@ export const gguData = {
 
       // Top logo in Hero matching Image 2
       welcomeText: (
-        <img
+        <Image
           src="/assets/all_universities_images/ggu/new_ggu_logo_main.png"
           alt="Golden Gate University | upGrad"
-          className="h-[28px] sm:h-[32px] w-auto object-contain"
+          width={250}
+          height={38}
+          className="h-[34px] sm:h-[38px] w-auto max-w-[250px] object-contain hidden md:block"
         />
       ),
-      welcomeContainerClassName: "!mb-2 !mt-0 !text-left",
+      welcomeContainerClassName: "!mb-2.5 !mt-0 !text-left hidden md:block",
       welcomeBadgeClassName: "!bg-transparent !p-0 !min-w-0 !shadow-none !border-none !rounded-none !block",
       welcomeTextStyle: {
         background: "transparent",
@@ -460,96 +656,112 @@ export const gguData = {
       },
 
       hashtagText: "Leadership Advancement or a Doctoral Degree",
+      hashtagClassName: "!text-[14px] !font-semibold !text-black !normal-case !tracking-normal !mb-1 hero-hashtag text-center sm:text-left",
       hashtagStyle: {
         fontFamily: "'Montserrat', sans-serif",
-        color: "#222222",
+        color: "#000000",
         fontSize: "14px",
-        fontWeight: "700",
-        letterSpacing: "0.1px",
-        marginBottom: "3px",
+        fontWeight: "600",
+        letterSpacing: "normal",
+        textTransform: "none",
+        marginBottom: "5px",
       },
 
       headlineText: "Golden Gate University\nOnline Courses",
-      headingFont: "'Montserrat', sans-serif",
-      headingClassName: "!whitespace-pre-line !leading-[1.12] tracking-tight font-extrabold text-[36px] sm:text-[40px] text-[#003468]",
+      headingFont: "'Anton', sans-serif",
+      headingClassName: "!whitespace-pre-line !leading-[1] tracking-normal font-medium text-[35px] sm:text-[42px] text-[#003468] text-center sm:text-left",
       headingStyle: {
-        fontFamily: "'Montserrat', sans-serif",
+        fontFamily: "'Anton', sans-serif",
         color: "#003468",
-        fontSize: "40px",
-        lineHeight: "1.12",
-        fontWeight: "800",
-        letterSpacing: "-0.2px",
-        marginTop: "3px",
-        marginBottom: "6px",
+        fontSize: "42px",
+        lineHeight: "1",
+        fontWeight: "500",
+        letterSpacing: "normal",
+        marginTop: "15px",
+        marginBottom: "15px",
       },
 
       taglineText: (
-        <span key="ggu-tagline">
+        <span key="ggu-tagline" className="inline-block text-[16px] text-black font-semibold">
           By <u>Golden Gate University</u> via <u>upGrad</u>
         </span>
       ),
+      taglineClassName: "!text-[16px] !text-black !font-semibold !leading-snug !py-1 sm:!py-2 max-w-[500px] hero-tagline text-center sm:text-left",
       taglineStyle: {
         fontFamily: "'Montserrat', sans-serif",
-        color: "#111111",
-        fontSize: "13.5px",
+        color: "#000000",
+        fontSize: "16px",
         fontWeight: "600",
         lineHeight: "1.3",
-        marginTop: "2px",
-        marginBottom: "8px",
+        padding: "5px 0 10px 0",
+        margin: "0",
       },
 
       highlightBox: {
         lines: [
           "DBA / MBA",
         ],
-        className: "!w-fit !px-6 !py-1 !rounded-full !border-2 !border-[#DC520A] !bg-white !text-[#003468] !italic !text-[19px] !font-extrabold !my-2 !shadow-none hero-highlight-pill",
+        background: "transparent",
+        className: "!w-fit !px-[20px] !py-[10px] !border-2 !border-[#DC520A] !rounded-[20px] !bg-transparent !text-[#003468] !italic !text-[20px] !font-extrabold !my-2 !shadow-none hero-highlight-pill mx-auto sm:mx-0",
         style: {
           fontFamily: "'Montserrat', sans-serif",
-          backgroundColor: "#ffffff",
+          backgroundColor: "transparent",
+          background: "transparent",
           color: "#003468",
           border: "2px solid #DC520A",
-          borderRadius: "9999px",
-          padding: "4px 24px",
-          fontSize: "19px",
+          borderRadius: "20px",
+          padding: "10px 20px",
+          fontSize: "20px",
           fontWeight: "800",
           fontStyle: "italic",
           textAlign: "center",
           lineHeight: "1.2",
           display: "inline-block",
           width: "fit-content",
-          marginTop: "4px",
-          marginBottom: "8px",
+          marginTop: "10px",
+          marginBottom: "10px",
         },
       },
 
+      coursesStripOnly: true,
       coursesStrip: [
-        "100% Online | U.S.-Accredited University |",
-        "Working-Professional Focus | No Cost EMI |",
-        "2500+ Global CXOs",
+        <span key="ggu-strip-mobile" className="inline-block">
+          100% Online <span className="text-[#DC520A] font-bold px-1">|</span> U.S.-Accredited University <span className="text-[#DC520A] font-bold px-1">|</span> Working-Professional Focus <span className="text-[#DC520A] font-bold px-1">|</span> No Cost EMI <span className="text-[#DC520A] font-bold px-1">|</span> 2500+ Global CXOs
+        </span>,
       ],
-      courseStripClassName: "!font-medium !text-[13.5px] !leading-[1.55] !text-[#222222] !my-2 !space-y-0.5 whitespace-nowrap hero-course-strip",
+      courseStripClassName: "!font-semibold !text-[12px] sm:!text-[14px] !leading-[18px] sm:!leading-[22px] !text-black !my-2.5 max-w-[360px] sm:max-w-[480px] mx-auto sm:mx-0 hero-course-strip whitespace-normal text-center sm:text-left",
       courseStripStyle: {
         fontFamily: "'Montserrat', sans-serif",
-        color: "#222222",
-        fontSize: "13.5px",
-        fontWeight: "500",
-        lineHeight: "1.55",
+        color: "#000000",
+        fontSize: "14px",
+        fontWeight: "600",
+        lineHeight: "22px",
         width: "100%",
-        maxWidth: "450px",
-        marginTop: "4px",
+        maxWidth: "480px",
+        marginTop: "10px",
         marginBottom: "10px",
       },
 
+      mobileStudentImage: "/assets/all_universities_images/ggu/ggu_mobile_img.png",
+      mobileStudentImageWrapperClassName: "!w-full !aspect-[800/649] !relative !overflow-hidden",
+      mobileStudentImageClassName: "!w-full !max-w-none !object-cover !object-top",
+      extraContent: null,
+
+      hideBrochureOnMobile: true,
+      formContainerClassName: "!flex !w-full sm:!w-[350px] lg:!w-[340px] xl:!w-[360px] !items-center !justify-center",
       brochureButtonText: "Download Brochure",
+      buttonClassName: "hero-brochure-btn",
       buttonStyle: {
         fontFamily: "'Montserrat', sans-serif",
         background: "#DC520A",
         backgroundColor: "#DC520A",
         color: "#ffffff",
         borderRadius: "5px",
-        fontSize: "14px",
+        fontSize: "16px",
         fontWeight: "700",
-        padding: "8px 20px",
+        padding: "10px 20px",
+        border: "none",
+        marginTop: "5px",
       },
 
       cardStyle: "white",
@@ -729,7 +941,7 @@ export const gguData = {
     },
     {
       title: "Global IP Protection",
-      desc: "Protect your ideas with Solid IPs in 155 countries",
+      desc: "Protect your Ideas with Solid IPs in 155 countries",
       image: "/assets/all_universities_images/ggu/learning-outcone-icon.webp",
     },
     {
@@ -742,7 +954,7 @@ export const gguData = {
   // Achievements / Stats Data
   stats: [
     {
-      value: "10k+",
+      value: "10k +",
       label: "Professionals Enrolled Successfully",
     },
     {
@@ -751,11 +963,11 @@ export const gguData = {
     },
     {
       value: "100+",
-      label: "Career Counseling Experts",
+      label: "Carrier Counseling Experts",
     },
     {
       value: "30k",
-      label: "Admissions Done",
+      label: "Admission Done",
     },
   ],
 
@@ -796,30 +1008,6 @@ export const gguData = {
       image: "/assets/all_universities_images/ggu/doctorate-dba-ggu.webp",
     },
     {
-      id: "dba-marketing",
-      code: "DBA Marketing",
-      title: "Online DBA in Marketing",
-      category: "Doctorate",
-      level: "Doctoral",
-      duration: "36 Months",
-      eligibility: "Master's or Bachelor's Degree",
-      description:
-        "Explore advanced research on consumer behavior and brand management strategies. Gain mastery in digital marketing analytics and global marketing campaign development.",
-      image: "/assets/all_universities_images/ggu/marketing-ggu.webp",
-    },
-    {
-      id: "dba-general",
-      code: "DBA General",
-      title: "Online DBA in General",
-      category: "Doctorate",
-      level: "Doctoral",
-      duration: "36 Months",
-      eligibility: "Master's or Bachelor's Degree",
-      description:
-        "Pursue a broad, interdisciplinary approach to advanced business challenges. Customize your research to address complex issues across multiple business functions.",
-      image: "/assets/all_universities_images/ggu/general-ggu.webp",
-    },
-    {
       id: "dba-ai",
       code: "DBA AI",
       title: "Online DBA in Generative AI",
@@ -840,7 +1028,7 @@ export const gguData = {
       duration: "36 Months",
       eligibility: "Master's or Bachelor's Degree",
       description:
-        "Master advanced financial theory and quantitative analysis. Prepare for executive leadership roles in corporate finance, investment banking, and economic consulting.",
+        "Master advanced financial theory and quantitative analysis. Prepare for leadership roles in corporate finance, investment banking, and economic consulting.",
       image: "/assets/all_universities_images/ggu/finance-ggu.webp",
     },
     {
@@ -866,6 +1054,30 @@ export const gguData = {
       description:
         "Learn to transform big data into actionable business intelligence. Build expertise in predictive modeling, data mining, and executive data-driven decision-making.",
       image: "/assets/all_universities_images/ggu/business-analytics-ggu.webp",
+    },
+    {
+      id: "dba-marketing",
+      code: "DBA Marketing",
+      title: "Online DBA in Marketing",
+      category: "Doctorate",
+      level: "Doctoral",
+      duration: "36 Months",
+      eligibility: "Master's or Bachelor's Degree",
+      description:
+        "Explore advanced research on consumer behavior and brand management strategies. Gain mastery in digital marketing analytics and global marketing campaign development.",
+      image: "/assets/all_universities_images/ggu/marketing-ggu.webp",
+    },
+    {
+      id: "dba-general",
+      code: "DBA General",
+      title: "Online DBA in General",
+      category: "Doctorate",
+      level: "Doctoral",
+      duration: "36 Months",
+      eligibility: "Master's or Bachelor's Degree",
+      description:
+        "Pursue a broad, interdisciplinary approach to advanced business challenges. Customize your research to address complex issues across multiple business functions.",
+      image: "/assets/all_universities_images/ggu/general-ggu.webp",
     },
     {
       id: "mba-analytics",

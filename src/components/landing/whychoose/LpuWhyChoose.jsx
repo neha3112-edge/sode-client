@@ -2,7 +2,7 @@
 
 import React from "react";
 
-const PEDAGOGY_CARDS = [
+const DEFAULT_PEDAGOGY_CARDS = [
   {
     title: "Live Lectures",
     desc: "The university provides interactive live sessions that create a real-time virtual classroom. It benefits the students pursuing LPU MBA online and LPU MCA online to interact with faculty, clear their doubts instantly, and collaborate with peers.",
@@ -20,40 +20,53 @@ const PEDAGOGY_CARDS = [
   },
 ];
 
-export default function LpuWhyChoose({ whyChoose = [], brand = {} }) {
-  const cards = whyChoose?.length ? whyChoose : PEDAGOGY_CARDS;
+export default function LpuWhyChoose({ whyChoose = [], brand = {}, onOpenApply }) {
+  const cards = whyChoose?.length ? whyChoose : DEFAULT_PEDAGOGY_CARDS;
+  const primaryColor = brand?.primaryColor || "#f58220";
+  const title = brand?.whyChooseTitle || `Learning Pedagogy at ${brand?.name || "LPU Online"}`;
+  const description =
+    brand?.whyChooseDescription ||
+    "The learning model at Lovely Professional University Online (LPU Online) is tailored to offer flexibility and an engaging experience to all the students who are enrolled in programs such as LPU MBA Online, LPU MCA Online, and LPU Online BCA.";
+  const placementTitle = brand?.placementTitle || `Placement Support Services at ${brand?.name || "LPU Online"}`;
+  const placementDescription =
+    brand?.placementDescription ||
+    "Lovely Professional University online admission also offers structured placement support to prepare students and professionals for real-world careers and job sectors.";
+
   return (
     <>
       {/* Learning Pedagogy Section */}
-      <section id="pedagogy" className="py-12 sm:py-16 bg-white border-b border-slate-100">
+      <section id="pedagogy" className="py-12 sm:py-16 bg-white border-b border-slate-100 select-none">
         <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-4xl mx-auto mb-8 sm:mb-10">
             <h2 className="text-2xl sm:text-3xl lg:text-[32px] font-black text-slate-900 tracking-tight leading-tight m-0">
-              Learning Pedagogy at LPU Online
+              {title}
             </h2>
             <p className="text-xs sm:text-[13px] text-slate-600 mt-2.5 leading-relaxed font-normal m-0 max-w-3xl mx-auto">
-              The learning model at Lovely Professional University Online (LPU Online) is tailored to offer flexibility and an engaging experience to all the students who are enrolled in programs such as LPU MBA Online, LPU MCA Online, and LPU Online BCA.
+              {description}
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {cards.map((card, idx) => {
-              const iconPath = card.path || PEDAGOGY_CARDS[idx]?.path || PEDAGOGY_CARDS[0].path;
+              const iconPath = card.path || DEFAULT_PEDAGOGY_CARDS[idx]?.path || DEFAULT_PEDAGOGY_CARDS[0].path;
               return (
                 <div
                   key={idx}
-                  className="bg-white rounded-[8px] p-6 sm:p-7 shadow-[0_4px_20px_rgba(0,0,0,0.06)] border border-slate-200/80 border-b-4 border-b-[#f58220] flex flex-col items-start text-left space-y-3"
+                  className="bg-white rounded-[8px] p-6 sm:p-7 shadow-[0_4px_20px_rgba(0,0,0,0.06)] border border-slate-200/80 border-b-4 flex flex-col items-start text-left space-y-3"
+                  style={{ borderBottomColor: primaryColor }}
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 shrink-0 relative flex items-center justify-center">
-                      <svg className="w-10 h-10 text-[#f58220]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-10 h-10" style={{ color: primaryColor }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d={iconPath} />
                       </svg>
                     </div>
-                    <h3 className="text-base sm:text-lg font-black text-[#f58220] m-0">{card.title}</h3>
+                    <h3 className="text-base sm:text-lg font-black m-0" style={{ color: primaryColor }}>
+                      {card.title}
+                    </h3>
                   </div>
                   <p className="text-[11.5px] sm:text-[12px] text-slate-600 leading-relaxed m-0 font-normal">
-                    {card.desc}
+                    {card.desc || card.description}
                   </p>
                 </div>
               );
@@ -63,20 +76,23 @@ export default function LpuWhyChoose({ whyChoose = [], brand = {} }) {
       </section>
 
       {/* Placement Support Services Section */}
-      <section id="placement-services" className="py-12 sm:py-16 bg-[#f9f9f9] border-b border-slate-200">
+      <section id="placement-services" className="py-12 sm:py-16 bg-[#f9f9f9] border-b border-slate-200 select-none">
         <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-4xl mx-auto mb-10 sm:mb-12">
             <h2 className="text-2xl sm:text-3xl lg:text-[32px] font-black text-slate-900 tracking-tight leading-tight m-0">
-              Placement Support Services at LPU Online
+              {placementTitle}
             </h2>
             <p className="text-xs sm:text-[13px] text-slate-600 mt-2.5 leading-relaxed font-normal m-0 max-w-3xl mx-auto">
-              Lovely Professional University online admission also offers structured placement support to prepare students and professionals for real-world careers and job sectors.
+              {placementDescription}
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             <div className="flex flex-col items-center text-center space-y-3">
-              <div className="w-16 h-16 rounded-full bg-[#f58220] flex items-center justify-center text-white shadow-md">
+              <div
+                className="w-16 h-16 rounded-full flex items-center justify-center text-white shadow-md"
+                style={{ backgroundColor: primaryColor }}
+              >
                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
@@ -90,7 +106,10 @@ export default function LpuWhyChoose({ whyChoose = [], brand = {} }) {
             </div>
 
             <div className="flex flex-col items-center text-center space-y-3">
-              <div className="w-16 h-16 rounded-full bg-[#f58220] flex items-center justify-center text-white shadow-md">
+              <div
+                className="w-16 h-16 rounded-full flex items-center justify-center text-white shadow-md"
+                style={{ backgroundColor: primaryColor }}
+              >
                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>

@@ -72,17 +72,13 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
                     </span>
                   </button>
 
-                  <div
-                    className={
-                      isOpen
-                        ? "pt-2.5 pb-1 text-[13px] sm:text-[13.5px] text-[#555555] leading-relaxed font-normal"
-                        : "sr-only"
-                    }
-                  >
-                    <p className="m-0 leading-relaxed font-normal">
-                      {faq.a || faq.answer}
-                    </p>
-                  </div>
+                  {isOpen && (
+                    <div className="pt-2.5 pb-1 text-[13px] sm:text-[13.5px] text-[#555555] leading-relaxed font-normal">
+                      <p className="m-0 leading-relaxed font-normal">
+                        {faq.a || faq.answer}
+                      </p>
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -117,12 +113,11 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
                       {displayQ}
                       <span className="span">{isOpen ? "−" : "+"}</span>
                     </div>
-                    <div
-                      className={isOpen ? "accordion-content" : "sr-only"}
-                      style={isOpen ? { display: "block" } : undefined}
-                    >
-                      {faq.a || faq.answer}
-                    </div>
+                    {isOpen && (
+                      <div className="accordion-content" style={{ display: "block" }}>
+                        {faq.a || faq.answer}
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -175,17 +170,13 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
                     </span>
                   </button>
 
-                  <div
-                    className={
-                      isOpen
-                        ? "px-5 py-3.5 sm:py-4 bg-white border-t border-[#e5e7eb] text-[13px] sm:text-[13.5px] text-[#333333] leading-relaxed font-normal"
-                        : "sr-only"
-                    }
-                  >
-                    <p className="m-0 leading-relaxed font-normal">
-                      {faq.a || faq.answer}
-                    </p>
-                  </div>
+                  {isOpen && (
+                    <div className="px-5 py-3.5 sm:py-4 bg-white border-t border-[#e5e7eb] text-[13px] sm:text-[13.5px] text-[#333333] leading-relaxed font-normal">
+                      <p className="m-0 leading-relaxed font-normal">
+                        {faq.a || faq.answer}
+                      </p>
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -289,23 +280,23 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
                     </span>
                   </button>
 
-                  <div
-                    className={isOpen ? answerClass : "sr-only"}
-                    style={
-                      isOpen
-                        ? {
-                            borderTopLeftRadius: "0px",
-                            borderTopRightRadius: "0px",
-                            borderBottomLeftRadius: "8px",
-                            borderBottomRightRadius: "8px",
-                            boxShadow: brand.faqAnswerBoxShadow || "0 3px 6px 2px #ccc",
-                            ...brand.faqAnswerStyle,
-                          }
-                        : undefined
-                    }
-                  >
-                    {faq.a}
-                  </div>
+                  {isOpen && (
+                    <div
+                      className={answerClass}
+                      style={{
+                        borderTopLeftRadius: "0px",
+                        borderTopRightRadius: "0px",
+                        borderBottomLeftRadius: "8px",
+                        borderBottomRightRadius: "8px",
+                        boxShadow:
+                          brand.faqAnswerBoxShadow ||
+                          "0 3px 6px 2px #ccc",
+                        ...brand.faqAnswerStyle,
+                      }}
+                    >
+                      {faq.a}
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -353,15 +344,11 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
                     </span>
                   </button>
 
-                  <div
-                    className={
-                      isOpen
-                        ? "px-4 sm:px-5 py-4 border-t border-[#dee2e6] bg-white text-[13px] sm:text-[13.5px] text-[#495057] leading-[1.65] font-normal"
-                        : "sr-only"
-                    }
-                  >
-                    {faq.a}
-                  </div>
+                  {isOpen && (
+                    <div className="px-4 sm:px-5 py-4 border-t border-[#dee2e6] bg-white text-[13px] sm:text-[13.5px] text-[#495057] leading-[1.65] font-normal">
+                      {faq.a}
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -377,12 +364,16 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
   return (
     <section id="faqs" className="py-10 sm:py-16 bg-white">
       <LandingContainer>
-        <h2
-          className="text-2xl sm:text-3xl font-semibold tracking-tight mb-6 sm:mb-8 text-left m-0"
-          style={{ color: headingColor }}
-        >
-          Frequently Asked Questions
-        </h2>
+        {brand.faqTitleHtml ? (
+          <div className="mb-6 sm:mb-8" dangerouslySetInnerHTML={{ __html: brand.faqTitleHtml }} />
+        ) : (
+          <h2
+            className="text-2xl sm:text-3xl font-semibold tracking-tight mb-6 sm:mb-8 text-left m-0"
+            style={{ color: headingColor }}
+          >
+            {brand.faqTitle || "Frequently Asked Questions"}
+          </h2>
+        )}
 
         {/* Clean Accordion List */}
         <div className="w-full divide-y divide-slate-200 border-t border-slate-200">
@@ -415,15 +406,11 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
                   </span>
                 </button>
 
-                <div
-                  className={
-                    isOpen
-                      ? "pb-4 pt-1 text-[13.5px] sm:text-[15px] text-[#4d4d4d] leading-relaxed font-normal"
-                      : "sr-only"
-                  }
-                >
-                  {faq.a || faq.answer}
-                </div>
+                {isOpen && (
+                  <div className="pb-4 pt-1 text-[13.5px] sm:text-[15px] text-[#4d4d4d] leading-relaxed font-normal">
+                    {faq.a || faq.answer}
+                  </div>
+                )}
               </div>
             );
           })}

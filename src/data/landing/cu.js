@@ -40,6 +40,8 @@ export const cuData = {
     showCouponBtn: true,
     couponBtnBg: "#22c55e",
     showCouponPillWrapper: false,
+    whyChooseLayout: "classic",
+    whyChooseTitle: "Why Choose Chandigarh University Online for Degree Courses",
 
     // Hero Section Configuration (styles passed via JSON as requested)
     hero: {

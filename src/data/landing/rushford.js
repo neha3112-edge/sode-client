@@ -39,16 +39,9 @@ export const rushfordCustomCss = `
     background-position: center top !important;
     background-size: cover !important;
     background-repeat: no-repeat !important;
-    padding: 30px 15px !important;
+    padding: 24px 20px !important;
     min-height: auto !important;
     position: relative !important;
-  }
-
-  @media (max-width: 768px) {
-    .landing-page--rushford #hero {
-      background-position: center top !important;
-      padding: 20px 10px !important;
-    }
   }
 
   .landing-page--rushford #hero > div.absolute {
@@ -59,16 +52,10 @@ export const rushfordCustomCss = `
     font-family: 'Anton', sans-serif !important;
     font-size: 65px !important;
     line-height: 1 !important;
-    font-weight: 900 !important;
+    font-weight: 700 !important;
     letter-spacing: 0.5px !important;
     color: #e0007a !important;
-    margin: 10px 0 !important;
-  }
-
-  @media (max-width: 640px) {
-    .landing-page--rushford #hero h1 {
-      font-size: 46px !important;
-    }
+    margin: 8px 0 !important;
   }
 
   /* Multicolor border */
@@ -84,15 +71,166 @@ export const rushfordCustomCss = `
   }
 
   /* Buttons */
-  .landing-page--rushford .downloadBrochureBtn {
-    background-color: #ffd23b !important;
-    color: #e0007a !important;
+  .landing-page--rushford .downloadBrochureBtn,
+  .landing-page--rushford .hero-brochure-btn {
+    background: #17479e !important;
+    background-color: #17479e !important;
+    color: #ffffff !important;
     font-weight: 700 !important;
-    border-radius: 8px !important;
+    border-radius: 6px !important;
+    border: none !important;
+    padding: 10px 24px !important;
+    font-size: 15px !important;
+    box-shadow: 0 4px 12px rgba(23, 71, 158, 0.25) !important;
     transition: all 0.2s ease !important;
   }
-  .landing-page--rushford .downloadBrochureBtn:hover {
-    background-color: #f5c72a !important;
+  .landing-page--rushford .downloadBrochureBtn:hover,
+  .landing-page--rushford .hero-brochure-btn:hover {
+    background: #0f3b82 !important;
+    background-color: #0f3b82 !important;
+    color: #ffffff !important;
+  }
+  .landing-page--rushford .hero-brochure-btn svg,
+  .landing-page--rushford .downloadBrochureBtn svg {
+    fill: #ffffff !important;
+    color: #ffffff !important;
+  }
+
+  /* Key Highlights / Stats Section matching First Image */
+  .landing-page--rushford #stats .ach {
+    display: grid !important;
+  }
+  @media (max-width: 1023px) {
+    .landing-page--rushford #stats .ach {
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+  }
+  @media (min-width: 1024px) {
+    .landing-page--rushford #stats .ach {
+      grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    }
+  }
+
+  /* Programmes / Courses Section matching First Image */
+  .landing-page--rushford #courses {
+    background-color: #ffffff !important;
+    padding-top: 40px !important;
+    padding-bottom: 48px !important;
+  }
+  .landing-page--rushford #courses .text-center {
+    margin-bottom: 26px !important;
+  }
+  .landing-page--rushford #courses .text-center h2 {
+    font-size: 32px !important;
+    font-weight: 300 !important;
+    color: #111111 !important;
+    margin-bottom: 3px !important;
+    line-height: 1.25 !important;
+    letter-spacing: 0 !important;
+  }
+  .landing-page--rushford #courses .text-center p {
+    font-size: 14.5px !important;
+    font-weight: 400 !important;
+    color: #333333 !important;
+    margin-top: 3px !important;
+    margin-bottom: 0 !important;
+  }
+  .landing-page--rushford #courses .grid > div {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    height: 100% !important;
+    border-radius: 10px !important;
+    background: #F2F2F2 !important;
+    background-color: #F2F2F2 !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05) !important;
+  }
+  .landing-page--rushford #courses .course-card-img-wrap {
+    height: 165px !important;
+    position: relative !important;
+    width: 100% !important;
+    overflow: hidden !important;
+  }
+  .landing-page--rushford #courses .grid h3 {
+    font-size: 19px !important;
+    font-weight: 400 !important;
+    color: #111111 !important;
+    line-height: 1.25 !important;
+    min-height: 48px !important;
+    margin-bottom: 8px !important;
+  }
+  .landing-page--rushford #courses .grid p {
+    font-size: 14px !important;
+    font-weight: 400 !important;
+    color: #2b2b2b !important;
+    line-height: 1.4 !important;
+    min-height: 58px !important;
+    margin-bottom: 12px !important;
+  }
+  .landing-page--rushford #courses hr {
+    border-color: #d1d5db !important;
+    margin-bottom: 12px !important;
+    margin-top: 0 !important;
+  }
+  .landing-page--rushford #courses button {
+    background-color: #6C4AB6 !important;
+    color: #ffffff !important;
+    border-radius: 6px !important;
+    width: auto !important;
+    display: inline-block !important;
+    padding: 8px 24px !important;
+    font-size: 15px !important;
+    font-weight: 500 !important;
+    border: none !important;
+    box-shadow: none !important;
+    cursor: pointer !important;
+    transition: background-color 0.2s ease !important;
+  }
+  .landing-page--rushford #courses button:hover {
+    background-color: #58399e !important;
+  }
+
+  /* About Us Section matching First Image */
+  .landing-page--rushford #about {
+    background-image: url(/assets/all_universities_images/rushford/about-image-rushford.webp) !important;
+    background-size: cover !important;
+    background-position: center right !important;
+    background-repeat: no-repeat !important;
+    background-color: #015fad !important;
+    color: #ffffff !important;
+    position: relative !important;
+  }
+  .landing-page--rushford #about .ab1 h2 {
+    color: #ffffff !important;
+    font-size: 32px !important;
+    font-weight: 600 !important;
+    margin-bottom: 16px !important;
+    letter-spacing: 0.5px !important;
+  }
+  .landing-page--rushford #about .ab1 p {
+    color: #ffffff !important;
+    font-size: 14.5px !important;
+    line-height: 1.6 !important;
+    margin-bottom: 14px !important;
+    font-weight: 300 !important;
+  }
+  .landing-page--rushford #about button {
+    background-color: #FF0066 !important;
+    color: #ffffff !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    padding: 10px 22px !important;
+    border-radius: 5px !important;
+    border: none !important;
+    cursor: pointer !important;
+    transition: background-color 0.2s ease !important;
+  }
+  .landing-page--rushford #about button:hover {
+    background-color: #e0005a !important;
+  }
+  .landing-page--rushford #about .mb-view {
+    display: none !important;
   }
 
   .landing-page--rushford .enquireNowBtn {
@@ -100,6 +238,65 @@ export const rushfordCustomCss = `
     color: #ffffff !important;
     font-weight: 700 !important;
     border-radius: 20px !important;
+  }
+
+  /* Degree section (#sample-degree) matching First 2 images */
+  .landing-page--rushford #sample-degree {
+    background-color: #ffffff !important;
+  }
+  .landing-page--rushford #sample-degree button,
+  .landing-page--rushford #sample-degree .enquireNowBtn {
+    background-color: #FF0066 !important;
+    color: #ffffff !important;
+    border-radius: 5px !important;
+    font-size: 14.5px !important;
+    font-weight: 600 !important;
+    padding: 10px 22px !important;
+    border: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+  .landing-page--rushford #sample-degree button:hover,
+  .landing-page--rushford #sample-degree .enquireNowBtn:hover {
+    background-color: #e0005a !important;
+  }
+
+  /* Copilot section matching First image & 3rd image */
+  .landing-page--rushford #copilot {
+    background-color: #08202D !important;
+    color: #ffffff !important;
+  }
+  .landing-page--rushford #copilot h2 {
+    color: #ffffff !important;
+  }
+  .landing-page--rushford #copilot p {
+    color: #ffffff !important;
+  }
+
+  /* Why Choose / Benefits Section matching First Image */
+  .landing-page--rushford #benefits {
+    background-color: #EFEFEF !important;
+    margin-top: 42px !important;
+    margin-bottom: 45px !important;
+  }
+  @media (max-width: 1023px) {
+    .landing-page--rushford #benefits {
+      margin-bottom: 0 !important;
+    }
+  }
+  @media (max-width: 768px) {
+    .landing-page--rushford #benefits {
+      margin-top: 5px !important;
+    
+      margin-bottom: 0 !important;
+    }
+  }
+
+  /* Admission Process Section matching First Image */
+  .landing-page--rushford #apply-steps h2 {
+    color: #000000 !important;
+    font-weight: 400 !important;
   }
 
   /* Compare section */
@@ -110,6 +307,268 @@ export const rushfordCustomCss = `
   /* Footer bottom */
   .landing-page--rushford .mini-footer-bottom {
     background-color: #17479e !important;
+  }
+
+  /* Mobile Specific Styles */
+  @media (max-width: 768px) {
+    /* About Us Mobile */
+  .landing-page--rushford #about {
+  background-image: none !important;
+  background-color: #015fad !important;
+  padding-top: 2px !important;
+  padding-bottom: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  min-height: auto !important;
+  max-height: none !important;
+  overflow: hidden !important;
+}
+    .landing-page--rushford #about .about-cnt {
+      padding-top: 0px !important;
+      padding-bottom: 5px !important;
+    }
+    .landing-page--rushford #about .ab1 h3 {
+      font-size: 26px !important;
+      margin-bottom: 12px !important;
+    }
+    .landing-page--rushford #about .ab1 p {
+      font-size: 13.5px !important;
+      line-height: 1.55 !important;
+      margin-bottom: 12px !important;
+    }
+   .landing-page--rushford #about .mb-view {
+  display: block !important;
+  margin-top: -15px !important;
+  margin-bottom: -10px !important;
+  padding: 0 !important;
+  line-height: 0 !important;
+}
+   .landing-page--rushford #about .mb-view img {
+  width: 100% !important;
+  height: auto !important;
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+    /* Navbar Hamburger Button */
+    .landing-page--rushford header.navbar button[aria-label="Toggle menu"] {
+      background-color: #17479e !important;
+      color: #ffffff !important;
+      border-radius: 6px !important;
+      padding: 6px !important;
+    }
+
+    /* Hero Mobile */
+    .landing-page--rushford #hero {
+      background-image: url(/assets/all_universities_images/rushford/mobile_new_bg_main.png) !important;
+      background-size: 100% auto !important;
+      background-position: center top !important;
+      background-repeat: no-repeat !important;
+      padding: 16px 0px 24px 0px !important;
+    }
+
+    .landing-page--rushford #hero .hero-info-col {
+      align-items: center !important;
+      text-align: center !important;
+      padding: 0 16px !important;
+    }
+
+    .landing-page--rushford #hero .hero-info-col p,
+    .landing-page--rushford #hero .hero-info-col h1,
+    .landing-page--rushford #hero .hero-info-col h2,
+    .landing-page--rushford #hero .hero-info-col .tagline {
+      text-align: center !important;
+    }
+
+    .landing-page--rushford #hero .hero-info-col > div:first-child {
+      display: none !important;
+    }
+
+    .landing-page--rushford #hero h1 {
+      font-size: 54px !important;
+      line-height: 1 !important;
+      margin: 6px 0px !important;
+      text-align: center !important;
+    }
+
+    .landing-page--rushford #hero .hero-brochure-btn {
+      display: none !important;
+    }
+
+    .landing-page--rushford #hero .hero-form-col {
+      padding: 0 16px !important;
+      margin-top: 0px !important;
+      width: 100% !important;
+    }
+
+  .landing-page--rushford .hero-mobile-image-wrapper {
+  width: 100% !important;
+  max-width: none !important;
+
+  aspect-ratio: 801 / 687 !important;
+  height: auto !important;
+
+  margin: 6px 0 -50px 0 !important;
+  padding: 0 !important;
+
+  position: relative !important;
+  overflow: hidden !important;
+
+  display: block !important;
+  z-index: 10 !important;
+}
+
+.landing-page--rushford .hero-mobile-image-wrapper img {
+  width: 100% !important;
+  max-width: none !important;
+  height: 100% !important;
+
+  object-fit: cover !important;
+  object-position: center top !important;
+
+  transform: scaleX(1.25) !important;
+  transform-origin: center center !important;
+
+  display: block !important;
+}
+
+    /* Stats Section (2x2 Grid on Mobile) */
+    /* Stats Section (2x2 Grid on Mobile) */
+    .landing-page--rushford #stats .ach,
+    .landing-page--rushford section#stats .ach,
+    .landing-page--rushford .achievement .ach,
+    .landing-page--rushford .ach.grid {
+      display: grid !important;
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+    .landing-page--rushford #stats .ach > div,
+    .landing-page--rushford .achievement .ach > div {
+      padding: 14px 10px !important;
+      gap: 8px !important;
+    }
+    .landing-page--rushford #stats .ach svg,
+    .landing-page--rushford .achievement .ach svg {
+      width: 24px !important;
+      height: 24px !important;
+    }
+    .landing-page--rushford #stats .ach h3,
+    .landing-page--rushford .achievement .ach h3 {
+      font-size: 14px !important;
+      margin: 0 0 2px 0 !important;
+    }
+    .landing-page--rushford #stats .ach p,
+    .landing-page--rushford .achievement .ach p {
+      font-size: 11px !important;
+      line-height: 1.25 !important;
+      margin: 0 !important;
+    }
+
+    /* Specialisations Cards Apply Button */
+    .landing-page--rushford #courses button {
+      background-color: #5e4592 !important;
+      color: #ffffff !important;
+      border-radius: 6px !important;
+      width: auto !important;
+      display: inline-block !important;
+      padding: 8px 24px !important;
+      font-size: 13.5px !important;
+      font-weight: 700 !important;
+    }
+
+    /* Degree Section Mobile */
+    .landing-page--rushford #sample-degree {
+      padding-top: 10px !important;
+      padding-bottom: 24px !important;
+    }
+    .landing-page--rushford #sample-degree .degree-info h2 {
+      font-size: 20px !important;
+      text-align: center !important;
+      margin-bottom: 8px !important;
+    }
+    .landing-page--rushford #sample-degree .degree-info p {
+      font-size: 13px !important;
+      line-height: 1.5 !important;
+      text-align: center !important;
+      margin-bottom: 16px !important;
+    }
+    .landing-page--rushford #sample-degree .degree-info button {
+      margin: 0 auto !important;
+      display: inline-flex !important;
+    }
+
+    /* Copilot Mobile matching 3rd image */
+    .landing-page--rushford #copilot {
+      padding-top: 28px !important;
+      padding-bottom: 28px !important;
+    }
+    .landing-page--rushford #copilot h2 {
+      font-size: 24px !important;
+      line-height: 1.25 !important;
+      margin-bottom: 12px !important;
+    }
+    .landing-page--rushford #copilot p {
+      font-size: 13.5px !important;
+      line-height: 1.55 !important;
+      margin-bottom: 20px !important;
+      font-weight: 300 !important;
+    }
+
+    /* Floating Call and Gift Icons */
+    .landing-page--rushford .floating-call-btn,
+    .landing-page--rushford .call_fix_image img {
+      width: 52px !important;
+      height: 52px !important;
+    }
+    .landing-page--rushford .floating-gift-btn {
+      width: 48px !important;
+      height: 48px !important;
+    }
+
+    /* Footer Sticky Bar (50/50 Split Flush Full Width) */
+    .landing-page--rushford .footer_sticky_buttons {
+      gap: 0px !important;
+      padding: 0px !important;
+      padding-bottom: max(0px, env(safe-area-inset-bottom)) !important;
+      background: transparent !important;
+      grid-template-columns: 1fr 1fr !important;
+      width: 100% !important;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.15) !important;
+    }
+    .landing-page--rushford .footer_sticky_buttons a,
+    .landing-page--rushford .footer_sticky_buttons button,
+    .landing-page--rushford .footer_sticky_buttons .wp_btn,
+    .landing-page--rushford .footer_sticky_buttons .apply_btn {
+      border-radius: 0px !important;
+      padding: 12px 6px !important;
+      font-size: 14.5px !important;
+      font-weight: 700 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      border: none !important;
+      height: 48px !important;
+      box-shadow: none !important;
+      width: 100% !important;
+      font-family: 'Outfit', sans-serif !important;
+    }
+    .landing-page--rushford .footer_sticky_buttons .wp_btn {
+      background: #20c968 !important;
+      background-color: #20c968 !important;
+      color: #ffffff !important;
+      gap: 7px !important;
+    }
+    .landing-page--rushford .footer_sticky_buttons .apply_btn {
+      background: #e51b24 !important;
+      background-color: #e51b24 !important;
+      color: #ffffff !important;
+      gap: 6px !important;
+    }
+    .landing-page--rushford .footer_sticky_buttons .wp_btn svg {
+      width: 18px !important;
+      height: 18px !important;
+      color: #ffffff !important;
+    }
   }
 `;
 
@@ -154,6 +613,8 @@ export const rushfordData = {
     hideMangLogo: true, // Only SODE logo in navbar on Rushford live site
     showCouponBtn: false, // No scholarship pill in navbar
     hideNavbarBadge: true,
+    mobileMenuBtnBg: "#17479e",
+    showFloatingCallOnMobile: true,
     sodeLogoContainerStyle: {
       width: "160px",
       height: "56px",
@@ -161,6 +622,21 @@ export const rushfordData = {
     },
     callGif: "/assets/all_universities_images/rushford/call_icon.gif",
     giftGif: "/assets/all_universities_images/rushford/gift.gif",
+
+    stickySplit: true,
+    stickyBarSplit: true,
+    stickyBrochureAction: "whatsapp",
+    stickyBrochureIcon: "whatsapp",
+    stickyApplyStyle: "red",
+
+    stickyBar: {
+      enabled: true,
+      isSplit: true,
+      background: "transparent",
+      applyStyle: "red",
+      hideApplyArrow: false,
+      brochureAction: "whatsapp",
+    },
 
     // Navbar Links matching https://distanceeducationschool.com/rushford/
     navLinks: [
@@ -187,8 +663,17 @@ export const rushfordData = {
     // Hero Section Configuration
     hero: {
       backgroundImage: "/assets/all_universities_images/rushford/rushford_new_desktop_bg.png",
-      mobileBackgroundImage: "/assets/all_universities_images/rushford/rushford_new_desktop_bg.png",
+      mobileBackgroundImage: "/assets/all_universities_images/rushford/mobile_new_bg_main.png",
       mobileStudentImage: "/assets/all_universities_images/rushford/rushford_new_mobile.png",
+      mobileStudentImageWrapperClassName: "w-full max-w-[390px] aspect-square mx-auto relative mb-0",
+      mobileStudentImageClassName: "w-full h-full object-contain object-bottom",
+      mobileStudentImageStyle: {
+        transform: "none",
+        transformOrigin: "center center",
+      },
+      hideBrochureOnMobile: true,
+      hideCourseBox: true,
+      coursesStripOnly: true,
       noOverlay: true,
       minHeight: "480px",
 
@@ -201,7 +686,7 @@ export const rushfordData = {
           className="h-[36px] sm:h-[46px] w-auto object-contain"
         />
       ),
-      welcomeContainerClassName: "!mb-2 !mt-0 !text-left",
+      welcomeContainerClassName: "!mb-2 !mt-0 !text-left hidden md:block",
       welcomeBadgeClassName: "!bg-transparent !p-0 !min-w-0 !shadow-none !border-none !rounded-none !block",
 
       hashtagText: (
@@ -223,9 +708,9 @@ export const rushfordData = {
         color: "#e0007a",
         fontSize: "65px",
         lineHeight: "1",
-        fontWeight: "900",
-        marginTop: "6px",
-        marginBottom: "6px",
+        fontWeight: "700",
+        marginTop: "8px",
+        marginBottom: "8px",
       },
 
       taglineText: (
@@ -245,7 +730,7 @@ export const rushfordData = {
 
       highlightBox: {
         text: "Earn a Doctorate Title\nalong with Management Expertise",
-        className: "!w-full !p-0 !bg-transparent !text-black !text-[19px] sm:text-[21px] !font-bold !text-left !shadow-none !m-0",
+        className: "!w-full !p-0 !bg-transparent !text-black !text-[19px] sm:text-[21px] !font-bold text-center sm:!text-left !shadow-none !m-0",
         style: {
           fontFamily: "'Outfit', sans-serif",
           backgroundColor: "transparent",
@@ -254,7 +739,7 @@ export const rushfordData = {
           padding: 0,
           fontSize: "20px",
           fontWeight: "700",
-          textAlign: "left",
+          textAlign: "center",
           lineHeight: "1.25",
           display: "block",
           marginTop: "6px",
@@ -264,7 +749,7 @@ export const rushfordData = {
       },
 
       coursesStrip: [
-        <div key="rushford-pills" className="grid grid-cols-2 gap-2 max-w-[420px] my-3">
+        <div key="rushford-pills" className="grid grid-cols-2 gap-2 max-w-[340px] sm:max-w-[420px] mx-auto sm:mx-0 my-3">
           <span key="rushford-online" className="border-2 border-[#16459a] py-2 px-3 rounded-[5px] text-[#000] font-semibold text-[12.5px] sm:text-[13px] text-center bg-white/70">
             100% Online
           </span>
@@ -281,15 +766,19 @@ export const rushfordData = {
       ],
 
       brochureButtonText: "Download Brochure",
+      buttonBackground: "#17479e",
+      buttonTextColor: "#ffffff",
       buttonStyle: {
         fontFamily: "'Outfit', sans-serif",
-        background: "#ffd23b",
-        backgroundColor: "#ffd23b",
-        color: "#e0007a",
-        borderRadius: "8px",
+        background: "#17479e",
+        backgroundColor: "#17479e",
+        color: "#ffffff",
+        borderRadius: "6px",
         fontSize: "15px",
         fontWeight: "700",
         padding: "10px 24px",
+        border: "none",
+        boxShadow: "0 4px 12px rgba(23, 71, 158, 0.25)",
       },
 
       cardStyle: "white",
@@ -333,9 +822,9 @@ export const rushfordData = {
     approvalsSubtitle: "Rushford Business School, Switzerland",
 
     // Degree Layout
-    degreeLayout: "imageLeft",
-    degreeTitleColor: "#111111",
-    degreeBtnBg: "#0cb1ef",
+    degreeLayout: "rushford",
+    degreeTitleColor: "#17479e",
+    degreeBtnBg: "#FF0066",
     degreeBtnTextColor: "#ffffff",
 
     // Offers & Placement (Microsoft Copilot Section)
@@ -349,7 +838,8 @@ export const rushfordData = {
 
     // Admission Process
     admissionProcessId: "apply-steps",
-    admissionTitle: "How to Apply for Rushford University Online Courses",
+    admissionHeadingColor: "#000000",
+    admissionTitle: "How To Apply For Rushford University Online Courses",
     admissionSubtitle:
       "Students can easily enrol in Rushford University Online courses. Candidates can conveniently apply by selecting their desired program. Follow these steps to secure admission in the university.",
 
@@ -401,7 +891,7 @@ export const rushfordData = {
     {
       icon: "rupee",
       label: "Fees",
-      value: "Approx Total of Rs. 6,50,000 (No taxes)",
+      value: "Approx Total of Rs. 6,50,000(No taxes)",
       bg: "#C80536",
     },
   ],
@@ -555,22 +1045,22 @@ export const rushfordData = {
   // Why Choose / Endless Benefits
   whyChoose: [
     {
-      title: "Expertise in Business",
+      title: "Expertise in Business:",
       desc: "Gain advanced research, analytical, and leadership skills for global business excellence.",
       image: "/assets/all_universities_images/rushford/expertise.webp",
     },
     {
-      title: "Global Career Opportunity",
+      title: "Global Career Opportunity :",
       desc: "International opportunities in senior leadership roles with higher salary growth in management.",
       image: "/assets/all_universities_images/rushford/growth.webp",
     },
     {
-      title: "Learning Approach",
+      title: "Learning Approach:",
       desc: "Access live faculty sessions, real-world projects, and alumni benefits worldwide.",
       image: "/assets/all_universities_images/rushford/modern-learning.webp",
     },
     {
-      title: "180 ECTS European Credits",
+      title: "180 ECTS European Credits:",
       desc: "Internationally recognized accreditation and global value with Earn 180 ECTS credits.",
       image: "/assets/all_universities_images/rushford/credit.webp",
     },

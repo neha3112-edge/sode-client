@@ -6,9 +6,14 @@ import { Clock, Laptop, Download, ArrowRight } from "lucide-react";
 
 export default function UuProgrammes({
   programmes = [],
+  brand = {},
   onSelectCourseForBrochure,
   onOpenApply,
 }) {
+  const uniName = brand.name || "University Online";
+  const ugTitle = brand.programmesUgSubtitle || "Undergraduate programs";
+  const pgTitle = brand.programmesPgSubtitle || "Postgraduate programs";
+
   const ugPrograms = programmes.filter(
     (p) =>
       p.level?.toLowerCase().includes("undergrad") ||
@@ -86,10 +91,10 @@ export default function UuProgrammes({
         {/* 1. Undergraduate Programs Section */}
         {ugPrograms.length > 0 && (
           <div className="mb-10 sm:mb-12">
-            <div className="text-center mb-6 sm:mb-7">
+            <div className="text-left mb-6 sm:mb-7">
               <h2 className="text-[20px] sm:text-[24px] lg:text-[26px] font-bold leading-tight m-0">
-                <span className="text-[#003399]">Uttaranchal University Online</span>{" "}
-                <span className="text-[#62B239]">Undergraduate programs</span>
+                <span className="text-[#003399]">{uniName}</span>{" "}
+                <span className="text-[#62B239]">{ugTitle}</span>
               </h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
@@ -101,10 +106,10 @@ export default function UuProgrammes({
         {/* 2. Postgraduate Programs Section */}
         {pgPrograms.length > 0 && (
           <div>
-            <div className="text-center mb-6 sm:mb-7">
+            <div className="text-left mb-6 sm:mb-7">
               <h2 className="text-[20px] sm:text-[24px] lg:text-[26px] font-bold leading-tight m-0">
-                <span className="text-[#003399]">Uttaranchal University Online</span>{" "}
-                <span className="text-[#62B239]">Postgraduate programs</span>
+                <span className="text-[#003399]">{uniName}</span>{" "}
+                <span className="text-[#62B239]">{pgTitle}</span>
               </h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
