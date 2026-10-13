@@ -184,9 +184,8 @@ export function AccreditationsView({ initialAccreditations = [] }) {
 
                     {/* Bottom: Warm Golden-Sand Capsule Button */}
                     <div className="w-full shrink-0 flex items-center justify-center mt-1 sm:mt-1.5 mb-0.5">
-                      <span className="bg-[#E4BE75] group-hover:bg-[#dbb15f] text-[#351C00] text-[8.5px] sm:text-[10px] md:text-[11px] font-bold px-2.5 sm:px-3.5 md:px-4 py-1 sm:py-1.5 rounded-full transition-colors inline-flex items-center justify-center text-center whitespace-nowrap shadow-xs leading-none">
-                        <span className="hidden sm:inline">View Updated List {currentYear}</span>
-                        <span className="sm:hidden">Updated List {currentYear}</span>
+                      <span className="bg-[#E4BE75] group-hover:bg-[#dbb15f] text-[#351C00] text-[8.5px] sm:text-[9.5px] md:text-[10px] font-bold px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full transition-colors inline-flex items-center justify-center text-center whitespace-nowrap shadow-xs leading-none">
+                        Updated List {currentYear}
                       </span>
                     </div>
                   </CardWrapper>
