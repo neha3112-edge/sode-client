@@ -83,7 +83,10 @@ function UniversityCard({ uni }) {
 
   return (
     <div className="bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col group h-full">
-      <div className="relative h-32 sm:h-36 w-full overflow-hidden bg-slate-100 shrink-0">
+      <Link
+        href={`/universities/${slug}`}
+        className="block relative h-32 sm:h-36 w-full overflow-hidden bg-slate-100 shrink-0 cursor-pointer"
+      >
         {imageSrc ? (
           <Image
             src={imageSrc}
@@ -128,7 +131,7 @@ function UniversityCard({ uni }) {
             <span className="text-[#072C50] text-[11px] font-black truncate px-1">{name}</span>
           )}
         </div>
-      </div>
+      </Link>
 
       <div className="pt-4.5 px-3.5 pb-3 flex flex-col flex-1">
         <Link href={`/universities/${slug}`} className="block group-hover:text-blue-600 transition-colors">
