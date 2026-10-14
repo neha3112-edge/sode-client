@@ -212,7 +212,7 @@ export const cuData = {
         width: 50%;
         height: 100%;
         background: rgba(255, 255, 255, 0.4);
-        transform: skewX(-25deg);
+        transform: skewX(-25deg); 
         animation: cuShine 2.5s infinite;
       }
       .coupon-btn {

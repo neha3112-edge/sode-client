@@ -101,6 +101,40 @@ export default function LandingAdmissionProcess({
 }) {
   if (brand.hideAdmissionProcess) return null;
 
+  // Galgotias Dedicated Layout
+  if (brand.slug === "galgotias" || brand.admissionLayout === "galgotias") {
+    const steps = [
+      { num: 1, title: "Submit Form", desc: "Fill in and submit your application form online", colorClass: "orange" },
+      { num: 2, title: "Expert's Counseling", desc: "You will receive a call from our expert counselor", colorClass: "blue" },
+      { num: 3, title: "Choose University", desc: "Select the course & university according to your interest", colorClass: "pink" },
+      { num: 4, title: "Online Payment", desc: "You need to make a smooth online fee submission", colorClass: "green" },
+      { num: 5, title: "Document Submit", desc: "You need to upload all the required verified documents.", colorClass: "purple" },
+      { num: 6, title: "Admission Confirm", desc: "Get Confirmation on your Email & Whatsapp", colorClass: "orange" },
+    ];
+    return (
+      <section className="apply-section py-12 sm:py-16 bg-white text-center select-none scroll-mt-20 w-full" id="how-to-apply">
+        <div className="w-full px-4 sm:px-8 lg:px-12 xl:px-16">
+          <h2 className="text-[24px] sm:text-[30px] lg:text-[32px] font-semibold text-center capitalize mb-3 text-[#111]">
+            {brand.admissionTitle || "How can one apply to Galgotias University Online?"}
+          </h2>
+          <p className="section-desc max-w-4xl mx-auto text-[#555] text-[13.5px] sm:text-[14px] leading-relaxed mb-8">
+            {brand.admissionSubtitle || "Galgotias University online admission process is quite simple and convenient. Learners get an opportunity to learn accessibly and get a worldwide recognised degree. They can enrol in Galgotias University Apply Online through the following steps."}
+          </p>
+
+          <div className="steps-wrapper grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-5 w-full">
+            {steps.map((st) => (
+              <div key={st.num} className={`step-card ${st.colorClass} w-full`}>
+                <div className="step-number">{st.num}</div>
+                <h4>{st.title}</h4>
+                <p>{st.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   // IIM Kozhikode Dedicated Layout
   if (brand.slug === "iim" || brand.admissionLayout === "iim") {
     const steps = [

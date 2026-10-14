@@ -8,6 +8,7 @@ import confetti from "canvas-confetti";
 import LandingContainer from "./LandingContainer";
 import LandingLeadForm from "./LandingLeadForm";
 import LandingButton from "./LandingButton";
+import GalgotiasHero from "./hero/GalgotiasHero";
 
 /**
  * Reusable Landing Hero Component
@@ -28,6 +29,19 @@ export default function LandingHero({
   onOpenScholarship,
 }) {
   const hero = brand?.hero || {};
+
+  if (brand.slug === "galgotias" || hero.heroStyle === "galgotias") {
+    return (
+      <GalgotiasHero
+        brand={brand}
+        courses={courses}
+        onOpenBrochure={onOpenBrochure}
+        onOpenApply={onOpenApply}
+        onOpenScholarship={onOpenScholarship}
+        onOpenDisclaimer={onOpenDisclaimer}
+      />
+    );
+  }
 
   /* ----------------------------- Helpers ----------------------------- */
 

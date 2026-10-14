@@ -90,9 +90,10 @@ export default function LandingNavbar({
     showCouponBtn !== false &&
     showCouponButton !== false;
 
+  const isGalgotias = slug === "galgotias" || navbar.navbarVariant === "galgotias";
+
   const isDesNavbar =
-    navbar.navbarVariant === "des" ||
-    slug === "galgotias";
+    navbar.navbarVariant === "des" && !isGalgotias;
 
   /* =======================================================
      SCROLL TO HERO
@@ -199,6 +200,62 @@ export default function LandingNavbar({
       behavior: "smooth",
     });
   };
+
+  /* =======================================================
+     GALGOTIAS NAVBAR
+  ======================================================= */
+
+  if (isGalgotias) {
+    return (
+      <header className="navbar sticky top-0 z-50 bg-white shadow-[0_5px_20px_rgba(0,0,0,0.12)] border-b border-slate-100">
+        <div className="top-navbar max-w-[1150px] mx-auto h-[70px] px-3 sm:px-4 flex items-center justify-between">
+          <div className="logo flex items-center max-w-[420px]">
+            <Link
+              href="#hero-section"
+              onClick={handleScrollTop}
+              className="des_logo flex items-center cursor-pointer"
+              aria-label="Distance Education School"
+            >
+              <img
+                src={navbar.sodeIcon || "/assets/galgotias/sode-icon.png"}
+                alt="SODE"
+                className="w-[125px] sm:w-[170px] h-auto object-contain"
+              />
+            </Link>
+            <div className="hidden sm:block h-[38px] w-[1px] bg-[#cccccc] mx-2 sm:mx-3 shrink-0" />
+            <Link
+              href="#hero-section"
+              onClick={handleScrollTop}
+              className="mang_logo flex items-center cursor-pointer"
+              aria-label="Galgotias University Online"
+            >
+              <img
+                src={navbar.logo || "/assets/galgotias/logo-GU-online.png"}
+                alt="Galgotias University Online"
+                className="w-[135px] sm:w-[185px] h-auto object-contain"
+              />
+            </Link>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleCouponClick}
+            className="coupon-btn-main hidden sm:inline-flex items-center gap-2 px-3.5 py-1.5 text-[13.5px] font-bold text-white rounded-[8px] cursor-pointer border-none shadow-[0_10px_25px_rgba(46,204,113,0.4)] transition-all hover:scale-105 active:scale-95"
+            style={{
+              background: "linear-gradient(135deg, #2ecc71, #27ae60)",
+            }}
+          >
+            <img
+              src="/assets/galgotias/gift.gif"
+              alt="Gift"
+              className="w-5 h-5 rounded-full object-contain"
+            />
+            <span>Scholarship Coupon Code</span>
+          </button>
+        </div>
+      </header>
+    );
+  }
 
   /* =======================================================
      DES NAVBAR

@@ -234,7 +234,7 @@ export default function UniversityLandingView({ data = {} }) {
         />
 
         {/* 2.5 Sub-Navigation Sticky Bar */}
-        {(brand.showSubNav === true || brand.slug === "galgotias" || slug === "galgotias") && (
+        {brand.showSubNav === true && (
           <LandingSubNav
             brand={{ ...brand, slug: brand.slug || slug }}
             onOpenApply={() => handleOpenApply()}

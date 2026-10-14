@@ -2,61 +2,46 @@
 
 import React from "react";
 
-export default function GalgotiasAbout({ about = {}, brand = {} }) {
-  const title = about.title || `About ${brand.name || "Galgotias University Online"}`;
-  const accTitle =
-    about.accreditationsTitle ||
-    `${brand.name || "Galgotias University Online"} Accreditations, Approvals and Ranking`;
-
-  const accDesc =
-    about.accreditationsDesc ||
-    `${brand.name || "Galgotias University Online"} is recognized for its strong commitment to quality education and academic excellence. It has established itself as one of the top private universities in India, focusing on research, innovation, and skill development.`;
-
-  const defaultParagraphs = [
-    `Galgotias Online is a pioneering initiative by Galgotias University, dedicated to providing individuals with a robust platform for elective online learning. This initiative empowers participants to enhance their competencies, cultivate expertise, and refine skills across diverse disciplines and career paths. The Online degree program allows students to study at their own pace while still receiving a high-quality education that connects to real-world situations. Students learn from experts who work in their field, work together with other students, and practice what they learn through real examples and hands-on projects.`,
-    `Galgotias University Online provides a state-of-the-art learning management system (LMS) that allows students to access course materials, submit assignments, and participate in discussions from anywhere in the world. The program doesn't just teach job skills. It also teaches students how to be good leaders, make the right choices, and communicate well with others. This helps create complete professionals who can handle the challenges of today's work world.`,
-  ];
-
-  const paragraphs =
-    Array.isArray(about.paragraphs) && about.paragraphs.length > 0
-      ? about.paragraphs
-      : [about.p1, about.p2, about.p3, about.text1, about.text2, about.text3].filter(Boolean).length > 0
-      ? [about.p1, about.p2, about.p3, about.text1, about.text2, about.text3].filter(Boolean)
-      : defaultParagraphs;
-
-  const primaryColor = brand.primaryColor || "#002b49";
-
+export default function GalgotiasAbout({ brand = {}, onOpenApply }) {
   return (
-    <section id="about" className="pt-10 sm:pt-14 pb-2 sm:pb-3 bg-white select-none">
-      <div className="max-w-[1360px] mx-auto px-6 sm:px-12 md:px-16 lg:px-24 xl:px-28 space-y-6 sm:space-y-8 text-left">
-        <div className="space-y-4">
-          <h2
-            className="text-2xl sm:text-3xl lg:text-[32px] font-black tracking-tight leading-tight m-0"
-            style={{ color: primaryColor }}
-          >
-            {title}
+    <div id="about" className="w-full select-none scroll-mt-20">
+      {/* Full Width Image with seamless bottom gradient to black */}
+      <div className="relative overflow-hidden w-full">
+        <img
+          src="/assets/galgotias/galgotia-about.webp"
+          alt="Galgotias University"
+          className="w-full h-auto object-cover block"
+        />
+        <div
+          className="absolute bottom-0 left-0 w-full h-[60%] pointer-events-none"
+          style={{
+            background:
+              "linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 100%)",
+          }}
+        />
+      </div>
+
+      {/* Full Width Black Content Container */}
+      <div id="abt-ct" className="w-full bg-black text-center text-white pt-2 pb-12 sm:pb-16 px-4 sm:px-10 md:px-16 lg:px-24">
+        <div className="w-full">
+          <h2 className="text-[26px] sm:text-[32px] md:text-[34px] font-bold text-white m-0 leading-tight">
+            About <br />
+            <span className="text-[#FFD508]">Galgotias University Online</span>
           </h2>
-          <div className="space-y-3.5 text-[14px] sm:text-[15.5px] text-slate-700 leading-relaxed font-normal">
-            {paragraphs.map((p, idx) => (
-              <p key={idx} className="m-0">
-                {p}
-              </p>
-            ))}
+          <p className="text-[13px] sm:text-[14px] text-white/95 leading-[1.65] my-4 sm:my-5 px-2 sm:px-6 md:px-10 font-normal">
+            Galgotias University is located in Uttar Pradesh. It is a reputed institute known for its excellent education across various fields. It is a NAAC A+ accredited university offering accessible education through different modes. Galgotias University, under its CDOE (Centre of Online and Distance Education), is dedicated to delivering education, committed to the needs of its learners and working professionals. The CDOE of the university is UGC -DEB entitled making Galgotias University online courses relevant to modern-day workforces. delivering quality education through advanced digital learning methods. As a learner, if one plans on upgrading their career, now is the right time to explore Galgotias University online admission process and start your journey with Galgotias online.
+          </p>
+          <div className="pt-2">
+            <button
+              type="button"
+              onClick={() => onOpenApply?.(null, "Apply Now")}
+              className="b2 inline-flex items-center justify-center bg-[#BC1820] hover:bg-[#a0131a] text-white font-semibold text-[14px] sm:text-[15px] px-8 sm:px-9 py-2.5 rounded-full border-none cursor-pointer shadow-md transition-all active:scale-95"
+            >
+              Apply Now
+            </button>
           </div>
         </div>
-
-        <div className="space-y-3 pt-2">
-          <h2
-            className="text-2xl sm:text-3xl lg:text-[30px] font-black tracking-tight leading-tight m-0"
-            style={{ color: primaryColor }}
-          >
-            {accTitle}
-          </h2>
-          <p className="text-[14px] sm:text-[15.5px] text-slate-700 leading-relaxed font-normal m-0">
-            {accDesc}
-          </p>
-        </div>
       </div>
-    </section>
+    </div>
   );
 }

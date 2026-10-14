@@ -16,6 +16,40 @@ export default function LandingRecruiters({
 }) {
   const activeRecruiters = recruiters || brand.recruiters || {};
 
+  // If Galgotias Layout
+  if (brand.slug === "galgotias" || brand.recruitersLayout === "galgotias") {
+    const title = activeRecruiters.title || "Galgotias University CODE Top Hiring Partners";
+    const desc =
+      activeRecruiters.subtitle ||
+      activeRecruiters.desc ||
+      "Online Galgotias University Collaborates with highly renowned and reputable companies across several sectors . These partnerships are a gateway to numerous career opportunities. Altogether, the university empowers learners to learn and grow as well as secure a high rank in top industry-leading organisations such as Abbott, Jio etc.";
+
+    return (
+      <section className="partners py-10 sm:py-14 bg-white text-center select-none scroll-mt-20 w-full" id="top-hiring-partners">
+        <div className="w-full px-4 sm:px-8 lg:px-12 xl:px-16">
+          <h2 className="text-[24px] sm:text-[30px] lg:text-[32px] font-semibold text-center capitalize mb-3 text-[#111]">
+            {title}
+          </h2>
+          <p className="text-center text-[#555] text-[13.5px] sm:text-[14px] leading-relaxed max-w-4xl mx-auto mb-6 px-2">
+            {desc}
+          </p>
+          <div className="w-full flex justify-center">
+            <img
+              src="/assets/galgotias/partner-desktop.webp"
+              alt="Galgotias Top Hiring Partners"
+              className="hidden sm:block w-full max-w-[1350px] h-auto object-contain p-2"
+            />
+            <img
+              src="/assets/galgotias/partner-mobile.webp"
+              alt="Galgotias Top Hiring Partners"
+              className="block sm:hidden w-full max-w-[500px] h-auto object-contain p-2"
+            />
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   // If LPU layout
   if (brand.slug === "lpu" || brand.recruitersLayout === "lpu") {
     const titlePrefix = activeRecruiters.titlePrefix || "Placement";

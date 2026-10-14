@@ -52,6 +52,55 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
     brand.slug === "iim" ||
     brand.faqLayout === "iim";
 
+  const isGalgotias =
+    brand.slug === "galgotias" ||
+    brand.faqLayout === "galgotias";
+
+  if (isGalgotias) {
+    return (
+      <section id="accordition" className="py-12 sm:py-16 bg-white select-none scroll-mt-20">
+        <div className="max-w-[1100px] mx-auto px-4 sm:px-6">
+          <h2 className="text-[26px] sm:text-[32px] md:text-[34px] font-bold text-center text-[#bc1820] m-0 mb-8 sm:mb-10">
+            Frequently Asked Questions
+          </h2>
+
+          <div className="space-y-3">
+            {faqs.map((faq, idx) => {
+              const isOpen = openIndex === idx;
+              const question = faq.q || faq.question || "";
+              const answer = faq.a || faq.answer || "";
+
+              return (
+                <div key={idx} className="w-full">
+                  <button
+                    type="button"
+                    onClick={() => toggleFaq(idx)}
+                    className={`w-full flex items-center justify-between text-left px-5 py-3.5 text-[14.5px] sm:text-[15.5px] font-medium transition-colors cursor-pointer border ${
+                      isOpen
+                        ? "bg-[#A13341] text-white rounded-t-[10px] border-[#A13341]"
+                        : "bg-white text-black hover:bg-slate-50 rounded-[10px] border-slate-300"
+                    }`}
+                  >
+                    <span className="pr-4">{question}</span>
+                    <span className="text-[18px] font-bold shrink-0">
+                      {isOpen ? "−" : "+"}
+                    </span>
+                  </button>
+
+                  {isOpen && (
+                    <div className="bg-[#f6f6f6] border border-t-0 border-slate-300 rounded-b-[10px] px-5 py-4 text-[13.5px] sm:text-[14px] text-[#333333] leading-relaxed">
+                      {answer}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   const isUpes =
     brand.slug === "upes" ||
     brand.faqLayout === "upes";

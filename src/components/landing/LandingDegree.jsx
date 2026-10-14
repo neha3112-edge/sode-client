@@ -21,6 +21,75 @@ export default function LandingDegree({
     images = null,
   } = degreeInfo;
 
+  const isGalgotias =
+    brand.degreeLayout === "galgotias" || brand.slug === "galgotias";
+
+  if (isGalgotias) {
+    return (
+      <section
+        id="certificate"
+        className="py-12 sm:py-16 bg-[#f6f6f6] select-none scroll-mt-20 overflow-visible"
+      >
+        <div className="w-full px-4 sm:px-8 lg:px-12 xl:px-16">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            {/* Left Content */}
+            <div className="lg:col-span-6 text-left">
+              <h2 className="text-[26px] sm:text-[30px] lg:text-[32px] font-bold text-[#002266] m-0 mb-4 leading-[1.2]">
+                About the Sample Degree of <br />
+                Galgotias Online
+              </h2>
+              <p className="text-[13.5px] sm:text-[14px] text-[#555555] leading-relaxed mb-4 font-normal">
+                After completing their Galgotias University online courses, students receive a UGC recognised degree issued by Galgotias University Online. The degree holds academic credibility and relevance worldwide. It also reflects the specialisation pursued during the program.
+              </p>
+
+              <ul className="space-y-2.5 my-5 text-[13.5px] sm:text-[14px] text-[#333333] list-none p-0 m-0">
+                <li className="flex items-center gap-2.5 font-medium">
+                  <span className="w-4 h-4 rounded-full bg-[#28a745] text-white flex items-center justify-center text-[10px] font-bold shrink-0">✓</span>
+                  <span>NAAC A+ Accredited Degree</span>
+                </li>
+                <li className="flex items-center gap-2.5 font-medium">
+                  <span className="w-4 h-4 rounded-full bg-[#28a745] text-white flex items-center justify-center text-[10px] font-bold shrink-0">✓</span>
+                  <span>Globally Recognised</span>
+                </li>
+                <li className="flex items-center gap-2.5 font-medium">
+                  <span className="w-4 h-4 rounded-full bg-[#28a745] text-white flex items-center justify-center text-[10px] font-bold shrink-0">✓</span>
+                  <span>Flexible Online Learning Mode</span>
+                </li>
+              </ul>
+
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={() => onOpenApply?.(null, "Get Degree")}
+                  className="degree-btn inline-flex items-center justify-center bg-[#f9bc08] hover:bg-[#e0a807] text-white font-bold text-[14px] sm:text-[15px] px-8 py-2.5 rounded-full border-none cursor-pointer shadow-sm transition-all active:scale-95"
+                >
+                  Get Degree
+                </button>
+              </div>
+            </div>
+
+            {/* Right Yellow Image Container */}
+            <div className="lg:col-span-6 pt-12 lg:pt-0">
+              <div className="cer2 bg-[#ffef97] rounded-[16px] px-3 sm:px-5 py-0 flex flex-row items-end justify-center gap-1 sm:gap-3 relative overflow-visible">
+                <img
+                  src="/assets/galgotias/image-01-galgotia.webp"
+                  alt="Galgotias Graduate"
+                  className="w-[170px] sm:w-[225px] md:w-[250px] max-w-[50%] h-auto object-contain shrink-0 block"
+                  style={{ marginTop: "-52px" }}
+                />
+                <img
+                  src="/assets/galgotias/sample-galgotia.webp"
+                  alt="Galgotias Sample Degree"
+                  className="w-[180px] sm:w-[235px] md:w-[260px] max-w-[50%] h-auto object-contain my-3 sm:my-4 shadow-sm rounded-[4px] block"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   const isCu =
     brand.degreeLayout === "cu" || brand.slug === "cu";
 

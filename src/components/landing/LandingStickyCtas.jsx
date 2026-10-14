@@ -32,12 +32,19 @@ export default function LandingStickyCtas({
           colors: ["#ff5722", "#ffb300", "#4caf50", "#ffd700", "#e91e63"],
         });
       }
-    } catch {}
+    } catch { }
     onOpenScholarship?.();
   };
 
-  const isCu = brand.slug === "cu" || brand.stickyLayout === "cu";
-  if (isCu) {
+  const isCuOrGalgotias =
+    brand.slug === "cu" ||
+    brand.stickyLayout === "cu" ||
+    brand.slug === "galgotias" ||
+    brand.stickyLayout === "galgotias";
+
+  if (isCuOrGalgotias) {
+    const defaultCallGif = brand.slug === "galgotias" ? "/assets/galgotias/call_icon.gif" : "/assets/cu/call_icon.gif";
+    const defaultGiftGif = brand.slug === "galgotias" ? "/assets/galgotias/gift.gif" : "/assets/cu/gift.gif";
     return (
       <>
         <div className="sticky_btn_Section block md:hidden">
@@ -61,7 +68,7 @@ export default function LandingStickyCtas({
         </div>
 
         <a className="call_fix_image" href={`tel:${phone}`} aria-label="Call Expert">
-          <img src={brand.callGif || "/assets/cu/call_icon.gif"} alt="Call Now" />
+          <img src={brand.callGif || defaultCallGif} alt="Call Now" />
         </a>
 
         {brand.showFloatingGift !== false && (
@@ -71,7 +78,7 @@ export default function LandingStickyCtas({
             onClick={handleGiftClick}
             aria-label="Get Scholarship Coupon Code"
           >
-            <img src={brand.giftGif || "/assets/cu/gift.gif"} alt="Scholarship Coupon" />
+            <img src={brand.giftGif || defaultGiftGif} alt="Scholarship Coupon" />
           </button>
         )}
       </>

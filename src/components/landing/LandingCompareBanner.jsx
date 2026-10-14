@@ -8,6 +8,10 @@ export default function LandingCompareBanner({ brand = {}, onOpenCompare }) {
     brand.name?.toLowerCase().includes("sikkim") ||
     brand.name?.toLowerCase().includes("smu");
 
+  const isCu =
+    brand.slug === "cu" ||
+    brand.compareLayout === "cu";
+
   const universityName =
     brand.compareUniversityName ||
     (isSmu
@@ -37,6 +41,42 @@ export default function LandingCompareBanner({ brand = {}, onOpenCompare }) {
             >
               <img
                 src={brand.arrowGif || "/assets/smu/arrow.gif"}
+                alt="Compare universities"
+                className="w-full h-full rounded-full object-cover"
+              />
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const isGalgotias =
+    brand.slug === "galgotias" ||
+    brand.compareLayout === "galgotias";
+
+  if (isGalgotias) {
+    return (
+      <div className="compare_Section py-12 sm:py-16 bg-[#f6f8fa] select-none scroll-mt-20 w-full" id="compare-universities">
+        <div className="max-w-[1100px] mx-auto px-4 sm:px-6">
+          <div className="compare_box relative bg-[#bc1820] rounded-[20px] pt-10 pb-14 sm:pt-12 sm:pb-16 px-6 sm:px-12 text-center text-white flex flex-col items-center justify-center shadow-md w-full">
+            <h2 className="text-[28px] sm:text-[34px] md:text-[36px] font-bold text-white m-0 tracking-tight leading-tight">
+              Still Confused?
+            </h2>
+            <h4 className="text-[14px] sm:text-[16px] font-normal text-white/95 mt-2 sm:mt-2.5 m-0 max-w-2xl leading-normal text-center">
+              {brand.compareSubtitle || "Compare Galgotias University with Top UGC-DEB Approved Universities"}
+            </h4>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                onOpenCompare?.();
+              }}
+              className="compare_btn absolute -bottom-6 sm:-bottom-7 left-1/2 -translate-x-1/2 w-12 h-12 sm:w-14 sm:h-14 bg-white rounded-full p-[3px] shadow-md flex items-center justify-center cursor-pointer transition-transform hover:scale-110 active:scale-95 border-none z-10"
+              aria-label="Compare Universities"
+            >
+              <img
+                src="/assets/galgotias/arrow.gif"
                 alt="Compare universities"
                 className="w-full h-full rounded-full object-cover"
               />

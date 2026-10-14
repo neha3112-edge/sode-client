@@ -327,7 +327,7 @@ export default function LandingFooter({
           <button
             type="button"
             onClick={
-              brand.slug === "cu" && onOpenCompare
+              (brand.slug === "cu" || brand.slug === "galgotias") && onOpenCompare
                 ? () => onOpenCompare()
                 : handleScrollTop
             }

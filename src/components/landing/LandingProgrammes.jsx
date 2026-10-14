@@ -61,6 +61,7 @@ export default function LandingProgrammes({
         programmes={programmes}
         brand={brand}
         onSelectCourseForBrochure={onSelectCourseForBrochure}
+        onOpenApply={onOpenApply}
       />
     );
   }
