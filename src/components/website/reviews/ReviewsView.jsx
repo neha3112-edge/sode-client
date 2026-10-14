@@ -42,9 +42,8 @@ function StarRating({ rating = 5, size = "w-3.5 h-3.5" }) {
           <svg
             key={star}
             viewBox="0 0 20 20"
-            className={`${size} ${
-              isFilled ? "text-[#F59E0B] fill-[#F59E0B]" : "text-slate-200 fill-slate-200"
-            }`}
+            className={`${size} ${isFilled ? "text-[#F59E0B] fill-[#F59E0B]" : "text-slate-200 fill-slate-200"
+              }`}
           >
             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
           </svg>
@@ -112,11 +111,11 @@ function ReviewCard({ review, onOpenModal }) {
           <div className="flex items-center gap-2.5 min-w-0">
             <UserAvatar name={review.name} avatarUrl={review.avatar} />
             <div className="min-w-0">
-              <h3 className="font-bold text-slate-900 text-sm leading-snug group-hover:text-[#11233E] transition-colors truncate">
+              <h3 className="font-bold text-slate-900 text-sm group-hover:text-[#11233E] transition-colors truncate">
                 {review.name}
               </h3>
               {review.time && (
-                <p className="text-[11px] text-slate-400 font-medium leading-none mt-0.5">
+                <p className="text-[11px] text-slate-400 font-medium mt-0.5">
                   {review.time}
                 </p>
               )}
@@ -139,7 +138,7 @@ function ReviewCard({ review, onOpenModal }) {
 
         {/* Review Text */}
         <div className="mt-1.5 flex flex-col justify-start">
-          <p className="text-slate-600 text-xs sm:text-[12.5px] leading-snug line-clamp-2 m-0">
+          <p className="text-slate-600 text-xs sm:text-[12.5px] line-clamp-2 m-0">
             {review.text || "Verified 5-Star rating on Google"}
           </p>
           {isLong && (
@@ -292,7 +291,7 @@ export default function ReviewsView({ data = null }) {
               {title}
             </h1>
 
-            <p className="text-xs sm:text-[13.5px] text-slate-200/90 leading-relaxed font-normal">
+            <p className="text-xs sm:text-[13.5px] text-slate-200/90 font-normal">
               {introText}
             </p>
           </div>
@@ -309,10 +308,10 @@ export default function ReviewsView({ data = null }) {
             </div>
 
             <div>
-              <div className="text-[#1a73e8] font-bold text-xs leading-none">
+              <div className="text-[#1a73e8] font-bold text-xs">
                 {scale}
               </div>
-              <div className="text-slate-900 font-extrabold text-sm sm:text-base leading-tight mt-0.5">
+              <div className="text-slate-900 font-extrabold text-sm sm:text-base mt-0.5">
                 {companyName}
               </div>
               <div className="flex items-center gap-1.5 mt-0.5">
@@ -328,7 +327,7 @@ export default function ReviewsView({ data = null }) {
           </div>
 
           {/* Right: See All & Review Us CTAs */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 pl-[52px] sm:pl-0">
             <a
               href={allReviewsUrl}
               target="_blank"
@@ -368,11 +367,10 @@ export default function ReviewsView({ data = null }) {
                 key={tab.id}
                 type="button"
                 onClick={() => handleFilterClick(tab.id)}
-                className={`px-4 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer whitespace-nowrap ${
-                  activeFilter === tab.id
-                    ? "bg-[#11233E] text-white"
-                    : "bg-[#EEF2F6] text-slate-700 hover:bg-slate-200 font-medium"
-                }`}
+                className={`px-4 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer whitespace-nowrap ${activeFilter === tab.id
+                  ? "bg-[#11233E] text-white"
+                  : "bg-[#EEF2F6] text-slate-700 hover:bg-slate-200 font-medium"
+                  }`}
               >
                 {tab.label}
               </button>
@@ -468,7 +466,7 @@ export default function ReviewsView({ data = null }) {
             <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-2">
               Are you a Distance Education School Student?
             </h2>
-            <p className="text-xs sm:text-[13px] text-slate-200/90 mb-4 leading-relaxed">
+            <p className="text-xs sm:text-[13px] text-slate-200/90 mb-4">
               Your genuine feedback helps thousands of aspiring students make informed decisions about their higher education and career paths.
             </p>
             <a
@@ -522,7 +520,7 @@ export default function ReviewsView({ data = null }) {
             </div>
 
             {/* Full Review Text */}
-            <div className="mt-4 pt-3 border-t border-slate-100 text-slate-700 text-xs sm:text-[13px] leading-relaxed">
+            <div className="mt-4 pt-3 border-t border-slate-100 text-slate-700 text-xs sm:text-[13px]">
               <p className="whitespace-pre-line m-0">{activeModalReview.text}</p>
             </div>
 
