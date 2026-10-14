@@ -204,15 +204,17 @@ function CleanCard({ c, brand, onSelectCourseForBrochure }) {
       </div>
 
       <div className="mt-3 pt-0.5">
-        <div className="relative w-28 sm:w-[114px] h-7 sm:h-[28px] mb-2">
-          <Image
-            src={brand.manipalLogo || c.logo || "/assets/manipal_v1_images/manipal-logo.webp"}
-            alt="Online Manipal"
-            fill
-            className="object-contain object-left"
-            sizes="120px"
-          />
-        </div>
+        {(brand.programmeLogo || c.logo || brand.manipalLogo || brand.logo || "/assets/manipal_v1_images/manipal-logo.webp") && (
+          <div className="relative w-28 sm:w-[114px] h-7 sm:h-[28px] mb-2">
+            <Image
+              src={brand.programmeLogo || c.logo || brand.manipalLogo || brand.logo || "/assets/manipal_v1_images/manipal-logo.webp"}
+              alt={brand.name || "University Logo"}
+              fill
+              className="object-contain object-left"
+              sizes="120px"
+            />
+          </div>
+        )}
 
         <Button
           type="primary"
@@ -220,7 +222,7 @@ function CleanCard({ c, brand, onSelectCourseForBrochure }) {
           className="w-full h-auto py-2 sm:py-2.5 px-4 rounded-[5px] !text-white font-medium text-[13px] sm:text-[13.5px] flex items-center justify-center gap-2 !border-none cursor-pointer transition-opacity hover:!opacity-95 shadow-xs"
           style={{ background: brand.programmeBtnBg || "linear-gradient(270deg, #ff6600 0%, #ee3024 100%)" }}
         >
-          <span>Download Brochure</span>
+          <span>{brand.programmeBtnLabel || "Download Brochure"}</span>
           <Download className="w-4 h-4 stroke-[2.5]" />
         </Button>
       </div>

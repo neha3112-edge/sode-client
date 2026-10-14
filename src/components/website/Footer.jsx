@@ -157,18 +157,18 @@ export function Footer({
           ====================================================== */}
           {topCta?.enabled !== false && (
             <div
-              className="mb-6 sm:mb-7 rounded-2xl p-6 sm:p-7 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-md"
+              className="mb-6 sm:mb-7 rounded-xl sm:rounded-2xl p-3.5 sm:p-7 flex flex-row items-center justify-between gap-3 sm:gap-6 shadow-md"
               style={{ backgroundColor: topCtaBg }}
             >
-              <div className="text-center sm:text-left">
+              <div className="text-left flex-1 min-w-0 pr-1">
                 <h3
-                  className="text-2xl sm:text-3xl md:text-[32px] font-extrabold tracking-tight"
+                  className="text-base sm:text-3xl md:text-[32px] font-extrabold tracking-tight leading-tight m-0"
                   style={{ color: topCtaText }}
                 >
                   {topCta?.heading || topCta?.title || "Have Any Doubt?"}
                 </h3>
                 <p
-                  className="mt-1 text-sm sm:text-base md:text-lg font-medium"
+                  className="mt-0.5 sm:mt-1 text-[11px] sm:text-base md:text-lg font-medium leading-snug m-0"
                   style={{ color: topCtaText, opacity: 0.85 }}
                 >
                   {topCta?.subheading || topCta?.subtitle || "Interact with experts, Get free consultation."}
@@ -178,14 +178,14 @@ export function Footer({
               {topCta?.button_url && topCta.button_url !== "#" && !topCta?.is_modal ? (
                 <Link
                   href={topCta.button_url}
-                  className="shrink-0 flex items-center gap-2.5 rounded-full px-7 py-3 text-sm md:text-base font-bold shadow-sm transition hover:shadow-md hover:scale-[1.02]"
+                  className="shrink-0 flex items-center gap-1 sm:gap-2.5 rounded-full px-2.5 py-1.5 sm:px-7 sm:py-3 text-[10.5px] sm:text-base font-bold shadow-sm transition hover:shadow-md hover:scale-[1.02] whitespace-nowrap"
                   style={{ backgroundColor: topCtaBtnBg, color: topCtaBtnText }}
                 >
                   <div
-                    className="flex h-6 w-6 items-center justify-center rounded"
+                    className="flex h-4 w-4 sm:h-6 sm:w-6 items-center justify-center rounded shrink-0"
                     style={{ backgroundColor: topCtaBtnText, color: topCtaBtnBg }}
                   >
-                    <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24">
+                    <svg className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.44-5.15-3.75-6.59-6.59l1.97-1.57c.28-.28.36-.67.25-1.02A11.36 11.36 0 018.57 3.9c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.52c0-.55-.45-1-.99-1z" />
                     </svg>
                   </div>
@@ -195,14 +195,14 @@ export function Footer({
                 <button
                   type="button"
                   onClick={() => openExpertForm(topCta?.heading || topCta?.title, topCta?.subheading || topCta?.subtitle)}
-                  className="cursor-pointer shrink-0 flex items-center gap-2.5 rounded-full px-7 py-3 text-sm md:text-base font-bold shadow-sm transition hover:shadow-md hover:scale-[1.02]"
+                  className="cursor-pointer shrink-0 flex items-center gap-1 sm:gap-2.5 rounded-full px-2.5 py-1.5 sm:px-7 sm:py-3 text-[10.5px] sm:text-base font-bold shadow-sm transition hover:shadow-md hover:scale-[1.02] whitespace-nowrap"
                   style={{ backgroundColor: topCtaBtnBg, color: topCtaBtnText }}
                 >
                   <div
-                    className="flex h-6 w-6 items-center justify-center rounded"
+                    className="flex h-4 w-4 sm:h-6 sm:w-6 items-center justify-center rounded shrink-0"
                     style={{ backgroundColor: topCtaBtnText, color: topCtaBtnBg }}
                   >
-                    <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24">
+                    <svg className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.44-5.15-3.75-6.59-6.59l1.97-1.57c.28-.28.36-.67.25-1.02A11.36 11.36 0 018.57 3.9c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.52c0-.55-.45-1-.99-1z" />
                     </svg>
                   </div>
@@ -405,9 +405,9 @@ export function Footer({
               ))}
 
               {/* Mobile-only: Social links (1 row) + Review / Google Rating card placed in the 4th cell next to GET STARTED */}
-              <div className="flex flex-col sm:hidden justify-start pt-1.5">
+              <div className="flex flex-col sm:hidden justify-start pt-1.5 w-full max-w-40">
                 {/* 1 Row for all 5 social icons without wrapping */}
-                <div className="flex items-center gap-1.5 flex-nowrap">
+                <div className="flex items-center justify-between w-full">
                   {socialLinksToRender.map((s, idx) => (
                     <a
                       key={s?._id || idx}
@@ -428,7 +428,7 @@ export function Footer({
                 {mediaBar?.show_rating !== false && (
                   <Link
                     href="/distance-education-school-reviews"
-                    className="mt-2.5 flex items-center gap-2 rounded-lg bg-white p-2 shadow-xs hover:shadow-sm transition cursor-pointer"
+                    className="mt-2.5 flex items-center gap-2 rounded-lg bg-white p-2 shadow-xs hover:shadow-sm transition cursor-pointer w-full"
                   >
                     <div className="shrink-0">
                       <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
@@ -477,20 +477,17 @@ export function Footer({
           </div>
 
           {/* =====================================================
-              3. LEGAL NOTICE SECTION (Centered)
+              3. LEGAL NOTICE SECTION
           ====================================================== */}
           {legal?.show_legal_notice !== false && legal?.disclaimer_text && (
-            <div className="mt-6 sm:mt-3 mb-4 pt-2 sm:pt-0 text-center max-w-full mx-auto px-2">
+            <div className="mt-5 sm:mt-4 mb-4 pt-2 sm:pt-0 w-full text-left">
               <h5
-                className="text-[12px] sm:text-[13px] font-bold uppercase tracking-normal mb-1"
+                className="text-[12px] sm:text-[13px] font-bold uppercase tracking-wider mb-2 text-left"
                 style={{ color: accentColor }}
               >
-                {legal?.legal_notice_heading || "LEGAL NOTICE"}
+                {(legal?.legal_notice_heading || "LEGAL NOTICE").replace(/LEAGAL/gi, "LEGAL")}
               </h5>
-              <p
-                className="text-[11px] sm:text-[12px] leading-relaxed text-justify text-gray-300 font-normal"
-                style={{ textAlign: "justify", textJustify: "inter-word" }}
-              >
+              <p className="text-[11px] sm:text-[12px] leading-normal text-left text-gray-300/90 font-normal">
                 {legal.disclaimer_text}
               </p>
             </div>

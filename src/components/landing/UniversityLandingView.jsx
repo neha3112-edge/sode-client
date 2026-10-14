@@ -28,8 +28,13 @@ import BrochureModal from "./modals/BrochureModal";
 import ScholarshipModal from "./modals/ScholarshipModal";
 import CompareModal from "./modals/CompareModal";
 import LegalModal from "./modals/LegalModal";
+import LiverpoolLandingView from "./LiverpoolLandingView";
 
 export default function UniversityLandingView({ data = {} }) {
+  if (data?.slug === "liverpool" || data?.brand?.slug === "liverpool") {
+    return <LiverpoolLandingView data={data} />;
+  }
+
   const {
     slug = "university",
     brand = {},
@@ -177,7 +182,7 @@ export default function UniversityLandingView({ data = {} }) {
   const isSmu = slug === "smu" || brand.slug === "smu";
   const isVgu = slug === "vgu" || brand.slug === "vgu";
 
-  const activeCustomCss = customCss || brand.customCss || data.css || "";
+  const activeCustomCss = customCss || brand.customCss || data.css || data.customCss || "";
   const pageSlug = brand.slug || slug || "university";
 
   const requestedFont = (brand.fontFamily || brand.font || data?.fontFamily || "Roboto").toLowerCase();
@@ -229,8 +234,8 @@ export default function UniversityLandingView({ data = {} }) {
           courses={courses}
           onOpenBrochure={(course, title) => handleOpenBrochure(course, title)}
           onOpenApply={(course, title) => handleOpenApply(course, title || "Apply Now")}
-          onOpenScholarship={() => setIsScholarshipOpen(true)}
           onOpenDisclaimer={() => handleOpenLegal("disclaimer")}
+          onOpenScholarship={() => setIsScholarshipOpen(true)}
         />
 
         {/* 2.5 Sub-Navigation Sticky Bar */}
@@ -356,7 +361,7 @@ export default function UniversityLandingView({ data = {} }) {
                         </div>
                       )}
 
-                      <div className="flex flex-wrap items-center justify-center gap-3 mt-4">
+                      <div className="overview-cta-row flex flex-wrap items-center justify-center gap-3 mt-4">
                         <button
                           type="button"
                           onClick={() => handleOpenBrochure()}
@@ -380,7 +385,7 @@ export default function UniversityLandingView({ data = {} }) {
                                 handleOpenApply();
                               }
                             }}
-                            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-[5px] bg-black text-white font-bold text-[15px] hover:brightness-125 transition-all cursor-pointer border-none shadow-xs active:scale-95"
+                            className="overviewKnowMoreBtn inline-flex items-center gap-2 px-6 py-2.5 rounded-[5px] bg-black text-white font-bold text-[15px] hover:brightness-125 transition-all cursor-pointer border-none shadow-xs active:scale-95"
                           >
                             <span>{brand.overviewSecondaryBtnText}</span>
                             <span className="text-[14px]">▼</span>
@@ -407,7 +412,7 @@ export default function UniversityLandingView({ data = {} }) {
                         <div className="b2-info">
                           {keySkillsList.map((skill, idx) => (
                             <div key={idx} className="b1">
-                              <img src={skill.icon} alt={skill.title} />
+                              <Image src={skill.icon} alt={skill.title} width={40} height={40} className="object-contain" />
                               <div>
                                 <h3>{skill.title}</h3>
                                 <p>{skill.desc}</p>
@@ -463,7 +468,7 @@ export default function UniversityLandingView({ data = {} }) {
                           {toolsList.map((t, idx) => (
                             <div key={idx} className="c1">
                               <div className="c1-img-wrap" style={{ minHeight: "140px", display: "flex", alignItems: "center", justifyContent: "center", padding: "16px" }}>
-                                <img src={t.image} alt={t.name} className="img-responsive" style={{ maxHeight: "90px", maxWidth: "180px", objectFit: "contain", margin: "auto" }} />
+                                <Image src={t.image} alt={t.name} width={180} height={90} className="img-responsive" style={{ maxHeight: "90px", maxWidth: "180px", objectFit: "contain", margin: "auto" }} />
                               </div>
                               <p
                                 className="c1-desc"
@@ -530,46 +535,92 @@ export default function UniversityLandingView({ data = {} }) {
                         {brand.whyChooseCarouselTitle || "Why Choose ESGCI Online DBA Program"}
                       </h2>
                       <div className="course-info">
-                        <Carousel
-                          autoplay
-                          autoplaySpeed={3000}
-                          dots={true}
-                          slidesToShow={3}
-                          responsive={[
-                            { breakpoint: 1024, settings: { slidesToShow: 2 } },
-                            { breakpoint: 640, settings: { slidesToShow: 1 } },
-                          ]}
-                        >
-                          {carouselItems.map((item, idx) => (
-                            <div key={idx} className="px-3 box-border outline-none py-2">
-                              <div className="bg-white rounded-[8px] overflow-hidden border border-slate-200/90 shadow-sm flex flex-col justify-between text-left h-full min-h-[390px] hover:shadow-md transition-shadow">
-                                <div className="relative w-full aspect-[16/10] overflow-hidden bg-slate-100">
-                                  <Image src={item.image} alt={item.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 33vw" />
-                                </div>
-                                <div className="p-5 flex-1 flex flex-col justify-between">
-                                  <div>
-                                    <h3 className="text-[17px] sm:text-[18px] font-bold text-[#111111] mb-2 leading-snug">
-                                      {item.title}
-                                    </h3>
-                                    <p className="text-[12.5px] sm:text-[13px] text-[#555555] leading-relaxed mb-4">
-                                      {item.desc || item.description}
-                                    </p>
+                        {/* Mobile View: Single card per slide with Ant Design Carousel */}
+                        <div className="block md:hidden max-w-[340px] sm:max-w-[380px] mx-auto [&_.slick-dots]:!relative [&_.slick-dots]:!mt-5 [&_.slick-dots_li_button]:!bg-slate-300 [&_.slick-dots_li.slick-active_button]:!bg-[#04903c]">
+                          <Carousel
+                            autoplay
+                            autoplaySpeed={3000}
+                            dots={true}
+                            slidesToShow={1}
+                            slidesToScroll={1}
+                            infinite={carouselItems.length > 1}
+                          >
+                            {carouselItems.map((item, idx) => (
+                              <div key={idx} className="px-1 box-border outline-none py-2">
+                                <div className="bg-white rounded-[8px] overflow-hidden border border-slate-200/90 shadow-sm flex flex-col justify-between text-left h-full min-h-[390px] hover:shadow-md transition-shadow">
+                                  <div className="relative w-full aspect-[16/10] overflow-hidden bg-slate-100">
+                                    <Image src={item.image} alt={item.title} fill className="object-cover" sizes="100vw" />
                                   </div>
-                                  <div>
-                                    <hr className="border-t border-slate-200 mb-4" />
-                                    <button
-                                      type="button"
-                                      onClick={() => handleOpenApply?.(item.title)}
-                                      className="w-full py-2 px-4 bg-[#fff000] text-black font-bold text-[13.5px] rounded-[5px] hover:brightness-95 transition-all border-none cursor-pointer"
-                                    >
-                                      Apply Now
-                                    </button>
+                                  <div className="p-5 flex-1 flex flex-col justify-between">
+                                    <div>
+                                      <h3 className="text-[17px] sm:text-[18px] font-bold text-[#111111] mb-2 leading-snug">
+                                        {item.title}
+                                      </h3>
+                                      <p className="text-[12.5px] sm:text-[13px] text-[#555555] leading-relaxed mb-4">
+                                        {item.desc || item.description}
+                                      </p>
+                                    </div>
+                                    <div>
+                                      <hr className="border-t border-slate-200 mb-4" />
+                                      <button
+                                        type="button"
+                                        onClick={() => handleOpenApply?.(item.title)}
+                                        className="w-full py-2 px-4 bg-[#fff000] text-black font-bold text-[13.5px] rounded-[5px] hover:brightness-95 transition-all border-none cursor-pointer"
+                                      >
+                                        Apply Now
+                                      </button>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
-                            </div>
-                          ))}
-                        </Carousel>
+                            ))}
+                          </Carousel>
+                        </div>
+
+                        {/* Desktop View: Multi-card Ant Design Carousel */}
+                        <div className="hidden md:block max-w-[1020px] mx-auto [&_.slick-track]:!flex [&_.slick-slide]:!h-auto [&_.slick-slide>div]:!h-full [&_.slick-dots]:!relative [&_.slick-dots]:!mt-5 [&_.slick-dots_li_button]:!bg-slate-300 [&_.slick-dots_li.slick-active_button]:!bg-[#04903c]">
+                          <Carousel
+                            autoplay
+                            autoplaySpeed={3000}
+                            dots={true}
+                            slidesToShow={3}
+                            slidesToScroll={1}
+                            responsive={[
+                              { breakpoint: 1024, settings: { slidesToShow: 2, slidesToScroll: 1 } },
+                            ]}
+                            infinite={carouselItems.length > 2}
+                          >
+                            {carouselItems.map((item, idx) => (
+                              <div key={idx} className="px-2.5 box-border outline-none py-2 h-full">
+                                <div className="bg-[#f1f1f1] overflow-hidden flex flex-col justify-between text-left h-full transition-shadow">
+                                  <div className="relative w-full aspect-[16/8.5] overflow-hidden bg-slate-200 shrink-0">
+                                    <Image src={item.image} alt={item.title} fill className="object-cover" sizes="(max-width: 1024px) 50vw, 33vw" />
+                                  </div>
+                                  <div className="p-3.5 sm:p-4 flex-1 flex flex-col justify-between">
+                                    <div>
+                                      <h3 className="text-[15.5px] sm:text-[16px] font-bold text-[#111111] mb-1.5 leading-snug min-h-[40px] flex items-start">
+                                        {item.title}
+                                      </h3>
+                                      <p className="text-[12px] text-[#555555] leading-relaxed mb-3 min-h-[54px] line-clamp-3">
+                                        {item.desc || item.description}
+                                      </p>
+                                    </div>
+                                    <div className="mt-auto">
+                                      <hr className="border-t border-[#d8d8d8] mb-3" />
+                                      <button
+                                        type="button"
+                                        onClick={() => handleOpenApply?.(item.title)}
+                                        className="py-1.5 px-4 bg-[#04903c] text-white font-bold text-[12.5px] rounded-[4px] hover:bg-[#037c34] transition-all border-none cursor-pointer inline-block"
+                                      >
+                                        Apply Now
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </Carousel>
+                        </div>
                       </div>
                     </div>
                   </section>
@@ -799,7 +850,7 @@ export default function UniversityLandingView({ data = {} }) {
 
       {/* Floating Sticky CTAs */}
       <LandingStickyCtas
-        brand={brand}
+        brand={{ ...brand, slug: brand.slug || slug || data?.slug }}
         onOpenApply={() => handleOpenApply(null, "Apply Now")}
         onOpenBrochure={() => handleOpenBrochure(null, "Download Brochure")}
         onOpenScholarship={() => setIsScholarshipOpen(true)}

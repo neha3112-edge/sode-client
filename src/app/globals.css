@@ -51,7 +51,9 @@ td,
 }
 
 .font-poppins,
-.font-poppins * {
+.font-poppins *,
+.blog-poppins-layout,
+.blog-poppins-layout * {
   font-family: var(--font-poppins), "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
 }
 
@@ -61,13 +63,7 @@ td,
 }
 
 html {
-  scroll-behavior: smooth;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
+  scroll-behavior: auto !important;
 }
 
 body {
@@ -167,6 +163,7 @@ body {
 .comparison-matrix-table .ant-table-tbody>tr:last-child>td {
   border-bottom: none !important;
 }
+
 
 /* =========================================================
    DEGREE4U STYLE MARQUEE ANIMATIONS
@@ -356,11 +353,21 @@ body:has(.landing-page-root)>div>main {
 
 @keyframes couponOuterShadow {
   0% {
-    box-shadow: 0 0 0 0.1px rgba(46, 204, 113, 0.75);
+    box-shadow: 
+      0 0 0 0.1px var(--coupon-shadow-start, rgba(46, 204, 113, 0.75)),
+      0 0 8px var(--coupon-shadow-start, rgba(46, 204, 113, 0.6));
+  }
+
+  50% {
+    box-shadow: 
+      0 0 0 6px var(--coupon-shadow-mid1, rgba(46, 204, 113, 0.45)),
+      0 0 16px var(--coupon-shadow-mid2, rgba(46, 204, 113, 0.35));
   }
 
   100% {
-    box-shadow: 0 0 0 20px rgba(46, 204, 113, 0);
+    box-shadow: 
+      0 0 0 16px var(--coupon-shadow-end, rgba(46, 204, 113, 0)),
+      0 0 24px var(--coupon-shadow-end, rgba(46, 204, 113, 0));
   }
 }
 
@@ -516,6 +523,33 @@ body:has(.landing-page-root)>div>main {
 /* Footer bottom */
 .landing-page--iim .mini-footer-bottom {
   background-color: #17479E !important;
+
+   GLOBAL AUTO-RENDERED HTML LINK STYLING
+========================================================= */
+a.auto-rendered-link {
+  text-decoration: underline !important;
+  text-underline-offset: 3px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: opacity 0.2s ease, color 0.2s ease !important;
+  color: #0284c7 !important;
+}
+
+a.auto-rendered-link:hover {
+  opacity: 0.8 !important;
+}
+
+/* Adaptive colors for dark backgrounds (Hero, Headers, Dark Cards) */
+.text-white a.auto-rendered-link,
+.text-slate-200 a.auto-rendered-link,
+.text-slate-300 a.auto-rendered-link,
+.bg-slate-900 a.auto-rendered-link,
+.bg-slate-950 a.auto-rendered-link,
+[style*="background-color: #072C50"] a.auto-rendered-link,
+[style*="background-color: #102A45"] a.auto-rendered-link,
+[style*="backgroundColor: #072C50"] a.auto-rendered-link,
+[style*="backgroundColor: #102A45"] a.auto-rendered-link {
+  color: #F5D061 !important;
 }
 
 /* =========================================================

@@ -1,18 +1,21 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Plus, Check, ChevronDown } from "lucide-react";
 import { useCompare } from "@/hooks/useCompare";
-import { getAssetPath } from "@/lib/utils";
+
+const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 
 export default function UniversityPeerUniversities({
   topUniversities = [],
   openFormModal,
 }) {
+  const router = useRouter();
   const [visibleTopUnis, setVisibleTopUnis] = useState(5);
-  const { toggleCompare, isInCompare, setIsCompareDrawerOpen } = useCompare();
+  const { toggleCompare, compareList, isInCompare, setIsCompareDrawerOpen } = useCompare();
 
   if (!topUniversities || topUniversities.length === 0) return null;
 
@@ -29,7 +32,7 @@ export default function UniversityPeerUniversities({
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
         {topUniversities.slice(0, visibleTopUnis).map((peer, index) => {
           const inCmp = isInCompare(peer._id || peer.slug || peer.name);
-          const peerLogo = peer.logo?.url || peer.logoUrl;
+          const peerLogo = peer.logo || peer.logoUrl;
           const providerName = peer.viaPartner || (peer.partner && peer.partner[0]?.name) || null;
           const coursesOfferedText = `${peer.coursesCount || peer.programsCount || 10}+ Programs`;
           const rawSlug = peer.slug || encodeURIComponent((peer.name || "").toLowerCase());
@@ -52,10 +55,13 @@ export default function UniversityPeerUniversities({
               )}
 
               {/* Circular Logo Container without border */}
-              <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-full p-1 flex items-center justify-center bg-white relative my-0.5 shrink-0 overflow-hidden">
+              <Link
+                href={uniDetailHref}
+                className="w-11 h-11 sm:w-14 sm:h-14 rounded-full p-1 flex items-center justify-center bg-white relative my-0.5 shrink-0 overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+              >
                 {peerLogo ? (
                   <Image
-                    src={getAssetPath(peerLogo)}
+                    src={getMediaUrl(peerLogo)}
                     alt={peer.name}
                     fill
                     sizes="56px"
@@ -66,7 +72,7 @@ export default function UniversityPeerUniversities({
                     {peer.initial || (peer.name && peer.name.charAt(0)) || "U"}
                   </div>
                 )}
-              </div>
+              </Link>
 
               {/* University Name & Courses Count */}
               <div className="w-full space-y-0.5 my-0.5">
@@ -87,26 +93,39 @@ export default function UniversityPeerUniversities({
               <button
                 type="button"
                 onClick={() => {
-                  const targetItem = {
-                    _id: peer._id || peer.slug,
-                    slug: peer.slug || peer._id,
-                    title: peer.name,
-                    uniName: peer.name,
-                    logoUrl: peerLogo,
-                  };
-                  toggleCompare(targetItem);
-                  setIsCompareDrawerOpen(true);
+                  const cleanUniSlug = (peer.slug && !peer.slug.includes("/")) ? peer.slug : (peer.slug?.split("/")[0] || peer._id);
+                  if (inCmp) {
+                    const existingSlugs = (compareList || [])
+                      .map((u) => u.uniSlug || (u.slug && !u.slug.includes("/") ? u.slug : null) || u.slug?.split("/")[0] || u._id || u.id)
+                      .filter(Boolean);
+                    const combinedSlugs = Array.from(new Set([...existingSlugs, cleanUniSlug])).filter(Boolean).slice(0, 3);
+                    const activeCourse = (typeof window !== "undefined" && window.__CURRENT_PAGE_COURSES__?.[0]) || "";
+                    router.push(`/tools/compare-universities?university=${encodeURIComponent(combinedSlugs.join(","))}${activeCourse ? `&course=${encodeURIComponent(activeCourse)}` : ""}`);
+                  } else {
+                    const targetItem = {
+                      _id: cleanUniSlug,
+                      slug: cleanUniSlug,
+                      uniSlug: cleanUniSlug,
+                      name: peer.name,
+                      title: peer.name,
+                      uniName: peer.name,
+                      logoUrl: peerLogo,
+                      logoSrc: peerLogo,
+                    };
+                    toggleCompare(targetItem);
+                    setIsCompareDrawerOpen(true);
+                  }
                 }}
                 className={`w-full py-1 px-2 rounded-lg text-[10px] sm:text-[11px] font-semibold transition-all flex items-center justify-center gap-1 border cursor-pointer mt-1 ${
                   inCmp
-                    ? "bg-teal-50 text-teal-700 border-teal-600 shadow-2xs"
+                    ? "bg-teal-50 text-teal-700 border-teal-600 shadow-2xs hover:bg-teal-100"
                     : "bg-white text-[#0a2540] border-gray-200 hover:bg-gray-50 hover:border-gray-300"
                 }`}
               >
                 {inCmp ? (
                   <>
                     <Check className="w-3.5 h-3.5 text-teal-600 shrink-0 stroke-2" />
-                    <span>Added to Compare</span>
+                    <span>Compare Now</span>
                   </>
                 ) : (
                   <>

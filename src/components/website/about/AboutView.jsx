@@ -12,7 +12,6 @@ import {
   RightOutlined,
   LeftOutlined,
 } from "@ant-design/icons";
-import { getAssetPath } from "@/lib/utils";
 
 // --- Vector SVGs for Perfect Visual Alignment with Screenshot ---
 
@@ -190,7 +189,7 @@ export function AboutView({ initialAboutData = null, initialReviews = [] }) {
   const [reviewSliderIndex, setReviewSliderIndex] = useState(0);
   const [hoveredStepIdx, setHoveredStepIdx] = useState(null);
 
-  const bannerImgUrl = getAssetPath(about?.bannerImage, "");
+  const bannerImgUrl = typeof about?.bannerImage === "string" ? about.bannerImage : (about?.bannerImage?.url || about?.bannerImage?.path || "");
 
   const stats = Array.isArray(about?.stats) ? about.stats : [];
   const videoReviews = Array.isArray(about?.videoReviews) ? about.videoReviews : [];
@@ -363,9 +362,9 @@ export function AboutView({ initialAboutData = null, initialReviews = [] }) {
                   key={idx}
                   className="group relative aspect-[9/13] sm:aspect-[9/12] rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 bg-slate-900 flex flex-col justify-end p-3 cursor-pointer"
                 >
-                  {item.thumbnailUrl && (
+                  {(item.thumbnail || item.thumbnailUrl) && (
                     <Image
-                      src={getAssetPath(item.thumbnailUrl)}
+                      src={typeof (item.thumbnail || item.thumbnailUrl) === "string" ? (item.thumbnail || item.thumbnailUrl) : ((item.thumbnail || item.thumbnailUrl)?.url || (item.thumbnail || item.thumbnailUrl)?.path || "")}
                       alt={item.studentName || "Student"}
                       fill
                       sizes="(max-width: 768px) 50vw, 25vw"
@@ -774,11 +773,15 @@ export function AboutView({ initialAboutData = null, initialReviews = [] }) {
                     </span>
                   </button>
 
-                  {isOpen && (
-                    <div className="bg-[#edf5fd] px-6 py-4 text-xs sm:text-sm text-slate-700 leading-relaxed border-t border-slate-200/50">
-                      {faq.answer}
-                    </div>
-                  )}
+                  <div
+                    className={
+                      isOpen
+                        ? "bg-[#edf5fd] px-6 py-4 text-xs sm:text-sm text-slate-700 leading-relaxed border-t border-slate-200/50"
+                        : "sr-only"
+                    }
+                  >
+                    {faq.answer}
+                  </div>
                 </div>
               );
             })}

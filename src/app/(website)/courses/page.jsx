@@ -3,8 +3,7 @@ import { request } from "@/services/request";
 import { getPageMetaData, constructMetadata } from "@/constants/pageMetaData";
 import { CoursesPageClientView } from "@/components/website";
 
-export const revalidate = 0;
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export async function generateMetadata() {
   const pageMeta = await getPageMetaData("/courses");
@@ -23,7 +22,8 @@ export default async function CoursesPage({ searchParams }) {
     page: resolvedSearchParams.page || 1,
     items: 10,
     category: resolvedSearchParams.category || undefined,
-    subcategory: resolvedSearchParams.subcategory || resolvedSearchParams.subCategory || resolvedSearchParams.subcourse || undefined,
+    subcategory: resolvedSearchParams.subcategory || resolvedSearchParams.subCategory || undefined,
+    subcourse: resolvedSearchParams.subcourse || resolvedSearchParams.subCourse || resolvedSearchParams.subcourseId || resolvedSearchParams.specialization || resolvedSearchParams.specializationId || undefined,
     course: resolvedSearchParams.course || resolvedSearchParams.courseId || undefined,
     university: resolvedSearchParams.university || resolvedSearchParams.universityId || undefined,
     duration: resolvedSearchParams.duration || undefined,
@@ -47,7 +47,7 @@ export default async function CoursesPage({ searchParams }) {
         entity: "courses",
         endPoint: "v1/list",
         options: queryOptions,
-        revalidate: 0, // search results always fresh
+        revalidate: 300, // ISR cached 5 mins
       }),
     ]);
 

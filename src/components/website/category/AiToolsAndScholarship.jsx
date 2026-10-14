@@ -6,17 +6,50 @@ import Link from "next/link";
 import { Container } from "@/components/common/Container";
 import { useToolWizard } from "@/components/tool/ToolWizardContext";
 import { CareerExpertsSection } from "@/components/website/counselor";
+import { ArrowRight } from "lucide-react";
+
+const DEFAULT_TOOLS = [
+  {
+    name: "Suggest University",
+    description: "Find universities that match your goals, preferences, and career plans.",
+    linkUrl: "/tools/suggest-university",
+    btnText: "Suggest University",
+  },
+  {
+    name: "Check Eligibility",
+    description: "Instantly check which courses and universities you are eligible for.",
+    linkUrl: "/tools/eligibility-checker",
+    btnText: "Check Eligibility",
+  },
+  {
+    name: "Compare University",
+    description: "Compare universities, courses, fees, and key benefits side by side.",
+    linkUrl: "/tools/compare-universities",
+    btnText: "Compare University",
+  },
+  {
+    name: "Suggest Course",
+    description: "Find the best online and distance programs aligned with your aspirations.",
+    linkUrl: "/tools/suggest-course",
+    btnText: "Suggest Course",
+  },
+];
 
 export default function AiToolsAndScholarship({ block, bIdx, counselors = [] }) {
   const { openTool } = useToolWizard();
 
+  const toolsList =
+    Array.isArray(block?.children) && block.children.length > 0
+      ? block.children.slice(0, 4)
+      : DEFAULT_TOOLS;
+
   return (
     <section
-      key={block._id || block.slug || bIdx}
-      className="w-full relative py-8 sm:py-12 md:py-14 bg-[#F1F5F9] text-center"
+      key={block?._id || block?.slug || bIdx}
+      className="w-full relative py-8 sm:py-10 bg-[#F1F5F9] text-center"
       suppressHydrationWarning
     >
-      <Container className="relative z-10 !max-w-7xl">
+      <Container className="relative z-10 max-w-7xl">
         <div className="w-full mx-auto text-center">
           {/* Top Badge */}
           <div className="flex justify-center mb-1.5 sm:mb-3">
@@ -38,18 +71,21 @@ export default function AiToolsAndScholarship({ block, bIdx, counselors = [] }) 
 
           {/* 4 Cards Grid (Strictly 4 on Home) */}
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 md:gap-5 text-center">
-            {(block.children || []).slice(0, 4).map((child, cIdx) => {
-              const cName = (child.name || child.title || "").toLowerCase();
+            {toolsList.map((child, cIdx) => {
+              const fullName = (child.name || child.title || "Tool").trim();
+              const cName = fullName.toLowerCase();
+
 
               let sparkleColor = "text-[#00ACC1]";
               let underlineClass = "border-[#00ACC1]";
+              let circleBg = "bg-[#E0F7F6]";
               let btnText = "Suggest University";
               let desc = "Find universities that match your goals, preferences, and career plans.";
               let isLink = true;
-              let linkUrl = "/tools/suggest-university";
+              let linkUrl = child.linkUrl || child.url || "/tools/suggest-university";
 
               let iconSvg = (
-                <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-6 h-6 sm:w-7 sm:h-7 text-[#00ACC1]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
               );
@@ -57,99 +93,126 @@ export default function AiToolsAndScholarship({ block, bIdx, counselors = [] }) 
               if (cName.includes("eligib")) {
                 sparkleColor = "text-[#AB47BC]";
                 underlineClass = "border-[#AB47BC]";
+                circleBg = "bg-[#F3E8FF]";
                 btnText = "Check Eligibility";
                 desc = "Instantly check which courses and universities you're eligible for.";
                 isLink = true;
-                linkUrl = "/tools/eligibility-checker";
+                linkUrl = child.linkUrl || child.url || "/tools/eligibility-checker";
                 iconSvg = (
-                  <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg className="w-6 h-6 sm:w-7 sm:h-7 text-[#AB47BC]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
                 );
               } else if (cName.includes("compar")) {
                 sparkleColor = "text-[#1E88E5]";
                 underlineClass = "border-[#1E88E5]";
+                circleBg = "bg-[#E0E7FF]";
                 btnText = "Compare University";
                 desc = "Compare universities, courses, fees, and key benefits side by side.";
                 isLink = true;
-                linkUrl = "/tools/compare-universities";
+                linkUrl = child.linkUrl || child.url || "/tools/compare-universities";
                 iconSvg = (
-                  <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="w-6 h-6 sm:w-7 sm:h-7 text-[#1E88E5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
                   </svg>
                 );
               } else if (cName.includes("course")) {
                 sparkleColor = "text-[#EC407A]";
                 underlineClass = "border-[#EC407A]";
+                circleBg = "bg-[#FCE4EC]";
                 btnText = "Suggest Course";
                 desc = "Discover accredited degree and diploma programs matched to your background.";
                 isLink = true;
-                linkUrl = "/tools/suggest-course";
+                linkUrl = child.linkUrl || child.url || "/tools/suggest-course";
                 iconSvg = (
-                  <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="w-6 h-6 sm:w-7 sm:h-7 text-[#EC407A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                   </svg>
                 );
+              } else if (cIdx % 4 === 1) {
+                sparkleColor = "text-[#AB47BC]";
+                underlineClass = "border-[#AB47BC]";
+                circleBg = "bg-[#F3E8FF]";
+              } else if (cIdx % 4 === 2) {
+                sparkleColor = "text-[#1E88E5]";
+                underlineClass = "border-[#1E88E5]";
+                circleBg = "bg-[#E0E7FF]";
+              } else if (cIdx % 4 === 3) {
+                sparkleColor = "text-[#EC407A]";
+                underlineClass = "border-[#EC407A]";
+                circleBg = "bg-[#FCE4EC]";
               }
+
+              const rawLogo = child.logo || child.image;
+              const logoUrl = rawLogo ? (typeof rawLogo === "string" ? rawLogo : rawLogo?.url || rawLogo?.path || null) : null;
 
               return (
                 <div
-                  key={child._id || cIdx}
-                  className="relative bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 md:p-6 shadow-sm hover:shadow-xl border border-slate-100/90 flex flex-col items-center text-center justify-between transition-all duration-300 hover:-translate-y-1 group"
+                  key={child._id || child.slug || cIdx}
+                  className="relative bg-white rounded-xl sm:rounded-2xl p-2.5 sm:p-5 md:p-6 shadow-xs hover:shadow-xl border border-slate-100 flex flex-col items-center text-center justify-between transition-all duration-300 hover:-translate-y-1 group"
                 >
+                  {/* Top-Right Sparkle */}
                   <span
-                    className={`absolute top-2 right-2 sm:top-3.5 sm:right-3.5 ${sparkleColor} font-black text-[10px] sm:text-xs group-hover:rotate-12 transition-transform`}
+                    className={`absolute top-2.5 right-2.5 sm:top-3.5 sm:right-3.5 ${sparkleColor} font-black text-xs select-none group-hover:rotate-12 transition-transform`}
                   >
                     ✦
                   </span>
 
-                  <Link href={linkUrl} className="flex flex-col items-center space-y-2 sm:space-y-3 w-full no-underline">
-                    <div className="w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center group-hover:scale-110 transition-transform">
-                      {child.logo?.url || (typeof child.logo === "string" && child.logo) ? (
+                  <Link href={linkUrl} className="flex flex-col items-center space-y-1.5 sm:space-y-3 w-full no-underline">
+                    {/* Round Icon with colored background (matching blog page) */}
+                    <div
+                      className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center mb-1 transition-transform group-hover:scale-110 shrink-0`}
+                    >
+                      {logoUrl ? (
                         <Image
-                          src={child.logo?.url || child.logo}
-                          alt={child.name || "Tool icon"}
-                          width={48}
-                          height={48}
+                          src={logoUrl}
+                          alt={fullName}
+                          width={55}
+                          height={55}
                           unoptimized
-                          className="w-9 h-9 sm:w-12 sm:h-12 md:w-13 md:h-13 object-contain"
                         />
                       ) : (
                         iconSvg
                       )}
                     </div>
 
-                    <h3 className="text-xs sm:text-base font-bold text-[#0F172A] tracking-tight m-0 pt-0.5 leading-tight">
-                      <span className={`border-b-2 ${underlineClass} pb-0.5 inline-block`}>
-                        {child.name}
-                      </span>
-                    </h3>
+                    {/* Title with Centered Short Accent Line */}
+                    <div className="w-full flex flex-col items-center justify-center mb-1">
+                      <h3 className="text-xs sm:text-base font-semibold text-[#0F172A] tracking-tight m-0 pt-0.5 leading-tight text-center">
+                        {fullName}
+                      </h3>
+                      <span className={`w-7 sm:w-8 border-b-2 ${underlineClass} mt-1 inline-block`} />
+                    </div>
 
-                    <p className="text-[#64748B] text-[10px] sm:text-xs md:text-[12.5px] leading-snug sm:leading-relaxed font-normal m-0 line-clamp-2 sm:line-clamp-3">
-                      {child.description || desc}
-                    </p>
+                    {/* Description */}
+                    <div className="w-full flex items-center justify-center mt-1">
+                      <p className="text-[#64748B] text-[10px] sm:text-[11px] leading-snug font-normal m-0 text-center">
+                        {child.description || desc}
+                      </p>
+                    </div>
                   </Link>
 
-                  <div className="w-full pt-3 sm:pt-5">
+                  {/* Button with circular arrow badge */}
+                  <div className="w-full pt-2.5 sm:pt-3">
                     {isLink ? (
                       <Link
                         href={linkUrl}
-                        className="w-full py-1.5 sm:py-2.5 px-2 sm:px-4 rounded-full bg-[#0B3B7E] hover:bg-[#072859] text-white font-bold text-[10px] sm:text-xs shadow-none transition-all flex items-center justify-center gap-1 sm:gap-1.5 cursor-pointer truncate"
+                        className="w-full py-1.5 sm:py-2 px-2 sm:px-4 rounded-full bg-[#0B3B7E] hover:bg-[#072859] text-white font-bold text-[9.5px] sm:text-xs shadow-xs transition-all flex items-center justify-center cursor-pointer no-underline group-hover:shadow-md active:scale-95"
                       >
-                        <span className="truncate">{btnText}</span>
-                        <span className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-white/20 flex items-center justify-center text-[9px] sm:text-[10px] shrink-0 group-hover:translate-x-0.5 transition-transform">
-                          →
+                        <span className="truncate min-w-0">{child.btnText || btnText}</span>
+                        <span className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-white text-[#0B3B7E] flex items-center justify-center shrink-0 ml-1 sm:ml-1.5 transition-transform group-hover:translate-x-0.5">
+                          <ArrowRight className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                         </span>
                       </Link>
                     ) : (
                       <button
                         type="button"
-                        onClick={clickHandler}
-                        className="w-full py-1.5 sm:py-2.5 px-2 sm:px-4 rounded-full bg-[#0B3B7E] hover:bg-[#072859] text-white font-bold text-[10px] sm:text-xs shadow-none transition-all flex items-center justify-center gap-1 sm:gap-1.5 cursor-pointer truncate border-0"
+                        onClick={() => openTool(linkUrl)}
+                        className="w-full py-1.5 sm:py-2 px-2 sm:px-4 rounded-full bg-[#0B3B7E] hover:bg-[#072859] text-white font-bold text-[9.5px] sm:text-xs shadow-xs transition-all flex items-center justify-center cursor-pointer border-0 group-hover:shadow-md active:scale-95"
                       >
-                        <span className="truncate">{btnText}</span>
-                        <span className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-white/20 flex items-center justify-center text-[9px] sm:text-[10px] shrink-0 group-hover:translate-x-0.5 transition-transform">
-                          →
+                        <span className="truncate min-w-0">{child.btnText || btnText}</span>
+                        <span className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-white text-[#0B3B7E] flex items-center justify-center shrink-0 ml-1 sm:ml-1.5 transition-transform group-hover:translate-x-0.5">
+                          <ArrowRight className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                         </span>
                       </button>
                     )}
@@ -158,22 +221,10 @@ export default function AiToolsAndScholarship({ block, bIdx, counselors = [] }) 
               );
             })}
           </div>
-
-          {/* Link to view all tools */}
-          <div className="mt-5 flex justify-center">
-            <Link
-              href="/tools"
-              className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-[#0B3B7E] hover:text-[#072859] bg-white hover:bg-slate-50 border border-slate-200 px-4 py-1.5 rounded-full shadow-2xs transition-colors"
-            >
-              <span>Explore All AI Tools</span>
-              <span className="text-xs">→</span>
-            </Link>
-          </div>
-
           {/* ── MEET OUR CAREER EXPERTS (INSIDE SAME TOOLS SECTION) ── */}
           <CareerExpertsSection counselors={counselors} />
         </div>
       </Container>
-    </section>
+    </section >
   );
 }

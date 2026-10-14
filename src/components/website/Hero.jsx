@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Carousel } from "antd";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Container } from "@/components/common/Container";
 import { useFormModal } from "@/hooks/useFormModal";
 import SafeHtmlRenderer from "@/components/website/SafeHtmlRenderer";
-import { getAssetPath } from "@/lib/utils";
 import { Video } from "@/components/common/Video";
 
 function getYouTubeEmbedUrl(url) {
@@ -42,6 +42,7 @@ const PAGE_CONTEXT_BADGE = {
 };
 
 export function Hero({ initialHeroData = null }) {
+  const carouselRef = useRef(null);
   const { openFormModal } = useFormModal();
 
   const heroData = initialHeroData?.result || initialHeroData || {};
@@ -60,8 +61,7 @@ export function Hero({ initialHeroData = null }) {
   const getMediaUrl = (mediaObj) => {
     if (!mediaObj) return null;
     if (typeof mediaObj === "string") return mediaObj;
-    if (typeof mediaObj === "object" && mediaObj.url) return mediaObj.url;
-    return null;
+    return mediaObj.url || mediaObj.src || mediaObj.path || null;
   };
 
   const heroType = heroData.hero_type || heroData.heroType || "carousel";
@@ -145,7 +145,7 @@ export function Hero({ initialHeroData = null }) {
         style={{
           backgroundColor: bgCol,
           ...(bgImgUrl
-            ? { backgroundImage: `url(${getAssetPath(bgImgUrl)})`, backgroundSize: "cover", backgroundPosition: "center" }
+            ? { backgroundImage: `url(${bgImgUrl})`, backgroundSize: "cover", backgroundPosition: "center" }
             : {}),
         }}
         className="w-full py-8 sm:py-12 lg:py-16 px-4 sm:px-6 lg:px-10 border-b border-slate-800 relative overflow-hidden"
@@ -166,7 +166,7 @@ export function Hero({ initialHeroData = null }) {
                 <span className={`inline-flex items-center gap-1.5 px-3 py-1 ${badge.bg} ${badge.text} text-xs font-bold rounded-full border ${badge.border} tracking-wide`}>
                   {badgeIconUrl && (
                     <span className="relative w-4 h-4 shrink-0 inline-block">
-                      <Image src={getAssetPath(badgeIconUrl)} alt="" fill sizes="16px" className="object-contain" />
+                      <Image src={badgeIconUrl} alt="" fill sizes="16px" className="object-contain" />
                     </span>
                   )}
                   {heroData.badge_text}
@@ -281,7 +281,7 @@ export function Hero({ initialHeroData = null }) {
                     />
                   ) : bannerUrl ? (
                     <Image
-                      src={getAssetPath(bannerUrl)}
+                      src={bannerUrl}
                       alt={title || "Hero Banner"}
                       fill
                       sizes="(max-width: 768px) 100vw, 50vw"
@@ -309,23 +309,23 @@ export function Hero({ initialHeroData = null }) {
               ...universities.map((u, i) => {
                 const logoRaw = u.image?.url || u.image?.path || (typeof u.image === "string" ? u.image : null);
                 const url = u.coursePageSlug
-                  ? (u.coursePageSlug.includes("/") ? `/universities/${u.coursePageSlug}` : `/${u.coursePageSlug}`)
+                  ? (u.coursePageSlug.includes("/") ? `/universities/${u.coursePageSlug}` : `/courses/${u.coursePageSlug}`)
                   : u.slug
                     ? `/universities/${u.slug}`
                     : null;
                 return {
                   id: u._id || `uni-${i}`,
                   title: u.name || "University",
-                  logoUrl: logoRaw ? getAssetPath(logoRaw) : null,
+                  logoUrl: logoRaw,
                   url,
                 };
               }),
               ...(heroData.partner_logos || heroData.partnerLogos || []).map((pl, i) => {
-                const logoRaw = pl.logo?.url || pl.logo?.path || pl.image?.url || pl.image?.path;
+                const logoRaw = pl.logo || pl.image;
                 return {
                   id: pl._id || `partner-${i}`,
                   title: pl.title || "Partner",
-                  logoUrl: logoRaw ? getAssetPath(logoRaw) : null,
+                  logoUrl: typeof logoRaw === "string" ? logoRaw : (logoRaw?.url || logoRaw?.path || null),
                   url: pl.url || null,
                 };
               }),
@@ -417,11 +417,13 @@ export function Hero({ initialHeroData = null }) {
   const isCarousel = Boolean(
     heroData?.is_carousel && Array.isArray(heroData?.slides) && heroData.slides.length > 0
   );
-  const carouselSettings = heroData?.carousel_settings || {};
+  const carouselSettings = heroData?.carousel_settings || heroData?.carouselSettings || {};
   const isAutoplay = carouselSettings.autoplay !== false;
-  const autoplayInterval = Number(carouselSettings.autoplay_interval) || 5000;
-  const showDots = carouselSettings.show_dots !== false;
-  const showArrows = Boolean(carouselSettings.show_arrows);
+  const autoplayInterval = Number(carouselSettings.autoplay_interval || carouselSettings.autoplayInterval) || 5000;
+  const showDots = carouselSettings.show_dots !== false && carouselSettings.showDots !== false;
+  const showArrows = Boolean(
+    carouselSettings.show_arrows ?? carouselSettings.showArrows ?? heroData?.show_arrows ?? heroData?.showArrows
+  );
 
   const renderSlideHeading = (rawTitle, highlightText, isLight, titleColor) => {
     if (!rawTitle) return null;
@@ -617,7 +619,26 @@ export function Hero({ initialHeroData = null }) {
           </div>
         )}
 
-        <Container className="relative z-10 w-full pointer-events-auto">
+        {/* Mobile slide click target (if slide has a primary button/action) */}
+        {primaryBtn?.enabled !== false && (
+          primaryBtn?.is_modal ? (
+            <button
+              type="button"
+              onClick={handlePrimaryClick}
+              aria-label={primaryBtn.text || "Hero action"}
+              className="md:hidden absolute inset-0 z-20 w-full h-full bg-transparent border-0 cursor-pointer p-0 m-0"
+            />
+          ) : primaryBtn?.url ? (
+            <Link
+              href={primaryBtn.url}
+              aria-label={primaryBtn.text || "Hero action"}
+              className="md:hidden absolute inset-0 z-20 w-full h-full cursor-pointer"
+            />
+          ) : null
+        )}
+
+        {/* Desktop-only: database text, headings, badges & CTA buttons */}
+        <Container className="hidden md:block relative z-10 w-full pointer-events-auto">
           <div className="w-full max-w-[70%] sm:max-w-[50%] md:max-w-[46%] lg:max-w-[44%] flex flex-col items-start space-y-1.5 sm:space-y-2 md:space-y-2.5">
             {renderSlideBadge(badgeText, isLight)}
             {renderSlideHeading(title, highlightText, isLight, titleColor)}
@@ -710,87 +731,48 @@ export function Hero({ initialHeroData = null }) {
       id="hero-section"
       className="relative w-full overflow-hidden aspect-[1.9/1] sm:aspect-[3.2/1] md:aspect-[3.8/1] lg:aspect-[4/1] min-h-[200px] sm:min-h-[220px] md:min-h-[240px] lg:min-h-[280px] max-h-[340px]"
     >
-      <style dangerouslySetInnerHTML={{
-        __html: `
-        #hero-section {
-          contain: layout paint;
-        }
-        .hero-carousel,
-        .hero-carousel .slick-slider,
-        .hero-carousel .slick-list,
-        .hero-carousel .slick-track,
-        .hero-carousel .slick-slide > div {
-          height: 100% !important;
-          min-height: inherit !important;
-        }
-        .hero-carousel .slick-dots {
-          bottom: 6px !important;
-          z-index: 20 !important;
-          display: flex !important;
-          justify-content: center !important;
-          align-items: center !important;
-          gap: 6px !important;
-        }
-        @media (min-width: 640px) {
-          .hero-carousel .slick-dots {
-            bottom: 10px !important;
-          }
-        }
-        .hero-carousel .slick-dots li {
-          margin: 0 !important;
-          width: auto !important;
-          height: auto !important;
-        }
-        .hero-carousel .slick-dots li button {
-          width: 7px !important;
-          height: 7px !important;
-          border-radius: 9999px !important;
-          background: rgba(255, 255, 255, 0.45) !important;
-          opacity: 1 !important;
-          transition: all 0.3s ease !important;
-          padding: 0 !important;
-        }
-        .hero-carousel .slick-dots li.slick-active button {
-          width: 8px !important;
-          height: 8px !important;
-          background: #F3CE7F !important;
-          transform: scale(1.1) !important;
-        }
-        .hero-carousel:not(.slick-initialized) {
-          display: block !important;
-          position: relative !important;
-          height: 100% !important;
-          overflow: hidden !important;
-        }
-        .hero-carousel:not(.slick-initialized) > div {
-          position: absolute !important;
-          inset: 0 !important;
-          width: 100% !important;
-          height: 100% !important;
-        }
-        .hero-carousel:not(.slick-initialized) > div:not(:first-child) {
-          display: none !important;
-          opacity: 0 !important;
-          visibility: hidden !important;
-        }
-      `}} />
       {isCarousel ? (
-        <Carousel
-          autoplay={isAutoplay}
-          autoplaySpeed={autoplayInterval}
-          dots={showDots}
-          arrows={showArrows}
-          draggable={true}
-          swipe={true}
-          swipeToSlide={true}
-          infinite={true}
-          touchMove={true}
-          touchThreshold={10}
-          pauseOnHover={true}
-          className="w-full h-full hero-carousel cursor-grab active:cursor-grabbing"
-        >
-          {heroData.slides.map((slide, idx) => renderHeroContent(slide, true, idx))}
-        </Carousel>
+        <div className="relative w-full h-full group/hero">
+          {showArrows && heroData.slides.length > 1 && (
+            <button
+              type="button"
+              onClick={() => carouselRef.current?.prev()}
+              aria-label="Previous slide"
+              className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/90 hover:bg-white text-slate-700 hover:text-blue-600 border border-slate-200/80 shadow-md flex items-center justify-center transition-all active:scale-95 cursor-pointer z-30"
+            >
+              <ChevronLeft size={18} className="stroke-[2.5]" />
+            </button>
+          )}
+
+          <Carousel
+            ref={carouselRef}
+            autoplay={isAutoplay}
+            autoplaySpeed={autoplayInterval}
+            dots={showDots}
+            arrows={false}
+            draggable={true}
+            swipe={true}
+            swipeToSlide={true}
+            infinite={true}
+            touchMove={true}
+            touchThreshold={10}
+            pauseOnHover={true}
+            className="w-full h-full hero-carousel cursor-grab active:cursor-grabbing"
+          >
+            {heroData.slides.map((slide, idx) => renderHeroContent(slide, true, idx))}
+          </Carousel>
+
+          {showArrows && heroData.slides.length > 1 && (
+            <button
+              type="button"
+              onClick={() => carouselRef.current?.next()}
+              aria-label="Next slide"
+              className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/90 hover:bg-white text-slate-700 hover:text-blue-600 border border-slate-200/80 shadow-md flex items-center justify-center transition-all active:scale-95 cursor-pointer z-30"
+            >
+              <ChevronRight size={18} className="stroke-[2.5]" />
+            </button>
+          )}
+        </div>
       ) : (
         renderHeroContent(heroData, false, 0)
       )}

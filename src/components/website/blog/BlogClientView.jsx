@@ -1,26 +1,25 @@
 "use client";
 
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Container } from "@/components/common/Container";
+import { Button, Carousel, Form, Input, message as staticMessage, Modal, Table, App } from "antd";
 import SafeHtmlRenderer from "@/components/website/SafeHtmlRenderer";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
-import { getAssetPath } from "@/lib/utils";
-import {
-  CalendarOutlined,
-  EyeOutlined,
-  ClockCircleOutlined,
-} from "@ant-design/icons";
+
+const getAssetPath = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || "");
+import { ArrowRight, CalendarIcon, Check, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Clock, Eye, Image as ImageIcon, Minus, Play, Plus, ThumbsDown, ThumbsUp, User, Video } from "lucide-react";
+import { request } from "@/services/request";
+import BlogSidebar from "./BlogSidebar";
 
 function formatBlogDate(dateStr) {
   if (!dateStr) return "";
   try {
     const d = new Date(dateStr);
     if (isNaN(d.getTime())) return "";
-    return d.toLocaleDateString("en-IN", {
+    return d.toLocaleDateString("en-US", {
+      month: "long",
       day: "numeric",
-      month: "short",
       year: "numeric",
     });
   } catch {
@@ -28,25 +27,685 @@ function formatBlogDate(dateStr) {
   }
 }
 
-export default function BlogClientView({ initialData, slug: propSlug }) {
+function formatViewsCount(views, readTime) {
+  const count = views !== undefined && views !== null && views !== "" ? Number(views) : null;
+  if (count !== null && !isNaN(count) && count > 0) {
+    if (count >= 1000) {
+      const formatted = (count / 1000).toFixed(1).replace(/\.0$/, "");
+      return `${formatted}k Reads`;
+    }
+    return `${count} Reads`;
+  }
+  if (readTime && typeof readTime === "string") {
+    return readTime.toLowerCase().includes("read") ? readTime : `${readTime} Reads`;
+  }
+  if (views) {
+    return `${views} Reads`;
+  }
+  return null;
+}
+
+function formatFontSize(size) {
+  if (!size) return undefined;
+  const s = String(size).trim();
+  if (!s) return undefined;
+  if (/^\d+(\.\d+)?$/.test(s)) return `${s}px`;
+  return s;
+}
+
+function getYouTubeEmbedUrl(url) {
+  if (!url || typeof url !== "string") return null;
+  const cleanUrl = url.trim();
+
+  if (cleanUrl.includes("youtube.com/embed/")) {
+    return cleanUrl;
+  }
+
+  const regExp = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=|shorts\/)|youtu\.be\/)([^"&?\/\s]{11})/;
+  const match = cleanUrl.match(regExp);
+
+  if (match && match[1]) {
+    return `https://www.youtube-nocookie.com/embed/${match[1]}?rel=0&modestbranding=1`;
+  }
+
+  return null;
+}
+
+// In-memory cache for parsed PDF documents to open in 0ms on repeat clicks
+const pdfDocCache = new Map();
+
+function PdfCanvasViewer({ url, title }) {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [numPages, setNumPages] = useState(0);
+  const [scale, setScale] = useState(1.0);
+  const containerRef = useRef(null);
+  const pagesContainerRef = useRef(null);
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    if (!url) {
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    const loadAndRender = async () => {
+      try {
+        if (typeof window === "undefined") return;
+
+        // Ensure PDF.js library is loaded
+        if (!window.pdfjsLib) {
+          await new Promise((resolve, reject) => {
+            const existingScript = document.getElementById("pdfjs-engine-script");
+            if (existingScript) {
+              if (window.pdfjsLib) {
+                resolve();
+                return;
+              }
+              existingScript.addEventListener("load", () => resolve());
+              existingScript.addEventListener("error", (e) => reject(e));
+              return;
+            }
+            const script = document.createElement("script");
+            script.id = "pdfjs-engine-script";
+            script.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+            script.onload = () => {
+              if (window.pdfjsLib) {
+                window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+                  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+              }
+              resolve();
+            };
+            script.onerror = () => reject(new Error("Unable to load PDF engine"));
+            document.head.appendChild(script);
+          });
+        }
+
+        if (isCancelled) return;
+
+        // Retrieve from memory cache or fetch document
+        let pdfDoc = pdfDocCache.get(url);
+        if (!pdfDoc) {
+          const loadingTask = window.pdfjsLib.getDocument({
+            url,
+            withCredentials: false,
+          });
+          pdfDoc = await loadingTask.promise;
+          pdfDocCache.set(url, pdfDoc);
+        }
+
+        if (isCancelled) return;
+
+        setNumPages(pdfDoc.numPages);
+
+        const pagesEl = pagesContainerRef.current;
+        if (!pagesEl) return;
+        pagesEl.innerHTML = "";
+
+        const containerWidth =
+          (containerRef.current?.clientWidth || window.innerWidth) - 24;
+
+        // Optimize: Cap outputScale at 1.5x max (prevents 3x-4x mobile RAM lag while keeping text sharp)
+        const outputScale = Math.min(window.devicePixelRatio || 1, 1.5);
+
+        for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
+          if (isCancelled) break;
+
+          const page = await pdfDoc.getPage(pageNum);
+          const initialViewport = page.getViewport({ scale: 1 });
+          const autoScale = Math.min(
+            (containerWidth / initialViewport.width) * scale,
+            2.0
+          );
+          const viewport = page.getViewport({ scale: Math.max(autoScale, 0.6) });
+
+          const canvas = document.createElement("canvas");
+          const context = canvas.getContext("2d", { alpha: false }); // alpha: false enables fast GPU rendering
+
+          canvas.width = Math.floor(viewport.width * outputScale);
+          canvas.height = Math.floor(viewport.height * outputScale);
+          canvas.style.width = `${Math.floor(viewport.width)}px`;
+          canvas.style.height = `${Math.floor(viewport.height)}px`;
+          canvas.style.maxWidth = "100%";
+          canvas.style.display = "block";
+
+          const pageWrapper = document.createElement("div");
+          pageWrapper.className =
+            "mb-3 shadow-md rounded-md overflow-hidden bg-white border border-slate-200 flex items-center justify-center";
+          pageWrapper.appendChild(canvas);
+          pagesEl.appendChild(pageWrapper);
+
+          const transform =
+            outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : null;
+
+          await page.render({
+            canvasContext: context,
+            transform,
+            viewport,
+          }).promise;
+
+          // FAST: Dismiss loading indicator as soon as Page 1 is ready!
+          if (pageNum === 1 && !isCancelled) {
+            setLoading(false);
+          }
+
+          // Non-blocking yield: keeps scroll and UI running at 120fps
+          if (pageNum < pdfDoc.numPages) {
+            await new Promise((r) => setTimeout(r, 10));
+          }
+        }
+
+        if (!isCancelled) {
+          setLoading(false);
+        }
+      } catch (err) {
+        console.error("PDF preview error:", err);
+        if (!isCancelled) {
+          setError(err.message || "Failed to render document preview");
+          setLoading(false);
+        }
+      }
+    };
+
+    loadAndRender();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [url, scale]);
+
+  return (
+    <div
+      ref={containerRef}
+      className="w-full h-full bg-slate-200/90 overflow-y-auto flex flex-col items-center relative select-none"
+    >
+      {numPages > 0 && !loading && (
+        <div className="sticky top-2 z-10 flex items-center gap-2 bg-slate-900/85 backdrop-blur text-white px-3 py-1 rounded-full text-xs shadow-md mb-2">
+          <span>{numPages} {numPages === 1 ? "page" : "pages"}</span>
+          <span className="opacity-40">|</span>
+          <button
+            type="button"
+            onClick={() => setScale((s) => Math.max(s - 0.2, 0.6))}
+            className="px-1.5 py-0.5 hover:bg-white/20 rounded font-bold cursor-pointer"
+          >
+            -
+          </button>
+          <span>{Math.round(scale * 100)}%</span>
+          <button
+            type="button"
+            onClick={() => setScale((s) => Math.min(s + 0.2, 2.0))}
+            className="px-1.5 py-0.5 hover:bg-white/20 rounded font-bold cursor-pointer"
+          >
+            +
+          </button>
+        </div>
+      )}
+
+      {loading && (
+        <div className="flex flex-col items-center justify-center h-full min-h-[300px] text-slate-500 gap-2.5">
+          <div className="w-8 h-8 border-3 border-blue-600 border-t-transparent rounded-full animate-spin" />
+          <span className="text-xs font-semibold text-slate-600">Loading document...</span>
+        </div>
+      )}
+
+      {error && !loading && (
+        <div className="flex flex-col items-center justify-center h-full min-h-[300px] text-slate-600 p-6 text-center gap-3">
+          <p className="text-xs text-red-500 font-semibold">{error}</p>
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg text-xs font-bold no-underline"
+          >
+            Open Document
+          </a>
+        </div>
+      )}
+
+      <div
+        ref={pagesContainerRef}
+        className="w-full flex flex-col items-center py-2 px-1"
+      />
+    </div>
+  );
+}
+
+export default function BlogClientView({
+  initialData,
+  initialPopularBlogs = [],
+  initialTools = [],
+  initialCategories = null,
+  slug: propSlug,
+}) {
+  const antdApp = App.useApp();
+  const message = antdApp?.message || staticMessage;
+  const [toolsList, setToolsList] = useState(
+    Array.isArray(initialTools) && initialTools.length > 0 ? initialTools : []
+  );
+  const [sidebarBlogs, setSidebarBlogs] = useState(
+    Array.isArray(initialPopularBlogs) && initialPopularBlogs.length > 0
+      ? initialPopularBlogs
+      : []
+  );
+  const toolsCarouselRef = useRef(null);
+
+  // Sync or client-side fetch blogs for sidebar if initialPopularBlogs is small
+  useEffect(() => {
+    if (!sidebarBlogs || sidebarBlogs.length < 5) {
+      let isMounted = true;
+      (async () => {
+        try {
+          const res = await request.dynamicList({
+            entity: "blogs",
+            endPoint: "v1/list",
+            options: { items: 10 },
+            revalidate: 300,
+          });
+          const list =
+            res?.result ||
+            res?.blogs ||
+            (Array.isArray(res) ? res : []);
+          if (isMounted && Array.isArray(list) && list.length > 0) {
+            setSidebarBlogs(list);
+          }
+        } catch { }
+      })();
+      return () => {
+        isMounted = false;
+      };
+    }
+  }, []);
+
+
+  // Sync or client-side fetch dynamic tools from category entity if initialTools is empty
+  useEffect(() => {
+    if (Array.isArray(initialTools) && initialTools.length > 0) {
+      setToolsList(initialTools);
+      return;
+    }
+    let isMounted = true;
+    (async () => {
+      try {
+        const res = await request.dynamicList({
+          entity: "category",
+          endPoint: "v1/list",
+          revalidate: 300,
+        });
+        const categories = Array.isArray(res?.result)
+          ? res.result
+          : Array.isArray(res?.categories)
+            ? res.categories
+            : Array.isArray(res?.sections)
+              ? res.sections
+              : Array.isArray(res)
+                ? res
+                : [];
+        const toolsParent = categories.find(
+          (c) =>
+            c.featuredType === "TOOLS" ||
+            c.featuredType === "FEATURED_TOOLS" ||
+            c.sectionType === "TOOLS" ||
+            (c.name && c.name.toLowerCase().includes("tool")) ||
+            (c.title && c.title.toLowerCase().includes("tool"))
+        );
+        const rawTools = toolsParent && (toolsParent.children || toolsParent.items);
+        if (
+          isMounted &&
+          Array.isArray(rawTools) &&
+          rawTools.length > 0
+        ) {
+          setToolsList(rawTools);
+        }
+      } catch (err) {
+        // Fallback gracefully
+      }
+    })();
+    return () => {
+      isMounted = false;
+    };
+  }, [initialTools]);
+
   const blog = initialData?.blogId || initialData || {};
+  const [viewsCount, setViewsCount] = useState(
+    blog?.viewsCount ?? blog?.views ?? 0
+  );
+
+  // Sync state if initialData changes
+  useEffect(() => {
+    if (blog?.viewsCount !== undefined && blog?.viewsCount !== null) {
+      setViewsCount(blog.viewsCount);
+    }
+  }, [blog?.viewsCount]);
+
+  // 👁️ Increment viewcount whenever blog is opened
+  useEffect(() => {
+    const targetSlug = propSlug || blog?.slug;
+    const targetId = blog?._id;
+    if (!targetSlug && !targetId) return;
+
+    let isMounted = true;
+    request
+      .dynamicPost({
+        entity: "blogs",
+        endPoint: "v1/view",
+        body: {
+          slug: targetSlug,
+          id: targetId,
+        },
+      })
+      .then((res) => {
+        if (isMounted) {
+          if (res?.result?.viewsCount != null) {
+            setViewsCount(res.result.viewsCount);
+          } else {
+            setViewsCount((prev) => (Number(prev) || 0) + 1);
+          }
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setViewsCount((prev) => (Number(prev) || 0) + 1);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [propSlug, blog?._id, blog?.slug]);
+
   const pageTitle = blog?.title || blog?.headline || "";
   const showBreadcrumbs = blog?.showBreadcrumbs !== false;
+
+  const blogSections = useMemo(() => {
+    const raw = blog?.sections || initialData?.sections || [];
+    if (!Array.isArray(raw)) return [];
+    return raw.filter((s) => s && s.enabled !== false);
+  }, [blog?.sections, initialData?.sections]);
+
+  // 📄 Group consecutive blocks under headings to prevent large disjoint gaps
+  const groupedSections = useMemo(() => {
+    if (!Array.isArray(blogSections) || blogSections.length === 0) return [];
+
+    const groups = [];
+    let currentGroup = null;
+
+    blogSections.forEach((sec) => {
+      const headingText = (sec.title || sec.poll?.title || "").trim();
+      const hasHeading = Boolean(headingText);
+
+      if (hasHeading || !currentGroup) {
+        const secId =
+          sec.id ||
+          (sec._id ? String(sec._id) : null) ||
+          (headingText ? headingText.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") : null) ||
+          `section-${groups.length + 1}`;
+
+        currentGroup = {
+          _id: sec._id || sec.id || `group-${groups.length}`,
+          id: secId,
+          headingText,
+          headingTag: sec.headingTag || "h2",
+          fontSize: sec.fontSize || "",
+          items: [sec],
+        };
+        groups.push(currentGroup);
+      } else {
+        currentGroup.items.push(sec);
+      }
+    });
+
+    return groups;
+  }, [blogSections]);
+
+  const [tocOpen, setTocOpen] = useState(false);
+  const [activeHeadingId, setActiveHeadingId] = useState("");
+  const [selectedPoll, setSelectedPoll] = useState("");
+  const [openFaqIndex, setOpenFaqIndex] = useState(0);
+  const [articleHelpful, setArticleHelpful] = useState(null);
+  const [likesCount, setLikesCount] = useState(blog?.likesCount ?? 0);
+  const [unlikesCount, setUnlikesCount] = useState(blog?.unlikesCount ?? 0);
+
+  useEffect(() => {
+    if (blog?.likesCount !== undefined) setLikesCount(blog.likesCount);
+    if (blog?.unlikesCount !== undefined) setUnlikesCount(blog.unlikesCount);
+  }, [blog?.likesCount, blog?.unlikesCount]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const targetSlug = propSlug || blog?.slug;
+      const targetId = blog?._id;
+      const saved = sessionStorage.getItem(`blog_helpful_${targetSlug || targetId}`);
+      if (saved === "yes" || saved === "no") {
+        setArticleHelpful(saved);
+      }
+    }
+  }, [propSlug, blog?._id, blog?.slug]);
+
+  const handleFeedbackClick = async (reactionType) => {
+    const targetSlug = propSlug || blog?.slug;
+    const targetId = blog?._id;
+    if (articleHelpful === reactionType) return;
+
+    const prevReaction = articleHelpful;
+    setArticleHelpful(reactionType);
+
+    if (reactionType === "yes") {
+      setLikesCount((prev) => (Number(prev) || 0) + 1);
+      if (prevReaction === "no") {
+        setUnlikesCount((prev) => Math.max(0, (Number(prev) || 0) - 1));
+      }
+    } else if (reactionType === "no") {
+      setUnlikesCount((prev) => (Number(prev) || 0) + 1);
+      if (prevReaction === "yes") {
+        setLikesCount((prev) => Math.max(0, (Number(prev) || 0) - 1));
+      }
+    }
+
+    try {
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem(`blog_helpful_${targetSlug || targetId}`, reactionType);
+      }
+      const res = await request.dynamicPost({
+        entity: "blogs",
+        endPoint: "v1/reaction",
+        body: {
+          slug: targetSlug,
+          id: targetId,
+          reaction: reactionType,
+          previousReaction: prevReaction,
+        },
+      });
+      if (res?.result) {
+        if (res.result.likesCount != null) setLikesCount(res.result.likesCount);
+        if (res.result.unlikesCount != null) setUnlikesCount(res.result.unlikesCount);
+      }
+    } catch (_) {}
+  };
+  const [commentsList, setCommentsList] = useState(
+    Array.isArray(blog?.comments) ? blog.comments : []
+  );
+
+  useEffect(() => {
+    if (Array.isArray(blog?.comments)) {
+      setCommentsList(blog.comments);
+    }
+  }, [blog?.comments]);
+  const [pdfModalOpen, setPdfModalOpen] = useState(false);
+  const [activePdf, setActivePdf] = useState({ url: "", title: "" });
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      if (typeof window !== "undefined") {
+        setIsMobile(
+          window.innerWidth < 768 ||
+          /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+            navigator.userAgent
+          )
+        );
+      }
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  const viewerUrl = useMemo(() => {
+    if (!activePdf.url) return "";
+    return `${activePdf.url}#toolbar=1&navpanes=0`;
+  }, [activePdf.url]);
+
+  // 🚀 Background Preload PDF.js so clicking 'View PDF' opens instantly with 0ms waiting
+  useEffect(() => {
+    if (typeof window === "undefined" || window.pdfjsLib) return;
+    const hasPdfDoc = blogSections?.some((s) => Boolean(s?.pdf || s?.blockType === "pdf"));
+    if (!hasPdfDoc) return;
+
+    const timer = setTimeout(() => {
+      if (!window.pdfjsLib && !document.getElementById("pdfjs-engine-script")) {
+        const script = document.createElement("script");
+        script.id = "pdfjs-engine-script";
+        script.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+        script.onload = () => {
+          if (window.pdfjsLib) {
+            window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+              "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+          }
+        };
+        document.head.appendChild(script);
+      }
+    }, 1500); // Low-priority background load after initial page paint
+
+    return () => clearTimeout(timer);
+  }, [blogSections]);
+
+  useEffect(() => {
+    if (Array.isArray(blog?.comments)) {
+      setCommentsList(blog.comments);
+    }
+  }, [blog?.comments]);
+
+  useEffect(() => {
+    if (selectedPoll) return;
+    const secWithPoll = blogSections.find((s) => s?.poll?.options?.length > 0);
+    if (secWithPoll) {
+      const firstOpt = secWithPoll.poll.options[0];
+      const firstTitle =
+        typeof firstOpt === "string"
+          ? firstOpt
+          : firstOpt?.option || firstOpt?.text || firstOpt?.title || "";
+      if (firstTitle) setSelectedPoll(firstTitle);
+    }
+  }, [blogSections, selectedPoll]);
+
+  // ── Ant Design Comment Form State & Handler ──
+  const [commentForm] = Form.useForm();
+  const [commentSubmitting, setCommentSubmitting] = useState(false);
+
+  const handleCommentSubmit = async (values) => {
+    setCommentSubmitting(true);
+    try {
+      const res = await request.dynamicPost({
+        entity: "blogs",
+        endPoint: "v1/comment",
+        body: {
+          name: values?.name,
+          email: values?.email,
+          comment: values?.comment,
+        },
+      });
+
+      if (res && res.success !== false) {
+        message.success(
+          res?.message || "Thank you! Your comment has been submitted and will be visible after admin approval."
+        );
+        commentForm.resetFields();
+      } else {
+        message.error(res?.message || "Failed to submit comment. Please try again.");
+      }
+    } catch (err) {
+      message.error(err?.message || "Failed to submit comment. Please try again.");
+    } finally {
+      setCommentSubmitting(false);
+    }
+  };
+
+  // ── Ant Design Table Memoized Columns Configuration (Exact CoursePage Styling) ──
+  const feeTableColumns = useMemo(
+    () => [
+      {
+        title: "Fee Component",
+        dataIndex: "name",
+        key: "name",
+        width: "50%",
+        align: "left",
+        onCell: (record) => ({
+          className: record?.isTotal
+            ? "font-bold text-gray-900 bg-slate-50 text-left text-xs sm:text-sm"
+            : "font-semibold text-gray-900 text-left text-xs sm:text-sm",
+        }),
+      },
+      {
+        title: "Example Amount",
+        dataIndex: "amount",
+        key: "amount",
+        width: "50%",
+        align: "left",
+        onCell: (record) => ({
+          className: record?.isTotal
+            ? "font-bold text-[#0F2A4A] bg-slate-50 text-left text-xs sm:text-sm"
+            : "font-medium text-gray-800 text-left text-xs sm:text-sm",
+        }),
+      },
+    ],
+    []
+  );
+
+  const comparisonTableColumns = useMemo(
+    () => [
+      {
+        title: "Factor",
+        dataIndex: "factor",
+        key: "factor",
+        width: "35%",
+        align: "left",
+        onCell: () => ({
+          className: "font-bold text-gray-900 text-left text-xs sm:text-sm",
+        }),
+      },
+      {
+        title: "What to Check",
+        dataIndex: "check",
+        key: "check",
+        width: "65%",
+        align: "left",
+        onCell: () => ({
+          className: "text-gray-700 font-normal text-left text-xs sm:text-sm",
+        }),
+      },
+    ],
+    []
+  );
 
   // Set up Breadcrumbs dynamically
   useBreadcrumb(
     showBreadcrumbs && pageTitle
       ? {
-          items: [
-            { label: "Home", href: "/" },
-            { label: "Blogs", href: "/blogs" },
-            { label: pageTitle },
-          ],
-          backButton: {
-            label: "Blogs",
-            href: "/blogs",
-          },
-        }
+        items: [
+          { label: "Home", href: "/" },
+          { label: "Blogs", href: "/blogs" },
+          { label: pageTitle },
+        ],
+        backButton: {
+          label: "Blogs",
+          href: "/blogs",
+        },
+        containerClassName: "!max-w-none w-full px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16",
+      }
       : { hidden: true },
     [pageTitle, showBreadcrumbs]
   );
@@ -62,54 +721,197 @@ export default function BlogClientView({ initialData, slug: propSlug }) {
     }
   }, [blog?.js]);
 
-  // Dynamic token parsing helper (for live DB tokens like {{fee:...}}, {{approvals:...}})
-  const parsedContent = useMemo(() => {
-    let raw = blog.content || "";
-    if (!raw) return "";
+  // 🤖 Dynamic Tools Mapping (from Category/Tools database with default fallback)
+  const mappedTools = useMemo(() => {
+    const DEFAULT_TOOLS = [
+      {
+        name: "Suggest University",
+        description: "Find universities that match your goals, preferences, and career plans.",
+        linkUrl: "/tools/suggest-university",
+        btnText: "Suggest University",
+      },
+      {
+        name: "Check Eligibility",
+        description: "Instantly check which courses and universities you are eligible for.",
+        linkUrl: "/tools/eligibility-checker",
+        btnText: "Check Eligibility",
+      },
+      {
+        name: "Compare University",
+        description: "Compare universities, courses, fees, and key benefits side by side.",
+        linkUrl: "/tools/compare-universities",
+        btnText: "Compare University",
+      },
+      {
+        name: "Suggest Course",
+        description: "Find the best online and distance programs aligned with your aspirations.",
+        linkUrl: "/tools/suggest-course",
+        btnText: "Suggest Course",
+      },
+    ];
 
-    return raw.replace(
-      /\{\{([a-zA-Z0-9_-]+):([a-zA-Z0-9_-]+)(?::([a-zA-Z0-9_-]+))?\}\}/g,
-      (match, type, uni, course) => {
-        const uniFormatted = uni
-          ? uni.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
-          : "";
-        const courseFormatted = course
-          ? course.replace(/-/g, " ").toUpperCase()
-          : "";
+    const sourceList =
+      Array.isArray(toolsList) && toolsList.length > 0
+        ? toolsList
+        : DEFAULT_TOOLS;
 
-        switch (type) {
-          case "fee":
-            return `<strong class="text-emerald-600 font-bold">₹ 1,80,000 (${courseFormatted} at ${uniFormatted})</strong>`;
-          case "fee_sem":
-            return `<strong class="text-emerald-600 font-bold">₹ 45,000 / Semester</strong>`;
-          case "fee_annual":
-            return `<strong class="text-emerald-600 font-bold">₹ 90,000 / Year</strong>`;
-          case "fee_emi":
-            return `<strong class="text-emerald-600 font-bold">₹ 4,999 / Month EMI</strong>`;
-          case "approvals":
-            return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800">UGC-DEB, AICTE, NAAC A+</span>`;
-          case "deadline":
-            return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800">15th October 2026</span>`;
-          case "rating":
-            return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-900 border border-amber-200">★ 4.8 / 5.0 (NAAC A+)</span>`;
-          case "placement":
-            return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">₹ 8.5 LPA Avg Package</span>`;
-          case "prospectus":
-            return `<a href="#counseling" class="inline-block px-3 py-1 bg-[#046bd2] text-white text-xs font-bold rounded hover:bg-blue-700">Download Prospectus</a>`;
-          case "duration":
-            return `2 Years (4 Semesters)`;
-          case "eligibility":
-            return `Graduation with min 50% marks from a recognized university`;
-          case "specializations":
-            return `Marketing, Finance, HR, IT, Business Analytics, International Business`;
-          default:
-            return match;
+    return sourceList.map((child, cIdx) => {
+      const fullName = (child.name || child.title || "Tool").trim();
+      const cName = fullName.toLowerCase();
+
+      let sparkleColor = "text-[#00ACC1]";
+      let underlineClass = "border-[#00ACC1]";
+      let circleBg = "bg-[#E0F7F6]";
+      let btnText = "Suggest University";
+      let desc = "Find universities that match your goals, preferences, and career plans.";
+      let isLink = true;
+      let linkUrl = child.linkUrl || child.url || "/tools/suggest-university";
+
+      let iconSvg = (
+        <svg className="w-6 h-6 sm:w-7 sm:h-7 text-[#00ACC1]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+        </svg>
+      );
+
+      if (cName.includes("eligib")) {
+        sparkleColor = "text-[#AB47BC]";
+        underlineClass = "border-[#AB47BC]";
+        circleBg = "bg-[#F3E8FF]";
+        btnText = "Check Eligibility";
+        desc = "Instantly check which courses and universities you're eligible for.";
+        isLink = true;
+        linkUrl = child.linkUrl || child.url || "/tools/eligibility-checker";
+        iconSvg = (
+          <svg className="w-6 h-6 sm:w-7 sm:h-7 text-[#AB47BC]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+        );
+      } else if (cName.includes("compar")) {
+        sparkleColor = "text-[#1E88E5]";
+        underlineClass = "border-[#1E88E5]";
+        circleBg = "bg-[#E0E7FF]";
+        btnText = "Compare University";
+        desc = "Compare universities, courses, fees, and key benefits side by side.";
+        isLink = true;
+        linkUrl = child.linkUrl || child.url || "/tools/compare-universities";
+        iconSvg = (
+          <svg className="w-6 h-6 sm:w-7 sm:h-7 text-[#1E88E5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+          </svg>
+        );
+      } else if (cName.includes("course")) {
+        sparkleColor = "text-[#EC407A]";
+        underlineClass = "border-[#EC407A]";
+        circleBg = "bg-[#FCE4EC]";
+        btnText = "Suggest Course";
+        desc = "Discover accredited degree and diploma programs matched to your background.";
+        isLink = true;
+        linkUrl = child.linkUrl || child.url || "/tools/suggest-course";
+        iconSvg = (
+          <svg className="w-6 h-6 sm:w-7 sm:h-7 text-[#EC407A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+          </svg>
+        );
+      } else if (cIdx % 4 === 1) {
+        sparkleColor = "text-[#AB47BC]";
+        underlineClass = "border-[#AB47BC]";
+        circleBg = "bg-[#F3E8FF]";
+      } else if (cIdx % 4 === 2) {
+        sparkleColor = "text-[#1E88E5]";
+        underlineClass = "border-[#1E88E5]";
+        circleBg = "bg-[#E0E7FF]";
+      } else if (cIdx % 4 === 3) {
+        sparkleColor = "text-[#EC407A]";
+        underlineClass = "border-[#EC407A]";
+        circleBg = "bg-[#FCE4EC]";
+      }
+
+      const rawLogo = child.logo || child.image;
+      const logoUrl = rawLogo ? (typeof rawLogo === "string" ? rawLogo : rawLogo?.url || rawLogo?.path || null) : null;
+
+      return {
+        id: child._id || child.slug || cIdx,
+        fullName,
+        description: child.description || desc,
+        btnText: child.btnText || btnText,
+        linkUrl,
+        sparkleColor,
+        underlineClass,
+        circleBg,
+        logoUrl,
+        iconSvg,
+      };
+    });
+  }, [toolsList]);
+
+  const allFaqs = useMemo(() => {
+    if (Array.isArray(blog?.faqs) && blog.faqs.length > 0) return blog.faqs;
+    if (Array.isArray(initialData?.faqs) && initialData.faqs.length > 0) return initialData.faqs;
+    return [];
+  }, [blog?.faqs, initialData?.faqs]);
+
+  // 📑 Dynamic Table of Contents (Directly generated from the grouped sections rendered on the page)
+  const finalHeadings = useMemo(() => {
+    const list = groupedSections
+      .map((group) => {
+        if (!group.headingText) return null;
+        const headingTagNum = group.headingTag
+          ? parseInt(group.headingTag.replace(/[^\d]/g, "")) || 2
+          : 2;
+        return {
+          id: group.id,
+          text: group.headingText,
+          level: headingTagNum,
+        };
+      })
+      .filter(Boolean);
+
+    if (allFaqs && allFaqs.length > 0) {
+      list.push({
+        id: "faqs",
+        text: "Frequently Asked Questions (FAQs)",
+        level: 2,
+      });
+    }
+    return list;
+  }, [groupedSections, allFaqs]);
+
+  // 🏷️ Display Tags (from blog only, no dummy fallback)
+  const displayTags = useMemo(() => {
+    if (Array.isArray(blog?.tags) && blog.tags.length > 0) {
+      return blog.tags.filter(Boolean).join(" | ");
+    }
+    if (typeof blog?.tags === "string" && blog.tags.trim()) {
+      return blog.tags
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean)
+        .join(" | ");
+    }
+    return "";
+  }, [blog?.tags]);
+
+  // Scroll spy to highlight active heading in TOC like course nav
+  useEffect(() => {
+    if (!finalHeadings || finalHeadings.length === 0) return;
+    const handleScroll = () => {
+      const scrollPos = window.scrollY + 100;
+      let cur = "";
+      for (const h of finalHeadings) {
+        const el = document.getElementById(h.id);
+        if (el && el.offsetTop <= scrollPos) {
+          cur = h.id;
         }
       }
-    );
-  }, [blog.content]);
+      if (cur) setActiveHeadingId(cur);
+    };
 
-  if (!blog || (!blog.content && !blog.title)) {
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [finalHeadings]);
+
+  if (!blog || (!blog.title && !blog.slug && !blog.headline)) {
     return null;
   }
 
@@ -121,83 +923,1441 @@ export default function BlogClientView({ initialData, slug: propSlug }) {
   const blogImageUrl = rawImage ? getAssetPath(rawImage) : null;
 
   const formattedDate = formatBlogDate(blog.publishedAt || blog.createdAt);
+  const viewsText = formatViewsCount(viewsCount, blog.readTime);
   const authorName =
-    blog.author?.fullname || blog.author?.name || "Editorial Team";
-  const categoryName = blog.category?.name || "";
+    blog.author?.fullname ||
+    blog.author?.name ||
+    (typeof blog.author === "string" ? blog.author : "");
+
+  // 🌟 Common Tailwind Typography (Ek hi jagah se pura text size & color change kar sakte hain)
+  const BLOG_BODY_TYPOGRAPHY = "[&_p]:text-xs sm:[&_p]:text-sm [&_p]:text-slate-700 [&_li]:text-xs sm:[&_li]:text-sm [&_li]:text-gray-700";
 
   return (
-    <div className="w-full bg-white text-gray-800 antialiased min-h-screen">
-      {/* ── Custom CSS from CMS ── */}
-      {blog?.css && (
-        <style
-          id={`custom-blog-css-${blog._id || "style"}`}
-          dangerouslySetInnerHTML={{ __html: blog.css }}
-        />
-      )}
+    <div className="min-h-screen bg-gray-100 text-gray-800 pb-16">
+      {/* ── Ant Design Table CSS (Strictly matching CoursePageClientView.jsx) ── */}
+      <style>{`
+        /* Ant Design Table Mobile-Fit & Crystal Clear Header Typography */
+        .course-antd-table {
+          width: 100% !important;
+        }
+        .course-antd-table .ant-table-wrapper {
+          width: 100% !important;
+        }
+        .course-antd-table table {
+          table-layout: fixed !important;
+          width: 100% !important;
+        }
+        .course-antd-table .ant-table {
+          overflow-x: visible !important;
+          background: #ffffff !important;
+        }
+        .course-antd-table .ant-table-container {
+          border-radius: 8px !important;
+          overflow: hidden !important;
+        }
+        .course-antd-table .ant-table-content {
+          overflow-x: visible !important;
+        }
+        .course-antd-table .ant-table-thead > tr > th,
+        .course-antd-table .ant-table-thead > tr > th.ant-table-cell,
+        .course-antd-table .ant-table-thead > tr > th *,
+        .course-antd-table .ant-table-thead th .ant-table-cell-content {
+          background-color: #0C2B4E !important;
+          color: #ffffff !important;
+          -webkit-text-fill-color: #ffffff !important;
+          font-weight: 700 !important;
+          font-size: 12px !important;
+          line-height: 1.35 !important;
+          letter-spacing: 0.025em !important;
+          font-family: inherit !important;
+          text-shadow: none !important;
+          opacity: 1 !important;
+        }
+        .course-antd-table .ant-table-thead > tr > th {
+          padding: 8px 8px !important;
+          white-space: normal !important;
+          word-break: break-word !important;
+          border-bottom: none !important;
+          border-right: 1px solid rgba(255, 255, 255, 0.15) !important;
+        }
+        @media (min-width: 640px) {
+          .course-antd-table .ant-table-thead > tr > th,
+          .course-antd-table .ant-table-thead > tr > th.ant-table-cell,
+          .course-antd-table .ant-table-thead > tr > th *,
+          .course-antd-table .ant-table-thead th .ant-table-cell-content {
+            font-size: 14px !important;
+          }
+          .course-antd-table .ant-table-thead > tr > th {
+            padding: 10px 14px !important;
+          }
+        }
+        .course-antd-table .ant-table-thead > tr > th:last-child {
+          border-right: none !important;
+        }
+        .course-antd-table .ant-table-thead > tr > th::before {
+          display: none !important;
+        }
+        .course-antd-table .ant-table-tbody > tr > td {
+          padding: 6px 7px !important;
+          font-size: 12px !important;
+          white-space: normal !important;
+          word-break: break-word !important;
+          vertical-align: middle !important;
+          border-bottom: 1px solid #e2e8f0 !important;
+          border-right: 1px solid #f1f5f9 !important;
+        }
+        @media (min-width: 640px) {
+          .course-antd-table .ant-table-tbody > tr > td {
+            padding: 8px 14px !important;
+            font-size: 14px !important;
+          }
+        }
+        .course-antd-table .ant-table-tbody > tr > td:last-child {
+          border-right: none !important;
+        }
+        .course-antd-table .ant-table-tbody > tr:hover > td {
+          background-color: #f8fafc !important;
+        }
+        .course-antd-table-alt .ant-table-thead > tr > th,
+        .course-antd-table-alt .ant-table-thead > tr > th.ant-table-cell,
+        .course-antd-table-alt .ant-table-thead > tr > th * {
+          background-color: #0C2B4E !important;
+          color: #ffffff !important;
+          -webkit-text-fill-color: #ffffff !important;
+          font-weight: 700 !important;
+        }
 
-      {/* ── Main Article Container (Clean, no Hero banner) ── */}
-      <Container className="max-w-4xl py-6 sm:py-10">
-        {/* 🏷️ Category & Date Bar */}
-        <div className="flex items-center gap-2.5 sm:gap-3 flex-wrap mb-3.5">
-          {categoryName && (
-            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-[#072C50] border border-blue-200/70">
-              {categoryName}
-            </span>
-          )}
-          {formattedDate && (
-            <span className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
-              <CalendarOutlined className="text-blue-500" />
-              {formattedDate}
-            </span>
-          )}
-          {blog.readTime && (
-            <span className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
-              <ClockCircleOutlined className="text-slate-400" />
-              {blog.readTime}
-            </span>
-          )}
-          {blog.viewsCount ? (
-            <span className="flex items-center gap-1.5 text-xs text-slate-500 font-medium ml-auto">
-              <EyeOutlined className="text-slate-400" />
-              {blog.viewsCount.toLocaleString()} Reads
-            </span>
-          ) : null}
-        </div>
 
-        {/* 📌 Blog Title (H1) */}
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#072C50] tracking-tight leading-snug sm:leading-tight mb-4 sm:mb-6">
-          {pageTitle}
-        </h1>
+        /* PDF Preview Modal Mobile Responsive */
+        .pdf-preview-modal {
+          max-width: calc(100vw - 16px) !important;
+          margin: 0 auto !important;
+        }
+        .pdf-preview-modal .ant-modal-content {
+          padding: 14px 14px 10px 14px !important;
+          border-radius: 14px !important;
+          overflow: hidden !important;
+        }
+        @media (max-width: 767px) {
+          .pdf-preview-modal {
+            max-width: calc(100vw - 12px) !important;
+            width: calc(100vw - 12px) !important;
+            top: 10px !important;
+            padding-bottom: 10px !important;
+          }
+          .pdf-preview-modal .ant-modal-content {
+            padding: 12px 10px 8px 10px !important;
+          }
+        }
 
-        {/* ✍️ Author Byline */}
-        <div className="flex items-center gap-2.5 pb-4 mb-6 sm:mb-8 border-b border-slate-100 text-xs text-slate-600">
-          <span className="w-7 h-7 rounded-full bg-blue-100 text-[#072C50] flex items-center justify-center font-bold text-xs uppercase">
-            {authorName.charAt(0)}
-          </span>
-          <span className="font-semibold text-slate-800">{authorName}</span>
-        </div>
+        /* AI Tools Carousel Default Dots - Dark Blue (#0B3B7E) */
+        .ai-tools-carousel .slick-dots li button,
+        .ai-tools-carousel .slick-dots li button::after {
+          background: #0B3B7E !important;
+          opacity: 0.28 !important;
+        }
+        .ai-tools-carousel .slick-dots li:hover button,
+        .ai-tools-carousel .slick-dots li:hover button::after {
+          opacity: 0.65 !important;
+        }
+        .ai-tools-carousel .slick-dots li.slick-active button,
+        .ai-tools-carousel .slick-dots li.slick-active button::after {
+          background: #0B3B7E !important;
+          opacity: 1 !important;
+        }
+      `}</style>
 
-        {/* 🖼️ Blog Cover Image (Jo blog me lagi hai wahi image show hogi) */}
-        {blogImageUrl && (
-          <div className="relative w-full aspect-[16/9] sm:aspect-[21/9] max-h-[460px] rounded-xl sm:rounded-2xl overflow-hidden shadow-xs border border-slate-200/80 mb-8 sm:mb-10 bg-slate-100">
-            <Image
-              src={blogImageUrl}
-              alt={pageTitle}
-              fill
-              priority
-              unoptimized
-              className="object-cover"
+      <div className="w-full pt-2.5 sm:pt-6 px-2.5 sm:px-6 lg:px-8 xl:px-10 2xl:px-12">
+        <div className="flex flex-col lg:flex-row items-start gap-4 sm:gap-6 xl:gap-8 w-full">
+          {/* ─── LEFT COLUMN: Main Blog Post Content ─── */}
+          <main className="flex-1 min-w-0 w-full">
+            <div className={`bg-white rounded-xl sm:rounded-2xl border border-gray-200/90 shadow-xs p-3.5 sm:p-7 ${BLOG_BODY_TYPOGRAPHY}`}>
+              <h1 className="text-lg sm:text-2xl text-gray-900 font-bold leading-snug sm:leading-tight mb-2 sm:mb-3">
+                {pageTitle}
+              </h1>
+              {(authorName || formattedDate || viewsText) && (
+                <div className="flex items-center justify-between flex-wrap gap-1.5 sm:gap-2 text-xs sm:text-sm text-slate-600 mb-2.5 sm:mb-3">
+                  {authorName && (
+                    <div className="flex items-center gap-1">
+                      <User className="size-3" />
+                      <span className="font-normal text-xs text-slate-600">{authorName}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-2 sm:gap-3 flex-wrap ml-auto">
+                    {formattedDate && (
+                      <div className="flex items-center gap-1">
+                        <CalendarIcon className="size-3 text-slate-500" />
+                        <span className="font-normal text-xs text-slate-600">{formattedDate}</span>
+                      </div>
+                    )}
+                    {viewsText && (
+                      <div className="flex items-center gap-1">
+                        {viewsText.toLowerCase().includes("min") ? (
+                          <Clock className="size-3 text-slate-500" />
+                        ) : (
+                          <Eye className="size-3 text-slate-500" />
+                        )}
+                        <span className="font-normal text-xs text-slate-600">{viewsText}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+              {/* 🖼️ Featured Cover Image Banner (Auto adjusts height to image aspect ratio without cropping) */}
+              {blogImageUrl && (
+                <div className="w-full rounded-lg sm:rounded-xl overflow-hidden mb-4 sm:mb-6 bg-slate-50 border border-slate-200/60 shadow-xs">
+                  <Image
+                    src={blogImageUrl}
+                    alt={pageTitle}
+                    width={1200}
+                    height={500}
+                    loading="eager"
+                    priority
+                    fetchPriority="high"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
+                    unoptimized
+                    className="w-full h-auto object-contain block"
+                  />
+                </div>
+              )}
+              {/* 📄 Intro / Subtitle from API */}
+              {blog.subtitle && (
+                <p className="text-xs sm:text-sm text-gray-700 mb-3 sm:mb-4">
+                  {blog.subtitle}
+                </p>
+              )}
+
+              {/* 📑 Table of Contents (Dynamically mapped to the sections below) */}
+              {finalHeadings.length > 0 && (
+                <div className="my-6 sm:my-8 rounded-2xl bg-white border border-gray-200 p-4 shadow-2xs w-full">
+                  <div
+                    onClick={() => setTocOpen(!tocOpen)}
+                    className={`flex items-center justify-between cursor-pointer select-none ${tocOpen ? "mb-4" : "mb-0"
+                      }`}
+                  >
+                    <h2 className="text-base sm:text-lg font-bold text-[#0D3B66] m-0">
+                      Table of Contents
+                    </h2>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setTocOpen(!tocOpen);
+                      }}
+                      className="text-[#0D3B66] hover:text-blue-700 p-1 rounded-md transition-colors cursor-pointer"
+                      aria-label="Toggle Table of Contents"
+                    >
+                      {tocOpen ? (
+                        <ChevronUp size={20} strokeWidth={2.4} />
+                      ) : (
+                        <ChevronDown size={20} strokeWidth={2.4} />
+                      )}
+                    </button>
+                  </div>
+
+                  <ul
+                    className={`space-y-2.5 text-xs sm:text-sm font-medium list-none p-0 m-0 ${tocOpen ? "block" : "hidden"
+                      }`}
+                    aria-hidden={!tocOpen}
+                  >
+                    {finalHeadings.map((h, i) => (
+                      <li key={`toc-${h.id || i}-${i}`} className="flex items-start gap-2">
+                        <span className="text-blue-500 font-bold select-none text-[17px] leading-none shrink-0">
+                          »
+                        </span>
+                        <a
+                          href={`#${h.id}`}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            const el = document.getElementById(h.id);
+                            if (el) {
+                              const y =
+                                el.getBoundingClientRect().top +
+                                window.pageYOffset -
+                                85;
+                              window.scrollTo({ top: y, behavior: "smooth" });
+                            }
+                          }}
+                          className="text-gray-700 text-xs sm:text-sm hover:text-blue-800 transition-colors hover:underline cursor-pointer"
+                        >
+                          {h.text}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* 📄 Dynamic Structured Sections from API */}
+              {groupedSections && groupedSections.length > 0 && (
+                <div className="space-y-6 sm:space-y-7 text-gray-700 text-xs sm:text-sm mt-5 sm:mt-6">
+                  {groupedSections.map((group, gIdx) => {
+                    const HeadingTag =
+                      group.headingTag && ["h1", "h2", "h3", "h4", "h5", "h6"].includes(group.headingTag.toLowerCase())
+                        ? group.headingTag.toLowerCase()
+                        : "h2";
+
+                    return (
+                      <section key={`sec-grp-${group._id || group.id || gIdx}-${gIdx}`} id={group.id} className="scroll-mt-24">
+                        {group.headingText && (
+                          <HeadingTag
+                            style={group.fontSize ? { fontSize: formatFontSize(group.fontSize) } : undefined}
+                            className="text-xl sm:text-2xl font-bold text-[#0D3B66] m-0 mb-1 tracking-tight"
+                          >
+                            {group.headingText}
+                          </HeadingTag>
+                        )}
+
+                        <div className="space-y-2 text-gray-700 text-xs sm:text-sm">
+                          {group.items.map((sec, sIdx) => {
+                            const hasImage = Boolean(
+                              sec.image ||
+                              sec.imageUrl ||
+                              sec.media ||
+                              sec.blockType === "image"
+                            );
+
+                            const hasVideo = Boolean(
+                              sec.video ||
+                              sec.videoUrl ||
+                              sec.youtubeUrl ||
+                              sec.blockType === "video"
+                            );
+
+                            const hasPdf = Boolean(
+                              sec.pdf ||
+                              sec.blockType === "pdf"
+                            );
+
+                            const isTitleOnly =
+                              !sec.paragraphs &&
+                              !sec.intro &&
+                              !sec.checklist &&
+                              !sec.table &&
+                              !sec.columnsList &&
+                              !sec.numberedList &&
+                              !sec.bulletPoints &&
+                              !sec.twoColBullets &&
+                              !sec.poll &&
+                              !sec.orderedSteps &&
+                              !sec.importantNotice &&
+                              !sec.ctaButtons &&
+                              !sec.ctaButton &&
+                              !sec.outro &&
+                              !sec.note &&
+                              !hasImage &&
+                              !hasVideo &&
+                              !hasPdf;
+
+                            if (isTitleOnly) return null;
+
+                            return (
+                              <div key={`sec-item-${sec._id || sec.id || sIdx}-${sIdx}`} className="space-y-1.5">
+                                {sec.title && sec.title.trim() !== group.headingText && (
+                                  <h3
+                                    style={sec.fontSize ? { fontSize: formatFontSize(sec.fontSize) } : undefined}
+                                    className="text-base sm:text-lg font-bold text-[#0D3B66] m-0 mb-1"
+                                  >
+                                    {sec.title}
+                                  </h3>
+                                )}
+
+                                {Array.isArray(sec.paragraphs) &&
+                                  sec.paragraphs.map((p, idx) => {
+                                    if (typeof p !== "string" || !p.trim()) return null;
+                                    return (
+                                      <p
+                                        key={idx}
+                                        style={sec.fontSize ? { fontSize: formatFontSize(sec.fontSize) } : undefined}
+                                        className="m-0 mb-3.5 last:mb-0 text-gray-700 text-xs sm:text-sm whitespace-pre-line"
+                                      >
+                                        {p}
+                                      </p>
+                                    );
+                                  })}
+                                {typeof sec.paragraphs === "string" && sec.paragraphs.trim() && (
+                                  <p
+                                    style={sec.fontSize ? { fontSize: formatFontSize(sec.fontSize) } : undefined}
+                                    className="m-0 mb-3.5 last:mb-0 text-gray-700 text-xs sm:text-sm whitespace-pre-line"
+                                  >
+                                    {sec.paragraphs}
+                                  </p>
+                                )}
+
+                                {sec.intro && (
+                                  <p
+                                    style={sec.fontSize ? { fontSize: formatFontSize(sec.fontSize) } : undefined}
+                                    className="m-0 mb-3.5 last:mb-0 text-gray-700 text-xs sm:text-sm whitespace-pre-line"
+                                  >
+                                    {sec.intro}
+                                  </p>
+                                )}
+
+                                {/* 🖼️ Image Section / Banner (1041 x 585 px / 16:9) */}
+                                {hasImage && (
+                                  <div className="my-3 sm:my-4 w-full">
+                                    {(() => {
+                                      const rawImg = sec.image || sec.imageUrl || sec.media;
+                                      const imgUrl = rawImg ? getAssetPath(rawImg) : null;
+                                      const altText =
+                                        (typeof rawImg === "object" ? rawImg?.alt : null) ||
+                                        sec.title ||
+                                        "Blog image";
+                                      const captionText =
+                                        (typeof rawImg === "object" ? rawImg?.caption : null) ||
+                                        sec.imageCaption ||
+                                        "";
+
+                                      if (imgUrl) {
+                                        return (
+                                          <div className="w-full">
+                                            <div className="w-full rounded-lg sm:rounded-xl overflow-hidden bg-slate-50 border border-slate-200/80 shadow-xs">
+                                              <Image
+                                                src={imgUrl}
+                                                alt={altText}
+                                                width={1041}
+                                                height={585}
+                                                unoptimized
+                                                className="w-full h-auto object-contain block"
+                                                sizes="(max-width: 768px) 100vw, 900px"
+                                              />
+                                            </div>
+                                            {captionText && (
+                                              <p className="text-center text-[11px] sm:text-xs text-slate-500 mt-1.5 font-medium italic m-0">
+                                                {captionText}
+                                              </p>
+                                            )}
+                                          </div>
+                                        );
+                                      }
+
+                                      // Placeholder (16:9 aspect ratio when no image uploaded)
+                                      return (
+                                        <div className="w-full">
+                                          <div className="relative w-full aspect-[16/9] max-h-[420px] rounded-lg sm:rounded-xl bg-[#737373] flex flex-col items-center justify-center text-white shadow-xs select-none">
+                                            <div className="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center text-white/90 mb-2">
+                                              <ImageIcon size={64} strokeWidth={1.5} className="text-white/90" />
+                                            </div>
+                                            <span className="text-sm sm:text-base font-semibold text-white tracking-wide">
+                                              {captionText || "1041 x 585 px"}
+                                            </span>
+                                          </div>
+                                          {captionText && (
+                                            <p className="text-center text-[11px] sm:text-xs text-slate-500 mt-1.5 font-medium italic m-0">
+                                              {captionText}
+                                            </p>
+                                          )}
+                                        </div>
+                                      );
+                                    })()}
+                                  </div>
+                                )}
+
+                                {/* 🎥 Video Section (YouTube Embed / Video Player 16:9 - Centered & Reduced Width) */}
+                                {hasVideo && (
+                                  <div className="my-3 sm:my-4 w-full flex flex-col items-center">
+                                    {(() => {
+                                      const rawVideo = sec.video || sec.videoUrl || sec.youtubeUrl;
+                                      const videoUrl = typeof rawVideo === "string" ? rawVideo : rawVideo?.url || "";
+                                      const videoTitle =
+                                        (typeof rawVideo === "object" ? rawVideo?.title : null) ||
+                                        sec.title ||
+                                        "Educational Video";
+                                      const captionText =
+                                        (typeof rawVideo === "object" ? rawVideo?.caption : null) ||
+                                        sec.videoCaption ||
+                                        "";
+
+                                      const embedUrl = getYouTubeEmbedUrl(videoUrl);
+                                      const isDirectVideo =
+                                        !embedUrl && videoUrl && /\.(mp4|webm|ogg|mov)($|\?)/i.test(videoUrl);
+
+                                      if (embedUrl) {
+                                        return (
+                                          <div className="w-full max-w-[560px] sm:max-w-[600px] mx-auto">
+                                            <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black border border-slate-200/80 shadow-xs">
+                                              <iframe
+                                                src={embedUrl}
+                                                title={videoTitle}
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                                allowFullScreen
+                                                className="w-full h-full border-0 absolute inset-0"
+                                              />
+                                            </div>
+                                            {captionText && (
+                                              <p className="text-center text-[11px] sm:text-xs text-slate-500 mt-1.5 font-medium italic m-0">
+                                                {captionText}
+                                              </p>
+                                            )}
+                                          </div>
+                                        );
+                                      }
+
+                                      if (isDirectVideo) {
+                                        return (
+                                          <div className="w-full max-w-[560px] sm:max-w-[600px] mx-auto">
+                                            <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black border border-slate-200/80 shadow-xs">
+                                              <video
+                                                controls
+                                                playsInline
+                                                className="w-full h-full object-cover"
+                                                src={getAssetPath(videoUrl)}
+                                              />
+                                            </div>
+                                            {captionText && (
+                                              <p className="text-center text-[11px] sm:text-xs text-slate-500 mt-1.5 font-medium italic m-0">
+                                                {captionText}
+                                              </p>
+                                            )}
+                                          </div>
+                                        );
+                                      }
+
+                                      // Video Player Placeholder (matching Screenshot 2 & 3)
+                                      return (
+                                        <div className="w-full max-w-[560px] sm:max-w-[600px] mx-auto">
+                                          <div className="relative w-full aspect-video rounded-xl bg-gradient-to-br from-slate-900 to-slate-800 border border-slate-700/80 flex flex-col items-center justify-center text-white shadow-xs overflow-hidden group">
+                                            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-red-600/90 hover:bg-red-600 text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                                              <Play size={26} className="fill-current translate-x-0.5 text-white" />
+                                            </div>
+                                            <span className="text-xs sm:text-sm font-semibold text-slate-300 mt-3 tracking-wide">
+                                              {videoTitle && videoTitle !== "Educational Video"
+                                                ? videoTitle
+                                                : "Video Player (16:9)"}
+                                            </span>
+                                          </div>
+                                          {captionText && (
+                                            <p className="text-center text-[11px] sm:text-xs text-slate-500 mt-1.5 font-medium italic m-0">
+                                              {captionText}
+                                            </p>
+                                          )}
+                                        </div>
+                                      );
+                                    })()}
+                                  </div>
+                                )}
+
+                                {/* 📄 PDF Document Button/Card (matching Screenshot) */}
+                                {hasPdf && (
+                                  <div className="my-3 w-full">
+                                    {(() => {
+                                      const rawPdf = sec.pdf;
+                                      const pdfUrl =
+                                        typeof rawPdf === "string"
+                                          ? rawPdf
+                                          : rawPdf?.url || rawPdf?.path || "";
+                                      let pdfName =
+                                        (typeof rawPdf === "object"
+                                          ? rawPdf?.name || rawPdf?.alt || rawPdf?.fileName
+                                          : null) ||
+                                        sec.title ||
+                                        (typeof rawPdf === "string" && rawPdf.includes(".pdf")
+                                          ? rawPdf.split("/").pop()
+                                          : "Document.pdf");
+
+                                      if (pdfName && typeof pdfName === "string" && !/\.pdf$/i.test(pdfName)) {
+                                        pdfName = `${pdfName}.pdf`;
+                                      }
+
+                                      const href = rawPdf ? getAssetPath(rawPdf) : (pdfUrl ? getAssetPath(pdfUrl) : "");
+
+                                      return (
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            if (href) {
+                                              setActivePdf({
+                                                url: href,
+                                                title: pdfName,
+                                              });
+                                              setPdfModalOpen(true);
+                                            }
+                                          }}
+                                          className="inline-flex items-center gap-3 bg-[#EAEBED] hover:bg-[#E2E4E7] active:bg-[#D9DCDE] border border-slate-300/60 px-3.5 py-2.5 rounded-lg transition-colors shadow-2xs group text-left cursor-pointer max-w-sm w-full sm:w-auto"
+                                        >
+                                          {/* PDF Icon with red border, ribbon, and PDF text */}
+                                          <div className="shrink-0 w-8 h-10 relative flex items-center justify-center">
+                                            <svg
+                                              className="w-8 h-10"
+                                              viewBox="0 0 32 40"
+                                              fill="none"
+                                              xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                              <path
+                                                d="M4 2C2.89543 2 2 2.89543 2 4V36C2 37.1046 2.89543 38 4 38H28C29.1046 38 30 37.1046 30 36V12L20 2H4Z"
+                                                fill="white"
+                                                stroke="#E11D48"
+                                                strokeWidth="1.8"
+                                                strokeLinejoin="round"
+                                              />
+                                              <path
+                                                d="M20 2V12H30"
+                                                stroke="#E11D48"
+                                                strokeWidth="1.8"
+                                                strokeLinejoin="round"
+                                              />
+                                              <path
+                                                d="M12.5 21C13 18 14.5 15.5 16 15.5C17 15.5 17 17.5 16 19.5C14.8 22 11 25.5 8.5 26C7.5 26.2 7 25.5 7.5 24.5C8.5 22.5 11 22 12.5 21ZM12.5 21C15 20.5 19.5 21 22 23C23 23.8 22.5 24.5 21 24C19 23.5 15.5 21.8 12.5 21Z"
+                                                stroke="#E11D48"
+                                                strokeWidth="1.3"
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                              />
+                                              <text
+                                                x="16"
+                                                y="34.5"
+                                                textAnchor="middle"
+                                                fill="#1E293B"
+                                                fontSize="6.5"
+                                                fontWeight="800"
+                                                fontFamily="sans-serif"
+                                                letterSpacing="0.5"
+                                              >
+                                                PDF
+                                              </text>
+                                            </svg>
+                                          </div>
+
+                                          {/* PDF Details */}
+                                          <div className="flex-1 min-w-0">
+                                            <span className="text-xs sm:text-[13px] font-semibold text-slate-800 leading-snug line-clamp-1 block">
+                                              {pdfName}
+                                            </span>
+                                            <span className="text-[11px] sm:text-xs font-semibold text-[#1a73e8] group-hover:underline flex items-center gap-1 mt-0.5">
+                                              View PDF
+                                            </span>
+                                          </div>
+                                        </button>
+                                      );
+                                    })()}
+                                  </div>
+                                )}
+
+                                {Array.isArray(sec.checklist) && sec.checklist.length > 0 && (
+                                  <ul className="space-y-0.5 list-none p-0">
+                                    {sec.checklist.map((item, idx) => (
+                                      <li key={idx} className="flex items-start gap-2 text-gray-700 text-xs sm:text-sm">
+                                        <span className="inline-flex items-center justify-center w-3 h-3 rounded bg-[#22C55E] text-white shrink-0 mt-1 shadow-2xs">
+                                          <Check size={9} strokeWidth={4} />
+                                        </span>
+                                        <span>{item}</span>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                )}
+
+                                {sec.table && Array.isArray(sec.table.rows) && sec.table.rows.length > 0 && (
+                                  <div className="my-2.5 w-full">
+                                    <div className="w-full overflow-hidden border border-gray-200 shadow-2xs rounded-lg">
+                                      <Table
+                                        columns={
+                                          Array.isArray(sec.table.headers) && sec.table.headers.length > 0
+                                            ? sec.table.headers.map((headerText, cIdx) => {
+                                              const total = sec.table.headers.length;
+                                              const width =
+                                                total === 2
+                                                  ? cIdx === 0
+                                                    ? "35%"
+                                                    : "65%"
+                                                  : `${Math.floor(100 / total)}%`;
+                                              return {
+                                                title: headerText,
+                                                dataIndex: `col${cIdx + 1}`,
+                                                key: `col${cIdx + 1}`,
+                                                width,
+                                                align: "left",
+                                                onCell: (record) => ({
+                                                  className: record?.isTotal
+                                                    ? "font-bold text-gray-900 bg-slate-50 text-left text-xs sm:text-sm"
+                                                    : cIdx === 0
+                                                      ? "font-bold text-gray-900 text-left text-xs sm:text-sm"
+                                                      : "font-normal text-gray-700 text-left text-xs sm:text-sm",
+                                                }),
+                                                render: (val, record) => {
+                                                  if (val !== undefined && val !== null && val !== "") return val;
+                                                  if (Array.isArray(record.cols) && record.cols[cIdx] !== undefined) return record.cols[cIdx];
+                                                  if (Array.isArray(record.values) && record.values[cIdx] !== undefined) return record.values[cIdx];
+                                                  if (cIdx === 0) return record.factor || record.name || record.category || "";
+                                                  if (cIdx === 1) return record.check || record.amount || record.details || "";
+                                                  return "";
+                                                },
+                                              };
+                                            })
+                                            : sec.table.type === "comparison"
+                                              ? comparisonTableColumns
+                                              : feeTableColumns
+                                        }
+                                        dataSource={sec.table.rows.map((row, idx) => ({
+                                          ...row,
+                                          key: row.key || row._id || row.factor || row.name || row.col1 || idx,
+                                        }))}
+                                        pagination={false}
+                                        size="small"
+                                        bordered
+                                        scroll={{ x: sec.table?.headers?.length > 3 ? "max-content" : undefined }}
+                                        className="course-antd-table w-full"
+                                      />
+                                    </div>
+                                    {sec.table.note && (
+                                      <p className="text-xs sm:text-sm text-slate-500 mt-1.5 italic m-0">
+                                        {sec.table.note}
+                                      </p>
+                                    )}
+                                  </div>
+                                )}
+
+                                {Array.isArray(sec.columnsList) && sec.columnsList.length > 0 && (
+                                  <div
+                                    className={`grid gap-x-8 gap-y-1.5 ${sec.columnsList.length === 1
+                                      ? "grid-cols-1"
+                                      : sec.columnsList.length === 2
+                                        ? "grid-cols-1 sm:grid-cols-2"
+                                        : sec.columnsList.length === 3
+                                          ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+                                          : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+                                      }`}
+                                  >
+                                    {sec.columnsList.map((col, cIdx) => (
+                                      <ul key={cIdx} className="space-y-1 list-none p-0 m-0">
+                                        {Array.isArray(col) &&
+                                          col.map((item, idx) => (
+                                            <li key={idx} className="flex items-start gap-2">
+                                              <span className="text-blue-500 font-bold select-none text-[16px] leading-none shrink-0 mt-0.5">
+                                                »
+                                              </span>
+                                              <span className="text-gray-700 text-xs sm:text-sm hover:text-blue-800 transition-colors">
+                                                {item}
+                                              </span>
+                                            </li>
+                                          ))}
+                                      </ul>
+                                    ))}
+                                  </div>
+                                )}
+
+                                {Array.isArray(sec.numberedList) && sec.numberedList.length > 0 && (
+                                  <div className="space-y-2">
+                                    {sec.numberedList.map((item, idx) => {
+                                      const rawTitle = (item?.title || "").trim();
+                                      let numberStr = `${idx + 1}.`;
+                                      let titleText = rawTitle;
+
+                                      const match = rawTitle.match(/^(\d+[\.\)])\s*(.*)$/);
+                                      if (match) {
+                                        numberStr = match[1];
+                                        titleText = match[2];
+                                      }
+
+                                      return (
+                                        <div key={idx} className="flex items-start gap-2">
+                                          <span className="font-bold text-slate-900 text-xs sm:text-sm select-none shrink-0">
+                                            {numberStr}
+                                          </span>
+                                          <div className="space-y-0.5 min-w-0 flex-1">
+                                            {titleText && (
+                                              <h4 className="font-bold text-slate-900 m-0 text-xs sm:text-sm">
+                                                {titleText}
+                                              </h4>
+                                            )}
+                                            {item?.desc && (
+                                              <p className="text-gray-700 m-0 text-xs sm:text-sm whitespace-pre-line">
+                                                {item.desc}
+                                              </p>
+                                            )}
+                                          </div>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                )}
+
+                                {Array.isArray(sec.bulletPoints) && sec.bulletPoints.length > 0 && (
+                                  Array.isArray(sec.bulletPoints[0]) ? (
+                                    <div
+                                      className={`grid gap-x-8 gap-y-1.5 ${sec.bulletPoints.length === 1
+                                        ? "grid-cols-1"
+                                        : sec.bulletPoints.length === 2
+                                          ? "grid-cols-1 sm:grid-cols-2"
+                                          : sec.bulletPoints.length === 3
+                                            ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+                                            : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+                                        }`}
+                                    >
+                                      {sec.bulletPoints.map((col, cIdx) => (
+                                        <ul key={cIdx} className="space-y-1 list-disc list-outside ml-5 text-gray-700 text-xs sm:text-sm p-0 m-0">
+                                          {Array.isArray(col) &&
+                                            col.map((item, idx) => (
+                                              <li key={idx}>
+                                                <span>{item}</span>
+                                              </li>
+                                            ))}
+                                        </ul>
+                                      ))}
+                                    </div>
+                                  ) : (
+                                    <ul className="space-y-1 list-disc list-outside ml-5 text-gray-700 text-xs sm:text-sm my-1 p-0">
+                                      {sec.bulletPoints.map((item, idx) => (
+                                        <li key={idx}>
+                                          <span>{item}</span>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  )
+                                )}
+
+                                {Array.isArray(sec.twoColBullets) && sec.twoColBullets.length > 0 && (
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1">
+                                    {sec.twoColBullets.map((col, cIdx) => (
+                                      <ul key={cIdx} className="space-y-1 list-disc list-inside text-gray-700 text-xs sm:text-sm p-0 m-0">
+                                        {Array.isArray(col) &&
+                                          col.map((item, idx) => (
+                                            <li key={idx}>
+                                              <span>{item}</span>
+                                            </li>
+                                          ))}
+                                      </ul>
+                                    ))}
+                                  </div>
+                                )}
+
+                                {sec.poll && Array.isArray(sec.poll.options) && sec.poll.options.length > 0 && (
+                                  <div className="rounded-xl border border-blue-400 bg-white p-4 sm:p-5 my-2.5 shadow-2xs">
+                                    {sec.poll.question && (
+                                      <h3 className="text-base sm:text-lg font-bold text-[#0D3B66] mb-3 m-0">
+                                        {sec.poll.question}
+                                      </h3>
+                                    )}
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                                      {sec.poll.options.map((optItem, optIdx) => {
+                                        const optTitle =
+                                          typeof optItem === "string"
+                                            ? optItem
+                                            : optItem?.option || optItem?.text || optItem?.title || "";
+                                        const isSelected = selectedPoll === optTitle;
+                                        return (
+                                          <button
+                                            key={optIdx}
+                                            type="button"
+                                            onClick={() => setSelectedPoll(optTitle)}
+                                            className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-full border text-xs sm:text-sm font-medium transition-all cursor-pointer text-left ${isSelected
+                                              ? "border-blue-600 bg-blue-50/70 text-blue-900 shadow-2xs ring-1 ring-blue-500/20"
+                                              : "border-slate-200 hover:border-slate-300 text-gray-700 bg-white"
+                                              }`}
+                                          >
+                                            <span
+                                              className={`w-3.5 h-3.5 rounded-full flex items-center justify-center shrink-0 border ${isSelected ? "border-blue-600 bg-blue-600" : "border-slate-300 bg-slate-200"
+                                                }`}
+                                            >
+                                              {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
+                                            </span>
+                                            <span className="truncate">{optTitle}</span>
+                                          </button>
+                                        );
+                                      })}
+                                    </div>
+
+                                    {(() => {
+                                      const activeOpt = sec.poll.options.find((o) => {
+                                        const title =
+                                          typeof o === "string"
+                                            ? o
+                                            : o?.option || o?.text || o?.title || "";
+                                        return title === selectedPoll;
+                                      });
+                                      const displayText =
+                                        (typeof activeOpt === "object" ? activeOpt?.answer : null) ||
+                                        sec.poll.footnote ||
+                                        null;
+
+                                      if (!displayText) return null;
+
+                                      const formattedText = displayText.startsWith("*")
+                                        ? displayText
+                                        : `*${displayText}`;
+
+                                      return (
+                                        <p className="text-xs sm:text-sm text-slate-500 mt-3 m-0 font-normal">
+                                          {formattedText}
+                                        </p>
+                                      );
+                                    })()}
+                                  </div>
+                                )}
+
+                                {(() => {
+                                  const buttons = Array.isArray(sec.ctaButtons) && sec.ctaButtons.length > 0
+                                    ? sec.ctaButtons.filter((b) => b && b.text)
+                                    : sec.ctaButton && sec.ctaButton.text
+                                      ? [sec.ctaButton]
+                                      : [];
+                                  if (buttons.length === 0) return null;
+                                  return (
+                                    <div className="pt-2 flex items-center justify-center gap-3 flex-wrap">
+                                      {buttons.map((btn, bIdx) => (
+                                        <Link
+                                          key={bIdx}
+                                          href={btn.href || "/courses"}
+                                          className="inline-flex items-center justify-center px-8 py-2.5 rounded-full bg-[#F4D068] hover:bg-[#ebc557] text-[#0C2B4E] text-xs sm:text-sm font-bold transition-all shadow-xs cursor-pointer no-underline active:scale-95"
+                                        >
+                                          {btn.text}
+                                        </Link>
+                                      ))}
+                                    </div>
+                                  );
+                                })()}
+
+                                {Array.isArray(sec.orderedSteps) && sec.orderedSteps.length > 0 && (
+                                  Array.isArray(sec.orderedSteps[0]) ? (
+                                    <div
+                                      className={`grid gap-x-8 gap-y-2.5 pt-1 ${sec.orderedSteps.length === 1
+                                        ? "grid-cols-1"
+                                        : sec.orderedSteps.length === 2
+                                          ? "grid-cols-1 sm:grid-cols-2"
+                                          : sec.orderedSteps.length === 3
+                                            ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+                                            : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+                                        }`}
+                                    >
+                                      {sec.orderedSteps.map((col, cIdx) => (
+                                        <ol key={cIdx} className="space-y-1.5 list-none p-0 m-0 text-gray-700 text-xs sm:text-sm">
+                                          {Array.isArray(col) &&
+                                            col.map((step, idx) => (
+                                              <li key={idx} className="flex items-start gap-3">
+                                                <span className="text-gray-500 font-medium select-none min-w-[20px] text-right">
+                                                  {idx + 1}.
+                                                </span>
+                                                <span className="text-gray-700">{step}</span>
+                                              </li>
+                                            ))}
+                                        </ol>
+                                      ))}
+                                    </div>
+                                  ) : (
+                                    <ol className="space-y-1.5 list-none p-0 m-0 text-gray-700 text-xs sm:text-sm">
+                                      {sec.orderedSteps.map((step, idx) => (
+                                        <li key={idx} className="flex items-start gap-4">
+                                          <span className="text-gray-500 font-medium select-none min-w-[20px] text-right">
+                                            {idx + 1}.
+                                          </span>
+                                          <span className="text-gray-700">{step}</span>
+                                        </li>
+                                      ))}
+                                    </ol>
+                                  )
+                                )}
+
+                                {sec.importantNotice && (sec.importantNotice.title || sec.importantNotice.desc) && (
+                                  <div className="space-y-1 pt-2">
+                                    {sec.importantNotice.title && (
+                                      <h4 className="font-bold text-gray-900 text-xs sm:text-sm m-0">
+                                        {sec.importantNotice.title}
+                                      </h4>
+                                    )}
+                                    {sec.importantNotice.desc && (
+                                      <p className="text-gray-700 text-xs sm:text-sm m-0 whitespace-pre-line">
+                                        {sec.importantNotice.desc}
+                                      </p>
+                                    )}
+                                  </div>
+                                )}
+
+                                {sec.note && <p className="text-xs sm:text-sm text-gray-700 font-bold m-0 whitespace-pre-line">{sec.note}</p>}
+                                {sec.outro && <p className="text-xs sm:text-sm text-gray-700 m-0 whitespace-pre-line">{sec.outro}</p>}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </section>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+
+            {/* =====================================================================
+            1️⃣5️⃣ FREQUENTLY ASKED QUESTIONS (Exact Course Page Standalone Card)
+        ===================================================================== */}
+            {allFaqs && allFaqs.length > 0 && (
+              <div
+                id="faqs"
+                data-nav-label="FAQs"
+                className="bg-white rounded-xl shadow-xs border border-gray-200 p-4 sm:p-6 md:p-8 mt-6 scroll-mt-20 space-y-5 sm:space-y-6"
+              >
+                <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
+                  Frequently Asked Questions (FAQs)
+                </h2>
+
+                <div className="space-y-2.5 sm:space-y-3 max-w-5xl mx-auto">
+                  {allFaqs.map((faq, idx) => {
+                    const isOpen = openFaqIndex === idx;
+                    const cleanQuestion = (faq.question || faq.q || "")
+                      .replace(/^q\d*[\.\:\s]*/i, "")
+                      .trim();
+                    return (
+                      <div
+                        key={idx}
+                        className={`rounded-xl border transition-all duration-200 overflow-hidden ${isOpen
+                          ? "border-blue-400 bg-blue-200/30 shadow-2xs"
+                          : "border-gray-200 bg-white hover:border-gray-300"
+                          }`}
+                      >
+                        <button
+                          type="button"
+                          onClick={() => setOpenFaqIndex(isOpen ? -1 : idx)}
+                          className="w-full flex items-center justify-between gap-3 p-2.5 sm:p-3 text-left cursor-pointer bg-transparent border-none outline-none"
+                        >
+                          <span
+                            className={`text-xs sm:text-sm font-semibold ${isOpen ? "text-[#0C2B4E]" : "text-gray-900"
+                              }`}
+                          >
+                            Q{idx + 1}. {cleanQuestion}
+                          </span>
+                          <span
+                            className={`flex items-center justify-center w-4 h-4 rounded-full shrink-0 transition-colors ${isOpen
+                              ? "bg-[#0C2B4E] text-white"
+                              : "bg-gray-300 text-gray-500"
+                              }`}
+                          >
+                            {isOpen ? <Minus size={10} /> : <Plus size={10} />}
+                          </span>
+                        </button>
+                        <div
+                          className={
+                            isOpen
+                              ? "p-3 text-xs sm:text-sm text-gray-700 font-normal border-t border-blue-100/60"
+                              : "sr-only"
+                          }
+                        >
+                          <SafeHtmlRenderer html={faq.answer || faq.a || ""} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* =====================================================================
+            👍 WAS THIS ARTICLE HELPFUL? (Helpful Feedback Card)
+        ===================================================================== */}
+            <div className="bg-[#f0f7ff] rounded-xl border border-blue-100 p-4 sm:p-5 mt-6">
+              <h3 className="text-base sm:text-lg font-bold text-[#0D3B66] m-0 mb-3 tracking-tight">
+                Was This Article Helpful?
+              </h3>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => handleFeedbackClick("yes")}
+                  className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all border cursor-pointer active:scale-95 ${articleHelpful === "yes"
+                    ? "bg-white border-emerald-500 text-emerald-700 shadow-2xs"
+                    : "bg-white border-gray-200 text-gray-700 hover:border-gray-300"
+                    }`}
+                >
+                  <ThumbsUp
+                    size={14}
+                    className={
+                      articleHelpful === "yes"
+                        ? "text-emerald-600 fill-emerald-600"
+                        : "text-gray-400"
+                    }
+                  />
+                  <span>Yes</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleFeedbackClick("no")}
+                  className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all border cursor-pointer active:scale-95 ${articleHelpful === "no"
+                    ? "bg-white border-emerald-500 text-emerald-700 shadow-2xs"
+                    : "bg-white border-gray-200 text-gray-700 hover:border-gray-300"
+                    }`}
+                >
+                  <ThumbsDown
+                    size={14}
+                    className={
+                      articleHelpful === "no"
+                        ? "text-emerald-600 fill-emerald-600"
+                        : "text-gray-400"
+                    }
+                  />
+                  <span>No</span>
+                </button>
+              </div>
+              {articleHelpful && (
+                <p className="text-xs sm:text-sm text-slate-500 mt-3 m-0 font-normal">
+                  {articleHelpful === "no"
+                    ? "*Thanks for your feedback! We'll work to improve it."
+                    : "*Thanks! We're glad this article helped."}
+                </p>
+              )}
+            </div>
+
+            {/* =====================================================================
+            💬 ADD COMMENTS SECTION
+        ===================================================================== */}
+            <div id="add-comments" className="mt-6 scroll-mt-20">
+              <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight m-0 mb-3">
+                Add Comments
+              </h2>
+
+              <div className="bg-[#f8f9fa] rounded-2xl border border-gray-200/90 p-4 sm:p-6 space-y-4">
+                {/* Scrollable list of comments */}
+                {commentsList && commentsList.length > 0 ? (
+                  <div className="bg-white rounded-xl border border-gray-200/80 p-4 max-h-[190px] overflow-y-auto space-y-3 shadow-2xs">
+                    {commentsList.map((cmt, idx) => (
+                      <div
+                        key={`comment-${cmt._id || cmt.id || idx}-${idx}`}
+                        className={`flex items-start gap-3 ${idx !== commentsList.length - 1 ? "pb-3 border-b border-gray-100" : ""
+                          }`}
+                      >
+                        <div className="w-7 h-7 rounded-full bg-blue-500 text-white flex items-center justify-center shrink-0">
+                          <User size={15} />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <h5 className="text-xs sm:text-sm font-bold text-gray-900 m-0">
+                            {cmt.name}
+                          </h5>
+                          <p className="text-xs sm:text-sm text-slate-500 mt-0.5 m-0 font-normal">
+                            {cmt.text || cmt.comment}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="bg-white rounded-xl border border-gray-200/80 p-4 text-center text-xs sm:text-sm text-slate-500 shadow-2xs">
+                    No comments yet. Be the first to share your thoughts!
+                  </div>
+                )}
+
+                {/* Leave a Comment Form */}
+                <div className="pt-1">
+                  <h4 className="text-xs sm:text-sm font-bold text-gray-900 m-0 mb-2">
+                    Leave a Comment
+                  </h4>
+
+                  <Form
+                    form={commentForm}
+                    layout="vertical"
+                    onFinish={handleCommentSubmit}
+                    className="space-y-3"
+                  >
+                    <Form.Item
+                      name="comment"
+                      rules={[{ required: true, message: "Please enter your comment" }]}
+                      className="mb-3"
+                    >
+                      <Input.TextArea
+                        rows={4}
+                        placeholder=""
+                        className="rounded-lg border border-gray-200 bg-white hover:border-blue-400 focus:border-blue-600 text-xs sm:text-sm p-3 resize-none shadow-2xs"
+                      />
+                    </Form.Item>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+                      <div className="sm:col-span-5">
+                        <Form.Item
+                          name="name"
+                          rules={[{ required: true, message: "Please enter your name" }]}
+                          className="mb-0"
+                        >
+                          <Input
+                            placeholder="Enter Your Name*"
+                            className="rounded-lg border-gray-200 h-10 text-xs sm:text-sm bg-white"
+                          />
+                        </Form.Item>
+                      </div>
+
+                      <div className="sm:col-span-4">
+                        <Form.Item
+                          name="email"
+                          rules={[
+                            { required: true, message: "Please enter your email" },
+                            { type: "email", message: "Please enter a valid email address" },
+                          ]}
+                          className="mb-0"
+                        >
+                          <Input
+                            placeholder="Enter Your Email*"
+                            className="rounded-lg border-gray-200 h-10 text-xs sm:text-sm bg-white"
+                          />
+                        </Form.Item>
+                      </div>
+
+                      <div className="sm:col-span-3">
+                        <Button
+                          type="primary"
+                          htmlType="submit"
+                          loading={commentSubmitting}
+                          className="w-full h-10 bg-[#003884] hover:bg-[#07244D] text-white font-bold rounded-lg border-none text-xs sm:text-sm shadow-xs transition-colors cursor-pointer flex items-center justify-center active:scale-95"
+                        >
+                          Submit
+                        </Button>
+                      </div>
+                    </div>
+                  </Form>
+                </div>
+              </div>
+
+              {/* Tags Bar directly below Add Comments card */}
+              {displayTags ? (
+                <div className="mt-4 bg-[#f8f9fa] rounded-lg border border-gray-200 px-4 py-2.5 text-xs sm:text-sm text-gray-700">
+                  <span className="font-bold text-gray-900">Tags: </span>
+                  <span className="text-gray-700">{displayTags}</span>
+                </div>
+              ) : null}
+
+              {/* =====================================================================
+              🤖 EXPLORE AI POWERED TOOLS (Exact Home Page CSS & Mobile Responsive)
+          ===================================================================== */}
+              {mappedTools && mappedTools.length > 0 && (
+                <div
+                  id="ai-tools"
+                  data-nav-label="AI Tools"
+                  className="w-full relative py-6 sm:py-8 md:py-10 px-3 sm:px-6 md:px-8 bg-[#F1F5F9] rounded-2xl sm:rounded-3xl border border-slate-200/80 my-8 text-center scroll-mt-20"
+                >
+                  <div className="relative mb-2">
+                    {/* Top Badge (Exact Home Page Match) */}
+                    <div className="flex justify-center mb-1.5 sm:mb-3">
+                      <div className="inline-flex items-center gap-1.5 px-3 py-0.5 sm:px-4 sm:py-1 rounded-full bg-[#F5E5BA] text-[#8C6228] border border-[#E9D195] text-[10px] sm:text-xs font-bold shadow-none">
+                        <span className="text-[#8C6228] text-xs sm:text-sm font-extrabold">✦</span>
+                        <span className="tracking-wider uppercase text-[10px] sm:text-[11px]">AI POWERED</span>
+                      </div>
+                    </div>
+
+                    {/* Heading */}
+                    <h2 className="text-lg sm:text-2xl md:text-3xl font-extrabold text-[#0F172A] tracking-tight m-0 mb-1 text-center">
+                      Explore AI Powered Tools
+                    </h2>
+
+                    {/* Subtitle */}
+                    <p className="text-[#64748B] text-[11px] sm:text-sm md:text-base font-normal max-w-xl mx-auto m-0 mb-4 sm:mb-6 text-center">
+                      Make smarter education decisions with AI-powered tools
+                    </p>
+                  </div>
+                  {/* ── Helper Tool Card Render ── */}
+                  {(() => {
+                    const renderToolCard = (tool, idx) => (
+                      <div key={`tool-${tool.id || idx}-${idx}`} className="px-1.5 sm:px-2 py-1.5 h-full">
+                        <div className="relative bg-white rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 shadow-xs hover:shadow-xl border border-slate-100 flex flex-col items-center text-center justify-between transition-all duration-300 hover:-translate-y-1 group h-full select-none">
+                          {/* Top-Right Sparkle */}
+                          <span
+                            className={`absolute top-2.5 right-2.5 sm:top-3.5 sm:right-3.5 ${tool.sparkleColor} font-black text-xs select-none group-hover:rotate-12 transition-transform`}
+                          >
+                            ✦
+                          </span>
+
+                          <Link
+                            href={tool.linkUrl}
+                            className="flex flex-col items-center space-y-2 sm:space-y-3 w-full no-underline"
+                          >
+                            {/* Round Icon with colored background (exact home page match) */}
+                            <div
+                              className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center mb-1 transition-transform group-hover:scale-110 shrink-0 ${tool.circleBg}`}
+                            >
+                              {tool.logoUrl ? (
+                                <Image
+                                  src={tool.logoUrl}
+                                  alt={tool.fullName}
+                                  width={55}
+                                  height={55}
+                                  unoptimized
+                                />
+                              ) : (
+                                tool.iconSvg
+                              )}
+                            </div>
+
+                            {/* Title with Centered Short Accent Line */}
+                            <div className="w-full flex flex-col items-center justify-center mb-1">
+                              <h3 className="text-sm sm:text-base font-semibold text-[#0F172A] tracking-tight m-0 pt-0.5 leading-tight text-center">
+                                {tool.fullName}
+                              </h3>
+                              <span className={`w-7 sm:w-8 border-b-2 ${tool.underlineClass} mt-1.5 inline-block`} />
+                            </div>
+
+                            {/* Description */}
+                            <div className="w-full flex items-center justify-center mt-1">
+                              <p className="text-[#64748B] text-xs sm:text-[11px] leading-relaxed sm:leading-snug font-normal m-0 text-center max-w-[280px] sm:max-w-none">
+                                {tool.description}
+                              </p>
+                            </div>
+                          </Link>
+
+                          {/* Button with circular arrow badge */}
+                          <div className="w-full pt-3">
+                            <Link
+                              href={tool.linkUrl}
+                              className="w-full py-2 sm:py-2 px-4 rounded-full bg-[#0B3B7E] hover:bg-[#072859] text-white font-bold text-xs shadow-xs transition-all flex items-center justify-center cursor-pointer no-underline group-hover:shadow-md active:scale-95"
+                            >
+                              <span className="truncate min-w-0">{tool.btnText}</span>
+                              <span className="w-4 h-4 rounded-full bg-white text-[#0B3B7E] flex items-center justify-center shrink-0 ml-1.5 transition-transform group-hover:translate-x-0.5">
+                                <ArrowRight className="w-3 h-3" />
+                              </span>
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
+                    );
+
+                    return (
+                      <div className="w-full relative mt-2">
+                        {/* ── MOBILE: EXACTLY 1 CARD ONLY PER ROW ── */}
+                        <div className="w-full relative block md:hidden">
+                          <Carousel
+                            autoplay={true}
+                            autoplaySpeed={3500}
+                            infinite={mappedTools.length > 1}
+                            pauseOnHover={true}
+                            draggable={true}
+                            swipeToSlide={true}
+                            dots={mappedTools.length > 1}
+                            slidesToShow={1}
+                            slidesToScroll={1}
+                            className="ai-tools-carousel [&_.slick-track]:flex [&_.slick-track]:items-stretch [&_.slick-slide]:h-auto [&_.slick-slide>div]:h-full pb-8"
+                          >
+                            {mappedTools.map(renderToolCard)}
+                          </Carousel>
+                        </div>
+
+                        {/* ── DESKTOP: 3 CARDS PER ROW ── */}
+                        <div className="w-full relative hidden md:block">
+                          <Carousel
+                            ref={toolsCarouselRef}
+                            autoplay={true}
+                            autoplaySpeed={3500}
+                            infinite={mappedTools.length > 3}
+                            pauseOnHover={true}
+                            draggable={true}
+                            swipeToSlide={true}
+                            dots={mappedTools.length > 3}
+                            slidesToShow={Math.min(mappedTools.length, 3)}
+                            slidesToScroll={1}
+                            className="ai-tools-carousel [&_.slick-list]:-mx-1.5! sm:[&_.slick-list]:-mx-2! [&_.slick-track]:flex [&_.slick-track]:items-stretch [&_.slick-slide]:h-auto [&_.slick-slide>div]:h-full pb-8"
+                          >
+                            {mappedTools.map(renderToolCard)}
+                          </Carousel>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+              )}
+            </div>
+          </main>
+
+          {/* ─── RIGHT COLUMN: Blog Sidebar (Positioned to the right to fill desktop space) ─── */}
+          <aside className="w-full lg:w-[360px] xl:w-[390px] 2xl:w-[420px] shrink-0 lg:self-stretch">
+            <BlogSidebar
+              title={pageTitle}
+              categories={initialCategories}
+              author={blog.author}
+              relatedBlogs={
+                Array.isArray(blog.related)
+                  ? blog.related
+                  : Array.isArray(initialData?.related)
+                    ? initialData.related
+                    : []
+              }
+              recentBlogs={
+                Array.isArray(blog.recent) && blog.recent.length > 0
+                  ? blog.recent
+                  : Array.isArray(initialData?.recent) && initialData.recent.length > 0
+                    ? initialData.recent
+                    : sidebarBlogs.length > 5
+                      ? sidebarBlogs.slice(5, 10)
+                      : sidebarBlogs.slice(0, 5)
+              }
+              popularBlogs={
+                Array.isArray(blog.popular) && blog.popular.length > 0
+                  ? blog.popular
+                  : Array.isArray(initialData?.popular) && initialData.popular.length > 0
+                    ? initialData.popular
+                    : sidebarBlogs.slice(0, 5)
+              }
+              currentSlug={propSlug || blog.slug}
             />
-          </div>
-        )}
+          </aside>
+        </div>
+      </div>
 
-        {/* 📄 Article Content */}
-        {parsedContent && (
-          <div className="text-slate-800 leading-relaxed text-sm sm:text-base space-y-4">
-            <SafeHtmlRenderer html={parsedContent} />
+      {/* ── PDF Preview Modal (Mobile & Desktop Responsive) ── */}
+      <Modal
+        open={pdfModalOpen}
+        onCancel={() => setPdfModalOpen(false)}
+        footer={null}
+        width={isMobile ? "96vw" : 920}
+        centered
+        destroyOnHidden
+        className="pdf-preview-modal"
+        style={{
+          maxWidth: "calc(100vw - 16px)",
+          margin: "0 auto",
+          top: isMobile ? 10 : 24,
+        }}
+        title={
+          <div className="flex items-center gap-2 pr-7 sm:pr-8">
+            <div className="shrink-0 w-5 h-6 sm:w-6 sm:h-7 relative flex items-center justify-center">
+              <svg className="w-5 h-6 sm:w-6 sm:h-7" viewBox="0 0 32 40" fill="none">
+                <path
+                  d="M4 2C2.89543 2 2 2.89543 2 4V36C2 37.1046 2.89543 38 4 38H28C29.1046 38 30 37.1046 30 36V12L20 2H4Z"
+                  fill="white"
+                  stroke="#E11D48"
+                  strokeWidth="2"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M20 2V12H30"
+                  stroke="#E11D48"
+                  strokeWidth="2"
+                  strokeLinejoin="round"
+                />
+                <text
+                  x="16"
+                  y="34.5"
+                  textAnchor="middle"
+                  fill="#E11D48"
+                  fontSize="7"
+                  fontWeight="800"
+                  fontFamily="sans-serif"
+                >
+                  PDF
+                </text>
+              </svg>
+            </div>
+            <span className="font-bold text-slate-900 text-xs sm:text-base truncate">
+              {activePdf.title || "PDF Document"}
+            </span>
           </div>
-        )}
-      </Container>
+        }
+        styles={{
+          body: {
+            padding: 0,
+            height: isMobile ? "74vh" : "78vh",
+            display: "flex",
+            flexDirection: "column",
+          },
+        }}
+      >
+        <div className="w-full h-full bg-slate-100 rounded-b-lg overflow-hidden flex flex-col">
+          {activePdf.url ? (
+            isMobile ? (
+              <PdfCanvasViewer url={activePdf.url} title={activePdf.title} />
+            ) : (
+              <iframe
+                src={viewerUrl}
+                title={activePdf.title || "PDF Viewer"}
+                className="w-full h-full border-0 flex-1 bg-white"
+              />
+            )
+          ) : (
+            <div className="flex items-center justify-center h-full text-slate-400 text-sm">
+              No document available
+            </div>
+          )}
+        </div>
+      </Modal>
     </div>
   );
 }

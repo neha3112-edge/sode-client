@@ -9,7 +9,6 @@ import {
   MailOutlined,
   EnvironmentOutlined,
 } from "@ant-design/icons";
-import { getAssetPath } from "@/lib/utils";
 
 // Social Media SVGs
 function FacebookIcon({ className = "w-5 h-5 fill-white" }) {
@@ -111,7 +110,7 @@ export function ContactView({
         page_url: typeof window !== "undefined" ? window.location.href : "",
       };
 
-      const response = await fetch(getAssetPath("/api/lead"), {
+      const response = await fetch("/api/lead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -140,7 +139,7 @@ export function ContactView({
   const registeredOffice = tenant?.registeredOffice || tenant?.address || "";
   const tenantName = tenant?.name || "";
   const tenantSubtitle = tenant?.subtitle || "";
-  const bannerImgUrl = tenant?.bannerImage?.url || null;
+  const bannerImgUrl = tenant?.bannerImage ? (typeof tenant.bannerImage === "string" ? tenant.bannerImage : tenant.bannerImage?.url || tenant.bannerImage?.path || null) : null;
 
   const contactHeroTitle = tenant?.contactHeroTitle || "";
   const contactHeroDescription = tenant?.contactHeroDescription || "";
@@ -258,7 +257,7 @@ export function ContactView({
               {(counselingFormTitle || counselingFormSubtitle || counselingPhone) && (
                 <div className="text-center mb-5">
                   {counselingFormTitle && (
-                    <h2 className="text-xl sm:text-2xl font-black text-[#E03E19] tracking-tight m-0">
+                    <h2 className="text-xl sm:text-2xl font-black text-[#072C50] tracking-tight m-0">
                       {counselingFormTitle}
                     </h2>
                   )}
@@ -411,7 +410,7 @@ export function ContactView({
                     type="primary"
                     htmlType="submit"
                     loading={loading}
-                    className="w-full h-11 sm:h-12 bg-[#E03E19] hover:bg-[#c43210]! text-white font-bold rounded-lg border-none shadow-md text-sm sm:text-base cursor-pointer transition-all"
+                    className="w-full h-11 sm:h-12 bg-[#072C50] hover:bg-[#0c3966]! text-white font-bold rounded-lg border-none shadow-md text-sm sm:text-base cursor-pointer transition-all"
                   >
                     {contactSubmitButtonText || "Submit"}
                   </Button>

@@ -56,7 +56,7 @@ export default function CourseCareerOpportunities({
   return (
     <div
       id="career-opportunities"
-      data-nav-label="Career & Scope"
+      data-nav-label="Career Opportunities"
       suppressHydrationWarning
       className="scroll-mt-20 bg-white rounded-xl border border-gray-200/90 shadow-xs p-3.5 sm:p-7 md:p-8 space-y-4 sm:space-y-5"
     >

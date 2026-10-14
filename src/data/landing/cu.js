@@ -48,37 +48,8 @@ export const cuData = {
     couponButtonText: "Scholarship Coupon Code",
     couponBtnBg: "linear-gradient(135deg, #2ecc71, #27ae60)",
     showCouponPillWrapper: false,
-    programmesLayout: "cu",
-    whyChooseLayout: "cu",
-    aboutLayout: "cu",
-    approvalsLayout: "cu",
-    degreeLayout: "cu",
-    statsLayout: "cu",
-    compareLayout: "cu",
-    faqLayout: "cu",
-    faqTitleColor: "#d11c1f",
-    stickyLayout: "cu",
-    showFooterForm: false,
-    hideStickyApply: true,
-    admissionFullWidth: true,
-    footerBottomBg: "#0b3c66",
-    footerDisclaimer:
-      "SODE Counselling Services LLP act as a marketing agency. All university names, logos, and trademarks mentioned are used for informational purposes only. We are not a university or an admission authority. Users are encouraged to verify information on official website of the University before making decisions.",
 
-    // Section sequence exactly matching distanceeducationschool.com/cu
-    sectionOrder: [
-      "stats",
-      "programmes",
-      "whyChoose",
-      "about",
-      "approvals",
-      "degree",
-      "admissionProcess",
-      "faqs",
-      "compareBanner",
-    ],
-
-    // Hero Section Configuration
+    // Hero Section Configuration (styles passed via JSON as requested)
     hero: {
       backgroundImage: "/assets/cu/CU-ODC.webp",
       mobileBackgroundImage: "",

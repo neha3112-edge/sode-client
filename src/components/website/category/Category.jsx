@@ -48,13 +48,9 @@ export function Category({ categories = [], universities = [], programs = [], co
       if (w < 640) {
         setSlidesToShowCount(4);
       } else if (w < 768) {
-        setSlidesToShowCount(5);
-      } else if (w < 1024) {
         setSlidesToShowCount(6);
-      } else if (w < 1280) {
-        setSlidesToShowCount(8);
       } else {
-        setSlidesToShowCount(9);
+        setSlidesToShowCount(8);
       }
     };
 
@@ -151,19 +147,96 @@ export function Category({ categories = [], universities = [], programs = [], co
   const handleCardClick = (item) => {
     if (!item) return;
 
+    // 0. If item is directly a Course (e.g. clicked in "TOP COURSES" section):
+    if (item.isCourse === true || item.itemType === "course") {
+      // If this course has subcategories configured in CRM -> Open Subcategories Modal!
+      if (Array.isArray(item.subcategories) && item.subcategories.length > 0) {
+        setModalData({
+          category: item,
+          isUniversity: false,
+          isUniversitiesModal: false,
+          isCoursesModal: false,
+          isCourseSubcategoriesModal: true,
+          items: item.subcategories,
+        });
+        setActiveCategory(item);
+        return;
+      }
+      // If no subcategories attached to this course -> Navigate directly to Course Page!
+      if (activeCategory) {
+        setActiveCategory(null);
+      }
+      const courseSlug = getItemSlug(item);
+      if (item.targetUrl && !/[0-9a-fA-F]{24}/.test(item.targetUrl)) {
+        router.push(item.targetUrl);
+      } else {
+        router.push(`/courses?course=${encodeURIComponent(courseSlug)}`);
+      }
+      return;
+    }
+
     // 1. If University Card is clicked -> Open Modal with its Offered Courses
     if (item.isUniversity === true || item.itemType === "university") {
       setModalData({
         category: item,
         isUniversity: true,
         isUniversitiesModal: false,
+        isCoursesModal: false,
+        isCourseSubcategoriesModal: false,
         items: item.courses || [],
       });
       setActiveCategory(item);
       return;
     }
 
-    // 2. If Category has Sub-Categories (children or items)
+    // 2. If Category Target Type is COURSE or modalType is COURSES
+    const isCourseCategory =
+      item.modalType === "COURSES" ||
+      item.targetType === "COURSE" ||
+      (Array.isArray(item.courses) && item.courses.length > 0);
+
+    if (isCourseCategory) {
+      const courseItems = (Array.isArray(item.courses) && item.courses.length > 0)
+        ? item.courses
+        : (Array.isArray(item.items) && item.items.length > 0)
+          ? item.items
+          : [];
+
+      setModalData({
+        category: item,
+        isUniversity: false,
+        isUniversitiesModal: false,
+        isCoursesModal: true,
+        items: courseItems,
+      });
+      setActiveCategory(item);
+      return;
+    }
+
+    // 3. If Category has Universities or modalType is UNIVERSITIES
+    if (
+      item.modalType === "UNIVERSITIES" ||
+      item.targetType === "UNIVERSITY" ||
+      (Array.isArray(item.universities) && item.universities.length > 0)
+    ) {
+      const uniItems = (Array.isArray(item.universities) && item.universities.length > 0)
+        ? item.universities
+        : (Array.isArray(item.items) && item.items.length > 0)
+          ? item.items
+          : [];
+
+      setModalData({
+        category: item,
+        isUniversity: false,
+        isUniversitiesModal: true,
+        isCoursesModal: false,
+        items: uniItems,
+      });
+      setActiveCategory(item);
+      return;
+    }
+
+    // 4. If Category has Sub-Categories (children or items)
     const subItems = (item.children && item.children.length > 0)
       ? item.children
       : (item.items && item.items.length > 0)
@@ -174,20 +247,9 @@ export function Category({ categories = [], universities = [], programs = [], co
       setModalData({
         category: item,
         isUniversity: false,
-        isUniversitiesModal: item.modalType === "UNIVERSITIES" || (item.universities && item.universities.length > 0),
+        isUniversitiesModal: false,
+        isCoursesModal: false,
         items: subItems,
-      });
-      setActiveCategory(item);
-      return;
-    }
-
-    // 3. If Category has Universities
-    if (Array.isArray(item.universities) && item.universities.length > 0) {
-      setModalData({
-        category: item,
-        isUniversity: false,
-        isUniversitiesModal: true,
-        items: item.universities,
       });
       setActiveCategory(item);
       return;
@@ -252,10 +314,10 @@ export function Category({ categories = [], universities = [], programs = [], co
           box-shadow: none !important;
         }
         .ant-carousel .slick-prev {
-          left: -10px !important;
+          left: -12px !important;
         }
         .ant-carousel .slick-next {
-          right: -10px !important;
+          right: -12px !important;
         }
         .ant-carousel .slick-prev::before,
         .ant-carousel .slick-next::before {

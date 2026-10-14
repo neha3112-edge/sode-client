@@ -33,7 +33,7 @@ export default async function WebsiteLayout({ children }) {
     <div className="flex flex-col min-h-screen">
       <Header initialHeaderData={headerData} />
       <GlobalBreadcrumb />
-      <main className="grow pb-16 lg:pb-0">{children}</main>
+      <main className="grow">{children}</main>
       <Footer
         initialHeaderData={headerData}
         initialFooterData={footerData}

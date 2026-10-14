@@ -2,12 +2,15 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Modal } from "antd";
 import { Clock, Plus, Check, ChevronDown, Download, Briefcase, GraduationCap, Award, BookOpen, Database, UserCog, ShoppingCart, CheckCircle2 } from "lucide-react";
 import { FaCalendar, FaClock } from "react-icons/fa";
 import { useCompare } from "@/hooks/useCompare";
-import { getAssetPath, formatAdmissionDeadline } from "@/lib/utils";
+import { formatAdmissionDeadline } from "@/lib/utils";
+
+const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 
 const SPEC_ICONS = [Briefcase, BookOpen, GraduationCap, Award, Database, UserCog, ShoppingCart];
 
@@ -25,7 +28,8 @@ export default function UniversityCoursesSection({
   heroBannerUrl,
   openFormModal,
 }) {
-  const { toggleCompare, isInCompare, setIsCompareDrawerOpen } = useCompare();
+  const router = useRouter();
+  const { toggleCompare, isInCompare, setIsCompareDrawerOpen, compareList } = useCompare();
   const [selectedCourseSpec, setSelectedCourseSpec] = useState(null);
   const brandColor = uni?.color_code || "#08AEAA";
 
@@ -33,10 +37,12 @@ export default function UniversityCoursesSection({
 
   return (
     <div
-      id="university-courses-section"
-      data-nav-label="Courses"
-      className="bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8 scroll-mt-20"
+      id="programs"
+      data-nav-label="Programs"
+      className="bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8 scroll-mt-20 relative"
     >
+      <span id="courses" className="sr-only" />
+      <span id="university-courses-section" className="sr-only" />
       <div className="flex flex-col items-center justify-center mb-3 sm:mb-5">
         <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight text-center m-0">
           {uniName} Courses
@@ -75,8 +81,7 @@ export default function UniversityCoursesSection({
             : `/universities/${slug || uni.slug || ""}/${rawCourseSlug}`;
           const specCount = item.specializationsCount || item.subcourses?.length || 0;
           const inCmp = isInCompare(item._id || item.slug || cardTitle);
-          const courseRawLogo = item.logo?.url || item.logo?.path || (typeof item.logo === "string" ? item.logo : null);
-          const courseLogoUrl = courseRawLogo ? getAssetPath(courseRawLogo) : null;
+          const courseLogoUrl = item.logo ? getMediaUrl(item.logo) : null;
           const displayCourseLogo = courseLogoUrl || logoUrl;
 
           return (
@@ -175,27 +180,44 @@ export default function UniversityCoursesSection({
                 <button
                   type="button"
                   onClick={() => {
-                    const targetItem = {
-                      _id: item._id || item.slug,
-                      slug: item.slug || item._id,
-                      title: cardTitle,
-                      uniName: uniName,
-                      logoUrl: displayCourseLogo || logoUrl,
-                      feeText: feeText,
-                      durationText: durationText,
-                    };
-                    toggleCompare(targetItem);
-                    setIsCompareDrawerOpen(true);
+                    const cleanSlug = slug || uni?.slug || (item.slug && !item.slug.includes("/") ? item.slug : null) || item.slug?.split("/")[0] || item._id;
+                    if (inCmp) {
+                      const slugs = (compareList || [])
+                        .map((u) => u.uniSlug || (u.slug && !u.slug.includes("/") ? u.slug : null) || u.slug?.split("/")[0] || u._id || u.id)
+                        .filter(Boolean);
+                      const combinedSlugs = Array.from(new Set([...slugs, cleanSlug])).filter(Boolean).slice(0, 3);
+                      const crsParam = cardTitle || item.rawName || "";
+                      router.push(
+                        `/tools/compare-universities?university=${encodeURIComponent(combinedSlugs.join(","))}${crsParam ? `&course=${encodeURIComponent(crsParam)}` : ""}`
+                      );
+                    } else {
+                      const targetItem = {
+                        _id: item._id || cleanSlug,
+                        slug: cleanSlug,
+                        uniSlug: cleanSlug,
+                        name: uniName,
+                        uniName: uniName,
+                        title: cardTitle,
+                        courseName: cardTitle,
+                        course: cardTitle,
+                        logoUrl: displayCourseLogo || logoUrl,
+                        logoSrc: displayCourseLogo || logoUrl,
+                        feeText: feeText,
+                        durationText: durationText,
+                      };
+                      toggleCompare(targetItem);
+                      setIsCompareDrawerOpen(true);
+                    }
                   }}
-                  className={`w-full py-1 text-[11px] sm:text-xs font-medium flex items-center justify-center gap-1 transition-all cursor-pointer mt-1 border-none bg-transparent min-h-[22px] ${inCmp
-                      ? "text-[#08AEAA] font-bold"
-                      : "text-gray-600 hover:text-[#0D3B66]"
+                  className={`w-full py-1 text-[11px] sm:text-xs font-semibold flex items-center justify-center gap-1 transition-all cursor-pointer mt-1 border-none bg-transparent min-h-[22px] ${inCmp
+                    ? "text-[#08AEAA] font-bold hover:underline"
+                    : "text-gray-600 hover:text-[#0D3B66]"
                     }`}
                 >
                   {inCmp ? (
                     <>
                       <Check className="w-3.5 h-3.5 text-[#08AEAA] shrink-0 stroke-[2.5]" />
-                      <span>Added to Compare</span>
+                      <span>Compare Now</span>
                     </>
                   ) : (
                     <>
@@ -217,7 +239,7 @@ export default function UniversityCoursesSection({
             onClick={() => {
               if (visibleCoursesCount >= filteredCourses.length) {
                 setVisibleCoursesCount(5);
-                const section = document.getElementById("university-courses-section");
+                const section = document.getElementById("programs") || document.getElementById("university-courses-section");
                 if (section) {
                   const yOffset = -70;
                   const y = section.getBoundingClientRect().top + window.pageYOffset + yOffset;
@@ -234,8 +256,8 @@ export default function UniversityCoursesSection({
             </span>
             <ChevronDown
               className={`w-3.5 h-3.5 transition-transform duration-200 ${visibleCoursesCount >= filteredCourses.length
-                  ? "rotate-180"
-                  : "group-hover:translate-y-0.5"
+                ? "rotate-180"
+                : "group-hover:translate-y-0.5"
                 }`}
             />
           </button>
@@ -262,8 +284,7 @@ export default function UniversityCoursesSection({
             ? selectedCourseSpec.subCourses
             : [];
 
-        const courseRawLogo = selectedCourseSpec.logo?.url || selectedCourseSpec.logo?.path || (typeof selectedCourseSpec.logo === "string" ? selectedCourseSpec.logo : null);
-        const uniLogoSrc = logoUrl || (courseRawLogo ? getAssetPath(courseRawLogo) : null);
+        const uniLogoSrc = logoUrl || (selectedCourseSpec.logo ? getMediaUrl(selectedCourseSpec.logo) : null);
 
         const rawCourseSlug = selectedCourseSpec.slug || encodeURIComponent(cTitle.toLowerCase());
         const baseCourseDetailHref = rawCourseSlug.includes("/")
@@ -286,7 +307,7 @@ export default function UniversityCoursesSection({
               <div className="relative w-full md:w-80 lg:w-88 shrink-0 h-36 sm:h-44 md:h-auto min-h-36 sm:min-h-44 md:min-h-[350px] md:max-h-[460px] rounded-xl sm:rounded-2xl overflow-hidden bg-slate-900 shadow-xs flex items-stretch">
                 {bannerSrc ? (
                   <Image
-                    src={getAssetPath(bannerSrc)}
+                    src={getMediaUrl(bannerSrc)}
                     alt={cTitle}
                     fill
                     sizes="(max-width: 768px) 100vw, 360px"

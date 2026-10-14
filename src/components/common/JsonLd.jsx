@@ -1,13 +1,10 @@
-import React from "react";
-import { getAssetPath } from "@/lib/utils";
-
 const SITE_URL = "https://sode.co.in";
 const SITE_NAME = "SODE";
 const SITE_DESCRIPTION =
   "Certifications & Online Degree Courses from top IITs, IIMs & global universities via SODE. Enroll in our MBA, DBA & executive leadership programs.";
 
-const OG_IMAGE = getAssetPath("/assets/images/sode-homepage-og-card-image.png");
-const ORGANIZATION_LOGO = getAssetPath("/assets/images/sode-logo.png");
+const OG_IMAGE = "/assets/images/sode-homepage-og-card-image.png";
+const ORGANIZATION_LOGO = "/assets/images/sode-logo.png";
 
 export const websiteSchema = {
   "@context": "https://schema.org",

@@ -5,7 +5,6 @@ import Link from "next/link";
 import Script from "next/script";
 import confetti from "canvas-confetti";
 import { Headphones, Home, Mail, CheckCircle2, Phone, BookOpen, Award, Compass } from "lucide-react";
-import { getAssetPath } from "@/lib/utils";
 
 /* =========================================================
    ICON MAPPING UTILITY
@@ -139,7 +138,7 @@ export default function ThankYouClient({
   ========================================================= */
 
   const getBrochureUrl = useCallback(() => {
-    return brochureUrl || getAssetPath("/assets/pdf/brochure.pdf");
+    return brochureUrl || "/assets/pdf/brochure.pdf";
   }, [brochureUrl]);
 
   /* =========================================================

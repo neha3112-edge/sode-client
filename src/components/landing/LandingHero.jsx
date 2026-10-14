@@ -29,6 +29,13 @@ export default function LandingHero({
   onOpenScholarship,
 }) {
   const hero = brand?.hero || {};
+  const isLeftAligned =
+    hero.mobileAlign === "left" ||
+    hero.alignLeftMobile ||
+    brand.slug === "manipal" ||
+    brand.slug === "amity" ||
+    brand.slug === "uu" ||
+    brand.slug === "mu";
 
   if (brand.slug === "galgotias" || hero.heroStyle === "galgotias") {
     return (
@@ -89,7 +96,7 @@ export default function LandingHero({
 
   const mobileBackgroundImage =
     hero.mobileBackgroundImage !== undefined
-      ? hero.mobileBackgroundImage
+      ? (hero.mobileBackgroundImage === "none" ? "" : hero.mobileBackgroundImage)
       : backgroundImage;
 
   const sectionStyle = {
@@ -190,6 +197,7 @@ export default function LandingHero({
       brand.primaryColor ||
       "#004172",
     color:
+      hero.courseStripStyle?.color ||
       hero.coursesColor ||
       hero.courseTextColor ||
       hero.headingColor ||
@@ -242,7 +250,9 @@ export default function LandingHero({
     return (
       <div
         className={joinClassNames(
-          "relative z-20 w-full sm:w-fit my-2",
+          isLeftAligned
+            ? "relative z-20 w-[318px] max-w-full self-start my-2 sm:w-fit"
+            : "relative z-20 w-full sm:w-fit my-2",
           hero.courseWrapperClassName
         )}
         style={hero.courseWrapperStyle}
@@ -251,7 +261,12 @@ export default function LandingHero({
           <span
             className={
               hero.courseLabelClassName ||
-              "absolute -top-3 left-1/2 -translate-x-1/2 sm:left-3 sm:translate-x-0 z-10 rounded-full px-3.5 py-0.5 text-[12px] sm:text-[13px] font-bold leading-normal shadow-sm whitespace-nowrap"
+              joinClassNames(
+                "absolute -top-3 z-10 rounded-full px-3.5 py-0.5 text-[12px] sm:text-[13px] font-bold leading-normal shadow-sm whitespace-nowrap",
+                isLeftAligned
+                  ? "left-3 translate-x-0"
+                  : "left-1/2 -translate-x-1/2 sm:left-3 sm:translate-x-0"
+              )
             }
             style={courseLabelStyle}
           >
@@ -262,7 +277,10 @@ export default function LandingHero({
         <div
           className={
             hero.courseBoxClassName ||
-            "rounded-[6px] border-2 bg-white/95 px-3 sm:px-4 pb-2 pt-3.5 text-[15px] sm:text-[18px] lg:text-[20px] font-bold leading-[1.25] shadow-sm text-center sm:text-left"
+            joinClassNames(
+              "rounded-[6px] border-2 bg-white/95 px-3 sm:px-4 pb-2 pt-3.5 text-[15px] sm:text-[18px] lg:text-[20px] font-bold leading-[1.25] shadow-sm w-full",
+              isLeftAligned ? "text-left" : "text-center sm:text-left"
+            )
           }
           style={courseBoxStyle}
         >

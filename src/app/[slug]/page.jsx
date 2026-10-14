@@ -17,6 +17,7 @@ import UniversityLandingView from "@/components/landing/UniversityLandingView";
 export const revalidate = 600;
 
 // ─── Unified page resolver ────────────────────────────────────────────────────
+// Cache-bust: GGU specializations order update
 const getPageData = cache(async (slug) => {
   if (!slug) return null;
 

@@ -3,16 +3,14 @@
 import React, { useState, useMemo } from "react";
 import { Empty, Pagination } from "antd";
 import {
-  CalendarOutlined,
-  ArrowRightOutlined,
-  EyeOutlined,
   SearchOutlined,
   BookOutlined,
-  UserOutlined,
+  ArrowRightOutlined,
 } from "@ant-design/icons";
+import { Calendar, Clock, User, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { getAssetPath } from "@/lib/utils";
+const getAssetPath = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 import WebsiteLayout from "@/components/layout/WebsiteLayout";
 import Container from "@/components/common/Container";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
@@ -65,15 +63,18 @@ function formatBlogDate(dateStr) {
   }
 }
 
-function formatReadViews(views, readTime) {
-  if (views && typeof views === "number" && views > 0) {
-    if (views >= 1000) return `${(views / 1000).toFixed(1)}k Read`;
-    return `${views} Read`;
+function formatReadTime(readTime) {
+  if (readTime && typeof readTime === "string" && readTime.trim()) {
+    const trimmed = readTime.trim();
+    if (trimmed.toLowerCase().includes("min")) {
+      return trimmed.toLowerCase().includes("read") ? trimmed : `${trimmed} read`;
+    }
+    return `${trimmed} min read`;
   }
-  if (readTime && typeof readTime === "string") {
-    return readTime.includes("Read") || readTime.includes("read") ? readTime : `${readTime} Read`;
+  if (typeof readTime === "number" && readTime > 0) {
+    return `${readTime} min read`;
   }
-  return "1.4k Read";
+  return "5 min read";
 }
 
 function getAuthorName(author) {
@@ -82,15 +83,16 @@ function getAuthorName(author) {
   return author.fullname || author.name || "Amritanjali Singh";
 }
 
-function BlogCard({ blog }) {
+function BlogCard({ blog, index = 0 }) {
   const [imgErr, setImgErr] = useState(false);
   const coverUrl = !imgErr ? getAssetPath(blog.coverImage || blog.featuredImage || blog.bannerImage) : null;
   const formattedDate = formatBlogDate(blog.publishedAt || blog.createdAt);
-  const viewsText = formatReadViews(blog.viewsCount || blog.views, blog.readTime);
+  const readTimeText = formatReadTime(blog.readTime);
   const authorName = getAuthorName(blog.author);
   const title = decodeHtml(blog.title || "");
   const subtitleText = cleanExcerpt(blog.subtitle || blog.excerpt || blog.content || "", 135);
   const blogSlug = blog.slug || blog._id;
+  const isAboveTheFold = index < 3;
 
   return (
     <div className="bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col group h-full">
@@ -105,8 +107,8 @@ function BlogCard({ blog }) {
             alt={title}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            loading="eager"
-            priority
+            loading={isAboveTheFold ? "eager" : "lazy"}
+            priority={isAboveTheFold}
             unoptimized
             className="object-cover group-hover:scale-105 transition-transform duration-500"
             onError={() => setImgErr(true)}
@@ -123,42 +125,42 @@ function BlogCard({ blog }) {
 
       {/* 📝 Blog Card Body */}
       <div className="p-4 sm:p-5 flex flex-col flex-1">
-        {/* Meta Row: Date & Reads */}
+        {/* Meta Row: Date & Read Time */}
         <div className="flex items-center justify-between text-[11px] sm:text-xs text-slate-400 mb-2.5">
-          <span className="flex items-center gap-1.5 font-medium text-slate-500">
-            <CalendarOutlined className="text-blue-500 text-[11px]" />
-            {formattedDate}
+          <span className="inline-flex items-center gap-1.5 font-medium text-slate-500 leading-none">
+            <Calendar size={13} className="text-blue-500 shrink-0" />
+            <span className="leading-none">{formattedDate}</span>
           </span>
-          <span className="flex items-center gap-1.5 font-medium text-slate-500">
-            <EyeOutlined className="text-slate-400 text-[11px]" />
-            {viewsText}
+          <span className="inline-flex items-center gap-1.5 font-medium text-slate-500 leading-none">
+            <Clock size={13} className="text-slate-400 shrink-0" />
+            <span className="leading-none">{readTimeText}</span>
           </span>
         </div>
 
         {/* Title */}
         <Link href={`/blogs/${blogSlug}`} className="block group-hover:text-blue-600 transition-colors">
-          <h3 className="text-sm sm:text-base font-bold text-[#072C50] m-0 leading-snug line-clamp-2 min-h-[2.5rem] sm:min-h-[2.8rem]">
+          <h3 className="text-[16px] sm:text-base font-semibold text-[#072C50] m-0 line-clamp-2 leading-snug">
             {title}
           </h3>
         </Link>
 
         {/* Subtitle */}
-        <p className="text-xs sm:text-[13px] text-slate-500 line-clamp-2 leading-relaxed m-0 mt-2 mb-4">
+        <p className="text-xs text-slate-500 line-clamp-2 m-0 mt-1 mb-3">
           {subtitleText}
         </p>
 
         {/* Footer: Author & Read More */}
         <div className="pt-3 border-t border-slate-100 flex items-center justify-between mt-auto">
-          <span className="flex items-center gap-1.5 text-xs font-medium text-slate-700 truncate max-w-[60%]">
-            <UserOutlined className="text-slate-400 text-xs shrink-0" />
-            <span className="truncate">{authorName}</span>
+          <span className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-700 truncate max-w-[60%] leading-none">
+            <User size={13} className="text-slate-400 shrink-0" />
+            <span className="truncate leading-none">{authorName}</span>
           </span>
           <Link
             href={`/blogs/${blogSlug}`}
-            className="text-xs font-bold text-blue-700 hover:text-blue-800 flex items-center gap-1 group/btn shrink-0"
+            className="text-xs font-bold text-blue-700 hover:text-blue-800 inline-flex items-center gap-1 group/btn shrink-0 leading-none"
           >
-            <span>Read More</span>
-            <ArrowRightOutlined className="text-[10px] group-hover/btn:translate-x-0.5 transition-transform" />
+            <span className="leading-none">Read More</span>
+            <ArrowRight size={13} className="group-hover/btn:translate-x-0.5 transition-transform shrink-0" />
           </Link>
         </div>
       </div>
@@ -280,10 +282,10 @@ export default function BlogPageClientView({
       {/* 🔷 Compact Full-Bleed Dark Blue Hero Section */}
       <section className="w-full bg-[#072C50] text-white py-5 sm:py-6 md:py-7 px-4 sm:px-6 shadow-inner">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-[#F3CE7F] tracking-tight mb-1.5 sm:mb-2">
+          <h1 className="text-[22px] sm:text-2xl md:text-3xl font-extrabold text-[#F3CE7F] tracking-tight mb-1.5 sm:mb-2">
             Blogs & Articles
           </h1>
-          <p className="text-blue-100/90 text-[11px] sm:text-xs md:text-sm font-normal max-w-2xl sm:max-w-3xl mx-auto leading-relaxed">
+          <p className="text-blue-100/90 text-[11px] sm:text-xs md:text-sm font-normal max-w-2xl sm:max-w-3xl mx-auto">
             Distance & Online education blogs and articles, featuring top courses and the best UGC universities according to facilities, support, & recognitions. Get the career guidance on the latest trends and updates in online/distance learning to help you achieve your academic & career goals.
           </p>
 
@@ -319,7 +321,7 @@ export default function BlogPageClientView({
         {categoryList.length > 0 && (
           <div className="w-full">
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight m-0">
+              <h2 className="text-[18px] sm:text-lg font-bold text-slate-900 tracking-tight m-0">
                 Browse By Categories
               </h2>
               <button
@@ -380,8 +382,8 @@ export default function BlogPageClientView({
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {displayedBlogs.map((blog) => (
-              <BlogCard key={blog._id || blog.slug} blog={blog} />
+            {displayedBlogs.map((blog, idx) => (
+              <BlogCard key={blog._id || blog.slug} blog={blog} index={idx} />
             ))}
           </div>
         )}

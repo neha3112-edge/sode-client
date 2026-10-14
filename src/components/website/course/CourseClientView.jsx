@@ -1,9 +1,13 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useFormModal } from "@/hooks/useFormModal";
-import { getAssetPath, formatAdmissionDeadline } from "@/lib/utils";
+import { useCompare } from "@/hooks/useCompare";
+import { formatAdmissionDeadline } from "@/lib/utils";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
+
+const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 import CourseHero from "./CourseHero";
 import CourseQuickFacts from "./CourseQuickFacts";
 import CourseAbout from "./CourseAbout";
@@ -22,7 +26,9 @@ export function CourseClientView({
   initialCourses = [],
   slug = "",
 }) {
+  const router = useRouter();
   const { openFormModal } = useFormModal();
+  const { toggleCompare, addToCompare, compareList, isInCompare, setIsCompareDrawerOpen } = useCompare();
   const [selectedPlanTab, setSelectedPlanTab] = useState("semester");
   const courseData = initialData || {};
 
@@ -97,27 +103,56 @@ export function CourseClientView({
     courseData?.university?.name ||
     "";
   const displayCourseTitle = courseData?.name || "Course Details";
-  const heroBannerSrc = getAssetPath(
+  const heroBannerSrc = getMediaUrl(
     courseData?.coursepageimage ||
     courseData?.bannerImage ||
     courseData?.banner ||
-    courseData?.universityId?.coursepageimage?.url ||
-    courseData?.universityId?.bannerImg?.url
+    courseData?.universityId?.coursepageimage ||
+    courseData?.universityId?.bannerImg
   );
-  const mobileHeroBannerSrc = getAssetPath(
+  const mobileHeroBannerSrc = getMediaUrl(
     courseData?.bannerImageMobile ||
     courseData?.mobileBannerImage ||
-    courseData?.universityId?.mobileBannerImg?.url ||
+    courseData?.universityId?.mobileBannerImg ||
     courseData?.coursepageimage ||
     courseData?.bannerImage ||
     courseData?.banner ||
-    courseData?.universityId?.bannerImg?.url
+    courseData?.universityId?.bannerImg
   );
   const universityLogoSrc = courseData?.logo
-    ? getAssetPath(courseData.logo)
+    ? getMediaUrl(courseData.logo)
     : courseData?.universityId?.logo
-      ? getAssetPath(courseData.universityId.logo)
+      ? getMediaUrl(courseData.universityId.logo)
       : null;
+
+  const currentUniSlug = useMemo(() => {
+    return (
+      courseData?.universitySlug ||
+      courseData?.universityId?.slug ||
+      courseData?.university?.slug ||
+      (typeof slug === "string" ? slug.split("/")[0] : "") ||
+      ""
+    ).toLowerCase().trim();
+  }, [courseData, slug]);
+
+  const currentCourseName = useMemo(() => {
+    return courseData?.name || courseData?.title || displayCourseTitle || "";
+  }, [courseData, displayCourseTitle]);
+
+
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.__CURRENT_PAGE_COURSES__ = [currentCourseName];
+      window.__CURRENT_PAGE_UNIVERSITY__ = universityName;
+    }
+    return () => {
+      if (typeof window !== "undefined") {
+        window.__CURRENT_PAGE_COURSES__ = null;
+        window.__CURRENT_PAGE_UNIVERSITY__ = null;
+      }
+    };
+  }, [currentCourseName, universityName]);
 
   const approvalsList = useMemo(() => {
     return Array.isArray(courseData?.approvals) ? courseData.approvals : [];
@@ -268,17 +303,8 @@ export function CourseClientView({
       );
       const providerName = isPartnerActive ? partnerObj.name : null;
 
-      const rawLogo =
-        uni.logo?.url ||
-        uni.logo?.path ||
-        (typeof uni.logo === "string" ? uni.logo : null) ||
-        uni.logoSrc?.url ||
-        uni.logoSrc ||
-        item.logo?.url ||
-        item.logo?.path ||
-        (typeof item.logo === "string" ? item.logo : null) ||
-        item.logoUrl;
-      const logoUrl = rawLogo ? getAssetPath(rawLogo, null) : null;
+      const rawLogo = uni.logo || uni.logoSrc || item.logo || item.logoUrl || null;
+      const logoUrl = rawLogo ? getMediaUrl(rawLogo) : null;
 
       let durationText = null;
       if (typeof duration === "string" && duration.trim()) {
@@ -355,11 +381,14 @@ export function CourseClientView({
 
       list.push({
         ...item,
-        _uniqueKey: `${item._id || item.slug || cardTitle || "program"}-${index}`,
+        _uniqueKey: `${item._id || uniSlug || cardTitle || "program"}-${index}`,
         title: cardTitle,
         cardTitle,
         displayName,
         uniName: uName,
+        uniSlug: uniSlug,
+        slug: uniSlug,
+        universitySlug: uniSlug,
         logoUrl,
         location: uniLocation,
         providerName,
@@ -389,10 +418,26 @@ export function CourseClientView({
 
     openFormModal({
       course: courseTitleForLead,
-      university: universityName || "Partner University",
+      university: universityName || "UPES",
+      university_name: universityName || "UPES",
       action: actionType,
+      title: actionType,
     });
   };
+
+  useEffect(() => {
+    const pageCourseName = courseData?.name || courseData?.title || "";
+    if (typeof window !== "undefined") {
+      window.__CURRENT_PAGE_COURSE__ = pageCourseName;
+      window.__CURRENT_PAGE_UNIVERSITY__ = universityName || "";
+    }
+    return () => {
+      if (typeof window !== "undefined") {
+        window.__CURRENT_PAGE_COURSE__ = null;
+        window.__CURRENT_PAGE_UNIVERSITY__ = null;
+      }
+    };
+  }, [courseData?.name, courseData?.title, universityName]);
 
   useBreadcrumb(
     {
@@ -402,8 +447,8 @@ export function CourseClientView({
         ...(universityName && (courseData?.universitySlug || courseData?.universityId?.slug)
           ? [{ label: universityName, href: `/university/${courseData.universitySlug || courseData.universityId?.slug}` }]
           : universityName
-          ? [{ label: universityName }]
-          : []),
+            ? [{ label: universityName }]
+            : []),
         {
           label: `${displayCourseTitle}${courseData?.fullName ? ` (${courseData.fullName})` : ""}`.trim(),
         },
@@ -419,7 +464,7 @@ export function CourseClientView({
   const availableSections = useMemo(() => {
     const list = [];
     if (courseData?.overview || courseData?.description) {
-      list.push({ id: "about", label: "Overview" });
+      list.push({ id: "overview", label: "Overview" });
     }
     if (highlightsList && highlightsList.length > 0) {
       list.push({ id: "key-highlights", label: "Highlights" });
@@ -434,7 +479,7 @@ export function CourseClientView({
       list.push({ id: "approvals", label: "Accreditations" });
     }
     if (specializations && specializations.length > 0) {
-      list.push({ id: "specializations", label: "Specialisations" });
+      list.push({ id: "specializations", label: "Specializations" });
     }
     if (
       courseData?.careerOpportunity &&
@@ -442,7 +487,7 @@ export function CourseClientView({
         courseData.careerOpportunity.highlights?.highestPackage ||
         courseData.careerOpportunity.highlights?.averagePackage)
     ) {
-      list.push({ id: "career-opportunities", label: "Career & Scope" });
+      list.push({ id: "career-opportunities", label: "Career Opportunities" });
     }
     if (processedPrograms && processedPrograms.length > 0) {
       list.push({ id: "alternative", label: "Alternative Universities" });
@@ -527,8 +572,6 @@ export function CourseClientView({
           courseData={courseData}
           universityName={universityName}
         />
-
-        {/* 5. Specialisations */}
         <CourseSpecializations
           specializations={specializations}
           courseData={courseData}
@@ -552,6 +595,9 @@ export function CourseClientView({
         <CourseAlternativeUniversities
           processedPrograms={processedPrograms}
           courseData={courseData}
+          currentUniSlug={currentUniSlug}
+          currentUniName={universityName}
+          currentUniLogo={universityLogoSrc}
         />
 
         {/* 8. FAQs */}

@@ -3,11 +3,13 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Carousel, Table } from "antd";
 import { Container } from "@/components/common/Container";
 import SafeHtmlRenderer from "@/components/website/SafeHtmlRenderer";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
-import { getAssetPath } from "@/lib/utils";
+
+const getAssetPath = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || "");
 import { useFormModal } from "@/hooks/useFormModal";
 import { useCompare } from "@/hooks/useCompare";
 import Hero from "@/components/website/Hero";
@@ -65,13 +67,13 @@ function isDirectVideoFile(url) {
 
 function resolveMediaUrl(media) {
   if (!media) return null;
-  if (typeof media === "string") return media;
-  return media.url || media.path || media.link || media.fileUrl || null;
+  return getAssetPath(media);
 }
 
 export default function CoursePageClientView({ page, slug, heroData = null }) {
+  const router = useRouter();
   const { openFormModal } = useFormModal();
-  const { isInCompare, toggleCompare, setIsCompareDrawerOpen } = useCompare();
+  const { isInCompare, toggleCompare, addToCompare, compareList, setIsCompareDrawerOpen } = useCompare();
 
   // Active Semester Tab State
   const [activeSemester, setActiveSemester] = useState(1);
@@ -99,7 +101,20 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
 
   // Core identifiers
   const pageTitle = page?.pageTitle || page?.title || "";
-  const cleanCourseName = pageTitle.replace(/^online\s+/i, "");
+  const rawCandidate =
+    page?.course?.name ||
+    page?.course?.code ||
+    page?.degreeName ||
+    (page?.shortTitle && !page.shortTitle.startsWith("(") ? page.shortTitle : null) ||
+    pageTitle;
+  const cleanCourseName = rawCandidate
+    .replace(/^[()]/g, "")
+    .replace(/[()]$/g, "")
+    .replace(/^online\s+/i, "")
+    .replace(/\s+course$/i, "")
+    .replace(/\s+program(?:me)?$/i, "")
+    .replace(/\s+degree$/i, "")
+    .trim();
   const cleanOnlineTitle = pageTitle
     ? pageTitle.toLowerCase().startsWith("online")
       ? pageTitle
@@ -123,6 +138,17 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
     },
     [pageTitle]
   );
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.__CURRENT_PAGE_COURSES__ = [cleanCourseName || pageTitle];
+    }
+    return () => {
+      if (typeof window !== "undefined") {
+        window.__CURRENT_PAGE_COURSES__ = null;
+      }
+    };
+  }, [cleanCourseName, pageTitle]);
 
   // Execute custom JavaScript if present
   useEffect(() => {
@@ -521,7 +547,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
       list.push({ id: "accreditations", label: "Accreditations" });
     }
     if (overview.enabled !== false && (Boolean(overview.description) || overviewTable.length > 0)) {
-      list.push({ id: "overview", label: "Highlights" });
+      list.push({ id: "key-highlights", label: "Highlights" });
     }
     if (whyChoose.enabled !== false && whyChooseCards && whyChooseCards.length > 0) {
       list.push({ id: "why-choose", label: "Why Choose Us" });
@@ -536,7 +562,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
       list.push({ id: "mode-comparison", label: "Mode Comparison" });
     }
     if (specializations.enabled !== false && specializationsList && specializationsList.length > 0) {
-      list.push({ id: "specializations", label: "Specialisations" });
+      list.push({ id: "specializations", label: "Specializations" });
     }
     if (syllabus.enabled !== false && syllabusData && syllabusData.length > 0) {
       list.push({ id: "syllabus", label: "Syllabus" });
@@ -551,7 +577,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
         Boolean(careerScope.jobRolesDescription) ||
         Boolean(careerScope.salaryTrend))
     ) {
-      list.push({ id: "career-scope", label: "Career & Scope" });
+      list.push({ id: "career-opportunities", label: "Career Opportunities" });
     }
     if (recruitersSection.enabled !== false && recruitersList && recruitersList.length > 0) {
       list.push({ id: "recruiters", label: "Top Recruiters" });
@@ -894,20 +920,48 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                 );
                 if (!imageSrc) return null;
 
+                const rawSlug =
+                  uni.slug ||
+                  (uni.url && uni.url.includes("/universities/")
+                    ? uni.url.split("/universities/")[1]?.split("/")[0]?.split("?")[0]
+                    : null);
+                const cleanSlug = rawSlug
+                  ? String(rawSlug).replace(/^\//, "").trim()
+                  : (uni.name
+                    ? uni.name.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "")
+                    : "");
+                const targetUrl = uni.url?.startsWith("http")
+                  ? uni.url
+                  : (cleanSlug ? `/universities/${encodeURIComponent(cleanSlug)}` : null);
+
+                const logoContent = (
+                  <div className="flex items-center justify-center h-12 sm:h-14 w-full">
+                    <div className="relative w-full h-full flex items-center justify-center group-hover/partner:scale-105 transition-transform duration-200">
+                      <Image
+                        src={getAssetPath(imageSrc)}
+                        alt={uni.name || uni.title || "University Logo"}
+                        fill
+                        className="object-contain object-center"
+                        sizes="(max-width: 640px) 140px, 200px"
+                        unoptimized
+                      />
+                    </div>
+                  </div>
+                );
+
                 return (
                   <div key={`partner-${uni._id || uni.slug || idx}-${idx}`} className="py-1">
-                    <div className="flex items-center justify-center h-12 sm:h-14 w-full">
-                      <div className="relative w-full h-full flex items-center justify-center">
-                        <Image
-                          src={getAssetPath(imageSrc)}
-                          alt={uni.name || uni.title || "University Logo"}
-                          fill
-                          className="object-contain object-center"
-                          sizes="(max-width: 640px) 140px, 200px"
-                          unoptimized
-                        />
-                      </div>
-                    </div>
+                    {targetUrl ? (
+                      <Link
+                        href={targetUrl}
+                        className="block w-full h-full group/partner cursor-pointer"
+                        title={uni.name || uni.title || "University"}
+                      >
+                        {logoContent}
+                      </Link>
+                    ) : (
+                      logoContent
+                    )}
                   </div>
                 );
               })}
@@ -1008,7 +1062,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                     return (
                       <div
                         key={idx}
-                        className="bg-white rounded-xl border border-gray-200 flex flex-col p-1.5 sm:p-3 items-center justify-between text-center aspect-[4/4.6] sm:aspect-square shadow-2xs hover:border-blue-300 transition-colors overflow-hidden shrink-0 w-[calc((100%-12px)/3)] sm:w-[calc((100%-20px)/3)] md:w-[calc((100%-60px)/6)]"
+                        className="bg-white rounded-xl border border-gray-200 flex flex-col p-1.5 sm:p-3 items-center justify-between text-center aspect-square shadow-2xs hover:border-blue-300 transition-colors overflow-hidden shrink-0 w-[calc((100%-12px)/3)] sm:w-[calc((100%-20px)/3)] md:w-[calc((100%-60px)/6)]"
                       >
                         <div className="flex-1 min-h-0 w-full relative">
                           {logoSrc ? (
@@ -1052,10 +1106,11 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
           ===================================================================== */}
             {overview.enabled !== false && (Boolean(overview.description) || overviewTable.length > 0) && (
               <div
-                id="overview"
+                id="key-highlights"
                 data-nav-label="Highlights"
-                className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-4 sm:p-6 md:p-8 mb-6 scroll-mt-20"
+                className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-4 sm:p-6 md:p-8 mb-6 scroll-mt-20 relative"
               >
+                <span id="overview" className="sr-only" />
                 <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
                   {overview.title || "Overview & Key Highlights"}
                 </h2>
@@ -1152,8 +1207,8 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                             <Image
                               src={getAssetPath(iconSrc)}
                               alt={card.title || "Icon"}
-                              width={28}
-                              height={28}
+                              width={40}
+                              height={40}
                               className="object-contain"
                               unoptimized
                             />
@@ -1206,8 +1261,8 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                             <Image
                               src={getAssetPath(iconSrc)}
                               alt={card.title || "Icon"}
-                              width={28}
-                              height={28}
+                              width={40}
+                              height={40}
                               className="object-contain"
                               unoptimized
                             />
@@ -1262,13 +1317,13 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                       <div key={idx} className="relative flex flex-col h-full">
                         <div className="w-full h-full rounded-xl p-2.5 sm:p-3.5 text-center flex flex-col items-center justify-start bg-white shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300 hover:-translate-y-1">
                           {/* Large icon circle */}
-                          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center shrink-0 bg-sky-50 border-2 border-sky-300 mb-2 sm:mb-3">
+                          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center shrink-0 mb-2 sm:mb-3">
                             {iconUrl ? (
                               <Image
                                 src={getAssetPath(iconUrl)}
                                 alt={stepTitle || "Step"}
-                                width={24}
-                                height={24}
+                                width={65}
+                                height={55}
                                 className="object-contain"
                                 unoptimized
                               />
@@ -1296,9 +1351,8 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                         {/* Arrow between cards - centered vertically to the card and horizontally in the gap */}
                         {idx < admissionSteps.length - 1 && (
                           <div
-                            className={`absolute top-1/2 -translate-y-1/2 left-[calc(100%+7px)] -translate-x-1/2 z-10 text-sky-400 pointer-events-none items-center justify-center ${
-                              idx === 2 ? "hidden lg:flex" : "hidden md:flex"
-                            }`}
+                            className={`absolute top-1/2 -translate-y-1/2 left-[calc(100%+7px)] -translate-x-1/2 z-10 text-sky-400 pointer-events-none items-center justify-center ${idx === 2 ? "hidden lg:flex" : "hidden md:flex"
+                              }`}
                           >
                             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                               <polyline points="9 18 15 12 9 6" />
@@ -1379,7 +1433,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
             {specializations.enabled !== false && specializationsList && specializationsList.length > 0 && (
               <div
                 id="specializations"
-                data-nav-label="Specialisations"
+                data-nav-label="Specializations"
                 className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-3 sm:p-6 mb-5 sm:mb-6 scroll-mt-20"
               >
                 <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-1.5 sm:mb-2">
@@ -1394,20 +1448,46 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-1.5 sm:gap-3">
                   {specializationsList.map((spec, idx) => {
                     const isHighlighted = !!spec.highlighted;
+                    const matchedSub = (specializations.subCourses || []).find(
+                      (sc) =>
+                        (sc._id && (sc._id === spec._id || sc._id === spec.id)) ||
+                        (sc.name && sc.name.trim().toLowerCase() === (spec.name || "").trim().toLowerCase())
+                    );
+                    const specSlug =
+                      spec.slug ||
+                      matchedSub?.slug ||
+                      (spec.name ? spec.name.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") : "") ||
+                      spec._id ||
+                      "";
+
+                    const courseSlug =
+                      page?.course?.slug ||
+                      page?.courseSlug ||
+                      page?.targetCourse?.slug ||
+                      (slug && !/^[0-9a-fA-F]{24}$/.test(slug) ? slug : "") ||
+                      (page?.course?.name ? page.course.name.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") : "") ||
+                      page?.course?._id ||
+                      "";
+
+                    const queryParams = new URLSearchParams();
+                    if (courseSlug) queryParams.set("course", courseSlug);
+                    if (specSlug) queryParams.set("subcourse", specSlug);
+                    const targetHref = `/courses?${queryParams.toString()}`;
 
                     return (
-                      <div
-                        key={idx}
-                        onClick={() => handleOpenLead(`Specialization: ${spec.name}`, `Enquire for ${spec.name} in ${pageTitle}`)}
-                        className={`px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg border flex items-center transition-all cursor-pointer shadow-2xs min-h-[42px] sm:min-h-[48px] ${isHighlighted
+                      <Link
+                        key={spec._id || spec.id || idx}
+                        href={targetHref}
+                        className={`px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg border flex items-center transition-all cursor-pointer shadow-2xs min-h-[42px] sm:min-h-[48px] group hover:border-[#0B57D0] hover:shadow-xs select-none ${isHighlighted
                           ? "border-[#00BCD4] bg-cyan-50/20 text-[#00838F]"
-                          : "border-slate-200 bg-white hover:border-slate-300 text-slate-800"
+                          : "border-slate-200 bg-white hover:bg-slate-50/50 text-slate-800"
                           }`}
+                        title={`Filter courses by ${spec.name}`}
                       >
-                        <span className={`text-[11px] sm:text-xs font-bold leading-tight line-clamp-2 ${isHighlighted ? "text-[#00838F]" : "text-slate-800"}`}>
+                        <span className={`text-[11px] sm:text-xs font-bold leading-tight line-clamp-2 group-hover:text-[#0B57D0] transition-colors ${isHighlighted ? "text-[#00838F]" : "text-slate-800"}`}>
                           {spec.name}
                         </span>
-                      </div>
+                      </Link>
                     );
                   })}
                 </div>
@@ -1592,18 +1672,50 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                         <button
                           type="button"
                           onClick={() => {
-                            toggleCompare(uni);
-                            setIsCompareDrawerOpen && setIsCompareDrawerOpen(true);
+                            if (inCmp) {
+                              const existingSlugs = (compareList || [])
+                                .map((u) => u.uniSlug || u.slug || u._id || u.id)
+                                .filter(Boolean);
+                              const cleanUniSlug = (uni.slug && !uni.slug.includes("/")) ? uni.slug : (uni.slug?.split("/")[0] || uni._id || uni.id);
+                              const combinedSlugs = Array.from(new Set([...existingSlugs, cleanUniSlug])).filter(Boolean).slice(0, 3);
+                              const targetCourse = cleanCourseName || pageTitle || "";
+                              router.push(
+                                `/tools/compare-universities?university=${encodeURIComponent(combinedSlugs.join(","))}${targetCourse ? `&course=${encodeURIComponent(targetCourse)}` : ""}`
+                              );
+                            } else {
+                              const cleanUniSlug = (uni.slug && !uni.slug.includes("/")) ? uni.slug : (uni.slug?.split("/")[0] || uni._id || uni.id);
+                              const comparePayload = {
+                                _id: uni._id || uni.id || cleanUniSlug,
+                                slug: cleanUniSlug,
+                                uniSlug: cleanUniSlug,
+                                name: uni.name,
+                                title: uni.name,
+                                uniName: uni.name,
+                                logoUrl: uniLogo,
+                                logoSrc: uniLogo,
+                                logo: uni.logo || uni.image,
+                                location: uni.location || "",
+                                courseName: cleanCourseName || pageTitle || "",
+                                course: cleanCourseName || pageTitle || "",
+                                feeText: uni.feeText || uni.customFee || "",
+                              };
+                              if (typeof addToCompare === "function") {
+                                addToCompare(comparePayload);
+                              } else {
+                                toggleCompare(comparePayload);
+                              }
+                              setIsCompareDrawerOpen && setIsCompareDrawerOpen(true);
+                            }
                           }}
                           className={`w-full py-1 px-2 rounded-lg text-[10px] sm:text-[11px] font-semibold transition-all flex items-center justify-center gap-1 border cursor-pointer mt-1 ${inCmp
-                            ? "bg-teal-50 text-teal-700 border-teal-600 shadow-2xs"
+                            ? "bg-teal-50 text-teal-700 border-teal-600 shadow-2xs hover:bg-teal-100"
                             : "bg-white text-[#0a2540] border-gray-200 hover:bg-gray-50 hover:border-gray-300"
                             }`}
                         >
                           {inCmp ? (
                             <>
                               <Check className="w-3.5 h-3.5 text-teal-600 shrink-0 stroke-2" />
-                              <span>Added to Compare</span>
+                              <span>Compare Now</span>
                             </>
                           ) : (
                             <>
@@ -1684,10 +1796,11 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                 Boolean(careerScope.jobRolesDescription) ||
                 Boolean(careerScope.salaryTrend)) && (
                 <div
-                  id="career-scope"
-                  data-nav-label="Career & Scope"
-                  className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-4 sm:p-6 md:p-8 mb-6 scroll-mt-20"
+                  id="career-opportunities"
+                  data-nav-label="Career Opportunities"
+                  className="bg-white rounded-xl shadow-xs border border-gray-200/90 p-4 sm:p-6 md:p-8 mb-6 scroll-mt-20 relative"
                 >
+                  <span id="career-scope" className="sr-only" />
                   <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-2">
                     {careerScope.title || "Career Scope & Salary Expectations"}
                   </h2>
@@ -1956,11 +2069,15 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                             {isOpen ? <Minus size={10} /> : <Plus size={10} />}
                           </span>
                         </button>
-                        {isOpen && (
-                          <div className="p-3 text-xs sm:text-[13px] text-gray-600 leading-relaxed font-normal border-t border-blue-100/60">
-                            <SafeHtmlRenderer html={faq.answer} />
-                          </div>
-                        )}
+                        <div
+                          className={
+                            isOpen
+                              ? "p-3 text-xs sm:text-[13px] text-gray-600 leading-relaxed font-normal border-t border-blue-100/60"
+                              : "sr-only"
+                          }
+                        >
+                          <SafeHtmlRenderer html={faq.answer} />
+                        </div>
                       </div>
                     );
                   })}

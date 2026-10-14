@@ -147,65 +147,17 @@ export const amityData = {
     approvalsBg: "#fff5c4",
     approvalsUniTitle: "Amity University Online",
     approvalsTitle: "Recognition and Approvals",
-
-    /* =====================================================
-       PROGRAMMES CONFIGURATION
-    ===================================================== */
-    programmesMobileStack: true,
-
-    /* =====================================================
-       ABOUT & WHY CHOOSE CONFIGURATION
-    ===================================================== */
-    aboutLayout: "classic",
-    whyChooseLayout: "classic",
-    whyChooseTitle: "Why Choose Amity University Online for Degree Courses",
-
-    /* =====================================================
-       SECTION ORDER (Matching distanceeducationschool.com/amity/)
-    ===================================================== */
-
-    sectionOrder: [
-      "approvals",
-      "programmes",
-      "about",
-      "stats",
-      "whyChoose",
-      "admissionProcess",
-      "faqs",
-      "footerForm",
-      "compareBanner",
-    ],
-
-    /* =====================================================
-       HERO
-    ===================================================== */
-
+    approvalsBannerBg: "#fdb913",
+    approvalsHeaderColor: "#000000",
+    approvalsBg: "#fff9db",
+    approvalsCircleBorder: "#fdb913",
     hero: {
-      backgroundImage:
-        "/assets/all_universities_images/amity/amity-bg-final.webp",
-
-      backgroundPosition:
-        "center center",
-
-      backgroundSize:
-        "cover",
-
-      backgroundRepeat:
-        "no-repeat",
-
-      mobileBackgroundImage:
-        "/assets/all_universities_images/amity/Mobile-bg-amity.webp",
-
-      mobileBackgroundPosition:
-        "center top",
-
-      mobileBackgroundSize:
-        "cover",
-
+      backgroundImage: "/assets/images/amity_hero_banner.jpg",
+      backgroundPosition: "center center",
+      backgroundSize: "cover",
       studentImage: null,
 
       noOverlay: true,
-
       backgroundColor: "#ffffff",
 
       headingColor: "#004172",
@@ -293,8 +245,8 @@ export const amityData = {
     ===================================================== */
 
     coursesStrip: [
-      "MBA | MCA | MCOM | MA | MSC",
-      "| BBA | BCA | BCOM | BA",
+      "MBA | MCA | MCOM | MA | MSC |",
+      "BBA | BCA | BCOM | BA",
     ],
 
     /* =====================================================
@@ -606,18 +558,7 @@ export const amityData = {
     image: "/assets/all_universities_images/amity/Amity-About.png",
     imagePosition: "left",
     buttonText: "Apply Now",
-    backgroundColor: "#ffffff",
-    titleColor: "#111827",
-    textColor: "#333333",
-    buttonColor: "#08417b",
-    buttonTextColor: "#08417b",
-    buttonBorderColor: "#08417b",
   },
-
-  /* =======================================================
-     WHY CHOOSE
-  ======================================================= */
-
   whyChoose: [
     {
       title: "International Recognition",

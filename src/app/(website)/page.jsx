@@ -41,8 +41,8 @@ export default async function Home() {
         : [];
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#f8fafc] text-slate-900 font-sans selection:bg-blue-600 selection:text-white">
-      <main className="flex w-full flex-1 flex-col pb-16 lg:pb-0">
+    <div className="flex flex-col min-h-screen text-slate-900 font-sans selection:bg-blue-600 selection:text-white">
+      <main className="flex w-full flex-1 flex-col">
         <Hero initialHeroData={heroData} />
         <Category
           universities={universities}
@@ -54,7 +54,3 @@ export default async function Home() {
     </div>
   );
 }
-
-
-
-

@@ -7,7 +7,6 @@ import { Carousel, Pagination } from "antd";
 import { Container } from "@/components/common/Container";
 import SafeHtmlRenderer from "@/components/website/SafeHtmlRenderer";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
-import { getAssetPath } from "@/lib/utils";
 import { useFormModal } from "@/hooks/useFormModal";
 import { Hero } from "@/components/website/Hero";
 import {
@@ -39,7 +38,7 @@ function getYouTubeEmbedUrl(url) {
 function getMediaUrl(media) {
   if (!media) return null;
   if (typeof media === "string") return media;
-  return media.url || media.path || null;
+  return media.url || media.path || media.src || null;
 }
 
 function DynamicHero({ hero, pageTitle, targetCourseName }) {
@@ -92,7 +91,7 @@ function DynamicHero({ hero, pageTitle, targetCourseName }) {
         {bgImgUrl && (
           <div className="absolute inset-0 w-full h-full pointer-events-none select-none overflow-hidden z-0">
             <Image
-              src={getAssetPath(bgImgUrl)}
+              src={bgImgUrl}
               alt=""
               fill
               priority
@@ -216,7 +215,7 @@ function DynamicHero({ hero, pageTitle, targetCourseName }) {
                     }
                   >
                     <Image
-                      src={getAssetPath(bannerUrl)}
+                      src={bannerUrl}
                       alt={title}
                       fill
                       priority
@@ -265,8 +264,8 @@ function DynamicHero({ hero, pageTitle, targetCourseName }) {
               className="w-full partner-antd-carousel"
             >
               {universities.map((uni, idx) => {
-                const imageSrc =
-                  uni.logo?.url || uni.image?.url || uni.coursepageimage?.url || (typeof uni.logo === "string" ? uni.logo : null);
+                const rawMedia = uni.logo || uni.image || uni.coursepageimage || null;
+                const imageSrc = getMediaUrl(rawMedia);
                 if (!imageSrc) return null;
 
                 const url = uni.courseSlug
@@ -279,7 +278,7 @@ function DynamicHero({ hero, pageTitle, targetCourseName }) {
                   <div className="flex items-center justify-center h-12 sm:h-14 w-full">
                     <div className="relative w-full h-full flex items-center justify-center">
                       <Image
-                        src={getAssetPath(imageSrc)}
+                        src={imageSrc}
                         alt={uni.name || "University Logo"}
                         fill
                         className="object-contain object-center"
@@ -310,14 +309,14 @@ function DynamicHero({ hero, pageTitle, targetCourseName }) {
   );
 }
 
-function RankedUniversityCard({ item, index, features }) {
+function RankedUniversityCard({ item, index, features, isStatePage = false }) {
   const { openFormModal } = useFormModal();
   const [isExpanded, setIsExpanded] = useState(false);
 
   const uni = item?.university;
   if (!uni) return null;
 
-  const rank = item.rank || index + 1;
+  const rank = index + 1;
   const name = uni.name;
   const slug = uni.slug;
   const logoUrl = getMediaUrl(uni.logo) || getMediaUrl(uni.image);
@@ -326,8 +325,15 @@ function RankedUniversityCard({ item, index, features }) {
   const hasCardMedia = Boolean(desktopImageUrl || mobileBannerUrl);
   const location = [uni.city?.name, uni.state?.name].filter(Boolean).join(", ");
   const approvalsJoined = uni.approvals?.map((a) => a.code || a.name).filter(Boolean).join(" | ");
-  const semFee = item.customFeeText || item.fees?.formattedSemesterFees || item.fees?.formattedPerSemesterPayable || "";
   const eligibilityText = item.eligibility;
+
+  const coursesList = item.offeredCourses || item.coursesOffered || [];
+  const coursesJoined = Array.isArray(coursesList)
+    ? coursesList
+        .map((c) => c.code || c.name || c.displayName)
+        .filter(Boolean)
+        .join(", ")
+    : "";
   const advantageText = item.highlightReason || item.advantage;
   const cardLink = item.courseSlug
     ? (item.courseSlug.includes("/") ? `/universities/${item.courseSlug}` : `/${item.courseSlug}`)
@@ -354,7 +360,7 @@ function RankedUniversityCard({ item, index, features }) {
             <p className="text-xs text-slate-600 leading-relaxed mb-3 font-normal">
               {!isExpanded && plainDescription.length > 170 ? (
                 <>
-                  {plainDescription.slice(0, 170).trim()}...{" "}
+                  <span>{plainDescription.slice(0, 170).trim()}... </span>
                   <button
                     type="button"
                     onClick={() => setIsExpanded(true)}
@@ -362,6 +368,7 @@ function RankedUniversityCard({ item, index, features }) {
                   >
                     Read More
                   </button>
+                  <span className="sr-only">{plainDescription.slice(170)}</span>
                 </>
               ) : (
                 <>
@@ -381,15 +388,7 @@ function RankedUniversityCard({ item, index, features }) {
           )}
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-2.5 gap-x-4 sm:gap-x-6 text-xs text-slate-700 mb-4">
-            {semFee && (
-              <div>
-                <div className="font-bold text-slate-900 flex items-center gap-1 mb-0.5">
-                  <span className="font-black text-slate-800 text-xs">₹</span>
-                  <span>Course Fee :</span>
-                </div>
-                <div className="text-slate-600 text-xs font-medium">{semFee}</div>
-              </div>
-            )}
+
 
             {location && (
               <div>
@@ -444,6 +443,18 @@ function RankedUniversityCard({ item, index, features }) {
                 </div>
               </div>
             )}
+
+            {(isStatePage || item.isStateListing || item.isGeneralListing || !item.courseId) && coursesJoined && (
+              <div>
+                <div className="font-bold text-slate-900 flex items-center gap-1 mb-0.5">
+                  <GraduationCap className="w-3.5 h-3.5 text-slate-800 shrink-0" />
+                  <span>Courses :</span>
+                </div>
+                <div className="text-slate-600 text-xs font-medium break-words line-clamp-3 leading-snug" title={coursesJoined}>
+                  {coursesJoined}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -485,30 +496,33 @@ function RankedUniversityCard({ item, index, features }) {
       </div>
 
       {hasCardMedia && (
-        <div className="w-full md:w-[340px] lg:w-[390px] xl:w-[420px] shrink-0 relative h-36 sm:h-44 md:h-auto md:min-h-full overflow-hidden border-b md:border-b-0 md:border-l border-slate-200/90 bg-slate-100 order-1 md:order-2">
+        <Link
+          href={cardLink}
+          className="w-full md:w-[340px] lg:w-[390px] xl:w-[420px] shrink-0 relative h-36 sm:h-44 md:h-auto md:min-h-full overflow-hidden border-b md:border-b-0 md:border-l border-slate-200/90 bg-slate-100 order-1 md:order-2 block group/media cursor-pointer"
+        >
           {/* Desktop Image (Course Image) */}
           {desktopImageUrl && (
             <Image
-              src={getAssetPath(desktopImageUrl)}
+              src={desktopImageUrl}
               alt={name}
               fill
               priority={index < 2}
               loading={index < 2 ? "eager" : "lazy"}
               sizes="(min-width: 768px) 420px, 1px"
-              className="object-cover object-center hidden md:block"
+              className="object-cover object-center hidden md:block group-hover/media:scale-105 transition-transform duration-500"
               unoptimized
             />
           )}
           {/* Mobile Image (Banner Image - Specialization modal style) */}
           {mobileBannerUrl && (
             <Image
-              src={getAssetPath(mobileBannerUrl)}
+              src={mobileBannerUrl}
               alt={name}
               fill
               priority={index < 2}
               loading={index < 2 ? "eager" : "lazy"}
               sizes="(max-width: 767px) 100vw, 1px"
-              className="object-cover object-center block md:hidden"
+              className="object-cover object-center block md:hidden group-hover/media:scale-105 transition-transform duration-500"
               unoptimized
             />
           )}
@@ -516,7 +530,7 @@ function RankedUniversityCard({ item, index, features }) {
             <div className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 md:top-3.5 md:right-3.5 z-10 bg-white rounded-xl sm:rounded-2xl shadow-md p-1.5 sm:p-2 flex items-center justify-center">
               <div className="relative w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14">
                 <Image
-                  src={getAssetPath(logoUrl)}
+                  src={logoUrl}
                   alt={name}
                   fill
                   priority={index < 2}
@@ -528,7 +542,7 @@ function RankedUniversityCard({ item, index, features }) {
               </div>
             </div>
           )}
-        </div>
+        </Link>
       )}
     </div>
   );
@@ -603,11 +617,15 @@ function FAQSection({ faqs, pageTitle }) {
                 </span>
               </button>
 
-              {isOpen && (
-                <div className="p-3.5 text-xs sm:text-[13px] text-gray-600 leading-relaxed font-normal border-t border-blue-100/60">
-                  <SafeHtmlRenderer html={answer} />
-                </div>
-              )}
+              <div
+                className={
+                  isOpen
+                    ? "p-3.5 text-xs sm:text-[13px] text-gray-600 leading-relaxed font-normal border-t border-blue-100/60"
+                    : "sr-only"
+                }
+              >
+                <SafeHtmlRenderer html={answer} />
+              </div>
             </div>
           );
         })}
@@ -630,9 +648,7 @@ export function DynamicListingClientView({ page }) {
   const pageSize = 10;
 
   const rankedList = useMemo(() => {
-    return (page?.rankedUniversities || []).filter(
-      (item) => item?.university && item.university?.showOnWebsite !== false
-    );
+    return (page?.rankedUniversities || []).filter((item) => Boolean(item?.university));
   }, [page?.rankedUniversities]);
 
   const displayedUniversities = useMemo(() => {
@@ -684,6 +700,7 @@ export function DynamicListingClientView({ page }) {
                     item={item}
                     index={startIndex + index}
                     features={page?.features}
+                    isStatePage={Boolean(!page?.targetCourse || page?.state || page?.city || page?.mode || page?.isStateListing)}
                   />
                 ))}
               </div>

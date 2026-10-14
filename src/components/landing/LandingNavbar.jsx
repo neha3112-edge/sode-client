@@ -75,11 +75,19 @@ export default function LandingNavbar({
     navbar.hideUniversityLogo !== true &&
     Boolean(logo);
 
+  const activeSodeIcon =
+    sodeIcon ||
+    navbar.sodeIcon ||
+    brand.sodeIcon ||
+    "/assets/images/sode_icon.png";
+
   const shouldShowSodeLogo =
     showSodeLogo === true ||
     (
       showSodeLogo !== false &&
+      navbar.hideSodeLogo !== true &&
       Boolean(
+        activeSodeIcon ||
         navbar.sodeIcon ||
         slug === "manipal" ||
         slug === "shoolini"
@@ -410,10 +418,7 @@ export default function LandingNavbar({
                 "
               >
                 <Image
-                  src={
-                    sodeIcon ||
-                    "/assets/images/sode_icon.png"
-                  }
+                  src={activeSodeIcon}
                   alt="SODE"
                   fill
                   priority
@@ -742,15 +747,25 @@ export default function LandingNavbar({
           {navbar.navLinks?.length > 0 && (
             <button
               type="button"
-              className="
+              className={`
                 md:hidden
                 p-2
                 rounded-md
-                text-slate-700
-                hover:text-slate-900
-                hover:bg-slate-100
                 transition-colors
-              "
+                ${
+                  navbar.mobileMenuBtnBg || slug === "iiitb"
+                    ? "text-white"
+                    : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
+                }
+              `}
+              style={
+                navbar.mobileMenuBtnBg || slug === "iiitb"
+                  ? {
+                      backgroundColor:
+                        navbar.mobileMenuBtnBg || primaryColor || "#002147",
+                    }
+                  : {}
+              }
               onClick={() =>
                 setIsMobileNavOpen(
                   !isMobileNavOpen

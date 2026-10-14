@@ -12,9 +12,10 @@ import ShooliniApprovals from "./layouts/ShooliniApprovals";
 import VguApprovals from "./layouts/VguApprovals";
 import SmuApprovals from "./layouts/SmuApprovals";
 import ApprovalsSlider from "./layouts/ApprovalsSlider";
-
 import UpesApprovals from "./layouts/UpesApprovals";
 import CuApprovals from "./layouts/CuApprovals";
+import MUApprovals from "./layouts/MUApprovals";
+import IIITBApprovals from "./layouts/IIITBApprovals";
 
 /**
  * Layout Registry Mapping
@@ -35,11 +36,15 @@ export const APPROVAL_LAYOUTS = {
   rushford: RushfordApprovals,
   esgci: ESGCIApprovals,
   ggu: GGUApprovals,
+  mu: MUApprovals,
+  iiitb: IIITBApprovals,
   split: ShooliniApprovals,
   vgu: VguApprovals,
   "vgu-badges": VguApprovals,
   "smu-carousel": SmuApprovals,
   slider: ApprovalsSlider,
+  "circle-carousel": ApprovalsSlider,
+  "circle-slider": ApprovalsSlider,
 
   // Fallbacks by legacy slug (for zero-downtime backward compatibility)
   galgotias: GalgotiasApprovals,
@@ -47,6 +52,8 @@ export const APPROVAL_LAYOUTS = {
   shoolini: ShooliniApprovals,
   smu: SmuApprovals,
   manipal: ApprovalsSlider,
+  mu: MUApprovals,
+  iiitb: IIITBApprovals,
 };
 
 export default APPROVAL_LAYOUTS;

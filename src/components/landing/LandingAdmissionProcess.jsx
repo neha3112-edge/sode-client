@@ -277,8 +277,8 @@ export default function LandingAdmissionProcess({
     admissionSteps && admissionSteps.length > 0
       ? admissionSteps
       : brand.admissionSteps && brand.admissionSteps.length > 0
-      ? brand.admissionSteps
-      : GLOBAL_ADMISSION_STEPS;
+        ? brand.admissionSteps
+        : GLOBAL_ADMISSION_STEPS;
 
   const activeUniversity =
     universityName ||
@@ -331,11 +331,10 @@ export default function LandingAdmissionProcess({
     enrollmentProcess?.title ||
     (isSmu
       ? `How To Take Admission In ${activeUniversity}?`
-      : `How to Apply for ${
-          activeUniversity.toLowerCase().includes("course")
-            ? activeUniversity
-            : `${activeUniversity} Courses`
-        }`);
+      : `How to Apply for ${activeUniversity.toLowerCase().includes("course")
+        ? activeUniversity
+        : `${activeUniversity} Courses`
+      }`);
 
   const subtitleText =
     admissionProcess?.subtitle ||
@@ -372,7 +371,7 @@ export default function LandingAdmissionProcess({
 
   return (
     <section
-      id={brand.admissionProcessId || (brand.slug === "ggu" ? "how-to-apply" : "process")}
+      id={brand.admissionProcessId || (brand.slug === "manipal" ? "apply" : brand.slug === "ggu" ? "how-to-apply" : "process")}
       className={`${sectionPadding} bg-white w-full select-none`}
     >
       <div className={containerClass}>
@@ -427,6 +426,7 @@ export default function LandingAdmissionProcess({
           }
           style={enrollmentProcess?.subtitleStyle}
         >
+
           {subtitleText}
         </p>
 
@@ -475,9 +475,11 @@ export default function LandingAdmissionProcess({
             const descColor = extractColor(step.descColor, "#4b5563");
 
             return (
-              <div
+              <Card
                 key={num}
-                className="rounded-[10px] overflow-hidden pt-5 pb-6 px-3 sm:px-3.5 text-center flex flex-col items-center justify-start h-full min-h-[170px] sm:min-h-[185px] transition-all duration-200 hover:-translate-y-1 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-md relative w-full"
+                variant="borderless"
+                styles={{ body: { padding: 0 } }}
+                className="rounded-[10px] sm:rounded-[12px] overflow-hidden pt-5 pb-6 px-3 sm:px-3.5 text-center flex flex-col items-center justify-start h-full min-h-[170px] sm:min-h-[185px] transition-all duration-200 hover:-translate-y-1 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-md relative w-full"
                 style={{
                   backgroundColor: cardBg,
                   borderBottom: `4px solid ${borderColor}`,
@@ -512,7 +514,7 @@ export default function LandingAdmissionProcess({
                     {desc}
                   </p>
                 )}
-              </div>
+              </Card>
             );
           })}
         </div>

@@ -180,26 +180,6 @@ export const lpuData = {
       },
     },
     aboutLayout: "lpu",
-    whyChooseLayout: "lpu",
-    degreeLayout: "lpu",
-    recruitersLayout: "lpu",
-    approvalsLayout: "lpu",
-    whyChooseTitle: "Learning Pedagogy at LPU Online",
-    whyChooseDescription: "The learning model at Lovely Professional University Online (LPU Online) is tailored to offer flexibility and an engaging experience to all the students who are enrolled in programs such as LPU MBA Online, LPU MCA Online, and LPU Online BCA.",
-    placementTitle: "Placement Support Services at LPU Online",
-    placementDescription: "Lovely Professional University online admission also offers structured placement support to prepare students and professionals for real-world careers and job sectors.",
-    placementServices: [
-      {
-        title: "Professional Enhancement Programme",
-        desc: "The Placement Enhancement Programme (PEP) trains students in aptitude, soft skills, and interview preparation. It is beneficial for LPU MBA online and LPU online MCA learners.",
-        image: "/assets/all_universities_images/lpu/p1.png",
-      },
-      {
-        title: "Mock Interviews & Workshops",
-        desc: "Mock interviews and industry-oriented online workshops are used to provide students of Lovely Professional University Online courses with communication skills, confidence, and real-life insights.",
-        image: "/assets/all_universities_images/lpu/p1.png",
-      },
-    ],
     sectionOrder: [
       "programmes",
       "approvals",
@@ -358,20 +338,14 @@ export const lpuData = {
     {
       title: "Live Lectures",
       desc: "The university provides interactive live sessions that create a real-time virtual classroom. It benefits the students pursuing LPU MBA online and LPU MCA online to interact with faculty, clear their doubts instantly, and collaborate with peers.",
-      path: "M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z",
-      image: "/assets/all_universities_images/lpu/online-lecture.webp",
     },
     {
       title: "Recorded Videos",
       desc: "Learners get access to recorded lectures for flexible learning. This facility is ideal for working professionals pursuing LPU MBA Online or LPU BCA Online, as it enables them to revise anytime and anywhere.",
-      path: "M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z",
-      image: "/assets/all_universities_images/lpu/exam-1.webp",
     },
     {
       title: "Assignments & Projects",
       desc: "The LMS of LPU online includes digital assignment submission and project work. Students from LPU online MCA and LPU MBA online tracks monitor progress and gain practical exposure throughout the course.",
-      path: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z",
-      image: "/assets/all_universities_images/lpu/exam-1.webp",
     },
   ],
   degreeInfo: {

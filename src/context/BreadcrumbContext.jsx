@@ -9,22 +9,32 @@ const BreadcrumbDispatchContext = createContext(null);
 export function BreadcrumbProvider({ children }) {
   const [customBreadcrumb, setCustomBreadcrumb] = useState(null);
   const pathname = usePathname();
+  const prevPathnameRef = useRef(pathname);
 
-  // Reset custom breadcrumb automatically on pathname change
+  // Reset custom breadcrumb only when transitioning to a different route
   useEffect(() => {
-    setCustomBreadcrumb(null);
+    if (prevPathnameRef.current !== pathname) {
+      prevPathnameRef.current = pathname;
+      setCustomBreadcrumb((prev) => {
+        if (prev?._pathname === pathname) {
+          return prev;
+        }
+        return null;
+      });
+    }
   }, [pathname]);
 
   const setBreadcrumb = useCallback((data) => {
     setCustomBreadcrumb((prev) => {
+      const next = data ? { ...data, _pathname: pathname } : null;
       try {
-        if (JSON.stringify(prev) === JSON.stringify(data)) {
+        if (JSON.stringify(prev) === JSON.stringify(next)) {
           return prev;
         }
       } catch (e) {}
-      return data;
+      return next;
     });
-  }, []);
+  }, [pathname]);
 
   const resetBreadcrumb = useCallback(() => {
     setCustomBreadcrumb(null);

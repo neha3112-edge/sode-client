@@ -11,6 +11,12 @@ export function useFormModal() {
       window.dispatchEvent(
         new CustomEvent("sode:open-form-modal", { detail: payload })
       );
+      window.dispatchEvent(
+        new CustomEvent("sode:open-counselling-modal", { detail: payload })
+      );
+      window.dispatchEvent(
+        new CustomEvent("open-counselling-modal", { detail: payload })
+      );
     }
   }, []);
   const closeFormModal = useCallback(() => {

@@ -4,7 +4,6 @@ import React, { useEffect, useMemo, useRef, useState, useSyncExternalStore } fro
 import { useRouter } from "next/navigation";
 import { Form, Input, Select, Button, Modal, message } from "antd";
 import { X } from "lucide-react";
-import { getAssetPath } from "@/lib/utils";
 import { STATE_OPTIONS } from "@/constants/stateOptions";
 import { DEFAULT_COURSE_OPTIONS } from "@/constants/courseOptions";
 
@@ -31,6 +30,40 @@ function normalizeCourseOptions(options) {
   });
 }
 
+function cleanCourseName(courseStr) {
+  if (!courseStr) return "";
+  let clean = String(courseStr).trim();
+  if (clean.includes("::")) {
+    const parts = clean.split("::");
+    clean = parts[0] || parts[1];
+  }
+  clean = clean.replace(/\b(online|distance|hybrid|regular|open|executive)\b/gi, "").trim();
+  clean = clean.replace(/\s+/g, " ").replace(/^[-–—\s/]+|[-–—\s/]+$/g, "").trim();
+  return clean;
+}
+
+function detectUniversityFromUrl() {
+  if (typeof window === "undefined") return "";
+  try {
+    const path = window.location.pathname;
+    if (path.includes("/universities/")) {
+      const segments = path.split("/").filter(Boolean);
+      const uIndex = segments.indexOf("universities");
+      if (uIndex !== -1 && segments[uIndex + 1]) {
+        const slug = segments[uIndex + 1];
+        if (slug.toLowerCase() === "upes") return "UPES";
+        return slug
+          .split("-")
+          .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+          .join(" ");
+      }
+    }
+  } catch (err) {
+    // fallback
+  }
+  return "";
+}
+
 /* =========================================================
    ANT DESIGN FORM WRAPPER COMPONENT
 ========================================================= */
@@ -54,6 +87,10 @@ export default function FormWrapper({
   courseOptions,
   defaultCourse = "",
   hideCourseField = false,
+
+  // University Context Props
+  universityName = "",
+  universityId = "",
 
   // Lead Tracking Props
   formNameOverride,
@@ -197,10 +234,8 @@ export default function FormWrapper({
     setLoading(true);
 
     try {
-      const apiCourse =
-        finalCourse && finalCourse.includes("::")
-          ? finalCourse.split("::")[0]
-          : finalCourse;
+      const apiCourse = cleanCourseName(finalCourse);
+      const resolvedUni = (universityName || detectUniversityFromUrl() || "").trim();
 
       const payload = {
         name: values.name.trim(),
@@ -208,12 +243,14 @@ export default function FormWrapper({
         phone: values.phone,
         state: values.state,
         course: apiCourse,
+        university: resolvedUni,
+        university_name: resolvedUni,
         form_name: formNameOverride || title?.trim() || "Website Form",
         source: sourceOverride || "SODE",
         ...getUTMParams(),
       };
 
-      const response = await fetch(getAssetPath("/api/lead"), {
+      const response = await fetch("/api/lead", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -247,7 +284,7 @@ export default function FormWrapper({
 
           // Initiate instant file download
           const link = document.createElement("a");
-          link.href = getAssetPath(finalBrochureUrl);
+          link.href = finalBrochureUrl;
           link.download = "";
           document.body.appendChild(link);
           link.click();

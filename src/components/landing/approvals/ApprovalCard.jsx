@@ -32,8 +32,9 @@ export function normalizeApprovalItem(item, idx = 0) {
   return {
     id,
     image: item.image || item.logo || item.icon || "",
-    title: item.title || item.text || item.name || "",
-    description: item.description || item.desc || item.about || "",
+    title: item.title || item.tag || item.name || item.text || "",
+    description: item.description || item.desc || item.about || (item.title ? item.text : "") || item.text || "",
+    text: item.text || item.description || item.desc || "",
     tag: item.tag || item.status || "",
     subtext: item.subtext || "",
     raw: item,

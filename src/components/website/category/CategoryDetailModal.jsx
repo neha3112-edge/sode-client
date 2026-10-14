@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Modal } from "antd";
-import { X } from "lucide-react";
+import { X, ChevronRight } from "lucide-react";
 import { CategoryIcon, PartnerLogoIcon, CourseIcon, formatTwoLineText, getItemSlug, isObjectId } from "./CategoryIcons";
 
 export default function CategoryDetailModal({
@@ -11,6 +11,37 @@ export default function CategoryDetailModal({
   onClose,
   router,
 }) {
+  const isCourseModal = Boolean(
+    modalData?.isCourseSubcategoriesModal ||
+    activeCategory?.isCourse ||
+    activeCategory?.itemType === "course"
+  );
+
+  const isUniModal = Boolean(
+    modalData?.isUniversity ||
+    activeCategory?.isUniversity ||
+    activeCategory?.itemType === "university"
+  );
+
+  const exploreButtonText = isCourseModal
+    ? "Explore"
+    : isUniModal
+      ? "Explore"
+      : modalData?.isCoursesModal
+        ? "Explore"
+        : modalData?.isUniversitiesModal
+          ? "Explore"
+          : "Explore";
+
+  const handleExploreClick = () => {
+    onClose();
+    if (isUniModal || modalData?.isUniversitiesModal) {
+      router.push("/universities");
+      return;
+    }
+    router.push("/courses");
+  };
+
   return (
     <Modal
       open={Boolean(activeCategory)}
@@ -42,6 +73,8 @@ export default function CategoryDetailModal({
               <div className="w-10 h-10 flex items-center justify-center shrink-0">
                 {modalData.isUniversity ? (
                   <PartnerLogoIcon partner={activeCategory} />
+                ) : modalData.isCourseSubcategoriesModal || activeCategory.isCourse ? (
+                  <CourseIcon course={activeCategory} />
                 ) : (
                   <CategoryIcon cat={activeCategory} />
                 )}
@@ -53,24 +86,39 @@ export default function CategoryDetailModal({
                 <span className="text-xs text-slate-500 block mt-0.5 truncate">
                   {modalData.isUniversity
                     ? "Programs & Degrees Offered"
-                    : (activeCategory.title || "Online Programs & Degrees")}
+                    : modalData.isCourseSubcategoriesModal
+                      ? "Choose Specialization / Subcategory"
+                      : modalData.isCoursesModal
+                        ? "Available Courses & Programs"
+                        : (activeCategory.title || "Online Programs & Degrees")}
                 </span>
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={onClose}
-              className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-900 transition-colors flex items-center justify-center cursor-pointer border-0"
-              aria-label="Close modal"
-            >
-              <X className="w-4 h-4" />
-            </button>
+            <div className="flex items-center gap-2 shrink-0 ml-auto">
+              <button
+                type="button"
+                onClick={handleExploreClick}
+                className="inline-flex items-center justify-center gap-1 py-1 px-2 rounded-full text-xs font-bold text-[#0B3B7E] bg-blue-50/80 hover:bg-blue-100 border border-blue-200/80 transition-all cursor-pointer shadow-none group shrink-0"
+              >
+                <span className="leading-none">{exploreButtonText}</span>
+                <ChevronRight className="w-3.5 h-3.5 shrink-0 transition-transform duration-200 group-hover:translate-x-0.5" />
+              </button>
+
+              <button
+                type="button"
+                onClick={onClose}
+                className="w-8 h-8 flex items-center justify-center cursor-pointer shrink-0 rounded-full hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-colors"
+                aria-label="Close modal"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
           {/* Modal Body */}
           <div className="flex-1 overflow-y-auto max-h-[64vh] overscroll-contain pr-1 space-y-4 scrollbar-thin [scrollbar-color:#cbd5e1_transparent]">
-            {/* 1. Category Sub-categories or Universities Grid */}
+            {/* 1. Category Sub-categories, Courses, or Universities Grid */}
             {!modalData.isUniversity && (
               <div>
                 {modalData.items && modalData.items.length > 0 ? (
@@ -83,8 +131,27 @@ export default function CategoryDetailModal({
                           const parentCatSlug = getItemSlug(activeCategory);
                           const itemSlug = getItemSlug(it);
 
-                          if (modalData.isUniversitiesModal) {
-                            router.push(`/courses?university=${encodeURIComponent(itemSlug)}`);
+                          if (modalData.isUniversitiesModal || it.isUniversity || it.itemType === "university") {
+                            if (it.targetUrl && it.targetUrl.startsWith("/universities/")) {
+                              router.push(it.targetUrl);
+                            } else {
+                              router.push(`/universities/${encodeURIComponent(itemSlug)}`);
+                            }
+                          } else if (modalData.isCourseSubcategoriesModal) {
+                            const courseSlug = getItemSlug(activeCategory);
+                            const subSlug = getItemSlug(it);
+                            if (it.targetUrl && !/[0-9a-fA-F]{24}/.test(it.targetUrl)) {
+                              router.push(it.targetUrl);
+                            } else {
+                              router.push(`/courses?course=${encodeURIComponent(courseSlug)}&subcategory=${encodeURIComponent(subSlug)}`);
+                            }
+                          } else if (modalData.isCoursesModal || it.isCourse || it.itemType === "course") {
+                            const courseSlug = getItemSlug(it);
+                            if (it.targetUrl && !/[0-9a-fA-F]{24}/.test(it.targetUrl)) {
+                              router.push(it.targetUrl);
+                            } else {
+                              router.push(`/courses?course=${encodeURIComponent(courseSlug)}`);
+                            }
                           } else if (parentCatSlug && parentCatSlug !== "all") {
                             router.push(`/courses?category=${encodeURIComponent(parentCatSlug)}&subcategory=${encodeURIComponent(itemSlug)}`);
                           } else if (it.targetUrl && !/[0-9a-fA-F]{24}/.test(it.targetUrl)) {
@@ -101,6 +168,10 @@ export default function CategoryDetailModal({
                           <div className="group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
                             {modalData.isUniversitiesModal ? (
                               <PartnerLogoIcon partner={it} />
+                            ) : modalData.isCourseSubcategoriesModal ? (
+                              <CategoryIcon cat={it} />
+                            ) : modalData.isCoursesModal || it.isCourse || it.itemType === "course" ? (
+                              <CourseIcon course={it} />
                             ) : (
                               <CategoryIcon cat={it} />
                             )}
@@ -145,12 +216,42 @@ export default function CategoryDetailModal({
                         onClick={() => {
                           onClose();
                           const uniSlug = getItemSlug(modalData.category);
-                          const crsSlug = getItemSlug(crs);
-                          if (crs.isSubCourse || crs.itemType === "subcourse") {
-                            const parentSlug = crs.parentCourseSlug || getItemSlug({ name: crs.parentCourseName, slug: crs.parentCourseSlug }) || crsSlug;
-                            router.push(`/courses?university=${encodeURIComponent(uniSlug)}&course=${encodeURIComponent(parentSlug)}&subcourse=${encodeURIComponent(crsSlug)}`);
+
+                          // 1. Use direct targetUrl if provided from API and clean
+                          if (crs.targetUrl && crs.targetUrl.startsWith("/universities/")) {
+                            const lastPart = crs.targetUrl.split("/universities/")[1]?.split("?")[0]?.split("/").filter(Boolean).pop();
+                            if (lastPart && !isObjectId(lastPart)) {
+                              router.push(crs.targetUrl);
+                              return;
+                            }
+                          }
+
+                          // 2. Use coursePageSlug if present
+                          if (crs.coursePageSlug && !isObjectId(crs.coursePageSlug)) {
+                            const cleanPageSlug = crs.coursePageSlug.startsWith("/") ? crs.coursePageSlug : `/universities/${crs.coursePageSlug}`;
+                            router.push(cleanPageSlug);
+                            return;
+                          }
+
+                          // 3. Clean course slug (strictly non-ObjectId)
+                          let crsSlug = "";
+                          if (crs.slug && !isObjectId(crs.slug)) {
+                            crsSlug = crs.slug;
+                          } else if (crs.courseSlug && !isObjectId(crs.courseSlug)) {
+                            crsSlug = crs.courseSlug;
                           } else {
-                            router.push(`/courses?university=${encodeURIComponent(uniSlug)}&course=${encodeURIComponent(crsSlug)}`);
+                            crsSlug = getItemSlug(crs);
+                          }
+
+                          if (crsSlug && crsSlug.includes("/")) {
+                            router.push(`/universities/${crsSlug}`);
+                          } else if (crs.isSubCourse || crs.itemType === "subcourse") {
+                            const parentSlug = (!isObjectId(crs.parentCourseSlug) ? crs.parentCourseSlug : "") ||
+                              getItemSlug({ name: crs.parentCourseName, slug: crs.parentCourseSlug }) ||
+                              crsSlug;
+                            router.push(`/universities/${encodeURIComponent(uniSlug)}/${encodeURIComponent(parentSlug)}/${encodeURIComponent(crsSlug)}`);
+                          } else {
+                            router.push(`/universities/${encodeURIComponent(uniSlug)}/${encodeURIComponent(crsSlug)}`);
                           }
                         }}
                         className="bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl p-1.5 min-[360px]:p-2 aspect-square flex flex-col items-center justify-between text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group min-w-0 w-full shadow-2xs overflow-hidden"
@@ -177,11 +278,11 @@ export default function CategoryDetailModal({
                       type="button"
                       onClick={() => {
                         onClose();
-                        router.push(`/courses?university=${encodeURIComponent(getItemSlug(modalData.category))}`);
+                        router.push(`/universities/${encodeURIComponent(getItemSlug(modalData.category))}`);
                       }}
                       className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors cursor-pointer border-0"
                     >
-                      Explore University Courses
+                      Explore University Page
                     </button>
                   </div>
                 )}

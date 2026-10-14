@@ -58,11 +58,15 @@ export default function CourseFaq({
                 </span>
               </button>
 
-              {isOpen && (
-                <div className="p-3 text-xs sm:text-[13px] text-gray-600 leading-relaxed font-normal border-t border-blue-100/60">
-                  <SafeHtmlRenderer html={answer} />
-                </div>
-              )}
+              <div
+                className={
+                  isOpen
+                    ? "p-3 text-xs sm:text-[13px] text-gray-600 leading-relaxed font-normal border-t border-blue-100/60"
+                    : "sr-only"
+                }
+              >
+                <SafeHtmlRenderer html={answer} />
+              </div>
             </div>
           );
         })}

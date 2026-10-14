@@ -2,7 +2,6 @@
 
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import mediaMap from "@/constants/mediaMap.json";
 
 export function cn(...inputs) {
   return twMerge(clsx(inputs));
@@ -11,52 +10,174 @@ export function cn(...inputs) {
 const DEFAULT_SVG_LOGO =
   "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230f172a'/><path d='M50 22L18 38L50 54L82 38L50 22Z' fill='%233b82f6'/><path d='M30 46.5V64C30 68 39 74 50 74C61 74 70 68 70 64V46.5L50 56.5L30 46.5Z' fill='%2360a5fa'/></svg>";
 
+// In-memory media registry for runtime-populated assets (e.g. from Blog, Course, University APIs)
+if (!globalThis.__mediaRegistry) {
+  globalThis.__mediaRegistry = new Map();
+}
+
+export function registerMediaMapping(key, url) {
+  if (!key || !url) return;
+  const cleanKey = String(key).trim().toLowerCase();
+  globalThis.__mediaRegistry.set(cleanKey, url);
+  const nameOnly = cleanKey.replace(/\.[^/.]+$/, "");
+  if (nameOnly && nameOnly !== cleanKey) {
+    globalThis.__mediaRegistry.set(nameOnly, url);
+  }
+}
+
+export function resolveMediaMapping(key) {
+  if (!key) return null;
+  const cleanKey = String(key).trim().toLowerCase();
+  if (globalThis.__mediaRegistry && globalThis.__mediaRegistry.has(cleanKey)) {
+    return globalThis.__mediaRegistry.get(cleanKey);
+  }
+  return null;
+}
+
+export function slugifyFileName(name = "", fallbackExt = "webp") {
+  if (!name) return "";
+  let baseName = String(name).trim();
+  let ext = "";
+  const extMatch = baseName.match(/\.([a-zA-Z0-9]+)$/);
+  if (extMatch) {
+    ext = extMatch[1].toLowerCase();
+    baseName = baseName.replace(/\.[a-zA-Z0-9]+$/, "");
+  } else {
+    ext = fallbackExt;
+  }
+  const slug = baseName
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/[\s_]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+  return `${slug || "image"}.${ext}`;
+}
+
 /**
- * Resolves an image/asset path to the correct URL from backend Media or MinIO.
- * Supports string URLs and populated Media objects ({ _id, url, name }).
+ * Formats image alt text cleanly into human-readable text.
+ * Example: 'data-data' -> 'Data Data'
+ *          'data_data.webp' -> 'Data Data'
+ *          'Manipal University Jaipur' -> 'Manipal University Jaipur'
  */
-export function getAssetPath(path = "", fallback = DEFAULT_SVG_LOGO) {
+export function formatAltText(text = "") {
+  if (!text || typeof text !== "string") return "";
+
+  // 1. Remove file extensions (.webp, .png, .jpg, .jpeg, .svg, .gif, .pdf, etc.)
+  let clean = text.replace(/\.(webp|png|jpe?g|svg|gif|avif|bmp|pdf|ico)$/i, "").trim();
+
+  // 2. Replace hyphens and underscores with spaces (e.g. data-data -> data data, data_data -> data data)
+  if (/[-_]/.test(clean)) {
+    clean = clean.replace(/[-_]+/g, " ");
+  }
+
+  // 3. Normalize multiple whitespace
+  clean = clean.replace(/\s+/g, " ").trim();
+  if (!clean) return "";
+
+  // 4. Title case each word: 'data data' -> 'Data Data'
+  // If a word is already an all-caps abbreviation/acronym like 'MBA', 'MCA', 'AI', 'IIT', keep it.
+  return clean
+    .split(" ")
+    .map((word) => {
+      if (!word) return "";
+      // Acronym check (e.g., MBA, MCA, AI, IIT, IIM)
+      if (word === word.toUpperCase() && word.length > 1 && !/^[0-9]+$/.test(word)) {
+        return word;
+      }
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(" ");
+}
+
+/**
+ * Returns image alt text dynamically based on media object { name, alt } or fallback.
+ * Prioritizes the image's name, and cleans formatted slugs (e.g. 'data-data' -> 'Data Data').
+ */
+export function getAssetAlt(media, fallbackAlt = "") {
+  if (!media) return formatAltText(fallbackAlt);
+
+  let target = "";
+  if (typeof media === "object" && media !== null) {
+    // 1. Prioritize image's name first!
+    target = media.name || media.alt || media.title || fallbackAlt || "";
+    if (!target && media.fileName) {
+      target = media.fileName;
+    }
+  } else if (typeof media === "string") {
+    if (fallbackAlt && !media.includes("/")) {
+      target = media || fallbackAlt;
+    } else if (media.startsWith("http") || media.startsWith("/")) {
+      target = fallbackAlt || media.split("/").pop().split("?")[0];
+    } else {
+      target = media || fallbackAlt;
+    }
+  }
+
+  return formatAltText(target);
+}
+
+function extractMinioRelPath(rawPath, mediaObj = null) {
+  if (!rawPath && !mediaObj) return "";
+  const str = typeof rawPath === "string" ? rawPath.trim() : "";
+
+  if (str.includes("/minio/")) {
+    return str.substring(str.indexOf("/minio/") + 7).replace(/^\/+/, "");
+  }
+  if (str.includes(":9000/")) {
+    return str.substring(str.indexOf(":9000/") + 6).replace(/^\/+/, "");
+  }
+  if (
+    str.startsWith("crm-media/") ||
+    str.startsWith("images/") ||
+    str.startsWith("uploads/")
+  ) {
+    return str.replace(/^\/+/, "");
+  }
+  if (mediaObj && typeof mediaObj === "object") {
+    if (mediaObj.bucket && mediaObj.key) {
+      return `${mediaObj.bucket}/${mediaObj.key}`.replace(/^\/+/, "");
+    }
+    if (mediaObj.path && typeof mediaObj.path === "string") {
+      const p = mediaObj.path.trim().replace(/^\/+/, "");
+      if (
+        p.startsWith("crm-media/") ||
+        p.startsWith("images/") ||
+        p.startsWith("uploads/")
+      ) {
+        return p;
+      }
+    }
+  }
+  return "";
+}
+
+function isHashOrFileName(str, fileName = "") {
+  if (!str) return true;
+  const s = String(str).trim();
+  if (fileName && s.toLowerCase() === fileName.toLowerCase()) return true;
+  const base = s.replace(/\.[a-zA-Z0-9]+$/, "");
+  if (/^[a-f0-9]{24,64}$/i.test(base)) return true;
+  if (/^[0-9a-fA-F-]{36}$/.test(base)) return true;
+  return false;
+}
+
+/**
+ * Returns the real raw image/asset URL directly from backend.
+ * No proxying or slug transformation.
+ */
+export function getAssetPath(path = "", fallback = DEFAULT_SVG_LOGO, customName = "") {
   if (!path) return fallback;
-  let targetPath = path;
 
   if (typeof path === "object" && path !== null) {
-    targetPath = path?.url || path?.src || path?.path || "";
+    return path.url || path.src || path.path || fallback;
   }
 
-  if (typeof targetPath !== "string") return fallback;
-  targetPath = targetPath.trim();
+  if (typeof path !== "string") return fallback;
+  const targetPath = path.trim();
   if (!targetPath) return fallback;
 
-  // 1. Convert MinIO internal IP/port URLs to same-domain relative proxy path (/media/...)
-  if (targetPath.includes(":9000/")) {
-    const relativeMedia = targetPath.substring(targetPath.indexOf(":9000/") + 6);
-    return `/media/${relativeMedia}`;
-  }
-
-  // 2. Data URIs → pass through as-is
-  if (targetPath.startsWith("data:image")) return targetPath;
-
-  // 3. Local asset path string → look up in mediaMap
-  const lookup = targetPath.toLowerCase();
-  if (mediaMap[targetPath]) {
-    return mediaMap[targetPath];
-  }
-  if (mediaMap[lookup]) {
-    return mediaMap[lookup];
-  }
-
-  // 4. Relative paths or /media/ paths -> return as-is
-  if (targetPath.startsWith("/media/") || targetPath.startsWith("/")) return targetPath;
-
-  // 5. Convert any insecure http:// to https:// to prevent Mixed Content security blocking
-  if (targetPath.startsWith("http://")) {
-    return targetPath.replace(/^http:\/\//i, "https://");
-  }
-
-  if (targetPath.startsWith("https://")) return targetPath;
-
-  // 6. Safe fallback for unmapped static strings
-  return fallback;
+  return targetPath;
 }
 
 const SHORT_MONTHS = [

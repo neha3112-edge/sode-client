@@ -172,11 +172,13 @@ export default function LandingRecruiters({
           <div className="placement-section">
             <h2><strong>PLACEMENTS</strong> PARTNERS</h2>
             {partners.map((p, idx) => (
-              <img
+              <Image
                 key={idx}
                 src={p.image}
                 alt={p.name || `p${idx + 1}`}
-                className="placement-img"
+                width={120}
+                height={40}
+                className="placement-img object-contain"
               />
             ))}
           </div>
@@ -340,28 +342,43 @@ export default function LandingRecruiters({
     brand.recruitersMobileImage ||
     "/assets/shoolini/partner-mobile.webp";
 
+  const isShoolini = brand.slug === "shoolini";
+  const titleColor = brand.recruitersTitleColor || brand.accentColor || "#fd2954";
+  const highlightColor = isShoolini
+    ? titleColor
+    : (brand.recruitersHighlightColor || "#000000");
+
   return (
     <section id="placement" className="py-10 sm:py-14 bg-white text-center select-none">
-      <LandingContainer>
-        <h2 className="text-2xl sm:text-3xl lg:text-[34px] font-bold text-[#fd2954] mb-6 sm:mb-8 tracking-tight">
-          Top Recruiters of <span className="font-extrabold text-[#000000]">{brand.name || "Shoolini University Online"}</span>
+      <div className="w-full max-w-[1320px] mx-auto px-4 sm:px-6">
+        <h2
+          className="text-2xl sm:text-3xl lg:text-[34px] font-bold mb-6 sm:mb-8 tracking-tight"
+          style={{ color: titleColor }}
+        >
+          Top Recruiters of{" "}
+          <span
+            className="font-extrabold"
+            style={{ color: highlightColor }}
+          >
+            {brand.name || "Shoolini University Online"}
+          </span>
         </h2>
 
-        <div className="max-w-5xl mx-auto px-2">
+        <div className="w-full max-w-[1300px] mx-auto px-2">
           {/* Desktop Partner Image */}
           <div className="hidden sm:block relative w-full">
             <Image
               src={desktopImg}
               alt={heading}
-              width={1100}
-              height={380}
+              width={1300}
+              height={450}
               className="w-full h-auto object-contain mx-auto"
               priority
             />
           </div>
 
           {/* Mobile Partner Image */}
-          <div className="block sm:hidden relative w-full">
+          <div className="block sm:hidden relative w-full max-w-[500px] mx-auto">
             <Image
               src={mobileImg}
               alt={heading}
@@ -372,7 +389,7 @@ export default function LandingRecruiters({
             />
           </div>
         </div>
-      </LandingContainer>
+      </div>
     </section>
   );
 }
@@ -421,16 +438,52 @@ function MuRecruitersCarousel({ activeRecruiters, brand }) {
           )}
         </div>
 
-        {/* Ant Design Carousel Window */}
-        <div className="overflow-hidden w-full max-w-[1180px] mx-auto px-1 py-1">
+        {/* Mobile View: Exactly 2 Cards per slide, 3 circular dots (matching Image 1) */}
+        <div className="block sm:hidden w-full max-w-[540px] mx-auto px-1 py-1 [&_.slick-dots]:!relative [&_.slick-dots]:!mt-5 [&_.slick-dots]:!mb-0 [&_.slick-dots_li]:!w-2.5 [&_.slick-dots_li]:!h-2.5 [&_.slick-dots_li]:!mx-1.5 [&_.slick-dots_li_button]:!w-2.5 [&_.slick-dots_li_button]:!h-2.5 [&_.slick-dots_li_button]:!rounded-full [&_.slick-dots_li_button]:!bg-[#b8b8b8] [&_.slick-dots_li.slick-active_button]:!bg-black">
+          <Carousel
+            slidesToShow={2}
+            slidesToScroll={2}
+            autoplay
+            autoplaySpeed={brand.recruitersInterval || 2500}
+            infinite={logos.length > 2}
+            dots={true}
+            arrows={false}
+            pauseOnHover
+            draggable
+          >
+            {logos.map((logo, idx) => (
+              <div key={`m-${idx}`} className="px-1.5 outline-none py-1">
+                <div
+                  className={
+                    brand.recruitersCardClassName ||
+                    "bg-white rounded-[8px] h-[74px] w-full px-3 py-2 flex items-center justify-center shadow-xs border border-slate-200 hover:shadow-md transition-all group overflow-hidden"
+                  }
+                  style={brand.recruitersCardStyle}
+                >
+                  <Image
+                    src={logo}
+                    alt={`Partner ${(idx % logos.length) + 1}`}
+                    width={160}
+                    height={50}
+                    className="max-h-[46px] max-w-[85%] w-auto h-auto object-contain mx-auto transition-transform duration-200 group-hover:scale-105"
+                    priority
+                  />
+                </div>
+              </div>
+            ))}
+          </Carousel>
+        </div>
+
+        {/* Desktop / Tablet View: 5 Cards (matching live website and Image 2) */}
+        <div className="hidden sm:block overflow-hidden w-full max-w-[1180px] mx-auto px-1 py-1 [&_.slick-dots]:!relative [&_.slick-dots]:!mt-5 [&_.slick-dots]:!mb-0 [&_.slick-dots_li]:!w-2.5 [&_.slick-dots_li]:!h-2.5 [&_.slick-dots_li]:!mx-1.5 [&_.slick-dots_li_button]:!w-2.5 [&_.slick-dots_li_button]:!h-2.5 [&_.slick-dots_li_button]:!rounded-full [&_.slick-dots_li_button]:!bg-[#b8b8b8] [&_.slick-dots_li.slick-active_button]:!bg-black">
           <Carousel
             ref={carouselRef}
             slidesToShow={brand.recruitersVisibleCount || 5}
             slidesToScroll={1}
             autoplay
-            autoplaySpeed={brand.recruitersInterval || 2200}
+            autoplaySpeed={brand.recruitersInterval || 2500}
             infinite={logos.length > (brand.recruitersVisibleCount || 5)}
-            dots={{ className: "!mt-5" }}
+            dots={true}
             arrows={false}
             pauseOnHover
             draggable
@@ -443,18 +496,10 @@ function MuRecruitersCarousel({ activeRecruiters, brand }) {
                   infinite: logos.length > 3,
                 },
               },
-              {
-                breakpoint: 640,
-                settings: {
-                  slidesToShow: 2,
-                  slidesToScroll: 1,
-                  infinite: logos.length > 2,
-                },
-              },
             ]}
           >
             {logos.map((logo, idx) => (
-              <div key={idx} className="px-2 sm:px-2.5 outline-none py-1">
+              <div key={`d-${idx}`} className="px-2 sm:px-2.5 outline-none py-1">
                 <div
                   className={
                     brand.recruitersCardClassName ||
@@ -462,11 +507,13 @@ function MuRecruitersCarousel({ activeRecruiters, brand }) {
                   }
                   style={brand.recruitersCardStyle}
                 >
-                  <img
+                  <Image
                     src={logo}
                     alt={`Partner ${(idx % logos.length) + 1}`}
+                    width={180}
+                    height={60}
                     className="max-h-[48px] sm:max-h-[56px] max-w-[85%] w-auto h-auto object-contain mx-auto transition-transform duration-200 group-hover:scale-105"
-                    loading="eager"
+                    priority
                   />
                 </div>
               </div>

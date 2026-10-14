@@ -1,7 +1,9 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { BookOpen, Users, Globe, Trophy, Star } from "lucide-react";
+import { FaUser, FaClock, FaGraduationCap, FaIndianRupeeSign } from "react-icons/fa6";
 
 function BuildingIcon({ className }) {
   return (
@@ -122,13 +124,13 @@ export default function LandingStats({ stats = [], brand = {} }) {
   // ==========================================
   if (isIiitbLayout) {
     return (
-      <div id="stats" className="HighLights bg-[#2b2b2b] text-white py-12 px-4 sm:px-6 select-none scroll-mt-20">
+      <div id="stats" className="HighLights bg-[#2b2b2b] text-white py-12 px-4 sm:px-6 select-none scroll-mt-20 mt-0" style={{ marginTop: 0 }}>
         <div className="container max-w-[1140px] mx-auto">
           <div className="ach grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
             {stats.map((st, idx) => (
               <div key={idx} className="ac1 flex items-center gap-3.5">
-                <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm">
-                  <StudentCapIcon className="w-6 h-6 text-[#002147]" />
+                <div className="w-12 h-12 min-w-[48px] min-h-[48px] aspect-square rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm">
+                  <StudentCapIcon className="w-6 h-6 text-[#002147] shrink-0" />
                 </div>
                 <div className="inner_arc1_grid text-left">
                   <h3 className="text-[26px] sm:text-[30px] font-bold text-white m-0 leading-tight">
@@ -147,7 +149,8 @@ export default function LandingStats({ stats = [], brand = {} }) {
   }
 
   // ==========================================
-  // SSBM Layout: Black Achievement Bar with Red Numbers (#c11f28)
+  // ==========================================
+  // SSBM Layout: Black Achievement Bar with Solid White Icons and Red Numbers (#c11f28)
   // ==========================================
   if (isSsbmLayout) {
     return (
@@ -155,22 +158,30 @@ export default function LandingStats({ stats = [], brand = {} }) {
         <div className="max-w-[1240px] mx-auto px-4 sm:px-6">
           <div className="ach grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 text-center">
             {stats.map((st, idx) => (
-              <div key={idx} className="ac1 p-4 flex flex-col items-center justify-center">
+              <div key={idx} className="ac1 p-3 sm:p-4 flex flex-col items-center justify-center">
                 <div className="text-white mb-2 flex items-center justify-center">
                   {st.icon === "users" ? (
-                    <Users className="w-8 h-8 text-white" />
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" className="w-[38px] h-[38px] fill-white shrink-0">
+                      <path d="M96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM0 482.3C0 383.8 79.8 304 178.3 304l91.4 0C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7L29.7 512C13.3 512 0 498.7 0 482.3zM609.3 512l-137.8 0c5.4-9.4 8.6-20.3 8.6-32c0-70.7-39.3-132.3-97.1-164.2c16.3-5 33.7-7.8 51.7-7.8l91.4 0c78.8 0 142.6 63.8 142.6 142.6c0 16.4-13.3 29.7-29.7 29.7zM448 208a80 80 0 1 1 0-160 80 80 0 1 1 0 160z"/>
+                    </svg>
                   ) : st.icon === "globe" ? (
-                    <Globe className="w-8 h-8 text-white" />
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" className="w-[38px] h-[38px] fill-white shrink-0">
+                      <path d="M512 256C512 397.4 397.4 512 256 512C114.6 512 0 397.4 0 256C0 114.6 114.6 0 256 0C397.4 0 512 114.6 512 256zM256 64C221.7 64 190.1 74.4 163.7 92.1C184.7 113.8 198.6 142.4 202.9 174.5C216.5 167.8 231.8 164 248 164C270.1 164 288 181.9 288 204C288 214.6 283.8 224.2 277 231.3C275.4 233 273.7 234.6 271.8 236C265 241.1 256.4 244 248 244C234.7 244 224 233.3 224 220C224 213.4 221.3 207.4 216.9 203.1C212.6 198.7 206.6 196 200 196C186.7 196 176 206.7 176 220C176 233.3 186.7 244 200 244C206.6 244 212.6 246.7 216.9 251.1C221.3 255.4 224 261.4 224 268C224 281.3 213.3 292 200 292C186.7 292 176 281.3 176 268C176 261.4 173.3 255.4 168.9 251.1C164.6 246.7 158.6 244 152 244C138.7 244 128 254.7 128 268C128 281.3 138.7 292 152 292C158.6 292 164.6 294.7 168.9 299.1C173.3 303.4 176 309.4 176 316C176 338.1 193.9 356 216 356C238.1 356 256 373.9 256 396C256 418.1 273.9 436 296 436C318.1 436 336 453.9 336 476C397.6 461.3 446.4 416.7 467.5 358C459.1 352.9 448 350 436 350C405.1 350 380 324.9 380 294C380 263.1 405.1 238 436 238C448 238 459.1 240.9 467.5 246C466.5 197.8 444.6 154.7 408.8 124.9C405.4 126.9 401.3 128 397 128C380.4 128 367 114.6 367 98C367 90.5 369.8 83.7 374.3 78.5C338.9 69.1 301.7 64 256 64z"/>
+                    </svg>
                   ) : st.icon === "trophy" ? (
-                    <Trophy className="w-8 h-8 text-white" />
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" className="w-[38px] h-[38px] fill-white shrink-0">
+                      <path d="M400 0H176c-26.5 0-48 21.5-48 48v32H48C21.5 80 0 101.5 0 128v48c0 70.7 57.3 128 128 128h11.2c28.3 40.8 72.4 69.3 124.8 77.2V432h-48c-17.7 0-32 14.3-32 32s14.3 32 32 32h144c17.7 0 32-14.3 32-32s-14.3-32-32-32h-48v-50.8c52.4-7.9 96.5-36.4 124.8-77.2H448c70.7 0 128-57.3 128-128v-48c0-26.5-21.5-48-48-48h-80V48c0-26.5-21.5-48-48-48zM128 240c-35.3 0-64-28.7-64-64v-32h64v96zm320-96h64v32c0 35.3-28.7 64-64 64v-96z"/>
+                    </svg>
                   ) : (
-                    <Star className="w-8 h-8 text-white" />
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" className="w-[38px] h-[38px] fill-white shrink-0">
+                      <path d="M316.9 18C311.6 7 300.4 0 288 0s-23.6 7-28.8 18L195 150.3 31.4 174.2c-12 1.8-21.5 10.9-24.3 22.7s2.5 24.1 13.5 32.5l118.4 90.7-28 163c-2 12 3 24.2 12.8 31.3s22.4 7.6 33.1 2L288 439.6l131.1 76.8c10.7 6.3 23.3 5.1 33.1-2s14.8-19.3 12.8-31.3l-28-163 118.4-90.7c11-8.4 16.3-20.7 13.5-32.5s-12.3-20.9-24.3-22.7L381 150.3 316.9 18z"/>
+                    </svg>
                   )}
                 </div>
-                <h1 className="text-[30px] sm:text-[36px] font-bold text-[#c11f28] m-0 mb-1 leading-tight">
+                <h1 className="text-[34px] sm:text-[38px] font-bold text-[#c11f28] m-0 mb-1 leading-tight">
                   {st.value || st.number || st.stat}
                 </h1>
-                <h3 className="text-[16px] sm:text-[18px] font-normal text-white m-0 tracking-tight">
+                <h3 className="text-[16px] sm:text-[17px] font-semibold text-white m-0 tracking-normal">
                   {st.label || st.title}
                 </h3>
               </div>
@@ -192,9 +203,12 @@ export default function LandingStats({ stats = [], brand = {} }) {
             {stats.map((st, idx) => (
               <div key={idx} className="ac1">
                 {st.icon && (
-                  <img
+                  <Image
                     src={st.icon}
                     alt={st.label}
+                    width={40}
+                    height={40}
+                    className="object-contain"
                   />
                 )}
                 <div>
@@ -252,33 +266,59 @@ export default function LandingStats({ stats = [], brand = {} }) {
     return (
       <section id="stats" aria-label="Key Highlights" className="achievement text-white select-none">
         <div className="w-full">
-          <div className="ach grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="ach grid grid-cols-2 lg:grid-cols-4">
             {stats.map((st, idx) => (
               <div
                 key={idx}
-                className="p-6 sm:p-8 flex items-center gap-4 text-white"
+                className="p-4 sm:p-5 lg:py-6 lg:px-7 text-white"
                 style={{ backgroundColor: st.bg || bgColors[idx % bgColors.length] }}
               >
-                <div className="shrink-0">
-                  {st.icon === "user" ? (
-                    <svg className="w-8 h-8 fill-current" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                  ) : st.icon === "clock" ? (
-                    <svg className="w-8 h-8 fill-current" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
-                  ) : st.icon === "graduation" ? (
-                    <svg className="w-8 h-8 fill-current" viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM3.45 13.47L12 18.12l8.55-4.65V18l-8.55 4.67L3.45 18v-4.53z"/></svg>
-                  ) : st.icon === "rupee" ? (
-                    <span className="text-[32px] font-bold">₹</span>
-                  ) : (
-                    <span className="text-[32px] font-bold">★</span>
-                  )}
-                </div>
-                <div>
-                  <h3 className="text-[20px] font-bold text-white m-0 mb-1 leading-snug">
-                    {st.label || st.title}
-                  </h3>
-                  <p className="text-[13.5px] text-white/95 leading-snug m-0 font-normal">
+                {/* Mobile: 2x2 cards with Icon + Title row and text below */}
+                <div className="flex flex-col sm:hidden">
+                  <div className="flex items-center gap-2 mb-1.5">
+                    {st.icon === "user" ? (
+                      <FaUser className="w-[18px] h-[18px] text-white shrink-0" />
+                    ) : st.icon === "clock" ? (
+                      <FaClock className="w-[18px] h-[18px] text-white shrink-0" />
+                    ) : st.icon === "graduation" ? (
+                      <FaGraduationCap className="w-[20px] h-[20px] text-white shrink-0" />
+                    ) : st.icon === "rupee" ? (
+                      <FaIndianRupeeSign className="w-[18px] h-[18px] text-white shrink-0" />
+                    ) : (
+                      <span className="text-[20px] font-bold">★</span>
+                    )}
+                    <h3 className="text-[17px] font-bold text-white m-0 leading-tight">
+                      {st.label || st.title}
+                    </h3>
+                  </div>
+                  <p className="text-[12px] text-white/95 leading-snug m-0 font-normal">
                     {st.value || st.desc || st.number}
                   </p>
+                </div>
+
+                {/* Desktop: Icon on left, Title + text on right */}
+                <div className="hidden sm:flex items-start gap-3.5 lg:gap-4">
+                  <div className="shrink-0 pt-0.5">
+                    {st.icon === "user" ? (
+                      <FaUser className="w-[20px] h-[20px] text-white" />
+                    ) : st.icon === "clock" ? (
+                      <FaClock className="w-[20px] h-[20px] text-white" />
+                    ) : st.icon === "graduation" ? (
+                      <FaGraduationCap className="w-[24px] h-[24px] text-white" />
+                    ) : st.icon === "rupee" ? (
+                      <FaIndianRupeeSign className="w-[20px] h-[20px] text-white" />
+                    ) : (
+                      <span className="text-[24px] font-bold">★</span>
+                    )}
+                  </div>
+                  <div>
+                    <h3 className="text-[19px] lg:text-[20px] font-bold text-white m-0 mb-1 leading-snug tracking-tight">
+                      {st.label || st.title}
+                    </h3>
+                    <p className="text-[12.5px] lg:text-[13px] text-white/95 leading-snug m-0 font-normal">
+                      {st.value || st.desc || st.number}
+                    </p>
+                  </div>
                 </div>
               </div>
             ))}
@@ -293,26 +333,28 @@ export default function LandingStats({ stats = [], brand = {} }) {
   // ==========================================
   if (isEsgciLayout) {
     return (
-      <section id="stats" aria-label="Key Highlights" className="achievement bg-black text-white py-6 sm:py-8 select-none">
+      <section id="stats" aria-label="Key Highlights" className="achievement bg-black text-white py-8 sm:py-10 select-none">
         <div className="max-w-[1240px] mx-auto px-4 sm:px-6">
-          <div className="ach grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 text-center">
+          <div className="ach grid grid-cols-2 lg:grid-cols-4 gap-y-7 gap-x-4 sm:gap-6 lg:gap-8 text-center items-start">
             {stats.map((st, idx) => (
-              <div key={idx} className="ac1 p-4 flex flex-col items-center justify-center">
-                {st.icon === "user" ? (
-                  <svg className="w-7 h-7 text-[#04903c] mb-2 fill-current" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                ) : st.icon === "clock" ? (
-                  <svg className="w-7 h-7 text-[#04903c] mb-2 fill-current" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
-                ) : st.icon === "graduation" ? (
-                  <svg className="w-7 h-7 text-[#04903c] mb-2 fill-current" viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM3.45 13.47L12 18.12l8.55-4.65V18l-8.55 4.67L3.45 18v-4.53z"/></svg>
-                ) : st.icon === "rupee" ? (
-                  <span className="text-[26px] font-bold text-[#04903c] mb-1">₹</span>
-                ) : (
-                  <span className="text-[26px] font-bold text-[#04903c] mb-1">★</span>
-                )}
-                <h3 className="text-[18px] sm:text-[19px] font-bold text-[#04903c] m-0 mb-1 tracking-tight">
+              <div key={idx} className="ac1 p-2 sm:p-3 flex flex-col items-center justify-start">
+                <div className="mb-2 sm:mb-2.5 flex items-center justify-center">
+                  {st.icon === "user" ? (
+                    <FaUser className="w-7 h-7 sm:w-8 sm:h-8 lg:w-9 lg:h-9 text-[#fff000]" />
+                  ) : st.icon === "clock" ? (
+                    <FaClock className="w-7 h-7 sm:w-8 sm:h-8 lg:w-9 lg:h-9 text-[#fff000]" />
+                  ) : st.icon === "graduation" ? (
+                    <FaGraduationCap className="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 text-[#fff000]" />
+                  ) : st.icon === "rupee" ? (
+                    <FaIndianRupeeSign className="w-7 h-7 sm:w-8 sm:h-8 lg:w-8 lg:h-8 text-[#fff000]" />
+                  ) : (
+                    <span className="text-[32px] font-bold text-[#fff000]">★</span>
+                  )}
+                </div>
+                <h3 className="text-[20px] sm:text-[22px] lg:text-[24px] font-black text-[#04903c] m-0 mb-1.5 tracking-tight font-outfit">
                   {st.label || st.title}
                 </h3>
-                <p className="text-[13px] sm:text-[13.5px] text-white/90 leading-snug m-0 font-normal">
+                <p className="text-[13.5px] sm:text-[14px] lg:text-[14.5px] text-white leading-snug sm:leading-[1.4] m-0 font-semibold max-w-[210px] sm:max-w-[240px] mx-auto">
                   {st.value || st.desc || st.number}
                 </p>
               </div>
@@ -328,22 +370,18 @@ export default function LandingStats({ stats = [], brand = {} }) {
   // ==========================================
   if (isGguLayout) {
     return (
-      <section id="stats" aria-label="Key Statistics" className="achievement py-8 sm:py-12 bg-white select-none">
-        <div className="max-w-[1140px] mx-auto px-4 sm:px-6">
-          <div className="ach bg-[#003468] rounded-[8px] sm:rounded-[10px] py-6 sm:py-7 px-2 sm:px-4 text-white grid grid-cols-2 md:grid-cols-4 shadow-md items-center">
+      <section id="stats" aria-label="Key Statistics" className="achievement py-5 sm:py-10 bg-white select-none">
+        <div className="max-w-[1140px] mx-auto px-3.5 sm:px-6">
+          <div className="ach bg-[#003468] rounded-[10px] py-8 sm:py-7 px-3 sm:px-4 text-white grid grid-cols-2 md:grid-cols-4 gap-y-8 sm:gap-y-0 shadow-md items-center">
             {stats.map((st, idx) => (
               <div
                 key={idx}
-                className={`ac1 relative px-3 sm:px-5 py-3 sm:py-4 text-center flex flex-col items-center justify-center ${
-                  idx % 2 === 0 ? "border-r border-white/20 md:border-r-0" : ""
-                } ${
-                  idx < 2 ? "border-b border-white/20 md:border-b-0" : ""
-                }`}
+                className="ac1 relative px-2 sm:px-5 py-2 sm:py-4 text-center flex flex-col items-center justify-center"
               >
-                <span className="block text-[32px] sm:text-[40px] lg:text-[46px] font-bold text-white tracking-tight leading-none">
+                <span className="block text-[40px] sm:text-[44px] lg:text-[48px] font-bold text-white tracking-tight leading-none">
                   {st.value || st.number}
                 </span>
-                <p className="text-[12px] sm:text-[13px] lg:text-[13.5px] text-white/90 font-medium mt-2 leading-snug m-0">
+                <p className="text-[13px] sm:text-[13px] lg:text-[13.5px] text-white font-medium mt-2.5 leading-[1.3] m-0 max-w-[145px] sm:max-w-none mx-auto">
                   {st.label}
                 </p>
 

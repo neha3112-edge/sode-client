@@ -4,6 +4,7 @@ import React, { useState, useMemo, useEffect, useRef } from "react";
 import { request } from "@/services/request";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Table, Select, Input } from "antd";
 import {
   Search,
@@ -19,12 +20,12 @@ import {
 } from "lucide-react";
 import { useFormModal } from "@/hooks/useFormModal";
 import { useCompare } from "@/hooks/useCompare";
-import { getAssetPath } from "@/lib/utils";
 import { Container } from "@/components/common/Container";
+
+const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 
 const { Option } = Select;
 
-// Smooth Accordion Card Component for Expanded Details
 function SmoothExpandedCard({
   record,
   isClosing,
@@ -71,7 +72,7 @@ function SmoothExpandedCard({
                 <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-lg shrink-0 flex items-center justify-center overflow-hidden">
                   {record.logo ? (
                     <Image
-                      src={record.logo}
+                      src={getMediaUrl(record.logo)}
                       alt={record.name}
                       width={46}
                       height={46}
@@ -84,7 +85,7 @@ function SmoothExpandedCard({
                     </span>
                   )}
                 </div>
-                <span className="font-semibold text-gray-900 text-sm sm:text-[15px] tracking-tight leading-tight truncate">
+                <span className="font-semibold text-gray-900 text-sm sm:text-[15px] tracking-tight truncate">
                   {record.name}
                 </span>
               </div>
@@ -110,10 +111,10 @@ function SmoothExpandedCard({
                   <MapPin size={13} />
                 </div>
                 <div>
-                  <span className="text-[10px] text-gray-400 font-normal uppercase tracking-wider block leading-none">
+                  <span className="text-[10px] text-gray-400 font-normal uppercase tracking-wider block">
                     Location
                   </span>
-                  <span className="text-xs sm:text-[13px] font-normal text-gray-700 block mt-0.5 leading-tight">
+                  <span className="text-xs sm:text-[13px] font-normal text-gray-700 block mt-0.5">
                     {record.location}
                   </span>
                 </div>
@@ -125,10 +126,10 @@ function SmoothExpandedCard({
                   <Building2 size={13} />
                 </div>
                 <div>
-                  <span className="text-[10px] text-gray-400 font-normal uppercase tracking-wider block leading-none">
+                  <span className="text-[10px] text-gray-400 font-normal uppercase tracking-wider block">
                     Established
                   </span>
-                  <span className="text-xs sm:text-[13px] font-normal text-gray-700 block mt-0.5 leading-tight">
+                  <span className="text-xs sm:text-[13px] font-normal text-gray-700 block mt-0.5">
                     {record.established}
                   </span>
                 </div>
@@ -141,10 +142,10 @@ function SmoothExpandedCard({
                     ⭐
                   </div>
                   <div>
-                    <span className="text-[10px] text-gray-400 font-normal uppercase tracking-wider block leading-none">
+                    <span className="text-[10px] text-gray-400 font-normal uppercase tracking-wider block">
                       NAAC Grade
                     </span>
-                    <span className="text-xs sm:text-[13px] font-semibold text-amber-800 block mt-0.5 leading-tight">
+                    <span className="text-xs sm:text-[13px] font-semibold text-amber-800 block mt-0.5">
                       {record.naac}
                     </span>
                   </div>
@@ -158,11 +159,11 @@ function SmoothExpandedCard({
                     🏆
                   </div>
                   <div>
-                    <span className="text-[10px] text-gray-400 font-normal uppercase tracking-wider block leading-none">
+                    <span className="text-[10px] text-gray-400 font-normal uppercase tracking-wider block">
                       NIRF Rank
                     </span>
-                    <span className="text-xs sm:text-[13px] font-semibold text-blue-800 block mt-0.5 leading-tight">
-                      {String(record.nirf).startsWith("#") ? record.nirf : `#${record.nirf}`}
+                    <span className="text-xs sm:text-[13px] font-semibold text-blue-800 block mt-0.5">
+                      {record.nirf}
                     </span>
                   </div>
                 </div>
@@ -201,7 +202,7 @@ function SmoothExpandedCard({
               {/* Know More */}
               <Link
                 href={record.slug ? `/universities/${record.slug}` : "#"}
-                className="w-full h-8 px-1 sm:px-2 rounded-lg bg-[#122A46] hover:bg-[#0c1f34] text-white font-normal text-[11px] sm:text-xs shadow-2xs flex items-center justify-center border border-transparent transition-all active:scale-95 text-center whitespace-nowrap min-w-0 leading-none"
+                className="w-full h-8 px-1 sm:px-2 rounded-lg bg-[#122A46] hover:bg-[#0c1f34] text-white font-normal text-[11px] sm:text-xs shadow-2xs flex items-center justify-center border border-transparent transition-all active:scale-95 text-center whitespace-nowrap min-w-0"
               >
                 <span className="truncate">Know More</span>
               </Link>
@@ -218,7 +219,7 @@ function SmoothExpandedCard({
                 {compared ? (
                   <>
                     <Check size={11} className="text-emerald-600 shrink-0" />
-                    <span className="truncate">Added</span>
+                    <span className="truncate">Compare Now</span>
                   </>
                 ) : (
                   <>
@@ -236,8 +237,9 @@ function SmoothExpandedCard({
 }
 
 export default function ApprovalUniversityDirectory({ initialData = null, className = "" }) {
+  const router = useRouter();
   const { openFormModal } = useFormModal();
-  const { toggleCompare, isInCompare } = useCompare();
+  const { toggleCompare, isInCompare, compareList, setIsCompareDrawerOpen } = useCompare();
 
   // ─── State ────────────────────────────────────────────────────
   const [apiData, setApiData] = useState(initialData);
@@ -409,7 +411,29 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
 
   const handleCompareClick = (u, e) => {
     e?.stopPropagation();
-    toggleCompare(u.rawUni || u);
+    const uniRecord = u.rawUni || u;
+    const targetSlug = uniRecord.slug || uniRecord._id || u.slug || u._id;
+    const isAlreadyIn = isInCompare(targetSlug);
+    if (isAlreadyIn) {
+      const slugs = (compareList || [])
+        .map((item) => item.slug || item.uniSlug || item._id || item.id)
+        .filter(Boolean);
+      const combinedSlugs = Array.from(new Set([...slugs, targetSlug])).filter(Boolean).slice(0, 3);
+      const crsParam = selectedCourse && selectedCourse !== "all" ? selectedCourse : "";
+      router.push(`/tools/compare-universities?university=${encodeURIComponent(combinedSlugs.join(","))}${crsParam ? `&course=${encodeURIComponent(crsParam)}` : ""}`);
+    } else {
+      toggleCompare({
+        _id: uniRecord._id || targetSlug,
+        slug: targetSlug,
+        uniSlug: targetSlug,
+        name: uniRecord.name || u.name,
+        uniName: uniRecord.name || u.name,
+        logo: uniRecord.logo || u.logo,
+        logoUrl: getMediaUrl(uniRecord.logo || u.logo),
+        location: uniRecord.location || u.location || "",
+      });
+      setIsCompareDrawerOpen?.(true);
+    }
   };
 
   // Format University Name: Breaks onto two lines on mobile, single line on desktop
@@ -418,7 +442,7 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
     const parts = name.trim().split(" ");
     if (parts.length === 2) {
       return (
-        <span className="font-semibold text-gray-900 text-xs sm:text-[13px] leading-tight block">
+        <span className="font-semibold text-gray-900 text-xs sm:text-[13px] block">
           <span className="block sm:inline">{parts[0]}</span>{" "}
           <span className="block sm:inline text-gray-800">{parts[1]}</span>
         </span>
@@ -428,14 +452,14 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
       const last = parts[parts.length - 1];
       const rest = parts.slice(0, parts.length - 1).join(" ");
       return (
-        <span className="font-semibold text-gray-900 text-xs sm:text-[13px] leading-tight block">
+        <span className="font-semibold text-gray-900 text-xs sm:text-[13px] block">
           <span className="block sm:inline">{rest}</span>{" "}
           <span className="block sm:inline text-gray-800">{last}</span>
         </span>
       );
     }
     return (
-      <span className="font-semibold text-gray-900 text-xs sm:text-[13px] leading-tight block">
+      <span className="font-semibold text-gray-900 text-xs sm:text-[13px] block">
         {name}
       </span>
     );
@@ -474,7 +498,7 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
             <div className="w-10 h-10 sm:w-9 sm:h-9 rounded-lg shrink-0 flex items-center justify-center overflow-hidden">
               {record.logo ? (
                 <Image
-                  src={record.logo}
+                  src={getMediaUrl(record.logo)}
                   alt={name}
                   width={40}
                   height={40}
@@ -499,7 +523,7 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
         key: "state",
         width: hasNaacCol || hasNirfCol ? "24%" : "28%",
         render: (state) => (
-          <span className="text-gray-600 text-xs sm:text-[13px] font-normal break-words whitespace-normal leading-tight block">
+          <span className="text-gray-600 text-xs sm:text-[13px] font-normal break-words whitespace-normal block">
             {state}
           </span>
         ),
@@ -515,7 +539,7 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
         render: (naac) => {
           if (!naac) return <span className="text-gray-400 text-xs font-normal">-</span>;
           return (
-            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] sm:text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200 shadow-2xs">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-2xl text-[11px] sm:text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200 shadow-2xs">
               {naac}
             </span>
           );
@@ -529,10 +553,9 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
         width: "16%",
         render: (nirf) => {
           if (!nirf) return <span className="text-gray-400 text-xs font-normal">-</span>;
-          const displayRank = String(nirf).startsWith("#") ? nirf : `#${nirf}`;
           return (
-            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] sm:text-xs font-semibold bg-blue-50 text-blue-800 border border-blue-200 shadow-2xs">
-              {displayRank}
+            <span className="inline-flex rounded-2xl items-center px-2 py-0.5 text-[11px] sm:text-xs font-semibold bg-blue-50 text-blue-600 border border-blue-200 shadow-2xs">
+              {nirf}
             </span>
           );
         },
@@ -549,7 +572,7 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
           expandedRowKeys.includes(record._id) && !closingRowKeys.includes(record._id);
         return (
           <div className="flex items-center justify-between gap-1 sm:gap-2 w-full">
-            <span className="text-gray-600 text-[11px] sm:text-[13px] font-normal leading-tight break-words whitespace-normal min-w-0">
+            <span className="text-gray-600 text-[11px] sm:text-[13px] font-normal break-words whitespace-normal min-w-0">
               {heiType}
             </span>
             <button
@@ -640,7 +663,7 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
                 <Option value="all">All NIRF Ranks</Option>
                 {filterOptions.nirf.map((rank) => (
                   <Option key={rank} value={rank}>
-                    Rank #{rank}
+                    Rank {rank}
                   </Option>
                 ))}
               </Select>

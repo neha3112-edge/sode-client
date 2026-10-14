@@ -21,11 +21,22 @@ const poppins = Poppins({
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
   variable: "--font-jakarta",
-  weight: ["400", "500", "600", "700", "800"],
   display: "swap",
 });
 
 export const metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://mysode.com")
+  ),
+  robots: {
+    index: false,
+    follow: false,
+    googleBot: {
+      index: false,
+      follow: false,
+    },
+  },
   icons: {
     icon: [
       { url: "/favicon.ico" },
@@ -44,8 +55,7 @@ export default function RootLayout({ children }) {
     <html
       lang="en-IN"
       suppressHydrationWarning
-      data-scroll-behavior="smooth"
-      className={`${roboto.variable} ${poppins.variable} ${jakarta.variable} font-sans h-full antialiased scroll-smooth`}
+      className={`${roboto.variable} ${poppins.variable} ${jakarta.variable} font-sans h-full antialiased`}
     >
       <head>
         <link rel="preconnect" href="https://new.crm.api.mysode.com" crossOrigin="anonymous" />

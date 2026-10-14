@@ -3,7 +3,8 @@
 import React from "react";
 import Image from "next/image";
 import { Award } from "lucide-react";
-import { getAssetPath } from "@/lib/utils";
+
+const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 
 export default function CourseApprovals({
   approvalsList,
@@ -16,21 +17,22 @@ export default function CourseApprovals({
     <div
       id="approvals"
       data-nav-label="Accreditations"
-      className="scroll-mt-20 bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 text-center"
+      className="scroll-mt-20 bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 text-center relative"
     >
+      <span id="accreditations" className="sr-only" />
       <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight mb-4">
         {courseData?.approvalsTitle || (universityName ? `Rankings & Accreditations of ${universityName}` : "Rankings & Accreditations")}
       </h2>
       <div className="flex flex-wrap items-center justify-start md:justify-center gap-1.5 sm:gap-2.5 md:gap-3 w-full">
         {approvalsList.map((item, idx) => {
-          const logoSrc = item.logo || item.image ? getAssetPath(item.logo || item.image) : null;
+          const logoSrc = item.logo || item.image ? getMediaUrl(item.logo || item.image) : null;
           const title = item.name || item.code || "Accredited";
           const desc = item.description || `Approved by ${title}`;
 
           return (
             <div
               key={item._id || idx}
-              className="bg-white rounded-xl border border-gray-200 flex flex-col p-1.5 sm:p-3 items-center justify-between text-center aspect-[4/4.6] sm:aspect-square shadow-2xs hover:border-blue-300 transition-colors overflow-hidden shrink-0 w-[calc((100%-12px)/3)] sm:w-[calc((100%-20px)/3)] md:w-[calc((100%-60px)/6)]"
+              className="bg-white rounded-xl border border-gray-200 flex flex-col p-1.5 sm:p-3 items-center justify-between text-center aspect-square shadow-2xs hover:border-blue-300 transition-colors overflow-hidden shrink-0 w-[calc((100%-12px)/3)] sm:w-[calc((100%-20px)/3)] md:w-[calc((100%-60px)/6)]"
             >
               <div className="flex-1 min-h-0 w-full relative">
                 {logoSrc ? (

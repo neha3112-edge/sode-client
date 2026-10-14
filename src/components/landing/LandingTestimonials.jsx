@@ -3,19 +3,20 @@
 import React, { useRef } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
-import { Carousel, Card, Button } from "antd";
+import { Carousel, Card } from "antd";
 import LandingContainer from "./LandingContainer";
 
 /**
  * Reusable Testimonials Carousel Section (#testimonials)
- * Built using Ant Design Carousel, Card, and Button.
+ * Provides dedicated 1-card carousel on mobile and 3-card carousel on desktop.
  */
 export default function LandingTestimonials({
   testimonials = [],
   universityName,
   brand = {},
 }) {
-  const carouselRef = useRef(null);
+  const mobileCarouselRef = useRef(null);
+  const desktopCarouselRef = useRef(null);
 
   if (!testimonials || testimonials.length === 0) return null;
 
@@ -27,14 +28,17 @@ export default function LandingTestimonials({
   return (
     <section
       id="testimonials"
-      className="py-12 sm:py-16 bg-white overflow-hidden select-none"
+      className="py-10 sm:py-16 bg-white overflow-hidden select-none"
     >
       <LandingContainer>
         {/* Heading */}
-        <div className="text-center mb-8 sm:mb-12">
-          <h2 className="text-2xl sm:text-3xl md:text-[32px] font-bold text-slate-900 tracking-tight m-0">
+        <div className="text-center mb-6 sm:mb-12">
+          <h2 className="text-2xl sm:text-3xl md:text-[32px] font-bold text-slate-900 tracking-tight m-0 leading-snug">
             What Learners Say{" "}
-            <span style={{ color: primaryColor }}>About {university}</span>
+            <span style={{ color: primaryColor }}>About</span>{" "}
+            <span className="block sm:inline" style={{ color: primaryColor }}>
+              {university}
+            </span>
           </h2>
           {isClassic && (
             <p className="text-xs sm:text-[14px] text-slate-600 max-w-2xl mx-auto mt-2 font-normal">
@@ -43,37 +47,110 @@ export default function LandingTestimonials({
           )}
         </div>
 
-        {/* Carousel Container */}
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-8">
+        {/* ------------------------------------------------------------- */}
+        {/* MOBILE VIEW: Exactly 1 Card per slide (md:hidden)             */}
+        {/* ------------------------------------------------------------- */}
+        <div className="block md:hidden relative w-full max-w-[390px] mx-auto px-7">
           {/* Controls */}
-          <Button
-            type="text"
-            onClick={() => carouselRef.current?.prev()}
-            className="absolute left-0 sm:-left-3 top-1/2 -translate-y-1/2 z-20 text-slate-800 hover:!text-[#ee3024] transition-colors p-1 !bg-transparent !border-none cursor-pointer flex items-center justify-center active:scale-90 !h-auto !w-auto"
+          <button
+            type="button"
+            onClick={() => mobileCarouselRef.current?.prev()}
             aria-label="Previous testimonial"
+            className="absolute left-0.5 top-[46%] -translate-y-1/2 z-20 text-slate-800 hover:text-[#ee3024] p-1.5 bg-transparent border-none cursor-pointer flex items-center justify-center active:scale-90"
           >
-            <ChevronLeft className="w-6 h-6 sm:w-8 sm:h-8 stroke-[2.5]" />
-          </Button>
+            <ChevronLeft className="w-6 h-6 stroke-[2.5]" />
+          </button>
 
-          <Button
-            type="text"
-            onClick={() => carouselRef.current?.next()}
-            className="absolute right-0 sm:-right-3 top-1/2 -translate-y-1/2 z-20 text-slate-800 hover:!text-[#ee3024] transition-colors p-1 !bg-transparent !border-none cursor-pointer flex items-center justify-center active:scale-90 !h-auto !w-auto"
+          <button
+            type="button"
+            onClick={() => mobileCarouselRef.current?.next()}
             aria-label="Next testimonial"
+            className="absolute right-0.5 top-[46%] -translate-y-1/2 z-20 text-slate-800 hover:text-[#ee3024] p-1.5 bg-transparent border-none cursor-pointer flex items-center justify-center active:scale-90"
           >
-            <ChevronRight className="w-6 h-6 sm:w-8 sm:h-8 stroke-[2.5]" />
-          </Button>
+            <ChevronRight className="w-6 h-6 stroke-[2.5]" />
+          </button>
 
-          {/* Ant Design Carousel Viewport */}
-          <div className="overflow-hidden">
+          {/* Carousel Viewport */}
+          <div className="w-full [&_.slick-dots]:!relative [&_.slick-dots]:!mt-5 [&_.slick-dots]:!mb-0 [&_.slick-dots_li]:!w-2.5 [&_.slick-dots_li]:!h-2.5 [&_.slick-dots_li]:!mx-1 [&_.slick-dots_li_button]:!w-2.5 [&_.slick-dots_li_button]:!h-2.5 [&_.slick-dots_li_button]:!rounded-full [&_.slick-dots_li_button]:!bg-[#d9d9d9] [&_.slick-dots_li.slick-active_button]:!bg-[#8c8c8c]">
             <Carousel
-              ref={carouselRef}
+              ref={mobileCarouselRef}
+              slidesToShow={1}
+              slidesToScroll={1}
+              autoplay
+              autoplaySpeed={3500}
+              infinite={items.length > 1}
+              dots={brand.testimonialsDots !== undefined ? brand.testimonialsDots : true}
+              arrows={false}
+              draggable
+            >
+              {items.map((item, idx) => (
+                <div key={idx} className="px-1 py-2 outline-none">
+                  <div className="bg-white rounded-xl p-6 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.08)] flex flex-col justify-start text-left w-full min-h-[350px] sm:min-h-[360px]">
+                    {/* Square Photo at Top Left */}
+                    <div className="relative w-20 h-20 rounded-md overflow-hidden mb-3.5 bg-slate-100 shrink-0 shadow-2xs">
+                      <Image
+                        src={item.image}
+                        alt={item.name}
+                        fill
+                        className="object-cover"
+                        sizes="80px"
+                      />
+                    </div>
+
+                    {/* Student Name */}
+                    <h3 className="text-[17px] font-bold text-slate-900 m-0 mb-1 leading-snug">
+                      {item.name}
+                    </h3>
+
+                    {/* Course */}
+                    <p className="text-[13px] font-medium text-slate-600 m-0 mb-3.5 leading-snug">
+                      {item.course}
+                    </p>
+
+                    {/* Review Text */}
+                    <p className="text-[13px] text-slate-700 leading-relaxed font-normal m-0">
+                      {item.text}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </Carousel>
+          </div>
+        </div>
+
+        {/* ------------------------------------------------------------- */}
+        {/* DESKTOP VIEW: 3 Cards per slide (hidden md:block)             */}
+        {/* ------------------------------------------------------------- */}
+        <div className="hidden md:block relative max-w-6xl mx-auto px-10">
+          {/* Controls */}
+          <button
+            type="button"
+            onClick={() => desktopCarouselRef.current?.prev()}
+            aria-label="Previous testimonial"
+            className="absolute -left-2 top-1/2 -translate-y-1/2 z-20 text-slate-800 hover:text-[#ee3024] p-1 bg-transparent border-none cursor-pointer flex items-center justify-center active:scale-90"
+          >
+            <ChevronLeft className="w-8 h-8 stroke-[2.5]" />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => desktopCarouselRef.current?.next()}
+            aria-label="Next testimonial"
+            className="absolute -right-2 top-1/2 -translate-y-1/2 z-20 text-slate-800 hover:text-[#ee3024] p-1 bg-transparent border-none cursor-pointer flex items-center justify-center active:scale-90"
+          >
+            <ChevronRight className="w-8 h-8 stroke-[2.5]" />
+          </button>
+
+          {/* Carousel Viewport */}
+          <div className="w-full [&_.slick-track]:!flex [&_.slick-slide]:!h-auto [&_.slick-slide>div]:!h-full [&_.slick-dots]:!relative [&_.slick-dots]:!mt-6 [&_.slick-dots]:!mb-0 [&_.slick-dots_li]:!w-2.5 [&_.slick-dots_li]:!h-2.5 [&_.slick-dots_li]:!mx-1.5 [&_.slick-dots_li_button]:!w-2.5 [&_.slick-dots_li_button]:!h-2.5 [&_.slick-dots_li_button]:!rounded-full [&_.slick-dots_li_button]:!bg-[#d9d9d9] [&_.slick-dots_li.slick-active_button]:!bg-[#8c8c8c]">
+            <Carousel
+              ref={desktopCarouselRef}
               slidesToShow={3}
               slidesToScroll={1}
               autoplay
-              autoplaySpeed={3200}
+              autoplaySpeed={3500}
               infinite={items.length > 3}
-              dots={false}
+              dots={brand.testimonialsDots !== undefined ? brand.testimonialsDots : true}
               arrows={false}
               pauseOnHover
               draggable
@@ -86,28 +163,19 @@ export default function LandingTestimonials({
                     infinite: items.length > 2,
                   },
                 },
-                {
-                  breakpoint: 640,
-                  settings: {
-                    slidesToShow: 1,
-                    slidesToScroll: 1,
-                    infinite: items.length > 1,
-                  },
-                },
               ]}
             >
               {items.map((item, idx) => (
-                <div key={idx} className="px-2.5 sm:px-3.5 py-2 outline-none h-full">
+                <div key={idx} className="px-3 py-3 outline-none h-full">
                   {isClassic ? (
-                    /* Classic Card */
                     <Card
                       variant="borderless"
                       styles={{ body: { padding: 0 } }}
-                      className="bg-white rounded-xl p-5 sm:p-6 border border-slate-200/80 shadow-xs hover:shadow-md transition-shadow h-full flex flex-col justify-between"
+                      className="bg-white rounded-xl p-6 border border-slate-200/80 shadow-xs hover:shadow-md transition-shadow h-full min-h-[380px] sm:min-h-[390px] md:min-h-[400px] flex flex-col justify-between"
                     >
                       <div>
                         <div className="flex items-center gap-3.5 mb-3.5">
-                          <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-orange-400 shrink-0">
+                          <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-orange-400 shrink-0">
                             <Image
                               src={item.image}
                               alt={item.name}
@@ -117,11 +185,11 @@ export default function LandingTestimonials({
                             />
                           </div>
                           <div>
-                            <h4 className="text-[15px] sm:text-[16px] font-bold text-slate-900 m-0">
+                            <h4 className="text-[16px] font-bold text-slate-900 m-0">
                               {item.name}
                             </h4>
                             <span
-                              className="text-[12px] sm:text-[12.5px] font-semibold"
+                              className="text-[12.5px] font-semibold"
                               style={{ color: primaryColor }}
                             >
                               {item.course}
@@ -131,7 +199,7 @@ export default function LandingTestimonials({
 
                         <hr className="border-t border-slate-100 my-3" />
 
-                        <p className="text-[13px] sm:text-[13.5px] text-slate-700 leading-relaxed font-normal m-0 line-clamp-5">
+                        <p className="text-[13.5px] text-slate-700 leading-relaxed font-normal m-0 line-clamp-5">
                           {item.text}
                         </p>
                       </div>
@@ -141,38 +209,35 @@ export default function LandingTestimonials({
                       </div>
                     </Card>
                   ) : (
-                    /* Clean Card */
-                    <Card
-                      variant="borderless"
-                      styles={{ body: { padding: 0 } }}
-                      className="bg-white rounded-[8px] sm:rounded-[10px] p-6 sm:p-7 border border-slate-100 shadow-md hover:shadow-lg transition-shadow h-full flex flex-col justify-start text-left"
+                    <div
+                      className="bg-white rounded-xl p-6 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.08)] hover:shadow-lg transition-shadow h-full min-h-[380px] sm:min-h-[390px] md:min-h-[400px] flex flex-col justify-start text-left"
                     >
                       {/* Square Photo */}
-                      <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-[4px] overflow-hidden mb-3.5 shrink-0 bg-slate-100 shadow-2xs">
+                      <div className="relative w-20 h-20 rounded-md overflow-hidden mb-3.5 bg-slate-100 shrink-0 shadow-2xs">
                         <Image
                           src={item.image}
                           alt={item.name}
                           fill
                           className="object-cover"
-                          sizes="64px"
+                          sizes="80px"
                         />
                       </div>
 
                       {/* Name */}
-                      <h3 className="text-[17px] sm:text-[18px] font-bold text-slate-900 m-0 leading-tight">
+                      <h3 className="text-[18px] font-bold text-slate-900 m-0 mb-1 leading-snug">
                         {item.name}
                       </h3>
 
                       {/* Course */}
-                      <p className="text-[13px] sm:text-[13.5px] text-slate-600 font-medium mt-1 mb-3.5 leading-tight">
+                      <p className="text-[13.5px] font-medium text-slate-600 m-0 mb-3.5 leading-snug">
                         {item.course}
                       </p>
 
                       {/* Review Text */}
-                      <p className="text-[12.5px] sm:text-[13px] text-slate-700 leading-relaxed font-normal m-0">
+                      <p className="text-[13.5px] text-slate-700 leading-relaxed font-normal m-0">
                         {item.text}
                       </p>
-                    </Card>
+                    </div>
                   )}
                 </div>
               ))}

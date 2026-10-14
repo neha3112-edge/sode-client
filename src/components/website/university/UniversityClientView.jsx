@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
 import { useCompare } from "@/hooks/useCompare";
 import { useFormModal } from "@/hooks/useFormModal";
-import { getAssetPath } from "@/lib/utils";
+
+const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 
 import UniversityHero from "./UniversityHero";
 import UniversityAbout from "./UniversityAbout";
@@ -34,8 +36,9 @@ const getSafeText = (val, fallback = "") => {
 };
 
 export function UniversityClientView({ initialData, slug }) {
+  const router = useRouter();
   const { openFormModal } = useFormModal();
-  const { toggleCompare, isInCompare, setIsCompareDrawerOpen } = useCompare();
+  const { addToCompare, compareList, isInCompare, setIsCompareDrawerOpen } = useCompare();
 
   const [activeCourseFilter, setActiveCourseFilter] = useState("ALL");
   const [visibleCoursesCount, setVisibleCoursesCount] = useState(5);
@@ -64,12 +67,12 @@ export function UniversityClientView({ initialData, slug }) {
     [uniName]
   );
 
-  const rawBanner = uni.bannerImg?.url || null;
-  const heroBannerUrl = rawBanner ? getAssetPath(rawBanner) : null;
-  const rawMobileBanner = uni.mobileBannerImg?.url || null;
-  const mobileHeroBannerUrl = rawMobileBanner ? getAssetPath(rawMobileBanner) : heroBannerUrl;
-  const rawLogo = data.logo?.url || null;
-  const logoUrl = rawLogo ? getAssetPath(rawLogo) : null;
+  const rawBanner = uni.bannerImg || null;
+  const heroBannerUrl = rawBanner ? getMediaUrl(rawBanner) : null;
+  const rawMobileBanner = uni.mobileBannerImg || null;
+  const mobileHeroBannerUrl = rawMobileBanner ? getMediaUrl(rawMobileBanner) : heroBannerUrl;
+  const rawLogo = data.logo || uni.logo || null;
+  const logoUrl = rawLogo ? getMediaUrl(rawLogo) : null;
 
   const numericRating = useMemo(() => {
     const raw = uni?.avg_rating ?? data?.avg_rating ?? uni?.rating ?? data?.rating ?? 4.8;
@@ -125,7 +128,7 @@ export function UniversityClientView({ initialData, slug }) {
     if (Array.isArray(uni.accreditations) && uni.accreditations.length > 0) {
       return uni.accreditations.map((acc) => ({
         title: acc.name,
-        logo: acc.logo?.url || (typeof acc.logo === "string" ? acc.logo : null),
+        logo: acc.logo ? getMediaUrl(acc.logo) : null,
         description: acc.description || "",
       }));
     }
@@ -202,7 +205,7 @@ export function UniversityClientView({ initialData, slug }) {
         items: (first.items || []).map((item) => ({
           title: item.title,
           description: item.description,
-          iconUrl: item.icon?.url || (typeof item.icon === "string" ? item.icon : null),
+          iconUrl: item.icon || null,
         })),
       };
     }
@@ -223,7 +226,7 @@ export function UniversityClientView({ initialData, slug }) {
       return {
         title: deg.title || "",
         description: deg.description || "",
-        imageUrl: deg.image?.url || (typeof deg.image === "string" ? deg.image : null),
+        imageUrl: deg.image || null,
         points: points,
         ctaText: deg.cta_text || "Get Degree",
         ctaLink: deg.cta_link || null,
@@ -256,11 +259,14 @@ export function UniversityClientView({ initialData, slug }) {
   }, [uni.faqs, uniName]);
 
   const handleUniversityCompare = () => {
+    const currentSlug = slug || uni.slug || data.slug || uni._id || data._id;
     const uniPayload = {
-      _id: uni._id || data._id || slug,
+      _id: uni._id || data._id || currentSlug,
       name: uniName,
-      slug: slug || uni.slug || data.slug,
+      slug: currentSlug,
       logo: rawLogo,
+      logoUrl: rawLogo,
+      logoSrc: rawLogo,
       city: locationText,
       state: "",
       naac_rating: { grade: "" },
@@ -268,8 +274,54 @@ export function UniversityClientView({ initialData, slug }) {
       established_year: establishedText,
       approvals: (accreditationsList || []).map((a) => ({ name: a.title })),
     };
-    toggleCompare(uniPayload);
-    setIsCompareDrawerOpen(true);
+    addToCompare(uniPayload);
+
+    const cleanUniSlug = (currentSlug && !currentSlug.includes("/")) ? currentSlug : (currentSlug?.split("/")[0]);
+    const existingSlugs = (compareList || [])
+      .map((u) => u.uniSlug || (u.slug && !u.slug.includes("/") ? u.slug : null) || u.slug?.split("/")[0] || u._id || u.id)
+      .filter(Boolean);
+    const combinedSlugs = Array.from(new Set([...existingSlugs, cleanUniSlug])).filter(Boolean).slice(0, 3);
+    const activeCourse = (activeCourseFilter && activeCourseFilter !== "ALL" ? activeCourseFilter : "") ||
+                         (typeof window !== "undefined" && window.__CURRENT_PAGE_COURSES__?.[0]) || "";
+    router.push(`/tools/compare-universities?university=${encodeURIComponent(combinedSlugs.join(","))}${activeCourse ? `&course=${encodeURIComponent(activeCourse)}` : ""}`);
+  };
+
+  const extractedCourses = useMemo(() => {
+    return Array.from(
+      new Set(
+        (coursesList || [])
+          .map((c) => {
+            const raw = c.rawName || c.title || c.name || "";
+            return raw
+              .replace(/\b(online|distance|hybrid|regular|open|executive|odl)\b/gi, "")
+              .replace(/\s+/g, " ")
+              .trim();
+          })
+          .filter(Boolean)
+      )
+    );
+  }, [coursesList]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.__CURRENT_PAGE_COURSES__ = extractedCourses;
+      window.__CURRENT_PAGE_UNIVERSITY__ = uniName;
+    }
+    return () => {
+      if (typeof window !== "undefined") {
+        window.__CURRENT_PAGE_COURSES__ = null;
+        window.__CURRENT_PAGE_UNIVERSITY__ = null;
+      }
+    };
+  }, [extractedCourses, uniName]);
+
+  const handleOpenUniversityForm = (customPayload = {}) => {
+    openFormModal({
+      university: uniName,
+      university_name: uniName,
+      courses: extractedCourses,
+      ...customPayload,
+    });
   };
 
   return (
@@ -283,7 +335,7 @@ export function UniversityClientView({ initialData, slug }) {
         starRatingValue={starRatingValue}
         displayRatingText={displayRatingText}
         coursePills={coursePills}
-        openFormModal={openFormModal}
+        openFormModal={handleOpenUniversityForm}
         handleUniversityCompare={handleUniversityCompare}
         isInCompare={isInCompare(uni._id || data._id || slug)}
         locationText={locationText}
@@ -333,7 +385,7 @@ export function UniversityClientView({ initialData, slug }) {
           uni={uni}
           logoUrl={logoUrl}
           heroBannerUrl={heroBannerUrl}
-          openFormModal={openFormModal}
+          openFormModal={handleOpenUniversityForm}
         />
 
         {/* Why Choose Section */}
@@ -346,7 +398,7 @@ export function UniversityClientView({ initialData, slug }) {
         <UniversitySampleDegree
           sampleDegreeData={sampleDegreeData}
           uniName={uniName}
-          openFormModal={openFormModal}
+          openFormModal={handleOpenUniversityForm}
         />
 
         {/* Top Recruiters Section */}
@@ -360,7 +412,7 @@ export function UniversityClientView({ initialData, slug }) {
         {/* Top Peer Universities Section */}
         <UniversityPeerUniversities
           topUniversities={topPeerUniversities}
-          openFormModal={openFormModal}
+          openFormModal={handleOpenUniversityForm}
         />
 
         {/* Admission Process Section (Above FAQ) */}

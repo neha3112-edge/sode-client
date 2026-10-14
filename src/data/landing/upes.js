@@ -58,16 +58,7 @@ export const upesData = {
     compareBannerColor: "#f2167d",
     compareUniversityName: "UPES University Online",
     badgeText: "Admissions Open 2026",
-    sectionOrder: [
-      "programmes",
-      "approvals",
-      "about",
-      "whyChoose",
-      "recruiters",
-      "admissionProcess",
-      "faqs",
-      "compareBanner",
-    ],
+    showCouponBtn: true,
     hero: {
       backgroundImage: "/assets/upes/upes-home-desktop.webp",
       mobileBackgroundImage: null,

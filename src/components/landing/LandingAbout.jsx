@@ -15,11 +15,12 @@ import MuAbout from "./about/MuAbout";
 import VguAbout from "./about/VguAbout";
 import SmuAbout from "./about/SmuAbout";
 import ManipalAbout from "./about/ManipalAbout";
-
 import CuAbout from "./about/CuAbout";
 import UpesAbout from "./about/UpesAbout";
+import ShooliniAbout from "./about/ShooliniAbout";
+import IiitbAbout from "./about/IiitbAbout";
 
-/**-
+/**
  * Reusable Registry of About Section Layouts.
  * Decouples university brand identity (slug) from visual layout rendering.
  */
@@ -27,7 +28,9 @@ const ABOUT_LAYOUTS = {
   upes: UpesAbout,
   cu: CuAbout,
   classic: ClassicAbout,
+  iiitb: IiitbAbout,
   imageRight: ClassicAbout,
+  shoolini: ShooliniAbout,
   lpu: LpuAbout,
   galgotias: GalgotiasAbout,
   iim: IimAbout,

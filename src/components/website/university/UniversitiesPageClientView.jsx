@@ -13,8 +13,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useCompare } from "@/hooks/useCompare";
-import { getAssetPath } from "@/lib/utils";
 import Container from "@/components/common/Container";
 import { request } from "@/services/request";
 
@@ -30,11 +30,13 @@ function getAvatarColor(name = "") {
 
 function resolveMediaUrl(media) {
   if (!media) return null;
-  return getAssetPath(media, null);
+  if (typeof media === "string") return media;
+  return media.url || media.path || media.src || null;
 }
 
 function UniversityCard({ uni }) {
-  const { toggleCompare, isInCompare } = useCompare();
+  const router = useRouter();
+  const { toggleCompare, compareList, isInCompare, setIsCompareDrawerOpen } = useCompare();
   const [logoErr, setLogoErr] = useState(false);
   const [imgErr, setImgErr] = useState(false);
 
@@ -71,9 +73,9 @@ function UniversityCard({ uni }) {
   const featuredCourse = uni?.featuredCourse || coursesList[0] || "";
   const programsText = coursesList.length > 0 ? coursesList.join(" | ") : "";
 
-  const logoUrl = !logoErr ? resolveMediaUrl(uni?.image || uni?.logoSrc || uni?.logo) : null;
+  const logoUrl = !logoErr ? resolveMediaUrl(uni?.image) : null;
   const imageSrc = !imgErr ? resolveMediaUrl(uni?.bannerImg || uni?.imageSrc || uni?.image) : null;
-  const logoAlt = uni?.image?.name || uni?.logoSrc?.name || uni?.logo?.name || name;
+  const logoAlt = uni?.image?.name || name;
   const imgAlt = uni?.bannerImg?.name || uni?.imageSrc?.name || name;
 
   const avatarBg = getAvatarColor(name);
@@ -81,7 +83,10 @@ function UniversityCard({ uni }) {
 
   return (
     <div className="bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col group h-full">
-      <div className="relative h-32 sm:h-36 w-full overflow-hidden bg-slate-100 shrink-0">
+      <Link
+        href={`/universities/${slug}`}
+        className="block relative h-32 sm:h-36 w-full overflow-hidden bg-slate-100 shrink-0 cursor-pointer"
+      >
         {imageSrc ? (
           <Image
             src={imageSrc}
@@ -109,8 +114,8 @@ function UniversityCard({ uni }) {
           </span>
         )}
 
-        <div className="absolute -bottom-3 left-0 h-9 sm:h-12 w-24 sm:w-26 bg-white rounded-md rounded-tl-none flex items-center justify-center p-1 z-10 overflow-hidden">
-          {logoUrl ? (
+        {logoUrl && (
+          <div className="absolute bottom-2.5 left-2.5 sm:bottom-3 sm:left-3 h-9 sm:h-11 w-24 sm:w-28 flex items-center justify-center z-10">
             <div className="relative w-full h-full">
               <Image
                 src={logoUrl}
@@ -122,13 +127,11 @@ function UniversityCard({ uni }) {
                 onError={() => setLogoErr(true)}
               />
             </div>
-          ) : (
-            <span className="text-[#072C50] text-[11px] font-black truncate px-1">{name}</span>
-          )}
-        </div>
-      </div>
+          </div>
+        )}
+      </Link>
 
-      <div className="pt-4.5 px-3.5 pb-3 flex flex-col flex-1">
+      <div className="pt-3.5 px-3.5 pb-3 flex flex-col flex-1">
         <Link href={`/universities/${slug}`} className="block group-hover:text-blue-600 transition-colors">
           <h3 className="text-sm sm:text-[15px] font-bold text-[#072C50] m-0 leading-tight line-clamp-1">
             {name}
@@ -189,14 +192,24 @@ function UniversityCard({ uni }) {
                   logoSrc: logoUrl,
                   university: uni,
                 };
-                toggleCompare(compareItem);
+                if (inCompare) {
+                  const slugs = (compareList || [])
+                    .map((u) => u.slug || u.uniSlug || u._id || u.id)
+                    .filter(Boolean);
+                  const combinedSlugs = Array.from(new Set([...slugs, slug])).slice(0, 3);
+                  const activeCourse = (typeof window !== "undefined" && window.__CURRENT_PAGE_COURSES__?.[0]) || "";
+                  router.push(`/tools/compare-universities?university=${encodeURIComponent(combinedSlugs.join(","))}${activeCourse ? `&course=${encodeURIComponent(activeCourse)}` : ""}`);
+                } else {
+                  toggleCompare(compareItem);
+                  setIsCompareDrawerOpen(true);
+                }
               }}
               className={`font-semibold rounded-md h-7 px-2 text-[11px] cursor-pointer ${inCompare
-                ? "border-amber-500 bg-amber-50 text-amber-700"
+                ? "border-amber-500 bg-amber-50 text-amber-700 hover:bg-amber-100"
                 : "border-slate-300 text-slate-600 hover:border-slate-400"
                 }`}
             >
-              {inCompare ? "✓ Comparing" : "+ Compare"}
+              {inCompare ? "Compare Now" : "+ Compare"}
             </Button>
 
             <Link href={`/universities/${slug}`}>

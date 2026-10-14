@@ -2,7 +2,8 @@
 
 import React from "react";
 import Image from "next/image";
-import { getAssetPath } from "@/lib/utils";
+
+const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 
 const STEP_COLORS = [
   { border: "#f97316", bg: "#fff7ee" },
@@ -50,11 +51,7 @@ export default function UniversityAdmissionProcess({ admissionProcess }) {
             const fallback = STEP_COLORS[idx % STEP_COLORS.length];
             const stepColor = step.color || fallback.border;
             const bgColor = fallback.bg;
-            const iconUrl = step.icon
-              ? typeof step.icon === "object"
-                ? step.icon.url || step.icon.path || null
-                : step.icon
-              : null;
+            const iconAsset = step.icon || null;
 
             return (
               <div
@@ -73,9 +70,9 @@ export default function UniversityAdmissionProcess({ admissionProcess }) {
                     color: stepColor,
                   }}
                 >
-                  {iconUrl ? (
+                  {iconAsset ? (
                     <Image
-                      src={getAssetPath(iconUrl)}
+                      src={getMediaUrl(iconAsset)}
                       alt={step.title || "Step icon"}
                       width={24}
                       height={24}
