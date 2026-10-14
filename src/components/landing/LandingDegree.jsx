@@ -83,6 +83,12 @@ export default function LandingDegree({
                   className="w-[180px] sm:w-[235px] md:w-[260px] max-w-[50%] h-auto object-contain my-3 sm:my-4 shadow-sm rounded-[4px] block"
                 />
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   const isRushford =
     brand.degreeLayout === "rushford" || brand.slug === "rushford";

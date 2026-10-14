@@ -523,7 +523,9 @@ body:has(.landing-page-root)>div>main {
 /* Footer bottom */
 .landing-page--iim .mini-footer-bottom {
   background-color: #17479E !important;
+}
 
+/* =========================================================
    GLOBAL AUTO-RENDERED HTML LINK STYLING
 ========================================================= */
 a.auto-rendered-link {
