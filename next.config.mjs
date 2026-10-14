@@ -1,5 +1,5 @@
 /** @type {import('next').NextConfig} */
-const MINIO_PUBLIC_URL = process.env.NEXT_PUBLIC_MINIO_URL || "https://new.crm.api.mysode.com/minio";
+const MINIO_PUBLIC_URL = process.env.NEXT_PUBLIC_MINIO_URL || "https://api.crm.mysode.com/minio";
 
 const nextConfig = {
   trailingSlash: true,

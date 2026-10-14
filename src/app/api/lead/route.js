@@ -218,7 +218,7 @@ export async function POST(req) {
 
     const crmLeadUrl =
       process.env.CRM_LEAD_API_URL ||
-      "https://new.crm.api.mysode.com/api/lead/apicreated";
+      "https://api.crm.mysode.com/api/lead/apicreated";
     const crmApiKey =
       process.env.CRM_API_KEY ||
       "a04b4291461f8b060559dfc965864c2c2590e6edd2f5aa7a49388484a1953f22";
