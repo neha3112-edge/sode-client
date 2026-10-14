@@ -98,9 +98,8 @@ export const lpuData = {
       studentImage: null,
       mobileStudentImage: "/assets/all_universities_images/lpu/university.webp",
       mobileStudentImageObjectFit: "object-cover",
-      mobileStudentImageWrapperClassName:
-        "block lg:hidden w-full max-w-[440px] mx-auto rounded-[14px] overflow-hidden my-3 shadow-md border border-slate-200/80 aspect-[2.14/1]",
-      mobileStudentImageClassName: "w-full h-full !object-cover",
+      mobileStudentImageWrapperClassName: "block lg:hidden w-full max-w-[440px] mx-auto rounded-[16px] overflow-hidden my-3.5 shadow-md border border-slate-200/80",
+      mobileStudentImageClassName: "w-full h-auto object-cover block rounded-[16px]",
       brochureButtonText: "Download Brochure",
       buttonStyle: {
         backgroundColor: "#4d4d4d",

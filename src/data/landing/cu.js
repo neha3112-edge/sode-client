@@ -55,7 +55,7 @@ export const cuData = {
       mobileBackgroundImage: "",
       showMobileCouponButton: true,
       mobileStudentImage: "/assets/cu/university.webp",
-      mobileStudentImageWrapperClassName: "block lg:hidden w-full max-w-[365px] mx-auto relative aspect-[925/433] rounded-[16px] overflow-hidden my-3 shadow-sm",
+      mobileStudentImageWrapperClassName: "block lg:hidden w-full max-w-[365px] mx-auto rounded-[16px] overflow-hidden my-3.5 shadow-sm",
       noOverlay: true,
       backgroundPosition: "53% top",
       backgroundSize: "cover",

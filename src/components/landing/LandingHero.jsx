@@ -752,25 +752,22 @@ export default function LandingHero({
             )}
             style={hero.formContainerStyle}
           >
-            {hero.mobileStudentImage && (
+            {(hero.mobileStudentImage || hero.mobileImage) && (
               <div
                 className={joinClassNames(
-                  hero.mobileStudentImageWrapperClassName ||
-                  "hero-mobile-image-wrapper block lg:hidden w-full relative aspect-[2.14/1] overflow-hidden mb-3"
+                  "hero-mobile-image-wrapper block lg:hidden w-full max-w-[440px] mx-auto my-3 sm:my-3.5",
+                  hero.mobileStudentImageWrapperClassName || hero.mobileImageWrapperClassName
                 )}
                 style={hero.mobileStudentImageWrapperStyle}
               >
-                <Image
-                  src={hero.mobileStudentImage}
+                <img
+                  src={hero.mobileStudentImage || hero.mobileImage}
                   alt={brand.name || "University"}
-                  fill
                   className={joinClassNames(
-                    hero.mobileStudentImageObjectFit || "object-cover",
-                    hero.mobileStudentImageClassName
+                    "w-full h-auto object-cover rounded-[16px] shadow-md border border-slate-200/60 block",
+                    hero.mobileStudentImageClassName || hero.mobileImageClassName
                   )}
                   style={hero.mobileStudentImageStyle}
-                  sizes="(max-width: 768px) 100vw, 420px"
-                  priority
                 />
               </div>
             )}

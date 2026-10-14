@@ -156,6 +156,9 @@ export const amityData = {
       backgroundPosition: "center center",
       backgroundSize: "cover",
       studentImage: null,
+      mobileStudentImage: "/assets/all_universities_images/amity/university.webp",
+      mobileStudentImageWrapperClassName: "block lg:hidden w-full max-w-[440px] mx-auto rounded-[16px] overflow-hidden my-3.5 shadow-md",
+      mobileStudentImageClassName: "w-full h-auto object-cover block rounded-[16px]",
 
       noOverlay: true,
       backgroundColor: "#ffffff",
