@@ -16,6 +16,7 @@ import IimWhyChoose from "./whychoose/IimWhyChoose";
 import IiitbWhyChoose from "./whychoose/IiitbWhyChoose";
 import UuWhyChoose from "./whychoose/UuWhyChoose";
 import SsbmWhyChoose from "./whychoose/SsbmWhyChoose";
+import UpesWhyChoose from "./whychoose/UpesWhyChoose";
 import ClassicWhyChoose from "./whychoose/ClassicWhyChoose";
 
 /**
@@ -28,6 +29,7 @@ const WHY_CHOOSE_LAYOUTS = {
   uu: UuWhyChoose,
   iiitb: IiitbWhyChoose,
   ssbm: SsbmWhyChoose,
+  upes: UpesWhyChoose,
   galgotias: GalgotiasWhyChoose,
   "galgotias-grid": GalgotiasWhyChoose,
   liverpool: LiverpoolWhyChoose,

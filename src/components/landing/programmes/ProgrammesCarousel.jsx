@@ -151,7 +151,7 @@ export default function ProgrammesCarousel({
       {/* ------------------------------------------------------------- */}
       <div
         className={`hidden md:block w-full mx-auto px-4 sm:px-6 relative ${
-          isClean ? "max-w-[1140px]" : isSmu ? "max-w-[1200px] xl:max-w-[1240px] px-6 sm:px-10 lg:px-12" : "max-w-[1240px] xl:max-w-[1360px] sm:px-8 lg:px-10"
+          isClean ? "max-w-[1140px] min-[1600px]:max-w-[1360px] min-[1920px]:max-w-[1520px]" : isSmu ? "max-w-[1200px] xl:max-w-[1240px] min-[1600px]:max-w-[1440px] min-[1920px]:max-w-[1600px] px-6 sm:px-10 lg:px-12" : "max-w-[1240px] xl:max-w-[1360px] min-[1600px]:max-w-[1520px] min-[1920px]:max-w-[1680px] sm:px-8 lg:px-10"
         }`}
       >
         <Button

@@ -429,7 +429,7 @@ export default function LandingDegree({
         }`}
     >
       <LandingContainer>
-        <div className="bg-white rounded-[8px] sm:rounded-[12px] shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-slate-100/80 p-6 sm:p-10 lg:p-12 max-w-[1140px] mx-auto">
+        <div className="bg-white rounded-[8px] sm:rounded-[12px] shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-slate-100/80 p-6 sm:p-10 lg:p-12 max-w-[1140px] min-[1600px]:max-w-[1360px] min-[1920px]:max-w-[1480px] mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             {/* Image Column */}
             <div

@@ -13,6 +13,7 @@ import GguProgrammes from "./programmes/GguProgrammes";
 import IiitbProgrammes from "./programmes/IiitbProgrammes";
 import UuProgrammes from "./programmes/UuProgrammes";
 import SsbmProgrammes from "./programmes/SsbmProgrammes";
+import UpesProgrammes from "./programmes/UpesProgrammes";
 import ProgrammesCarousel from "./programmes/ProgrammesCarousel";
 
 /**
@@ -43,6 +44,7 @@ const PROGRAMME_LAYOUTS = {
   uu: UuProgrammes,
   iiitb: IiitbProgrammes,
   ssbm: SsbmProgrammes,
+  upes: UpesProgrammes,
   ggu: GguProgrammes,
   mu: MuGrid,
   vgu: VguGrid,

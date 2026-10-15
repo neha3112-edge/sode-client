@@ -40,7 +40,7 @@ export default function AmityApprovals({
         className="w-full py-5 sm:py-8 lg:py-10 px-3 sm:px-6 lg:px-8"
         style={{ backgroundColor: sectionBg }}
       >
-        <div className="max-w-[1360px] mx-auto">
+        <div className="max-w-[1360px] min-[1600px]:max-w-[1520px] min-[1920px]:max-w-[1680px] mx-auto">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-2.5 min-[390px]:gap-x-3 sm:gap-x-8 lg:gap-x-10 gap-y-4 sm:gap-y-6 lg:gap-y-8 items-center">
             {approvals.map((item, idx) => {
               const data = normalizeApprovalItem(item, idx);

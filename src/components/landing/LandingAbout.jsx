@@ -17,6 +17,7 @@ import SmuAbout from "./about/SmuAbout";
 import ManipalAbout from "./about/ManipalAbout";
 import ShooliniAbout from "./about/ShooliniAbout";
 import IiitbAbout from "./about/IiitbAbout";
+import UpesAbout from "./about/UpesAbout";
 
 /**
  * Reusable Registry of About Section Layouts.
@@ -32,6 +33,7 @@ const ABOUT_LAYOUTS = {
   iim: IimAbout,
   uu: UuAbout,
   ssbm: SsbmAbout,
+  upes: UpesAbout,
   liverpool: LiverpoolAbout,
   rushford: RushfordAbout,
   esgci: EsgciAbout,

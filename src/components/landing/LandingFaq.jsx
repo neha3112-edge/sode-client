@@ -37,6 +37,49 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
     brand.slug === "iim" ||
     brand.faqLayout === "iim";
 
+  const isUpes =
+    brand.slug === "upes" ||
+    brand.faqLayout === "upes";
+
+  // ==========================================
+  // Layout: UPES Online FAQ
+  // ==========================================
+  if (isUpes) {
+    return (
+      <section id="faqs" className="scroll-mt-24">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-10">
+          <p id="faq-subh">{brand.faqSubtitle || "FAQ'S"}</p>
+          <h3>{brand.faqTitle || "Frequently Asked Questions"}</h3>
+
+          <div className="space-y-1">
+            {faqs.map((faq, idx) => {
+              const isOpen = openIndex === idx;
+              return (
+                <div key={idx} className={`faq-item ${isOpen ? "active" : ""}`}>
+                  <button
+                    type="button"
+                    className="faq-question"
+                    onClick={() => toggleFaq(idx)}
+                  >
+                    <span>{faq.q || faq.question}</span>
+                    <span className="faq-icon">
+                      {isOpen ? "−" : "+"}
+                    </span>
+                  </button>
+                  {isOpen && (
+                    <div className="faq-answer">
+                      <p className="m-0">{faq.a || faq.answer}</p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   // ==========================================
   // Layout: Uttaranchal University (UU) FAQ
   // ==========================================

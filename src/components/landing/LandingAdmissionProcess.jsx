@@ -103,7 +103,7 @@ export default function LandingAdmissionProcess({
 
   // IIM Kozhikode Dedicated Layout
   if (brand.slug === "iim" || brand.admissionLayout === "iim") {
-    const steps = [
+    const steps = (admissionSteps && admissionSteps.length > 0) ? admissionSteps : [
       { num: 1, title: "Submit Form", desc: "Fill in and submit your application form online", colorClass: "orange" },
       { num: 2, title: "Expert's Counseling", desc: "You will receive a call from our expert counselor", colorClass: "blue" },
       { num: 3, title: "Choose University", desc: "Select the course & university according to your interest", colorClass: "pink" },
@@ -211,18 +211,36 @@ export default function LandingAdmissionProcess({
   return (
     <section
       id={brand.admissionProcessId || (brand.slug === "manipal" ? "apply" : brand.slug === "ggu" ? "how-to-apply" : "process")}
-      className={`apply-section ${brand.admissionSectionClass || "pt-10 sm:pt-3 lg:pt-4 pb-10 sm:pb-12 lg:pb-14 bg-white w-full select-none"}`}
+      className={`apply-section ${brand.admissionSectionClass || "pt-10 sm:pt-3 lg:pt-[36px] pb-10 sm:pb-12 lg:pb-14 bg-white w-full select-none"}`}
     >
-      <div className="w-full px-3 sm:px-6 md:px-8 lg:px-8 xl:px-12 2xl:px-16 max-w-[1400px] mx-auto">
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+            @media (min-width: 1024px) {
+              .apply-section,
+              [class*="landing-page"] .apply-section {
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+              }
+              .apply-section h2,
+              [class*="landing-page"] .apply-section h2 {
+                font-size: 30px !important;
+                line-height: 1.25 !important;
+              }
+            }
+          `,
+        }}
+      />
+      <div className="w-full px-3 sm:px-6 md:px-8 lg:px-[14px] max-w-[1400px] lg:max-w-none mx-auto box-border">
         {/* Heading */}
         {hasEnrollmentPrefix ? (
-          <h2 className="text-2xl sm:text-3xl lg:text-[34px] font-bold text-center tracking-tight mb-2.5 sm:mb-3 m-0">
+          <h2 className="text-2xl sm:text-3xl lg:text-[30px] xl:text-[32px] font-bold text-center tracking-tight mb-2.5 sm:mb-3 lg:mb-2 m-0">
             <span style={{ color: prefixColor }}>{titlePrefix} </span>
             <span style={{ color: highlightColor }}>{titleHighlight}</span>
           </h2>
         ) : (
           <h2
-            className="text-[22px] sm:text-[26px] lg:text-[30px] xl:text-[32px] font-medium text-center tracking-tight mb-2.5 sm:mb-3 m-0 leading-tight"
+            className="text-[22px] sm:text-[26px] lg:text-[30px] xl:text-[32px] font-medium text-center tracking-tight mb-2 sm:mb-2.5 lg:mb-2 m-0 leading-tight"
             style={{ color: headingColor }}
           >
             {headingText}
@@ -230,7 +248,7 @@ export default function LandingAdmissionProcess({
         )}
 
         {/* Subtitle */}
-        <p className="text-[14.5px] sm:text-[13.5px] lg:text-[14px] text-center text-[#555555] mb-5 sm:mb-6 lg:mb-7 max-w-[860px] mx-auto font-normal leading-relaxed m-0 px-2 sm:px-4">
+        <p className="text-[14.5px] sm:text-[13.5px] lg:text-[14px] text-center text-[#555555] mb-5 sm:mb-6 lg:mb-[24px] max-w-[860px] lg:max-w-[960px] mx-auto font-normal leading-relaxed m-0 px-2 sm:px-4">
           {subtitleText}
         </p>
 
@@ -242,7 +260,7 @@ export default function LandingAdmissionProcess({
             `grid ${rawSteps.length <= 4
               ? "grid-cols-2 lg:grid-cols-4 max-w-4xl mx-auto"
               : "grid-cols-2 md:grid-cols-3 lg:grid-cols-6"
-            } gap-2.5 sm:gap-3 lg:gap-2.5 xl:gap-3.5 2xl:gap-4 w-full`
+            } gap-2.5 sm:gap-3 lg:gap-3 xl:gap-3.5 2xl:gap-3.5 w-full`
           }
         >
           {rawSteps.map((step, idx) => {
@@ -272,8 +290,8 @@ export default function LandingAdmissionProcess({
               <Card
                 key={num}
                 variant="borderless"
-                styles={{ body: { padding: 0 } }}
-                className="rounded-[14px] sm:rounded-2xl overflow-hidden px-2 py-3 sm:px-2.5 sm:py-3.5 lg:px-2 lg:py-3.5 xl:px-3 xl:py-4 text-center flex flex-col items-center justify-start h-full min-h-[160px] sm:min-h-[165px] lg:min-h-[165px] xl:min-h-[175px] transition-all duration-200 hover:-translate-y-1 shadow-2xs hover:shadow-xs relative"
+                styles={{ body: { padding: 0, height: "100%" } }}
+                className="rounded-[14px] sm:rounded-2xl lg:rounded-[18px] overflow-hidden px-2 py-3 sm:px-2.5 sm:py-3.5 lg:px-3 lg:pt-5 lg:pb-4 text-center flex flex-col items-center justify-start h-full min-h-[160px] sm:min-h-[165px] lg:min-h-[185px] lg:h-[185px] transition-all duration-200 hover:-translate-y-1 shadow-2xs hover:shadow-xs relative box-border"
                 style={{
                   backgroundColor: cardBg,
                   borderBottom: `4px solid ${borderColor}`,
@@ -281,7 +299,7 @@ export default function LandingAdmissionProcess({
               >
                 {/* Circular Number Badge */}
                 <div
-                  className="w-9 h-9 sm:w-10 sm:h-10 lg:w-9 lg:h-9 xl:w-10 xl:h-10 rounded-full border-2 flex items-center justify-center font-bold text-[14px] sm:text-[15px] lg:text-[14px] xl:text-[15px] mb-2 sm:mb-2.5 shrink-0 shadow-2xs select-none mx-auto"
+                  className="w-9 h-9 sm:w-10 sm:h-10 lg:w-11 lg:h-11 rounded-full border-2 flex items-center justify-center font-bold text-[14px] sm:text-[15px] lg:text-[16px] mb-2 sm:mb-2.5 lg:mb-2.5 shrink-0 shadow-2xs select-none mx-auto"
                   style={{
                     backgroundColor: circleBg,
                     borderColor: themeColor,
@@ -293,7 +311,7 @@ export default function LandingAdmissionProcess({
 
                 {/* Step Title */}
                 <h3
-                  className="text-[13px] sm:text-[14px] lg:text-[13px] xl:text-[14.5px] 2xl:text-[15px] font-bold mb-1 sm:mb-1.5 leading-snug m-0 text-center"
+                  className="text-[13px] sm:text-[14px] lg:text-[15.5px] xl:text-[16px] font-bold mb-1 sm:mb-1.5 lg:mb-1.5 leading-snug m-0 text-center"
                   style={{ color: titleColor }}
                 >
                   {title}
@@ -302,7 +320,7 @@ export default function LandingAdmissionProcess({
                 {/* Step Description */}
                 {desc && (
                   <p
-                    className="text-[11px] sm:text-[11.5px] lg:text-[11px] xl:text-[11.5px] 2xl:text-[12px] leading-[1.35] sm:leading-[1.4] font-normal m-0 text-center line-clamp-3 max-w-[190px] mx-auto"
+                    className="text-[11px] sm:text-[11.5px] lg:text-[12.5px] xl:text-[13px] leading-[1.35] sm:leading-[1.4] lg:leading-[1.45] font-normal m-0 text-center line-clamp-3 lg:line-clamp-none max-w-[190px] lg:max-w-none mx-auto px-1"
                     style={{ color: descColor }}
                   >
                     {desc}

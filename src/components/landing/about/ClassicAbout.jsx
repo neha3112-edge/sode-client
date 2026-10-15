@@ -50,7 +50,7 @@ export default function ClassicAbout({ about = {}, brand = {}, onOpenApply }) {
         ...about.sectionStyle,
       }}
     >
-      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1240px] min-[1600px]:max-w-[1520px] min-[1920px]:max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 xl:gap-14 items-center">
           {/* Image Column */}
           {imageSrc && (

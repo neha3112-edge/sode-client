@@ -211,7 +211,7 @@ export default function LandingNavbar({
   if (isDesNavbar) {
     return (
       <header className="sticky top-0 z-50 bg-white border-b border-slate-200/80 shadow-[0_4px_20px_rgba(0,0,0,0.08)]">
-        <LandingContainer className="h-16 sm:h-20 flex items-center justify-between px-3 sm:px-6 max-w-[1360px]">
+        <LandingContainer className="h-16 sm:h-20 flex items-center justify-between px-3 sm:px-6 max-w-[1360px] min-[1600px]:max-w-[1520px] min-[1920px]:max-w-[1680px]">
 
           {/* DES Logo */}
           <div className="flex items-center min-w-0 py-1">
@@ -304,7 +304,13 @@ export default function LandingNavbar({
   ======================================================= */
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-slate-200/80 shadow-[0px_2px_10px_rgba(0,0,0,0.06)]">
+    <>
+      {(navbar.topbarText || brand.topbarText) && (
+        <div className="topbar">
+          <p className="m-0">{navbar.topbarText || brand.topbarText}</p>
+        </div>
+      )}
+      <header className="sticky top-0 z-50 bg-white border-b border-slate-200/80 shadow-[0px_2px_10px_rgba(0,0,0,0.06)]">
 
       <LandingContainer
         className="
@@ -766,6 +772,7 @@ export default function LandingNavbar({
         )}
 
     </header>
+    </>
   );
 }
 

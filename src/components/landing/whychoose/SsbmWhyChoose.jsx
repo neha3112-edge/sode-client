@@ -18,7 +18,7 @@ export default function SsbmWhyChoose({ whyChoose = [], brand = {}, onOpenApply 
         backgroundImage: `url(${brand.whyChooseBgImage || "/assets/all_universities_images/ssbm/Global.webp"})`,
       }}
     >
-      <div className="max-w-[1240px] mx-auto px-4 sm:px-6">
+      <div className="max-w-[1240px] min-[1600px]:max-w-[1520px] min-[1920px]:max-w-[1680px] mx-auto px-4 sm:px-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           {/* Left Spacer for Desktop Background Alignment */}
           <div className="hidden lg:block lg:col-span-4" />

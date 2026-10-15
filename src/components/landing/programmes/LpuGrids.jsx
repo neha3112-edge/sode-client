@@ -76,7 +76,7 @@ export default function LpuGrids({ programmes, brand = {}, onSelectCourseForBroc
 
   return (
     <section id="program" className="py-12 sm:py-16 bg-white">
-      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+      <div className="max-w-[1240px] min-[1600px]:max-w-[1520px] min-[1920px]:max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         {renderGroup(pgList, pgTitle, mainHeader)}
         {renderGroup(ugList, ugTitle)}
       </div>

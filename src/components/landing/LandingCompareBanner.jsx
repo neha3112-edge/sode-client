@@ -14,7 +14,7 @@ export default function LandingCompareBanner({ brand = {}, onOpenCompare }) {
     (isSmu
       ? "Sikkim Manipal University"
       : brand.shortName ||
-        (brand.name ? brand.name.replace(/\s*Online\s*$/i, "") : "Amity University"));
+      (brand.name ? brand.name.replace(/\s*Online\s*$/i, "") : "Amity University"));
 
 
   const isIim =
@@ -26,7 +26,10 @@ export default function LandingCompareBanner({ brand = {}, onOpenCompare }) {
       <div className="compare_Section" id="compare-universities">
         <div className="compare_box">
           <h2>Still Confused?</h2>
-          <h4>{brand.compareSubtitle || "Compare IIM Kozhikode University with Top World Renowned Universities"}</h4>
+          <h4>
+            {brand.compareSubtitle ||
+              `Compare ${universityName} with Top UGC-DEB Approved Universities`}
+          </h4>
           <Link
             href="#compare-universities"
             className="compare_btn"
@@ -38,8 +41,8 @@ export default function LandingCompareBanner({ brand = {}, onOpenCompare }) {
             <Image
               src={brand.arrowGif || "/assets/iim/arrow.gif"}
               alt="Compare universities"
-              width={60}
-              height={30}
+              width={70}
+              height={70}
               unoptimized
             />
           </Link>
@@ -48,7 +51,12 @@ export default function LandingCompareBanner({ brand = {}, onOpenCompare }) {
     );
   }
 
-  const sectionBg = brand.compareSectionBg || "bg-white";
+  const sectionBg = brand.compareSectionBg || "bg-[#f6f8fa]";
+  const sectionBgColor =
+    brand.compareSectionBgColor && brand.compareSectionBgColor !== "#ffffff"
+      ? brand.compareSectionBgColor
+      : "#f6f8fa";
+
   const bannerBg =
     brand.compareBannerBg ||
     (isSmu
@@ -57,40 +65,40 @@ export default function LandingCompareBanner({ brand = {}, onOpenCompare }) {
 
   return (
     <section
-      className={`compare_Section ${sectionBg} pt-8 sm:pt-14 pb-14 sm:pb-16 select-none`}
-      style={{ backgroundColor: brand.compareSectionBgColor || "#ffffff" }}
+      className={`compare_Section ${sectionBg} pt-8 sm:pt-9 md:pt-10 pb-8 sm:pb-9 md:pb-10 select-none`}
+      style={{ backgroundColor: sectionBgColor }}
     >
-      <div className={`${brand.compareBoxMaxWidth || "max-w-[1440px] 2xl:max-w-[1540px]"} mx-auto px-4 sm:px-8 lg:px-12`}>
+      <div className={`${brand.compareBoxMaxWidth || "max-w-[1760px] 2xl:max-w-[1840px]"} w-full mx-auto px-3 sm:px-5 md:px-6`}>
         <div
-          className="compare_box relative rounded-xl sm:rounded-2xl px-8 sm:px-16 pt-9 pb-18 sm:pt-12 sm:pb-16 text-center text-white transition-colors flex flex-col items-center justify-center shadow-md"
+          className="compare_box relative rounded-xl sm:rounded-2xl px-6 sm:px-12 pt-7 pb-8 sm:pt-8 sm:pb-9 md:pt-9 md:pb-11 text-center text-white transition-colors flex flex-col items-center justify-center shadow-md min-h-[150px] sm:min-h-[173px] md:min-h-[191px]"
           style={{ background: bannerBg }}
         >
           {/* Heading */}
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white tracking-tight m-0">
+          <h2 className="text-xl sm:text-2xl md:text-[30px] lg:text-[32px] font-semibold text-white tracking-normal leading-tight m-0">
             Still Confused?
           </h2>
 
           {/* Subtitle */}
-          <h3 className="text-xs sm:text-sm md:text-sm text-white/95 font-semibold tracking-normal mt-2 max-w-xs sm:max-w-xl mx-auto m-0 leading-snug px-1">
+          <h3 className="text-xs sm:text-sm md:text-[17px] text-white/95 font-normal tracking-normal mt-1 sm:mt-1.5 max-w-xl sm:max-w-3xl mx-auto m-0 leading-snug px-1">
             {brand.compareSubtitle ||
               brand.compareBannerSubtitle ||
               `Compare ${universityName} with Top UGC-DEB Approved Universities`}
           </h3>
 
           {/* Centered Overlapping Circular Button */}
-          <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 z-10">
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 z-10">
             <button
               type="button"
               onClick={() => onOpenCompare?.()}
               aria-label="Compare universities"
-              className="w-16 h-16 sm:w-18 sm:h-18 rounded-full bg-white flex items-center justify-center cursor-pointer hover:scale-105 active:scale-95 transition-all shadow-md border border-slate-100"
+              className="w-14 h-14 sm:w-16 sm:h-16 md:w-[68px] md:h-[68px] rounded-full bg-white flex items-center justify-center cursor-pointer hover:scale-105 active:scale-95 transition-all shadow-lg p-0.5 sm:p-0.5 border border-slate-100"
             >
-              <div className="relative w-full h-full rounded-full overflow-hidden">
+              <div className="relative w-full h-full rounded-full overflow-hidden flex items-center justify-center">
                 <Image
-                  src={brand.arrowGif || "/assets/images/arrow.gif"}
+                  src={brand.arrowGif || brand.arrowIcon || "/assets/all_universities_images/ggu/arrow.gif" || "/assets/images/arrow.gif"}
                   alt="Compare down arrow"
                   fill
-                  className="object-cover rounded-full"
+                  className="object-contain rounded-full scale-[1.13]"
                   unoptimized
                 />
               </div>

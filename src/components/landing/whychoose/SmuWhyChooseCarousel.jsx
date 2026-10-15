@@ -21,7 +21,7 @@ export default function SmuWhyChooseCarousel({ whyChoose = [], brand = {}, onOpe
         </h2>
       </div>
 
-      <div className="w-full max-w-[1140px] xl:max-w-[1200px] mx-auto px-6 sm:px-10 lg:px-12 relative">
+      <div className="w-full max-w-[1140px] xl:max-w-[1200px] min-[1600px]:max-w-[1440px] min-[1920px]:max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-12 relative">
         <Button
           type="text"
           onClick={() => carouselRef.current?.prev()}

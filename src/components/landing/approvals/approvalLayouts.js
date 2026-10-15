@@ -14,6 +14,7 @@ import SmuApprovals from "./layouts/SmuApprovals";
 import ApprovalsSlider from "./layouts/ApprovalsSlider";
 import MUApprovals from "./layouts/MUApprovals";
 import IIITBApprovals from "./layouts/IIITBApprovals";
+import UpesApprovals from "./layouts/UpesApprovals";
 
 /**
  * Layout Registry Mapping
@@ -34,6 +35,7 @@ export const APPROVAL_LAYOUTS = {
   ggu: GGUApprovals,
   mu: MUApprovals,
   iiitb: IIITBApprovals,
+  upes: UpesApprovals,
   split: ShooliniApprovals,
   vgu: VguApprovals,
   "vgu-badges": VguApprovals,
