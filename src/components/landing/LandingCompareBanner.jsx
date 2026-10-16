@@ -17,40 +17,6 @@ export default function LandingCompareBanner({ brand = {}, onOpenCompare }) {
       (brand.name ? brand.name.replace(/\s*Online\s*$/i, "") : "Amity University"));
 
 
-  const isIim =
-    brand.slug === "iim" ||
-    brand.compareLayout === "iim";
-
-  if (isIim) {
-    return (
-      <div className="compare_Section" id="compare-universities">
-        <div className="compare_box">
-          <h2>Still Confused?</h2>
-          <h4>
-            {brand.compareSubtitle ||
-              `Compare ${universityName} with Top UGC-DEB Approved Universities`}
-          </h4>
-          <Link
-            href="#compare-universities"
-            className="compare_btn"
-            onClick={(e) => {
-              e.preventDefault();
-              onOpenCompare?.();
-            }}
-          >
-            <Image
-              src={brand.arrowGif || "/assets/iim/arrow.gif"}
-              alt="Compare universities"
-              width={70}
-              height={70}
-              unoptimized
-            />
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   const sectionBg = brand.compareSectionBg || "bg-[#f6f8fa]";
   const sectionBgColor =
     brand.compareSectionBgColor && brand.compareSectionBgColor !== "#ffffff"
@@ -65,21 +31,21 @@ export default function LandingCompareBanner({ brand = {}, onOpenCompare }) {
 
   return (
     <section
-      className={`compare_Section ${sectionBg} pt-8 sm:pt-9 md:pt-10 pb-8 sm:pb-9 md:pb-10 select-none`}
+      className={`compare_Section ${sectionBg} pt-8 sm:pt-9 md:pt-15 pb-8 sm:pb-9 md:pb-14 select-none`}
       style={{ backgroundColor: sectionBgColor }}
     >
-      <div className={`${brand.compareBoxMaxWidth || "max-w-[1760px] 2xl:max-w-[1640px]"} w-full mx-auto px-3 sm:px-5 md:px-6`}>
+      <div className={`${brand.compareBoxMaxWidth || "max-w-[1700px] 2xl:max-w-[1900px]"} w-full mx-auto px-1 sm:px-3 md:px-14 lg:px-0px`}>
         <div
-          className="compare_box relative rounded-xl sm:rounded-2xl px-6 sm:px-12 pt-7 pb-8 sm:pt-8 sm:pb-9 md:pt-9 md:pb-11 text-center text-white transition-colors flex flex-col items-center justify-center shadow-md min-h-[150px] sm:min-h-[173px] md:min-h-[191px]"
+          className="compare_box relative rounded-xl sm:rounded-2xl px-6 sm:px-12 pt-7 pb-8 sm:pt-8 sm:pb-9 md:pt-9 md:pb-11 lg:pt-10 lg:pb-12 text-center text-white transition-colors flex flex-col items-center justify-center shadow-md min-h-[150px] sm:min-h-[173px] md:min-h-[191px]"
           style={{ background: bannerBg }}
         >
           {/* Heading */}
-          <h2 className="text-xl sm:text-2xl md:text-[30px] lg:text-[32px] font-semibold text-white tracking-normal leading-tight m-0">
+          <h2 className="text-xl sm:text-2xl md:text-[30px] lg:text-[32px] font-semibold text-white  leading-tight tracking-wide m-0 -translate-y-2">
             Still Confused?
           </h2>
 
           {/* Subtitle */}
-          <h3 className="text-xs sm:text-sm md:text-[17px] text-white/95 font-normal tracking-normal mt-1 sm:mt-1.5 max-w-xl sm:max-w-3xl mx-auto m-0 leading-snug px-1">
+          <h3 className="text-xs sm:text-sm md:text-[17px] text-white/95 font-normal tracking-wide mt-1 sm:mt-1.5 max-w-xl sm:max-w-3xl mx-auto m-0 leading-snug px-1 -translate-y-2">
             {brand.compareSubtitle ||
               brand.compareBannerSubtitle ||
               `Compare ${universityName} with Top UGC-DEB Approved Universities`}
