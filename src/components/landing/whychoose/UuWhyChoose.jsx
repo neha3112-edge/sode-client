@@ -22,11 +22,11 @@ export default function UuWhyChoose({ whyChoose = [], brand = {}, onOpenApply })
       className="w-full select-none py-10 sm:py-16 lg:py-20 scroll-mt-20 text-white"
       style={{ backgroundColor: bg }}
     >
-      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1240px] min-[1600px]:max-w-[1520px] min-[1920px]:max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-center">
           {/* Left: Student Image */}
           <div className="lg:col-span-5 flex justify-center">
-            <div className="relative w-full max-w-[360px] sm:max-w-[420px] aspect-[4/4.5] rounded-[24px] sm:rounded-[32px] overflow-hidden shadow-2xl">
+            <div className="relative w-full max-w-[360px] sm:max-w-[420px] aspect-[503/600] rounded-[24px] sm:rounded-[28px] overflow-hidden shadow-2xl">
               <Image
                 src={studentImage}
                 alt={title}
@@ -40,8 +40,26 @@ export default function UuWhyChoose({ whyChoose = [], brand = {}, onOpenApply })
 
           {/* Right: Text + 2-Column Icon Grid + Apply Button */}
           <div className="lg:col-span-7 flex flex-col justify-center text-left">
-            <h2 className="text-[22px] sm:text-[28px] lg:text-[32px] font-bold text-white leading-tight m-0 mb-3">
-              {title} <span style={{ color: accentColor }}>{highlight}</span>
+            <h2 className="text-[20px] sm:text-[26px] lg:text-[30px] font-bold text-white leading-tight m-0 mb-3 text-left">
+              {/* Mobile (< sm): 3 lines */}
+              <span className="block sm:hidden">
+                <span className="block">Uttaranchal University</span>
+                <span className="block">
+                  Benefits in the{" "}
+                  <span style={{ color: accentColor }}>Online Degree</span>
+                </span>
+                <span className="block" style={{ color: accentColor }}>
+                  Programs
+                </span>
+              </span>
+
+              {/* Laptop & Desktop (>= sm): exact 2 lines from reference Image 1 */}
+              <span className="hidden sm:inline">
+                Uttaranchal University Benefits in
+                <br className="hidden sm:block" />
+                the{" "}
+                <span style={{ color: accentColor }}>Online Degree Programs</span>
+              </span>
             </h2>
 
             {description && (

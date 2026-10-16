@@ -170,7 +170,7 @@ export default function LandingDegree({
         id="certificate"
         className="py-16 sm:py-24 bg-white select-none scroll-mt-20"
       >
-        <div className="max-w-[1260px] mx-auto px-5 sm:px-6 lg:px-8">
+        <div className="max-w-[1260px] min-[1600px]:max-w-[1440px] mx-auto px-5 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
             {/* Left Degree Image */}
             <div className="lg:col-span-6 flex justify-center lg:justify-start">
@@ -216,6 +216,53 @@ export default function LandingDegree({
                   <span className="text-[14px] leading-none">➔</span>
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  const isEsgci =
+    brand.degreeLayout === "esgci" || brand.slug === "esgci";
+
+  if (isEsgci) {
+    return (
+      <section
+        id="sample-degree"
+        className="degree-section py-10 sm:py-16 bg-white select-none scroll-mt-20"
+      >
+        <div className="max-w-[1140px] min-[1600px]:max-w-[1440px] mx-auto px-4 sm:px-6">
+          <div className="degree grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
+            {/* Degree display */}
+            <div className="flex justify-center">
+              <div className="relative w-full max-w-[440px] shadow-[0_0_5px_2px_#ccc] rounded-[4px] overflow-hidden bg-white">
+                <Image
+                  src={image || "/assets/all_universities_images/esgci/degree-ESGCI.webp"}
+                  alt={title || "ESGCI Online DBA Degree"}
+                  width={600}
+                  height={420}
+                  className="w-full h-auto object-contain"
+                  priority
+                />
+              </div>
+            </div>
+
+            {/* Degree info */}
+            <div className="degree-info text-left">
+              <h2 className="text-[22px] sm:text-[30px] lg:text-[35px] font-bold text-[#04903c] leading-tight m-0 mb-3">
+                {title || "ESGCI Online DBA Degree"}
+              </h2>
+              <p className="text-[13.5px] sm:text-[14px] text-[#333333] leading-relaxed mb-6 font-normal">
+                {description}
+              </p>
+              <button
+                type="button"
+                onClick={() => onOpenApply?.()}
+                className="enquireNowBtn px-7 py-2.5 bg-[#fff000] hover:bg-[#ebd800] text-black font-bold text-[15px] sm:text-[16px] rounded-[5px] transition-all border-none cursor-pointer active:scale-95 shadow-sm"
+              >
+                {buttonText || "Get Degree"}
+              </button>
             </div>
           </div>
         </div>
@@ -623,15 +670,15 @@ export default function LandingDegree({
   return (
     <section
       id="degree"
-      className={`select-none ${isGgu ? "bg-[#F6F6F6] pt-2 pb-14 sm:pb-16" : "py-10 sm:py-14 bg-[#F3F3F8]"
+      className={`select-none ${isGgu ? "bg-[#F6F6F6] pt-2 pb-14 sm:pb-16" : "py-12 sm:py-16 bg-[#f4f7fb]"
         }`}
       style={degreeInfo.sectionBg ? { backgroundColor: degreeInfo.sectionBg } : {}}
     >
       <LandingContainer>
         <div
-          className={`max-w-[1140px] mx-auto ${isTransparentCard
+          className={`max-w-[1140px] min-[1600px]:max-w-[1360px] min-[1920px]:max-w-[1480px] mx-auto ${isTransparentCard
               ? "bg-transparent px-5 sm:px-8 lg:px-10 py-2 shadow-none border-none"
-              : "bg-white rounded-[16px] sm:rounded-[24px] shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-slate-100/80 p-4 sm:p-8 lg:p-12"
+              : "bg-white rounded-[8px] sm:rounded-[12px] shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-slate-100/80 p-6 sm:p-10 lg:p-12"
             }`}
           style={
             !isTransparentCard && degreeInfo.cardBackground
@@ -639,7 +686,7 @@ export default function LandingDegree({
               : {}
           }
         >
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             {/* Image Column */}
             <div
               className={`lg:col-span-5 flex justify-center ${isImageLeft ? "order-1 lg:order-1" : "order-2 lg:order-2"
@@ -653,6 +700,8 @@ export default function LandingDegree({
                         key={idx}
                         className={`relative w-full ${isTransparentCard
                             ? "max-w-[360px] sm:max-w-[420px] aspect-square mx-auto"
+                            : isGgu
+                            ? "max-w-[380px] sm:max-w-[440px] aspect-[583/499]"
                             : "h-[250px] sm:h-[300px] rounded-[10px] overflow-hidden shadow-lg border border-slate-200 bg-white"
                           }`}
                       >
@@ -660,8 +709,8 @@ export default function LandingDegree({
                           src={imgSrc}
                           alt={`Sample Degree ${idx + 1}`}
                           fill
-                          className="object-contain"
-                          sizes="(max-width: 1024px) 360px, 420px"
+                          className={isGgu ? "object-contain" : "object-contain p-2"}
+                          sizes="(max-width: 1024px) 380px, 440px"
                         />
                       </div>
                     ))}
@@ -671,6 +720,8 @@ export default function LandingDegree({
                 <div
                   className={`relative w-full ${isTransparentCard
                       ? "max-w-[360px] sm:max-w-[420px] aspect-square mx-auto"
+                      : isGgu
+                      ? "max-w-[360px] sm:max-w-[410px] aspect-[583/499]"
                       : "max-w-[340px] sm:max-w-[420px] h-[250px] sm:h-[300px] rounded-[10px] overflow-hidden shadow-lg border border-slate-200 bg-white"
                     }`}
                 >
@@ -678,9 +729,9 @@ export default function LandingDegree({
                     src={image}
                     alt="Sample Degree"
                     fill
+                    className={isGgu ? "object-contain" : "object-contain p-2"}
+                    sizes="(max-width: 1024px) 360px, 410px"
                     priority
-                    className="object-contain"
-                    sizes="(max-width: 1024px) 360px, 420px"
                   />
                 </div>
               )}

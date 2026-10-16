@@ -147,20 +147,73 @@ export const amityData = {
     approvalsBg: "#fff5c4",
     approvalsUniTitle: "Amity University Online",
     approvalsTitle: "Recognition and Approvals",
-    approvalsBannerBg: "#fdb913",
-    approvalsHeaderColor: "#000000",
-    approvalsBg: "#fff9db",
-    approvalsCircleBorder: "#fdb913",
+
+    /* =====================================================
+       PROGRAMMES CONFIGURATION
+    ===================================================== */
+    programmesMobileStack: true,
+    stickyCtaLayout: "default",
+    stickyBrochureIcon: "whatsapp",
+    stickyApplyStyle: "yellow",
+    showFloatingCallOnMobile: true,
+
+    /* =====================================================
+       ABOUT & WHY CHOOSE CONFIGURATION
+    ===================================================== */
+    aboutLayout: "classic",
+    whyChooseLayout: "classic",
+    whyChooseTitle: "Why Choose Amity University Online for Degree Courses",
+
+    /* =====================================================
+       SECTION ORDER (Matching distanceeducationschool.com/amity/)
+    ===================================================== */
+
+    sectionOrder: [
+      "approvals",
+      "programmes",
+      "about",
+      "stats",
+      "whyChoose",
+      "admissionProcess",
+      "faqs",
+      "footerForm",
+      "compareBanner",
+    ],
+
+    /* =====================================================
+       HERO
+    ===================================================== */
+
     hero: {
-      backgroundImage: "/assets/images/amity_hero_banner.jpg",
-      backgroundPosition: "center center",
-      backgroundSize: "cover",
+      backgroundImage:
+        "/assets/all_universities_images/amity/amity-bg-final.webp",
+
+      backgroundPosition:
+        "center center",
+
+      backgroundSize:
+        "cover",
+
+      backgroundRepeat:
+        "no-repeat",
+
+      mobileBackgroundImage:
+        "/assets/all_universities_images/amity/Mobile-bg-amity.webp",
+
+      mobileBackgroundPosition:
+        "center top",
+
+      mobileBackgroundSize:
+        "cover",
+
+      mobileImage:
+        "/assets/all_universities_images/amity/university.webp",
+
       studentImage: null,
-      mobileStudentImage: "/assets/all_universities_images/amity/university.webp",
-      mobileStudentImageWrapperClassName: "block lg:hidden w-full max-w-[440px] mx-auto rounded-[16px] overflow-hidden my-3.5 shadow-md",
-      mobileStudentImageClassName: "w-full h-auto object-cover block rounded-[16px]",
 
       noOverlay: true,
+      mobileAlign: "left",
+
       backgroundColor: "#ffffff",
 
       headingColor: "#004172",
@@ -561,7 +614,18 @@ export const amityData = {
     image: "/assets/all_universities_images/amity/Amity-About.png",
     imagePosition: "left",
     buttonText: "Apply Now",
+    backgroundColor: "#ffffff",
+    titleColor: "#08417b",
+    textColor: "#333333",
+    buttonColor: "#08417b",
+    buttonTextColor: "#08417b",
+    buttonBorderColor: "#08417b",
   },
+
+  /* =======================================================
+     WHY CHOOSE
+  ======================================================= */
+
   whyChoose: [
     {
       title: "International Recognition",

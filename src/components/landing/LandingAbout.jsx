@@ -36,6 +36,7 @@ const ABOUT_LAYOUTS = {
   iim: IimAbout,
   uu: UuAbout,
   ssbm: SsbmAbout,
+  upes: UpesAbout,
   liverpool: LiverpoolAbout,
   rushford: RushfordAbout,
   esgci: EsgciAbout,

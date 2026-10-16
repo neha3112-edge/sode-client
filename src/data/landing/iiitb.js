@@ -892,27 +892,31 @@ export const iiitbData = {
         <div key="iiitb-checklist-wrap" className="w-full flex flex-col items-center sm:items-start -translate-y-2 sm:translate-y-0">
           <div className="banner_lists text-left my-1.5 sm:my-2">
             <ul className="space-y-1.5 p-0 m-0 list-none font-semibold italic text-black text-[13.5px] sm:text-[14.5px]">
-              <li className="flex items-center gap-2">
-                <svg className="w-4 h-4 text-[#00cc00] shrink-0 fill-current" viewBox="0 0 24 24">
-                  <path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+              <li key="naac" className="flex items-center gap-2">
+                <svg className="w-[17px] h-[17px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="#00cc00" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 11 12 14 22 4" />
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
                 </svg>
                 <span key="naac-text">NAAC A+ accredited</span>
               </li>
-              <li className="flex items-center gap-2">
-                <svg className="w-4 h-4 text-[#00cc00] shrink-0 fill-current" viewBox="0 0 24 24">
-                  <path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+              <li key="cert" className="flex items-center gap-2">
+                <svg className="w-[17px] h-[17px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="#00cc00" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 11 12 14 22 4" />
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
                 </svg>
                 <span key="cert-text">6+ Certification courses</span>
               </li>
-              <li className="flex items-center gap-2">
-                <svg className="w-4 h-4 text-[#00cc00] shrink-0 fill-current" viewBox="0 0 24 24">
-                  <path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+              <li key="collab" className="flex items-center gap-2">
+                <svg className="w-[17px] h-[17px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="#00cc00" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 11 12 14 22 4" />
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
                 </svg>
                 <span key="collab-text">Partnership of IIIT &amp; IIM Udaipur</span>
               </li>
-              <li className="flex items-center gap-2">
-                <svg className="w-4 h-4 text-[#00cc00] shrink-0 fill-current" viewBox="0 0 24 24">
-                  <path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+              <li key="duration" className="flex items-center gap-2">
+                <svg className="w-[17px] h-[17px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="#00cc00" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 11 12 14 22 4" />
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
                 </svg>
                 <span key="dur-text">5-14 Months</span>
               </li>

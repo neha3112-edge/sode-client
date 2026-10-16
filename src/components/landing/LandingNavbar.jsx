@@ -82,26 +82,21 @@ export default function LandingNavbar({
     "/assets/images/sode_icon.png";
 
   const shouldShowSodeLogo =
-    showSodeLogo === true ||
-    (
-      showSodeLogo !== false &&
-      navbar.hideSodeLogo !== true &&
-      Boolean(
-        activeSodeIcon ||
-        navbar.sodeIcon ||
-        slug === "manipal" ||
-        slug === "shoolini"
-      )
-    );
+    showSodeLogo !== false &&
+    navbar.hideSodeLogo !== true &&
+    Boolean(activeSodeIcon);
+
+  const shouldShowSodeLogoOnLeftOnMobile =
+    !shouldShowUniversityLogo ||
+    navbar.sodeOnLeftMobile === true;
 
   const isCouponVisible =
     showCouponBtn !== false &&
     showCouponButton !== false;
 
-  const isGalgotias = slug === "galgotias" || navbar.navbarVariant === "galgotias";
-
   const isDesNavbar =
-    navbar.navbarVariant === "des" && !isGalgotias;
+    navbar.navbarVariant === "des" ||
+    slug === "galgotias";
 
   /* =======================================================
      SCROLL TO HERO
@@ -210,69 +205,13 @@ export default function LandingNavbar({
   };
 
   /* =======================================================
-     GALGOTIAS NAVBAR
-  ======================================================= */
-
-  if (isGalgotias) {
-    return (
-      <header className="navbar sticky top-0 z-50 bg-white shadow-[0_5px_20px_rgba(0,0,0,0.12)] border-b border-slate-100">
-        <div className="top-navbar max-w-[1150px] mx-auto h-[70px] px-3 sm:px-4 flex items-center justify-between">
-          <div className="logo flex items-center max-w-[420px]">
-            <Link
-              href="#hero-section"
-              onClick={handleScrollTop}
-              className="des_logo flex items-center cursor-pointer"
-              aria-label="Distance Education School"
-            >
-              <img
-                src={navbar.sodeIcon || "/assets/galgotias/sode-icon.png"}
-                alt="SODE"
-                className="w-[125px] sm:w-[170px] h-auto object-contain"
-              />
-            </Link>
-            <div className="hidden sm:block h-[38px] w-[1px] bg-[#cccccc] mx-2 sm:mx-3 shrink-0" />
-            <Link
-              href="#hero-section"
-              onClick={handleScrollTop}
-              className="mang_logo flex items-center cursor-pointer"
-              aria-label="Galgotias University Online"
-            >
-              <img
-                src={navbar.logo || "/assets/galgotias/logo-GU-online.png"}
-                alt="Galgotias University Online"
-                className="w-[135px] sm:w-[185px] h-auto object-contain"
-              />
-            </Link>
-          </div>
-
-          <button
-            type="button"
-            onClick={handleCouponClick}
-            className="coupon-btn-main hidden sm:inline-flex items-center gap-2 px-3.5 py-1.5 text-[13.5px] font-bold text-white rounded-[8px] cursor-pointer border-none shadow-[0_10px_25px_rgba(46,204,113,0.4)] transition-all hover:scale-105 active:scale-95"
-            style={{
-              background: "linear-gradient(135deg, #2ecc71, #27ae60)",
-            }}
-          >
-            <img
-              src="/assets/galgotias/gift.gif"
-              alt="Gift"
-              className="w-5 h-5 rounded-full object-contain"
-            />
-            <span>Scholarship Coupon Code</span>
-          </button>
-        </div>
-      </header>
-    );
-  }
-
-  /* =======================================================
      DES NAVBAR
   ======================================================= */
 
   if (isDesNavbar) {
     return (
       <header className="sticky top-0 z-50 bg-white border-b border-slate-200/80 shadow-[0_4px_20px_rgba(0,0,0,0.08)]">
-        <LandingContainer className="h-16 sm:h-20 flex items-center justify-between px-3 sm:px-6 max-w-[1360px]">
+        <LandingContainer className="h-16 sm:h-20 flex items-center justify-between px-3 sm:px-6 max-w-[1360px] min-[1600px]:max-w-[1520px] min-[1920px]:max-w-[1680px]">
 
           {/* DES Logo */}
           <div className="flex items-center min-w-0 py-1">
@@ -365,19 +304,17 @@ export default function LandingNavbar({
   ======================================================= */
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-slate-200/80 shadow-[0px_2px_10px_rgba(0,0,0,0.06)]">
-      {Boolean(navbar.topbarText) && (
-        <div
-          className="w-full text-center py-2 px-3 text-[10.5px] sm:text-[13px] md:text-[14px] font-medium text-white select-none leading-snug"
-          style={{ backgroundColor: navbar.topbarBg || "#5a359d" }}
-        >
-          <p className="m-0 p-0">{navbar.topbarText}</p>
+    <>
+      {(navbar.topbarText || brand.topbarText) && (
+        <div className="topbar">
+          <p className="m-0">{navbar.topbarText || brand.topbarText}</p>
         </div>
       )}
+      <header className="sticky top-0 z-50 bg-white border-b border-slate-200/80 shadow-[0px_2px_10px_rgba(0,0,0,0.06)]">
 
-      <LandingContainer
-        className="
-          h-16
+        <LandingContainer
+          className="
+          h-[80px]
           sm:h-20
           lg:h-22
           flex
@@ -386,131 +323,131 @@ export default function LandingNavbar({
           px-3
           sm:px-6
         "
-      >
+        >
 
-        {/* =================================================
+          {/* =================================================
             LEFT: SODE + UNIVERSITY LOGO
             Positioning remains reusable/fixed.
         ================================================= */}
 
-        <div className={`flex items-center min-w-0 shrink-0 ${slug === "lpu" || slug === "cu" ? "ml-0 sm:ml-4" : "ml-4"}`}>
+          <div className="flex items-center min-w-0 shrink-0 ml-0 sm:ml-1 md:ml-2">
 
-          {/* SODE ICON */}
-          {shouldShowSodeLogo && (
-            <Link
-              href="#hero"
-              onClick={handleScrollTop}
-              className={`flex items-center shrink-0 cursor-pointer lg:translate-x-8 ${
-                slug === "vgu" || slug === "uu" || slug === "lpu" || slug === "cu" ? "hidden md:flex" : ""
-              }`}
-              aria-label="Distance Education School"
-            >
-              <div
-                className="
-                  relative
-                  w-9
-                  sm:w-11
-                  lg:w-20
-                  h-9
-                  sm:h-11
-                  lg:h-12
-                  shrink-0
-                "
-              >
-                <Image
-                  src={activeSodeIcon}
-                  alt="SODE"
-                  fill
-                  priority
-                  className="object-contain object-left"
-                  sizes="(max-width: 640px) 36px, 80px"
-                />
-              </div>
-            </Link>
-          )}
-
-          {/* DIVIDER */}
-          {shouldShowSodeLogo &&
-            shouldShowUniversityLogo &&
-            !navbar.hideNavDivider &&
-            navbar.showNavDivider !== false && (
-              <div
+            {/* SODE ICON */}
+            {shouldShowSodeLogo && (
+              <Link
+                href="#hero"
+                onClick={handleScrollTop}
                 className={`
+                items-center shrink-0 cursor-pointer
+                ${shouldShowSodeLogoOnLeftOnMobile
+                    ? "flex"
+                    : "hidden md:flex"
+                  }
+              `}
+                aria-label="Distance Education School"
+              >
+                <div
+                  className={`
+                  relative
+                  shrink-0
+                  ${shouldShowSodeLogoOnLeftOnMobile
+                      ? "w-11 sm:w-13 lg:w-[76px] h-11 sm:h-12 lg:h-[58px]"
+                      : "w-10 sm:w-12 md:w-14 lg:w-[76px] h-10 sm:h-12 md:h-13 lg:h-[58px]"
+                    }
+                `}
+                >
+                  <Image
+                    src={
+                      activeSodeIcon
+                    }
+                    alt="SODE"
+                    fill
+                    priority
+                    className="object-contain object-left"
+                    sizes="(max-width: 640px) 48px, 100px"
+                  />
+                </div>
+              </Link>
+            )}
+
+            {/* DIVIDER on DESKTOP */}
+            {shouldShowSodeLogo &&
+              shouldShowUniversityLogo &&
+              !navbar.hideNavDivider &&
+              navbar.showNavDivider !== false && (
+                <div
+                  className="
+                  hidden md:block
                   h-7
                   sm:h-9
-                  lg:h-11
+                  md:h-10
+                  lg:h-[50px]
                   w-px
                   bg-[#d1d5db]
                   mx-2
                   sm:mx-3
-                  lg:mx-4
+                  lg:mx-3.5
                   shrink-0
-                  ${slug === "vgu" || slug === "uu" || slug === "lpu" || slug === "cu" ? "hidden md:block" : ""}
-                `}
-              />
-            )}
+                "
+                />
+              )}
 
-          {/* UNIVERSITY LOGO */}
-          {shouldShowUniversityLogo && (
-            <Link
-              href="#hero"
-              onClick={handleScrollTop}
-              className="flex items-center min-w-0 shrink-0 cursor-pointer"
-              aria-label={name}
-            >
-              <div
-                className={`
+            {/* UNIVERSITY LOGO */}
+            {shouldShowUniversityLogo && (
+              <Link
+                href="#hero"
+                onClick={handleScrollTop}
+                className="flex items-center min-w-0 shrink-0 cursor-pointer"
+                aria-label={name}
+              >
+                <div
+                  className={`
                   relative
                   shrink-0
                   ${navbar.logoWrapperClassName ||
-                  (slug === "cu"
-                    ? "w-[210px] sm:w-[260px] lg:w-[290px] h-[48px] sm:h-[56px] lg:h-[62px]"
-                    : slug === "vgu"
-                    ? "w-48 sm:w-56 lg:w-60 h-9 sm:h-11 lg:h-12"
-                    : slug === "lpu"
-                    ? "w-44 sm:w-52 lg:w-60 h-10 sm:h-11 lg:h-12"
-                    : "w-36 sm:w-48 lg:w-60 h-9 sm:h-11 lg:h-12")
-                  }
+                    brand.logoWrapperClassName ||
+                    "w-48 sm:w-56 md:w-64 lg:w-[270px] h-12 sm:h-13 md:h-14 lg:h-[58px]"
+                    }
                 `}
-                style={navbar.logoWrapperStyle}
-              >
-                <Image
-                  src={logo}
-                  alt={name}
-                  fill
-                  priority
-                  className={`
+                  style={navbar.logoWrapperStyle}
+                >
+                  <Image
+                    src={logo}
+                    alt={name}
+                    fill
+                    priority
+                    className={`
                     object-contain
                     object-left
                     ${navbar.logoClassName || ""}
                   `}
-                  sizes="(max-width: 640px) 200px, 320px"
-                  style={navbar.logoStyle}
-                />
-              </div>
-            </Link>
-          )}
+                    sizes="(max-width: 640px) 210px, 320px"
+                    style={navbar.logoStyle}
+                  />
+                </div>
+              </Link>
+            )}
 
-        </div>
+          </div>
 
-        {/* =================================================
+          {/* =================================================
             RIGHT: NAVIGATION + CTA
         ================================================= */}
 
-        <div className="shrink-0 pl-2 mr-1.5 sm:mr-3 flex items-center gap-4 sm:gap-6 lg:gap-8">
+          <div className="shrink-0 pl-2 mr-1.5 sm:mr-3 flex items-center gap-4 sm:gap-6 lg:gap-8">
 
-          {/* NAV LINKS */}
-          {navbar.navLinks?.length > 0 && (
-            <ul className="hidden md:flex items-center gap-5 lg:gap-8 header_menu_list list-none m-0 p-0">
+            {/* NAV LINKS */}
+            {navbar.navLinks?.length > 0 && (
+              <ul className="hidden md:flex items-center gap-5 lg:gap-8 header_menu_list list-none m-0 p-0">
 
-              {navbar.navLinks.map((link, idx) => (
-                <li key={`${link.label}-${idx}`}>
-                  <a
-                    href={link.href}
-                    onClick={(e) =>
-                      handleNavLinkClick(e, link)
-                    }
-                    className="
+                {navbar.navLinks.map((link, idx) => (
+                  <li key={`${link.label}-${idx}`}>
+                    <a
+                      href={link.href}
+                      onClick={(e) =>
+                        handleNavLinkClick(e, link)
+                      }
+                      className="
                       text-[#111111]
                       hover:text-[#0055b8]
                       font-semibold
@@ -518,117 +455,105 @@ export default function LandingNavbar({
                       lg:text-[15.5px]
                       transition-colors
                     "
-                  >
-                    {link.label}
-                  </a>
-                </li>
-              ))}
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
 
-            </ul>
-          )}
+              </ul>
+            )}
 
-          {/* VGU, UU, LPU & CU MOBILE SODE LOGO (RIGHT SIDE) */}
-          {(slug === "vgu" || slug === "uu" || slug === "lpu" || slug === "cu") && (
-            <Link
-              href="#hero"
-              onClick={handleScrollTop}
-              className="des_logo flex md:hidden items-center shrink-0 cursor-pointer mr-0.5"
-              aria-label="Back to Top"
-            >
-              <div className="relative w-14 sm:w-16 h-12 sm:h-14">
-                <Image
-                  src={
-                    sodeIcon ||
-                    (slug === "cu"
-                      ? "/assets/cu/sode-icon.png"
-                      : slug === "vgu"
-                      ? "/assets/all_universities_images/vgu/sode-icon.png"
-                      : slug === "lpu"
-                      ? "/assets/all_universities_images/lpu/sode-icon.png"
-                      : "/assets/all_universities_images/uu/sode-icon.png")
-                  }
-                  alt="SODE"
-                  fill
-                  priority
-                  className="object-contain object-right"
-                  sizes="64px"
-                />
-              </div>
-            </Link>
-          )}
+            {/* MOBILE SODE LOGO (Global across all landing pages) */}
+            {shouldShowSodeLogo && !shouldShowSodeLogoOnLeftOnMobile && (
+              <Link
+                href="#hero"
+                onClick={handleScrollTop}
+                className="des_logo flex md:hidden items-center shrink-0 cursor-pointer"
+                aria-label="Distance Education School"
+              >
+                <div className="relative w-16 sm:w-16 h-12 sm:h-12">
+                  <Image
+                    src={activeSodeIcon}
+                    alt="SODE"
+                    fill
+                    priority
+                    className="object-contain object-right"
+                    sizes="100px"
+                  />
+                </div>
+              </Link>
+            )}
 
-          {/* SCHOLARSHIP COUPON / BADGE */}
-          {isCouponVisible ? (
-            <div
-              className={`
-                ${slug === "uu" || slug === "vgu" || slug === "lpu" || slug === "cu" || slug === "smu" || slug === "upes"
-                  ? "hidden md:inline-flex"
-                  : "inline-flex"
-                }
+            {/* SCHOLARSHIP COUPON / BADGE (Desktop only) */}
+            {isCouponVisible ? (
+              <div
+                className={`
+                hidden md:inline-flex
                 ${navbar.couponWrapperBg ||
-                  navbar.showCouponPillWrapper
-                  ? "p-1.5 sm:p-2 rounded-[12px] sm:rounded-[14px] items-center justify-center transition-all"
-                  : "items-center"
-                }
-              `}
-              style={
-                navbar.couponWrapperBg
-                  ? {
-                    backgroundColor:
-                      navbar.couponWrapperBg,
+                    navbar.showCouponPillWrapper
+                    ? "p-1.5 sm:p-2 rounded-[12px] sm:rounded-[14px] items-center justify-center transition-all"
+                    : "items-center"
                   }
-                  : navbar.showCouponPillWrapper
+              `}
+                style={
+                  navbar.couponWrapperBg
                     ? {
                       backgroundColor:
-                        "#dcfce7",
+                        navbar.couponWrapperBg,
                     }
-                    : {}
-              }
-            >
-              <Button
-                type="text"
-                onClick={handleCouponClick}
-                aria-label="Get Scholarship Coupon Code"
-                style={{
-                  ...(couponBtnBg ||
-                    navbar.couponBtnBg ||
-                    navbar.themeGradient
-                    ? {
-                      "--coupon-btn-bg":
-                        couponBtnBg ||
-                        navbar.couponBtnBg ||
-                        navbar.themeGradient,
-                    }
-                    : couponButtonColor
+                    : navbar.showCouponPillWrapper
                       ? {
                         backgroundColor:
-                          couponButtonColor,
+                          "#dcfce7",
                       }
-                      : {
-                        backgroundColor:
-                          "#22c55e",
-                      }),
+                      : {}
+                }
+              >
+                <Button
+                  type="text"
+                  onClick={handleCouponClick}
+                  aria-label="Get Scholarship Coupon Code"
+                  style={{
+                    ...(couponBtnBg ||
+                      navbar.couponBtnBg ||
+                      navbar.themeGradient
+                      ? {
+                        "--coupon-btn-bg":
+                          couponBtnBg ||
+                          navbar.couponBtnBg ||
+                          navbar.themeGradient,
+                      }
+                      : couponButtonColor
+                        ? {
+                          backgroundColor:
+                            couponButtonColor,
+                        }
+                        : {
+                          backgroundColor:
+                            "#22c55e",
+                        }),
 
-                  "--coupon-shadow-start":
-                    navbar.couponShadowColor ||
-                    "rgba(46, 204, 113, 0.65)",
+                    "--coupon-shadow-start":
+                      navbar.couponShadowColor ||
+                      "rgba(46, 204, 113, 0.65)",
 
-                  "--coupon-shadow-mid1":
-                    navbar.couponShadowColorMid1 ||
-                    "rgba(46, 204, 113, 0.42)",
+                    "--coupon-shadow-mid1":
+                      navbar.couponShadowColorMid1 ||
+                      "rgba(46, 204, 113, 0.42)",
 
-                  "--coupon-shadow-mid2":
-                    navbar.couponShadowColorMid2 ||
-                    "rgba(46, 204, 113, 0.22)",
+                    "--coupon-shadow-mid2":
+                      navbar.couponShadowColorMid2 ||
+                      "rgba(46, 204, 113, 0.22)",
 
-                  "--coupon-shadow-mid3":
-                    navbar.couponShadowColorMid3 ||
-                    "rgba(46, 204, 113, 0.08)",
+                    "--coupon-shadow-mid3":
+                      navbar.couponShadowColorMid3 ||
+                      "rgba(46, 204, 113, 0.08)",
 
-                  "--coupon-shadow-end":
-                    "rgba(46, 204, 113, 0)",
-                }}
-                className="
+                    "--coupon-shadow-end":
+                      "rgba(46, 204, 113, 0)",
+                  }}
+                  className="
                   coupon-btn-main
                   relative
                   inline-flex
@@ -657,14 +582,14 @@ export default function LandingNavbar({
                   active:scale-95
                   !h-auto
                 "
-              >
+                >
 
-                {/* Moving Light Green Box */}
-                <span className="moving-light-green-box" />
+                  {/* Moving Light Green Box */}
+                  <span className="moving-light-green-box" />
 
-                {/* Gift Icon */}
-                <span
-                  className="
+                  {/* Gift Icon */}
+                  <span
+                    className="
                     relative
                     -ml-1.5
                     sm:-ml-2.5
@@ -683,23 +608,23 @@ export default function LandingNavbar({
                     p-0
                     overflow-hidden
                   "
-                >
-                  <Image
-                    src={
-                      giftGif ||
-                      "/assets/images/gift.gif"
-                    }
-                    alt="Scholarship Gift"
-                    width={26}
-                    height={26}
-                    unoptimized
-                    className="w-5 h-5 sm:w-6 sm:h-6 object-contain"
-                  />
-                </span>
+                  >
+                    <Image
+                      src={
+                        giftGif ||
+                        "/assets/images/gift.gif"
+                      }
+                      alt="Scholarship Gift"
+                      width={26}
+                      height={26}
+                      unoptimized
+                      className="w-5 h-5 sm:w-6 sm:h-6 object-contain"
+                    />
+                  </span>
 
-                {/* Coupon Text */}
-                <span
-                  className="
+                  {/* Coupon Text */}
+                  <span
+                    className="
                     relative
                     z-10
                     tracking-wide
@@ -711,18 +636,18 @@ export default function LandingNavbar({
                     sm:text-[15px]
                     md:text-[15.5px]
                   "
-                >
-                  {couponButtonText}
-                </span>
+                  >
+                    {couponButtonText}
+                  </span>
 
-              </Button>
-            </div>
-          ) : (
-            !navbar.hideNavbarBadge &&
-            badgeText && (
-              <span
-                className="
-                  inline-block
+                </Button>
+              </div>
+            ) : (
+              !navbar.hideNavbarBadge &&
+              badgeText && (
+                <span
+                  className="
+                  hidden md:inline-block
                   text-[12px]
                   sm:text-base
                   md:text-xl
@@ -732,101 +657,100 @@ export default function LandingNavbar({
                   text-right
                   select-none
                 "
-                style={{
-                  color:
-                    primaryColor ||
-                    "#08417b",
-                }}
-              >
-                {badgeText}
-              </span>
-            )
-          )}
+                  style={{
+                    color:
+                      primaryColor ||
+                      "#08417b",
+                  }}
+                >
+                  {badgeText}
+                </span>
+              )
+            )}
 
-          {/* MOBILE MENU */}
-          {navbar.navLinks?.length > 0 && (
-            <button
-              type="button"
-              className={`
+            {/* MOBILE MENU */}
+            {navbar.navLinks?.length > 0 && (
+              <button
+                type="button"
+                className={`
                 md:hidden
                 p-2
-                rounded-md
+                rounded-lg
                 transition-colors
-                ${
-                  navbar.mobileMenuBtnBg || slug === "iiitb"
+                ${navbar.mobileMenuBtnBg || navbar.slug === "iiitb"
                     ? "text-white"
                     : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
-                }
+                  }
               `}
-              style={
-                navbar.mobileMenuBtnBg || slug === "iiitb"
-                  ? {
+                style={
+                  navbar.mobileMenuBtnBg || navbar.slug === "iiitb"
+                    ? {
                       backgroundColor:
                         navbar.mobileMenuBtnBg || primaryColor || "#002147",
                     }
-                  : {}
-              }
-              onClick={() =>
-                setIsMobileNavOpen(
-                  !isMobileNavOpen
-                )
-              }
-              aria-label="Toggle menu"
-              aria-expanded={isMobileNavOpen}
-            >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+                    : {}
+                }
+                onClick={() =>
+                  setIsMobileNavOpen(
+                    !isMobileNavOpen
+                  )
+                }
+                aria-label="Toggle menu"
+                aria-expanded={isMobileNavOpen}
               >
-                {isMobileNavOpen ? (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                ) : (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                )}
-              </svg>
-            </button>
-          )}
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  {isMobileNavOpen ? (
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2.5}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  ) : (
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2.5}
+                      d="M4 6h16M4 12h16M4 18h16"
+                    />
+                  )}
+                </svg>
+              </button>
+            )}
 
-        </div>
+          </div>
 
-      </LandingContainer>
+        </LandingContainer>
 
-      {/* =================================================
+        {/* =================================================
           MOBILE MENU DROPDOWN
       ================================================= */}
 
-      {navbar.navLinks?.length > 0 &&
-        isMobileNavOpen && (
-          <div className="md:hidden bg-white border-t border-slate-200 px-4 py-3 shadow-md">
-            <ul className="flex flex-col gap-2.5 list-none m-0 p-0">
+        {navbar.navLinks?.length > 0 &&
+          isMobileNavOpen && (
+            <div className="md:hidden bg-white border-t border-slate-200 px-4 py-3 shadow-md">
+              <ul className="flex flex-col gap-2.5 list-none m-0 p-0">
 
-              {navbar.navLinks.map(
-                (link, idx) => (
-                  <li
-                    key={`${link.label}-mobile-${idx}`}
-                  >
-                    <a
-                      href={link.href}
-                      onClick={(e) => {
-                        setIsMobileNavOpen(false);
-                        handleNavLinkClick(
-                          e,
-                          link
-                        );
-                      }}
-                      className="
+                {navbar.navLinks.map(
+                  (link, idx) => (
+                    <li
+                      key={`${link.label}-mobile-${idx}`}
+                    >
+                      <a
+                        href={link.href}
+                        onClick={(e) => {
+                          setIsMobileNavOpen(false);
+                          handleNavLinkClick(
+                            e,
+                            link
+                          );
+                        }}
+                        className="
                         block
                         py-1.5
                         text-[15px]
@@ -834,18 +758,19 @@ export default function LandingNavbar({
                         text-slate-800
                         hover:text-[#0055b8]
                       "
-                    >
-                      {link.label}
-                    </a>
-                  </li>
-                )
-              )}
+                      >
+                        {link.label}
+                      </a>
+                    </li>
+                  )
+                )}
 
-            </ul>
-          </div>
-        )}
+              </ul>
+            </div>
+          )}
 
-    </header>
+      </header>
+    </>
   );
 }
 
@@ -897,7 +822,6 @@ const NAV_TABS = [
     targets: [
       "approvals",
       "recognition",
-      "approval",
     ],
   },
   {
@@ -907,7 +831,6 @@ const NAV_TABS = [
       "recruiters",
       "placement",
       "partners",
-      "hiring-partner",
     ],
   },
   {
@@ -925,7 +848,6 @@ const NAV_TABS = [
       "admission",
       "admissionProcess",
       "enrollment",
-      "admission-process",
     ],
   },
   {
@@ -942,7 +864,6 @@ const NAV_TABS = [
     targets: [
       "faqs",
       "faq",
-      "fAQ",
     ],
   },
 ];

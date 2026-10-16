@@ -107,43 +107,29 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
 
   if (isUpes) {
     return (
-      <section id="faqs" className="py-10 sm:py-14 bg-white select-none border-b border-slate-100">
-        <div className="max-w-[900px] mx-auto px-4 sm:px-6">
-          <div className="text-center mb-6 sm:mb-8">
-            <p className="text-[13px] sm:text-[14px] font-bold text-[#555555] uppercase tracking-wider mb-1 m-0">
-              FAQ&apos;S
-            </p>
-            <h2 className="text-[20px] sm:text-[26px] lg:text-[28px] font-bold text-[#003399] tracking-tight leading-tight m-0">
-              {brand.faqTitle || "Frequently Asked Questions"}
-            </h2>
-          </div>
+      <section id="faqs" className="scroll-mt-24">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-10">
+          <p id="faq-subh">{brand.faqSubtitle || "FAQ'S"}</p>
+          <h3>{brand.faqTitle || "Frequently Asked Questions"}</h3>
 
-          <div className="space-y-3">
+          <div className="space-y-1">
             {faqs.map((faq, idx) => {
               const isOpen = openIndex === idx;
-              const questionText = faq.q || faq.question || "";
-              const answerText = faq.a || faq.answer || "";
-
               return (
-                <div
-                  key={idx}
-                  className="rounded-[8px] border border-slate-200 overflow-hidden bg-white shadow-2xs"
-                >
+                <div key={idx} className={`faq-item ${isOpen ? "active" : ""}`}>
                   <button
                     type="button"
+                    className="faq-question"
                     onClick={() => toggleFaq(idx)}
-                    className={`w-full py-3.5 px-4 sm:px-5 flex items-center justify-between text-left text-[14px] sm:text-[15px] font-semibold transition-colors cursor-pointer border-none ${
-                      isOpen ? "bg-[#ebebeb] text-[#000000]" : "bg-white text-[#222222] hover:bg-slate-50"
-                    }`}
                   >
-                    <span className="pr-4 leading-snug">{questionText}</span>
-                    <span className="text-[#555555] text-lg font-bold shrink-0">
+                    <span>{faq.q || faq.question}</span>
+                    <span className="faq-icon">
                       {isOpen ? "−" : "+"}
                     </span>
                   </button>
                   {isOpen && (
-                    <div className="p-4 sm:p-5 text-[12.5px] sm:text-[13.5px] text-[#444444] leading-[1.7] bg-white border-t border-slate-200">
-                      <p className="m-0">{answerText}</p>
+                    <div className="faq-answer">
+                      <p className="m-0">{faq.a || faq.answer}</p>
                     </div>
                   )}
                 </div>
@@ -155,6 +141,9 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
     );
   }
 
+  // ==========================================
+  // Layout: Uttaranchal University (UU) FAQ
+  // ==========================================
   const isCu =
     brand.slug === "cu" ||
     brand.faqLayout === "cu";
@@ -608,17 +597,18 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
   if (isSmu) {
     return (
       <section id="faqs" className="py-10 sm:py-14 lg:py-16 bg-white w-full select-none">
-        <div className="w-full px-4 sm:px-8 lg:px-12 xl:px-16 max-w-[1536px] 2xl:max-w-[1680px] mx-auto">
+        <div className="w-full px-4 sm:px-6 lg:px-8 max-w-[1240px] xl:max-w-[1300px] mx-auto">
           {/* Header: FAQ'S | Frequently Asked Questions */}
-          <div className="mb-5 sm:mb-7 text-left">
-            <h2 className="text-[24px] sm:text-[28px] lg:text-[32px] font-semibold text-[#212529] tracking-tight leading-[1.25] m-0 text-left">
-              <span className="block sm:inline">FAQ&apos;S | Frequently Asked</span>{" "}
-              <span className="block sm:inline">Questions</span>
+          <div className="mb-6 sm:mb-8 text-left">
+            <h2 className="text-2xl sm:text-[28px] lg:text-[32px] tracking-tight m-0 inline-flex items-center flex-wrap gap-1.5 sm:gap-2">
+              <span className="font-bold text-[#111827]">FAQ&apos;S</span>
+              <span className="text-[#9ca3af] font-normal mx-1">|</span>
+              <span className="font-normal text-[#111827]">Frequently Asked Questions</span>
             </h2>
           </div>
 
           {/* Cards List */}
-          <div className="space-y-2.5 sm:space-y-3 w-full">
+          <div className="space-y-3 sm:space-y-3.5 w-full">
             {faqs.map((faq, idx) => {
               const isOpen = openIndex === idx;
               const rawQuestion = faq.q.replace(/^Q\d+[\.\:\s]*/i, "");
@@ -632,19 +622,19 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
                   <button
                     type="button"
                     onClick={() => toggleFaq(idx)}
-                    className="w-full px-4 sm:px-5 py-3 sm:py-3.5 text-left flex items-center justify-between gap-3 cursor-pointer bg-[#f8f9fa] hover:bg-[#f1f3f5] transition-colors border-none m-0"
+                    className="w-full px-4 sm:px-5 py-3.5 sm:py-4 text-left flex items-center justify-between gap-4 cursor-pointer bg-[#f8f9fa] hover:bg-[#f1f3f5] transition-colors border-none m-0"
                     aria-expanded={isOpen}
                   >
-                    <span className="text-[13.5px] sm:text-[14.5px] font-semibold text-[#212529] leading-snug">
+                    <span className="text-[13.5px] sm:text-[14.5px] font-bold text-[#212529] leading-snug">
                       {formattedQuestion}
                     </span>
-                    <span className="font-normal text-[20px] sm:text-[22px] text-[#212529] leading-none shrink-0 ml-2 select-none">
-                      {isOpen ? "−" : "+"}
+                    <span className="font-bold text-lg sm:text-xl text-[#212529] leading-none shrink-0 ml-3 select-none">
+                      {isOpen ? "-" : "+"}
                     </span>
                   </button>
 
                   {isOpen && (
-                    <div className="px-4 sm:px-5 py-3.5 sm:py-4 border-t border-[#dee2e6] bg-white text-[13px] sm:text-[13.5px] text-[#495057] leading-[1.65] font-normal">
+                    <div className="px-4 sm:px-5 py-4 border-t border-[#dee2e6] bg-white text-[13px] sm:text-[13.5px] text-[#495057] leading-[1.65] font-normal">
                       {faq.a}
                     </div>
                   )}

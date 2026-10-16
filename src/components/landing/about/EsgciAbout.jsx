@@ -4,7 +4,7 @@ import React from "react";
 import LandingButton from "../LandingButton";
 
 export default function EsgciAbout({ about = {}, brand = {}, onOpenApply }) {
-  const bg = brand.aboutBg || about.backgroundColor || "#04903c";
+  const bg = brand.aboutBg || about.backgroundColor || "#000000";
   const title = about.title || `About ${brand.name || "ESGCI"}`;
 
   const paragraphs =

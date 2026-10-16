@@ -54,309 +54,23 @@ export const uuData = {
     stickyApplyStyle: "white-red",
     showFloatingCallOnMobile: true,
 
-    // Custom CSS Overrides specifically for Uttaranchal University (loaded from JSON)
+    // Custom CSS specifically for Uttaranchal University (Typography & Brand Highlights)
     customCss: `
-      /* Uttaranchal University Custom Styles & Overrides (JSON Configured) */
       @import url('https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700;800;900&family=Oswald:wght@500;600;700&display=swap');
 
       .landing-page--uu {
-        font-family: 'Montserrat', sans-serif !important;
+        font-family: 'Montserrat', sans-serif;
       }
 
       .landing-page--uu #hero h1 {
-        font-family: 'Anton', 'Oswald', sans-serif !important;
-        letter-spacing: 1.2px !important;
-        word-spacing: 3px !important;
-        text-transform: uppercase !important;
-        font-weight: 700 !important;
-        font-size: 30px !important;
-        line-height: 1.15 !important;
-        white-space: nowrap !important;
-      }
-
-      .landing-page--uu #hero h1 span {
-        font-family: inherit !important;
-        font-size: inherit !important;
-        font-weight: inherit !important;
-        letter-spacing: inherit !important;
-        line-height: inherit !important;
+        font-family: 'Anton', 'Oswald', sans-serif;
+        letter-spacing: 1.2px;
+        word-spacing: 3px;
+        text-transform: uppercase;
       }
 
       .landing-page--uu .sp {
-        color: #62B239 !important;
-      }
-
-      .landing-page--uu #about .about-subtitle {
-        color: #62B239 !important;
-        font-family: 'Montserrat', sans-serif !important;
-        font-size: 28px !important;
-        font-weight: 500 !important;
-        line-height: 1.2 !important;
-        margin-bottom: 6px !important;
-        display: block !important;
-      }
-
-      .landing-page--uu #about h2,
-      .landing-page--uu #about .about-title {
-        color: #222222 !important;
-        font-family: 'Montserrat', sans-serif !important;
-        font-size: 28px !important;
-        font-weight: 500 !important;
-        line-height: 1.2 !important;
-        margin-bottom: 16px !important;
-      }
-
-      .landing-page--uu #program h2 {
-        color: #003399 !important;
-        font-weight: 700 !important;
-        text-align: left !important;
-      }
-
-      .landing-page--uu #program .card-box-cnt h2,
-      .landing-page--uu #program h3 {
-        color: #17479E !important;
-      }
-
-      .landing-page--uu #whychoose {
-        background-color: #0A3C7D !important;
-        color: #ffffff !important;
-      }
-
-      .landing-page--uu #whychoose h2,
-      .landing-page--uu #whychoose h3 {
-        color: #ffffff !important;
-      }
-
-      .landing-page--uu #whychoose p {
-        color: rgba(255, 255, 255, 0.9) !important;
-      }
-
-      .landing-page--uu #whychoose button {
-        background: #62B239 !important;
-        color: #ffffff !important;
-      }
-
-      .landing-page--uu #degree h2 {
-        color: #003399 !important;
-      }
-
-      .landing-page--uu #degree button {
-        background: #62B239 !important;
-        color: #ffffff !important;
-      }
-
-      .landing-page--uu .landing-lead-card {
-        border-radius: 12px !important;
-        box-shadow: 0 14px 36px rgba(0, 0, 0, 0.22) !important;
-      }
-
-      /* ── UU MOBILE RESPONSIVE ── */
-
-      /* Hero: stack form below content on mobile */
-      @media (max-width: 767px) {
-        .landing-page--uu #hero {
-          background-image: none !important;
-          background-color: #0A3C7D !important;
-          background-position: center top !important;
-          padding: 16px 14px 28px !important;
-        }
-        .landing-page--uu #hero div.-z-20 {
-          display: none !important;
-        }
-        .landing-page--uu .hero-info-col {
-          display: flex !important;
-          flex-direction: column !important;
-          align-items: flex-start !important;
-          text-align: left !important;
-          width: 100% !important;
-          max-width: 100% !important;
-        }
-        .landing-page--uu #hero h1 {
-          font-family: 'Oswald', sans-serif !important;
-          font-weight: 600 !important;
-          font-size: 26px !important;
-          line-height: 1.15 !important;
-          text-align: left !important;
-          margin-bottom: 6px !important;
-          word-spacing: 4px !important;
-          letter-spacing: 0.5px !important;
-        }
-        .landing-page--uu .hero-info-col p {
-          text-align: left !important;
-        }
-        .landing-page--uu .hero-brochure-btn {
-          display: inline-flex !important;
-          background: #cc1d1d !important;
-          border-radius: 8px !important;
-          padding: 10px 22px !important;
-          margin-top: 10px !important;
-          margin-bottom: 16px !important;
-          font-size: 14px !important;
-          font-weight: 700 !important;
-          color: #ffffff !important;
-          align-self: flex-start !important;
-        }
-        .landing-page--uu .hero-mobile-image-wrapper {
-          width: 100% !important;
-          height: auto !important;
-          aspect-ratio: 926 / 433 !important;
-          border-radius: 16px !important;
-          overflow: hidden !important;
-          margin-bottom: 12px !important;
-          position: relative !important;
-          z-index: 10 !important;
-          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
-        }
-        .landing-page--uu .hero-form-col {
-          width: 100% !important;
-          align-items: center !important;
-          z-index: 20 !important;
-          position: relative !important;
-        }
-        .landing-page--uu .hero-form-col .landing-card {
-          width: 100% !important;
-          max-width: 360px !important;
-          border-radius: 12px !important;
-          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12) !important;
-          background: #ffffff !important;
-        }
-      }
-
-      /* Programmes Section: 1-col on phone */
-      @media (max-width: 639px) {
-        .landing-page--uu #program {
-          padding: 40px 12px !important;
-        }
-        .landing-page--uu #program h2 {
-          font-size: 22px !important;
-        }
-      }
-
-      /* Approvals: auto columns on phone */
-      @media (max-width: 639px) {
-        .landing-page--uu #certification,
-        .landing-page--uu #accreditations {
-          padding: 36px 12px !important;
-        }
-        .landing-page--uu #certification h2,
-        .landing-page--uu #accreditations h2 {
-          font-size: 20px !important;
-        }
-      }
-
-      /* Why Choose section: full-width cards on phone */
-      @media (max-width: 767px) {
-        .landing-page--uu #whychoose {
-          padding: 40px 16px !important;
-        }
-        .landing-page--uu #whychoose h2 {
-          font-size: 21px !important;
-          line-height: 1.25 !important;
-          text-align: left !important;
-        }
-        .landing-page--uu #whychoose p {
-          text-align: left !important;
-        }
-        .landing-page--uu #whychoose .grid {
-          gap: 14px !important;
-        }
-      }
-
-      /* About Section: single col on mobile */
-      @media (max-width: 767px) {
-        .landing-page--uu #about {
-          padding: 40px 16px !important;
-        }
-        .landing-page--uu #about .about-subtitle {
-          color: #62B239 !important;
-          font-family: 'Montserrat', sans-serif !important;
-          font-size: 22px !important;
-          font-weight: 600 !important;
-          line-height: 1.25 !important;
-          margin-bottom: 4px !important;
-          display: block !important;
-          text-align: left !important;
-        }
-        .landing-page--uu #about h2,
-        .landing-page--uu #about .about-title {
-          color: #222222 !important;
-          font-family: 'Montserrat', sans-serif !important;
-          font-size: 22px !important;
-          font-weight: 600 !important;
-          line-height: 1.25 !important;
-          margin-bottom: 14px !important;
-          text-align: left !important;
-        }
-      }
-
-      /* Degree Section */
-      @media (max-width: 767px) {
-        .landing-page--uu #degree {
-          padding: 36px 16px !important;
-        }
-        .landing-page--uu #degree h2 {
-          font-size: 26px !important;
-          line-height: 1.25 !important;
-          white-space: normal !important;
-          text-align: center !important;
-        }
-        .landing-page--uu #degree p {
-          text-align: center !important;
-        }
-      }
-
-      /* Admission Process */
-      @media (max-width: 639px) {
-        .landing-page--uu .apply-section,
-        .landing-page--uu [id="admission"] {
-          padding: 36px 12px !important;
-        }
-        .landing-page--uu .apply-section h2 {
-          font-size: 20px !important;
-        }
-      }
-
-      /* FAQ */
-      @media (max-width: 639px) {
-        .landing-page--uu .faq-section {
-          padding: 36px 12px !important;
-        }
-        .landing-page--uu .faq-section h2 {
-          font-size: 20px !important;
-        }
-      }
-
-      /* Footer sticky bottom bar: bigger text */
-      @media (max-width: 767px) {
-        .landing-page--uu .footer_sticky_buttons {
-          gap: 8px !important;
-          padding: 10px 12px !important;
-        }
-        .landing-page--uu .footer_sticky_buttons a,
-        .landing-page--uu .footer_sticky_buttons button {
-          font-size: 12px !important;
-          padding: 9px 10px !important;
-        }
-      }
-
-      /* Overview section */
-      @media (max-width: 639px) {
-        .landing-page--uu .overview-section {
-          padding: 36px 12px !important;
-        }
-        .landing-page--uu .overview_lists {
-          grid-template-columns: 1fr 1fr !important;
-          gap: 10px !important;
-        }
-        .landing-page--uu .overview_list_inner {
-          padding: 10px !important;
-        }
-        .landing-page--uu .overview_list_inner h3 {
-          font-size: 13px !important;
-        }
-        .landing-page--uu .overview_list_inner p {
-          font-size: 11px !important;
-        }
+        color: #62B239;
       }
     `,
 
@@ -383,8 +97,9 @@ export const uuData = {
       mobileBackgroundImage: "none",
       mobileImage: "/assets/all_universities_images/uu/university.webp",
       mobileStudentImage: "/assets/all_universities_images/uu/university.webp",
-      mobileStudentImageWrapperClassName: "block lg:hidden w-full max-w-[440px] mx-auto rounded-[16px] overflow-hidden my-3.5 shadow-md",
+      mobileStudentImageWrapperClassName: "block lg:hidden w-full max-w-[440px] mx-auto rounded-[16px] overflow-hidden my-3.5 shadow-md aspect-[926/433] !h-auto",
       mobileStudentImageClassName: "w-full h-auto object-cover block rounded-[16px]",
+      mobileImageWrapperClassName: "aspect-[926/433] !h-auto",
       mobileImageClassName: "object-cover",
       backgroundPosition: "60% center",
       backgroundSize: "cover",
@@ -518,8 +233,8 @@ export const uuData = {
 
     // Sample Degree Configuration
     degreeLayout: "uu",
-    degreeTitleColor: "#111111",
-    degreeBtnBg: "#0A3C7D",
+    degreeTitleColor: "#003399",
+    degreeBtnBg: "#62B239",
     degreeBtnTextColor: "#ffffff",
 
     // Admission Process Configuration

@@ -47,12 +47,12 @@ const PROGRAMME_LAYOUTS = {
   uu: UuProgrammes,
   iiitb: IiitbProgrammes,
   ssbm: SsbmProgrammes,
+  upes: UpesProgrammes,
+  cu: CuProgrammes,
   ggu: GguProgrammes,
   mu: MuGrid,
   vgu: VguGrid,
   shoolini: ShooliniGrid,
-  cu: CuProgrammes,
-  upes: UpesProgrammes,
 };
 
 /**
@@ -72,38 +72,6 @@ export default function LandingProgrammes({
 
   // Resolve raw layout identifier from brand config (with legacy slug fallback)
   const rawLayout = brand.programmesLayout || brand.slug || "carousel";
-
-  if (rawLayout === "upes" || brand.slug === "upes") {
-    return (
-      <UpesProgrammes
-        programmes={programmes}
-        brand={brand}
-        onSelectCourseForBrochure={onSelectCourseForBrochure}
-        onOpenApply={onOpenApply}
-      />
-    );
-  }
-
-  if (rawLayout === "cu" || brand.slug === "cu") {
-    return (
-      <CuProgrammes
-        programmes={programmes}
-        brand={brand}
-        onSelectCourseForBrochure={onSelectCourseForBrochure}
-      />
-    );
-  }
-
-  if (rawLayout === "galgotias" || rawLayout === "galgotias-grid" || brand.slug === "galgotias") {
-    return (
-      <GalgotiasGrid
-        programmes={programmes}
-        brand={brand}
-        onSelectCourseForBrochure={onSelectCourseForBrochure}
-        onOpenApply={onOpenApply}
-      />
-    );
-  }
 
   // Normalize aliases (e.g. "galgotias-grid" -> "galgotias", "grid" -> "shoolini")
   const normalizedKey = PROGRAMME_LAYOUT_ALIASES[rawLayout] || rawLayout;

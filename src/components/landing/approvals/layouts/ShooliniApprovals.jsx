@@ -16,30 +16,31 @@ export default function ShooliniApprovals({
     <section id="approval" className="w-full select-none p-0 overflow-hidden bg-[#010d2a] scroll-mt-20">
       <div className="w-full grid grid-cols-1 lg:grid-cols-12 items-stretch">
         <div className="lg:col-span-5 bg-[#010d2a] text-white flex flex-col justify-center px-6 sm:px-12 lg:px-16 xl:pl-20 py-8 sm:py-12">
-          <h2 className="text-2xl sm:text-3xl lg:text-[32px] font-bold leading-tight m-0 mb-3 text-white">
-            <span
-              className="font-extrabold inline"
-              style={{
-                background: brand?.themeGradient || "linear-gradient(to right, #fd202a, #ff4be5)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
-              {uniName}{" "}
-            </span>
-            <span className="text-white font-bold">Recognitions & Accreditations</span>
+          <h2 className="text-2xl sm:text-3xl lg:text-[34px] font-bold leading-[1.22] m-0 mb-3 text-white">
+            {brand?.approvalsTitleHtml ? (
+              <span dangerouslySetInnerHTML={{ __html: brand.approvalsTitleHtml }} />
+            ) : (
+              <>
+                <span className="block font-bold">
+                  <span className="text-[#fd202a]">Shoolini University </span>
+                  <span className="text-[#ff389e]">Online</span>
+                </span>
+                <span className="block text-white font-bold">Recognitions &</span>
+                <span className="block text-white font-bold">Accreditations</span>
+              </>
+            )}
           </h2>
           {subtitle && (
-            <p className="text-[13px] sm:text-[14px] text-[#ecf0f1] font-normal leading-relaxed m-0">
+            <p className="text-[13px] sm:text-[14px] text-[#cbd5e1] font-normal leading-relaxed m-0 max-w-[420px]">
               {subtitle}
             </p>
           )}
         </div>
 
         <div
-          className="lg:col-span-7 p-6 sm:p-8 lg:p-10 xl:pr-16 flex items-center"
+          className="lg:col-span-7 p-6 sm:p-8 lg:p-10 xl:pr-16 flex items-center bg-white"
           style={{
-            background: "linear-gradient(to right, #fce8e8 0%, #fdf3f3 40%, #ffffff 100%)",
+            backgroundColor: brand?.approvalsRightBg || brand?.approvalsBg || "#ffffff",
           }}
         >
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 sm:gap-8 w-full">

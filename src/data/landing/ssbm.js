@@ -71,7 +71,6 @@ export const ssbmCustomCss = `
     min-height: auto !important;
     display: block !important;
   }
-}
     .landing-page--ssbm #hero > div.ant-layout-content,
     .landing-page--ssbm #hero .ant-layout-content {
       padding-left: 0 !important;
@@ -154,6 +153,30 @@ export const ssbmCustomCss = `
         display: none !important;
       }
     }
+  }
+
+  /* Desktop Hero Brochure Button */
+  .landing-page--ssbm .hero-brochure-btn,
+  .landing-page--ssbm #hero .hero-brochure-btn,
+  .landing-page--ssbm #hero .downloadBrochureBtn {
+    background: #c11f28 !important;
+    background-color: #c11f28 !important;
+    color: #ffffff !important;
+    border-radius: 6px !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    padding: 10px 22px !important;
+    border: none !important;
+    box-shadow: 0 4px 12px rgba(193, 31, 40, 0.25) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    cursor: pointer !important;
+    margin-top: 10px !important;
+  }
+  .landing-page--ssbm .hero-brochure-btn:hover,
+  .landing-page--ssbm #hero .hero-brochure-btn:hover {
+    background-color: #a81a22 !important;
   }
 
   /* Hero custom checklist */

@@ -14,9 +14,8 @@ export default function VguGrid({ programmes, brand = {}, onSelectCourseForBroch
   return (
     <section id="program" className="w-full py-9 sm:py-16 bg-[#f7f9fa] border-b border-slate-200 select-none">
       <div className={containerClass}>
-        <h2 className="text-center text-[21px] sm:text-[26px] lg:text-[28px] font-bold text-[#203061] tracking-tight mb-6 sm:mb-10 leading-[1.25] whitespace-pre-line">
-          {brand.programmesTitle ||
-            "VGU Online |\nVivekananda Global University\nOnline Courses"}
+        <h2 className="text-center text-[21px] sm:text-[26px] lg:text-[28px] font-bold text-[#203061] tracking-tight mb-6 sm:mb-8 leading-[1.25] whitespace-pre-line">
+          {brand.programmesTitle || (brand.name ? `${brand.name} Online Courses` : "Online Degree Courses")}
         </h2>
 
         <div className={gridClass}>

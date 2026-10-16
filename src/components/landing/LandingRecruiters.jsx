@@ -350,18 +350,22 @@ export default function LandingRecruiters({
 
   return (
     <section id="placement" className="py-10 sm:py-14 bg-white text-center select-none">
-      <div className="w-full max-w-[1320px] mx-auto px-4 sm:px-6">
+      <div className="w-full max-w-[1320px] min-[1600px]:max-w-[1520px] min-[1920px]:max-w-[1680px] mx-auto px-4 sm:px-6">
         <h2
           className="text-2xl sm:text-3xl lg:text-[34px] font-bold mb-6 sm:mb-8 tracking-tight"
           style={{ color: titleColor }}
         >
-          Top Recruiters of{" "}
-          <span
-            className="font-extrabold"
-            style={{ color: highlightColor }}
-          >
-            {brand.name || "Shoolini University Online"}
-          </span>
+          {activeRecruiters.fullTitle || (
+            <>
+              Top Recruiters of{" "}
+              <span
+                className="font-extrabold"
+                style={{ color: highlightColor }}
+              >
+                {brand.name || "Shoolini University Online"}
+              </span>
+            </>
+          )}
         </h2>
 
         <div className="w-full max-w-[1300px] mx-auto px-2">
@@ -413,7 +417,7 @@ function MuRecruitersCarousel({ activeRecruiters, brand }) {
         ...brand.recruitersSectionStyle,
       }}
     >
-      <div className={brand.recruitersContainerClassName || "max-w-[1240px] mx-auto px-4 sm:px-6"}>
+      <div className={brand.recruitersContainerClassName || "max-w-[1240px] min-[1600px]:max-w-[1520px] min-[1920px]:max-w-[1680px] mx-auto px-4 sm:px-6"}>
         {/* Title and Subtitle */}
         <div className="max-w-4xl mx-auto mb-6 sm:mb-8 text-center">
           <h2

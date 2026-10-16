@@ -32,6 +32,7 @@ const WHY_CHOOSE_LAYOUTS = {
   uu: UuWhyChoose,
   iiitb: IiitbWhyChoose,
   ssbm: SsbmWhyChoose,
+  upes: UpesWhyChoose,
   galgotias: GalgotiasWhyChoose,
   "galgotias-grid": GalgotiasWhyChoose,
   liverpool: LiverpoolWhyChoose,
