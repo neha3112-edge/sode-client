@@ -198,104 +198,19 @@ export const esgciCustomCss = `
       line-height: 1 !important;
     }
 
-    .landing-page--esgci #hero .hero-info-col > div:first-child {
-      display: none !important;
+    /* About - Mobile */
+    .landing-page--esgci #about {
+      background-color: #000000 !important;
+      background-image: none !important;
     }
-
-    .landing-page--esgci #hero .hero-brochure-btn {
-      display: none !important;
-    }
-
-    .landing-page--esgci #hero .hero-form-col {
-  width: 100% !important;
-      max-width: 100% !important;
-      display: flex !important;
-      justify-content: center !important;
-      align-items: center !important;
-      z-index: 20 !important;
-      position: relative !important;
-      padding-left: 0 !important;
-      padding-right: 0 !important;
-      margin-left: 0 !important;
-      margin-right: 0 !important;
-    }
-
-    .landing-page--esgci .hero-mobile-image-wrapper img {
-      width: 100% !important;
-  max-width: none !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  object-position: center top !important;
-  display: block !important;
-  transform: scaleX(1.15) !important;
-  transform-origin: center center !important;
-    }
-
-
-     /* About - Mobile */
-  .landing-page--esgci #about {
-    background-color: #000000 !important;
-    background-image: none !important;
-  }
     .landing-page--esgci #benefits {
-  background-image: url(/assets/all_universities_images/esgci/benefits-mobile.webp) !important;
-  background-size: 100% 100% !important;
-  background-position: center center !important;
-  background-repeat: no-repeat !important;
-  padding-top: 36px !important;
-  padding-bottom: 45px !important;
-  min-height: 1000px !important;
-}
-
-    .landing-page--esgci .call_fix_image img {
-      width: 60px !important;
-      bottom: 140px !important;
-      right: 9px !important;
-    }
-
-    /* Footer Sticky Bar (50/50 Split Flush Full Width) */
-    .landing-page--esgci .footer_sticky_buttons {
-      gap: 0px !important;
-      padding: 0px !important;
-      padding-bottom: max(0px, env(safe-area-inset-bottom)) !important;
-      background: transparent !important;
-      grid-template-columns: 1fr 1fr !important;
-      width: 100% !important;
-      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.15) !important;
-    }
-    .landing-page--esgci .footer_sticky_buttons a,
-    .landing-page--esgci .footer_sticky_buttons button,
-    .landing-page--esgci .footer_sticky_buttons .wp_btn,
-    .landing-page--esgci .footer_sticky_buttons .apply_btn {
-      border-radius: 0px !important;
-      padding: 12px 6px !important;
-      font-size: 14.5px !important;
-      font-weight: 700 !important;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      border: none !important;
-      height: 48px !important;
-      box-shadow: none !important;
-      width: 100% !important;
-      font-family: 'Outfit', sans-serif !important;
-    }
-    .landing-page--esgci .footer_sticky_buttons .wp_btn {
-      background: #20c968 !important;
-      background-color: #20c968 !important;
-      color: #ffffff !important;
-      gap: 7px !important;
-    }
-    .landing-page--esgci .footer_sticky_buttons .apply_btn {
-      background: #fff000 !important;
-      background-color: #fff000 !important;
-      color: #000000 !important;
-      gap: 6px !important;
-    }
-    .landing-page--esgci .footer_sticky_buttons .wp_btn svg {
-      width: 18px !important;
-      height: 18px !important;
-      color: #ffffff !important;
+      background-image: url(/assets/all_universities_images/esgci/benefits-mobile.webp) !important;
+      background-size: 100% 100% !important;
+      background-position: center center !important;
+      background-repeat: no-repeat !important;
+      padding-top: 36px !important;
+      padding-bottom: 45px !important;
+      min-height: 1000px !important;
     }
   }
 `;

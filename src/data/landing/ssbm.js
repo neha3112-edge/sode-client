@@ -154,60 +154,6 @@ export const ssbmCustomCss = `
         display: none !important;
       }
     }
-
-    .landing-page--ssbm .hero-mobile-image-wrapper {
-      width: 100% !important;
-      max-width: 100% !important;
-      position: relative !important;
-      left: 0 !important;
-      right: 0 !important;
-      margin-left: 0 !important;
-      margin-right: 0 !important;
-      aspect-ratio: 801 / 687 !important;
-      height: auto !important;
-      margin-top: 6px !important;
-      margin-bottom: -50px !important;
-      z-index: 10 !important;
-      display: block !important;
-      overflow: hidden !important;
-    }
-
- .landing-page--ssbm .hero-mobile-image-wrapper img {
-  width: 100% !important;
-  max-width: none !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  object-position: center top !important;
-  display: block !important;
-  transform: scaleX(1.15) !important;
-  transform-origin: center center !important;
-}
-
-    .landing-page--ssbm .hero-form-col {
-      width: 100% !important;
-      max-width: 100% !important;
-      display: flex !important;
-      justify-content: center !important;
-      align-items: center !important;
-      z-index: 20 !important;
-      position: relative !important;
-      padding-left: 0 !important;
-      padding-right: 0 !important;
-      margin-left: 0 !important;
-      margin-right: 0 !important;
-    }
-
-    .landing-page--ssbm .hero-form-col .landing-card,
-    .landing-page--ssbm #hero .landing-lead-card {
-      width: calc(100% - 32px) !important;
-      max-width: 360px !important;
-      border-radius: 12px !important;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12) !important;
-      background: #ffffff !important;
-      position: relative !important;
-      z-index: 20 !important;
-      margin: 0 auto !important;
-    }
   }
 
   /* Hero custom checklist */

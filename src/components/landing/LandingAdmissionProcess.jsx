@@ -365,9 +365,7 @@ export default function LandingAdmissionProcess({
   const containerClass =
     brand.admissionContainerClass ||
     admissionProcess?.containerClass ||
-    (isCu || isSmu || brand.admissionFullWidth || admissionProcess?.fullWidth
-      ? "w-full px-4 sm:px-6 lg:px-8 xl:px-10 max-w-none"
-      : "w-full px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 max-w-[1280px] mx-auto");
+    "w-full px-4 sm:px-6 lg:px-8 xl:px-10 max-w-none";
 
   return (
     <section
