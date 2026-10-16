@@ -25,15 +25,13 @@ export default function UpesWhyChoose({ whyChoose = [], brand = {} }) {
                   <Image
                     src={item.image}
                     alt={item.title}
-                    width={54}
-                    height={54}
+                    width={64}
+                    height={64}
                     className="object-contain"
                   />
                 </div>
-                <div className="working-p-content">
-                  <h4>{item.title}</h4>
-                  <p>{item.desc || item.description}</p>
-                </div>
+                <h4>{item.title}</h4>
+                <p>{item.desc || item.description}</p>
               </div>
             );
           })}
