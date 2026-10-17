@@ -1,3 +1,5 @@
+import React from "react";
+
 /**
  * IIM Kozhikode (upGrad) HRM Analytics Landing Page Configuration & Embedded CSS
  * Pixel-perfect match to https://distanceeducationschool.com/iim/
@@ -104,13 +106,34 @@ export const iimCustomCss = `
      3. HERO SECTION (#hero)
      ========================================================= */
   .landing-page--iim #hero {
-    background-image: url("/assets/all_universities_images/iim/iim_desktop_new_img.png") !important;
-    background-repeat: no-repeat !important;
-    background-size: cover !important;
-    background-position: center top !important;
-    padding: 30px 0 35px 0 !important;
+    background-image: none !important;
+    padding: 6px 0 10px 0 !important;
     margin: 0 !important;
     position: relative !important;
+  }
+
+  .landing-page--iim #hero div[aria-hidden="true"],
+  .landing-page--iim #hero div[style*="background-image"] {
+    background-position: center -145px !important;
+    background-position-y: -145px !important;
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
+  }
+
+  @media only screen and (min-width: 1600px) {
+    .landing-page--iim #hero div[aria-hidden="true"],
+    .landing-page--iim #hero div[style*="background-image"] {
+      background-position: center -180px !important;
+      background-position-y: -180px !important;
+    }
+  }
+
+  @media only screen and (max-width: 1250px) and (min-width: 1000px) {
+    .landing-page--iim #hero div[aria-hidden="true"],
+    .landing-page--iim #hero div[style*="background-image"] {
+      background-position: center -95px !important;
+      background-position-y: -95px !important;
+    }
   }
 
   .landing-page--iim #hero .hero-grid {
@@ -126,7 +149,7 @@ export const iimCustomCss = `
   }
 
   .landing-page--iim #hero .hero-logo-container {
-    margin-bottom: 10px !important;
+    margin-bottom: 8px !important;
   }
   .landing-page--iim #hero .hero-logo-container img {
     width: 220px !important;
@@ -141,32 +164,37 @@ export const iimCustomCss = `
     color: #17479E !important;
     font-weight: 500 !important;
     line-height: 1.05 !important;
-    margin: 6px 0 10px 0 !important;
-    letter-spacing: 0.5px !important;
-    text-transform: uppercase !important;
+    margin: 4px 0 8px 0 !important;
+    letter-spacing: 0.2px !important;
+    text-transform: none !important;
   }
 
   .landing-page--iim #hero .hero-tagline {
-    font-size: 17px !important;
-    font-weight: 700 !important;
-    color: #111111 !important;
-    margin: 0 0 10px 0 !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    color: #000000 !important;
+    margin: 0 0 12px 0 !important;
     line-height: 1.3 !important;
   }
 
+  .landing-page--iim #hero .hero-tagline u,
+  .landing-page--iim #hero .hero-tagline .underline {
+    text-decoration: underline !important;
+  }
+
   .landing-page--iim #hero .hero-description {
-    font-size: 14px !important;
-    color: #333333 !important;
-    line-height: 1.5 !important;
-    max-width: 520px !important;
-    margin: 0 0 14px 0 !important;
+    font-size: 13.5px !important;
+    color: #222222 !important;
+    line-height: 1.30 !important;
+    max-width: 270px !important;
+    margin: 0 0 18px 0 !important;
   }
 
   .landing-page--iim #hero .hero-clock-badge {
     display: inline-flex !important;
     align-items: center !important;
     gap: 7px !important;
-    font-size: 16px !important;
+    font-size: 15px !important;
     font-weight: 700 !important;
     color: #111111 !important;
     margin: 0 0 18px 0 !important;
@@ -179,8 +207,8 @@ export const iimCustomCss = `
     border-radius: 8px !important;
     font-weight: 700 !important;
     font-size: 15px !important;
-    padding: 10px 24px !important;
-    box-shadow: 0 4px 12px rgba(23, 71, 158, 0.3) !important;
+    padding: 10px 22px !important;
+    box-shadow: 0 4px 12px rgba(23, 71, 158, 0.25) !important;
     cursor: pointer !important;
     display: inline-flex !important;
     align-items: center !important;
@@ -230,7 +258,29 @@ export const iimCustomCss = `
     background: #123980 !important;
   }
 
+  /* Hide disclaimer/terms checkbox in hero form for IIM */
+  .landing-page--iim #hero .ant-form-item:has(input[type="checkbox"]),
+  .landing-page--iim #hero .ant-form-item:has(.ant-checkbox-wrapper) {
+    display: none !important;
+  }
+
   /* Responsive Hero */
+  @media only screen and (max-width: 999px) {
+    .landing-page--iim #hero {
+      padding: 20px 10px !important;
+    }
+    .landing-page--iim #hero div[aria-hidden="true"],
+    .landing-page--iim #hero div[style*="background-image"] {
+      background-position: center top !important;
+      background-position-y: 0 !important;
+    }
+    .landing-page--iim #hero .hero-description {
+      max-width: 480px !important;
+      text-align: center !important;
+      margin: 0 auto 14px auto !important;
+    }
+  }
+
   @media only screen and (max-width: 991px) {
     .landing-page--iim #hero h1 {
       font-size: 38px !important;
@@ -243,6 +293,10 @@ export const iimCustomCss = `
       background-size: cover !important;
       background-position: center top !important;
       padding: 20px 12px 25px 12px !important;
+    }
+    .landing-page--iim #hero div[aria-hidden="true"] {
+      background-position: center top !important;
+      background-position-y: 0 !important;
     }
     .landing-page--iim #hero .hero-info-col {
       text-align: center !important;
@@ -306,156 +360,270 @@ export const iimCustomCss = `
      4. ACHIEVEMENT / STATS BAR (.achievement)
      ========================================================= */
   .landing-page--iim .achievement {
-    background-color: #FFE5B2 !important;
-    padding: 24px 15px !important;
+    background-color: #fce2adff !important;
+    padding: 28px 70px 28px 0px !important;
     width: 100% !important;
     margin: 0 !important;
+    box-sizing: border-box !important;
   }
 
   .landing-page--iim .ach {
     display: grid !important;
     grid-template-columns: repeat(4, 1fr) !important;
-    gap: 20px !important;
-    max-width: 1120px !important;
+    gap: 16px !important;
+    max-width: 1140px !important;
     margin: 0 auto !important;
+    align-items: center !important;
   }
 
   .landing-page--iim .ac1 {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 12px !important;
+    gap: 14px !important;
+    text-align: left !important;
   }
 
   .landing-page--iim .ac1 img {
-    width: 46px !important;
-    height: auto !important;
+    width: 58px !important;
+    height: 58px !important;
+    border-radius: 50% !important;
+    background-color: #ffffff !important;
+    padding: 10px !important;
     object-fit: contain !important;
     flex-shrink: 0 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+  }
+
+  .landing-page--iim .ac1 > div {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: flex-start !important;
   }
 
   .landing-page--iim .ach h3 {
-    font-size: 28px !important;
+    font-size: 32px !important;
     color: #17479E !important;
-    margin: 0 !important;
+    margin: 0 0 2px 0 !important;
     font-weight: 800 !important;
-    line-height: 1.1 !important;
+    line-height: 1 !important;
+    letter-spacing: -0.3px !important;
   }
 
   .landing-page--iim .ac1 p {
     font-weight: 600 !important;
-    font-size: 13px !important;
+    font-size: 14.5px !important;
     color: #111111 !important;
     margin: 0 !important;
-    line-height: 1.25 !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
   }
 
-  @media only screen and (max-width: 991px) {
+  @media only screen and (max-width: 1199px) and (min-width: 992px) {
+    .landing-page--iim .ach {
+      max-width: 960px !important;
+      gap: 12px !important;
+    }
+    .landing-page--iim .achievement {
+      padding: 10px 15px !important;
+    }
+    .landing-page--iim .ac1 {
+      gap: 10px !important;
+    }
+    .landing-page--iim .ac1 img {
+      width: 52px !important;
+      height: 52px !important;
+      padding: 9px !important;
+    }
+    .landing-page--iim .ach h3 {
+      font-size: 28px !important;
+    }
+    .landing-page--iim .ac1 p {
+      font-size: 13px !important;
+    }
+  }
+
+  @media only screen and (max-width: 991px) and (min-width: 769px) {
+    .landing-page--iim .achievement {
+      padding: 14px 15px !important;
+    }
+    .landing-page--iim .ach {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 16px 24px !important;
+      max-width: 620px !important;
+    }
+    .landing-page--iim .ac1 {
+      justify-content: flex-start !important;
+      padding-left: 15px !important;
+    }
+    .landing-page--iim .ach h3 {
+      font-size: 28px !important;
+    }
+    .landing-page--iim .ac1 p {
+      font-size: 13.5px !important;
+    }
+    .landing-page--iim .ac1 img {
+      width: 52px !important;
+      height: 52px !important;
+      padding: 9px !important;
+    }
+  }
+
+  @media only screen and (max-width: 768px) {
+    .landing-page--iim .achievement {
+      padding: 14px 12px !important;
+    }
+    .landing-page--iim .ach {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 14px 10px !important;
+    }
+    .landing-page--iim .ac1 {
+      justify-content: flex-start !important;
+      padding-left: 6px !important;
+      gap: 10px !important;
+    }
     .landing-page--iim .ach h3 {
       font-size: 24px !important;
     }
     .landing-page--iim .ac1 p {
       font-size: 12px !important;
+      white-space: normal !important;
+    }
+    .landing-page--iim .ac1 img {
+      width: 44px !important;
+      height: 44px !important;
+      padding: 8px !important;
     }
   }
 
-  @media only screen and (max-width: 768px) {
+  @media only screen and (max-width: 480px) {
+    .landing-page--iim .achievement {
+      padding: 12px 10px !important;
+    }
     .landing-page--iim .ach {
-      grid-template-columns: repeat(2, 1fr) !important;
-      gap: 18px 12px !important;
+      gap: 12px 8px !important;
     }
     .landing-page--iim .ac1 {
-      justify-content: flex-start !important;
-      padding-left: 10px !important;
+      padding-left: 2px !important;
+      gap: 8px !important;
     }
     .landing-page--iim .ach h3 {
-      font-size: 24px !important;
+      font-size: 22px !important;
+    }
+    .landing-page--iim .ac1 p {
+      font-size: 11px !important;
     }
     .landing-page--iim .ac1 img {
-      width: 42px !important;
+      width: 40px !important;
+      height: 40px !important;
+      padding: 7px !important;
     }
   }
 
   /* =========================================================
      5. OVERVIEW SECTION (#overview)
      ========================================================= */
-  .landing-page--iim #overview {
-    margin: 40px 0 !important;
-    padding: 10px 20px !important;
-  }
+.landing-page--iim #overview {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 35px 0 !important;
+  padding: 10px 130px !important;
+  box-sizing: border-box !important;
+}
 
-  .landing-page--iim .overview1 {
-    text-align: center !important;
-    max-width: 980px !important;
-    margin: 0 auto !important;
-  }
+.landing-page--iim .overview1 {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  text-align: left !important;
+}
 
-  .landing-page--iim .overview1 h2 {
-    font-size: 28px !important;
-    font-weight: 800 !important;
-    color: #111111 !important;
-    margin: 0 0 16px 0 !important;
-    line-height: 1.3 !important;
-  }
+.landing-page--iim .overview1 h2 {
+  font-size: 26px !important;
+  font-weight: 800 !important;
+  color: #111111 !important;
+  text-align: left !important;
+  margin: 0 0 12px 0 !important;
+  line-height: 1.3 !important;
+  white-space: nowrap !important;
+}
 
-  .landing-page--iim .overview1 p {
-    font-size: 14.5px !important;
-    color: #444444 !important;
-    line-height: 1.65 !important;
-    margin: 0 !important;
-  }
+.landing-page--iim .overview1 p {
+  font-size: 13.5px !important;
+  color: #444444 !important;
+  text-align: left !important;
+  line-height: 1.55 !important;
+  max-width: none !important;
+  width: 100% !important;
+  margin: 0 !important;
+}
 
   @media only screen and (max-width: 768px) {
     .landing-page--iim .overview1 h2 {
       font-size: 22px !important;
+      text-align: left !important;
     }
     .landing-page--iim .overview1 p {
-      font-size: 13.5px !important;
+      font-size: 13px !important;
+      text-align: left !important;
     }
   }
 
   /* =========================================================
      6. KEY SKILLS SECTION (#key-skills)
      ========================================================= */
-  .landing-page--iim section.certification#key-skills {
-    margin: 40px 0 !important;
-    padding: 10px 20px !important;
-  }
+ .landing-page--iim section.certification#key-skills {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 35px 0 !important;
+  padding: 10px 130px !important;
+  box-sizing: border-box !important;
+}
 
-  .landing-page--iim #key-skills h2 {
-    font-size: 26px !important;
-    font-weight: 800 !important;
-    text-align: center !important;
-    color: #111111 !important;
-    margin: 0 0 12px 0 !important;
-    line-height: 1.3 !important;
+ .landing-page--iim #key-skills h2 {
+  font-size: 26px !important;
+  font-weight: 800 !important;
+  text-align: left !important;
+  color: #111111 !important;
+  margin: 0 0 12px 0 !important;
+  line-height: 1.3 !important;
+  white-space: nowrap !important;
+}
+
+  .landing-page--iim #key-skills h2 .blue {
+    color: #17479E !important;
   }
 
   .landing-page--iim #key-skills p {
     font-size: 13.5px !important;
-    text-align: center !important;
+    text-align: left !important;
     color: #444444 !important;
-    margin: 0 !important;
+    margin: 0 0 15px 0 !important;
+    max-width: 100% !important;
+    line-height: 1.55 !important;
   }
 
-  .landing-page--iim .b2-info {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 22px !important;
-    margin-top: 25px !important;
-    max-width: 1120px !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-  }
+.landing-page--iim .b2-info {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 32px !important;
+  margin-top: 25px !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  box-sizing: border-box !important;
+}
 
   .landing-page--iim .b1 {
     background: #ffffff !important;
-    padding: 16px 20px !important;
+    padding: 14px 18px !important;
     border-radius: 10px !important;
     border: 2px solid #17479E !important;
     display: flex !important;
-    align-items: flex-start !important;
-    gap: 16px !important;
+    align-items: center !important;
+    gap: 18px !important;
     box-sizing: border-box !important;
     transition: transform 0.2s, box-shadow 0.2s !important;
   }
@@ -464,25 +632,26 @@ export const iimCustomCss = `
   }
 
   .landing-page--iim .b1 img {
-    width: 60px !important;
-    height: auto !important;
+    width: 65px !important;
+    height: 65px !important;
     flex-shrink: 0 !important;
     object-fit: contain !important;
-    margin-top: 2px !important;
+    margin: 0 !important;
   }
 
   .landing-page--iim .b1 h3 {
     color: #17479E !important;
-    font-size: 17px !important;
-    margin: 0 0 6px 0 !important;
+    font-size: 18px !important;
+    margin: 0 0 4px 0 !important;
     font-weight: 700 !important;
-    line-height: 1.3 !important;
+    line-height: 1.25 !important;
+    text-align: left !important;
   }
 
   .landing-page--iim .b1 p {
-    font-size: 13px !important;
+    font-size: 13.5px !important;
     color: #444444 !important;
-    line-height: 1.4 !important;
+    line-height: 1.35 !important;
     text-align: left !important;
     margin: 0 !important;
   }
@@ -492,20 +661,26 @@ export const iimCustomCss = `
       grid-template-columns: 1fr !important;
       gap: 16px !important;
     }
+    .landing-page--iim .overview1 h2,
+    .landing-page--iim #key-skills h2 {
+      font-size: 22px !important;
+    }
   }
 
   @media only screen and (max-width: 768px) {
-    .landing-page--iim #key-skills h2 {
-      font-size: 21px !important;
-    }
     .landing-page--iim .b1 {
       padding: 12px 14px !important;
+      gap: 14px !important;
     }
     .landing-page--iim .b1 img {
       width: 50px !important;
+      height: 50px !important;
     }
     .landing-page--iim .b1 h3 {
-      font-size: 15.5px !important;
+      font-size: 16px !important;
+    }
+    .landing-page--iim .b1 p {
+      font-size: 12.5px !important;
     }
   }
 
@@ -513,39 +688,55 @@ export const iimCustomCss = `
      7. TOOLS & TECHNOLOGIES SECTION (#courses)
      ========================================================= */
   .landing-page--iim section#courses {
-    margin: 40px 0 !important;
-    padding: 10px 20px !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 35px 0 !important;
+    padding: 10px 130px !important;
+    box-sizing: border-box !important;
   }
 
   .landing-page--iim #courses h2 {
     font-size: 26px !important;
     font-weight: 800 !important;
-    text-align: center !important;
+    text-align: left !important;
     color: #111111 !important;
     margin: 0 0 12px 0 !important;
     line-height: 1.3 !important;
   }
 
+  .landing-page--iim #courses h2 .blue {
+    color: #17479E !important;
+    background-color: #e8f0fe !important;
+    padding: 2px 8px !important;
+    border-radius: 4px !important;
+    display: inline-block !important;
+    margin-top: 4px !important;
+  }
+
   .landing-page--iim #courses p {
     font-size: 13.5px !important;
-    text-align: center !important;
+    text-align: left !important;
     color: #444444 !important;
-    margin: 0 !important;
-    line-height: 1.5 !important;
+    margin: 0 0 15px 0 !important;
+    line-height: 1.55 !important;
+    max-width: 100% !important;
   }
 
   .landing-page--iim .course-info {
     display: grid !important;
     grid-template-columns: repeat(3, 1fr) !important;
-    gap: 25px !important;
+    gap: 32px !important;
     margin-top: 25px !important;
-    max-width: 1120px !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    box-sizing: border-box !important;
   }
 
   .landing-page--iim .c1 {
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05) !important;
+    border: 1px solid #dcdcdc !important;
     border-radius: 12px !important;
     overflow: hidden !important;
     background: #ffffff !important;
@@ -553,20 +744,31 @@ export const iimCustomCss = `
     flex-direction: column !important;
     justify-content: space-between !important;
     height: 100% !important;
+    box-sizing: border-box !important;
+    transition: transform 0.2s, box-shadow 0.2s !important;
+  }
+  .landing-page--iim .c1:hover {
+    box-shadow: 0 6px 18px rgba(23, 71, 158, 0.12) !important;
+    transform: translateY(-2px) !important;
   }
 
   .landing-page--iim .c1 .c1-img-wrap {
-    min-height: 140px !important;
+    min-height: 130px !important;
+    height: 130px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    padding: 20px !important;
+    padding: 16px 20px !important;
     background: #ffffff !important;
+    box-sizing: border-box !important;
   }
 
-  .landing-page--iim .c1 img {
-    max-width: 180px !important;
-    max-height: 85px !important;
+  .landing-page--iim .c1 img,
+  .landing-page--iim .c1 .c1-img-wrap img {
+    max-width: 170px !important;
+    max-height: 75px !important;
+    width: auto !important;
+    height: auto !important;
     object-fit: contain !important;
     margin: auto !important;
     display: block !important;
@@ -577,15 +779,15 @@ export const iimCustomCss = `
   .landing-page--iim .c1 .c1-desc {
     background-color: #17479E !important;
     color: #ffffff !important;
-    padding: 16px 18px 20px 18px !important;
-    font-size: 13.5px !important;
-    border-bottom-left-radius: 12px !important;
-    border-bottom-right-radius: 12px !important;
+    padding: 14px 16px 18px 16px !important;
+    font-size: 13px !important;
+    border-bottom-left-radius: 10px !important;
+    border-bottom-right-radius: 10px !important;
     margin: 0 !important;
     text-align: left !important;
-    line-height: 1.55 !important;
+    line-height: 1.45 !important;
     display: block !important;
-    min-height: 105px !important;
+    min-height: 85px !important;
     box-sizing: border-box !important;
   }
 
@@ -606,12 +808,57 @@ export const iimCustomCss = `
   }
 
   @media only screen and (max-width: 991px) {
+    .landing-page--iim section#courses {
+      padding: 10px 20px !important;
+    }
     .landing-page--iim .course-info {
       grid-template-columns: 1fr !important;
       gap: 20px !important;
+      max-width: 480px !important;
+      margin: 20px auto 0 auto !important;
     }
     .landing-page--iim #courses h2 {
-      font-size: 21px !important;
+      font-size: 22px !important;
+      text-align: left !important;
+    }
+    .landing-page--iim #courses p {
+      font-size: 13px !important;
+      text-align: left !important;
+    }
+    .landing-page--iim .c1 .c1-img-wrap {
+      min-height: 130px !important;
+      height: 130px !important;
+    }
+    .landing-page--iim .c1 img,
+    .landing-page--iim .c1 .c1-img-wrap img {
+      max-width: 170px !important;
+      max-height: 75px !important;
+    }
+  }
+
+  @media only screen and (max-width: 768px) {
+    .landing-page--iim section#courses {
+      padding: 10px 15px !important;
+      margin: 30px 0 !important;
+    }
+    .landing-page--iim #courses h2 {
+      font-size: 20px !important;
+    }
+    .landing-page--iim .c1 .c1-img-wrap {
+      min-height: 120px !important;
+      height: 120px !important;
+      padding: 14px !important;
+    }
+    .landing-page--iim .c1 img,
+    .landing-page--iim .c1 .c1-img-wrap img {
+      max-width: 150px !important;
+      max-height: 65px !important;
+    }
+    .landing-page--iim #courses .c1 p,
+    .landing-page--iim .c1 p,
+    .landing-page--iim .c1 .c1-desc {
+      padding: 12px 14px 16px 14px !important;
+      font-size: 12.5px !important;
     }
   }
 
@@ -621,40 +868,180 @@ export const iimCustomCss = `
   .landing-page--iim #about {
     background-color: #F0F3FA !important;
     color: #111111 !important;
-    padding: 45px 20px !important;
+    padding: 40px 15px !important;
     margin: 35px 0 !important;
   }
 
-  .landing-page--iim #about h2 {
+  .landing-page--iim .about-cnt {
+    display: grid !important;
+    grid-template-columns: 1.45fr 1fr !important;
+    gap: 30px !important;
+    align-items: center !important;
+    max-width: 1140px !important;
+    margin: 0 auto !important;
+  }
+
+  .landing-page--iim .ab1 {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+  }
+
+  .landing-page--iim .ab1 h2 {
     color: #17479E !important;
     font-weight: 800 !important;
     font-size: 28px !important;
-    margin: 0 0 15px 0 !important;
+    margin: 0 0 14px 0 !important;
+    text-transform: uppercase !important;
+    text-align: center !important;
+    letter-spacing: 0.3px !important;
   }
 
-  .landing-page--iim #about p {
-    font-size: 14px !important;
+  .landing-page--iim .ab1 p {
+    font-size: 13.5px !important;
     color: #333333 !important;
-    line-height: 1.65 !important;
+    line-height: 1.38 !important;
+    text-align: center !important;
+    margin: 0 !important;
   }
 
-  .landing-page--iim #about .bg-white {
-    background: transparent !important;
-    border: 1px solid #111111 !important;
-    border-radius: 10px !important;
-    padding: 14px 12px !important;
-    box-shadow: none !important;
+  .landing-page--iim .ab1 > br {
+    display: none !important;
   }
 
-  .landing-page--iim #about .bg-white p {
-    color: #111111 !important;
-    font-weight: 700 !important;
-    font-size: 13px !important;
-    margin-bottom: 10px !important;
+  .landing-page--iim .accreited {
+    border: 1.5px solid #234880 !important;
+    border-radius: 12px !important;
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 14px !important;
+    align-items: center !important;
+    justify-content: space-around !important;
+    padding: 30px 18px 20px 18px !important;
+    position: relative !important;
+    margin-top: 24px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
-  .landing-page--iim #about img {
+  .landing-page--iim .accreited h2 {
+    position: absolute !important;
+    top: -22px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    background: #F0F3FA !important;
+    padding: 0 16px !important;
+    font-size: 15.5px !important;
+    font-weight: 800 !important;
+    color: #17479E !important;
+    text-align: center !important;
+    text-transform: none !important;
+    margin: 0 !important;
+    line-height: 1.25 !important;
+    letter-spacing: normal !important;
+    white-space: normal !important;
+    width: max-content !important;
+    max-width: 90% !important;
+  }
+
+  .landing-page--iim .accreited h2 br {
+    display: block !important;
+  }
+
+  .landing-page--iim .accreited .acc-card {
+    background: #ffffff !important;
     border-radius: 8px !important;
+    height: 64px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 6px 12px !important;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05) !important;
+    box-sizing: border-box !important;
+  }
+
+  .landing-page--iim .accreited .acc-card img {
+    max-height: 48px !important;
+    height: 44px !important;
+    max-width: 95% !important;
+    width: auto !important;
+    object-fit: contain !important;
+  }
+
+  .landing-page--iim .ab2 {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 100% !important;
+  }
+
+  .landing-page--iim .ab2 img {
+    border-radius: 20px !important;
+    width: 100% !important;
+    height: auto !important;
+    max-width: 440px !important;
+    max-height: 350px !important;
+    object-fit: cover !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+  }
+
+  @media only screen and (max-width: 991px) {
+    .landing-page--iim .about-cnt {
+      grid-template-columns: 1fr !important;
+      gap: 25px !important;
+    }
+    .landing-page--iim .ab1 h2 {
+      font-size: 24px !important;
+    }
+    .landing-page--iim .ab2 {
+      max-width: 440px !important;
+      margin: 0 auto !important;
+    }
+    .landing-page--iim .ab2 img {
+      max-height: 320px !important;
+    }
+    .landing-page--iim .accreited {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 12px !important;
+      padding-top: 40px !important;
+    }
+    .landing-page--iim .accreited h2 {
+      font-size: 14.5px !important;
+      top: -20px !important;
+      white-space: normal !important;
+      width: 90% !important;
+    }
+    .landing-page--iim .accreited .acc-card {
+      height: 58px !important;
+    }
+    .landing-page--iim .accreited .acc-card img {
+      max-height: 42px !important;
+    }
+  }
+
+  @media only screen and (max-width: 480px) {
+    .landing-page--iim .about-cnt {
+      padding: 15px 0 !important;
+    }
+    .landing-page--iim .ab1 h2 {
+      font-size: 21px !important;
+    }
+    .landing-page--iim .ab1 p {
+      font-size: 12.5px !important;
+      line-height: 1.4 !important;
+    }
+    .landing-page--iim .accreited h2 {
+      font-size: 13px !important;
+      top: -18px !important;
+      padding: 0 6px !important;
+    }
+    .landing-page--iim .accreited .acc-card {
+      height: 52px !important;
+    }
+    .landing-page--iim .accreited .acc-card img {
+      max-height: 36px !important;
+    }
   }
 
   /* =========================================================
@@ -666,12 +1053,16 @@ export const iimCustomCss = `
     background-size: cover !important;
     background-position: center right !important;
     color: #ffffff !important;
-    padding: 50px 30px !important;
+    padding: 50px 30px 75px 30px !important;
     margin: 35px 0 !important;
+    min-height: 640px !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    align-items: center !important;
   }
 
   .landing-page--iim .benefits-cnt {
-    width: 600px !important;
+    width: 580px !important;
     max-width: 100% !important;
   }
 
@@ -679,15 +1070,15 @@ export const iimCustomCss = `
     font-size: 28px !important;
     font-weight: 800 !important;
     color: #ffffff !important;
-    margin: 0 0 20px 0 !important;
+    margin: 0 0 18px 0 !important;
     line-height: 1.3 !important;
   }
 
   .landing-page--iim .benefits-cnt h3 {
-    font-size: 17px !important;
+    font-size: 16.5px !important;
     font-weight: 700 !important;
     color: #ffffff !important;
-    margin: 0 0 4px 0 !important;
+    margin: 0 0 3px 0 !important;
     display: flex !important;
     align-items: center !important;
     gap: 8px !important;
@@ -701,26 +1092,63 @@ export const iimCustomCss = `
     margin: 0 !important;
   }
 
+  .landing-page--iim .benefits-cnt .enquireNowBtn {
+    margin-top: 6px !important;
+    margin-bottom: 10px !important;
+  }
+
+  @media only screen and (min-width: 769px) and (max-width: 1024px) {
+    .landing-page--iim #benefits {
+      padding: 40px 20px 60px 20px !important;
+      min-height: 580px !important;
+      background-position: 70% center !important;
+    }
+    .landing-page--iim .benefits-cnt {
+      width: 480px !important;
+    }
+    .landing-page--iim .benefits-cnt h2 {
+      font-size: 24px !important;
+    }
+    .landing-page--iim .benefits-cnt h3 {
+      font-size: 15px !important;
+    }
+    .landing-page--iim .benefits-cnt p {
+      font-size: 12.5px !important;
+    }
+  }
+
   @media only screen and (max-width: 768px) {
     .landing-page--iim #benefits {
       background-image: url("/assets/all_universities_images/iim/mobile-bg-for-benefits.webp") !important;
       background-size: cover !important;
-      background-position: center top !important;
-      padding: 30px 20px !important;
-      padding-bottom: 270px !important;
+      background-position: center bottom !important;
+      padding: 30px 20px 480px 20px !important;
+      min-height: auto !important;
+      display: block !important;
     }
     .landing-page--iim .benefits-cnt {
       width: 100% !important;
       max-width: 380px !important;
+      margin: 0 auto !important;
     }
     .landing-page--iim .benefits-cnt h2 {
       font-size: 22px !important;
+      text-align: left !important;
     }
     .landing-page--iim .benefits-cnt h3 {
-      font-size: 15.5px !important;
+      font-size: 15px !important;
     }
     .landing-page--iim .benefits-cnt p {
       font-size: 12.5px !important;
+    }
+  }
+
+  @media only screen and (max-width: 480px) {
+    .landing-page--iim #benefits {
+      padding: 25px 15px 440px 15px !important;
+    }
+    .landing-page--iim .benefits-cnt h2 {
+      font-size: 20px !important;
     }
   }
 
@@ -742,33 +1170,34 @@ export const iimCustomCss = `
   }
 
   .landing-page--iim .degree img {
-    width: 440px !important;
-    max-width: 100% !important;
+    width: 100% !important;
+    max-width: 530px !important;
     height: auto !important;
-    border-radius: 8px !important;
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    display: block !important;
   }
 
   .landing-page--iim .degree-info h2 {
     color: #17479E !important;
-    font-size: 38px !important;
+    font-size: 36px !important;
     font-weight: 700 !important;
     line-height: 1.15 !important;
-    margin: 0 0 10px 0 !important;
+    margin: 0 !important;
   }
 
   .landing-page--iim .degree-info h3 {
-    font-size: 20px !important;
-    font-weight: 600 !important;
+    font-size: 19px !important;
+    font-weight: 700 !important;
     color: #111111 !important;
-    margin: 0 0 15px 0 !important;
+    margin: 0 !important;
   }
 
   .landing-page--iim .degree-info p {
     font-size: 14px !important;
-    color: #444444 !important;
-    line-height: 1.6 !important;
-    margin: 0 0 20px 0 !important;
+    color: #333333 !important;
+    line-height: 1.55 !important;
+    margin: 0 !important;
   }
 
   @media only screen and (max-width: 768px) {
@@ -794,12 +1223,13 @@ export const iimCustomCss = `
   }
 
   .landing-page--iim .placement-section {
-    padding: 35px 25px !important;
+    padding: 35px 20px !important;
     background-color: #F2F2F2 !important;
-    border-radius: 16px !important;
+    border-radius: 18px !important;
     text-align: center !important;
-    max-width: 1120px !important;
+    max-width: 1140px !important;
     margin: 0 auto !important;
+    box-sizing: border-box !important;
   }
 
   .landing-page--iim .placement-section h2 {
@@ -812,192 +1242,148 @@ export const iimCustomCss = `
   }
 
   .landing-page--iim .placement-img {
-    width: 125px !important;
+    width: 128px !important;
     height: auto !important;
-    margin: 10px 14px !important;
+    margin: 6px 7px !important;
     display: inline-block !important;
     vertical-align: middle !important;
     object-fit: contain !important;
+    transition: transform 0.2s ease !important;
+  }
+
+  .landing-page--iim .placement-img:hover {
+    transform: translateY(-2px) !important;
+  }
+
+  @media only screen and (min-width: 992px) and (max-width: 1140px) {
+    .landing-page--iim .placement-img {
+      width: 116px !important;
+      margin: 6px 5px !important;
+    }
+  }
+
+  @media only screen and (min-width: 769px) and (max-width: 991px) {
+    .landing-page--iim .placement-img {
+      width: 104px !important;
+      margin: 6px 4px !important;
+    }
   }
 
   @media only screen and (max-width: 768px) {
+    .landing-page--iim .placement-section {
+      padding: 25px 12px !important;
+    }
     .landing-page--iim .placement-img {
       width: 95px !important;
-      margin: 8px 6px !important;
+      margin: 6px 5px !important;
     }
   }
 
-  /* =========================================================
-     12. HOW TO APPLY (#how-to-apply)
-     ========================================================= */
-  .landing-page--iim .apply-section {
-    padding: 50px 20px !important;
-    background: #ffffff !important;
-    text-align: center !important;
-    margin: 0 !important;
-  }
 
-  .landing-page--iim .apply-section h2 {
-    font-size: 28px !important;
-    font-weight: 700 !important;
-    text-align: center !important;
-    color: #193579 !important;
-    margin: 0 0 10px 0 !important;
-  }
-
-  .landing-page--iim .section-desc {
-    max-width: 900px !important;
-    margin: 0 auto 30px auto !important;
-    color: #555555 !important;
-    font-size: 14px !important;
-    line-height: 1.55 !important;
-  }
-
-  .landing-page--iim .steps-wrapper {
-    display: grid !important;
-    grid-template-columns: repeat(6, 1fr) !important;
-    gap: 15px !important;
-    max-width: 1120px !important;
-    margin: 0 auto !important;
-  }
-
-  .landing-page--iim .step-card {
-    background: #ffffff !important;
-    padding: 20px 14px !important;
-    border-radius: 14px !important;
-    position: relative !important;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: flex-start !important;
-  }
-
-  .landing-page--iim .step-card h4 {
-    font-size: 15px !important;
-    margin: 15px 0 8px 0 !important;
-    color: #000000 !important;
-    font-weight: 600 !important;
-  }
-
-  .landing-page--iim .step-card p {
-    font-size: 12px !important;
-    color: #444444 !important;
-    line-height: 1.35 !important;
-    margin: 0 !important;
-  }
-
-  .landing-page--iim .step-number {
-    width: 44px !important;
-    height: 44px !important;
-    border-radius: 50% !important;
-    margin: 0 auto !important;
-    font-size: 19px !important;
-    font-weight: bold !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    background: #ffffff !important;
-  }
-
-  .landing-page--iim .step-card::after {
-    content: "" !important;
-    position: absolute !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    height: 5px !important;
-    width: 100% !important;
-    border-radius: 0 0 14px 14px !important;
-  }
-
-  .landing-page--iim .orange .step-number { border: 3px solid #ff8c32 !important; color: #ff8c32 !important; }
-  .landing-page--iim .orange::after { background: #ff8c32 !important; }
-  .landing-page--iim .orange { background: #fff4e9 !important; }
-
-  .landing-page--iim .blue .step-number { border: 3px solid #0b5ed7 !important; color: #0b5ed7 !important; }
-  .landing-page--iim .blue::after { background: #0b5ed7 !important; }
-  .landing-page--iim .blue { background: #f2f8ff !important; }
-
-  .landing-page--iim .pink .step-number { border: 3px solid #ff2d6f !important; color: #ff2d6f !important; }
-  .landing-page--iim .pink::after { background: #ff2d6f !important; }
-  .landing-page--iim .pink { background: #fff1f6 !important; }
-
-  .landing-page--iim .green .step-number { border: 3px solid #1faa59 !important; color: #1faa59 !important; }
-  .landing-page--iim .green::after { background: #1faa59 !important; }
-  .landing-page--iim .green { background: #effff5 !important; }
-
-  .landing-page--iim .purple .step-number { border: 3px solid #8e2de2 !important; color: #8e2de2 !important; }
-  .landing-page--iim .purple::after { background: #8e2de2 !important; }
-  .landing-page--iim .purple { background: #f9f0ff !important; }
-
-  @media (max-width: 1200px) {
-    .landing-page--iim .steps-wrapper {
-      grid-template-columns: repeat(3, 1fr) !important;
-    }
-  }
-  @media (max-width: 768px) {
-    .landing-page--iim .steps-wrapper {
-      grid-template-columns: repeat(1, 1fr) !important;
-    }
-    .landing-page--iim .apply-section h2 {
-      font-size: 21px !important;
-    }
-  }
 
   /* =========================================================
      13. FAQS SECTION (#faqs)
      ========================================================= */
   .landing-page--iim #faqs {
-    margin: 40px 0 !important;
-    padding: 10px 20px !important;
+    margin: 45px 0 !important;
+    padding: 0 16px !important;
   }
 
-  .landing-page--iim #faqs h2 {
+  .landing-page--iim #faqs .container {
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+  }
+
+  .landing-page--iim #faqs .faq-title {
+    margin-bottom: 22px !important;
+  }
+
+  .landing-page--iim #faqs .faq-title h2 {
     font-size: 26px !important;
-    font-weight: 700 !important;
+    font-weight: 800 !important;
     color: #111111 !important;
-    margin: 0 0 25px 0 !important;
+    margin: 0 !important;
     text-align: left !important;
+    letter-spacing: -0.2px !important;
   }
 
-  .landing-page--iim #faqs .divide-y {
-    border-top: none !important;
+  .landing-page--iim #faqs .accordion {
     display: flex !important;
     flex-direction: column !important;
     gap: 12px !important;
-    max-width: 900px !important;
-    margin: 0 auto !important;
-  }
-
-  .landing-page--iim #faqs .divide-y > div {
-    border: 1px solid #dee2e6 !important;
-    border-left: 5px solid #17479E !important;
-    border-radius: 5px !important;
-    background: #ffffff !important;
-    padding: 0 18px !important;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
-  }
-
-  .landing-page--iim #faqs button {
-    padding: 15px 0 !important;
     width: 100% !important;
+  }
+
+  .landing-page--iim #faqs .accordion-item {
+    background-color: #f1f3f5 !important;
+    border: 1px solid #dcdfe3 !important;
+    border-left: 5px solid #17479E !important;
+    border-radius: 4px !important;
+    overflow: hidden !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+    transition: all 0.2s ease !important;
+  }
+
+  .landing-page--iim #faqs .accordion-header {
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
-    cursor: pointer !important;
-  }
-
-  .landing-page--iim #faqs button span:first-child {
+    padding: 14px 18px !important;
     font-size: 15px !important;
     font-weight: 600 !important;
     color: #111111 !important;
+    cursor: pointer !important;
+    user-select: none !important;
     line-height: 1.4 !important;
+    gap: 14px !important;
+    background: transparent !important;
   }
 
-  .landing-page--iim #faqs button span:last-child {
-    color: #17479E !important;
-    font-size: 20px !important;
-    font-weight: bold !important;
-    margin-left: 12px !important;
+  .landing-page--iim #faqs .accordion-header:hover {
+    background-color: #e9ecef !important;
+  }
+
+  .landing-page--iim #faqs .accordion-header .span {
+    font-size: 17px !important;
+    font-weight: 700 !important;
+    color: #111111 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+    margin-left: auto !important;
+  }
+
+  .landing-page--iim #faqs .accordion-content {
+    padding: 12px 18px 16px 18px !important;
+    font-size: 14px !important;
+    color: #444444 !important;
+    line-height: 1.6 !important;
+    border-top: 1px solid #e2e5e8 !important;
+    background-color: #ffffff !important;
+  }
+
+  @media only screen and (max-width: 768px) {
+    .landing-page--iim #faqs {
+      margin: 30px 0 !important;
+      padding: 0 12px !important;
+    }
+    .landing-page--iim #faqs .faq-title h2 {
+      font-size: 20px !important;
+      margin-bottom: 14px !important;
+    }
+    .landing-page--iim #faqs .accordion {
+      gap: 10px !important;
+    }
+    .landing-page--iim #faqs .accordion-header {
+      padding: 12px 14px !important;
+      font-size: 13.5px !important;
+    }
+    .landing-page--iim #faqs .accordion-content {
+      padding: 10px 14px 14px 14px !important;
+      font-size: 13px !important;
+    }
   }
 
   @media only screen and (max-width: 768px) {
@@ -1177,11 +1563,12 @@ export const iimData = {
     whyChooseLayout: "iim",
     degreeLayout: "iim",
     recruitersLayout: "iim",
-    admissionLayout: "iim",
     faqLayout: "iim",
     stickyCtaLayout: "iim",
     faqAccentColor: "#17479E",
     faqTitle: "FAQ | Frequently Asked Questions",
+    admissionTitle: "How to Apply for IIM Kozhikode University Online Courses",
+    admissionSubtitle: "Students can easily enrol in IIM Kozhikode University Online courses. Candidates can conveniently apply by selecting their desired program. Follow these steps to secure admission in the university.",
 
     // Global Compare Banner Configuration
     compareBannerBg: "#17479E",
@@ -1209,21 +1596,27 @@ export const iimData = {
       style: "iim",
       backgroundImage: "/assets/all_universities_images/iim/iim_desktop_new_img.png",
       mobileBackgroundImage: "/assets/all_universities_images/iim/new_iim_mobile_bg.png",
-      backgroundPosition: "center top",
+      backgroundPosition: "center -140px",
+      desktopBackgroundPosition: "center -140px",
       noOverlay: true,
-      minHeight: "440px",
+      minHeight: "auto",
 
       logo: "/assets/all_universities_images/iim/upgrade_iim_logo.png",
       logoContainerClassName: "hero-logo-container",
+      headlineHtml: "HRM Analytics<br/>Online Certification",
       headingText: "HRM Analytics\nOnline Certification",
       headingColor: "#17479E",
       headingClassName: "hero-headline",
-      taglineText: "By IIM Kozhikode via Upgrade",
+      taglineText: (
+        <span>
+          By <u className="underline">IIM Kozhikode</u> via <u className="underline">Upgrade</u>
+        </span>
+      ),
       taglineClassName: "hero-tagline",
       description:
         "Earn a 6-month professional certificate from IIM Kozhikode. This HR Analytics course covers recruitment, job posting, and workforce management via case studies & real-world projects.",
       descriptionColor: "#333333",
-      descriptionClassName: "hero-description",
+      descriptionClassName: "hero-description tracking-wide",
       courseLines: ["🕒 6 Months"],
       hideCourseBox: true,
       courseStripClassName: "hero-clock-badge",
@@ -1233,6 +1626,10 @@ export const iimData = {
       buttonClassName: "hero-brochure-btn",
       hideBrochureOnMobile: true,
       mobileStudentImage: "/assets/all_universities_images/iim/iim_mobile_new_img.png",
+      hideTermsCheckbox: true,
+      form: {
+        hideTermsCheckbox: true,
+      },
       formCardType: "white",
       formTitleColor: "#17479E",
       phoneBadgeBg: "#17479E",
@@ -1300,7 +1697,7 @@ export const iimData = {
 
   tools: [
     {
-      name: "Power BI",
+      name: "Power BI ",
       desc: "Transform HR data into dynamic dashboards and interactive reports that support strategic decisions.",
       image: "/assets/all_universities_images/iim/power-bi.webp",
     },
@@ -1395,48 +1792,56 @@ export const iimData = {
     { name: "CBSPL", image: "/assets/all_universities_images/iim/cbspl.webp" },
   ],
 
-  howToApply: {
-    title: "How to Apply for IIM Kozhikode University Online Courses",
-    desc: "Students can easily enrol in IIM Kozhikode University Online courses. Candidates can conveniently apply by selecting their desired program. Follow these steps to secure admission in the university.",
-    steps: [
-      {
-        num: 1,
-        title: "Submit Form",
-        desc: "Fill in and submit your application form online",
-        colorClass: "orange",
-      },
-      {
-        num: 2,
-        title: "Expert's Counseling",
-        desc: "You will receive a call from our expert counselor",
-        colorClass: "blue",
-      },
-      {
-        num: 3,
-        title: "Choose University",
-        desc: "Select the course & university according to your interest",
-        colorClass: "pink",
-      },
-      {
-        num: 4,
-        title: "Online Payment",
-        desc: "You need to make a smooth online fee submission",
-        colorClass: "green",
-      },
-      {
-        num: 5,
-        title: "Document Submit",
-        desc: "You need to upload all the required verified documents.",
-        colorClass: "purple",
-      },
-      {
-        num: 6,
-        title: "Admission Confirm",
-        desc: "Get Confirmation on your Email & Whatsapp",
-        colorClass: "orange",
-      },
-    ],
-  },
+  admissionSteps: [
+    {
+      num: 1,
+      title: "Submit Form",
+      desc: "Fill in and submit your application form online",
+      themeColor: "#ff7a00",
+      borderColor: "#ff7a00",
+      cardBg: "#fff8f0",
+    },
+    {
+      num: 2,
+      title: "Expert's Counseling",
+      desc: "You will receive a call from our expert counselor",
+      themeColor: "#0066cc",
+      borderColor: "#0066cc",
+      cardBg: "#f0f7ff",
+    },
+    {
+      num: 3,
+      title: "Choose University",
+      desc: "Select the course & university according to your interest",
+      themeColor: "#ff2a6d",
+      borderColor: "#ff2a6d",
+      cardBg: "#fff0f5",
+    },
+    {
+      num: 4,
+      title: "Online Payment",
+      desc: "You need to make a smooth online fee submission",
+      themeColor: "#16a34a",
+      borderColor: "#16a34a",
+      cardBg: "#f0faf3",
+    },
+    {
+      num: 5,
+      title: "Document Submit",
+      desc: "You need to upload all the required verified documents.",
+      themeColor: "#8b5cf6",
+      borderColor: "#8b5cf6",
+      cardBg: "#f7f2ff",
+    },
+    {
+      num: 6,
+      title: "Admission Confirm",
+      desc: "Get Confirmation on your Email & Whatsapp",
+      themeColor: "#ff7a00",
+      borderColor: "#ff7a00",
+      cardBg: "#fff8f0",
+    },
+  ],
 
   faqs: [
     {

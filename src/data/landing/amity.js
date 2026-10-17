@@ -57,6 +57,24 @@ export const amityData = {
     .amity-header-accent {
       color: #08417b;
     }
+
+    /* Amity Navbar Logo - compact size matching target header */
+    .amity-navbar-logo {
+      width: 102px !important;
+      height: 36px !important;
+    }
+    @media (min-width: 640px) {
+      .amity-navbar-logo {
+        width: 98px !important;
+        height: 34px !important;
+      }
+    }
+    @media (min-width: 1024px) {
+      .amity-navbar-logo {
+        width: 102px !important;
+        height: 35px !important;
+      }
+    }
   `,
 
   /* =======================================================
@@ -107,7 +125,9 @@ export const amityData = {
     sodeLogo:
       "/assets/all_universities_images/amity/new-des-logo.webp",
 
-    showSodeLogo: true,
+    showSodeLogo: false,
+    logoWrapperClassName:
+      "w-[105px] sm:w-[115px] lg:w-[125px] h-9 sm:h-[38px] lg:h-[40px] amity-navbar-logo",
 
     whyChooseStudentImage:
       "/assets/all_universities_images/amity/Why-choose-amity.png",

@@ -101,35 +101,6 @@ export default function LandingAdmissionProcess({
 }) {
   if (brand.hideAdmissionProcess) return null;
 
-  // IIM Kozhikode Dedicated Layout
-  if (brand.slug === "iim" || brand.admissionLayout === "iim") {
-    const steps = (admissionSteps && admissionSteps.length > 0) ? admissionSteps : [
-      { num: 1, title: "Submit Form", desc: "Fill in and submit your application form online", colorClass: "orange" },
-      { num: 2, title: "Expert's Counseling", desc: "You will receive a call from our expert counselor", colorClass: "blue" },
-      { num: 3, title: "Choose University", desc: "Select the course & university according to your interest", colorClass: "pink" },
-      { num: 4, title: "Online Payment", desc: "You need to make a smooth online fee submission", colorClass: "green" },
-      { num: 5, title: "Document Submit", desc: "You need to upload all the required verified documents.", colorClass: "purple" },
-      { num: 6, title: "Admission Confirm", desc: "Get Confirmation on your Email & Whatsapp", colorClass: "orange" },
-    ];
-    return (
-      <section className="apply-section" id="how-to-apply">
-        <h2>{brand.admissionTitle || "How to Apply for IIM Kozhikode University Online Courses"}</h2>
-        <p className="section-desc">
-          {brand.admissionSubtitle || "Students can easily enrol in IIM Kozhikode University Online courses. Candidates can conveniently apply by selecting their desired program. Follow these steps to secure admission in the university."}
-        </p>
-
-        <div className="steps-wrapper">
-          {steps.map((st) => (
-            <div key={st.num} className={`step-card ${st.colorClass}`}>
-              <div className="step-number">{st.num}</div>
-              <h4>{st.title}</h4>
-              <p>{st.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-    );
-  }
 
   // Active steps with fallback to global 6 steps
   const rawSteps =
@@ -240,7 +211,7 @@ export default function LandingAdmissionProcess({
           </h2>
         ) : (
           <h2
-            className="text-[22px] sm:text-[26px] lg:text-[30px] xl:text-[32px] font-medium text-center tracking-tight mb-2 sm:mb-2.5 lg:mb-2 m-0 leading-tight"
+            className={`text-[22px] sm:text-[26px] lg:text-[30px] xl:text-[32px] font-medium text-center ${brand.slug === "iim" || brand.admissionTrackingWide ? "tracking-wide" : "tracking-tight"} mb-2 sm:mb-2.5 lg:mb-2 m-0 leading-tight`}
             style={{ color: headingColor }}
           >
             {headingText}
@@ -248,7 +219,7 @@ export default function LandingAdmissionProcess({
         )}
 
         {/* Subtitle */}
-        <p className="text-[14.5px] sm:text-[13.5px] lg:text-[14px] text-center text-[#555555] mb-5 sm:mb-6 lg:mb-[24px] max-w-[860px] lg:max-w-[960px] mx-auto font-normal leading-relaxed m-0 px-2 sm:px-4">
+        <p className={`text-[14.5px] sm:text-[13.5px] lg:text-[14px] text-center text-[#555555] mb-5 sm:mb-6 lg:mb-[24px] max-w-[860px] lg:max-w-[960px] mx-auto font-normal leading-relaxed m-0 px-2 sm:px-4 ${brand.slug === "iim" || brand.admissionTrackingWide ? "tracking-wide" : ""}`}>
           {subtitleText}
         </p>
 
