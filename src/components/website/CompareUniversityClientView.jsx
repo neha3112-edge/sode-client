@@ -883,7 +883,7 @@ export default function CompareUniversityClientView({
 
     const bulletList = (arr, icon, iconClass) =>
       arr?.length
-        ? <ul className="space-y-0.5 m-0 p-0 list-none text-[11px] text-slate-600 inline-block text-left max-w-70">
+        ? <ul className="space-y-0.5 m-0 p-0 list-none text-[11px] text-slate-600 w-full text-left">
           {arr.map((item, i) => (
             <li key={i} className="flex items-center gap-2">
               {icon ? (
