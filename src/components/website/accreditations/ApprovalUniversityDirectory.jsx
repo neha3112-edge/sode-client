@@ -4,7 +4,7 @@ import React, { useState, useMemo, useEffect, useRef } from "react";
 import { request } from "@/services/request";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, notFound } from "next/navigation";
 import { Table, Select, Input } from "antd";
 import {
   Search,
@@ -237,6 +237,10 @@ function SmoothExpandedCard({
 }
 
 export default function ApprovalUniversityDirectory({ initialData = null, className = "" }) {
+  if (!initialData || (!initialData.approval && !initialData._id)) {
+    notFound();
+  }
+
   const router = useRouter();
   const { openFormModal } = useFormModal();
   const { toggleCompare, isInCompare, compareList, setIsCompareDrawerOpen } = useCompare();

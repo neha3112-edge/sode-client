@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, notFound } from "next/navigation";
 import { useFormModal } from "@/hooks/useFormModal";
 import { useCompare } from "@/hooks/useCompare";
 import { formatAdmissionDeadline } from "@/lib/utils";
@@ -26,6 +26,10 @@ export function CourseClientView({
   initialCourses = [],
   slug = "",
 }) {
+  if (!initialData || (!initialData.name && !initialData.title && !initialData._id)) {
+    notFound();
+  }
+
   const router = useRouter();
   const { openFormModal } = useFormModal();
   const { toggleCompare, addToCompare, compareList, isInCompare, setIsCompareDrawerOpen } = useCompare();

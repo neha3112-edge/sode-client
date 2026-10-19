@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, notFound } from "next/navigation";
 import { Carousel, Table } from "antd";
 import { Container } from "@/components/common/Container";
 import SafeHtmlRenderer from "@/components/website/SafeHtmlRenderer";
@@ -71,6 +71,10 @@ function resolveMediaUrl(media) {
 }
 
 export default function CoursePageClientView({ page, slug, heroData = null }) {
+  if (!page || (!page.pageTitle && !page.title && !page._id)) {
+    notFound();
+  }
+
   const router = useRouter();
   const { openFormModal } = useFormModal();
   const { isInCompare, toggleCompare, addToCompare, compareList, setIsCompareDrawerOpen } = useCompare();

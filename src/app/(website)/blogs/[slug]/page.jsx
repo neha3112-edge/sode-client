@@ -1,4 +1,5 @@
 import { cache } from "react";
+import { notFound } from "next/navigation";
 import { request } from "@/services/request";
 import { getPageMetaData, constructMetadata } from "@/constants/pageMetaData";
 import { BlogClientView } from "@/components/website";
@@ -79,7 +80,16 @@ export async function generateMetadata({ params }) {
       getBlogPageData(slug),
       getPageMetaData(`/blogs/${slug}`),
     ]);
-    const blog = data?.blogId || data || {};
+    const blog = data?.blogId || data;
+    if (!blog || (!blog.title && !data?.headline)) {
+      return {
+        title: "Page Not Found",
+        robots: {
+          index: false,
+          follow: false,
+        },
+      };
+    }
 
     const title = data?.headline || blog?.title || "";
     const description = data?.metaDescription || blog?.subtitle || blog?.excerpt || "";

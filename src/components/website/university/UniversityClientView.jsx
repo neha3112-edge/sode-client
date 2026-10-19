@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, notFound } from "next/navigation";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
 import { useCompare } from "@/hooks/useCompare";
 import { useFormModal } from "@/hooks/useFormModal";
@@ -36,6 +36,17 @@ const getSafeText = (val, fallback = "") => {
 };
 
 export function UniversityClientView({ initialData, slug }) {
+  const data = initialData || null;
+  const uni =
+    (data && typeof data.result === "object" ? data.result : null) ||
+    (data && typeof data.universityId === "object" ? data.universityId : null) ||
+    data ||
+    null;
+
+  if (!uni || (!uni.name && !uni.tagline && !uni._id)) {
+    notFound();
+  }
+
   const router = useRouter();
   const { openFormModal } = useFormModal();
   const { addToCompare, compareList, isInCompare, setIsCompareDrawerOpen } = useCompare();
@@ -43,14 +54,7 @@ export function UniversityClientView({ initialData, slug }) {
   const [activeCourseFilter, setActiveCourseFilter] = useState("ALL");
   const [visibleCoursesCount, setVisibleCoursesCount] = useState(5);
 
-  const data = initialData || {};
-  const uni =
-    (data && typeof data.result === "object" ? data.result : null) ||
-    (data && typeof data.universityId === "object" ? data.universityId : null) ||
-    data ||
-    {};
-
-  const uniName = uni.name || data.name || data.tagline || "University";
+  const uniName = uni.name || data?.name || data?.tagline || "University";
 
   useBreadcrumb(
     {

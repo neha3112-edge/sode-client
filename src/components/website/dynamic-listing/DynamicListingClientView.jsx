@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Carousel, Pagination } from "antd";
@@ -635,6 +636,10 @@ function FAQSection({ faqs, pageTitle }) {
 }
 
 export function DynamicListingClientView({ page }) {
+  if (!page || (!page.title && !page._id)) {
+    notFound();
+  }
+
   useBreadcrumb([
     { label: "Home", href: "/" },
     { label: "Top Universities", href: "/universities" },

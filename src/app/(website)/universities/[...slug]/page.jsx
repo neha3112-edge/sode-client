@@ -1,4 +1,5 @@
 import { cache } from "react";
+import { notFound } from "next/navigation";
 import { request } from "@/services/request";
 import { getPageMetaData, constructMetadata } from "@/constants/pageMetaData";
 import { UniversityClientView, CourseClientView } from "@/components/website";
@@ -164,6 +165,12 @@ export default async function UniversityOrCourseDetailPage({ params }) {
       getUniversityData(uniSlug),
       getPageMetaData(`/universities/${uniSlug}`),
     ]);
+
+    const uni = (initialData && typeof initialData.universityId === "object" ? initialData.universityId : initialData) || {};
+    if (!initialData || (!uni.name && !initialData.name && !initialData.tagline)) {
+      notFound();
+    }
+
     return (
       <>
         {pageMeta?.schemaMarkup && <JsonLdScript data={pageMeta.schemaMarkup} />}
@@ -178,6 +185,11 @@ export default async function UniversityOrCourseDetailPage({ params }) {
     getCourseData(slugArray),
     getPageMetaData(`/universities/${slugStr}`),
   ]);
+
+  if (!initialData || (!initialData.name && !initialData.title)) {
+    notFound();
+  }
+
   const initialCourses =
     Array.isArray(initialData?.topUniversities) && initialData.topUniversities.length > 0
       ? initialData.topUniversities

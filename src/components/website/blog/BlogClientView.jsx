@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Button, Carousel, Form, Input, message as staticMessage, Modal, Table, App } from "antd";
@@ -281,6 +282,11 @@ export default function BlogClientView({
   initialCategories = null,
   slug: propSlug,
 }) {
+  const blog = initialData?.blogId || initialData;
+  if (!blog || (!blog.title && !blog.headline && !blog._id)) {
+    notFound();
+  }
+
   const antdApp = App.useApp();
   const message = antdApp?.message || staticMessage;
   const [toolsList, setToolsList] = useState(
@@ -369,7 +375,6 @@ export default function BlogClientView({
     };
   }, [initialTools]);
 
-  const blog = initialData?.blogId || initialData || {};
   const [viewsCount, setViewsCount] = useState(
     blog?.viewsCount ?? blog?.views ?? 0
   );
