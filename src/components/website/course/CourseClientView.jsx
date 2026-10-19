@@ -159,15 +159,30 @@ export function CourseClientView({
   }, [courseData]);
 
   const approvalsSummary = useMemo(() => {
-    const found = approvalsList.find((a) => {
-      const name = typeof a === "string" ? a : (a.name || a.code || a.title || "");
-      return /ugc/i.test(name);
-    });
-    if (found) {
-      const name = typeof found === "string" ? found : (found.name || found.code || found.title || "");
-      return name.includes("DEB") ? name : `${name}-DEB`;
+    if (!approvalsList || approvalsList.length === 0) return "";
+
+    const getName = (a) => (typeof a === "string" ? a : (a?.name || a?.code || a?.title || "")).trim();
+
+    // 1. UGC / UGC-DEB
+    const ugcItem = approvalsList.find((a) => /ugc/i.test(getName(a)));
+    if (ugcItem) {
+      const name = getName(ugcItem);
+      return name.toUpperCase().includes("DEB") ? name : `${name}-DEB`;
     }
-    return "UGC-DEB";
+
+    // 2. AICTE
+    const aicteItem = approvalsList.find((a) => /aicte/i.test(getName(a)));
+    if (aicteItem) {
+      return getName(aicteItem);
+    }
+
+    // 3. Any other approval/accreditation (NIRF, NAAC, etc.)
+    const otherItem = approvalsList.find((a) => Boolean(getName(a)));
+    if (otherItem) {
+      return getName(otherItem);
+    }
+
+    return "";
   }, [approvalsList]);
 
   const highlightsList = useMemo(() => {

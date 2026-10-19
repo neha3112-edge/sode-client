@@ -79,7 +79,7 @@ export default function UniversityCoursesSection({
           const courseDetailHref = rawCourseSlug.includes("/")
             ? `/universities/${rawCourseSlug}`
             : `/universities/${slug || uni.slug || ""}/${rawCourseSlug}`;
-          const specCount = item.specializationsCount || item.subcourses?.length || 0;
+          const specCount = item.isDirectCard ? 0 : (item.specializationsCount || item.subcourses?.length || 0);
           const inCmp = isInCompare(item._id || item.slug || cardTitle);
           const courseLogoUrl = item.logo ? getMediaUrl(item.logo) : null;
           const displayCourseLogo = courseLogoUrl || logoUrl;
@@ -278,11 +278,13 @@ export default function UniversityCoursesSection({
         const itemDeadline = formatAdmissionDeadline(selectedCourseSpec.admissionDeadline || uni?.admissionDeadline || uni?.admission_deadline || "");
         const itemDesc = selectedCourseSpec.description?.trim() || selectedCourseSpec.overview?.trim() || selectedCourseSpec.desc?.trim() || (cTitle ? `This Program focuses on ${cTitle}, covering specialized concepts and practical applications. Learners build analysis and professional problem-solving through degree study, preparing for relevant professional and industry roles and supporting confident professional growth.` : "");
 
-        const specializationsList = Array.isArray(selectedCourseSpec.subcourses) && selectedCourseSpec.subcourses.length > 0
-          ? selectedCourseSpec.subcourses
-          : Array.isArray(selectedCourseSpec.subCourses)
-            ? selectedCourseSpec.subCourses
-            : [];
+        const specializationsList = selectedCourseSpec.isDirectCard
+          ? []
+          : (Array.isArray(selectedCourseSpec.subcourses) && selectedCourseSpec.subcourses.length > 0
+            ? selectedCourseSpec.subcourses
+            : Array.isArray(selectedCourseSpec.subCourses)
+              ? selectedCourseSpec.subCourses
+              : []);
 
         const uniLogoSrc = logoUrl || (selectedCourseSpec.logo ? getMediaUrl(selectedCourseSpec.logo) : null);
 

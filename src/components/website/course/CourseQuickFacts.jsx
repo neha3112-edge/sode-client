@@ -47,7 +47,7 @@ export default function CourseQuickFacts({
           <div className="min-w-0">
             <span className="text-[11px] sm:text-xs text-gray-500 font-medium block leading-none mb-1">Approvals</span>
             <span className="text-xs sm:text-sm font-bold text-gray-900 block leading-snug line-clamp-2 sm:truncate">
-              {approvalsSummary || "UGC-DEB"}
+              {approvalsSummary || "Approved"}
             </span>
           </div>
         </div>

@@ -1309,11 +1309,10 @@ export default function CoursesPageClientView({
                                     setIsCompareDrawerOpen(true);
                                   }
                                 }}
-                                className={`border text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors inline-flex items-center justify-center gap-1.5 cursor-pointer ml-1 ${
-                                  inCmp
+                                className={`border text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors inline-flex items-center justify-center gap-1.5 cursor-pointer ml-1 ${inCmp
                                     ? "bg-teal-50 border-teal-500 text-teal-700 hover:bg-teal-100 font-bold"
                                     : "border-gray-200 hover:border-gray-300 hover:bg-gray-50 bg-white text-gray-800"
-                                }`}
+                                  }`}
                               >
                                 {inCmp ? (
                                   <>
@@ -1441,11 +1440,10 @@ export default function CoursesPageClientView({
                                   setIsCompareDrawerOpen(true);
                                 }
                               }}
-                              className={`border text-[11px] font-semibold px-2.5 py-1 rounded-lg transition-colors inline-flex items-center justify-center gap-1 cursor-pointer shrink-0 self-center ${
-                                inCmp
+                              className={`border text-[11px] font-semibold px-2.5 py-1 rounded-lg transition-colors inline-flex items-center justify-center gap-1 cursor-pointer shrink-0 self-center ${inCmp
                                   ? "bg-teal-50 border-teal-500 text-teal-700 hover:bg-teal-100 font-bold"
                                   : "border-gray-200 hover:border-gray-300 hover:bg-gray-50 bg-white text-gray-700"
-                              }`}
+                                }`}
                             >
                               {inCmp ? (
                                 <>

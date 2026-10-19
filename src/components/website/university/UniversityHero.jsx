@@ -274,7 +274,7 @@ export default function UniversityHero({
                   Approvals
                 </span>
                 <span className="text-xs sm:text-sm font-bold text-gray-900 block leading-snug line-clamp-2 sm:truncate">
-                  {approvalsSummary || "UGC-DEB"}
+                  {approvalsSummary || "Approved"}
                 </span>
               </div>
             </div>

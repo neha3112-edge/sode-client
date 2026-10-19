@@ -2,7 +2,16 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
+const getMediaUrl = (obj) => {
+  if (!obj) return null;
+  if (typeof obj === "string") {
+    if (/^[0-9a-fA-F]{24}$/.test(obj)) return null;
+    return obj;
+  }
+  const raw = obj?.url || obj?.path || obj?.src || null;
+  if (typeof raw === "string" && /^[0-9a-fA-F]{24}$/.test(raw)) return null;
+  return raw;
+};
 
 // Category Icon Component - Renders MinIO Media Asset image/SVG from backend using Next.js Image
 export function CategoryIcon({ cat }) {

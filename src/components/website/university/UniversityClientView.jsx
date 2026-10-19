@@ -136,8 +136,30 @@ export function UniversityClientView({ initialData, slug }) {
   }, [uni.accreditations]);
 
   const approvalsSummary = useMemo(() => {
-    const found = accreditationsList.find((a) => /ugc/i.test(a.title));
-    return found ? (found.title.includes("DEB") ? found.title : `${found.title}-DEB`) : "UGC-DEB";
+    if (!accreditationsList || accreditationsList.length === 0) return "";
+
+    const getName = (a) => (typeof a === "string" ? a : (a?.title || a?.name || a?.code || "")).trim();
+
+    // 1. UGC / UGC-DEB
+    const ugcItem = accreditationsList.find((a) => /ugc/i.test(getName(a)));
+    if (ugcItem) {
+      const name = getName(ugcItem);
+      return name.toUpperCase().includes("DEB") ? name : `${name}-DEB`;
+    }
+
+    // 2. AICTE
+    const aicteItem = accreditationsList.find((a) => /aicte/i.test(getName(a)));
+    if (aicteItem) {
+      return getName(aicteItem);
+    }
+
+    // 3. Any other accreditation (NIRF, NAAC, etc.)
+    const otherItem = accreditationsList.find((a) => Boolean(getName(a)));
+    if (otherItem) {
+      return getName(otherItem);
+    }
+
+    return "";
   }, [accreditationsList]);
 
   const coursesList = useMemo(() => {
