@@ -97,8 +97,6 @@ function PdfCanvasViewer({ url, title }) {
     const loadAndRender = async () => {
       try {
         if (typeof window === "undefined") return;
-
-        // Ensure PDF.js library is loaded
         if (!window.pdfjsLib) {
           await new Promise((resolve, reject) => {
             const existingScript = document.getElementById("pdfjs-engine-script");
@@ -127,8 +125,6 @@ function PdfCanvasViewer({ url, title }) {
         }
 
         if (isCancelled) return;
-
-        // Retrieve from memory cache or fetch document
         let pdfDoc = pdfDocCache.get(url);
         if (!pdfDoc) {
           const loadingTask = window.pdfjsLib.getDocument({
@@ -528,7 +524,7 @@ export default function BlogClientView({
         if (res.result.likesCount != null) setLikesCount(res.result.likesCount);
         if (res.result.unlikesCount != null) setUnlikesCount(res.result.unlikesCount);
       }
-    } catch (_) {}
+    } catch (_) { }
   };
   const [commentsList, setCommentsList] = useState(
     Array.isArray(blog?.comments) ? blog.comments : []
