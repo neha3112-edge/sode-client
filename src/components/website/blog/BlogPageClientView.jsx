@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Empty, Pagination } from "antd";
 import {
   SearchOutlined,
@@ -234,12 +234,29 @@ export default function BlogPageClientView({
     return Array.from(catMap.values());
   }, [initialCategories, initialBlogs]);
 
-  const handleCategoryChange = async (catItem) => {
+  const handleCategoryChange = async (catItem, updateHash = true) => {
     const isAll = catItem === "all" || !catItem;
     const selectedKey = isAll ? "all" : (catItem.slug || catItem.id || catItem);
     const catId = isAll ? "all" : (catItem.id || selectedKey);
     setActiveCategory(catId);
     setCurrentPage(1);
+
+    if (typeof window !== "undefined" && updateHash) {
+      if (isAll) {
+        window.history.replaceState(null, "", window.location.pathname);
+      } else {
+        const hashSlug =
+          catItem.slug ||
+          (catItem.name
+            ? catItem.name
+                .toLowerCase()
+                .replace(/&/g, "and")
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/^-+|-+$/g, "")
+            : String(selectedKey));
+        window.history.replaceState(null, "", `#${hashSlug}`);
+      }
+    }
 
     if (isAll) {
       setBlogsList(initialBlogs);
@@ -269,6 +286,48 @@ export default function BlogPageClientView({
       setLoading(false);
     }
   };
+
+  // 🔗 Sync URL hash (#category-slug or #banking-and-finance) on load and hashchange
+  useEffect(() => {
+    if (typeof window === "undefined" || !categoryList || categoryList.length === 0) return;
+
+    const applyHashCategory = () => {
+      const rawHash = window.location.hash.replace(/^#+/, "").trim();
+      if (!rawHash) {
+        if (activeCategory !== "all") {
+          handleCategoryChange("all", false);
+        }
+        return;
+      }
+
+      const decodedHash = decodeURIComponent(rawHash).toLowerCase();
+      const cleanHash = decodedHash.replace(/&/g, "and").replace(/[^a-z0-9]+/g, " ").trim();
+
+      const foundCat = categoryList.find((c) => {
+        const cSlug = String(c.slug || "").toLowerCase().trim();
+        const cId = String(c.id || "").toLowerCase().trim();
+        const cName = String(c.name || "").toLowerCase().trim();
+        const cNameClean = cName.replace(/&/g, "and").replace(/[^a-z0-9]+/g, " ").trim();
+        const cSlugClean = cSlug.replace(/&/g, "and").replace(/[^a-z0-9]+/g, " ").trim();
+
+        return (
+          cSlug === decodedHash ||
+          cSlugClean === cleanHash ||
+          cNameClean === cleanHash ||
+          cId === decodedHash
+        );
+      });
+
+      if (foundCat && activeCategory !== foundCat.id) {
+        handleCategoryChange(foundCat, false);
+      }
+    };
+
+    applyHashCategory();
+
+    window.addEventListener("hashchange", applyHashCategory);
+    return () => window.removeEventListener("hashchange", applyHashCategory);
+  }, [categoryList]);
 
   // Client-side search filtering
   const filteredBlogs = useMemo(() => {
