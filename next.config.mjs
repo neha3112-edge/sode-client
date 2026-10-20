@@ -48,7 +48,6 @@ const nextConfig = {
         destination: `${BACKEND_URL}/download/:path*`,
       },
       {
-        // /media/:bucket/:year/:month/:day/:file -> MinIO
         source: "/media/:path*",
         destination: `${MINIO_PUBLIC_URL}/:path*`,
       },
