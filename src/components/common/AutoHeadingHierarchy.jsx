@@ -42,25 +42,23 @@ export default function AutoHeadingHierarchy() {
     }
 
     function normalizeHeadings() {
-      // 1. Normalize headings inside <header> or <nav> so they don't appear out-of-order before main H1
-      const navHeadings = document.querySelectorAll(
+      // 1. Normalize headings inside <header>, <nav>, or .slick-cloned (carousel duplicates)
+      const nonContentHeadings = document.querySelectorAll(
         "header h1, header h2, header h3, header h4, header h5, header h6, " +
-        "nav h1, nav h2, nav h3, nav h4, nav h5, nav h6"
+        "nav h1, nav h2, nav h3, nav h4, nav h5, nav h6, " +
+        ".slick-cloned h1, .slick-cloned h2, .slick-cloned h3, .slick-cloned h4, .slick-cloned h5, .slick-cloned h6"
       );
-      navHeadings.forEach((h) => {
-        if (!h.getAttribute("data-seo-normalized")) {
-          const div = replaceTag(h, "div");
-          div.setAttribute("role", "heading");
-          div.setAttribute("aria-level", "6");
-        }
+      nonContentHeadings.forEach((h) => {
+        const div = replaceTag(h, "div");
+        div.setAttribute("aria-hidden", "true");
       });
 
       // 2. Query all remaining page headings in document order
       const allHeadings = Array.from(
         document.querySelectorAll("h1, h2, h3, h4, h5, h6")
       ).filter((h) => {
-        // Exclude hidden elements or modals not currently open
-        if (h.closest("header, nav, [role='dialog']:not(.ant-modal)")) return false;
+        // Exclude hidden elements, header, nav, or carousel clones
+        if (h.closest("header, nav, .slick-cloned, [role='dialog']:not(.ant-modal)")) return false;
         const text = (h.textContent || "").trim();
         return text.length > 0 || h.querySelector("img, svg");
       });

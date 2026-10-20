@@ -38,9 +38,9 @@ export default function CategorySectionBlock({
           <div className="flex items-center justify-between mb-3 gap-2">
             <div className="flex items-center gap-2.5 truncate">
               <span className="w-1.5 h-5 rounded-full inline-block shrink-0 bg-blue-500" />
-              <h3 className="text-sm sm:text-base font-bold text-gray-900 tracking-tight truncate">
+              <h2 className="text-sm sm:text-base font-bold text-gray-900 tracking-tight truncate m-0">
                 {block.title}
-              </h3>
+              </h2>
             </div>
 
 
