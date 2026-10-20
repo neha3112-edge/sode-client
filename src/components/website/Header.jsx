@@ -24,7 +24,7 @@ function resolveImg(mediaObj, fallback = "/assets/images/new_sode_tm_logo.png") 
   return mediaObj.url || mediaObj.src || mediaObj.path || fallback;
 }
 
-// ✦ AI Tools Button with Sparkling Effect & NEW Badge
+
 function AiToolButton({ label = "AI Tools", badge = "NEW", onClick, href, className = "" }) {
   const content = (
     <>
