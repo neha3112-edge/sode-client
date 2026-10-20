@@ -173,10 +173,17 @@ export function Hero({ initialHeroData = null }) {
                 </span>
               )}
 
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-[2.6rem] font-black tracking-tight leading-tight m-0">
-                <span className="text-rose-500">{title}</span>{" "}
-                <span className={isTransparentCard ? "text-white" : "text-slate-900"}>{highlight}</span>
-              </h1>
+              {index === 0 ? (
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-[2.6rem] font-black tracking-tight leading-tight m-0">
+                  <span className="text-rose-500">{title}</span>{" "}
+                  <span className={isTransparentCard ? "text-white" : "text-slate-900"}>{highlight}</span>
+                </h1>
+              ) : (
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl xl:text-[2.6rem] font-black tracking-tight leading-tight m-0">
+                  <span className="text-rose-500">{title}</span>{" "}
+                  <span className={isTransparentCard ? "text-white" : "text-slate-900"}>{highlight}</span>
+                </h2>
+              )}
 
               {heroData.subtitle && (
                 <p className={`text-sm sm:text-base font-semibold ${isTransparentCard ? "text-slate-200" : "text-slate-700"} m-0 leading-snug`}>
@@ -425,15 +432,16 @@ export function Hero({ initialHeroData = null }) {
     carouselSettings.show_arrows ?? carouselSettings.showArrows ?? heroData?.show_arrows ?? heroData?.showArrows
   );
 
-  const renderSlideHeading = (rawTitle, highlightText, isLight, titleColor) => {
+  const renderSlideHeading = (rawTitle, highlightText, isLight, titleColor, isPrimary = true) => {
     if (!rawTitle) return null;
 
     const defaultColor = titleColor || (isLight ? "#072C50" : "#ffffff");
     const highlightColor = isLight ? "#965D2C" : "#F6DE95";
     const lines = rawTitle.split("\n");
+    const HeadingTag = isPrimary ? "h1" : "h2";
 
     return (
-      <h1 className="flex flex-col space-y-0.5 sm:space-y-1 m-0">
+      <HeadingTag className="flex flex-col space-y-0.5 sm:space-y-1 m-0">
         {lines.map((line, lIdx) => {
           const isGovernorHeader = line.toUpperCase() === "GOVERNOR OF KERALA";
           const isGovernorSub = line.toUpperCase().includes("ARIF MOHAMMED KHAN");
@@ -488,7 +496,7 @@ export function Hero({ initialHeroData = null }) {
             </span>
           );
         })}
-      </h1>
+      </HeadingTag>
     );
   };
 
@@ -641,7 +649,7 @@ export function Hero({ initialHeroData = null }) {
         <Container className="hidden md:block relative z-10 w-full pointer-events-auto">
           <div className="w-full max-w-[70%] sm:max-w-[50%] md:max-w-[46%] lg:max-w-[44%] flex flex-col items-start space-y-1.5 sm:space-y-2 md:space-y-2.5">
             {renderSlideBadge(badgeText, isLight)}
-            {renderSlideHeading(title, highlightText, isLight, titleColor)}
+            {renderSlideHeading(title, highlightText, isLight, titleColor, index === 0)}
 
             {subtitle && (
               <p
