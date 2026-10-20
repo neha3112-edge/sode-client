@@ -201,7 +201,8 @@ function SmoothExpandedCard({
 
               {/* Know More */}
               <Link
-                href={record.slug ? `/universities/${record.slug}` : "#"}
+                href={record.targetUrl || (record.slug ? `/universities/${record.slug}` : "#")}
+                {...(record.isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                 className="w-full h-8 px-1 sm:px-2 rounded-lg bg-[#122A46] hover:bg-[#0c1f34] text-white font-normal text-[11px] sm:text-xs shadow-2xs flex items-center justify-center border border-transparent transition-all active:scale-95 text-center whitespace-nowrap min-w-0"
               >
                 <span className="truncate">Know More</span>
@@ -287,23 +288,37 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
   // Normalize API response into standard shape
   const normalizedList = useMemo(() => {
     const rawList = apiData?.result || [];
-    return rawList.map((item) => ({
-      _id: String(item._id),
-      name: item.name || "University",
-      slug: item.slug || "",
-      state: item.state || "India",
-      location: item.location || item.state || "India",
-      heiType: item.heiType || "Private University",
-      mode: (typeof item.mode === "object" ? item.mode?.name : item.mode) || null,
-      established: item.established || "",
-      naac: item.naac || null,
-      nirf: item.nirf || item.nirf_rank || null,
-      logo: item.logo || null,
-      courses: Array.isArray(item.courses) ? item.courses : [],
-      ugcSessions: item.ugcSessions || [],
-      ugc_accreditations: item.ugc_accreditations || [],
-      rawUni: item,
-    }));
+    return rawList.map((item) => {
+      const customUrl = String(item.targetUrl || item.official_website || item.rawUni?.official_website || "").trim();
+      const isExternal = Boolean(
+        item.isExternal ||
+        (customUrl && (customUrl.startsWith("http://") || customUrl.startsWith("https://") || customUrl.includes(".")))
+      );
+      const targetUrl = isExternal
+        ? (customUrl.startsWith("http") ? customUrl : `https://${customUrl}`)
+        : (item.slug ? `/universities/${item.slug}` : "#");
+
+      return {
+        _id: String(item._id),
+        name: item.name || "University",
+        slug: item.slug || "",
+        official_website: customUrl,
+        targetUrl,
+        isExternal,
+        state: item.state || "India",
+        location: item.location || item.state || "India",
+        heiType: item.heiType || "Private University",
+        mode: (typeof item.mode === "object" ? item.mode?.name : item.mode) || null,
+        established: item.established || "",
+        naac: item.naac || null,
+        nirf: item.nirf || item.nirf_rank || null,
+        logo: item.logo || null,
+        courses: Array.isArray(item.courses) ? item.courses : [],
+        ugcSessions: item.ugcSessions || [],
+        ugc_accreditations: item.ugc_accreditations || [],
+        rawUni: item,
+      };
+    });
   }, [apiData]);
 
   const [selectedNaac, setSelectedNaac] = useState("all");

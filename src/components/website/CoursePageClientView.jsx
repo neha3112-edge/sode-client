@@ -1609,7 +1609,14 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                       : uni.coursesCount
                         ? `${uni.coursesCount}+ Programs`
                         : (uni.city || uni.state || "Recognized University");
-                    const uniHref = uni.slug ? `/universities/${uni.slug}` : "#";
+                    const rawUniTarget = uni.targetUrl || uni.official_website || (uni.slug ? `/universities/${uni.slug}` : '#');
+                    const isUniExternal = Boolean(
+                      uni.isExternal ||
+                      (typeof rawUniTarget === 'string' && (rawUniTarget.startsWith('http://') || rawUniTarget.startsWith('https://')))
+                    );
+                    const uniHref = isUniExternal
+                      ? (rawUniTarget.startsWith('http') ? rawUniTarget : `https://${rawUniTarget}`)
+                      : (uni.slug ? `/universities/${uni.slug}` : '#');
                     const uniLogo = resolveMediaUrl(uni.logo || uni.image);
 
                     return (
@@ -1640,6 +1647,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                           <div className="min-h-7 sm:min-h-8 flex items-center justify-center">
                             <Link
                               href={uniHref}
+                              {...(isUniExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                               className="text-xs sm:text-[12.5px] font-semibold text-[#0a2540] hover:text-blue-600 line-clamp-2 leading-tight m-0 w-full text-center no-underline transition-colors"
                             >
                               {uni.name}
@@ -1750,6 +1758,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                           </button>
                           <Link
                             href={uniHref}
+                            {...(isUniExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                             className="w-full bg-white hover:bg-gray-50 text-[#0a2540] hover:text-blue-600 border border-gray-200 text-[11px] sm:text-xs font-semibold py-1.5 px-1 rounded-md sm:rounded-lg text-center no-underline transition-colors flex items-center justify-center whitespace-nowrap leading-none"
                           >
                             Know More

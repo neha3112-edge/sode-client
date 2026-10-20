@@ -14,6 +14,7 @@ const getAssetPath = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.
 import WebsiteLayout from "@/components/layout/WebsiteLayout";
 import Container from "@/components/common/Container";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
+import { request } from "@/services/request";
 
 function decodeHtml(html) {
   if (!html) return "";
@@ -182,10 +183,12 @@ export default function BlogPageClientView({
     backButton: { label: "Back to Home", href: "/" },
   });
 
+  const [blogsList, setBlogsList] = useState(initialBlogs);
   const [activeCategory, setActiveCategory] = useState("all");
   const [isCategoriesExpanded, setIsCategoriesExpanded] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(false);
   const pageSize = 12;
 
   // Compute category list: prioritize server unpaginated initialCategories, fallback to blogs' populated category field
@@ -195,6 +198,7 @@ export default function BlogPageClientView({
         id: String(cat._id || cat.id),
         name: cat.name,
         slug: cat.slug || cat.name.toLowerCase().replace(/\s+/g, "-"),
+        count: cat.count || 0,
       }));
     }
 
@@ -230,32 +234,45 @@ export default function BlogPageClientView({
     return Array.from(catMap.values());
   }, [initialCategories, initialBlogs]);
 
-  const handleCategoryChange = (catId) => {
+  const handleCategoryChange = async (catItem) => {
+    const isAll = catItem === "all" || !catItem;
+    const selectedKey = isAll ? "all" : (catItem.slug || catItem.id || catItem);
+    const catId = isAll ? "all" : (catItem.id || selectedKey);
     setActiveCategory(catId);
     setCurrentPage(1);
+
+    if (isAll) {
+      setBlogsList(initialBlogs);
+      return;
+    }
+
+    // 🚀 Fetch category blogs directly from API with proper API_BASE_URL
+    try {
+      setLoading(true);
+      const queryParam = catItem.slug || catItem.id || selectedKey;
+      const data = await request.dynamicList({
+        entity: "blogs",
+        endPoint: "v1/list",
+        options: {
+          category: queryParam,
+          items: 100,
+        },
+      });
+
+      const list = data?.result || data?.blogs || (Array.isArray(data) ? data : []);
+      if (Array.isArray(list)) {
+        setBlogsList(list);
+      }
+    } catch (err) {
+      console.error("[BlogCategory] Filter fetch error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Client-side filtering without any URL/router mutation
+  // Client-side search filtering
   const filteredBlogs = useMemo(() => {
-    return (initialBlogs || []).filter((blog) => {
-      // Category filter
-      if (activeCategory !== "all") {
-        const cat = blog.category;
-        const target = String(activeCategory).toLowerCase();
-        const catId = (typeof cat === "object" ? String(cat?._id || "") : String(cat || "")).toLowerCase();
-        const catSlug = (typeof cat === "object" ? String(cat?.slug || "") : "").toLowerCase();
-        const catName = (typeof cat === "object" ? String(cat?.name || "") : "").toLowerCase();
-
-        const match =
-          catId === target ||
-          catSlug === target ||
-          catName === target ||
-          catName.includes(target) ||
-          (blog.tags && blog.tags.some((t) => String(t).toLowerCase() === target));
-
-        if (!match) return false;
-      }
-
+    return (blogsList || []).filter((blog) => {
       // Search filter
       if (searchQuery.trim()) {
         const q = searchQuery.trim().toLowerCase();
@@ -269,7 +286,7 @@ export default function BlogPageClientView({
 
       return true;
     });
-  }, [initialBlogs, activeCategory, searchQuery]);
+  }, [blogsList, searchQuery]);
 
   const totalCount = filteredBlogs.length;
   const displayedBlogs = useMemo(() => {
@@ -361,7 +378,7 @@ export default function BlogPageClientView({
                   <button
                     key={`${cat.id}-${idx}`}
                     type="button"
-                    onClick={() => handleCategoryChange(cat.id)}
+                    onClick={() => handleCategoryChange(cat)}
                     className={`px-4 sm:px-5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 whitespace-nowrap shrink-0 cursor-pointer border ${isActive
                       ? "bg-[#072C50] text-white border-[#072C50] shadow-xs"
                       : "bg-white text-gray-700 border-gray-300 hover:border-blue-400 hover:text-blue-500"

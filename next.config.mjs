@@ -1,6 +1,11 @@
 /** @type {import('next').NextConfig} */
 const MINIO_PUBLIC_URL = process.env.NEXT_PUBLIC_MINIO_URL || "https://api.crm.mysode.com/minio";
 
+const BACKEND_URL =
+  process.env.NODE_ENV === "production" || process.env.NEXT_PUBLIC_DEV_REMOTE === "remote"
+    ? (process.env.NEXT_PUBLIC_REMOTE_BACKEND_SERVER || "https://api.crm.mysode.com").replace(/\/+$/, "")
+    : (process.env.NEXT_PUBLIC_LOCAL_BACKEND_SERVER || "http://localhost:3000").replace(/\/+$/, "");
+
 const nextConfig = {
   trailingSlash: true,
   reactStrictMode: true,
@@ -33,6 +38,15 @@ const nextConfig = {
 
   async rewrites() {
     return [
+      {
+        // Reverse proxy all /api/* client calls to the backend server
+        source: "/api/:path*",
+        destination: `${BACKEND_URL}/api/:path*`,
+      },
+      {
+        source: "/download/:path*",
+        destination: `${BACKEND_URL}/download/:path*`,
+      },
       {
         // /media/:bucket/:year/:month/:day/:file -> MinIO
         source: "/media/:path*",

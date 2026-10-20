@@ -331,14 +331,22 @@ function RankedUniversityCard({ item, index, features, isStatePage = false }) {
   const coursesList = item.offeredCourses || item.coursesOffered || [];
   const coursesJoined = Array.isArray(coursesList)
     ? coursesList
-        .map((c) => c.code || c.name || c.displayName)
-        .filter(Boolean)
-        .join(", ")
+      .map((c) => c.code || c.name || c.displayName)
+      .filter(Boolean)
+      .join(", ")
     : "";
   const advantageText = item.highlightReason || item.advantage;
-  const cardLink = item.courseSlug
+  const rawTarget = item.targetUrl || uni?.targetUrl || item.courseSlug || slug;
+  const isExternal = Boolean(
+    item.isExternal ||
+    uni?.isExternal ||
+    (typeof rawTarget === "string" && (rawTarget.startsWith("http://") || rawTarget.startsWith("https://")))
+  );
+  const cardLink = isExternal
+    ? (rawTarget.startsWith("http") ? rawTarget : `https://${rawTarget}`)
+    : item.courseSlug
     ? (item.courseSlug.includes("/") ? `/universities/${item.courseSlug}` : `/${item.courseSlug}`)
-    : `/universities/${slug}`;
+    : slug ? `/universities/${slug}` : "#";
   const rawDescription = item.description || uni.description || "";
   const plainDescription = rawDescription
     ? rawDescription.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim()
@@ -351,7 +359,11 @@ function RankedUniversityCard({ item, index, features, isStatePage = false }) {
           <div className="border-b border-dashed border-slate-300 pb-2 mb-2.5 flex items-center justify-between gap-3">
             <h2 className="text-lg sm:text-xl font-black text-[#072c50] flex flex-wrap items-center gap-1.5 leading-snug">
               <span className="text-[#f15a24] font-black mr-1">#{rank}.</span>
-              <Link href={cardLink} className="hover:text-blue-700 transition-colors">
+              <Link
+                href={cardLink}
+                {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                className="hover:text-blue-700 transition-colors"
+              >
                 {name}
               </Link>
             </h2>
@@ -462,6 +474,7 @@ function RankedUniversityCard({ item, index, features, isStatePage = false }) {
         <div className="flex items-center justify-between sm:justify-start gap-1.5 sm:gap-2.5 pt-1.5 sm:pt-2 w-full">
           <Link
             href={cardLink}
+            {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
             className="flex-[0.85] sm:flex-none px-2 sm:px-4 py-2 rounded-lg bg-[#008738] hover:bg-[#00702e] text-white font-bold text-[11px] sm:text-xs shadow-xs text-center transition-all inline-flex items-center justify-center whitespace-nowrap min-w-0"
           >
             <span className="truncate">{features?.knowMoreText || "Know More"}</span>
@@ -589,11 +602,10 @@ function FAQSection({ faqs, pageTitle }) {
           return (
             <div
               key={faq._id || idx}
-              className={`rounded-xl border transition-all duration-200 overflow-hidden ${
-                isOpen
+              className={`rounded-xl border transition-all duration-200 overflow-hidden ${isOpen
                   ? "border-blue-400 bg-blue-200/30 shadow-2xs"
                   : "border-gray-200 bg-white hover:border-gray-300"
-              }`}
+                }`}
             >
               <button
                 type="button"
@@ -601,18 +613,16 @@ function FAQSection({ faqs, pageTitle }) {
                 className="w-full flex items-center justify-between gap-4 p-2.5 sm:p-3 text-left cursor-pointer bg-transparent border-none outline-none"
               >
                 <span
-                  className={`text-xs sm:text-[14px] font-semibold leading-snug ${
-                    isOpen ? "text-[#0C2B4E]" : "text-gray-900"
-                  }`}
+                  className={`text-xs sm:text-[14px] font-semibold leading-snug ${isOpen ? "text-[#0C2B4E]" : "text-gray-900"
+                    }`}
                 >
                   Q{idx + 1}. {question}
                 </span>
                 <span
-                  className={`flex items-center justify-center w-5 h-5 rounded-full shrink-0 transition-colors ${
-                    isOpen
+                  className={`flex items-center justify-center w-5 h-5 rounded-full shrink-0 transition-colors ${isOpen
                       ? "bg-[#0C2B4E] text-white"
                       : "bg-gray-200 text-gray-500"
-                  }`}
+                    }`}
                 >
                   {isOpen ? <Minus size={11} /> : <Plus size={11} />}
                 </span>
