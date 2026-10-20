@@ -14,7 +14,6 @@ const CompareDrawerWidget = dynamic(() => import("@/components/website/CompareDr
 const AutoEngineToolModal = dynamic(() => import("@/components/tool/AutoEngineToolModal"), { ssr: false });
 const GlobalHtmlAutoRenderer = dynamic(() => import("@/components/providers/GlobalHtmlAutoRenderer"), { ssr: false });
 const AutoImageTitle = dynamic(() => import("@/components/common/AutoImageTitle"), { ssr: false });
-const AutoHeadingHierarchy = dynamic(() => import("@/components/common/AutoHeadingHierarchy"), { ssr: false });
 const ModalOTP = dynamic(() => import("@/components/website/ModalOTP"), { ssr: false });
 
 /**
@@ -38,7 +37,6 @@ export default function AppProviders({ children }) {
                 <JsonLd />
                 <GlobalHtmlAutoRenderer />
                 <AutoImageTitle />
-                <AutoHeadingHierarchy />
                 {children}
                 <CompareDrawerWidget />
                 <AutoEngineToolModal />
