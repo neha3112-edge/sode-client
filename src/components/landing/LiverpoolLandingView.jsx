@@ -1120,9 +1120,9 @@ export default function LiverpoolLandingView({ data = {} }) {
       ───────────────────────────────────────────────────────────── */}
       <section id="enrollment-steps" className="pathway-section py-10 sm:py-16 max-w-[1300px] mx-auto px-4 sm:px-6 text-center select-none scroll-mt-20">
         <div className="pathway-header mb-8 sm:mb-12">
-          <h1 className="text-[28px] sm:text-[38px] font-extrabold text-[#17357a] m-0 leading-tight">
+          <h2 className="text-[28px] sm:text-[38px] font-extrabold text-[#17357a] m-0 leading-tight">
             MBA Program Journey
-          </h1>
+          </h2>
           <p className="text-[16px] sm:text-[20px] font-medium text-[#444444] mt-2 m-0">
             LBS MBA Pathway + IIM-U
           </p>

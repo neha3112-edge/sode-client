@@ -433,20 +433,20 @@ export function Hero({ initialHeroData = null }) {
     const lines = rawTitle.split("\n");
 
     return (
-      <div className="flex flex-col space-y-0.5 sm:space-y-1">
+      <h1 className="flex flex-col space-y-0.5 sm:space-y-1 m-0">
         {lines.map((line, lIdx) => {
           const isGovernorHeader = line.toUpperCase() === "GOVERNOR OF KERALA";
           const isGovernorSub = line.toUpperCase().includes("ARIF MOHAMMED KHAN");
 
           if (isGovernorHeader) {
             return (
-              <h1
+              <span
                 key={lIdx}
                 style={{ color: "#965D2C" }}
-                className="text-xl sm:text-2xl md:text-3xl lg:text-[34px] xl:text-[36px] font-black tracking-wide leading-none m-0 font-sans uppercase"
+                className="text-xl sm:text-2xl md:text-3xl lg:text-[34px] xl:text-[36px] font-black tracking-wide leading-none m-0 font-sans uppercase block"
               >
                 {line}
-              </h1>
+              </span>
             );
           }
 
@@ -455,7 +455,7 @@ export function Hero({ initialHeroData = null }) {
               <span
                 key={lIdx}
                 style={{ color: "#072C50" }}
-                className="text-xs sm:text-sm md:text-[15px] lg:text-[16px] font-black tracking-wide leading-snug m-0 uppercase"
+                className="text-xs sm:text-sm md:text-[15px] lg:text-[16px] font-black tracking-wide leading-snug m-0 uppercase block"
               >
                 {line}
               </span>
@@ -479,16 +479,16 @@ export function Hero({ initialHeroData = null }) {
           }
 
           return (
-            <h1
+            <span
               key={lIdx}
               style={{ color: defaultColor }}
-              className="text-lg sm:text-2xl md:text-[28px] lg:text-[32px] font-black leading-[1.15] tracking-tight m-0 font-sans"
+              className="text-lg sm:text-2xl md:text-[28px] lg:text-[32px] font-black leading-[1.15] tracking-tight m-0 font-sans block"
             >
               {lineContent}
-            </h1>
+            </span>
           );
         })}
-      </div>
+      </h1>
     );
   };
 
