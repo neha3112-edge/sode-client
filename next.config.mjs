@@ -36,6 +36,21 @@ const nextConfig = {
     ],
   },
 
+  // 🚀 Fast Edge & Browser Caching Headers (Zero speed slowdown)
+  async headers() {
+    return [
+      {
+        source: "/images/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, s-maxage=31536000, stale-while-revalidate=86400, immutable",
+          },
+        ],
+      },
+    ];
+  },
+
   async rewrites() {
     return [
       {
@@ -46,6 +61,11 @@ const nextConfig = {
       {
         source: "/download/:path*",
         destination: `${BACKEND_URL}/download/:path*`,
+      },
+      {
+        // ⚡ Clean /images/:path* -> MinIO Images Direct Proxy
+        source: "/images/:path*",
+        destination: "https://api.crm.mysode.com/images/:path*",
       },
       {
         source: "/media/:path*",
