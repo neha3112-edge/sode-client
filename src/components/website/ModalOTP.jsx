@@ -221,6 +221,7 @@ export default function ModalOTP({
   const [resendTimer, setResendTimer] = useState(30);
   const [canResend, setCanResend] = useState(false);
   const [contextPayload, setContextPayload] = useState(null);
+  const [otpMessage, setOtpMessage] = useState("");
 
   // Track if auto-opened by scroll or dismissed on current page
   const hasAutoTriggeredRef = useRef(false);
@@ -357,6 +358,7 @@ export default function ModalOTP({
         throw new Error(data.message || "Failed to send OTP");
       }
 
+      setOtpMessage(data.message || `We've sent a 6-digit OTP for +91 ${cleanPhone}.`);
       setStep("otp");
       setResendTimer(30);
       setCanResend(false);
@@ -507,7 +509,7 @@ export default function ModalOTP({
     step === "phone"
       ? "Enter your 10-digit mobile number to receive a verification OTP."
       : step === "otp"
-        ? `We've sent a 6-digit OTP for +91 ${phone}. Check your server console to test.`
+        ? otpMessage || `We've sent a 6-digit OTP for +91 ${phone}.`
         : !isCoursePreSelected
           ? "Select your desired course and details, or skip directly."
           : "Enter your full name and email ID, or skip directly.";

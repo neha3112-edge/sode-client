@@ -63,28 +63,6 @@ export default function RootLayout({ children }) {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;0,900;1,700;1,800&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,700;1,800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet" />
-        <script
-          id="seo-img-title-sync"
-          dangerouslySetInnerHTML={{
-            __html: `(function(){
-              function sync(){
-                var imgs = document.querySelectorAll('img');
-                for(var i=0; i<imgs.length; i++){
-                  var img = imgs[i];
-                  var a = img.getAttribute('alt') || '';
-                  var t = img.getAttribute('title') || '';
-                  if(!t && a) img.setAttribute('title', a);
-                  else if(!a && t) img.setAttribute('alt', t);
-                }
-              }
-              if(document.readyState === 'loading'){
-                document.addEventListener('DOMContentLoaded', sync);
-              } else {
-                sync();
-              }
-            })();`,
-          }}
-        />
       </head>
       <body className={`${roboto.className} min-h-full flex flex-col`} suppressHydrationWarning>
         <AppProviders>
