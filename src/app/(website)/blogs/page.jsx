@@ -19,23 +19,31 @@ export async function generateMetadata() {
 export default async function BlogsPage() {
   let initialBlogs = [];
   let initialCategories = [];
+  let initialPagination = { page: 1, total: 0, limit: 12 };
 
   try {
     const blogsRes = await request.dynamicList({
       entity: "blogs",
       endPoint: "v1/list",
-      options: { page: 1, items: 24 },
+      options: { page: 1, items: 12 },
       revalidate: 3600,
     });
 
     const list = blogsRes?.result || blogsRes?.blogs || (Array.isArray(blogsRes) ? blogsRes : []);
     initialBlogs = Array.isArray(list) ? list : [];
     initialCategories = blogsRes?.categories || [];
+    const pagination = blogsRes?.pagination || {};
+    initialPagination = {
+      page: pagination.page || 1,
+      total: pagination.total || pagination.count || initialBlogs.length,
+      limit: pagination.limit || 12,
+    };
 
     return (
       <BlogPageClientView
         initialBlogs={initialBlogs}
         initialCategories={initialCategories}
+        initialPagination={initialPagination}
       />
     );
   } catch (err) {
@@ -46,6 +54,7 @@ export default async function BlogsPage() {
     <BlogPageClientView
       initialBlogs={initialBlogs}
       initialCategories={[]}
+      initialPagination={initialPagination}
     />
   );
 }

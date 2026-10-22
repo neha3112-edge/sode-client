@@ -171,6 +171,7 @@ function BlogCard({ blog, index = 0 }) {
 export default function BlogPageClientView({
   initialBlogs = [],
   initialCategories = [],
+  initialPagination = {},
 }) {
   // Top Global Breadcrumbs
   useBreadcrumb({
@@ -182,13 +183,14 @@ export default function BlogPageClientView({
     backButton: { label: "Back to Home", href: "/" },
   });
 
+  const pageSize = initialPagination?.limit || 12;
   const [blogsList, setBlogsList] = useState(initialBlogs);
+  const [totalCount, setTotalCount] = useState(initialPagination?.total ?? initialBlogs.length);
   const [activeCategory, setActiveCategory] = useState("all");
   const [isCategoriesExpanded, setIsCategoriesExpanded] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(initialPagination?.page || 1);
   const [loading, setLoading] = useState(false);
-  const pageSize = 12;
 
   // Compute category list: prioritize server unpaginated initialCategories, fallback to blogs' populated category field
   const categoryList = useMemo(() => {
@@ -233,7 +235,42 @@ export default function BlogPageClientView({
     return Array.from(catMap.values());
   }, [initialCategories, initialBlogs]);
 
-  const handleCategoryChange = async (catItem, updateHash = true) => {
+  // 🚀 Fetch from Backend with page, category, and search query
+  const fetchBlogs = async (page = 1, category = activeCategory, search = searchQuery) => {
+    try {
+      setLoading(true);
+      const isAll = category === "all" || !category;
+      const options = {
+        page,
+        items: pageSize,
+      };
+      if (!isAll) {
+        options.category = category;
+      }
+      if (search && search.trim()) {
+        options.q = search.trim();
+      }
+
+      const res = await request.dynamicList({
+        entity: "blogs",
+        endPoint: "v1/list",
+        options,
+      });
+
+      const list = res?.result || res?.blogs || (Array.isArray(res) ? res : []);
+      const newTotal = res?.pagination?.total ?? res?.pagination?.count ?? list.length;
+
+      setBlogsList(Array.isArray(list) ? list : []);
+      setTotalCount(newTotal);
+      setCurrentPage(page);
+    } catch (err) {
+      console.error("[BlogPage] Error fetching blogs from backend:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCategoryChange = (catItem, updateHash = true) => {
     const isAll = catItem === "all" || !catItem;
     const selectedKey = isAll ? "all" : (catItem.slug || catItem.id || catItem);
     const catId = isAll ? "all" : (catItem.id || selectedKey);
@@ -257,33 +294,13 @@ export default function BlogPageClientView({
       }
     }
 
-    if (isAll) {
+    if (isAll && !searchQuery.trim()) {
       setBlogsList(initialBlogs);
+      setTotalCount(initialPagination?.total ?? initialBlogs.length);
       return;
     }
 
-    // 🚀 Fetch category blogs directly from API with proper API_BASE_URL
-    try {
-      setLoading(true);
-      const queryParam = catItem.slug || catItem.id || selectedKey;
-      const data = await request.dynamicList({
-        entity: "blogs",
-        endPoint: "v1/list",
-        options: {
-          category: queryParam,
-          items: 100,
-        },
-      });
-
-      const list = data?.result || data?.blogs || (Array.isArray(data) ? data : []);
-      if (Array.isArray(list)) {
-        setBlogsList(list);
-      }
-    } catch (err) {
-      console.error("[BlogCategory] Filter fetch error:", err);
-    } finally {
-      setLoading(false);
-    }
+    fetchBlogs(1, catId, searchQuery);
   };
 
   // 🔗 Sync URL hash (#category-slug or #banking-and-finance) on load and hashchange
@@ -328,29 +345,7 @@ export default function BlogPageClientView({
     return () => window.removeEventListener("hashchange", applyHashCategory);
   }, [categoryList]);
 
-  // Client-side search filtering
-  const filteredBlogs = useMemo(() => {
-    return (blogsList || []).filter((blog) => {
-      // Search filter
-      if (searchQuery.trim()) {
-        const q = searchQuery.trim().toLowerCase();
-        const title = (blog.title || "").toLowerCase();
-        const subtitle = (blog.subtitle || blog.excerpt || blog.content || "").toLowerCase();
-        const tags = Array.isArray(blog.tags) ? blog.tags.join(" ").toLowerCase() : "";
-        if (!title.includes(q) && !subtitle.includes(q) && !tags.includes(q)) {
-          return false;
-        }
-      }
-
-      return true;
-    });
-  }, [blogsList, searchQuery]);
-
-  const totalCount = filteredBlogs.length;
-  const displayedBlogs = useMemo(() => {
-    const start = (currentPage - 1) * pageSize;
-    return filteredBlogs.slice(start, start + pageSize);
-  }, [filteredBlogs, currentPage, pageSize]);
+  const displayedBlogs = blogsList || [];
 
   return (
     <WebsiteLayout hasContainer={false} py="" bg="#f8fafc">
@@ -366,15 +361,21 @@ export default function BlogPageClientView({
 
           {/* 🔍 Search Blogs Pill (Aligned with Paragraph Width) */}
           <form
-            onSubmit={(e) => e.preventDefault()}
+            onSubmit={(e) => {
+              e.preventDefault();
+              fetchBlogs(1, activeCategory, searchQuery);
+            }}
             className="relative max-w-2xl sm:max-w-3xl mx-auto mt-3.5 sm:mt-4"
           >
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setCurrentPage(1);
+                const val = e.target.value;
+                setSearchQuery(val);
+                if (!val.trim()) {
+                  fetchBlogs(1, activeCategory, "");
+                }
               }}
               placeholder="Search Blogs......"
               className="w-full h-9 sm:h-9.5 bg-white text-slate-800 placeholder-slate-400 text-xs sm:text-sm rounded-full pl-5 pr-12 shadow-xs border border-transparent focus:outline-none focus:ring-1.5 focus:ring-[#F3CE7F] transition-all"
@@ -456,14 +457,14 @@ export default function BlogPageClientView({
             <Empty description="No blogs found matching your criteria." />
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-opacity duration-200 ${loading ? "opacity-40 pointer-events-none" : "opacity-100"}`}>
             {displayedBlogs.map((blog, idx) => (
               <BlogCard key={blog._id || blog.slug} blog={blog} index={idx} />
             ))}
           </div>
         )}
 
-        {/* 🧭 Centered Pagination */}
+        {/* 🧭 Centered Pagination (Backend Powered) */}
         {totalCount > pageSize && (
           <div className="flex justify-center items-center pt-6 pb-4">
             <Pagination
@@ -471,7 +472,7 @@ export default function BlogPageClientView({
               pageSize={pageSize}
               total={totalCount}
               onChange={(page) => {
-                setCurrentPage(page);
+                fetchBlogs(page, activeCategory, searchQuery);
                 if (typeof window !== "undefined") {
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }
