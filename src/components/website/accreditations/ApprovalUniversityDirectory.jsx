@@ -21,6 +21,7 @@ import {
 import { useFormModal } from "@/hooks/useFormModal";
 import { useCompare } from "@/hooks/useCompare";
 import { Container } from "@/components/common/Container";
+import { openWhatsAppBrochure } from "@/lib/whatsappBrochure";
 
 const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 
@@ -420,11 +421,11 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
 
   const handleGetBrochure = (u, e) => {
     e?.stopPropagation();
-    openFormModal({
-      title: `Download Brochure - ${u.name}`,
-      subtitle: "Get free syllabus & enrollment guidance",
-      defaultCourse: u.name,
-      submitButtonText: "Download Brochure",
+    const uniRecord = u.rawUni || u;
+    const targetSlug = uniRecord.slug || u.slug || uniRecord._id || u.name?.toLowerCase()?.replace(/\s+/g, "-");
+    openWhatsAppBrochure({
+      title: u.name,
+      slug: targetSlug,
     });
   };
 

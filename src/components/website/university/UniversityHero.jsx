@@ -7,9 +7,11 @@ import { Rate } from "antd";
 import { Download, BadgeCheck, GraduationCap } from "lucide-react";
 import { formatAdmissionDeadline } from "@/lib/utils";
 import { FaBuilding, FaCalendar, FaMapMarkerAlt } from "react-icons/fa";
+import { openWhatsAppBrochure } from "@/lib/whatsappBrochure";
 
 export default function UniversityHero({
   uniName,
+  slug,
   heroBannerUrl,
   mobileHeroBannerUrl,
   logoUrl,
@@ -139,13 +141,10 @@ export default function UniversityHero({
                     <button
                       type="button"
                       onClick={() => {
-                        openFormModal &&
-                          openFormModal({
-                            title: `Download Brochure - ${uniName}`,
-                            subtitle: "Fill details to receive instant digital brochure",
-                            university: uniName,
-                            submitButtonText: "Get Brochure",
-                          });
+                        openWhatsAppBrochure({
+                          title: uniName,
+                          slug: slug || uniName?.toLowerCase()?.replace(/\s+/g, "-"),
+                        });
                       }}
                       className="whitespace-nowrap bg-[#00B4D8] hover:bg-[#0096C7] text-white font-bold text-xs sm:text-sm px-4 py-2 rounded-full border-none cursor-pointer flex items-center gap-1.5 shadow-sm transition-all active:scale-95 shrink-0"
                     >
@@ -189,13 +188,10 @@ export default function UniversityHero({
               <button
                 type="button"
                 onClick={() => {
-                  openFormModal &&
-                    openFormModal({
-                      title: `Download Brochure - ${uniName}`,
-                      subtitle: "Fill details to receive instant digital brochure",
-                      university: uniName,
-                      submitButtonText: "Get Brochure",
-                    });
+                  openWhatsAppBrochure({
+                    title: uniName,
+                    slug: slug || uniName?.toLowerCase()?.replace(/\s+/g, "-"),
+                  });
                 }}
                 className="whitespace-nowrap bg-[#00B4D8] hover:bg-[#0096C7] text-white font-bold text-[10.5px] sm:text-sm px-2 sm:px-5 py-2 sm:py-2.5 rounded-full border-none cursor-pointer flex items-center justify-center gap-1 shadow-sm transition-all active:scale-95"
               >

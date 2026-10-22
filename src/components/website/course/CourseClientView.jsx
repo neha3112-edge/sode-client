@@ -6,6 +6,7 @@ import { useFormModal } from "@/hooks/useFormModal";
 import { useCompare } from "@/hooks/useCompare";
 import { formatAdmissionDeadline } from "@/lib/utils";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
+import { openWhatsAppBrochure } from "@/lib/whatsappBrochure";
 
 const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 import CourseHero from "./CourseHero";
@@ -433,6 +434,14 @@ export function CourseClientView({
       } else {
         courseTitleForLead = `${courseTitleForLead} in ${cleanSpec}`;
       }
+    }
+
+    if (actionType === "Download Brochure") {
+      openWhatsAppBrochure({
+        title: `${courseTitleForLead}${universityName ? ` - ${universityName}` : ""}`,
+        slug: slug || courseData?.slug || `${universityName || "course"}/${courseTitleForLead}`,
+      });
+      return;
     }
 
     openFormModal({

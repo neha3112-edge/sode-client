@@ -355,6 +355,7 @@ export function UniversityClientView({ initialData, slug }) {
       {/* Hero Header Section */}
       <UniversityHero
         uniName={uniName}
+        slug={slug || uni?.slug || data?.slug}
         heroBannerUrl={heroBannerUrl}
         mobileHeroBannerUrl={mobileHeroBannerUrl}
         logoUrl={logoUrl}

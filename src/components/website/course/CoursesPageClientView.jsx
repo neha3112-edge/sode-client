@@ -27,6 +27,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useFormModal } from "@/hooks/useFormModal";
 import { useCompare } from "@/hooks/useCompare";
 import { formatAdmissionDeadline } from "@/lib/utils";
+import { openWhatsAppBrochure } from "@/lib/whatsappBrochure";
 import { FaCalendar, FaClock } from "react-icons/fa";
 import { getFullSpecName, getCleanSpecName } from "./CourseSpecializations";
 
@@ -1922,13 +1923,11 @@ export default function CoursesPageClientView({
                         type="button"
                         onClick={() => {
                           const title = detailTitle;
+                          const slug = selectedSpecDetail?.slug || specializationModalData?.slug || "courses";
                           handleCloseSpecModal();
-                          openFormModal({
-                            title: "Download Brochure",
-                            subtitle: title,
-                            defaultCourse: title,
-                            formNameOverride: `BrochureModal_${specializationModalData.slug || modalUniName}_${selectedSpecDetail.slug || selectedSpecDetail.name}`,
-                            submitButtonText: "Download Brochure",
+                          openWhatsAppBrochure({
+                            title,
+                            slug,
                           });
                         }}
                         className="flex-1 min-w-0 bg-[#0C2B4E] hover:bg-[#071c33] text-white text-[11px] sm:text-xs md:text-sm font-bold py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all cursor-pointer shadow-sm border-none active:scale-95"
@@ -2091,12 +2090,9 @@ export default function CoursesPageClientView({
                       type="button"
                       onClick={() => {
                         handleCloseSpecModal();
-                        openFormModal({
-                          title: "Download Brochure",
-                          subtitle: modalCourseTitle,
-                          defaultCourse: modalCourseTitle,
-                          formNameOverride: `BrochureModal_${specializationModalData.slug || modalUniName}`,
-                          submitButtonText: "Download Brochure",
+                        openWhatsAppBrochure({
+                          title: modalCourseTitle,
+                          slug: specializationModalData?.slug || "courses",
                         });
                       }}
                       className="bg-[#0B2546] hover:bg-[#06182c] text-white text-xs sm:text-sm font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 flex-1 shadow-sm transition-all cursor-pointer border-none"

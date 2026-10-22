@@ -9,6 +9,7 @@ import { Container } from "@/components/common/Container";
 import SafeHtmlRenderer from "@/components/website/SafeHtmlRenderer";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
 import { useFormModal } from "@/hooks/useFormModal";
+import { openWhatsAppBrochure } from "@/lib/whatsappBrochure";
 import { Hero } from "@/components/website/Hero";
 import {
   GraduationCap,
@@ -496,9 +497,9 @@ function RankedUniversityCard({ item, index, features, isStatePage = false }) {
           <button
             type="button"
             onClick={() =>
-              openFormModal({
-                title: `${features?.brochureBtnText || "Download Brochure"} - ${name}`,
-                source: "dynamic_listing_brochure",
+              openWhatsAppBrochure({
+                title: name,
+                slug: slug || item?.slug || item?.courseSlug || name?.toLowerCase()?.replace(/\s+/g, "-"),
               })
             }
             className="flex-[1.1] sm:flex-none px-2 sm:px-4 py-2 rounded-lg border border-[#f15a24] text-[#f15a24] hover:bg-orange-50 font-semibold text-[11px] sm:text-xs inline-flex items-center justify-center gap-1 sm:gap-1.5 transition-all min-w-0 cursor-pointer whitespace-nowrap"

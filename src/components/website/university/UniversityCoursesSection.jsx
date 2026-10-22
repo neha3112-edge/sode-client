@@ -9,6 +9,7 @@ import { Clock, Plus, Check, ChevronDown, Download, Briefcase, GraduationCap, Aw
 import { FaCalendar, FaClock } from "react-icons/fa";
 import { useCompare } from "@/hooks/useCompare";
 import { formatAdmissionDeadline } from "@/lib/utils";
+import { openWhatsAppBrochure } from "@/lib/whatsappBrochure";
 
 const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 
@@ -456,17 +457,12 @@ export default function UniversityCoursesSection({
                   <button
                     type="button"
                     onClick={() => {
+                      const courseSlug = selectedCourseSpec?.slug || `${slug}/${cTitle?.toLowerCase()?.replace(/\s+/g, "-")}`;
                       setSelectedCourseSpec(null);
-                      openFormModal &&
-                        openFormModal({
-                          title: "Download Brochure",
-                          subtitle: `${cTitle} - ${uniName}`,
-                          defaultCourse: `${cTitle} - ${uniName}`,
-                          university: uniName,
-                          formNameOverride: `BrochureModal_${selectedCourseSpec.slug || uniName}`,
-                          isBrochureForm: true,
-                          submitButtonText: "Download Brochure",
-                        });
+                      openWhatsAppBrochure({
+                        title: `${cTitle} - ${uniName}`,
+                        slug: courseSlug,
+                      });
                     }}
                     className="flex-1 min-w-0 bg-[#0C2B4E] hover:bg-[#081f38] text-white text-[11px] sm:text-xs md:text-sm font-semibold py-2.5 px-2 sm:px-4 rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all cursor-pointer shadow-xs active:scale-95 border-none"
                   >
