@@ -1923,11 +1923,25 @@ export default function CoursesPageClientView({
                         type="button"
                         onClick={() => {
                           const title = detailTitle;
-                          const slug = selectedSpecDetail?.slug || specializationModalData?.slug || "courses";
+                          const specSlug =
+                            selectedSpecDetail?.slug ||
+                            (selectedSpecDetail?.name
+                              ? selectedSpecDetail.name
+                                  .toLowerCase()
+                                  .replace(/^online\s+[a-z0-9+-]+\s+in\s+/i, "")
+                                  .replace(/^distance\s+[a-z0-9+-]+\s+in\s+/i, "")
+                                  .replace(/[^a-z0-9]+/g, "-")
+                                  .replace(/^-|-$/g, "")
+                              : "");
+                          const baseCourseSlug = specializationModalData?.slug || "courses";
+                          const fullSlug = specSlug && !baseCourseSlug.toLowerCase().includes(specSlug)
+                            ? `${baseCourseSlug.replace(/\/+$/, "")}/${specSlug}`
+                            : baseCourseSlug;
+
                           handleCloseSpecModal();
                           openWhatsAppBrochure({
                             title,
-                            slug,
+                            slug: fullSlug,
                           });
                         }}
                         className="flex-1 min-w-0 bg-[#0C2B4E] hover:bg-[#071c33] text-white text-[11px] sm:text-xs md:text-sm font-bold py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all cursor-pointer shadow-sm border-none active:scale-95"

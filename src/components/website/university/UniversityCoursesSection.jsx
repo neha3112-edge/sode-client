@@ -32,6 +32,7 @@ export default function UniversityCoursesSection({
   const router = useRouter();
   const { toggleCompare, isInCompare, setIsCompareDrawerOpen, compareList } = useCompare();
   const [selectedCourseSpec, setSelectedCourseSpec] = useState(null);
+  const [selectedSubSpec, setSelectedSubSpec] = useState(null);
   const brandColor = uni?.color_code || "#08AEAA";
 
   if (!coursesList || coursesList.length === 0) return null;
@@ -94,7 +95,10 @@ export default function UniversityCoursesSection({
                 <div className="absolute top-0 left-0 z-10">
                   <button
                     type="button"
-                    onClick={() => setSelectedCourseSpec(item)}
+                    onClick={() => {
+                      setSelectedCourseSpec(item);
+                      setSelectedSubSpec(null);
+                    }}
                     style={{ backgroundColor: brandColor }}
                     className="hover:opacity-90 text-white text-[9px] sm:text-[10px] font-bold px-2.5 sm:px-3 py-1 rounded-tl-xl rounded-br-xl cursor-pointer transition-opacity border-none flex items-center gap-1 shadow-2xs leading-none"
                   >
@@ -382,113 +386,188 @@ export default function UniversityCoursesSection({
                 </div>
 
                 {/* Middle: Specializations OR Program Highlights */}
-                {specializationsList.length > 0 ? (
-                  <div className="my-1">
-                    <div className="flex items-center gap-2.5 sm:gap-3 mb-2">
-                      <h4 className="text-xs sm:text-sm md:text-base font-bold text-[#0C2B4E] m-0 tracking-tight shrink-0">
-                        {specializationsList.length} Specializations Available
-                      </h4>
-                      <div className="flex-1 h-px bg-gray-200" />
-                    </div>
+                {(() => {
+                  const cleanUniSlug = String(slug || uni?.slug || "university").toLowerCase().trim();
+                  const rawCourseSlug = String(selectedCourseSpec.slug || cTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-")).toLowerCase().trim();
+                  const cleanCourseSlug = rawCourseSlug.replace(new RegExp(`^${cleanUniSlug}[/-]?`), "");
 
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-1.5 sm:gap-2 max-h-32 sm:max-h-40 overflow-y-auto pr-1">
-                      {specializationsList.map((sub, idx) => {
-                        const subName = typeof sub === "string" ? sub : sub.name || "";
-                        const subSlug =
-                          (typeof sub === "object" ? sub.slug : "") ||
-                          subName
-                            .toLowerCase()
-                            .replace(/^online\s+[a-z0-9+-]+\s+in\s+/i, "")
-                            .replace(/^distance\s+[a-z0-9+-]+\s+in\s+/i, "")
-                            .replace(/[^a-z0-9]+/g, "-")
-                            .replace(/^-|-$/g, "");
+                  const currentSub = selectedSubSpec;
+                  const currentSubName = currentSub
+                    ? (typeof currentSub === "string" ? currentSub : currentSub.name || currentSub.title || "")
+                    : "";
+                  const currentSubSlug = currentSub
+                    ? ((typeof currentSub === "object" ? currentSub.slug : "") ||
+                      currentSubName
+                        .toLowerCase()
+                        .replace(/^online\s+[a-z0-9+-]+\s+in\s+/i, "")
+                        .replace(/^distance\s+[a-z0-9+-]+\s+in\s+/i, "")
+                        .replace(/[^a-z0-9]+/g, "-")
+                        .replace(/^-|-$/g, ""))
+                    : "";
 
-                        const rawCourseSlug = selectedCourseSpec.slug || encodeURIComponent(cTitle.toLowerCase());
-                        const baseCourseDetailHref = rawCourseSlug.includes("/")
-                          ? `/universities/${rawCourseSlug}`
-                          : `/universities/${slug || uni?.slug || ""}/${rawCourseSlug}`;
+                  const modalEffectiveTitle = currentSubName
+                    ? (currentSubName.toLowerCase().includes(cTitle.toLowerCase()) ? `${currentSubName} - ${uniName}` : `${cTitle} in ${currentSubName} - ${uniName}`)
+                    : `${cTitle} - ${uniName}`;
 
-                        const specHref = `${baseCourseDetailHref}/${encodeURIComponent(subSlug)}#specializations`;
+                  const modalEffectiveSlug = currentSubSlug
+                    ? `${cleanUniSlug}/${cleanCourseSlug}/${currentSubSlug}`
+                    : `${cleanUniSlug}/${cleanCourseSlug}`;
 
-                        return (
-                          <Link
-                            key={idx}
-                            href={specHref}
-                            onClick={() => setSelectedCourseSpec(null)}
-                            className="flex items-center gap-1.5 sm:gap-2 text-[10.5px] sm:text-xs font-semibold px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-blue-50/50 text-[#0C2B4E] border border-blue-100 hover:border-[#08AEAA] hover:bg-blue-100/70 hover:shadow-xs transition-all no-underline cursor-pointer group/spec"
-                          >
-                            <CheckCircle2 size={13} className="text-[#08AEAA] group-hover/spec:scale-110 transition-transform shrink-0" />
-                            <span className="truncate leading-tight group-hover/spec:text-[#08AEAA] transition-colors" title={subName}>
-                              {subName}
+                  return (
+                    <>
+                      {specializationsList.length > 0 ? (
+                        <div className="my-1">
+                          <div className="flex items-center justify-between gap-2.5 sm:gap-3 mb-2">
+                            <h4 className="text-xs sm:text-sm md:text-base font-bold text-[#0C2B4E] m-0 tracking-tight shrink-0">
+                              {specializationsList.length} Specializations Available
+                            </h4>
+                            <span className="text-[10px] sm:text-[11px] text-gray-500 font-normal">
+                              {currentSubName ? (
+                                <span className="text-[#08AEAA] font-bold">Selected: {currentSubName}</span>
+                              ) : (
+                                "Click to select for brochure"
+                              )}
                             </span>
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="my-1 bg-slate-50/90 rounded-xl p-3 sm:p-3.5 border border-slate-200/70">
-                    <div className="text-[11px] sm:text-xs font-bold text-[#0C2B4E] mb-2 tracking-tight uppercase">
-                      Program Highlights
-                    </div>
-                    <div className="grid grid-cols-2 gap-2 text-xs text-gray-700">
-                      <div className="flex items-center gap-2">
-                        <CheckCircle2 size={14} className="text-[#08AEAA] shrink-0" />
-                        <span className="font-medium text-gray-800 text-[11px] sm:text-xs">100% Online & Flexible</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <CheckCircle2 size={14} className="text-[#08AEAA] shrink-0" />
-                        <span className="font-medium text-gray-800 text-[11px] sm:text-xs">UGC & DEB Entitled</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <CheckCircle2 size={14} className="text-[#08AEAA] shrink-0" />
-                        <span className="font-medium text-gray-800 text-[11px] sm:text-xs">Career & Placement Support</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <CheckCircle2 size={14} className="text-[#08AEAA] shrink-0" />
-                        <span className="font-medium text-gray-800 text-[11px] sm:text-xs">Industry-Aligned Curriculum</span>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                          </div>
 
-                {/* Bottom: Action Buttons */}
-                <div className="flex items-center gap-2 sm:gap-3 pt-2 mt-auto w-full">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const courseSlug = selectedCourseSpec?.slug || `${slug}/${cTitle?.toLowerCase()?.replace(/\s+/g, "-")}`;
-                      setSelectedCourseSpec(null);
-                      openWhatsAppBrochure({
-                        title: `${cTitle} - ${uniName}`,
-                        slug: courseSlug,
-                      });
-                    }}
-                    className="flex-1 min-w-0 bg-[#0C2B4E] hover:bg-[#081f38] text-white text-[11px] sm:text-xs md:text-sm font-semibold py-2.5 px-2 sm:px-4 rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all cursor-pointer shadow-xs active:scale-95 border-none"
-                  >
-                    <span className="truncate">Download Brochure</span>
-                    <Download className="w-3.5 h-3.5 shrink-0" />
-                  </button>
+                          <div className="grid grid-cols-2 md:grid-cols-3 gap-1.5 sm:gap-2 max-h-36 sm:max-h-44 overflow-y-auto pr-1">
+                            {specializationsList.map((sub, idx) => {
+                              const subName = typeof sub === "string" ? sub : sub.name || "";
+                              const subSlug =
+                                (typeof sub === "object" ? sub.slug : "") ||
+                                subName
+                                  .toLowerCase()
+                                  .replace(/^online\s+[a-z0-9+-]+\s+in\s+/i, "")
+                                  .replace(/^distance\s+[a-z0-9+-]+\s+in\s+/i, "")
+                                  .replace(/[^a-z0-9]+/g, "-")
+                                  .replace(/^-|-$/g, "");
 
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedCourseSpec(null);
-                      openFormModal &&
-                        openFormModal({
-                          title: "Book Free Counseling",
-                          subtitle: `${cTitle} - ${uniName}`,
-                          defaultCourse: `${cTitle} - ${uniName}`,
-                          university: uniName,
-                          formNameOverride: `CourseDetailModal_${selectedCourseSpec.slug || uniName}`,
-                          submitButtonText: "Get Counseling",
-                        });
-                    }}
-                    className="flex-1 min-w-0 bg-white hover:bg-gray-50 text-[#0C2B4E] border border-[#0C2B4E] text-[10.5px] min-[380px]:text-[11.5px] sm:text-xs md:text-sm font-semibold py-2.5 px-1.5 sm:px-4 rounded-xl flex items-center justify-center text-center transition-all cursor-pointer shadow-xs active:scale-95"
-                  >
-                    <span className="truncate">Get 100% FREE Counseling</span>
-                  </button>
-                </div>
+                              const isSelected = Boolean(
+                                selectedSubSpec &&
+                                  ((typeof selectedSubSpec === "string" && selectedSubSpec === subName) ||
+                                    selectedSubSpec.name === subName ||
+                                    selectedSubSpec.slug === subSlug)
+                              );
+
+                              const thisSubTitle = subName.toLowerCase().includes(cTitle.toLowerCase())
+                                ? `${subName} - ${uniName}`
+                                : `${cTitle} in ${subName} - ${uniName}`;
+                              const thisSubSlug = `${cleanUniSlug}/${cleanCourseSlug}/${subSlug}`;
+
+                              return (
+                                <div
+                                  key={idx}
+                                  onClick={() => setSelectedSubSpec(isSelected ? null : sub)}
+                                  className={`flex items-center justify-between gap-1.5 sm:gap-2 text-[10.5px] sm:text-xs font-semibold px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl border transition-all cursor-pointer group/spec ${
+                                    isSelected
+                                      ? "bg-teal-50 border-[#08AEAA] text-[#08AEAA] shadow-xs ring-1 ring-[#08AEAA]/30"
+                                      : "bg-blue-50/50 text-[#0C2B4E] border-blue-100 hover:border-[#08AEAA] hover:bg-blue-100/70"
+                                  }`}
+                                >
+                                  <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                                    <CheckCircle2
+                                      size={13}
+                                      className={`${
+                                        isSelected
+                                          ? "text-[#08AEAA] scale-110"
+                                          : "text-[#08AEAA] group-hover/spec:scale-110"
+                                      } transition-transform shrink-0`}
+                                    />
+                                    <span className="truncate leading-tight" title={subName}>
+                                      {subName}
+                                    </span>
+                                  </div>
+
+                                  <button
+                                    type="button"
+                                    title={`Download ${subName} Brochure`}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setSelectedCourseSpec(null);
+                                      setSelectedSubSpec(null);
+                                      openWhatsAppBrochure({
+                                        title: thisSubTitle,
+                                        slug: thisSubSlug,
+                                      });
+                                    }}
+                                    className="p-1 rounded-md hover:bg-white text-gray-400 hover:text-[#08AEAA] shrink-0 border-none bg-transparent cursor-pointer transition-colors"
+                                  >
+                                    <Download className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="my-1 bg-slate-50/90 rounded-xl p-3 sm:p-3.5 border border-slate-200/70">
+                          <div className="text-[11px] sm:text-xs font-bold text-[#0C2B4E] mb-2 tracking-tight uppercase">
+                            Program Highlights
+                          </div>
+                          <div className="grid grid-cols-2 gap-2 text-xs text-gray-700">
+                            <div className="flex items-center gap-2">
+                              <CheckCircle2 size={14} className="text-[#08AEAA] shrink-0" />
+                              <span className="font-medium text-gray-800 text-[11px] sm:text-xs">100% Online & Flexible</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <CheckCircle2 size={14} className="text-[#08AEAA] shrink-0" />
+                              <span className="font-medium text-gray-800 text-[11px] sm:text-xs">UGC & DEB Entitled</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <CheckCircle2 size={14} className="text-[#08AEAA] shrink-0" />
+                              <span className="font-medium text-gray-800 text-[11px] sm:text-xs">Career & Placement Support</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <CheckCircle2 size={14} className="text-[#08AEAA] shrink-0" />
+                              <span className="font-medium text-gray-800 text-[11px] sm:text-xs">Industry-Aligned Curriculum</span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Bottom: Action Buttons */}
+                      <div className="flex items-center gap-2 sm:gap-3 pt-2 mt-auto w-full">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedCourseSpec(null);
+                            setSelectedSubSpec(null);
+                            openWhatsAppBrochure({
+                              title: modalEffectiveTitle,
+                              slug: modalEffectiveSlug,
+                            });
+                          }}
+                          className="flex-1 min-w-0 bg-[#0C2B4E] hover:bg-[#081f38] text-white text-[11px] sm:text-xs md:text-sm font-semibold py-2.5 px-2 sm:px-4 rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all cursor-pointer shadow-xs active:scale-95 border-none"
+                        >
+                          <span className="truncate">
+                            {currentSubName ? `Download ${currentSubName} Brochure` : "Download Brochure"}
+                          </span>
+                          <Download className="w-3.5 h-3.5 shrink-0" />
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedCourseSpec(null);
+                            setSelectedSubSpec(null);
+                            openFormModal &&
+                              openFormModal({
+                                title: "Book Free Counseling",
+                                subtitle: modalEffectiveTitle,
+                                defaultCourse: modalEffectiveTitle,
+                                university: uniName,
+                                formNameOverride: `CourseDetailModal_${modalEffectiveSlug.replace(/\//g, "_")}`,
+                                submitButtonText: "Get Counseling",
+                              });
+                          }}
+                          className="flex-1 min-w-0 bg-white hover:bg-gray-50 text-[#0C2B4E] border border-[#0C2B4E] text-[10.5px] min-[380px]:text-[11.5px] sm:text-xs md:text-sm font-semibold py-2.5 px-1.5 sm:px-4 rounded-xl flex items-center justify-center text-center transition-all cursor-pointer shadow-xs active:scale-95"
+                        >
+                          <span className="truncate">Get 100% FREE Counseling</span>
+                        </button>
+                      </div>
+                    </>
+                  );
+                })()}
               </div>
             </div>
           </Modal>

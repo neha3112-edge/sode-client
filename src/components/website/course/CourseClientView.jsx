@@ -437,9 +437,21 @@ export function CourseClientView({
     }
 
     if (actionType === "Download Brochure") {
+      let effectiveSlug = slug || courseData?.slug || `${universityName || "course"}/${courseTitleForLead}`;
+      if (specName) {
+        const specSlug = String(specName)
+          .toLowerCase()
+          .replace(/^online\s+[a-z0-9+-]+\s+in\s+/i, "")
+          .replace(/^distance\s+[a-z0-9+-]+\s+in\s+/i, "")
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-|-$/g, "");
+        if (specSlug && !effectiveSlug.toLowerCase().includes(specSlug)) {
+          effectiveSlug = `${effectiveSlug.replace(/\/+$/, "")}/${specSlug}`;
+        }
+      }
       openWhatsAppBrochure({
         title: `${courseTitleForLead}${universityName ? ` - ${universityName}` : ""}`,
-        slug: slug || courseData?.slug || `${universityName || "course"}/${courseTitleForLead}`,
+        slug: effectiveSlug,
       });
       return;
     }
