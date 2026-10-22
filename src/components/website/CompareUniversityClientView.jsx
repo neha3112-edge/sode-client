@@ -833,7 +833,7 @@ export default function CompareUniversityClientView({
           </button>
           <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg border border-gray-200 bg-white p-1 flex items-center justify-center relative">
             {uni.logo ? (
-              <Image src={getAssetPath(uni.logo)} alt={uni.name || "Logo"} fill unoptimized className="object-contain p-0.5" />
+              <Image src={getAssetPath(uni.logo)} alt={uni.name || "Logo"} fill className="object-contain p-0.5" />
             ) : (
               <span className="text-sm font-semibold text-[#0C3058]">{(uni.name || "U")[0]}</span>
             )}
@@ -1105,7 +1105,6 @@ export default function CompareUniversityClientView({
                       src={logo}
                       alt={name}
                       fill
-                      unoptimized
                       className="object-contain"
                     />
                   </div>
@@ -1199,7 +1198,6 @@ export default function CompareUniversityClientView({
                                 src={getAssetPath(rawImage)}
                                 alt={displayTitle || "Image"}
                                 fill
-                                unoptimized
                                 className="object-contain"
                               />
                             ) : (
@@ -1405,7 +1403,7 @@ export default function CompareUniversityClientView({
                       <CloseOutlined className="text-[7px]" />
                     </button>
                     <div className="w-8 h-8 rounded-lg border border-slate-200 bg-white p-0.5 flex items-center justify-center relative">
-                      {uni.logo ? <Image src={getAssetPath(uni.logo)} alt={uni.name || "Logo"} fill unoptimized className="object-contain p-0.5" /> : <span className="text-xs font-bold text-[#1C3569]">{(uni.name || "U")[0]}</span>}
+                      {uni.logo ? <Image src={getAssetPath(uni.logo)} alt={uni.name || "Logo"} fill className="object-contain p-0.5" /> : <span className="text-xs font-bold text-[#1C3569]">{(uni.name || "U")[0]}</span>}
                     </div>
                     <h4 className="text-[11px] font-bold text-[#1C3569] m-0 line-clamp-2">{uni.isCourseOffering ? uni.title : uni.name}</h4>
                   </div>
@@ -1488,7 +1486,7 @@ export default function CompareUniversityClientView({
           className="rounded-2xl border-2 border-blue-500 bg-white p-2 flex items-center justify-center shadow-2xl"
         >
           {flyingLogo.logo
-            ? <div className="relative w-full h-full"><Image src={getAssetPath(flyingLogo.logo)} alt={flyingLogo.name || "Logo"} fill unoptimized className="object-contain p-1" /></div>
+            ? <div className="relative w-full h-full"><Image src={getAssetPath(flyingLogo.logo)} alt={flyingLogo.name || "Logo"} fill className="object-contain p-1" /></div>
             : <span className="text-base font-black text-[#1C3569]">{flyingLogo.name ? flyingLogo.name[0] : "U"}</span>
           }
         </div>
@@ -1625,7 +1623,7 @@ export default function CompareUniversityClientView({
                     >
                       <div className="relative w-full h-14 sm:h-16 flex items-center justify-center p-1">
                         {rawLogo ? (
-                          <Image src={getAssetPath(rawLogo)} alt={st.name} fill unoptimized className="object-contain" />
+                          <Image src={getAssetPath(rawLogo)} alt={st.name} fill className="object-contain" />
                         ) : (
                           <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-500">
                             <EnvironmentOutlined className="text-lg" />
@@ -1664,7 +1662,7 @@ export default function CompareUniversityClientView({
                     >
                       <div className="relative w-full h-14 sm:h-16 flex items-center justify-center p-1">
                         {rawLogo ? (
-                          <Image src={getAssetPath(rawLogo)} alt={app.name || app.code} fill unoptimized className="object-contain" />
+                          <Image src={getAssetPath(rawLogo)} alt={app.name || app.code} fill className="object-contain" />
                         ) : (
                           <span className="text-base sm:text-lg font-bold text-[#0C3058] bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1">
                             {app.code || (app.name || "A").slice(0, 4)}
@@ -1711,7 +1709,7 @@ export default function CompareUniversityClientView({
                       {/* Logo */}
                       <div className="relative w-full h-14 sm:h-16 flex items-center justify-center p-1">
                         {rawLogo ? (
-                          <Image src={getAssetPath(rawLogo)} alt={uni.name || "University Logo"} fill unoptimized className="object-contain" />
+                          <Image src={getAssetPath(rawLogo)} alt={uni.name || "University Logo"} fill className="object-contain" />
                         ) : (
                           <span className="text-xl font-bold text-[#0C3058]">{(uni.name || "U")[0]}</span>
                         )}

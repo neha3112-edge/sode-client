@@ -110,7 +110,6 @@ function BlogCard({ blog, index = 0 }) {
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             loading={isAboveTheFold ? "eager" : "lazy"}
             priority={isAboveTheFold}
-            unoptimized
             className="object-cover group-hover:scale-105 transition-transform duration-500"
             onError={() => setImgErr(true)}
           />
@@ -249,10 +248,10 @@ export default function BlogPageClientView({
           catItem.slug ||
           (catItem.name
             ? catItem.name
-                .toLowerCase()
-                .replace(/&/g, "and")
-                .replace(/[^a-z0-9]+/g, "-")
-                .replace(/^-+|-+$/g, "")
+              .toLowerCase()
+              .replace(/&/g, "and")
+              .replace(/[^a-z0-9]+/g, "-")
+              .replace(/^-+|-+$/g, "")
             : String(selectedKey));
         window.history.replaceState(null, "", `#${hashSlug}`);
       }

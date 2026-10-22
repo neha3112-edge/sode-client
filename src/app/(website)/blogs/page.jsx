@@ -24,7 +24,7 @@ export default async function BlogsPage() {
     const blogsRes = await request.dynamicList({
       entity: "blogs",
       endPoint: "v1/list",
-      options: { page: 1, items: 100 },
+      options: { page: 1, items: 24 },
       revalidate: 3600,
     });
 

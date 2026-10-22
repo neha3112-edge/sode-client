@@ -19,7 +19,7 @@ const nextConfig = {
     "127.0.0.1",
   ],
   images: {
-    unoptimized: true,
+    unoptimized: false,
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 31536000,
     deviceSizes: [360, 480, 640, 750, 828, 1080, 1200, 1920],
@@ -33,6 +33,14 @@ const nextConfig = {
         protocol: "http",
         hostname: "localhost",
       },
+    ],
+  },
+  experimental: {
+    optimizePackageImports: [
+      "antd",
+      "@ant-design/icons",
+      "lucide-react",
+      "react-icons",
     ],
   },
 
