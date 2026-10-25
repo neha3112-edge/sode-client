@@ -520,11 +520,13 @@ export default function CompareUniversityClientView({
     (allStates || []).forEach((st) => {
       const name = typeof st === "object" ? st?.name : st;
       const id = typeof st === "object" ? st?._id || st?.id || st?.slug : st;
+      const logo = typeof st === "object" ? (st?.logo?.url || st?.logo || null) : null;
       if (name && !map.has(name.toLowerCase())) {
         map.set(name.toLowerCase(), {
           _id: id,
           name: name,
           slug: (typeof st === "object" ? st?.slug : "") || name.toLowerCase().replace(/\s+/g, "-"),
+          logo: logo,
         });
       }
     });
@@ -534,8 +536,10 @@ export default function CompareUniversityClientView({
 
     uniPool.forEach((u) => {
       let stName = "";
+      let stLogo = null;
       if (typeof u.state === "object" && u.state?.name) {
         stName = u.state.name;
+        stLogo = u.state.logo?.url || (typeof u.state.logo === "string" ? u.state.logo : null);
       } else if (typeof u.state === "string" && u.state.trim() && !/^[0-9a-fA-F]{24}$/.test(u.state)) {
         stName = u.state.trim();
       } else if (u.location && !/^[0-9a-fA-F]{24}$/.test(u.location)) {
@@ -546,11 +550,17 @@ export default function CompareUniversityClientView({
       if (stName) {
         const key = stName.toLowerCase();
         countMap.set(key, (countMap.get(key) || 0) + 1);
-        if (!map.has(key)) {
+        const existing = map.get(key);
+        if (existing) {
+          if (!existing.logo && stLogo) {
+            existing.logo = stLogo;
+          }
+        } else {
           map.set(key, {
             _id: key,
             name: stName,
             slug: key.replace(/\s+/g, "-"),
+            logo: stLogo || null,
           });
         }
       }
