@@ -189,18 +189,15 @@ export function Category({ categories = [], universities = [], programs = [], co
       return;
     }
 
-    // 2. If Category Target Type is COURSE or modalType is COURSES
-    const isCourseCategory =
-      item.modalType === "COURSES" ||
-      item.targetType === "COURSE" ||
-      (Array.isArray(item.courses) && item.courses.length > 0);
+    // 2. If Category Target Type is COURSE or modalType is COURSES AND has courses
+    const hasCourses =
+      (Array.isArray(item.courses) && item.courses.length > 0) ||
+      (item.modalType === "COURSES" && Array.isArray(item.items) && item.items.length > 0);
 
-    if (isCourseCategory) {
+    if (hasCourses) {
       const courseItems = (Array.isArray(item.courses) && item.courses.length > 0)
         ? item.courses
-        : (Array.isArray(item.items) && item.items.length > 0)
-          ? item.items
-          : [];
+        : item.items;
 
       setModalData({
         category: item,
