@@ -388,12 +388,14 @@ export default function CoursesPageClientView({
   initialCoursesData = { programs: [], total: 0, totalPages: 1, page: 1 },
   initialCategories: initialCategoriesProp = [],
   initialUniversities: initialUniversitiesProp = [],
+  initialCourseOptions = [],
+  initialSubcourseOptions = [],
 }) {
   const [coursesData, setCoursesData] = useState(initialCoursesData);
   const [initialCategories, setInitialCategories] = useState(initialCategoriesProp);
   const [initialUniversities, setInitialUniversities] = useState(initialUniversitiesProp);
-  const [coursesOptionsList, setCoursesOptionsList] = useState([]);
-  const [subcoursesOptionsList, setSubcoursesOptionsList] = useState([]);
+  const [coursesOptionsList, setCoursesOptionsList] = useState(initialCourseOptions);
+  const [subcoursesOptionsList, setSubcoursesOptionsList] = useState(initialSubcourseOptions);
 
   const [currentPage, setCurrentPage] = useState(1);
   const isInitialMount = useRef(true);
@@ -407,6 +409,10 @@ export default function CoursesPageClientView({
   const initialSubCourse = searchParams?.get("subCourse") || searchParams?.get("subcourseId") || searchParams?.get("subcourse") || searchParams?.get("specialization") || searchParams?.get("specializationId") || "";
   const initialQuery = searchParams?.get("search") || "";
   const initialUnis = searchParams?.get("university") ? searchParams.get("university").split(",").map((u) => u.trim()) : [];
+
+  const initialFilterKey = useRef(
+    `${initialCat}|${initialSubcatArr.join(",")}|${initialCourse}|${initialSubCourse}|${initialUnis.join(",")}|0,1000000|3,48|${initialQuery}|1`
+  );
 
   const [appliedSearchTerm, setAppliedSearchTerm] = useState(initialQuery);
   const [activeCategoryTab, setActiveCategoryTab] = useState(initialCat);
@@ -555,19 +561,36 @@ export default function CoursesPageClientView({
   const pathname = usePathname();
 
   useEffect(() => {
+    const needCategories = !initialCategories || initialCategories.length === 0;
+    const needUniversities = !initialUniversities || initialUniversities.length === 0;
+    const needCourses = !coursesOptionsList || coursesOptionsList.length === 0;
+    const needSubcourses = !subcoursesOptionsList || subcoursesOptionsList.length === 0;
+
+    if (!needCategories && !needUniversities && !needCourses && !needSubcourses) {
+      return;
+    }
+
     let isMounted = true;
     Promise.all([
-      request.dynamicList({ entity: "category", endPoint: "v1/list", revalidate: 900 }),
-      request.dynamicList({ entity: "universities", endPoint: "v1/list", options: { items: 100 }, revalidate: 300 }),
-      request.dynamicList({ entity: "courses", endPoint: "v1/options", revalidate: 300 }),
-      request.dynamicList({ entity: "subcourses", endPoint: "v1/options", revalidate: 300 }),
+      needCategories
+        ? request.dynamicList({ entity: "category", endPoint: "v1/list", revalidate: 900 })
+        : Promise.resolve(null),
+      needUniversities
+        ? request.dynamicList({ entity: "universities", endPoint: "v1/list", options: { items: 100 }, revalidate: 300 })
+        : Promise.resolve(null),
+      needCourses
+        ? request.dynamicList({ entity: "courses", endPoint: "v1/options", revalidate: 300 })
+        : Promise.resolve(null),
+      needSubcourses
+        ? request.dynamicList({ entity: "subcourses", endPoint: "v1/options", revalidate: 300 })
+        : Promise.resolve(null),
     ])
       .then(([categoriesRes, unisRes, coursesRes, subcoursesRes]) => {
         if (!isMounted) return;
-        setInitialCategories(categoriesRes?.categories || categoriesRes?.result || []);
-        setInitialUniversities(unisRes?.result || unisRes || []);
-        setCoursesOptionsList(coursesRes?.result || coursesRes || []);
-        setSubcoursesOptionsList(subcoursesRes?.result || subcoursesRes || []);
+        if (categoriesRes) setInitialCategories(categoriesRes?.categories || categoriesRes?.result || []);
+        if (unisRes) setInitialUniversities(unisRes?.result || unisRes || []);
+        if (coursesRes) setCoursesOptionsList(coursesRes?.result || coursesRes || []);
+        if (subcoursesRes) setSubcoursesOptionsList(subcoursesRes?.result || subcoursesRes || []);
       })
       .catch((err) => {
         console.error("Error loading initial filter options:", err);
@@ -577,6 +600,13 @@ export default function CoursesPageClientView({
       isMounted = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (initialCoursesData?.programs?.length > 0) {
+      setCoursesData(initialCoursesData);
+      initialFilterKey.current = `${initialCat}|${initialSubcatArr.join(",")}|${initialCourse}|${initialSubCourse}|${initialUnis.join(",")}|0,1000000|3,48|${initialQuery}|1`;
+    }
+  }, [initialCoursesData]);
 
   useEffect(() => {
     const cat = searchParams?.get("category");
@@ -608,9 +638,15 @@ export default function CoursesPageClientView({
   }, [searchParams]);
 
   useEffect(() => {
+    const currentFilterKey = `${activeCategoryTab}|${(activeSubcategory || []).join(",")}|${selectedCourse}|${selectedSubCourse}|${(selectedUniversities || []).join(",")}|${feeRange.join(",")}|${durationRange.join(",")}|${appliedSearchTerm}|${currentPage}`;
+
     // Skip duplicate client-side fetch on initial page mount (SSR already loaded initialCoursesData)
     if (isInitialMount.current) {
       isInitialMount.current = false;
+      if (currentFilterKey === initialFilterKey.current && initialCoursesData?.programs?.length > 0) {
+        return;
+      }
+    } else if (currentFilterKey === initialFilterKey.current && coursesData?.programs?.length > 0) {
       return;
     }
 

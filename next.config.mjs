@@ -8,6 +8,7 @@ const BACKEND_URL =
 
 const nextConfig = {
   trailingSlash: true,
+  skipTrailingSlashRedirect: true,
   reactStrictMode: true,
   compress: true,
   poweredByHeader: false,

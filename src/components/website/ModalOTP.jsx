@@ -409,34 +409,20 @@ export default function ModalOTP({
     contextPayload?.buttonText ||
     (resolvedUni ? `Apply to ${resolvedUni}` : "Book 1:1 Counselling");
 
-  const modalSubtitle =
-    step === "otp"
-      ? otpMessage || `We've sent a 6-digit OTP for +91 ${phone}.`
-      : contextPayload?.subtitle ||
-        "Enter your details to receive admission guidance and fee structures.";
-
   return (
     <Modal
       id={triggerId}
       open={isOpen}
       onCancel={handleClose}
       destroyOnHidden
-      centered
-      width={420}
-      className="counselling-otp-modal [&_.ant-modal-close]:top-3.5! [&_.ant-modal-close]:right-3.5! [&_.ant-modal-close]:text-gray-500! hover:[&_.ant-modal-close]:text-gray-800!"
+      title={modalTitle}
+      width={400}
       footer={null}
       mask={{ closable: true }}
       closable={true}
       focusable={{ focusTriggerAfterClose: false, autoFocusButton: null }}
     >
-      <div className="pt-2 pb-1">
-        <h3 className="text-xl font-bold text-[#0C2B4E] mb-1">
-          {modalTitle}
-        </h3>
-        <p className="text-xs text-gray-500 mb-4">
-          {modalSubtitle}
-        </p>
-
+      <div>
         <Form
           form={form}
           preserve={true}
