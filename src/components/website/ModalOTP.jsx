@@ -3,174 +3,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { EditOutlined, RedoOutlined } from "@ant-design/icons";
 import { Form, Input, Modal, Button, Select, message as staticMessage, App } from "antd";
-import { Phone, ShieldCheck, User, Mail, GraduationCap } from "lucide-react";
+import { Phone, ShieldCheck, User, Mail, GraduationCap, MapPin, ArrowLeft, ArrowRight } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 
-/* =========================================================
-   CLEAN COURSE NAME (STRIP MODES LIKE ONLINE / DISTANCE)
-========================================================= */
-function cleanCourseName(courseStr, uniName = "") {
-  if (!courseStr) return "";
-  let clean = String(courseStr).trim();
-  if (clean.includes("::")) {
-    const parts = clean.split("::");
-    clean = parts[0] || parts[1];
-  }
 
-  // Strip university name if attached (e.g. "- Sikkim Manipal University")
-  if (uniName) {
-    const escapedUni = String(uniName).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    clean = clean.replace(new RegExp(`[-–—|/]?\\s*${escapedUni}.*`, "gi"), "").trim();
-  }
-
-  // Strip generic university terms
-  clean = clean.replace(/[-–—|/]?\s*(online university|university|deemed university).*/gi, "").trim();
-
-  // Strip Mode keywords (Online, Distance, Hybrid, Regular, Open, Executive, ODL)
-  clean = clean.replace(/\b(online|distance|hybrid|regular|open|executive|odl)\b/gi, "").trim();
-  clean = clean.replace(/\s+/g, " ").replace(/^[-–—\s/:]+|[-–—\s/:]+$/g, "").trim();
-
-  // Convert short acronym slugs to uppercase (e.g. "ba" -> "BA", "mba" -> "MBA")
-  if (clean.length <= 5 && !clean.includes(" ")) {
-    clean = clean.toUpperCase();
-  }
-
-  return clean;
-}
-
-function isSameAsUniversity(courseName, uniName = "") {
-  if (!courseName) return false;
-  const c = String(courseName).toLowerCase().replace(/[^a-z0-9]/g, "");
-  if (!c) return true;
-  if (
-    c.includes("university") ||
-    c.includes("college") ||
-    c.includes("institute") ||
-    c.includes("vidyapeeth")
-  ) {
-    return true;
-  }
-  if (uniName) {
-    const u = String(uniName).toLowerCase().replace(/[^a-z0-9]/g, "");
-    if (u) {
-      if (c === u) return true;
-      if (c.length >= 6 && (u.includes(c) || c.includes(u))) return true;
-    }
-  }
-  return false;
-}
-
-/* =========================================================
-   AUTO-DETECT UNIVERSITY AND COURSE FROM CURRENT URL PATH
-========================================================= */
-function detectPageContext() {
-  if (typeof window === "undefined") return { university: "", course: "", isCoursePage: false };
-  try {
-    const path = window.location.pathname;
-    if (path.includes("/universities/")) {
-      const segments = path.split("/").filter(Boolean);
-      const uIndex = segments.indexOf("universities");
-      if (uIndex !== -1) {
-        const uniSlug = segments[uIndex + 1];
-        const courseSlug = segments[uIndex + 2];
-        const uniName = uniSlug
-          ? uniSlug.toLowerCase() === "upes"
-            ? "UPES"
-            : uniSlug
-              .split("-")
-              .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-              .join(" ")
-          : "";
-
-        if (courseSlug) {
-          return {
-            university: uniName,
-            course: cleanCourseName(courseSlug),
-            isCoursePage: true,
-          };
-        } else {
-          return {
-            university: uniName,
-            course: "",
-            isCoursePage: false,
-          };
-        }
-      }
-    }
-  } catch (err) {
-    // fallback
-  }
-  return { university: "", course: "", isCoursePage: false };
-}
-
-/* =========================================================
-   EXTRACT AVAILABLE COURSES FOR DROPDOWN (DYNAMIC FALLBACK)
-========================================================= */
-function getAvailableCourses(contextPayload, currentUni = "") {
-  const set = new Set();
-
-  // 1. From contextPayload.courses (passed from university view)
-  if (Array.isArray(contextPayload?.courses) && contextPayload.courses.length > 0) {
-    contextPayload.courses.forEach((c) => {
-      const clean = cleanCourseName(c, currentUni);
-      if (clean && !isSameAsUniversity(clean, currentUni)) set.add(clean);
-    });
-  }
-
-  // 2. From window.__CURRENT_PAGE_COURSES__ (cached by UniversityClientView)
-  if (typeof window !== "undefined" && Array.isArray(window.__CURRENT_PAGE_COURSES__)) {
-    window.__CURRENT_PAGE_COURSES__.forEach((c) => {
-      const clean = cleanCourseName(c, currentUni);
-      if (clean && !isSameAsUniversity(clean, currentUni)) set.add(clean);
-    });
-  }
-
-  // 3. Extract directly from DOM of the current university page
-  if (typeof document !== "undefined") {
-    document
-      .querySelectorAll(
-        "#programs a, #programs h3, #programs h4, [data-nav-label='Programs'] a, #university-courses-section a, #university-courses-section h3, #university-courses-section h4, [data-nav-label='Courses'] a, .university-courses-grid a"
-      )
-      .forEach((el) => {
-        const text = el.innerText?.trim();
-        const clean = cleanCourseName(text, currentUni);
-        if (
-          clean &&
-          clean.length <= 30 &&
-          !isSameAsUniversity(clean, currentUni) &&
-          !clean.toLowerCase().includes("filter") &&
-          !clean.toLowerCase().includes("apply") &&
-          !clean.toLowerCase().includes("brochure")
-        ) {
-          set.add(clean);
-        }
-      });
-
-    if (set.size === 0) {
-      document
-        .querySelectorAll("a[href*='/online-'], a[href*='/distance-']")
-        .forEach((el) => {
-          const text = el.innerText?.trim();
-          const clean = cleanCourseName(text, currentUni);
-          if (
-            clean &&
-            clean.length <= 30 &&
-            !isSameAsUniversity(clean, currentUni) &&
-            !clean.toLowerCase().includes("apply") &&
-            !clean.toLowerCase().includes("brochure")
-          ) {
-            set.add(clean);
-          }
-        });
-    }
-  }
-
-  if (set.size > 0) {
-    return Array.from(set);
-  }
-
-  return ["MBA", "BBA", "BCA", "MCA", "B.Com", "M.Com", "BA", "MA", "B.Sc", "M.Sc"];
-}
 
 /* =========================================================
    EXTRACT UTM & GOOGLE TRACKING PARAMS
@@ -202,6 +38,75 @@ function getUTMParams() {
   };
 }
 
+/* =========================================================
+   DYNAMIC STATE & COURSE OPTIONS FETCH (/api/.../v1/options)
+========================================================= */
+let cachedStateOptions = null;
+let stateFetchPromise = null;
+
+async function fetchStateOptions() {
+  if (cachedStateOptions) return cachedStateOptions;
+  if (stateFetchPromise) return stateFetchPromise;
+
+  stateFetchPromise = (async () => {
+    try {
+      const res = await fetch("/api/state/v1/options");
+      if (!res.ok) throw new Error("Failed to fetch states");
+      const data = await res.json();
+      const list = Array.isArray(data?.result) ? data.result : [];
+      if (list.length > 0) {
+        cachedStateOptions = list
+          .filter((s) => s?.name && !s.removed)
+          .map((s) => ({
+            label: s.name,
+            value: s.name,
+          }));
+        return cachedStateOptions;
+      }
+    } catch (err) {
+      console.warn("Could not load dynamic states from /api/state/v1/options:", err);
+    } finally {
+      stateFetchPromise = null;
+    }
+    return null;
+  })();
+
+  return stateFetchPromise;
+}
+
+let cachedCourseOptions = null;
+let courseFetchPromise = null;
+
+async function fetchCourseOptions() {
+  if (cachedCourseOptions) return cachedCourseOptions;
+  if (courseFetchPromise) return courseFetchPromise;
+
+  courseFetchPromise = (async () => {
+    try {
+      const res = await fetch("/api/courses/v1/options");
+      if (!res.ok) throw new Error("Failed to fetch courses");
+      const data = await res.json();
+      const list = Array.isArray(data?.result) ? data.result : [];
+      if (list.length > 0) {
+        cachedCourseOptions = list
+          .filter((c) => c?.name && !c.removed)
+          .map((c) => ({
+            label: c.name,
+            value: c.name,
+          }));
+        return cachedCourseOptions;
+      }
+    } catch (err) {
+      console.warn("Could not load dynamic courses from /api/courses/v1/options:", err);
+    } finally {
+      courseFetchPromise = null;
+    }
+    return null;
+  })();
+
+  return courseFetchPromise;
+}
+
 export default function ModalOTP({
   open: controlledOpen,
   onCancel,
@@ -222,6 +127,31 @@ export default function ModalOTP({
   const [canResend, setCanResend] = useState(false);
   const [contextPayload, setContextPayload] = useState(null);
   const [otpMessage, setOtpMessage] = useState("");
+  const [stateOptions, setStateOptions] = useState(() => cachedStateOptions || []);
+  const [courseOptions, setCourseOptions] = useState(() => cachedCourseOptions || []);
+
+  useEffect(() => {
+    let isMounted = true;
+    fetchStateOptions().then((opts) => {
+      if (isMounted && opts && opts.length > 0) {
+        setStateOptions(opts);
+      }
+    });
+    fetchCourseOptions().then((opts) => {
+      if (isMounted && opts && opts.length > 0) {
+        setCourseOptions(opts);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (contextPayload?.course) {
+      form.setFieldsValue({ course: contextPayload.course });
+    }
+  }, [contextPayload, form]);
 
   // Track if auto-opened by scroll or dismissed on current page
   const hasAutoTriggeredRef = useRef(false);
@@ -302,41 +232,12 @@ export default function ModalOTP({
     if (onCancel) onCancel();
   };
 
-  /* =========================================================
-     DETECT IF COURSE IS ALREADY KNOWN OR NEEDS SELECT DROPDOWN
-  ========================================================= */
-  const pageContext = detectPageContext();
-
   const resolvedUni = (
     contextPayload?.university ||
     contextPayload?.university_name ||
     (typeof window !== "undefined" && window.__CURRENT_PAGE_UNIVERSITY__) ||
-    pageContext.university ||
     "UPES"
   ).trim();
-
-  // 1. Explicitly passed course from button/card
-  const passedCourseRaw =
-    contextPayload?.course ||
-    contextPayload?.courseName ||
-    "";
-
-  // 2. Global course from current course page (if on a course page)
-  const globalPageCourse =
-    (typeof window !== "undefined" && window.__CURRENT_PAGE_COURSE__) ||
-    pageContext.course ||
-    "";
-
-  const rawCourse = passedCourseRaw || globalPageCourse || pageContext.course || "";
-  const cleanedCourse = cleanCourseName(rawCourse, resolvedUni) || pageContext.course || "";
-
-  // If we are on a course page OR have a valid pre-selected course
-  const isLikelyUni = isSameAsUniversity(cleanedCourse, resolvedUni);
-  const isCoursePreSelected = Boolean(
-    pageContext.isCoursePage || (cleanedCourse && !isLikelyUni)
-  );
-
-  const availableCourses = getAvailableCourses(contextPayload, resolvedUni);
 
   /* =========================================================
      STEP 1: SEND OTP
@@ -358,16 +259,19 @@ export default function ModalOTP({
         throw new Error(data.message || "Failed to send OTP");
       }
 
-      setOtpMessage(data.message || `We've sent a 6-digit OTP for +91 ${cleanPhone}.`);
+      const successMsg = data.message || `We've sent a 6-digit OTP for +91 ${cleanPhone}.`;
+      message.success(successMsg);
+      setOtpMessage(successMsg);
       setStep("otp");
       setResendTimer(30);
       setCanResend(false);
     } catch (err) {
-      console.error("OTP send error:", err);
+      const errorMsg = err.message || "Something went wrong sending OTP";
+      message.error(errorMsg);
       form.setFields([
         {
           name: "phone",
-          errors: [err.message || "Something went wrong sending OTP"],
+          errors: [errorMsg],
         },
       ]);
     } finally {
@@ -393,48 +297,26 @@ export default function ModalOTP({
 
       const verifyData = await verifyRes.json();
       if (!verifyRes.ok || !verifyData.success) {
+        const errorMsg = verifyData?.message || "Invalid OTP. Please enter the correct code.";
+        message.error(errorMsg);
         form.setFields([
           {
             name: "otp",
-            errors: [verifyData?.message || "Invalid OTP. Please enter the correct code."],
+            errors: [errorMsg],
           },
         ]);
         return;
       }
 
-      // 2. Submit Lead immediately upon verification (so lead is captured)
-      const formName =
-        contextPayload?.action ||
-        contextPayload?.title ||
-        "Get 100% FREE Counseling";
-
-      const leadPayload = {
-        phone: cleanPhone,
-        name: "",
-        course: isCoursePreSelected ? cleanedCourse : "",
-        university_name: resolvedUni || "UPES",
-        form_name: formName,
-        source: contextPayload?.source || "SODE",
-        page_url: typeof window !== "undefined" ? window.location.href : "",
-        ...getUTMParams(),
-      };
-
-      console.log("🚀 [OTP VERIFIED] Creating Lead:", leadPayload);
-
-      await fetch("/api/lead", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(leadPayload),
-      });
-
-      // Proceed to Step 3: Full Name, Email & Course (if needed)
-      setStep("details");
+      message.success(verifyData?.message || "OTP verified successfully!");
+      setStep("name");
     } catch (err) {
-      console.error("Verification error:", err);
+      const errorMsg = err.message || "Invalid OTP. Please enter the correct code.";
+      message.error(errorMsg);
       form.setFields([
         {
           name: "otp",
-          errors: [err.message || "Invalid OTP. Please enter the correct code."],
+          errors: [errorMsg],
         },
       ]);
     } finally {
@@ -443,56 +325,77 @@ export default function ModalOTP({
   };
 
   /* =========================================================
-     STEP 3: SAVE FULL NAME, EMAIL & COURSE (OR REDIRECT TO THANK YOU)
+     STEP 3: PROCEED TO EMAIL
+  ========================================================= */
+  const handleNextToEmail = async () => {
+    try {
+      await form.validateFields(["name"]);
+      setStep("email");
+    } catch {
+      // validation error shown by Form
+    }
+  };
+
+  /* =========================================================
+     STEP 4: PROCEED TO COURSE & STATE
+  ========================================================= */
+  const handleNextToPreferences = async () => {
+    try {
+      await form.validateFields(["email"]);
+      setStep("preferences");
+    } catch {
+      // validation error shown by Form
+    }
+  };
+
+  /* =========================================================
+     STEP 5: FINAL SUBMIT (ANT DESIGN VALUES)
   ========================================================= */
   const handleSaveDetails = async (values) => {
     setLoading(true);
     try {
-      const cleanPhone = phone;
-      const finalCourse = cleanCourseName(
-        values?.course || (isCoursePreSelected ? cleanedCourse : "")
-      );
+      const formValues = await form.validateFields();
+      const allValues = {
+        ...form.getFieldsValue(true),
+        ...formValues,
+        ...(values || {}),
+      };
 
-      const formName =
-        contextPayload?.action ||
-        contextPayload?.title ||
-        "Get 100% FREE Counseling";
-
-      const updatePayload = {
-        phone: cleanPhone,
-        name: values?.name ? String(values.name).trim() : "",
-        email: values?.email ? String(values.email).trim() : "",
-        course: finalCourse,
+      const payload = {
+        ...allValues,
+        phone: allValues.phone || phone,
         university_name: resolvedUni || "UPES",
-        form_name: formName,
+        form_name: contextPayload?.action || contextPayload?.title || "Get 100% FREE Counseling",
         source: contextPayload?.source || "SODE",
         page_url: typeof window !== "undefined" ? window.location.href : "",
         ...getUTMParams(),
       };
 
-      console.log("🚀 [SAVING DETAILS] Updating Lead:", updatePayload);
-
-      await fetch("/api/lead", {
+      const response = await fetch("/api/lead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatePayload),
+        body: JSON.stringify(payload),
       });
 
-      if (onFinish) onFinish(updatePayload);
+      const data = await response.json();
+      if (!response.ok || !data?.success) {
+        throw new Error(data?.message || "Failed to submit lead");
+      }
+
+      if (onFinish) onFinish(payload);
       handleClose();
       router.push("/thank-you");
     } catch (err) {
       console.error("Save details error:", err);
+      if (err?.errorFields?.length) {
+        setLoading(false);
+        return;
+      }
       handleClose();
       router.push("/thank-you");
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleSkip = () => {
-    handleClose();
-    router.push("/thank-you");
   };
 
   const handleResendOtp = async () => {
@@ -501,18 +404,26 @@ export default function ModalOTP({
   };
 
   const modalTitle =
-    step === "details"
-      ? "Almost Done!"
-      : contextPayload?.title || "Get 100% FREE Counseling";
+    step === "phone"
+      ? (contextPayload?.title || `Apply to ${resolvedUni || "University"}`)
+      : step === "otp"
+        ? "Verify OTP"
+        : step === "name"
+          ? "What is your Full Name?"
+          : step === "email"
+            ? "Enter Your Email ID"
+            : "Select State & Course";
 
   const modalSubtitle =
     step === "phone"
       ? "Enter your 10-digit mobile number to receive a verification OTP."
       : step === "otp"
         ? otpMessage || `We've sent a 6-digit OTP for +91 ${phone}.`
-        : !isCoursePreSelected
-          ? "Select your desired course and details, or skip directly."
-          : "Enter your full name and email ID, or skip directly.";
+        : step === "name"
+          ? "Please enter your full name as per official records."
+          : step === "email"
+            ? "We'll send admission details and fee structures to your email."
+            : "Select your current state and preferred course.";
 
   return (
     <Modal
@@ -538,6 +449,7 @@ export default function ModalOTP({
 
         <Form
           form={form}
+          preserve={true}
           onFinish={
             step === "phone"
               ? handleSendOtp
@@ -645,7 +557,7 @@ export default function ModalOTP({
             </>
           )}
 
-          {step === "details" && (
+          {step === "name" && (
             <>
               <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-2.5 mb-3 flex items-center justify-between">
                 <span className="text-xs font-semibold text-emerald-800">
@@ -654,44 +566,64 @@ export default function ModalOTP({
                 <span className="text-[11px] text-emerald-600 font-medium">Verified</span>
               </div>
 
-              {/* Show Course Select ONLY if course is NOT already pre-selected */}
-              {!isCoursePreSelected && (
-                <Form.Item
-                  name="course"
-                  className="mb-3"
-                  rules={[{ required: true, message: "Please select a course" }]}
-                >
-                  <Select
-                    showSearch
-                    placeholder="Select Course"
-                    allowClear
-                    prefix={<GraduationCap size={15} className="text-gray-400 mr-1" />}
-                    className="w-full text-left"
-                    filterOption={(input, option) =>
-                      (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-                    }
-                    options={availableCourses.map((c) => ({
-                      label: c,
-                      value: c,
-                    }))}
-                  />
-                </Form.Item>
-              )}
+              <div className="flex items-center justify-between mb-3 px-0.5">
+                <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                  Step 1 of 3: Full Name
+                </span>
+                <div className="flex items-center gap-1.5">
+                  <div className="h-1.5 rounded-full w-6 bg-[#0C2B4E] transition-all" />
+                  <div className="h-1.5 rounded-full w-2 bg-slate-200 transition-all" />
+                  <div className="h-1.5 rounded-full w-2 bg-slate-200 transition-all" />
+                </div>
+              </div>
 
               <Form.Item
                 name="name"
-                className="mb-3"
+                className="mb-4"
                 rules={[
                   { required: true, message: "Please enter your full name" },
                   { min: 2, message: "Name must be at least 2 characters" },
                 ]}
               >
                 <Input
+                  autoFocus
                   placeholder="Full Name"
                   prefix={<User size={15} className="text-gray-400 mr-1" />}
                   disabled={loading}
+                  onPressEnter={handleNextToEmail}
                 />
               </Form.Item>
+
+              <Button
+                type="primary"
+                onClick={handleNextToEmail}
+                block
+                className="font-bold bg-[#0C2B4E] hover:bg-[#08203b] border-none shadow-sm cursor-pointer flex items-center justify-center gap-1"
+              >
+                Next <ArrowRight size={15} />
+              </Button>
+            </>
+          )}
+
+          {step === "email" && (
+            <>
+              <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-2.5 mb-3 flex items-center justify-between">
+                <span className="text-xs font-semibold text-emerald-800">
+                  ✓ Verified: +91 {phone}
+                </span>
+                <span className="text-[11px] text-emerald-600 font-medium">Verified</span>
+              </div>
+
+              <div className="flex items-center justify-between mb-3 px-0.5">
+                <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                  Step 2 of 3: Email ID
+                </span>
+                <div className="flex items-center gap-1.5">
+                  <div className="h-1.5 rounded-full w-2 bg-emerald-500 transition-all" />
+                  <div className="h-1.5 rounded-full w-6 bg-[#0C2B4E] transition-all" />
+                  <div className="h-1.5 rounded-full w-2 bg-slate-200 transition-all" />
+                </div>
+              </div>
 
               <Form.Item
                 name="email"
@@ -702,30 +634,107 @@ export default function ModalOTP({
                 ]}
               >
                 <Input
+                  autoFocus
                   type="email"
                   placeholder="Email ID"
                   prefix={<Mail size={15} className="text-gray-400 mr-1" />}
                   disabled={loading}
+                  onPressEnter={handleNextToPreferences}
                 />
               </Form.Item>
 
-              <div className="grid grid-cols-2 gap-2 sm:gap-2.5">
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  loading={loading}
-                  className="w-full rounded-2xl font-semibold bg-[#0C2B4E] hover:bg-[#08203b] border-none shadow-sm cursor-pointer px-1 sm:px-3 text-xs sm:text-sm"
-                >
-                  {loading ? "Submitting..." : "Submit & Continue"}
-                </Button>
-
+              <div className="grid grid-cols-3 gap-2">
                 <Button
                   type="default"
-                  onClick={handleSkip}
-                  disabled={loading}
-                  className="w-full rounded-2xl text-gray-600 hover:text-gray-900 border-slate-300 font-medium cursor-pointer shadow-none text-xs sm:text-sm"
+                  onClick={() => setStep("name")}
+                  className="font-medium text-gray-600 hover:text-gray-900 border-slate-300 flex items-center justify-center gap-1"
                 >
-                  Skip →
+                  <ArrowLeft size={14} /> Back
+                </Button>
+                <Button
+                  type="primary"
+                  onClick={handleNextToPreferences}
+                  className="col-span-2 font-bold bg-[#0C2B4E] hover:bg-[#08203b] border-none shadow-sm cursor-pointer flex items-center justify-center gap-1"
+                >
+                  Next <ArrowRight size={15} />
+                </Button>
+              </div>
+            </>
+          )}
+
+          {step === "preferences" && (
+            <>
+              <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-2.5 mb-3 flex items-center justify-between">
+                <span className="text-xs font-semibold text-emerald-800">
+                  ✓ Verified: +91 {phone}
+                </span>
+                <span className="text-[11px] text-emerald-600 font-medium">Verified</span>
+              </div>
+
+              <div className="flex items-center justify-between mb-3 px-0.5">
+                <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                  Step 3 of 3: State & Course
+                </span>
+                <div className="flex items-center gap-1.5">
+                  <div className="h-1.5 rounded-full w-2 bg-emerald-500 transition-all" />
+                  <div className="h-1.5 rounded-full w-2 bg-emerald-500 transition-all" />
+                  <div className="h-1.5 rounded-full w-6 bg-[#0C2B4E] transition-all" />
+                </div>
+              </div>
+
+              <Form.Item
+                name="state"
+                className="mb-3"
+                rules={[{ required: true, message: "Please select your state" }]}
+              >
+                <Select
+                  showSearch
+                  placeholder="Select State"
+                  allowClear
+                  loading={stateOptions.length === 0}
+                  className="w-full text-left"
+                  prefix={<MapPin size={15} className="text-gray-400 mr-1" />}
+                  filterOption={(input, option) =>
+                    (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                  }
+                  options={stateOptions}
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="course"
+                className="mb-4"
+                rules={[{ required: true, message: "Please select your course" }]}
+              >
+                <Select
+                  showSearch
+                  placeholder="Select Course"
+                  allowClear
+                  loading={courseOptions.length === 0}
+                  className="w-full text-left"
+                  prefix={<GraduationCap size={15} className="text-gray-400 mr-1" />}
+                  filterOption={(input, option) =>
+                    (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                  }
+                  options={courseOptions}
+                />
+              </Form.Item>
+
+              <div className="grid grid-cols-3 gap-2">
+                <Button
+                  type="default"
+                  onClick={() => setStep("email")}
+                  className="font-medium text-gray-600 hover:text-gray-900 border-slate-300 flex items-center justify-center gap-1"
+                >
+                  <ArrowLeft size={14} /> Back
+                </Button>
+                <Button
+                  type="primary"
+                  onClick={() => handleSaveDetails()}
+                  loading={loading}
+                  className="col-span-2 font-bold bg-[#0C2B4E] hover:bg-[#08203b] border-none shadow-sm cursor-pointer"
+                >
+                  {loading ? "Submitting..." : "Submit"}
                 </Button>
               </div>
             </>
