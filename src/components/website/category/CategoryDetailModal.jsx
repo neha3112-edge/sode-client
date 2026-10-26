@@ -23,23 +23,28 @@ export default function CategoryDetailModal({
     activeCategory?.itemType === "university"
   );
 
-  const exploreButtonText = isCourseModal
-    ? "Explore"
-    : isUniModal
-      ? "Explore"
-      : modalData?.isCoursesModal
-        ? "Explore"
-        : modalData?.isUniversitiesModal
-          ? "Explore"
-          : "Explore";
+  const showExploreButton = Boolean(isCourseModal || isUniModal);
 
   const handleExploreClick = () => {
     onClose();
-    if (isUniModal || modalData?.isUniversitiesModal) {
-      router.push("/universities");
+    if (isUniModal) {
+      const targetSlug = getItemSlug(activeCategory);
+      if (activeCategory?.targetUrl && !/[0-9a-fA-F]{24}/.test(activeCategory.targetUrl)) {
+        router.push(activeCategory.targetUrl);
+      } else {
+        router.push(`/universities/${encodeURIComponent(targetSlug)}`);
+      }
       return;
     }
-    router.push("/courses");
+    if (isCourseModal) {
+      const targetSlug = getItemSlug(activeCategory);
+      if (activeCategory?.targetUrl && !/[0-9a-fA-F]{24}/.test(activeCategory.targetUrl)) {
+        router.push(activeCategory.targetUrl);
+      } else {
+        router.push(`/courses?course=${encodeURIComponent(targetSlug)}`);
+      }
+      return;
+    }
   };
 
   return (
@@ -96,14 +101,16 @@ export default function CategoryDetailModal({
             </div>
 
             <div className="flex items-center gap-2 shrink-0 ml-auto">
-              <button
-                type="button"
-                onClick={handleExploreClick}
-                className="inline-flex items-center justify-center gap-1 py-1 px-2 rounded-full text-xs font-bold text-[#0B3B7E] bg-blue-50/80 hover:bg-blue-100 border border-blue-200/80 transition-all cursor-pointer shadow-none group shrink-0"
-              >
-                <span className="leading-none">{exploreButtonText}</span>
-                <ChevronRight className="w-3.5 h-3.5 shrink-0 transition-transform duration-200 group-hover:translate-x-0.5" />
-              </button>
+              {showExploreButton && (
+                <button
+                  type="button"
+                  onClick={handleExploreClick}
+                  className="inline-flex items-center justify-center gap-1 py-1 px-2 rounded-full text-xs font-bold text-[#0B3B7E] bg-blue-50/80 hover:bg-blue-100 border border-blue-200/80 transition-all cursor-pointer shadow-none group shrink-0"
+                >
+                  <span className="leading-none">Explore</span>
+                  <ChevronRight className="w-3.5 h-3.5 shrink-0 transition-transform duration-200 group-hover:translate-x-0.5" />
+                </button>
+              )}
 
               <button
                 type="button"
