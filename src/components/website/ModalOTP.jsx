@@ -404,26 +404,16 @@ export default function ModalOTP({
   };
 
   const modalTitle =
-    step === "phone"
-      ? (contextPayload?.title || `Apply to ${resolvedUni || "University"}`)
-      : step === "otp"
-        ? "Verify OTP"
-        : step === "name"
-          ? "What is your Full Name?"
-          : step === "email"
-            ? "Enter Your Email ID"
-            : "Select State & Course";
+    contextPayload?.title ||
+    contextPayload?.action ||
+    contextPayload?.buttonText ||
+    (resolvedUni ? `Apply to ${resolvedUni}` : "Book 1:1 Counselling");
 
   const modalSubtitle =
-    step === "phone"
-      ? "Enter your 10-digit mobile number to receive a verification OTP."
-      : step === "otp"
-        ? otpMessage || `We've sent a 6-digit OTP for +91 ${phone}.`
-        : step === "name"
-          ? "Please enter your full name as per official records."
-          : step === "email"
-            ? "We'll send admission details and fee structures to your email."
-            : "Select your current state and preferred course.";
+    step === "otp"
+      ? otpMessage || `We've sent a 6-digit OTP for +91 ${phone}.`
+      : contextPayload?.subtitle ||
+        "Enter your details to receive admission guidance and fee structures.";
 
   return (
     <Modal
