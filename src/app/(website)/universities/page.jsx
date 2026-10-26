@@ -35,8 +35,8 @@ export default async function UniversitiesPage() {
       initialUniversities = Array.isArray(uniRes.value?.result)
         ? uniRes.value.result
         : Array.isArray(uniRes.value)
-        ? uniRes.value
-        : [];
+          ? uniRes.value
+          : [];
     }
 
     if (optionsRes.status === "fulfilled" && optionsRes.value) {
