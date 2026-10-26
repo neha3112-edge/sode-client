@@ -7,8 +7,6 @@ import { useRouter } from "next/navigation";
 import { Form, Input, Select, Button, Checkbox, message as staticMessage, Modal, Carousel, App } from "antd";
 import { ArrowRight, Building2, Calendar, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, Clock, Eye, FileText, GraduationCap, Link2, Mail, Share2, User, UserCheck, X } from "lucide-react";
 const getAssetPath = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
-import { STATE_OPTIONS } from "@/constants/stateOptions";
-import { DEFAULT_COURSE_OPTIONS } from "@/constants/courseOptions";
 import { PartnerLogoIcon, CourseIcon, getItemSlug, isObjectId } from "@/components/website/category/CategoryIcons";
 import { subscribeToBlogPushNotifications, isBlogSubscribed, listenToForegroundNotifications } from "@/services/fcm";
 import { request } from "@/services/request";
@@ -26,6 +24,105 @@ function formatCardDate(dateStr) {
   } catch {
     return "8 Oct 2026";
   }
+}
+
+/* =========================================================
+   EXTRACT UTM & GOOGLE TRACKING PARAMS
+========================================================= */
+function getUTMParams() {
+  if (typeof window === "undefined") return {};
+
+  const params = new URLSearchParams(window.location.search);
+  const storedData = localStorage.getItem("utm_data");
+  let parsedData = {};
+
+  try {
+    parsedData = storedData ? JSON.parse(storedData) : {};
+  } catch {
+    parsedData = {};
+  }
+
+  return {
+    utm_source:
+      params.get("utm_source") || parsedData.utm_source || "Blog Sidebar",
+    utm_medium:
+      params.get("utm_medium") || parsedData.utm_medium || "Organic",
+    utm_campaign:
+      params.get("utm_campaign") || parsedData.utm_campaign || "",
+    utm_term: params.get("utm_term") || parsedData.utm_term || "",
+    utm_content: params.get("utm_content") || parsedData.utm_content || "",
+    utm_adgroup: params.get("utm_adgroup") || parsedData.utm_adgroup || "",
+    gclid: params.get("gclid") || parsedData.gclid || "",
+  };
+}
+
+/* =========================================================
+   DYNAMIC STATE & COURSE OPTIONS FETCH (/api/.../v1/options)
+========================================================= */
+let cachedStateOptions = null;
+let stateFetchPromise = null;
+
+async function fetchStateOptions() {
+  if (cachedStateOptions) return cachedStateOptions;
+  if (stateFetchPromise) return stateFetchPromise;
+
+  stateFetchPromise = (async () => {
+    try {
+      const res = await fetch("/api/state/v1/options");
+      if (!res.ok) throw new Error("Failed to fetch states");
+      const data = await res.json();
+      const list = Array.isArray(data?.result) ? data.result : [];
+      if (list.length > 0) {
+        cachedStateOptions = list
+          .filter((s) => s?.name && !s.removed)
+          .map((s) => ({
+            label: s.name,
+            value: s.name,
+          }));
+        return cachedStateOptions;
+      }
+    } catch (err) {
+      console.warn("Could not load dynamic states from /api/state/v1/options:", err);
+    } finally {
+      stateFetchPromise = null;
+    }
+    return null;
+  })();
+
+  return stateFetchPromise;
+}
+
+let cachedCourseOptions = null;
+let courseFetchPromise = null;
+
+async function fetchCourseOptions() {
+  if (cachedCourseOptions) return cachedCourseOptions;
+  if (courseFetchPromise) return courseFetchPromise;
+
+  courseFetchPromise = (async () => {
+    try {
+      const res = await fetch("/api/courses/v1/options");
+      if (!res.ok) throw new Error("Failed to fetch courses");
+      const data = await res.json();
+      const list = Array.isArray(data?.result) ? data.result : [];
+      if (list.length > 0) {
+        cachedCourseOptions = list
+          .filter((c) => c?.name && !c.removed)
+          .map((c) => ({
+            label: c.name,
+            value: c.name,
+          }));
+        return cachedCourseOptions;
+      }
+    } catch (err) {
+      console.warn("Could not load dynamic courses from /api/courses/v1/options:", err);
+    } finally {
+      courseFetchPromise = null;
+    }
+    return null;
+  })();
+
+  return courseFetchPromise;
 }
 
 export default function BlogSidebar({
@@ -213,18 +310,28 @@ export default function BlogSidebar({
     router.push(`/universities/${encodeURIComponent(cleanSlug)}`);
   };
 
-  // Normalize course options
-  const courseSelectOptions = (DEFAULT_COURSE_OPTIONS || [])
-    .filter((c) => !c.disabled && c.value && !c.value.startsWith("__"))
-    .map((c) => ({
-      value: c.label || c.value,
-      label: c.label || c.value,
-    }));
+  // Dynamic course options from API
+  const [courseOptions, setCourseOptions] = useState(() => cachedCourseOptions || []);
 
-  const stateSelectOptions = (STATE_OPTIONS || []).map((s) => ({
-    value: s,
-    label: s,
-  }));
+  // Dynamic state options from API
+  const [stateOptions, setStateOptions] = useState(() => cachedStateOptions || []);
+
+  useEffect(() => {
+    let isMounted = true;
+    fetchStateOptions().then((opts) => {
+      if (isMounted && opts && opts.length > 0) {
+        setStateOptions(opts);
+      }
+    });
+    fetchCourseOptions().then((opts) => {
+      if (isMounted && opts && opts.length > 0) {
+        setCourseOptions(opts);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Handle Free Counseling Lead Submission
   const handleLeadSubmit = async (values) => {
@@ -243,8 +350,7 @@ export default function BlogSidebar({
         form_name: "Blog Sidebar - Free Counseling",
         source: "SODE",
         page_url: typeof window !== "undefined" ? window.location.href : "",
-        utm_source: "Blog Sidebar",
-        utm_medium: "Organic",
+        ...getUTMParams(),
       };
 
       const res = await fetch("/api/lead", {
@@ -260,6 +366,7 @@ export default function BlogSidebar({
           "Thank you! Your free counseling request has been received. Our expert advisor will call you shortly."
         );
         leadForm.resetFields();
+        router.push("/thank-you");
       } else {
         message.error(data?.message || "Failed to submit. Please try again.");
       }
@@ -628,8 +735,9 @@ export default function BlogSidebar({
           >
             <Select
               placeholder="Select Course"
-              options={courseSelectOptions}
+              options={courseOptions}
               showSearch
+              loading={courseOptions.length === 0}
               optionFilterProp="label"
               className="w-full"
             />
@@ -643,8 +751,9 @@ export default function BlogSidebar({
           >
             <Select
               placeholder="Select State"
-              options={stateSelectOptions}
+              options={stateOptions}
               showSearch
+              loading={stateOptions.length === 0}
               optionFilterProp="label"
               className="w-full"
             />
