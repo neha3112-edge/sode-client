@@ -5,13 +5,65 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Modal } from "antd";
-import { Clock, Plus, Check, ChevronDown, Download, Briefcase, GraduationCap, Award, BookOpen, Database, UserCog, ShoppingCart, CheckCircle2 } from "lucide-react";
+import {
+  Clock,
+  Plus,
+  Check,
+  ChevronDown,
+  Download,
+  Briefcase,
+  GraduationCap,
+  Award,
+  BookOpen,
+  Database,
+  UserCog,
+  ShoppingCart,
+  CheckCircle2,
+  ArrowLeft,
+  X,
+  ChevronRight,
+  Calendar,
+} from "lucide-react";
 import { FaCalendar, FaClock } from "react-icons/fa";
 import { useCompare } from "@/hooks/useCompare";
 import { formatAdmissionDeadline } from "@/lib/utils";
 import { openWhatsAppBrochure } from "@/lib/whatsappBrochure";
+import { request } from "@/services/request";
+import { getFullSpecName, getCleanSpecName } from "../course/CourseSpecializations";
 
 const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
+
+const extractDurationText = (val) => {
+  if (!val) return "";
+  if (typeof val === "string") return val;
+  if (typeof val === "number") return `${val} Months`;
+  if (typeof val === "object") {
+    if (val.name) return String(val.name);
+    if (val.months) return `${val.months} Months`;
+  }
+  return "";
+};
+
+const extractFeeText = (val) => {
+  if (!val) return "";
+  if (typeof val === "string") return val;
+  if (typeof val === "number") return `₹ ${Number(val).toLocaleString("en-IN")}`;
+  if (typeof val === "object") {
+    if (val.formattedSemesterFees) return String(val.formattedSemesterFees);
+    if (val.semesterFees) return `₹ ${Number(val.semesterFees).toLocaleString("en-IN")} / Semester`;
+    if (val.formattedPerSemesterPayable) return String(val.formattedPerSemesterPayable);
+    if (val.perSemesterPayable) return `₹ ${Number(val.perSemesterPayable).toLocaleString("en-IN")} / Semester`;
+    if (val.formattedNetPayable) return String(val.formattedNetPayable);
+    if (val.netPayable) return `₹ ${Number(val.netPayable).toLocaleString("en-IN")}`;
+    if (val.formattedBasePayable) return String(val.formattedBasePayable);
+    if (val.basePayable) return `₹ ${Number(val.basePayable).toLocaleString("en-IN")}`;
+    if (val.formattedActualFees) return String(val.formattedActualFees);
+    if (val.actualFees) return `₹ ${Number(val.actualFees).toLocaleString("en-IN")}`;
+    if (val.amount) return `₹ ${Number(val.amount).toLocaleString("en-IN")}`;
+    if (val.name) return String(val.name);
+  }
+  return "";
+};
 
 const SPEC_ICONS = [Briefcase, BookOpen, GraduationCap, Award, Database, UserCog, ShoppingCart];
 
@@ -33,7 +85,92 @@ export default function UniversityCoursesSection({
   const { toggleCompare, isInCompare, setIsCompareDrawerOpen, compareList } = useCompare();
   const [selectedCourseSpec, setSelectedCourseSpec] = useState(null);
   const [selectedSubSpec, setSelectedSubSpec] = useState(null);
+  const [selectedSpecDetail, setSelectedSpecDetail] = useState(null);
+  const [specFullData, setSpecFullData] = useState(null);
+  const [loadingSpecDetail, setLoadingSpecDetail] = useState(false);
+  const [activeSpecSem, setActiveSpecSem] = useState(0);
   const brandColor = uni?.color_code || "#08AEAA";
+
+  const handleCloseSpecModal = () => {
+    setSelectedCourseSpec(null);
+    setSelectedSubSpec(null);
+    setSelectedSpecDetail(null);
+    setSpecFullData(null);
+    setActiveSpecSem(0);
+  };
+
+  const handleBackToSpecList = () => {
+    setSelectedSpecDetail(null);
+    setSpecFullData(null);
+    setActiveSpecSem(0);
+  };
+
+  const handleOpenSpecDetail = async (sc, parentData) => {
+    const scObj = typeof sc === "string" ? { name: sc, title: sc } : sc;
+    setSelectedSpecDetail(scObj);
+    setSpecFullData(null);
+    setLoadingSpecDetail(true);
+    setActiveSpecSem(0);
+
+    try {
+      const cleanUni = String(slug || uni?.slug || "university").toLowerCase().trim();
+      let rawCourseSlug = String(parentData?.slug || parentData?.title || parentData?.name || "").toLowerCase().trim();
+      let cleanCourse = rawCourseSlug.replace(new RegExp(`^${cleanUni}[/-]?`), "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+      let slugPath = "";
+      if (parentData?.slug && parentData.slug.includes("/")) {
+        slugPath = parentData.slug;
+      } else if (cleanUni && cleanCourse) {
+        slugPath = `${cleanUni}/${cleanCourse}`;
+      }
+
+      let detailResult = null;
+      if (slugPath) {
+        const res = await request.dynamicRead({
+          entity: "courses",
+          endPoint: "v1/list",
+          id: slugPath,
+          revalidate: 300,
+        });
+        detailResult = res?.result || res;
+      }
+
+      if (!detailResult || (!Array.isArray(detailResult.subcourses) && !Array.isArray(detailResult.subCourses))) {
+        const uSlug = slug || uni?.slug;
+        const cSlug = parentData?.slug ? parentData.slug.replace(new RegExp(`^${cleanUni}[/-]?`), "") : "";
+        if (uSlug && cSlug) {
+          const res2 = await request.dynamicRead({
+            entity: "courses",
+            endPoint: "v1/list",
+            id: `${uSlug}/${cSlug}`,
+            revalidate: 300,
+          });
+          detailResult = res2?.result || res2;
+        }
+      }
+
+      const list = detailResult?.subcourses || detailResult?.subCourses || parentData?.subcourses || parentData?.subCourses;
+      if (Array.isArray(list)) {
+        const subSlug = (scObj.slug || scObj.name || "").toLowerCase().trim();
+        const scIdStr = String(scObj._id || scObj.id || "");
+        const matched = list.find((item) => {
+          if (!item) return false;
+          if (scIdStr && (String(item._id) === scIdStr || String(item.id) === scIdStr)) return true;
+          if (item.slug && item.slug.toLowerCase().trim() === subSlug) return true;
+          const iName = (item.name || "").toLowerCase().trim();
+          if (iName === subSlug || iName.includes(subSlug) || subSlug.includes(iName)) return true;
+          return false;
+        });
+        if (matched) {
+          setSpecFullData(matched);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to fetch specialization details:", err);
+    } finally {
+      setLoadingSpecDetail(false);
+    }
+  };
 
   if (!coursesList || coursesList.length === 0) return null;
 
@@ -98,6 +235,9 @@ export default function UniversityCoursesSection({
                     onClick={() => {
                       setSelectedCourseSpec(item);
                       setSelectedSubSpec(null);
+                      setSelectedSpecDetail(null);
+                      setSpecFullData(null);
+                      setActiveSpecSem(0);
                     }}
                     style={{ backgroundColor: brandColor }}
                     className="hover:opacity-90 text-white text-[9px] sm:text-[10px] font-bold px-2.5 sm:px-3 py-1 rounded-tl-xl rounded-br-xl cursor-pointer transition-opacity border-none flex items-center gap-1 shadow-2xs leading-none"
@@ -303,273 +443,534 @@ export default function UniversityCoursesSection({
         return (
           <Modal
             open={Boolean(selectedCourseSpec)}
-            onCancel={() => setSelectedCourseSpec(null)}
+            onCancel={handleCloseSpecModal}
             footer={null}
             centered
-            width={(selectedCourseSpec?.subcourses?.length || selectedCourseSpec?.subCourses?.length || 0) > 0 ? 1120 : 880}
-            className="max-w-[95vw] [&_.ant-modal-content]:rounded-2xl sm:[&_.ant-modal-content]:rounded-3xl [&_.ant-modal-content]:p-4 sm:[&_.ant-modal-content]:p-6 md:[&_.ant-modal-content]:p-7 [&_.ant-modal-close]:top-3.5 [&_.ant-modal-close]:right-3.5 sm:[&_.ant-modal-close]:top-4 sm:[&_.ant-modal-close]:right-4"
+            closable={false}
+            destroyOnHidden
+            width={selectedSpecDetail ? 1150 : (specializationsList.length > 0 ? 1120 : 880)}
+            className="max-w-[95vw] [&_.ant-modal-content]:rounded-2xl sm:[&_.ant-modal-content]:rounded-3xl [&_.ant-modal-content]:p-4 sm:[&_.ant-modal-content]:p-6 md:[&_.ant-modal-content]:p-7"
           >
-            <div className="flex flex-col md:flex-row items-stretch gap-4 sm:gap-6 p-0 sm:p-1 pb-1 max-h-[85vh] overflow-y-auto overflow-x-hidden">
-              {/* Left Column: Portrait Banner Card */}
-              <div className="relative w-full md:w-80 lg:w-88 shrink-0 h-36 sm:h-44 md:h-auto min-h-36 sm:min-h-44 md:min-h-[350px] md:max-h-[460px] rounded-xl sm:rounded-2xl overflow-hidden bg-slate-900 shadow-xs flex items-stretch">
-                {bannerSrc ? (
-                  <Image
-                    src={getMediaUrl(bannerSrc)}
-                    alt={cTitle}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 360px"
-                    className="object-cover object-center"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-linear-to-br from-[#0C2B4E] to-[#0077B6] flex items-center justify-center">
-                    <GraduationCap className="w-14 h-14 sm:w-16 sm:h-16 text-white/40" />
-                  </div>
-                )}
+            {selectedSpecDetail ? (
+              // ── VIEW 2: SPECIALIZATION DETAIL VIEW (WITH CURRICULUM, SYLLABUS, SEMESTERS) ──
+              (() => {
+                const cleanSpecTitle = getCleanSpecName(selectedSpecDetail.name, cTitle);
+                const detailTitle = getFullSpecName(selectedSpecDetail.name, cTitle);
+                const fullDetailWithUni = detailTitle.toLowerCase().includes(uniName.toLowerCase())
+                  ? detailTitle
+                  : `${detailTitle} - ${uniName}`;
 
-                {/* Top-Left Logo Badge: University Logo */}
-                {uniLogoSrc && (
-                  <div className="absolute top-2.5 left-2.5 sm:top-3.5 sm:left-3.5 z-10 bg-white rounded-lg sm:rounded-xl shadow-md p-1.5 sm:p-2 flex flex-col items-center justify-center text-center min-w-[60px] sm:min-w-[74px] max-w-[76px] sm:max-w-[90px]">
-                    <div className="relative w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center">
-                      <Image
-                        src={uniLogoSrc}
-                        alt={uniName || "University"}
-                        fill
-                        sizes="32px"
-                        className="object-contain"
-                      />
+                const itemDuration =
+                  extractDurationText(specFullData?.duration) ||
+                  extractDurationText(selectedSpecDetail?.duration) ||
+                  extractDurationText(cDuration) ||
+                  "";
+
+                const rawDeadline =
+                  specFullData?.admissionDeadline ||
+                  selectedSpecDetail?.admissionDeadline ||
+                  selectedCourseSpec.admissionDeadline ||
+                  uni?.admissionDeadline ||
+                  uni?.admission_deadline ||
+                  "";
+                const specDeadline = rawDeadline ? formatAdmissionDeadline(rawDeadline) : "";
+
+                const rawDesc =
+                  specFullData?.description ||
+                  selectedSpecDetail?.description ||
+                  itemDesc;
+                const specDesc = typeof rawDesc === "string" ? rawDesc.trim() : "";
+
+                const itemFeesFormatted =
+                  extractFeeText(specFullData?.fees) ||
+                  extractFeeText(specFullData?.fee) ||
+                  extractFeeText(selectedSpecDetail?.fees) ||
+                  extractFeeText(selectedSpecDetail?.fee) ||
+                  extractFeeText(modalFeeText) ||
+                  "";
+
+                const specDesktopBannerRaw =
+                  specFullData?.bannerImage ||
+                  specFullData?.bannerImg ||
+                  specFullData?.banner ||
+                  specFullData?.image ||
+                  selectedSpecDetail?.bannerImage ||
+                  selectedSpecDetail?.bannerImg ||
+                  selectedSpecDetail?.banner ||
+                  selectedSpecDetail?.image ||
+                  bannerSrc ||
+                  "";
+                const specDesktopBanner = specDesktopBannerRaw ? (getMediaUrl(specDesktopBannerRaw) || "") : "";
+
+                const specMobileBannerRaw =
+                  specFullData?.bannerImageMobile ||
+                  specFullData?.mobileBannerImg ||
+                  selectedSpecDetail?.bannerImageMobile ||
+                  selectedSpecDetail?.mobileBannerImg ||
+                  specDesktopBannerRaw;
+                const specMobileBanner = specMobileBannerRaw ? (getMediaUrl(specMobileBannerRaw) || specDesktopBanner) : specDesktopBanner;
+
+                const specCurriculum = (() => {
+                  if (Array.isArray(specFullData?.curriculum) && specFullData.curriculum.length > 0) {
+                    return specFullData.curriculum
+                      .filter((c) => c && Array.isArray(c.subjects) && c.subjects.length > 0)
+                      .map((c, idx) => ({
+                        semester: c.semesterName || `Semester ${idx + 1}`,
+                        subjects: c.subjects,
+                      }));
+                  }
+                  if (Array.isArray(selectedSpecDetail?.curriculum) && selectedSpecDetail.curriculum.length > 0) {
+                    return selectedSpecDetail.curriculum
+                      .filter((c) => c && Array.isArray(c.subjects) && c.subjects.length > 0)
+                      .map((c, idx) => ({
+                        semester: c.semesterName || `Semester ${idx + 1}`,
+                        subjects: c.subjects,
+                      }));
+                  }
+                  return [];
+                })();
+
+                const activeCurriculum = specCurriculum[activeSpecSem] || specCurriculum[0];
+
+                const cleanUniSlug = String(slug || uni?.slug || "university").toLowerCase().trim();
+                const rawCourseSlug = String(selectedCourseSpec.slug || cTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-")).toLowerCase().trim();
+                const cleanCourseSlug = rawCourseSlug.replace(new RegExp(`^${cleanUniSlug}[/-]?`), "");
+                const specSlug =
+                  selectedSpecDetail?.slug ||
+                  (selectedSpecDetail?.name
+                    ? selectedSpecDetail.name
+                        .toLowerCase()
+                        .replace(/^online\s+[a-z0-9+-]+\s+in\s+/i, "")
+                        .replace(/^distance\s+[a-z0-9+-]+\s+in\s+/i, "")
+                        .replace(/[^a-z0-9]+/g, "-")
+                        .replace(/^-|-$/g, "")
+                    : "");
+                const fullSlug = specSlug && !cleanCourseSlug.toLowerCase().includes(specSlug)
+                  ? `${cleanUniSlug}/${cleanCourseSlug}/${specSlug}`
+                  : `${cleanUniSlug}/${cleanCourseSlug}`;
+
+                return (
+                  <div className="relative text-left max-h-[82vh] overflow-y-auto pr-1 scrollbar-thin [scrollbar-color:#cbd5e1_transparent]">
+                    {/* Top Bar with Back Button & Close Button */}
+                    <div className="flex items-center justify-between pb-3 mb-2 border-b border-slate-100 gap-2">
+                      <button
+                        type="button"
+                        onClick={handleBackToSpecList}
+                        className="inline-flex items-center gap-1.5 py-1.5 px-3.5 rounded-full text-xs font-bold text-[#0B2546] bg-slate-100 hover:bg-slate-200 transition-colors cursor-pointer border-0 shrink-0"
+                      >
+                        <ArrowLeft className="w-3.5 h-3.5" />
+                        <span>Back to Specializations</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleCloseSpecModal}
+                        className="w-8 h-8 rounded-full bg-slate-100/90 hover:bg-slate-200 text-slate-500 hover:text-slate-900 transition-colors flex items-center justify-center cursor-pointer border-0 ml-auto shrink-0"
+                        aria-label="Close modal"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
                     </div>
-                    <span className="text-[8px] sm:text-[9px] font-bold text-gray-900 leading-tight mt-0.5 sm:mt-1 line-clamp-1 sm:line-clamp-2">
-                      {uniName}
-                    </span>
+
+                    <div className="flex flex-col md:flex-row items-stretch gap-5 sm:gap-6">
+                      {/* Left Column: Portrait Banner Card */}
+                      <div className="relative w-full md:w-80 lg:w-88 shrink-0 h-36 sm:h-44 md:h-auto min-h-36 sm:min-h-44 md:min-h-[350px] md:max-h-[460px] rounded-xl sm:rounded-2xl overflow-hidden bg-slate-900 shadow-xs flex items-stretch">
+                        {specDesktopBanner && (
+                          <Image
+                            src={specDesktopBanner}
+                            alt={detailTitle}
+                            fill
+                            sizes="(max-width: 768px) 100vw, 370px"
+                            className={`object-cover object-center ${
+                              specMobileBanner && specMobileBanner !== specDesktopBanner ? "hidden md:block" : "block"
+                            }`}
+                          />
+                        )}
+
+                        {specMobileBanner && specMobileBanner !== specDesktopBanner && (
+                          <Image
+                            src={specMobileBanner}
+                            alt={detailTitle}
+                            fill
+                            sizes="100vw"
+                            className="object-cover object-center block md:hidden"
+                          />
+                        )}
+
+                        {!specDesktopBanner && !specMobileBanner && (
+                          <div className="w-full h-full bg-linear-to-br from-slate-200 to-slate-300 flex items-center justify-center">
+                            <span className="text-slate-400 font-bold text-sm">No Image</span>
+                          </div>
+                        )}
+
+                        {(selectedSpecDetail?.logo || (uniLogoSrc && !uniName?.toLowerCase().includes("manipal"))) && (
+                          <div className="absolute top-2.5 left-2.5 sm:top-3.5 sm:left-3.5 z-10 bg-white rounded-xl shadow-md p-1.5 sm:p-2.5 flex flex-col items-center justify-center text-center min-w-[64px] sm:min-w-[74px] max-w-[80px] sm:max-w-[90px]">
+                            <div className="relative w-7 h-7 sm:w-9 sm:h-9 flex items-center justify-center">
+                              <Image
+                                src={getMediaUrl(selectedSpecDetail?.logo) || uniLogoSrc}
+                                alt={selectedSpecDetail?.logo ? cleanSpecTitle : (uniName || "University")}
+                                fill
+                                sizes="36px"
+                                className="object-contain"
+                              />
+                            </div>
+                            <span className="text-[8.5px] sm:text-[9.5px] font-bold text-gray-900 leading-tight mt-0.5 sm:mt-1 line-clamp-1 sm:line-clamp-2">
+                              {selectedSpecDetail?.logo ? cleanSpecTitle : uniName}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Right Column: Content */}
+                      <div className="flex-1 flex flex-col justify-start text-left gap-3 sm:gap-3.5">
+                        <div>
+                          <h3 className="text-xl sm:text-2xl lg:text-[25px] font-black text-[#0C2B4E] tracking-tight leading-tight mb-2.5">
+                            {detailTitle}
+                          </h3>
+
+                          <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-gray-500 font-medium mb-2.5">
+                            {itemDuration && (
+                              <div className="flex items-center gap-1.5">
+                                <FaClock className="w-3 h-3 text-[#072C50] shrink-0" />
+                                <span>{itemDuration}</span>
+                              </div>
+                            )}
+                            {itemFeesFormatted && (
+                              <span className="font-bold text-gray-500">{itemFeesFormatted}</span>
+                            )}
+                            {specDeadline && (
+                              <div className="flex items-center gap-1.5">
+                                <FaCalendar className="w-3 h-3 text-[#072C50] shrink-0" />
+                                <span className="text-red-500">
+                                  Admission Deadline : <strong className="font-semibold text-gray-500">{specDeadline}</strong>
+                                </span>
+                              </div>
+                            )}
+                          </div>
+
+                          <p className="text-xs sm:text-[13px] text-gray-600 leading-relaxed mb-0 font-normal">
+                            {specDesc}
+                          </p>
+                        </div>
+
+                        {/* Course Curriculum Section */}
+                        {specCurriculum.length > 0 ? (
+                          <div>
+                            <div className="flex items-center gap-3 mb-2.5">
+                              <h4 className="text-sm sm:text-base font-bold text-[#0C2B4E] m-0 tracking-tight shrink-0">
+                                Course Curriculum
+                              </h4>
+                              <div className="flex-1 h-px bg-gray-200" />
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-4 items-stretch">
+                              <div className="col-span-12 md:col-span-3 grid grid-cols-3 md:flex md:flex-col gap-2">
+                                {specCurriculum.map((sem, sIdx) => {
+                                  const isActive = activeSpecSem === sIdx;
+                                  return (
+                                    <button
+                                      key={sIdx}
+                                      type="button"
+                                      onClick={() => setActiveSpecSem(sIdx)}
+                                      className={`w-full py-1.5 px-3 rounded-full text-xs font-semibold transition-all cursor-pointer border-none ${
+                                        isActive
+                                          ? "bg-[#0C2B4E] text-white shadow-xs md:w-full"
+                                          : "bg-[#EEF3FA] text-[#475569] hover:bg-[#dde7f5] md:w-[88%]"
+                                      }`}
+                                    >
+                                      <span className="flex items-center justify-between w-full">
+                                        <span>{sem.semester}</span>
+                                        {isActive && <ChevronRight className="w-3.5 h-3.5 shrink-0 stroke-[2.5]" />}
+                                      </span>
+                                    </button>
+                                  );
+                                })}
+                              </div>
+
+                              <div className="col-span-12 md:col-span-9 bg-linear-to-br from-blue-50/50 via-blue-50/30 to-slate-50/40 border border-blue-100/80 rounded-2xl p-3.5 sm:p-4 min-h-[135px] flex items-start">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 w-full">
+                                  {(activeCurriculum?.subjects || []).map((sub, subIdx) => (
+                                    <div key={subIdx} className="flex items-start gap-2 text-xs text-gray-700 leading-snug">
+                                      <span className="text-gray-900 font-bold shrink-0 leading-none mt-0.5">•</span>
+                                      <span className="font-medium text-gray-800 line-clamp-1">
+                                        {typeof sub === "string" ? sub : sub.name || ""}
+                                      </span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ) : loadingSpecDetail ? (
+                          <div className="my-2 bg-slate-50/90 rounded-xl p-3 sm:p-4 border border-slate-200/70 flex items-center justify-center gap-2">
+                            <div className="w-4 h-4 border-2 border-[#08AEAA] border-t-transparent rounded-full animate-spin" />
+                            <span className="text-xs text-gray-600 font-medium">Loading specialization curriculum...</span>
+                          </div>
+                        ) : (
+                          <div className="my-1 bg-slate-50/90 rounded-xl p-3 sm:p-3.5 border border-slate-200/70">
+                            <div className="text-[11px] sm:text-xs font-bold text-[#0C2B4E] mb-2 tracking-tight uppercase">
+                              Program Highlights
+                            </div>
+                            <div className="grid grid-cols-2 gap-2 text-xs text-gray-700">
+                              <div className="flex items-center gap-2">
+                                <CheckCircle2 size={14} className="text-[#08AEAA] shrink-0" />
+                                <span className="font-medium text-gray-800 text-[11px] sm:text-xs">100% Online & Flexible</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <CheckCircle2 size={14} className="text-[#08AEAA] shrink-0" />
+                                <span className="font-medium text-gray-800 text-[11px] sm:text-xs">UGC & DEB Entitled</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <CheckCircle2 size={14} className="text-[#08AEAA] shrink-0" />
+                                <span className="font-medium text-gray-800 text-[11px] sm:text-xs">Career & Placement Support</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <CheckCircle2 size={14} className="text-[#08AEAA] shrink-0" />
+                                <span className="font-medium text-gray-800 text-[11px] sm:text-xs">Industry-Aligned Curriculum</span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Bottom Action Buttons */}
+                        <div className="flex items-center gap-2 sm:gap-3 pt-2 mt-auto w-full">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              handleCloseSpecModal();
+                              openWhatsAppBrochure({
+                                title: fullDetailWithUni,
+                                slug: fullSlug,
+                              });
+                            }}
+                            className="flex-1 min-w-0 bg-[#0C2B4E] hover:bg-[#081f38] text-white text-[11px] sm:text-xs md:text-sm font-semibold py-2.5 px-2 sm:px-4 rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all cursor-pointer shadow-xs active:scale-95 border-none"
+                          >
+                            <span className="truncate">Download Brochure</span>
+                            <Download className="w-3.5 h-3.5 shrink-0" />
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              handleCloseSpecModal();
+                              openFormModal &&
+                                openFormModal({
+                                  title: "Book Free Counseling",
+                                  subtitle: fullDetailWithUni,
+                                  defaultCourse: fullDetailWithUni,
+                                  university: uniName,
+                                  formNameOverride: `CourseDetailModal_${cleanUniSlug}_${cleanCourseSlug}_${selectedSpecDetail.slug || selectedSpecDetail.name}`,
+                                  submitButtonText: "Get Counseling",
+                                });
+                            }}
+                            className="flex-1 min-w-0 bg-white hover:bg-gray-50 text-[#0C2B4E] border border-[#0C2B4E] text-[10.5px] min-[380px]:text-[11.5px] sm:text-xs md:text-sm font-semibold py-2.5 px-1.5 sm:px-4 rounded-xl flex items-center justify-center text-center transition-all cursor-pointer shadow-xs active:scale-95"
+                          >
+                            <span className="truncate">Get 100% FREE Counseling</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                )}
-              </div>
+                );
+              })()
+            ) : (
+              // ── VIEW 1: SPECIALIZATIONS GRID OVERVIEW (INITIAL MODAL STATE) ──
+              <div className="relative text-left">
+                {/* Close Button Top-Right */}
+                <button
+                  type="button"
+                  onClick={handleCloseSpecModal}
+                  className="absolute -top-1 -right-1 sm:top-0 sm:right-0 z-20 w-8 h-8 rounded-full bg-slate-100/90 hover:bg-slate-200 text-slate-500 hover:text-slate-900 transition-colors flex items-center justify-center cursor-pointer border-0"
+                  aria-label="Close modal"
+                >
+                  <X className="w-4 h-4" />
+                </button>
 
-              {/* Right Column: Details & Actions */}
-              <div className="flex-1 flex flex-col justify-start text-left gap-3 sm:gap-3.5">
-                <div>
-                  <h3 className="text-xl sm:text-2xl lg:text-[25px] font-black text-[#0C2B4E] tracking-tight leading-tight mb-2.5">
-                    <Link
-                      href={baseCourseDetailHref}
-                      onClick={() => setSelectedCourseSpec(null)}
-                      className="text-[#0C2B4E] hover:text-[#08AEAA] no-underline transition-colors cursor-pointer"
-                    >
-                      {cTitle}
-                    </Link>
-                  </h3>
-
-                  <div className="flex flex-wrap items-center gap-x-3 sm:gap-x-4 gap-y-1.5 text-xs text-gray-500 font-medium mb-2.5">
-                    {cDuration && (
-                      <div className="flex items-center gap-1.5">
-                        <FaClock className="w-3 h-3 text-[#072C50] shrink-0" />
-                        <span>{cDuration}</span>
+                <div className="flex flex-col md:flex-row items-stretch gap-4 sm:gap-6 p-0 sm:p-1 pb-1 max-h-[85vh] overflow-y-auto overflow-x-hidden">
+                  {/* Left Column: Portrait Banner Card */}
+                  <div className="relative w-full md:w-80 lg:w-88 shrink-0 h-36 sm:h-44 md:h-auto min-h-36 sm:min-h-44 md:min-h-[350px] md:max-h-[460px] rounded-xl sm:rounded-2xl overflow-hidden bg-slate-900 shadow-xs flex items-stretch">
+                    {bannerSrc ? (
+                      <Image
+                        src={getMediaUrl(bannerSrc)}
+                        alt={cTitle}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 360px"
+                        className="object-cover object-center"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-linear-to-br from-[#0C2B4E] to-[#0077B6] flex items-center justify-center">
+                        <GraduationCap className="w-14 h-14 sm:w-16 sm:h-16 text-white/40" />
                       </div>
                     )}
-                    {modalFeeText && (
-                      <span className="font-bold text-gray-500">{modalFeeText}</span>
-                    )}
-                    {itemDeadline && (
-                      <div className="flex items-center gap-1.5">
-                        <FaCalendar className="w-3 h-3 text-[#072C50] shrink-0" />
-                        <span className="text-red-500">
-                          Admission Deadline : <strong className="font-semibold text-gray-500">{itemDeadline}</strong>
+
+                    {/* Top-Left Logo Badge: University Logo */}
+                    {uniLogoSrc && (
+                      <div className="absolute top-2.5 left-2.5 sm:top-3.5 sm:left-3.5 z-10 bg-white rounded-lg sm:rounded-xl shadow-md p-1.5 sm:p-2 flex flex-col items-center justify-center text-center min-w-[60px] sm:min-w-[74px] max-w-[76px] sm:max-w-[90px]">
+                        <div className="relative w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center">
+                          <Image
+                            src={uniLogoSrc}
+                            alt={uniName || "University"}
+                            fill
+                            sizes="32px"
+                            className="object-contain"
+                          />
+                        </div>
+                        <span className="text-[8px] sm:text-[9px] font-bold text-gray-900 leading-tight mt-0.5 sm:mt-1 line-clamp-1 sm:line-clamp-2">
+                          {uniName}
                         </span>
                       </div>
                     )}
                   </div>
 
-                  {itemDesc && (
-                    <p className="text-xs sm:text-[13px] text-gray-600 leading-relaxed mb-0 font-normal line-clamp-3 sm:line-clamp-4">
-                      {itemDesc}
-                    </p>
-                  )}
-                </div>
+                  {/* Right Column: Details & Actions */}
+                  <div className="flex-1 flex flex-col justify-start text-left gap-3 sm:gap-3.5">
+                    <div>
+                      <h3 className="text-xl sm:text-2xl lg:text-[25px] font-black text-[#0C2B4E] tracking-tight leading-tight mb-2.5">
+                        <Link
+                          href={baseCourseDetailHref}
+                          onClick={handleCloseSpecModal}
+                          className="text-[#0C2B4E] hover:text-[#08AEAA] no-underline transition-colors cursor-pointer"
+                        >
+                          {cTitle}
+                        </Link>
+                      </h3>
 
-                {/* Middle: Specializations OR Program Highlights */}
-                {(() => {
-                  const cleanUniSlug = String(slug || uni?.slug || "university").toLowerCase().trim();
-                  const rawCourseSlug = String(selectedCourseSpec.slug || cTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-")).toLowerCase().trim();
-                  const cleanCourseSlug = rawCourseSlug.replace(new RegExp(`^${cleanUniSlug}[/-]?`), "");
-
-                  const currentSub = selectedSubSpec;
-                  const currentSubName = currentSub
-                    ? (typeof currentSub === "string" ? currentSub : currentSub.name || currentSub.title || "")
-                    : "";
-                  const currentSubSlug = currentSub
-                    ? ((typeof currentSub === "object" ? currentSub.slug : "") ||
-                      currentSubName
-                        .toLowerCase()
-                        .replace(/^online\s+[a-z0-9+-]+\s+in\s+/i, "")
-                        .replace(/^distance\s+[a-z0-9+-]+\s+in\s+/i, "")
-                        .replace(/[^a-z0-9]+/g, "-")
-                        .replace(/^-|-$/g, ""))
-                    : "";
-
-                  const modalEffectiveTitle = currentSubName
-                    ? (currentSubName.toLowerCase().includes(cTitle.toLowerCase()) ? `${currentSubName} - ${uniName}` : `${cTitle} in ${currentSubName} - ${uniName}`)
-                    : `${cTitle} - ${uniName}`;
-
-                  const modalEffectiveSlug = currentSubSlug
-                    ? `${cleanUniSlug}/${cleanCourseSlug}/${currentSubSlug}`
-                    : `${cleanUniSlug}/${cleanCourseSlug}`;
-
-                  return (
-                    <>
-                      {specializationsList.length > 0 ? (
-                        <div className="my-1">
-                          <div className="flex items-center justify-between gap-2.5 sm:gap-3 mb-2">
-                            <h4 className="text-xs sm:text-sm md:text-base font-bold text-[#0C2B4E] m-0 tracking-tight shrink-0">
-                              {specializationsList.length} Specializations Available
-                            </h4>
-                            <span className="text-[10px] sm:text-[11px] text-gray-500 font-normal">
-                              {currentSubName ? (
-                                <span className="text-[#08AEAA] font-bold">Selected: {currentSubName}</span>
-                              ) : (
-                                "Click to select for brochure"
-                              )}
+                      <div className="flex flex-wrap items-center gap-x-3 sm:gap-x-4 gap-y-1.5 text-xs text-gray-500 font-medium mb-2.5">
+                        {cDuration && (
+                          <div className="flex items-center gap-1.5">
+                            <FaClock className="w-3 h-3 text-[#072C50] shrink-0" />
+                            <span>{cDuration}</span>
+                          </div>
+                        )}
+                        {modalFeeText && (
+                          <span className="font-bold text-gray-500">{modalFeeText}</span>
+                        )}
+                        {itemDeadline && (
+                          <div className="flex items-center gap-1.5">
+                            <FaCalendar className="w-3 h-3 text-[#072C50] shrink-0" />
+                            <span className="text-red-500">
+                              Admission Deadline : <strong className="font-semibold text-gray-500">{itemDeadline}</strong>
                             </span>
                           </div>
-
-                          <div className="grid grid-cols-2 md:grid-cols-3 gap-1.5 sm:gap-2 max-h-36 sm:max-h-44 overflow-y-auto pr-1">
-                            {specializationsList.map((sub, idx) => {
-                              const subName = typeof sub === "string" ? sub : sub.name || "";
-                              const subSlug =
-                                (typeof sub === "object" ? sub.slug : "") ||
-                                subName
-                                  .toLowerCase()
-                                  .replace(/^online\s+[a-z0-9+-]+\s+in\s+/i, "")
-                                  .replace(/^distance\s+[a-z0-9+-]+\s+in\s+/i, "")
-                                  .replace(/[^a-z0-9]+/g, "-")
-                                  .replace(/^-|-$/g, "");
-
-                              const isSelected = Boolean(
-                                selectedSubSpec &&
-                                  ((typeof selectedSubSpec === "string" && selectedSubSpec === subName) ||
-                                    selectedSubSpec.name === subName ||
-                                    selectedSubSpec.slug === subSlug)
-                              );
-
-                              const thisSubTitle = subName.toLowerCase().includes(cTitle.toLowerCase())
-                                ? `${subName} - ${uniName}`
-                                : `${cTitle} in ${subName} - ${uniName}`;
-                              const thisSubSlug = `${cleanUniSlug}/${cleanCourseSlug}/${subSlug}`;
-
-                              return (
-                                <div
-                                  key={idx}
-                                  onClick={() => setSelectedSubSpec(isSelected ? null : sub)}
-                                  className={`flex items-center justify-between gap-1.5 sm:gap-2 text-[10.5px] sm:text-xs font-semibold px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl border transition-all cursor-pointer group/spec ${
-                                    isSelected
-                                      ? "bg-teal-50 border-[#08AEAA] text-[#08AEAA] shadow-xs ring-1 ring-[#08AEAA]/30"
-                                      : "bg-blue-50/50 text-[#0C2B4E] border-blue-100 hover:border-[#08AEAA] hover:bg-blue-100/70"
-                                  }`}
-                                >
-                                  <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
-                                    <CheckCircle2
-                                      size={13}
-                                      className={`${
-                                        isSelected
-                                          ? "text-[#08AEAA] scale-110"
-                                          : "text-[#08AEAA] group-hover/spec:scale-110"
-                                      } transition-transform shrink-0`}
-                                    />
-                                    <span className="truncate leading-tight" title={subName}>
-                                      {subName}
-                                    </span>
-                                  </div>
-
-                                  <button
-                                    type="button"
-                                    title={`Download ${subName} Brochure`}
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setSelectedCourseSpec(null);
-                                      setSelectedSubSpec(null);
-                                      openWhatsAppBrochure({
-                                        title: thisSubTitle,
-                                        slug: thisSubSlug,
-                                      });
-                                    }}
-                                    className="p-1 rounded-md hover:bg-white text-gray-400 hover:text-[#08AEAA] shrink-0 border-none bg-transparent cursor-pointer transition-colors"
-                                  >
-                                    <Download className="w-3.5 h-3.5" />
-                                  </button>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="my-1 bg-slate-50/90 rounded-xl p-3 sm:p-3.5 border border-slate-200/70">
-                          <div className="text-[11px] sm:text-xs font-bold text-[#0C2B4E] mb-2 tracking-tight uppercase">
-                            Program Highlights
-                          </div>
-                          <div className="grid grid-cols-2 gap-2 text-xs text-gray-700">
-                            <div className="flex items-center gap-2">
-                              <CheckCircle2 size={14} className="text-[#08AEAA] shrink-0" />
-                              <span className="font-medium text-gray-800 text-[11px] sm:text-xs">100% Online & Flexible</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <CheckCircle2 size={14} className="text-[#08AEAA] shrink-0" />
-                              <span className="font-medium text-gray-800 text-[11px] sm:text-xs">UGC & DEB Entitled</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <CheckCircle2 size={14} className="text-[#08AEAA] shrink-0" />
-                              <span className="font-medium text-gray-800 text-[11px] sm:text-xs">Career & Placement Support</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <CheckCircle2 size={14} className="text-[#08AEAA] shrink-0" />
-                              <span className="font-medium text-gray-800 text-[11px] sm:text-xs">Industry-Aligned Curriculum</span>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Bottom: Action Buttons */}
-                      <div className="flex items-center gap-2 sm:gap-3 pt-2 mt-auto w-full">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setSelectedCourseSpec(null);
-                            setSelectedSubSpec(null);
-                            openWhatsAppBrochure({
-                              title: modalEffectiveTitle,
-                              slug: modalEffectiveSlug,
-                            });
-                          }}
-                          className="flex-1 min-w-0 bg-[#0C2B4E] hover:bg-[#081f38] text-white text-[11px] sm:text-xs md:text-sm font-semibold py-2.5 px-2 sm:px-4 rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all cursor-pointer shadow-xs active:scale-95 border-none"
-                        >
-                          <span className="truncate">
-                            {currentSubName ? `Download ${currentSubName} Brochure` : "Download Brochure"}
-                          </span>
-                          <Download className="w-3.5 h-3.5 shrink-0" />
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setSelectedCourseSpec(null);
-                            setSelectedSubSpec(null);
-                            openFormModal &&
-                              openFormModal({
-                                title: "Book Free Counseling",
-                                subtitle: modalEffectiveTitle,
-                                defaultCourse: modalEffectiveTitle,
-                                university: uniName,
-                                formNameOverride: `CourseDetailModal_${modalEffectiveSlug.replace(/\//g, "_")}`,
-                                submitButtonText: "Get Counseling",
-                              });
-                          }}
-                          className="flex-1 min-w-0 bg-white hover:bg-gray-50 text-[#0C2B4E] border border-[#0C2B4E] text-[10.5px] min-[380px]:text-[11.5px] sm:text-xs md:text-sm font-semibold py-2.5 px-1.5 sm:px-4 rounded-xl flex items-center justify-center text-center transition-all cursor-pointer shadow-xs active:scale-95"
-                        >
-                          <span className="truncate">Get 100% FREE Counseling</span>
-                        </button>
+                        )}
                       </div>
-                    </>
-                  );
-                })()}
+                    </div>
+
+                    {/* Middle: Specializations OR Program Highlights */}
+                    {specializationsList.length > 0 ? (
+                      <div className="my-1">
+                        <div className="flex items-center justify-between gap-2.5 sm:gap-3 mb-2">
+                          <h4 className="text-xs sm:text-sm md:text-base font-bold text-[#0C2B4E] m-0 tracking-tight shrink-0">
+                            {specializationsList.length} Specializations Available
+                          </h4>
+                          <span className="text-[10px] sm:text-[11px] text-gray-500 font-normal">
+                            Click specialization to view details
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-1.5 sm:gap-2 max-h-36 sm:max-h-44 overflow-y-auto pr-1">
+                          {specializationsList.map((sub, idx) => {
+                            const subName = typeof sub === "string" ? sub : sub.name || "";
+                            return (
+                              <div
+                                key={idx}
+                                onClick={() => handleOpenSpecDetail(sub, selectedCourseSpec)}
+                                className="flex items-center gap-1.5 sm:gap-2 text-[10.5px] sm:text-xs font-semibold px-2.5 sm:px-3 py-2 rounded-lg sm:rounded-xl border transition-all cursor-pointer group/spec bg-blue-50/50 text-[#0C2B4E] border-blue-100 hover:border-[#08AEAA] hover:bg-blue-100/70"
+                              >
+                                <CheckCircle2
+                                  size={13}
+                                  className="text-[#08AEAA] group-hover/spec:scale-110 transition-transform shrink-0"
+                                />
+                                <span className="truncate leading-tight" title={subName}>
+                                  {subName}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="my-1 bg-slate-50/90 rounded-xl p-3 sm:p-3.5 border border-slate-200/70">
+                        <div className="text-[11px] sm:text-xs font-bold text-[#0C2B4E] mb-2 tracking-tight uppercase">
+                          Program Highlights
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 text-xs text-gray-700">
+                          <div className="flex items-center gap-2">
+                            <CheckCircle2 size={14} className="text-[#08AEAA] shrink-0" />
+                            <span className="font-medium text-gray-800 text-[11px] sm:text-xs">100% Online & Flexible</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <CheckCircle2 size={14} className="text-[#08AEAA] shrink-0" />
+                            <span className="font-medium text-gray-800 text-[11px] sm:text-xs">UGC & DEB Entitled</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <CheckCircle2 size={14} className="text-[#08AEAA] shrink-0" />
+                            <span className="font-medium text-gray-800 text-[11px] sm:text-xs">Career & Placement Support</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <CheckCircle2 size={14} className="text-[#08AEAA] shrink-0" />
+                            <span className="font-medium text-gray-800 text-[11px] sm:text-xs">Industry-Aligned Curriculum</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {itemDesc && (
+                      <p className="text-xs sm:text-[13px] text-gray-600 leading-relaxed mb-0 font-normal">
+                        {itemDesc}
+                      </p>
+                    )}
+
+                    {/* Bottom: Action Buttons */}
+                    <div className="flex items-center gap-2 sm:gap-3 pt-2 mt-auto w-full">
+                      {(() => {
+                        const cleanUniSlug = String(slug || uni?.slug || "university").toLowerCase().trim();
+                        const rawCourseSlug = String(selectedCourseSpec.slug || cTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-")).toLowerCase().trim();
+                        const cleanCourseSlug = rawCourseSlug.replace(new RegExp(`^${cleanUniSlug}[/-]?`), "");
+
+                        return (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                handleCloseSpecModal();
+                                openWhatsAppBrochure({
+                                  title: `${cTitle} - ${uniName}`,
+                                  slug: `${cleanUniSlug}/${cleanCourseSlug}`,
+                                });
+                              }}
+                              className="flex-1 min-w-0 bg-[#0C2B4E] hover:bg-[#081f38] text-white text-[11px] sm:text-xs md:text-sm font-semibold py-2.5 px-2 sm:px-4 rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all cursor-pointer shadow-xs active:scale-95 border-none"
+                            >
+                              <span className="truncate">Download Brochure</span>
+                              <Download className="w-3.5 h-3.5 shrink-0" />
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                handleCloseSpecModal();
+                                openFormModal &&
+                                  openFormModal({
+                                    title: "Book Free Counseling",
+                                    subtitle: `${cTitle} - ${uniName}`,
+                                    defaultCourse: `${cTitle} - ${uniName}`,
+                                    university: uniName,
+                                    formNameOverride: `CourseDetailModal_${cleanUniSlug}_${cleanCourseSlug}`,
+                                    submitButtonText: "Get Counseling",
+                                  });
+                              }}
+                              className="flex-1 min-w-0 bg-white hover:bg-gray-50 text-[#0C2B4E] border border-[#0C2B4E] text-[10.5px] min-[380px]:text-[11.5px] sm:text-xs md:text-sm font-semibold py-2.5 px-1.5 sm:px-4 rounded-xl flex items-center justify-center text-center transition-all cursor-pointer shadow-xs active:scale-95"
+                            >
+                              <span className="truncate">Get 100% FREE Counseling</span>
+                            </button>
+                          </>
+                        );
+                      })()}
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
           </Modal>
         );
       })()}
