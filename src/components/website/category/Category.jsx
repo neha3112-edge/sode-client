@@ -191,8 +191,9 @@ export function Category({ categories = [], universities = [], programs = [], co
 
     // 2. If Category Target Type is COURSE or modalType is COURSES AND has courses
     const hasCourses =
-      (Array.isArray(item.courses) && item.courses.length > 0) ||
-      (item.modalType === "COURSES" && Array.isArray(item.items) && item.items.length > 0);
+      item.modalType !== "SUB_CATEGORIES" &&
+      ((Array.isArray(item.courses) && item.courses.length > 0) ||
+      (item.modalType === "COURSES" && Array.isArray(item.items) && item.items.length > 0));
 
     if (hasCourses) {
       const courseItems = (Array.isArray(item.courses) && item.courses.length > 0)

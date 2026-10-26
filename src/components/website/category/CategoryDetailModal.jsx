@@ -152,10 +152,10 @@ export default function CategoryDetailModal({
                             } else {
                               router.push(`/courses?course=${encodeURIComponent(courseSlug)}`);
                             }
-                          } else if (parentCatSlug && parentCatSlug !== "all") {
-                            router.push(`/courses?category=${encodeURIComponent(parentCatSlug)}&subcategory=${encodeURIComponent(itemSlug)}`);
                           } else if (it.targetUrl && !/[0-9a-fA-F]{24}/.test(it.targetUrl)) {
                             router.push(it.targetUrl);
+                          } else if (parentCatSlug && parentCatSlug !== "all") {
+                            router.push(`/courses?category=${encodeURIComponent(parentCatSlug)}&subcategory=${encodeURIComponent(itemSlug)}`);
                           } else if (it.targetUrl && itemSlug && !isObjectId(itemSlug)) {
                             router.push(it.targetUrl.replace(/[0-9a-fA-F]{24}/g, encodeURIComponent(itemSlug)));
                           } else {
