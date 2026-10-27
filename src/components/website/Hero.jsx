@@ -997,11 +997,11 @@ export function Hero({ initialHeroData = null }) {
         )}
 
         {/* ============================================================== */}
-        {/* 📱 1. MOBILE HERO VIEW (strictly md:hidden, 0 impact on desktop) */}
+        {/* 🌐 GLOBAL CONTAINER: Wraps both Mobile & Desktop text overlay   */}
         {/* ============================================================== */}
-        <div className="md:hidden relative z-10 w-full h-full flex items-center px-3 xs:px-3.5 py-1.5 xs:py-2">
-          {/* Mobile Left Text Container (strictly bounded to 46% - 47% width so text NEVER overlaps graphics) */}
-          <div className="w-[47%] xs:w-[46%] max-w-[185px] xs:max-w-[215px] flex flex-col justify-center items-start space-y-1 xs:space-y-1.5 z-10">
+        <Container className="relative z-10 w-full h-full flex items-center pointer-events-auto">
+          {/* 📱 1. MOBILE HERO VIEW (strictly md:hidden) */}
+          <div className="md:hidden w-[50%] xs:w-[48%] max-w-[195px] xs:max-w-[220px] flex flex-col justify-center items-start space-y-1 xs:space-y-1.5 z-10 py-1.5 xs:py-2">
             {renderMobileSlideBadge(badgeText, isLight)}
             {renderMobileSlideHeading(title, highlightText, isLight, titleColor, index)}
 
@@ -1053,16 +1053,12 @@ export function Hero({ initialHeroData = null }) {
               type="button"
               onClick={handlePrimaryClick}
               aria-label={primaryBtn?.text || "Hero counselling"}
-              className="absolute inset-0 z-5 w-full h-full bg-transparent border-0 cursor-pointer p-0 m-0"
+              className="md:hidden absolute inset-0 z-5 w-full h-full bg-transparent border-0 cursor-pointer p-0 m-0"
             />
           )}
-        </div>
 
-        {/* ============================================================== */}
-        {/* 💻 2. DESKTOP HERO VIEW (hidden md:block - 100% UNTOUCHED)       */}
-        {/* ============================================================== */}
-        <Container className="hidden md:block relative z-10 w-full pointer-events-auto">
-          <div className="w-full max-w-[70%] sm:max-w-[50%] md:max-w-[46%] lg:max-w-[44%] flex flex-col items-start space-y-1.5 sm:space-y-2 md:space-y-2.5">
+          {/* 💻 2. DESKTOP HERO VIEW (hidden md:block - 100% UNTOUCHED) */}
+          <div className="hidden md:block w-full max-w-[70%] sm:max-w-[50%] md:max-w-[46%] lg:max-w-[44%] flex flex-col items-start space-y-1.5 sm:space-y-2 md:space-y-2.5">
             {renderSlideBadge(badgeText, isLight)}
             {renderSlideHeading(title, highlightText, isLight, titleColor, index === 0)}
 
