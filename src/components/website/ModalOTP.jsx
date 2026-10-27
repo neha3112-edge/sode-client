@@ -443,13 +443,14 @@ export default function ModalOTP({
         {/* ==========================================
             💻 DESKTOP LEFT BANNER (hidden on mobile, uses next/image)
         ========================================== */}
-        <div className="hidden md:block md:w-[42%] relative shrink-0 self-start">
+        <div className="hidden md:block md:w-[42%] bg-[#1E6FD9] relative shrink-0 self-start overflow-hidden">
           <Image
             src="/counseling-modal-desktop.png"
             alt="Learn Online. Grow Your Career."
             width={362}
             height={632}
             priority
+            sizes="(max-width: 768px) 100vw, 310px"
             className="w-full h-auto block"
           />
         </div>
@@ -457,13 +458,14 @@ export default function ModalOTP({
         {/* ==========================================
             📱 MOBILE TOP BANNER (hidden on desktop, uses next/image)
         ========================================== */}
-        <div className="block md:hidden w-full relative shrink-0">
+        <div className="block md:hidden w-full bg-[#1E6FD9] relative shrink-0 overflow-hidden">
           <Image
             src="/counseling-modal-mobile.png"
             alt="Learn Online. Grow Your Career."
-            width={310}
+            width={308}
             height={103}
             priority
+            sizes="(max-width: 480px) 100vw, 390px"
             className="w-full h-auto block"
           />
         </div>
