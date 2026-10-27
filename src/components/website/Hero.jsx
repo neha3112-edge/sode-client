@@ -793,16 +793,16 @@ export function Hero({ initialHeroData = null }) {
         {/* ============================================================== */}
         {/* 📱 1. MOBILE HERO VIEW (strictly md:hidden, 0 impact on desktop) */}
         {/* ============================================================== */}
-        <div className="md:hidden relative z-10 w-full h-full flex items-center px-3.5 xs:px-4 py-2">
-          {/* Mobile Left Text Container (50% - 54% width overlay) */}
-          <div className="w-[54%] xs:w-[50%] max-w-[210px] xs:max-w-[245px] flex flex-col justify-center items-start space-y-1 xs:space-y-1.5 z-10">
+        <div className="md:hidden relative z-10 w-full h-full flex items-center px-3 xs:px-3.5 py-1.5 xs:py-2">
+          {/* Mobile Left Text Container (strictly bounded to 46% - 47% width so text NEVER overlaps graphics) */}
+          <div className="w-[47%] xs:w-[46%] max-w-[185px] xs:max-w-[215px] flex flex-col justify-center items-start space-y-1 xs:space-y-1.5 z-10">
             {renderMobileSlideBadge(badgeText, isLight)}
             {renderMobileSlideHeading(title, highlightText, isLight, titleColor, index)}
 
             {subtitle && (
               <p
                 style={{ color: isLight ? "#334155" : (subtitleColor || "#cbd5e1") }}
-                className="text-[8.5px] xs:text-[9.5px] leading-tight font-normal line-clamp-2 max-w-full m-0 opacity-95"
+                className="text-[8px] xs:text-[9px] leading-tight font-normal line-clamp-2 max-w-full m-0 opacity-95"
               >
                 {getMobileSlideSubtitle(subtitle, title)}
               </p>
@@ -820,7 +820,7 @@ export function Hero({ initialHeroData = null }) {
                       color: "#072C50",
                       border: "1px solid rgba(226, 176, 83, 0.6)",
                     }}
-                    className="px-2.5 py-1 rounded-md font-bold text-[10px] xs:text-[11px] shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap"
+                    className="px-2 py-0.5 rounded-md font-bold text-[9.5px] xs:text-[10.5px] shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap"
                   >
                     {primaryBtn.text}
                   </button>
@@ -832,7 +832,7 @@ export function Hero({ initialHeroData = null }) {
                       color: "#072C50",
                       border: "1px solid rgba(226, 176, 83, 0.6)",
                     }}
-                    className="inline-block px-2.5 py-1 rounded-md font-bold text-[10px] xs:text-[11px] shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap"
+                    className="inline-block px-2 py-0.5 rounded-md font-bold text-[9.5px] xs:text-[10.5px] shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap"
                   >
                     {primaryBtn.text}
                   </Link>
