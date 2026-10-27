@@ -159,8 +159,11 @@ export default function ModalOTP({
   // Global event listener for modal triggers
   useEffect(() => {
     const handleTriggerClick = (e) => {
+      // Ignore clicks happening inside the modal dialog
+      if (e.target.closest("[data-modal-container='true']")) return;
+
       const target = e.target.closest(
-        `#${triggerId}, #${triggerId}-btn, [data-modal="${triggerId}"], [data-target="#${triggerId}"], [data-target="${triggerId}"], a[href="#${triggerId}"]`
+        `#${triggerId}-btn, [data-modal="${triggerId}"], [data-target="#${triggerId}"], [data-target="${triggerId}"], a[href="#${triggerId}"]`
       );
       if (target) {
         e.preventDefault();
@@ -245,7 +248,12 @@ export default function ModalOTP({
      STEP 1: SEND OTP
   ========================================================= */
   const handleSendOtp = async (e) => {
-    e?.preventDefault();
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    if (loading) return;
+
     setPhoneError("");
 
     const clean = phone.replace(/\D/g, "").slice(-10);
@@ -269,15 +277,16 @@ export default function ModalOTP({
 
       const data = await res.json();
       if (!res.ok || !data.success) {
-        throw new Error(data.message || "Failed to send OTP");
+        throw new Error(data?.message || "Failed to send OTP");
       }
 
-      message.success(data.message || `OTP sent to +91 ${clean}`);
+      message.success(data?.message || `OTP sent to +91 ${clean}`);
       setStep("otp");
       setResendTimer(30);
       setCanResend(false);
       setOtpDigits(["", "", "", "", "", ""]);
     } catch (err) {
+      console.error("[ModalOTP handleSendOtp error]:", err);
       const errorMsg = err.message || "Something went wrong sending OTP";
       setPhoneError(errorMsg);
       message.error(errorMsg);
@@ -304,6 +313,9 @@ export default function ModalOTP({
   const handleOtpKeyDown = (index, e) => {
     if (e.key === "Backspace" && !otpDigits[index] && index > 0) {
       otpInputRefs.current[index - 1]?.focus();
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      handleVerifyOtp(e);
     }
   };
 
@@ -321,7 +333,12 @@ export default function ModalOTP({
   };
 
   const handleVerifyOtp = async (e) => {
-    e?.preventDefault();
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    if (loading) return;
+
     setOtpError("");
 
     const fullOtp = otpDigits.join("");
@@ -332,10 +349,11 @@ export default function ModalOTP({
 
     setLoading(true);
     try {
+      const cleanPhone = phone.replace(/\D/g, "").slice(-10);
       const res = await fetch("/api/otp/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone, otp: fullOtp }),
+        body: JSON.stringify({ phone: cleanPhone, otp: fullOtp }),
       });
 
       const data = await res.json();
@@ -358,10 +376,11 @@ export default function ModalOTP({
     if (!canResend || !phone) return;
     setLoading(true);
     try {
+      const cleanPhone = phone.replace(/\D/g, "").slice(-10);
       const res = await fetch("/api/otp/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone, purpose: "counselling" }),
+        body: JSON.stringify({ phone: cleanPhone, purpose: "counselling" }),
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data?.message || "Failed to resend OTP");
@@ -381,7 +400,10 @@ export default function ModalOTP({
      STEP 3: EMAIL ADDRESS
   ========================================================= */
   const handleNextToName = (e) => {
-    e?.preventDefault();
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     setEmailError("");
     const cleanEmail = email.trim();
     if (!cleanEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
@@ -395,7 +417,10 @@ export default function ModalOTP({
      STEP 4: FULL NAME
   ========================================================= */
   const handleNextToState = (e) => {
-    e?.preventDefault();
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     setNameError("");
     const cleanName = name.trim();
     if (!cleanName || cleanName.length < 2) {
@@ -409,7 +434,12 @@ export default function ModalOTP({
      STEP 5: FINAL SUBMIT WITH STATE
   ========================================================= */
   const handleFinalSubmit = async (e) => {
-    e?.preventDefault();
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    if (loading) return;
+
     setStateError("");
 
     if (!selectedState) {
@@ -419,8 +449,9 @@ export default function ModalOTP({
 
     setLoading(true);
     try {
+      const cleanPhone = phone.replace(/\D/g, "").slice(-10);
       const payload = {
-        phone,
+        phone: cleanPhone,
         name: name.trim(),
         email: email.trim(),
         state: selectedState,
@@ -458,8 +489,8 @@ export default function ModalOTP({
 
   return (
     <div
-      id={triggerId}
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs transition-opacity animate-in fade-in duration-200"
+      data-modal-container="true"
+      className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs transition-opacity animate-in fade-in duration-200"
       onClick={(e) => {
         if (e.target === e.currentTarget) handleClose();
       }}
@@ -468,6 +499,32 @@ export default function ModalOTP({
         className="relative w-full max-w-[390px] md:max-w-[740px] bg-white rounded-2xl md:rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row font-sans m-auto animate-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* ==========================================
+            ❌ CLOSE BUTTON (Over Image on Mobile, Top-Right on Desktop)
+        ========================================== */}
+        <button
+          type="button"
+          onClick={handleClose}
+          aria-label="Close"
+          className="absolute top-3 right-3 z-30 w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer border-none shadow-xs text-white bg-black/35 hover:bg-black/55 md:text-slate-500 md:bg-slate-100 md:hover:bg-slate-200 md:hover:text-slate-800"
+        >
+          <X size={18} className="stroke-[2.5]" />
+        </button>
+
+        {/* ==========================================
+            ⬅️ BACK BUTTON (When step !== 'phone')
+        ========================================== */}
+        {step !== "phone" && (
+          <button
+            type="button"
+            onClick={handleBack}
+            aria-label="Back"
+            className="absolute top-3 left-3 md:left-[43.5%] z-30 w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer border-none shadow-xs text-white bg-black/35 hover:bg-black/55 md:text-slate-600 md:bg-slate-100 md:hover:bg-slate-200 md:hover:text-slate-900"
+          >
+            <ArrowLeft size={18} className="stroke-[2.5]" />
+          </button>
+        )}
+
         {/* ==========================================
             💻 DESKTOP LEFT BANNER (hidden on mobile)
         ========================================== */}
@@ -493,45 +550,22 @@ export default function ModalOTP({
         {/* ==========================================
             FORM CONTENT (Right Side Desktop / Bottom Mobile)
         ========================================== */}
-        <div className="w-full md:w-[58%] p-5 sm:p-7 md:p-8 flex flex-col justify-between relative bg-white">
-          {/* Top Bar: Back & Close Navigation */}
-          <div className="flex items-center justify-between mb-4 sm:mb-5">
-            {step !== "phone" ? (
-              <button
-                type="button"
-                onClick={handleBack}
-                aria-label="Back"
-                className="w-8 h-8 rounded-full flex items-center justify-center text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all cursor-pointer border-none bg-transparent"
-              >
-                <ArrowLeft size={18} className="stroke-[2.5]" />
-              </button>
-            ) : (
-              <div className="w-8 h-8" />
-            )}
-
-            <button
-              type="button"
-              onClick={handleClose}
-              aria-label="Close"
-              className="w-8 h-8 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-all cursor-pointer border-none bg-transparent ml-auto"
-            >
-              <X size={18} className="stroke-[2.5]" />
-            </button>
-          </div>
-
+        <div className="w-full md:w-[58%] p-5 sm:p-7 md:p-8 flex flex-col justify-center relative bg-white">
           {/* ==========================================
               STEP 1: PHONE NUMBER
           ========================================== */}
           {step === "phone" && (
             <form onSubmit={handleSendOtp} className="flex flex-col flex-1">
-              <div>
-                <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0">
+              <div className="text-center mb-5">
+                <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center">
                   Book 1:1 Free Counseling
                 </h2>
-                <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1 mb-5 leading-normal">
+                <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center">
                   Enter your mobile number to receive an OTP
                 </p>
+              </div>
 
+              <div>
                 {/* Phone Input Box */}
                 <div
                   className={`flex items-center rounded-xl border bg-white px-3 py-2.5 transition-all shadow-xs ${
@@ -562,7 +596,7 @@ export default function ModalOTP({
                   />
                 </div>
                 {phoneError && (
-                  <p className="text-[11px] text-rose-500 font-medium mt-1.5 ml-1">
+                  <p className="text-[11px] text-rose-500 font-medium mt-1.5 ml-1 text-center">
                     {phoneError}
                   </p>
                 )}
@@ -571,6 +605,7 @@ export default function ModalOTP({
                 <button
                   type="submit"
                   disabled={loading}
+                  onClick={handleSendOtp}
                   className="w-full mt-4 py-2.5 sm:py-3 px-4 rounded-xl font-bold text-sm sm:text-base text-white bg-[#1A73E8] hover:bg-[#1565C0] active:scale-[0.99] transition-all flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed border-none"
                 >
                   {loading ? "Sending OTP..." : "Get OTP"}
@@ -578,13 +613,13 @@ export default function ModalOTP({
                 </button>
 
                 {/* Consent & Disclaimer */}
-                <div className="mt-3.5 flex items-start gap-2">
+                <div className="mt-3.5 flex items-start gap-2 text-left">
                   <input
                     type="checkbox"
                     id="modal-consent-checkbox"
                     checked={consent}
                     onChange={(e) => setConsent(e.target.checked)}
-                    className="mt-0.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer h-3.5 w-3.5"
+                    className="mt-0.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer h-3.5 w-3.5 shrink-0"
                   />
                   <label
                     htmlFor="modal-consent-checkbox"
@@ -611,21 +646,23 @@ export default function ModalOTP({
           ========================================== */}
           {step === "otp" && (
             <form onSubmit={handleVerifyOtp} className="flex flex-col flex-1">
-              <div>
-                <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0">
+              <div className="text-center mb-5">
+                <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center">
                   Verify Your Number
                 </h2>
-                <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1 mb-5 leading-normal">
+                <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center">
                   We've sent a 6-digit OTP to your WhatsApp number +91 {phone}{" "}
                   <button
                     type="button"
                     onClick={() => setStep("phone")}
-                    className="text-[#1A73E8] font-bold hover:underline cursor-pointer border-none bg-transparent p-0 inline"
+                    className="text-[#1A73E8] font-bold hover:underline cursor-pointer border-none bg-transparent p-0 inline ml-1"
                   >
                     Edit
                   </button>
                 </p>
+              </div>
 
+              <div>
                 {/* OTP Boxes (6 digits) */}
                 <div className="flex items-center justify-between gap-1.5 sm:gap-2 my-2">
                   {otpDigits.map((digit, idx) => (
@@ -650,13 +687,13 @@ export default function ModalOTP({
                   ))}
                 </div>
                 {otpError && (
-                  <p className="text-[11px] text-rose-500 font-medium mt-1.5 ml-1">
+                  <p className="text-[11px] text-rose-500 font-medium mt-1.5 ml-1 text-center">
                     {otpError}
                   </p>
                 )}
 
                 {/* Resend OTP Timer */}
-                <div className="mt-3 mb-2 flex items-center justify-start text-xs font-semibold">
+                <div className="mt-3 mb-2 flex items-center justify-center text-xs font-semibold">
                   {canResend ? (
                     <button
                       type="button"
@@ -676,6 +713,7 @@ export default function ModalOTP({
                 <button
                   type="submit"
                   disabled={loading}
+                  onClick={handleVerifyOtp}
                   className="w-full mt-4 py-2.5 sm:py-3 px-4 rounded-xl font-bold text-sm sm:text-base text-white bg-[#1A73E8] hover:bg-[#1565C0] active:scale-[0.99] transition-all flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed border-none"
                 >
                   {loading ? "Verifying..." : "Verify & Continue"}
@@ -690,14 +728,16 @@ export default function ModalOTP({
           ========================================== */}
           {step === "email" && (
             <form onSubmit={handleNextToName} className="flex flex-col flex-1">
-              <div>
-                <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0">
+              <div className="text-center mb-5">
+                <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center">
                   Your Email Address
                 </h2>
-                <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1 mb-5 leading-normal">
+                <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center">
                   Enter your email address to get updates and important information.
                 </p>
+              </div>
 
+              <div>
                 {/* Email Input Box */}
                 <div
                   className={`flex items-center rounded-xl border bg-white px-3.5 py-2.5 transition-all shadow-xs ${
@@ -720,7 +760,7 @@ export default function ModalOTP({
                   />
                 </div>
                 {emailError && (
-                  <p className="text-[11px] text-rose-500 font-medium mt-1.5 ml-1">
+                  <p className="text-[11px] text-rose-500 font-medium mt-1.5 ml-1 text-center">
                     {emailError}
                   </p>
                 )}
@@ -728,6 +768,7 @@ export default function ModalOTP({
                 {/* Action Button */}
                 <button
                   type="submit"
+                  onClick={handleNextToName}
                   className="w-full mt-5 py-2.5 sm:py-3 px-4 rounded-xl font-bold text-sm sm:text-base text-white bg-[#1A73E8] hover:bg-[#1565C0] active:scale-[0.99] transition-all flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 cursor-pointer border-none"
                 >
                   Continue
@@ -742,14 +783,16 @@ export default function ModalOTP({
           ========================================== */}
           {step === "name" && (
             <form onSubmit={handleNextToState} className="flex flex-col flex-1">
-              <div>
-                <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0">
+              <div className="text-center mb-5">
+                <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center">
                   Your Full Name
                 </h2>
-                <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1 mb-5 leading-normal">
+                <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center">
                   Please enter your full name as per your official ID or documents.
                 </p>
+              </div>
 
+              <div>
                 {/* Name Input Box */}
                 <div
                   className={`flex items-center rounded-xl border bg-white px-3.5 py-2.5 transition-all shadow-xs ${
@@ -772,7 +815,7 @@ export default function ModalOTP({
                   />
                 </div>
                 {nameError && (
-                  <p className="text-[11px] text-rose-500 font-medium mt-1.5 ml-1">
+                  <p className="text-[11px] text-rose-500 font-medium mt-1.5 ml-1 text-center">
                     {nameError}
                   </p>
                 )}
@@ -780,6 +823,7 @@ export default function ModalOTP({
                 {/* Action Button */}
                 <button
                   type="submit"
+                  onClick={handleNextToState}
                   className="w-full mt-5 py-2.5 sm:py-3 px-4 rounded-xl font-bold text-sm sm:text-base text-white bg-[#1A73E8] hover:bg-[#1565C0] active:scale-[0.99] transition-all flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 cursor-pointer border-none"
                 >
                   Continue
@@ -794,14 +838,16 @@ export default function ModalOTP({
           ========================================== */}
           {step === "state" && (
             <form onSubmit={handleFinalSubmit} className="flex flex-col flex-1">
-              <div>
-                <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0">
+              <div className="text-center mb-5">
+                <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center">
                   Your State
                 </h2>
-                <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1 mb-5 leading-normal">
+                <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center">
                   Please select your state as per your official ID or documents.
                 </p>
+              </div>
 
+              <div>
                 {/* State Select Dropdown */}
                 <div
                   className={`flex items-center rounded-xl border bg-white px-3.5 py-2.5 transition-all shadow-xs relative ${
@@ -835,7 +881,7 @@ export default function ModalOTP({
                   />
                 </div>
                 {stateError && (
-                  <p className="text-[11px] text-rose-500 font-medium mt-1.5 ml-1">
+                  <p className="text-[11px] text-rose-500 font-medium mt-1.5 ml-1 text-center">
                     {stateError}
                   </p>
                 )}
@@ -844,6 +890,7 @@ export default function ModalOTP({
                 <button
                   type="submit"
                   disabled={loading}
+                  onClick={handleFinalSubmit}
                   className="w-full mt-5 py-2.5 sm:py-3 px-4 rounded-xl font-bold text-sm sm:text-base text-white bg-[#1A73E8] hover:bg-[#1565C0] active:scale-[0.99] transition-all flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed border-none"
                 >
                   {loading ? "Submitting..." : "Submit"}
