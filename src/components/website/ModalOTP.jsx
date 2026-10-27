@@ -10,6 +10,7 @@ import {
   User,
   MapPin,
   ArrowRight,
+  GraduationCap,
 } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 
@@ -53,6 +54,15 @@ const DEFAULT_INDIAN_STATES = [
 ];
 
 /* =========================================================
+   FALLBACK POPULAR COURSES LIST
+========================================================= */
+const DEFAULT_COURSES = [
+  "Online MBA", "Online MCA", "Online BBA", "Online BCA", "Online B.Com",
+  "Online M.Com", "Online MA", "Online BA", "Online M.Sc", "Online B.Sc",
+  "Executive MBA", "Data Science", "Digital Marketing", "Artificial Intelligence"
+];
+
+/* =========================================================
    CRISP INDIAN TRICOLOR SVG ICON
 ========================================================= */
 const IndiaFlagIcon = () => (
@@ -81,7 +91,7 @@ export default function ModalOTP({
   const [form] = Form.useForm();
 
   const [isOpen, setIsOpen] = useState(Boolean(controlledOpen));
-  // Steps: 'phone' (1) -> 'otp' (2) -> 'email' (3) -> 'name' (4) -> 'state' (5)
+  // Steps: 'phone' (1) -> 'otp' (2) -> 'email' (3) -> 'course' (4) -> 'state' (5) -> 'name' (6)
   const [step, setStep] = useState("phone");
 
   const [phone, setPhone] = useState("");
@@ -90,6 +100,7 @@ export default function ModalOTP({
   const [canResend, setCanResend] = useState(false);
   const [contextPayload, setContextPayload] = useState(null);
   const [stateOptions, setStateOptions] = useState(DEFAULT_INDIAN_STATES);
+  const [courseOptions, setCourseOptions] = useState(DEFAULT_COURSES);
 
   // Fetch States from backend
   useEffect(() => {
@@ -104,7 +115,26 @@ export default function ModalOTP({
           if (names.length > 0) setStateOptions(names);
         }
       })
-      .catch(() => { });
+      .catch(() => {});
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Fetch Courses from backend
+  useEffect(() => {
+    let isMounted = true;
+    fetch("/api/courses/v1/options")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!isMounted) return;
+        const list = Array.isArray(data?.result) ? data.result : [];
+        if (list.length > 0) {
+          const names = list.filter((c) => c?.name && !c.removed).map((c) => c.name);
+          if (names.length > 0) setCourseOptions(names);
+        }
+      })
+      .catch(() => {});
     return () => {
       isMounted = false;
     };
@@ -151,6 +181,9 @@ export default function ModalOTP({
     const handleCustomEvent = (e) => {
       if (e?.detail) {
         setContextPayload(e.detail);
+        if (e.detail.course || e.detail.defaultCourse) {
+          form.setFieldValue("course", e.detail.course || e.detail.defaultCourse);
+        }
       }
       if (!e.detail || e.detail.targetId === triggerId || !e.detail.targetId) {
         setIsOpen(true);
@@ -168,7 +201,7 @@ export default function ModalOTP({
       window.removeEventListener("sode:open-counselling-modal", handleCustomEvent);
       window.removeEventListener("open-counselling-modal", handleCustomEvent);
     };
-  }, [triggerId]);
+  }, [triggerId, form]);
 
   // Lock body scroll and listen for Escape key when modal is open
   useEffect(() => {
@@ -201,8 +234,9 @@ export default function ModalOTP({
   const handleBack = () => {
     if (step === "otp") setStep("phone");
     else if (step === "email") setStep("otp");
-    else if (step === "name") setStep("email");
-    else if (step === "state") setStep("name");
+    else if (step === "course") setStep("email");
+    else if (step === "state") setStep("course");
+    else if (step === "name") setStep("state");
   };
 
   const resolvedUni = (
@@ -223,8 +257,8 @@ export default function ModalOTP({
     if (loading) return;
 
     try {
-      await form.validateFields(["phone", "consent"]);
-      const phoneVal = form.getFieldValue("phone");
+      const values = await form.validateFields(["phone", "consent"]);
+      const phoneVal = values?.phone || form.getFieldValue("phone");
       const clean = String(phoneVal || "").replace(/\D/g, "").slice(-10);
 
       setLoading(true);
@@ -319,21 +353,21 @@ export default function ModalOTP({
   /* =========================================================
      STEP 3: EMAIL ADDRESS
   ========================================================= */
-  const handleNextToName = async (e) => {
+  const handleNextToCourse = async (e) => {
     if (e) {
       e.preventDefault();
       e.stopPropagation();
     }
     try {
       await form.validateFields(["email"]);
-      setStep("name");
+      setStep("course");
     } catch (err) {
       // Handled by Antd Form
     }
   };
 
   /* =========================================================
-     STEP 4: FULL NAME
+     STEP 4: COURSE SELECTION
   ========================================================= */
   const handleNextToState = async (e) => {
     if (e) {
@@ -341,7 +375,7 @@ export default function ModalOTP({
       e.stopPropagation();
     }
     try {
-      await form.validateFields(["name"]);
+      await form.validateFields(["course"]);
       setStep("state");
     } catch (err) {
       // Handled by Antd Form
@@ -349,7 +383,23 @@ export default function ModalOTP({
   };
 
   /* =========================================================
-     STEP 5: FINAL SUBMIT WITH STATE
+     STEP 5: YOUR STATE
+  ========================================================= */
+  const handleNextToName = async (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    try {
+      await form.validateFields(["state"]);
+      setStep("name");
+    } catch (err) {
+      // Handled by Antd Form
+    }
+  };
+
+  /* =========================================================
+     STEP 6: FULL NAME & FINAL SUBMIT
   ========================================================= */
   const handleFinalSubmit = async (e) => {
     if (e) {
@@ -359,7 +409,7 @@ export default function ModalOTP({
     if (loading) return;
 
     try {
-      await form.validateFields(["state"]);
+      await form.validateFields(["name"]);
       const values = form.getFieldsValue(true);
       const cleanPhone = phone || String(values.phone || "").replace(/\D/g, "").slice(-10);
 
@@ -368,7 +418,8 @@ export default function ModalOTP({
         phone: cleanPhone,
         name: String(values.name || "").trim(),
         email: String(values.email || "").trim(),
-        state: values.state,
+        course: values.course || "",
+        state: values.state || "",
         university_name: resolvedUni,
         form_name: contextPayload?.action || contextPayload?.title || "Book 1:1 Free Counseling",
         source: contextPayload?.source || "SODE",
@@ -421,7 +472,7 @@ export default function ModalOTP({
           type="button"
           onClick={handleClose}
           aria-label="Close"
-          className="absolute top-3 right-3 z-30 w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer border-none shadow-xs text-white bg-black/35 hover:bg-black/55 md:text-slate-500 md:bg-slate-100 md:hover:bg-slate-200 md:hover:text-slate-800"
+          className="absolute top-2.5 right-2.5 md:top-3.5 md:right-3.5 z-30 w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer border-none shadow-xs text-white bg-black/40 hover:bg-black/60 md:text-slate-500 md:bg-slate-100 md:hover:bg-slate-200 md:hover:text-slate-800"
         >
           <X size={18} className="stroke-[2.5]" />
         </button>
@@ -434,7 +485,7 @@ export default function ModalOTP({
             type="button"
             onClick={handleBack}
             aria-label="Back"
-            className="absolute top-3 left-3 md:left-[43.5%] z-30 w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer border-none shadow-xs text-white bg-black/35 hover:bg-black/55 md:text-slate-600 md:bg-slate-100 md:hover:bg-slate-200 md:hover:text-slate-900"
+            className="absolute top-2.5 left-2.5 md:top-3.5 md:left-[44%] z-30 w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer border-none shadow-xs text-white bg-black/40 hover:bg-black/60 md:text-slate-600 md:bg-slate-100 md:hover:bg-slate-200 md:hover:text-slate-900"
           >
             <ArrowLeft size={18} className="stroke-[2.5]" />
           </button>
@@ -683,7 +734,7 @@ export default function ModalOTP({
 
                 <Button
                   type="primary"
-                  onClick={handleNextToName}
+                  onClick={handleNextToCourse}
                   className="w-full mt-5 h-11 rounded-xl font-bold text-sm sm:text-base text-white bg-[#1A73E8] hover:bg-[#1565C0]! border-none flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 cursor-pointer"
                 >
                   Continue
@@ -693,35 +744,36 @@ export default function ModalOTP({
             )}
 
             {/* ==========================================
-                STEP 4: FULL NAME
+                STEP 4: COURSE SELECTION
             ========================================== */}
-            {step === "name" && (
+            {step === "course" && (
               <>
                 <div className="text-center mb-5">
                   <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center">
-                    Your Full Name
+                    Select Course
                   </h2>
                   <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center">
-                    Please enter your full name as per your official ID or documents.
+                    Choose the course or degree program you are interested in.
                   </p>
                 </div>
 
                 <Form.Item
-                  name="name"
+                  name="course"
                   validateTrigger="onSubmit"
-                  rules={[
-                    { required: true, message: "Please enter your full name" },
-                    { min: 2, message: "Name must be at least 2 characters" },
-                  ]}
+                  rules={[{ required: true, message: "Please select your course" }]}
                   className="mb-0"
                 >
-                  <Input
-                    type="text"
+                  <Select
+                    showSearch
                     autoFocus
-                    placeholder="Enter your Name"
-                    onChange={() => form.setFields([{ name: "name", errors: [] }])}
-                    prefix={<User size={16} className="text-slate-400 mr-2 shrink-0" />}
-                    className="rounded-xl h-11 text-xs sm:text-sm font-semibold border-slate-300 hover:border-blue-500 focus:border-blue-600"
+                    placeholder="Select Course"
+                    onChange={() => form.setFields([{ name: "course", errors: [] }])}
+                    prefix={<GraduationCap size={16} className="text-slate-400 mr-1 shrink-0" />}
+                    className="w-full h-11 rounded-xl text-xs sm:text-sm font-semibold [&_.ant-select-selector]:rounded-xl! [&_.ant-select-selector]:h-11! [&_.ant-select-selector]:flex! [&_.ant-select-selector]:items-center!"
+                    options={courseOptions.map((c) => ({ label: c, value: c }))}
+                    filterOption={(input, option) =>
+                      (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                    }
                   />
                 </Form.Item>
 
@@ -737,7 +789,7 @@ export default function ModalOTP({
             )}
 
             {/* ==========================================
-                STEP 5: YOUR STATE (FINAL STEP)
+                STEP 5: YOUR STATE
             ========================================== */}
             {step === "state" && (
               <>
@@ -772,6 +824,50 @@ export default function ModalOTP({
 
                 <Button
                   type="primary"
+                  onClick={handleNextToName}
+                  className="w-full mt-5 h-11 rounded-xl font-bold text-sm sm:text-base text-white bg-[#1A73E8] hover:bg-[#1565C0]! border-none flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 cursor-pointer"
+                >
+                  Continue
+                  <ArrowRight size={16} className="stroke-[2.5]" />
+                </Button>
+              </>
+            )}
+
+            {/* ==========================================
+                STEP 6: FULL NAME (FINAL STEP)
+            ========================================== */}
+            {step === "name" && (
+              <>
+                <div className="text-center mb-5">
+                  <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center">
+                    Your Full Name
+                  </h2>
+                  <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center">
+                    Please enter your full name as per your official ID or documents.
+                  </p>
+                </div>
+
+                <Form.Item
+                  name="name"
+                  validateTrigger="onSubmit"
+                  rules={[
+                    { required: true, message: "Please enter your full name" },
+                    { min: 2, message: "Name must be at least 2 characters" },
+                  ]}
+                  className="mb-0"
+                >
+                  <Input
+                    type="text"
+                    autoFocus
+                    placeholder="Enter your Name"
+                    onChange={() => form.setFields([{ name: "name", errors: [] }])}
+                    prefix={<User size={16} className="text-slate-400 mr-2 shrink-0" />}
+                    className="rounded-xl h-11 text-xs sm:text-sm font-semibold border-slate-300 hover:border-blue-500 focus:border-blue-600"
+                  />
+                </Form.Item>
+
+                <Button
+                  type="primary"
                   loading={loading}
                   onClick={handleFinalSubmit}
                   className="w-full mt-5 h-11 rounded-xl font-bold text-sm sm:text-base text-white bg-[#1A73E8] hover:bg-[#1565C0]! border-none flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 cursor-pointer"
@@ -786,4 +882,3 @@ export default function ModalOTP({
     </div>
   );
 }
-
