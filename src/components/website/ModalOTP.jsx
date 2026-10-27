@@ -42,27 +42,6 @@ function getUTMParams() {
 }
 
 /* =========================================================
-   FALLBACK INDIAN STATES LIST
-========================================================= */
-const DEFAULT_INDIAN_STATES = [
-  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
-  "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
-  "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram",
-  "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu",
-  "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
-  "Delhi", "Jammu and Kashmir", "Chandigarh", "Puducherry"
-];
-
-/* =========================================================
-   FALLBACK POPULAR COURSES LIST
-========================================================= */
-const DEFAULT_COURSES = [
-  "Online MBA", "Online MCA", "Online BBA", "Online BCA", "Online B.Com",
-  "Online M.Com", "Online MA", "Online BA", "Online M.Sc", "Online B.Sc",
-  "Executive MBA", "Data Science", "Digital Marketing", "Artificial Intelligence"
-];
-
-/* =========================================================
    CRISP INDIAN TRICOLOR SVG ICON
 ========================================================= */
 const IndiaFlagIcon = () => (
@@ -99,8 +78,8 @@ export default function ModalOTP({
   const [resendTimer, setResendTimer] = useState(30);
   const [canResend, setCanResend] = useState(false);
   const [contextPayload, setContextPayload] = useState(null);
-  const [stateOptions, setStateOptions] = useState(DEFAULT_INDIAN_STATES);
-  const [courseOptions, setCourseOptions] = useState(DEFAULT_COURSES);
+  const [stateOptions, setStateOptions] = useState([]);
+  const [courseOptions, setCourseOptions] = useState([]);
 
   // Fetch States from backend
   useEffect(() => {
