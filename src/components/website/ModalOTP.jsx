@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Modal, message as staticMessage, App } from "antd";
+import { message as staticMessage, App } from "antd";
 import {
   ArrowLeft,
   X,
@@ -190,6 +190,25 @@ export default function ModalOTP({
       window.removeEventListener("open-counselling-modal", handleCustomEvent);
     };
   }, [triggerId]);
+
+  // Lock body scroll and listen for Escape key when modal is open
+  useEffect(() => {
+    if (!isOpen) return;
+
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        handleClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen]);
 
   const handleClose = () => {
     setIsOpen(false);
@@ -435,54 +454,30 @@ export default function ModalOTP({
     }
   };
 
-  return (
-    <>
-      <style jsx global>{`
-        .counselling-otp-modal .ant-modal-content {
-          padding: 0 !important;
-          overflow: hidden !important;
-          border-radius: 1.25rem !important;
-        }
-        .counselling-otp-modal .ant-modal-body {
-          padding: 0 !important;
-          margin: 0 !important;
-        }
-      `}</style>
+  if (!isOpen) return null;
 
-      <Modal
-        id={triggerId}
-        open={isOpen}
-        onCancel={handleClose}
-        destroyOnHidden
-        footer={null}
-        closable={false}
-        centered
-        width={720}
-        className="counselling-otp-modal [&_.ant-modal-content]:p-0! [&_.ant-modal-content]:overflow-hidden! [&_.ant-modal-content]:rounded-2xl! [&_.ant-modal-body]:p-0! [&_.ant-modal-body]:m-0! p-0"
-        styles={{
-          content: {
-            padding: 0,
-            borderRadius: "1.25rem",
-            overflow: "hidden",
-            boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
-          },
-          body: {
-            padding: 0,
-            margin: 0,
-          },
-        }}
+  return (
+    <div
+      id={triggerId}
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs transition-opacity animate-in fade-in duration-200"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) handleClose();
+      }}
+    >
+      <div
+        className="relative w-full max-w-[390px] md:max-w-[740px] bg-white rounded-2xl md:rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row font-sans m-auto animate-in zoom-in-95 duration-200"
+        onClick={(e) => e.stopPropagation()}
       >
-        <div className="w-full bg-white flex flex-col md:flex-row overflow-hidden font-sans">
-          {/* ==========================================
-              💻 DESKTOP LEFT BANNER (hidden on mobile)
-          ========================================== */}
-          <div className="hidden md:block md:w-[42%] bg-[#1E6FD9] relative overflow-hidden shrink-0 self-stretch">
-            <img
-              src="/counseling-modal-desktop.png"
-              alt="Learn Online. Grow Your Career."
-              className="w-full h-full object-cover object-center block"
-            />
-          </div>
+        {/* ==========================================
+            💻 DESKTOP LEFT BANNER (hidden on mobile)
+        ========================================== */}
+        <div className="hidden md:block md:w-[42%] bg-[#1E6FD9] relative overflow-hidden shrink-0 self-stretch">
+          <img
+            src="/counseling-modal-desktop.png"
+            alt="Learn Online. Grow Your Career."
+            className="w-full h-full object-cover object-center block"
+          />
+        </div>
 
         {/* ==========================================
             📱 MOBILE TOP BANNER (hidden on desktop)
@@ -858,7 +853,6 @@ export default function ModalOTP({
           )}
         </div>
       </div>
-    </Modal>
-  </>
-);
+    </div>
+  );
 }
