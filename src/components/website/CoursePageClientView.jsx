@@ -364,7 +364,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
     });
 
     return list.map((row, idx) => ({
-      key: row.category || idx,
+      key: row._id ? `${row._id}-${idx}` : `${row.category || "cat"}-${idx}`,
       category: row.category,
       details: row.details,
     }));
@@ -420,7 +420,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
   const modeComparisonDataSource = useMemo(
     () =>
       (comparisonRows || []).map((row, idx) => ({
-        key: row.category || idx,
+        key: row._id ? `${row._id}-${idx}` : `${row.category || "mode"}-${idx}`,
         category: row.category,
         online: row.online,
         regular: row.regular,
@@ -452,7 +452,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
   const syllabusDataSource = useMemo(
     () =>
       (currentSemesterData?.subjects || []).map((subj, idx) => ({
-        key: subj.subjectName || subj.name || idx,
+        key: subj._id ? `${subj._id}-${idx}` : `${subj.subjectName || subj.name || "subject"}-${idx}`,
         subjectName: subj.subjectName || subj.name || "",
         focusArea: subj.focusArea || subj.description || "",
       })),
@@ -489,7 +489,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
   const careerLevelDataSource = useMemo(
     () =>
       (experienceLevels || []).map((lvl, idx) => ({
-        key: lvl.level || idx,
+        key: lvl._id ? `${lvl._id}-${idx}` : `${lvl.level || "lvl"}-${idx}`,
         level: lvl.level,
         jobRoles: lvl.jobRoles,
         salaryRange: lvl.salaryRange,
@@ -527,7 +527,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
   const careerJobRoleDataSource = useMemo(
     () =>
       (jobRolesList || []).map((job, idx) => ({
-        key: job.role || idx,
+        key: job._id ? `${job._id}-${idx}` : `${job.role || "job"}-${idx}`,
         role: job.role,
         desc: job.desc,
         salary: job.salary,
@@ -1518,11 +1518,11 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
 
                 {/* Semester Pill Tabs */}
                 <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-6">
-                  {syllabusData.map((sem) => {
+                  {syllabusData.map((sem, sIdx) => {
                     const isActive = activeSemester === sem.semesterNumber;
                     return (
                       <button
-                        key={sem.semesterNumber}
+                        key={sem._id ? `${sem._id}-${sIdx}` : `sem-${sem.semesterNumber || sIdx}-${sIdx}`}
                         type="button"
                         onClick={() => {
                           setActiveSemester(sem.semesterNumber);

@@ -1590,7 +1590,7 @@ export default function BlogClientView({
                                         }
                                         dataSource={sec.table.rows.map((row, idx) => ({
                                           ...row,
-                                          key: row.key || row._id || row.factor || row.name || row.col1 || idx,
+                                          key: row.key ? `${row.key}-${idx}` : (row._id ? `${row._id}-${idx}` : `${row.factor || row.name || row.col1 || "row"}-${idx}`),
                                         }))}
                                         pagination={false}
                                         size="small"
