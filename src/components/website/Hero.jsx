@@ -536,7 +536,7 @@ export function Hero({ initialHeroData = null }) {
                   const isCompareUni = /^(compare|50\+\s*universities|choose\s+with|confidence\.?)$/i.test(token.content.trim());
 
                   let className = isMobile
-                    ? "text-[12.5px] xs:text-[14.5px] font-black leading-[1.15] font-sans inline"
+                    ? "text-[14.5px] xs:text-[16.5px] font-black leading-[1.16] font-sans inline"
                     : "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.15] tracking-tight m-0 font-sans inline";
 
                   if (isLargeNum) {
@@ -581,7 +581,7 @@ export function Hero({ initialHeroData = null }) {
                 // Default text token
                 const isCompareUni = /^(compare|choose\s+with|confidence\.?)$/i.test(token.content.trim());
                 let textClassName = isMobile
-                  ? (isCompareUni ? "text-[18px] xs:text-[21px] font-black tracking-tight font-sans block" : "text-[12.5px] xs:text-[14.5px] font-black leading-[1.15] font-sans inline")
+                  ? (isCompareUni ? "text-[18px] xs:text-[21px] font-black tracking-tight font-sans block" : "text-[14.5px] xs:text-[16.5px] font-black leading-[1.16] font-sans inline")
                   : "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.15] tracking-tight m-0 font-sans inline";
 
                 return (
@@ -741,7 +741,7 @@ export function Hero({ initialHeroData = null }) {
             <span
               key={lIdx}
               style={{ color: defaultColor }}
-              className="text-[12.5px] xs:text-[14.5px] font-black leading-[1.15] tracking-tight m-0 font-sans block"
+              className="text-[14.5px] xs:text-[16.5px] font-black leading-[1.16] tracking-tight m-0 font-sans block"
             >
               {lineContent}
             </span>
@@ -873,7 +873,7 @@ export function Hero({ initialHeroData = null }) {
 
         {/* 📱 MOBILE HERO VIEW (strictly md:hidden) */}
         <Container className="md:hidden relative z-10 w-full h-full flex items-center pointer-events-auto">
-          <div className="w-[50%] xs:w-[48%] max-w-[195px] xs:max-w-[220px] flex flex-col justify-center items-start space-y-1 xs:space-y-1.5 z-10 py-1.5 xs:py-2">
+          <div className="w-[54%] xs:w-[50%] max-w-[215px] xs:max-w-[235px] flex flex-col justify-center items-start space-y-1 xs:space-y-1.5 z-10 py-1.5 xs:py-2">
             {renderMobileSlideBadge(mobileBadgeText, isLight)}
             {renderMobileSlideHeading(mobileTitle, highlightText, isLight, titleColor)}
 
