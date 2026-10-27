@@ -104,7 +104,7 @@ export default function ModalOTP({
           if (names.length > 0) setStateOptions(names);
         }
       })
-      .catch(() => {});
+      .catch(() => { });
     return () => {
       isMounted = false;
     };
