@@ -507,18 +507,21 @@ export function Hero({ initialHeroData = null }) {
             <div key={lIdx} className="flex flex-wrap items-baseline gap-x-1.5 leading-none">
               {tokens.map((token, tIdx) => {
                 if (token.type === "outline") {
+                  const isSamman = /^samman$/i.test(token.content.trim());
                   return (
                     <span
                       key={tIdx}
                       style={{
-                        WebkitTextStroke: isMobile ? "1.2px " + token.color : "1.6px " + token.color,
+                        WebkitTextStroke: isMobile ? "1.2px " + token.color : "1.8px " + token.color,
                         color: "transparent",
-                        letterSpacing: "0.04em",
+                        letterSpacing: isSamman ? (isMobile ? "0.035em" : "0.04em") : "0.04em",
                       }}
                       className={
                         isMobile
-                          ? "text-[21px] xs:text-[25px] font-black tracking-tight leading-[0.95] font-sans uppercase block"
-                          : "text-2xl sm:text-3xl md:text-4xl lg:text-[44px] font-black tracking-tight leading-[0.95] font-sans uppercase block"
+                          ? (isSamman
+                            ? "text-[32px] xs:text-[38px] font-black leading-[0.9] font-sans uppercase block"
+                            : "text-[24px] xs:text-[28px] font-black tracking-tight leading-[0.95] font-sans uppercase block")
+                          : "text-3xl sm:text-4xl md:text-5xl lg:text-[56px] font-black tracking-tight leading-[0.95] font-sans uppercase block"
                       }
                     >
                       {token.content}
