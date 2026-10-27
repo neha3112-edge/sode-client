@@ -584,13 +584,10 @@ export function Hero({ initialHeroData = null }) {
   const renderSlideHeading = (rawTitle, highlightText, isLight, titleColor, isPrimary = true) => {
     if (!rawTitle) return null;
 
+    const cleanTitle = (rawTitle || "").replace(/\[\/?(#[0-9a-fA-F]{3,8}|color[^\]]*|outline[^\]]*|stroke[^\]]*|divider[^\]]*)\]/gi, "").replace(/\[\/?\]/g, "").trim();
     const defaultColor = titleColor || (isLight ? "#072C50" : "#ffffff");
-
-    if (hasFormattingTags(rawTitle)) {
-      return renderFormattedContent(rawTitle, defaultColor, false);
-    }
     const highlightColor = isLight ? "#965D2C" : "#F6DE95";
-    const lines = rawTitle.split("\n");
+    const lines = cleanTitle.split("\n");
     const HeadingTag = isPrimary ? "h1" : "h2";
 
     return (
@@ -619,47 +616,6 @@ export function Hero({ initialHeroData = null }) {
                 className="text-xs sm:text-sm md:text-[15px] lg:text-[16px] font-black tracking-wide leading-snug m-0 uppercase block"
               >
                 {line}
-              </span>
-            );
-          }
-
-          const isRashtraHeader = line.toUpperCase().includes("RASHTRA NIRMA");
-          const isGajendraSub = line.toUpperCase().includes("GAJENDRA CHAUHAN");
-
-          if (isRashtraHeader) {
-            return (
-              <div key={lIdx} className="flex flex-col space-y-0.5 m-0 leading-none">
-                <span style={{ color: "#965D2C" }} className="text-xl sm:text-2xl md:text-3xl lg:text-[34px] font-black tracking-tight leading-[0.95] font-sans uppercase block">
-                  RASHTRA NIRMATA
-                </span>
-                <span
-                  style={{
-                    WebkitTextStroke: "1.6px #965D2C",
-                    color: "transparent",
-                  }}
-                  className="text-2xl sm:text-3xl md:text-4xl lg:text-[44px] font-black tracking-tight leading-[0.95] font-sans uppercase block"
-                >
-                  SAMMAN
-                </span>
-                <div className="flex items-center gap-2 py-1">
-                  <span className="w-8 md:w-12 h-[1px] bg-[#64748B]/60 inline-block" />
-                  <span className="text-xs md:text-sm font-bold uppercase tracking-widest text-[#64748B]">
-                    FROM
-                  </span>
-                  <span className="w-8 md:w-12 h-[1px] bg-[#64748B]/60 inline-block" />
-                </div>
-              </div>
-            );
-          }
-
-          if (isGajendraSub) {
-            return (
-              <span
-                key={lIdx}
-                style={{ color: "#072C50" }}
-                className="text-sm sm:text-base md:text-lg lg:text-xl font-black tracking-wide leading-snug m-0 uppercase block"
-              >
-                SH. GAJENDRA CHAUHAN
               </span>
             );
           }
@@ -996,12 +952,25 @@ export function Hero({ initialHeroData = null }) {
           </div>
         )}
 
-        {/* ============================================================== */}
-        {/* 🌐 GLOBAL CONTAINER: Wraps both Mobile & Desktop text overlay   */}
-        {/* ============================================================== */}
-        <Container className="relative z-10 w-full h-full flex items-center pointer-events-auto">
-          {/* 📱 1. MOBILE HERO VIEW (strictly md:hidden) */}
-          <div className="md:hidden w-[50%] xs:w-[48%] max-w-[195px] xs:max-w-[220px] flex flex-col justify-center items-start space-y-1 xs:space-y-1.5 z-10 py-1.5 xs:py-2">
+        {/* Mobile slide click target (if slide has a primary button/action) */}
+        {(!primaryBtn?.text || primaryBtn?.enabled === false || primaryBtn?.is_modal) ? (
+          <button
+            type="button"
+            onClick={handlePrimaryClick}
+            aria-label={primaryBtn?.text || "Hero action"}
+            className="md:hidden absolute inset-0 z-20 w-full h-full bg-transparent border-0 cursor-pointer p-0 m-0"
+          />
+        ) : primaryBtn?.url ? (
+          <Link
+            href={primaryBtn.url}
+            aria-label={primaryBtn.text || "Hero action"}
+            className="md:hidden absolute inset-0 z-20 w-full h-full cursor-pointer"
+          />
+        ) : null}
+
+        {/* 📱 MOBILE HERO VIEW (strictly md:hidden) */}
+        <Container className="md:hidden relative z-10 w-full h-full flex items-center pointer-events-auto">
+          <div className="w-[50%] xs:w-[48%] max-w-[195px] xs:max-w-[220px] flex flex-col justify-center items-start space-y-1 xs:space-y-1.5 z-10 py-1.5 xs:py-2">
             {renderMobileSlideBadge(badgeText, isLight)}
             {renderMobileSlideHeading(title, highlightText, isLight, titleColor, index)}
 
@@ -1046,19 +1015,11 @@ export function Hero({ initialHeroData = null }) {
               </div>
             )}
           </div>
+        </Container>
 
-          {/* Tap anywhere on mobile slide to trigger modal/link if not clicking a button */}
-          {(!primaryBtn?.text || primaryBtn?.enabled === false || primaryBtn?.is_modal) && (
-            <button
-              type="button"
-              onClick={handlePrimaryClick}
-              aria-label={primaryBtn?.text || "Hero counselling"}
-              className="md:hidden absolute inset-0 z-5 w-full h-full bg-transparent border-0 cursor-pointer p-0 m-0"
-            />
-          )}
-
-          {/* 💻 2. DESKTOP HERO VIEW (hidden md:block - 100% UNTOUCHED) */}
-          <div className="hidden md:block w-full max-w-[70%] sm:max-w-[50%] md:max-w-[46%] lg:max-w-[44%] flex flex-col items-start space-y-1.5 sm:space-y-2 md:space-y-2.5">
+        {/* 💻 DESKTOP HERO VIEW (hidden md:block - 100% UNTOUCHED from 88bde7c) */}
+        <Container className="hidden md:block relative z-10 w-full pointer-events-auto">
+          <div className="w-full max-w-[70%] sm:max-w-[50%] md:max-w-[46%] lg:max-w-[44%] flex flex-col items-start space-y-1.5 sm:space-y-2 md:space-y-2.5">
             {renderSlideBadge(badgeText, isLight)}
             {renderSlideHeading(title, highlightText, isLight, titleColor, index === 0)}
 
@@ -1089,7 +1050,7 @@ export function Hero({ initialHeroData = null }) {
             )}
 
             <div className="flex flex-wrap items-center gap-2 pt-0.5 sm:pt-1">
-              {primaryBtn?.enabled !== false && primaryBtn?.text && (
+              {primaryBtn?.enabled !== false && (
                 primaryBtn?.is_modal ? (
                   <button
                     type="button"
@@ -1098,9 +1059,8 @@ export function Hero({ initialHeroData = null }) {
                       background: "linear-gradient(180deg, #F3CE7F 0%, #E7B85D 100%)",
                       color: "#072C50",
                       border: "1px solid rgba(226, 176, 83, 0.6)",
-                      boxShadow: isLight ? "0 4px 12px rgba(184, 139, 74, 0.35)" : "0 4px 12px rgba(0, 0, 0, 0.25)",
                     }}
-                    className="px-4 py-1.5 sm:px-5 sm:py-2 rounded-lg font-bold text-xs sm:text-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap"
+                    className="px-3.5 py-1.5 rounded-lg font-bold text-xs shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
                   >
                     {primaryBtn.text}
                   </button>
@@ -1111,28 +1071,35 @@ export function Hero({ initialHeroData = null }) {
                       background: "linear-gradient(180deg, #F3CE7F 0%, #E7B85D 100%)",
                       color: "#072C50",
                       border: "1px solid rgba(226, 176, 83, 0.6)",
-                      boxShadow: isLight ? "0 4px 12px rgba(184, 139, 74, 0.35)" : "0 4px 12px rgba(0, 0, 0, 0.25)",
                     }}
-                    className="px-4 py-1.5 sm:px-5 sm:py-2 rounded-lg font-bold text-xs sm:text-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap"
+                    className="px-3.5 py-1.5 rounded-lg font-bold text-xs shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
                   >
                     {primaryBtn.text}
                   </Link>
                 )
               )}
 
-              {secondaryBtn?.enabled && secondaryBtn?.text && (
+              {secondaryBtn?.enabled !== false && secondaryBtn?.text && (
                 secondaryBtn?.is_modal ? (
                   <button
                     type="button"
                     onClick={handleSecondaryClick}
-                    className="hidden sm:inline-block px-4 py-1.5 sm:px-4.5 sm:py-2 rounded-lg font-bold text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap border border-white/30 bg-transparent text-white hover:bg-white/10"
+                    style={{
+                      borderColor: isLight ? "#EEC471" : "rgba(255, 255, 255, 0.4)",
+                      color: isLight ? "#072C50" : "#ffffff",
+                    }}
+                    className="px-3 py-1.5 rounded-lg font-medium text-xs border hover:bg-white/10 transition-all cursor-pointer"
                   >
                     {secondaryBtn.text}
                   </button>
                 ) : (
                   <Link
                     href={secondaryBtn?.url || "/courses"}
-                    className="hidden sm:inline-block px-4 py-1.5 sm:px-4.5 sm:py-2 rounded-lg font-bold text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap border border-white/30 bg-transparent text-white hover:bg-white/10"
+                    style={{
+                      borderColor: isLight ? "#EEC471" : "rgba(255, 255, 255, 0.4)",
+                      color: isLight ? "#072C50" : "#ffffff",
+                    }}
+                    className="px-3 py-1.5 rounded-lg font-medium text-xs border hover:bg-white/10 transition-all cursor-pointer"
                   >
                     {secondaryBtn.text}
                   </Link>
