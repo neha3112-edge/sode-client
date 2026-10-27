@@ -514,12 +514,12 @@ export function Hero({ initialHeroData = null }) {
                       style={{
                         WebkitTextStroke: isMobile ? "1.2px " + token.color : "1.8px " + token.color,
                         color: "transparent",
-                        letterSpacing: isSamman ? (isMobile ? "0.035em" : "0.04em") : "0.04em",
+                        letterSpacing: isSamman ? (isMobile ? "0.012em" : "0.04em") : "0.04em",
                       }}
                       className={
                         isMobile
                           ? (isSamman
-                            ? "text-[32px] xs:text-[38px] font-black leading-[0.9] font-sans uppercase block"
+                            ? "text-[30.5px] xs:text-[35px] font-black leading-[0.9] font-sans uppercase block"
                             : "text-[24px] xs:text-[28px] font-black tracking-tight leading-[0.95] font-sans uppercase block")
                           : "text-3xl sm:text-4xl md:text-5xl lg:text-[56px] font-black tracking-tight leading-[0.95] font-sans uppercase block"
                       }
@@ -560,7 +560,7 @@ export function Hero({ initialHeroData = null }) {
                       : "text-xs sm:text-sm md:text-base lg:text-[18px] font-black tracking-wide leading-snug uppercase block pt-0.5";
                   } else if (isRashtra) {
                     className = isMobile
-                      ? "text-[15px] xs:text-[18px] font-black tracking-tight leading-[0.95] font-sans uppercase block"
+                      ? "text-[16px] xs:text-[18.5px] font-black tracking-tight leading-[0.95] font-sans uppercase block"
                       : "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.15] tracking-tight font-sans block";
                   } else if (isGajendra) {
                     className = isMobile
