@@ -436,38 +436,53 @@ export default function ModalOTP({
   };
 
   return (
-    <Modal
-      id={triggerId}
-      open={isOpen}
-      onCancel={handleClose}
-      destroyOnHidden
-      footer={null}
-      closable={false}
-      centered
-      width={720}
-      styles={{
-        content: {
-          padding: 0,
-          borderRadius: "1.25rem",
-          overflow: "hidden",
-          boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
-        },
-        body: {
-          padding: 0,
-        },
-      }}
-    >
-      <div className="w-full bg-white flex flex-col md:flex-row overflow-hidden font-sans">
-        {/* ==========================================
-            💻 DESKTOP LEFT BANNER (hidden on mobile)
-        ========================================== */}
-        <div className="hidden md:block md:w-[42%] bg-[#1E6FD9] relative overflow-hidden shrink-0">
-          <img
-            src="/counseling-modal-desktop.png"
-            alt="Learn Online. Grow Your Career."
-            className="w-full h-full object-cover object-center block"
-          />
-        </div>
+    <>
+      <style jsx global>{`
+        .counselling-otp-modal .ant-modal-content {
+          padding: 0 !important;
+          overflow: hidden !important;
+          border-radius: 1.25rem !important;
+        }
+        .counselling-otp-modal .ant-modal-body {
+          padding: 0 !important;
+          margin: 0 !important;
+        }
+      `}</style>
+
+      <Modal
+        id={triggerId}
+        open={isOpen}
+        onCancel={handleClose}
+        destroyOnHidden
+        footer={null}
+        closable={false}
+        centered
+        width={720}
+        className="counselling-otp-modal [&_.ant-modal-content]:p-0! [&_.ant-modal-content]:overflow-hidden! [&_.ant-modal-content]:rounded-2xl! [&_.ant-modal-body]:p-0! [&_.ant-modal-body]:m-0! p-0"
+        styles={{
+          content: {
+            padding: 0,
+            borderRadius: "1.25rem",
+            overflow: "hidden",
+            boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+          },
+          body: {
+            padding: 0,
+            margin: 0,
+          },
+        }}
+      >
+        <div className="w-full bg-white flex flex-col md:flex-row overflow-hidden font-sans">
+          {/* ==========================================
+              💻 DESKTOP LEFT BANNER (hidden on mobile)
+          ========================================== */}
+          <div className="hidden md:block md:w-[42%] bg-[#1E6FD9] relative overflow-hidden shrink-0 self-stretch">
+            <img
+              src="/counseling-modal-desktop.png"
+              alt="Learn Online. Grow Your Career."
+              className="w-full h-full object-cover object-center block"
+            />
+          </div>
 
         {/* ==========================================
             📱 MOBILE TOP BANNER (hidden on desktop)
@@ -844,5 +859,6 @@ export default function ModalOTP({
         </div>
       </div>
     </Modal>
-  );
+  </>
+);
 }
