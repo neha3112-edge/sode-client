@@ -265,8 +265,8 @@ export default function ModalOTP({
     if (loading) return;
 
     try {
-      await form.validateFields(["otp"]);
-      const otpVal = form.getFieldValue("otp");
+      const values = await form.validateFields(["otp"]);
+      const otpVal = values?.otp || form.getFieldValue("otp");
       const cleanPhone = phone || String(form.getFieldValue("phone") || "").replace(/\D/g, "").slice(-10);
 
       setLoading(true);
@@ -443,28 +443,28 @@ export default function ModalOTP({
         {/* ==========================================
             💻 DESKTOP LEFT BANNER (hidden on mobile, uses next/image)
         ========================================== */}
-        <div className="hidden md:block md:w-[42%] bg-[#1E6FD9] relative overflow-hidden shrink-0 self-stretch min-h-[400px]">
+        <div className="hidden md:block md:w-[42%] relative shrink-0 self-start">
           <Image
             src="/counseling-modal-desktop.png"
             alt="Learn Online. Grow Your Career."
-            fill
-            sizes="(max-width: 768px) 100vw, 42vw"
+            width={362}
+            height={632}
             priority
-            className="object-cover object-center"
+            className="w-full h-auto block"
           />
         </div>
 
         {/* ==========================================
             📱 MOBILE TOP BANNER (hidden on desktop, uses next/image)
         ========================================== */}
-        <div className="block md:hidden w-full bg-[#1E6FD9] relative overflow-hidden shrink-0 h-[140px]">
+        <div className="block md:hidden w-full relative shrink-0">
           <Image
             src="/counseling-modal-mobile.png"
             alt="Learn Online. Grow Your Career."
-            fill
-            sizes="100vw"
+            width={310}
+            height={103}
             priority
-            className="object-cover object-center"
+            className="w-full h-auto block"
           />
         </div>
 
@@ -607,18 +607,15 @@ export default function ModalOTP({
                   ]}
                   className="mb-0 text-center [&_.ant-form-item-control-input-content]:flex [&_.ant-form-item-control-input-content]:justify-center"
                 >
-                  <div className="flex justify-center w-full my-2">
-                    <Input.OTP
-                      length={6}
-                      size="large"
-                      autoFocus
-                      onChange={(text) => {
-                        form.setFieldValue("otp", text);
-                        form.setFields([{ name: "otp", errors: [] }]);
-                      }}
-                      className="[&_input]:w-10! [&_input]:h-11! sm:[&_input]:w-12! sm:[&_input]:h-13! [&_input]:text-base! sm:[&_input]:text-lg! [&_input]:font-black! [&_input]:rounded-xl!"
-                    />
-                  </div>
+                  <Input.OTP
+                    length={6}
+                    size="large"
+                    autoFocus
+                    onChange={() => {
+                      form.setFields([{ name: "otp", errors: [] }]);
+                    }}
+                    className="my-2 [&_input]:w-10! [&_input]:h-11! sm:[&_input]:w-12! sm:[&_input]:h-13! [&_input]:text-base! sm:[&_input]:text-lg! [&_input]:font-black! [&_input]:rounded-xl!"
+                  />
                 </Form.Item>
 
                 <div className="mt-3 mb-2 flex items-center justify-center text-xs font-semibold">
