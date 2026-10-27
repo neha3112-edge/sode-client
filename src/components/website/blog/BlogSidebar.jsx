@@ -393,7 +393,7 @@ export default function BlogSidebar({
       const res = await fetch("/api/otp/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: clean, purpose: "counselling", otp_length: 4 }),
+        body: JSON.stringify({ phone: clean, purpose: "counselling" }),
       });
 
       const data = await res.json().catch(() => null);
@@ -406,7 +406,7 @@ export default function BlogSidebar({
       setResendTimer(30);
       setCanResend(false);
       setOtpValue("");
-      message.success(data?.message || `OTP sent to your WhatsApp (+91 ${clean})`);
+      message.success(data?.message || `6-digit OTP sent to your WhatsApp (+91 ${clean})`);
     } catch (err) {
       console.error("[BlogSidebar handleSendOtp error]:", err);
       message.error(err.message || "Failed to send OTP");
@@ -418,8 +418,8 @@ export default function BlogSidebar({
   // Verify OTP handler
   const handleVerifyOtp = async (inputOtp) => {
     const code = String(inputOtp || otpValue || "").trim();
-    if (!code || code.length < 4) {
-      message.error("Please enter a valid 4-digit OTP");
+    if (!code || code.length < 6) {
+      message.error("Please enter a valid 6-digit OTP");
       return;
     }
     const rawNumber = leadForm.getFieldValue("number");
@@ -460,12 +460,12 @@ export default function BlogSidebar({
       const res = await fetch("/api/otp/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: cleanPhone, purpose: "counselling", otp_length: 4 }),
+        body: JSON.stringify({ phone: cleanPhone, purpose: "counselling" }),
       });
       const data = await res.json().catch(() => null);
       if (!res.ok || !data?.success) throw new Error(data?.message || "Failed to resend OTP");
 
-      message.success("OTP resent to your WhatsApp!");
+      message.success("6-digit OTP resent to your WhatsApp!");
       setResendTimer(30);
       setCanResend(false);
       setOtpValue("");
@@ -487,7 +487,7 @@ export default function BlogSidebar({
         return;
       }
       if (otpStep === "otp_sent") {
-        message.warning("Please enter the 4-digit OTP sent to your WhatsApp to verify your number.");
+        message.warning("Please enter the 6-digit OTP sent to your WhatsApp to verify your number.");
         return;
       }
       message.info("Please verify your mobile number with OTP first.");
@@ -909,21 +909,21 @@ export default function BlogSidebar({
           {otpStep === "otp_sent" && !isPhoneVerified && (
             <div className="mb-3.5 pt-1 pb-1 flex flex-col items-end">
               <span className="text-[11px] sm:text-xs text-slate-500 font-medium mb-1.5 text-right block">
-                Enter OTP Received in your Whatsapp
+                Enter 6-digit OTP Received in your Whatsapp
               </span>
               <div className="flex justify-end w-full">
                 <Input.OTP
-                  length={4}
+                  length={6}
                   size="large"
                   value={otpValue}
                   onChange={(val) => {
                     setOtpValue(val);
-                    if (val && String(val).length === 4) {
+                    if (val && String(val).length === 6) {
                       handleVerifyOtp(val);
                     }
                   }}
                   autoFocus
-                  className="[&_input]:w-9! [&_input]:h-10! sm:[&_input]:w-10! sm:[&_input]:h-11! [&_input]:rounded-lg! [&_input]:text-base! [&_input]:font-bold! [&_input]:border-slate-300!"
+                  className="[&_input]:w-7! [&_input]:h-9! sm:[&_input]:w-8! sm:[&_input]:h-10! [&_input]:rounded-lg! [&_input]:text-sm! sm:[&_input]:text-base! [&_input]:font-bold! [&_input]:border-slate-300!"
                 />
               </div>
               <div className="mt-2 text-right w-full">
