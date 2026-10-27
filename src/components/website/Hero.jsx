@@ -470,6 +470,47 @@ export function Hero({ initialHeroData = null }) {
             );
           }
 
+          const isRashtraHeader = line.toUpperCase().includes("RASHTRA NIRMA");
+          const isGajendraSub = line.toUpperCase().includes("GAJENDRA CHAUHAN");
+
+          if (isRashtraHeader) {
+            return (
+              <div key={lIdx} className="flex flex-col space-y-0.5 m-0 leading-none">
+                <span style={{ color: "#965D2C" }} className="text-xl sm:text-2xl md:text-3xl lg:text-[34px] font-black tracking-tight leading-[0.95] font-sans uppercase block">
+                  RASHTRA NIRMATA
+                </span>
+                <span
+                  style={{
+                    WebkitTextStroke: "1.6px #965D2C",
+                    color: "transparent",
+                  }}
+                  className="text-2xl sm:text-3xl md:text-4xl lg:text-[44px] font-black tracking-tight leading-[0.95] font-sans uppercase block"
+                >
+                  SAMMAN
+                </span>
+                <div className="flex items-center gap-2 py-1">
+                  <span className="w-8 md:w-12 h-[1px] bg-[#64748B]/60 inline-block" />
+                  <span className="text-xs md:text-sm font-bold uppercase tracking-widest text-[#64748B]">
+                    FROM
+                  </span>
+                  <span className="w-8 md:w-12 h-[1px] bg-[#64748B]/60 inline-block" />
+                </div>
+              </div>
+            );
+          }
+
+          if (isGajendraSub) {
+            return (
+              <span
+                key={lIdx}
+                style={{ color: "#072C50" }}
+                className="text-sm sm:text-base md:text-lg lg:text-xl font-black tracking-wide leading-snug m-0 uppercase block"
+              >
+                SH. GAJENDRA CHAUHAN
+              </span>
+            );
+          }
+
           let lineContent = line;
           if (highlightText && line.toLowerCase().includes(highlightText.toLowerCase())) {
             const idx = line.toLowerCase().indexOf(highlightText.toLowerCase());
@@ -629,26 +670,32 @@ export function Hero({ initialHeroData = null }) {
       );
     }
 
-    // 5️⃣ Slide 5: Rashtra Nirmata Samman (Honoured by Sh. Gajendra Chauhan)
+    // 5️⃣ Slide 5: Rashtra Nirmata Samman (Matches media_1793126795382_453c6988.png & media_1793126806473_d14fdc5d.png)
     if (lower.includes("rashtra nirmata") || lower.includes("gajendra")) {
       return (
         <div className="flex flex-col space-y-0.5 m-0">
           <div className="flex flex-col leading-none">
-            <span className="text-[16px] xs:text-[19px] sm:text-[21px] font-black tracking-tight leading-[0.92] font-sans uppercase text-[#965D2C] block">
+            <span className="text-[15px] xs:text-[18px] font-black tracking-tight leading-[0.95] font-sans uppercase text-[#965D2C] block">
               RASHTRA NIRMATA
             </span>
-            <span className="text-[16px] xs:text-[19px] sm:text-[21px] font-black tracking-tight leading-[0.92] font-sans uppercase text-[#965D2C] block">
+            <span
+              style={{
+                WebkitTextStroke: "1.2px #965D2C",
+                color: "transparent",
+              }}
+              className="text-[21px] xs:text-[25px] font-black tracking-tight leading-[0.95] font-sans uppercase block"
+            >
               SAMMAN
             </span>
           </div>
           <div className="flex items-center gap-1.5 py-0.5">
-            <span className="w-5 xs:w-7 h-[1.5px] bg-[#965D2C]/50 inline-block" />
-            <span className="text-[8px] xs:text-[9px] font-black uppercase tracking-widest text-[#965D2C]">
+            <span className="w-5 xs:w-7 h-[1px] bg-[#64748B]/60 inline-block" />
+            <span className="text-[8px] xs:text-[9px] font-bold uppercase tracking-widest text-[#64748B]">
               FROM
             </span>
-            <span className="w-5 xs:w-7 h-[1.5px] bg-[#965D2C]/50 inline-block" />
+            <span className="w-5 xs:w-7 h-[1px] bg-[#64748B]/60 inline-block" />
           </div>
-          <span className="text-[11px] xs:text-[12.5px] font-black tracking-tight uppercase text-[#072C50] block">
+          <span className="text-[11px] xs:text-[13px] font-black tracking-tight uppercase text-[#072C50] block">
             SH. GAJENDRA CHAUHAN
           </span>
         </div>
