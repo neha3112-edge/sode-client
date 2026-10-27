@@ -702,22 +702,40 @@ export function Hero({ initialHeroData = null }) {
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
         }}
-        className="relative w-full overflow-hidden aspect-[1.8/1] xs:aspect-[1.85/1] sm:aspect-[3.2/1] md:aspect-[3.8/1] lg:aspect-[4/1] min-h-[205px] sm:min-h-[220px] md:min-h-[240px] lg:min-h-[280px] max-h-[340px] flex items-center select-none py-2 sm:py-0"
+        className="relative w-full overflow-hidden aspect-[1.9/1] sm:aspect-[3.2/1] md:aspect-[3.8/1] lg:aspect-[4/1] min-h-[200px] sm:min-h-[220px] md:min-h-[240px] lg:min-h-[280px] max-h-[340px] flex items-center select-none py-2 sm:py-0"
       >
-        {/* Desktop-only Background Banner Image (100% UNTOUCHED) */}
+        {/* Full-width banner image (Mobile & Desktop) */}
         {desktopBannerUrl && (
-          <div className="hidden md:block absolute inset-0 w-full h-full pointer-events-none select-none overflow-hidden">
-            <Image
-              src={desktopBannerUrl}
-              alt={title || "Hero banner"}
-              fill
-              priority={true}
-              loading="eager"
-              fetchPriority="high"
-              unoptimized
-              sizes="100vw"
-              className="object-cover object-center"
-            />
+          <div className="absolute inset-0 w-full h-full pointer-events-none select-none overflow-hidden">
+            <div className={`relative w-full h-full ${mobileBannerUrl && mobileBannerUrl !== desktopBannerUrl ? "hidden md:block" : "block"}`}>
+              <Image
+                src={desktopBannerUrl}
+                alt={title || "Hero banner"}
+                fill
+                priority={true}
+                loading="eager"
+                fetchPriority="high"
+                unoptimized
+                sizes={mobileBannerUrl && mobileBannerUrl !== desktopBannerUrl ? "(min-width: 768px) 100vw, 1px" : "100vw"}
+                className="object-cover object-center"
+              />
+            </div>
+
+            {mobileBannerUrl && mobileBannerUrl !== desktopBannerUrl && (
+              <div className="block md:hidden relative w-full h-full">
+                <Image
+                  src={mobileBannerUrl}
+                  alt={title || "Hero mobile banner"}
+                  fill
+                  priority={true}
+                  loading="eager"
+                  fetchPriority="high"
+                  unoptimized
+                  sizes="(max-width: 767px) 100vw, 1px"
+                  className="object-cover object-center"
+                />
+              </div>
+            )}
           </div>
         )}
 
@@ -725,8 +743,8 @@ export function Hero({ initialHeroData = null }) {
         {/* 📱 1. MOBILE HERO VIEW (strictly md:hidden, 0 impact on desktop) */}
         {/* ============================================================== */}
         <div className="md:hidden relative z-10 w-full h-full flex items-center px-3.5 xs:px-4 py-2">
-          {/* Mobile Left Text Container (58% width) */}
-          <div className="w-[58%] xs:w-[56%] flex flex-col justify-center items-start space-y-1.5 z-10">
+          {/* Mobile Left Text Container (58% width overlay) */}
+          <div className="w-[58%] xs:w-[56%] flex flex-col justify-center items-start space-y-1 xs:space-y-1.5 z-10">
             {renderMobileSlideBadge(badgeText, isLight)}
             {renderMobileSlideHeading(title, highlightText, isLight, titleColor, index)}
 
@@ -771,25 +789,6 @@ export function Hero({ initialHeroData = null }) {
               </div>
             )}
           </div>
-
-          {/* Mobile Right Cutout Model Image (44% width) */}
-          {mobileBannerUrl && (
-            <div className="absolute right-0 bottom-0 top-0 w-[44%] xs:w-[46%] h-full pointer-events-none select-none z-1 flex items-end justify-end overflow-hidden">
-              <div className="relative w-full h-full">
-                <Image
-                  src={mobileBannerUrl}
-                  alt={title || "Hero mobile model"}
-                  fill
-                  priority={true}
-                  loading="eager"
-                  fetchPriority="high"
-                  unoptimized
-                  sizes="(max-width: 767px) 50vw, 1px"
-                  className="object-contain object-bottom-right"
-                />
-              </div>
-            </div>
-          )}
 
           {/* Tap anywhere on mobile slide to trigger modal/link if not clicking a button */}
           {(!primaryBtn?.text || primaryBtn?.enabled === false || primaryBtn?.is_modal) && (
@@ -896,7 +895,7 @@ export function Hero({ initialHeroData = null }) {
   return (
     <section
       id="hero-section"
-      className="relative w-full overflow-hidden aspect-[1.8/1] xs:aspect-[1.85/1] sm:aspect-[3.2/1] md:aspect-[3.8/1] lg:aspect-[4/1] min-h-[205px] sm:min-h-[220px] md:min-h-[240px] lg:min-h-[280px] max-h-[340px]"
+      className="relative w-full overflow-hidden aspect-[1.9/1] sm:aspect-[3.2/1] md:aspect-[3.8/1] lg:aspect-[4/1] min-h-[200px] sm:min-h-[220px] md:min-h-[240px] lg:min-h-[280px] max-h-[340px]"
     >
       {isCarousel ? (
         <div className="relative w-full h-full group/hero">
