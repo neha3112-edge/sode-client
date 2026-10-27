@@ -476,6 +476,7 @@ export default function ModalOTP({
             form={form}
             layout="vertical"
             requiredMark={false}
+            validateTrigger="onSubmit"
             className="flex flex-col flex-1"
           >
             {/* ==========================================
@@ -494,6 +495,7 @@ export default function ModalOTP({
 
                 <Form.Item
                   name="phone"
+                  validateTrigger="onSubmit"
                   rules={[
                     { required: true, message: "Please enter your mobile number" },
                     {
@@ -514,6 +516,9 @@ export default function ModalOTP({
                     autoFocus
                     maxLength={10}
                     placeholder="Enter your mobile number"
+                    onChange={() => {
+                      form.setFields([{ name: "phone", errors: [] }]);
+                    }}
                     prefix={
                       <div className="flex items-center gap-1.5 pr-2.5 border-r border-slate-300 shrink-0 select-none mr-2">
                         <IndiaFlagIcon />
@@ -538,6 +543,7 @@ export default function ModalOTP({
                   name="consent"
                   valuePropName="checked"
                   initialValue={true}
+                  validateTrigger="onSubmit"
                   rules={[
                     {
                       validator: (_, val) =>
@@ -586,11 +592,20 @@ export default function ModalOTP({
 
                 <Form.Item
                   name="otp"
+                  validateTrigger="onSubmit"
                   rules={[
                     { required: true, message: "Please enter the complete OTP" },
-                    { min: 4, message: "Please enter a valid OTP" },
+                    {
+                      validator: (_, val) => {
+                        const str = String(val || "").trim();
+                        if (!str || str.length < 6) {
+                          return Promise.reject(new Error("Please enter a valid 6-digit OTP"));
+                        }
+                        return Promise.resolve();
+                      },
+                    },
                   ]}
-                  className="mb-0 flex justify-center"
+                  className="mb-0 text-center [&_.ant-form-item-control-input-content]:flex [&_.ant-form-item-control-input-content]:justify-center"
                 >
                   <div className="flex justify-center w-full my-2">
                     <Input.OTP
@@ -599,6 +614,7 @@ export default function ModalOTP({
                       autoFocus
                       onChange={(text) => {
                         form.setFieldValue("otp", text);
+                        form.setFields([{ name: "otp", errors: [] }]);
                       }}
                       className="[&_input]:w-10! [&_input]:h-11! sm:[&_input]:w-12! sm:[&_input]:h-13! [&_input]:text-base! sm:[&_input]:text-lg! [&_input]:font-black! [&_input]:rounded-xl!"
                     />
@@ -649,6 +665,7 @@ export default function ModalOTP({
 
                 <Form.Item
                   name="email"
+                  validateTrigger="onSubmit"
                   rules={[
                     { required: true, message: "Please enter your email address" },
                     { type: "email", message: "Please enter a valid email address" },
@@ -659,6 +676,7 @@ export default function ModalOTP({
                     type="email"
                     autoFocus
                     placeholder="Enter your Email Address"
+                    onChange={() => form.setFields([{ name: "email", errors: [] }])}
                     prefix={<Mail size={16} className="text-slate-400 mr-2 shrink-0" />}
                     className="rounded-xl h-11 text-xs sm:text-sm font-semibold border-slate-300 hover:border-blue-500 focus:border-blue-600"
                   />
@@ -691,6 +709,7 @@ export default function ModalOTP({
 
                 <Form.Item
                   name="name"
+                  validateTrigger="onSubmit"
                   rules={[
                     { required: true, message: "Please enter your full name" },
                     { min: 2, message: "Name must be at least 2 characters" },
@@ -701,6 +720,7 @@ export default function ModalOTP({
                     type="text"
                     autoFocus
                     placeholder="Enter your Name"
+                    onChange={() => form.setFields([{ name: "name", errors: [] }])}
                     prefix={<User size={16} className="text-slate-400 mr-2 shrink-0" />}
                     className="rounded-xl h-11 text-xs sm:text-sm font-semibold border-slate-300 hover:border-blue-500 focus:border-blue-600"
                   />
@@ -733,6 +753,7 @@ export default function ModalOTP({
 
                 <Form.Item
                   name="state"
+                  validateTrigger="onSubmit"
                   rules={[{ required: true, message: "Please select your state" }]}
                   className="mb-0"
                 >
@@ -740,6 +761,7 @@ export default function ModalOTP({
                     showSearch
                     autoFocus
                     placeholder="Select State"
+                    onChange={() => form.setFields([{ name: "state", errors: [] }])}
                     prefix={<MapPin size={16} className="text-slate-400 mr-1 shrink-0" />}
                     className="w-full h-11 rounded-xl text-xs sm:text-sm font-semibold [&_.ant-select-selector]:rounded-xl! [&_.ant-select-selector]:h-11! [&_.ant-select-selector]:flex! [&_.ant-select-selector]:items-center!"
                     options={stateOptions.map((st) => ({ label: st, value: st }))}
@@ -765,3 +787,4 @@ export default function ModalOTP({
     </div>
   );
 }
+
