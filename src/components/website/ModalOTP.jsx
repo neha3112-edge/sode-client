@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import { message as staticMessage, App } from "antd";
+import React, { useState, useEffect } from "react";
+import Image from "next/image";
+import { Form, Input, Button, Checkbox, Select, message as staticMessage, App } from "antd";
 import {
   ArrowLeft,
   X,
@@ -9,7 +10,6 @@ import {
   User,
   MapPin,
   ArrowRight,
-  ChevronDown,
 } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 
@@ -78,33 +78,18 @@ export default function ModalOTP({
   const pathname = usePathname();
   const antdApp = App.useApp();
   const message = antdApp?.message || staticMessage;
+  const [form] = Form.useForm();
 
   const [isOpen, setIsOpen] = useState(Boolean(controlledOpen));
   // Steps: 'phone' (1) -> 'otp' (2) -> 'email' (3) -> 'name' (4) -> 'state' (5)
   const [step, setStep] = useState("phone");
 
-  // Form Fields
   const [phone, setPhone] = useState("");
-  const [otpDigits, setOtpDigits] = useState(["", "", "", "", "", ""]);
-  const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
-  const [selectedState, setSelectedState] = useState("");
-  const [consent, setConsent] = useState(true);
-
-  // Validation Errors
-  const [phoneError, setPhoneError] = useState("");
-  const [otpError, setOtpError] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [nameError, setNameError] = useState("");
-  const [stateError, setStateError] = useState("");
-
   const [loading, setLoading] = useState(false);
   const [resendTimer, setResendTimer] = useState(30);
   const [canResend, setCanResend] = useState(false);
   const [contextPayload, setContextPayload] = useState(null);
   const [stateOptions, setStateOptions] = useState(DEFAULT_INDIAN_STATES);
-
-  const otpInputRefs = useRef([]);
 
   // Fetch States from backend
   useEffect(() => {
@@ -146,15 +131,6 @@ export default function ModalOTP({
       if (interval) clearInterval(interval);
     };
   }, [step, resendTimer]);
-
-  // Auto-focus first OTP digit when entering otp step
-  useEffect(() => {
-    if (step === "otp") {
-      setTimeout(() => {
-        otpInputRefs.current[0]?.focus();
-      }, 150);
-    }
-  }, [step]);
 
   // Global event listener for modal triggers
   useEffect(() => {
@@ -217,15 +193,7 @@ export default function ModalOTP({
     setIsOpen(false);
     setStep("phone");
     setPhone("");
-    setOtpDigits(["", "", "", "", "", ""]);
-    setEmail("");
-    setName("");
-    setSelectedState("");
-    setPhoneError("");
-    setOtpError("");
-    setEmailError("");
-    setNameError("");
-    setStateError("");
+    form.resetFields();
     setContextPayload(null);
     if (onCancel) onCancel();
   };
@@ -245,7 +213,7 @@ export default function ModalOTP({
   ).trim();
 
   /* =========================================================
-     STEP 1: SEND OTP
+     STEP 1: SEND OTP (Antd Form)
   ========================================================= */
   const handleSendOtp = async (e) => {
     if (e) {
@@ -254,21 +222,12 @@ export default function ModalOTP({
     }
     if (loading) return;
 
-    setPhoneError("");
-
-    const clean = phone.replace(/\D/g, "").slice(-10);
-    if (!clean || clean.length !== 10 || !/^[6-9]\d{9}$/.test(clean)) {
-      setPhoneError("Please enter a valid 10-digit mobile number");
-      return;
-    }
-
-    if (!consent) {
-      setPhoneError("Please accept the consent terms to proceed");
-      return;
-    }
-
-    setLoading(true);
     try {
+      await form.validateFields(["phone", "consent"]);
+      const phoneVal = form.getFieldValue("phone");
+      const clean = String(phoneVal || "").replace(/\D/g, "").slice(-10);
+
+      setLoading(true);
       const res = await fetch("/api/otp/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -280,58 +239,24 @@ export default function ModalOTP({
         throw new Error(data?.message || "Failed to send OTP");
       }
 
+      setPhone(clean);
       message.success(data?.message || `OTP sent to +91 ${clean}`);
       setStep("otp");
       setResendTimer(30);
       setCanResend(false);
-      setOtpDigits(["", "", "", "", "", ""]);
+      form.setFieldValue("otp", "");
     } catch (err) {
+      if (err?.errorFields) return;
       console.error("[ModalOTP handleSendOtp error]:", err);
-      const errorMsg = err.message || "Something went wrong sending OTP";
-      setPhoneError(errorMsg);
-      message.error(errorMsg);
+      message.error(err.message || "Something went wrong sending OTP");
     } finally {
       setLoading(false);
     }
   };
 
   /* =========================================================
-     STEP 2: VERIFY OTP
+     STEP 2: VERIFY OTP (Antd Form)
   ========================================================= */
-  const handleOtpDigitChange = (index, value) => {
-    setOtpError("");
-    const char = value.slice(-1);
-    const newDigits = [...otpDigits];
-    newDigits[index] = char;
-    setOtpDigits(newDigits);
-
-    if (char && index < 5) {
-      otpInputRefs.current[index + 1]?.focus();
-    }
-  };
-
-  const handleOtpKeyDown = (index, e) => {
-    if (e.key === "Backspace" && !otpDigits[index] && index > 0) {
-      otpInputRefs.current[index - 1]?.focus();
-    } else if (e.key === "Enter") {
-      e.preventDefault();
-      handleVerifyOtp(e);
-    }
-  };
-
-  const handleOtpPaste = (e) => {
-    e.preventDefault();
-    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
-    if (!pasted) return;
-    const newDigits = [...otpDigits];
-    for (let i = 0; i < 6; i++) {
-      newDigits[i] = pasted[i] || "";
-    }
-    setOtpDigits(newDigits);
-    const lastIdx = Math.min(pasted.length, 5);
-    otpInputRefs.current[lastIdx]?.focus();
-  };
-
   const handleVerifyOtp = async (e) => {
     if (e) {
       e.preventDefault();
@@ -339,21 +264,16 @@ export default function ModalOTP({
     }
     if (loading) return;
 
-    setOtpError("");
-
-    const fullOtp = otpDigits.join("");
-    if (!fullOtp || fullOtp.length < 4) {
-      setOtpError("Please enter the complete OTP");
-      return;
-    }
-
-    setLoading(true);
     try {
-      const cleanPhone = phone.replace(/\D/g, "").slice(-10);
+      await form.validateFields(["otp"]);
+      const otpVal = form.getFieldValue("otp");
+      const cleanPhone = phone || String(form.getFieldValue("phone") || "").replace(/\D/g, "").slice(-10);
+
+      setLoading(true);
       const res = await fetch("/api/otp/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: cleanPhone, otp: fullOtp }),
+        body: JSON.stringify({ phone: cleanPhone, otp: String(otpVal).trim() }),
       });
 
       const data = await res.json();
@@ -364,19 +284,20 @@ export default function ModalOTP({
       message.success("OTP verified successfully!");
       setStep("email");
     } catch (err) {
-      const errorMsg = err.message || "Invalid OTP. Please check and try again.";
-      setOtpError(errorMsg);
-      message.error(errorMsg);
+      if (err?.errorFields) return;
+      message.error(err.message || "Invalid OTP. Please check and try again.");
     } finally {
       setLoading(false);
     }
   };
 
   const handleResendOtp = async () => {
-    if (!canResend || !phone) return;
+    if (!canResend) return;
+    const cleanPhone = phone || String(form.getFieldValue("phone") || "").replace(/\D/g, "").slice(-10);
+    if (!cleanPhone) return;
+
     setLoading(true);
     try {
-      const cleanPhone = phone.replace(/\D/g, "").slice(-10);
       const res = await fetch("/api/otp/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -387,8 +308,7 @@ export default function ModalOTP({
       message.success("OTP resent successfully!");
       setResendTimer(30);
       setCanResend(false);
-      setOtpDigits(["", "", "", "", "", ""]);
-      otpInputRefs.current[0]?.focus();
+      form.setFieldValue("otp", "");
     } catch (err) {
       message.error(err.message || "Failed to resend OTP");
     } finally {
@@ -399,35 +319,33 @@ export default function ModalOTP({
   /* =========================================================
      STEP 3: EMAIL ADDRESS
   ========================================================= */
-  const handleNextToName = (e) => {
+  const handleNextToName = async (e) => {
     if (e) {
       e.preventDefault();
       e.stopPropagation();
     }
-    setEmailError("");
-    const cleanEmail = email.trim();
-    if (!cleanEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
-      setEmailError("Please enter a valid email address");
-      return;
+    try {
+      await form.validateFields(["email"]);
+      setStep("name");
+    } catch (err) {
+      // Handled by Antd Form
     }
-    setStep("name");
   };
 
   /* =========================================================
      STEP 4: FULL NAME
   ========================================================= */
-  const handleNextToState = (e) => {
+  const handleNextToState = async (e) => {
     if (e) {
       e.preventDefault();
       e.stopPropagation();
     }
-    setNameError("");
-    const cleanName = name.trim();
-    if (!cleanName || cleanName.length < 2) {
-      setNameError("Please enter your full name");
-      return;
+    try {
+      await form.validateFields(["name"]);
+      setStep("state");
+    } catch (err) {
+      // Handled by Antd Form
     }
-    setStep("state");
   };
 
   /* =========================================================
@@ -440,21 +358,17 @@ export default function ModalOTP({
     }
     if (loading) return;
 
-    setStateError("");
-
-    if (!selectedState) {
-      setStateError("Please select your state");
-      return;
-    }
-
-    setLoading(true);
     try {
-      const cleanPhone = phone.replace(/\D/g, "").slice(-10);
+      await form.validateFields(["state"]);
+      const values = form.getFieldsValue(true);
+      const cleanPhone = phone || String(values.phone || "").replace(/\D/g, "").slice(-10);
+
+      setLoading(true);
       const payload = {
         phone: cleanPhone,
-        name: name.trim(),
-        email: email.trim(),
-        state: selectedState,
+        name: String(values.name || "").trim(),
+        email: String(values.email || "").trim(),
+        state: values.state,
         university_name: resolvedUni,
         form_name: contextPayload?.action || contextPayload?.title || "Book 1:1 Free Counseling",
         source: contextPayload?.source || "SODE",
@@ -477,6 +391,7 @@ export default function ModalOTP({
       handleClose();
       router.push("/thank-you");
     } catch (err) {
+      if (err?.errorFields) return;
       console.error("Submit error:", err);
       handleClose();
       router.push("/thank-you");
@@ -526,24 +441,30 @@ export default function ModalOTP({
         )}
 
         {/* ==========================================
-            💻 DESKTOP LEFT BANNER (hidden on mobile)
+            💻 DESKTOP LEFT BANNER (hidden on mobile, uses next/image)
         ========================================== */}
-        <div className="hidden md:block md:w-[42%] bg-[#1E6FD9] relative overflow-hidden shrink-0 self-stretch">
-          <img
+        <div className="hidden md:block md:w-[42%] bg-[#1E6FD9] relative overflow-hidden shrink-0 self-stretch min-h-[400px]">
+          <Image
             src="/counseling-modal-desktop.png"
             alt="Learn Online. Grow Your Career."
-            className="w-full h-full object-cover object-center block"
+            fill
+            sizes="(max-width: 768px) 100vw, 42vw"
+            priority
+            className="object-cover object-center"
           />
         </div>
 
         {/* ==========================================
-            📱 MOBILE TOP BANNER (hidden on desktop)
+            📱 MOBILE TOP BANNER (hidden on desktop, uses next/image)
         ========================================== */}
-        <div className="block md:hidden w-full bg-[#1E6FD9] relative overflow-hidden shrink-0 max-h-[145px]">
-          <img
+        <div className="block md:hidden w-full bg-[#1E6FD9] relative overflow-hidden shrink-0 h-[140px]">
+          <Image
             src="/counseling-modal-mobile.png"
             alt="Learn Online. Grow Your Career."
-            className="w-full h-full object-cover object-center block"
+            fill
+            sizes="100vw"
+            priority
+            className="object-cover object-center"
           />
         </div>
 
@@ -551,80 +472,81 @@ export default function ModalOTP({
             FORM CONTENT (Right Side Desktop / Bottom Mobile)
         ========================================== */}
         <div className="w-full md:w-[58%] p-5 sm:p-7 md:p-8 flex flex-col justify-center relative bg-white">
-          {/* ==========================================
-              STEP 1: PHONE NUMBER
-          ========================================== */}
-          {step === "phone" && (
-            <form onSubmit={handleSendOtp} className="flex flex-col flex-1">
-              <div className="text-center mb-5">
-                <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center">
-                  Book 1:1 Free Counseling
-                </h2>
-                <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center">
-                  Enter your mobile number to receive an OTP
-                </p>
-              </div>
+          <Form
+            form={form}
+            layout="vertical"
+            requiredMark={false}
+            className="flex flex-col flex-1"
+          >
+            {/* ==========================================
+                STEP 1: PHONE NUMBER
+            ========================================== */}
+            {step === "phone" && (
+              <>
+                <div className="text-center mb-5">
+                  <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center">
+                    Book 1:1 Free Counseling
+                  </h2>
+                  <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center">
+                    Enter your mobile number to receive an OTP
+                  </p>
+                </div>
 
-              <div>
-                {/* Phone Input Box */}
-                <div
-                  className={`flex items-center rounded-xl border bg-white px-3 py-2.5 transition-all shadow-xs ${
-                    phoneError
-                      ? "border-rose-400 ring-2 ring-rose-100"
-                      : "border-slate-300 focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-100"
-                  }`}
+                <Form.Item
+                  name="phone"
+                  rules={[
+                    { required: true, message: "Please enter your mobile number" },
+                    {
+                      validator: (_, value) => {
+                        const clean = String(value || "").replace(/\D/g, "").slice(-10);
+                        if (!clean || clean.length !== 10 || !/^[6-9]\d{9}$/.test(clean)) {
+                          return Promise.reject(new Error("Please enter a valid 10-digit mobile number"));
+                        }
+                        return Promise.resolve();
+                      },
+                    },
+                  ]}
+                  className="mb-0"
                 >
-                  <div className="flex items-center gap-1.5 pr-2.5 border-r border-slate-300 shrink-0 select-none">
-                    <IndiaFlagIcon />
-                    <span className="text-xs sm:text-sm font-bold text-slate-800 tracking-wide">
-                      +91
-                    </span>
-                  </div>
-
-                  <input
+                  <Input
                     type="tel"
                     inputMode="numeric"
                     autoFocus
                     maxLength={10}
-                    value={phone}
-                    onChange={(e) => {
-                      setPhone(e.target.value.replace(/\D/g, "").slice(0, 10));
-                      setPhoneError("");
-                    }}
                     placeholder="Enter your mobile number"
-                    className="w-full pl-3 text-xs sm:text-sm font-semibold text-slate-800 outline-none placeholder:text-slate-400 placeholder:font-normal bg-transparent"
+                    prefix={
+                      <div className="flex items-center gap-1.5 pr-2.5 border-r border-slate-300 shrink-0 select-none mr-2">
+                        <IndiaFlagIcon />
+                        <span className="text-xs sm:text-sm font-bold text-slate-800">+91</span>
+                      </div>
+                    }
+                    className="rounded-xl h-11 text-xs sm:text-sm font-semibold border-slate-300 hover:border-blue-500 focus:border-blue-600"
                   />
-                </div>
-                {phoneError && (
-                  <p className="text-[11px] text-rose-500 font-medium mt-1.5 ml-1 text-center">
-                    {phoneError}
-                  </p>
-                )}
+                </Form.Item>
 
-                {/* Action Button */}
-                <button
-                  type="submit"
-                  disabled={loading}
+                <Button
+                  type="primary"
+                  loading={loading}
                   onClick={handleSendOtp}
-                  className="w-full mt-4 py-2.5 sm:py-3 px-4 rounded-xl font-bold text-sm sm:text-base text-white bg-[#1A73E8] hover:bg-[#1565C0] active:scale-[0.99] transition-all flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed border-none"
+                  className="w-full mt-4 h-11 rounded-xl font-bold text-sm sm:text-base text-white bg-[#1A73E8] hover:bg-[#1565C0]! border-none flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 cursor-pointer"
                 >
                   {loading ? "Sending OTP..." : "Get OTP"}
                   {!loading && <ArrowRight size={16} className="stroke-[2.5]" />}
-                </button>
+                </Button>
 
-                {/* Consent & Disclaimer */}
-                <div className="mt-3.5 flex items-start gap-2 text-left">
-                  <input
-                    type="checkbox"
-                    id="modal-consent-checkbox"
-                    checked={consent}
-                    onChange={(e) => setConsent(e.target.checked)}
-                    className="mt-0.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer h-3.5 w-3.5 shrink-0"
-                  />
-                  <label
-                    htmlFor="modal-consent-checkbox"
-                    className="text-[9.5px] sm:text-[10.5px] text-slate-500 leading-snug cursor-pointer select-none"
-                  >
+                <Form.Item
+                  name="consent"
+                  valuePropName="checked"
+                  initialValue={true}
+                  rules={[
+                    {
+                      validator: (_, val) =>
+                        val ? Promise.resolve() : Promise.reject(new Error("Please accept the terms to proceed")),
+                    },
+                  ]}
+                  className="mt-3.5 mb-0"
+                >
+                  <Checkbox className="text-[9.5px] sm:text-[10.5px] text-slate-500 leading-snug">
                     I consent to share my details with UGC-DEB approved universities &amp; receive
                     updates via mail/mobile.{" "}
                     <a
@@ -632,67 +554,57 @@ export default function ModalOTP({
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-[#1A73E8] font-bold hover:underline"
+                      onClick={(e) => e.stopPropagation()}
                     >
                       Disclaimer
                     </a>
-                  </label>
-                </div>
-              </div>
-            </form>
-          )}
+                  </Checkbox>
+                </Form.Item>
+              </>
+            )}
 
-          {/* ==========================================
-              STEP 2: VERIFY OTP
-          ========================================== */}
-          {step === "otp" && (
-            <form onSubmit={handleVerifyOtp} className="flex flex-col flex-1">
-              <div className="text-center mb-5">
-                <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center">
-                  Verify Your Number
-                </h2>
-                <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center">
-                  We've sent a 6-digit OTP to your WhatsApp number +91 {phone}{" "}
-                  <button
-                    type="button"
-                    onClick={() => setStep("phone")}
-                    className="text-[#1A73E8] font-bold hover:underline cursor-pointer border-none bg-transparent p-0 inline ml-1"
-                  >
-                    Edit
-                  </button>
-                </p>
-              </div>
-
-              <div>
-                {/* OTP Boxes (6 digits) */}
-                <div className="flex items-center justify-between gap-1.5 sm:gap-2 my-2">
-                  {otpDigits.map((digit, idx) => (
-                    <input
-                      key={idx}
-                      ref={(el) => (otpInputRefs.current[idx] = el)}
-                      type="text"
-                      inputMode="numeric"
-                      maxLength={1}
-                      value={digit}
-                      onChange={(e) => handleOtpDigitChange(idx, e.target.value)}
-                      onKeyDown={(e) => handleOtpKeyDown(idx, e)}
-                      onPaste={handleOtpPaste}
-                      className={`w-10 h-11 xs:w-11 xs:h-12 sm:w-12 sm:h-13 text-center text-base sm:text-lg font-black rounded-xl border bg-white outline-none transition-all shadow-xs ${
-                        otpError
-                          ? "border-rose-400 ring-2 ring-rose-100"
-                          : digit
-                          ? "border-blue-600 bg-blue-50/20 text-blue-900"
-                          : "border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 text-slate-900"
-                      }`}
-                    />
-                  ))}
-                </div>
-                {otpError && (
-                  <p className="text-[11px] text-rose-500 font-medium mt-1.5 ml-1 text-center">
-                    {otpError}
+            {/* ==========================================
+                STEP 2: VERIFY OTP
+            ========================================== */}
+            {step === "otp" && (
+              <>
+                <div className="text-center mb-5">
+                  <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center">
+                    Verify Your Number
+                  </h2>
+                  <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center">
+                    We've sent a 6-digit OTP to your WhatsApp number +91 {phone}{" "}
+                    <button
+                      type="button"
+                      onClick={() => setStep("phone")}
+                      className="text-[#1A73E8] font-bold hover:underline cursor-pointer border-none bg-transparent p-0 inline ml-1"
+                    >
+                      Edit
+                    </button>
                   </p>
-                )}
+                </div>
 
-                {/* Resend OTP Timer */}
+                <Form.Item
+                  name="otp"
+                  rules={[
+                    { required: true, message: "Please enter the complete OTP" },
+                    { min: 4, message: "Please enter a valid OTP" },
+                  ]}
+                  className="mb-0 flex justify-center"
+                >
+                  <div className="flex justify-center w-full my-2">
+                    <Input.OTP
+                      length={6}
+                      size="large"
+                      autoFocus
+                      onChange={(text) => {
+                        form.setFieldValue("otp", text);
+                      }}
+                      className="[&_input]:w-10! [&_input]:h-11! sm:[&_input]:w-12! sm:[&_input]:h-13! [&_input]:text-base! sm:[&_input]:text-lg! [&_input]:font-black! [&_input]:rounded-xl!"
+                    />
+                  </div>
+                </Form.Item>
+
                 <div className="mt-3 mb-2 flex items-center justify-center text-xs font-semibold">
                   {canResend ? (
                     <button
@@ -709,195 +621,145 @@ export default function ModalOTP({
                   )}
                 </div>
 
-                {/* Verify Button */}
-                <button
-                  type="submit"
-                  disabled={loading}
+                <Button
+                  type="primary"
+                  loading={loading}
                   onClick={handleVerifyOtp}
-                  className="w-full mt-4 py-2.5 sm:py-3 px-4 rounded-xl font-bold text-sm sm:text-base text-white bg-[#1A73E8] hover:bg-[#1565C0] active:scale-[0.99] transition-all flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed border-none"
+                  className="w-full mt-4 h-11 rounded-xl font-bold text-sm sm:text-base text-white bg-[#1A73E8] hover:bg-[#1565C0]! border-none flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 cursor-pointer"
                 >
                   {loading ? "Verifying..." : "Verify & Continue"}
                   {!loading && <ArrowRight size={16} className="stroke-[2.5]" />}
-                </button>
-              </div>
-            </form>
-          )}
+                </Button>
+              </>
+            )}
 
-          {/* ==========================================
-              STEP 3: EMAIL ADDRESS
-          ========================================== */}
-          {step === "email" && (
-            <form onSubmit={handleNextToName} className="flex flex-col flex-1">
-              <div className="text-center mb-5">
-                <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center">
-                  Your Email Address
-                </h2>
-                <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center">
-                  Enter your email address to get updates and important information.
-                </p>
-              </div>
+            {/* ==========================================
+                STEP 3: EMAIL ADDRESS
+            ========================================== */}
+            {step === "email" && (
+              <>
+                <div className="text-center mb-5">
+                  <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center">
+                    Your Email Address
+                  </h2>
+                  <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center">
+                    Enter your email address to get updates and important information.
+                  </p>
+                </div>
 
-              <div>
-                {/* Email Input Box */}
-                <div
-                  className={`flex items-center rounded-xl border bg-white px-3.5 py-2.5 transition-all shadow-xs ${
-                    emailError
-                      ? "border-rose-400 ring-2 ring-rose-100"
-                      : "border-slate-300 focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-100"
-                  }`}
+                <Form.Item
+                  name="email"
+                  rules={[
+                    { required: true, message: "Please enter your email address" },
+                    { type: "email", message: "Please enter a valid email address" },
+                  ]}
+                  className="mb-0"
                 >
-                  <Mail size={16} className="text-slate-400 shrink-0 mr-2.5" />
-                  <input
+                  <Input
                     type="email"
                     autoFocus
-                    value={email}
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                      setEmailError("");
-                    }}
                     placeholder="Enter your Email Address"
-                    className="w-full text-xs sm:text-sm font-semibold text-slate-800 outline-none placeholder:text-slate-400 placeholder:font-normal bg-transparent"
+                    prefix={<Mail size={16} className="text-slate-400 mr-2 shrink-0" />}
+                    className="rounded-xl h-11 text-xs sm:text-sm font-semibold border-slate-300 hover:border-blue-500 focus:border-blue-600"
                   />
-                </div>
-                {emailError && (
-                  <p className="text-[11px] text-rose-500 font-medium mt-1.5 ml-1 text-center">
-                    {emailError}
-                  </p>
-                )}
+                </Form.Item>
 
-                {/* Action Button */}
-                <button
-                  type="submit"
+                <Button
+                  type="primary"
                   onClick={handleNextToName}
-                  className="w-full mt-5 py-2.5 sm:py-3 px-4 rounded-xl font-bold text-sm sm:text-base text-white bg-[#1A73E8] hover:bg-[#1565C0] active:scale-[0.99] transition-all flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 cursor-pointer border-none"
+                  className="w-full mt-5 h-11 rounded-xl font-bold text-sm sm:text-base text-white bg-[#1A73E8] hover:bg-[#1565C0]! border-none flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 cursor-pointer"
                 >
                   Continue
                   <ArrowRight size={16} className="stroke-[2.5]" />
-                </button>
-              </div>
-            </form>
-          )}
+                </Button>
+              </>
+            )}
 
-          {/* ==========================================
-              STEP 4: FULL NAME
-          ========================================== */}
-          {step === "name" && (
-            <form onSubmit={handleNextToState} className="flex flex-col flex-1">
-              <div className="text-center mb-5">
-                <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center">
-                  Your Full Name
-                </h2>
-                <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center">
-                  Please enter your full name as per your official ID or documents.
-                </p>
-              </div>
+            {/* ==========================================
+                STEP 4: FULL NAME
+            ========================================== */}
+            {step === "name" && (
+              <>
+                <div className="text-center mb-5">
+                  <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center">
+                    Your Full Name
+                  </h2>
+                  <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center">
+                    Please enter your full name as per your official ID or documents.
+                  </p>
+                </div>
 
-              <div>
-                {/* Name Input Box */}
-                <div
-                  className={`flex items-center rounded-xl border bg-white px-3.5 py-2.5 transition-all shadow-xs ${
-                    nameError
-                      ? "border-rose-400 ring-2 ring-rose-100"
-                      : "border-slate-300 focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-100"
-                  }`}
+                <Form.Item
+                  name="name"
+                  rules={[
+                    { required: true, message: "Please enter your full name" },
+                    { min: 2, message: "Name must be at least 2 characters" },
+                  ]}
+                  className="mb-0"
                 >
-                  <User size={16} className="text-slate-400 shrink-0 mr-2.5" />
-                  <input
+                  <Input
                     type="text"
                     autoFocus
-                    value={name}
-                    onChange={(e) => {
-                      setName(e.target.value);
-                      setNameError("");
-                    }}
                     placeholder="Enter your Name"
-                    className="w-full text-xs sm:text-sm font-semibold text-slate-800 outline-none placeholder:text-slate-400 placeholder:font-normal bg-transparent"
+                    prefix={<User size={16} className="text-slate-400 mr-2 shrink-0" />}
+                    className="rounded-xl h-11 text-xs sm:text-sm font-semibold border-slate-300 hover:border-blue-500 focus:border-blue-600"
                   />
-                </div>
-                {nameError && (
-                  <p className="text-[11px] text-rose-500 font-medium mt-1.5 ml-1 text-center">
-                    {nameError}
-                  </p>
-                )}
+                </Form.Item>
 
-                {/* Action Button */}
-                <button
-                  type="submit"
+                <Button
+                  type="primary"
                   onClick={handleNextToState}
-                  className="w-full mt-5 py-2.5 sm:py-3 px-4 rounded-xl font-bold text-sm sm:text-base text-white bg-[#1A73E8] hover:bg-[#1565C0] active:scale-[0.99] transition-all flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 cursor-pointer border-none"
+                  className="w-full mt-5 h-11 rounded-xl font-bold text-sm sm:text-base text-white bg-[#1A73E8] hover:bg-[#1565C0]! border-none flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 cursor-pointer"
                 >
                   Continue
                   <ArrowRight size={16} className="stroke-[2.5]" />
-                </button>
-              </div>
-            </form>
-          )}
+                </Button>
+              </>
+            )}
 
-          {/* ==========================================
-              STEP 5: YOUR STATE (FINAL STEP)
-          ========================================== */}
-          {step === "state" && (
-            <form onSubmit={handleFinalSubmit} className="flex flex-col flex-1">
-              <div className="text-center mb-5">
-                <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center">
-                  Your State
-                </h2>
-                <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center">
-                  Please select your state as per your official ID or documents.
-                </p>
-              </div>
-
-              <div>
-                {/* State Select Dropdown */}
-                <div
-                  className={`flex items-center rounded-xl border bg-white px-3.5 py-2.5 transition-all shadow-xs relative ${
-                    stateError
-                      ? "border-rose-400 ring-2 ring-rose-100"
-                      : "border-slate-300 focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-100"
-                  }`}
-                >
-                  <MapPin size={16} className="text-slate-400 shrink-0 mr-2.5" />
-                  <select
-                    autoFocus
-                    value={selectedState}
-                    onChange={(e) => {
-                      setSelectedState(e.target.value);
-                      setStateError("");
-                    }}
-                    className="w-full text-xs sm:text-sm font-semibold text-slate-800 outline-none bg-transparent cursor-pointer appearance-none pr-6"
-                  >
-                    <option value="" disabled>
-                      Select State
-                    </option>
-                    {stateOptions.map((st) => (
-                      <option key={st} value={st}>
-                        {st}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown
-                    size={16}
-                    className="text-slate-400 pointer-events-none absolute right-3"
-                  />
-                </div>
-                {stateError && (
-                  <p className="text-[11px] text-rose-500 font-medium mt-1.5 ml-1 text-center">
-                    {stateError}
+            {/* ==========================================
+                STEP 5: YOUR STATE (FINAL STEP)
+            ========================================== */}
+            {step === "state" && (
+              <>
+                <div className="text-center mb-5">
+                  <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center">
+                    Your State
+                  </h2>
+                  <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center">
+                    Please select your state as per your official ID or documents.
                   </p>
-                )}
+                </div>
 
-                {/* Final Submit Button */}
-                <button
-                  type="submit"
-                  disabled={loading}
+                <Form.Item
+                  name="state"
+                  rules={[{ required: true, message: "Please select your state" }]}
+                  className="mb-0"
+                >
+                  <Select
+                    showSearch
+                    autoFocus
+                    placeholder="Select State"
+                    prefix={<MapPin size={16} className="text-slate-400 mr-1 shrink-0" />}
+                    className="w-full h-11 rounded-xl text-xs sm:text-sm font-semibold [&_.ant-select-selector]:rounded-xl! [&_.ant-select-selector]:h-11! [&_.ant-select-selector]:flex! [&_.ant-select-selector]:items-center!"
+                    options={stateOptions.map((st) => ({ label: st, value: st }))}
+                    filterOption={(input, option) =>
+                      (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                    }
+                  />
+                </Form.Item>
+
+                <Button
+                  type="primary"
+                  loading={loading}
                   onClick={handleFinalSubmit}
-                  className="w-full mt-5 py-2.5 sm:py-3 px-4 rounded-xl font-bold text-sm sm:text-base text-white bg-[#1A73E8] hover:bg-[#1565C0] active:scale-[0.99] transition-all flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed border-none"
+                  className="w-full mt-5 h-11 rounded-xl font-bold text-sm sm:text-base text-white bg-[#1A73E8] hover:bg-[#1565C0]! border-none flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 cursor-pointer"
                 >
                   {loading ? "Submitting..." : "Submit"}
-                </button>
-              </div>
-            </form>
-          )}
+                </Button>
+              </>
+            )}
+          </Form>
         </div>
       </div>
     </div>
