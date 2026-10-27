@@ -167,10 +167,10 @@ export function Category({ categories = [], universities = [], programs = [], co
         setActiveCategory(null);
       }
       const courseSlug = getItemSlug(item);
-      if (item.targetUrl && !/[0-9a-fA-F]{24}/.test(item.targetUrl)) {
+      if (item.targetUrl && !/[0-9a-fA-F]{24}/.test(item.targetUrl) && !item.targetUrl.includes("course=&") && item.targetUrl !== "/courses?course=") {
         router.push(item.targetUrl);
       } else {
-        router.push(`/courses?course=${encodeURIComponent(courseSlug)}`);
+        router.push(courseSlug ? `/courses?course=${encodeURIComponent(courseSlug)}` : `/courses`);
       }
       return;
     }

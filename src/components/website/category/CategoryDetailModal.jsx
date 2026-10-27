@@ -38,10 +38,10 @@ export default function CategoryDetailModal({
     }
     if (isCourseModal) {
       const targetSlug = getItemSlug(activeCategory);
-      if (activeCategory?.targetUrl && !/[0-9a-fA-F]{24}/.test(activeCategory.targetUrl)) {
+      if (activeCategory?.targetUrl && !/[0-9a-fA-F]{24}/.test(activeCategory.targetUrl) && !activeCategory.targetUrl.includes("course=&") && activeCategory.targetUrl !== "/courses?course=") {
         router.push(activeCategory.targetUrl);
       } else {
-        router.push(`/courses?course=${encodeURIComponent(targetSlug)}`);
+        router.push(targetSlug ? `/courses?course=${encodeURIComponent(targetSlug)}` : `/courses`);
       }
       return;
     }
@@ -147,10 +147,13 @@ export default function CategoryDetailModal({
                           } else if (modalData.isCourseSubcategoriesModal) {
                             const courseSlug = getItemSlug(activeCategory);
                             const subSlug = getItemSlug(it);
-                            if (it.targetUrl && !/[0-9a-fA-F]{24}/.test(it.targetUrl)) {
+                            if (it.targetUrl && !/[0-9a-fA-F]{24}/.test(it.targetUrl) && !it.targetUrl.includes("course=&") && !it.targetUrl.endsWith("course=")) {
                               router.push(it.targetUrl);
                             } else {
-                              router.push(`/courses?course=${encodeURIComponent(courseSlug)}&subcategory=${encodeURIComponent(subSlug)}`);
+                              const q = [];
+                              if (courseSlug) q.push(`course=${encodeURIComponent(courseSlug)}`);
+                              if (subSlug) q.push(`subcategory=${encodeURIComponent(subSlug)}`);
+                              router.push(q.length > 0 ? `/courses?${q.join("&")}` : "/courses");
                             }
                           } else if (modalData.isCoursesModal || it.isCourse || it.itemType === "course") {
                             const courseSlug = getItemSlug(it);
