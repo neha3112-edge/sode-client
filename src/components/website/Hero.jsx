@@ -614,37 +614,21 @@ export function Hero({ initialHeroData = null }) {
       );
     }
 
-    // 2️⃣ Slide 5: RASHTRA NIRMATA SAMMAN (matches media_1793126795382_453c6988.png)
+    // 2️⃣ Slide 5: Rashtra Nirmata Samman (matches desktop media_1793129227634_eedd9fb6.png)
     if (lower.includes("rashtra") || lower.includes("gajendra") || lower.includes("samman")) {
       return (
-        <HeadingTag className="flex flex-col space-y-0.5 m-0 leading-none">
+        <HeadingTag className="flex flex-col space-y-0.5 sm:space-y-1 m-0">
           <span
             style={{ color: "#965D2C" }}
-            className="text-xl sm:text-2xl md:text-3xl lg:text-[34px] font-black tracking-tight leading-[0.95] font-sans uppercase block"
+            className="text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.15] tracking-tight m-0 font-sans block"
           >
-            RASHTRA NIRMATA
+            Rashtra Nirmata Samman
           </span>
-          <span
-            style={{
-              WebkitTextStroke: "1.8px #965D2C",
-              color: "transparent",
-            }}
-            className="text-2xl sm:text-3xl md:text-4xl lg:text-[44px] font-black tracking-tight leading-[0.95] font-sans uppercase block"
-          >
-            SAMMAN
-          </span>
-          <div className="flex items-center gap-2 py-1">
-            <span className="w-8 md:w-12 h-[1px] bg-[#64748B]/60 inline-block" />
-            <span className="text-xs md:text-sm font-bold uppercase tracking-widest text-[#64748B]">
-              FROM
-            </span>
-            <span className="w-8 md:w-12 h-[1px] bg-[#64748B]/60 inline-block" />
-          </div>
           <span
             style={{ color: "#072C50" }}
-            className="text-sm sm:text-base md:text-lg lg:text-xl font-black tracking-wide leading-snug m-0 uppercase block"
+            className="text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.15] tracking-tight m-0 font-sans block"
           >
-            SH. GAJENDRA CHAUHAN
+            from Shri Gajendra Chauhan
           </span>
         </HeadingTag>
       );
