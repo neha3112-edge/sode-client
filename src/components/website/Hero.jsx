@@ -584,42 +584,143 @@ export function Hero({ initialHeroData = null }) {
   const renderSlideHeading = (rawTitle, highlightText, isLight, titleColor, isPrimary = true) => {
     if (!rawTitle) return null;
 
-    const cleanTitle = (rawTitle || "").replace(/\[\/?(#[0-9a-fA-F]{3,8}|color[^\]]*|outline[^\]]*|stroke[^\]]*|divider[^\]]*)\]/gi, "").replace(/\[\/?\]/g, "").trim();
+    const cleanTitle = (rawTitle || "")
+      .replace(/\[\/?(#[0-9a-fA-F]{3,8}|color[^\]]*|outline[^\]]*|stroke[^\]]*|divider[^\]]*)\]/gi, "")
+      .replace(/\[\/?\]/g, "")
+      .trim();
+
+    const lower = cleanTitle.toLowerCase();
     const defaultColor = titleColor || (isLight ? "#072C50" : "#ffffff");
     const highlightColor = isLight ? "#965D2C" : "#F6DE95";
-    const lines = cleanTitle.split("\n");
     const HeadingTag = isPrimary ? "h1" : "h2";
 
+    // 1️⃣ Slide 4: GOVERNOR OF KERALA (matches media_1793128579186_c81b9031.png)
+    if (lower.includes("governor") || lower.includes("arif mohammed khan")) {
+      return (
+        <HeadingTag className="flex flex-col space-y-1 sm:space-y-1.5 m-0">
+          <span
+            style={{ color: "#965D2C" }}
+            className="text-2xl sm:text-3xl md:text-[34px] lg:text-[40px] xl:text-[44px] font-black tracking-wide leading-none m-0 font-sans uppercase block"
+          >
+            GOVERNOR OF KERALA
+          </span>
+          <span
+            style={{ color: "#072C50" }}
+            className="text-xs sm:text-sm md:text-base lg:text-[18px] font-black tracking-wide leading-snug m-0 uppercase block pt-0.5"
+          >
+            HONORABLE SH. ARIF MOHAMMED KHAN
+          </span>
+        </HeadingTag>
+      );
+    }
+
+    // 2️⃣ Slide 5: RASHTRA NIRMATA SAMMAN (matches media_1793126795382_453c6988.png)
+    if (lower.includes("rashtra") || lower.includes("gajendra") || lower.includes("samman")) {
+      return (
+        <HeadingTag className="flex flex-col space-y-0.5 m-0 leading-none">
+          <span
+            style={{ color: "#965D2C" }}
+            className="text-xl sm:text-2xl md:text-3xl lg:text-[34px] font-black tracking-tight leading-[0.95] font-sans uppercase block"
+          >
+            RASHTRA NIRMATA
+          </span>
+          <span
+            style={{
+              WebkitTextStroke: "1.8px #965D2C",
+              color: "transparent",
+            }}
+            className="text-2xl sm:text-3xl md:text-4xl lg:text-[44px] font-black tracking-tight leading-[0.95] font-sans uppercase block"
+          >
+            SAMMAN
+          </span>
+          <div className="flex items-center gap-2 py-1">
+            <span className="w-8 md:w-12 h-[1px] bg-[#64748B]/60 inline-block" />
+            <span className="text-xs md:text-sm font-bold uppercase tracking-widest text-[#64748B]">
+              FROM
+            </span>
+            <span className="w-8 md:w-12 h-[1px] bg-[#64748B]/60 inline-block" />
+          </div>
+          <span
+            style={{ color: "#072C50" }}
+            className="text-sm sm:text-base md:text-lg lg:text-xl font-black tracking-wide leading-snug m-0 uppercase block"
+          >
+            SH. GAJENDRA CHAUHAN
+          </span>
+        </HeadingTag>
+      );
+    }
+
+    // 3️⃣ Slide 2: Compare 50+ Universities (matches media_1793128605439_77c263cd.png)
+    if (lower.includes("compare") && (cleanTitle.includes("50+") || lower.includes("universities"))) {
+      return (
+        <HeadingTag className="flex flex-col space-y-0.5 sm:space-y-1 m-0">
+          <span
+            style={{ color: "#072C50" }}
+            className="text-lg sm:text-2xl md:text-[28px] lg:text-[32px] font-black leading-[1.15] tracking-tight m-0 font-sans block"
+          >
+            Compare <span style={{ color: "#965D2C" }}>50+ Universities</span>
+          </span>
+          <span
+            style={{ color: "#072C50" }}
+            className="text-lg sm:text-2xl md:text-[28px] lg:text-[32px] font-black leading-[1.15] tracking-tight m-0 font-sans block"
+          >
+            Choose with Confidence.
+          </span>
+        </HeadingTag>
+      );
+    }
+
+    // 4️⃣ Slide 3: 5 Lakh+ Students (matches media_1793128593180_7ff864c4.png)
+    if (lower.includes("5 lakh")) {
+      return (
+        <HeadingTag className="flex flex-col space-y-0.5 sm:space-y-1 m-0">
+          <span
+            style={{ color: "#ffffff" }}
+            className="text-lg sm:text-2xl md:text-[28px] lg:text-[32px] font-black leading-[1.15] tracking-tight m-0 font-sans block"
+          >
+            5 Lakh+ Students Found
+          </span>
+          <span
+            style={{ color: "#ffffff" }}
+            className="text-lg sm:text-2xl md:text-[28px] lg:text-[32px] font-black leading-[1.15] tracking-tight m-0 font-sans block"
+          >
+            Their Right Career Path
+          </span>
+        </HeadingTag>
+      );
+    }
+
+    // 5️⃣ Slide 1: Certifications & Online Degree Courses (matches media_1793128620710_66074b16.png)
+    if (lower.includes("iits, iims") || lower.includes("b-schools") || lower.includes("certifications & online")) {
+      return (
+        <HeadingTag className="flex flex-col space-y-0.5 sm:space-y-1 m-0">
+          <span
+            style={{ color: "#ffffff" }}
+            className="text-lg sm:text-2xl md:text-[28px] lg:text-[32px] font-black leading-[1.15] tracking-tight m-0 font-sans block"
+          >
+            Certifications &amp; Online Degree
+          </span>
+          <span
+            style={{ color: "#ffffff" }}
+            className="text-lg sm:text-2xl md:text-[28px] lg:text-[32px] font-black leading-[1.15] tracking-tight m-0 font-sans block"
+          >
+            Courses from IITs, IIMs &amp; Leading
+          </span>
+          <span
+            style={{ color: "#ffffff" }}
+            className="text-lg sm:text-2xl md:text-[28px] lg:text-[32px] font-black leading-[1.15] tracking-tight m-0 font-sans block"
+          >
+            Global B-Schools
+          </span>
+        </HeadingTag>
+      );
+    }
+
+    // Generic fallback for any other slide
+    const lines = cleanTitle.split("\n");
     return (
       <HeadingTag className="flex flex-col space-y-0.5 sm:space-y-1 m-0">
         {lines.map((line, lIdx) => {
-          const isGovernorHeader = line.toUpperCase() === "GOVERNOR OF KERALA";
-          const isGovernorSub = line.toUpperCase().includes("ARIF MOHAMMED KHAN");
-
-          if (isGovernorHeader) {
-            return (
-              <span
-                key={lIdx}
-                style={{ color: "#965D2C" }}
-                className="text-xl sm:text-2xl md:text-3xl lg:text-[34px] xl:text-[36px] font-black tracking-wide leading-none m-0 font-sans uppercase block"
-              >
-                {line}
-              </span>
-            );
-          }
-
-          if (isGovernorSub) {
-            return (
-              <span
-                key={lIdx}
-                style={{ color: "#072C50" }}
-                className="text-xs sm:text-sm md:text-[15px] lg:text-[16px] font-black tracking-wide leading-snug m-0 uppercase block"
-              >
-                {line}
-              </span>
-            );
-          }
-
           let lineContent = line;
           if (highlightText && line.toLowerCase().includes(highlightText.toLowerCase())) {
             const idx = line.toLowerCase().indexOf(highlightText.toLowerCase());
@@ -1025,7 +1126,7 @@ export function Hero({ initialHeroData = null }) {
 
             {subtitle && (
               <p
-                style={{ color: subtitleColor }}
+                style={{ color: isLight ? "#072C50" : (subtitleColor || "#cbd5e1") }}
                 className="text-[10px] sm:text-xs md:text-[13px] leading-tight sm:leading-relaxed font-normal line-clamp-2 max-w-sm sm:max-w-md lg:max-w-lg m-0"
               >
                 {subtitle}
@@ -1050,7 +1151,7 @@ export function Hero({ initialHeroData = null }) {
             )}
 
             <div className="flex flex-wrap items-center gap-2 pt-0.5 sm:pt-1">
-              {primaryBtn?.enabled !== false && (
+              {primaryBtn?.enabled !== false && primaryBtn?.text && (
                 primaryBtn?.is_modal ? (
                   <button
                     type="button"
