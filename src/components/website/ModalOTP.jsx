@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { Form, Input, Button, Checkbox, Select, message as staticMessage, App } from "antd";
 import {
@@ -185,6 +185,62 @@ export default function ModalOTP({
       window.removeEventListener("open-counselling-modal", handleCustomEvent);
     };
   }, [triggerId, form]);
+
+  // 45% Scroll auto-popup listener
+  const hasTriggeredByScroll = useRef(false);
+
+  // Reset scroll trigger when route / page changes
+  useEffect(() => {
+    hasTriggeredByScroll.current = false;
+  }, [pathname]);
+
+  // Global 45% page scroll trigger to auto-open modal
+  useEffect(() => {
+    if (pathname === "/thank-you" || pathname?.startsWith("/thank-you")) return;
+
+    let ticking = false;
+
+    const handleScroll = () => {
+      if (hasTriggeredByScroll.current || isOpen) return;
+
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          if (hasTriggeredByScroll.current || isOpen) {
+            ticking = false;
+            return;
+          }
+
+          try {
+            if (typeof window !== "undefined" && sessionStorage.getItem("lead_submitted") === "true") {
+              ticking = false;
+              return;
+            }
+          } catch {
+            // ignore storage restrictions
+          }
+
+          const scrollTop = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
+          const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+
+          if (scrollHeight > 150) {
+            const scrollPercentage = (scrollTop / scrollHeight) * 100;
+            if (scrollPercentage >= 45) {
+              hasTriggeredByScroll.current = true;
+              setIsOpen(true);
+            }
+          }
+
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [pathname, isOpen]);
 
   // Lock body scroll and listen for Escape key when modal is open
   useEffect(() => {
@@ -421,12 +477,27 @@ export default function ModalOTP({
         throw new Error(data?.message || "Failed to submit lead");
       }
 
+      try {
+        if (typeof window !== "undefined") {
+          sessionStorage.setItem("lead_submitted", "true");
+        }
+      } catch {
+        // ignore
+      }
+
       if (onFinish) onFinish(payload);
       handleClose();
       router.push("/thank-you");
     } catch (err) {
       if (err?.errorFields) return;
       console.error("Submit error:", err);
+      try {
+        if (typeof window !== "undefined") {
+          sessionStorage.setItem("lead_submitted", "true");
+        }
+      } catch {
+        // ignore
+      }
       handleClose();
       router.push("/thank-you");
     } finally {
