@@ -31,7 +31,8 @@ export default function VguWhyChoose({ whyChoose = [], brand = {}, onOpenApply }
   };
 
   return (
-    <section id="Resources" className="py-9 sm:py-12 bg-white border-b border-slate-200 select-none">
+    <section id="advantage" className="py-9 sm:py-12 bg-white border-b border-slate-200 select-none scroll-mt-20">
+      <div id="Resources" className="sr-only"></div>
       <LandingContainer>
         <div className="flex justify-center mb-4 sm:mb-4.5">
           <div

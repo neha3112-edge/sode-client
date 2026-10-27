@@ -29,8 +29,8 @@ export default function FooterClassic({
     brand.desLogo ||
     brand.sodeFooterLogo ||
     (brand.sodeLogo &&
-    !brand.sodeLogo.includes("icon") &&
-    !brand.sodeLogo.includes("tm")
+      !brand.sodeLogo.includes("icon") &&
+      !brand.sodeLogo.includes("tm")
       ? brand.sodeLogo
       : "/assets/all_universities_images/ggu/new-des-logo.webp");
 
@@ -63,7 +63,7 @@ export default function FooterClassic({
             className="inline-block cursor-pointer"
             aria-label="Back to Top"
           >
-            <div className="relative w-[360px] sm:w-[520px] md:w-[640px] lg:w-[740px] xl:w-[780px] h-[95px] sm:h-[138px] md:h-[170px] lg:h-[196px] xl:h-[206px]">
+            <div className={`relative ${brand.footerLogoContainerClassName || "w-[420px] sm:w-[620px] md:w-[760px] lg:w-[800px] xl:w-[1020px] h-[110px] sm:h-[164px] md:h-[200px] lg:h-[238px] xl:h-[270px]"}`}>
               <Image
                 src={footerLogoSrc}
                 alt="Distance Education School - SODE School of Online & Distance Education"
@@ -83,7 +83,7 @@ export default function FooterClassic({
         >
           <p className="m-0 text-[11px] sm:text-[11.5px] md:text-[12px] text-[#666666] leading-[1.62] font-normal tracking-[0.15px]">
             {footerText}
-          </p>
+          </p>` qA`
 
           {/* Legal Links */}
           <div className="mt-3.5 sm:mt-4 mb-3.5 sm:mb-4 text-[11.5px] sm:text-[12px] font-medium text-[#111111] flex items-center justify-center gap-2 sm:gap-2.5">

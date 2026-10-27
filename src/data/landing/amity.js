@@ -36,7 +36,7 @@ export const amityData = {
   },
 
   /* =======================================================
-     PAGE-SPECIFIC CSS
+     PAGE-SPECIFIC CSS        
   ======================================================= */
 
   customCss: `
@@ -49,13 +49,47 @@ export const amityData = {
       color: #000000;
       font-weight: 700;
     }
-
-    .amity-theme-btn:hover {
+ 
+    .amity-theme-btn:hover {  
       background-color: #e5a60b;
     }
 
     .amity-header-accent {
       color: #08417b;
+    }
+
+    /* Compact, sleek Navbar Height for Amity */
+    .landing-page--amity header.landing-navbar-header {
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+    .landing-page--amity header .landing-navbar-container {
+      height: 60px !important;
+      min-height: 60px !important;
+    }
+    @media (min-width: 640px) {
+      .landing-page--amity header .landing-navbar-container {
+        height: 64px !important;
+        min-height: 64px !important;
+      }
+    }
+    @media (min-width: 1024px) {
+      .landing-page--amity header .landing-navbar-container {
+        height: 66px !important;
+        min-height: 66px !important;
+      }
+    }
+    .landing-page--amity header .landing-navbar-container a div.relative {
+      height: 40px !important;
+      max-height: 42px !important;
+    }
+    @media (min-width: 1024px) {
+      .landing-page--amity header .landing-navbar-container a div.relative {
+        height: 44px !important;
+        max-height: 46px !important;
+      }
+    }
+    .landing-page--amity header .w-px {
+      height: 30px !important;
     }
   `,
 
@@ -75,7 +109,8 @@ export const amityData = {
 
     hashtag: "#YourFutureBeginsHere",
 
-    headline: "Amity University Online",
+    headline: "Amity University Online"
+    ,
 
     tagline1:
       "Learn from Anywhere, Grow Everywhere",
@@ -97,6 +132,9 @@ export const amityData = {
        These values decide WHAT is shown.
        Position/size remains reusable in LandingNavbar.jsx.
     ===================================================== */
+
+    navbarHeightClass: "h-[60px] sm:h-[64px] lg:h-[66px]",
+    logoWrapperClassName: "w-44 sm:w-52 md:w-56 lg:w-[230px] h-10 sm:h-11 lg:h-[44px]",
 
     logo:
       "/assets/all_universities_images/amity/Amity-online-logo.png",
@@ -224,7 +262,7 @@ export const amityData = {
 
       courseBorder: "#004172",
 
-      formBackground: "#08417b",
+      formBackground: "#0841 7b",
 
       formTitleColor: "#fdb913",
 

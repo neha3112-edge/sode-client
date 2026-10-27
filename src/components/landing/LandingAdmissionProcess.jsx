@@ -231,7 +231,7 @@ export default function LandingAdmissionProcess({
           `,
         }}
       />
-      <div className="w-full px-3 sm:px-6 md:px-8 lg:px-[14px] max-w-[1400px] lg:max-w-none mx-auto box-border">
+      <div className={`w-full mx-auto box-border ${brand.admissionContainerClass || (brand.slug === "lpu" ? "w-full max-w-full px-4 sm:px-6 lg:px-8 xl:px-12" : "px-4 sm:px-6 lg:px-8 max-w-[1360px] min-[1600px]:max-w-[1520px] min-[1920px]:max-w-[1680px]")}`}>
         {/* Heading */}
         {hasEnrollmentPrefix ? (
           <h2 className="text-2xl sm:text-3xl lg:text-[30px] xl:text-[32px] font-bold text-center tracking-tight mb-2.5 sm:mb-3 lg:mb-2 m-0">

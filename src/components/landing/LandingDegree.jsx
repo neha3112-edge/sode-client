@@ -419,7 +419,7 @@ export default function LandingDegree({
         id="Degreeinfo"
         className="py-12 sm:py-16 md:py-20 bg-[#fff8f2] select-none scroll-mt-20 border-b border-slate-200"
       >
-        <div className="max-w-[1240px] mx-auto px-8 sm:px-8 lg:px-8">
+        <LandingContainer className="px-3 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-8 lg:gap-12 items-center">
             {/* Left: Certificate Image (Matching Image Ratio) */}
             <div className="lg:col-span-5 flex justify-center">
@@ -441,10 +441,10 @@ export default function LandingDegree({
                 <h2 className="text-[30px] sm:text-[34px] lg:text-[38px] font-semibold text-[#f58220] tracking-wide m-0 leading-tight whitespace-pre-line text-center lg:text-left">
                   {titleH2}
                 </h2>
-                <h3 className="text-xl sm:text-2xl lg:text-[26px] font-bold text-slate-900 tracking-wide m-0 mt-2 leading-tight">
+                <h3 className="text-xl sm:text-2xl lg:text-[26px] font-bold text-slate-900 tracking-wide m-0 mt-2 leading-tight text-center lg:text-left">
                   {subtitleH3}
                 </h3>
-                <p className="text-[13px] sm:text-[14px] text-slate-700 leading-relaxed font-normal mt-2.5 sm:mt-3 m-0 max-w-2xl">
+                <p className="text-[13px] sm:text-[14px] text-slate-700 leading-relaxed font-normal mt-2.5 sm:mt-3 m-0 max-w-2xl text-center lg:text-left mx-auto lg:mx-0">
                   {descriptionText}
                 </p>
               </div>
@@ -465,7 +465,7 @@ export default function LandingDegree({
                 ))}
               </div>
 
-              <div className="pt-2 flex justify-start">
+              <div className="pt-2 flex justify-center lg:justify-start">
                 <button
                   type="button"
                   onClick={() => onOpenApply?.()}
@@ -476,7 +476,7 @@ export default function LandingDegree({
               </div>
             </div>
           </div>
-        </div>
+        </LandingContainer>
       </section>
     );
   }

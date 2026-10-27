@@ -14,6 +14,7 @@ export const DEFAULT_CALL_HREF = "tel:07065777755";
 export const DEFAULT_STICKY_ASSETS = {
   callGif: "/assets/images/call_icon.gif",
   giftGif: "/assets/images/gift.gif",
+  whatsappGif: "/assets/all_universities_images/all_universities_images/lpu/whatsapp.gif",
   iimCallGif: "/assets/iim/call_icon.gif",
   iimGiftGif: "/assets/iim/gift.gif",
 };
@@ -23,6 +24,7 @@ export const DEFAULT_STICKY_LABELS = {
   apply: "Apply Now",
   callAria: "Call Expert",
   giftAria: "Get Scholarship Coupon Code",
+  whatsappAria: "Chat on WhatsApp",
 };
 
 export const DEFAULT_CONFETTI_COLORS = [
@@ -123,6 +125,20 @@ export const LEGACY_STICKY_CTA_CONFIG = {
     brochureIcon: "whatsapp",
     showFloatingCallOnMobile: true,
   },
+  vgu: {
+    layout: "default",
+    stickyBarBg: "#d11c1f",
+    brochureAction: "whatsapp",
+    brochureIcon: "whatsapp",
+    stickyBrochureBg: "#25d366",
+    stickyBrochureTextColor: "#ffffff",
+    applyStyle: "white-red",
+    stickyApplyBg: "#ffffff",
+    stickyApplyTextColor: "#ee3024",
+    showFloatingCallOnMobile: true,
+    callGif: "/assets/all_universities_images/vgu/call_icon.gif",
+    giftGif: "/assets/all_universities_images/vgu/gift.gif",
+  },
 };
 
 // =========================================================
@@ -167,6 +183,24 @@ export function resolveStickyCtaConfig(brand = {}) {
     brand.callIcon ||
     legacy.callGif ||
     (layout === "iim" ? DEFAULT_STICKY_ASSETS.iimCallGif : DEFAULT_STICKY_ASSETS.callGif);
+
+  // 3.5. Floating WhatsApp Button
+  const isWhatsAppHidden = Boolean(brand.hideFloatingWhatsApp || brand.hideFloatingWa);
+  const showWhatsApp = Boolean(
+    (brand.showFloatingWhatsApp ?? brand.floatingWhatsApp?.enabled ?? true) &&
+    whatsappUrl &&
+    !isWhatsAppHidden
+  );
+  const showWhatsAppOnMobile = Boolean(
+    brand.showFloatingWhatsAppOnMobile ??
+    brand.floatingWhatsApp?.mobile ??
+    true
+  );
+  const whatsappImage =
+    brand.whatsappGif ||
+    brand.whatsappIcon ||
+    brand.floatingWhatsApp?.image ||
+    DEFAULT_STICKY_ASSETS.whatsappGif;
 
   // 4. Floating Gift Button
   const isGiftEnabled =
@@ -275,6 +309,14 @@ export function resolveStickyCtaConfig(brand = {}) {
       desktop: true,
       image: callImage,
       alt: "Call Expert",
+    },
+    floatingWhatsApp: {
+      enabled: showWhatsApp,
+      mobile: showWhatsAppOnMobile,
+      desktop: true,
+      image: whatsappImage,
+      alt: "Chat on WhatsApp",
+      url: whatsappUrl,
     },
     floatingGift: {
       enabled: isGiftEnabled,

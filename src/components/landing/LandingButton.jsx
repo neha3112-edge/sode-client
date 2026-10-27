@@ -123,6 +123,21 @@ export default function LandingButton({
   const hasBgClass = Boolean(className && /\bbg-/.test(className));
   const hasBorderClass = Boolean(className && /\bborder-/.test(className));
   const hasTextClass = Boolean(className && /\btext-/.test(className));
+  const hasFontWeightClass = Boolean(
+    className &&
+      /\b!?font-(?:thin|extralight|light|normal|medium|semibold|bold|extrabold|black)\b/.test(
+        className
+      )
+  );
+
+  if (hasFontWeightClass || style?.fontWeight) {
+    variantClasses = variantClasses
+      .replace(
+        /\b!?font-(?:thin|extralight|light|normal|medium|semibold|bold|extrabold|black)\b/g,
+        ""
+      )
+      .trim();
+  }
 
   // Resolved colors & radius: LP JSON data props override default styles
   const resolvedBg =

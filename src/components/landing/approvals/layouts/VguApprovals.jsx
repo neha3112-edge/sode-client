@@ -20,6 +20,7 @@ export default function VguApprovals({ approvals = [], brand = {} }) {
 
   return (
     <section id="approval" className="w-full py-8 sm:py-14 bg-white border-b border-slate-200 scroll-mt-20 select-none">
+      <div id="approvals" className="sr-only"></div>
       <div className={containerClass}>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-7 lg:gap-12 items-center">
           {/* Left Column: Heading, Description, Enquire Button */}

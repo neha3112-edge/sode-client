@@ -18,7 +18,7 @@ export const liverpoolCustomCss = `
   .landing-page--liverpool header.navbar {
     background: #ffffff !important;
     border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
-    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.05) !important;
+    box-F   shadow: 0px 2px 10px rgba(0, 0, 0, 0.05) !important;
   }
 
   .landing-page--liverpool .header_menu_list li a {

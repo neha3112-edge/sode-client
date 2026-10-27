@@ -1,6 +1,426 @@
 // VGU Landing Data
+export const vguCustomCss = `
+  /* =======================================================
+     PAGE-SPECIFIC CSS FOR VGU ONLINE
+  ======================================================= */
+  html,
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
+  .landing-page--vgu,
+  .landing-page-root {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .landing-page--vgu header,
+  .landing-page--vgu main,
+  .landing-page--vgu section,
+  .landing-page--vgu #hero,
+  .landing-page--vgu footer {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  .landing-page--vgu header {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Compact sleek Navbar Height */
+  .landing-page--vgu header .landing-navbar-container {
+    height: 60px !important;
+    min-height: 60px !important;
+  }
+  @media (min-width: 640px) {
+    .landing-page--vgu header .landing-navbar-container {
+      height: 64px !important;
+      min-height: 64px !important;
+    }
+  }
+  @media (min-width: 1024px) {
+    .landing-page--vgu header .landing-navbar-container {
+      height: 66px !important;
+      min-height: 66px !important;
+    }
+  }
+
+  /* Completely remove any SODE logo or branding from header */
+  .landing-page--vgu header a[aria-label="Distance Education School"],
+  .landing-page--vgu header a[aria-label="SODE"],
+  .landing-page--vgu .des_logo {
+    display: none !important;
+  }
+
+  /* Coupon Button on Navbar */
+  .landing-page--vgu .coupon-btn-main {
+    background: #28a745 !important;
+    background-color: #28a745 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 14px rgba(40, 167, 69, 0.35) !important;
+  }
+
+  /* Hero Section */
+  .landing-page--vgu #hero {
+    background-color: #811811;
+  }
+
+  /* Hero Title: Strictly 2 lines on Desktop, 3 lines on Mobile */
+  @media (min-width: 641px) {
+    .landing-page--vgu #hero h1 {
+      display: flex !important;
+      flex-direction: column !important;
+      line-height: 1.18 !important;
+      margin-top: 0 !important;
+      margin-bottom: 0.35rem !important;
+    }
+    .landing-page--vgu #hero h1 .vgu-hero-title-line1,
+    .landing-page--vgu #hero h1 .vgu-hero-title-line2 {
+      display: block !important;
+      white-space: nowrap !important;
+      width: fit-content !important;
+    }
+    .landing-page--vgu #hero h1 .vgu-title-part1,
+    .landing-page--vgu #hero h1 .vgu-title-part2 {
+      display: inline !important;
+      white-space: nowrap !important;
+    }
+    .landing-page--vgu #hero h1 .vgu-hero-title-line1,
+    .landing-page--vgu #hero h1 .vgu-hero-title-line2 {
+      font-size: clamp(26px, 2.5vw, 34px) !important;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .landing-page--vgu #hero h1 {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      text-align: left !important;
+      gap: 1px !important;
+      margin-top: 0 !important;
+      margin-bottom: 12px !important;
+    }
+    .landing-page--vgu #hero h1 .vgu-hero-title-line1 {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      white-space: normal !important;
+      width: 100% !important;
+      gap: 1px !important;
+    }
+    .landing-page--vgu #hero h1 .vgu-title-part1,
+    .landing-page--vgu #hero h1 .vgu-title-part2,
+    .landing-page--vgu #hero h1 .vgu-hero-title-line2 {
+      display: block !important;
+      white-space: nowrap !important;
+      font-size: clamp(23px, 6.8vw, 28px) !important;
+      line-height: 1.2 !important;
+      font-weight: 800 !important;
+      color: #ffffff !important;
+      letter-spacing: -0.01em !important;
+    }
+
+    .landing-page--vgu #hero div[class*="tagline"],
+    .landing-page--vgu #hero p[class*="tagline"] {
+      font-size: 13.5px !important;
+      line-height: 1.48 !important;
+      color: #ffffff !important;
+      opacity: 0.95 !important;
+      margin-top: 10px !important;
+      margin-bottom: 16px !important;
+      max-width: 100% !important;
+      text-align: left !important;
+    }
+
+    .landing-page--vgu #hero [class*="courseStrip"] {
+      font-size: clamp(18px, 5.2vw, 21px) !important;
+      font-weight: 800 !important;
+      line-height: 1.32 !important;
+      color: #ffffff !important;
+      margin-top: 14px !important;
+      margin-bottom: 18px !important;
+      letter-spacing: 0.02em !important;
+      text-align: left !important;
+    }
+    .landing-page--vgu #hero [class*="courseStrip"] div {
+      font-weight: 800 !important;
+      color: #ffffff !important;
+    }
+  }
+
+  /* Completely remove coupon buttons from hero in mobile view */
+  @media (max-width: 1024px) {
+    .landing-page--vgu #hero .coupon-btn-main,
+    .landing-page--vgu #hero button.coupon-btn-main,
+    .landing-page--vgu #hero .hero-form-col .coupon-btn-main {
+      display: none !important;
+      visibility: hidden !important;
+      height: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+  }
+
+  @media (min-width: 1000px) {
+    .landing-page--vgu #hero {
+      background-position: center top !important;
+      background-size: cover !important;
+    }
+  }
+
+  /* Download brochure button: Desktop */
+  @media (min-width: 769px) {
+    .landing-page--vgu .hero-brochure-btn {
+      background-color: #0da651 !important;
+      border-radius: 9999px !important;
+      border: none !important;
+      color: #ffffff !important;
+      box-shadow: 0 4px 14px rgba(13, 166, 81, 0.4) !important;
+      transition: all 0.2s ease-in-out;
+    }
+    .landing-page--vgu .hero-brochure-btn:hover {
+      background-color: #0b8f45 !important;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(13, 166, 81, 0.45) !important;
+    }
+  }
+
+  /* Download brochure button: Mobile */
+  @media (max-width: 768px) {
+    .landing-page--vgu .hero-brochure-btn,
+    .landing-page--vgu #hero .hero-brochure-btn {
+      background: transparent !important;
+      background-color: transparent !important;
+      border: 2px solid #ffffff !important;
+      color: #ffffff !important;
+      border-radius: 9999px !important;
+      padding: 8px 24px !important;
+      font-size: 14.5px !important;
+      font-weight: 700 !important;
+      box-shadow: none !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+      align-self: flex-start !important;
+      margin-top: 6px !important;
+      margin-bottom: 18px !important;
+    }
+    .landing-page--vgu .hero-brochure-btn svg,
+    .landing-page--vgu #hero .hero-brochure-btn svg {
+      fill: #ffffff !important;
+      color: #ffffff !important;
+      width: 15px !important;
+      height: 15px !important;
+    }
+
+    .landing-page--vgu #hero .hero-mobile-image-wrapper {
+      border-radius: 18px !important;
+      overflow: hidden !important;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2) !important;
+      border: 1px solid rgba(255, 255, 255, 0.22) !important;
+      margin-top: 14px !important;
+      margin-bottom: 20px !important;
+      width: 100% !important;
+      max-width: 440px !important;
+    }
+    .landing-page--vgu #hero .hero-mobile-image-wrapper img {
+      border-radius: 18px !important;
+      width: 100% !important;
+      height: auto !important;
+      display: block !important;
+    }
+  }
+
+  /* Right Form Card */
+  .landing-page--vgu .landing-lead-card {
+    background: #ffffff !important;
+    border-radius: 16px !important;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.16) !important;
+    border: none !important;
+  }
+
+  /* Form Inputs and Selects inside card */
+  .landing-page--vgu .landing-lead-card input,
+  .landing-page--vgu .landing-lead-card .ant-input,
+  .landing-page--vgu .landing-lead-card .ant-select-selector {
+    background-color: #f0f3f5 !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 6px !important;
+    font-size: 13px !important;
+    color: #1e293b !important;
+  }
+
+  .landing-page--vgu .landing-lead-card input::placeholder,
+  .landing-page--vgu .landing-lead-card .ant-input::placeholder,
+  .landing-page--vgu .landing-lead-card .ant-select-selection-placeholder {
+    color: #94a3b8 !important;
+    font-size: 13px !important;
+  }
+
+  .landing-page--vgu .landing-lead-card .ant-select-selector {
+    display: flex !important;
+    align-items: center !important;
+    height: 38px !important;
+  }
+
+  .landing-page--vgu .landing-lead-card .ant-select-selection-item {
+    line-height: 38px !important;
+  }
+
+  /* Form Phone Badge */
+  .landing-page--vgu .landing-lead-card a[href^="tel"] {
+    background-color: #7a161d !important;
+    color: #ffffff !important;
+    border-radius: 9999px !important;
+    font-weight: 700 !important;
+    padding: 6px 16px !important;
+    box-shadow: 0 2px 8px rgba(122, 22, 29, 0.3) !important;
+  }
+
+  /* Submit Button */
+  .landing-page--vgu .landing-lead-card button[type="submit"] {
+    background: #7a161d !important;
+    background-color: #7a161d !important;
+    color: #ffffff !important;
+    border-radius: 8px !important;
+    border: none !important;
+    height: 40px !important;
+    font-weight: 700 !important;
+    font-size: 15px !important;
+    box-shadow: 0 4px 12px rgba(122, 22, 29, 0.3) !important;
+    transition: all 0.2s ease-in-out;
+  }
+  .landing-page--vgu .landing-lead-card button[type="submit"]:hover {
+    background-color: #8c1a22 !important;
+    box-shadow: 0 6px 16px rgba(122, 22, 29, 0.4) !important;
+  }
+
+  /* Section-by-Section Match with distanceeducationschool.com/vgu */
+
+  /* Approvals Section */
+  .landing-page--vgu #approval,
+  .landing-page--vgu #approvals {
+    background-color: #ffffff !important;
+  }
+  .landing-page--vgu #approval h3,
+  .landing-page--vgu #approvals h3,
+  .landing-page--vgu #approval h2,
+  .landing-page--vgu #approvals h2 {
+    color: #811811 !important;
+  }
+
+  /* Program Courses Section */
+  .landing-page--vgu #program {
+    background-color: #f7f7f7 !important;
+  }
+  .landing-page--vgu #program h2 {
+    color: #203061 !important;
+  }
+
+  /* About Section */
+  .landing-page--vgu #about {
+    background-image: url("/assets/all_universities_images/vgu/about-bg-vgu.webp") !important;
+    background-repeat: no-repeat !important;
+    background-size: cover !important;
+    background-position: center !important;
+  }
+
+  /* Advantage / Resources Section */
+  .landing-page--vgu #advantage h2,
+  .landing-page--vgu #Resources h2 {
+    background-color: #811811 !important;
+    color: #ffffff !important;
+  }
+
+  /* Degree Section */
+  .landing-page--vgu #degree {
+    background-color: #F3F3F8 !important;
+  }
+  .landing-page--vgu #degree h2 {
+    color: #811811 !important;
+  }
+
+  /* Recruiters / Partners Section */
+  .landing-page--vgu #partners {
+    background-color: #ffffff !important;
+  }
+  .landing-page--vgu #partners h2 {
+    background-color: #811811 !important;
+    color: #ffffff !important;
+  }
+
+  /* Apply Section */
+  .landing-page--vgu .apply-section {
+    background-color: #ffffff !important;
+  }
+  .landing-page--vgu .apply-section h2 {
+    color: #193579 !important;
+  }
+
+  /* FAQ Section */
+  .landing-page--vgu #faq,
+  .landing-page--vgu #faqs {
+    background-color: #F3F3F8 !important;
+  }
+  .landing-page--vgu #faq h2,
+  .landing-page--vgu #faqs h2 {
+    color: #811811 !important;
+  }
+
+  /* Compare Universities Section */
+  .landing-page--vgu .compare_box {
+    background-color: #851b1f !important;
+    border-radius: 20px !important;
+  }
+
+  /* Mobile Floating Actions & Sticky Bar Precision Matching */
+  @media (max-width: 768px) {
+    .landing-page--vgu .floating-call-btn {
+      width: 58px !important;
+      height: 58px !important;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35), 0 0 25px rgba(46, 204, 113, 0.6) !important;
+      border-radius: 50px !important;
+    }
+
+    .landing-page--vgu .floating-gift-btn {
+      width: 54px !important;
+      height: 54px !important;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25) !important;
+      border-radius: 50px !important;
+    }
+
+    .landing-page--vgu .footer_sticky_buttons {
+      background: #d11c1f !important;
+      padding: 8px 12px !important;
+    }
+
+    .landing-page--vgu .footer_sticky_buttons .wp_btn {
+      background: #25d366 !important;
+      color: #ffffff !important;
+      border-radius: 100px !important;
+      font-size: 14.5px !important;
+      font-weight: 700 !important;
+    }
+
+    .landing-page--vgu .footer_sticky_buttons .apply_btn {
+      background: #ffffff !important;
+      color: #ee3024 !important;
+      border-radius: 100px !important;
+      font-size: 14.5px !important;
+      font-weight: 700 !important;
+    }
+  }
+`;
+
 export const vguData = {
   slug: "vgu",
+  customCss: vguCustomCss,
   meta: {
     title: "Vivekananda Global University Online | VGU Online Courses",
     description:
@@ -17,10 +437,12 @@ export const vguData = {
   },
   brand: {
     slug: "vgu",
+    pageStyle: { margin: 0, padding: 0 },
+    pageClassName: "!m-0 !p-0 w-full",
     name: "Vivekananda Global University Online",
     shortName: "VGU Online",
     hashtag: "",
-    headline: "Vivekananda Global\nUniversity\nOnline Degree Programs",
+    headline: "Vivekananda Global University\nOnline Degree Programs",
     tagline1:
       "Empowering professionals with career-focused education, modern curriculum, and industry-aligned learning at Vivekananda Global University.",
     tagline2: "",
@@ -29,17 +451,42 @@ export const vguData = {
     enquireTitle: "Enquire Now",
     enquireSubtitle: "Academic Experts will assist you!",
     officialUrl: "https://distanceeducationschool.com/vgu/",
+    navbarHeightClass: "h-[60px] sm:h-[64px] lg:h-[66px]",
     logo: "/assets/all_universities_images/vgu/vgu-logo.webp",
-    sodeIcon: "/assets/all_universities_images/vgu/sode-icon.png",
-    sodeLogo: "/assets/all_universities_images/vgu/sode-icon.png",
+    logoWrapperClassName: "w-[210px] sm:w-[250px] md:w-[270px] lg:w-[290px] h-[38px] sm:h-[44px] lg:h-[46px]",
+    logoClassName: "object-contain object-left",
+    navLinks: [
+      { label: "Courses", href: "#program" },
+      { label: "Approvals", href: "#approval" },
+      { label: "About", href: "#about" },
+      { label: "Advantage", href: "#advantage" },
+      { label: "FAQs", href: "#faqs" },
+    ],
+    hideDesktopNavLinks: true,
+    mobileMenuIconColor: "#08417b",
+    sodeIcon: null,
+    sodeLogo: null,
     callGif: "/assets/all_universities_images/vgu/call_icon.gif",
     giftGif: "/assets/all_universities_images/vgu/gift.gif",
     arrowGif: "/assets/all_universities_images/vgu/arrow.gif",
-    showSodeLogo: true,
+    showFloatingCallOnMobile: true,
+    stickyBarBg: "#811811",
+    stickyApplyStyle: "white-red",
+    stickyApplyBg: "#ffffff",
+    stickyApplyTextColor: "#e53935",
+    stickyBrochureAction: "whatsapp",
+    stickyBrochureIcon: "whatsapp",
+    stickyBrochureBg: "#25d366",
+    stickyBrochureTextColor: "#ffffff",
+    showSodeLogo: false,
+    hideSodeLogo: true,
     showCouponButton: true,
+    showMobileCouponButton: false,
+    hideMobileCouponButton: true,
     showFooterForm: false,
     couponButtonText: "Scholarship Coupon Code",
-    couponButtonColor: "#22c55e",
+    couponButtonColor: "#28a745",
+    couponBtnBg: "#28a745",
     campusImage: "/assets/all_universities_images/vgu/university.webp",
     buildingAboutImage: "/assets/all_universities_images/vgu/about-image-vgu.webp",
     whyChooseStudentImage: "/assets/all_universities_images/vgu/university.webp",
@@ -53,11 +500,14 @@ export const vguData = {
     badgeText: "Admissions Open 2026",
     hero: {
       backgroundImage: "/assets/all_universities_images/vgu/vgu-desktop.webp",
+      backgroundPosition: "center top",
+      backgroundSize: "cover",
       mobileBackgroundImage: "",
       mobileStudentImage: "/assets/all_universities_images/vgu/university.webp",
-      mobileStudentImageWrapperClassName: "block lg:hidden w-full max-w-[440px] mx-auto rounded-[16px] sm:rounded-[20px] overflow-hidden my-3.5 shadow-md border border-white/20",
-      mobileStudentImageClassName: "w-full h-auto object-cover block rounded-[16px]",
-      showMobileCouponButton: true,
+      mobileStudentImageWrapperClassName: "block lg:hidden w-full max-w-[440px] mx-auto rounded-[18px] overflow-hidden my-3.5 shadow-md border border-white/20",
+      mobileStudentImageClassName: "w-full h-auto object-cover block rounded-[18px]",
+      showMobileCouponButton: false,
+      hideMobileCouponButton: true,
       noOverlay: true,
       backgroundColor: "#811811",
       titleColor: "#ffffff",
@@ -65,35 +515,102 @@ export const vguData = {
       coursesColor: "#ffffff",
       hashtagColor: "#ffffff",
       hideCourseBox: true,
-      contentClassName: "lg:max-w-[580px] xl:max-w-[620px]",
-      headingClassName: "text-[23px] sm:text-[28px] md:text-[31px] lg:text-[33px] xl:text-[35px] font-extrabold text-white leading-[1.18] tracking-tight whitespace-pre-line text-left",
-      taglineClassName: "mt-3 mb-2.5 text-[12.5px] sm:text-[14px] font-normal leading-[1.55] text-white/95 max-w-[490px] text-left",
-      courseStripClassName: "my-3 space-y-0.5 text-[16px] sm:text-[18px] lg:text-[20px] font-black text-white tracking-wide leading-snug text-left",
-      buttonRadius: "rounded-full",
+      alignLeftMobile: true,
+      mobileAlign: "left",
+      minHeight: "480px",
+      containerClassName: "max-w-[1360px] min-[1600px]:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6 lg:py-8",
+      contentClassName: "w-full min-[1000px]:max-w-[500px] xl:max-w-[540px] text-left items-start z-10",
+      titleHtml: '<span class="vgu-hero-title-line1"><span class="vgu-title-part1">Vivekananda Global</span> <span class="vgu-title-part2">University</span></span><span class="vgu-hero-title-line2">Online Degree Programs</span>',
+      headingClassName: "font-extrabold text-white leading-[1.18] tracking-tight text-left m-0",
+      taglineClassName: "mt-3.5 mb-3 text-[13.5px] sm:text-[14px] lg:text-[14.5px] font-normal leading-[1.5] text-white/95 max-w-[440px] text-left",
+      coursesStrip: [
+        "MBA | MSC | MA | MCA | MA-",
+        "JMC | BBA | BCA | BA",
+      ],
+      courseStripClassName: "my-3.5 space-y-1 text-[17px] sm:text-[19px] lg:text-[21px] font-extrabold text-white tracking-wide leading-tight text-left",
+      courseStripItemClassName: "tracking-wide font-extrabold",
+      showBrochureButton: true,
+      brochureButtonText: "Download Brochure",
       buttonTextColor: "#ffffff",
-      buttonClassName: "mt-2 mb-3.5 py-2 px-6 sm:px-7 rounded-full text-white font-semibold text-[13px] sm:text-[14px] bg-[#811811] sm:bg-[#008000] border-2 border-white sm:border-none inline-flex items-center gap-2 shadow-md transition-all self-start",
+      buttonRadius: "9999px",
+      buttonClassName: "!rounded-full max-md:!bg-transparent max-md:!border-2 max-md:!border-white md:!bg-[#0da651] md:hover:!bg-[#0c9548] md:!border-none text-white font-semibold text-[14px] sm:text-[15px] py-2 px-6 sm:px-7 inline-flex items-center gap-2 shadow-md transition-all self-start mt-2 mb-2 !h-auto",
+      formContainerClassName: "w-full sm:w-[350px] min-[1000px]:w-[340px] xl:w-[350px] shrink-0 flex flex-col items-center min-[1000px]:items-end justify-center z-20",
       formCardType: "white",
       formBackground: "#ffffff",
-      formTitleColor: "#811811",
-      formPhoneBg: "#6b130e",
-      phoneBadgeBackground: "#6b130e",
-      phoneBadgeBg: "#6b130e",
+      formTitleColor: "#7a161d",
+      formPhoneBg: "#7a161d",
+      phoneBadgeBackground: "#7a161d",
+      phoneBadgeBg: "#7a161d",
       formPhoneColor: "#ffffff",
       phonePlaceholder: "Enter 10-digit Mobile Number",
-      submitButtonBackground: "#811811",
+      submitButtonBackground: "#7a161d",
       submitButtonTextColor: "#ffffff",
       hideTermsCheckbox: true,
-      minHeight: "440px",
-      backgroundPosition: "center top",
-      containerClassName: "max-w-[1400px] !px-6 sm:!px-10 lg:!px-12 py-4 sm:py-5 lg:py-6",
       headingFont: "'Plus Jakarta Sans', sans-serif",
+      formCourseList: [
+        { value: "MBA", label: "MBA" },
+        { value: "MSC", label: "MSC" },
+        { value: "MA", label: "MA" },
+        { value: "MCA", label: "MCA" },
+        { value: "MA-JMC", label: "MA-JMC" },
+        { value: "BBA", label: "BBA" },
+        { value: "BCA", label: "BCA" },
+        { value: "BA", label: "BA" },
+      ],
       form: {
+        variant: "white",
+        title: "Enquire Now",
+        subtitle: "Academic Experts will assist you!",
+        phoneText: "+91 7065 7777 55",
+        showPhoneBadge: true,
+        namePlaceholder: "Enter Your Name",
+        emailPlaceholder: "Enter Your Email",
+        phonePlaceholder: "Enter 10-digit Mobile Number",
+        coursePlaceholder: "Select Your Course",
+        statePlaceholder: "Select Your State",
+        submitText: "Submit",
+        hideTermsCheckbox: true,
+        phoneBeforeEmail: false,
+        courseList: [
+          { value: "MBA", label: "MBA" },
+          { value: "MSC", label: "MSC" },
+          { value: "MA", label: "MA" },
+          { value: "MCA", label: "MCA" },
+          { value: "MA-JMC", label: "MA-JMC" },
+          { value: "BBA", label: "BBA" },
+          { value: "BCA", label: "BCA" },
+          { value: "BA", label: "BA" },
+        ],
+        colors: {
+          background: "#ffffff",
+          title: "#7a161d",
+          subtitle: "#334155",
+          phoneBackground: "#7a161d",
+          phoneText: "#ffffff",
+          phoneIcon: "#ffffff",
+          inputBackground: "#f0f3f5",
+          inputBorder: "1px solid #e2e8f0",
+          inputText: "#1e293b",
+          inputPlaceholder: "#94a3b8",
+          selectBackground: "#f0f3f5",
+          selectBorder: "1px solid #e2e8f0",
+          selectText: "#1e293b",
+          selectPlaceholder: "#94a3b8",
+          countryCodeBackground: "#f0f3f5",
+          countryCodeBorder: "#cbd5e1",
+          countryCodeText: "#1e293b",
+          submitBackground: "#7a161d",
+          submitText: "#ffffff",
+        },
         layout: {
-          fieldHeight: "33px",
-          fieldGap: "8px",
-          padding: "16px 18px",
-          borderRadius: "12px",
+          padding: "18px 20px 20px",
+          borderRadius: "16px",
           maxWidth: "350px",
+          fieldHeight: "38px",
+          fieldRadius: "6px",
+          fieldGap: "9px",
+          submitButtonRadius: "8px",
+          boxShadow: "0 10px 35px rgba(0, 0, 0, 0.15)",
         },
       },
     },

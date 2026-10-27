@@ -68,10 +68,10 @@ export default function LandingRecruiters({
 
     return (
       <section id="recruiters" className="py-12 sm:py-16 md:py-20 bg-white select-none border-b border-slate-200">
-        <LandingContainer>
+        <LandingContainer className="px-3 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             {/* Left: Text & Apply Button */}
-            <div className="lg:col-span-5 text-left space-y-4 pl-4 sm:pl-6 lg:pl-0">
+            <div className="lg:col-span-5 text-left space-y-4">
               <h2 className="text-3xl sm:text-4xl lg:text-[40px] font-bold text-[#b0b7c3] tracking-wide m-0 leading-tight">
                 {titlePrefix}
               </h2>
@@ -157,14 +157,14 @@ export default function LandingRecruiters({
     const partners = activeRecruiters.partners && activeRecruiters.partners.length > 0
       ? activeRecruiters.partners
       : [
-          { name: "Capco", image: "/assets/iim/capco.webp" },
-          { name: "Cognizant", image: "/assets/iim/Cognizant.webp" },
-          { name: "Delhivery", image: "/assets/iim/Delhivery.webp" },
-          { name: "Capita", image: "/assets/iim/capita.webp" },
-          { name: "Disney", image: "/assets/iim/disnep.webp" },
-          { name: "Codeyoung", image: "/assets/iim/codeyoung.webp" },
-          { name: "CBSPL", image: "/assets/iim/cbspl.webp" },
-        ];
+        { name: "Capco", image: "/assets/iim/capco.webp" },
+        { name: "Cognizant", image: "/assets/iim/Cognizant.webp" },
+        { name: "Delhivery", image: "/assets/iim/Delhivery.webp" },
+        { name: "Capita", image: "/assets/iim/capita.webp" },
+        { name: "Disney", image: "/assets/iim/disnep.webp" },
+        { name: "Codeyoung", image: "/assets/iim/codeyoung.webp" },
+        { name: "CBSPL", image: "/assets/iim/cbspl.webp" },
+      ];
 
     return (
       <section id="placement">

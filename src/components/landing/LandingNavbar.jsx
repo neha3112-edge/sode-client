@@ -185,13 +185,17 @@ export default function LandingNavbar({
     e.preventDefault();
 
     const targetId = link.href.slice(1);
-    const target = document.getElementById(targetId);
+    const target =
+      document.getElementById(targetId) ||
+      (targetId === "advantage" ? document.getElementById("advantage") || document.getElementById("Resources") || document.getElementById("whychoose") : null) ||
+      (targetId === "courses" ? document.getElementById("program") : null) ||
+      (targetId === "approvals" ? document.getElementById("approval") : null);
 
     if (!target) {
       return;
     }
 
-    const navHeight = 70;
+    const navHeight = 65;
 
     const targetY =
       target.getBoundingClientRect().top +
@@ -310,19 +314,23 @@ export default function LandingNavbar({
           <p className="m-0">{navbar.topbarText || brand.topbarText}</p>
         </div>
       )}
-      <header className="sticky top-0 z-50 bg-white border-b border-slate-200/80 shadow-[0px_2px_10px_rgba(0,0,0,0.06)]">
+      <header
+        className={`landing-navbar-header sticky top-0 z-50 bg-white border-b border-slate-200/80 shadow-[0px_2px_10px_rgba(0,0,0,0.06)] ${navbar.headerClassName || ""}`}
+        style={navbar.headerStyle}
+      >
 
         <LandingContainer
-          className="
-          h-[80px]
-          sm:h-20
-          lg:h-22
+          className={`
+          landing-navbar-container
+          ${navbar.navbarHeightClass || navbar.containerHeight || "h-[64px] sm:h-[68px] lg:h-[72px]"}
           flex
           items-center
           justify-between
           px-3
           sm:px-6
-        "
+          ${navbar.navbarContainerClassName || ""}
+        `}
+          style={navbar.navbarContainerStyle}
         >
 
           {/* =================================================
@@ -437,7 +445,7 @@ export default function LandingNavbar({
           <div className="shrink-0 pl-2 mr-1.5 sm:mr-3 flex items-center gap-4 sm:gap-6 lg:gap-8">
 
             {/* NAV LINKS */}
-            {navbar.navLinks?.length > 0 && (
+            {navbar.navLinks?.length > 0 && !navbar.hideDesktopNavLinks && (
               <ul className="hidden md:flex items-center gap-5 lg:gap-8 header_menu_list list-none m-0 p-0">
 
                 {navbar.navLinks.map((link, idx) => (
@@ -669,17 +677,20 @@ export default function LandingNavbar({
             )}
 
             {/* MOBILE MENU */}
-            {navbar.navLinks?.length > 0 && (
+            {(navbar.navLinks?.length > 0 || navbar.showMobileMenu) && (
               <button
                 type="button"
                 className={`
                 md:hidden
-                p-2
+                p-1.5
+                sm:p-2
                 rounded-lg
                 transition-colors
                 ${navbar.mobileMenuBtnBg || navbar.slug === "iiitb"
                     ? "text-white"
-                    : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
+                    : navbar.mobileMenuIconColor || navbar.slug === "vgu" || navbar.slug === "lpu"
+                      ? "text-[#08417b] hover:bg-blue-50/50"
+                      : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
                   }
               `}
                 style={
@@ -688,7 +699,9 @@ export default function LandingNavbar({
                       backgroundColor:
                         navbar.mobileMenuBtnBg || primaryColor || "#002147",
                     }
-                    : {}
+                    : {
+                      color: navbar.mobileMenuIconColor || (navbar.slug === "vgu" || navbar.slug === "lpu" ? "#08417b" : undefined),
+                    }
                 }
                 onClick={() =>
                   setIsMobileNavOpen(
@@ -699,7 +712,7 @@ export default function LandingNavbar({
                 aria-expanded={isMobileNavOpen}
               >
                 <svg
-                  className="w-6 h-6"
+                  className={`w-7 h-7 transition-transform duration-300 ${isMobileNavOpen ? "rotate-90" : "rotate-0"}`}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -731,15 +744,18 @@ export default function LandingNavbar({
           MOBILE MENU DROPDOWN
       ================================================= */}
 
-        {navbar.navLinks?.length > 0 &&
-          isMobileNavOpen && (
-            <div className="md:hidden bg-white border-t border-slate-200 px-4 py-3 shadow-md">
-              <ul className="flex flex-col gap-2.5 list-none m-0 p-0">
+        {navbar.navLinks?.length > 0 && (
+          <div
+            className={`md:hidden grid transition-all duration-300 ease-in-out bg-white border-[#e5e9f0] shadow-2xl overflow-hidden ${isMobileNavOpen ? "grid-rows-[1fr] opacity-100 border-t" : "grid-rows-[0fr] opacity-0 border-t-0 pointer-events-none"}`}
+          >
+            <div className="overflow-hidden min-h-0">
+              <ul className="flex flex-col list-none m-0 p-0 w-full">
 
                 {navbar.navLinks.map(
                   (link, idx) => (
                     <li
                       key={`${link.label}-mobile-${idx}`}
+                      className="w-full border-b border-[#e5e9f0]"
                     >
                       <a
                         href={link.href}
@@ -751,12 +767,20 @@ export default function LandingNavbar({
                           );
                         }}
                         className="
-                        block
-                        py-1.5
-                        text-[15px]
-                        font-semibold
-                        text-slate-800
-                        hover:text-[#0055b8]
+                        w-full
+                        flex
+                        items-center
+                        justify-center
+                        text-center
+                        py-3.5
+                        px-4
+                        text-[16px]
+                        font-bold
+                        text-[#08417b]
+                        hover:text-[#002f6c]
+                        active:bg-slate-50
+                        transition-colors
+                        no-underline
                       "
                       >
                         {link.label}
@@ -766,8 +790,121 @@ export default function LandingNavbar({
                 )}
 
               </ul>
+
+              {/* Mobile Dropdown Scholarship Coupon Button */}
+              {isCouponVisible && (
+                <div className="w-full flex justify-center items-center pt-4 pb-5 px-4 bg-white">
+                  <Button
+                    type="text"
+                    onClick={(e) => {
+                      setIsMobileNavOpen(false);
+                      handleCouponClick(e);
+                    }}
+                    aria-label="Get Scholarship Coupon Code"
+                    style={{
+                      ...(couponBtnBg ||
+                        navbar.couponBtnBg ||
+                        navbar.themeGradient
+                        ? {
+                          "--coupon-btn-bg":
+                            couponBtnBg ||
+                            navbar.couponBtnBg ||
+                            navbar.themeGradient,
+                        }
+                        : couponButtonColor
+                          ? {
+                            backgroundColor:
+                              couponButtonColor,
+                          }
+                          : {
+                            backgroundColor:
+                              "#28a745",
+                          }),
+                      backgroundColor:
+                        couponButtonColor ||
+                        couponBtnBg ||
+                        "#28a745",
+                    }}
+                    className="
+                    coupon-btn-main
+                    relative
+                    inline-flex
+                    items-center
+                    justify-center
+                    gap-2.5
+                    px-6
+                    py-2.5
+                    rounded-[10px]
+                    !text-white
+                    font-bold
+                    text-[14px]
+                    sm:text-[15px]
+                    cursor-pointer
+                    !border-none
+                    overflow-hidden
+                    select-none
+                    shadow-[0_4px_14px_rgba(40,167,69,0.35)]
+                    hover:!brightness-105
+                    active:scale-95
+                    !h-auto
+                  "
+                  >
+                    {/* Moving Light Green Box */}
+                    <span className="moving-light-green-box" />
+
+                    {/* Gift Icon inside white circle */}
+                    <span
+                      className="
+                      relative
+                      w-6
+                      h-6
+                      rounded-full
+                      bg-white
+                      flex
+                      items-center
+                      justify-center
+                      shrink-0
+                      shadow-xs
+                      z-10
+                      p-0.5
+                      overflow-hidden
+                    "
+                    >
+                      <Image
+                        src={
+                          giftGif ||
+                          "/assets/images/gift.gif"
+                        }
+                        alt="Scholarship Gift"
+                        width={22}
+                        height={22}
+                        unoptimized
+                        className="w-5 h-5 object-contain"
+                      />
+                    </span>
+
+                    {/* Coupon Text */}
+                    <span
+                      className="
+                      relative
+                      z-10
+                      tracking-wide
+                      whitespace-nowrap
+                      text-white
+                      font-bold
+                      drop-shadow-[0_1px_2px_rgba(0,0,0,0.15)]
+                      text-[14px]
+                      sm:text-[14.5px]
+                    "
+                    >
+                      {couponButtonText || "Scholarship Coupon Code"}
+                    </span>
+                  </Button>
+                </div>
+              )}
             </div>
-          )}
+          </div>
+        )}
 
       </header>
     </>

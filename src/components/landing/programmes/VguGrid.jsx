@@ -48,7 +48,10 @@ export default function VguGrid({ programmes, brand = {}, onSelectCourseForBroch
 
                   {/* Content: Title, Subtitle, Description */}
                   <div className="pt-5 pb-3 px-4 text-center flex flex-col items-center">
-                    <h3 className="text-[26px] sm:text-[28px] font-extrabold text-black m-0 tracking-tight leading-none mb-2">
+                    <h3
+                      className="text-[26px] sm:text-[28px] font-extrabold m-0 tracking-tight leading-none mb-2"
+                      style={{ color: primaryColor }}
+                    >
                       {c.code || c.id?.toUpperCase() || c.title}
                     </h3>
                     <p className="text-[13px] sm:text-[13.5px] font-bold text-[#1f2937] mt-0 mb-3 leading-snug line-clamp-1">
@@ -75,7 +78,7 @@ export default function VguGrid({ programmes, brand = {}, onSelectCourseForBroch
                     type="button"
                     onClick={() => onOpenApply?.(c.code || c.title)}
                     style={{ backgroundColor: primaryColor }}
-                    className="hover:opacity-95 active:scale-95 text-white font-bold text-[11.5px] sm:text-[12px] py-2 px-4 rounded-[8px] inline-flex items-center justify-center shadow-xs transition-all cursor-pointer border-none shrink-0"
+                    className="hover:opacity-95 active:scale-95 text-white font-bold text-[11.5px] sm:text-[12px] py-2 px-4 rounded-full inline-flex items-center justify-center shadow-xs transition-all cursor-pointer border-none shrink-0"
                   >
                     <span>Apply Now</span>
                   </button>

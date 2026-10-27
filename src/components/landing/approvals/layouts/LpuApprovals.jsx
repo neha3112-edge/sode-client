@@ -3,6 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { normalizeApprovalItem } from "../ApprovalCard";
+import LandingContainer from "../../LandingContainer";
 
 export default function LpuApprovals({ approvals = [], brand = {} }) {
   const uniName = brand?.approvalsUniName || "LPU University";
@@ -10,8 +11,8 @@ export default function LpuApprovals({ approvals = [], brand = {} }) {
   const titlePart2 = brand?.approvalsTitlePart2 || "Approvals";
 
   return (
-    <section id="approvals" className="w-full bg-[#4d4d4d] text-white pt-5 sm:pt-7 md:pt-8 pb-6 sm:pb-7 md:pb-8 px-4 sm:px-6 lg:px-8 xl:px-12 scroll-mt-20">
-      <div className="w-full max-w-[1400px] mx-auto text-center">
+    <section id="approvals" className="w-full bg-[#4d4d4d] text-white pt-5 sm:pt-7 md:pt-8 pb-6 sm:pb-7 md:pb-8 scroll-mt-20">
+      <LandingContainer className="text-center px-3 sm:px-6">
         <h2 className="text-[22px] sm:text-[28px] lg:text-[34px] font-extrabold tracking-wide m-0 mb-5 sm:mb-6 md:mb-7 leading-tight">
           <span className="text-[#f58220] block sm:inline">{uniName}</span>{" "}
           <span className="text-white inline">{titlePart1} {titlePart2}</span>
@@ -52,7 +53,7 @@ export default function LpuApprovals({ approvals = [], brand = {} }) {
             );
           })}
         </div>
-      </div>
+      </LandingContainer>
     </section>
   );
 }

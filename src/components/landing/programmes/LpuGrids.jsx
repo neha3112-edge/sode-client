@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import LandingContainer from "../LandingContainer";
 
 export default function LpuGrids({ programmes, brand = {}, onSelectCourseForBrochure }) {
   const isPost = (c) =>
@@ -26,13 +27,13 @@ export default function LpuGrids({ programmes, brand = {}, onSelectCourseForBroc
 
   const renderGroup = (list, subTitle, mainTitle) => (
     <div>
-      <div className="pb-6">
+      <div className="pb-4 sm:pb-5">
         {mainTitle && (
-          <h2 className="text-3xl sm:text-4xl lg:text-[40px] text-[#b3b3b3] font-black tracking-tight leading-none m-0">
+          <h2 className="text-[23px] sm:text-[30px] lg:text-[34px] text-[#cccccc] font-bold tracking-tight leading-none m-0">
             {mainTitle}
           </h2>
         )}
-        <p className="text-[19px] sm:text-[22px] lg:text-[24px] text-[#f58220] font-semibold tracking-tight leading-[1.25] mt-1.5 sm:mt-2 m-0">
+        <p className="text-[15.5px] sm:text-[18px] lg:text-[20px] text-[#f58220] font-bold tracking-tight leading-[1.25] mt-1 sm:mt-1.5 m-0">
           {subTitle}
         </p>
       </div>
@@ -80,10 +81,10 @@ export default function LpuGrids({ programmes, brand = {}, onSelectCourseForBroc
 
   return (
     <section id="program" className="py-12 sm:py-16 bg-white">
-      <div className="max-w-[1240px] min-[1600px]:max-w-[1520px] min-[1920px]:max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+      <LandingContainer className="px-3 sm:px-6 space-y-12">
         {renderGroup(pgList, pgTitle, mainHeader)}
         {renderGroup(ugList, ugTitle)}
-      </div>
+      </LandingContainer>
     </section>
   );
 }

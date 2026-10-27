@@ -814,7 +814,11 @@ export default function LandingHero({
             )}
 
             {/* Mobile Scholarship Coupon Button */}
-            {(brand.showCouponBtn || brand.showCouponButton || hero.showCouponBtn || hero.showCouponButton) && (
+            {hero.showMobileCouponButton !== false &&
+              brand.showMobileCouponButton !== false &&
+              hero.hideMobileCouponButton !== true &&
+              brand.hideMobileCouponButton !== true &&
+              (brand.showCouponBtn || brand.showCouponButton || hero.showCouponBtn || hero.showCouponButton) && (
               <div className="w-full flex justify-center md:hidden mb-3">
                 <button
                   type="button"
@@ -871,7 +875,11 @@ export default function LandingHero({
               </div>
             )}
 
-            {(hero.showMobileCouponButton || brand.slug === "vgu") && brand.slug !== "lpu" && (
+            {hero.showMobileCouponButton === true &&
+              hero.hideMobileCouponButton !== true &&
+              brand.hideMobileCouponButton !== true &&
+              brand.slug !== "vgu" &&
+              brand.slug !== "lpu" && (
               <div className="w-full block lg:hidden my-2 mb-3.5 flex justify-center">
                 <Button
                   type="text"
@@ -1045,18 +1053,26 @@ export default function LandingHero({
           }
           style={hero.bottomStrip.style}
         >
-          <LandingContainer className="max-w-[1360px] min-[1600px]:max-w-[1520px] min-[1920px]:max-w-[1680px] px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+          <LandingContainer className={brand?.slug === "lpu" ? "px-3 sm:px-6" : "max-w-[1360px] min-[1600px]:max-w-[1520px] min-[1920px]:max-w-[1680px] px-4 sm:px-6 lg:px-8"}>
+            <div className={hero.bottomStrip.innerClassName || "flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left"}>
               <div>
                 {hero.bottomStrip.textHtml ? (
                   <p
-                    className="text-base sm:text-xl font-bold text-slate-800 m-0"
+                    className={
+                      hero.bottomStrip.textClassName ||
+                      "text-base sm:text-xl font-bold text-slate-800 m-0"
+                    }
                     dangerouslySetInnerHTML={{
                       __html: hero.bottomStrip.textHtml,
                     }}
                   />
                 ) : (
-                  <p className="text-base sm:text-xl font-bold text-slate-800 m-0">
+                  <p
+                    className={
+                      hero.bottomStrip.textClassName ||
+                      "text-base sm:text-xl font-bold text-slate-800 m-0"
+                    }
+                  >
                     {hero.bottomStrip.text}
                   </p>
                 )}

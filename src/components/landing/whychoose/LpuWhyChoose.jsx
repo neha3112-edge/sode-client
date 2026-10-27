@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import LandingContainer from "../LandingContainer";
 
 const DEFAULT_PEDAGOGY_CARDS = [
   {
@@ -54,7 +55,7 @@ export default function LpuWhyChoose({ whyChoose = [], brand = {} }) {
     <>
       {/* 1. Learning Pedagogy Section (White Background) */}
       <section id="pedagogy" className="py-12 sm:py-16 md:py-20 bg-white select-none">
-        <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
+        <LandingContainer className="px-3 sm:px-6">
           {/* Header (Left Aligned matching reference screenshot) */}
           <div className="text-left max-w-5xl">
             <h2 className="text-[26px] sm:text-3xl lg:text-[34px] font-bold text-slate-600 tracking-wide leading-tight m-0">
@@ -116,12 +117,12 @@ export default function LpuWhyChoose({ whyChoose = [], brand = {} }) {
               );
             })}
           </div>
-        </div>
+        </LandingContainer>
       </section>
 
       {/* 2. Placement Support Services Section (Light Gray Background) */}
       <section id="placement-support" className="py-12 sm:py-16 md:py-20 bg-[#f8f9fa] select-none text-center">
-        <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
+        <LandingContainer className="px-3 sm:px-6">
           <div className="max-w-3xl mx-auto px-2">
             <h2 className="text-[24px] sm:text-[30px] lg:text-[34px] font-bold text-slate-700 tracking-tight leading-tight m-0">
               {placementTitle}
@@ -162,7 +163,7 @@ export default function LpuWhyChoose({ whyChoose = [], brand = {} }) {
               );
             })}
           </div>
-        </div>
+        </LandingContainer>
       </section>
     </>
   );
