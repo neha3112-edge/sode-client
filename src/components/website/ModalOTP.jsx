@@ -94,7 +94,7 @@ export default function ModalOTP({
           if (names.length > 0) setStateOptions(names);
         }
       })
-      .catch(() => {});
+      .catch(() => { });
     return () => {
       isMounted = false;
     };
@@ -113,7 +113,7 @@ export default function ModalOTP({
           if (names.length > 0) setCourseOptions(names);
         }
       })
-      .catch(() => {});
+      .catch(() => { });
     return () => {
       isMounted = false;
     };
@@ -451,429 +451,425 @@ export default function ModalOTP({
           if (e.target === e.currentTarget) handleClose();
         }}
       >
-      <div
-        className="relative w-full max-w-[390px] md:max-w-[740px] bg-white rounded-2xl md:rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row font-sans m-auto animate-in zoom-in-95 duration-200"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* ==========================================
+        <div
+          className="relative w-full max-w-[390px] md:max-w-[740px] bg-white rounded-2xl md:rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row font-sans m-auto animate-in zoom-in-95 duration-200"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* ==========================================
             ❌ CLOSE BUTTON (Over Image on Mobile, Top-Right on Desktop)
         ========================================== */}
-        <button
-          type="button"
-          onClick={handleClose}
-          aria-label="Close"
-          className="absolute top-2.5 right-2.5 md:top-3.5 md:right-3.5 z-30 w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer border-none shadow-xs text-white bg-black/40 hover:bg-black/60 md:text-slate-500 md:bg-slate-100 md:hover:bg-slate-200 md:hover:text-slate-800"
-        >
-          <X size={18} className="stroke-[2.5]" />
-        </button>
-
-        {/* ==========================================
-            ⬅️ BACK BUTTON (When step !== 'phone')
-        ========================================== */}
-        {step !== "phone" && (
           <button
             type="button"
-            onClick={handleBack}
-            aria-label="Back"
-            className="absolute top-2.5 left-2.5 md:top-3.5 md:left-[44%] z-30 w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer border-none shadow-xs text-white bg-black/40 hover:bg-black/60 md:text-slate-600 md:bg-slate-100 md:hover:bg-slate-200 md:hover:text-slate-900"
+            onClick={handleClose}
+            aria-label="Close"
+            className="absolute top-2.5 right-2.5 md:top-3.5 md:right-3.5 z-30 w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer border-none shadow-xs text-white bg-black/40 hover:bg-black/60 md:text-slate-500 md:bg-slate-100 md:hover:bg-slate-200 md:hover:text-slate-800"
           >
-            <ArrowLeft size={18} className="stroke-[2.5]" />
+            <X size={18} className="stroke-[2.5]" />
           </button>
-        )}
 
-        {/* ==========================================
+          {/* ==========================================
+            ⬅️ BACK BUTTON (When step !== 'phone')
+        ========================================== */}
+          {step !== "phone" && (
+            <button
+              type="button"
+              onClick={handleBack}
+              aria-label="Back"
+              className="absolute top-2.5 left-2.5 md:top-3.5 md:left-[44%] z-30 w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer border-none shadow-xs text-white bg-black/40 hover:bg-black/60 md:text-slate-600 md:bg-slate-100 md:hover:bg-slate-200 md:hover:text-slate-900"
+            >
+              <ArrowLeft size={18} className="stroke-[2.5]" />
+            </button>
+          )}
+
+          {/* ==========================================
             💻 DESKTOP LEFT BANNER (hidden on mobile, uses next/image)
         ========================================== */}
-        <div className="hidden md:block md:w-[42%] bg-[#1E6FD9] relative shrink-0 self-start overflow-hidden">
-          <Image
-            src="/counseling-modal-desktop.png"
-            alt="Learn Online. Grow Your Career."
-            width={362}
-            height={632}
-            priority
-            sizes="(max-width: 768px) 100vw, 310px"
-            className="w-full h-auto block"
-          />
-        </div>
+          <div className="hidden md:block md:w-[42%] bg-[#1E6FD9] relative shrink-0 self-start overflow-hidden">
+            <Image
+              src="/counseling-modal-desktop.png"
+              alt="Learn Online. Grow Your Career."
+              width={362}
+              height={632}
+              priority
+              sizes="(max-width: 768px) 100vw, 310px"
+              className="w-full h-auto block"
+            />
+          </div>
 
-        {/* ==========================================
+          {/* ==========================================
             📱 MOBILE TOP BANNER (hidden on desktop, uses next/image)
         ========================================== */}
-        <div className="block md:hidden w-full bg-[#1E6FD9] relative shrink-0 overflow-hidden">
-          <Image
-            src="/counseling-modal-mobile.png"
-            alt="Learn Online. Grow Your Career."
-            width={308}
-            height={103}
-            priority
-            sizes="(max-width: 480px) 100vw, 390px"
-            className="w-full h-auto block"
-          />
-        </div>
+          <div className="block md:hidden w-full bg-[#1E6FD9] relative shrink-0 overflow-hidden">
+            <Image
+              src="/counseling-modal-mobile.png"
+              alt="Learn Online. Grow Your Career."
+              width={308}
+              height={103}
+              priority
+              sizes="(max-width: 480px) 100vw, 390px"
+              className="w-full h-auto block"
+            />
+          </div>
 
-        {/* ==========================================
+          {/* ==========================================
             FORM CONTENT (Right Side Desktop / Bottom Mobile)
         ========================================== */}
-        <div className="w-full md:w-[58%] p-6 sm:p-8 md:p-9 flex flex-col justify-center items-center relative bg-white self-stretch min-h-full">
-          <Form
-            form={form}
-            layout="vertical"
-            requiredMark={false}
-            validateTrigger="onSubmit"
-            className="w-full my-auto flex flex-col justify-center"
-          >
-            {/* ==========================================
+          <div className="w-full md:w-[58%] p-6 sm:p-8 md:p-9 flex flex-col justify-center items-center relative bg-white self-stretch min-h-full">
+            <Form
+              form={form}
+              layout="vertical"
+              requiredMark={false}
+              validateTrigger="onSubmit"
+              className="w-full my-auto flex flex-col justify-center"
+            >
+              {/* ==========================================
                 STEP 1: PHONE NUMBER
             ========================================== */}
-            {step === "phone" && (
-              <>
-                <div className="text-center mb-5">
-                  <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center">
-                    Book 1:1 Free Counseling
-                  </h2>
-                  <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center">
-                    Enter your mobile number to receive an OTP
-                  </p>
-                </div>
+              {step === "phone" && (
+                <>
+                  <div className="text-center mb-5">
+                    <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center">
+                      Book 1:1 Free Counseling
+                    </h2>
+                    <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center">
+                      Enter your mobile number to receive an OTP
+                    </p>
+                  </div>
 
-                <Form.Item
-                  name="phone"
-                  validateTrigger="onSubmit"
-                  rules={[
-                    { required: true, message: "Please enter your mobile number" },
-                    {
-                      validator: (_, value) => {
-                        const clean = String(value || "").replace(/\D/g, "").slice(-10);
-                        if (!clean || clean.length !== 10 || !/^[6-9]\d{9}$/.test(clean)) {
-                          return Promise.reject(new Error("Please enter a valid 10-digit mobile number"));
-                        }
-                        return Promise.resolve();
+                  <Form.Item
+                    name="phone"
+                    validateTrigger="onSubmit"
+                    rules={[
+                      { required: true, message: "Please enter your mobile number" },
+                      {
+                        validator: (_, value) => {
+                          const clean = String(value || "").replace(/\D/g, "").slice(-10);
+                          if (!clean || clean.length !== 10 || !/^[6-9]\d{9}$/.test(clean)) {
+                            return Promise.reject(new Error("Please enter a valid 10-digit mobile number"));
+                          }
+                          return Promise.resolve();
+                        },
                       },
-                    },
-                  ]}
-                  className="mb-0"
-                >
-                  <Input
-                    type="tel"
-                    inputMode="numeric"
-                    autoFocus
-                    maxLength={10}
-                    placeholder="Enter your mobile number"
-                    onChange={() => {
-                      form.setFields([{ name: "phone", errors: [] }]);
-                    }}
-                    prefix={
-                      <div className="flex items-center gap-1.5 pr-2.5 border-r border-slate-300 shrink-0 select-none mr-2">
-                        <IndiaFlagIcon />
-                        <span className="text-xs sm:text-sm font-bold text-slate-800">+91</span>
-                      </div>
-                    }
-                    className="rounded-xl h-11 text-xs sm:text-sm font-semibold border-slate-300 hover:border-blue-500 focus:border-blue-600"
-                  />
-                </Form.Item>
+                    ]}
+                    className="mb-0"
+                  >
+                    <Input
+                      type="tel"
+                      inputMode="numeric"
+                      autoFocus
+                      maxLength={10}
+                      placeholder="Enter your mobile number"
+                      onChange={() => {
+                        form.setFields([{ name: "phone", errors: [] }]);
+                      }}
+                      prefix={
+                        <div className="flex items-center gap-1.5 pr-2.5 border-r border-slate-300 shrink-0 select-none mr-2">
+                          <IndiaFlagIcon />
+                          <span className="text-xs sm:text-sm font-bold text-slate-800">+91</span>
+                        </div>
+                      }
+                      className="rounded-xl h-11 text-xs sm:text-sm font-semibold border-slate-300 hover:border-blue-500 focus:border-blue-600"
+                    />
+                  </Form.Item>
 
-                <Button
-                  type="primary"
-                  loading={loading}
-                  onClick={handleSendOtp}
-                  className="w-full mt-4 h-11 rounded-xl font-bold text-sm sm:text-base text-white bg-[#1A73E8] hover:bg-[#1565C0]! border-none flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 cursor-pointer"
-                >
-                  {loading ? "Sending OTP..." : "Get OTP"}
-                  {!loading && <ArrowRight size={16} className="stroke-[2.5]" />}
-                </Button>
+                  <Button
+                    type="primary"
+                    loading={loading}
+                    onClick={handleSendOtp}
+                    className="w-full mt-4 h-11 rounded-xl font-bold text-sm sm:text-base text-white bg-[#1A73E8] hover:bg-[#1565C0]! border-none flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 cursor-pointer"
+                  >
+                    {loading ? "Sending OTP..." : "Get OTP"}
+                    {!loading && <ArrowRight size={16} className="stroke-[2.5]" />}
+                  </Button>
 
-                <Form.Item
-                  name="consent"
-                  valuePropName="checked"
-                  initialValue={true}
-                  validateTrigger="onSubmit"
-                  rules={[
-                    {
-                      validator: (_, val) =>
-                        val ? Promise.resolve() : Promise.reject(new Error("Please accept the terms to proceed")),
-                    },
-                  ]}
-                  className="mt-3.5 mb-0"
-                >
-                  <Checkbox className="text-[9.5px] sm:text-[10.5px] text-slate-500 leading-snug">
-                    I consent to share my details with UGC-DEB approved universities &amp; receive
-                    updates via mail/mobile.{" "}
-                    <a
-                      href="/disclaimer"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[#1A73E8] font-bold hover:underline"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      Disclaimer
-                    </a>
-                  </Checkbox>
-                </Form.Item>
-              </>
-            )}
+                  <Form.Item
+                    name="consent"
+                    valuePropName="checked"
+                    initialValue={true}
+                    validateTrigger="onSubmit"
+                    rules={[
+                      {
+                        validator: (_, val) =>
+                          val ? Promise.resolve() : Promise.reject(new Error("Please accept the terms to proceed")),
+                      },
+                    ]}
+                    className="mt-3.5 mb-0"
+                  >
+                    <Checkbox className="text-[9.5px] sm:text-[10.5px] text-slate-500 leading-snug">
+                      I consent to share my details with UGC-DEB approved universities &amp; receive
+                      updates via mail/mobile.{" "}
+                      <a
+                        href="/disclaimer"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[#1A73E8] font-bold hover:underline"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Disclaimer
+                      </a>
+                    </Checkbox>
+                  </Form.Item>
+                </>
+              )}
 
-            {/* ==========================================
+              {/* ==========================================
                 STEP 2: VERIFY OTP
             ========================================== */}
-            {step === "otp" && (
-              <>
-                <div className="text-center mb-5">
-                  <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center">
-                    Verify Your Number
-                  </h2>
-                  <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center">
-                    We've sent a 6-digit OTP to your WhatsApp number +91 {phone}{" "}
-                    <button
-                      type="button"
-                      onClick={() => setStep("phone")}
-                      className="text-[#1A73E8] font-bold hover:underline cursor-pointer border-none bg-transparent p-0 inline ml-1"
-                    >
-                      Edit
-                    </button>
-                  </p>
-                </div>
+              {step === "otp" && (
+                <>
+                  <div className="text-center mb-5">
+                    <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center">
+                      Verify Your Number
+                    </h2>
+                    <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center">
+                      We've sent a 6-digit OTP to your WhatsApp number +91 {phone}{" "}
+                      <button
+                        type="button"
+                        onClick={() => setStep("phone")}
+                        className="text-[#1A73E8] font-bold hover:underline cursor-pointer border-none bg-transparent p-0 inline ml-1"
+                      >
+                        Edit
+                      </button>
+                    </p>
+                  </div>
 
-                <Form.Item
-                  name="otp"
-                  validateTrigger="onSubmit"
-                  rules={[
-                    { required: true, message: "Please enter the complete OTP" },
-                    {
-                      validator: (_, val) => {
-                        const str = String(val || "").trim();
-                        if (!str || str.length < 6) {
-                          return Promise.reject(new Error("Please enter a valid 6-digit OTP"));
-                        }
-                        return Promise.resolve();
+                  <Form.Item
+                    name="otp"
+                    validateTrigger="onSubmit"
+                    rules={[
+                      { required: true, message: "Please enter the complete OTP" },
+                      {
+                        validator: (_, val) => {
+                          const str = String(val || "").trim();
+                          if (!str || str.length < 6) {
+                            return Promise.reject(new Error("Please enter a valid 6-digit OTP"));
+                          }
+                          return Promise.resolve();
+                        },
                       },
-                    },
-                  ]}
-                  className="mb-0 text-center [&_.ant-form-item-control-input-content]:flex [&_.ant-form-item-control-input-content]:justify-center"
-                >
-                  <Input.OTP
-                    length={6}
-                    size="large"
-                    autoFocus
-                    onChange={() => {
-                      form.setFields([{ name: "otp", errors: [] }]);
-                    }}
-                    className="my-2 [&_input]:w-10! [&_input]:h-11! sm:[&_input]:w-12! sm:[&_input]:h-13! [&_input]:text-base! sm:[&_input]:text-lg! [&_input]:font-black! [&_input]:rounded-xl!"
-                  />
-                </Form.Item>
+                    ]}
+                    className="mb-0 text-center [&_.ant-form-item-control-input-content]:flex [&_.ant-form-item-control-input-content]:justify-center"
+                  >
+                    <Input.OTP
+                      length={6}
+                      size="large"
+                      autoFocus
+                      onChange={() => {
+                        form.setFields([{ name: "otp", errors: [] }]);
+                      }}
+                      className="my-2 [&_input]:w-10! [&_input]:h-11! sm:[&_input]:w-12! sm:[&_input]:h-13! [&_input]:text-base! sm:[&_input]:text-lg! [&_input]:font-black! [&_input]:rounded-xl!"
+                    />
+                  </Form.Item>
 
-                <div className="mt-3 mb-2 flex items-center justify-center text-xs font-semibold">
-                  {canResend ? (
-                    <button
-                      type="button"
-                      onClick={handleResendOtp}
-                      className="text-[#1A73E8] hover:underline font-bold cursor-pointer border-none bg-transparent p-0"
-                    >
-                      Resend OTP
-                    </button>
-                  ) : (
-                    <span className="text-[#1A73E8] font-medium">
-                      Resend OTP (00:{String(resendTimer).padStart(2, "0")})
-                    </span>
-                  )}
-                </div>
+                  <div className="mt-3 mb-2 flex items-center justify-center text-xs font-semibold">
+                    {canResend ? (
+                      <button
+                        type="button"
+                        onClick={handleResendOtp}
+                        className="text-[#1A73E8] hover:underline font-bold cursor-pointer border-none bg-transparent p-0"
+                      >
+                        Resend OTP
+                      </button>
+                    ) : (
+                      <span className="text-[#1A73E8] font-medium">
+                        Resend OTP (00:{String(resendTimer).padStart(2, "0")})
+                      </span>
+                    )}
+                  </div>
 
-                <Button
-                  type="primary"
-                  loading={loading}
-                  onClick={handleVerifyOtp}
-                  className="w-full mt-4 h-11 rounded-xl font-bold text-sm sm:text-base text-white bg-[#1A73E8] hover:bg-[#1565C0]! border-none flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 cursor-pointer"
-                >
-                  {loading ? "Verifying..." : "Verify & Continue"}
-                  {!loading && <ArrowRight size={16} className="stroke-[2.5]" />}
-                </Button>
-              </>
-            )}
+                  <Button
+                    type="primary"
+                    loading={loading}
+                    onClick={handleVerifyOtp}
+                    className="w-full mt-4 h-11 rounded-xl font-bold text-sm sm:text-base text-white bg-[#1A73E8] hover:bg-[#1565C0]! border-none flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 cursor-pointer"
+                  >
+                    {loading ? "Verifying..." : "Verify & Continue"}
+                    {!loading && <ArrowRight size={16} className="stroke-[2.5]" />}
+                  </Button>
+                </>
+              )}
 
-            {/* ==========================================
+              {/* ==========================================
                 STEP 3: EMAIL ADDRESS
             ========================================== */}
-            {step === "email" && (
-              <>
-                <div className="text-center mb-5">
-                  <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center">
-                    Your Email Address
-                  </h2>
-                  <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center">
-                    Enter your email address to get updates and important information.
-                  </p>
-                </div>
+              {step === "email" && (
+                <>
+                  <div className="text-center mb-5">
+                    <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center">
+                      Your Email Address
+                    </h2>
+                    <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center">
+                      Enter your email address to get updates and important information.
+                    </p>
+                  </div>
 
-                <Form.Item
-                  name="email"
-                  validateTrigger="onSubmit"
-                  rules={[
-                    { required: true, message: "Please enter your email address" },
-                    { type: "email", message: "Please enter a valid email address" },
-                  ]}
-                  className="mb-0"
-                >
-                  <Input
-                    type="email"
-                    autoFocus
-                    placeholder="Enter your Email Address"
-                    onChange={() => form.setFields([{ name: "email", errors: [] }])}
-                    prefix={<Mail size={16} className="text-slate-400 mr-2 shrink-0" />}
-                    className="rounded-xl h-11 text-xs sm:text-sm font-semibold border-slate-300 hover:border-blue-500 focus:border-blue-600"
-                  />
-                </Form.Item>
+                  <Form.Item
+                    name="email"
+                    validateTrigger="onSubmit"
+                    rules={[
+                      { required: true, message: "Please enter your email address" },
+                      { type: "email", message: "Please enter a valid email address" },
+                    ]}
+                    className="mb-0"
+                  >
+                    <Input
+                      type="email"
+                      autoFocus
+                      placeholder="Enter your Email Address"
+                      onChange={() => form.setFields([{ name: "email", errors: [] }])}
+                      prefix={<Mail size={16} className="text-slate-400 mr-2 shrink-0" />}
+                      className="rounded-xl h-11 text-xs sm:text-sm font-semibold border-slate-300 hover:border-blue-500 focus:border-blue-600"
+                    />
+                  </Form.Item>
 
-                <Button
-                  type="primary"
-                  onClick={handleNextToCourse}
-                  className="w-full mt-5 h-11 rounded-xl font-bold text-sm sm:text-base text-white bg-[#1A73E8] hover:bg-[#1565C0]! border-none flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 cursor-pointer"
-                >
-                  Continue
-                  <ArrowRight size={16} className="stroke-[2.5]" />
-                </Button>
-              </>
-            )}
+                  <Button
+                    type="primary"
+                    onClick={handleNextToCourse}
+                    className="w-full mt-5 h-11 rounded-xl font-bold text-sm sm:text-base text-white bg-[#1A73E8] hover:bg-[#1565C0]! border-none flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 cursor-pointer"
+                  >
+                    Continue
+                    <ArrowRight size={16} className="stroke-[2.5]" />
+                  </Button>
+                </>
+              )}
 
-            {/* ==========================================
+              {/* ==========================================
                 STEP 4: COURSE SELECTION
             ========================================== */}
-            {step === "course" && (
-              <>
-                <div className="text-center mb-5">
-                  <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center">
-                    Select Course
-                  </h2>
-                  <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center">
-                    Choose the course or degree program you are interested in.
-                  </p>
-                </div>
+              {step === "course" && (
+                <>
+                  <div className="text-center mb-5">
+                    <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center">
+                      Select Course
+                    </h2>
+                    <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center">
+                      Choose the course or degree program you are interested in.
+                    </p>
+                  </div>
 
-                <Form.Item
-                  name="course"
-                  validateTrigger="onSubmit"
-                  rules={[{ required: true, message: "Please select your course" }]}
-                  className="mb-0"
-                >
-                  <Select
-                    showSearch
-                    autoFocus
-                    placeholder="Select Course"
-                    onChange={() => form.setFields([{ name: "course", errors: [] }])}
-                    prefix={<GraduationCap size={16} className="text-slate-400 mr-1 shrink-0" />}
-                    className="w-full h-11 rounded-xl text-xs sm:text-sm font-semibold [&_.ant-select-selector]:rounded-xl! [&_.ant-select-selector]:h-11! [&_.ant-select-selector]:flex! [&_.ant-select-selector]:items-center!"
-                    popupClassName="!z-[100005] select-dropdown-high-z shadow-2xl rounded-xl"
-                    dropdownStyle={{ zIndex: 100005 }}
-                    options={courseOptions.map((c) => ({ label: c, value: c }))}
-                    filterOption={(input, option) =>
-                      (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-                    }
-                  />
-                </Form.Item>
+                  <Form.Item
+                    name="course"
+                    validateTrigger="onSubmit"
+                    rules={[{ required: true, message: "Please select your course" }]}
+                    className="mb-0"
+                  >
+                    <Select
+                      showSearch
+                      autoFocus
+                      placeholder="Select Course"
+                      onChange={() => form.setFields([{ name: "course", errors: [] }])}
+                      prefix={<GraduationCap size={16} className="text-slate-400 mr-1 shrink-0" />}
+                      className="w-full h-11 rounded-xl text-xs sm:text-sm font-semibold [&_.ant-select-selector]:rounded-xl! [&_.ant-select-selector]:h-11! [&_.ant-select-selector]:flex! [&_.ant-select-selector]:items-center!"
+                      options={courseOptions.map((c) => ({ label: c, value: c }))}
+                      filterOption={(input, option) =>
+                        (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                      }
+                    />
+                  </Form.Item>
 
-                <Button
-                  type="primary"
-                  onClick={handleNextToState}
-                  className="w-full mt-5 h-11 rounded-xl font-bold text-sm sm:text-base text-white bg-[#1A73E8] hover:bg-[#1565C0]! border-none flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 cursor-pointer"
-                >
-                  Continue
-                  <ArrowRight size={16} className="stroke-[2.5]" />
-                </Button>
-              </>
-            )}
+                  <Button
+                    type="primary"
+                    onClick={handleNextToState}
+                    className="w-full mt-5 h-11 rounded-xl font-bold text-sm sm:text-base text-white bg-[#1A73E8] hover:bg-[#1565C0]! border-none flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 cursor-pointer"
+                  >
+                    Continue
+                    <ArrowRight size={16} className="stroke-[2.5]" />
+                  </Button>
+                </>
+              )}
 
-            {/* ==========================================
+              {/* ==========================================
                 STEP 5: YOUR STATE
             ========================================== */}
-            {step === "state" && (
-              <>
-                <div className="text-center mb-5">
-                  <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center">
-                    Your State
-                  </h2>
-                  <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center">
-                    Please select your state as per your official ID or documents.
-                  </p>
-                </div>
+              {step === "state" && (
+                <>
+                  <div className="text-center mb-5">
+                    <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center">
+                      Your State
+                    </h2>
+                    <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center">
+                      Please select your state as per your official ID or documents.
+                    </p>
+                  </div>
 
-                <Form.Item
-                  name="state"
-                  validateTrigger="onSubmit"
-                  rules={[{ required: true, message: "Please select your state" }]}
-                  className="mb-0"
-                >
-                  <Select
-                    showSearch
-                    autoFocus
-                    placeholder="Select State"
-                    onChange={() => form.setFields([{ name: "state", errors: [] }])}
-                    prefix={<MapPin size={16} className="text-slate-400 mr-1 shrink-0" />}
-                    className="w-full h-11 rounded-xl text-xs sm:text-sm font-semibold [&_.ant-select-selector]:rounded-xl! [&_.ant-select-selector]:h-11! [&_.ant-select-selector]:flex! [&_.ant-select-selector]:items-center!"
-                    popupClassName="!z-[100005] select-dropdown-high-z shadow-2xl rounded-xl"
-                    dropdownStyle={{ zIndex: 100005 }}
-                    options={stateOptions.map((st) => ({ label: st, value: st }))}
-                    filterOption={(input, option) =>
-                      (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-                    }
-                  />
-                </Form.Item>
+                  <Form.Item
+                    name="state"
+                    validateTrigger="onSubmit"
+                    rules={[{ required: true, message: "Please select your state" }]}
+                    className="mb-0"
+                  >
+                    <Select
+                      showSearch
+                      autoFocus
+                      placeholder="Select State"
+                      onChange={() => form.setFields([{ name: "state", errors: [] }])}
+                      prefix={<MapPin size={16} className="text-slate-400 mr-1 shrink-0" />}
+                      className="w-full h-11 rounded-xl text-xs sm:text-sm font-semibold [&_.ant-select-selector]:rounded-xl! [&_.ant-select-selector]:h-11! [&_.ant-select-selector]:flex! [&_.ant-select-selector]:items-center!"
+                      options={stateOptions.map((st) => ({ label: st, value: st }))}
+                      filterOption={(input, option) =>
+                        (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                      }
+                    />
+                  </Form.Item>
 
-                <Button
-                  type="primary"
-                  onClick={handleNextToName}
-                  className="w-full mt-5 h-11 rounded-xl font-bold text-sm sm:text-base text-white bg-[#1A73E8] hover:bg-[#1565C0]! border-none flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 cursor-pointer"
-                >
-                  Continue
-                  <ArrowRight size={16} className="stroke-[2.5]" />
-                </Button>
-              </>
-            )}
+                  <Button
+                    type="primary"
+                    onClick={handleNextToName}
+                    className="w-full mt-5 h-11 rounded-xl font-bold text-sm sm:text-base text-white bg-[#1A73E8] hover:bg-[#1565C0]! border-none flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 cursor-pointer"
+                  >
+                    Continue
+                    <ArrowRight size={16} className="stroke-[2.5]" />
+                  </Button>
+                </>
+              )}
 
-            {/* ==========================================
+              {/* ==========================================
                 STEP 6: FULL NAME (FINAL STEP)
             ========================================== */}
-            {step === "name" && (
-              <>
-                <div className="text-center mb-5">
-                  <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center">
-                    Your Full Name
-                  </h2>
-                  <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center">
-                    Please enter your full name as per your official ID or documents.
-                  </p>
-                </div>
+              {step === "name" && (
+                <>
+                  <div className="text-center mb-5">
+                    <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center">
+                      Your Full Name
+                    </h2>
+                    <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center">
+                      Please enter your full name as per your official ID or documents.
+                    </p>
+                  </div>
 
-                <Form.Item
-                  name="name"
-                  validateTrigger="onSubmit"
-                  rules={[
-                    { required: true, message: "Please enter your full name" },
-                    { min: 2, message: "Name must be at least 2 characters" },
-                  ]}
-                  className="mb-0"
-                >
-                  <Input
-                    type="text"
-                    autoFocus
-                    placeholder="Enter your Name"
-                    onChange={() => form.setFields([{ name: "name", errors: [] }])}
-                    prefix={<User size={16} className="text-slate-400 mr-2 shrink-0" />}
-                    className="rounded-xl h-11 text-xs sm:text-sm font-semibold border-slate-300 hover:border-blue-500 focus:border-blue-600"
-                  />
-                </Form.Item>
+                  <Form.Item
+                    name="name"
+                    validateTrigger="onSubmit"
+                    rules={[
+                      { required: true, message: "Please enter your full name" },
+                      { min: 2, message: "Name must be at least 2 characters" },
+                    ]}
+                    className="mb-0"
+                  >
+                    <Input
+                      type="text"
+                      autoFocus
+                      placeholder="Enter your Name"
+                      onChange={() => form.setFields([{ name: "name", errors: [] }])}
+                      prefix={<User size={16} className="text-slate-400 mr-2 shrink-0" />}
+                      className="rounded-xl h-11 text-xs sm:text-sm font-semibold border-slate-300 hover:border-blue-500 focus:border-blue-600"
+                    />
+                  </Form.Item>
 
-                <Button
-                  type="primary"
-                  loading={loading}
-                  onClick={handleFinalSubmit}
-                  className="w-full mt-5 h-11 rounded-xl font-bold text-sm sm:text-base text-white bg-[#1A73E8] hover:bg-[#1565C0]! border-none flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 cursor-pointer"
-                >
-                  {loading ? "Submitting..." : "Submit"}
-                </Button>
-              </>
-            )}
-          </Form>
+                  <Button
+                    type="primary"
+                    loading={loading}
+                    onClick={handleFinalSubmit}
+                    className="w-full mt-5 h-11 rounded-xl font-bold text-sm sm:text-base text-white bg-[#1A73E8] hover:bg-[#1565C0]! border-none flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 cursor-pointer"
+                  >
+                    {loading ? "Submitting..." : "Submit"}
+                  </Button>
+                </>
+              )}
+            </Form>
+          </div>
         </div>
       </div>
-    </div>
-  </>
-);
+    </>
+  );
 }
