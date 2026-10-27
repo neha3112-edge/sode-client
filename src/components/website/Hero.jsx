@@ -810,24 +810,35 @@ export function Hero({ initialHeroData = null }) {
     const cleanTitle = rawTitle.replace(/\s+/g, " ").trim();
     const lower = cleanTitle.toLowerCase();
 
-    // 1️⃣ Slide 1: IITs / IIMs & Leading B-Schools
+    // 1️⃣ Slide 1: IITs / IIMs & Leading B-Schools (matches media_1793129423597_bc48a743.webp)
     if (lower.includes("iits, iims") || lower.includes("b-schools") || lower.includes("certifications & online")) {
       return (
-        <h2 className="text-[13.5px] xs:text-[15.5px] sm:text-base font-black leading-[1.18] tracking-tight m-0 font-sans text-[#F6DE95]">
-          Certifications &amp; Online Degree Courses from IITs, IIMs Leading Global B-Schools
-        </h2>
+        <div className="flex flex-col m-0 leading-tight">
+          <span className="text-[12.5px] xs:text-[14.5px] font-black leading-[1.15] text-[#F6DE95] font-sans tracking-tight block">
+            Certifications &amp; Online
+          </span>
+          <span className="text-[12.5px] xs:text-[14.5px] font-black leading-[1.15] text-[#F6DE95] font-sans tracking-tight block">
+            Degree Courses from
+          </span>
+          <span className="text-[12.5px] xs:text-[14.5px] font-black leading-[1.15] text-white font-sans tracking-tight block">
+            IITs, IIMs  Leading
+          </span>
+          <span className="text-[12.5px] xs:text-[14.5px] font-black leading-[1.15] text-white font-sans tracking-tight block">
+            Global B-Schools
+          </span>
+        </div>
       );
     }
 
-    // 2️⃣ Slide 4: Governor of Kerala (matches media_1793126071040_20c7c9e3.png)
+    // 2️⃣ Slide 4: Governor of Kerala (matches media_1793129416069_7b3e1992.webp)
     if (lower.includes("governor") || lower.includes("arif mohammed khan")) {
       return (
-        <div className="flex flex-col space-y-1 m-0">
+        <div className="flex flex-col space-y-0.5 m-0">
           <div className="flex flex-col leading-none">
-            <span className="text-[20px] xs:text-[23px] sm:text-[26px] font-black tracking-tight leading-[0.92] font-sans uppercase text-[#965D2C] block">
+            <span className="text-[20px] xs:text-[23px] sm:text-[25px] font-black tracking-tight leading-[0.92] font-sans uppercase text-[#965D2C] block">
               GOVERNOR
             </span>
-            <span className="text-[20px] xs:text-[23px] sm:text-[26px] font-black tracking-tight leading-[0.92] font-sans uppercase text-[#965D2C] block">
+            <span className="text-[20px] xs:text-[23px] sm:text-[25px] font-black tracking-tight leading-[0.92] font-sans uppercase text-[#965D2C] block">
               OF KERALA
             </span>
           </div>
@@ -843,36 +854,45 @@ export function Hero({ initialHeroData = null }) {
       );
     }
 
-    // 3️⃣ Slide 3: 5 Lakh+ Students Found Their Right Career Path
+    // 3️⃣ Slide 3: 5 Lakh+ Students (matches media_1793129407713_63d6e6a1.webp)
     if (lower.includes("5 lakh")) {
       return (
-        <div className="flex flex-col m-0 leading-tight">
-          <span className="text-[23px] xs:text-[27px] font-black tracking-tight leading-none text-[#F6DE95] block">
+        <div className="flex flex-col m-0 leading-none">
+          <span className="text-[24px] xs:text-[28px] font-black tracking-tight leading-none text-[#F6DE95] block">
             5 Lakh+
           </span>
-          <span className="text-[12.5px] xs:text-[14.5px] font-black tracking-tight leading-tight text-white block pt-0.5">
-            Students Found Their Right Career Path
+          <span className="text-[12.5px] xs:text-[14.5px] font-black tracking-tight leading-[1.18] text-white block pt-1">
+            Students Found Their
+          </span>
+          <span className="text-[12.5px] xs:text-[14.5px] font-black tracking-tight leading-[1.18] text-white block">
+            Right Career Path
           </span>
         </div>
       );
     }
 
-    // 4️⃣ Slide 2: Compare 50+ Universities Choose with Confidence
+    // 4️⃣ Slide 2: Compare 50+ Universities (matches media_1793129399942_b4d86072.webp)
     if (lower.includes("compare") && (cleanTitle.includes("50+") || lower.includes("universities"))) {
       return (
-        <div className="flex flex-col m-0 leading-tight">
-          <span className="text-[16px] xs:text-[19px] font-black tracking-tight leading-none text-[#072C50] block">
-            Compare <span className="text-[#965D2C]">50+ Universities</span>
+        <div className="flex flex-col m-0 leading-[1.05]">
+          <span className="text-[18px] xs:text-[21px] font-black tracking-tight text-[#072C50] font-sans block">
+            Compare
           </span>
-          <span className="text-[16px] xs:text-[19px] font-black tracking-tight leading-none text-[#072C50] block pt-0.5">
-            Choose with Confidence
+          <span className="text-[18px] xs:text-[21px] font-black tracking-tight text-[#965D2C] font-sans block">
+            50+ Universities
+          </span>
+          <span className="text-[18px] xs:text-[21px] font-black tracking-tight text-[#072C50] font-sans block pt-0.5">
+            Choose with
+          </span>
+          <span className="text-[18px] xs:text-[21px] font-black tracking-tight text-[#072C50] font-sans block">
+            Confidence
           </span>
         </div>
       );
     }
 
-    // 5️⃣ Slide 5: Rashtra Nirmata Samman (Matches media_1793126795382_453c6988.png & media_1793126806473_d14fdc5d.png)
-    if (lower.includes("rashtra nirmata") || lower.includes("gajendra")) {
+    // 5️⃣ Slide 5: Rashtra Nirmata Samman (matches media_1793129387632_a45fc5e3.webp)
+    if (lower.includes("rashtra") || lower.includes("gajendra") || lower.includes("samman")) {
       return (
         <div className="flex flex-col space-y-0.5 m-0">
           <div className="flex flex-col leading-none">
@@ -1061,7 +1081,7 @@ export function Hero({ initialHeroData = null }) {
 
             {subtitle && (
               <p
-                style={{ color: isLight ? "#334155" : (subtitleColor || "#cbd5e1") }}
+                style={{ color: isLight ? "#072C50" : (subtitleColor || "#cbd5e1") }}
                 className="text-[8px] xs:text-[9px] leading-tight font-normal line-clamp-2 max-w-full m-0 opacity-95"
               >
                 {getMobileSlideSubtitle(subtitle, title)}
