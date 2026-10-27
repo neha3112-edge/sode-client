@@ -178,8 +178,6 @@ export default async function UniversityOrCourseDetailPage({ params }) {
       </>
     );
   }
-
-  // 2+ segments -> Course under University
   const slugStr = slugArray.join("/");
   const [initialData, pageMeta] = await Promise.all([
     getCourseData(slugArray),
