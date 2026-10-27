@@ -518,9 +518,6 @@ export default function ModalOTP({
       <div
         data-modal-container="true"
         className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs transition-opacity animate-in fade-in duration-200"
-        onClick={(e) => {
-          if (e.target === e.currentTarget) handleClose();
-        }}
       >
         <div
           className="relative w-full max-w-[390px] md:max-w-[740px] bg-white rounded-2xl md:rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row font-sans m-auto animate-in zoom-in-95 duration-200"
