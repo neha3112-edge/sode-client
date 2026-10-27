@@ -550,13 +550,13 @@ export function Hero({ initialHeroData = null }) {
     return (
       <div
         style={{
-          borderColor: isLight ? "#B88B4A" : "rgba(255, 255, 255, 0.35)",
-          backgroundColor: isLight ? "rgba(253, 247, 236, 0.95)" : "rgba(255, 255, 255, 0.12)",
+          borderColor: isLight ? "rgba(184, 139, 74, 0.7)" : "rgba(255, 255, 255, 0.35)",
+          backgroundColor: isLight ? "rgba(253, 247, 236, 0.9)" : "rgba(255, 255, 255, 0.12)",
         }}
-        className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9.5px] xs:text-[10.5px] font-bold tracking-normal border shadow-2xs w-fit"
+        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[8.5px] xs:text-[9.5px] font-extrabold tracking-wide border shadow-2xs w-fit"
       >
-        <span className="text-amber-400 font-bold text-[10px] leading-none">⭐</span>
-        <span style={{ color: isLight ? "#072C50" : "#ffffff" }} className="leading-tight font-bold uppercase tracking-tight">
+        <span className="text-amber-500 font-bold text-[9px] leading-none">⭐</span>
+        <span style={{ color: isLight ? "#072C50" : "#ffffff" }} className="leading-tight font-extrabold uppercase tracking-wide">
           {cleanText}
         </span>
       </div>
@@ -566,61 +566,89 @@ export function Hero({ initialHeroData = null }) {
   const renderMobileSlideHeading = (rawTitle, highlightText, isLight, titleColor, index = 0) => {
     if (!rawTitle) return null;
     const cleanTitle = rawTitle.replace(/\s+/g, " ").trim();
+    const lower = cleanTitle.toLowerCase();
 
     // 1️⃣ Slide 1: IITs / IIMs & Leading B-Schools
-    if (cleanTitle.toLowerCase().includes("iits, iims") || cleanTitle.toLowerCase().includes("b-schools") || cleanTitle.toLowerCase().includes("certifications & online")) {
+    if (lower.includes("iits, iims") || lower.includes("b-schools") || lower.includes("certifications & online")) {
       return (
-        <h2 className="text-[13px] xs:text-[15px] sm:text-base font-black leading-[1.18] tracking-tight m-0 font-sans text-[#F6DE95]">
+        <h2 className="text-[13.5px] xs:text-[15.5px] sm:text-base font-black leading-[1.18] tracking-tight m-0 font-sans text-[#F6DE95]">
           Certifications &amp; Online Degree Courses from IITs, IIMs Leading Global B-Schools
         </h2>
       );
     }
 
-    // 2️⃣ Slide 2: Governor of Kerala
-    if (cleanTitle.toLowerCase().includes("governor of kerala")) {
+    // 2️⃣ Slide 4: Governor of Kerala (matches media_1793126071040_20c7c9e3.png)
+    if (lower.includes("governor") || lower.includes("arif mohammed khan")) {
       return (
-        <div className="flex flex-col space-y-0.5 m-0">
-          <span className="text-[14px] xs:text-[16px] sm:text-lg font-black tracking-wide leading-none font-sans uppercase text-[#965D2C]">
-            GOVERNOR OF KERALA
+        <div className="flex flex-col space-y-1 m-0">
+          <div className="flex flex-col leading-none">
+            <span className="text-[20px] xs:text-[23px] sm:text-[26px] font-black tracking-tight leading-[0.92] font-sans uppercase text-[#965D2C] block">
+              GOVERNOR
+            </span>
+            <span className="text-[20px] xs:text-[23px] sm:text-[26px] font-black tracking-tight leading-[0.92] font-sans uppercase text-[#965D2C] block">
+              OF KERALA
+            </span>
+          </div>
+          <div className="flex flex-col leading-tight pt-0.5">
+            <span className="text-[8px] xs:text-[9px] font-extrabold tracking-wider uppercase text-[#072C50] block">
+              HONORABLE
+            </span>
+            <span className="text-[11px] xs:text-[12.5px] font-black tracking-tight uppercase text-[#072C50] block">
+              SH. ARIF MOHAMMED KHAN
+            </span>
+          </div>
+        </div>
+      );
+    }
+
+    // 3️⃣ Slide 3: 5 Lakh+ Students Found Their Right Career Path
+    if (lower.includes("5 lakh")) {
+      return (
+        <div className="flex flex-col m-0 leading-tight">
+          <span className="text-[23px] xs:text-[27px] font-black tracking-tight leading-none text-[#F6DE95] block">
+            5 Lakh+
           </span>
-          <span className="text-[10px] xs:text-[11px] sm:text-xs font-black tracking-wide leading-tight uppercase text-[#072C50]">
-            HONORABLE SH. ARIF MOHAMMED KHAN
+          <span className="text-[12.5px] xs:text-[14.5px] font-black tracking-tight leading-tight text-white block pt-0.5">
+            Students Found Their Right Career Path
           </span>
         </div>
       );
     }
 
-    // 3️⃣ Slide 3: 5 Lakh+ Students
-    if (cleanTitle.toLowerCase().includes("5 lakh")) {
+    // 4️⃣ Slide 2: Compare 50+ Universities Choose with Confidence
+    if (lower.includes("compare") && (cleanTitle.includes("50+") || lower.includes("universities"))) {
       return (
-        <h2 className="text-[13px] xs:text-[15px] sm:text-base font-black leading-[1.18] tracking-tight m-0 font-sans text-white">
-          <span className="text-[#F6DE95]">5 Lakh+</span> Students Found Their Right Career Path
-        </h2>
+        <div className="flex flex-col m-0 leading-tight">
+          <span className="text-[16px] xs:text-[19px] font-black tracking-tight leading-none text-[#072C50] block">
+            Compare <span className="text-[#965D2C]">50+ Universities</span>
+          </span>
+          <span className="text-[16px] xs:text-[19px] font-black tracking-tight leading-none text-[#072C50] block pt-0.5">
+            Choose with Confidence
+          </span>
+        </div>
       );
     }
 
-    // 4️⃣ Slide 4: Compare 50+ Universities
-    if (cleanTitle.toLowerCase().includes("compare") && (cleanTitle.includes("50+") || cleanTitle.toLowerCase().includes("universities"))) {
-      return (
-        <h2 className="text-[13px] xs:text-[15px] sm:text-base font-black leading-[1.18] tracking-tight m-0 font-sans text-[#072C50]">
-          Compare <span className="text-[#965D2C]">50+ Universities</span> Choose with Confidence
-        </h2>
-      );
-    }
-
-    // 5️⃣ Slide 5: Rashtra Nirmata Samman
-    if (cleanTitle.toLowerCase().includes("rashtra nirmata")) {
+    // 5️⃣ Slide 5: Rashtra Nirmata Samman (Honoured by Sh. Gajendra Chauhan)
+    if (lower.includes("rashtra nirmata") || lower.includes("gajendra")) {
       return (
         <div className="flex flex-col space-y-0.5 m-0">
-          <span className="text-[13px] xs:text-[15px] sm:text-base font-black tracking-wide leading-none font-sans uppercase text-[#965D2C]">
-            RASHTRA NIRMATA SAMMAN
-          </span>
-          <div className="flex items-center gap-1.5 py-0.5">
-            <span className="w-5 h-[1px] bg-[#965D2C]/40 inline-block" />
-            <span className="text-[8px] xs:text-[9px] font-bold uppercase tracking-wider text-[#965D2C]">FROM</span>
-            <span className="w-5 h-[1px] bg-[#965D2C]/40 inline-block" />
+          <div className="flex flex-col leading-none">
+            <span className="text-[16px] xs:text-[19px] sm:text-[21px] font-black tracking-tight leading-[0.92] font-sans uppercase text-[#965D2C] block">
+              RASHTRA NIRMATA
+            </span>
+            <span className="text-[16px] xs:text-[19px] sm:text-[21px] font-black tracking-tight leading-[0.92] font-sans uppercase text-[#965D2C] block">
+              SAMMAN
+            </span>
           </div>
-          <span className="text-[10px] xs:text-[11px] sm:text-xs font-black tracking-wide leading-tight uppercase text-[#072C50]">
+          <div className="flex items-center gap-1.5 py-0.5">
+            <span className="w-5 xs:w-7 h-[1.5px] bg-[#965D2C]/50 inline-block" />
+            <span className="text-[8px] xs:text-[9px] font-black uppercase tracking-widest text-[#965D2C]">
+              FROM
+            </span>
+            <span className="w-5 xs:w-7 h-[1.5px] bg-[#965D2C]/50 inline-block" />
+          </div>
+          <span className="text-[11px] xs:text-[12.5px] font-black tracking-tight uppercase text-[#072C50] block">
             SH. GAJENDRA CHAUHAN
           </span>
         </div>
@@ -637,6 +665,29 @@ export function Hero({ initialHeroData = null }) {
   };
 
   const getMobileSlideSubtitle = (rawSubtitle, title = "") => {
+    const lowerTitle = (title || "").toLowerCase();
+    const lowerSub = (rawSubtitle || "").toLowerCase();
+
+    if (lowerTitle.includes("governor") || lowerSub.includes("arif") || lowerSub.includes("kerala")) {
+      return "graced SODE with his visit and witnessed our journey of empowering students and working professionals.";
+    }
+
+    if (lowerTitle.includes("rashtra") || lowerSub.includes("gajendra") || lowerSub.includes("samman")) {
+      return "recognising our commitment to education counselling services.";
+    }
+
+    if (lowerTitle.includes("compare") || lowerSub.includes("approvals")) {
+      return "Compare universities, courses, fees, approvals, Eligibility, All in one Place.";
+    }
+
+    if (lowerTitle.includes("5 lakh") || lowerSub.includes("counseling")) {
+      return "Get Personalized 1:1 Counseling From Career Experts To Choose Right Course & University.";
+    }
+
+    if (lowerTitle.includes("iits, iims") || lowerSub.includes("strategic leadership")) {
+      return "Your Gateway to Strategic Leadership Program Learning from Leading Institutions.";
+    }
+
     if (!rawSubtitle) return "";
     return rawSubtitle.replace(/\\/g, "").replace(/\s+/g, " ").trim();
   };
@@ -743,15 +794,15 @@ export function Hero({ initialHeroData = null }) {
         {/* 📱 1. MOBILE HERO VIEW (strictly md:hidden, 0 impact on desktop) */}
         {/* ============================================================== */}
         <div className="md:hidden relative z-10 w-full h-full flex items-center px-3.5 xs:px-4 py-2">
-          {/* Mobile Left Text Container (58% width overlay) */}
-          <div className="w-[58%] xs:w-[56%] flex flex-col justify-center items-start space-y-1 xs:space-y-1.5 z-10">
+          {/* Mobile Left Text Container (50% - 54% width overlay) */}
+          <div className="w-[54%] xs:w-[50%] max-w-[210px] xs:max-w-[245px] flex flex-col justify-center items-start space-y-1 xs:space-y-1.5 z-10">
             {renderMobileSlideBadge(badgeText, isLight)}
             {renderMobileSlideHeading(title, highlightText, isLight, titleColor, index)}
 
             {subtitle && (
               <p
-                style={{ color: subtitleColor }}
-                className="text-[9.5px] xs:text-[10.5px] leading-tight font-normal line-clamp-2 max-w-full m-0 opacity-90"
+                style={{ color: isLight ? "#334155" : (subtitleColor || "#cbd5e1") }}
+                className="text-[8.5px] xs:text-[9.5px] leading-tight font-normal line-clamp-2 max-w-full m-0 opacity-95"
               >
                 {getMobileSlideSubtitle(subtitle, title)}
               </p>
