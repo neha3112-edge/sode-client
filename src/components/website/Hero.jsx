@@ -511,9 +511,9 @@ export function Hero({ initialHeroData = null }) {
                     <span
                       key={tIdx}
                       style={{
-                        WebkitTextStroke: isMobile ? "1px " + token.color : "1.6px " + token.color,
+                        WebkitTextStroke: isMobile ? "1.2px " + token.color : "1.6px " + token.color,
                         color: "transparent",
-                        letterSpacing: "0.08em",
+                        letterSpacing: "0.04em",
                       }}
                       className={
                         isMobile
@@ -527,26 +527,44 @@ export function Hero({ initialHeroData = null }) {
                 }
 
                 if (token.type === "color") {
-                  const isLargeNum = /^\d+\s*lakh\+?/i.test(token.content);
-                  const isGov = /^governor(\s+of\s+kerala)?$/i.test(token.content);
-                  const isHonorable = /^honorable$/i.test(token.content);
+                  const isLargeNum = /^\d+\s*lakh\+?/i.test(token.content.trim());
+                  const isGov = /^(governor|of\s+kerala|governor\s+of\s+kerala)$/i.test(token.content.trim());
+                  const isHonorable = /^honorable$/i.test(token.content.trim());
+                  const isArif = /^(sh\.?\s+)?arif\s+mohammed\s+khan$/i.test(token.content.trim());
+                  const isRashtra = /^rashtra\s+nirmata$/i.test(token.content.trim());
+                  const isGajendra = /^(sh\.?\s+|shri\s+)?(from\s+shri\s+)?gajendra\s+chauhan$/i.test(token.content.trim());
+                  const isCompareUni = /^(compare|50\+\s*universities|choose\s+with|confidence\.?)$/i.test(token.content.trim());
 
                   let className = isMobile
-                    ? "text-[14px] xs:text-[16px] font-black leading-[1.15] font-sans block"
-                    : "text-lg sm:text-2xl md:text-[28px] lg:text-[32px] font-black leading-[1.15] tracking-tight m-0 font-sans block";
+                    ? "text-[12.5px] xs:text-[14.5px] font-black leading-[1.15] font-sans inline"
+                    : "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.15] tracking-tight m-0 font-sans inline";
 
                   if (isLargeNum) {
                     className = isMobile
-                      ? "text-[23px] xs:text-[27px] font-black tracking-tight leading-none block"
+                      ? "text-[24px] xs:text-[28px] font-black tracking-tight leading-none block"
                       : "text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-none block";
                   } else if (isGov) {
                     className = isMobile
                       ? "text-[20px] xs:text-[23px] font-black tracking-tight leading-[0.92] font-sans uppercase block"
-                      : "text-xl sm:text-2xl md:text-3xl lg:text-[36px] font-black tracking-tight leading-[0.92] font-sans uppercase block";
+                      : "text-2xl sm:text-3xl md:text-[34px] lg:text-[40px] xl:text-[44px] font-black tracking-wide leading-none font-sans uppercase block";
                   } else if (isHonorable) {
                     className = isMobile
                       ? "text-[8px] xs:text-[9px] font-extrabold tracking-wider uppercase block pt-0.5"
-                      : "text-xs sm:text-sm font-extrabold tracking-wider uppercase block pt-1";
+                      : "text-xs sm:text-sm md:text-base lg:text-[18px] font-black tracking-wide leading-snug uppercase block pt-0.5";
+                  } else if (isArif) {
+                    className = isMobile
+                      ? "text-[11px] xs:text-[12.5px] font-black tracking-tight uppercase block"
+                      : "text-xs sm:text-sm md:text-base lg:text-[18px] font-black tracking-wide leading-snug uppercase block pt-0.5";
+                  } else if (isRashtra) {
+                    className = isMobile
+                      ? "text-[15px] xs:text-[18px] font-black tracking-tight leading-[0.95] font-sans uppercase block"
+                      : "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.15] tracking-tight font-sans block";
+                  } else if (isGajendra) {
+                    className = isMobile
+                      ? "text-[11px] xs:text-[13px] font-black tracking-tight uppercase block"
+                      : "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.15] tracking-tight font-sans block";
+                  } else if (isCompareUni && isMobile) {
+                    className = "text-[18px] xs:text-[21px] font-black tracking-tight font-sans block";
                   }
 
                   return (
@@ -560,15 +578,17 @@ export function Hero({ initialHeroData = null }) {
                   );
                 }
 
+                // Default text token
+                const isCompareUni = /^(compare|choose\s+with|confidence\.?)$/i.test(token.content.trim());
+                let textClassName = isMobile
+                  ? (isCompareUni ? "text-[18px] xs:text-[21px] font-black tracking-tight font-sans block" : "text-[12.5px] xs:text-[14.5px] font-black leading-[1.15] font-sans inline")
+                  : "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.15] tracking-tight m-0 font-sans inline";
+
                 return (
                   <span
                     key={tIdx}
                     style={{ color: defaultColor }}
-                    className={
-                      isMobile
-                        ? "text-[14px] xs:text-[16px] font-black leading-[1.15] font-sans block"
-                        : "text-lg sm:text-2xl md:text-[28px] lg:text-[32px] font-black leading-[1.15] tracking-tight m-0 font-sans block"
-                    }
+                    className={textClassName}
                   >
                     {token.content}
                   </span>
@@ -583,125 +603,16 @@ export function Hero({ initialHeroData = null }) {
 
   const renderSlideHeading = (rawTitle, highlightText, isLight, titleColor, isPrimary = true) => {
     if (!rawTitle) return null;
-
-    const cleanTitle = (rawTitle || "")
-      .replace(/\[\/?(#[0-9a-fA-F]{3,8}|color[^\]]*|outline[^\]]*|stroke[^\]]*|divider[^\]]*)\]/gi, "")
-      .replace(/\[\/?\]/g, "")
-      .trim();
-
-    const lower = cleanTitle.toLowerCase();
     const defaultColor = titleColor || (isLight ? "#072C50" : "#ffffff");
+
+    if (hasFormattingTags(rawTitle)) {
+      return renderFormattedContent(rawTitle, defaultColor, false);
+    }
+
     const highlightColor = isLight ? "#965D2C" : "#F6DE95";
+    const lines = rawTitle.split("\n");
     const HeadingTag = isPrimary ? "h1" : "h2";
 
-    // 1️⃣ Slide 4: GOVERNOR OF KERALA (matches media_1793128579186_c81b9031.png)
-    if (lower.includes("governor") || lower.includes("arif mohammed khan")) {
-      return (
-        <HeadingTag className="flex flex-col space-y-1 sm:space-y-1.5 m-0">
-          <span
-            style={{ color: "#965D2C" }}
-            className="text-2xl sm:text-3xl md:text-[34px] lg:text-[40px] xl:text-[44px] font-black tracking-wide leading-none m-0 font-sans uppercase block"
-          >
-            GOVERNOR OF KERALA
-          </span>
-          <span
-            style={{ color: "#072C50" }}
-            className="text-xs sm:text-sm md:text-base lg:text-[18px] font-black tracking-wide leading-snug m-0 uppercase block pt-0.5"
-          >
-            HONORABLE SH. ARIF MOHAMMED KHAN
-          </span>
-        </HeadingTag>
-      );
-    }
-
-    // 2️⃣ Slide 5: Rashtra Nirmata Samman (matches desktop media_1793129227634_eedd9fb6.png)
-    if (lower.includes("rashtra") || lower.includes("gajendra") || lower.includes("samman")) {
-      return (
-        <HeadingTag className="flex flex-col space-y-0.5 sm:space-y-1 m-0">
-          <span
-            style={{ color: "#965D2C" }}
-            className="text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.15] tracking-tight m-0 font-sans block"
-          >
-            Rashtra Nirmata Samman
-          </span>
-          <span
-            style={{ color: "#072C50" }}
-            className="text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.15] tracking-tight m-0 font-sans block"
-          >
-            from Shri Gajendra Chauhan
-          </span>
-        </HeadingTag>
-      );
-    }
-
-    // 3️⃣ Slide 2: Compare 50+ Universities (matches media_1793128605439_77c263cd.png)
-    if (lower.includes("compare") && (cleanTitle.includes("50+") || lower.includes("universities"))) {
-      return (
-        <HeadingTag className="flex flex-col space-y-0.5 sm:space-y-1 m-0">
-          <span
-            style={{ color: "#072C50" }}
-            className="text-lg sm:text-2xl md:text-[28px] lg:text-[32px] font-black leading-[1.15] tracking-tight m-0 font-sans block"
-          >
-            Compare <span style={{ color: "#965D2C" }}>50+ Universities</span>
-          </span>
-          <span
-            style={{ color: "#072C50" }}
-            className="text-lg sm:text-2xl md:text-[28px] lg:text-[32px] font-black leading-[1.15] tracking-tight m-0 font-sans block"
-          >
-            Choose with Confidence.
-          </span>
-        </HeadingTag>
-      );
-    }
-
-    // 4️⃣ Slide 3: 5 Lakh+ Students (matches media_1793128593180_7ff864c4.png)
-    if (lower.includes("5 lakh")) {
-      return (
-        <HeadingTag className="flex flex-col space-y-0.5 sm:space-y-1 m-0">
-          <span
-            style={{ color: "#ffffff" }}
-            className="text-lg sm:text-2xl md:text-[28px] lg:text-[32px] font-black leading-[1.15] tracking-tight m-0 font-sans block"
-          >
-            5 Lakh+ Students Found
-          </span>
-          <span
-            style={{ color: "#ffffff" }}
-            className="text-lg sm:text-2xl md:text-[28px] lg:text-[32px] font-black leading-[1.15] tracking-tight m-0 font-sans block"
-          >
-            Their Right Career Path
-          </span>
-        </HeadingTag>
-      );
-    }
-
-    // 5️⃣ Slide 1: Certifications & Online Degree Courses (matches media_1793128620710_66074b16.png)
-    if (lower.includes("iits, iims") || lower.includes("b-schools") || lower.includes("certifications & online")) {
-      return (
-        <HeadingTag className="flex flex-col space-y-0.5 sm:space-y-1 m-0">
-          <span
-            style={{ color: "#ffffff" }}
-            className="text-lg sm:text-2xl md:text-[28px] lg:text-[32px] font-black leading-[1.15] tracking-tight m-0 font-sans block"
-          >
-            Certifications &amp; Online Degree
-          </span>
-          <span
-            style={{ color: "#ffffff" }}
-            className="text-lg sm:text-2xl md:text-[28px] lg:text-[32px] font-black leading-[1.15] tracking-tight m-0 font-sans block"
-          >
-            Courses from IITs, IIMs &amp; Leading
-          </span>
-          <span
-            style={{ color: "#ffffff" }}
-            className="text-lg sm:text-2xl md:text-[28px] lg:text-[32px] font-black leading-[1.15] tracking-tight m-0 font-sans block"
-          >
-            Global B-Schools
-          </span>
-        </HeadingTag>
-      );
-    }
-
-    // Generic fallback for any other slide
-    const lines = cleanTitle.split("\n");
     return (
       <HeadingTag className="flex flex-col space-y-0.5 sm:space-y-1 m-0">
         {lines.map((line, lIdx) => {
@@ -711,7 +622,6 @@ export function Hero({ initialHeroData = null }) {
             const before = line.slice(0, idx);
             const match = line.slice(idx, idx + highlightText.length);
             const after = line.slice(idx + highlightText.length);
-
             lineContent = (
               <>
                 {before}
@@ -725,7 +635,7 @@ export function Hero({ initialHeroData = null }) {
             <span
               key={lIdx}
               style={{ color: defaultColor }}
-              className="text-lg sm:text-2xl md:text-[28px] lg:text-[32px] font-black leading-[1.15] tracking-tight m-0 font-sans block"
+              className="text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.15] tracking-tight m-0 font-sans block"
             >
               {lineContent}
             </span>
@@ -798,174 +708,62 @@ export function Hero({ initialHeroData = null }) {
     );
   };
 
-  const renderMobileSlideHeading = (rawTitle, highlightText, isLight, titleColor, index = 0) => {
+  const renderMobileSlideHeading = (rawTitle, highlightText, isLight, titleColor) => {
     if (!rawTitle) return null;
-
     const defaultColor = titleColor || (isLight ? "#072C50" : "#ffffff");
 
     if (hasFormattingTags(rawTitle)) {
       return renderFormattedContent(rawTitle, defaultColor, true);
     }
 
-    const cleanTitle = rawTitle.replace(/\s+/g, " ").trim();
-    const lower = cleanTitle.toLowerCase();
+    const highlightColor = isLight ? "#965D2C" : "#F6DE95";
+    const lines = rawTitle.split("\n");
 
-    // 1️⃣ Slide 1: IITs / IIMs & Leading B-Schools (matches media_1793129423597_bc48a743.webp)
-    if (lower.includes("iits, iims") || lower.includes("b-schools") || lower.includes("certifications & online")) {
-      return (
-        <div className="flex flex-col m-0 leading-tight">
-          <span className="text-[12.5px] xs:text-[14.5px] font-black leading-[1.15] text-[#F6DE95] font-sans tracking-tight block">
-            Certifications &amp; Online
-          </span>
-          <span className="text-[12.5px] xs:text-[14.5px] font-black leading-[1.15] text-[#F6DE95] font-sans tracking-tight block">
-            Degree Courses from
-          </span>
-          <span className="text-[12.5px] xs:text-[14.5px] font-black leading-[1.15] text-white font-sans tracking-tight block">
-            IITs, IIMs  Leading
-          </span>
-          <span className="text-[12.5px] xs:text-[14.5px] font-black leading-[1.15] text-white font-sans tracking-tight block">
-            Global B-Schools
-          </span>
-        </div>
-      );
-    }
-
-    // 2️⃣ Slide 4: Governor of Kerala (matches media_1793129416069_7b3e1992.webp)
-    if (lower.includes("governor") || lower.includes("arif mohammed khan")) {
-      return (
-        <div className="flex flex-col space-y-0.5 m-0">
-          <div className="flex flex-col leading-none">
-            <span className="text-[20px] xs:text-[23px] sm:text-[25px] font-black tracking-tight leading-[0.92] font-sans uppercase text-[#965D2C] block">
-              GOVERNOR
-            </span>
-            <span className="text-[20px] xs:text-[23px] sm:text-[25px] font-black tracking-tight leading-[0.92] font-sans uppercase text-[#965D2C] block">
-              OF KERALA
-            </span>
-          </div>
-          <div className="flex flex-col leading-tight pt-0.5">
-            <span className="text-[8px] xs:text-[9px] font-extrabold tracking-wider uppercase text-[#072C50] block">
-              HONORABLE
-            </span>
-            <span className="text-[11px] xs:text-[12.5px] font-black tracking-tight uppercase text-[#072C50] block">
-              SH. ARIF MOHAMMED KHAN
-            </span>
-          </div>
-        </div>
-      );
-    }
-
-    // 3️⃣ Slide 3: 5 Lakh+ Students (matches media_1793129407713_63d6e6a1.webp)
-    if (lower.includes("5 lakh")) {
-      return (
-        <div className="flex flex-col m-0 leading-none">
-          <span className="text-[24px] xs:text-[28px] font-black tracking-tight leading-none text-[#F6DE95] block">
-            5 Lakh+
-          </span>
-          <span className="text-[12.5px] xs:text-[14.5px] font-black tracking-tight leading-[1.18] text-white block pt-1">
-            Students Found Their
-          </span>
-          <span className="text-[12.5px] xs:text-[14.5px] font-black tracking-tight leading-[1.18] text-white block">
-            Right Career Path
-          </span>
-        </div>
-      );
-    }
-
-    // 4️⃣ Slide 2: Compare 50+ Universities (matches media_1793129399942_b4d86072.webp)
-    if (lower.includes("compare") && (cleanTitle.includes("50+") || lower.includes("universities"))) {
-      return (
-        <div className="flex flex-col m-0 leading-[1.05]">
-          <span className="text-[18px] xs:text-[21px] font-black tracking-tight text-[#072C50] font-sans block">
-            Compare
-          </span>
-          <span className="text-[18px] xs:text-[21px] font-black tracking-tight text-[#965D2C] font-sans block">
-            50+ Universities
-          </span>
-          <span className="text-[18px] xs:text-[21px] font-black tracking-tight text-[#072C50] font-sans block pt-0.5">
-            Choose with
-          </span>
-          <span className="text-[18px] xs:text-[21px] font-black tracking-tight text-[#072C50] font-sans block">
-            Confidence
-          </span>
-        </div>
-      );
-    }
-
-    // 5️⃣ Slide 5: Rashtra Nirmata Samman (matches media_1793129387632_a45fc5e3.webp)
-    if (lower.includes("rashtra") || lower.includes("gajendra") || lower.includes("samman")) {
-      return (
-        <div className="flex flex-col space-y-0.5 m-0">
-          <div className="flex flex-col leading-none">
-            <span className="text-[15px] xs:text-[18px] font-black tracking-tight leading-[0.95] font-sans uppercase text-[#965D2C] block">
-              RASHTRA NIRMATA
-            </span>
-            <span
-              style={{
-                WebkitTextStroke: "1.2px #965D2C",
-                color: "transparent",
-              }}
-              className="text-[21px] xs:text-[25px] font-black tracking-tight leading-[0.95] font-sans uppercase block"
-            >
-              SAMMAN
-            </span>
-          </div>
-          <div className="flex items-center gap-1.5 py-0.5">
-            <span className="w-5 xs:w-7 h-[1px] bg-[#64748B]/60 inline-block" />
-            <span className="text-[8px] xs:text-[9px] font-bold uppercase tracking-widest text-[#64748B]">
-              FROM
-            </span>
-            <span className="w-5 xs:w-7 h-[1px] bg-[#64748B]/60 inline-block" />
-          </div>
-          <span className="text-[11px] xs:text-[13px] font-black tracking-tight uppercase text-[#072C50] block">
-            SH. GAJENDRA CHAUHAN
-          </span>
-        </div>
-      );
-    }
-
-    // Generic fallback with custom color or highlight
     return (
-      <h2 style={{ color: defaultColor }} className="text-[13px] xs:text-[15px] font-black leading-[1.18] tracking-tight m-0 font-sans">
-        {cleanTitle}
-      </h2>
+      <div className="flex flex-col space-y-0.5 m-0 leading-tight">
+        {lines.map((line, lIdx) => {
+          let lineContent = line;
+          if (highlightText && line.toLowerCase().includes(highlightText.toLowerCase())) {
+            const idx = line.toLowerCase().indexOf(highlightText.toLowerCase());
+            const before = line.slice(0, idx);
+            const match = line.slice(idx, idx + highlightText.length);
+            const after = line.slice(idx + highlightText.length);
+            lineContent = (
+              <>
+                {before}
+                <span style={{ color: highlightColor }}>{match}</span>
+                {after}
+              </>
+            );
+          }
+
+          return (
+            <span
+              key={lIdx}
+              style={{ color: defaultColor }}
+              className="text-[12.5px] xs:text-[14.5px] font-black leading-[1.15] tracking-tight m-0 font-sans block"
+            >
+              {lineContent}
+            </span>
+          );
+        })}
+      </div>
     );
-  };
-
-  const getMobileSlideSubtitle = (rawSubtitle, title = "") => {
-    const lowerTitle = (title || "").toLowerCase();
-    const lowerSub = (rawSubtitle || "").toLowerCase();
-
-    if (lowerTitle.includes("governor") || lowerSub.includes("arif") || lowerSub.includes("kerala")) {
-      return "graced SODE with his visit and witnessed our journey of empowering students and working professionals.";
-    }
-
-    if (lowerTitle.includes("rashtra") || lowerSub.includes("gajendra") || lowerSub.includes("samman")) {
-      return "recognising our commitment to education counselling services.";
-    }
-
-    if (lowerTitle.includes("compare") || lowerSub.includes("approvals")) {
-      return "Compare universities, courses, fees, approvals, Eligibility, All in one Place.";
-    }
-
-    if (lowerTitle.includes("5 lakh") || lowerSub.includes("counseling")) {
-      return "Get Personalized 1:1 Counseling From Career Experts To Choose Right Course & University.";
-    }
-
-    if (lowerTitle.includes("iits, iims") || lowerSub.includes("strategic leadership")) {
-      return "Your Gateway to Strategic Leadership Program Learning from Leading Institutions.";
-    }
-
-    if (!rawSubtitle) return "";
-    return rawSubtitle.replace(/\\/g, "").replace(/\s+/g, " ").trim();
   };
 
   const renderHeroContent = (data, isSlide = false, index = 0) => {
     if (!data) return null;
 
     const badgeText = data?.badge_text;
+    const mobileBadgeText = data?.mobile_badge_text || data?.badge_text_mobile || badgeText;
+
     const title = data?.title;
+    const mobileTitle = data?.mobile_title || data?.title_mobile || title;
+
     const highlightText = data?.highlight_text;
+
     const subtitle = data?.subtitle;
+    const mobileSubtitle = data?.mobile_subtitle || data?.subtitle_mobile || subtitle;
 
     const isLight = data?.title_color === "#072C50" || data?.title_color === "#965D2C";
     const titleColor = data?.title_color || (isLight ? "#072C50" : "#ffffff");
@@ -1076,15 +874,15 @@ export function Hero({ initialHeroData = null }) {
         {/* 📱 MOBILE HERO VIEW (strictly md:hidden) */}
         <Container className="md:hidden relative z-10 w-full h-full flex items-center pointer-events-auto">
           <div className="w-[50%] xs:w-[48%] max-w-[195px] xs:max-w-[220px] flex flex-col justify-center items-start space-y-1 xs:space-y-1.5 z-10 py-1.5 xs:py-2">
-            {renderMobileSlideBadge(badgeText, isLight)}
-            {renderMobileSlideHeading(title, highlightText, isLight, titleColor, index)}
+            {renderMobileSlideBadge(mobileBadgeText, isLight)}
+            {renderMobileSlideHeading(mobileTitle, highlightText, isLight, titleColor)}
 
-            {subtitle && (
+            {mobileSubtitle && (
               <p
                 style={{ color: isLight ? "#072C50" : (subtitleColor || "#cbd5e1") }}
-                className="text-[8px] xs:text-[9px] leading-tight font-normal line-clamp-2 max-w-full m-0 opacity-95"
+                className="text-[9px] xs:text-[9px] leading-tight font-normal line-clamp-2 max-w-full m-0"
               >
-                {getMobileSlideSubtitle(subtitle, title)}
+                {mobileSubtitle}
               </p>
             )}
 
