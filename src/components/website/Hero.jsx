@@ -530,6 +530,117 @@ export function Hero({ initialHeroData = null }) {
     );
   };
 
+  // ==============================================================
+  // 📱 MOBILE-SPECIFIC HELPERS (strictly for mobile view < 768px)
+  // ==============================================================
+  const renderMobileSlideBadge = (badgeText, isLight) => {
+    if (!badgeText) return null;
+
+    if (badgeText.startsWith("#1")) {
+      return (
+        <div className="inline-flex items-center gap-1 text-[11px] xs:text-xs tracking-wide">
+          <span className="font-serif italic font-extrabold text-[#F3CE7F] text-xs xs:text-sm">#1</span>
+          <span className="font-medium text-slate-100 italic">{badgeText.replace(/^#1\s*/, "")}</span>
+        </div>
+      );
+    }
+
+    const cleanText = badgeText.replace(/^[#★⭐\s*]+/i, "").trim() || badgeText;
+
+    return (
+      <div
+        style={{
+          borderColor: isLight ? "#B88B4A" : "rgba(255, 255, 255, 0.35)",
+          backgroundColor: isLight ? "rgba(253, 247, 236, 0.95)" : "rgba(255, 255, 255, 0.12)",
+        }}
+        className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9.5px] xs:text-[10.5px] font-bold tracking-normal border shadow-2xs w-fit"
+      >
+        <span className="text-amber-400 font-bold text-[10px] leading-none">⭐</span>
+        <span style={{ color: isLight ? "#072C50" : "#ffffff" }} className="leading-tight font-bold uppercase tracking-tight">
+          {cleanText}
+        </span>
+      </div>
+    );
+  };
+
+  const renderMobileSlideHeading = (rawTitle, highlightText, isLight, titleColor, index = 0) => {
+    if (!rawTitle) return null;
+    const cleanTitle = rawTitle.replace(/\s+/g, " ").trim();
+
+    // 1️⃣ Slide 1: IITs / IIMs & Leading B-Schools
+    if (cleanTitle.toLowerCase().includes("iits, iims") || cleanTitle.toLowerCase().includes("b-schools") || cleanTitle.toLowerCase().includes("certifications & online")) {
+      return (
+        <h2 className="text-[13px] xs:text-[15px] sm:text-base font-black leading-[1.18] tracking-tight m-0 font-sans text-[#F6DE95]">
+          Certifications &amp; Online Degree Courses from IITs, IIMs Leading Global B-Schools
+        </h2>
+      );
+    }
+
+    // 2️⃣ Slide 2: Governor of Kerala
+    if (cleanTitle.toLowerCase().includes("governor of kerala")) {
+      return (
+        <div className="flex flex-col space-y-0.5 m-0">
+          <span className="text-[14px] xs:text-[16px] sm:text-lg font-black tracking-wide leading-none font-sans uppercase text-[#965D2C]">
+            GOVERNOR OF KERALA
+          </span>
+          <span className="text-[10px] xs:text-[11px] sm:text-xs font-black tracking-wide leading-tight uppercase text-[#072C50]">
+            HONORABLE SH. ARIF MOHAMMED KHAN
+          </span>
+        </div>
+      );
+    }
+
+    // 3️⃣ Slide 3: 5 Lakh+ Students
+    if (cleanTitle.toLowerCase().includes("5 lakh")) {
+      return (
+        <h2 className="text-[13px] xs:text-[15px] sm:text-base font-black leading-[1.18] tracking-tight m-0 font-sans text-white">
+          <span className="text-[#F6DE95]">5 Lakh+</span> Students Found Their Right Career Path
+        </h2>
+      );
+    }
+
+    // 4️⃣ Slide 4: Compare 50+ Universities
+    if (cleanTitle.toLowerCase().includes("compare") && (cleanTitle.includes("50+") || cleanTitle.toLowerCase().includes("universities"))) {
+      return (
+        <h2 className="text-[13px] xs:text-[15px] sm:text-base font-black leading-[1.18] tracking-tight m-0 font-sans text-[#072C50]">
+          Compare <span className="text-[#965D2C]">50+ Universities</span> Choose with Confidence
+        </h2>
+      );
+    }
+
+    // 5️⃣ Slide 5: Rashtra Nirmata Samman
+    if (cleanTitle.toLowerCase().includes("rashtra nirmata")) {
+      return (
+        <div className="flex flex-col space-y-0.5 m-0">
+          <span className="text-[13px] xs:text-[15px] sm:text-base font-black tracking-wide leading-none font-sans uppercase text-[#965D2C]">
+            RASHTRA NIRMATA SAMMAN
+          </span>
+          <div className="flex items-center gap-1.5 py-0.5">
+            <span className="w-5 h-[1px] bg-[#965D2C]/40 inline-block" />
+            <span className="text-[8px] xs:text-[9px] font-bold uppercase tracking-wider text-[#965D2C]">FROM</span>
+            <span className="w-5 h-[1px] bg-[#965D2C]/40 inline-block" />
+          </div>
+          <span className="text-[10px] xs:text-[11px] sm:text-xs font-black tracking-wide leading-tight uppercase text-[#072C50]">
+            SH. GAJENDRA CHAUHAN
+          </span>
+        </div>
+      );
+    }
+
+    // Generic fallback with custom color or highlight
+    const defaultColor = titleColor || (isLight ? "#072C50" : "#ffffff");
+    return (
+      <h2 style={{ color: defaultColor }} className="text-[13px] xs:text-[15px] font-black leading-[1.18] tracking-tight m-0 font-sans">
+        {cleanTitle}
+      </h2>
+    );
+  };
+
+  const getMobileSlideSubtitle = (rawSubtitle, title = "") => {
+    if (!rawSubtitle) return "";
+    return rawSubtitle.replace(/\\/g, "").replace(/\s+/g, " ").trim();
+  };
+
   const renderHeroContent = (data, isSlide = false, index = 0) => {
     if (!data) return null;
 
@@ -591,61 +702,109 @@ export function Hero({ initialHeroData = null }) {
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
         }}
-        className="relative w-full overflow-hidden aspect-[1.9/1] sm:aspect-[3.2/1] md:aspect-[3.8/1] lg:aspect-[4/1] min-h-[200px] sm:min-h-[220px] md:min-h-[240px] lg:min-h-[280px] max-h-[340px] flex items-center select-none py-3.5 sm:py-0"
+        className="relative w-full overflow-hidden aspect-[1.8/1] xs:aspect-[1.85/1] sm:aspect-[3.2/1] md:aspect-[3.8/1] lg:aspect-[4/1] min-h-[205px] sm:min-h-[220px] md:min-h-[240px] lg:min-h-[280px] max-h-[340px] flex items-center select-none py-2 sm:py-0"
       >
+        {/* Desktop-only Background Banner Image (100% UNTOUCHED) */}
         {desktopBannerUrl && (
-          <div className="absolute inset-0 w-full h-full pointer-events-none select-none overflow-hidden">
-            <div className={`relative w-full h-full ${mobileBannerUrl && mobileBannerUrl !== desktopBannerUrl ? "hidden md:block" : "block"}`}>
-              <Image
-                src={desktopBannerUrl}
-                alt={title || "Hero banner"}
-                fill
-                priority={true}
-                loading="eager"
-                fetchPriority="high"
-                unoptimized
-                sizes={mobileBannerUrl && mobileBannerUrl !== desktopBannerUrl ? "(min-width: 768px) 100vw, 1px" : "100vw"}
-                className="object-cover object-center"
-              />
-            </div>
+          <div className="hidden md:block absolute inset-0 w-full h-full pointer-events-none select-none overflow-hidden">
+            <Image
+              src={desktopBannerUrl}
+              alt={title || "Hero banner"}
+              fill
+              priority={true}
+              loading="eager"
+              fetchPriority="high"
+              unoptimized
+              sizes="100vw"
+              className="object-cover object-center"
+            />
+          </div>
+        )}
 
-            {mobileBannerUrl && mobileBannerUrl !== desktopBannerUrl && (
-              <div className="block md:hidden relative w-full h-full">
+        {/* ============================================================== */}
+        {/* 📱 1. MOBILE HERO VIEW (strictly md:hidden, 0 impact on desktop) */}
+        {/* ============================================================== */}
+        <div className="md:hidden relative z-10 w-full h-full flex items-center px-3.5 xs:px-4 py-2">
+          {/* Mobile Left Text Container (58% width) */}
+          <div className="w-[58%] xs:w-[56%] flex flex-col justify-center items-start space-y-1.5 z-10">
+            {renderMobileSlideBadge(badgeText, isLight)}
+            {renderMobileSlideHeading(title, highlightText, isLight, titleColor, index)}
+
+            {subtitle && (
+              <p
+                style={{ color: subtitleColor }}
+                className="text-[9.5px] xs:text-[10.5px] leading-tight font-normal line-clamp-2 max-w-full m-0 opacity-90"
+              >
+                {getMobileSlideSubtitle(subtitle, title)}
+              </p>
+            )}
+
+            {/* Mobile Primary Button if enabled (e.g. Compare Now on Slide 4) */}
+            {primaryBtn?.enabled !== false && primaryBtn?.text && (
+              <div className="pt-0.5">
+                {primaryBtn?.is_modal ? (
+                  <button
+                    type="button"
+                    onClick={handlePrimaryClick}
+                    style={{
+                      background: "linear-gradient(180deg, #F3CE7F 0%, #E7B85D 100%)",
+                      color: "#072C50",
+                      border: "1px solid rgba(226, 176, 83, 0.6)",
+                    }}
+                    className="px-2.5 py-1 rounded-md font-bold text-[10px] xs:text-[11px] shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap"
+                  >
+                    {primaryBtn.text}
+                  </button>
+                ) : (
+                  <Link
+                    href={primaryBtn?.url || "/counselling"}
+                    style={{
+                      background: "linear-gradient(180deg, #F3CE7F 0%, #E7B85D 100%)",
+                      color: "#072C50",
+                      border: "1px solid rgba(226, 176, 83, 0.6)",
+                    }}
+                    className="inline-block px-2.5 py-1 rounded-md font-bold text-[10px] xs:text-[11px] shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap"
+                  >
+                    {primaryBtn.text}
+                  </Link>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Mobile Right Cutout Model Image (44% width) */}
+          {mobileBannerUrl && (
+            <div className="absolute right-0 bottom-0 top-0 w-[44%] xs:w-[46%] h-full pointer-events-none select-none z-1 flex items-end justify-end overflow-hidden">
+              <div className="relative w-full h-full">
                 <Image
                   src={mobileBannerUrl}
-                  alt={title || "Hero mobile banner"}
+                  alt={title || "Hero mobile model"}
                   fill
                   priority={true}
                   loading="eager"
                   fetchPriority="high"
                   unoptimized
-                  sizes="(max-width: 767px) 100vw, 1px"
-                  className="object-cover object-center"
+                  sizes="(max-width: 767px) 50vw, 1px"
+                  className="object-contain object-bottom-right"
                 />
               </div>
-            )}
-          </div>
-        )}
+            </div>
+          )}
 
-        {/* Mobile slide click target (if slide has a primary button/action) */}
-        {primaryBtn?.enabled !== false && (
-          primaryBtn?.is_modal ? (
+          {/* Tap anywhere on mobile slide to trigger modal/link if not clicking a button */}
+          {(!primaryBtn?.text || primaryBtn?.enabled === false || primaryBtn?.is_modal) && (
             <button
               type="button"
               onClick={handlePrimaryClick}
-              aria-label={primaryBtn.text || "Hero action"}
-              className="md:hidden absolute inset-0 z-20 w-full h-full bg-transparent border-0 cursor-pointer p-0 m-0"
+              aria-label={primaryBtn?.text || "Hero counselling"}
+              className="absolute inset-0 z-5 w-full h-full bg-transparent border-0 cursor-pointer p-0 m-0"
             />
-          ) : primaryBtn?.url ? (
-            <Link
-              href={primaryBtn.url}
-              aria-label={primaryBtn.text || "Hero action"}
-              className="md:hidden absolute inset-0 z-20 w-full h-full cursor-pointer"
-            />
-          ) : null
-        )}
+          )}
+        </div>
 
-        {/* Desktop-only: database text, headings, badges & CTA buttons */}
+        {/* ============================================================== */}
+        {/* 💻 2. DESKTOP HERO VIEW (hidden md:block - 100% UNTOUCHED)       */}
+        {/* ============================================================== */}
         <Container className="hidden md:block relative z-10 w-full pointer-events-auto">
           <div className="w-full max-w-[70%] sm:max-w-[50%] md:max-w-[46%] lg:max-w-[44%] flex flex-col items-start space-y-1.5 sm:space-y-2 md:space-y-2.5">
             {renderSlideBadge(badgeText, isLight)}
@@ -737,7 +896,7 @@ export function Hero({ initialHeroData = null }) {
   return (
     <section
       id="hero-section"
-      className="relative w-full overflow-hidden aspect-[1.9/1] sm:aspect-[3.2/1] md:aspect-[3.8/1] lg:aspect-[4/1] min-h-[200px] sm:min-h-[220px] md:min-h-[240px] lg:min-h-[280px] max-h-[340px]"
+      className="relative w-full overflow-hidden aspect-[1.8/1] xs:aspect-[1.85/1] sm:aspect-[3.2/1] md:aspect-[3.8/1] lg:aspect-[4/1] min-h-[205px] sm:min-h-[220px] md:min-h-[240px] lg:min-h-[280px] max-h-[340px]"
     >
       {isCarousel ? (
         <div className="relative w-full h-full group/hero">
