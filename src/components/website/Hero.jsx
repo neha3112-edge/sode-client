@@ -538,9 +538,9 @@ export function Hero({ initialHeroData = null }) {
 
     if (badgeText.startsWith("#1")) {
       return (
-        <div className="inline-flex items-center gap-1 text-[11px] xs:text-xs tracking-wide">
+        <div className="inline-flex items-center gap-1 text-[9.5px] xs:text-[10.5px] tracking-wide whitespace-nowrap">
           <span className="font-serif italic font-extrabold text-[#F3CE7F] text-xs xs:text-sm">#1</span>
-          <span className="font-medium text-slate-100 italic">{badgeText.replace(/^#1\s*/, "")}</span>
+          <span className="font-medium text-slate-100 italic whitespace-nowrap">{badgeText.replace(/^#1\s*/, "")}</span>
         </div>
       );
     }
@@ -553,10 +553,10 @@ export function Hero({ initialHeroData = null }) {
           borderColor: isLight ? "rgba(184, 139, 74, 0.7)" : "rgba(255, 255, 255, 0.35)",
           backgroundColor: isLight ? "rgba(253, 247, 236, 0.9)" : "rgba(255, 255, 255, 0.12)",
         }}
-        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[8.5px] xs:text-[9.5px] font-extrabold tracking-wide border shadow-2xs w-fit"
+        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[8px] xs:text-[9px] font-extrabold tracking-wide border shadow-2xs w-fit whitespace-nowrap max-w-[85vw]"
       >
-        <span className="text-amber-500 font-bold text-[9px] leading-none">⭐</span>
-        <span style={{ color: isLight ? "#072C50" : "#ffffff" }} className="leading-tight font-extrabold uppercase tracking-wide">
+        <span className="text-amber-500 font-bold text-[8.5px] leading-none">⭐</span>
+        <span style={{ color: isLight ? "#072C50" : "#ffffff" }} className="leading-tight font-extrabold uppercase tracking-wide whitespace-nowrap">
           {cleanText}
         </span>
       </div>
