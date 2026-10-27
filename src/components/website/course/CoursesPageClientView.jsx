@@ -1195,7 +1195,9 @@ export default function CoursesPageClientView({
                           <h3 className="text-sm sm:text-base font-bold text-gray-900 leading-snug line-clamp-1 m-0">
                             {cardTitle}
                           </h3>
-                          {item.displayName && item.displayName.toLowerCase() !== cardTitle.toLowerCase() && (
+                          {item.displayName &&
+                            item.displayName.toLowerCase() !== cardTitle.toLowerCase() &&
+                            item.displayName.replace(/^online\s+/i, "").trim().toLowerCase() !== cardTitle.replace(/^online\s+/i, "").trim().toLowerCase() && (
                             <span className="text-[11.5px] sm:text-xs font-normal text-gray-500 block leading-tight mt-0.5 tracking-tight">
                               {item.displayName}
                             </span>
@@ -1366,7 +1368,9 @@ export default function CoursesPageClientView({
                         <p className="text-xs sm:text-sm font-bold text-gray-900 leading-snug line-clamp-1 m-0">
                           {cardTitle}
                         </p>
-                        {item.displayName && item.displayName.toLowerCase() !== cardTitle.toLowerCase() && (
+                        {item.displayName &&
+                          item.displayName.toLowerCase() !== cardTitle.toLowerCase() &&
+                          item.displayName.replace(/^online\s+/i, "").trim().toLowerCase() !== cardTitle.replace(/^online\s+/i, "").trim().toLowerCase() && (
                           <span className="text-[10px] sm:text-[11px] font-normal text-gray-500 block leading-tight mt-0.5 tracking-tight">
                             {item.displayName}
                           </span>
