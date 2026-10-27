@@ -471,13 +471,13 @@ export default function ModalOTP({
         {/* ==========================================
             FORM CONTENT (Right Side Desktop / Bottom Mobile)
         ========================================== */}
-        <div className="w-full md:w-[58%] p-5 sm:p-7 md:p-8 flex flex-col justify-center relative bg-white">
+        <div className="w-full md:w-[58%] p-6 sm:p-8 md:p-9 flex flex-col justify-center items-center relative bg-white self-stretch min-h-full">
           <Form
             form={form}
             layout="vertical"
             requiredMark={false}
             validateTrigger="onSubmit"
-            className="flex flex-col flex-1"
+            className="w-full my-auto flex flex-col justify-center"
           >
             {/* ==========================================
                 STEP 1: PHONE NUMBER
