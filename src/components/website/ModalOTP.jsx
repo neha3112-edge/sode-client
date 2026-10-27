@@ -144,8 +144,12 @@ export default function ModalOTP({
   // Global event listener for modal triggers
   useEffect(() => {
     const handleTriggerClick = (e) => {
-      // Ignore clicks happening inside the modal dialog
-      if (e.target.closest("[data-modal-container='true']")) return;
+      // Ignore clicks happening inside the modal dialog or antd popups/dropdowns
+      if (
+        e.target.closest("[data-modal-container='true']") ||
+        e.target.closest(".ant-select-dropdown") ||
+        e.target.closest(".ant-popover")
+      ) return;
 
       const target = e.target.closest(
         `#${triggerId}-btn, [data-modal="${triggerId}"], [data-target="#${triggerId}"], [data-target="${triggerId}"], a[href="#${triggerId}"]`
@@ -433,13 +437,20 @@ export default function ModalOTP({
   if (!isOpen) return null;
 
   return (
-    <div
-      data-modal-container="true"
-      className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs transition-opacity animate-in fade-in duration-200"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) handleClose();
-      }}
-    >
+    <>
+      <style jsx global>{`
+        .ant-select-dropdown,
+        .select-dropdown-high-z {
+          z-index: 100005 !important;
+        }
+      `}</style>
+      <div
+        data-modal-container="true"
+        className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs transition-opacity animate-in fade-in duration-200"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) handleClose();
+        }}
+      >
       <div
         className="relative w-full max-w-[390px] md:max-w-[740px] bg-white rounded-2xl md:rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row font-sans m-auto animate-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
@@ -749,6 +760,8 @@ export default function ModalOTP({
                     onChange={() => form.setFields([{ name: "course", errors: [] }])}
                     prefix={<GraduationCap size={16} className="text-slate-400 mr-1 shrink-0" />}
                     className="w-full h-11 rounded-xl text-xs sm:text-sm font-semibold [&_.ant-select-selector]:rounded-xl! [&_.ant-select-selector]:h-11! [&_.ant-select-selector]:flex! [&_.ant-select-selector]:items-center!"
+                    popupClassName="!z-[100005] select-dropdown-high-z shadow-2xl rounded-xl"
+                    dropdownStyle={{ zIndex: 100005 }}
                     options={courseOptions.map((c) => ({ label: c, value: c }))}
                     filterOption={(input, option) =>
                       (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
@@ -794,6 +807,8 @@ export default function ModalOTP({
                     onChange={() => form.setFields([{ name: "state", errors: [] }])}
                     prefix={<MapPin size={16} className="text-slate-400 mr-1 shrink-0" />}
                     className="w-full h-11 rounded-xl text-xs sm:text-sm font-semibold [&_.ant-select-selector]:rounded-xl! [&_.ant-select-selector]:h-11! [&_.ant-select-selector]:flex! [&_.ant-select-selector]:items-center!"
+                    popupClassName="!z-[100005] select-dropdown-high-z shadow-2xl rounded-xl"
+                    dropdownStyle={{ zIndex: 100005 }}
                     options={stateOptions.map((st) => ({ label: st, value: st }))}
                     filterOption={(input, option) =>
                       (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
@@ -859,5 +874,6 @@ export default function ModalOTP({
         </div>
       </div>
     </div>
-  );
+  </>
+);
 }
