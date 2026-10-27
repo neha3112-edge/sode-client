@@ -27,6 +27,22 @@ function formatCardDate(dateStr) {
 }
 
 /* =========================================================
+   CRISP INDIAN TRICOLOR SVG ICON
+========================================================= */
+const IndiaFlagIcon = () => (
+  <svg
+    className="w-5 h-3.5 rounded-[2px] shadow-xs inline-block overflow-hidden shrink-0"
+    viewBox="0 0 640 480"
+  >
+    <path fill="#f93" d="M0 0h640v160H0z" />
+    <path fill="#fff" d="M0 160h640v160H0z" />
+    <path fill="#128807" d="M0 320h640v160H0z" />
+    <circle cx="320" cy="240" r="56" fill="none" stroke="#000080" strokeWidth="8" />
+    <circle cx="320" cy="240" r="14" fill="#000080" />
+  </svg>
+);
+
+/* =========================================================
    EXTRACT UTM & GOOGLE TRACKING PARAMS
 ========================================================= */
 function getUTMParams() {
@@ -148,6 +164,35 @@ export default function BlogSidebar({
   const [selectedAuthorCat, setSelectedAuthorCat] = useState("All");
   const [modalSlidesToShow, setModalSlidesToShow] = useState(3);
   const carouselRef = useRef(null);
+
+  // ── OTP State for Counseling Form (Antd Input.OTP) ──
+  const [otpStep, setOtpStep] = useState("idle"); // 'idle' | 'otp_sent' | 'verified'
+  const [isPhoneVerified, setIsPhoneVerified] = useState(false);
+  const [verifiedPhone, setVerifiedPhone] = useState("");
+  const [otpValue, setOtpValue] = useState("");
+  const [sendingOtp, setSendingOtp] = useState(false);
+  const [verifyingOtp, setVerifyingOtp] = useState(false);
+  const [resendTimer, setResendTimer] = useState(30);
+  const [canResend, setCanResend] = useState(false);
+
+  // Resend OTP Countdown Timer
+  useEffect(() => {
+    let interval = null;
+    if (otpStep === "otp_sent" && resendTimer > 0) {
+      interval = setInterval(() => {
+        setResendTimer((prev) => {
+          if (prev <= 1) {
+            setCanResend(true);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [otpStep, resendTimer]);
 
   useEffect(() => {
     setIsSubscribed(isBlogSubscribed());
@@ -333,8 +378,123 @@ export default function BlogSidebar({
     };
   }, []);
 
+  // Send OTP handler
+  const handleSendOtp = async () => {
+    try {
+      const rawNumber = leadForm.getFieldValue("number");
+      const clean = String(rawNumber || "").replace(/\D/g, "").slice(-10);
+      if (!clean || clean.length !== 10) {
+        message.error("Please enter a valid 10-digit mobile number");
+        leadForm.setFields([{ name: "number", errors: ["Enter valid 10-digit number"] }]);
+        return;
+      }
+
+      setSendingOtp(true);
+      const res = await fetch("/api/otp/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: clean, purpose: "counselling", otp_length: 4 }),
+      });
+
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.success) {
+        throw new Error(data?.message || "Failed to send OTP");
+      }
+
+      setVerifiedPhone(clean);
+      setOtpStep("otp_sent");
+      setResendTimer(30);
+      setCanResend(false);
+      setOtpValue("");
+      message.success(data?.message || `OTP sent to your WhatsApp (+91 ${clean})`);
+    } catch (err) {
+      console.error("[BlogSidebar handleSendOtp error]:", err);
+      message.error(err.message || "Failed to send OTP");
+    } finally {
+      setSendingOtp(false);
+    }
+  };
+
+  // Verify OTP handler
+  const handleVerifyOtp = async (inputOtp) => {
+    const code = String(inputOtp || otpValue || "").trim();
+    if (!code || code.length < 4) {
+      message.error("Please enter a valid 4-digit OTP");
+      return;
+    }
+    const rawNumber = leadForm.getFieldValue("number");
+    const cleanPhone = verifiedPhone || String(rawNumber || "").replace(/\D/g, "").slice(-10);
+
+    try {
+      setVerifyingOtp(true);
+      const res = await fetch("/api/otp/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: cleanPhone, otp: code }),
+      });
+
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.success) {
+        throw new Error(data?.message || "Invalid OTP. Please check and try again.");
+      }
+
+      setIsPhoneVerified(true);
+      setOtpStep("verified");
+      message.success("Mobile number verified successfully!");
+    } catch (err) {
+      message.error(err.message || "Invalid OTP. Please check and try again.");
+    } finally {
+      setVerifyingOtp(false);
+    }
+  };
+
+  // Resend OTP handler
+  const handleResendOtp = async () => {
+    if (!canResend) return;
+    const rawNumber = leadForm.getFieldValue("number");
+    const cleanPhone = verifiedPhone || String(rawNumber || "").replace(/\D/g, "").slice(-10);
+    if (!cleanPhone) return;
+
+    try {
+      setSendingOtp(true);
+      const res = await fetch("/api/otp/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: cleanPhone, purpose: "counselling", otp_length: 4 }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.success) throw new Error(data?.message || "Failed to resend OTP");
+
+      message.success("OTP resent to your WhatsApp!");
+      setResendTimer(30);
+      setCanResend(false);
+      setOtpValue("");
+    } catch (err) {
+      message.error(err.message || "Failed to resend OTP");
+    } finally {
+      setSendingOtp(false);
+    }
+  };
+
   // Handle Free Counseling Lead Submission
   const handleLeadSubmit = async (values) => {
+    if (!isPhoneVerified) {
+      const rawNumber = values.number || leadForm.getFieldValue("number");
+      const clean = String(rawNumber || "").replace(/\D/g, "").slice(-10);
+      if (!clean || clean.length !== 10) {
+        message.error("Please enter a valid 10-digit mobile number");
+        leadForm.setFields([{ name: "number", errors: ["Enter valid 10-digit number"] }]);
+        return;
+      }
+      if (otpStep === "otp_sent") {
+        message.warning("Please enter the 4-digit OTP sent to your WhatsApp to verify your number.");
+        return;
+      }
+      message.info("Please verify your mobile number with OTP first.");
+      handleSendOtp();
+      return;
+    }
+
     setSubmitting(true);
     try {
       const fullPhone = values.number
@@ -347,8 +507,9 @@ export default function BlogSidebar({
         phone: fullPhone,
         course: values.course,
         state: values.state,
-        form_name: "Blog Sidebar - Free Counseling",
+        form_name: "Blog Sidebar - Book 1:1 Free Counseling",
         source: "SODE",
+        is_verified: true,
         page_url: typeof window !== "undefined" ? window.location.href : "",
         ...getUTMParams(),
       };
@@ -366,6 +527,9 @@ export default function BlogSidebar({
           "Thank you! Your free counseling request has been received. Our expert advisor will call you shortly."
         );
         leadForm.resetFields();
+        setIsPhoneVerified(false);
+        setOtpStep("idle");
+        setOtpValue("");
         router.push("/thank-you");
       } else {
         message.error(data?.message || "Failed to submit. Please try again.");
@@ -658,14 +822,14 @@ export default function BlogSidebar({
 
   return (
     <div className="space-y-5 w-full h-full">
-      <div id="free-counseling" className="bg-white rounded-2xl border border-gray-200/90 shadow-xs p-3.5 sm:p-6 relative scroll-mt-24">
+      <div id="free-counseling" className="bg-white rounded-2xl border border-gray-200/90 shadow-md p-4 sm:p-6 relative scroll-mt-24">
         {/* Header */}
-        <div className="text-center mb-4">
-          <h3 className="text-base sm:text-lg font-extrabold text-[#0C2B4E] tracking-tight m-0">
-            Book 100% Free Counseling
+        <div className="text-center mb-5">
+          <h3 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight m-0">
+            Book 1:1 Free Counseling
           </h3>
           <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1 m-0">
-            Get 1 to 1 Expert Guidance from SODE™
+            Academic Experts will assist you!
           </p>
         </div>
 
@@ -676,34 +840,20 @@ export default function BlogSidebar({
           requiredMark={false}
           className="space-y-3"
         >
-          {/* Name */}
+          {/* 1. Name */}
           <Form.Item
             name="name"
             rules={[{ required: true, message: "Please enter your name" }]}
             className="mb-3"
           >
             <Input
-              placeholder="Enter Your Name"
-              className="rounded-lg border-slate-200 hover:border-[#0C2B4E] focus:border-[#0C2B4E]"
+              placeholder="Enter Name"
+              size="large"
+              className="rounded-xl border-slate-300 hover:border-blue-500 focus:border-blue-500 text-sm h-11"
             />
           </Form.Item>
 
-          {/* Email */}
-          <Form.Item
-            name="email"
-            rules={[
-              { required: true, message: "Please enter your email" },
-              { type: "email", message: "Please enter a valid email" },
-            ]}
-            className="mb-3"
-          >
-            <Input
-              placeholder="Enter Your Email"
-              className="rounded-lg border-slate-200 hover:border-[#0C2B4E] focus:border-[#0C2B4E]"
-            />
-          </Form.Item>
-
-          {/* Phone Number with +91 [India] prefix */}
+          {/* 2. Mobile Number with +91 [India] prefix and Get OTP button */}
           <Form.Item
             name="number"
             rules={[
@@ -713,21 +863,105 @@ export default function BlogSidebar({
                 message: "Enter valid 10-digit number",
               },
             ]}
-            className="mb-3"
+            className="mb-2"
           >
             <Input
               prefix={
-                <span className="font-semibold text-slate-600 text-xs pr-2 mr-1 border-r border-slate-200 select-none">
-                  IN +91 ▾
-                </span>
+                <div className="flex items-center gap-1.5 pr-2.5 mr-2 border-r border-slate-200 select-none">
+                  <IndiaFlagIcon />
+                  <span className="font-semibold text-slate-700 text-xs">+91</span>
+                </div>
               }
-              placeholder="Enter Your Number"
+              suffix={
+                isPhoneVerified ? (
+                  <span className="inline-flex items-center gap-1 text-green-600 font-bold text-xs select-none pr-1">
+                    <CheckCircle2 className="w-4 h-4 fill-green-600 text-white" />
+                    Verified
+                  </span>
+                ) : (
+                  <Button
+                    type="primary"
+                    size="small"
+                    onClick={handleSendOtp}
+                    loading={sendingOtp}
+                    disabled={otpStep === "otp_sent"}
+                    className="bg-[#1A73E8] hover:bg-[#1565C0] text-white font-semibold text-xs rounded-lg h-7 px-3 border-none shadow-none cursor-pointer flex items-center justify-center"
+                  >
+                    Get OTP
+                  </Button>
+                )
+              }
+              placeholder="Enter Mobile Number"
               maxLength={10}
-              className="rounded-lg border-slate-200 hover:border-[#0C2B4E] focus:border-[#0C2B4E]"
+              disabled={isPhoneVerified}
+              onChange={() => {
+                if (otpStep !== "idle" && !isPhoneVerified) {
+                  setOtpStep("idle");
+                  setOtpValue("");
+                }
+              }}
+              size="large"
+              className="rounded-xl border-slate-300 hover:border-blue-500 focus:border-blue-500 text-sm h-11"
             />
           </Form.Item>
 
-          {/* Select Course */}
+          {/* 2.1 OTP Verification Box (shown when OTP sent and awaiting verification) */}
+          {otpStep === "otp_sent" && !isPhoneVerified && (
+            <div className="mb-3.5 pt-1 pb-1 flex flex-col items-end">
+              <span className="text-[11px] sm:text-xs text-slate-500 font-medium mb-1.5 text-right block">
+                Enter OTP Received in your Whatsapp
+              </span>
+              <div className="flex justify-end w-full">
+                <Input.OTP
+                  length={4}
+                  size="large"
+                  value={otpValue}
+                  onChange={(val) => {
+                    setOtpValue(val);
+                    if (val && String(val).length === 4) {
+                      handleVerifyOtp(val);
+                    }
+                  }}
+                  autoFocus
+                  className="[&_input]:w-9! [&_input]:h-10! sm:[&_input]:w-10! sm:[&_input]:h-11! [&_input]:rounded-lg! [&_input]:text-base! [&_input]:font-bold! [&_input]:border-slate-300!"
+                />
+              </div>
+              <div className="mt-2 text-right w-full">
+                {canResend ? (
+                  <button
+                    type="button"
+                    onClick={handleResendOtp}
+                    disabled={sendingOtp}
+                    className="text-[#1A73E8] hover:underline font-bold text-xs cursor-pointer border-none bg-transparent p-0"
+                  >
+                    Resend OTP
+                  </button>
+                ) : (
+                  <span className="text-[#1A73E8] font-medium text-xs">
+                    Resend OTP (00:{String(resendTimer).padStart(2, "0")})
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* 3. Email */}
+          <Form.Item
+            name="email"
+            rules={[
+              { required: true, message: "Please enter your email" },
+              { type: "email", message: "Please enter a valid email" },
+            ]}
+            className="mb-3"
+          >
+            <Input
+              placeholder="Enter Email"
+              size="large"
+              className="rounded-xl border-slate-300 hover:border-blue-500 focus:border-blue-500 text-sm h-11"
+            />
+          </Form.Item>
+
+          {/* 4. Select Course */}
           <Form.Item
             name="course"
             rules={[{ required: true, message: "Please select a course" }]}
@@ -739,11 +973,12 @@ export default function BlogSidebar({
               showSearch
               loading={courseOptions.length === 0}
               optionFilterProp="label"
-              className="w-full"
+              size="large"
+              className="w-full h-11 [&_.ant-select-selector]:rounded-xl! [&_.ant-select-selector]:border-slate-300!"
             />
           </Form.Item>
 
-          {/* Select State */}
+          {/* 5. Select State */}
           <Form.Item
             name="state"
             rules={[{ required: true, message: "Please select your state" }]}
@@ -755,11 +990,12 @@ export default function BlogSidebar({
               showSearch
               loading={stateOptions.length === 0}
               optionFilterProp="label"
-              className="w-full"
+              size="large"
+              className="w-full h-11 [&_.ant-select-selector]:rounded-xl! [&_.ant-select-selector]:border-slate-300!"
             />
           </Form.Item>
 
-          {/* Consent Disclaimer Checkbox */}
+          {/* 6. Consent Disclaimer Checkbox */}
           <Form.Item
             name="consent"
             valuePropName="checked"
@@ -772,29 +1008,29 @@ export default function BlogSidebar({
                     : Promise.reject(new Error("Please accept terms")),
               },
             ]}
-            className="mb-3"
+            className="mb-4"
           >
-            <Checkbox className="text-xs text-slate-500 leading-tight select-none">
-              I consent to share my details with SODE™ to receive counseling and
-              updates for UGC-DEB approved universities.{" "}
+            <Checkbox className="text-[11px] sm:text-xs text-slate-500 leading-tight select-none">
+              I consent to share my details with UGC-DEB approved universities & receive updates via mail/mobile.{" "}
               <Link
                 href="/disclaimer"
-                className="text-blue-600 hover:underline inline"
+                className="text-blue-600 font-semibold hover:underline inline"
               >
                 Disclaimer
               </Link>
             </Checkbox>
           </Form.Item>
 
-          {/* Submit Button */}
+          {/* 7. Submit Button */}
           <Button
             type="primary"
             htmlType="submit"
             loading={submitting}
             block
-            className="h-11 bg-[#0C2B4E] hover:bg-[#08203b] text-white font-bold text-sm uppercase tracking-wider rounded-lg shadow-xs transition-all active:scale-[0.99] border-none"
+            size="large"
+            className="h-11 bg-[#1A73E8] hover:bg-[#1565C0] text-white font-bold text-sm sm:text-base rounded-xl shadow-md shadow-blue-500/20 border-none transition-all active:scale-[0.99] cursor-pointer"
           >
-            SUBMIT
+            Submit
           </Button>
         </Form>
       </div>

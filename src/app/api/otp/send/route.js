@@ -4,7 +4,7 @@ import { API_BASE_URL } from "@/config/api";
 export async function POST(req) {
   try {
     const body = await req.json();
-    const { phone, purpose } = body || {};
+    const { phone, purpose, otp_length } = body || {};
 
     if (!phone) {
       return NextResponse.json(
@@ -26,7 +26,7 @@ export async function POST(req) {
     const res = await fetch(targetUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phone: cleanPhone, purpose: purpose || "counselling" }),
+      body: JSON.stringify({ phone: cleanPhone, purpose: purpose || "counselling", otp_length: otp_length || 4 }),
     });
 
     const data = await res.json();
