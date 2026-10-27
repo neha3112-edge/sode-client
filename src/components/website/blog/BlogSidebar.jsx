@@ -825,7 +825,7 @@ export default function BlogSidebar({
       <div id="free-counseling" className="bg-white rounded-2xl border border-gray-200/90 shadow-md p-4 sm:p-6 relative scroll-mt-24">
         {/* Header */}
         <div className="text-center mb-5">
-          <h3 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight m-0">
+          <h3 className="text-xl sm:text-2xl font-black text-[#0C2B4E] tracking-tight m-0">
             Book 1:1 Free Counseling
           </h3>
           <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1 m-0">
@@ -849,7 +849,7 @@ export default function BlogSidebar({
             <Input
               placeholder="Enter Name"
               size="large"
-              className="rounded-xl border-slate-300 hover:border-blue-500 focus:border-blue-500 text-sm h-11"
+              className="rounded-xl border-slate-300 hover:border-[#0C2B4E] focus:border-[#0C2B4E] text-sm h-11"
             />
           </Form.Item>
 
@@ -885,7 +885,7 @@ export default function BlogSidebar({
                     onClick={handleSendOtp}
                     loading={sendingOtp}
                     disabled={otpStep === "otp_sent"}
-                    className="bg-[#1A73E8] hover:bg-[#1565C0] text-white font-semibold text-xs rounded-lg h-7 px-3 border-none shadow-none cursor-pointer flex items-center justify-center"
+                    className="bg-[#0C2B4E] hover:bg-[#08203b] text-white font-semibold text-xs rounded-lg h-7 px-3 border-none shadow-none cursor-pointer flex items-center justify-center"
                   >
                     Get OTP
                   </Button>
@@ -901,7 +901,7 @@ export default function BlogSidebar({
                 }
               }}
               size="large"
-              className="rounded-xl border-slate-300 hover:border-blue-500 focus:border-blue-500 text-sm h-11"
+              className="rounded-xl border-slate-300 hover:border-[#0C2B4E] focus:border-[#0C2B4E] text-sm h-11"
             />
           </Form.Item>
 
@@ -932,12 +932,12 @@ export default function BlogSidebar({
                     type="button"
                     onClick={handleResendOtp}
                     disabled={sendingOtp}
-                    className="text-[#1A73E8] hover:underline font-bold text-xs cursor-pointer border-none bg-transparent p-0"
+                    className="text-[#0C2B4E] hover:underline font-bold text-xs cursor-pointer border-none bg-transparent p-0"
                   >
                     Resend OTP
                   </button>
                 ) : (
-                  <span className="text-[#1A73E8] font-medium text-xs">
+                  <span className="text-[#0C2B4E] font-medium text-xs">
                     Resend OTP (00:{String(resendTimer).padStart(2, "0")})
                   </span>
                 )}
@@ -957,7 +957,7 @@ export default function BlogSidebar({
             <Input
               placeholder="Enter Email"
               size="large"
-              className="rounded-xl border-slate-300 hover:border-blue-500 focus:border-blue-500 text-sm h-11"
+              className="rounded-xl border-slate-300 hover:border-[#0C2B4E] focus:border-[#0C2B4E] text-sm h-11"
             />
           </Form.Item>
 
@@ -1014,7 +1014,7 @@ export default function BlogSidebar({
               I consent to share my details with UGC-DEB approved universities & receive updates via mail/mobile.{" "}
               <Link
                 href="/disclaimer"
-                className="text-blue-600 font-semibold hover:underline inline"
+                className="text-[#0C2B4E] font-semibold hover:underline inline"
               >
                 Disclaimer
               </Link>
@@ -1028,7 +1028,7 @@ export default function BlogSidebar({
             loading={submitting}
             block
             size="large"
-            className="h-11 bg-[#1A73E8] hover:bg-[#1565C0] text-white font-bold text-sm sm:text-base rounded-xl shadow-md shadow-blue-500/20 border-none transition-all active:scale-[0.99] cursor-pointer"
+            className="h-11 bg-[#0C2B4E] hover:bg-[#08203b] text-white font-bold text-sm sm:text-base rounded-xl shadow-md shadow-[#0C2B4E]/20 border-none transition-all active:scale-[0.99] cursor-pointer"
           >
             Submit
           </Button>
