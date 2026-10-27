@@ -432,10 +432,163 @@ export function Hero({ initialHeroData = null }) {
     carouselSettings.show_arrows ?? carouselSettings.showArrows ?? heroData?.show_arrows ?? heroData?.showArrows
   );
 
+  const hasFormattingTags = (str) => {
+    if (!str) return false;
+    return /\[(#[0-9a-fA-F]{3,8}|color|outline|stroke|divider)/i.test(str) || /<span[^>]*style=["\x27]color/i.test(str) || /<font[^>]*color/i.test(str);
+  };
+
+  const parseLineTokens = (line, defaultColor) => {
+    const tagRegex = /(\[outline(?::([#a-zA-Z0-9]+))?\]([\s\S]*?)\[\/outline\])|(\[stroke(?::([#a-zA-Z0-9]+))?\]([\s\S]*?)\[\/stroke\])|(\[(#[0-9a-fA-F]{3,8})\]([\s\S]*?)\[\/\])|(\[color[:=]([#a-zA-Z0-9]+)\]([\s\S]*?)\[\/color\])|(<span[^>]*style=["\x27]color:\s*([^;"\x27]+)["\x27][^>]*>([\s\S]*?)<\/span>)|(<font[^>]*color=["\x27]([^"\x27]+)["\x27][^>]*>([\s\S]*?)<\/font>)/gi;
+
+    let lastIndex = 0;
+    const tokens = [];
+    let match;
+
+    while ((match = tagRegex.exec(line)) !== null) {
+      if (match.index > lastIndex) {
+        tokens.push({ type: "text", content: line.slice(lastIndex, match.index) });
+      }
+
+      if (match[1]) {
+        tokens.push({ type: "outline", color: match[2] || defaultColor, content: match[3] });
+      } else if (match[4]) {
+        tokens.push({ type: "outline", color: match[5] || defaultColor, content: match[6] });
+      } else if (match[7]) {
+        tokens.push({ type: "color", color: match[8], content: match[9] });
+      } else if (match[10]) {
+        tokens.push({ type: "color", color: match[11], content: match[12] });
+      } else if (match[13]) {
+        tokens.push({ type: "color", color: match[14], content: match[15] });
+      } else if (match[16]) {
+        tokens.push({ type: "color", color: match[17], content: match[18] });
+      }
+
+      lastIndex = tagRegex.lastIndex;
+    }
+
+    if (lastIndex < line.length) {
+      tokens.push({ type: "text", content: line.slice(lastIndex) });
+    }
+
+    return tokens;
+  };
+
+  const renderFormattedContent = (rawText, defaultColor, isMobile = false) => {
+    if (!rawText) return null;
+    const rawLines = rawText.split("\n");
+
+    return (
+      <div className="flex flex-col space-y-0.5 sm:space-y-1 m-0 leading-tight">
+        {rawLines.map((line, lIdx) => {
+          const trimmed = line.trim();
+          if (!trimmed) return null;
+
+          if (
+            trimmed.toUpperCase() === "—— FROM ——" ||
+            trimmed.toUpperCase() === "--- FROM ---" ||
+            trimmed.toUpperCase() === "[DIVIDER]FROM[/DIVIDER]" ||
+            trimmed.toUpperCase().includes("[DIVIDER]")
+          ) {
+            const dividerText = trimmed.replace(/\[\/?divider\]|[—\-]/gi, "").trim() || "FROM";
+            return (
+              <div key={lIdx} className="flex items-center gap-1.5 py-0.5">
+                <span className={isMobile ? "w-5 xs:w-7 h-[1px] bg-[#64748B]/60 inline-block" : "w-8 md:w-12 h-[1px] bg-[#64748B]/60 inline-block"} />
+                <span className={isMobile ? "text-[8px] xs:text-[9px] font-bold uppercase tracking-widest text-[#64748B]" : "text-xs md:text-sm font-bold uppercase tracking-widest text-[#64748B]"}>
+                  {dividerText}
+                </span>
+                <span className={isMobile ? "w-5 xs:w-7 h-[1px] bg-[#64748B]/60 inline-block" : "w-8 md:w-12 h-[1px] bg-[#64748B]/60 inline-block"} />
+              </div>
+            );
+          }
+
+          const tokens = parseLineTokens(trimmed, defaultColor);
+
+          return (
+            <div key={lIdx} className="flex flex-wrap items-baseline gap-x-1.5 leading-none">
+              {tokens.map((token, tIdx) => {
+                if (token.type === "outline") {
+                  return (
+                    <span
+                      key={tIdx}
+                      style={{
+                        WebkitTextStroke: isMobile ? "1px " + token.color : "1.6px " + token.color,
+                        color: "transparent",
+                        letterSpacing: "0.08em",
+                      }}
+                      className={
+                        isMobile
+                          ? "text-[21px] xs:text-[25px] font-black tracking-tight leading-[0.95] font-sans uppercase block"
+                          : "text-2xl sm:text-3xl md:text-4xl lg:text-[44px] font-black tracking-tight leading-[0.95] font-sans uppercase block"
+                      }
+                    >
+                      {token.content}
+                    </span>
+                  );
+                }
+
+                if (token.type === "color") {
+                  const isLargeNum = /^\d+\s*lakh\+?/i.test(token.content);
+                  const isGov = /^governor(\s+of\s+kerala)?$/i.test(token.content);
+                  const isHonorable = /^honorable$/i.test(token.content);
+
+                  let className = isMobile
+                    ? "text-[14px] xs:text-[16px] font-black leading-[1.15] font-sans block"
+                    : "text-lg sm:text-2xl md:text-[28px] lg:text-[32px] font-black leading-[1.15] tracking-tight m-0 font-sans block";
+
+                  if (isLargeNum) {
+                    className = isMobile
+                      ? "text-[23px] xs:text-[27px] font-black tracking-tight leading-none block"
+                      : "text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-none block";
+                  } else if (isGov) {
+                    className = isMobile
+                      ? "text-[20px] xs:text-[23px] font-black tracking-tight leading-[0.92] font-sans uppercase block"
+                      : "text-xl sm:text-2xl md:text-3xl lg:text-[36px] font-black tracking-tight leading-[0.92] font-sans uppercase block";
+                  } else if (isHonorable) {
+                    className = isMobile
+                      ? "text-[8px] xs:text-[9px] font-extrabold tracking-wider uppercase block pt-0.5"
+                      : "text-xs sm:text-sm font-extrabold tracking-wider uppercase block pt-1";
+                  }
+
+                  return (
+                    <span
+                      key={tIdx}
+                      style={{ color: token.color }}
+                      className={className}
+                    >
+                      {token.content}
+                    </span>
+                  );
+                }
+
+                return (
+                  <span
+                    key={tIdx}
+                    style={{ color: defaultColor }}
+                    className={
+                      isMobile
+                        ? "text-[14px] xs:text-[16px] font-black leading-[1.15] font-sans block"
+                        : "text-lg sm:text-2xl md:text-[28px] lg:text-[32px] font-black leading-[1.15] tracking-tight m-0 font-sans block"
+                    }
+                  >
+                    {token.content}
+                  </span>
+                );
+              })}
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
   const renderSlideHeading = (rawTitle, highlightText, isLight, titleColor, isPrimary = true) => {
     if (!rawTitle) return null;
 
     const defaultColor = titleColor || (isLight ? "#072C50" : "#ffffff");
+
+    if (hasFormattingTags(rawTitle)) {
+      return renderFormattedContent(rawTitle, defaultColor, false);
+    }
     const highlightColor = isLight ? "#965D2C" : "#F6DE95";
     const lines = rawTitle.split("\n");
     const HeadingTag = isPrimary ? "h1" : "h2";
@@ -606,6 +759,13 @@ export function Hero({ initialHeroData = null }) {
 
   const renderMobileSlideHeading = (rawTitle, highlightText, isLight, titleColor, index = 0) => {
     if (!rawTitle) return null;
+
+    const defaultColor = titleColor || (isLight ? "#072C50" : "#ffffff");
+
+    if (hasFormattingTags(rawTitle)) {
+      return renderFormattedContent(rawTitle, defaultColor, true);
+    }
+
     const cleanTitle = rawTitle.replace(/\s+/g, " ").trim();
     const lower = cleanTitle.toLowerCase();
 
@@ -703,7 +863,6 @@ export function Hero({ initialHeroData = null }) {
     }
 
     // Generic fallback with custom color or highlight
-    const defaultColor = titleColor || (isLight ? "#072C50" : "#ffffff");
     return (
       <h2 style={{ color: defaultColor }} className="text-[13px] xs:text-[15px] font-black leading-[1.18] tracking-tight m-0 font-sans">
         {cleanTitle}
