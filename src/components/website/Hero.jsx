@@ -479,12 +479,9 @@ export function Hero({ initialHeroData = null }) {
   const renderFormattedContent = (rawText, defaultColor, isMobile = false) => {
     if (!rawText) return null;
     const rawLines = rawText.split("\n");
-    const isCompareSlide = /compare|50\+\s*universities|confidence/i.test(rawText);
-    const isRashtraSlide = /rashtra\s+nirmata|gajendra\s+chauhan/i.test(rawText);
-    const isTightSlide = isCompareSlide || isRashtraSlide;
 
     return (
-      <div className={`flex flex-col ${isMobile ? "space-y-0 leading-none" : isTightSlide ? "space-y-0 leading-none" : "space-y-0.5 sm:space-y-1 leading-tight"} m-0`}>
+      <div className="flex flex-col space-y-0 leading-none m-0">
         {rawLines.map((line, lIdx) => {
           const trimmed = line.trim();
           if (!trimmed) return null;
@@ -568,9 +565,7 @@ export function Hero({ initialHeroData = null }) {
                     ? (isStudentsPath
                       ? "text-[18.5px] xs:text-[21px] sm:text-[23px] font-black tracking-tight leading-[1.05] font-sans block"
                       : "text-[17px] xs:text-[19px] sm:text-[20px] font-black leading-[1.02] font-sans inline")
-                    : (isTightSlide
-                      ? "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.0] tracking-tight m-0 font-sans inline"
-                      : "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.15] tracking-tight m-0 font-sans inline");
+                    : "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.0] tracking-tight m-0 font-sans inline";
 
                   if (isLargeNum) {
                     className = isMobile
@@ -630,9 +625,7 @@ export function Hero({ initialHeroData = null }) {
                       : isStudentsPath
                         ? "text-[18.5px] xs:text-[21px] sm:text-[23px] font-black tracking-tight leading-[1.05] font-sans block"
                         : "text-[17px] xs:text-[19px] sm:text-[20px] font-black leading-[1.02] font-sans inline")
-                  : (isTightSlide
-                    ? "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.0] tracking-tight m-0 font-sans inline"
-                    : "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.15] tracking-tight m-0 font-sans inline");
+                  : "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.0] tracking-tight m-0 font-sans inline";
 
                 return (
                   <span
@@ -662,16 +655,12 @@ export function Hero({ initialHeroData = null }) {
       return renderFormattedContent(rawTitle, defaultColor, false);
     }
 
-    const isCompareSlide = /compare|50\+\s*universities|confidence/i.test(rawTitle);
-    const isRashtraSlide = /rashtra\s+nirmata|gajendra\s+chauhan/i.test(rawTitle);
-    const isTightSlide = isCompareSlide || isRashtraSlide;
-
     const highlightColor = isLight ? "#965D2C" : "#F6DE95";
     const lines = rawTitle.split("\n");
     const HeadingTag = isPrimary ? "h1" : "h2";
 
     return (
-      <HeadingTag className={`flex flex-col ${isTightSlide ? "space-y-0" : "space-y-0.5 sm:space-y-1"} m-0`}>
+      <HeadingTag className="flex flex-col space-y-0 m-0 leading-none">
         {lines.map((line, lIdx) => {
           let lineContent = line;
           if (highlightText && line.toLowerCase().includes(highlightText.toLowerCase())) {
@@ -692,9 +681,7 @@ export function Hero({ initialHeroData = null }) {
             <span
               key={lIdx}
               style={{ color: defaultColor }}
-              className={`text-lg sm:text-2xl md:text-[25px] lg:text-[30px] xl:text-[34px] font-black ${
-                isTightSlide ? "leading-[1.0]" : "leading-[1.15]"
-              } tracking-tight m-0 font-sans block md:whitespace-nowrap`}
+              className="text-lg sm:text-2xl md:text-[25px] lg:text-[30px] xl:text-[34px] font-black leading-[1.0] tracking-tight m-0 font-sans block md:whitespace-nowrap"
             >
               {lineContent}
             </span>
