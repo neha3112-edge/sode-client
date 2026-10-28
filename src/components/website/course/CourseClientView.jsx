@@ -42,15 +42,12 @@ export function CourseClientView({
   const isFullfeesPayment = paymentTypeName.includes("full") || paymentTypeName.includes("one") || paymentTypeName.includes("lump");
 
   const initialPlanTab = useMemo(() => {
-    if (isYearlyPayment) return "yearly";
-    if (isSemesterPayment) return "semester";
-    if (isFullfeesPayment) return "fullfees";
-    if (courseData?.defaultPlan) return courseData.defaultPlan;
-    if (courseData?.durationMonths && Number(courseData.durationMonths) < 12) return "fullfees";
-    if (courseData?.ledger?.yearly) return "yearly";
     if (courseData?.ledger?.semester) return "semester";
+    if (courseData?.ledger?.yearly) return "yearly";
+    if (courseData?.ledger?.fullfees) return "fullfees";
+    if (courseData?.defaultPlan) return courseData.defaultPlan;
     return "fullfees";
-  }, [isYearlyPayment, isSemesterPayment, isFullfeesPayment, courseData]);
+  }, [courseData]);
 
   const [selectedPlanTab, setSelectedPlanTab] = useState(initialPlanTab);
 
@@ -98,8 +95,8 @@ export function CourseClientView({
 
     return {
       fullfees: full ? { ...full, emi: fullEmi } : null,
-      yearly: isSemesterPayment || isFullfeesPayment ? null : (year ? { ...year, emi: yearEmi } : null),
-      semester: isYearlyPayment || isFullfeesPayment ? null : (sem ? { ...sem, emi: semEmi } : null),
+      yearly: year ? { ...year, emi: yearEmi } : null,
+      semester: sem ? { ...sem, emi: semEmi } : null,
       paymentTypeName: courseData?.paymentType?.name || promoData?.paymentTypeName || "",
       durationMonths: Number(courseData?.durationMonths || 0),
       totalSemesters: Number(courseData?.totalSemesters || 0),
@@ -108,8 +105,8 @@ export function CourseClientView({
       formattedActualFees: promoData?.formattedActualFees || full?.formattedGross || null,
       emi: {
         fullfees: fullEmi,
-        yearly: isSemesterPayment || isFullfeesPayment ? null : yearEmi,
-        semester: isYearlyPayment || isFullfeesPayment ? null : semEmi,
+        yearly: year ? yearEmi : null,
+        semester: sem ? semEmi : null,
         summary: availableSummary,
         hasSpecificPaymentTypes,
       },

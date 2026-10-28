@@ -16,11 +16,11 @@ export default function CourseFeesPlan({
   const isSemesterSelected = paymentTypeName.includes("sem");
   const isFullfeesSelected = paymentTypeName.includes("full") || paymentTypeName.includes("one") || paymentTypeName.includes("lump");
 
-  // Build dynamic plan cards based on configured paymentType (Fullfees is ALWAYS default)
+  // Build dynamic plan cards based on available plans in activeLedgerData (Fullfees is ALWAYS default)
   const planCards = [];
 
-  // 1. Semester-wise Plan Card (Only show if not restricted to Yearly or Fullfees)
-  if (activeLedgerData?.semester && !isYearlySelected && !isFullfeesSelected) {
+  // 1. Semester-wise Plan Card
+  if (activeLedgerData?.semester) {
     planCards.push({
       id: "semester",
       title: "Semester-wise",
@@ -43,8 +43,8 @@ export default function CourseFeesPlan({
     });
   }
 
-  // 2. Yearly Plan Card (Show if Yearly is selected, or if general multi-year course)
-  if (activeLedgerData?.yearly && !isSemesterSelected && !isFullfeesSelected) {
+  // 2. Yearly Plan Card
+  if (activeLedgerData?.yearly) {
     planCards.push({
       id: "yearly",
       title: "Yearly Plan",
@@ -246,13 +246,7 @@ export default function CourseFeesPlan({
           { key: "semester", label: "Semester EMI", ledger: activeLedgerData.emi.semester },
           { key: "yearly", label: "Yearly EMI", ledger: activeLedgerData.emi.yearly },
           { key: "fullfees", label: "Fullfees EMI", ledger: activeLedgerData.emi.fullfees },
-        ].filter((t) => {
-          if (!t.ledger || !t.ledger.available) return false;
-          if (t.key === "semester" && isYearlySelected) return false;
-          if (t.key === "yearly" && isSemesterSelected) return false;
-          if ((t.key === "semester" || t.key === "yearly") && isFullfeesSelected) return false;
-          return true;
-        });
+        ].filter((t) => t.ledger && t.ledger.available);
 
         const currentSubTabKey =
           activeEmiSubTab && activeLedgerData.emi[activeEmiSubTab]?.available
