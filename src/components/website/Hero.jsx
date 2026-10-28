@@ -478,7 +478,7 @@ export function Hero({ initialHeroData = null }) {
     const rawLines = rawText.split("\n");
 
     return (
-      <div className="flex flex-col space-y-0.5 sm:space-y-1 m-0 leading-tight">
+      <div className={`flex flex-col ${isMobile ? "space-y-0 leading-none" : "space-y-0.5 sm:space-y-1 leading-tight"} m-0`}>
         {rawLines.map((line, lIdx) => {
           const trimmed = line.trim();
           if (!trimmed) return null;
@@ -539,7 +539,7 @@ export function Hero({ initialHeroData = null }) {
                   const isCompareUni = /^(compare|50\+\s*universities|choose\s+with|confidence\.?)$/i.test(token.content.trim());
 
                   let className = isMobile
-                    ? "text-[17px] xs:text-[19px] sm:text-[20px] font-black leading-[1.15] font-sans inline"
+                    ? "text-[17px] xs:text-[19px] sm:text-[20px] font-black leading-[1.02] font-sans inline"
                     : "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.15] tracking-tight m-0 font-sans inline";
 
                   if (isLargeNum) {
@@ -584,7 +584,7 @@ export function Hero({ initialHeroData = null }) {
                 // Default text token
                 const isCompareUni = /^(compare|choose\s+with|confidence\.?)$/i.test(token.content.trim());
                 let textClassName = isMobile
-                  ? (isCompareUni ? "text-[18px] xs:text-[21px] font-black tracking-tight font-sans block" : "text-[17px] xs:text-[19px] sm:text-[20px] font-black leading-[1.15] font-sans inline")
+                  ? (isCompareUni ? "text-[18px] xs:text-[21px] font-black tracking-tight font-sans block" : "text-[17px] xs:text-[19px] sm:text-[20px] font-black leading-[1.02] font-sans inline")
                   : "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.15] tracking-tight m-0 font-sans inline";
 
                 return (
@@ -723,7 +723,7 @@ export function Hero({ initialHeroData = null }) {
     const lines = rawTitle.split("\n");
 
     return (
-      <div className="flex flex-col space-y-0.5 m-0 leading-tight">
+      <div className="flex flex-col space-y-0 m-0 leading-none">
         {lines.map((line, lIdx) => {
           let lineContent = line;
           if (highlightText && line.toLowerCase().includes(highlightText.toLowerCase())) {
@@ -744,7 +744,7 @@ export function Hero({ initialHeroData = null }) {
             <span
               key={lIdx}
               style={{ color: defaultColor }}
-              className="text-[17px] xs:text-[19px] sm:text-[20px] font-black leading-[1.15] tracking-tight m-0 font-sans block"
+              className="text-[17px] xs:text-[19px] sm:text-[20px] font-black leading-[1.02] tracking-tight m-0 font-sans block"
             >
               {lineContent}
             </span>
@@ -878,141 +878,141 @@ export function Hero({ initialHeroData = null }) {
         <Container className="md:hidden relative z-10 w-full h-full flex items-center pointer-events-auto">
           <div className="w-[60%] xs:w-[56%] max-w-[250px] xs:max-w-[275px] flex flex-col justify-center items-start space-y-1 xs:space-y-1.5 z-10 py-1.5 xs:py-2">
             {renderMobileSlideBadge(mobileBadgeText, isLight)}
-            {renderMobileSlideHeading(mobileTitle, highlightText, isLight, titleColor)}
+              {renderMobileSlideHeading(mobileTitle, highlightText, isLight, titleColor)}
 
-            {mobileSubtitle && (
-              <p
-                style={{ color: isLight ? "#072C50" : (subtitleColor || "#cbd5e1") }}
-                className="text-[9px] xs:text-[9px] leading-tight font-normal line-clamp-2 max-w-full mt-2"
-              >
-                {mobileSubtitle}
-              </p>
-            )}
+              {mobileSubtitle && (
+                <p
+                  style={{ color: isLight ? "#072C50" : (subtitleColor || "#cbd5e1") }}
+                  className="text-[9px] xs:text-[9px] leading-tight font-normal line-clamp-2 max-w-full mt-2"
+                >
+                  {mobileSubtitle}
+                </p>
+              )}
 
-            {/* Mobile Primary Button if enabled (e.g. Compare Now on Slide 4) */}
-            {primaryBtn?.enabled !== false && primaryBtn?.text && (
-              <div className="pt-0.5">
-                {primaryBtn?.is_modal ? (
-                  <button
-                    type="button"
-                    onClick={handlePrimaryClick}
-                    style={{
-                      background: "linear-gradient(180deg, #F3CE7F 0%, #E7B85D 100%)",
-                      color: "#072C50",
-                      border: "1px solid rgba(226, 176, 83, 0.6)",
-                    }}
-                    className="px-2 py-0.5 rounded-md font-bold text-[9.5px] xs:text-[10.5px] shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap"
-                  >
-                    {primaryBtn.text}
-                  </button>
-                ) : (
-                  <Link
-                    href={primaryBtn?.url || "/counselling"}
-                    style={{
-                      background: "linear-gradient(180deg, #F3CE7F 0%, #E7B85D 100%)",
-                      color: "#072C50",
-                      border: "1px solid rgba(226, 176, 83, 0.6)",
-                    }}
-                    className="inline-block px-2 py-0.5 rounded-md font-bold text-[9.5px] xs:text-[10.5px] shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap"
-                  >
-                    {primaryBtn.text}
-                  </Link>
-                )}
-              </div>
-            )}
-          </div>
+              {/* Mobile Primary Button if enabled (e.g. Compare Now on Slide 4) */}
+              {primaryBtn?.enabled !== false && primaryBtn?.text && (
+                <div className="pt-0.5">
+                  {primaryBtn?.is_modal ? (
+                    <button
+                      type="button"
+                      onClick={handlePrimaryClick}
+                      style={{
+                        background: "linear-gradient(180deg, #F3CE7F 0%, #E7B85D 100%)",
+                        color: "#072C50",
+                        border: "1px solid rgba(226, 176, 83, 0.6)",
+                      }}
+                      className="px-2 py-0.5 rounded-md font-bold text-[9.5px] xs:text-[10.5px] shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap"
+                    >
+                      {primaryBtn.text}
+                    </button>
+                  ) : (
+                    <Link
+                      href={primaryBtn?.url || "/counselling"}
+                      style={{
+                        background: "linear-gradient(180deg, #F3CE7F 0%, #E7B85D 100%)",
+                        color: "#072C50",
+                        border: "1px solid rgba(226, 176, 83, 0.6)",
+                      }}
+                      className="inline-block px-2 py-0.5 rounded-md font-bold text-[9.5px] xs:text-[10.5px] shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap"
+                    >
+                      {primaryBtn.text}
+                    </Link>
+                  )}
+                </div>
+              )}
+            </div>
         </Container>
 
         {/* 💻 DESKTOP HERO VIEW (hidden md:block - 100% UNTOUCHED from 88bde7c) */}
         <Container className="hidden md:block relative z-10 w-full pointer-events-auto">
           <div className="w-full max-w-[70%] sm:max-w-[56%] md:max-w-[54%] lg:max-w-[54%] xl:max-w-[52%] flex flex-col items-start space-y-1.5 sm:space-y-2 md:space-y-2.5">
             {renderSlideBadge(badgeText, isLight)}
-            {renderSlideHeading(title, highlightText, isLight, titleColor, index === 0)}
+              {renderSlideHeading(title, highlightText, isLight, titleColor, index === 0)}
 
-            {subtitle && (
-              <p
-                style={{ color: isLight ? "#072C50" : (subtitleColor || "#cbd5e1") }}
-                className="text-[10px] sm:text-xs md:text-[13px] leading-tight sm:leading-relaxed font-normal line-clamp-2 max-w-sm sm:max-w-md lg:max-w-lg mt-3"
-              >
-                {subtitle}
-              </p>
-            )}
+              {subtitle && (
+                <p
+                  style={{ color: isLight ? "#072C50" : (subtitleColor || "#cbd5e1") }}
+                  className="text-[10px] sm:text-xs md:text-[13px] leading-tight sm:leading-relaxed font-normal line-clamp-2 max-w-sm sm:max-w-md lg:max-w-lg mt-3"
+                >
+                  {subtitle}
+                </p>
+              )}
 
-            {categoryItems && categoryItems.length > 0 && (
-              <div className="hidden sm:flex flex-wrap gap-1 pt-0.5">
-                {categoryItems.map((item, tIdx) => (
-                  <Link
-                    key={item._id || tIdx}
-                    href={item.url || "#"}
-                    className={`px-2 py-0.5 rounded text-[10px] sm:text-xs font-medium transition-all shadow-2xs ${isLight
-                      ? "bg-white/90 text-[#072C50] border border-[#EEC471]/40 hover:border-[#EEC471] hover:bg-amber-50"
-                      : "bg-white/10 text-white border border-white/20 hover:bg-white/20 backdrop-blur-md"
-                      }`}
-                  >
-                    {item.name}
-                  </Link>
-                ))}
+              {categoryItems && categoryItems.length > 0 && (
+                <div className="hidden sm:flex flex-wrap gap-1 pt-0.5">
+                  {categoryItems.map((item, tIdx) => (
+                    <Link
+                      key={item._id || tIdx}
+                      href={item.url || "#"}
+                      className={`px-2 py-0.5 rounded text-[10px] sm:text-xs font-medium transition-all shadow-2xs ${isLight
+                        ? "bg-white/90 text-[#072C50] border border-[#EEC471]/40 hover:border-[#EEC471] hover:bg-amber-50"
+                        : "bg-white/10 text-white border border-white/20 hover:bg-white/20 backdrop-blur-md"
+                        }`}
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex flex-wrap items-center gap-2 pt-0.5 sm:pt-1">
+                {primaryBtn?.enabled !== false && primaryBtn?.text && (
+                  primaryBtn?.is_modal ? (
+                    <button
+                      type="button"
+                      onClick={handlePrimaryClick}
+                      style={{
+                        background: "linear-gradient(180deg, #F3CE7F 0%, #E7B85D 100%)",
+                        color: "#072C50",
+                        border: "1px solid rgba(226, 176, 83, 0.6)",
+                      }}
+                      className="px-3.5 py-1.5 rounded-lg font-bold text-xs shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+                    >
+                      {primaryBtn.text}
+                    </button>
+                  ) : (
+                    <Link
+                      href={primaryBtn?.url || "/counselling"}
+                      style={{
+                        background: "linear-gradient(180deg, #F3CE7F 0%, #E7B85D 100%)",
+                        color: "#072C50",
+                        border: "1px solid rgba(226, 176, 83, 0.6)",
+                      }}
+                      className="px-3.5 py-1.5 rounded-lg font-bold text-xs shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+                    >
+                      {primaryBtn.text}
+                    </Link>
+                  )
+                )}
+
+                {secondaryBtn?.enabled !== false && secondaryBtn?.text && (
+                  secondaryBtn?.is_modal ? (
+                    <button
+                      type="button"
+                      onClick={handleSecondaryClick}
+                      style={{
+                        borderColor: isLight ? "#EEC471" : "rgba(255, 255, 255, 0.4)",
+                        color: isLight ? "#072C50" : "#ffffff",
+                      }}
+                      className="px-3 py-1.5 rounded-lg font-medium text-xs border hover:bg-white/10 transition-all cursor-pointer"
+                    >
+                      {secondaryBtn.text}
+                    </button>
+                  ) : (
+                    <Link
+                      href={secondaryBtn?.url || "/courses"}
+                      style={{
+                        borderColor: isLight ? "#EEC471" : "rgba(255, 255, 255, 0.4)",
+                        color: isLight ? "#072C50" : "#ffffff",
+                      }}
+                      className="px-3 py-1.5 rounded-lg font-medium text-xs border hover:bg-white/10 transition-all cursor-pointer"
+                    >
+                      {secondaryBtn.text}
+                    </Link>
+                  )
+                )}
               </div>
-            )}
-
-            <div className="flex flex-wrap items-center gap-2 pt-0.5 sm:pt-1">
-              {primaryBtn?.enabled !== false && primaryBtn?.text && (
-                primaryBtn?.is_modal ? (
-                  <button
-                    type="button"
-                    onClick={handlePrimaryClick}
-                    style={{
-                      background: "linear-gradient(180deg, #F3CE7F 0%, #E7B85D 100%)",
-                      color: "#072C50",
-                      border: "1px solid rgba(226, 176, 83, 0.6)",
-                    }}
-                    className="px-3.5 py-1.5 rounded-lg font-bold text-xs shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
-                  >
-                    {primaryBtn.text}
-                  </button>
-                ) : (
-                  <Link
-                    href={primaryBtn?.url || "/counselling"}
-                    style={{
-                      background: "linear-gradient(180deg, #F3CE7F 0%, #E7B85D 100%)",
-                      color: "#072C50",
-                      border: "1px solid rgba(226, 176, 83, 0.6)",
-                    }}
-                    className="px-3.5 py-1.5 rounded-lg font-bold text-xs shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
-                  >
-                    {primaryBtn.text}
-                  </Link>
-                )
-              )}
-
-              {secondaryBtn?.enabled !== false && secondaryBtn?.text && (
-                secondaryBtn?.is_modal ? (
-                  <button
-                    type="button"
-                    onClick={handleSecondaryClick}
-                    style={{
-                      borderColor: isLight ? "#EEC471" : "rgba(255, 255, 255, 0.4)",
-                      color: isLight ? "#072C50" : "#ffffff",
-                    }}
-                    className="px-3 py-1.5 rounded-lg font-medium text-xs border hover:bg-white/10 transition-all cursor-pointer"
-                  >
-                    {secondaryBtn.text}
-                  </button>
-                ) : (
-                  <Link
-                    href={secondaryBtn?.url || "/courses"}
-                    style={{
-                      borderColor: isLight ? "#EEC471" : "rgba(255, 255, 255, 0.4)",
-                      color: isLight ? "#072C50" : "#ffffff",
-                    }}
-                    className="px-3 py-1.5 rounded-lg font-medium text-xs border hover:bg-white/10 transition-all cursor-pointer"
-                  >
-                    {secondaryBtn.text}
-                  </Link>
-                )
-              )}
             </div>
-          </div>
         </Container>
       </div>
     );
