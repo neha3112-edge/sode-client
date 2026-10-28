@@ -554,11 +554,11 @@ export function Hero({ initialHeroData = null }) {
                       : "text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-none block";
                   } else if (isGov) {
                     className = isMobile
-                      ? "text-[20px] xs:text-[23px] font-black tracking-tight leading-[0.92] font-sans uppercase block"
+                      ? "text-[23px] xs:text-[26px] sm:text-[28px] font-black tracking-tight leading-[1.12] font-sans uppercase block"
                       : "text-2xl sm:text-3xl md:text-[34px] lg:text-[40px] xl:text-[44px] font-black tracking-wide leading-none font-sans uppercase block";
                   } else if (isHonorable) {
                     className = isMobile
-                      ? "text-[8px] xs:text-[9px] font-extrabold tracking-wider uppercase block pt-0.5"
+                      ? "text-[8px] xs:text-[9px] font-extrabold tracking-wider uppercase block pt-1"
                       : "text-xs sm:text-sm md:text-base lg:text-[18px] font-black tracking-wide leading-snug uppercase block pt-0.5";
                   } else if (isArif) {
                     className = isMobile
@@ -763,9 +763,12 @@ export function Hero({ initialHeroData = null }) {
           const isLargeNum = /^\d+\s*lakh\+?/i.test(line.trim());
           const isStudentsPath = /^(students\s+found\s+their|right\s+career\s+path)$/i.test(line.trim());
           const isCompareUni = /^(compare|50\+\s*universities|choose\s+with|confidence\.?)$/i.test(line.trim());
+          const isGov = /^(governor|of\s+kerala|governor\s+of\s+kerala)$/i.test(line.trim());
           let lineClass = "text-[17px] xs:text-[19px] sm:text-[20px] font-black leading-[1.02] tracking-tight m-0 font-sans block";
           if (isLargeNum) {
             lineClass = "text-[28px] xs:text-[33px] sm:text-[36px] font-black tracking-tight leading-none m-0 font-sans block";
+          } else if (isGov) {
+            lineClass = "text-[23px] xs:text-[26px] sm:text-[28px] font-black tracking-tight leading-[1.12] m-0 font-sans uppercase block";
           } else if (isCompareUni) {
             lineClass = "text-[21px] xs:text-[24px] sm:text-[26px] font-black tracking-tight leading-[1.02] m-0 font-sans block";
           } else if (isStudentsPath) {
