@@ -533,18 +533,20 @@ export default function LandingHero({
               )
             )}
 
-            {!hero.hideHashtag && hero.showHashtag !== false && (hero.hashtagText || brand.hashtag) && (
+            {!hero.hideHashtag && hero.showHashtag !== false && (hero.hashtagText || hero.hashtag || brand.hashtagText || brand.hashtag) && (
               <p
                 className={
                   hero.hashtagClassName ||
+                  brand.hashtagClassName ||
                   "m-0 text-[13px] sm:text-[14px] font-bold tracking-wide"
                 }
                 style={{
-                  color: hero.hashtagColor,
+                  color: hero.hashtagColor || brand.hashtagColor,
+                  ...brand.hashtagStyle,
                   ...hero.hashtagStyle,
                 }}
               >
-                {hero.hashtagText || brand.hashtag}
+                {hero.hashtagText || hero.hashtag || brand.hashtagText || brand.hashtag}
               </p>
             )}
 

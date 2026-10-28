@@ -51,6 +51,7 @@ export const lpuData = {
     mobileMenuIconColor: "#08417b",
     arrowIcon: "/assets/all_universities_images/lpu/arrow.gif",
     footerLogo: "/assets/all_universities_images/lpu/new-des-logo.webp",
+    footerLogoContainerClassName: "w-[310px] sm:w-[320px] md:w-[420px] lg:w-[480px] xl:w-[540px] h-[68px] sm:h-[84px] md:h-[110px] lg:h-[125px] xl:h-[141px]",
     heroBg: "/assets/all_universities_images/lpu/new-desktop-front-bg.webp",
     heroUniversityImg: "/assets/all_universities_images/lpu/university.webp",
     brochurePdf: "/assets/lpu/LPU_University_Brochure_compressed.pdf",
@@ -66,14 +67,18 @@ export const lpuData = {
     approvalsUniName: "LPU University",
     admissionProcessId: "admission-process",
     admissionContainerClass: "w-full max-w-full px-4 sm:px-6 lg:px-8 xl:px-12",
+    admissionGridClass: "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4.5 sm:gap-4 lg:gap-3 xl:gap-4 w-full",
     compareBannerBg: "#f58220",
     compareBoxMaxWidth: "w-full max-w-full px-4 sm:px-6 lg:px-8 xl:px-12",
     footerBg: "#073663",
     footerBottomBg: "#073663",
+    footerDisclaimerContainerClassName: "max-w-[1090px] lg:max-w-none",
+    footerDisclaimerClassName: "lg:text-[10px] xl:text-[11px] min-[1400px]:text-[11.5px] min-[1600px]:text-[12px] lg:whitespace-nowrap",
     couponBtnBg: "linear-gradient(135deg, #2ecc71, #27ae60)",
     couponButtonText: "Scholarship Coupon Code",
     faqLayout: "sidebar",
     faqSubtitle: "Frequently Asked Question",
+    faqContainerClassName: "px-5 sm:px-6 md:px-8",
     coursesStrip: [
       "MBA | MCA | MA | MSc Maths",
       "MCOM | BCA | BBA | BA",
@@ -366,6 +371,8 @@ export const lpuData = {
       desc: "Professionals start their career in tech with a practical and affordable LPU Online BCA program. It prepares them for in-demand IT roles through LPU Online courses.",
     },
   ],
+  whyChooseDescriptionClassName: "text-[15.5px] sm:text-[17px] text-slate-700 mt-2.5 sm:mt-3 leading-relaxed font-normal m-0",
+  whyChooseCardClassName: "bg-white rounded-none py-7 px-5 sm:py-8 sm:px-6 min-h-[195px] sm:min-h-[215px] border border-slate-200 border-b-2 border-b-[#f58220] shadow-[0_4px_20px_rgba(0,0,0,0.08)] hover:shadow-[0_10px_28px_rgba(0,0,0,0.13)] transition-all duration-300 text-left relative h-full overflow-hidden",
   whyChoose: [
     {
       title: "Live Lectures",
@@ -380,11 +387,25 @@ export const lpuData = {
       desc: "The LMS of LPU online includes digital assignment submission and project work. Students from LPU online MCA and LPU MBA online tracks monitor progress and gain practical exposure throughout the course.",
     },
   ],
+  degreeContainerClassName: "px-6 sm:px-8 lg:px-8",
   degreeInfo: {
+    sectionClassName: "py-12 sm:py-16 md:py-20 bg-[#fff8f2] select-none scroll-mt-20 border-b border-slate-200",
+    containerClassName: "px-6 sm:px-8 lg:px-8",
     image: "/assets/all_universities_images/lpu/sample-certificate-lpu.webp",
+    hideCertificateOnMobile: true,
     title: "Get UGC Entitled\nOnline Degree",
+    titleClassName: "text-[27px] sm:text-[34px] lg:text-[38px] font-bold text-[#f58220] tracking-tight leading-tight whitespace-pre-line text-center lg:text-left",
     subtitle: "Which Enhance Your Career",
+    subtitleClassName: "text-[16px] sm:text-2xl lg:text-[26px] font-bold text-slate-900 tracking-tight m-0 mt-1.5 leading-tight text-center lg:text-left",
     desc: "Lovely Professional University Online (LPU Online) is one of the most trusted and credible institutions in India that offers flexible and affordable education in digital mode.",
+    descClassName: "text-[12px] sm:text-[13px] text-slate-600 leading-relaxed font-normal mt-2 sm:mt-2.5 mb-5 sm:mb-6 m-0 max-w-[340px] sm:max-w-xl text-center lg:text-left mx-auto lg:mx-0",
+    featuresGridClassName: "grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-4.5 pt-1.5 text-left max-w-[340px] sm:max-w-none mx-auto",
+    cardClassName: "bg-transparent rounded-[5px] p-5 sm:p-5 border-2 border-[#f58220] flex flex-col items-start text-left",
+    cardTitleClassName: "text-[14.5px] sm:text-[15px] font-bold text-slate-900 m-0 mb-1.5 leading-snug",
+    cardDescClassName: "text-[12px] sm:text-[12.5px] text-[#4b5563] leading-[1.65] m-0 font-normal",
+    buttonContainerClassName: "pt-2 flex justify-start max-w-[340px] sm:max-w-none mx-auto",
+    buttonClassName: "bg-black hover:bg-slate-800 text-white font-normal text-[13.5px] sm:text-[14px] px-8 py-3 rounded-[4px] shadow-xs transition-all cursor-pointer border-none active:scale-95 inline-flex items-center",
+    buttonText: "Get FREE Career Assistance",
     features: [
       {
         title: "Top University Degree",
@@ -392,7 +413,7 @@ export const lpuData = {
       },
       {
         title: "Universally Accepted Degree",
-        desc: "Professionals can upgrade themselves through a globally recognised, UGC-approved degree. These online degrees are accepted worldwide by all employers and academic institutions.",
+        desc: "Professionals can upgrade themselves through a globally recognised, UGC-approved degree . These online degrees are accepted worldwide by all employers and academic institutions.",
       },
       {
         title: "Equivalent to Campus Programs",
@@ -479,7 +500,7 @@ export const lpuData = {
     prefixColor: "#334155",
     highlightColor: "#334155",
     description: "The admission process of LPU Online is quite simple, quick, and completely student-friendly. It is designed to ensure a seamless enrollment experience for learners applying to online degree programs. Here's a step-by-step guide to enrolling in an online course at the university.",
-    gridClass: "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3.5 lg:gap-3 xl:gap-4 w-full",
+    gridClass: "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4.5 sm:gap-4 lg:gap-3 xl:gap-4 w-full",
   },
   faqs: [
     {

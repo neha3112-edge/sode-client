@@ -14,6 +14,7 @@ function getApplyButtonStyles(stickyBar) {
     "white-orange": { bg: "#ffffff", text: "#DC520A" },
     "white-accent": { bg: "#ffffff", text: "#f97316" },
     "white-pink": { bg: "#ffffff", text: "#f2167d" },
+    "white-blue": { bg: "#ffffff", text: "#074a76" },
     "white-brand": { bg: "#ffffff", text: stickyBar.brandColor || "#003468" },
     "pink": { bg: "#f2167d", text: "#ffffff" },
     "red": { bg: "#c11f28", text: "#ffffff" },
@@ -191,3 +192,4 @@ export default function StickyBottomBar({
     </div>
   );
 }
+

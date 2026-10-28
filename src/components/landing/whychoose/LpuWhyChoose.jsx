@@ -68,7 +68,7 @@ export default function LpuWhyChoose({ whyChoose = [], brand = {} }) {
                 </>
               )}
             </h2>
-            <p className="text-[13px] sm:text-[14px] text-slate-700 mt-2.5 sm:mt-3 leading-relaxed font-normal m-0">
+            <p className={brand?.whyChooseDescriptionClassName || "text-[15.5px] sm:text-[17px] text-slate-700 mt-2.5 sm:mt-3 leading-relaxed font-normal m-0"}>
               {description}
             </p>
           </div>
@@ -80,7 +80,7 @@ export default function LpuWhyChoose({ whyChoose = [], brand = {} }) {
               return (
                 <div
                   key={idx}
-                  className="bg-white rounded-none p-5 sm:p-6 border border-slate-200 border-b-2 border-b-[#f58220] shadow-[0_4px_20px_rgba(0,0,0,0.08)] hover:shadow-[0_10px_28px_rgba(0,0,0,0.13)] transition-all duration-300 text-left relative h-full overflow-hidden"
+                  className={brand?.whyChooseCardClassName || "bg-white rounded-none py-7 px-5 sm:py-8 sm:px-6 min-h-[195px] sm:min-h-[215px] border border-slate-200 border-b-2 border-b-[#f58220] shadow-[0_4px_20px_rgba(0,0,0,0.08)] hover:shadow-[0_10px_28px_rgba(0,0,0,0.13)] transition-all duration-300 text-left relative h-full overflow-hidden"}
                   style={{
                     borderBottomColor: primaryColor || "#f58220",
                     borderBottomWidth: "2px",

@@ -255,12 +255,15 @@ export default function LandingAdmissionProcess({
         {/* Responsive Step Cards Grid */}
         <div
           className={
-            (brand.admissionGridClass ? brand.admissionGridClass.replace(/\bgrid-cols-1\b/, "grid-cols-2") : null) ||
-            (enrollmentProcess?.gridClass ? enrollmentProcess.gridClass.replace(/\bgrid-cols-1\b/, "grid-cols-2") : null) ||
-            `grid ${rawSteps.length <= 4
-              ? "grid-cols-2 lg:grid-cols-4 max-w-4xl mx-auto"
-              : "grid-cols-2 md:grid-cols-3 lg:grid-cols-6"
-            } gap-2.5 sm:gap-3 lg:gap-3 xl:gap-3.5 2xl:gap-3.5 w-full`
+            brand.admissionGridClass ||
+            enrollmentProcess?.gridClass ||
+            (brand.slug === "lpu"
+              ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4.5 sm:gap-4 lg:gap-3 xl:gap-4 w-full"
+              : `grid ${rawSteps.length <= 4
+                  ? "grid-cols-2 lg:grid-cols-4 max-w-4xl mx-auto"
+                  : "grid-cols-2 md:grid-cols-3 lg:grid-cols-6"
+                } gap-2.5 sm:gap-3 lg:gap-3 xl:gap-3.5 2xl:gap-3.5 w-full`
+            )
           }
         >
           {rawSteps.map((step, idx) => {
@@ -291,15 +294,15 @@ export default function LandingAdmissionProcess({
                 key={num}
                 variant="borderless"
                 styles={{ body: { padding: 0, height: "100%" } }}
-                className="rounded-[14px] sm:rounded-2xl lg:rounded-[18px] overflow-hidden px-2 py-3 sm:px-2.5 sm:py-3.5 lg:px-3 lg:pt-5 lg:pb-4 text-center flex flex-col items-center justify-start h-full min-h-[160px] sm:min-h-[165px] lg:min-h-[185px] lg:h-[185px] transition-all duration-200 hover:-translate-y-1 shadow-2xs hover:shadow-xs relative box-border"
+                className="rounded-[10px] sm:rounded-[12px] lg:rounded-[14px] overflow-hidden px-4 py-6 sm:px-3 sm:py-4 lg:px-3 lg:pt-5 lg:pb-4 text-center flex flex-col items-center justify-center h-full min-h-[165px] sm:min-h-[175px] lg:min-h-[185px] lg:h-[185px] transition-all duration-200 hover:-translate-y-1 shadow-[0_2px_10px_rgba(0,0,0,0.03)] hover:shadow-xs relative box-border"
                 style={{
                   backgroundColor: cardBg,
-                  borderBottom: `4px solid ${borderColor}`,
+                  borderBottom: `5.5px solid ${borderColor}`,
                 }}
               >
                 {/* Circular Number Badge */}
                 <div
-                  className="w-9 h-9 sm:w-10 sm:h-10 lg:w-11 lg:h-11 rounded-full border-2 flex items-center justify-center font-bold text-[14px] sm:text-[15px] lg:text-[16px] mb-2 sm:mb-2.5 lg:mb-2.5 shrink-0 shadow-2xs select-none mx-auto"
+                  className="w-10 h-10 lg:w-11 lg:h-11 rounded-full border-2 flex items-center justify-center font-bold text-[15px] lg:text-[16px] mb-2 sm:mb-2.5 lg:mb-2.5 shrink-0 shadow-2xs select-none mx-auto"
                   style={{
                     backgroundColor: circleBg,
                     borderColor: themeColor,
@@ -311,7 +314,7 @@ export default function LandingAdmissionProcess({
 
                 {/* Step Title */}
                 <h3
-                  className="text-[13px] sm:text-[14px] lg:text-[15.5px] xl:text-[16px] font-bold mb-1 sm:mb-1.5 lg:mb-1.5 leading-snug m-0 text-center"
+                  className="text-[15px] sm:text-[14px] lg:text-[15.5px] xl:text-[16px] font-bold mb-1.5 sm:mb-1.5 lg:mb-1.5 leading-snug m-0 text-center"
                   style={{ color: titleColor }}
                 >
                   {title}
@@ -320,7 +323,7 @@ export default function LandingAdmissionProcess({
                 {/* Step Description */}
                 {desc && (
                   <p
-                    className="text-[11px] sm:text-[11.5px] lg:text-[12.5px] xl:text-[13px] leading-[1.35] sm:leading-[1.4] lg:leading-[1.45] font-normal m-0 text-center line-clamp-3 lg:line-clamp-none max-w-[190px] lg:max-w-none mx-auto px-1"
+                    className="text-[12.5px] sm:text-[11.5px] lg:text-[12.5px] xl:text-[13px] leading-relaxed font-normal m-0 text-center max-w-[340px] sm:max-w-[200px] lg:max-w-none mx-auto px-1"
                     style={{ color: descColor }}
                   >
                     {desc}

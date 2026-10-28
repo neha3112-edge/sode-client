@@ -63,7 +63,7 @@ export default function FooterClassic({
             className="inline-block cursor-pointer"
             aria-label="Back to Top"
           >
-            <div className={`relative ${brand.footerLogoContainerClassName || "w-[420px] sm:w-[620px] md:w-[760px] lg:w-[800px] xl:w-[1020px] h-[110px] sm:h-[164px] md:h-[200px] lg:h-[238px] xl:h-[270px]"}`}>
+            <div className={`relative ${brand.footerLogoContainerClassName || "w-[240px] sm:w-[320px] md:w-[420px] lg:w-[480px] xl:w-[540px] h-[63px] sm:h-[84px] md:h-[110px] lg:h-[125px] xl:h-[141px]"}`}>
               <Image
                 src={footerLogoSrc}
                 alt="Distance Education School - SODE School of Online & Distance Education"
@@ -79,18 +79,18 @@ export default function FooterClassic({
         {/* Agency Disclaimer Text */}
         <div
           id="footer-bottom-bar"
-          className="mt-1.5 sm:mt-2 px-2 sm:px-6 w-full max-w-[1090px] mx-auto text-center"
+          className={`mt-1.5 sm:mt-2 px-2 sm:px-6 w-full ${brand.footerDisclaimerContainerClassName || "max-w-[1090px] lg:max-w-none"} mx-auto text-center`}
         >
-          <p className="m-0 text-[11px] sm:text-[11.5px] md:text-[12px] text-[#666666] leading-[1.62] font-normal tracking-[0.15px]">
+          <p className={`m-0 text-[11px] sm:text-[11.5px] md:text-[12px] ${brand.footerDisclaimerClassName || "lg:text-[10px] xl:text-[11px] min-[1400px]:text-[11.5px] min-[1600px]:text-[12px] lg:whitespace-nowrap"} text-[#666666] leading-[1.62] font-normal tracking-[0.15px]`}>
             {footerText}
-          </p>` qA`
+          </p>
 
           {/* Legal Links */}
-          <div className="mt-3.5 sm:mt-4 mb-3.5 sm:mb-4 text-[11.5px] sm:text-[12px] font-medium text-[#111111] flex items-center justify-center gap-2 sm:gap-2.5">
+          <div className="mt-3.5 sm:mt-4 mb-3.5 sm:mb-4 text-[13px] sm:text-[14px] font-normal text-[#111111] flex items-center justify-center gap-2 sm:gap-2.5">
             <button
               type="button"
               onClick={() => onOpenDisclaimer?.()}
-              className="hover:underline hover:text-black cursor-pointer font-medium text-[#111111] border-none bg-transparent p-0 transition-colors"
+              className="hover:underline hover:text-black cursor-pointer font-normal text-[#111111] border-none bg-transparent p-0 transition-colors"
             >
               Disclaimer
             </button>
@@ -100,7 +100,7 @@ export default function FooterClassic({
             <button
               type="button"
               onClick={() => onOpenTerms?.()}
-              className="hover:underline hover:text-black cursor-pointer font-medium text-[#111111] border-none bg-transparent p-0 transition-colors"
+              className="hover:underline hover:text-black cursor-pointer font-normal text-[#111111] border-none bg-transparent p-0 transition-colors"
             >
               Terms & Conditions
             </button>
@@ -110,7 +110,7 @@ export default function FooterClassic({
             <button
               type="button"
               onClick={() => onOpenPrivacy?.()}
-              className="hover:underline hover:text-black cursor-pointer font-medium text-[#111111] border-none bg-transparent p-0 transition-colors"
+              className="hover:underline hover:text-black cursor-pointer font-normal text-[#111111] border-none bg-transparent p-0 transition-colors"
             >
               Privacy Policy
             </button>
@@ -121,7 +121,7 @@ export default function FooterClassic({
       {/* Brand Navy Copyright Bar (reusable across all landing pages) */}
       {!brand.hideFooterCopyright && (
         <div
-          className="mini-footer-bottom text-white pt-2 pb-[76px] lg:pb-2 px-4 sm:px-8 text-[11.5px] sm:text-[12px] tracking-wide font-normal transition-colors"
+          className="mini-footer-bottom text-white pt-2.5 pb-[78px] lg:pb-2.5 px-4 sm:px-8 text-[13.5px] sm:text-[14px] tracking-wide font-normal transition-colors"
           style={{
             backgroundColor:
               brand.footerBottomBg ||

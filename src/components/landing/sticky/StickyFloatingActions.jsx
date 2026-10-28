@@ -20,7 +20,7 @@ export default function StickyFloatingActions({
   };
 
   return (
-    <div className="fixed bottom-14 sm:bottom-6 right-3 sm:right-6 z-40 flex flex-col items-center gap-2.5 sm:gap-3 pointer-events-auto">
+    <div className="fixed bottom-[80px] lg:bottom-6 right-3 sm:right-6 z-40 flex flex-col items-center gap-2.5 sm:gap-3 pointer-events-auto">
       {/* 1. Call Button */}
       {floatingCall?.enabled && (
         <Link
@@ -29,7 +29,7 @@ export default function StickyFloatingActions({
           title={labels.callAria}
           className={`floating-call-btn ${
             floatingCall.mobile ? "flex" : "hidden sm:flex"
-          } relative w-14 h-14 sm:w-16 sm:h-16 lg:w-[68px] lg:h-[68px] rounded-full overflow-hidden shadow-2xl items-center justify-center transition-transform hover:scale-110 active:scale-95 bg-white drop-shadow-lg`}
+          } relative w-16 h-16 sm:w-[68px] sm:h-[68px] lg:w-[72px] lg:h-[72px] rounded-full overflow-hidden shadow-2xl items-center justify-center transition-transform hover:scale-110 active:scale-95 bg-white drop-shadow-lg`}
         >
           <Image
             src={floatingCall.image}
@@ -49,7 +49,7 @@ export default function StickyFloatingActions({
           onClick={handleGiftClick}
           aria-label={labels.giftAria}
           title={labels.giftAria}
-          className="floating-gift-btn relative w-14 h-14 sm:w-16 sm:h-16 lg:w-[68px] lg:h-[68px] rounded-full overflow-hidden shadow-2xl flex items-center justify-center transition-transform hover:scale-110 active:scale-95 bg-white border-none cursor-pointer p-1.5 drop-shadow-lg"
+          className="floating-gift-btn relative w-16 h-16 sm:w-[68px] sm:h-[68px] lg:w-[72px] lg:h-[72px] rounded-full overflow-hidden shadow-2xl flex items-center justify-center transition-transform hover:scale-110 active:scale-95 bg-white border-none cursor-pointer p-1.5 drop-shadow-lg"
         >
           <Image
             src={floatingGift.image}

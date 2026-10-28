@@ -52,7 +52,7 @@ export default function ProgrammesCarousel({
             <span className="text-[#192f59]">{brand.programmesHighlight || displayUniversity}</span>
           </h2>
         ) : isSmu ? (
-          <h2 className="text-[24px] sm:text-[28px] lg:text-[32px] font-bold text-[#212529] m-0 tracking-tight leading-tight">
+          <h2 className={brand.programmesTitleClassName || "text-[24px] sm:text-[28px] lg:text-[32px] font-semibold text-[#212529] m-0 tracking-tight leading-tight"}>
             {brand.programmesTitle || `Programs offered by ${brand.name || "Sikkim Manipal University Online"}`}
           </h2>
         ) : (
@@ -292,8 +292,15 @@ function SmuCard({ c, brand, onSelectCourseForBrochure, onOpenApply }) {
         <Button
           type="primary"
           onClick={() => onSelectCourseForBrochure?.(c.code || c.title)}
-          className="active:scale-95 !text-white font-semibold text-[13px] sm:text-[13.5px] h-auto py-2.5 px-2 rounded-[5px] flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer !border-none"
-          style={{ backgroundColor: brand.slug === "vgu" ? "#008000" : brand.hero?.buttonBackground || "#f78d2d" }}
+          className={`active:scale-95 !text-white font-semibold text-[13px] sm:text-[13.5px] h-auto py-2.5 px-2 rounded-[5px] flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer !border-none ${
+            brand.courseBrochureClassName || ""
+          }`}
+          style={{
+            backgroundColor:
+              brand.courseBrochureBg ||
+              (brand.slug === "vgu" ? "#008000" : brand.hero?.buttonBackground || "#074a76"),
+            color: brand.courseBrochureTextColor || "#ffffff",
+          }}
         >
           <span>Get Brochure</span>
           <FaDownload className="w-3 h-3 text-white shrink-0" />
@@ -302,10 +309,40 @@ function SmuCard({ c, brand, onSelectCourseForBrochure, onOpenApply }) {
         <Button
           type="primary"
           onClick={() => onOpenApply?.(c.code || c.title)}
-          className="active:scale-95 !text-white font-semibold text-[13px] sm:text-[13.5px] h-auto py-2.5 px-2 rounded-[5px] flex items-center justify-center transition-all shadow-xs cursor-pointer !border-none"
-          style={{ backgroundColor: brand.primaryColor || "#074a76" }}
+          className={`active:scale-95 font-semibold text-[13px] sm:text-[13.5px] h-auto py-2.5 px-2 rounded-[5px] flex items-center justify-center transition-all shadow-xs cursor-pointer ${
+            brand.courseApplyClassName ||
+            (brand.courseApplyBg === "#ffffff" || brand.applyBtnBg === "#ffffff"
+              ? "!bg-white hover:!bg-blue-50/40"
+              : "!text-white !border-none")
+          }`}
+          style={{
+            backgroundColor:
+              brand.courseApplyBg ||
+              brand.applyBtnBg ||
+              brand.primaryColor ||
+              "#074a76",
+            color:
+              brand.courseApplyTextColor ||
+              brand.applyBtnTextColor ||
+              "#ffffff",
+            borderColor:
+              brand.courseApplyBorderColor ||
+              (brand.courseApplyBg === "#ffffff"
+                ? (brand.courseApplyTextColor || brand.primaryColor || "#074a76")
+                : undefined),
+            ...brand.courseApplyStyle,
+          }}
         >
-          <span>Apply Now</span>
+          <span
+            style={{
+              color:
+                brand.courseApplyTextColor ||
+                brand.applyBtnTextColor ||
+                "#ffffff",
+            }}
+          >
+            Apply Now
+          </span>
         </Button>
       </div>
     </Card>

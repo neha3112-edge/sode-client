@@ -18,11 +18,14 @@ export default function SmuAbout({ about = {}, brand = {}, leader = null }) {
       ? about.paragraphs
       : [about.p1, about.p2, about.p3, about.text1, about.text2, about.text3].filter(Boolean);
 
+  const titleText = about.title || brand.aboutTitle || title;
+  const titleLines = typeof titleText === "string" ? titleText.split("\n") : [titleText];
+
   return (
     <div id="about" className="w-full">
       <section className="w-full pt-16 sm:pt-20 md:pt-28 lg:pt-32 pb-0 bg-transparent overflow-visible relative select-none">
         <div className="w-full bg-[#006372] relative overflow-visible shadow-sm">
-          <div className="max-w-[1440px] 2xl:max-w-[1536px] mx-auto px-4 sm:px-6 lg:px-10 relative overflow-visible">
+          <div className="max-w-[1440px] 2xl:max-w-[1536px] mx-auto px-2 sm:px-6 lg:px-10 relative overflow-visible">
             <div className="flex flex-col md:flex-row items-center md:items-stretch justify-between relative min-h-[380px] lg:min-h-[440px]">
               {imageSrc && (
                 <div className="hidden md:block w-[260px] md:w-[300px] lg:w-[350px] xl:w-[380px] shrink-0 relative">
@@ -38,16 +41,23 @@ export default function SmuAbout({ about = {}, brand = {}, leader = null }) {
                   </div>
                 </div>
               )}
-              <div className="flex-1 py-12 sm:py-14 md:py-16 lg:py-20 text-center text-white max-w-4xl xl:max-w-5xl mx-auto px-4 sm:px-6 relative z-0 flex flex-col justify-center">
-                <h2 className="text-[26px] sm:text-[30px] lg:text-[36px] font-bold text-white tracking-normal leading-[1.25] m-0 mb-4 sm:mb-5 text-center">
-                  About Sikkim Manipal University Online
+              <div className="flex-1 py-12 sm:py-14 md:py-16 lg:py-20 text-center text-white max-w-4xl xl:max-w-5xl mx-auto px-2 sm:px-6 relative z-0 flex flex-col justify-center">
+                <h2 className={brand.aboutTitleClassName || about.titleClassName || "text-[20px] min-[390px]:text-[21.5px] sm:text-[26px] md:text-[30px] lg:text-[36px] font-semibold text-white tracking-normal leading-[1.3] m-0 mb-5 sm:mb-6 text-center"}>
+                  {titleLines.map((line, idx) => (
+                    <span
+                      key={idx}
+                      className={`block ${idx === 0 ? "whitespace-nowrap" : ""}`}
+                    >
+                      {line}
+                    </span>
+                  ))}
                 </h2>
                 {paragraphs.length > 0 && (
-                  <div className="text-[14px] sm:text-[14.5px] lg:text-[15.5px] text-white/95 leading-[1.75] font-normal text-center tracking-[0.15px] space-y-3.5 sm:space-y-4">
+                  <div className={brand.aboutParagraphsClassName || about.paragraphsClassName || "text-[15px] sm:text-[16px] lg:text-[17px] text-white leading-[1.7] font-normal text-center tracking-normal space-y-6 sm:space-y-7 max-w-3xl xl:max-w-4xl mx-auto px-1 sm:px-4"}>
                     {paragraphs.map((p, idx) => (
                       <p
                         key={idx}
-                        className="max-w-3xl xl:max-w-4xl mx-auto m-0"
+                        className={brand.aboutParagraphClassName || about.paragraphClassName || "m-0"}
                       >
                         {p}
                       </p>

@@ -198,18 +198,18 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
         id="faqs"
         className="py-12 sm:py-16 md:py-20 bg-white select-none border-b border-slate-200 scroll-mt-20"
       >
-        <LandingContainer className="px-3 sm:px-6">
+        <LandingContainer className={brand.faqContainerClassName || "!px-5 sm:!px-6 md:!px-8"}>
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 lg:gap-10 items-stretch">
             {/* Left Column: FAQ Highlight Box */}
             <div className="md:col-span-4 flex">
-              <div className="w-full bg-[#fff9f4] p-6 sm:p-8 md:p-10 flex flex-col justify-center text-left">
+              <div className="w-full bg-[#fff9f4] rounded-[10px] sm:rounded-[12px] p-6 sm:p-8 md:p-10 flex flex-col justify-center text-left">
                 <h2
                   className="text-5xl sm:text-6xl lg:text-[62px] font-black tracking-tight m-0 leading-none"
                   style={{ color: primaryColor }}
                 >
                   FAQ
                 </h2>
-                <div className="mt-3.5 sm:mt-4 text-xl sm:text-2xl font-bold text-slate-900 leading-tight">
+                <div className="mt-3.5 sm:mt-4 text-[25px] sm:text-[28px] md:text-[32px] font-bold text-slate-900 leading-[1.18]">
                   <div>Frequently Asked</div>
                   <div>Question</div>
                 </div>
@@ -226,7 +226,7 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
                 return (
                   <div
                     key={idx}
-                    className="w-full transition-all"
+                    className="w-full transition-all overflow-hidden rounded-r-[6px]"
                     style={{ borderLeft: `4px solid ${primaryColor}` }}
                   >
                     <button

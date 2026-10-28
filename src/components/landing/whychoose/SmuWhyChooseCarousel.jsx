@@ -60,14 +60,8 @@ export default function SmuWhyChooseCarousel({ whyChoose = [], brand = {}, onOpe
         .smu-adv-carousel .slick-slide.slick-center .smu-adv-header {
           min-height: 56px !important;
         }
-        .smu-adv-carousel .slick-slide.slick-center .smu-adv-header h3 {
-          font-size: 17.5px !important;
-        }
         .smu-adv-carousel .slick-slide.slick-center .smu-adv-body {
-          min-height: 110px !important;
-        }
-        .smu-adv-carousel .slick-slide.slick-center .smu-adv-body p {
-          font-size: 14px !important;
+          min-height: 115px !important;
         }
         @media (max-width: 767px) {
           .smu-adv-carousel .slick-track {
@@ -87,17 +81,17 @@ export default function SmuWhyChooseCarousel({ whyChoose = [], brand = {}, onOpe
             box-shadow: 0 10px 28px rgba(0, 0, 0, 0.1) !important;
           }
           .smu-adv-carousel .smu-adv-header {
-            min-height: 48px !important;
+            min-height: 52px !important;
           }
           .smu-adv-carousel .smu-adv-body {
-            min-height: 85px !important;
+            min-height: 105px !important;
           }
         }
       `}</style>
 
       {/* Heading */}
       <div className="text-center mb-6 sm:mb-8 px-4 max-w-5xl mx-auto">
-        <h2 className="text-[24px] sm:text-[30px] lg:text-[34px] font-bold text-[#1a202c] m-0 tracking-tight leading-tight">
+        <h2 className={brand.whyChooseTitleClassName || "text-[24px] sm:text-[30px] lg:text-[34px] font-semibold text-[#1a202c] m-0 tracking-tight leading-tight"}>
           {sectionTitle}
         </h2>
       </div>
@@ -167,7 +161,7 @@ export default function SmuWhyChooseCarousel({ whyChoose = [], brand = {}, onOpe
                 onClick={() => carouselRef.current?.goTo(idx)}
                 className="box-border outline-none py-2"
               >
-                <div className="smu-adv-card bg-white rounded-[10px] overflow-hidden shadow-[0px_4px_22px_rgba(0,0,0,0.07)] border border-slate-100 flex flex-col text-center transition-all duration-500 max-w-[300px] sm:max-w-[360px] md:max-w-none mx-auto">
+                <div className={brand.whyChooseCardClassName || "smu-adv-card bg-white rounded-[10px] overflow-hidden shadow-[0px_4px_22px_rgba(0,0,0,0.07)] border border-slate-100 flex flex-col text-center transition-all duration-500 max-w-[325px] sm:max-w-[360px] md:max-w-none mx-auto"}>
                   <div className="relative w-full h-[210px] sm:h-[230px] lg:h-[250px] bg-slate-100 overflow-hidden">
                     <Image
                       src={item.image}
@@ -179,16 +173,16 @@ export default function SmuWhyChooseCarousel({ whyChoose = [], brand = {}, onOpe
                   </div>
 
                   <div
-                    className="smu-adv-header py-3 px-3 text-white flex items-center justify-center min-h-[48px] transition-all duration-500"
+                    className={brand.whyChooseHeaderClassName || "smu-adv-header py-3.5 px-3 text-white flex items-center justify-center min-h-[52px] sm:min-h-[56px] transition-all duration-500"}
                     style={{ backgroundColor: headerBg }}
                   >
-                    <h3 className="font-bold text-white m-0 tracking-tight leading-snug text-[15px] sm:text-[16px]">
+                    <h3 className={brand.whyChooseItemTitleClassName || "font-bold text-white m-0 tracking-tight leading-snug text-[16px] sm:text-[17.5px]"}>
                       {item.title}
                     </h3>
                   </div>
 
-                  <div className="smu-adv-body bg-white p-4 sm:p-5 flex items-center justify-center min-h-[95px] transition-all duration-500">
-                    <p className="text-[13px] text-[#555555] leading-relaxed m-0 font-normal">
+                  <div className={brand.whyChooseBodyClassName || "smu-adv-body bg-white p-4 sm:p-5 flex items-center justify-center min-h-[105px] sm:min-h-[115px] transition-all duration-500"}>
+                    <p className={brand.whyChooseDescriptionClassName || "text-[15px] sm:text-[15.5px] text-[#444444] leading-relaxed m-0 font-normal"}>
                       {item.desc || item.description}
                     </p>
                   </div>

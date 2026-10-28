@@ -385,12 +385,9 @@ export default function LandingDegree({
       brand.degreeImage ||
       "/assets/all_universities_images/lpu/sample-certificate-lpu.webp";
 
-    const titleH2 = degreeInfo.title || "Get UGC Entitled\nOnline Degree";
-    const subtitleH3 = degreeInfo.subtitle || "Which Enhance Your Career";
-    const descriptionText =
-      description ||
-      degreeInfo.desc ||
-      "Lovely Professional University Online (LPU Online) is one of the most trusted and credible institutions in India that offers flexible and affordable education in digital mode.";
+    const titleH2 = degreeInfo.title || "";
+    const subtitleH3 = degreeInfo.subtitle || "";
+    const descriptionText = description || degreeInfo.desc || "";
 
     const defaultFeatures = [
       {
@@ -414,15 +411,30 @@ export default function LandingDegree({
     const activeFeatures =
       features && features.length > 0 ? features : defaultFeatures;
 
+    const hideCertOnMobile = Boolean(
+      degreeInfo.hideCertificateOnMobile ??
+      degreeInfo.hideCertOnMobile ??
+      brand.hideDegreeCertOnMobile
+    );
+
+    const sectionClassName = degreeInfo.sectionClassName || brand.degreeSectionClassName || "";
+    const containerClassName = degreeInfo.containerClassName || brand.degreeContainerClassName || "";
+    const titleClassName = degreeInfo.titleClassName || "";
+    const subtitleClassName = degreeInfo.subtitleClassName || "";
+    const descClassName = degreeInfo.descClassName || "";
+    const gridClassName = degreeInfo.featuresGridClassName || "";
+    const defaultCardClassName = degreeInfo.cardClassName || "";
+    const defaultCardTitleClassName = degreeInfo.cardTitleClassName || "";
+    const defaultCardDescClassName = degreeInfo.cardDescClassName || "";
+    const buttonClassName = degreeInfo.buttonClassName || "";
+    const buttonContainerClassName = degreeInfo.buttonContainerClassName || "pt-2 flex justify-start";
+
     return (
-      <section
-        id="Degreeinfo"
-        className="py-12 sm:py-16 md:py-20 bg-[#fff8f2] select-none scroll-mt-20 border-b border-slate-200"
-      >
-        <LandingContainer className="px-3 sm:px-6">
+      <section id="Degreeinfo" className={sectionClassName}>
+        <LandingContainer className={containerClassName}>
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-8 lg:gap-12 items-center">
-            {/* Left: Certificate Image (Matching Image Ratio) */}
-            <div className="lg:col-span-5 flex justify-center">
+            {/* Left: Certificate Image */}
+            <div className={`${hideCertOnMobile ? "hidden lg:flex" : "flex"} lg:col-span-5 justify-center`}>
               <div className="relative w-full max-w-[340px] sm:max-w-[380px] lg:max-w-[420px] aspect-[666/825] rounded-[4px] overflow-hidden shadow-md bg-white border border-slate-200/90">
                 <Image
                   src={certImage}
@@ -435,43 +447,37 @@ export default function LandingDegree({
               </div>
             </div>
 
-            {/* Right: Info & 2x2 Feature Boxes */}
+            {/* Right: Info & Feature Boxes */}
             <div className="lg:col-span-7 text-left space-y-4">
               <div>
-                <h2 className="text-[30px] sm:text-[34px] lg:text-[38px] font-semibold text-[#f58220] tracking-wide m-0 leading-tight whitespace-pre-line text-center lg:text-left">
-                  {titleH2}
-                </h2>
-                <h3 className="text-xl sm:text-2xl lg:text-[26px] font-bold text-slate-900 tracking-wide m-0 mt-2 leading-tight text-center lg:text-left">
-                  {subtitleH3}
-                </h3>
-                <p className="text-[13px] sm:text-[14px] text-slate-700 leading-relaxed font-normal mt-2.5 sm:mt-3 m-0 max-w-2xl text-center lg:text-left mx-auto lg:mx-0">
-                  {descriptionText}
-                </p>
+                {titleH2 && <h2 className={titleClassName}>{titleH2}</h2>}
+                {subtitleH3 && <h3 className={subtitleClassName}>{subtitleH3}</h3>}
+                {descriptionText && <p className={descClassName}>{descriptionText}</p>}
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-4.5 pt-1.5 text-left">
+              <div className={gridClassName}>
                 {activeFeatures.map((feat, idx) => (
                   <div
                     key={idx}
-                    className="bg-transparent rounded-[8px] p-4 sm:p-5 border-2 border-[#f58220] flex flex-col items-start text-left"
+                    className={feat.cardClassName || defaultCardClassName}
                   >
-                    <h4 className="text-[15px] sm:text-[15.5px] font-bold text-slate-900 m-0 mb-1.5 leading-snug">
+                    <h4 className={feat.titleClassName || defaultCardTitleClassName}>
                       {feat.title}
                     </h4>
-                    <p className="text-[12px] sm:text-[12.5px] text-slate-600 leading-relaxed m-0 font-normal">
+                    <p className={feat.descClassName || defaultCardDescClassName}>
                       {feat.desc || feat.description}
                     </p>
                   </div>
                 ))}
               </div>
 
-              <div className="pt-2 flex justify-center lg:justify-start">
+              <div className={buttonContainerClassName}>
                 <button
                   type="button"
                   onClick={() => onOpenApply?.()}
-                  className="bg-black hover:bg-slate-800 text-white font-bold text-[13.5px] sm:text-[14px] px-8 py-3 rounded-[4px] shadow-xs transition-all cursor-pointer border-none active:scale-95 inline-flex items-center"
+                  className={buttonClassName}
                 >
-                  <span>Get FREE Career Assistance</span>
+                  <span>{degreeInfo.buttonText || "Get FREE Career Assistance"}</span>
                 </button>
               </div>
             </div>

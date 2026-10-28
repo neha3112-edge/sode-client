@@ -139,6 +139,13 @@ export const LEGACY_STICKY_CTA_CONFIG = {
     callGif: "/assets/all_universities_images/vgu/call_icon.gif",
     giftGif: "/assets/all_universities_images/vgu/gift.gif",
   },
+  smu: {
+    layout: "default",
+    applyStyle: "white-accent",
+    stickyApplyBg: "#ffffff",
+    stickyApplyTextColor: "#074a76",
+    showFloatingCallOnMobile: true,
+  },
 };
 
 // =========================================================
