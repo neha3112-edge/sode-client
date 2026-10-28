@@ -479,9 +479,12 @@ export function Hero({ initialHeroData = null }) {
   const renderFormattedContent = (rawText, defaultColor, isMobile = false) => {
     if (!rawText) return null;
     const rawLines = rawText.split("\n");
+    const isCompareSlide = /compare|50\+\s*universities|confidence/i.test(rawText);
+    const isRashtraSlide = /rashtra\s+nirmata|gajendra\s+chauhan/i.test(rawText);
+    const isTightSlide = isCompareSlide || isRashtraSlide;
 
     return (
-      <div className={`flex flex-col ${isMobile ? "space-y-0 leading-none" : "space-y-0.5 sm:space-y-1 leading-tight"} m-0`}>
+      <div className={`flex flex-col ${isMobile ? "space-y-0 leading-none" : isTightSlide ? "space-y-0 leading-none" : "space-y-0.5 sm:space-y-1 leading-tight"} m-0`}>
         {rawLines.map((line, lIdx) => {
           const trimmed = line.trim();
           if (!trimmed) return null;
@@ -556,16 +559,18 @@ export function Hero({ initialHeroData = null }) {
                   const isGov = /^(governor|of\s+kerala|governor\s+of\s+kerala)$/i.test(token.content.trim());
                   const isHonorable = /^honorable$/i.test(token.content.trim());
                   const isArif = /^(sh\.?\s+)?arif\s+mohammed\s+khan$/i.test(token.content.trim());
-                  const isRashtra = /^rashtra\s+nirmata$/i.test(token.content.trim());
+                  const isRashtra = /^rashtra\s+nirmata(\s+samman)?$/i.test(token.content.trim());
                   const isSamman = /^samman$/i.test(token.content.trim());
                   const isGajendra = /^(sh\.?\s+|shri\s+)?(from\s+shri\s+)?gajendra\s+chauhan$/i.test(token.content.trim());
-                  const isCompareUni = /^(compare|50\+\s*universities|choose\s+with|confidence\.?)$/i.test(token.content.trim());
+                  const isCompareUni = /^(compare|50\+\s*universities|choose\s+with(\s+confidence\.?)?|confidence\.?)$/i.test(token.content.trim());
 
                   let className = isMobile
                     ? (isStudentsPath
                       ? "text-[18.5px] xs:text-[21px] sm:text-[23px] font-black tracking-tight leading-[1.05] font-sans block"
                       : "text-[17px] xs:text-[19px] sm:text-[20px] font-black leading-[1.02] font-sans inline")
-                    : "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.15] tracking-tight m-0 font-sans inline";
+                    : (isTightSlide
+                      ? "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.0] tracking-tight m-0 font-sans inline"
+                      : "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.15] tracking-tight m-0 font-sans inline");
 
                   if (isLargeNum) {
                     className = isMobile
@@ -586,7 +591,7 @@ export function Hero({ initialHeroData = null }) {
                   } else if (isRashtra) {
                     className = isMobile
                       ? "text-[16px] xs:text-[18.5px] font-black tracking-tight leading-[0.95] font-sans uppercase block"
-                      : "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.15] tracking-tight font-sans block";
+                      : "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.0] tracking-tight font-sans block";
                   } else if (isSamman) {
                     className = isMobile
                       ? "text-[32px] xs:text-[36.5px] sm:text-[39px] font-black tracking-tight leading-[0.95] font-sans uppercase block"
@@ -594,7 +599,7 @@ export function Hero({ initialHeroData = null }) {
                   } else if (isGajendra) {
                     className = isMobile
                       ? "text-[11px] xs:text-[13px] font-black tracking-tight uppercase block"
-                      : "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.15] tracking-tight font-sans block";
+                      : "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.0] tracking-tight font-sans block";
                   } else if (isCompareUni && isMobile) {
                     className = "text-[21px] xs:text-[24px] sm:text-[26px] font-black tracking-tight leading-[1.02] font-sans block";
                   }
@@ -614,7 +619,7 @@ export function Hero({ initialHeroData = null }) {
                 }
 
                 // Default text token
-                const isCompareUni = /^(compare|choose\s+with|confidence\.?)$/i.test(token.content.trim());
+                const isCompareUni = /^(compare|50\+\s*universities|choose\s+with(\s+confidence\.?)?|confidence\.?)$/i.test(token.content.trim());
                 const isStudentsPath = /^(students\s+found\s+their|right\s+career\s+path)$/i.test(token.content.trim());
                 const isLargeNum = /^\d+\s*lakh\+?/i.test(token.content.trim());
                 let textClassName = isMobile
@@ -625,7 +630,9 @@ export function Hero({ initialHeroData = null }) {
                       : isStudentsPath
                         ? "text-[18.5px] xs:text-[21px] sm:text-[23px] font-black tracking-tight leading-[1.05] font-sans block"
                         : "text-[17px] xs:text-[19px] sm:text-[20px] font-black leading-[1.02] font-sans inline")
-                  : "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.15] tracking-tight m-0 font-sans inline";
+                  : (isTightSlide
+                    ? "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.0] tracking-tight m-0 font-sans inline"
+                    : "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.15] tracking-tight m-0 font-sans inline");
 
                 return (
                   <span
@@ -655,12 +662,16 @@ export function Hero({ initialHeroData = null }) {
       return renderFormattedContent(rawTitle, defaultColor, false);
     }
 
+    const isCompareSlide = /compare|50\+\s*universities|confidence/i.test(rawTitle);
+    const isRashtraSlide = /rashtra\s+nirmata|gajendra\s+chauhan/i.test(rawTitle);
+    const isTightSlide = isCompareSlide || isRashtraSlide;
+
     const highlightColor = isLight ? "#965D2C" : "#F6DE95";
     const lines = rawTitle.split("\n");
     const HeadingTag = isPrimary ? "h1" : "h2";
 
     return (
-      <HeadingTag className="flex flex-col space-y-0.5 sm:space-y-1 m-0">
+      <HeadingTag className={`flex flex-col ${isTightSlide ? "space-y-0" : "space-y-0.5 sm:space-y-1"} m-0`}>
         {lines.map((line, lIdx) => {
           let lineContent = line;
           if (highlightText && line.toLowerCase().includes(highlightText.toLowerCase())) {
@@ -681,7 +692,9 @@ export function Hero({ initialHeroData = null }) {
             <span
               key={lIdx}
               style={{ color: defaultColor }}
-              className="text-lg sm:text-2xl md:text-[25px] lg:text-[30px] xl:text-[34px] font-black leading-[1.15] tracking-tight m-0 font-sans block md:whitespace-nowrap"
+              className={`text-lg sm:text-2xl md:text-[25px] lg:text-[30px] xl:text-[34px] font-black ${
+                isTightSlide ? "leading-[1.0]" : "leading-[1.15]"
+              } tracking-tight m-0 font-sans block md:whitespace-nowrap`}
             >
               {lineContent}
             </span>
