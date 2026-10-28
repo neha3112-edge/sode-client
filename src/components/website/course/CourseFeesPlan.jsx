@@ -11,7 +11,134 @@ export default function CourseFeesPlan({
 }) {
   const [activeEmiSubTab, setActiveEmiSubTab] = useState(null);
 
-  if (!activeLedgerData) return null;
+  const paymentTypeName = (activeLedgerData?.paymentTypeName || "").toLowerCase();
+  const isYearlySelected = paymentTypeName.includes("year") || paymentTypeName.includes("annual");
+  const isSemesterSelected = paymentTypeName.includes("sem");
+  const isFullfeesSelected = paymentTypeName.includes("full") || paymentTypeName.includes("one") || paymentTypeName.includes("lump");
+
+  // Build dynamic plan cards based on configured paymentType (Fullfees is ALWAYS default)
+  const planCards = [];
+
+  // 1. Semester-wise Plan Card (Only show if not restricted to Yearly or Fullfees)
+  if (activeLedgerData?.semester && !isYearlySelected && !isFullfeesSelected) {
+    planCards.push({
+      id: "semester",
+      title: "Semester-wise",
+      badge: activeLedgerData.semester?.discountPercentage > 0 ? {
+        text: activeLedgerData.semester?.badgeText || (
+          activeLedgerData.scholarship || activeLedgerData.semester?.discountType === "SCHOLARSHIP"
+            ? `${activeLedgerData.semester.discountPercentage}% SCHOLARSHIP`
+            : `${activeLedgerData.semester.discountPercentage}% OFF`
+        ),
+        color: activeLedgerData.semester?.badgeColor || "success",
+      } : null,
+      hasDiscount: Boolean(
+        Number(activeLedgerData.semester?.discountFees || activeLedgerData.semester?.totalDiscountFees || 0) > 0
+      ),
+      grossFee: activeLedgerData.semester?.formattedGross,
+      payableFee: activeLedgerData.semester?.formattedBasePayable || activeLedgerData.semester?.formattedPayable || "₹ 16,320 / Sem",
+      extraOff: activeLedgerData.semester?.extraOff,
+      subtitle: `${activeLedgerData.semester?.totalSemesters || 6} Semesters • Installments`,
+      onClick: () => setSelectedPlanTab("semester"),
+    });
+  }
+
+  // 2. Yearly Plan Card (Show if Yearly is selected, or if general multi-year course)
+  if (activeLedgerData?.yearly && !isSemesterSelected && !isFullfeesSelected) {
+    planCards.push({
+      id: "yearly",
+      title: "Yearly Plan",
+      badge: activeLedgerData.yearly?.discountPercentage > 0 ? {
+        text: activeLedgerData.yearly?.badgeText || (
+          activeLedgerData.scholarship || activeLedgerData.yearly?.discountType === "SCHOLARSHIP"
+            ? `${activeLedgerData.yearly.discountPercentage}% SCHOLARSHIP`
+            : `${activeLedgerData.yearly.discountPercentage}% OFF`
+        ),
+        color: activeLedgerData.yearly?.badgeColor || "success",
+      } : null,
+      hasDiscount: Boolean(
+        Number(activeLedgerData.yearly?.discountFees || activeLedgerData.yearly?.totalDiscountFees || 0) > 0
+      ),
+      grossFee: activeLedgerData.yearly?.formattedGross,
+      payableFee: activeLedgerData.yearly?.formattedBasePayable || activeLedgerData.yearly?.formattedPayable || "₹ 30,720 / Year",
+      extraOff: activeLedgerData.yearly?.extraOff,
+      subtitle: `${activeLedgerData.yearly?.totalYears || 3} Annual Installments`,
+      onClick: () => setSelectedPlanTab("yearly"),
+    });
+  }
+
+  // 3. Full Fees Card (ALWAYS DEFAULT)
+  if (activeLedgerData?.fullfees) {
+    planCards.push({
+      id: "fullfees",
+      title: "Full Fees",
+      badge: activeLedgerData.fullfees?.discountPercentage > 0 ? {
+        text: activeLedgerData.fullfees?.badgeText || (
+          activeLedgerData.scholarship || activeLedgerData.fullfees?.discountType === "SCHOLARSHIP"
+            ? `${activeLedgerData.fullfees.discountPercentage}% SCHOLARSHIP`
+            : `MAX SAVINGS ${activeLedgerData.fullfees.discountPercentage}%`
+        ),
+        color: activeLedgerData.fullfees?.badgeColor || (activeLedgerData.scholarship ? "success" : "warning"),
+      } : null,
+      hasDiscount: Boolean(
+        Number(activeLedgerData.fullfees?.discountFees || activeLedgerData.fullfees?.totalDiscountFees || 0) > 0
+      ),
+      grossFee: activeLedgerData.fullfees?.formattedGross,
+      payableFee: activeLedgerData.fullfees?.formattedBasePayable || activeLedgerData.fullfees?.formattedPayable || "₹ 80,640",
+      extraOff: activeLedgerData.fullfees?.extraOff,
+      subtitle: "One-time lump sum • Max discount",
+      onClick: () => setSelectedPlanTab("fullfees"),
+    });
+  }
+
+  // 4. EMI Option Card
+  if (activeLedgerData?.emi?.available) {
+    planCards.push({
+      id: "emi",
+      isEmi: true,
+      title: (activeLedgerData.emi?.summary?.hasInterest && Number(activeLedgerData.emi?.summary?.interestRate) > 1) ? "Standard EMI" : "No-Cost EMI",
+      badge: {
+        text: (activeLedgerData.emi?.summary?.hasInterest && Number(activeLedgerData.emi?.summary?.interestRate) > 1) ? "EASY FINANCING" : "NO-COST EMI",
+        color: (activeLedgerData.emi?.summary?.hasInterest && Number(activeLedgerData.emi?.summary?.interestRate) > 1) ? "geekblue" : "orange",
+      },
+      hasDiscount: false,
+      payableFee: activeLedgerData.emi?.summary?.formattedMinMonthlyEmi ? `Starting ${activeLedgerData.emi.summary.formattedMinMonthlyEmi}` : "Bank & NBFC EMI",
+      subtitle: isYearlySelected
+        ? "Yearly Plan EMI"
+        : isSemesterSelected
+          ? "Semester EMI"
+          : (activeLedgerData.emi?.summary?.planName || "Bank & NBFC Financing"),
+      onClick: () => setSelectedPlanTab("emi"),
+    });
+  }
+
+  // Auto-sync selectedPlanTab if currently selected tab is hidden
+  React.useEffect(() => {
+    const validCardIds = planCards.map((c) => c.id);
+    if (validCardIds.length > 0 && !validCardIds.includes(selectedPlanTab)) {
+      if (isYearlySelected && validCardIds.includes("yearly")) {
+        setSelectedPlanTab("yearly");
+      } else if (isSemesterSelected && validCardIds.includes("semester")) {
+        setSelectedPlanTab("semester");
+      } else if (validCardIds.includes("fullfees")) {
+        setSelectedPlanTab("fullfees");
+      } else {
+        setSelectedPlanTab(validCardIds[0]);
+      }
+    }
+  }, [planCards, selectedPlanTab, setSelectedPlanTab, isYearlySelected, isSemesterSelected]);
+
+  if (!activeLedgerData || planCards.length === 0) return null;
+
+  const count = planCards.length;
+  const gridColsClass =
+    count === 1
+      ? "grid-cols-1 max-w-sm mx-auto"
+      : count === 2
+        ? "grid-cols-1 sm:grid-cols-2 max-w-2xl mx-auto"
+        : count === 3
+          ? "grid-cols-2 sm:grid-cols-3 max-w-4xl mx-auto"
+          : "grid-cols-2 lg:grid-cols-4";
 
   return (
     <div
@@ -24,90 +151,8 @@ export default function CourseFeesPlan({
       </h2>
 
       {/* Side-by-Side Plan & EMI Comparison Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
-        {[
-          {
-            id: "semester",
-            title: "Semester-wise",
-            badge: activeLedgerData.semester?.discountPercentage > 0 ? {
-              text: activeLedgerData.semester?.badgeText || (
-                activeLedgerData.scholarship || activeLedgerData.semester?.discountType === "SCHOLARSHIP"
-                  ? `${activeLedgerData.semester.discountPercentage}% SCHOLARSHIP`
-                  : `${activeLedgerData.semester.discountPercentage}% OFF`
-              ),
-              color: activeLedgerData.semester?.badgeColor || "success",
-            } : null,
-            hasDiscount: Boolean(
-              Number(activeLedgerData.semester?.discountFees || activeLedgerData.semester?.totalDiscountFees || 0) > 0
-            ),
-            grossFee: activeLedgerData.semester?.formattedGross,
-            payableFee: activeLedgerData.semester?.formattedBasePayable || activeLedgerData.semester?.formattedPayable || "₹ 16,320 / Sem",
-            extraOff: activeLedgerData.semester?.extraOff,
-            subtitle: `${activeLedgerData.semester?.totalSemesters || 6} Semesters • Installments`,
-            onClick: () => setSelectedPlanTab("semester"),
-          },
-          {
-            id: "yearly",
-            title: "Yearly Plan",
-            badge: activeLedgerData.yearly?.discountPercentage > 0 ? {
-              text: activeLedgerData.yearly?.badgeText || (
-                activeLedgerData.scholarship || activeLedgerData.yearly?.discountType === "SCHOLARSHIP"
-                  ? `${activeLedgerData.yearly.discountPercentage}% SCHOLARSHIP`
-                  : `${activeLedgerData.yearly.discountPercentage}% OFF`
-              ),
-              color: activeLedgerData.yearly?.badgeColor || "success",
-            } : null,
-            hasDiscount: Boolean(
-              Number(activeLedgerData.yearly?.discountFees || activeLedgerData.yearly?.totalDiscountFees || 0) > 0
-            ),
-            grossFee: activeLedgerData.yearly?.formattedGross,
-            payableFee: activeLedgerData.yearly?.formattedBasePayable || activeLedgerData.yearly?.formattedPayable || "₹ 30,720 / Year",
-            extraOff: activeLedgerData.yearly?.extraOff,
-            subtitle: `${activeLedgerData.yearly?.totalYears || 3} Annual Installments`,
-            onClick: () => setSelectedPlanTab("yearly"),
-          },
-          {
-            id: "fullfees",
-            title: "Full Fees",
-            badge: activeLedgerData.fullfees?.discountPercentage > 0 ? {
-              text: activeLedgerData.fullfees?.badgeText || (
-                activeLedgerData.scholarship || activeLedgerData.fullfees?.discountType === "SCHOLARSHIP"
-                  ? `${activeLedgerData.fullfees.discountPercentage}% SCHOLARSHIP`
-                  : `MAX SAVINGS ${activeLedgerData.fullfees.discountPercentage}%`
-              ),
-              color: activeLedgerData.fullfees?.badgeColor || (activeLedgerData.scholarship ? "success" : "warning"),
-            } : null,
-            hasDiscount: Boolean(
-              Number(activeLedgerData.fullfees?.discountFees || activeLedgerData.fullfees?.totalDiscountFees || 0) > 0
-            ),
-            grossFee: activeLedgerData.fullfees?.formattedGross,
-            payableFee: activeLedgerData.fullfees?.formattedBasePayable || activeLedgerData.fullfees?.formattedPayable || "₹ 80,640",
-            extraOff: activeLedgerData.fullfees?.extraOff,
-            subtitle: "One-time lump sum • Max discount",
-            onClick: () => setSelectedPlanTab("fullfees"),
-          },
-          {
-            id: "emi",
-            isEmi: true,
-            title: (activeLedgerData.emi?.summary?.hasInterest && Number(activeLedgerData.emi?.summary?.interestRate) > 1) ? "Standard EMI" : "No-Cost EMI",
-            badge: {
-              text: (activeLedgerData.emi?.summary?.hasInterest && Number(activeLedgerData.emi?.summary?.interestRate) > 1) ? "EASY FINANCING" : "NO-COST EMI",
-              color: (activeLedgerData.emi?.summary?.hasInterest && Number(activeLedgerData.emi?.summary?.interestRate) > 1) ? "geekblue" : "orange",
-            },
-            hasDiscount: false,
-            payableFee: activeLedgerData.emi?.summary?.formattedMinMonthlyEmi ? `Starting ${activeLedgerData.emi.summary.formattedMinMonthlyEmi}` : "Bank & NBFC EMI",
-            subtitle: activeLedgerData.emi?.yearly?.available
-              ? "Yearly Plan EMI"
-              : activeLedgerData.emi?.fullfees?.available
-                ? "Full Course EMI"
-                : activeLedgerData.emi?.semester?.available
-                  ? "Semester EMI"
-                  : (activeLedgerData.emi?.summary?.planName || "Bank & NBFC Financing"),
-            onClick: () => {
-              setSelectedPlanTab("emi");
-            },
-          },
-        ].map((card) => {
+      <div className={`grid ${gridColsClass} gap-2 sm:gap-4`}>
+        {planCards.map((card) => {
           const isSelected = selectedPlanTab === card.id;
           const isEmi = card.isEmi;
 
@@ -201,7 +246,13 @@ export default function CourseFeesPlan({
           { key: "semester", label: "Semester EMI", ledger: activeLedgerData.emi.semester },
           { key: "yearly", label: "Yearly EMI", ledger: activeLedgerData.emi.yearly },
           { key: "fullfees", label: "Fullfees EMI", ledger: activeLedgerData.emi.fullfees },
-        ].filter((t) => t.ledger && t.ledger.available);
+        ].filter((t) => {
+          if (!t.ledger || !t.ledger.available) return false;
+          if (t.key === "semester" && isYearlySelected) return false;
+          if (t.key === "yearly" && isSemesterSelected) return false;
+          if ((t.key === "semester" || t.key === "yearly") && isFullfeesSelected) return false;
+          return true;
+        });
 
         const currentSubTabKey =
           activeEmiSubTab && activeLedgerData.emi[activeEmiSubTab]?.available
