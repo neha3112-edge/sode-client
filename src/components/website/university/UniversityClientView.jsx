@@ -439,6 +439,7 @@ export function UniversityClientView({ initialData, slug }) {
         {/* Top Peer Universities Section */}
         <UniversityPeerUniversities
           topUniversities={topPeerUniversities}
+          title={uni.peer_universities_title || uni.top_universities_title || uni.top_ugc_deb_universities_title}
           openFormModal={handleOpenUniversityForm}
         />
 
