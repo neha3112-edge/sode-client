@@ -375,23 +375,25 @@ export function CourseClientView({
       const courseSlug = item.courseSlug || course?.slug || slugify(course?.shortName || course?.name || courseName);
       const subcourseSlug = item.subCourseSlug || subcourse?.slug || (subcourse?.name ? slugify(subcourse.name) : "");
 
-      let courseDetailHref = "/courses";
-      if (item.coursePageSlug && item.coursePageSlug.includes("/")) {
-        courseDetailHref = `/universities/${item.coursePageSlug}`;
-      } else if (item.slug && item.slug.includes("/")) {
-        courseDetailHref = `/universities/${item.slug}`;
-      } else if (uniSlug && courseSlug && subcourseSlug) {
-        courseDetailHref = `/universities/${encodeURIComponent(uniSlug)}/${encodeURIComponent(courseSlug)}/${encodeURIComponent(subcourseSlug)}`;
-      } else if (uniSlug && courseSlug) {
-        courseDetailHref = `/universities/${encodeURIComponent(uniSlug)}/${encodeURIComponent(courseSlug)}`;
-      } else if (courseSlug && subcourseSlug) {
-        courseDetailHref = `/courses/${encodeURIComponent(courseSlug)}/${encodeURIComponent(subcourseSlug)}`;
-      } else if (courseSlug) {
-        courseDetailHref = `/courses/${encodeURIComponent(courseSlug)}`;
-      } else if (item.slug) {
-        courseDetailHref = item.slug.includes("/")
-          ? `/universities/${item.slug}`
-          : `/courses/${encodeURIComponent(item.slug)}`;
+      let courseDetailHref = item.courseDetailHref || "/courses";
+      if (!item.courseDetailHref) {
+        if (item.coursePageSlug && item.coursePageSlug.includes("/")) {
+          courseDetailHref = `/universities/${item.coursePageSlug}`;
+        } else if (item.slug && item.slug.includes("/")) {
+          courseDetailHref = `/universities/${item.slug}`;
+        } else if (uniSlug && courseSlug && subcourseSlug) {
+          courseDetailHref = `/universities/${encodeURIComponent(uniSlug)}/${encodeURIComponent(courseSlug)}/${encodeURIComponent(subcourseSlug)}`;
+        } else if (uniSlug && courseSlug) {
+          courseDetailHref = `/universities/${encodeURIComponent(uniSlug)}/${encodeURIComponent(courseSlug)}`;
+        } else if (courseSlug && subcourseSlug) {
+          courseDetailHref = `/courses/${encodeURIComponent(courseSlug)}/${encodeURIComponent(subcourseSlug)}`;
+        } else if (courseSlug) {
+          courseDetailHref = `/courses/${encodeURIComponent(courseSlug)}`;
+        } else if (item.slug) {
+          courseDetailHref = item.slug.includes("/")
+            ? `/universities/${item.slug}`
+            : `/courses/${encodeURIComponent(item.slug)}`;
+        }
       }
 
       const uniLocation =

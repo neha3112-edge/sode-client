@@ -28,7 +28,7 @@ export default function CourseAlternativeUniversities({
     courseData?.top_universities_title ||
     courseData?.peer_universities_title ||
     (Array.isArray(processedPrograms) && processedPrograms[0]?.sectionTitle) ||
-    "Top Universities";
+    `Top Alternative Universities Offering ${courseData?.name || "Online Courses"}`;
 
   return (
     <div
