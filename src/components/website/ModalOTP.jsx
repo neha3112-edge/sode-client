@@ -582,7 +582,7 @@ export default function ModalOTP({
           {/* ==========================================
             FORM CONTENT (Right Side Desktop / Bottom Mobile)
         ========================================== */}
-          <div className="w-full md:w-[58%] p-6 sm:p-8 md:p-9 flex flex-col justify-center items-center relative bg-white self-stretch min-h-full">
+          <div className="w-full md:w-[58%] p-6 sm:p-8 md:p-9 flex flex-col justify-center items-center md:items-start relative bg-white self-stretch min-h-full">
             <Form
               form={form}
               layout="vertical"
@@ -595,11 +595,11 @@ export default function ModalOTP({
             ========================================== */}
               {step === "phone" && (
                 <>
-                  <div className="text-center mb-5">
-                    <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center">
+                  <div className="w-full text-center md:text-left mb-5">
+                    <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center md:text-left">
                       Book 1:1 Free Counseling
                     </h2>
-                    <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center">
+                    <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center md:text-left">
                       Enter your mobile number to receive an OTP
                     </p>
                   </div>
@@ -685,11 +685,11 @@ export default function ModalOTP({
             ========================================== */}
               {step === "otp" && (
                 <>
-                  <div className="text-center mb-5">
-                    <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center">
+                  <div className="w-full text-center md:text-left mb-5">
+                    <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center md:text-left">
                       Verify Your Number
                     </h2>
-                    <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center">
+                    <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center md:text-left">
                       We've sent a 6-digit OTP to your WhatsApp number +91 {phone}{" "}
                       <button
                         type="button"
@@ -716,7 +716,7 @@ export default function ModalOTP({
                         },
                       },
                     ]}
-                    className="mb-0 text-center [&_.ant-form-item-control-input-content]:flex [&_.ant-form-item-control-input-content]:justify-center"
+                    className="mb-0 text-center md:text-left [&_.ant-form-item-control-input-content]:flex [&_.ant-form-item-control-input-content]:justify-center md:[&_.ant-form-item-control-input-content]:justify-start"
                   >
                     <Input.OTP
                       length={6}
@@ -729,7 +729,7 @@ export default function ModalOTP({
                     />
                   </Form.Item>
 
-                  <div className="mt-3 mb-2 flex items-center justify-center text-xs font-semibold">
+                  <div className="mt-3 mb-2 flex items-center justify-center md:justify-start text-xs font-semibold">
                     {canResend ? (
                       <button
                         type="button"
@@ -762,11 +762,11 @@ export default function ModalOTP({
             ========================================== */}
               {step === "email" && (
                 <>
-                  <div className="text-center mb-5">
-                    <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center">
+                  <div className="w-full text-center md:text-left mb-5">
+                    <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center md:text-left">
                       Your Email Address
                     </h2>
-                    <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center">
+                    <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center md:text-left">
                       Enter your email address to get updates and important information.
                     </p>
                   </div>
@@ -806,11 +806,11 @@ export default function ModalOTP({
             ========================================== */}
               {step === "course" && (
                 <>
-                  <div className="text-center mb-5">
-                    <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center">
+                  <div className="w-full text-center md:text-left mb-5">
+                    <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center md:text-left">
                       Select Course
                     </h2>
-                    <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center">
+                    <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center md:text-left">
                       Choose the course or degree program you are interested in.
                     </p>
                   </div>
@@ -851,11 +851,11 @@ export default function ModalOTP({
             ========================================== */}
               {step === "state" && (
                 <>
-                  <div className="text-center mb-5">
-                    <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center">
+                  <div className="w-full text-center md:text-left mb-5">
+                    <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center md:text-left">
                       Your State
                     </h2>
-                    <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center">
+                    <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center md:text-left">
                       Please select your state as per your official ID or documents.
                     </p>
                   </div>
@@ -896,11 +896,11 @@ export default function ModalOTP({
             ========================================== */}
               {step === "name" && (
                 <>
-                  <div className="text-center mb-5">
-                    <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center">
+                  <div className="w-full text-center md:text-left mb-5">
+                    <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center md:text-left">
                       Your Full Name
                     </h2>
-                    <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center">
+                    <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center md:text-left">
                       Please enter your full name as per your official ID or documents.
                     </p>
                   </div>
