@@ -126,6 +126,14 @@ export const iiitbCustomCss = `
 
   /* Why Choose Section */
 
+  /* About Section */
+  .landing-page--iiitb .about-section {
+    background: #005a8d !important;
+    color: #ffffff !important;
+  }
+
+  /* Why Choose Section */
+
 /* Why Choose Section */
 .landing-page--iiitb .why-section {
   width: 100% !important;

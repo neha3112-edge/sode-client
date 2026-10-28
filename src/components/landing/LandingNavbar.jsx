@@ -330,7 +330,7 @@ export default function LandingNavbar({
             Positioning remains reusable/fixed.
         ================================================= */}
 
-          <div className="flex items-center min-w-0 shrink-0 ml-0 sm:ml-1 md:ml-2">
+          <div className="flex items-center min-w-0 shrink-0 ml-0 lg:-ml-6">
 
             {/* SODE ICON */}
             {shouldShowSodeLogo && (
@@ -351,8 +351,8 @@ export default function LandingNavbar({
                   relative
                   shrink-0
                   ${shouldShowSodeLogoOnLeftOnMobile
-                      ? "w-11 sm:w-13 lg:w-[76px] h-11 sm:h-12 lg:h-[58px]"
-                      : "w-10 sm:w-12 md:w-14 lg:w-[76px] h-10 sm:h-12 md:h-13 lg:h-[58px]"
+                      ? "w-11 sm:w-13 lg:w-[73px] h-11 sm:h-12 lg:h-[55px]"
+                      : "w-10 sm:w-12 md:w-14 lg:w-[73px] h-10 sm:h-12 md:h-13 lg:h-[55px]"
                     }
                 `}
                 >
@@ -438,23 +438,23 @@ export default function LandingNavbar({
 
             {/* NAV LINKS */}
             {navbar.navLinks?.length > 0 && (
-              <ul className="hidden md:flex items-center gap-5 lg:gap-8 header_menu_list list-none m-0 p-0">
+              <ul className="hidden md:flex items-center gap-6 lg:gap-[52px] header_menu_list list-none m-0 p-0">
 
                 {navbar.navLinks.map((link, idx) => (
                   <li key={`${link.label}-${idx}`}>
                     <a
                       href={link.href}
-                      onClick={(e) =>
-                        handleNavLinkClick(e, link)
-                      }
+                      onClick={(e) => handleNavLinkClick(e, link)}
                       className="
-                      text-[#111111]
-                      hover:text-[#0055b8]
-                      font-semibold
-                      text-[14px]
-                      lg:text-[15.5px]
-                      transition-colors
-                    "
+    text-[#0b2340]
+    hover:text-[#0055b8]
+    font-medium
+    text-[16px]
+    lg:text-[17px]
+    leading-normal
+    transition-colors
+    whitespace-nowrap
+  "
                     >
                       {link.label}
                     </a>

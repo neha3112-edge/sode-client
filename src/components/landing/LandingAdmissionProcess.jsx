@@ -211,7 +211,7 @@ export default function LandingAdmissionProcess({
           </h2>
         ) : (
           <h2
-            className={`text-[22px] sm:text-[26px] lg:text-[30px] xl:text-[32px] font-medium text-center ${brand.slug === "iim" || brand.admissionTrackingWide ? "tracking-wide" : "tracking-tight"} mb-2 sm:mb-2.5 lg:mb-2 m-0 leading-tight`}
+            className={`text-[22px] sm:text-[26px] lg:text-[30px] xl:text-[32px] font-medium text-center ${brand.admissionTrackingWide ? "tracking-wide" : "tracking-tight"} mb-2 sm:mb-2.5 lg:mb-2 m-0 leading-tight`}
             style={{ color: headingColor }}
           >
             {headingText}
@@ -219,7 +219,7 @@ export default function LandingAdmissionProcess({
         )}
 
         {/* Subtitle */}
-        <p className={`text-[14.5px] sm:text-[13.5px] lg:text-[14px] text-center text-[#555555] mb-5 sm:mb-6 lg:mb-[24px] max-w-[860px] lg:max-w-[960px] mx-auto font-normal leading-relaxed m-0 px-2 sm:px-4 ${brand.slug === "iim" || brand.admissionTrackingWide ? "tracking-wide" : ""}`}>
+        <p className={`text-[14.5px] sm:text-[13.5px] lg:text-[14px] text-center text-[#555555] mb-5 sm:mb-6 lg:mb-[24px] max-w-[860px] lg:max-w-[960px] mx-auto font-normal leading-relaxed m-0 px-2 sm:px-4 ${brand.admissionTrackingWide ? "tracking-wide" : ""}`}>
           {subtitleText}
         </p>
 

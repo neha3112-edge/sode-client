@@ -58,6 +58,20 @@ export const amityData = {
       color: #08417b;
     }
 
+    .amity-theme-btn {
+      background-color: #fdb913;
+      color: #000000;
+      font-weight: 700;
+    }
+
+    .amity-theme-btn:hover {
+      background-color: #e5a60b;
+    }
+
+    .amity-header-accent {
+      color: #08417b;
+    }
+
     /* Amity Navbar Logo - compact size matching target header */
     .amity-navbar-logo {
       width: 102px !important;
@@ -128,6 +142,9 @@ export const amityData = {
     showSodeLogo: false,
     logoWrapperClassName:
       "w-[105px] sm:w-[115px] lg:w-[125px] h-9 sm:h-[38px] lg:h-[40px] amity-navbar-logo",
+
+    arrowGif:
+      "/assets/all_universities_images/amity/arrow.gif",
 
     whyChooseStudentImage:
       "/assets/all_universities_images/amity/Why-choose-amity.png",
