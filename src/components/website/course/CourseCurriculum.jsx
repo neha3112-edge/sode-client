@@ -21,9 +21,9 @@ export default function CourseCurriculum({
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
         {curriculumList.map((sem, idx) => {
-          const rawLabel = sem.semester || `Semester ${idx + 1}`;
-          const numMatch = rawLabel.match(/\d+/);
-          const semesterTitle = numMatch ? `Semester ${numMatch[0]}` : rawLabel;
+          const rawLabel = sem.semester || sem.semesterName || `Semester ${idx + 1}`;
+          const cleanLabel = String(rawLabel).trim();
+          const semesterTitle = /^\d+$/.test(cleanLabel) ? `Semester ${cleanLabel}` : cleanLabel;
 
           return (
             <div
@@ -39,11 +39,19 @@ export default function CourseCurriculum({
               <ul className="w-full text-left space-y-2 sm:space-y-2.5 text-xs sm:text-[13px] text-gray-700 m-0 p-0 list-none flex-1 min-h-0 overflow-y-auto pr-1.5 scrollbar-thin [scrollbar-color:#cbd5e1_transparent]">
                 {sem.subjects.map((sub, sIdx) => {
                   const subName = typeof sub === "string" ? sub : (sub.name || "");
+                  const subCredits = typeof sub === "object" ? sub.credits : null;
 
                   return (
-                    <li key={sIdx} className="flex items-start gap-1.5 sm:gap-2 leading-relaxed">
-                      <span className="text-gray-900 font-bold shrink-0">•</span>
-                      <span className="text-gray-700 break-words">{subName}</span>
+                    <li key={sIdx} className="flex items-start justify-between gap-1.5 sm:gap-2 leading-relaxed">
+                      <div className="flex items-start gap-1.5 sm:gap-2 min-w-0">
+                        <span className="text-gray-900 font-bold shrink-0">•</span>
+                        <span className="text-gray-700 break-words">{subName}</span>
+                      </div>
+                      {subCredits ? (
+                        <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-100 px-1.5 py-0.5 rounded shrink-0">
+                          {subCredits} {subCredits === 1 ? 'Credit' : 'Credits'}
+                        </span>
+                      ) : null}
                     </li>
                   );
                 })}
