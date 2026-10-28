@@ -424,7 +424,7 @@ export default function UniversityCoursesSection({
 
         const cDuration = selectedCourseSpec.duration || "";
         const itemDeadline = formatAdmissionDeadline(selectedCourseSpec.admissionDeadline || uni?.admissionDeadline || uni?.admission_deadline || "");
-        const itemDesc = selectedCourseSpec.description?.trim() || selectedCourseSpec.overview?.trim() || selectedCourseSpec.desc?.trim() || (cTitle ? `This Program focuses on ${cTitle}, covering specialized concepts and practical applications. Learners build analysis and professional problem-solving through degree study, preparing for relevant professional and industry roles and supporting confident professional growth.` : "");
+        const itemDesc = selectedCourseSpec.description?.trim() || selectedCourseSpec.overview?.trim() || selectedCourseSpec.desc?.trim() || "";
 
         const specializationsList = selectedCourseSpec.isDirectCard
           ? []
