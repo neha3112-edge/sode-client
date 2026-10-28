@@ -544,11 +544,11 @@ export function Hero({ initialHeroData = null }) {
 
                   if (isLargeNum) {
                     className = isMobile
-                      ? "text-[24px] xs:text-[28px] font-black tracking-tight leading-[1.05] block pt-0.5"
+                      ? "text-[24px] xs:text-[28px] font-black tracking-tight leading-none block"
                       : "text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-none block";
                   } else if (isGov) {
                     className = isMobile
-                      ? "text-[20px] xs:text-[23px] font-black tracking-tight leading-[1.02] font-sans uppercase block pt-0.5"
+                      ? "text-[20px] xs:text-[23px] font-black tracking-tight leading-[0.92] font-sans uppercase block"
                       : "text-2xl sm:text-3xl md:text-[34px] lg:text-[40px] xl:text-[44px] font-black tracking-wide leading-none font-sans uppercase block";
                   } else if (isHonorable) {
                     className = isMobile
@@ -560,7 +560,7 @@ export function Hero({ initialHeroData = null }) {
                       : "text-xs sm:text-sm md:text-base lg:text-[18px] font-black tracking-wide leading-snug uppercase block pt-0.5";
                   } else if (isRashtra) {
                     className = isMobile
-                      ? "text-[16px] xs:text-[18.5px] font-black tracking-tight leading-[1.02] font-sans uppercase block pt-0.5"
+                      ? "text-[16px] xs:text-[18.5px] font-black tracking-tight leading-[0.95] font-sans uppercase block"
                       : "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.15] tracking-tight font-sans block";
                   } else if (isGajendra) {
                     className = isMobile
@@ -701,7 +701,7 @@ export function Hero({ initialHeroData = null }) {
           borderColor: isLight ? "rgba(184, 139, 74, 0.7)" : "rgba(255, 255, 255, 0.35)",
           backgroundColor: isLight ? "rgba(253, 247, 236, 0.9)" : "rgba(255, 255, 255, 0.12)",
         }}
-        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[8px] xs:text-[9px] font-extrabold tracking-wide border shadow-2xs w-fit whitespace-nowrap max-w-[85vw]"
+        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[8px] xs:text-[9px] font-extrabold tracking-wide border shadow-2xs w-fit whitespace-nowrap max-w-[85vw] mb-1.5 xs:mb-2"
       >
         <span className="text-amber-500 font-bold text-[8.5px] leading-none">⭐</span>
         <span style={{ color: isLight ? "#072C50" : "#ffffff" }} className="leading-tight font-extrabold uppercase tracking-wide whitespace-nowrap">
@@ -883,7 +883,7 @@ export function Hero({ initialHeroData = null }) {
             {mobileSubtitle && (
               <p
                 style={{ color: isLight ? "#072C50" : (subtitleColor || "#cbd5e1") }}
-                className="text-[9px] xs:text-[9px] leading-tight font-normal line-clamp-3 max-w-full mt-0.5 whitespace-pre-line"
+                className="text-[9px] xs:text-[9px] leading-tight font-normal line-clamp-3 max-w-full !mt-1.5 xs:!mt-2 whitespace-pre-line"
               >
                 {(mobileSubtitle || "").replace(/\[\/?\]/g, "")}
               </p>
