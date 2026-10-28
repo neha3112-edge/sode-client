@@ -539,7 +539,7 @@ export function Hero({ initialHeroData = null }) {
                   const isCompareUni = /^(compare|50\+\s*universities|choose\s+with|confidence\.?)$/i.test(token.content.trim());
 
                   let className = isMobile
-                    ? "text-[14.5px] xs:text-[16.5px] font-black leading-[1.16] font-sans inline"
+                    ? "text-[17px] xs:text-[19px] sm:text-[20px] font-black leading-[1.15] font-sans inline"
                     : "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.15] tracking-tight m-0 font-sans inline";
 
                   if (isLargeNum) {
@@ -584,7 +584,7 @@ export function Hero({ initialHeroData = null }) {
                 // Default text token
                 const isCompareUni = /^(compare|choose\s+with|confidence\.?)$/i.test(token.content.trim());
                 let textClassName = isMobile
-                  ? (isCompareUni ? "text-[18px] xs:text-[21px] font-black tracking-tight font-sans block" : "text-[14.5px] xs:text-[16.5px] font-black leading-[1.16] font-sans inline")
+                  ? (isCompareUni ? "text-[18px] xs:text-[21px] font-black tracking-tight font-sans block" : "text-[17px] xs:text-[19px] sm:text-[20px] font-black leading-[1.15] font-sans inline")
                   : "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.15] tracking-tight m-0 font-sans inline";
 
                 return (
@@ -638,7 +638,7 @@ export function Hero({ initialHeroData = null }) {
             <span
               key={lIdx}
               style={{ color: defaultColor }}
-              className="text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.15] tracking-tight m-0 font-sans block"
+              className="text-lg sm:text-2xl md:text-[25px] lg:text-[30px] xl:text-[34px] font-black leading-[1.15] tracking-tight m-0 font-sans block md:whitespace-nowrap"
             >
               {lineContent}
             </span>
@@ -744,7 +744,7 @@ export function Hero({ initialHeroData = null }) {
             <span
               key={lIdx}
               style={{ color: defaultColor }}
-              className="text-[14.5px] xs:text-[16.5px] font-black leading-[1.16] tracking-tight m-0 font-sans block"
+              className="text-[17px] xs:text-[19px] sm:text-[20px] font-black leading-[1.15] tracking-tight m-0 font-sans block"
             >
               {lineContent}
             </span>
@@ -876,14 +876,14 @@ export function Hero({ initialHeroData = null }) {
 
         {/* 📱 MOBILE HERO VIEW (strictly md:hidden) */}
         <Container className="md:hidden relative z-10 w-full h-full flex items-center pointer-events-auto">
-          <div className="w-[54%] xs:w-[50%] max-w-[215px] xs:max-w-[235px] flex flex-col justify-center items-start space-y-1 xs:space-y-1.5 z-10 py-1.5 xs:py-2">
+          <div className="w-[60%] xs:w-[56%] max-w-[250px] xs:max-w-[275px] flex flex-col justify-center items-start space-y-1 xs:space-y-1.5 z-10 py-1.5 xs:py-2">
             {renderMobileSlideBadge(mobileBadgeText, isLight)}
             {renderMobileSlideHeading(mobileTitle, highlightText, isLight, titleColor)}
 
             {mobileSubtitle && (
               <p
                 style={{ color: isLight ? "#072C50" : (subtitleColor || "#cbd5e1") }}
-                className="text-[9px] xs:text-[9px] leading-tight font-normal line-clamp-2 max-w-full m-0"
+                className="text-[9px] xs:text-[9px] leading-tight font-normal line-clamp-2 max-w-full mt-2"
               >
                 {mobileSubtitle}
               </p>
@@ -925,14 +925,14 @@ export function Hero({ initialHeroData = null }) {
 
         {/* 💻 DESKTOP HERO VIEW (hidden md:block - 100% UNTOUCHED from 88bde7c) */}
         <Container className="hidden md:block relative z-10 w-full pointer-events-auto">
-          <div className="w-full max-w-[70%] sm:max-w-[50%] md:max-w-[46%] lg:max-w-[44%] flex flex-col items-start space-y-1.5 sm:space-y-2 md:space-y-2.5">
+          <div className="w-full max-w-[70%] sm:max-w-[56%] md:max-w-[54%] lg:max-w-[54%] xl:max-w-[52%] flex flex-col items-start space-y-1.5 sm:space-y-2 md:space-y-2.5">
             {renderSlideBadge(badgeText, isLight)}
             {renderSlideHeading(title, highlightText, isLight, titleColor, index === 0)}
 
             {subtitle && (
               <p
                 style={{ color: isLight ? "#072C50" : (subtitleColor || "#cbd5e1") }}
-                className="text-[10px] sm:text-xs md:text-[13px] leading-tight sm:leading-relaxed font-normal line-clamp-2 max-w-sm sm:max-w-md lg:max-w-lg m-0"
+                className="text-[10px] sm:text-xs md:text-[13px] leading-tight sm:leading-relaxed font-normal line-clamp-2 max-w-sm sm:max-w-md lg:max-w-lg mt-3"
               >
                 {subtitle}
               </p>
