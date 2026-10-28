@@ -202,7 +202,7 @@ export default function UniversityCoursesSection({
         )}
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-4 auto-rows-fr">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-4">
         {filteredCourses.slice(0, visibleCoursesCount).map((item, index) => {
           const cardTitle = item.title || item.name || "";
           const durationText = item.duration || "";
@@ -226,7 +226,7 @@ export default function UniversityCoursesSection({
           return (
             <div
               key={item._id || item.slug || `${cardTitle}-${index}`}
-              className="bg-gray-50 rounded-xl border border-gray-200 hover:border-[#08AEAA] p-2 sm:p-2.5 hover:shadow-md transition-all flex flex-col items-center justify-between text-center relative group min-w-0 w-full h-full shadow-2xs"
+              className="bg-gray-50 rounded-xl border border-gray-200 hover:border-[#08AEAA] p-1.5 min-[360px]:p-2 sm:p-2.5 hover:shadow-md transition-all flex flex-col items-center justify-between text-center relative group min-w-0 w-full aspect-square shadow-2xs overflow-hidden"
             >
               {specCount > 0 && (
                 <div className="absolute top-0 left-0 z-10">
@@ -240,21 +240,22 @@ export default function UniversityCoursesSection({
                       setActiveSpecSem(0);
                     }}
                     style={{ backgroundColor: brandColor }}
-                    className="hover:opacity-90 text-white text-[9px] sm:text-[10px] font-bold px-2.5 sm:px-3 py-1 rounded-tl-xl rounded-br-xl cursor-pointer transition-opacity border-none flex items-center gap-1 shadow-2xs leading-none"
+                    className="hover:opacity-90 text-white text-[8.5px] min-[360px]:text-[9px] sm:text-[10px] font-bold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-tl-xl rounded-br-xl cursor-pointer transition-opacity border-none flex items-center gap-1 shadow-2xs leading-none"
                   >
                     {String(specCount).padStart(2, "0")} Specialisation
                   </button>
                 </div>
               )}
 
-              <div className="w-11 h-11 sm:w-11 sm:h-11 rounded-full p-1 flex items-center justify-center relative mt-2.5 sm:mt-3 mb-1.5 sm:mb-2 shrink-0">
+              {/* Course Logo */}
+              <div className="w-8 h-8 min-[360px]:w-9 min-[360px]:h-9 sm:w-11 sm:h-11 rounded-full p-0.5 sm:p-1 flex items-center justify-center relative mt-2 min-[360px]:mt-2.5 sm:mt-3 mb-0.5 sm:mb-1 shrink-0">
                 {displayCourseLogo ? (
                   <Link href={courseDetailHref} className="relative w-full h-full block">
                     <Image
                       src={displayCourseLogo}
                       alt={cardTitle || uniName}
                       fill
-                      sizes="(max-width: 768px) 48px, 60px"
+                      sizes="(max-width: 768px) 44px, 56px"
                       className="object-contain transition-transform group-hover:scale-105"
                     />
                   </Link>
@@ -265,36 +266,38 @@ export default function UniversityCoursesSection({
                 )}
               </div>
 
-              <div className="w-full flex-1 flex flex-col justify-center">
+              {/* Title & Duration/Fees Info */}
+              <div className="w-full flex-1 flex flex-col justify-center min-h-0 px-0.5">
                 <div className="flex items-center justify-center">
                   <Link
                     href={courseDetailHref}
-                    className="text-xs sm:text-[13px] font-semibold text-[#0a2540] hover:text-[#08AEAA] line-clamp-2 leading-tight m-0 w-full text-center no-underline transition-colors"
+                    className="text-[11px] min-[360px]:text-xs sm:text-[13px] font-semibold text-[#0a2540] hover:text-[#08AEAA] line-clamp-1 sm:line-clamp-2 leading-tight m-0 w-full text-center no-underline transition-colors"
                   >
                     {cardTitle}
                   </Link>
                 </div>
 
-                <div className="min-h-9 flex items-center justify-center gap-1 sm:gap-1.5 text-center w-full whitespace-nowrap overflow-hidden pt-0.5">
+                <div className="flex items-center justify-center gap-1 text-center w-full whitespace-nowrap overflow-hidden pt-0.5">
                   {feeText ? (
-                    <span className="text-[11.5px] sm:text-[13px] font-bold text-[#0D3B66] tracking-tight shrink-0">
+                    <span className="text-[10px] min-[360px]:text-[11px] sm:text-[12px] font-bold text-[#0D3B66] tracking-tight shrink-0">
                       {feeText.replace(/\s*\/\s*Semester/i, " / Sem").replace(/\s*INR$/, "")}
                     </span>
                   ) : null}
                   {feeText && durationText && (
-                    <span className="text-gray-300 text-xs shrink-0">•</span>
+                    <span className="text-gray-300 text-[10px] shrink-0">•</span>
                   )}
                   {durationText ? (
-                    <div className="text-[10.5px] sm:text-[11.5px] text-gray-500 font-normal flex items-center gap-0.5 sm:gap-1 shrink-0">
-                      <Clock className="w-3 h-3 shrink-0 text-gray-400" />
+                    <div className="text-[9.5px] min-[360px]:text-[10px] sm:text-[11px] text-gray-500 font-normal flex items-center gap-0.5 shrink-0">
+                      <Clock className="w-2.5 h-2.5 sm:w-3 sm:h-3 shrink-0 text-gray-400" />
                       <span>{durationText}</span>
                     </div>
                   ) : null}
                 </div>
               </div>
 
-              <div className="w-full mt-auto pt-1.5">
-                <div className="w-full grid grid-cols-2 gap-1.5 items-center">
+              {/* Bottom Actions */}
+              <div className="w-full mt-auto shrink-0 pt-0.5">
+                <div className="w-full grid grid-cols-2 gap-1 sm:gap-1.5 items-center">
                   <button
                     type="button"
                     onClick={() => {
@@ -308,19 +311,19 @@ export default function UniversityCoursesSection({
                           submitButtonText: "Apply Now",
                         });
                     }}
-                    className="w-full bg-[#F4D068] hover:bg-[#ebc557] text-gray-900 text-[11px] sm:text-xs font-semibold py-2 px-1 rounded-md sm:rounded-lg border-none cursor-pointer transition-colors active:scale-95 flex items-center justify-center text-center whitespace-nowrap leading-none"
+                    className="w-full bg-[#F4D068] hover:bg-[#ebc557] text-gray-900 text-[9.5px] min-[360px]:text-[10.5px] sm:text-xs font-semibold py-1 sm:py-1.5 px-0.5 sm:px-1 rounded-md sm:rounded-lg border-none cursor-pointer transition-colors active:scale-95 flex items-center justify-center text-center whitespace-nowrap leading-none"
                   >
                     Apply Now
                   </button>
                   <Link
                     href={courseDetailHref}
-                    className="w-full bg-[#0D3B66] hover:bg-[#072440] text-white border-none text-[11px] sm:text-xs font-semibold py-2 px-1 rounded-md sm:rounded-lg text-center no-underline transition-colors flex items-center justify-center whitespace-nowrap leading-none"
+                    className="w-full bg-[#0D3B66] hover:bg-[#072440] text-white border-none text-[9.5px] min-[360px]:text-[10.5px] sm:text-xs font-semibold py-1 sm:py-1.5 px-0.5 sm:px-1 rounded-md sm:rounded-lg text-center no-underline transition-colors flex items-center justify-center whitespace-nowrap leading-none"
                   >
                     Know More
                   </Link>
                 </div>
 
-                <hr className="w-full border-t border-gray-200 my-1.5" />
+                <hr className="w-full border-t border-gray-200 my-0.5 min-[360px]:my-1 sm:my-1.5" />
 
                 <button
                   type="button"
@@ -354,19 +357,19 @@ export default function UniversityCoursesSection({
                       setIsCompareDrawerOpen(true);
                     }
                   }}
-                  className={`w-full py-1 text-[11px] sm:text-xs font-semibold flex items-center justify-center gap-1 transition-all cursor-pointer mt-1 border-none bg-transparent min-h-[22px] ${inCmp
+                  className={`w-full py-0.5 text-[9.5px] min-[360px]:text-[10.5px] sm:text-xs font-semibold flex items-center justify-center gap-1 transition-all cursor-pointer border-none bg-transparent min-h-[18px] sm:min-h-[22px] ${inCmp
                     ? "text-[#08AEAA] font-bold hover:underline"
                     : "text-gray-600 hover:text-[#0D3B66]"
                     }`}
                 >
                   {inCmp ? (
                     <>
-                      <Check className="w-3.5 h-3.5 text-[#08AEAA] shrink-0 stroke-[2.5]" />
+                      <Check className="w-3 h-3 text-[#08AEAA] shrink-0 stroke-[2.5]" />
                       <span>Compare Now</span>
                     </>
                   ) : (
                     <>
-                      <Plus className="w-3.5 h-3.5 text-gray-500 shrink-0 stroke-2" />
+                      <Plus className="w-3 h-3 text-gray-500 shrink-0 stroke-2" />
                       <span>Add to Compare</span>
                     </>
                   )}
