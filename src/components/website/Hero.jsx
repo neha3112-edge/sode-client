@@ -544,11 +544,11 @@ export function Hero({ initialHeroData = null }) {
 
                   if (isLargeNum) {
                     className = isMobile
-                      ? "text-[24px] xs:text-[28px] font-black tracking-tight leading-none block"
+                      ? "text-[24px] xs:text-[28px] font-black tracking-tight leading-[1.05] block pt-0.5"
                       : "text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-none block";
                   } else if (isGov) {
                     className = isMobile
-                      ? "text-[20px] xs:text-[23px] font-black tracking-tight leading-[0.92] font-sans uppercase block"
+                      ? "text-[20px] xs:text-[23px] font-black tracking-tight leading-[1.02] font-sans uppercase block pt-0.5"
                       : "text-2xl sm:text-3xl md:text-[34px] lg:text-[40px] xl:text-[44px] font-black tracking-wide leading-none font-sans uppercase block";
                   } else if (isHonorable) {
                     className = isMobile
@@ -560,7 +560,7 @@ export function Hero({ initialHeroData = null }) {
                       : "text-xs sm:text-sm md:text-base lg:text-[18px] font-black tracking-wide leading-snug uppercase block pt-0.5";
                   } else if (isRashtra) {
                     className = isMobile
-                      ? "text-[16px] xs:text-[18.5px] font-black tracking-tight leading-[0.95] font-sans uppercase block"
+                      ? "text-[16px] xs:text-[18.5px] font-black tracking-tight leading-[1.02] font-sans uppercase block pt-0.5"
                       : "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.15] tracking-tight font-sans block";
                   } else if (isGajendra) {
                     className = isMobile
@@ -883,44 +883,44 @@ export function Hero({ initialHeroData = null }) {
             {mobileSubtitle && (
               <p
                 style={{ color: isLight ? "#072C50" : (subtitleColor || "#cbd5e1") }}
-                className="text-[9px] xs:text-[9px] leading-tight font-normal line-clamp-3 max-w-full mt-1.5 xs:mt-2 whitespace-pre-line"
+                className="text-[9px] xs:text-[9px] leading-tight font-normal line-clamp-3 max-w-full mt-0.5 whitespace-pre-line"
               >
                 {(mobileSubtitle || "").replace(/\[\/?\]/g, "")}
               </p>
             )}
 
-              {/* Mobile Primary Button if enabled (e.g. Compare Now on Slide 4) */}
-              {primaryBtn?.enabled !== false && primaryBtn?.text && (
-                <div className="pt-0.5">
-                  {primaryBtn?.is_modal ? (
-                    <button
-                      type="button"
-                      onClick={handlePrimaryClick}
-                      style={{
-                        background: "linear-gradient(180deg, #F3CE7F 0%, #E7B85D 100%)",
-                        color: "#072C50",
-                        border: "1px solid rgba(226, 176, 83, 0.6)",
-                      }}
-                      className="px-2 py-0.5 rounded-md font-bold text-[9.5px] xs:text-[10.5px] shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap"
-                    >
-                      {primaryBtn.text}
-                    </button>
-                  ) : (
-                    <Link
-                      href={primaryBtn?.url || "/counselling"}
-                      style={{
-                        background: "linear-gradient(180deg, #F3CE7F 0%, #E7B85D 100%)",
-                        color: "#072C50",
-                        border: "1px solid rgba(226, 176, 83, 0.6)",
-                      }}
-                      className="inline-block px-2 py-0.5 rounded-md font-bold text-[9.5px] xs:text-[10.5px] shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap"
-                    >
-                      {primaryBtn.text}
-                    </Link>
-                  )}
-                </div>
-              )}
-            </div>
+            {/* Mobile Primary Button if enabled (e.g. Compare Now on Slide 4) */}
+            {primaryBtn?.enabled !== false && primaryBtn?.text && (
+              <div className="pt-0.5">
+                {primaryBtn?.is_modal ? (
+                  <button
+                    type="button"
+                    onClick={handlePrimaryClick}
+                    style={{
+                      background: "linear-gradient(180deg, #F3CE7F 0%, #E7B85D 100%)",
+                      color: "#072C50",
+                      border: "1px solid rgba(226, 176, 83, 0.6)",
+                    }}
+                    className="px-2 py-0.5 rounded-md font-bold text-[9.5px] xs:text-[10.5px] shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap"
+                  >
+                    {primaryBtn.text}
+                  </button>
+                ) : (
+                  <Link
+                    href={primaryBtn?.url || "/counselling"}
+                    style={{
+                      background: "linear-gradient(180deg, #F3CE7F 0%, #E7B85D 100%)",
+                      color: "#072C50",
+                      border: "1px solid rgba(226, 176, 83, 0.6)",
+                    }}
+                    className="inline-block px-2 py-0.5 rounded-md font-bold text-[9.5px] xs:text-[10.5px] shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap"
+                  >
+                    {primaryBtn.text}
+                  </Link>
+                )}
+              </div>
+            )}
+          </div>
         </Container>
 
         {/* 💻 DESKTOP HERO VIEW (hidden md:block - 100% UNTOUCHED from 88bde7c) */}
@@ -938,81 +938,81 @@ export function Hero({ initialHeroData = null }) {
               </p>
             )}
 
-              {categoryItems && categoryItems.length > 0 && (
-                <div className="hidden sm:flex flex-wrap gap-1 pt-0.5">
-                  {categoryItems.map((item, tIdx) => (
-                    <Link
-                      key={item._id || tIdx}
-                      href={item.url || "#"}
-                      className={`px-2 py-0.5 rounded text-[10px] sm:text-xs font-medium transition-all shadow-2xs ${isLight
-                        ? "bg-white/90 text-[#072C50] border border-[#EEC471]/40 hover:border-[#EEC471] hover:bg-amber-50"
-                        : "bg-white/10 text-white border border-white/20 hover:bg-white/20 backdrop-blur-md"
-                        }`}
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
-                </div>
+            {categoryItems && categoryItems.length > 0 && (
+              <div className="hidden sm:flex flex-wrap gap-1 pt-0.5">
+                {categoryItems.map((item, tIdx) => (
+                  <Link
+                    key={item._id || tIdx}
+                    href={item.url || "#"}
+                    className={`px-2 py-0.5 rounded text-[10px] sm:text-xs font-medium transition-all shadow-2xs ${isLight
+                      ? "bg-white/90 text-[#072C50] border border-[#EEC471]/40 hover:border-[#EEC471] hover:bg-amber-50"
+                      : "bg-white/10 text-white border border-white/20 hover:bg-white/20 backdrop-blur-md"
+                      }`}
+                  >
+                    {item.name}
+                  </Link>
+                ))}
+              </div>
+            )}
+
+            <div className="flex flex-wrap items-center gap-2 pt-0.5 sm:pt-1">
+              {primaryBtn?.enabled !== false && primaryBtn?.text && (
+                primaryBtn?.is_modal ? (
+                  <button
+                    type="button"
+                    onClick={handlePrimaryClick}
+                    style={{
+                      background: "linear-gradient(180deg, #F3CE7F 0%, #E7B85D 100%)",
+                      color: "#072C50",
+                      border: "1px solid rgba(226, 176, 83, 0.6)",
+                    }}
+                    className="px-3.5 py-1.5 rounded-lg font-bold text-xs shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+                  >
+                    {primaryBtn.text}
+                  </button>
+                ) : (
+                  <Link
+                    href={primaryBtn?.url || "/counselling"}
+                    style={{
+                      background: "linear-gradient(180deg, #F3CE7F 0%, #E7B85D 100%)",
+                      color: "#072C50",
+                      border: "1px solid rgba(226, 176, 83, 0.6)",
+                    }}
+                    className="px-3.5 py-1.5 rounded-lg font-bold text-xs shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+                  >
+                    {primaryBtn.text}
+                  </Link>
+                )
               )}
 
-              <div className="flex flex-wrap items-center gap-2 pt-0.5 sm:pt-1">
-                {primaryBtn?.enabled !== false && primaryBtn?.text && (
-                  primaryBtn?.is_modal ? (
-                    <button
-                      type="button"
-                      onClick={handlePrimaryClick}
-                      style={{
-                        background: "linear-gradient(180deg, #F3CE7F 0%, #E7B85D 100%)",
-                        color: "#072C50",
-                        border: "1px solid rgba(226, 176, 83, 0.6)",
-                      }}
-                      className="px-3.5 py-1.5 rounded-lg font-bold text-xs shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
-                    >
-                      {primaryBtn.text}
-                    </button>
-                  ) : (
-                    <Link
-                      href={primaryBtn?.url || "/counselling"}
-                      style={{
-                        background: "linear-gradient(180deg, #F3CE7F 0%, #E7B85D 100%)",
-                        color: "#072C50",
-                        border: "1px solid rgba(226, 176, 83, 0.6)",
-                      }}
-                      className="px-3.5 py-1.5 rounded-lg font-bold text-xs shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
-                    >
-                      {primaryBtn.text}
-                    </Link>
-                  )
-                )}
-
-                {secondaryBtn?.enabled !== false && secondaryBtn?.text && (
-                  secondaryBtn?.is_modal ? (
-                    <button
-                      type="button"
-                      onClick={handleSecondaryClick}
-                      style={{
-                        borderColor: isLight ? "#EEC471" : "rgba(255, 255, 255, 0.4)",
-                        color: isLight ? "#072C50" : "#ffffff",
-                      }}
-                      className="px-3 py-1.5 rounded-lg font-medium text-xs border hover:bg-white/10 transition-all cursor-pointer"
-                    >
-                      {secondaryBtn.text}
-                    </button>
-                  ) : (
-                    <Link
-                      href={secondaryBtn?.url || "/courses"}
-                      style={{
-                        borderColor: isLight ? "#EEC471" : "rgba(255, 255, 255, 0.4)",
-                        color: isLight ? "#072C50" : "#ffffff",
-                      }}
-                      className="px-3 py-1.5 rounded-lg font-medium text-xs border hover:bg-white/10 transition-all cursor-pointer"
-                    >
-                      {secondaryBtn.text}
-                    </Link>
-                  )
-                )}
-              </div>
+              {secondaryBtn?.enabled !== false && secondaryBtn?.text && (
+                secondaryBtn?.is_modal ? (
+                  <button
+                    type="button"
+                    onClick={handleSecondaryClick}
+                    style={{
+                      borderColor: isLight ? "#EEC471" : "rgba(255, 255, 255, 0.4)",
+                      color: isLight ? "#072C50" : "#ffffff",
+                    }}
+                    className="px-3 py-1.5 rounded-lg font-medium text-xs border hover:bg-white/10 transition-all cursor-pointer"
+                  >
+                    {secondaryBtn.text}
+                  </button>
+                ) : (
+                  <Link
+                    href={secondaryBtn?.url || "/courses"}
+                    style={{
+                      borderColor: isLight ? "#EEC471" : "rgba(255, 255, 255, 0.4)",
+                      color: isLight ? "#072C50" : "#ffffff",
+                    }}
+                    className="px-3 py-1.5 rounded-lg font-medium text-xs border hover:bg-white/10 transition-all cursor-pointer"
+                  >
+                    {secondaryBtn.text}
+                  </Link>
+                )
+              )}
             </div>
+          </div>
         </Container>
       </div>
     );
