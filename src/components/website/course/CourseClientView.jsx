@@ -530,7 +530,12 @@ export function CourseClientView({
       list.push({ id: "career-opportunities", label: "Career Opportunities" });
     }
     if (processedPrograms && processedPrograms.length > 0) {
-      list.push({ id: "alternative", label: "Alternative Universities" });
+      const altLabel =
+        courseData?.top_universities_title ||
+        courseData?.peer_universities_title ||
+        (processedPrograms[0]?.sectionTitle) ||
+        "Top Universities";
+      list.push({ id: "alternative", label: altLabel });
     }
     if (faqList && faqList.length > 0) {
       list.push({ id: "faqs", label: "FAQs" });

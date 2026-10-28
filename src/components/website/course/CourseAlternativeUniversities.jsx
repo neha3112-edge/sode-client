@@ -24,14 +24,20 @@ export default function CourseAlternativeUniversities({
 
   if (!processedPrograms || processedPrograms.length === 0) return null;
 
+  const sectionTitle =
+    courseData?.top_universities_title ||
+    courseData?.peer_universities_title ||
+    (Array.isArray(processedPrograms) && processedPrograms[0]?.sectionTitle) ||
+    "Top Universities";
+
   return (
     <div
       id="alternative"
-      data-nav-label="Alternative Universities"
+      data-nav-label={sectionTitle}
       className="scroll-mt-20 bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8"
     >
       <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-6 sm:mb-8 m-0">
-        Top Alternative Universities Offering {courseData?.name || "Online Courses"}
+        {sectionTitle}
       </h2>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
@@ -105,7 +111,7 @@ export default function CourseAlternativeUniversities({
                   </Link>
                 </div>
                 <div className="text-[10px] sm:text-[11px] text-gray-500 font-normal flex items-center justify-center">
-                  <span className="truncate">{item.location || coursesOfferedText}</span>
+                  <span className="truncate">{coursesOfferedText}</span>
                 </div>
               </div>
 
