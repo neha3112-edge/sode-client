@@ -798,7 +798,7 @@ export const iimCustomCss = `
   }
 
   .landing-page--iim .overview1 h2 {
-    font-size: 26px !important;
+    font-size: 24px !important;
     font-weight: 800 !important;
     color: #111111 !important;
     text-align: left !important;
@@ -1150,7 +1150,7 @@ export const iimCustomCss = `
      ========================================================= */
   .landing-page--iim section#courses {
     width: 100% !important;
-    margin: 60px 0 40px 0 !important;
+    margin: 70px 0 40px 0 !important;
     padding: 0 !important;
     box-sizing: border-box !important;
   }
@@ -1164,11 +1164,11 @@ export const iimCustomCss = `
   }
 
   .landing-page--iim #courses h2 {
-    font-size: 26px !important;
+    font-size: 25px !important;
     font-weight: 800 !important;
     text-align: left !important;
     color: #111111 !important;
-    margin: 0 0 12px 0 !important;
+    margin: 0 0 16px 0 !important;
     padding: 0 !important;
     line-height: 1.3 !important;
   }
@@ -1176,9 +1176,9 @@ export const iimCustomCss = `
   .landing-page--iim #courses h2 .blue {
     color: #17479E !important;
     background-color: #eef5fc !important;
-    padding: 2px 8px !important;
+    padding: 1px 8px !important;
     border-radius: 4px !important;
-    display: inline !important;
+    display: table !important;
   }
 
   .landing-page--iim #courses p {
@@ -1295,8 +1295,8 @@ export const iimCustomCss = `
     }
     .landing-page--iim .c1 img,
     .landing-page--iim .c1 .c1-img-wrap img {
-      max-width: 165px !important;
-      max-height: 65px !important;
+     max-width: 300px !important;
+  max-height: 110px !important;
     }
     .landing-page--iim #courses .c1 p,
     .landing-page--iim .c1 p,
