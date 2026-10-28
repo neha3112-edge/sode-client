@@ -494,12 +494,17 @@ export function Hero({ initialHeroData = null }) {
           ) {
             const dividerText = trimmed.replace(/\[\/?divider\]|[—\-]/gi, "").trim() || "FROM";
             return (
-              <div key={lIdx} className="flex items-center gap-1.5 py-0.5">
-                <span className={isMobile ? "w-5 xs:w-7 h-[1px] bg-[#64748B]/60 inline-block" : "w-8 md:w-12 h-[1px] bg-[#64748B]/60 inline-block"} />
-                <span className={isMobile ? "text-[8px] xs:text-[9px] font-bold uppercase tracking-widest text-[#64748B]" : "text-xs md:text-sm font-bold uppercase tracking-widest text-[#64748B]"}>
+              <div
+                key={lIdx}
+                className={`flex items-center justify-center gap-1.5 py-0.5 ${
+                  isMobile ? "w-full max-w-[200px] xs:max-w-[220px]" : "w-full max-w-[260px]"
+                }`}
+              >
+                <span className="flex-1 h-[1px] bg-[#64748B]/60 inline-block" />
+                <span className={isMobile ? "text-[8px] xs:text-[9px] font-bold uppercase tracking-widest text-[#64748B] shrink-0" : "text-xs md:text-sm font-bold uppercase tracking-widest text-[#64748B] shrink-0"}>
                   {dividerText}
                 </span>
-                <span className={isMobile ? "w-5 xs:w-7 h-[1px] bg-[#64748B]/60 inline-block" : "w-8 md:w-12 h-[1px] bg-[#64748B]/60 inline-block"} />
+                <span className="flex-1 h-[1px] bg-[#64748B]/60 inline-block" />
               </div>
             );
           }
@@ -515,14 +520,13 @@ export function Hero({ initialHeroData = null }) {
                     <span
                       key={tIdx}
                       style={{
-                        WebkitTextStroke: isMobile ? "1.2px " + token.color : "1.8px " + token.color,
-                        color: "transparent",
+                        color: token.color,
                         letterSpacing: isSamman ? (isMobile ? "0.012em" : "0.04em") : "0.04em",
                       }}
                       className={
                         isMobile
                           ? (isSamman
-                            ? "text-[30.5px] xs:text-[35px] font-black leading-[0.9] font-sans uppercase block"
+                            ? "text-[28px] xs:text-[33px] sm:text-[36px] font-black leading-[0.95] font-sans uppercase block"
                             : "text-[24px] xs:text-[28px] font-black tracking-tight leading-[0.95] font-sans uppercase block")
                           : "text-3xl sm:text-4xl md:text-5xl lg:text-[56px] font-black tracking-tight leading-[0.95] font-sans uppercase block"
                       }
@@ -539,6 +543,7 @@ export function Hero({ initialHeroData = null }) {
                   const isHonorable = /^honorable$/i.test(token.content.trim());
                   const isArif = /^(sh\.?\s+)?arif\s+mohammed\s+khan$/i.test(token.content.trim());
                   const isRashtra = /^rashtra\s+nirmata$/i.test(token.content.trim());
+                  const isSamman = /^samman$/i.test(token.content.trim());
                   const isGajendra = /^(sh\.?\s+|shri\s+)?(from\s+shri\s+)?gajendra\s+chauhan$/i.test(token.content.trim());
                   const isCompareUni = /^(compare|50\+\s*universities|choose\s+with|confidence\.?)$/i.test(token.content.trim());
 
@@ -568,6 +573,10 @@ export function Hero({ initialHeroData = null }) {
                     className = isMobile
                       ? "text-[16px] xs:text-[18.5px] font-black tracking-tight leading-[0.95] font-sans uppercase block"
                       : "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.15] tracking-tight font-sans block";
+                  } else if (isSamman) {
+                    className = isMobile
+                      ? "text-[28px] xs:text-[33px] sm:text-[36px] font-black tracking-tight leading-[0.95] font-sans uppercase block"
+                      : "text-3xl sm:text-4xl md:text-5xl lg:text-[56px] font-black tracking-tight leading-[0.95] font-sans uppercase block";
                   } else if (isGajendra) {
                     className = isMobile
                       ? "text-[11px] xs:text-[13px] font-black tracking-tight uppercase block"
@@ -765,11 +774,14 @@ export function Hero({ initialHeroData = null }) {
           const isCompareUni = /^(compare|50\+\s*universities|choose\s+with|confidence\.?)$/i.test(line.trim());
           const isGov = /^(governor|of\s+kerala|governor\s+of\s+kerala)$/i.test(line.trim());
           const isHonorable = /^honorable$/i.test(line.trim());
+          const isSamman = /^samman$/i.test(line.trim());
           let lineClass = "text-[17px] xs:text-[19px] sm:text-[20px] font-black leading-[1.02] tracking-tight m-0 font-sans block";
           if (isLargeNum) {
             lineClass = "text-[28px] xs:text-[33px] sm:text-[36px] font-black tracking-tight leading-none m-0 font-sans block";
           } else if (isGov) {
             lineClass = "text-[24px] xs:text-[29px] sm:text-[36px] font-black tracking-tight leading-[1] m-0 font-sans uppercase block";
+          } else if (isSamman) {
+            lineClass = "text-[28px] xs:text-[33px] sm:text-[36px] font-black tracking-tight leading-[0.95] m-0 font-sans uppercase block";
           } else if (isHonorable) {
             lineClass = "text-[8px] xs:text-[9px] font-extrabold tracking-wider uppercase block pt-2.5 xs:pt-3";
           } else if (isCompareUni) {
