@@ -883,7 +883,7 @@ export function Hero({ initialHeroData = null }) {
             {mobileSubtitle && (
               <p
                 style={{ color: isLight ? "#072C50" : (subtitleColor || "#cbd5e1") }}
-                className="text-[9px] xs:text-[9px] leading-tight font-normal line-clamp-2 max-w-full mt-1.5 xs:mt-2 whitespace-pre-line"
+                className="text-[9px] xs:text-[9px] leading-tight font-normal line-clamp-3 max-w-full mt-1.5 xs:mt-2 whitespace-pre-line"
               >
                 {(mobileSubtitle || "").replace(/\[\/?\]/g, "")}
               </p>
@@ -932,7 +932,7 @@ export function Hero({ initialHeroData = null }) {
             {subtitle && (
               <p
                 style={{ color: isLight ? "#072C50" : (subtitleColor || "#cbd5e1") }}
-                className="text-[10px] sm:text-xs md:text-[13px] leading-tight sm:leading-relaxed font-normal line-clamp-2 max-w-sm sm:max-w-md lg:max-w-lg mt-2 sm:mt-2.5 whitespace-pre-line"
+                className="text-[10px] sm:text-xs md:text-[13px] leading-tight sm:leading-relaxed font-normal line-clamp-3 max-w-sm sm:max-w-md lg:max-w-lg mt-2 sm:mt-2.5 whitespace-pre-line"
               >
                 {(subtitle || "").replace(/\[\/?\]/g, "")}
               </p>
