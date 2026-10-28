@@ -493,18 +493,32 @@ export function Hero({ initialHeroData = null }) {
             trimmed.toUpperCase().includes("[DIVIDER]")
           ) {
             const dividerText = trimmed.replace(/\[\/?divider\]|[—\-]/gi, "").trim() || "FROM";
+            const dividerColor = defaultColor === "#ffffff" ? "rgba(255, 255, 255, 0.75)" : "#726B50";
             return (
               <div
                 key={lIdx}
-                className={`flex items-center justify-center gap-1.5 py-0.5 ${
-                  isMobile ? "w-full max-w-[200px] xs:max-w-[220px]" : "w-full max-w-[260px]"
+                className={`flex items-center justify-center gap-2.5 xs:gap-3 py-1 my-0.5 ${
+                  isMobile ? "w-full max-w-[200px] xs:max-w-[230px]" : "w-full max-w-[280px]"
                 }`}
               >
-                <span className="flex-1 h-[1px] bg-[#64748B]/60 inline-block" />
-                <span className={isMobile ? "text-[8px] xs:text-[9px] font-bold uppercase tracking-widest text-[#64748B] shrink-0" : "text-xs md:text-sm font-bold uppercase tracking-widest text-[#64748B] shrink-0"}>
+                <span
+                  style={{ backgroundColor: dividerColor }}
+                  className="flex-1 h-[1px] inline-block opacity-70"
+                />
+                <span
+                  style={{ color: dividerColor }}
+                  className={
+                    isMobile
+                      ? "text-[10px] xs:text-[11px] font-normal uppercase tracking-[0.24em] shrink-0"
+                      : "text-xs md:text-sm font-normal uppercase tracking-[0.28em] shrink-0"
+                  }
+                >
                   {dividerText}
                 </span>
-                <span className="flex-1 h-[1px] bg-[#64748B]/60 inline-block" />
+                <span
+                  style={{ backgroundColor: dividerColor }}
+                  className="flex-1 h-[1px] inline-block opacity-70"
+                />
               </div>
             );
           }
