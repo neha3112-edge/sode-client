@@ -554,7 +554,7 @@ export function Hero({ initialHeroData = null }) {
                       : "text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-none block";
                   } else if (isGov) {
                     className = isMobile
-                      ? "text-[23px] xs:text-[26px] sm:text-[28px] font-black tracking-tight leading-[1.12] font-sans uppercase block"
+                      ? "text-[29px] xs:text-[33px] sm:text-[36px] font-black tracking-tight leading-[1.08] font-sans uppercase block"
                       : "text-2xl sm:text-3xl md:text-[34px] lg:text-[40px] xl:text-[44px] font-black tracking-wide leading-none font-sans uppercase block";
                   } else if (isHonorable) {
                     className = isMobile
@@ -768,7 +768,7 @@ export function Hero({ initialHeroData = null }) {
           if (isLargeNum) {
             lineClass = "text-[28px] xs:text-[33px] sm:text-[36px] font-black tracking-tight leading-none m-0 font-sans block";
           } else if (isGov) {
-            lineClass = "text-[23px] xs:text-[26px] sm:text-[28px] font-black tracking-tight leading-[1.12] m-0 font-sans uppercase block";
+            lineClass = "text-[29px] xs:text-[33px] sm:text-[36px] font-black tracking-tight leading-[1.08] m-0 font-sans uppercase block";
           } else if (isCompareUni) {
             lineClass = "text-[21px] xs:text-[24px] sm:text-[26px] font-black tracking-tight leading-[1.02] m-0 font-sans block";
           } else if (isStudentsPath) {
