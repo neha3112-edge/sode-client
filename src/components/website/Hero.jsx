@@ -878,16 +878,16 @@ export function Hero({ initialHeroData = null }) {
         <Container className="md:hidden relative z-10 w-full h-full flex items-center pointer-events-auto">
           <div className="w-[60%] xs:w-[56%] max-w-[250px] xs:max-w-[275px] flex flex-col justify-center items-start space-y-1 xs:space-y-1.5 z-10 py-1.5 xs:py-2">
             {renderMobileSlideBadge(mobileBadgeText, isLight)}
-              {renderMobileSlideHeading(mobileTitle, highlightText, isLight, titleColor)}
+            {renderMobileSlideHeading(mobileTitle, highlightText, isLight, titleColor)}
 
-              {mobileSubtitle && (
-                <p
-                  style={{ color: isLight ? "#072C50" : (subtitleColor || "#cbd5e1") }}
-                  className="text-[9px] xs:text-[9px] leading-tight font-normal line-clamp-2 max-w-full mt-2"
-                >
-                  {mobileSubtitle}
-                </p>
-              )}
+            {mobileSubtitle && (
+              <p
+                style={{ color: isLight ? "#072C50" : (subtitleColor || "#cbd5e1") }}
+                className="text-[9px] xs:text-[9px] leading-tight font-normal line-clamp-2 max-w-full m-0"
+              >
+                {mobileSubtitle}
+              </p>
+            )}
 
               {/* Mobile Primary Button if enabled (e.g. Compare Now on Slide 4) */}
               {primaryBtn?.enabled !== false && primaryBtn?.text && (
@@ -927,16 +927,16 @@ export function Hero({ initialHeroData = null }) {
         <Container className="hidden md:block relative z-10 w-full pointer-events-auto">
           <div className="w-full max-w-[70%] sm:max-w-[56%] md:max-w-[54%] lg:max-w-[54%] xl:max-w-[52%] flex flex-col items-start space-y-1.5 sm:space-y-2 md:space-y-2.5">
             {renderSlideBadge(badgeText, isLight)}
-              {renderSlideHeading(title, highlightText, isLight, titleColor, index === 0)}
+            {renderSlideHeading(title, highlightText, isLight, titleColor, index === 0)}
 
-              {subtitle && (
-                <p
-                  style={{ color: isLight ? "#072C50" : (subtitleColor || "#cbd5e1") }}
-                  className="text-[10px] sm:text-xs md:text-[13px] leading-tight sm:leading-relaxed font-normal line-clamp-2 max-w-sm sm:max-w-md lg:max-w-lg mt-3"
-                >
-                  {subtitle}
-                </p>
-              )}
+            {subtitle && (
+              <p
+                style={{ color: isLight ? "#072C50" : (subtitleColor || "#cbd5e1") }}
+                className="text-[10px] sm:text-xs md:text-[13px] leading-tight sm:leading-relaxed font-normal line-clamp-2 max-w-sm sm:max-w-md lg:max-w-lg m-0"
+              >
+                {subtitle}
+              </p>
+            )}
 
               {categoryItems && categoryItems.length > 0 && (
                 <div className="hidden sm:flex flex-wrap gap-1 pt-0.5">
