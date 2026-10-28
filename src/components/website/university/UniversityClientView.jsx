@@ -368,7 +368,7 @@ export function UniversityClientView({ initialData, slug }) {
         locationText={locationText}
         establishedText={establishedText}
         approvalsSummary={approvalsSummary}
-        admissionDeadline={uni.admission_deadline}
+        admissionDeadline={uni.admission_deadline || uni.admissionDeadline}
         admissionStatus={uni.admission_status}
       />
 
