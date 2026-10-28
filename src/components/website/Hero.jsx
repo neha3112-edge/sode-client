@@ -531,6 +531,7 @@ export function Hero({ initialHeroData = null }) {
 
                 if (token.type === "color") {
                   const isLargeNum = /^\d+\s*lakh\+?/i.test(token.content.trim());
+                  const isStudentsPath = /^(students\s+found\s+their|right\s+career\s+path)$/i.test(token.content.trim());
                   const isGov = /^(governor|of\s+kerala|governor\s+of\s+kerala)$/i.test(token.content.trim());
                   const isHonorable = /^honorable$/i.test(token.content.trim());
                   const isArif = /^(sh\.?\s+)?arif\s+mohammed\s+khan$/i.test(token.content.trim());
@@ -539,12 +540,14 @@ export function Hero({ initialHeroData = null }) {
                   const isCompareUni = /^(compare|50\+\s*universities|choose\s+with|confidence\.?)$/i.test(token.content.trim());
 
                   let className = isMobile
-                    ? "text-[17px] xs:text-[19px] sm:text-[20px] font-black leading-[1.02] font-sans inline"
+                    ? (isStudentsPath
+                      ? "text-[18.5px] xs:text-[21px] sm:text-[23px] font-black tracking-tight leading-[1.05] font-sans block"
+                      : "text-[17px] xs:text-[19px] sm:text-[20px] font-black leading-[1.02] font-sans inline")
                     : "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.15] tracking-tight m-0 font-sans inline";
 
                   if (isLargeNum) {
                     className = isMobile
-                      ? "text-[24px] xs:text-[28px] font-black tracking-tight leading-none block"
+                      ? "text-[28px] xs:text-[33px] sm:text-[36px] font-black tracking-tight leading-none block"
                       : "text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-none block";
                   } else if (isGov) {
                     className = isMobile
@@ -583,8 +586,16 @@ export function Hero({ initialHeroData = null }) {
 
                 // Default text token
                 const isCompareUni = /^(compare|choose\s+with|confidence\.?)$/i.test(token.content.trim());
+                const isStudentsPath = /^(students\s+found\s+their|right\s+career\s+path)$/i.test(token.content.trim());
+                const isLargeNum = /^\d+\s*lakh\+?/i.test(token.content.trim());
                 let textClassName = isMobile
-                  ? (isCompareUni ? "text-[21px] xs:text-[24px] sm:text-[26px] font-black tracking-tight leading-[1.02] font-sans block" : "text-[17px] xs:text-[19px] sm:text-[20px] font-black leading-[1.02] font-sans inline")
+                  ? (isLargeNum
+                    ? "text-[28px] xs:text-[33px] sm:text-[36px] font-black tracking-tight leading-none block"
+                    : isCompareUni
+                      ? "text-[21px] xs:text-[24px] sm:text-[26px] font-black tracking-tight leading-[1.02] font-sans block"
+                      : isStudentsPath
+                        ? "text-[18.5px] xs:text-[21px] sm:text-[23px] font-black tracking-tight leading-[1.05] font-sans block"
+                        : "text-[17px] xs:text-[19px] sm:text-[20px] font-black leading-[1.02] font-sans inline")
                   : "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.15] tracking-tight m-0 font-sans inline";
 
                 return (
@@ -701,7 +712,7 @@ export function Hero({ initialHeroData = null }) {
           borderColor: isLight ? "rgba(184, 139, 74, 0.7)" : "rgba(255, 255, 255, 0.35)",
           backgroundColor: isLight ? "rgba(253, 247, 236, 0.9)" : "rgba(255, 255, 255, 0.12)",
         }}
-        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[8px] xs:text-[9px] font-extrabold tracking-wide border shadow-2xs w-fit whitespace-nowrap max-w-[85vw] mb-1.5 xs:mb-2"
+        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[8px] xs:text-[9px] font-extrabold tracking-wide border shadow-2xs w-fit whitespace-nowrap max-w-[85vw] mb-2 xs:mb-2"
       >
         <span className="text-amber-500 font-bold text-[8.5px] leading-none">⭐</span>
         <span style={{ color: isLight ? "#072C50" : "#ffffff" }} className="leading-tight font-extrabold uppercase tracking-wide whitespace-nowrap">
@@ -740,11 +751,23 @@ export function Hero({ initialHeroData = null }) {
             );
           }
 
+          const isLargeNum = /^\d+\s*lakh\+?/i.test(line.trim());
+          const isStudentsPath = /^(students\s+found\s+their|right\s+career\s+path)$/i.test(line.trim());
+          const isCompareUni = /^(compare|50\+\s*universities|choose\s+with|confidence\.?)$/i.test(line.trim());
+          let lineClass = "text-[17px] xs:text-[19px] sm:text-[20px] font-black leading-[1.02] tracking-tight m-0 font-sans block";
+          if (isLargeNum) {
+            lineClass = "text-[28px] xs:text-[33px] sm:text-[36px] font-black tracking-tight leading-none m-0 font-sans block";
+          } else if (isCompareUni) {
+            lineClass = "text-[21px] xs:text-[24px] sm:text-[26px] font-black tracking-tight leading-[1.02] m-0 font-sans block";
+          } else if (isStudentsPath) {
+            lineClass = "text-[18.5px] xs:text-[21px] sm:text-[23px] font-black tracking-tight leading-[1.05] m-0 font-sans block";
+          }
+
           return (
             <span
               key={lIdx}
               style={{ color: defaultColor }}
-              className="text-[17px] xs:text-[19px] sm:text-[20px] font-black leading-[1.02] tracking-tight m-0 font-sans block"
+              className={lineClass}
             >
               {lineContent}
             </span>
