@@ -46,8 +46,6 @@ export default function CourseAlternativeUniversities({
           const cardTitle = item.cardTitle || item.title || "Course Program";
           const logoUrl = getMediaUrl(item.logoUrl);
           const providerName = item.providerName || null;
-          const programsCount = Number(item.coursesCount ?? item.programsCount ?? 0) || 0;
-          const coursesOfferedText = `${programsCount} ${programsCount === 1 ? "Program" : "Programs"}`;
           const rawHref = item.courseDetailHref || `/courses`;
           const courseDetailHref =
             rawHref.startsWith("/courses/") && rawHref.split("/").length > 3
@@ -100,8 +98,8 @@ export default function CourseAlternativeUniversities({
                 )}
               </div>
 
-              {/* University Name & Courses Count */}
-              <div className="w-full space-y-0.5 my-0.5">
+              {/* University Name */}
+              <div className="w-full my-1">
                 <div className="min-h-7 sm:min-h-8 flex items-center justify-center">
                   <Link
                     href={courseDetailHref}
@@ -109,9 +107,6 @@ export default function CourseAlternativeUniversities({
                   >
                     {uName}
                   </Link>
-                </div>
-                <div className="text-[10px] sm:text-[11px] text-gray-500 font-normal flex items-center justify-center">
-                  <span className="truncate">{coursesOfferedText}</span>
                 </div>
               </div>
 
