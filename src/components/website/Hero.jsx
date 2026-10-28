@@ -473,7 +473,17 @@ export function Hero({ initialHeroData = null }) {
       tokens.push({ type: "text", content: cleanedLine.slice(lastIndex), isBold: isLineBold });
     }
 
-    return tokens;
+    return tokens.map((token) => {
+      let size = null;
+      let content = token.content;
+      const sizeMatch = /\[size[:=]([0-9a-zA-Z%pxrem]+)\]([\s\S]*?)\[\/size\]/i.exec(content);
+      if (sizeMatch) {
+        size = sizeMatch[1];
+        if (/^\d+$/.test(size)) size = `${size}px`;
+        content = content.replace(/\[size[:=][0-9a-zA-Z%pxrem]+\]/gi, '').replace(/\[\/size\]/gi, '');
+      }
+      return { ...token, content, size };
+    });
   };
 
   const renderFormattedContent = (rawText, defaultColor, isMobile = false) => {
@@ -555,7 +565,7 @@ export function Hero({ initialHeroData = null }) {
                   const isStudentsPath = /^(students\s+found\s+their|right\s+career\s+path)$/i.test(token.content.trim());
                   const isGov = /^(governor|of\s+kerala|governor\s+of\s+kerala)$/i.test(token.content.trim());
                   const isHonorable = /^honorable$/i.test(token.content.trim());
-                  const isArif = /^(sh\.?\s+)?arif\s+mohammed\s+khan$/i.test(token.content.trim());
+                  const isArif = /^(honorable\s+)?(sh\.?\s+|shri\s+)?arif\s+mohammed\s+khan$/i.test(token.content.trim());
                   const isRashtra = /^rashtra\s+nirmata(\s+samman)?$/i.test(token.content.trim());
                   const isSamman = /^samman$/i.test(token.content.trim());
                   const isGajendra = /^(sh\.?\s+|shri\s+)?(from\s+shri\s+)?gajendra\s+chauhan$/i.test(token.content.trim());
@@ -582,7 +592,7 @@ export function Hero({ initialHeroData = null }) {
                   } else if (isArif) {
                     className = isMobile
                       ? "text-[11px] xs:text-[12.5px] font-black tracking-tight uppercase block"
-                      : "text-xs sm:text-sm md:text-base lg:text-[18px] font-black tracking-wide leading-snug uppercase block pt-0.5";
+                      : "text-xs sm:text-sm md:text-base lg:text-[18px] font-black tracking-wide leading-snug block pt-0.5";
                   } else if (isRashtra) {
                     className = isMobile
                       ? "text-[16px] xs:text-[18.5px] font-black tracking-tight leading-[0.95] font-sans uppercase block"
@@ -604,6 +614,7 @@ export function Hero({ initialHeroData = null }) {
                       key={tIdx}
                       style={{
                         color: token.color,
+                        fontSize: (!isMobile && token.size) ? token.size : undefined,
                         WebkitTextStroke: (token.isBold || isGov) ? (isMobile ? "0.35px " + token.color : "0.5px " + token.color) : undefined,
                       }}
                       className={className}
@@ -617,6 +628,7 @@ export function Hero({ initialHeroData = null }) {
                 const isCompareUni = /^(compare|50\+\s*universities|choose\s+with(\s+confidence\.?)?|confidence\.?)$/i.test(token.content.trim());
                 const isStudentsPath = /^(students\s+found\s+their|right\s+career\s+path)$/i.test(token.content.trim());
                 const isLargeNum = /^\d+\s*lakh\+?/i.test(token.content.trim());
+                const isArif = /^(honorable\s+)?(sh\.?\s+|shri\s+)?arif\s+mohammed\s+khan$/i.test(token.content.trim());
                 let textClassName = isMobile
                   ? (isLargeNum
                     ? "text-[28px] xs:text-[33px] sm:text-[36px] font-black tracking-tight leading-none block"
@@ -625,13 +637,16 @@ export function Hero({ initialHeroData = null }) {
                       : isStudentsPath
                         ? "text-[18.5px] xs:text-[21px] sm:text-[23px] font-black tracking-tight leading-[1.05] font-sans block"
                         : "text-[17px] xs:text-[19px] sm:text-[20px] font-black leading-[1.02] font-sans inline")
-                  : "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.0] tracking-tight m-0 font-sans inline";
+                  : (isArif
+                    ? "text-xs sm:text-sm md:text-base lg:text-[18px] font-black tracking-wide leading-snug block pt-0.5"
+                    : "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.0] tracking-tight m-0 font-sans inline");
 
                 return (
                   <span
                     key={tIdx}
                     style={{
                       color: defaultColor,
+                      fontSize: (!isMobile && token.size) ? token.size : undefined,
                       WebkitTextStroke: token.isBold ? (isMobile ? "0.35px " + defaultColor : "0.5px " + defaultColor) : undefined,
                     }}
                     className={textClassName}
