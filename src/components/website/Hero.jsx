@@ -567,7 +567,7 @@ export function Hero({ initialHeroData = null }) {
                       ? "text-[11px] xs:text-[13px] font-black tracking-tight uppercase block"
                       : "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.15] tracking-tight font-sans block";
                   } else if (isCompareUni && isMobile) {
-                    className = "text-[18px] xs:text-[21px] font-black tracking-tight font-sans block";
+                    className = "text-[21px] xs:text-[24px] sm:text-[26px] font-black tracking-tight leading-[1.02] font-sans block";
                   }
 
                   return (
@@ -584,7 +584,7 @@ export function Hero({ initialHeroData = null }) {
                 // Default text token
                 const isCompareUni = /^(compare|choose\s+with|confidence\.?)$/i.test(token.content.trim());
                 let textClassName = isMobile
-                  ? (isCompareUni ? "text-[18px] xs:text-[21px] font-black tracking-tight font-sans block" : "text-[17px] xs:text-[19px] sm:text-[20px] font-black leading-[1.02] font-sans inline")
+                  ? (isCompareUni ? "text-[21px] xs:text-[24px] sm:text-[26px] font-black tracking-tight leading-[1.02] font-sans block" : "text-[17px] xs:text-[19px] sm:text-[20px] font-black leading-[1.02] font-sans inline")
                   : "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.15] tracking-tight m-0 font-sans inline";
 
                 return (
