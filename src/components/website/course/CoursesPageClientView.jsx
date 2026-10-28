@@ -38,15 +38,45 @@ const extractFeeText = (val) => {
   if (typeof val === "string") return val;
   if (typeof val === "number") return `₹ ${Number(val).toLocaleString("en-IN")}`;
   if (typeof val === "object") {
-    if (val.formattedSemesterFees) return String(val.formattedSemesterFees);
-    if (val.semesterFees) return `₹ ${Number(val.semesterFees).toLocaleString("en-IN")} / Semester`;
-    if (val.formattedPerSemesterPayable) return String(val.formattedPerSemesterPayable);
-    if (val.perSemesterPayable) return `₹ ${Number(val.perSemesterPayable).toLocaleString("en-IN")} / Semester`;
-    if (val.formattedNetPayable) return String(val.formattedNetPayable);
-    if (val.netPayable) return `₹ ${Number(val.netPayable).toLocaleString("en-IN")}`;
+    const defaultPlan = val.defaultPlan || (val.ledger?.semester ? "semester" : (val.ledger?.yearly ? "yearly" : "fullfees"));
+
+    if (defaultPlan === "fullfees" || (!val.ledger?.semester && !val.ledger?.yearly)) {
+      const full = val.ledger?.fullfees;
+      if (full?.formattedBasePayable) return String(full.formattedBasePayable);
+      if (full?.formattedPayable) return String(full.formattedPayable);
+      if (val.formattedBasePayable) return String(val.formattedBasePayable);
+      if (val.formattedNetPayable) return String(val.formattedNetPayable);
+      if (val.formattedActualFees) return String(val.formattedActualFees);
+      if (val.basePayable) return `₹ ${Number(val.basePayable).toLocaleString("en-IN")}`;
+      if (val.netPayable) return `₹ ${Number(val.netPayable).toLocaleString("en-IN")}`;
+      if (val.actualFees) return `₹ ${Number(val.actualFees).toLocaleString("en-IN")}`;
+      if (val.amount) return `₹ ${Number(val.amount).toLocaleString("en-IN")}`;
+      if (val.name) return String(val.name);
+    }
+
+    if (defaultPlan === "yearly" && val.ledger?.yearly) {
+      const yr = val.ledger.yearly;
+      if (yr.formattedBasePayable) return String(yr.formattedBasePayable);
+      if (yr.formattedPayable) return String(yr.formattedPayable);
+    }
+
+    if (defaultPlan === "semester" && val.ledger?.semester) {
+      const sem = val.ledger.semester;
+      if (sem.formattedBasePayable) return String(sem.formattedBasePayable);
+      if (sem.formattedPayable) return String(sem.formattedPayable);
+      if (val.formattedSemesterFees) return String(val.formattedSemesterFees);
+      if (val.semesterFees) return `₹ ${Number(val.semesterFees).toLocaleString("en-IN")} / Semester`;
+      if (val.formattedPerSemesterPayable) return String(val.formattedPerSemesterPayable);
+      if (val.perSemesterPayable) return `₹ ${Number(val.perSemesterPayable).toLocaleString("en-IN")} / Semester`;
+    }
+
+    if (val.ledger?.semester?.formattedBasePayable) return String(val.ledger.semester.formattedBasePayable);
+    if (val.formattedSemesterFees && !val.formattedSemesterFees.includes("NaN")) return String(val.formattedSemesterFees);
     if (val.formattedBasePayable) return String(val.formattedBasePayable);
-    if (val.basePayable) return `₹ ${Number(val.basePayable).toLocaleString("en-IN")}`;
+    if (val.formattedNetPayable) return String(val.formattedNetPayable);
     if (val.formattedActualFees) return String(val.formattedActualFees);
+    if (val.basePayable) return `₹ ${Number(val.basePayable).toLocaleString("en-IN")}`;
+    if (val.netPayable) return `₹ ${Number(val.netPayable).toLocaleString("en-IN")}`;
     if (val.actualFees) return `₹ ${Number(val.actualFees).toLocaleString("en-IN")}`;
     if (val.amount) return `₹ ${Number(val.amount).toLocaleString("en-IN")}`;
     if (val.name) return String(val.name);
