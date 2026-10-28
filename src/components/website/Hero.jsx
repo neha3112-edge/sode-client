@@ -540,7 +540,7 @@ export function Hero({ initialHeroData = null }) {
                       className={
                         isMobile
                           ? (isSamman
-                            ? "text-[28px] xs:text-[33px] sm:text-[36px] font-black leading-[0.95] font-sans uppercase block"
+                            ? "text-[34px] xs:text-[39px] sm:text-[42px] font-black leading-[0.95] font-sans uppercase block"
                             : "text-[24px] xs:text-[28px] font-black tracking-tight leading-[0.95] font-sans uppercase block")
                           : "text-3xl sm:text-4xl md:text-5xl lg:text-[56px] font-black tracking-tight leading-[0.95] font-sans uppercase block"
                       }
@@ -589,7 +589,7 @@ export function Hero({ initialHeroData = null }) {
                       : "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.15] tracking-tight font-sans block";
                   } else if (isSamman) {
                     className = isMobile
-                      ? "text-[28px] xs:text-[33px] sm:text-[36px] font-black tracking-tight leading-[0.95] font-sans uppercase block"
+                      ? "text-[34px] xs:text-[39px] sm:text-[42px] font-black tracking-tight leading-[0.95] font-sans uppercase block"
                       : "text-3xl sm:text-4xl md:text-5xl lg:text-[56px] font-black tracking-tight leading-[0.95] font-sans uppercase block";
                   } else if (isGajendra) {
                     className = isMobile
@@ -795,7 +795,7 @@ export function Hero({ initialHeroData = null }) {
           } else if (isGov) {
             lineClass = "text-[24px] xs:text-[29px] sm:text-[36px] font-black tracking-tight leading-[1] m-0 font-sans uppercase block";
           } else if (isSamman) {
-            lineClass = "text-[28px] xs:text-[33px] sm:text-[36px] font-black tracking-tight leading-[0.95] m-0 font-sans uppercase block";
+            lineClass = "text-[34px] xs:text-[39px] sm:text-[42px] font-black tracking-tight leading-[0.95] m-0 font-sans uppercase block";
           } else if (isHonorable) {
             lineClass = "text-[8px] xs:text-[9px] font-extrabold tracking-wider uppercase block pt-2.5 xs:pt-3";
           } else if (isCompareUni) {
