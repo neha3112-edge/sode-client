@@ -41,7 +41,8 @@ export default function UniversityPeerUniversities({
           const inCmp = isInCompare(peer._id || peer.slug || peer.name);
           const peerLogo = peer.logo || peer.logoUrl;
           const providerName = peer.viaPartner || (peer.partner && peer.partner[0]?.name) || null;
-          const coursesOfferedText = `${peer.coursesCount || peer.programsCount || 10}+ Programs`;
+          const programsCount = Number(peer.coursesCount ?? peer.programsCount ?? 0) || 0;
+          const coursesOfferedText = `${programsCount} ${programsCount === 1 ? "Program" : "Programs"}`;
           const rawSlug = peer.slug || encodeURIComponent((peer.name || "").toLowerCase());
           const uniDetailHref = `/universities/${rawSlug}`;
 

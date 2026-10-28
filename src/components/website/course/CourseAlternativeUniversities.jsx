@@ -40,7 +40,8 @@ export default function CourseAlternativeUniversities({
           const cardTitle = item.cardTitle || item.title || "Course Program";
           const logoUrl = getMediaUrl(item.logoUrl);
           const providerName = item.providerName || null;
-          const coursesOfferedText = `${item.coursesCount || item.programsCount || 10}+ Programs`;
+          const programsCount = Number(item.coursesCount ?? item.programsCount ?? 0) || 0;
+          const coursesOfferedText = `${programsCount} ${programsCount === 1 ? "Program" : "Programs"}`;
           const rawHref = item.courseDetailHref || `/courses`;
           const courseDetailHref =
             rawHref.startsWith("/courses/") && rawHref.split("/").length > 3
