@@ -876,7 +876,7 @@ export function Hero({ initialHeroData = null }) {
 
         {/* 📱 MOBILE HERO VIEW (strictly md:hidden) */}
         <Container className="md:hidden relative z-10 w-full h-full flex items-center pointer-events-auto">
-          <div className="w-[60%] xs:w-[56%] max-w-[250px] xs:max-w-[275px] flex flex-col justify-center items-start space-y-1 xs:space-y-1.5 z-10 py-1.5 xs:py-2">
+          <div className="w-[62%] xs:w-[58%] max-w-[260px] xs:max-w-[285px] flex flex-col justify-center items-start space-y-1 xs:space-y-1.5 z-10 py-1.5 xs:py-2 pl-2.5 xs:pl-3">
             {renderMobileSlideBadge(mobileBadgeText, isLight)}
             {renderMobileSlideHeading(mobileTitle, highlightText, isLight, titleColor)}
 
