@@ -226,7 +226,7 @@ export default function UniversityCoursesSection({
           return (
             <div
               key={item._id || item.slug || `${cardTitle}-${index}`}
-              className="bg-gray-50 rounded-xl border border-gray-200 hover:border-[#08AEAA] p-2 sm:p-2.5 hover:shadow-md transition-all flex flex-col items-center justify-between text-center relative group min-w-0 w-full h-full min-h-[295px] sm:min-h-[305px] shadow-2xs"
+              className="bg-gray-50 rounded-xl border border-gray-200 hover:border-[#08AEAA] p-2 sm:p-2.5 hover:shadow-md transition-all flex flex-col items-center justify-between text-center relative group min-w-0 w-full h-full shadow-2xs"
             >
               {specCount > 0 && (
                 <div className="absolute top-0 left-0 z-10">
@@ -247,8 +247,7 @@ export default function UniversityCoursesSection({
                 </div>
               )}
 
-              {/* Course Logo */}
-              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full p-1 flex items-center justify-center relative mt-3 sm:mt-3.5 mb-1.5 sm:mb-2 shrink-0">
+              <div className="w-11 h-11 sm:w-11 sm:h-11 rounded-full p-1 flex items-center justify-center relative mt-2.5 sm:mt-3 mb-1.5 sm:mb-2 shrink-0">
                 {displayCourseLogo ? (
                   <Link href={courseDetailHref} className="relative w-full h-full block">
                     <Image
@@ -266,9 +265,8 @@ export default function UniversityCoursesSection({
                 )}
               </div>
 
-              {/* Title & Duration/Fees Info (fixed uniform height across all cards) */}
-              <div className="w-full flex-1 flex flex-col justify-center my-0.5">
-                <div className="h-8 sm:h-9 flex items-center justify-center w-full px-0.5">
+              <div className="w-full flex-1 flex flex-col justify-center">
+                <div className="flex items-center justify-center">
                   <Link
                     href={courseDetailHref}
                     className="text-xs sm:text-[13px] font-semibold text-[#0a2540] hover:text-[#08AEAA] line-clamp-2 leading-tight m-0 w-full text-center no-underline transition-colors"
@@ -277,9 +275,9 @@ export default function UniversityCoursesSection({
                   </Link>
                 </div>
 
-                <div className="h-7 sm:h-8 flex items-center justify-center gap-1 sm:gap-1.5 text-center w-full whitespace-nowrap overflow-hidden pt-0.5">
+                <div className="min-h-9 flex items-center justify-center gap-1 sm:gap-1.5 text-center w-full whitespace-nowrap overflow-hidden pt-0.5">
                   {feeText ? (
-                    <span className="text-[11px] sm:text-[12.5px] font-bold text-[#0D3B66] tracking-tight shrink-0">
+                    <span className="text-[11.5px] sm:text-[13px] font-bold text-[#0D3B66] tracking-tight shrink-0">
                       {feeText.replace(/\s*\/\s*Semester/i, " / Sem").replace(/\s*INR$/, "")}
                     </span>
                   ) : null}
@@ -287,7 +285,7 @@ export default function UniversityCoursesSection({
                     <span className="text-gray-300 text-xs shrink-0">•</span>
                   )}
                   {durationText ? (
-                    <div className="text-[10px] sm:text-[11px] text-gray-500 font-normal flex items-center gap-0.5 sm:gap-1 shrink-0">
+                    <div className="text-[10.5px] sm:text-[11.5px] text-gray-500 font-normal flex items-center gap-0.5 sm:gap-1 shrink-0">
                       <Clock className="w-3 h-3 shrink-0 text-gray-400" />
                       <span>{durationText}</span>
                     </div>
