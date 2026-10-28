@@ -434,40 +434,43 @@ export function Hero({ initialHeroData = null }) {
 
   const hasFormattingTags = (str) => {
     if (!str) return false;
-    return /\[(#[0-9a-fA-F]{3,8}|color|outline|stroke|divider)/i.test(str) || /<span[^>]*style=["\x27]color/i.test(str) || /<font[^>]*color/i.test(str);
+    return /\[(#[0-9a-fA-F]{3,8}|color|outline|stroke|divider|b|strong|extrabold)/i.test(str) || /<span[^>]*style=["\x27]color/i.test(str) || /<font[^>]*color/i.test(str) || /<\/?(?:b|strong)\b/i.test(str);
   };
 
   const parseLineTokens = (line, defaultColor) => {
+    const isLineBold = /\[\/?(?:b|strong|extrabold)\]|<\/?(?:b|strong)>/i.test(line);
+    const cleanedLine = line.replace(/\[\/?(?:b|strong|extrabold)\]/gi, '').replace(/<\/?(?:b|strong)>/gi, '');
+
     const tagRegex = /(\[outline(?::([#a-zA-Z0-9]+))?\]([\s\S]*?)\[\/outline\])|(\[stroke(?::([#a-zA-Z0-9]+))?\]([\s\S]*?)\[\/stroke\])|(\[(#[0-9a-fA-F]{3,8})\]([\s\S]*?)\[\/\])|(\[color[:=]([#a-zA-Z0-9]+)\]([\s\S]*?)\[\/color\])|(<span[^>]*style=["\x27]color:\s*([^;"\x27]+)["\x27][^>]*>([\s\S]*?)<\/span>)|(<font[^>]*color=["\x27]([^"\x27]+)["\x27][^>]*>([\s\S]*?)<\/font>)/gi;
 
     let lastIndex = 0;
     const tokens = [];
     let match;
 
-    while ((match = tagRegex.exec(line)) !== null) {
+    while ((match = tagRegex.exec(cleanedLine)) !== null) {
       if (match.index > lastIndex) {
-        tokens.push({ type: "text", content: line.slice(lastIndex, match.index) });
+        tokens.push({ type: "text", content: cleanedLine.slice(lastIndex, match.index), isBold: isLineBold });
       }
 
       if (match[1]) {
-        tokens.push({ type: "outline", color: match[2] || defaultColor, content: match[3] });
+        tokens.push({ type: "outline", color: match[2] || defaultColor, content: match[3], isBold: isLineBold });
       } else if (match[4]) {
-        tokens.push({ type: "outline", color: match[5] || defaultColor, content: match[6] });
+        tokens.push({ type: "outline", color: match[5] || defaultColor, content: match[6], isBold: isLineBold });
       } else if (match[7]) {
-        tokens.push({ type: "color", color: match[8], content: match[9] });
+        tokens.push({ type: "color", color: match[8], content: match[9], isBold: isLineBold });
       } else if (match[10]) {
-        tokens.push({ type: "color", color: match[11], content: match[12] });
+        tokens.push({ type: "color", color: match[11], content: match[12], isBold: isLineBold });
       } else if (match[13]) {
-        tokens.push({ type: "color", color: match[14], content: match[15] });
+        tokens.push({ type: "color", color: match[14], content: match[15], isBold: isLineBold });
       } else if (match[16]) {
-        tokens.push({ type: "color", color: match[17], content: match[18] });
+        tokens.push({ type: "color", color: match[17], content: match[18], isBold: isLineBold });
       }
 
       lastIndex = tagRegex.lastIndex;
     }
 
-    if (lastIndex < line.length) {
-      tokens.push({ type: "text", content: line.slice(lastIndex) });
+    if (lastIndex < cleanedLine.length) {
+      tokens.push({ type: "text", content: cleanedLine.slice(lastIndex), isBold: isLineBold });
     }
 
     return tokens;
@@ -576,7 +579,10 @@ export function Hero({ initialHeroData = null }) {
                   return (
                     <span
                       key={tIdx}
-                      style={{ color: token.color }}
+                      style={{
+                        color: token.color,
+                        WebkitTextStroke: (token.isBold || isGov) ? (isMobile ? "0.35px " + token.color : "0.5px " + token.color) : undefined,
+                      }}
                       className={className}
                     >
                       {token.content}
@@ -601,7 +607,10 @@ export function Hero({ initialHeroData = null }) {
                 return (
                   <span
                     key={tIdx}
-                    style={{ color: defaultColor }}
+                    style={{
+                      color: defaultColor,
+                      WebkitTextStroke: token.isBold ? (isMobile ? "0.35px " + defaultColor : "0.5px " + defaultColor) : undefined,
+                    }}
                     className={textClassName}
                   >
                     {token.content}
