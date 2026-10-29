@@ -240,17 +240,36 @@ export default function LandingAdmissionProcess({
           </h2>
         ) : (
           <h2
-            className="text-[22px] sm:text-[26px] lg:text-[30px] xl:text-[32px] font-medium text-center tracking-tight mb-2 sm:mb-2.5 lg:mb-2 m-0 leading-tight"
-            style={{ color: headingColor }}
+            className={
+              enrollmentProcess?.headingClassName ||
+              admissionProcess?.headingClassName ||
+              brand.admissionHeadingClassName ||
+              "text-[22px] sm:text-[26px] lg:text-[30px] xl:text-[32px] font-bold text-center tracking-tight mb-2 sm:mb-2.5 lg:mb-2 m-0 leading-[1.2] sm:leading-tight whitespace-pre-line"
+            }
+            style={{
+              color: headingColor,
+              ...(enrollmentProcess?.headingStyle || {}),
+              ...(admissionProcess?.headingStyle || {}),
+            }}
           >
             {headingText}
           </h2>
         )}
 
         {/* Subtitle */}
-        <p className="text-[14.5px] sm:text-[13.5px] lg:text-[14px] text-center text-[#555555] mb-5 sm:mb-6 lg:mb-[24px] max-w-[860px] lg:max-w-[960px] mx-auto font-normal leading-relaxed m-0 px-2 sm:px-4">
-          {subtitleText}
-        </p>
+        {subtitleText && (
+          <p
+            className={
+              enrollmentProcess?.subtitleClassName ||
+              admissionProcess?.subtitleClassName ||
+              brand.admissionSubtitleClassName ||
+              "text-[14.5px] sm:text-[13.5px] lg:text-[14px] text-center text-[#555555] mb-5 sm:mb-6 lg:mb-[24px] max-w-[860px] lg:max-w-[960px] mx-auto font-normal leading-relaxed m-0 px-2 sm:px-4 whitespace-pre-line"
+            }
+            style={enrollmentProcess?.subtitleStyle || admissionProcess?.subtitleStyle || {}}
+          >
+            {subtitleText}
+          </p>
+        )}
 
         {/* Responsive Step Cards Grid */}
         <div
@@ -258,7 +277,7 @@ export default function LandingAdmissionProcess({
             brand.admissionGridClass ||
             admissionProcess?.gridClass ||
             enrollmentProcess?.gridClass ||
-            (brand.slug === "lpu" || brand.slug === "vgu"
+            (brand.slug === "lpu" || brand.slug === "vgu" || brand.slug === "galgotias" || brand.slug === "cu"
               ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-4 lg:gap-3 xl:gap-4 w-full max-w-[420px] sm:max-w-none mx-auto"
               : `grid ${rawSteps.length <= 4
                   ? "grid-cols-2 lg:grid-cols-4 max-w-4xl mx-auto"

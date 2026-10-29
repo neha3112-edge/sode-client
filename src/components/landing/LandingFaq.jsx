@@ -151,7 +151,7 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
   if (isCu) {
     return (
       <section id="faqs" className="py-12 sm:py-16 bg-white select-none scroll-mt-20">
-        <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className={brand.faqContainerClassName || brand.faqContainerClass || "max-w-[1240px] mx-auto px-8 sm:px-10 lg:px-14"}>
           <h2
             className="text-[26px] sm:text-[32px] font-semibold text-[#d11c1f] tracking-tight mb-6 sm:mb-8 m-0"
             style={{ color: brand.faqHeadingColor || brand.faqTitleColor || "#d11c1f" }}

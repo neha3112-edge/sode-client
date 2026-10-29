@@ -60,7 +60,7 @@ export default function GalgotiasGrid({
 }) {
   return (
     <section id="program" className="py-12 sm:py-16 bg-white select-none scroll-mt-20">
-      <div className="w-full px-4 sm:px-8 lg:px-12 xl:px-16">
+      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8 sm:mb-10">
           <h2 className="text-[26px] sm:text-[32px] md:text-[34px] font-bold text-[#002266] m-0 mb-2">
             Galgotias University online courses

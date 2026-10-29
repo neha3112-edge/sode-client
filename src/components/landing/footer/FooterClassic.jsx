@@ -86,11 +86,11 @@ export default function FooterClassic({
           </p>
 
           {/* Legal Links */}
-          <div className="mt-3.5 sm:mt-4 mb-3.5 sm:mb-4 text-[13px] sm:text-[14px] font-normal text-[#111111] flex items-center justify-center gap-2 sm:gap-2.5">
+          <div className="mt-3.5 sm:mt-4 mb-3.5 sm:mb-4 text-[13px] sm:text-[14px] font-semibold text-[#111111] flex items-center justify-center gap-2 sm:gap-2.5">
             <button
               type="button"
               onClick={() => onOpenDisclaimer?.()}
-              className="hover:underline hover:text-black cursor-pointer font-normal text-[#111111] border-none bg-transparent p-0 transition-colors"
+              className="hover:underline hover:text-black cursor-pointer font-semibold text-[#111111] border-none bg-transparent p-0 transition-colors"
             >
               Disclaimer
             </button>
@@ -100,7 +100,7 @@ export default function FooterClassic({
             <button
               type="button"
               onClick={() => onOpenTerms?.()}
-              className="hover:underline hover:text-black cursor-pointer font-normal text-[#111111] border-none bg-transparent p-0 transition-colors"
+              className="hover:underline hover:text-black cursor-pointer font-semibold text-[#111111] border-none bg-transparent p-0 transition-colors"
             >
               Terms & Conditions
             </button>
@@ -110,7 +110,7 @@ export default function FooterClassic({
             <button
               type="button"
               onClick={() => onOpenPrivacy?.()}
-              className="hover:underline hover:text-black cursor-pointer font-normal text-[#111111] border-none bg-transparent p-0 transition-colors"
+              className="hover:underline hover:text-black cursor-pointer font-semibold text-[#111111] border-none bg-transparent p-0 transition-colors"
             >
               Privacy Policy
             </button>

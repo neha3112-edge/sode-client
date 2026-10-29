@@ -38,7 +38,7 @@ export default function GalgotiasApprovals({ brand = {} }) {
 
   return (
     <section id="approvals" className="py-8 sm:py-10 bg-[#f9bc08] select-none scroll-mt-20">
-      <div className="w-full px-4 sm:px-8 lg:px-12 xl:px-16">
+      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
         <h1 className="text-[22px] sm:text-[26px] md:text-[28px] font-bold text-center text-[#111111] mb-8 sm:mb-10 m-0">
           Accreditations & Approvals of Galgotias University online
         </h1>

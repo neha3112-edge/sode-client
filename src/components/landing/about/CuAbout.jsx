@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import LandingContainer from "../LandingContainer";
 
 export default function CuAbout({
   about = {},
@@ -21,7 +22,7 @@ export default function CuAbout({
 
   return (
     <section id="about" className="py-12 sm:py-16 bg-[#1f2846] text-white select-none scroll-mt-20">
-      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+      <LandingContainer className="px-3 sm:px-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
           {/* Left Text */}
           <div className="lg:col-span-6 space-y-4 text-left">
@@ -57,7 +58,7 @@ export default function CuAbout({
             </div>
           </div>
         </div>
-      </div>
+      </LandingContainer>
     </section>
   );
 }

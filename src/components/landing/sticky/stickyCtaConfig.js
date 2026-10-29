@@ -111,6 +111,10 @@ export const LEGACY_STICKY_CTA_CONFIG = {
   },
   cu: {
     layout: "default",
+    stickyBarBg: "#d11c1f",
+    applyStyle: "white-red",
+    applyBg: "#ffffff",
+    applyTextColor: "#d11c1f",
     callGif: "/assets/cu/call_icon.gif",
     giftGif: "/assets/cu/gift.gif",
     brochureAction: "whatsapp",

@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import LandingContainer from "../../LandingContainer";
 
 const CU_APPROVALS = [
   {
@@ -27,7 +28,7 @@ export default function CuApprovals({ approvals = [], brand = {} }) {
 
   return (
     <section id="approvals" className="py-12 sm:py-16 bg-[#e6e6e6] select-none scroll-mt-20">
-      <div className="max-w-[1260px] mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <LandingContainer className="text-center px-3 sm:px-6">
         <h2 className="text-[28px] sm:text-[36px] font-bold text-[#d11c1f] m-0 mb-8 sm:mb-10 leading-tight">
           CU Online <span className="text-black font-bold">Awards & Recognition</span>
         </h2>
@@ -53,7 +54,7 @@ export default function CuApprovals({ approvals = [], brand = {} }) {
             </div>
           ))}
         </div>
-      </div>
+      </LandingContainer>
     </section>
   );
 }

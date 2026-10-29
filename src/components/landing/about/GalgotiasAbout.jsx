@@ -22,13 +22,13 @@ export default function GalgotiasAbout({ brand = {}, onOpenApply }) {
       </div>
 
       {/* Full Width Black Content Container */}
-      <div id="abt-ct" className="w-full bg-black text-center text-white pt-2 pb-12 sm:pb-16 px-4 sm:px-10 md:px-16 lg:px-24">
-        <div className="w-full">
+      <div id="abt-ct" className="w-full bg-black text-center text-white pt-2 pb-12 sm:pb-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1140px] mx-auto">
           <h2 className="text-[26px] sm:text-[32px] md:text-[34px] font-bold text-white m-0 leading-tight">
             About <br />
             <span className="text-[#FFD508]">Galgotias University Online</span>
           </h2>
-          <p className="text-[13px] sm:text-[14px] text-white/95 leading-[1.65] my-4 sm:my-5 px-2 sm:px-6 md:px-10 font-normal">
+          <p className="text-[13.5px] sm:text-[14px] text-white/95 leading-[1.65] my-4 sm:my-5 max-w-[960px] mx-auto font-normal">
             Galgotias University is located in Uttar Pradesh. It is a reputed institute known for its excellent education across various fields. It is a NAAC A+ accredited university offering accessible education through different modes. Galgotias University, under its CDOE (Centre of Online and Distance Education), is dedicated to delivering education, committed to the needs of its learners and working professionals. The CDOE of the university is UGC -DEB entitled making Galgotias University online courses relevant to modern-day workforces. delivering quality education through advanced digital learning methods. As a learner, if one plans on upgrading their career, now is the right time to explore Galgotias University online admission process and start your journey with Galgotias online.
           </p>
           <div className="pt-2">

@@ -76,16 +76,16 @@ export default function LandingCompareBanner({ brand = {}, onOpenCompare }) {
     >
       <div className={`${brand.compareBoxMaxWidth || (brand.slug === "lpu" ? "w-full max-w-full px-4 sm:px-6 lg:px-8 xl:px-12" : (brand.compareFullWidth ? "max-w-full" : "max-w-[1760px] 2xl:max-w-[1640px]"))} w-full mx-auto ${brand.compareBoxPadding || (brand.slug === "lpu" || brand.compareFullWidth ? "" : "px-3 sm:px-5 md:px-6")}`}>
         <div
-          className={`compare_box relative ${brand.compareFullWidth ? "rounded-none" : "rounded-xl sm:rounded-2xl"} px-6 sm:px-12 pt-7 pb-8 sm:pt-8 sm:pb-9 md:pt-9 md:pb-11 text-center text-white transition-colors flex flex-col items-center justify-center shadow-md min-h-[150px] sm:min-h-[173px] md:min-h-[191px]`}
+          className={`compare_box relative ${brand.compareFullWidth ? "rounded-none" : "rounded-[20px]"} px-6 sm:px-12 pt-7 pb-8 sm:pt-8 sm:pb-9 md:pt-9 md:pb-11 text-center text-white transition-colors flex flex-col items-center justify-center shadow-md min-h-[150px] sm:min-h-[173px] md:min-h-[191px]`}
           style={{ background: bannerBg }}
         >
           {/* Heading */}
-          <h2 className="text-xl sm:text-2xl md:text-[30px] lg:text-[32px] font-semibold text-white tracking-normal leading-tight m-0">
+          <h2 className="text-[22px] sm:text-2xl md:text-[30px] lg:text-[32px] font-bold text-white tracking-normal leading-tight m-0">
             Still Confused?
           </h2>
 
           {/* Subtitle */}
-          <h3 className="text-xs sm:text-sm md:text-[17px] text-white/95 font-normal tracking-normal mt-1 sm:mt-1.5 max-w-xl sm:max-w-3xl mx-auto m-0 leading-snug px-1">
+          <h3 className="text-[13px] sm:text-[14.5px] md:text-[17px] text-white font-medium tracking-normal mt-1 sm:mt-1.5 max-w-xl sm:max-w-3xl mx-auto m-0 leading-snug px-1">
             {brand.compareSubtitle ||
               brand.compareBannerSubtitle ||
               `Compare ${universityName} with Top UGC-DEB Approved Universities`}

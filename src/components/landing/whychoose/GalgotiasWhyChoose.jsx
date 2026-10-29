@@ -66,7 +66,7 @@ export default function GalgotiasWhyChoose({ brand = {} }) {
           }
         `}</style>
 
-        <div className="w-full px-4 sm:px-8 lg:px-12 xl:px-16">
+        <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-8 sm:mb-10">
             <div className="w-10 sm:w-12 hidden md:block" />
             <h2 className="text-[24px] sm:text-[30px] lg:text-[32px] font-bold text-center text-[#bc1820] m-0 flex-1">

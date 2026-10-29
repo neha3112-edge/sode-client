@@ -29,13 +29,41 @@ export const galgotiasData = {
     /* =========================================================
        PAGE-SPECIFIC CSS FOR GALGOTIAS ONLINE
     ========================================================= */
+    html,
+    body {
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      overflow-x: clip !important;
+    }
+
+    .landing-page--galgotias,
+    .landing-page--galgotias * {
+      box-sizing: border-box;
+    }
+
+    .landing-page--galgotias {
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      overflow-x: clip !important;
+      font-family: 'Montserrat', sans-serif !important;
+    }
+
+    .landing-page--galgotias header,
+    .landing-page--galgotias .landing-navbar-header {
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 50 !important;
+      background-color: #ffffff !important;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05) !important;
+    }
+
     :root {
       --primary-color: #BC1820;
       --secondary-color: #f9bc08;
       --dark-blue: #002266;
-    }
-    .landing-page--galgotias {
-      font-family: 'Montserrat', sans-serif !important;
     }
     .landing-page--galgotias .yellow {
       color: #FFD508 !important;
@@ -132,11 +160,27 @@ export const galgotiasData = {
     enquireTitle: "Enquire Now",
     enquireSubtitle: "Academic Experts will assist you!",
     officialUrl: "https://galgotiasuniversity.edu.in",
-    logo: "/assets/galgotias/logo-GU-online.png",
-    sodeLogo: "/assets/galgotias/new-des-logo.webp",
-    sodeIcon: "/assets/galgotias/sode-icon.png",
-    showSodeLogo: true,
-    campusImage: "/assets/galgotias/university.webp",
+    logo: "/assets/all_universities_images/all_universities_images/galgotias/logo-GU-online.png",
+    logoWrapperClassName: "w-[245px] sm:w-[270px] md:w-[290px] lg:w-[310px] h-[42px] sm:h-[46px] md:h-[48px] lg:h-[52px]",
+    navbarHeightClass: "h-[62px] sm:h-[68px] lg:h-[72px]",
+    sodeLogo: null,
+    sodeIcon: null,
+    showSodeLogo: false,
+    showMobileMenu: true,
+    mobileMenuIconColor: "#08417b",
+    hideDesktopNavLinks: true,
+    navLinks: [
+      { label: "Courses", href: "#program" },
+      { label: "Approvals", href: "#approvals" },
+      { label: "About", href: "#about" },
+      { label: "Why Galgotias", href: "#advantage" },
+      { label: "FAQs", href: "#accordition" },
+    ],
+    campusImage: "/assets/all_universities_images/all_universities_images/galgotias/university.webp",
+    callGif: "/assets/all_universities_images/all_universities_images/galgotias/call_icon.gif",
+    giftGif: "/assets/all_universities_images/all_universities_images/galgotias/gift.gif",
+    showFloatingCallOnMobile: true,
+    showFloatingGift: true,
     primaryColor: "#BC1820",
     themeBg: "bg-[#BC1820]",
     themeBorder: "border-[#BC1820]",
@@ -160,6 +204,9 @@ export const galgotiasData = {
     admissionSubtitle:
       "Galgotias University online admission process is quite simple and convenient. Learners get an opportunity to learn accessibly and get a worldwide recognised degree. They can enrol in Galgotias University Apply Online through the following steps.",
     admissionLayout: "galgotias",
+    admissionContainerClass: "max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8",
+    admissionGridClass: "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-4 lg:gap-3 xl:gap-4 w-full max-w-[420px] sm:max-w-none mx-auto",
+    compareBoxMaxWidth: "max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8",
     faqLayout: "galgotias",
     compareLayout: "galgotias",
 

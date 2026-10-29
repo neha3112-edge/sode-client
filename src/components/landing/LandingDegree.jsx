@@ -71,12 +71,14 @@ export default function LandingDegree({
             {/* Right Yellow Image Container */}
             <div className="lg:col-span-6 pt-12 lg:pt-0">
               <div className="cer2 bg-[#ffef97] rounded-[16px] px-3 sm:px-5 py-0 flex flex-row items-end justify-center gap-1 sm:gap-3 relative overflow-visible">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src="/assets/galgotias/image-01-galgotia.webp"
                   alt="Galgotias Graduate"
                   className="w-[170px] sm:w-[225px] md:w-[250px] max-w-[50%] h-auto object-contain shrink-0 block"
                   style={{ marginTop: "-52px" }}
                 />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src="/assets/galgotias/sample-galgotia.webp"
                   alt="Galgotias Sample Degree"
@@ -170,7 +172,7 @@ export default function LandingDegree({
         id="certificate"
         className="py-16 sm:py-24 bg-white select-none scroll-mt-20"
       >
-        <div className="max-w-[1260px] min-[1600px]:max-w-[1440px] mx-auto px-5 sm:px-6 lg:px-8">
+        <LandingContainer className="px-3 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
             {/* Left Degree Image */}
             <div className="lg:col-span-6 flex justify-center lg:justify-start">
@@ -218,7 +220,7 @@ export default function LandingDegree({
               </div>
             </div>
           </div>
-        </div>
+        </LandingContainer>
       </section>
     );
   }

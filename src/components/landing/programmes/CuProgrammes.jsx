@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { Clock, Download } from "lucide-react";
+import LandingContainer from "../LandingContainer";
 
 const UG_PROGRAMMES = [
   {
@@ -84,7 +85,7 @@ export default function CuProgrammes({
 
   return (
     <section id="programs" className="py-12 sm:py-16 bg-white select-none scroll-mt-20">
-      <div className="max-w-[1240px] mx-auto px-5 sm:px-6 lg:px-8">
+      <LandingContainer className="px-3 sm:px-6">
         {/* Title */}
         <div className="text-center mb-8 sm:mb-12">
           <h2 className="text-[22px] sm:text-[26px] lg:text-[30px] font-bold text-gray-700 tracking-tight leading-tight m-0">
@@ -167,7 +168,7 @@ export default function CuProgrammes({
             </div>
           ))}
         </div>
-      </div>
+      </LandingContainer>
     </section>
   );
 }

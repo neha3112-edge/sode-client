@@ -92,10 +92,13 @@ export default function LandingStats({ stats = [], brand = {} }) {
     return (
       <section
         id="achievements"
-        className="w-full bg-[#d11c1f] text-white py-6 sm:py-8 select-none scroll-mt-20"
+        className={
+          brand.statsSectionClassName ||
+          "w-full bg-[#d11c1f] text-white py-12 sm:py-16 lg:py-20 select-none scroll-mt-20"
+        }
       >
-        <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-5 sm:gap-7 text-left items-start">
+        <LandingContainer className={brand.statsContainerClassName || "px-3 sm:px-6"}>
+          <div className={brand.statsGridClassName || "grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 text-left items-start"}>
             {stats.map((st, idx) => (
               <div key={idx} className="flex flex-col items-start justify-start text-left">
                 <h3 className="text-[26px] sm:text-[32px] lg:text-[36px] font-bold tracking-wider text-white m-0 leading-none text-left">
@@ -107,7 +110,7 @@ export default function LandingStats({ stats = [], brand = {} }) {
               </div>
             ))}
           </div>
-        </div>
+        </LandingContainer>
       </section>
     );
   }

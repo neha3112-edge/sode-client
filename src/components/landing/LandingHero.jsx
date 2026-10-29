@@ -35,7 +35,8 @@ export default function LandingHero({
     brand.slug === "manipal" ||
     brand.slug === "amity" ||
     brand.slug === "uu" ||
-    brand.slug === "mu";
+    brand.slug === "mu" ||
+    brand.slug === "cu";
   if (brand.slug === "galgotias" || hero.heroStyle === "galgotias") {
     return (
       <GalgotiasHero
@@ -792,6 +793,7 @@ export default function LandingHero({
                 )}
                 style={hero.mobileStudentImageWrapperStyle || hero.mobileImageWrapperStyle}
               >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={hero.mobileStudentImage || hero.mobileImage}
                   alt={brand.name || "University"}
@@ -816,10 +818,12 @@ export default function LandingHero({
             )}
 
             {/* Mobile Scholarship Coupon Button */}
-            {hero.showMobileCouponButton !== false &&
+            {!hero.showMobileCouponButton &&
+              hero.showMobileCouponButton !== false &&
               brand.showMobileCouponButton !== false &&
               hero.hideMobileCouponButton !== true &&
               brand.hideMobileCouponButton !== true &&
+              brand.slug !== "cu" &&
               (brand.showCouponBtn || brand.showCouponButton || hero.showCouponBtn || hero.showCouponButton) && (
               <div className="w-full flex justify-center md:hidden mb-3">
                 <button

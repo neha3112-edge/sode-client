@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import LandingContainer from "../LandingContainer";
 
 const CU_CHOOSE_ITEMS = [
   {
@@ -47,7 +48,7 @@ export default function CuWhyChoose({ whyChoose = [], brand = {}, onOpenApply })
 
   return (
     <section id="whychoose" className="py-12 sm:py-16 bg-[#e6e6e6] select-none scroll-mt-20">
-      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
+      <LandingContainer className="px-3 sm:px-6">
         {/* Header */}
         <div className="text-center max-w-[1240px] mx-auto mb-10">
           <h2 className="text-[26px] sm:text-[32px] lg:text-[36px] font-bold text-black tracking-tight leading-tight m-0">
@@ -97,7 +98,7 @@ export default function CuWhyChoose({ whyChoose = [], brand = {}, onOpenApply })
             );
           })}
         </div>
-      </div>
+      </LandingContainer>
     </section>
   );
 }

@@ -26,7 +26,7 @@ export default function LandingRecruiters({
 
     return (
       <section className="partners py-10 sm:py-14 bg-white text-center select-none scroll-mt-20 w-full" id="top-hiring-partners">
-        <div className="w-full px-4 sm:px-8 lg:px-12 xl:px-16">
+        <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-[24px] sm:text-[30px] lg:text-[32px] font-semibold text-center capitalize mb-3 text-[#111]">
             {title}
           </h2>
