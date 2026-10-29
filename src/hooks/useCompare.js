@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore, useCallback, useMemo, useState, useEffect } from "react";
+import { useSyncExternalStore, useCallback, useMemo } from "react";
 
 const STORAGE_KEY = "sode_compare_universities";
 
@@ -64,42 +64,90 @@ function setDrawerOpen(open) {
 }
 
 export function useCompare() {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const rawStore = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const isCompareDrawerOpen = useSyncExternalStore(subscribeDrawer, getDrawerSnapshot, () => false);
 
   const compareList = useMemo(() => {
-    if (!mounted) return [];
-    return cachedList;
-  }, [cachedRaw, mounted]);
+    try {
+      return JSON.parse(rawStore);
+    } catch {
+      return cachedList;
+    }
+  }, [rawStore]);
 
   const isInCompare = useCallback(
-    (identifier) => {
-      if (!identifier) return false;
-      const targetKey = String(identifier).toLowerCase().trim();
-      return (cachedList || []).some((item) => {
-        const keys = [item._id, item.id, item.slug, item.uniSlug, item.name, item.uniName, item.title].filter(Boolean);
-        return keys.some((k) => String(k).toLowerCase().trim() === targetKey);
+    (...identifiers) => {
+      const list = compareList && compareList.length > 0 ? compareList : (cachedList || []);
+      if (!list || !list.length) return false;
+
+      const flatTargets = identifiers.flat().filter(Boolean);
+      if (!flatTargets.length) return false;
+
+      const queryKeys = [];
+      for (const t of flatTargets) {
+        if (typeof t === "object") {
+          const keys = [t._id, t.id, t.rawId, t.slug, t.uniSlug, t.name, t.uniName, t.title, t.universityName]
+            .filter(Boolean)
+            .map((k) => String(k).toLowerCase().trim());
+          queryKeys.push(...keys);
+        } else {
+          queryKeys.push(String(t).toLowerCase().trim());
+        }
+      }
+
+      if (!queryKeys.length) return false;
+
+      return list.some((item) => {
+        if (!item) return false;
+        const itemKeys = [
+          item._id,
+          item.id,
+          item.rawId,
+          item.slug,
+          item.uniSlug,
+          item.name,
+          item.uniName,
+          item.title,
+          item.universityName,
+        ]
+          .filter(Boolean)
+          .map((k) => String(k).toLowerCase().trim());
+
+        return queryKeys.some((qk) => itemKeys.includes(qk));
       });
     },
-    []
+    [compareList]
   );
 
   const addToCompare = useCallback((university) => {
     if (!university) return;
-    const uniId = String(university._id || university.id || university.slug || university.uniSlug || university.name || university.uniName || university.title).toLowerCase();
     const current = cachedList || [];
-    const exists = current.some(
-      (u) => {
-        const keys = [u._id, u.id, u.slug, u.uniSlug, u.name, u.uniName, u.title].filter(Boolean);
-        return keys.some((k) => String(k).toLowerCase().trim() === uniId);
-      }
-    );
+
+    const queryKeys = (
+      typeof university === "object"
+        ? [
+            university._id,
+            university.id,
+            university.rawId,
+            university.slug,
+            university.uniSlug,
+            university.name,
+            university.uniName,
+            university.title,
+            university.universityName,
+          ]
+        : [university]
+    )
+      .filter(Boolean)
+      .map((k) => String(k).toLowerCase().trim());
+
+    const exists = current.some((u) => {
+      const keys = [u._id, u.id, u.rawId, u.slug, u.uniSlug, u.name, u.uniName, u.title, u.universityName]
+        .filter(Boolean)
+        .map((k) => String(k).toLowerCase().trim());
+      return queryKeys.some((qk) => keys.includes(qk));
+    });
+
     if (exists) return;
 
     let next = [];
@@ -111,13 +159,34 @@ export function useCompare() {
     saveListToStorage(next);
   }, []);
 
-  const removeFromCompare = useCallback((identifier) => {
-    if (!identifier) return;
-    const targetKey = String(identifier).toLowerCase().trim();
+  const removeFromCompare = useCallback((target) => {
+    if (!target) return;
+    const queryKeys = (
+      typeof target === "object"
+        ? [
+            target._id,
+            target.id,
+            target.rawId,
+            target.slug,
+            target.uniSlug,
+            target.name,
+            target.uniName,
+            target.title,
+            target.universityName,
+          ]
+        : [target]
+    )
+      .filter(Boolean)
+      .map((k) => String(k).toLowerCase().trim());
+
+    if (!queryKeys.length) return;
+
     const current = cachedList || [];
     const next = current.filter((u) => {
-      const keys = [u._id, u.id, u.slug, u.uniSlug, u.name, u.uniName, u.title].filter(Boolean);
-      return !keys.some((k) => String(k).toLowerCase().trim() === targetKey);
+      const keys = [u._id, u.id, u.rawId, u.slug, u.uniSlug, u.name, u.uniName, u.title, u.universityName]
+        .filter(Boolean)
+        .map((k) => String(k).toLowerCase().trim());
+      return !queryKeys.some((qk) => keys.includes(qk));
     });
     saveListToStorage(next);
   }, []);
@@ -125,9 +194,8 @@ export function useCompare() {
   const toggleCompare = useCallback(
     (item) => {
       if (!item) return;
-      const key = item.slug || item.uniSlug || item._id || item.id || item.name || item.title;
-      if (isInCompare(key)) {
-        removeFromCompare(key);
+      if (isInCompare(item)) {
+        removeFromCompare(item);
       } else {
         addToCompare(item);
       }

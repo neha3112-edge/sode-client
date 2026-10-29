@@ -1603,7 +1603,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                 {/* University Cards Grid (Strictly Backend Data, 5-by-5 Incremental Display) */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
                   {universitiesList.slice(0, visibleUnisCount).map((uni, idx) => {
-                    const inCmp = typeof isInCompare === "function" ? isInCompare(uni._id || uni.slug || uni.name) : false;
+                    const inCmp = typeof isInCompare === "function" ? Boolean(isInCompare(uni) || isInCompare(uni.slug) || isInCompare(uni._id) || isInCompare(uni.name)) : false;
                     const coursesOfferedText = uni.programsCount
                       ? `${uni.programsCount} Programs`
                       : uni.coursesCount

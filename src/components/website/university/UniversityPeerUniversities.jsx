@@ -38,7 +38,14 @@ export default function UniversityPeerUniversities({
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
         {topUniversities.slice(0, visibleTopUnis).map((peer, index) => {
-          const inCmp = isInCompare(peer._id || peer.slug || peer.name);
+          const cleanUniSlug = (peer.slug && !peer.slug.includes("/")) ? peer.slug : (peer.slug?.split("/")[0] || peer._id);
+          const inCmp = Boolean(
+            isInCompare(peer) ||
+            isInCompare(cleanUniSlug) ||
+            isInCompare(peer.slug) ||
+            isInCompare(peer._id) ||
+            isInCompare(peer.name)
+          );
           const peerLogo = peer.logo || peer.logoUrl;
           const providerName = peer.viaPartner || (peer.partner && peer.partner[0]?.name) || null;
           const programsCount = Number(peer.coursesCount ?? peer.programsCount ?? 0) || 0;
@@ -112,6 +119,8 @@ export default function UniversityPeerUniversities({
                   } else {
                     const targetItem = {
                       _id: cleanUniSlug,
+                      id: peer._id,
+                      rawId: peer._id,
                       slug: cleanUniSlug,
                       uniSlug: cleanUniSlug,
                       name: peer.name,

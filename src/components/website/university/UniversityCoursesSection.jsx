@@ -104,6 +104,7 @@ export default function UniversityCoursesSection({
   setActiveCourseFilter,
   visibleCoursesCount = 5,
   setVisibleCoursesCount,
+  isMobileOrTablet = false,
   uniName,
   slug,
   uni,
@@ -223,7 +224,10 @@ export default function UniversityCoursesSection({
             </span>
             <button
               type="button"
-              onClick={() => setActiveCourseFilter("ALL")}
+              onClick={() => {
+                setActiveCourseFilter("ALL");
+                if (setVisibleCoursesCount) setVisibleCoursesCount(isMobileOrTablet ? 6 : 5);
+              }}
               className="text-xs text-[#08AEAA] hover:underline font-bold cursor-pointer border-none bg-transparent p-0"
             >
               Clear Filter (Show All {coursesList.length} Courses)
@@ -242,14 +246,13 @@ export default function UniversityCoursesSection({
             ? `/universities/${rawCourseSlug}`
             : `/universities/${slug || uni.slug || ""}/${rawCourseSlug}`;
           const specCount = item.isDirectCard ? 0 : (item.specializationsCount || item.subcourses?.length || 0);
-          const inCmp = isInCompare(item._id || item.slug || cardTitle);
           const courseLogoUrl = item.logo ? getMediaUrl(item.logo) : null;
           const displayCourseLogo = courseLogoUrl || logoUrl;
 
           return (
             <div
               key={item._id || item.slug || `${cardTitle}-${index}`}
-              className="bg-gray-50 rounded-xl border border-gray-200 hover:border-[#08AEAA] p-1.5 min-[360px]:p-2 sm:p-2.5 hover:shadow-md transition-all flex flex-col items-center justify-between text-center relative group min-w-0 w-full aspect-square shadow-2xs overflow-hidden"
+              className="bg-gray-50 rounded-xl border border-gray-200 hover:border-[#08AEAA] p-2 sm:p-2.5 hover:shadow-md transition-all flex flex-col items-center justify-between text-center relative group min-w-0 w-full aspect-[4/3.2] shadow-2xs overflow-hidden"
             >
               {specCount > 0 && (
                 <div className="absolute top-0 left-0 z-10">
@@ -271,7 +274,7 @@ export default function UniversityCoursesSection({
               )}
 
               {/* Course Logo */}
-              <div className="w-8 h-8 min-[360px]:w-9 min-[360px]:h-9 sm:w-11 sm:h-11 rounded-full p-0.5 sm:p-1 flex items-center justify-center relative mt-2 min-[360px]:mt-2.5 sm:mt-3 mb-0.5 sm:mb-1 shrink-0">
+              <div className="w-8 h-8 min-[360px]:w-9 min-[360px]:h-9 sm:w-10 sm:h-10 rounded-full p-0.5 sm:p-1 flex items-center justify-center relative mt-1.5 sm:mt-2 mb-0.5 shrink-0">
                 {displayCourseLogo ? (
                   <Link href={courseDetailHref} className="relative w-full h-full block">
                     <Image
@@ -290,7 +293,7 @@ export default function UniversityCoursesSection({
               </div>
 
               {/* Title & Duration/Fees Info */}
-              <div className="w-full flex-1 flex flex-col justify-center min-h-0 px-0.5">
+              <div className="w-full flex-1 flex flex-col justify-center min-h-0 px-0.5 my-0.5">
                 <div className="flex items-center justify-center">
                   <Link
                     href={courseDetailHref}
@@ -319,7 +322,7 @@ export default function UniversityCoursesSection({
               </div>
 
               {/* Bottom Actions */}
-              <div className="w-full mt-auto shrink-0 pt-0.5">
+              <div className="w-full mt-auto shrink-0 pt-1">
                 <div className="w-full grid grid-cols-2 gap-1 sm:gap-1.5 items-center">
                   <button
                     type="button"
@@ -334,82 +337,32 @@ export default function UniversityCoursesSection({
                           submitButtonText: "Apply Now",
                         });
                     }}
-                    className="w-full bg-[#F4D068] hover:bg-[#ebc557] text-gray-900 text-[9.5px] min-[360px]:text-[10.5px] sm:text-xs font-semibold py-1 sm:py-1.5 px-0.5 sm:px-1 rounded-md sm:rounded-lg border-none cursor-pointer transition-colors active:scale-95 flex items-center justify-center text-center whitespace-nowrap leading-none"
+                    className="w-full bg-[#F4D068] hover:bg-[#ebc557] text-gray-900 text-[10px] sm:text-xs font-bold py-1.5 px-1 rounded-md sm:rounded-lg border-none cursor-pointer transition-colors active:scale-95 flex items-center justify-center text-center whitespace-nowrap leading-none shadow-2xs"
                   >
                     Apply Now
                   </button>
                   <Link
                     href={courseDetailHref}
-                    className="w-full bg-[#0D3B66] hover:bg-[#072440] text-white border-none text-[9.5px] min-[360px]:text-[10.5px] sm:text-xs font-semibold py-1 sm:py-1.5 px-0.5 sm:px-1 rounded-md sm:rounded-lg text-center no-underline transition-colors flex items-center justify-center whitespace-nowrap leading-none"
+                    className="w-full bg-[#0D3B66] hover:bg-[#072440] text-white border-none text-[10px] sm:text-xs font-semibold py-1.5 px-1 rounded-md sm:rounded-lg text-center no-underline transition-colors flex items-center justify-center whitespace-nowrap leading-none shadow-2xs"
                   >
                     Know More
                   </Link>
                 </div>
-
-                <hr className="w-full border-t border-gray-200 my-0.5 min-[360px]:my-1 sm:my-1.5" />
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    const cleanSlug = slug || uni?.slug || (item.slug && !item.slug.includes("/") ? item.slug : null) || item.slug?.split("/")[0] || item._id;
-                    if (inCmp) {
-                      const slugs = (compareList || [])
-                        .map((u) => u.uniSlug || (u.slug && !u.slug.includes("/") ? u.slug : null) || u.slug?.split("/")[0] || u._id || u.id)
-                        .filter(Boolean);
-                      const combinedSlugs = Array.from(new Set([...slugs, cleanSlug])).filter(Boolean).slice(0, 3);
-                      const crsParam = cardTitle || item.rawName || "";
-                      router.push(
-                        `/tools/compare-universities?university=${encodeURIComponent(combinedSlugs.join(","))}${crsParam ? `&course=${encodeURIComponent(crsParam)}` : ""}`
-                      );
-                    } else {
-                      const targetItem = {
-                        _id: item._id || cleanSlug,
-                        slug: cleanSlug,
-                        uniSlug: cleanSlug,
-                        name: uniName,
-                        uniName: uniName,
-                        title: cardTitle,
-                        courseName: cardTitle,
-                        course: cardTitle,
-                        logoUrl: displayCourseLogo || logoUrl,
-                        logoSrc: displayCourseLogo || logoUrl,
-                        feeText: feeText,
-                        durationText: durationText,
-                      };
-                      toggleCompare(targetItem);
-                      setIsCompareDrawerOpen(true);
-                    }
-                  }}
-                  className={`w-full py-0.5 text-[9.5px] min-[360px]:text-[10.5px] sm:text-xs font-semibold flex items-center justify-center gap-1 transition-all cursor-pointer border-none bg-transparent min-h-[18px] sm:min-h-[22px] ${inCmp
-                    ? "text-[#08AEAA] font-bold hover:underline"
-                    : "text-gray-600 hover:text-[#0D3B66]"
-                    }`}
-                >
-                  {inCmp ? (
-                    <>
-                      <Check className="w-3 h-3 text-[#08AEAA] shrink-0 stroke-[2.5]" />
-                      <span>Compare Now</span>
-                    </>
-                  ) : (
-                    <>
-                      <Plus className="w-3 h-3 text-gray-500 shrink-0 stroke-2" />
-                      <span>Add to Compare</span>
-                    </>
-                  )}
-                </button>
               </div>
             </div>
           );
         })}
       </div>
 
-      {filteredCourses.length > 5 && (
+      {filteredCourses.length > (isMobileOrTablet ? 6 : 5) && (
         <div className="flex justify-center mt-4 pt-1">
           <button
             type="button"
             onClick={() => {
+              const defaultCount = isMobileOrTablet ? 6 : 5;
+              const stepCount = isMobileOrTablet ? 6 : 5;
               if (visibleCoursesCount >= filteredCourses.length) {
-                setVisibleCoursesCount(5);
+                setVisibleCoursesCount(defaultCount);
                 const section = document.getElementById("programs") || document.getElementById("university-courses-section");
                 if (section) {
                   const yOffset = -70;
@@ -417,7 +370,7 @@ export default function UniversityCoursesSection({
                   window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
                 }
               } else {
-                setVisibleCoursesCount((prev) => prev + 5);
+                setVisibleCoursesCount((prev) => prev + stepCount);
               }
             }}
             className="inline-flex items-center justify-center gap-1.5 px-5 py-1.5 rounded-full text-xs font-bold text-[#0B3B7E] bg-blue-50/80 hover:bg-blue-100 border border-blue-200/80 transition-all cursor-pointer shadow-none group"

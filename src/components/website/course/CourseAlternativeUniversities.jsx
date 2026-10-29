@@ -59,7 +59,12 @@ export default function CourseAlternativeUniversities({
             item.universityId?.slug ||
             uName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 
-          const inCmp = isInCompare(targetUniSlug || item._id || uName);
+          const inCmp = Boolean(
+            isInCompare(item) ||
+            isInCompare(targetUniSlug) ||
+            isInCompare(item._id) ||
+            isInCompare(uName)
+          );
 
           return (
             <div

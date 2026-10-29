@@ -79,7 +79,7 @@ function UniversityCard({ uni }) {
   const imgAlt = uni?.bannerImg?.name || uni?.imageSrc?.name || name;
 
   const avatarBg = getAvatarColor(name);
-  const inCompare = isInCompare(slug);
+  const inCompare = Boolean(isInCompare(uni) || isInCompare(slug));
 
   return (
     <div className="bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col group h-full">

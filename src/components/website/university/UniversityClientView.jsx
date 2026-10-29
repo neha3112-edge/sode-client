@@ -53,6 +53,24 @@ export function UniversityClientView({ initialData, slug }) {
 
   const [activeCourseFilter, setActiveCourseFilter] = useState("ALL");
   const [visibleCoursesCount, setVisibleCoursesCount] = useState(5);
+  const [isMobileOrTablet, setIsMobileOrTablet] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const isMob = typeof window !== "undefined" && window.innerWidth < 1024;
+      setIsMobileOrTablet(isMob);
+      setVisibleCoursesCount((prev) => {
+        if (prev === 5 || prev === 6) {
+          return isMob ? 6 : 5;
+        }
+        return prev;
+      });
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const uniName = uni.name || data?.name || data?.tagline || "University";
 
@@ -364,7 +382,7 @@ export function UniversityClientView({ initialData, slug }) {
         coursePills={coursePills}
         openFormModal={handleOpenUniversityForm}
         handleUniversityCompare={handleUniversityCompare}
-        isInCompare={isInCompare(uni._id || data._id || slug)}
+        isInCompare={Boolean(isInCompare(uni) || isInCompare(slug) || isInCompare(uni._id) || isInCompare(data?._id))}
         locationText={locationText}
         establishedText={establishedText}
         approvalsSummary={approvalsSummary}
@@ -413,6 +431,7 @@ export function UniversityClientView({ initialData, slug }) {
           logoUrl={logoUrl}
           heroBannerUrl={heroBannerUrl}
           openFormModal={handleOpenUniversityForm}
+          isMobileOrTablet={isMobileOrTablet}
         />
 
         {/* Why Choose Section */}
