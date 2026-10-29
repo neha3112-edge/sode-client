@@ -1228,7 +1228,7 @@ export default function CoursesPageClientView({
                     {/* Desktop Card Layout */}
                     <div className="hidden sm:flex items-center gap-5">
                       {/* Left: University Logo + Name */}
-                      <div className={`flex flex-col items-center justify-center text-center pr-4 border-r border-gray-200 shrink-0 ${item.collaborations && item.collaborations.length > 0 ? "w-36 sm:w-44" : "w-28 sm:w-36"}`}>
+                      <div className={`flex flex-col items-center justify-center text-center pr-4 border-r border-gray-200 shrink-0 ${item.collaborations && item.collaborations.length > 0 ? "w-32 sm:w-36" : "w-28 sm:w-32"}`}>
                         {item.collaborations && item.collaborations.length > 0 ? (
                           <div className="flex items-center justify-center gap-1.5 mb-1.5">
                             <div className="w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center bg-white relative shrink-0">
@@ -1333,7 +1333,7 @@ export default function CoursesPageClientView({
                         )}
 
                         {/* Actions Row: Specializations | Know More | Apply Now | + Add to Compare */}
-                        <div className="flex items-center gap-2.5 pt-0.5">
+                        <div className="flex flex-wrap items-center gap-2 pt-0.5">
                           {Array.isArray(item.subcourses) && item.subcourses.length > 0 && (
                             <button
                               type="button"
@@ -1342,7 +1342,7 @@ export default function CoursesPageClientView({
                                 setSpecFullData(null);
                                 setSpecializationModalData(item);
                               }}
-                              className="bg-blue-50 hover:bg-blue-100 text-[#0B3B7E] border border-blue-200 text-xs font-bold px-3.5 py-1.5 rounded-lg transition-colors inline-flex items-center gap-1.5 cursor-pointer"
+                              className="bg-blue-50 hover:bg-blue-100 text-[#0B3B7E] border border-blue-200 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors inline-flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0"
                             >
                               <BookOpen className="w-3.5 h-3.5" />
                               <span>Specializations ({item.specializationsCount || item.subcourses.length})</span>
@@ -1351,7 +1351,7 @@ export default function CoursesPageClientView({
 
                           <Link
                             href={courseDetailHref}
-                            className="bg-[#0a2540] hover:bg-[#06182c] text-white text-xs font-semibold px-4 py-1.5 rounded-lg transition-colors inline-flex items-center justify-center no-underline"
+                            className="bg-[#0a2540] hover:bg-[#06182c] text-white text-xs font-semibold px-3.5 py-1.5 rounded-lg transition-colors inline-flex items-center justify-center no-underline whitespace-nowrap shrink-0"
                           >
                             Know More
                           </Link>
@@ -1367,7 +1367,7 @@ export default function CoursesPageClientView({
                                 submitButtonText: "Apply Now",
                               });
                             }}
-                            className="bg-[#F4D068] hover:bg-[#ebc557] text-gray-900 text-xs font-bold px-4 py-1.5 rounded-lg transition-colors border-none cursor-pointer inline-flex items-center justify-center"
+                            className="bg-[#F4D068] hover:bg-[#ebc557] text-gray-900 text-xs font-bold px-3.5 py-1.5 rounded-lg transition-colors border-none cursor-pointer inline-flex items-center justify-center whitespace-nowrap shrink-0"
                           >
                             Apply Now
                           </button>
@@ -1422,7 +1422,7 @@ export default function CoursesPageClientView({
                                     setIsCompareDrawerOpen(true);
                                   }
                                 }}
-                                className={`border text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors inline-flex items-center justify-center gap-1.5 cursor-pointer ml-1 ${inCmp
+                                className={`border text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors inline-flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0 ${inCmp
                                   ? "bg-teal-50 border-teal-500 text-teal-700 hover:bg-teal-100 font-bold"
                                   : "border-gray-200 hover:border-gray-300 hover:bg-gray-50 bg-white text-gray-800"
                                   }`}
