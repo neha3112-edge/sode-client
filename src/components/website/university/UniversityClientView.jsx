@@ -171,8 +171,8 @@ export function UniversityClientView({ initialData, slug }) {
       return uni.courses.map((c, idx) => ({
         ...c,
         _id: c._id || `c-${idx}`,
-        title: c.title || c.name || "",
-        name: c.name || c.title || "",
+        title: c.codeName || c.shortName || c.title || c.name || "",
+        name: c.codeName || c.shortName || c.name || c.title || "",
         slug: c.slug || `${slug || uni.slug}/${(c.title || c.name || "").toLowerCase().replace(/\s+/g, "-")}`,
         logo: c.logo || null,
         fees: c.fees || "",
@@ -192,7 +192,7 @@ export function UniversityClientView({ initialData, slug }) {
     const seen = new Set();
     const result = [];
     for (const c of coursesList) {
-      const rawShortName = (c.rawName || "").trim();
+      const rawShortName = (c.codeName || c.shortName || c.rawName || "").trim();
       const cleanShort = (rawShortName || c.title || c.name || "")
         .replace(/^(?:online|distance|odl)\s+/i, "")
         .trim();

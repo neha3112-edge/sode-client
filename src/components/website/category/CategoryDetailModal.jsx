@@ -273,7 +273,7 @@ export default function CategoryDetailModal({
                         </div>
                         <div className="h-7 min-[360px]:h-8 sm:h-8.5 flex items-center justify-center w-full min-w-0 px-0.5 pb-0.5 shrink-0">
                           <h5 className="text-[9.5px] min-[360px]:text-[10px] sm:text-[10.5px] font-medium text-slate-800 group-hover:text-blue-600 transition-colors text-center w-full tracking-tight min-w-0 m-0 uppercase">
-                            {formatTwoLineText(crs.name)}
+                            {formatTwoLineText(crs.codeName || crs.shortName || crs.name)}
                           </h5>
                         </div>
                       </div>

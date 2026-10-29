@@ -234,7 +234,7 @@ export default function UniversityCoursesSection({
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-4">
         {filteredCourses.slice(0, visibleCoursesCount).map((item, index) => {
-          const cardTitle = item.title || item.name || "";
+          const cardTitle = item.codeName || item.shortName || item.title || item.name || "";
           const durationText = item.duration || "";
           const feeText = extractFeeText(item.fees);
           const rawCourseSlug = item.slug || encodeURIComponent(cardTitle.toLowerCase());
