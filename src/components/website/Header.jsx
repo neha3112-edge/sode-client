@@ -334,6 +334,30 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
 
   const [selectedMobileCategory, setSelectedMobileCategory] = useState(null);
 
+  const resetDrawerScroll = () => {
+    if (typeof document !== "undefined") {
+      const drawerBody = document.querySelector(".ant-drawer-body");
+      if (drawerBody) {
+        drawerBody.scrollTop = 0;
+      }
+      const drawerContent = document.querySelector(".ant-drawer-content");
+      if (drawerContent) {
+        drawerContent.scrollTop = 0;
+      }
+    }
+  };
+
+  const handleSelectMobileCategory = (catData) => {
+    setSelectedMobileCategory(catData);
+    resetDrawerScroll();
+    setTimeout(resetDrawerScroll, 10);
+    setTimeout(resetDrawerScroll, 50);
+  };
+
+  useEffect(() => {
+    resetDrawerScroll();
+  }, [selectedMobileCategory]);
+
   const closeMobile = (url) => {
     setMobileMenuOpen(false);
     setSelectedMobileCategory(null);
@@ -1268,7 +1292,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                                   [cat._id]: !prev[cat._id],
                                 }));
                               } else {
-                                setSelectedMobileCategory({
+                                handleSelectMobileCategory({
                                   title: cat.name,
                                   type: section.type,
                                   items: cat.items || [],
@@ -1300,7 +1324,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                                   key={sub.category?._id || sIdx}
                                   type="button"
                                   onClick={() =>
-                                    setSelectedMobileCategory({
+                                    handleSelectMobileCategory({
                                       title: sub.category?.name || `${cat.name} - Subcategory`,
                                       type: section.type,
                                       items: sub.items || [],
@@ -1333,11 +1357,15 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
           ) : (
             /* ── VIEW 2: 2-COLUMN CARDS GRID (Matching Phone 2 Mockup) ── */
             <div>
-              {/* Back Header */}
-              <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
+              {/* Back Header - Sticky so it is always visible at the top */}
+              <div className="sticky top-0 bg-white z-10 flex items-center justify-between pb-3 mb-3 border-b border-slate-100 -mt-2 pt-2">
                 <button
                   type="button"
-                  onClick={() => setSelectedMobileCategory(null)}
+                  onClick={() => {
+                    setSelectedMobileCategory(null);
+                    resetDrawerScroll();
+                    setTimeout(resetDrawerScroll, 10);
+                  }}
                   className="inline-flex items-center gap-1.5 text-xs font-bold text-[#0B57D0] hover:text-[#072C50] transition-colors cursor-pointer bg-transparent border-none p-0"
                 >
                   <LeftOutlined className="text-[11px]" />
