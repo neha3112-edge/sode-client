@@ -13,10 +13,96 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCompare } from "@/hooks/useCompare";
 import Container from "@/components/common/Container";
 import { request } from "@/services/request";
+
+function resolveCategoryMatch(paramVal, options = []) {
+  if (!paramVal) return null;
+  const raw = String(paramVal).trim().toLowerCase();
+  const clean = raw.replace(/^top-?/i, "").replace(/[^a-z0-9]/g, "");
+
+  // 1. Direct match on option value or label
+  const directMatch = options.find((opt) => {
+    const val = String(opt.value || "").toLowerCase();
+    const lbl = String(opt.label || "").toLowerCase();
+    return val === raw || lbl === raw;
+  });
+  if (directMatch) return directMatch.value;
+
+  // 2. Normalized match (without "top-")
+  const normMatch = options.find((opt) => {
+    const valClean = String(opt.value || "").toLowerCase().replace(/^top-?/i, "").replace(/[^a-z0-9]/g, "");
+    const lblClean = String(opt.label || "").toLowerCase().replace(/^top-?/i, "").replace(/[^a-z0-9]/g, "");
+    return valClean === clean || lblClean === clean;
+  });
+  if (normMatch) return normMatch.value;
+
+  // 3. Keyword heuristic match
+  if (clean.includes("iit") || clean.includes("iim")) {
+    const iitOpt = options.find((opt) => {
+      const v = String(opt.value || opt.label || "").toLowerCase();
+      return v.includes("iit") || v.includes("iim");
+    });
+    if (iitOpt) return iitOpt.value;
+  }
+  if (clean.includes("global") || clean.includes("international")) {
+    const globalOpt = options.find((opt) => {
+      const v = String(opt.value || opt.label || "").toLowerCase();
+      return v.includes("global");
+    });
+    if (globalOpt) return globalOpt.value;
+  }
+  if (clean.includes("domestic") || clean.includes("indian")) {
+    const domOpt = options.find((opt) => {
+      const v = String(opt.value || opt.label || "").toLowerCase();
+      return v.includes("domestic");
+    });
+    if (domOpt) return domOpt.value;
+  }
+
+  return paramVal;
+}
+
+function resolveAccreditationMatch(paramVal, options = []) {
+  if (!paramVal) return null;
+  const raw = String(paramVal).trim().toLowerCase();
+  const direct = options.find((opt) => {
+    const val = String(opt.value || "").toLowerCase();
+    const lbl = String(opt.label || "").toLowerCase();
+    return val === raw || lbl === raw || val.includes(raw) || raw.includes(val);
+  });
+  if (direct) return direct.value;
+
+  if (raw.includes("ugc") || raw.includes("deb")) {
+    const ugcOpt = options.find((opt) => String(opt.value || opt.label || "").toLowerCase().includes("ugc"));
+    if (ugcOpt) return ugcOpt.value;
+  }
+  if (raw.includes("naac")) {
+    const naacOpt = options.find((opt) => String(opt.value || opt.label || "").toLowerCase().includes("naac"));
+    if (naacOpt) return naacOpt.value;
+  }
+  if (raw.includes("nirf")) {
+    const nirfOpt = options.find((opt) => String(opt.value || opt.label || "").toLowerCase().includes("nirf"));
+    if (nirfOpt) return nirfOpt.value;
+  }
+  if (raw.includes("aicte")) {
+    const aicteOpt = options.find((opt) => String(opt.value || opt.label || "").toLowerCase().includes("aicte"));
+    if (aicteOpt) return aicteOpt.value;
+  }
+  return paramVal;
+}
+
+function resolveCourseMatch(paramVal, options = []) {
+  if (!paramVal) return null;
+  const raw = String(paramVal).trim().toLowerCase().replace(/[^a-z0-9]/g, "");
+  const match = options.find((opt) => {
+    const val = String(opt.value || opt.label || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+    return val === raw || val.includes(raw) || raw.includes(val);
+  });
+  return match ? match.value : paramVal;
+}
 
 const AVATAR_COLORS = [
   "#1C3569", "#4F46E5", "#0369A1", "#047857", "#B45309",
@@ -232,6 +318,8 @@ export default function UniversitiesPageClientView({
   initialUniversities = [],
   initialOptions = null,
 }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const ITEMS_PER_PAGE = 12;
   const [allUniversities] = useState(initialUniversities);
   const [filterOptions, setFilterOptions] = useState(initialOptions);
@@ -244,6 +332,18 @@ export default function UniversitiesPageClientView({
   const [selectedState, setSelectedState] = useState(null);
   const [selectedAccreditation, setSelectedAccreditation] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+
+  const updateUrlParam = (key, value) => {
+    const current = new URLSearchParams(Array.from(searchParams?.entries() || []));
+    if (value) {
+      current.set(key, value);
+    } else {
+      current.delete(key);
+    }
+    const search = current.toString();
+    const query = search ? `?${search}` : "";
+    router.replace(`/universities${query}`, { scroll: false });
+  };
 
   // ⏱️ Debounce search term by 300ms to avoid unnecessary load
   useEffect(() => {
@@ -374,6 +474,48 @@ export default function UniversitiesPageClientView({
     return [];
   }, [filterOptions]);
 
+  // 🔗 Sync state with URL search parameters (e.g. ?category=iits-iims or ?category=global-universities)
+  useEffect(() => {
+    if (!searchParams) return;
+    const cat = searchParams.get("category") || searchParams.get("type") || searchParams.get("top");
+    const crs = searchParams.get("course");
+    const st = searchParams.get("state");
+    const appr = searchParams.get("accreditation") || searchParams.get("approval");
+    const q = searchParams.get("search") || searchParams.get("q");
+
+    if (cat) {
+      const resolved = resolveCategoryMatch(cat, topOptions);
+      setSelectedTop(resolved);
+    } else {
+      setSelectedTop(null);
+    }
+
+    if (crs) {
+      const resolved = resolveCourseMatch(crs, courseOptions);
+      setSelectedCourse(resolved);
+    } else {
+      setSelectedCourse(null);
+    }
+
+    if (st) {
+      setSelectedState(st);
+    } else {
+      setSelectedState(null);
+    }
+
+    if (appr) {
+      const resolved = resolveAccreditationMatch(appr, accreditationOptions);
+      setSelectedAccreditation(resolved);
+    } else {
+      setSelectedAccreditation(null);
+    }
+
+    if (q) {
+      setSearchTerm(q);
+      setDebouncedSearch(q);
+    }
+  }, [searchParams, topOptions, courseOptions, stateOptions, accreditationOptions]);
+
   const resetFilters = () => {
     setSearchTerm("");
     setDebouncedSearch("");
@@ -383,6 +525,7 @@ export default function UniversitiesPageClientView({
     setSelectedState(null);
     setSelectedAccreditation(null);
     setCurrentPage(1);
+    router.replace("/universities", { scroll: false });
   };
 
   const filtered = useMemo(() => {
@@ -410,34 +553,70 @@ export default function UniversitiesPageClientView({
           ? uni.approvals.map((a) => (typeof a === "object" ? a.name || a.code || a.title || "" : String(a)).toUpperCase())
           : [];
         const target = selectedAccreditation.toUpperCase().trim();
-        const hasApproval = rawApps.some((a) => a.includes(target) || target.includes(a));
+        const normTarget = target.replace(/[^A-Z0-9]/g, "");
+        const hasApproval = rawApps.some((a) => {
+          const normA = a.replace(/[^A-Z0-9]/g, "");
+          return normA.includes(normTarget) || normTarget.includes(normA) || a.includes(target) || target.includes(a);
+        });
         const hasNaac = target.includes("NAAC") && Boolean(uni?.naac_rating?.grade || uni?.naac_rating?.name);
         if (!hasApproval && !hasNaac) return false;
       }
 
       if (selectedTop) {
         const sel = selectedTop.toLowerCase();
-        const uniCats = Array.isArray(uni?.category)
-          ? uni.category
-          : (uni?.category ? [uni.category] : []);
-        const hasCategory = uniCats.some((c) => {
-          if (!c) return false;
-          const cSlug = (typeof c === "object" ? (c.slug || "") : "").toLowerCase();
-          const cName = (typeof c === "object" ? (c.name || "") : String(c || "")).toLowerCase();
-          const cCode = (typeof c === "object" ? (c.code || "") : "").toLowerCase();
-          const cId = (typeof c === "object" ? (c._id || "") : "").toString().toLowerCase();
-          return (
-            (cSlug && cSlug === sel) ||
-            (cName && cName === sel) ||
-            (cCode && cCode === sel) ||
-            (cId && cId === sel) ||
-            (cSlug && sel.includes(cSlug)) ||
-            (cSlug && cSlug.includes(sel)) ||
-            (cName && sel.includes(cName)) ||
-            (cName && cName.includes(sel))
-          );
-        });
-        if (!hasCategory) return false;
+        const selNorm = sel.replace(/^top-?/i, "").replace(/[^a-z0-9]/g, "");
+        const isIit = selNorm.includes("iit") || selNorm.includes("iim");
+        const isGlobal = selNorm.includes("global");
+        const isDomestic = selNorm.includes("domestic");
+        const isUgc = selNorm.includes("ugc") || selNorm.includes("deb");
+
+        // 1. Direct name / approval / type heuristics
+        const matchesHeuristic =
+          (isIit && (
+            /\b(iit|iim|iiit)\b/i.test(uni?.name || "") ||
+            (uni?.name || "").toLowerCase().includes("indian institute of")
+          )) ||
+          (isGlobal && (
+            (uni?.type || "").toLowerCase().includes("global") ||
+            (uni?.country && (typeof uni.country === "object" ? uni.country.name : uni.country) !== "India") ||
+            Boolean(uni?.isGlobal)
+          )) ||
+          (isUgc && (
+            Array.isArray(uni?.approvals) && uni.approvals.some((a) => {
+              const str = typeof a === "object" ? (a.name || a.code || "") : String(a);
+              return /ugc/i.test(str);
+            })
+          ));
+
+        if (!matchesHeuristic) {
+          const uniCats = Array.isArray(uni?.category)
+            ? uni.category
+            : (uni?.category ? [uni.category] : []);
+          const hasCategory = uniCats.some((c) => {
+            if (!c) return false;
+            const cSlug = (typeof c === "object" ? (c.slug || "") : "").toLowerCase();
+            const cName = (typeof c === "object" ? (c.name || "") : String(c || "")).toLowerCase();
+            const cCode = (typeof c === "object" ? (c.code || "") : "").toLowerCase();
+            const cId = (typeof c === "object" ? (c._id || "") : "").toString().toLowerCase();
+            const cNorm = (cSlug || cName).replace(/^top-?/i, "").replace(/[^a-z0-9]/g, "");
+
+            return (
+              (cSlug && cSlug === sel) ||
+              (cName && cName === sel) ||
+              (cCode && cCode === sel) ||
+              (cId && cId === sel) ||
+              (cNorm && cNorm === selNorm) ||
+              (isIit && cNorm.includes("iit")) ||
+              (isGlobal && cNorm.includes("global")) ||
+              (isDomestic && cNorm.includes("domestic")) ||
+              (cSlug && sel.includes(cSlug)) ||
+              (cSlug && cSlug.includes(sel)) ||
+              (cName && sel.includes(cName)) ||
+              (cName && cName.includes(sel))
+            );
+          });
+          if (!hasCategory) return false;
+        }
       }
 
       if (selectedCourse) {
@@ -504,6 +683,7 @@ export default function UniversitiesPageClientView({
               onChange={(val) => {
                 setSelectedTop(val);
                 setCurrentPage(1);
+                updateUrlParam("category", val);
               }}
               placeholder={
                 <span className="flex items-center gap-1.5 text-slate-700">
@@ -522,6 +702,7 @@ export default function UniversitiesPageClientView({
               onChange={(val) => {
                 setSelectedCourse(val);
                 setCurrentPage(1);
+                updateUrlParam("course", val);
               }}
               placeholder={
                 <span className="flex items-center gap-1.5 text-slate-700">
@@ -540,6 +721,7 @@ export default function UniversitiesPageClientView({
               onChange={(val) => {
                 setSelectedState(val);
                 setCurrentPage(1);
+                updateUrlParam("state", val);
               }}
               placeholder={
                 <span className="flex items-center gap-1.5 text-slate-700">
@@ -558,6 +740,7 @@ export default function UniversitiesPageClientView({
               onChange={(val) => {
                 setSelectedAccreditation(val);
                 setCurrentPage(1);
+                updateUrlParam("accreditation", val);
               }}
               placeholder={
                 <span className="flex items-center gap-1.5 text-slate-700">
@@ -579,31 +762,62 @@ export default function UniversitiesPageClientView({
             {searchTerm && (
               <span className="inline-flex items-center gap-1 bg-white/15 text-white text-[11px] font-semibold px-2 py-0.5 rounded-md border border-white/20">
                 Search: &quot;{searchTerm}&quot;
-                <X className="w-3 h-3 cursor-pointer hover:text-amber-300" onClick={() => setSearchTerm("")} />
+                <X
+                  className="w-3 h-3 cursor-pointer hover:text-amber-300"
+                  onClick={() => {
+                    setSearchTerm("");
+                    setDebouncedSearch("");
+                    updateUrlParam("search", null);
+                  }}
+                />
               </span>
             )}
             {selectedTop && (
               <span className="inline-flex items-center gap-1 bg-white/15 text-white text-[11px] font-semibold px-2 py-0.5 rounded-md border border-white/20">
-                {selectedTop}
-                <X className="w-3 h-3 cursor-pointer hover:text-amber-300" onClick={() => setSelectedTop(null)} />
+                Category: {topOptions.find((o) => o.value === selectedTop)?.label || selectedTop}
+                <X
+                  className="w-3 h-3 cursor-pointer hover:text-amber-300"
+                  onClick={() => {
+                    setSelectedTop(null);
+                    updateUrlParam("category", null);
+                  }}
+                />
               </span>
             )}
             {selectedCourse && (
               <span className="inline-flex items-center gap-1 bg-white/15 text-white text-[11px] font-semibold px-2 py-0.5 rounded-md border border-white/20">
-                {selectedCourse}
-                <X className="w-3 h-3 cursor-pointer hover:text-amber-300" onClick={() => setSelectedCourse(null)} />
+                Course: {courseOptions.find((o) => o.value === selectedCourse)?.label || selectedCourse}
+                <X
+                  className="w-3 h-3 cursor-pointer hover:text-amber-300"
+                  onClick={() => {
+                    setSelectedCourse(null);
+                    updateUrlParam("course", null);
+                  }}
+                />
               </span>
             )}
             {selectedState && (
               <span className="inline-flex items-center gap-1 bg-white/15 text-white text-[11px] font-semibold px-2 py-0.5 rounded-md border border-white/20">
-                {selectedState}
-                <X className="w-3 h-3 cursor-pointer hover:text-amber-300" onClick={() => setSelectedState(null)} />
+                State: {selectedState}
+                <X
+                  className="w-3 h-3 cursor-pointer hover:text-amber-300"
+                  onClick={() => {
+                    setSelectedState(null);
+                    updateUrlParam("state", null);
+                  }}
+                />
               </span>
             )}
             {selectedAccreditation && (
               <span className="inline-flex items-center gap-1 bg-white/15 text-white text-[11px] font-semibold px-2 py-0.5 rounded-md border border-white/20">
-                {selectedAccreditation}
-                <X className="w-3 h-3 cursor-pointer hover:text-amber-300" onClick={() => setSelectedAccreditation(null)} />
+                Accreditation: {accreditationOptions.find((o) => o.value === selectedAccreditation)?.label || selectedAccreditation}
+                <X
+                  className="w-3 h-3 cursor-pointer hover:text-amber-300"
+                  onClick={() => {
+                    setSelectedAccreditation(null);
+                    updateUrlParam("accreditation", null);
+                  }}
+                />
               </span>
             )}
             <button

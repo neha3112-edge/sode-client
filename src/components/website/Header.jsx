@@ -291,7 +291,7 @@ const renderAccreditationCard = (acc, idx, onNavigate) => {
         </Link>
 
         <Link
-          href="/universities"
+          href={primarySlug ? `/universities?approval=${encodeURIComponent(primarySlug)}` : "/universities"}
           onClick={() => onNavigate?.()}
           className="text-[11px] font-bold text-slate-900 hover:text-[#0B57D0] flex items-center gap-1 transition select-none"
         >
@@ -1725,7 +1725,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                             Know More
                           </Link>
                           <Link
-                            href="/universities"
+                            href={itemSlug ? `/universities?approval=${encodeURIComponent(itemSlug)}` : "/universities"}
                             onClick={() => closeMobile()}
                             className="text-[10px] font-bold text-[#072C50] hover:text-[#0B57D0] flex items-center gap-0.5 transition"
                           >
