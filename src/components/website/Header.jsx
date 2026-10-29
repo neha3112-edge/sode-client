@@ -322,6 +322,16 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
         : [{ text: "Compare Universities", url: "/tools/compare-universities" }];
   }, [headerData]);
 
+  const mobileAiToolItem = useMemo(() => {
+    return rawMenuItems.find(
+      (item) =>
+        item.is_highlighted ||
+        (item.label || "").toLowerCase().includes("tool") ||
+        (item.url || "").includes("tool") ||
+        (item.url || "").includes("suggest")
+    );
+  }, [rawMenuItems]);
+
   const [selectedMobileCategory, setSelectedMobileCategory] = useState(null);
 
   const closeMobile = (url) => {
@@ -713,17 +723,21 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
 
           {/* Mobile Right Controls (Matching Mockup) */}
           <div className="flex lg:hidden items-center gap-2 shrink-0">
-            <Link
-              href="/tools"
-              onClick={() => setActiveMenuKey(null)}
-              className="relative inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EBF3FE] hover:bg-[#DCEBFD] text-[#0B57D0] border border-blue-200/80 font-bold text-xs transition-all shadow-xs shrink-0 select-none"
-            >
-              <span className="text-[#0B57D0] font-extrabold text-sm leading-none">✦</span>
-              <span className="text-[#072C50] font-bold text-xs">AI Tools</span>
-              <span className="absolute -top-1.5 -right-1 px-1.5 py-0.2 text-[8px] font-black uppercase tracking-wider rounded-full bg-black text-[#FFD166] border border-white leading-none shadow-xs">
-                NEW
-              </span>
-            </Link>
+            {mobileAiToolItem && (
+              <Link
+                href={mobileAiToolItem.url || "/tools"}
+                onClick={() => setActiveMenuKey(null)}
+                className="relative inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EBF3FE] hover:bg-[#DCEBFD] text-[#0B57D0] border border-blue-200/80 font-bold text-xs transition-all shadow-xs shrink-0 select-none"
+              >
+                <span className="text-[#0B57D0] font-extrabold text-sm leading-none">✦</span>
+                <span className="text-[#072C50] font-bold text-xs">{mobileAiToolItem.label || "AI Tools"}</span>
+                {(mobileAiToolItem.badge || "NEW") && (
+                  <span className="absolute -top-1.5 -right-1 px-1.5 py-0.2 text-[8px] font-black uppercase tracking-wider rounded-full bg-black text-[#FFD166] border border-white leading-none shadow-xs">
+                    {mobileAiToolItem.badge || "NEW"}
+                  </span>
+                )}
+              </Link>
+            )}
 
             <Link
               href="/tools/compare-universities"
