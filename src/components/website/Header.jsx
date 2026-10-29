@@ -144,16 +144,177 @@ function getCoursePastelStyle(courseName = "") {
   };
 }
 
-// Helper to trim "Online" / "Distance" from subcategory names (e.g., Distance Master -> Master, Online Bachelor -> Bachelor)
-const formatCategoryDisplayName = (name = "") => {
+// Helper to trim "Online" / "Distance" ONLY from course subcategories (e.g., Distance Master -> Master, Online Bachelor -> Bachelor)
+// Subcategories under universities (e.g. "Top Online Universities", "Top Distance Universities") MUST NEVER be trimmed!
+const formatCategoryDisplayName = (name = "", type = "programs") => {
+  if (!name) return "";
+  if (type === "programs") {
+    const cleaned = name.replace(/\b(online|distance)\b/gi, "").trim().replace(/\s+/g, " ");
+    return cleaned || name;
+  }
+  return name;
+};
+
+// Helper to trim "Online" / "Distance" prefix from course card titles
+const cleanCourseDisplayName = (name = "") => {
   if (!name) return "";
   const cleaned = name.replace(/\b(online|distance)\b/gi, "").trim().replace(/\s+/g, " ");
   return cleaned || name;
 };
 
+// 🎖️ Title Formatter & Resolver for Accreditations / Approvals
+const getAccreditationTitle = (acc) => {
+  if (!acc) return "Recognized Universities";
+  const name = (acc.name || acc.title || acc.code || "").trim();
+  const slug = (acc.slug || "").toLowerCase();
+  const combined = `${name} ${slug}`.toLowerCase();
+
+  // Priority check statutory bodies first (to prevent false matches on generic words like online)
+  if (combined.includes("naac")) {
+    return "NAAC Accredited Universities";
+  }
+  if (combined.includes("nirf")) {
+    return "NIRF Ranked Universities";
+  }
+  if (combined.includes("wes")) {
+    return "WES Approved Universities";
+  }
+  if (combined.includes("aicte")) {
+    return "AICTE Approved Universities";
+  }
+  if (combined.includes("online")) {
+    return "UGC Approved Online Universities";
+  }
+  if (combined.includes("distance") || combined.includes("deb")) {
+    return "UGC Approved Distance Universities";
+  }
+  if (combined.includes("ugc")) {
+    return "UGC Approved Universities";
+  }
+
+  return name || "Recognized Universities";
+};
+
+// 🎖️ Badge Text Resolver for Accreditations
+const getAccreditationBadge = (acc, title = "") => {
+  const slug = (acc?.slug || "").toLowerCase();
+  const lower = `${title} ${slug}`.toLowerCase();
+  if (lower.includes("naac")) return "NAAC Grade";
+  if (lower.includes("nirf")) return "NIRF Top Ranked";
+  if (lower.includes("ugc")) return "UGC-DEB Approved";
+  if (lower.includes("aicte")) return "AICTE Approved";
+  if (lower.includes("wes")) return "WES Recognized";
+  return "Govt. Approved";
+};
+
+// 🎖️ Standard Mega Menu Accreditation Card (Exact UI Matching University & Course Cards)
+const renderAccreditationCard = (acc, idx, onNavigate) => {
+  const primarySlug = acc.slug || "";
+  const cardUrl = primarySlug ? `/accreditations/${primarySlug}` : "/accreditations";
+  const logoUrl = acc.logo
+    ? (typeof acc.logo === "string" ? acc.logo : (acc.logo.url || acc.logo.path || null))
+    : null;
+  const currentYear = new Date().getFullYear();
+  const cardTitle = getAccreditationTitle(acc);
+  const badgeText = getAccreditationBadge(acc, cardTitle);
+
+  return (
+    <div
+      key={acc._id ? `${acc._id}-${idx}` : `acc-${idx}`}
+      className="bg-white border border-slate-200/90 rounded-xl p-3 hover:border-blue-400 hover:shadow-md transition-all flex flex-col justify-between group"
+    >
+      <div>
+        <div className="flex items-start gap-2.5">
+          {/* Accreditation / Approval Logo */}
+          <Link
+            href={cardUrl}
+            onClick={() => onNavigate?.()}
+            className="relative w-10 h-10 flex items-center justify-start shrink-0 group-hover:scale-105 transition-transform"
+          >
+            {logoUrl ? (
+              <Image
+                src={logoUrl}
+                alt={cardTitle}
+                fill
+                unoptimized
+                sizes="40px"
+                className="object-contain object-left"
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                </svg>
+              </div>
+            )}
+          </Link>
+
+          {/* Details */}
+          <div className="min-w-0 flex-1">
+            <Link
+              href={cardUrl}
+              onClick={() => onNavigate?.()}
+              className="block group-hover:text-[#0B57D0] transition-colors"
+            >
+              <h4
+                className="text-[13px] font-bold text-slate-900 leading-snug truncate m-0 group-hover:text-[#0B57D0] transition-colors"
+                title={cardTitle}
+              >
+                {cardTitle}
+              </h4>
+            </Link>
+
+            {/* Badges Row */}
+            <div className="flex items-center gap-2 mt-1 flex-wrap">
+              <span className="inline-flex items-center gap-1 text-[10px] text-slate-500 font-medium min-w-0">
+                <svg className="w-3.5 h-3.5 text-emerald-600 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span className="truncate">{badgeText}</span>
+              </span>
+              <span className="inline-flex items-center text-[9.5px] font-bold text-[#351C00] bg-[#E4BE75]/80 px-1.5 py-0.5 rounded-full leading-none whitespace-nowrap shrink-0">
+                List {currentYear}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Action Buttons Row */}
+      <div className="flex items-center justify-between pt-2.5 mt-2 border-t border-slate-100/80">
+        <Link
+          href={cardUrl}
+          onClick={() => onNavigate?.()}
+          className="px-3 py-1 text-[11px] font-semibold text-slate-700 bg-white border border-slate-300 rounded-2xl hover:bg-slate-50 hover:border-slate-400 transition inline-block select-none"
+        >
+          Know More
+        </Link>
+
+        <Link
+          href="/universities"
+          onClick={() => onNavigate?.()}
+          className="text-[11px] font-bold text-slate-900 hover:text-[#0B57D0] flex items-center gap-1 transition select-none"
+        >
+          <span>View Universities</span>
+          <span className="text-[12px] leading-none">→</span>
+        </Link>
+      </div>
+    </div>
+  );
+};
+
 // 🏛️ Dynamic Category Icon Renderer
 function renderCategoryIcon(categoryName = "", type = "programs") {
   const name = (categoryName || "").toLowerCase();
+
+  // 0. Accreditation / Approval category check
+  if (type === "accreditations" || name.includes("accredit") || name.includes("approval") || name.includes("recognition")) {
+    return (
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+      </svg>
+    );
+  }
 
   // 1. Specific category checks first (avoiding "top" substring catch-all)
   if (name.includes("city")) {
@@ -371,7 +532,11 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
       .filter((m) => m.has_dropdown && Array.isArray(m.mega_menu) && m.mega_menu.length > 0)
       .map((m) => {
         const l = (m.label || "").toLowerCase();
-        const type = l.includes("universit") ? "universities" : "programs";
+        const type = (l.includes("accredit") || l.includes("approval") || l.includes("recognition"))
+          ? "accreditations"
+          : l.includes("universit")
+            ? "universities"
+            : "programs";
         const validCategories = m.mega_menu
           .filter((g) => g?.category && (g.items?.length > 0 || g.category.name))
           .map((g) => ({
@@ -385,7 +550,11 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
           _id: m._id || m.label,
           title: m.label,
           type,
-          icon: type === "universities" ? (
+          icon: type === "accreditations" ? (
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+            </svg>
+          ) : type === "universities" ? (
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zm0 8.87L4.72 9 12 5.04 19.28 9 12 11.87zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z" />
             </svg>
@@ -417,6 +586,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
     const labelLower = (activeMenuItem.label || "").toLowerCase();
     const isUniversities = labelLower.includes("universit");
     const isPrograms = labelLower.includes("program") || labelLower.includes("course");
+    const isAccreditations = labelLower.includes("accredit") || labelLower.includes("approval") || labelLower.includes("recognition");
 
     const groups = Array.isArray(activeMenuItem.mega_menu) ? activeMenuItem.mega_menu : [];
     const validGroups = groups.filter((g) => g.category && (g.items?.length > 0 || g.category.name));
@@ -427,13 +597,21 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
 
     return {
       itemKey,
-      type: isUniversities ? "universities" : isPrograms ? "programs" : "generic",
-      sidebarHeaderTitle: isUniversities
-        ? "Top Universities"
-        : isPrograms
-          ? "Professional Courses"
-          : activeMenuItem.label,
-      sidebarIcon: isUniversities ? (
+      type: isAccreditations ? "accreditations" : isUniversities ? "universities" : isPrograms ? "programs" : "generic",
+      sidebarHeaderTitle: isAccreditations
+        ? "Accreditations & Approvals"
+        : isUniversities
+          ? "Top Universities"
+          : isPrograms
+            ? "Professional Courses"
+            : activeMenuItem.label,
+      sidebarIcon: isAccreditations ? (
+        <div className="w-7 h-7 rounded-full bg-[#0B57D0] text-white flex items-center justify-center shrink-0 shadow-xs">
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+          </svg>
+        </div>
+      ) : isUniversities ? (
         <div className="w-7 h-7 rounded-full bg-[#0B57D0] text-white flex items-center justify-center shrink-0 shadow-xs">
           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
             <path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zm0 8.87L4.72 9 12 5.04 19.28 9 12 11.87zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z" />
@@ -830,12 +1008,21 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                         <div key={grp.category?._id || gIdx} className="space-y-1">
                           <button
                             type="button"
-                            onClick={() =>
+                            onClick={() => {
                               setActiveCategoryIndex((prev) => ({
                                 ...prev,
                                 [currentMegaMenuData.itemKey]: gIdx,
-                              }))
-                            }
+                              }));
+                              if (hasSubcategories) {
+                                const firstSubId = subcats[0]?.category?._id || subcats[0]?.category?.slug;
+                                if (firstSubId) {
+                                  setActiveSubCategory((prev) => ({
+                                    ...prev,
+                                    [grpKey]: firstSubId,
+                                  }));
+                                }
+                              }
+                            }}
                             className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-left text-[12.5px] transition-all cursor-pointer select-none ${isActive
                               ? "bg-[#EBF3FE] text-[#0B57D0] font-bold shadow-xs"
                               : "text-slate-700 hover:bg-slate-50 hover:text-slate-900 font-medium"
@@ -875,9 +1062,9 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                                   >
                                     <div className="flex items-center gap-2 min-w-0">
                                       <span className={isSubActive ? "text-[#0B57D0]" : "text-slate-400"}>
-                                        {renderCategoryIcon(formatCategoryDisplayName(sub.category?.name), currentMegaMenuData.type)}
+                                        {renderCategoryIcon(formatCategoryDisplayName(sub.category?.name, currentMegaMenuData.type), currentMegaMenuData.type)}
                                       </span>
-                                      <span className="truncate">{formatCategoryDisplayName(sub.category?.name)}</span>
+                                      <span className="truncate">{formatCategoryDisplayName(sub.category?.name, currentMegaMenuData.type)}</span>
                                     </div>
                                     <RightOutlined
                                       className={`text-[9.5px] shrink-0 ml-1 transition-transform ${
@@ -902,26 +1089,36 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                     {currentMegaMenuData.type === "universities" && (() => {
                       const grpKey = currentMegaMenuData.currentGroup?.category?._id || currentMegaMenuData.currentGroup?.category?.slug || `grp-${currentMegaMenuData.currentIdx}`;
                       const subcats = Array.isArray(currentMegaMenuData.currentGroup?.subcategories) ? currentMegaMenuData.currentGroup.subcategories : [];
-                      const currentSubId = activeSubCategory[grpKey] || null;
+                      const defaultSubId = subcats.length > 0 ? (subcats[0].category?._id || subcats[0].category?.slug) : null;
+                      const currentSubId = activeSubCategory[grpKey] || defaultSubId;
 
                       const selectedSubCat = currentSubId ? subcats.find(
                         (s) => (s.category?._id || s.category?.slug) === currentSubId
-                      ) : null;
+                      ) : (subcats.length > 0 ? subcats[0] : null);
 
                       const allItems = selectedSubCat
                         ? (selectedSubCat.items || [])
-                        : (currentMegaMenuData.currentGroup?.items || []);
+                        : (subcats.length > 0 ? (subcats[0]?.items || []) : (currentMegaMenuData.currentGroup?.items || []));
 
+                      const approvals = allItems.filter((it) => it.is_approval);
                       const dynamicListings = allItems.filter((it) => it.is_dynamic_listing);
-                      const regularUniversities = allItems.filter((it) => !it.is_dynamic_listing);
+                      const regularUniversities = allItems.filter((it) => !it.is_dynamic_listing && !it.is_approval);
+                      const hasAnyItems = approvals.length > 0 || dynamicListings.length > 0 || regularUniversities.length > 0;
 
                       return (
                         <>
-                          {allItems.length === 0 && (
+                          {!hasAnyItems && (
                             <div className="col-span-full py-12 text-center text-slate-400 font-medium text-xs">
-                              No universities or listings found in this category currently.
+                              No universities, accreditations, or listings found in this category currently.
                             </div>
                           )}
+
+                          {/* Official Approvals & Accreditations (Matching Standard University & Course Card Grid) */}
+                          {approvals.length > 0 &&
+                            approvals.map((app, idx) =>
+                              renderAccreditationCard(app, idx, () => setActiveMenuKey(null))
+                            )
+                          }
                           {/* Dynamic Listings (Clean 2-Column Bulleted List with Header Text Color) */}
                           {dynamicListings.length > 0 && (
                             <div className="col-span-full grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3 p-1">
@@ -1064,7 +1261,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
 
                       const displayedItems = selectedSubCat
                         ? (selectedSubCat.items || [])
-                        : (currentMegaMenuData.currentGroup?.items || []);
+                        : (subcats.length > 0 ? (subcats[0]?.items || []) : (currentMegaMenuData.currentGroup?.items || []));
 
                       if (displayedItems.length === 0) {
                         return (
@@ -1100,6 +1297,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
 
                         const headerLogoObj = prog.header_logo || prog.effective_logo || prog.logo;
                         const headerLogoUrl = (headerLogoObj?.url || headerLogoObj?.path || typeof headerLogoObj === "string") ? resolveImg(headerLogoObj) : null;
+                        const courseDisplayName = cleanCourseDisplayName(prog.name);
 
                         return (
                           <div
@@ -1117,7 +1315,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                                   {headerLogoUrl ? (
                                     <Image
                                       src={headerLogoUrl}
-                                      alt={prog.name || "Course Logo"}
+                                      alt={courseDisplayName || "Course Logo"}
                                       fill
                                       unoptimized
                                       sizes="36px"
@@ -1137,9 +1335,9 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                                   >
                                     <h4
                                       className="text-[13px] font-bold text-slate-900 leading-snug truncate m-0 group-hover:text-[#0B57D0] transition-colors"
-                                      title={prog.name}
+                                      title={courseDisplayName}
                                     >
-                                      {prog.name}
+                                      {courseDisplayName}
                                     </h4>
                                   </Link>
 
@@ -1188,6 +1386,34 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                           </div>
                         );
                       });
+                    })()}
+
+                    {/* C. DYNAMIC ACCREDITATION / APPROVAL CARDS */}
+                    {currentMegaMenuData.type === "accreditations" && (() => {
+                      const grpKey = currentMegaMenuData.currentGroup?.category?._id || currentMegaMenuData.currentGroup?.category?.slug || `grp-${currentMegaMenuData.currentIdx}`;
+                      const subcats = Array.isArray(currentMegaMenuData.currentGroup?.subcategories) ? currentMegaMenuData.currentGroup.subcategories : [];
+                      const defaultSubId = subcats.length > 0 ? (subcats[0].category?._id || subcats[0].category?.slug) : null;
+                      const currentSubId = activeSubCategory[grpKey] || defaultSubId;
+
+                      const selectedSubCat = subcats.find(
+                        (s) => (s.category?._id || s.category?.slug) === currentSubId
+                      );
+
+                      const displayedItems = selectedSubCat
+                        ? (selectedSubCat.items || [])
+                        : (currentMegaMenuData.currentGroup?.items || []);
+
+                      if (displayedItems.length === 0) {
+                        return (
+                          <div className="col-span-full py-12 text-center text-slate-400 font-medium text-xs">
+                            No accreditations or approvals found in this category currently.
+                          </div>
+                        );
+                      }
+
+                      return displayedItems.map((app, idx) =>
+                        renderAccreditationCard(app, idx, () => setActiveMenuKey(null))
+                      );
                     })()}
 
                     {/* Empty State for category with no items */}
@@ -1334,10 +1560,10 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                                 >
                                   <div className="flex items-center gap-3">
                                     <span className="text-[#0B57D0] text-base group-hover:scale-110 transition-transform">
-                                      {renderCategoryIcon(formatCategoryDisplayName(sub.category?.name), section.type)}
+                                      {renderCategoryIcon(formatCategoryDisplayName(sub.category?.name, section.type), section.type)}
                                     </span>
                                     <span className="font-semibold text-slate-800 text-[13.5px] group-hover:text-[#0B57D0]">
-                                      {formatCategoryDisplayName(sub.category?.name)}
+                                      {formatCategoryDisplayName(sub.category?.name, section.type)}
                                     </span>
                                   </div>
                                   <RightOutlined className="text-[10px] text-slate-400 group-hover:text-[#0B57D0] group-hover:translate-x-0.5 transition-all" />
@@ -1380,14 +1606,19 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
               <div className="grid grid-cols-2 gap-2.5 pb-4">
                 {selectedMobileCategory.items.map((item, idx) => {
                   const itemSlug = item.slug || item._id || item.name;
-                  const isUni = selectedMobileCategory.type === "universities" || !!item.location || item.courses_count !== undefined;
+                  const isAcc = selectedMobileCategory.type === "accreditations" || !!item.is_approval;
+                  const isUni = !isAcc && (selectedMobileCategory.type === "universities" || !!item.location || item.courses_count !== undefined);
                   const logoSrc = item.header_logo || item.logo || item.image || null;
-                  const detailUrl = isUni
-                    ? (item.url || `/universities/${encodeURIComponent(itemSlug)}`)
-                    : (item.url || `/courses?course=${encodeURIComponent(itemSlug)}`);
-                  const viewCoursesUrl = isUni
-                    ? `/courses?university=${encodeURIComponent(itemSlug)}`
-                    : detailUrl;
+                  const detailUrl = isAcc
+                    ? (item.url || `/accreditations/${encodeURIComponent(itemSlug)}`)
+                    : isUni
+                      ? (item.url || `/universities/${encodeURIComponent(itemSlug)}`)
+                      : (item.url || `/courses?course=${encodeURIComponent(itemSlug)}`);
+                  const viewCoursesUrl = isAcc
+                    ? detailUrl
+                    : isUni
+                      ? `/courses?university=${encodeURIComponent(itemSlug)}`
+                      : detailUrl;
 
                   if (item.is_dynamic_listing) {
                     return (
@@ -1402,6 +1633,95 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                           {item.name || item.title}
                         </span>
                       </Link>
+                    );
+                  }
+
+                  if (item.is_approval) {
+                    const currentYear = new Date().getFullYear();
+                    const cardTitle = getAccreditationTitle(item);
+                    const badgeText = getAccreditationBadge(item, cardTitle);
+                    const cardUrl = item.slug ? `/accreditations/${item.slug}` : (item.url || "/accreditations");
+
+                    return (
+                      <div
+                        key={item._id || idx}
+                        className="bg-white border border-slate-200/90 rounded-2xl p-2.5 sm:p-3 flex flex-col justify-between shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:border-blue-300 transition-all"
+                      >
+                        <div>
+                          {/* Top Section: Logo Left + Title Right */}
+                          <div className="flex items-center gap-2">
+                            {logoSrc ? (
+                              <Link
+                                href={cardUrl}
+                                onClick={() => closeMobile()}
+                                className="relative w-8 h-8 sm:w-9 sm:h-9 shrink-0 flex items-center justify-center"
+                              >
+                                <Image
+                                  src={resolveImg(logoSrc)}
+                                  alt={cardTitle}
+                                  fill
+                                  unoptimized
+                                  sizes="36px"
+                                  className="object-contain"
+                                />
+                              </Link>
+                            ) : (
+                              <Link
+                                href={cardUrl}
+                                onClick={() => closeMobile()}
+                                className="flex items-center justify-center shrink-0 mt-0.5"
+                              >
+                                <span className="w-2 h-2 rounded-full bg-[#0B57D0]" />
+                              </Link>
+                            )}
+
+                            {/* Title */}
+                            <div className="flex-1 min-w-0 text-left">
+                              <Link
+                                href={cardUrl}
+                                onClick={() => closeMobile()}
+                                className="block hover:text-[#0B57D0]"
+                              >
+                                <h4 className="text-[11.5px] font-bold text-[#072C50] leading-snug line-clamp-2 m-0">
+                                  {cardTitle}
+                                </h4>
+                              </Link>
+                            </div>
+                          </div>
+
+                          {/* Badges Row */}
+                          <div className="flex items-center justify-between gap-1.5 mt-1.5 text-[9.5px] min-w-0">
+                            <span className="inline-flex items-center gap-1 text-slate-600 font-semibold min-w-0 truncate">
+                              <svg className="w-3 h-3 text-emerald-600 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                              </svg>
+                              <span className="truncate">{badgeText}</span>
+                            </span>
+                            <span className="inline-flex items-center text-[9px] font-bold text-[#351C00] bg-[#E4BE75]/80 px-1.5 py-0.5 rounded-full leading-none whitespace-nowrap shrink-0">
+                              List {currentYear}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Action Buttons Row */}
+                        <div className="flex items-center justify-between pt-2 mt-2 border-t border-slate-100">
+                          <Link
+                            href={cardUrl}
+                            onClick={() => closeMobile()}
+                            className="px-2.5 py-0.5 text-[10px] font-semibold text-slate-700 bg-white border border-slate-300 rounded-full hover:bg-slate-50 transition"
+                          >
+                            Know More
+                          </Link>
+                          <Link
+                            href="/universities"
+                            onClick={() => closeMobile()}
+                            className="text-[10px] font-bold text-[#072C50] hover:text-[#0B57D0] flex items-center gap-0.5 transition"
+                          >
+                            <span>View Unis</span>
+                            <span className="text-[11px]">→</span>
+                          </Link>
+                        </div>
+                      </div>
                     );
                   }
 
@@ -1447,7 +1767,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                               className="block hover:text-[#0B57D0]"
                             >
                               <h4 className="text-[11.5px] font-bold text-[#072C50] leading-snug line-clamp-2 m-0">
-                                {item.name || item.title}
+                                {mobileSubCategoryView?.type === "programs" ? cleanCourseDisplayName(item.name || item.title) : (item.name || item.title)}
                               </h4>
                             </Link>
                           </div>
@@ -1483,7 +1803,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                           onClick={() => closeMobile()}
                           className="inline-flex items-center justify-center px-2 py-1 text-[9.5px] font-bold text-[#072C50] hover:text-[#0B57D0] border border-slate-300 rounded-2xl bg-white hover:bg-slate-50 transition-colors whitespace-nowrap"
                         >
-                          Know More
+                          {isAcc ? "Verify" : "Know More"}
                         </Link>
                         {!item.is_dynamic_listing && (
                           <Link
@@ -1491,7 +1811,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                             onClick={() => closeMobile()}
                             className="inline-flex items-center gap-0.5 text-[9.5px] font-bold text-[#072C50] hover:text-[#0B57D0] transition-colors whitespace-nowrap overflow-hidden"
                           >
-                            <span className="truncate">View Courses</span>
+                            <span className="truncate">{isAcc ? "Directory" : "View Courses"}</span>
                             <RightOutlined className="text-[6.5px] shrink-0" />
                           </Link>
                         )}
