@@ -180,7 +180,6 @@ function FilterSidebarContent({
           <span>Category</span>
         </label>
         <Select
-          showSearch
           placeholder="All Categories"
           value={currentCategoryValue}
           onChange={(val) => {
@@ -193,10 +192,6 @@ function FilterSidebarContent({
           }}
           className="w-full"
           options={categorySelectOptions}
-          optionFilterProp="label"
-          filterOption={(input, option) =>
-            (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-          }
         />
       </div>
 
@@ -207,7 +202,6 @@ function FilterSidebarContent({
           <span>Sub Category</span>
         </label>
         <Select
-          showSearch
           placeholder="All Sub Categories"
           value={
             Array.isArray(activeSubcategory) && activeSubcategory.length > 0
@@ -220,10 +214,6 @@ function FilterSidebarContent({
           }}
           className="w-full"
           options={subcategorySelectOptions}
-          optionFilterProp="label"
-          filterOption={(input, option) =>
-            (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-          }
         />
       </div>
 
@@ -234,7 +224,6 @@ function FilterSidebarContent({
           <span>Course</span>
         </label>
         <Select
-          showSearch
           placeholder="All Courses"
           value={
             (() => {
@@ -257,10 +246,6 @@ function FilterSidebarContent({
           }}
           className="w-full"
           options={courseSelectOptions}
-          optionFilterProp="label"
-          filterOption={(input, option) =>
-            (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-          }
         />
       </div>
 
@@ -271,7 +256,6 @@ function FilterSidebarContent({
           <span>Sub Course</span>
         </label>
         <Select
-          showSearch
           placeholder="All Sub Courses"
           value={
             (() => {
@@ -294,10 +278,6 @@ function FilterSidebarContent({
           }}
           className="w-full"
           options={subcourseSelectOptions}
-          optionFilterProp="label"
-          filterOption={(input, option) =>
-            (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-          }
         />
       </div>
 
@@ -308,7 +288,6 @@ function FilterSidebarContent({
           <span>Institute</span>
         </label>
         <Select
-          showSearch
           placeholder="All Institute"
           value={
             selectedUniversities && selectedUniversities.length > 0
@@ -322,10 +301,6 @@ function FilterSidebarContent({
           }}
           className="w-full"
           options={universityOptions}
-          optionFilterProp="label"
-          filterOption={(input, option) =>
-            (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-          }
         />
       </div>
 
@@ -1137,7 +1112,6 @@ export default function CoursesPageClientView({
       <div className="lg:hidden flex items-center gap-2 mb-4 bg-white p-2.5 rounded-2xl border border-gray-200">
         <div className="flex-1 grid grid-cols-2 gap-2 min-w-0">
           <Select
-            showSearch
             value={
               selectedCourse && selectedCourse !== "all"
                 ? selectedCourse
@@ -1158,10 +1132,8 @@ export default function CoursesPageClientView({
             options={categorySelectOptions}
             className="w-full"
             placeholder="Category"
-            optionFilterProp="label"
           />
           <Select
-            showSearch
             value={
               Array.isArray(activeSubcategory) && activeSubcategory.length > 0
                 ? activeSubcategory[0]
@@ -1174,7 +1146,6 @@ export default function CoursesPageClientView({
             options={subcategorySelectOptions}
             className="w-full"
             placeholder="Sub Category"
-            optionFilterProp="label"
           />
         </div>
         <button
@@ -1706,6 +1677,8 @@ export default function CoursesPageClientView({
 
       {/* Mobile Drawer Filter */}
       <Drawer
+        autoFocus={false}
+        focusTriggerAfterClose={false}
         title={
           <div className="flex items-center justify-between w-full pr-4">
             <div className="flex items-center gap-2">
@@ -1722,13 +1695,23 @@ export default function CoursesPageClientView({
           </div>
         }
         placement="bottom"
-        onClose={() => setIsMobileDrawerOpen(false)}
+        onClose={() => {
+          if (typeof document !== "undefined" && document.activeElement && typeof document.activeElement.blur === "function") {
+            document.activeElement.blur();
+          }
+          setIsMobileDrawerOpen(false);
+        }}
         open={isMobileDrawerOpen}
         className="lg:hidden"
         footer={
           <div className="flex items-center gap-3 p-2 border-t border-gray-100">
             <button
               type="button"
+              onPointerDown={() => {
+                if (typeof document !== "undefined" && document.activeElement && typeof document.activeElement.blur === "function") {
+                  document.activeElement.blur();
+                }
+              }}
               onClick={() => setIsMobileDrawerOpen(false)}
               className="flex-1 py-2.5 px-4 rounded-xl border border-gray-300 text-gray-700 font-semibold text-sm bg-white hover:bg-gray-50 cursor-pointer transition-colors"
             >
@@ -1736,6 +1719,11 @@ export default function CoursesPageClientView({
             </button>
             <button
               type="button"
+              onPointerDown={() => {
+                if (typeof document !== "undefined" && document.activeElement && typeof document.activeElement.blur === "function") {
+                  document.activeElement.blur();
+                }
+              }}
               onClick={handleApplyMobileFilters}
               className="flex-1 py-2.5 px-4 rounded-xl bg-[#0a2540] hover:bg-[#06182c] text-white font-bold text-sm border-none cursor-pointer transition-colors shadow-sm"
             >
