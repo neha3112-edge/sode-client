@@ -1767,7 +1767,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                               className="block hover:text-[#0B57D0]"
                             >
                               <h4 className="text-[11.5px] font-bold text-[#072C50] leading-snug line-clamp-2 m-0">
-                                {mobileSubCategoryView?.type === "programs" ? cleanCourseDisplayName(item.name || item.title) : (item.name || item.title)}
+                                {selectedMobileCategory?.type === "programs" ? cleanCourseDisplayName(item.name || item.title) : (item.name || item.title)}
                               </h4>
                             </Link>
                           </div>
