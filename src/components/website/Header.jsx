@@ -1443,7 +1443,12 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
             wrapper: { height: "auto", maxHeight: "92vh" },
             section: { height: "auto", maxHeight: "92vh", borderBottomLeftRadius: "24px", borderBottomRightRadius: "24px", overflow: "hidden" },
             header: { padding: "8px 16px", backgroundColor: "#ffffff", borderBottom: "1px solid #f1f5f9" },
-            body: { padding: "14px 16px 28px", height: "auto", maxHeight: "calc(92vh - 64px)", overflowY: "auto" },
+            body: {
+              padding: selectedMobileCategory ? "0 16px 28px" : "14px 16px 28px",
+              height: "auto",
+              maxHeight: "calc(92vh - 64px)",
+              overflowY: "auto",
+            },
           }}
           title={
             <div className="flex items-center justify-between w-full">
@@ -1583,8 +1588,8 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
           ) : (
             /* ── VIEW 2: 2-COLUMN CARDS GRID (Matching Phone 2 Mockup) ── */
             <div>
-              {/* Back Header - Sticky so it is always visible at the top */}
-              <div className="sticky top-0 bg-white z-10 flex items-center justify-between pb-3 mb-3 border-b border-slate-100 -mt-2 pt-2">
+              {/* Back Header - Full touch to the top with solid background and zero gap */}
+              <div className="sticky top-0 bg-white z-30 flex items-center justify-between py-2.5 mb-3 border-b border-slate-100 -mx-4 px-4 shadow-[0_2px_6px_rgba(0,0,0,0.03)]">
                 <button
                   type="button"
                   onClick={() => {
