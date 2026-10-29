@@ -698,18 +698,27 @@ export default function CompareUniversityClientView({
   const findCourseOffering = (uni, courseName) => {
     if (!uni) return null;
 
+    const buildOfferingItem = (item, defaultName) => {
+      if (!item) return null;
+      return {
+        course_name: item.name || item.course_name || defaultName || "Selected Program",
+        fee_per_semester: item.fee_per_semester || null,
+        fee_per_semester_gross: item.fee_per_semester_gross || null,
+        full_course_fee: item.full_course_fee || null,
+        full_course_fee_gross: item.full_course_fee_gross || null,
+        has_discount: Boolean(item.has_discount || item.fee_details?.has_discount),
+        fee_discount: item.fee_discount || item.fee_details?.discount_text || null,
+        fee_details: item.fee_details || null,
+        rating: item.rating || uni.rating || 4.5,
+        duration: item.duration || "2–3 Years",
+        eligibility: item.eligibility || "Graduation / 10+2 from recognized board",
+        specializations: item.specializations?.length ? item.specializations : [],
+      };
+    };
+
     if (uni.isCourseOffering || uni.type === "course_offering") {
       const firstSub = (uni.courses || [])[0];
-      return {
-        course_name: uni.course_name || uni.title || firstSub?.name || "Selected Program",
-        fee_per_semester: uni.fee_per_semester || firstSub?.fee_per_semester || null,
-        full_course_fee: uni.full_course_fee || firstSub?.full_course_fee || null,
-        fee_discount: uni.fee_discount || "Upto 20%",
-        rating: uni.rating || 4.5,
-        duration: uni.duration || firstSub?.duration || "2–3 Years",
-        eligibility: uni.eligibility || firstSub?.eligibility || "Graduation / 10+2 from recognized board",
-        specializations: uni.specializations?.length ? uni.specializations : (firstSub?.specializations || []),
-      };
+      return buildOfferingItem(firstSub || uni, uni.title || uni.course_name);
     }
 
     const coursesList = Array.isArray(uni.courses) && uni.courses.length > 0
@@ -720,19 +729,7 @@ export default function CompareUniversityClientView({
 
     if (!courseName || courseName === "all") {
       const first = coursesList[0];
-      if (first) {
-        return {
-          course_name: first.name || first.course_name || "General Program",
-          fee_per_semester: first.fee_per_semester || null,
-          full_course_fee: first.full_course_fee || null,
-          fee_discount: first.fee_discount || "Upto 20%",
-          rating: first.rating || uni.rating || 4.5,
-          duration: first.duration || "2–3 Years",
-          eligibility: first.eligibility || "Graduation / 10+2",
-          specializations: first.specializations || [],
-        };
-      }
-      return null;
+      return first ? buildOfferingItem(first, "General Program") : null;
     }
 
     const target = courseName.trim().toLowerCase();
@@ -765,16 +762,7 @@ export default function CompareUniversityClientView({
     });
 
     if (match) {
-      return {
-        course_name: match.name || match.course_name || courseName,
-        fee_per_semester: match.fee_per_semester || null,
-        full_course_fee: match.full_course_fee || null,
-        fee_discount: match.fee_discount || "Upto 20%",
-        rating: match.rating || uni.rating || 4.5,
-        duration: match.duration || "2–3 Years",
-        eligibility: match.eligibility || "Graduation / 10+2",
-        specializations: match.specializations || [],
-      };
+      return buildOfferingItem(match, courseName);
     }
 
     const inOffered = (uni.coursesOffered || []).some((c) => {
@@ -782,32 +770,13 @@ export default function CompareUniversityClientView({
       return cl === target || (cleanTarget && cl === cleanTarget) || cl.includes(`(${target})`) || wordRegex.test(cl);
     });
     if (inOffered && coursesList[0]) {
-      const first = coursesList[0];
-      return {
-        course_name: courseName,
-        fee_per_semester: first?.fee_per_semester || null,
-        full_course_fee: first?.full_course_fee || null,
-        fee_discount: first?.fee_discount || "Upto 20%",
-        rating: first?.rating || uni.rating || 4.5,
-        duration: first?.duration || "2–3 Years",
-        eligibility: first?.eligibility || "Graduation / 10+2",
-        specializations: first?.specializations || [],
-      };
+      return buildOfferingItem(coursesList[0], courseName);
     }
 
     // Reliable fallback: If university has offerings, use first course so comparison cells are never empty dashes
     const fallbackCourse = coursesList[0];
     if (fallbackCourse) {
-      return {
-        course_name: fallbackCourse.name || fallbackCourse.course_name || courseName,
-        fee_per_semester: fallbackCourse.fee_per_semester || null,
-        full_course_fee: fallbackCourse.full_course_fee || null,
-        fee_discount: fallbackCourse.fee_discount || "Upto 20%",
-        rating: fallbackCourse.rating || uni.rating || 4.5,
-        duration: fallbackCourse.duration || "2–3 Years",
-        eligibility: fallbackCourse.eligibility || "Graduation / 10+2",
-        specializations: fallbackCourse.specializations || [],
-      };
+      return buildOfferingItem(fallbackCourse, courseName);
     }
 
     return null;
@@ -843,7 +812,7 @@ export default function CompareUniversityClientView({
           </button>
           <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg border border-gray-200 bg-white p-1 flex items-center justify-center relative">
             {uni.logo ? (
-              <Image src={getAssetPath(uni.logo)} alt={uni.name || "Logo"} fill className="object-contain p-0.5" />
+              <Image src={getAssetPath(uni.logo)} alt={uni.name || "Logo"} fill sizes="(max-width: 640px) 36px, 40px" className="object-contain p-0.5" />
             ) : (
               <span className="text-sm font-semibold text-[#0C3058]">{(uni.name || "U")[0]}</span>
             )}
@@ -941,13 +910,31 @@ export default function CompareUniversityClientView({
           featureTitle: "Fees per Semester",
           renderCell: (uni) => {
             const off = findCourseOffering(uni, cName);
-            if (off?.fee_per_semester) {
-              return <span className="text-[11px] text-emerald-700 font-semibold">{off.fee_per_semester}</span>;
+            if (!off) return <span className="text-slate-400 text-[11px]">-</span>;
+
+            const fd = off.fee_details;
+            const hasDiscount = Boolean(fd?.sem_has_discount || (off.has_discount && off.fee_per_semester_gross));
+            const grossFee = fd?.sem_gross || off.fee_per_semester_gross;
+            const payableFee = fd?.sem_net || off.fee_per_semester;
+
+            if (payableFee) {
+              return (
+                <div className="flex items-center justify-center gap-1.5 flex-wrap">
+                  {hasDiscount && grossFee && grossFee !== payableFee && (
+                    <span className="text-[10px] sm:text-[11px] font-bold text-gray-500 line-through decoration-red-600 decoration-1.5">
+                      {grossFee}
+                    </span>
+                  )}
+                  <span className="text-[11px] sm:text-xs text-emerald-700 font-bold">
+                    {payableFee}
+                  </span>
+                </div>
+              );
             }
-            if (off?.full_course_fee) {
-              return <span className="text-[11px] text-emerald-700 font-semibold">{off.full_course_fee}</span>;
+            if (off.full_course_fee) {
+              return <span className="text-slate-600 font-medium text-[11px]">{off.full_course_fee}</span>;
             }
-            return <span className="text-slate-400 font-medium text-[11px]">{off ? "Available on Inquiry" : "-"}</span>;
+            return <span className="text-slate-400 font-medium text-[11px]">Available on Inquiry</span>;
           },
         },
         {
@@ -956,11 +943,28 @@ export default function CompareUniversityClientView({
           featureTitle: "Total / Full Course Fee",
           renderCell: (uni) => {
             const off = findCourseOffering(uni, cName);
-            return off?.full_course_fee ? (
-              <span className="text-slate-600 font-medium text-[11px]">{off.full_course_fee}</span>
-            ) : (
-              <span className="text-slate-400 font-medium text-[11px]">{off ? "Available on Inquiry" : "-"}</span>
-            );
+            if (!off) return <span className="text-slate-400 text-[11px]">-</span>;
+
+            const fd = off.fee_details;
+            const hasDiscount = Boolean(fd?.full_has_discount || (off.has_discount && off.full_course_fee_gross));
+            const grossFee = fd?.full_gross || off.full_course_fee_gross;
+            const payableFee = fd?.full_net || off.full_course_fee;
+
+            if (payableFee) {
+              return (
+                <div className="flex items-center justify-center gap-1.5 flex-wrap">
+                  {hasDiscount && grossFee && grossFee !== payableFee && (
+                    <span className="text-[10px] sm:text-[11px] font-bold text-gray-500 line-through decoration-red-600 decoration-1.5">
+                      {grossFee}
+                    </span>
+                  )}
+                  <span className="text-[11px] sm:text-xs text-slate-800 font-bold">
+                    {payableFee}
+                  </span>
+                </div>
+              );
+            }
+            return <span className="text-slate-400 font-medium text-[11px]">Available on Inquiry</span>;
           },
         },
         {
@@ -969,13 +973,26 @@ export default function CompareUniversityClientView({
           featureTitle: "Fees Discount & Scholarships",
           renderCell: (uni) => {
             const off = findCourseOffering(uni, cName);
-            return off ? (
-              <span className="text-[11px] text-slate-600 font-medium">
-                {off.fee_discount || "Upto 20% Available"}
-              </span>
-            ) : (
-              <span className="text-slate-400 text-[11px]">-</span>
-            );
+            if (!off) return <span className="text-slate-400 text-[11px]">-</span>;
+
+            const disc = String(off.fee_discount || off.fee_details?.discount_text || "").trim();
+            const isInvalidOrFallback = !disc || /upto/i.test(disc) || /no\s*discount/i.test(disc);
+
+            if (!isInvalidOrFallback) {
+              return (
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  🏷️ {disc}
+                </span>
+              );
+            }
+            if (off.has_discount || off.fee_details?.has_discount) {
+              return (
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  🏷️ Scholarship Available
+                </span>
+              );
+            }
+            return <span className="text-slate-500 font-medium text-[11px]">Available on Inquiry</span>;
           },
         },
         {
@@ -1036,19 +1053,53 @@ export default function CompareUniversityClientView({
       ]
       : [
         {
-          key: `courses_offered`,
+          key: "courses_offered",
           icon: <BookOutlined className="text-blue-600" />,
           featureTitle: "Courses Offered",
           renderCell: (u) => {
-            const coursesList = (u.courses || []).map((c) => c?.name || c).filter(Boolean);
-            const fallback = Array.isArray(u.coursesOffered) ? u.coursesOffered : [];
-            const allC = coursesList.length > 0 ? coursesList : fallback;
-            return allC.length > 0 ? listTags(allC) : <span className="text-slate-400 text-[11px]">-</span>;
+            let list = [];
+            if (Array.isArray(u.online_courses) && u.online_courses.length > 0) {
+              list = u.online_courses;
+            } else if (Array.isArray(u.distance_courses) && u.distance_courses.length > 0) {
+              list = u.distance_courses;
+            } else {
+              const allCourses = Array.isArray(u.courses) && u.courses.length > 0
+                ? u.courses
+                : (Array.isArray(u.coursesOffered) ? u.coursesOffered : []);
+              list = allCourses.map((c) => (typeof c === "object" ? c?.clean_name || c?.name || c?.raw_name : c));
+            }
+
+            const cleanList = Array.from(
+              new Set(
+                (list || [])
+                  .map((s) => String(s || "").replace(/\b(online|distance)\b/gi, "").trim().replace(/\s+/g, " "))
+                  .filter(Boolean)
+              )
+            );
+
+            return cleanList.length > 0 ? listTags(cleanList) : <span className="text-slate-400 text-[11px]">-</span>;
           },
         },
       ];
 
     const uniRows = [
+      {
+        key: "mode",
+        icon: <BookOutlined className="text-blue-600" />,
+        featureTitle: "Mode of Education",
+        renderCell: (u) => {
+          const rawMode = typeof u.mode === "object" ? u.mode?.name : u.mode;
+          let cleanMode = rawMode
+            ? Array.from(new Set(String(rawMode).split(",").map((s) => s.trim()).filter(Boolean))).join(", ")
+            : "";
+          if (!cleanMode || cleanMode === "-") {
+            if (u.online_courses?.length && !u.distance_courses?.length) cleanMode = "Online";
+            else if (u.distance_courses?.length && !u.online_courses?.length) cleanMode = "Distance";
+            else if (u.online_courses?.length && u.distance_courses?.length) cleanMode = "Online, Distance";
+          }
+          return <span className="text-slate-600 font-medium text-[11px]">{cleanMode || "-"}</span>;
+        },
+      },
       { key: "ownership", icon: <BankOutlined className="text-blue-600" />, featureTitle: "Ownership Type", renderCell: (u) => listTags(Array.isArray(u.ownership_type) ? u.ownership_type : u.ownership_type ? [u.ownership_type] : []) },
       { key: "location", icon: <GlobalOutlined className="text-blue-600" />, featureTitle: "University Location", renderCell: (u) => <span className="text-slate-600 font-medium text-[11px]">{u.location || "-"}</span> },
       { key: "est_year", icon: <ClockCircleOutlined className="text-blue-600" />, featureTitle: "Year of Establishment", renderCell: (u) => <span className="font-medium text-slate-600 text-[11px]">{u.established_year || "-"}</span> },
@@ -1085,7 +1136,6 @@ export default function CompareUniversityClientView({
       { key: "placement", icon: <TrophyOutlined className="text-blue-600" />, featureTitle: "Placement Assistance", renderCell: (u) => boolCell(u.placement_assistance) },
       { key: "emi", icon: <CreditCardOutlined className="text-blue-600" />, featureTitle: "EMI Facility", renderCell: (u) => boolCell(u.emi_available) },
       { key: "scholarship", icon: <DollarOutlined className="text-blue-600" />, featureTitle: "Scholarship Opportunities", renderCell: (u) => boolCell(u.scholarship_available) },
-      { key: "mode", icon: <BookOutlined className="text-blue-600" />, featureTitle: "Mode of Education", renderCell: (u) => <span className="text-slate-600 font-medium text-[11px]">{(typeof u.mode === "object" ? u.mode?.name : u.mode) || "-"}</span> },
       { key: "exam_mode", icon: <LaptopOutlined className="text-blue-600" />, featureTitle: "Examination Mode", renderCell: (u) => listTags(Array.isArray(u.exam_mode) ? u.exam_mode : u.exam_mode ? [u.exam_mode] : []) },
       {
         key: "approvals",
@@ -1115,6 +1165,7 @@ export default function CompareUniversityClientView({
                       src={logo}
                       alt={name}
                       fill
+                      sizes="56px"
                       className="object-contain"
                     />
                   </div>
@@ -1208,6 +1259,7 @@ export default function CompareUniversityClientView({
                                 src={getAssetPath(rawImage)}
                                 alt={displayTitle || "Image"}
                                 fill
+                                sizes="(max-width: 640px) 75px, 180px"
                                 className="object-contain"
                               />
                             ) : (
@@ -1380,28 +1432,69 @@ export default function CompareUniversityClientView({
           <div>
             {/* Desktop Table */}
             <div className="hidden md:block bg-white rounded-2xl overflow-hidden shadow-md">
-              <Table columns={tableColumns} dataSource={tableDataSource} pagination={false} bordered size="small" scroll={{ x: "max-content" }} rowKey="key" className="w-full [&_.ant-table-cell]:py-2! [&_.ant-table-cell]:px-2.5!" />
-              {/* Single Centered Footer Row of Buttons */}
-              <div className="flex items-center justify-center gap-2 py-3 px-4 bg-slate-50 border-t border-slate-200">
-                <Button
-                  size="small"
-                  type="primary"
-                  onClick={() => openFormModal({ title: `Apply Now - ${comparedData.map((u) => u.name).filter(Boolean).join(" vs ")}`, subtitle: "Fill your details to get free expert 1:1 counseling", defaultCourse: selectedCourse || "General Counseling" })}
-                  className="bg-[#00B4D8] hover:bg-[#0096C7] border-none font-semibold text-[11px] sm:text-xs rounded-xl cursor-pointer"
-                >
-                  Apply Now
-                </Button>
-                {comparedData[0]?.slug && (
-                  <Link href={`/universities/${comparedData[0].slug}`}>
-                    <Button
-                      size="small"
-                      className="bg-[#0C3058] text-white hover:bg-[#0a2540] border-none font-semibold text-[11px] sm:text-xs rounded-xl cursor-pointer"
-                    >
-                      View Details
-                    </Button>
-                  </Link>
+              <Table
+                columns={tableColumns}
+                dataSource={tableDataSource}
+                pagination={false}
+                bordered
+                size="small"
+                scroll={{ x: "max-content" }}
+                rowKey="key"
+                className="w-full [&_.ant-table-cell]:py-2! [&_.ant-table-cell]:px-2.5!"
+                summary={() => (
+                  <Table.Summary>
+                    <Table.Summary.Row className="bg-slate-50/90 font-medium">
+                      <Table.Summary.Cell index={0} className="bg-slate-50/80 px-2.5 py-3 text-center">
+                        <span className="sr-only">Actions</span>
+                      </Table.Summary.Cell>
+                      {comparedData.map((uni, idx) => {
+                        const detailLink = uni.url || (uni.slug ? `/universities/${uni.slug}` : null);
+                        return (
+                          <Table.Summary.Cell key={uni._id || uni.slug || idx} index={idx + 1} align="center" className="py-3 px-2">
+                            <div className="flex items-center justify-center gap-2">
+                              <Button
+                                size="small"
+                                type="primary"
+                                onClick={() =>
+                                  openFormModal({
+                                    title: `Apply Now - ${uni.name || uni.title || ""}`,
+                                    subtitle: "Fill your details to get free expert 1:1 counseling",
+                                    defaultCourse: selectedCourse || "General Counseling",
+                                  })
+                                }
+                                className="bg-[#00B4D8] hover:bg-[#0096C7] border-none font-semibold text-[11px] sm:text-xs rounded-xl cursor-pointer shadow-xs"
+                              >
+                                Apply Now
+                              </Button>
+                              {detailLink && (
+                                detailLink.startsWith("http") ? (
+                                  <a href={detailLink} target="_blank" rel="noopener noreferrer">
+                                    <Button
+                                      size="small"
+                                      className="bg-[#0C3058] text-white hover:bg-[#0a2540] border-none font-semibold text-[11px] sm:text-xs rounded-xl cursor-pointer shadow-xs"
+                                    >
+                                      Know More
+                                    </Button>
+                                  </a>
+                                ) : (
+                                  <Link href={detailLink}>
+                                    <Button
+                                      size="small"
+                                      className="bg-[#0C3058] text-white hover:bg-[#0a2540] border-none font-semibold text-[11px] sm:text-xs rounded-xl cursor-pointer shadow-xs"
+                                    >
+                                      Know More
+                                    </Button>
+                                  </Link>
+                                )
+                              )}
+                            </div>
+                          </Table.Summary.Cell>
+                        );
+                      })}
+                    </Table.Summary.Row>
+                  </Table.Summary>
                 )}
-              </div>
+              />
             </div>
 
             {/* Mobile Cards */}
@@ -1413,7 +1506,7 @@ export default function CompareUniversityClientView({
                       <CloseOutlined className="text-[7px]" />
                     </button>
                     <div className="w-8 h-8 rounded-lg border border-slate-200 bg-white p-0.5 flex items-center justify-center relative">
-                      {uni.logo ? <Image src={getAssetPath(uni.logo)} alt={uni.name || "Logo"} fill className="object-contain p-0.5" /> : <span className="text-xs font-bold text-[#1C3569]">{(uni.name || "U")[0]}</span>}
+                      {uni.logo ? <Image src={getAssetPath(uni.logo)} alt={uni.name || "Logo"} fill sizes="32px" className="object-contain p-0.5" /> : <span className="text-xs font-bold text-[#1C3569]">{(uni.name || "U")[0]}</span>}
                     </div>
                     <h4 className="text-[11px] font-bold text-[#1C3569] m-0 line-clamp-2">{uni.isCourseOffering ? uni.title : uni.name}</h4>
                   </div>
@@ -1435,26 +1528,50 @@ export default function CompareUniversityClientView({
                   </div>
                 ))}
               </div>
-              {/* Single Centered Footer Row of Buttons on Mobile */}
-              <div className="flex items-center justify-center gap-2 py-3 px-4 bg-slate-50 border-t border-slate-200">
-                <Button
-                  size="small"
-                  type="primary"
-                  onClick={() => openFormModal({ title: `Apply Now - ${comparedData.map((u) => u.name).filter(Boolean).join(" vs ")}`, subtitle: "Fill your details to get free expert 1:1 counseling", defaultCourse: selectedCourse || "General Counseling" })}
-                  className="bg-[#00B4D8] hover:bg-[#0096C7] border-none font-semibold text-[11px] sm:text-xs rounded-xl cursor-pointer"
-                >
-                  Apply Now
-                </Button>
-                {comparedData[0]?.slug && (
-                  <Link href={`/universities/${comparedData[0].slug}`}>
-                    <Button
-                      size="small"
-                      className="bg-[#0C3058] text-white hover:bg-[#0a2540] border-none font-semibold text-[11px] sm:text-xs rounded-xl cursor-pointer"
-                    >
-                      View Details
-                    </Button>
-                  </Link>
-                )}
+              {/* Separate Column Buttons on Mobile */}
+              <div className={`grid ${comparedData.length === 1 ? "grid-cols-1" : comparedData.length === 2 ? "grid-cols-2" : "grid-cols-3"} divide-x divide-slate-200 bg-slate-50 border-t border-slate-200 p-2`}>
+                {comparedData.map((uni, idx) => {
+                  const detailLink = uni.url || (uni.slug ? `/universities/${uni.slug}` : null);
+                  return (
+                    <div key={idx} className="flex flex-col items-center justify-center gap-1.5 px-1 py-1">
+                      <Button
+                        size="small"
+                        type="primary"
+                        onClick={() =>
+                          openFormModal({
+                            title: `Apply Now - ${uni.name || uni.title || ""}`,
+                            subtitle: "Fill your details to get free expert 1:1 counseling",
+                            defaultCourse: selectedCourse || "General Counseling",
+                          })
+                        }
+                        className="w-full bg-[#00B4D8] hover:bg-[#0096C7] border-none font-semibold text-[10px] sm:text-xs rounded-lg cursor-pointer h-7 px-1 truncate shadow-xs"
+                      >
+                        Apply Now
+                      </Button>
+                      {detailLink && (
+                        detailLink.startsWith("http") ? (
+                          <a href={detailLink} target="_blank" rel="noopener noreferrer" className="w-full">
+                            <Button
+                              size="small"
+                              className="w-full bg-[#0C3058] text-white hover:bg-[#0a2540] border-none font-semibold text-[10px] sm:text-xs rounded-lg cursor-pointer h-7 px-1 truncate shadow-xs"
+                            >
+                              Know More
+                            </Button>
+                          </a>
+                        ) : (
+                          <Link href={detailLink} className="w-full">
+                            <Button
+                              size="small"
+                              className="w-full bg-[#0C3058] text-white hover:bg-[#0a2540] border-none font-semibold text-[10px] sm:text-xs rounded-lg cursor-pointer h-7 px-1 truncate shadow-xs"
+                            >
+                              Know More
+                            </Button>
+                          </Link>
+                        )
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -1496,7 +1613,7 @@ export default function CompareUniversityClientView({
           className="rounded-2xl border-2 border-blue-500 bg-white p-2 flex items-center justify-center shadow-2xl"
         >
           {flyingLogo.logo
-            ? <div className="relative w-full h-full"><Image src={getAssetPath(flyingLogo.logo)} alt={flyingLogo.name || "Logo"} fill className="object-contain p-1" /></div>
+            ? <div className="relative w-full h-full"><Image src={getAssetPath(flyingLogo.logo)} alt={flyingLogo.name || "Logo"} fill sizes="64px" className="object-contain p-1" /></div>
             : <span className="text-base font-black text-[#1C3569]">{flyingLogo.name ? flyingLogo.name[0] : "U"}</span>
           }
         </div>
@@ -1633,7 +1750,7 @@ export default function CompareUniversityClientView({
                     >
                       <div className="relative w-full h-14 sm:h-16 flex items-center justify-center p-1">
                         {rawLogo ? (
-                          <Image src={getAssetPath(rawLogo)} alt={st.name} fill className="object-contain" />
+                          <Image src={getAssetPath(rawLogo)} alt={st.name} fill sizes="(max-width: 640px) 140px, 180px" className="object-contain" />
                         ) : (
                           <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-500">
                             <EnvironmentOutlined className="text-lg" />
@@ -1672,7 +1789,7 @@ export default function CompareUniversityClientView({
                     >
                       <div className="relative w-full h-14 sm:h-16 flex items-center justify-center p-1">
                         {rawLogo ? (
-                          <Image src={getAssetPath(rawLogo)} alt={app.name || app.code} fill className="object-contain" />
+                          <Image src={getAssetPath(rawLogo)} alt={app.name || app.code} fill sizes="(max-width: 640px) 140px, 180px" className="object-contain" />
                         ) : (
                           <span className="text-base sm:text-lg font-bold text-[#0C3058] bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1">
                             {app.code || (app.name || "A").slice(0, 4)}
@@ -1719,7 +1836,7 @@ export default function CompareUniversityClientView({
                       {/* Logo */}
                       <div className="relative w-full h-14 sm:h-16 flex items-center justify-center p-1">
                         {rawLogo ? (
-                          <Image src={getAssetPath(rawLogo)} alt={uni.name || "University Logo"} fill className="object-contain" />
+                          <Image src={getAssetPath(rawLogo)} alt={uni.name || "University Logo"} fill sizes="(max-width: 640px) 140px, 180px" className="object-contain" />
                         ) : (
                           <span className="text-xl font-bold text-[#0C3058]">{(uni.name || "U")[0]}</span>
                         )}
