@@ -465,10 +465,14 @@ export default function CompareUniversityClientView({
     }
   };
 
-  const lastHandledKey = useRef(null);
-
-  // Auto-open university selection modal when navigating with exactly 1 university selected
+  // Auto-open university selection modal only once when navigating with exactly 1 university selected
   useEffect(() => {
+    if (hasAutoOpenedModal.current) return;
+    if (isComparisonView) {
+      hasAutoOpenedModal.current = true;
+      return;
+    }
+
     const urlUniParam =
       searchParams.get("university") ||
       searchParams.get("universityid") ||
@@ -476,25 +480,13 @@ export default function CompareUniversityClientView({
       searchParams.get("universities") ||
       "";
 
-    const compareListKey = (compareList || [])
-      .map((u) => u.uniSlug || (u.slug && !u.slug.includes("/") ? u.slug : null) || u.slug?.split("/")[0] || u._id || u.id)
-      .filter(Boolean)
-      .sort()
-      .join(",");
-
-    const navigationKey = urlUniParam.trim().toLowerCase() || compareListKey;
-
-    // Reset auto-open flag if the navigation key changed (e.g. user came with a new university)
-    if (navigationKey && lastHandledKey.current !== navigationKey) {
-      lastHandledKey.current = navigationKey;
-      hasAutoOpenedModal.current = false;
-    }
-
-    if (hasAutoOpenedModal.current) return;
+    const urlSlugs = urlUniParam
+      ? urlUniParam.split(",").map((s) => s.trim()).filter(Boolean)
+      : [];
 
     const count =
-      initialComparedData?.length > 0
-        ? initialComparedData.length
+      urlSlugs.length > 0
+        ? urlSlugs.length
         : comparedData?.length > 0
           ? comparedData.length
           : (compareList?.length || 0);
@@ -505,9 +497,10 @@ export default function CompareUniversityClientView({
     } else if (count >= 2) {
       hasAutoOpenedModal.current = true;
     }
-  }, [searchParams, initialComparedData, comparedData, compareList]);
+  }, [searchParams, isComparisonView, comparedData, compareList]);
 
   const handleApplyCompareFromModal = async () => {
+    hasAutoOpenedModal.current = true;
     setIsUniModalOpen(false);
     if (!modalSelectedUnis || modalSelectedUnis.length === 0) return;
 
@@ -574,7 +567,6 @@ export default function CompareUniversityClientView({
 
   const handleBackToSelection = () => {
     hasAutoOpenedModal.current = true;
-    lastHandledKey.current = "";
     clearCompare();
     setComparedData([]);
     setModalSelectedUnis([]);
