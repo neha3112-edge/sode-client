@@ -50,6 +50,25 @@ td,
   font-family: var(--font-roboto), Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
+/* Prevent virtual keyboard from popping up on mobile devices when tapping Select */
+.ant-select input,
+.ant-select-input,
+.ant-select-selection-search-input {
+  caret-color: transparent !important;
+}
+
+@media (max-width: 1024px) {
+  .ant-select input,
+  .ant-select-input,
+  .ant-select-selection-search-input,
+  .no-mobile-keyboard input {
+    pointer-events: none !important;
+    caret-color: transparent !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+  }
+}
+
 .font-poppins,
 .font-poppins *,
 .blog-poppins-layout,

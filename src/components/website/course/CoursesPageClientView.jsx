@@ -180,6 +180,12 @@ function FilterSidebarContent({
           <span>Category</span>
         </label>
         <Select
+          showSearch={false}
+          onOpenChange={(open) => {
+            if (!open && typeof document !== "undefined" && document.activeElement && typeof document.activeElement.blur === "function") {
+              document.activeElement.blur();
+            }
+          }}
           placeholder="All Categories"
           value={currentCategoryValue}
           onChange={(val) => {
@@ -202,6 +208,12 @@ function FilterSidebarContent({
           <span>Sub Category</span>
         </label>
         <Select
+          showSearch={false}
+          onOpenChange={(open) => {
+            if (!open && typeof document !== "undefined" && document.activeElement && typeof document.activeElement.blur === "function") {
+              document.activeElement.blur();
+            }
+          }}
           placeholder="All Sub Categories"
           value={
             Array.isArray(activeSubcategory) && activeSubcategory.length > 0
@@ -224,6 +236,12 @@ function FilterSidebarContent({
           <span>Course</span>
         </label>
         <Select
+          showSearch={false}
+          onOpenChange={(open) => {
+            if (!open && typeof document !== "undefined" && document.activeElement && typeof document.activeElement.blur === "function") {
+              document.activeElement.blur();
+            }
+          }}
           placeholder="All Courses"
           value={
             (() => {
@@ -256,6 +274,12 @@ function FilterSidebarContent({
           <span>Sub Course</span>
         </label>
         <Select
+          showSearch={false}
+          onOpenChange={(open) => {
+            if (!open && typeof document !== "undefined" && document.activeElement && typeof document.activeElement.blur === "function") {
+              document.activeElement.blur();
+            }
+          }}
           placeholder="All Sub Courses"
           value={
             (() => {
@@ -288,6 +312,12 @@ function FilterSidebarContent({
           <span>Institute</span>
         </label>
         <Select
+          showSearch={false}
+          onOpenChange={(open) => {
+            if (!open && typeof document !== "undefined" && document.activeElement && typeof document.activeElement.blur === "function") {
+              document.activeElement.blur();
+            }
+          }}
           placeholder="All Institute"
           value={
             selectedUniversities && selectedUniversities.length > 0
@@ -572,6 +602,83 @@ export default function CoursesPageClientView({
     setDraftFeeRange([0, 1000000]);
     setDraftDurationRange([3, 48]);
   };
+
+  // Prevent virtual mobile keyboard from opening on mobile devices when tapping Ant Design Selects
+  useEffect(() => {
+    if (typeof window === "undefined" || typeof document === "undefined") return;
+
+    const neutralizeInput = (input) => {
+      if (!input) return;
+      try {
+        input.setAttribute("inputmode", "none");
+        input.setAttribute("readonly", "true");
+        input.setAttribute("tabindex", "-1");
+        input.style.caretColor = "transparent";
+        input.style.pointerEvents = "none";
+        // Neutralize Ant Design's focus() call on the internal input
+        input.focus = () => {};
+      } catch (_) {}
+    };
+
+    const disableSelectInputsKeyboard = () => {
+      const inputs = document.querySelectorAll(
+        ".ant-select input, .ant-select-input, .ant-select-selection-search-input"
+      );
+      inputs.forEach(neutralizeInput);
+    };
+
+    disableSelectInputsKeyboard();
+
+    // Neutralize input immediately before any click/tap handler runs (capture phase)
+    const handlePointerCapture = (e) => {
+      const select = e.target?.closest?.(".ant-select");
+      if (select) {
+        const input = select.querySelector("input");
+        if (input) neutralizeInput(input);
+      }
+    };
+
+    // Block any focus event on select inputs from reaching external listeners / mobile virtual keyboard emulators
+    const handleFocusCapture = (e) => {
+      const target = e.target;
+      if (
+        target &&
+        target.tagName === "INPUT" &&
+        target.closest &&
+        target.closest(".ant-select")
+      ) {
+        e.stopImmediatePropagation();
+        e.stopPropagation();
+        neutralizeInput(target);
+        try {
+          HTMLInputElement.prototype.blur.call(target);
+        } catch (_) {}
+      }
+    };
+
+    window.addEventListener("pointerdown", handlePointerCapture, true);
+    window.addEventListener("touchstart", handlePointerCapture, true);
+    window.addEventListener("mousedown", handlePointerCapture, true);
+    window.addEventListener("focus", handleFocusCapture, true);
+    window.addEventListener("focusin", handleFocusCapture, true);
+
+    let observer;
+    if (document.body) {
+      observer = new MutationObserver(() => {
+        disableSelectInputsKeyboard();
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+    }
+
+    return () => {
+      window.removeEventListener("pointerdown", handlePointerCapture, true);
+      window.removeEventListener("touchstart", handlePointerCapture, true);
+      window.removeEventListener("mousedown", handlePointerCapture, true);
+      window.removeEventListener("focus", handleFocusCapture, true);
+      window.removeEventListener("focusin", handleFocusCapture, true);
+      if (observer) observer.disconnect();
+    };
+  }, []);
 
   const { openFormModal } = useFormModal();
   const { toggleCompare, isInCompare, setIsCompareDrawerOpen, compareList } = useCompare();
@@ -1112,6 +1219,12 @@ export default function CoursesPageClientView({
       <div className="lg:hidden flex items-center gap-2 mb-4 bg-white p-2.5 rounded-2xl border border-gray-200">
         <div className="flex-1 grid grid-cols-2 gap-2 min-w-0">
           <Select
+            showSearch={false}
+            onOpenChange={(open) => {
+              if (!open && typeof document !== "undefined" && document.activeElement && typeof document.activeElement.blur === "function") {
+                document.activeElement.blur();
+              }
+            }}
             value={
               selectedCourse && selectedCourse !== "all"
                 ? selectedCourse
@@ -1134,6 +1247,12 @@ export default function CoursesPageClientView({
             placeholder="Category"
           />
           <Select
+            showSearch={false}
+            onOpenChange={(open) => {
+              if (!open && typeof document !== "undefined" && document.activeElement && typeof document.activeElement.blur === "function") {
+                document.activeElement.blur();
+              }
+            }}
             value={
               Array.isArray(activeSubcategory) && activeSubcategory.length > 0
                 ? activeSubcategory[0]
@@ -1679,6 +1798,8 @@ export default function CoursesPageClientView({
       <Drawer
         autoFocus={false}
         focusTriggerAfterClose={false}
+        rootClassName="no-mobile-keyboard"
+        className="no-mobile-keyboard lg:hidden"
         title={
           <div className="flex items-center justify-between w-full pr-4">
             <div className="flex items-center gap-2">
@@ -1702,30 +1823,29 @@ export default function CoursesPageClientView({
           setIsMobileDrawerOpen(false);
         }}
         open={isMobileDrawerOpen}
-        className="lg:hidden"
         footer={
           <div className="flex items-center gap-3 p-2 border-t border-gray-100">
             <button
               type="button"
-              onPointerDown={() => {
+              onClick={() => {
                 if (typeof document !== "undefined" && document.activeElement && typeof document.activeElement.blur === "function") {
                   document.activeElement.blur();
                 }
+                setIsMobileDrawerOpen(false);
               }}
-              onClick={() => setIsMobileDrawerOpen(false)}
-              className="flex-1 py-2.5 px-4 rounded-xl border border-gray-300 text-gray-700 font-semibold text-sm bg-white hover:bg-gray-50 cursor-pointer transition-colors"
+              className="flex-1 py-2.5 px-4 rounded-xl border border-gray-300 text-gray-700 font-semibold text-sm bg-white hover:bg-gray-50 cursor-pointer transition-colors touch-manipulation active:scale-95"
             >
               Close
             </button>
             <button
               type="button"
-              onPointerDown={() => {
+              onClick={() => {
                 if (typeof document !== "undefined" && document.activeElement && typeof document.activeElement.blur === "function") {
                   document.activeElement.blur();
                 }
+                handleApplyMobileFilters();
               }}
-              onClick={handleApplyMobileFilters}
-              className="flex-1 py-2.5 px-4 rounded-xl bg-[#0a2540] hover:bg-[#06182c] text-white font-bold text-sm border-none cursor-pointer transition-colors shadow-sm"
+              className="flex-1 py-2.5 px-4 rounded-xl bg-[#0a2540] hover:bg-[#06182c] text-white font-bold text-sm border-none cursor-pointer transition-colors shadow-sm touch-manipulation active:scale-95"
             >
               Apply Filter
             </button>
