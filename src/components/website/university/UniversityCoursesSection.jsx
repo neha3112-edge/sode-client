@@ -541,10 +541,10 @@ export default function UniversityCoursesSection({
                       <button
                         type="button"
                         onClick={handleCloseSpecModal}
-                        className="w-8 h-8 rounded-full bg-slate-100/90 hover:bg-slate-200 text-slate-500 hover:text-slate-900 transition-colors flex items-center justify-center cursor-pointer border-0 ml-auto shrink-0"
+                        className="w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer border-none shadow-xs text-white bg-black/40 hover:bg-black/60 md:text-slate-500 md:bg-slate-100 md:hover:bg-slate-200 md:hover:text-slate-800 ml-auto shrink-0"
                         aria-label="Close modal"
                       >
-                        <X className="w-4 h-4" />
+                        <X size={18} className="stroke-[2.5]" />
                       </button>
                     </div>
 
@@ -776,10 +776,10 @@ export default function UniversityCoursesSection({
                 <button
                   type="button"
                   onClick={handleCloseSpecModal}
-                  className="absolute -top-1 -right-1 sm:top-0 sm:right-0 z-20 w-8 h-8 rounded-full bg-slate-100/90 hover:bg-slate-200 text-slate-500 hover:text-slate-900 transition-colors flex items-center justify-center cursor-pointer border-0"
+                  className="absolute top-2.5 right-2.5 md:top-3.5 md:right-3.5 z-30 w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer border-none shadow-xs text-white bg-black/40 hover:bg-black/60 md:text-slate-500 md:bg-slate-100 md:hover:bg-slate-200 md:hover:text-slate-800"
                   aria-label="Close modal"
                 >
-                  <X className="w-4 h-4" />
+                  <X size={18} className="stroke-[2.5]" />
                 </button>
 
                 <div className="flex flex-col md:flex-row items-stretch gap-4 sm:gap-6 p-0 sm:p-1 pb-1 max-h-[85vh] overflow-y-auto overflow-x-hidden">

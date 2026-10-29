@@ -1527,6 +1527,11 @@ export default function BlogSidebar({
         width={1040}
         centered
         destroyOnHidden={true}
+        closeIcon={
+          <span className="w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer border-none shadow-xs text-slate-500 bg-slate-100 hover:bg-slate-200 hover:text-slate-800">
+            <X size={18} className="stroke-[2.5]" />
+          </span>
+        }
         afterOpenChange={(open) => {
           if (open) {
             setTimeout(() => {
@@ -1538,7 +1543,7 @@ export default function BlogSidebar({
       >
         <div>
           {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4 pb-2.5 sm:pb-4 border-b border-gray-100">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4 pb-2.5 sm:pb-4 border-b border-gray-100 pr-10 sm:pr-12">
             {/* Author info */}
             <div className="flex items-center gap-3">
               {authorAvatar ? (

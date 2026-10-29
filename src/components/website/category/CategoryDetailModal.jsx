@@ -115,10 +115,10 @@ export default function CategoryDetailModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="w-8 h-8 flex items-center justify-center cursor-pointer shrink-0 rounded-full hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-colors"
+                className="w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer border-none shadow-xs text-slate-500 bg-slate-100 hover:bg-slate-200 hover:text-slate-800 shrink-0"
                 aria-label="Close modal"
               >
-                <X className="w-4 h-4" />
+                <X size={18} className="stroke-[2.5]" />
               </button>
             </div>
           </div>

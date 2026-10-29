@@ -1696,10 +1696,11 @@ export default function CompareUniversityClientView({
           <button
             type="button"
             onClick={() => setIsUniModalOpen(false)}
-            className="w-7 h-7 text-gray-700 hover:text-slate-900 flex items-center justify-center transition-colors border-none bg-transparent cursor-pointer p-0 shrink-0"
+            className="w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer border-none shadow-xs text-slate-500 bg-slate-100 hover:bg-slate-200 hover:text-slate-800 shrink-0"
             title="Close"
+            aria-label="Close modal"
           >
-            <CloseOutlined className="text-sm" />
+            <CloseOutlined className="text-[13px] font-bold" />
           </button>
         </div>
 

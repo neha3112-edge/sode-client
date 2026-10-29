@@ -13,6 +13,7 @@ import {
   ShoppingCart,
   Download,
   ChevronRight,
+  X,
 } from "lucide-react";
 import { formatAdmissionDeadline } from "@/lib/utils";
 import { FaCalendar, FaClock } from "react-icons/fa";
@@ -312,7 +313,12 @@ export default function CourseSpecializations({
             footer={null}
             width={1150}
             centered
-            className="max-w-[96vw] [&_.ant-modal-content]:rounded-3xl [&_.ant-modal-content]:p-4 sm:[&_.ant-modal-content]:p-6 md:[&_.ant-modal-content]:p-7 [&_.ant-modal-close]:top-4 [&_.ant-modal-close]:right-4 [&_.ant-modal-content]:max-h-[85vh] [&_.ant-modal-content]:overflow-y-auto [&_.ant-modal-content]:overflow-x-hidden"
+            closeIcon={
+              <span className="w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer border-none shadow-xs text-white bg-black/40 hover:bg-black/60 md:text-slate-500 md:bg-slate-100 md:hover:bg-slate-200 md:hover:text-slate-800">
+                <X size={18} className="stroke-[2.5]" />
+              </span>
+            }
+            className="max-w-[96vw] [&_.ant-modal-content]:rounded-3xl [&_.ant-modal-content]:p-4 sm:[&_.ant-modal-content]:p-6 md:[&_.ant-modal-content]:p-7 [&_.ant-modal-close]:top-2.5 [&_.ant-modal-close]:right-2.5 md:[&_.ant-modal-close]:top-3.5 md:[&_.ant-modal-close]:right-3.5 [&_.ant-modal-content]:max-h-[85vh] [&_.ant-modal-content]:overflow-y-auto [&_.ant-modal-content]:overflow-x-hidden"
           >
             <div className="flex flex-col md:flex-row items-stretch gap-5 sm:gap-6">
               {/* Left Column: Portrait Banner Card */}

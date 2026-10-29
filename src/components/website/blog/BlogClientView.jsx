@@ -9,7 +9,7 @@ import SafeHtmlRenderer from "@/components/website/SafeHtmlRenderer";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
 
 const getAssetPath = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || "");
-import { ArrowRight, CalendarIcon, Check, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Clock, Eye, Image as ImageIcon, Minus, Play, Plus, ThumbsDown, ThumbsUp, User, Video } from "lucide-react";
+import { ArrowRight, CalendarIcon, Check, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Clock, Eye, Image as ImageIcon, Minus, Play, Plus, ThumbsDown, ThumbsUp, User, Video, X } from "lucide-react";
 import { request } from "@/services/request";
 import BlogSidebar from "./BlogSidebar";
 
@@ -2291,6 +2291,11 @@ export default function BlogClientView({
         width={isMobile ? "96vw" : 920}
         centered
         destroyOnHidden
+        closeIcon={
+          <span className="w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer border-none shadow-xs text-slate-500 bg-slate-100 hover:bg-slate-200 hover:text-slate-800">
+            <X size={18} className="stroke-[2.5]" />
+          </span>
+        }
         className="pdf-preview-modal"
         style={{
           maxWidth: "calc(100vw - 16px)",
