@@ -57,7 +57,7 @@ export default function LandingRecruiters({
     const desc =
       activeRecruiters.desc ||
       activeRecruiters.description ||
-      "At LPU Online, Students and Professionals get an opportunity to enhance their career truly nurture their ambitions. The Lovely Professional University Online Admission supports students and has a dedicated placement support and a strong network of hiring partners. They create real opportunities for professional growth, whether you're pursuing an LPU MBA Online or an LPU Online MCA program.";
+      "At LPU Online, Students and Professionals get an opportunity to enhance their career truly nurture their ambitions. The Lovely Professional University Online Admission supports students and has a dedicated placement support and a strong network of hiring partners. They create real opportunities for professional growth, whether you&apos;re pursuing an LPU MBA Online or an LPU Online MCA program.";
 
     const desktopImage =
       activeRecruiters.desktopImage ||
@@ -89,7 +89,7 @@ export default function LandingRecruiters({
                     supports students and has a dedicated <br className="sm:hidden" />
                     placement support and a strong network of <br className="sm:hidden" />
                     hiring partners. They create real opportunities <br className="sm:hidden" />
-                    for professional growth, whether you're <br className="sm:hidden" />
+                    for professional growth, whether you&apos;re <br className="sm:hidden" />
                     pursuing an LPU MBA Online or an LPU Online <br className="sm:hidden" />
                     MCA program.
                   </>
@@ -236,8 +236,8 @@ export default function LandingRecruiters({
         <LandingContainer>
           {/* Centered Maroon Badge */}
           <div className="flex justify-center mb-6 sm:mb-12">
-            <div className="bg-[#811811] text-white px-8 sm:px-14 py-2.5 sm:py-3.5 rounded-[8px] sm:rounded-[10px] text-center shadow-xs min-w-[270px] sm:min-w-[340px]">
-              <h2 className="text-[17px] sm:text-[20px] font-bold text-white tracking-tight leading-[1.25] whitespace-pre-line m-0">
+            <div className={activeRecruiters.badgeClassName || "bg-[#811811] text-white px-5 sm:px-10 py-2.5 sm:py-3 rounded-[14px] rounded-tl-none text-center shadow-xs inline-flex items-center justify-center"}>
+              <h2 className={activeRecruiters.titleClassName || "text-[17.5px] sm:text-[21px] font-semibold text-white tracking-normal leading-none whitespace-nowrap m-0"}>
                 {title}
               </h2>
             </div>

@@ -8,7 +8,7 @@ export const vguCustomCss = `
     margin: 0 !important;
     padding: 0 !important;
     width: 100% !important;
-    overflow-x: hidden !important;
+    overflow-x: clip !important;
   }
 
   .landing-page--vgu,
@@ -17,6 +17,7 @@ export const vguCustomCss = `
     padding: 0 !important;
     width: 100% !important;
     max-width: 100% !important;
+    overflow-x: clip !important;
   }
 
   .landing-page--vgu header,
@@ -28,25 +29,30 @@ export const vguCustomCss = `
     margin-right: 0 !important;
   }
 
-  .landing-page--vgu header {
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  .landing-page--vgu header,
+  .landing-page--vgu .landing-navbar-header {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 50 !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05) !important;
   }
 
   /* Compact sleek Navbar Height */
   .landing-page--vgu header .landing-navbar-container {
-    height: 60px !important;
-    min-height: 60px !important;
+    height: 66px !important;
+    min-height: 66px !important;
   }
   @media (min-width: 640px) {
     .landing-page--vgu header .landing-navbar-container {
-      height: 64px !important;
-      min-height: 64px !important;
+      height: 70px !important;
+      min-height: 70px !important;
     }
   }
   @media (min-width: 1024px) {
     .landing-page--vgu header .landing-navbar-container {
-      height: 66px !important;
-      min-height: 66px !important;
+      height: 72px !important;
+      min-height: 72px !important;
     }
   }
 
@@ -308,6 +314,17 @@ export const vguCustomCss = `
   .landing-page--vgu #approvals {
     background-color: #ffffff !important;
   }
+  .landing-page--vgu #approval .grid > div,
+  .landing-page--vgu #approvals .grid > div {
+    border-radius: 9999px !important;
+  }
+  @media (max-width: 639px) {
+    .landing-page--vgu #approval .grid > div,
+    .landing-page--vgu #approvals .grid > div {
+      margin-left: 12px !important;
+      margin-right: 12px !important;
+    }
+  }
   .landing-page--vgu #approval h3,
   .landing-page--vgu #approvals h3,
   .landing-page--vgu #approval h2,
@@ -320,7 +337,7 @@ export const vguCustomCss = `
     background-color: #f7f7f7 !important;
   }
   .landing-page--vgu #program h2 {
-    color: #203061 !important;
+    color: #35529a !important;
   }
 
   /* About Section */
@@ -451,9 +468,16 @@ export const vguData = {
     enquireTitle: "Enquire Now",
     enquireSubtitle: "Academic Experts will assist you!",
     officialUrl: "https://distanceeducationschool.com/vgu/",
-    navbarHeightClass: "h-[60px] sm:h-[64px] lg:h-[66px]",
+    navbarHeightClass: "h-[66px] sm:h-[70px] lg:h-[72px]",
+    headerClassName: "!sticky !top-0 !z-50 bg-white shadow-[0px_2px_10px_rgba(0,0,0,0.06)]",
+    headerStyle: {
+      position: "sticky",
+      top: 0,
+      zIndex: 50,
+      backgroundColor: "#ffffff",
+    },
     logo: "/assets/all_universities_images/vgu/vgu-logo.webp",
-    logoWrapperClassName: "w-[210px] sm:w-[250px] md:w-[270px] lg:w-[290px] h-[38px] sm:h-[44px] lg:h-[46px]",
+    logoWrapperClassName: "w-[260px] sm:w-[285px] md:w-[305px] lg:w-[320px] h-[52px] sm:h-[56px] lg:h-[58px]",
     logoClassName: "object-contain object-left",
     navLinks: [
       { label: "Courses", href: "#program" },
@@ -487,6 +511,10 @@ export const vguData = {
     couponButtonText: "Scholarship Coupon Code",
     couponButtonColor: "#28a745",
     couponBtnBg: "#28a745",
+    footerLogoContainerClassName:
+      "w-[340px] sm:w-[520px] md:w-[680px] lg:w-[780px] xl:w-[880px] h-[90px] sm:h-[138px] md:h-[180px] lg:h-[206px] xl:h-[233px] max-w-[92vw] sm:max-w-full",
+    footerDisclaimerContainerClassName: "max-w-[1090px] lg:max-w-none",
+    footerBottomBg: "#0b3c66",
     campusImage: "/assets/all_universities_images/vgu/university.webp",
     buildingAboutImage: "/assets/all_universities_images/vgu/about-image-vgu.webp",
     whyChooseStudentImage: "/assets/all_universities_images/vgu/university.webp",
@@ -625,17 +653,21 @@ export const vguData = {
     approvalsLayout: "vgu-badges",
     approvalsConfig: {
       containerClassName: "max-w-[1340px] mx-auto px-6 sm:px-12 md:px-16 lg:px-24 xl:px-32",
+      cardRadius: "rounded-full",
+      cardClassName: "mx-3 sm:mx-0",
       titleClassName: "text-[21px] sm:text-[28px] lg:text-[35px] font-bold text-[#811811] leading-[1.2] tracking-tight m-0",
       buttonBg: "#ffd508",
       buttonTextColor: "#000000",
       buttonText: "Enquire Now",
     },
     programmesTitle:
-      "VGU Online |\nVivekananda Global University\nOnline Courses",
+      "VGU Online |\nVivekananda Global\nUniversity\nOnline Courses",
     programmesLayout: "vgu-cards",
     cardSize: "medium",
     programmesConfig: {
       containerClassName: "max-w-[1280px] mx-auto px-8 sm:px-10 lg:px-8",
+      headingClassName:
+        "text-center text-[24px] sm:text-[20px] md:text-[24px] lg:text-[28px] xl:text-[32px] font-bold text-[#35529a] tracking-tight mb-6 sm:mb-8 leading-[1.25] whitespace-normal sm:whitespace-nowrap",
       gridClassName: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-7",
       cardClassName: "bg-white rounded-[20px] overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.08)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)] transition-all duration-300 flex flex-col justify-between group max-w-[340px] sm:max-w-none mx-auto w-full border border-slate-100/80",
       imageHeight: "h-[185px] sm:h-[190px]",
@@ -648,6 +680,16 @@ export const vguData = {
     whyChooseDescription:
       "Vivekananda Global University Online is the most trusted university by students because of its recognised approvals and job-ready curriculum. VGU University courses are offered online with expert faculty, helpful resources like LMS that help students get strong knowledge and necessary skills, and a smooth Vivekananda Global University course admissions process.",
     whyChooseLayout: "vgu-grid",
+    whyChooseConfig: {
+      badgeClassName:
+        "text-white px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 rounded-[8px] sm:rounded-[10px] text-center shadow-xs max-w-[490px] sm:max-w-none sm:inline-block mx-2 sm:mx-auto",
+      headerTitleClassName:
+        "text-[15.5px] sm:text-[16px] md:text-[18px] lg:text-[20px] font-semibold text-white tracking-wide leading-[1.3] m-0",
+      titleClassName:
+        "text-[17px] sm:text-[18px] font-medium text-slate-900 m-0 tracking-tight leading-snug mb-1.5",
+      descClassName:
+        "text-[12.5px] sm:text-[13px] text-slate-600 leading-relaxed font-normal m-0 max-w-[310px]",
+    },
     aboutLayout: "vgu-banner",
     aboutConfig: {
       backgroundColor: "#2e6396",
@@ -665,9 +707,15 @@ export const vguData = {
       iconColor: "#ffffff",
       activeQuestionColor: "#811811",
       questionPrefix: "» ",
-      containerClassName: "max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8",
+      containerClassName: "max-w-[1240px] mx-auto px-5 sm:px-8 lg:px-8",
+      titleClassName:
+        "text-[24px] sm:text-[28px] md:text-[32px] font-bold text-center m-0 mb-6 sm:mb-8 md:mb-10 tracking-tight leading-[1.25] whitespace-normal sm:whitespace-nowrap",
+      cardClassName:
+        "rounded-[8px] sm:rounded-[10px] overflow-hidden bg-white shadow-xs border border-slate-200/70 transition-all",
     },
     admissionHeadingColor: "#203061",
+    admissionGridClass:
+      "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-4 lg:gap-3 xl:gap-4 w-full max-w-[420px] sm:max-w-none mx-auto",
   },
   courses: [
     { value: "MBA", label: "MBA - Master of Business Administration" },
@@ -854,6 +902,10 @@ export const vguData = {
     buttonTextColor: "#000000",
     sectionPadding: "py-6 sm:py-8",
     cardPadding: "p-0",
+    imageWrapperClassName:
+      "w-full max-w-[390px] sm:max-w-[460px] lg:max-w-[500px] aspect-square mx-auto flex items-center justify-center",
+    imageClassName:
+      "object-contain scale-125 sm:scale-130 lg:scale-135 transition-transform duration-300", 
     features: [
       {
         title: "UGC Entitled",
@@ -880,7 +932,9 @@ export const vguData = {
     image: "/assets/all_universities_images/vgu/sample-degree-vgu.webp",
   },
   recruiters: {
-    title: "Top Recruiters at VGU\nOnline",
+    title: "Top Recruiters at VGU Online",
+    badgeClassName: "bg-[#811811] text-white px-5 sm:px-10 py-2.5 sm:py-3 rounded-[14px] rounded-tl-none text-center shadow-xs inline-flex items-center justify-center",
+    titleClassName: "text-[17.5px] sm:text-[21px] font-semibold text-white tracking-normal leading-none whitespace-nowrap m-0",
     image: "/assets/all_universities_images/vgu/placement-partner-vgu.webp",
     desktopImage: "/assets/all_universities_images/vgu/placement-partner-vgu.webp",
     mobileImage: "/assets/all_universities_images/vgu/hairing-partner-vgu-mobile.webp",
@@ -893,6 +947,8 @@ export const vguData = {
     title:
       "How to Apply for\nVivekananda Global University\nOnline Courses",
     titleColor: "#172b4d",
+    gridClass:
+      "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-4 lg:gap-3 xl:gap-4 w-full max-w-[420px] sm:max-w-none mx-auto",
     sectionPadding: "pt-10 sm:pt-14 lg:pt-16 pb-10 sm:pb-12 lg:pb-14",
     subtitle:
       "Students can easily enrol in Vivekananda Global University Online courses. Candidates can conveniently apply by selecting their desired program. Follow these steps to secure admission in the university.",

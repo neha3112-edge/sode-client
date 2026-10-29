@@ -704,18 +704,18 @@ export default function LandingDegree({
                     {images.map((imgSrc, idx) => (
                       <div
                         key={idx}
-                        className={`relative w-full ${isTransparentCard
+                        className={`relative w-full ${degreeInfo.imageWrapperClassName || (isTransparentCard
                             ? "max-w-[360px] sm:max-w-[420px] aspect-square mx-auto"
                             : isGgu
                             ? "max-w-[380px] sm:max-w-[440px] aspect-[583/499]"
                             : "h-[250px] sm:h-[300px] rounded-[10px] overflow-hidden shadow-lg border border-slate-200 bg-white"
-                          }`}
+                          )}`}
                       >
                         <Image
                           src={imgSrc}
                           alt={`Sample Degree ${idx + 1}`}
                           fill
-                          className={isGgu ? "object-contain" : "object-contain p-2"}
+                          className={degreeInfo.imageClassName || (isGgu ? "object-contain" : "object-contain p-2")}
                           sizes="(max-width: 1024px) 380px, 440px"
                         />
                       </div>
@@ -724,18 +724,18 @@ export default function LandingDegree({
                 </div>
               ) : (
                 <div
-                  className={`relative w-full ${isTransparentCard
+                  className={`relative w-full ${degreeInfo.imageWrapperClassName || (isTransparentCard
                       ? "max-w-[360px] sm:max-w-[420px] aspect-square mx-auto"
                       : isGgu
                       ? "max-w-[360px] sm:max-w-[410px] aspect-[583/499]"
                       : "max-w-[340px] sm:max-w-[420px] h-[250px] sm:h-[300px] rounded-[10px] overflow-hidden shadow-lg border border-slate-200 bg-white"
-                    }`}
+                    )}`}
                 >
                   <Image
                     src={image}
                     alt="Sample Degree"
                     fill
-                    className={isGgu ? "object-contain" : "object-contain p-2"}
+                    className={degreeInfo.imageClassName || (isGgu ? "object-contain" : "object-contain p-2")}
                     sizes="(max-width: 1024px) 360px, 410px"
                     priority
                   />

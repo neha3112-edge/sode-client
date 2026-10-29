@@ -11,11 +11,26 @@ export default function VguGrid({ programmes, brand = {}, onSelectCourseForBroch
   const containerClass = cfg.containerClassName || "max-w-[1280px] mx-auto px-8 sm:px-10 lg:px-8";
   const gridClass = cfg.gridClassName || "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-7";
 
+  const renderTitle = () => {
+    const rawTitle = brand.programmesTitle;
+    if (typeof rawTitle === "string" && rawTitle.includes("\n")) {
+      const lines = rawTitle.split("\n");
+      return lines.map((line, idx) => (
+        <React.Fragment key={idx}>
+          {idx > 0 && <br className="sm:hidden" />}
+          {idx > 0 && <span className="hidden sm:inline"> </span>}
+          <span>{line}</span>
+        </React.Fragment>
+      ));
+    }
+    return rawTitle || (brand.name ? `${brand.name} Online Courses` : "Online Degree Courses");
+  };
+
   return (
     <section id="program" className="w-full py-9 sm:py-16 bg-[#f7f9fa] border-b border-slate-200 select-none">
       <div className={containerClass}>
-        <h2 className="text-center text-[21px] sm:text-[26px] lg:text-[28px] font-bold text-[#203061] tracking-tight mb-6 sm:mb-8 leading-[1.25] whitespace-pre-line">
-          {brand.programmesTitle || (brand.name ? `${brand.name} Online Courses` : "Online Degree Courses")}
+        <h2 className={cfg.headingClassName || brand.programmesHeadingClassName || "text-center text-[24px] sm:text-[20px] md:text-[24px] lg:text-[28px] xl:text-[32px] font-bold text-[#35529a] tracking-tight mb-6 sm:mb-8 leading-[1.25] whitespace-normal sm:whitespace-nowrap"}>
+          {renderTitle()}
         </h2>
 
         <div className={gridClass}>

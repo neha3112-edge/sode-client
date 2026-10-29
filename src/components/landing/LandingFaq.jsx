@@ -262,6 +262,20 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
     const prefix = cfg.questionPrefix || "» ";
     const faqTitle = brand.faqTitle || "Frequently Asked Questions";
 
+    const renderFaqTitle = () => {
+      if (typeof faqTitle === "string" && faqTitle.includes("\n")) {
+        const parts = faqTitle.split("\n");
+        return parts.map((part, idx) => (
+          <React.Fragment key={idx}>
+            {idx > 0 && <br className="sm:hidden" />}
+            {idx > 0 && <span className="hidden sm:inline"> </span>}
+            <span>{part}</span>
+          </React.Fragment>
+        ));
+      }
+      return faqTitle;
+    };
+
     return (
       <section
         id="faq"
@@ -269,15 +283,15 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
         className="py-8 sm:py-12 lg:py-16 bg-[#F3F3F8] w-full select-none scroll-mt-20 sm:scroll-mt-24"
       >
         <div id="faqs" className="sr-only"></div>
-        <div className={cfg.containerClassName || "max-w-[1140px] mx-auto px-3.5 sm:px-6 lg:px-8"}>
+        <div className={cfg.containerClassName || "max-w-[1140px] mx-auto px-5 sm:px-8 lg:px-8"}>
           <h2
-            className="text-[22px] sm:text-[26px] md:text-[30px] font-bold text-center m-0 mb-5 sm:mb-8 md:mb-10 tracking-tight leading-[1.25] whitespace-pre-line"
+            className={cfg.titleClassName || "text-[24px] sm:text-[28px] md:text-[32px] font-bold text-center m-0 mb-6 sm:mb-8 md:mb-10 tracking-tight leading-[1.25] whitespace-normal sm:whitespace-nowrap"}
             style={{ color: titleColor }}
           >
-            {faqTitle}
+            {renderFaqTitle()}
           </h2>
 
-          <div className="space-y-2.5 sm:space-y-3.5 w-full">
+          <div className="space-y-3 sm:space-y-3.5 w-full">
             {faqs.map((faq, idx) => {
               const isOpen = openIndex === idx;
               const rawQuestion = (faq.q || faq.question || "").replace(/^Q\d+[\.\:\s]*/i, "").trim();
@@ -286,12 +300,12 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
               return (
                 <div
                   key={idx}
-                  className="rounded-[6px] overflow-hidden bg-white shadow-2xs border border-slate-200/60 transition-all"
+                  className={cfg.cardClassName || "rounded-[8px] sm:rounded-[10px] overflow-hidden bg-white shadow-xs border border-slate-200/70 transition-all"}
                 >
                   <button
                     type="button"
                     onClick={() => toggleFaq(idx)}
-                    className="w-full px-3.5 sm:px-5 md:px-6 py-3 sm:py-3.5 md:py-4 text-left flex items-center justify-between gap-3 sm:gap-4 cursor-pointer transition-colors border-none m-0"
+                    className="w-full px-4 sm:px-5 md:px-6 py-3.5 sm:py-4 text-left flex items-center justify-between gap-3 sm:gap-4 cursor-pointer transition-colors border-none m-0"
                     style={{
                       backgroundColor: isOpen ? "#811811" : "#ffffff",
                       color: isOpen ? "#ffffff" : "#1e293b",
@@ -299,18 +313,18 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
                     aria-expanded={isOpen}
                   >
                     <span
-                      className={`text-[13px] sm:text-[14px] md:text-[15px] font-medium leading-snug transition-colors flex-1 ${
+                      className={`text-[14.5px] sm:text-[15.5px] md:text-[16px] font-medium leading-snug transition-colors flex-1 ${
                         isOpen ? "text-white" : "text-[#1e293b]"
                       }`}
                     >
-                      <span className={`mr-1 sm:mr-1.5 select-none ${isOpen ? "text-white/80" : "text-slate-500"}`}>
+                      <span className={`mr-1.5 sm:mr-2 select-none ${isOpen ? "text-white/80" : "text-slate-500"}`}>
                         {prefix}
                       </span>
                       <span>{questionNumber} </span>
                       <span>{rawQuestion}</span>
                     </span>
                     <span
-                      className="w-[22px] h-[22px] sm:w-[24px] sm:h-[24px] rounded-full flex items-center justify-center font-bold text-[13px] sm:text-[14px] leading-none shrink-0 ml-2.5 sm:ml-3 select-none transition-transform"
+                      className="w-[24px] h-[24px] sm:w-[26px] sm:h-[26px] rounded-full flex items-center justify-center font-bold text-[14px] sm:text-[15px] leading-none shrink-0 ml-2.5 sm:ml-3 select-none transition-transform"
                       style={{
                         backgroundColor: isOpen ? "#ffffff" : iconBg,
                         color: isOpen ? "#811811" : iconColor,
@@ -321,7 +335,7 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
                   </button>
 
                   {isOpen && (
-                    <div className="px-3.5 sm:px-5 md:px-6 py-3.5 sm:py-4 bg-white text-[12.5px] sm:text-[13.5px] text-[#4b5563] leading-[1.65] font-normal border-t border-slate-100">
+                    <div className="px-4 sm:px-5 md:px-6 py-3.5 sm:py-4 bg-white text-[13.5px] sm:text-[14px] text-[#4b5563] leading-[1.65] font-normal border-t border-slate-100">
                       <p className="m-0">{faq.a || faq.answer}</p>
                     </div>
                   )}

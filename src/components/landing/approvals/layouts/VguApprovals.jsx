@@ -139,7 +139,7 @@ export default function VguApprovals({ approvals = [], brand = {} }) {
                 return (
                   <div
                     key={data.id || idx}
-                    className="bg-white rounded-[30px] sm:rounded-full border border-slate-500/80 px-5 sm:px-6 py-4 sm:py-4.5 flex items-center gap-4 sm:gap-4.5 transition-all hover:border-slate-800 shadow-2xs"
+                    className={`bg-white ${cfg.cardRadius || brand.approvalsCardRadius || "rounded-full"} border border-slate-500/80 px-5 sm:px-6 py-4 sm:py-4.5 flex items-center gap-4 sm:gap-4.5 transition-all hover:border-slate-800 shadow-2xs ${cfg.cardClassName || "mx-3 sm:mx-0"}`}
                   >
                     <div className="relative w-[60px] h-[60px] sm:w-[68px] sm:h-[68px] shrink-0 flex items-center justify-center">
                       <Image

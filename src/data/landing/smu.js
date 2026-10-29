@@ -209,7 +209,7 @@ export const smuData = {
       tag: "UGC-DEB",
     },
     {
-      image: "/assets/smu/WURI_logo.webp",
+      image: "/assets/smu/WURI_log/o.webp",
       text: "Recognised among the top global universities",
       tag: "WURI",
     },

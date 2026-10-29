@@ -5,21 +5,29 @@ import Image from "next/image";
 import LandingContainer from "../LandingContainer";
 
 export default function VguWhyChoose({ whyChoose = [], brand = {}, onOpenApply }) {
+  const cfg = brand.whyChooseConfig || {};
   const headerBg = brand.primaryColor || "#811811";
   const rawTitle =
     brand.whyChooseTitle ||
     `Why ${brand.name || "Vivekananda Global University Online"} is a Smart Choice for learners?`;
 
-  // Render title with clean 3-line break matching user request
+  // Render title with responsive lines (3 lines on mobile, 2 lines on tablet/desktop)
   const renderTitle = () => {
-    if (typeof rawTitle === "string") {
-      const lines = rawTitle.includes("\n")
-        ? rawTitle.split("\n")
-        : [
-            "Why Vivekananda Global University",
-            "Online is a Smart Choice",
-            "for learners?",
-          ];
+    if (typeof rawTitle === "string" && rawTitle.includes("Vivekananda Global University")) {
+      return (
+        <>
+          <span className="block sm:whitespace-nowrap">Why Vivekananda Global University</span>
+          <span className="block sm:whitespace-nowrap">
+            Online is a Smart Choice
+            <br className="sm:hidden" />
+            <span className="hidden sm:inline"> </span>
+            for learners?
+          </span>
+        </>
+      );
+    }
+    if (typeof rawTitle === "string" && rawTitle.includes("\n")) {
+      const lines = rawTitle.split("\n");
       return lines.map((line, idx) => (
         <React.Fragment key={idx}>
           {idx > 0 && <br />}
@@ -36,10 +44,10 @@ export default function VguWhyChoose({ whyChoose = [], brand = {}, onOpenApply }
       <LandingContainer>
         <div className="flex justify-center mb-4 sm:mb-4.5">
           <div
-            className="text-white px-4 sm:px-8 py-2.5 sm:py-3 rounded-[8px] sm:rounded-[10px] text-center shadow-xs max-w-[490px] sm:max-w-[510px] mx-2 sm:mx-0"
+            className={cfg.badgeClassName || "text-white px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 rounded-[8px] sm:rounded-[10px] text-center shadow-xs max-w-[490px] sm:max-w-none sm:inline-block mx-2 sm:mx-auto"}
             style={{ backgroundColor: headerBg }}
           >
-            <h2 className="text-[15.5px] sm:text-[19px] md:text-[20px] font-semibold text-white tracking-wide leading-[1.3] m-0">
+            <h2 className={cfg.headerTitleClassName || "text-[15.5px] sm:text-[16px] md:text-[18px] lg:text-[20px] font-semibold text-white tracking-wide leading-[1.3] m-0"}>
               {renderTitle()}
             </h2>
           </div>
@@ -65,10 +73,10 @@ export default function VguWhyChoose({ whyChoose = [], brand = {}, onOpenApply }
                   />
                 </div>
               )}
-              <h3 className="text-[15px] sm:text-[16px] font-bold text-slate-900 m-0 tracking-tight leading-snug mb-1">
+              <h3 className={cfg.titleClassName || "text-[17px] sm:text-[18px] font-medium text-slate-900 m-0 tracking-tight leading-snug mb-1.5"}>
                 {item.title}
               </h3>
-              <p className="text-[12px] sm:text-[12.5px] text-slate-600 leading-relaxed font-normal m-0 max-w-[310px]">
+              <p className={cfg.descClassName || "text-[12.5px] sm:text-[13px] text-slate-600 leading-relaxed font-normal m-0 max-w-[310px]"}>
                 {item.desc || item.description}
               </p>
             </div>
