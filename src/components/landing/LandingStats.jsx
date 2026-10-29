@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { BookOpen, Users, Globe, Trophy, Star } from "lucide-react";
 import { FaUser, FaClock, FaGraduationCap, FaIndianRupeeSign } from "react-icons/fa6";
+import LandingContainer from "./LandingContainer";
 
 function BuildingIcon({ className }) {
   return (
@@ -407,26 +408,26 @@ export default function LandingStats({ stats = [], brand = {} }) {
     const numberColor = brand.statsNumberColor || "#f78d2d";
     return (
       <section className="w-full bg-white py-10 sm:py-14 lg:py-16 select-none">
-        <div className="max-w-[1240px] xl:max-w-[1300px] min-[1600px]:max-w-[1520px] min-[1920px]:max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 lg:gap-12 text-center">
+        <LandingContainer className={brand.statsContainerClassName || "px-3 sm:px-6"}>
+          <div className={brand.statsGridClassName || "grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8 lg:gap-12 text-center"}>
             {stats.map((st, idx) => (
               <div
                 key={idx}
-                className="flex flex-col items-center justify-center space-y-1 sm:space-y-2"
+                className="flex flex-col items-center justify-center space-y-1 sm:space-y-2 px-1"
               >
                 <div
-                  className={brand.statsNumberClassName || "text-[34px] sm:text-[44px] lg:text-[54px] font-medium text-[#f78d2d] tracking-tight leading-none"}
+                  className={brand.statsNumberClassName || "text-[26px] min-[390px]:text-[28px] sm:text-[38px] lg:text-[50px] font-medium text-[#f78d2d] tracking-tight leading-none"}
                   style={{ color: numberColor, ...brand.statsNumberStyle }}
                 >
                   {st.number}
                 </div>
-                <p className={brand.statsLabelClassName || "text-[13.5px] sm:text-[14.5px] lg:text-[15.5px] text-[#212529] font-semibold leading-snug m-0"}>
+                <p className={brand.statsLabelClassName || "text-[12.5px] sm:text-[14px] lg:text-[15.5px] text-[#212529] font-semibold leading-snug m-0 text-center"}>
                   {st.label}
                 </p>
               </div>
             ))}
           </div>
-        </div>
+        </LandingContainer>
       </section>
     );
   }

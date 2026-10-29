@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Carousel, Card, Button } from "antd";
 import { Download, ChevronLeft, ChevronRight, Hourglass } from "lucide-react";
 import { FaDownload } from "react-icons/fa";
+import LandingContainer from "../LandingContainer";
 
 export default function ProgrammesCarousel({
   programmes = [],
@@ -149,11 +150,8 @@ export default function ProgrammesCarousel({
       {/* ------------------------------------------------------------- */}
       {/* DESKTOP VIEW: Multiple Cards per slide (hidden md:block)      */}
       {/* ------------------------------------------------------------- */}
-      <div
-        className={`hidden md:block w-full mx-auto px-4 sm:px-6 relative ${
-          isClean ? "max-w-[1140px] min-[1600px]:max-w-[1360px] min-[1920px]:max-w-[1520px]" : isSmu ? "max-w-[1200px] xl:max-w-[1240px] min-[1600px]:max-w-[1440px] min-[1920px]:max-w-[1600px] px-6 sm:px-10 lg:px-12" : "max-w-[1240px] xl:max-w-[1360px] min-[1600px]:max-w-[1520px] min-[1920px]:max-w-[1680px] sm:px-8 lg:px-10"
-        }`}
-      >
+      {isSmu ? (
+        <LandingContainer className="hidden md:block relative px-3 sm:px-6">
         <Button
           type="text"
           onClick={() => desktopCarouselRef.current?.prev()}
@@ -202,7 +200,61 @@ export default function ProgrammesCarousel({
             ))}
           </Carousel>
         </div>
-      </div>
+        </LandingContainer>
+      ) : (
+        <div
+          className={`hidden md:block w-full mx-auto px-4 sm:px-6 relative ${
+            isClean ? "max-w-[1140px] min-[1600px]:max-w-[1360px] min-[1920px]:max-w-[1520px]" : "max-w-[1240px] xl:max-w-[1360px] min-[1600px]:max-w-[1520px] min-[1920px]:max-w-[1680px] sm:px-8 lg:px-10"
+          }`}
+        >
+          <Button
+            type="text"
+            onClick={() => desktopCarouselRef.current?.prev()}
+            aria-label="Previous programme"
+            className="flex absolute left-0 sm:-left-3 lg:-left-5 top-1/2 -translate-y-1/2 z-20 text-[#222222] hover:!text-[#ee3024] transition-colors p-1 !bg-transparent !border-none cursor-pointer items-center justify-center active:scale-90 !h-auto !w-auto"
+          >
+            <ChevronLeft className="w-6 h-6 sm:w-8 sm:h-8 stroke-[2.5]" />
+          </Button>
+
+          <Button
+            type="text"
+            onClick={() => desktopCarouselRef.current?.next()}
+            aria-label="Next programme"
+            className="flex absolute right-0 sm:-right-3 lg:-right-5 top-1/2 -translate-y-1/2 z-20 text-[#222222] hover:!text-[#ee3024] transition-colors p-1 !bg-transparent !border-none cursor-pointer items-center justify-center active:scale-90 !h-auto !w-auto"
+          >
+            <ChevronRight className="w-6 h-6 sm:w-8 sm:h-8 stroke-[2.5]" />
+          </Button>
+
+          <div className="w-full px-5 sm:px-0 [&_.slick-dots]:!relative [&_.slick-dots]:!mt-5 [&_.slick-dots]:!mb-0 [&_.slick-dots_li]:!w-2 [&_.slick-dots_li]:!h-2 [&_.slick-dots_li]:!mx-1 [&_.slick-dots_li_button]:!w-2 [&_.slick-dots_li_button]:!h-2 [&_.slick-dots_li_button]:!rounded-full [&_.slick-dots_li_button]:!bg-slate-300 [&_.slick-dots_li.slick-active_button]:!bg-[#ee3024]">
+            <Carousel
+              ref={desktopCarouselRef}
+              autoplay={isAutoplay}
+              autoplaySpeed={autoplaySpeed}
+              dots={showDots}
+              slidesToShow={desktopSlides}
+              slidesToScroll={1}
+              infinite={programmes.length > 1}
+              responsive={[
+                { breakpoint: 1280, settings: { slidesToShow: desktopSlides } },
+                { breakpoint: 1024, settings: { slidesToShow: tabletSlides } },
+              ]}
+            >
+              {programmes.map((c, idx) => (
+                <div
+                  key={`${c.id || c.code}-${idx}`}
+                  className={`box-border py-2 ${isClean ? "px-2 sm:px-2.5 lg:px-3" : "px-1.5 sm:px-2 xl:px-2.5"}`}
+                >
+                  {isClean ? (
+                    <CleanCard c={c} brand={brand} onSelectCourseForBrochure={onSelectCourseForBrochure} />
+                  ) : (
+                    <ClassicCard c={c} brand={brand} onSelectCourseForBrochure={onSelectCourseForBrochure} />
+                  )}
+                </div>
+              ))}
+            </Carousel>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

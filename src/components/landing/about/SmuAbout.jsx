@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import LandingContainer from "../LandingContainer";
 
 export default function SmuAbout({ about = {}, brand = {}, leader = null }) {
   const universityName = brand.name || "Sikkim Manipal University Online";
@@ -25,7 +26,7 @@ export default function SmuAbout({ about = {}, brand = {}, leader = null }) {
     <div id="about" className="w-full">
       <section className="w-full pt-16 sm:pt-20 md:pt-28 lg:pt-32 pb-0 bg-transparent overflow-visible relative select-none">
         <div className="w-full bg-[#006372] relative overflow-visible shadow-sm">
-          <div className="max-w-[1440px] 2xl:max-w-[1536px] mx-auto px-2 sm:px-6 lg:px-10 relative overflow-visible">
+          <LandingContainer className="px-3 sm:px-6 relative overflow-visible">
             <div className="flex flex-col md:flex-row items-center md:items-stretch justify-between relative min-h-[380px] lg:min-h-[440px]">
               {imageSrc && (
                 <div className="hidden md:block w-[260px] md:w-[300px] lg:w-[350px] xl:w-[380px] shrink-0 relative">
@@ -66,13 +67,13 @@ export default function SmuAbout({ about = {}, brand = {}, leader = null }) {
                 )}
               </div>
             </div>
-          </div>
+          </LandingContainer>
         </div>
       </section>
 
       {leaderData && (
         <section className="w-full bg-white py-10 sm:py-14 lg:py-20 border-b border-slate-100">
-          <div className="max-w-[1536px] 2xl:max-w-[1680px] mx-auto px-4 sm:px-8 lg:px-12 xl:px-16">
+          <LandingContainer className="px-3 sm:px-6">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-16 items-center">
               <div className="lg:col-span-8 space-y-3.5 sm:space-y-4.5 text-center lg:text-left order-2 lg:order-1">
                 <h2 className="text-[24px] sm:text-[28px] lg:text-[34px] font-bold text-black tracking-tight leading-[1.25] m-0 text-center lg:text-left">
@@ -106,7 +107,7 @@ export default function SmuAbout({ about = {}, brand = {}, leader = null }) {
                 </div>
               )}
             </div>
-          </div>
+          </LandingContainer>
         </section>
       )}
     </div>

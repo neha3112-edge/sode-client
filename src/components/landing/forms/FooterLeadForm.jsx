@@ -44,7 +44,7 @@ export default function FooterLeadForm({
       >
         {/* Navy Blue Horizontal Band */}
         <div className="w-full bg-[#074a76] relative overflow-visible">
-          <div className="max-w-[1240px] xl:max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <LandingContainer className="px-3 sm:px-6 relative">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center min-h-[190px] sm:min-h-[220px]">
               {/* Left Column: Heading & Subtitle */}
               <div className="lg:col-span-7 text-left text-white py-8 sm:py-10 space-y-2.5">
@@ -135,7 +135,7 @@ export default function FooterLeadForm({
                 </div>
               </div>
             </div>
-          </div>
+          </LandingContainer>
         </div>
       </section>
     );

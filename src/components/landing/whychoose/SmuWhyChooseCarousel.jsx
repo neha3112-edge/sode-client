@@ -4,6 +4,7 @@ import React, { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import { Carousel } from "antd";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import LandingContainer from "../LandingContainer";
 
 export default function SmuWhyChooseCarousel({ whyChoose = [], brand = {}, onOpenApply }) {
   const carouselRef = useRef(null);
@@ -89,15 +90,16 @@ export default function SmuWhyChooseCarousel({ whyChoose = [], brand = {}, onOpe
         }
       `}</style>
 
-      {/* Heading */}
-      <div className="text-center mb-6 sm:mb-8 px-4 max-w-5xl mx-auto">
-        <h2 className={brand.whyChooseTitleClassName || "text-[24px] sm:text-[30px] lg:text-[34px] font-semibold text-[#1a202c] m-0 tracking-tight leading-tight"}>
-          {sectionTitle}
-        </h2>
-      </div>
+      <LandingContainer className="px-3 sm:px-6">
+        {/* Heading */}
+        <div className="text-center mb-6 sm:mb-8 px-4 max-w-5xl mx-auto">
+          <h2 className={brand.whyChooseTitleClassName || "text-[24px] sm:text-[30px] lg:text-[34px] font-semibold text-[#1a202c] m-0 tracking-tight leading-tight"}>
+            {sectionTitle}
+          </h2>
+        </div>
 
-      {/* Full-width container */}
-      <div className="w-full px-6 sm:px-10 md:px-12 lg:px-16 xl:px-20 relative">
+        {/* Carousel container */}
+        <div className="w-full px-2 sm:px-8 md:px-10 lg:px-12 relative">
         {/* Previous Navigation Button */}
         <button
           type="button"
@@ -191,7 +193,8 @@ export default function SmuWhyChooseCarousel({ whyChoose = [], brand = {}, onOpe
             ))}
           </Carousel>
         </div>
-      </div>
+        </div>
+      </LandingContainer>
     </section>
   );
 }

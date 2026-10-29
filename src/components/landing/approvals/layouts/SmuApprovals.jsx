@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Carousel } from "antd";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { normalizeApprovalItem } from "../ApprovalCard";
+import LandingContainer from "../../LandingContainer";
 
 export default function SmuApprovals({ approvals = [], title, subtitle, brand = {} }) {
   const carouselRef = useRef(null);
@@ -19,7 +20,7 @@ export default function SmuApprovals({ approvals = [], title, subtitle, brand = 
       className="w-full py-8 sm:py-12 bg-[#efefef] select-none scroll-mt-20 overflow-hidden"
       style={{ backgroundColor: brand?.approvalsBg || "#efefef" }}
     >
-      <div className="w-full max-w-[1536px] 2xl:max-w-[1680px] mx-auto px-3 sm:px-8 lg:px-12 xl:px-16">
+      <LandingContainer className="text-center px-3 sm:px-6">
         <div className="text-center w-full max-w-[1200px] mx-auto mb-6 sm:mb-8 lg:mb-10 px-1 sm:px-4">
           <h2 className={brand?.approvalsTitleClassName || "text-[24px] sm:text-[28px] md:text-[32px] lg:text-[36px] font-semibold text-[#111827] tracking-tight leading-[1.25] m-0 mb-3 sm:mb-4 max-w-[340px] sm:max-w-xl md:max-w-2xl mx-auto"}>
             {typeof displayTitle === "string" && displayTitle.includes("Rankings & Accreditations") ? (
@@ -105,7 +106,7 @@ export default function SmuApprovals({ approvals = [], title, subtitle, brand = 
             <ChevronRight className="w-7 h-7 sm:w-8 sm:h-8 stroke-[2.5]" />
           </button>
         </div>
-      </div>
+      </LandingContainer>
     </section>
   );
 }
