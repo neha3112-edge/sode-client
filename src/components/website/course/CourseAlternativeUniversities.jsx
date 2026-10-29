@@ -122,31 +122,12 @@ export default function CourseAlternativeUniversities({
                     const existingSlugs = (compareList || [])
                       .map((u) => u.uniSlug || u.slug || u._id || u.id)
                       .filter(Boolean);
-                    const allSlugs = currentUniSlug && !existingSlugs.includes(currentUniSlug)
-                      ? [currentUniSlug, ...existingSlugs, targetUniSlug]
-                      : [...existingSlugs, targetUniSlug];
-                    const combinedSlugs = Array.from(new Set(allSlugs)).filter(Boolean).slice(0, 3);
+                    const combinedSlugs = Array.from(new Set([...existingSlugs, targetUniSlug])).filter(Boolean).slice(0, 3);
                     const crsParam = courseData?.name || cardTitle || "";
                     router.push(
                       `/tools/compare-universities?university=${encodeURIComponent(combinedSlugs.join(","))}${crsParam ? `&course=${encodeURIComponent(crsParam)}` : ""}`
                     );
                   } else {
-                    // Also include current details page university if not already in compare
-                    if (currentUniSlug && !isInCompare(currentUniSlug)) {
-                      addToCompare({
-                        _id: currentUniSlug,
-                        slug: currentUniSlug,
-                        uniSlug: currentUniSlug,
-                        name: currentUniName || "University",
-                        uniName: currentUniName || "University",
-                        title: courseData?.name || "Program",
-                        courseName: courseData?.name || "",
-                        course: courseData?.name || "",
-                        logoUrl: currentUniLogo,
-                        logoSrc: currentUniLogo,
-                      });
-                    }
-
                     const targetItem = {
                       _id: targetUniSlug || item._id,
                       slug: targetUniSlug,

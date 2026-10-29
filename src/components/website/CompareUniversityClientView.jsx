@@ -78,6 +78,7 @@ export default function CompareUniversityClientView({
   const [modalLoading, setModalLoading] = useState(false);
   const [modalSearch, setModalSearch] = useState("");
   const [modalSelectedUnis, setModalSelectedUnis] = useState([]);
+  const hasAutoOpenedModal = useRef(false);
 
   useEffect(() => {
     if (initialComparedData?.length > 0) {
@@ -381,12 +382,62 @@ export default function CompareUniversityClientView({
     syncCompareUrl(remaining.map((u) => u.slug || u._id || u.id).filter(Boolean));
   };
 
+  const getUniMatchKeys = (u) => {
+    if (!u) return [];
+    const keys = [
+      u._id,
+      u.id,
+      u.slug,
+      u.uniSlug,
+      u.universitySlug,
+      typeof u.slug === "string" && u.slug.includes("/") ? u.slug.split("/")[0] : null,
+      typeof u.uniSlug === "string" && u.uniSlug.includes("/") ? u.uniSlug.split("/")[0] : null,
+      u.name,
+      u.uniName,
+      u.title,
+    ]
+      .filter(Boolean)
+      .map((k) => String(k).toLowerCase().trim());
+    return Array.from(new Set(keys));
+  };
+
+  const isModalUniSelected = (uni) => {
+    if (!uni) return false;
+    const targetKeys = getUniMatchKeys(uni);
+    return modalSelectedUnis.some((u) => {
+      const uKeys = getUniMatchKeys(u);
+      return targetKeys.some((tk) => uKeys.includes(tk));
+    });
+  };
+
+  const handleToggleFromModal = (uni) => {
+    if (!uni) return;
+    const targetKeys = getUniMatchKeys(uni);
+
+    if (isModalUniSelected(uni)) {
+      setModalSelectedUnis((prev) =>
+        prev.filter((u) => {
+          const uKeys = getUniMatchKeys(u);
+          return !targetKeys.some((tk) => uKeys.includes(tk));
+        })
+      );
+    } else {
+      if (modalSelectedUnis.length >= 3) return;
+      setModalSelectedUnis((prev) => [...prev, uni]);
+    }
+  };
+
   const openUniversityModal = async (mode = "all") => {
     setModalMode(mode);
     setSelectedModalState(null);
     setSelectedModalApproval(null);
     setModalSearch("");
-    const currentActive = compareList?.length > 0 ? compareList : comparedData;
+    const currentActive =
+      comparedData?.length > 0
+        ? comparedData
+        : initialComparedData?.length > 0
+          ? initialComparedData
+          : (compareList || []);
     setModalSelectedUnis([...currentActive]);
     setIsUniModalOpen(true);
     const hasApprovalsLoaded = (modalUniversities || []).some(
@@ -414,39 +465,47 @@ export default function CompareUniversityClientView({
     }
   };
 
-  const isModalUniSelected = (uni) => {
-    if (!uni) return false;
-    const targetKeys = [uni._id, uni.id, uni.slug, uni.uniSlug, uni.name]
-      .filter(Boolean)
-      .map((k) => String(k).toLowerCase().trim());
-    return modalSelectedUnis.some((u) => {
-      const uKeys = [u._id, u.id, u.slug, u.uniSlug, u.name]
-        .filter(Boolean)
-        .map((k) => String(k).toLowerCase().trim());
-      return targetKeys.some((tk) => uKeys.includes(tk));
-    });
-  };
+  const lastHandledKey = useRef(null);
 
-  const handleToggleFromModal = (uni) => {
-    if (!uni) return;
-    const targetKeys = [uni._id, uni.id, uni.slug, uni.uniSlug, uni.name]
-      .filter(Boolean)
-      .map((k) => String(k).toLowerCase().trim());
+  // Auto-open university selection modal when navigating with exactly 1 university selected
+  useEffect(() => {
+    const urlUniParam =
+      searchParams.get("university") ||
+      searchParams.get("universityid") ||
+      searchParams.get("ids") ||
+      searchParams.get("universities") ||
+      "";
 
-    if (isModalUniSelected(uni)) {
-      setModalSelectedUnis((prev) =>
-        prev.filter((u) => {
-          const uKeys = [u._id, u.id, u.slug, u.uniSlug, u.name]
-            .filter(Boolean)
-            .map((k) => String(k).toLowerCase().trim());
-          return !targetKeys.some((tk) => uKeys.includes(tk));
-        })
-      );
-    } else {
-      if (modalSelectedUnis.length >= 3) return;
-      setModalSelectedUnis((prev) => [...prev, uni]);
+    const compareListKey = (compareList || [])
+      .map((u) => u.uniSlug || (u.slug && !u.slug.includes("/") ? u.slug : null) || u.slug?.split("/")[0] || u._id || u.id)
+      .filter(Boolean)
+      .sort()
+      .join(",");
+
+    const navigationKey = urlUniParam.trim().toLowerCase() || compareListKey;
+
+    // Reset auto-open flag if the navigation key changed (e.g. user came with a new university)
+    if (navigationKey && lastHandledKey.current !== navigationKey) {
+      lastHandledKey.current = navigationKey;
+      hasAutoOpenedModal.current = false;
     }
-  };
+
+    if (hasAutoOpenedModal.current) return;
+
+    const count =
+      initialComparedData?.length > 0
+        ? initialComparedData.length
+        : comparedData?.length > 0
+          ? comparedData.length
+          : (compareList?.length || 0);
+
+    if (count === 1) {
+      hasAutoOpenedModal.current = true;
+      openUniversityModal("all");
+    } else if (count >= 2) {
+      hasAutoOpenedModal.current = true;
+    }
+  }, [searchParams, initialComparedData, comparedData, compareList]);
 
   const handleApplyCompareFromModal = async () => {
     setIsUniModalOpen(false);
@@ -514,6 +573,8 @@ export default function CompareUniversityClientView({
   };
 
   const handleBackToSelection = () => {
+    hasAutoOpenedModal.current = true;
+    lastHandledKey.current = "";
     clearCompare();
     setComparedData([]);
     setModalSelectedUnis([]);
