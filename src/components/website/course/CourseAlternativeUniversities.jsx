@@ -67,7 +67,6 @@ export default function CourseAlternativeUniversities({
               className={`bg-gray-50 rounded-xl border border-gray-200 hover:border-blue-400 p-2 sm:p-2.5 hover:shadow-md transition-all flex flex-col items-center justify-between text-center relative group min-w-0 shadow-2xs ${index === 5 && visibleCount === 6 ? "flex lg:hidden" : "flex"
                 }`}
             >
-              {/* Top Right Corner Pinned Provider Badge */}
               {Boolean(providerName) && (
                 <div className="absolute top-0 right-0 z-10 pointer-events-none">
                   <span className="bg-[#FFF0F3] border-b border-l border-[#FFE4E6] text-[#E52E2E] text-[8.5px] sm:text-[9.5px] font-bold px-1.5 py-0.5 rounded-bl-lg rounded-tr-xl">
@@ -162,8 +161,8 @@ export default function CourseAlternativeUniversities({
                   }
                 }}
                 className={`w-full py-1 px-2 rounded-lg text-[10px] sm:text-[11px] font-semibold transition-all flex items-center justify-center gap-1 border cursor-pointer mt-1 ${inCmp
-                    ? "bg-teal-50 text-teal-700 border-teal-600 shadow-2xs hover:bg-teal-100"
-                    : "bg-white text-[#0a2540] border-gray-200 hover:bg-gray-50 hover:border-gray-300"
+                  ? "bg-teal-50 text-teal-700 border-teal-600 shadow-2xs hover:bg-teal-100"
+                  : "bg-white text-[#0a2540] border-gray-200 hover:bg-gray-50 hover:border-gray-300"
                   }`}
               >
                 {inCmp ? (
