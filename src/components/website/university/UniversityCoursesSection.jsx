@@ -562,11 +562,11 @@ export default function UniversityCoursesSection({
                   selectedSpecDetail?.slug ||
                   (selectedSpecDetail?.name
                     ? selectedSpecDetail.name
-                        .toLowerCase()
-                        .replace(/^online\s+[a-z0-9+-]+\s+in\s+/i, "")
-                        .replace(/^distance\s+[a-z0-9+-]+\s+in\s+/i, "")
-                        .replace(/[^a-z0-9]+/g, "-")
-                        .replace(/^-|-$/g, "")
+                      .toLowerCase()
+                      .replace(/^online\s+[a-z0-9+-]+\s+in\s+/i, "")
+                      .replace(/^distance\s+[a-z0-9+-]+\s+in\s+/i, "")
+                      .replace(/[^a-z0-9]+/g, "-")
+                      .replace(/^-|-$/g, "")
                     : "");
                 const fullSlug = specSlug && !cleanCourseSlug.toLowerCase().includes(specSlug)
                   ? `${cleanUniSlug}/${cleanCourseSlug}/${specSlug}`
@@ -604,9 +604,8 @@ export default function UniversityCoursesSection({
                             alt={detailTitle}
                             fill
                             sizes="(max-width: 768px) 100vw, 370px"
-                            className={`object-cover object-center ${
-                              specMobileBanner && specMobileBanner !== specDesktopBanner ? "hidden md:block" : "block"
-                            }`}
+                            className={`object-cover object-center ${specMobileBanner && specMobileBanner !== specDesktopBanner ? "hidden md:block" : "block"
+                              }`}
                           />
                         )}
 
@@ -665,7 +664,7 @@ export default function UniversityCoursesSection({
                               <div className="flex items-center gap-1.5">
                                 <FaCalendar className="w-3 h-3 text-[#072C50] shrink-0" />
                                 <span className="text-red-500">
-                                  Admission Deadline : <strong className="font-semibold text-gray-500">{specDeadline}</strong>
+                                  Admission Deadline: <strong className="font-semibold text-gray-500">{specDeadline}</strong>
                                 </span>
                               </div>
                             )}
@@ -695,11 +694,10 @@ export default function UniversityCoursesSection({
                                       key={sIdx}
                                       type="button"
                                       onClick={() => setActiveSpecSem(sIdx)}
-                                      className={`w-full py-1.5 px-3 rounded-full text-xs font-semibold transition-all cursor-pointer border-none ${
-                                        isActive
-                                          ? "bg-[#0C2B4E] text-white shadow-xs md:w-full"
-                                          : "bg-[#EEF3FA] text-[#475569] hover:bg-[#dde7f5] md:w-[88%]"
-                                      }`}
+                                      className={`w-full py-1.5 px-3 rounded-full text-xs font-semibold transition-all cursor-pointer border-none ${isActive
+                                        ? "bg-[#0C2B4E] text-white shadow-xs md:w-full"
+                                        : "bg-[#EEF3FA] text-[#475569] hover:bg-[#dde7f5] md:w-[88%]"
+                                        }`}
                                     >
                                       <span className="flex items-center justify-between w-full">
                                         <span>{sem.semester}</span>
@@ -894,7 +892,7 @@ export default function UniversityCoursesSection({
                           <div className="flex items-center gap-1.5">
                             <FaCalendar className="w-3 h-3 text-[#072C50] shrink-0" />
                             <span className="text-red-500">
-                              Admission Deadline : <strong className="font-semibold text-gray-500">{itemDeadline}</strong>
+                              Admission Deadline: <strong className="font-semibold text-gray-500">{itemDeadline}</strong>
                             </span>
                           </div>
                         )}

@@ -377,7 +377,7 @@ export default function CourseSpecializations({
                       <div className="flex items-center gap-1.5">
                         <FaCalendar className="w-3 h-3 text-[#072C50] shrink-0" />
                         <span className="text-red-500">
-                          Admission Deadline : <strong className="font-semibold text-gray-500">{itemDeadline}</strong>
+                          Admission Deadline: <strong className="font-semibold text-gray-500">{itemDeadline}</strong>
                         </span>
                       </div>
                     )}

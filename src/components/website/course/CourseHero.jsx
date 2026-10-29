@@ -131,7 +131,7 @@ export default function CourseHero({
           {courseData?.admissionDeadline && (
             <div className="flex items-center gap-2 text-xs sm:text-sm font-medium text-white">
               <FaCalendar className="w-4 h-4 text-amber-400 shrink-0" />
-              <span>Admission Deadline : {formatAdmissionDeadline(courseData.admissionDeadline)}</span>
+              <span>Admission Deadline: {formatAdmissionDeadline(courseData.admissionDeadline)}</span>
             </div>
           )}
         </div>

@@ -1228,10 +1228,10 @@ export default function CoursesPageClientView({
                           {item.displayName &&
                             item.displayName.toLowerCase() !== cardTitle.toLowerCase() &&
                             item.displayName.replace(/^online\s+/i, "").trim().toLowerCase() !== cardTitle.replace(/^online\s+/i, "").trim().toLowerCase() && (
-                            <span className="text-[11.5px] sm:text-xs font-normal text-gray-500 block leading-tight mt-0.5 tracking-tight">
-                              {item.displayName}
-                            </span>
-                          )}
+                              <span className="text-[11.5px] sm:text-xs font-normal text-gray-500 block leading-tight mt-0.5 tracking-tight">
+                                {item.displayName}
+                              </span>
+                            )}
                         </Link>
 
                         {/* Fee & Duration Row */}
@@ -1401,10 +1401,10 @@ export default function CoursesPageClientView({
                         {item.displayName &&
                           item.displayName.toLowerCase() !== cardTitle.toLowerCase() &&
                           item.displayName.replace(/^online\s+/i, "").trim().toLowerCase() !== cardTitle.replace(/^online\s+/i, "").trim().toLowerCase() && (
-                          <span className="text-[10px] sm:text-[11px] font-normal text-gray-500 block leading-tight mt-0.5 tracking-tight">
-                            {item.displayName}
-                          </span>
-                        )}
+                            <span className="text-[10px] sm:text-[11px] font-normal text-gray-500 block leading-tight mt-0.5 tracking-tight">
+                              {item.displayName}
+                            </span>
+                          )}
                       </Link>
 
                       {/* Fee & Duration + Compare */}
@@ -1892,7 +1892,7 @@ export default function CoursesPageClientView({
                           <div className="flex items-center gap-1.5">
                             <FaCalendar className="w-3 h-3 text-[#072C50] shrink-0" />
                             <span className="text-red-500">
-                              Admission Deadline : <strong className="font-semibold text-gray-500">{itemDeadline}</strong>
+                              Admission Deadline: <strong className="font-semibold text-gray-500">{itemDeadline}</strong>
                             </span>
                           </div>
                         )}
@@ -2116,7 +2116,7 @@ export default function CoursesPageClientView({
                       {modalDeadline && (
                         <div className="flex items-center gap-1.5">
                           <Calendar className="w-3.5 h-3.5 text-gray-500 shrink-0" />
-                          <span className="text-red-500 font-bold">Admission Deadline :</span>
+                          <span className="text-red-500 font-bold">Admission Deadline:</span>
                           <span className="font-normal text-gray-800">{modalDeadline}</span>
                         </div>
                       )}
