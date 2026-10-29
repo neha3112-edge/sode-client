@@ -31,7 +31,27 @@ import { openWhatsAppBrochure } from "@/lib/whatsappBrochure";
 import { FaCalendar, FaClock } from "react-icons/fa";
 import { getFullSpecName, getCleanSpecName } from "./CourseSpecializations";
 
-const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
+const getMediaUrl = (obj) => {
+  if (!obj) return null;
+  let raw = null;
+  if (typeof obj === "string") {
+    raw = obj;
+  } else if (typeof obj === "object") {
+    raw = obj.url || obj.path || obj.src || (obj.fileName && typeof obj.fileName === "string" ? obj.fileName : null);
+  }
+  if (!raw || typeof raw !== "string") return null;
+  const trimmed = raw.trim();
+  if (!trimmed || trimmed === "[object Object]") return null;
+  if (/^[0-9a-fA-F]{24}$/.test(trimmed)) return null;
+
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+    return trimmed;
+  }
+  if (trimmed.startsWith("//")) {
+    return `https:${trimmed}`;
+  }
+  return trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+};
 
 const extractFeeText = (val) => {
   if (!val) return "";
@@ -689,6 +709,7 @@ export default function CoursesPageClientView({
 
     const allFlatUniversities = [
       ...(initialUniversities || []),
+      ...(universityOptions || []),
     ];
 
     const resolvedCategoryIds = Array.isArray(activeCategoryTab)
@@ -850,13 +871,21 @@ export default function CoursesPageClientView({
           uni.admission_deadline ||
           null;
 
+        const collabs = (Array.isArray(item.collaborations) && item.collaborations.length > 0)
+          ? item.collaborations
+          : (Array.isArray(item.partnerUnis) ? item.partnerUnis : []);
+        const effectiveUniName = item.combinedUniName || uniName;
+
         list.push({
           ...item,
           _uniqueKey: `${item._id || item.slug || cardTitle || "program"}-${index}`,
           title: cardTitle,
           cardTitle,
           displayName,
-          uniName,
+          uniName: effectiveUniName,
+          combinedUniName: effectiveUniName,
+          collaborations: collabs,
+          partnerUnis: collabs,
           uniObj: uni,
           courseObj: course,
           subcourseObj: subcourse,
@@ -1002,8 +1031,16 @@ export default function CoursesPageClientView({
 
     if (Array.isArray(initialUniversities)) initialUniversities.forEach(addUni);
 
+    (processedPrograms || []).forEach((item) => {
+      if (item?.collaborations && Array.isArray(item.collaborations)) {
+        item.collaborations.forEach((collab) => {
+          if (collab) addUni(collab);
+        });
+      }
+    });
+
     return Array.from(map.values());
-  }, [initialUniversities]);
+  }, [initialUniversities, processedPrograms]);
 
   const courseSelectOptions = useMemo(() => {
     const list = [{ value: "all", label: "All Courses" }];
@@ -1191,38 +1228,81 @@ export default function CoursesPageClientView({
                     {/* Desktop Card Layout */}
                     <div className="hidden sm:flex items-center gap-5">
                       {/* Left: University Logo + Name */}
-                      <div className="w-28 sm:w-32 flex flex-col items-center justify-center text-center pr-4 border-r border-gray-200 shrink-0">
-                        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full p-1.5 flex items-center justify-center bg-white relative mb-1.5">
-                          {logoUrl ? (
-                            <Image
-                              src={logoUrl}
-                              alt={uniName}
-                              fill
-                              sizes="64px"
-                              loading={index < 3 ? "eager" : "lazy"}
-                              priority={index === 0}
-                              className="object-contain p-1"
-                            />
-                          ) : (
-                            <div className="w-full h-full rounded-full bg-blue-50 text-blue-600 font-bold flex items-center justify-center text-xs uppercase">
-                              {uniName.charAt(0)}
+                      <div className={`flex flex-col items-center justify-center text-center pr-4 border-r border-gray-200 shrink-0 ${item.collaborations && item.collaborations.length > 0 ? "w-36 sm:w-44" : "w-28 sm:w-36"}`}>
+                        {item.collaborations && item.collaborations.length > 0 ? (
+                          <div className="flex items-center justify-center gap-1.5 mb-1.5">
+                            <div className="w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center bg-white relative shrink-0">
+                              {logoUrl ? (
+                                <Image
+                                  src={logoUrl}
+                                  alt={uniName}
+                                  fill
+                                  sizes="48px"
+                                  loading={index < 3 ? "eager" : "lazy"}
+                                  priority={index === 0}
+                                  className="object-contain p-0.5"
+                                />
+                              ) : (
+                                <div className="w-full h-full rounded-full bg-blue-50 text-blue-600 font-bold flex items-center justify-center text-[10px] uppercase">
+                                  {uniName.charAt(0)}
+                                </div>
+                              )}
                             </div>
-                          )}
-                        </div>
-                        <span className="text-xs font-bold text-[#0a2540] line-clamp-2 leading-tight">
+                            <span className="text-gray-400 font-bold text-xs select-none">&amp;</span>
+                            {item.collaborations.map((collab, cIdx) => {
+                              const collabLogo = getMediaUrl(collab.logoUrl || collab.logo);
+                              return (
+                                <div key={cIdx} className="w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center bg-white relative shrink-0" title={collab.name}>
+                                  {collabLogo ? (
+                                    <Image
+                                      src={collabLogo}
+                                      alt={collab.name || "Collaborator Logo"}
+                                      fill
+                                      sizes="48px"
+                                      className="object-contain p-0.5"
+                                    />
+                                  ) : (
+                                    <div className="w-full h-full rounded-full bg-amber-50 text-amber-700 font-bold flex items-center justify-center text-[10px] uppercase">
+                                      {(collab.name || "C").charAt(0)}
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full p-1.5 flex items-center justify-center bg-white relative mb-1.5">
+                            {logoUrl ? (
+                              <Image
+                                src={logoUrl}
+                                alt={uniName}
+                                fill
+                                sizes="64px"
+                                loading={index < 3 ? "eager" : "lazy"}
+                                priority={index === 0}
+                                className="object-contain p-1"
+                              />
+                            ) : (
+                              <div className="w-full h-full rounded-full bg-blue-50 text-blue-600 font-bold flex items-center justify-center text-xs uppercase">
+                                {uniName.charAt(0)}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                        <span className="text-xs font-bold text-[#0a2540] leading-tight break-words">
                           {uniName}
                         </span>
                       </div>
 
                       {/* Right: Details & Actions */}
-                      <div className="flex-1 min-w-0 space-y-2.5">
+                      <div className={`flex-1 min-w-0 space-y-2.5 ${providerName ? "pr-24" : ""}`}>
 
                         {/* Title & Full Display Name Underneath */}
                         <Link
                           href={courseDetailHref}
                           className="hover:text-blue-600 transition-colors block text-left no-underline group"
                         >
-                          <h3 className="text-sm sm:text-base font-bold text-gray-900 leading-snug line-clamp-1 m-0">
+                          <h3 className="text-sm sm:text-base font-bold text-gray-900 leading-snug m-0 break-words">
                             {cardTitle}
                           </h3>
                           {item.displayName &&
@@ -1368,26 +1448,69 @@ export default function CoursesPageClientView({
                     {/* Mobile Card Layout */}
                     <div className="flex sm:hidden flex-col gap-2.5">
                       {/* Mobile Top Row: Uni Logo + Uni Name & Provider Badge */}
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <div className="w-9 h-9 rounded-full border border-gray-200 p-1 flex items-center justify-center bg-white relative shrink-0">
-                            {logoUrl ? (
-                              <Image
-                                src={logoUrl}
-                                alt={uniName}
-                                fill
-                                sizes="36px"
-                                loading={index < 3 ? "eager" : "lazy"}
-                                priority={index === 0}
-                                className="object-contain p-0.5"
-                              />
-                            ) : (
-                              <span className="text-xs font-bold text-blue-600">
-                                {uniName.charAt(0)}
-                              </span>
-                            )}
-                          </div>
-                          <span className="text-xs font-bold text-[#0a2540]">
+                      <div className={`flex items-center min-w-0 ${providerName ? "pr-24" : ""}`}>
+                        <div className="flex items-center gap-2 min-w-0 flex-1">
+                          {item.collaborations && item.collaborations.length > 0 ? (
+                            <div className="flex items-center justify-center gap-1 shrink-0 self-center">
+                              <div className="w-8 h-8 flex items-center justify-center bg-white relative shrink-0">
+                                {logoUrl ? (
+                                  <Image
+                                    src={logoUrl}
+                                    alt={uniName}
+                                    fill
+                                    sizes="32px"
+                                    loading={index < 3 ? "eager" : "lazy"}
+                                    priority={index === 0}
+                                    className="object-contain p-0.5"
+                                  />
+                                ) : (
+                                  <span className="text-[10px] font-bold text-blue-600">
+                                    {uniName.charAt(0)}
+                                  </span>
+                                )}
+                              </div>
+                              <span className="text-gray-400 font-bold text-[10px] select-none inline-flex items-center justify-center leading-none self-center">&amp;</span>
+                              {item.collaborations.map((collab, cIdx) => {
+                                const collabLogo = getMediaUrl(collab.logoUrl || collab.logo);
+                                return (
+                                  <div key={cIdx} className="w-8 h-8 flex items-center justify-center bg-white relative shrink-0" title={collab.name}>
+                                    {collabLogo ? (
+                                      <Image
+                                        src={collabLogo}
+                                        alt={collab.name || "Collaborator Logo"}
+                                        fill
+                                        sizes="32px"
+                                        className="object-contain p-0.5"
+                                      />
+                                    ) : (
+                                      <span className="text-[10px] font-bold text-amber-600">
+                                        {(collab.name || "C").charAt(0)}
+                                      </span>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          ) : (
+                            <div className="w-9 h-9 flex items-center justify-center bg-white relative shrink-0">
+                              {logoUrl ? (
+                                <Image
+                                  src={logoUrl}
+                                  alt={uniName}
+                                  fill
+                                  sizes="36px"
+                                  loading={index < 3 ? "eager" : "lazy"}
+                                  priority={index === 0}
+                                  className="object-contain p-0.5"
+                                />
+                              ) : (
+                                <span className="text-xs font-bold text-blue-600">
+                                  {uniName.charAt(0)}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                          <span className="text-xs font-bold text-[#0a2540] leading-tight break-words min-w-0 flex-1 self-center">
                             {uniName}
                           </span>
                         </div>
@@ -1395,7 +1518,7 @@ export default function CoursesPageClientView({
 
                       {/* Title & Full Display Name Underneath — using <p> not <h3> to avoid duplicate headings in DOM (SEO) */}
                       <Link href={courseDetailHref} className="no-underline block">
-                        <p className="text-xs sm:text-sm font-bold text-gray-900 leading-snug line-clamp-1 m-0">
+                        <p className="text-xs sm:text-sm font-bold text-gray-900 leading-snug m-0 break-words">
                           {cardTitle}
                         </p>
                         {item.displayName &&

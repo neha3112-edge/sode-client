@@ -8,7 +8,27 @@ import { formatAdmissionDeadline } from "@/lib/utils";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
 import { openWhatsAppBrochure } from "@/lib/whatsappBrochure";
 
-const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
+const getMediaUrl = (obj) => {
+  if (!obj) return null;
+  let raw = null;
+  if (typeof obj === "string") {
+    raw = obj;
+  } else if (typeof obj === "object") {
+    raw = obj.url || obj.path || obj.src || (obj.fileName && typeof obj.fileName === "string" ? obj.fileName : null);
+  }
+  if (!raw || typeof raw !== "string") return null;
+  const trimmed = raw.trim();
+  if (!trimmed || trimmed === "[object Object]") return null;
+  if (/^[0-9a-fA-F]{24}$/.test(trimmed)) return null;
+
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+    return trimmed;
+  }
+  if (trimmed.startsWith("//")) {
+    return `https:${trimmed}`;
+  }
+  return trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+};
 
 const extractFeeText = (val) => {
   if (!val) return "";
@@ -547,7 +567,7 @@ export function CourseClientView({
         { label: "Home", href: "/" },
         { label: "Courses", href: "/courses" },
         ...(universityName && (courseData?.universitySlug || courseData?.universityId?.slug)
-          ? [{ label: universityName, href: `/university/${courseData.universitySlug || courseData.universityId?.slug}` }]
+          ? [{ label: universityName, href: `/universities/${courseData.universitySlug || courseData.universityId?.slug}` }]
           : universityName
             ? [{ label: universityName }]
             : []),

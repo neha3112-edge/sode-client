@@ -7,6 +7,28 @@ import { Download } from "lucide-react";
 import { FaClock, FaCalendar } from "react-icons/fa";
 import { formatAdmissionDeadline } from "@/lib/utils";
 
+function getSafeMediaUrl(obj) {
+  if (!obj) return null;
+  let raw = null;
+  if (typeof obj === "string") {
+    raw = obj;
+  } else if (typeof obj === "object") {
+    raw = obj.url || obj.path || obj.src || (obj.fileName && typeof obj.fileName === "string" ? obj.fileName : null);
+  }
+  if (!raw || typeof raw !== "string") return null;
+  const trimmed = raw.trim();
+  if (!trimmed || trimmed === "[object Object]") return null;
+  if (/^[0-9a-fA-F]{24}$/.test(trimmed)) return null;
+
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+    return trimmed;
+  }
+  if (trimmed.startsWith("//")) {
+    return `https:${trimmed}`;
+  }
+  return trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+}
+
 export default function CourseHero({
   courseData,
   displayCourseTitle,
@@ -17,6 +39,7 @@ export default function CourseHero({
   handleOpenLead,
 }) {
   const effectiveUniName =
+    courseData?.combinedUniversityName ||
     universityName ||
     courseData?.universityName ||
     courseData?.universityId?.name ||
@@ -29,31 +52,64 @@ export default function CourseHero({
     courseData?.university?.slug ||
     "";
 
+  const safeHeroBannerSrc = getSafeMediaUrl(heroBannerSrc);
+  const safeMobileHeroBannerSrc = getSafeMediaUrl(mobileHeroBannerSrc);
+  const safeUniversityLogoSrc = getSafeMediaUrl(universityLogoSrc);
+
+  const collaboratorLogos = React.useMemo(() => {
+    const list = [];
+    if (Array.isArray(courseData?.collaboratorLogos) && courseData.collaboratorLogos.length > 0) {
+      courseData.collaboratorLogos.forEach((c) => {
+        const safeUrl = getSafeMediaUrl(c?.logo || c?.logoUrl || c);
+        if (safeUrl) {
+          list.push({
+            name: c.name || "Collaborator",
+            slug: c.slug || "",
+            logo: safeUrl,
+          });
+        }
+      });
+    } else if (Array.isArray(courseData?.collaborations) && courseData.collaborations.length > 0) {
+      courseData.collaborations.forEach((c) => {
+        const u = c?.universityId || c;
+        const safeUrl = getSafeMediaUrl(u?.logo?.url || u?.logo?.path || u?.logo?.fileName || u?.logo);
+        if (safeUrl) {
+          list.push({
+            name: u?.name || "Collaborator",
+            slug: u?.slug || "",
+            logo: safeUrl,
+          });
+        }
+      });
+    }
+    return list;
+  }, [courseData]);
+
   return (
     <div className="rounded-2xl overflow-hidden shadow-sm border border-gray-200 bg-[#0C2B4E] flex flex-col md:grid md:grid-cols-12 min-h-80 md:min-h-90">
       {/* Mobile Image (Top) / Desktop Image (Right) */}
       <div className="order-1 md:order-2 md:col-span-6 relative w-full h-64 sm:h-72 md:h-full overflow-hidden rounded-b-3xl md:rounded-none md:rounded-l-3xl">
-        {heroBannerSrc || mobileHeroBannerSrc ? (
+        {safeHeroBannerSrc || safeMobileHeroBannerSrc ? (
           <>
-            {heroBannerSrc && (
+            {safeHeroBannerSrc && (
               <Image
-                src={heroBannerSrc}
+                src={safeHeroBannerSrc}
                 alt={displayCourseTitle || courseData?.name || "Course Banner"}
                 fill
                 sizes={
-                  mobileHeroBannerSrc && mobileHeroBannerSrc !== heroBannerSrc
+                  safeMobileHeroBannerSrc && safeMobileHeroBannerSrc !== safeHeroBannerSrc
                     ? "(min-width: 768px) 50vw, 1px"
                     : "(max-width: 768px) 100vw, 50vw"
                 }
-                className={`object-cover object-center ${mobileHeroBannerSrc && mobileHeroBannerSrc !== heroBannerSrc ? "hidden md:block" : "block"
+                className={`object-cover object-center ${safeMobileHeroBannerSrc && safeMobileHeroBannerSrc !== safeHeroBannerSrc ? "hidden md:block" : "block"
                   }`}
                 priority
                 loading="eager"
               />
             )}
-            {mobileHeroBannerSrc && mobileHeroBannerSrc !== heroBannerSrc && (
+            {safeMobileHeroBannerSrc && safeMobileHeroBannerSrc !== safeHeroBannerSrc && (
               <Image
-                src={mobileHeroBannerSrc}
+                src={safeMobileHeroBannerSrc}
                 alt={displayCourseTitle || courseData?.name || "Course Banner"}
                 fill
                 sizes="(max-width: 767px) 100vw, 1px"
@@ -67,20 +123,42 @@ export default function CourseHero({
           <div className="w-full h-full bg-[#0C2B4E]" />
         )}
 
-        {/* University Logo */}
-        {universityLogoSrc && (
-          <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 bg-white rounded-xl shadow-md p-1.5 sm:p-2 flex items-center justify-center">
-            <div className="relative w-11 h-11 sm:w-16 sm:h-16">
-              <Image
-                src={universityLogoSrc}
-                alt={effectiveUniName || "University Logo"}
-                fill
-                priority
-                loading="eager"
-                sizes="(max-width: 640px) 44px, 64px"
-                className="object-contain"
-              />
-            </div>
+        {/* University Logo(s) - Supports Collaborator Logos */}
+        {(safeUniversityLogoSrc || collaboratorLogos.length > 0) && (
+          <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 bg-white rounded-xl shadow-md p-1.5 sm:p-2 flex items-center justify-center gap-1.5 sm:gap-2">
+            {safeUniversityLogoSrc && (
+              <div className="relative w-11 h-11 sm:w-14 sm:h-14">
+                <Image
+                  src={safeUniversityLogoSrc}
+                  alt={effectiveUniName || "University Logo"}
+                  fill
+                  priority
+                  loading="eager"
+                  sizes="(max-width: 640px) 44px, 56px"
+                  className="object-contain"
+                />
+              </div>
+            )}
+            {collaboratorLogos.length > 0 && (
+              <>
+                {safeUniversityLogoSrc && (
+                  <span className="text-gray-400 font-bold text-xs sm:text-sm px-0.5 select-none">&amp;</span>
+                )}
+                {collaboratorLogos.map((collab, idx) => (
+                  <div key={idx} className="relative w-11 h-11 sm:w-14 sm:h-14" title={collab.name}>
+                    <Image
+                      src={collab.logo}
+                      alt={collab.name || "Collaborator Logo"}
+                      fill
+                      priority
+                      loading="eager"
+                      sizes="(max-width: 640px) 44px, 56px"
+                      className="object-contain"
+                    />
+                  </div>
+                ))}
+              </>
+            )}
           </div>
         )}
       </div>

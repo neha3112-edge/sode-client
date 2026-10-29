@@ -53,6 +53,10 @@ function normalizeCourseData(pageRes) {
     fullFee: raw.fullFee || null,
     customContent: raw.customContent || "",
     topUniversities: Array.isArray(raw.topUniversities) ? raw.topUniversities : [],
+    collaborations: Array.isArray(raw.collaborations) ? raw.collaborations : [],
+    collaboratorLogos: Array.isArray(raw.collaboratorLogos) ? raw.collaboratorLogos : [],
+    partnerUnis: Array.isArray(raw.partnerUnis) ? raw.partnerUnis : [],
+    combinedUniversityName: raw.combinedUniversityName || raw.universityName || "",
   };
 }
 
