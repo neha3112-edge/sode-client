@@ -147,24 +147,70 @@ function getCoursePastelStyle(courseName = "") {
 // 🏛️ Dynamic Category Icon Renderer
 function renderCategoryIcon(categoryName = "", type = "programs") {
   const name = (categoryName || "").toLowerCase();
-  if (type === "universities") {
-    if (name.includes("global") || name.includes("international")) {
-      return (
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      );
-    }
-    if (name.includes("iit") || name.includes("iim") || name.includes("top")) {
-      return (
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-        </svg>
-      );
-    }
+
+  // 1. Specific category checks first (avoiding "top" substring catch-all)
+  if (name.includes("city")) {
+    return (
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.75a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21" />
+      </svg>
+    );
+  }
+
+  if (name.includes("state")) {
+    return (
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+      </svg>
+    );
+  }
+
+  if (name.includes("online")) {
+    return (
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0H3" />
+      </svg>
+    );
+  }
+
+  if (name.includes("distance")) {
+    return (
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+      </svg>
+    );
+  }
+
+  if (name.includes("iit") || name.includes("iim")) {
+    return (
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5" />
+      </svg>
+    );
+  }
+
+  if (name.includes("global") || name.includes("international") || name.includes("abroad")) {
+    return (
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    );
+  }
+
+  if (name.includes("ugc") || name.includes("approved") || name.includes("accredit")) {
     return (
       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+      </svg>
+    );
+  }
+
+  // Generic Top universities (Trophy/Star)
+  if (name.includes("top")) {
+    return (
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
       </svg>
     );
   }
@@ -191,6 +237,20 @@ function renderCategoryIcon(categoryName = "", type = "programs") {
       </svg>
     );
   }
+  if (name.includes("diploma") || name.includes("certificat")) {
+    return (
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+      </svg>
+    );
+  }
+  if (type === "universities") {
+    return (
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+      </svg>
+    );
+  }
   return (
     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5" />
@@ -203,8 +263,10 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
   const headerData = initialHeaderData?.result || initialHeaderData || {};
   const [activeMenuKey, setActiveMenuKey] = useState(null); // Key of the currently opened menu item
   const [activeCategoryIndex, setActiveCategoryIndex] = useState({});
+  const [activeSubCategory, setActiveSubCategory] = useState({});
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileActiveKeys, setMobileActiveKeys] = useState([]);
+  const [expandedMobileCategories, setExpandedMobileCategories] = useState({});
 
   const headerRef = useRef(null);
 
@@ -257,6 +319,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
           .map((g) => ({
             _id: g.category?._id || g.category?.name,
             name: g.category?.name || "",
+            subcategories: Array.isArray(g.subcategories) ? g.subcategories : [],
             items: g.items || [],
           }));
 
@@ -695,32 +758,76 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                   <div className="space-y-1">
                     {currentMegaMenuData.groups.map((grp, gIdx) => {
                       const isActive = currentMegaMenuData.currentIdx === gIdx;
+                      const grpKey = grp.category?._id || grp.category?.slug || `grp-${gIdx}`;
+                      const subcats = Array.isArray(grp.subcategories) ? grp.subcategories : [];
+                      const hasSubcategories = subcats.length > 0;
+                      const defaultSubId = hasSubcategories ? (subcats[0].category?._id || subcats[0].category?.slug) : null;
+                      const currentSubId = activeSubCategory[grpKey] || defaultSubId;
+
                       return (
-                        <button
-                          key={grp.category?._id || gIdx}
-                          type="button"
-                          onClick={() =>
-                            setActiveCategoryIndex((prev) => ({
-                              ...prev,
-                              [currentMegaMenuData.itemKey]: gIdx,
-                            }))
-                          }
-                          className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-left text-[12.5px] transition-all cursor-pointer select-none ${isActive
-                            ? "bg-[#EBF3FE] text-[#0B57D0] font-bold shadow-xs"
-                            : "text-slate-700 hover:bg-slate-50 hover:text-slate-900 font-medium"
-                            }`}
-                        >
-                          <div className="flex items-center gap-2 min-w-0">
-                            <span className={isActive ? "text-[#0B57D0]" : "text-slate-400"}>
-                              {renderCategoryIcon(grp.category?.name, currentMegaMenuData.type)}
-                            </span>
-                            <span className="truncate">{grp.category?.name}</span>
-                          </div>
-                          <RightOutlined
-                            className={`text-[9.5px] shrink-0 ml-1 transition-transform ${isActive ? "text-[#0B57D0] font-bold translate-x-0.5" : "text-slate-400"
+                        <div key={grp.category?._id || gIdx} className="space-y-1">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setActiveCategoryIndex((prev) => ({
+                                ...prev,
+                                [currentMegaMenuData.itemKey]: gIdx,
+                              }))
+                            }
+                            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-left text-[12.5px] transition-all cursor-pointer select-none ${isActive
+                              ? "bg-[#EBF3FE] text-[#0B57D0] font-bold shadow-xs"
+                              : "text-slate-700 hover:bg-slate-50 hover:text-slate-900 font-medium"
                               }`}
-                          />
-                        </button>
+                          >
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span className={isActive ? "text-[#0B57D0]" : "text-slate-400"}>
+                                {renderCategoryIcon(grp.category?.name, currentMegaMenuData.type)}
+                              </span>
+                              <span className="truncate">{grp.category?.name}</span>
+                            </div>
+                            <RightOutlined
+                              className={`text-[9.5px] shrink-0 ml-1 transition-transform ${isActive ? "text-[#0B57D0] font-bold rotate-90" : "text-slate-400"
+                                }`}
+                            />
+                          </button>
+
+                          {/* Subcategories (Matches Exact Main Category Theme, Height & Font Size) */}
+                          {isActive && hasSubcategories && (
+                            <div className="pl-3 py-0.5 space-y-1">
+                              {subcats.map((sub, sIdx) => {
+                                const subId = sub.category?._id || sub.category?.slug || `sub-${sIdx}`;
+                                const isSubActive = currentSubId === subId;
+                                return (
+                                  <button
+                                    key={subId}
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setActiveSubCategory((prev) => ({ ...prev, [grpKey]: subId }));
+                                    }}
+                                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-left text-[12.5px] transition-all cursor-pointer select-none ${
+                                      isSubActive
+                                        ? "bg-[#EBF3FE] text-[#0B57D0] font-bold shadow-xs"
+                                        : "text-slate-700 hover:bg-slate-50 hover:text-slate-900 font-medium"
+                                    }`}
+                                  >
+                                    <div className="flex items-center gap-2 min-w-0">
+                                      <span className={isSubActive ? "text-[#0B57D0]" : "text-slate-400"}>
+                                        {renderCategoryIcon(sub.category?.name, currentMegaMenuData.type)}
+                                      </span>
+                                      <span className="truncate">{sub.category?.name}</span>
+                                    </div>
+                                    <RightOutlined
+                                      className={`text-[9.5px] shrink-0 ml-1 transition-transform ${
+                                        isSubActive ? "text-[#0B57D0] font-bold translate-x-0.5" : "text-slate-400"
+                                      }`}
+                                    />
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
                       );
                     })}
                   </div>
@@ -731,12 +838,28 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3.5">
                     {/* A. DYNAMIC UNIVERSITY / LISTING CARDS */}
                     {currentMegaMenuData.type === "universities" && (() => {
-                      const allItems = currentMegaMenuData.currentGroup?.items || [];
+                      const grpKey = currentMegaMenuData.currentGroup?.category?._id || currentMegaMenuData.currentGroup?.category?.slug || `grp-${currentMegaMenuData.currentIdx}`;
+                      const subcats = Array.isArray(currentMegaMenuData.currentGroup?.subcategories) ? currentMegaMenuData.currentGroup.subcategories : [];
+                      const currentSubId = activeSubCategory[grpKey] || null;
+
+                      const selectedSubCat = currentSubId ? subcats.find(
+                        (s) => (s.category?._id || s.category?.slug) === currentSubId
+                      ) : null;
+
+                      const allItems = selectedSubCat
+                        ? (selectedSubCat.items || [])
+                        : (currentMegaMenuData.currentGroup?.items || []);
+
                       const dynamicListings = allItems.filter((it) => it.is_dynamic_listing);
                       const regularUniversities = allItems.filter((it) => !it.is_dynamic_listing);
 
                       return (
                         <>
+                          {allItems.length === 0 && (
+                            <div className="col-span-full py-12 text-center text-slate-400 font-medium text-xs">
+                              No universities or listings found in this category currently.
+                            </div>
+                          )}
                           {/* Dynamic Listings (Clean 2-Column Bulleted List with Header Text Color) */}
                           {dynamicListings.length > 0 && (
                             <div className="col-span-full grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3 p-1">
@@ -866,9 +989,30 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                       );
                     })()}
 
-                    {/* B. DYNAMIC COURSE / PROGRAM CARDS (Screenshot 2) */}
-                    {currentMegaMenuData.type === "programs" &&
-                      currentMegaMenuData.currentGroup?.items?.map((prog, idx) => {
+                    {/* B. DYNAMIC COURSE / PROGRAM CARDS (Screenshot 2 with Subcategory filtering) */}
+                    {currentMegaMenuData.type === "programs" && (() => {
+                      const grpKey = currentMegaMenuData.currentGroup?.category?._id || currentMegaMenuData.currentGroup?.category?.slug || `grp-${currentMegaMenuData.currentIdx}`;
+                      const subcats = Array.isArray(currentMegaMenuData.currentGroup?.subcategories) ? currentMegaMenuData.currentGroup.subcategories : [];
+                      const defaultSubId = subcats.length > 0 ? (subcats[0].category?._id || subcats[0].category?.slug) : null;
+                      const currentSubId = activeSubCategory[grpKey] || defaultSubId;
+
+                      const selectedSubCat = subcats.find(
+                        (s) => (s.category?._id || s.category?.slug) === currentSubId
+                      );
+
+                      const displayedItems = selectedSubCat
+                        ? (selectedSubCat.items || [])
+                        : (currentMegaMenuData.currentGroup?.items || []);
+
+                      if (displayedItems.length === 0) {
+                        return (
+                          <div className="col-span-full py-12 text-center text-slate-400 font-medium text-xs">
+                            No courses found in this category currently.
+                          </div>
+                        );
+                      }
+
+                      return displayedItems.map((prog, idx) => {
                         const progSlug = (prog.slug && !/^[0-9a-fA-F]{24}$/.test(prog.slug))
                           ? prog.slug
                           : (prog.name ? prog.name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') : String(prog._id || ""));
@@ -981,7 +1125,8 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                             </div>
                           </div>
                         );
-                      })}
+                      });
+                    })()}
 
                     {/* Empty State for category with no items */}
                     {(!currentMegaMenuData.currentGroup?.items || currentMegaMenuData.currentGroup.items.length === 0) && (
@@ -1070,30 +1215,77 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                   </div>
 
                   <div className="space-y-1">
-                    {section.categories.map((cat, cIdx) => (
-                      <button
-                        key={cat._id || cIdx}
-                        type="button"
-                        onClick={() =>
-                          setSelectedMobileCategory({
-                            title: cat.name,
-                            type: section.type,
-                            items: cat.items || [],
-                          })
-                        }
-                        className="w-full flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-[#F0F6FE] active:bg-[#E2EDFC] transition-colors text-left border-none bg-transparent cursor-pointer group"
-                      >
-                        <div className="flex items-center gap-3">
-                          <span className="text-[#0B57D0] text-base group-hover:scale-110 transition-transform">
-                            {renderCategoryIcon(cat.name, section.type)}
-                          </span>
-                          <span className="font-semibold text-slate-800 text-[13.5px] group-hover:text-[#0B57D0]">
-                            {cat.name}
-                          </span>
+                    {section.categories.map((cat, cIdx) => {
+                      const hasSub = Array.isArray(cat.subcategories) && cat.subcategories.length > 0;
+                      const isExpanded = !!expandedMobileCategories[cat._id];
+
+                      return (
+                        <div key={cat._id || cIdx} className="space-y-1">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (hasSub) {
+                                setExpandedMobileCategories((prev) => ({
+                                  ...prev,
+                                  [cat._id]: !prev[cat._id],
+                                }));
+                              } else {
+                                setSelectedMobileCategory({
+                                  title: cat.name,
+                                  type: section.type,
+                                  items: cat.items || [],
+                                });
+                              }
+                            }}
+                            className="w-full flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-[#F0F6FE] active:bg-[#E2EDFC] transition-colors text-left border-none bg-transparent cursor-pointer group"
+                          >
+                            <div className="flex items-center gap-3">
+                              <span className="text-[#0B57D0] text-base group-hover:scale-110 transition-transform">
+                                {renderCategoryIcon(cat.name, section.type)}
+                              </span>
+                              <span className="font-semibold text-slate-800 text-[13.5px] group-hover:text-[#0B57D0]">
+                                {cat.name}
+                              </span>
+                            </div>
+                            <RightOutlined
+                              className={`text-[10px] text-slate-400 group-hover:text-[#0B57D0] transition-transform ${
+                                hasSub && isExpanded ? "rotate-90 text-[#0B57D0]" : "group-hover:translate-x-0.5"
+                              }`}
+                            />
+                          </button>
+
+                          {/* Subcategories under Category in Mobile (Same styling & size, no line border) */}
+                          {hasSub && isExpanded && (
+                            <div className="pl-4 space-y-1 py-0.5">
+                              {cat.subcategories.map((sub, sIdx) => (
+                                <button
+                                  key={sub.category?._id || sIdx}
+                                  type="button"
+                                  onClick={() =>
+                                    setSelectedMobileCategory({
+                                      title: sub.category?.name || `${cat.name} - Subcategory`,
+                                      type: section.type,
+                                      items: sub.items || [],
+                                    })
+                                  }
+                                  className="w-full flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-[#F0F6FE] active:bg-[#E2EDFC] transition-colors text-left border-none bg-transparent cursor-pointer group"
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <span className="text-[#0B57D0] text-base group-hover:scale-110 transition-transform">
+                                      {renderCategoryIcon(sub.category?.name, section.type)}
+                                    </span>
+                                    <span className="font-semibold text-slate-800 text-[13.5px] group-hover:text-[#0B57D0]">
+                                      {sub.category?.name}
+                                    </span>
+                                  </div>
+                                  <RightOutlined className="text-[10px] text-slate-400 group-hover:text-[#0B57D0] group-hover:translate-x-0.5 transition-all" />
+                                </button>
+                              ))}
+                            </div>
+                          )}
                         </div>
-                        <RightOutlined className="text-[10px] text-slate-400 group-hover:text-[#0B57D0] group-hover:translate-x-0.5 transition-all" />
-                      </button>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               ))}

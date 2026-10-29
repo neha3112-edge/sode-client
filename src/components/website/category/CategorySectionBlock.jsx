@@ -26,6 +26,11 @@ export default function CategorySectionBlock({
     : Boolean(expandedSections[blockKey]);
   const currentVisibleCount = isCourse ? (visibleCounts[blockKey] || 8) : block.children.length;
 
+  const formattedTitle = (block.title || "")
+    .toUpperCase()
+    .replace(/\bIITS\b/g, "IITs")
+    .replace(/\bIIMS\b/g, "IIMs");
+
   return (
     <section
       key={blockKey}
@@ -39,11 +44,9 @@ export default function CategorySectionBlock({
             <div className="flex items-center gap-2.5 truncate">
               <span className="w-1.5 h-5 rounded-full inline-block shrink-0 bg-blue-500" />
               <h2 className="text-sm sm:text-base font-bold text-gray-900 tracking-tight truncate m-0">
-                {block.title}
+                {formattedTitle}
               </h2>
             </div>
-
-
           </div>
 
           {/* Content: Course Grid OR University Carousel */}
@@ -124,9 +127,8 @@ export default function CategorySectionBlock({
                   viewBox="0 0 24 24"
                   strokeWidth={2.5}
                   stroke="currentColor"
-                  className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                    isExpanded ? "rotate-180" : "group-hover:translate-y-0.5"
-                  }`}
+                  className={`w-3.5 h-3.5 transition-transform duration-200 ${isExpanded ? "rotate-180" : "group-hover:translate-y-0.5"
+                    }`}
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                 </svg>
@@ -169,9 +171,8 @@ export default function CategorySectionBlock({
                   viewBox="0 0 24 24"
                   strokeWidth={2.5}
                   stroke="currentColor"
-                  className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                    isExpanded ? "rotate-180" : "group-hover:translate-y-0.5"
-                  }`}
+                  className={`w-3.5 h-3.5 transition-transform duration-200 ${isExpanded ? "rotate-180" : "group-hover:translate-y-0.5"
+                    }`}
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                 </svg>
