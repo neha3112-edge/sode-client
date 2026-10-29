@@ -1607,18 +1607,24 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                 {selectedMobileCategory.items.map((item, idx) => {
                   const itemSlug = item.slug || item._id || item.name;
                   const isAcc = selectedMobileCategory.type === "accreditations" || !!item.is_approval;
-                  const isUni = !isAcc && (selectedMobileCategory.type === "universities" || !!item.location || item.courses_count !== undefined);
+                  const isProg = selectedMobileCategory.type === "programs";
+                  const isUni = !isAcc && !isProg && (selectedMobileCategory.type === "universities" || !!item.location || item.courses_count !== undefined);
                   const logoSrc = item.header_logo || item.logo || item.image || null;
                   const detailUrl = isAcc
                     ? (item.url || `/accreditations/${encodeURIComponent(itemSlug)}`)
                     : isUni
                       ? (item.url || `/universities/${encodeURIComponent(itemSlug)}`)
-                      : (item.url || `/courses?course=${encodeURIComponent(itemSlug)}`);
-                  const viewCoursesUrl = isAcc
-                    ? detailUrl
+                      : (item.url || `/courses/${encodeURIComponent(itemSlug)}`);
+                  const secondaryUrl = isAcc
+                    ? "/universities"
                     : isUni
                       ? `/courses?university=${encodeURIComponent(itemSlug)}`
-                      : detailUrl;
+                      : `/universities?course=${encodeURIComponent(itemSlug)}`;
+                  const secondaryLabel = isAcc
+                    ? "View Unis"
+                    : isUni
+                      ? "View Courses"
+                      : "View Unis";
 
                   if (item.is_dynamic_listing) {
                     return (
@@ -1728,7 +1734,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                   return (
                     <div
                       key={item._id || idx}
-                      className="bg-white border border-slate-200/90 rounded-2xl p-2.5 sm:p-3 flex flex-col justify-between shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:border-blue-300 transition-all"
+                      className="bg-white border border-slate-200/90 rounded-2xl p-2 sm:p-2.5 flex flex-col justify-between shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:border-blue-300 transition-all"
                     >
                       <div>
                         {/* Top Section: Logo Left + Title Right */}
@@ -1773,9 +1779,31 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                           </div>
                         </div>
 
-                        {/* Full-width Badges Row (Only for non-dynamic listing universities) */}
-                        {!item.is_dynamic_listing && (item.approval || item.courses_count || item.duration) && (
-                          <div className="flex items-center gap-2 mt-1.5 text-[9.5px]">
+                        {/* Full-width Badges Row: For Courses (Duration & Specialisations Side-by-Side Centered) */}
+                        {isProg && (item.duration || item.specialisations_count > 0) && (
+                          <div className="flex items-center justify-center gap-1.5 mt-1 text-[8.5px] sm:text-[9px] min-w-0 overflow-hidden w-full text-center">
+                            {item.duration && (
+                              <span className="inline-flex items-center gap-0.5 text-slate-500 font-medium shrink-0 whitespace-nowrap">
+                                <svg className="w-2.5 h-2.5 text-slate-400 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                                </svg>
+                                <span>{item.duration}</span>
+                              </span>
+                            )}
+                            {item.specialisations_count > 0 && (
+                              <span className="inline-flex items-center gap-0.5 text-slate-500 font-medium min-w-0 truncate whitespace-nowrap">
+                                <svg className="w-2.5 h-2.5 text-slate-400 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                  <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z" />
+                                </svg>
+                                <span className="truncate">{item.specialisations_count} Specialisation</span>
+                              </span>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Full-width Badges Row: For Universities (Approval & Courses Count Matching Desktop) */}
+                        {!isProg && !item.is_dynamic_listing && (item.approval || item.courses_count > 0) && (
+                          <div className="flex items-center gap-2 mt-1.5 text-[9.5px] flex-wrap">
                             {item.approval && (
                               <span className="inline-flex items-center gap-1 text-slate-600 font-semibold whitespace-nowrap">
                                 <svg className="w-3 h-3 text-emerald-600 shrink-0" viewBox="0 0 20 20" fill="currentColor">
@@ -1784,12 +1812,12 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                                 <span className="truncate">{item.approval}</span>
                               </span>
                             )}
-                            {(item.courses_count || item.duration) && (
+                            {item.courses_count > 0 && (
                               <span className="inline-flex items-center gap-1 text-slate-500 font-medium whitespace-nowrap">
-                                <svg className="w-3 h-3 text-blue-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+                                <svg className="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                                 </svg>
-                                <span className="truncate">{item.courses_count ? `${item.courses_count}+ Courses` : item.duration}</span>
+                                <span className="truncate">{item.courses_count}+ Courses</span>
                               </span>
                             )}
                           </div>
@@ -1803,15 +1831,15 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                           onClick={() => closeMobile()}
                           className="inline-flex items-center justify-center px-2 py-1 text-[9.5px] font-bold text-[#072C50] hover:text-[#0B57D0] border border-slate-300 rounded-2xl bg-white hover:bg-slate-50 transition-colors whitespace-nowrap"
                         >
-                          {isAcc ? "Verify" : "Know More"}
+                          Know More
                         </Link>
                         {!item.is_dynamic_listing && (
                           <Link
-                            href={viewCoursesUrl}
+                            href={secondaryUrl}
                             onClick={() => closeMobile()}
                             className="inline-flex items-center gap-0.5 text-[9.5px] font-bold text-[#072C50] hover:text-[#0B57D0] transition-colors whitespace-nowrap overflow-hidden"
                           >
-                            <span className="truncate">{isAcc ? "Directory" : "View Courses"}</span>
+                            <span className="truncate">{secondaryLabel}</span>
                             <RightOutlined className="text-[6.5px] shrink-0" />
                           </Link>
                         )}
