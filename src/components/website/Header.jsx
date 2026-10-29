@@ -1439,12 +1439,12 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
           }}
           placement="top"
           closable={false}
+          className="mobile-nav-drawer"
           styles={{
             wrapper: { height: "auto", maxHeight: "92vh" },
-            section: { height: "auto", maxHeight: "92vh", borderBottomLeftRadius: "24px", borderBottomRightRadius: "24px", overflow: "hidden" },
             header: { padding: "8px 16px", backgroundColor: "#ffffff", borderBottom: "1px solid #f1f5f9" },
             body: {
-              padding: selectedMobileCategory ? "0 16px 28px" : "14px 16px 28px",
+              padding: 0,
               height: "auto",
               maxHeight: "calc(92vh - 64px)",
               overflowY: "auto",
@@ -1494,7 +1494,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
         >
           {!selectedMobileCategory ? (
             /* ── VIEW 1: CATEGORIES OVERVIEW (Matching Phone 1 Mockup) ── */
-            <div className="space-y-6">
+            <div className="p-4 space-y-6">
               {/* Dynamic Mega Menu Sections from database */}
               {mobileMegaSections.map((section) => (
                 <div key={section._id}>
@@ -1589,7 +1589,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
             /* ── VIEW 2: 2-COLUMN CARDS GRID (Matching Phone 2 Mockup) ── */
             <div>
               {/* Back Header - Full touch to the top with solid background and zero gap */}
-              <div className="sticky top-0 bg-white z-30 flex items-center justify-between py-2.5 mb-3 border-b border-slate-100 -mx-4 px-4 shadow-[0_2px_6px_rgba(0,0,0,0.03)]">
+              <div className="sticky top-0 bg-white z-30 flex items-center justify-between px-4 py-2.5 border-b border-slate-100 shadow-[0_2px_6px_rgba(0,0,0,0.03)]">
                 <button
                   type="button"
                   onClick={() => {
@@ -1608,7 +1608,8 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
               </div>
 
               {/* 2-Column Cards Grid */}
-              <div className="grid grid-cols-2 gap-2.5 pb-4">
+              <div className="p-4 pt-3">
+                <div className="grid grid-cols-2 gap-2.5 pb-4">
                 {selectedMobileCategory.items.map((item, idx) => {
                   const itemSlug = item.slug || item._id || item.name;
                   const isAcc = selectedMobileCategory.type === "accreditations" || !!item.is_approval;
@@ -1784,9 +1785,9 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                           </div>
                         </div>
 
-                        {/* Full-width Badges Row: For Courses (Duration & Specialisations Side-by-Side Centered) */}
+                        {/* Full-width Badges Row: For Courses (Duration & Specialisations Side-by-Side Left-Aligned) */}
                         {isProg && (item.duration || item.specialisations_count > 0) && (
-                          <div className="flex items-center justify-center gap-1.5 mt-1 text-[8.5px] sm:text-[9px] min-w-0 overflow-hidden w-full text-center">
+                          <div className="flex items-center justify-start gap-1.5 mt-1 text-[8.5px] sm:text-[9px] min-w-0 overflow-hidden w-full text-left">
                             {item.duration && (
                               <span className="inline-flex items-center gap-0.5 text-slate-500 font-medium shrink-0 whitespace-nowrap">
                                 <svg className="w-2.5 h-2.5 text-slate-400 shrink-0" viewBox="0 0 20 20" fill="currentColor">
@@ -1860,7 +1861,8 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                 </div>
               )}
             </div>
-          )}
+          </div>
+        )}
         </Drawer>
       </AntHeader>
     </>

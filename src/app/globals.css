@@ -279,6 +279,10 @@ body {
   border-bottom-right-radius: 20px !important;
 }
 
+.mobile-nav-drawer .ant-drawer-body {
+  padding: 0 !important;
+}
+
 /* =========================================================
    STANDALONE LANDING PAGE ISOLATION
    Hides website header, footer, and nav when viewing LP
