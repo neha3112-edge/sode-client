@@ -144,6 +144,13 @@ function getCoursePastelStyle(courseName = "") {
   };
 }
 
+// Helper to trim "Online" / "Distance" from subcategory names (e.g., Distance Master -> Master, Online Bachelor -> Bachelor)
+const formatCategoryDisplayName = (name = "") => {
+  if (!name) return "";
+  const cleaned = name.replace(/\b(online|distance)\b/gi, "").trim().replace(/\s+/g, " ");
+  return cleaned || name;
+};
+
 // 🏛️ Dynamic Category Icon Renderer
 function renderCategoryIcon(categoryName = "", type = "programs") {
   const name = (categoryName || "").toLowerCase();
@@ -162,6 +169,23 @@ function renderCategoryIcon(categoryName = "", type = "programs") {
       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
         <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+      </svg>
+    );
+  }
+
+  // Check specific degrees (Master, Bachelor) BEFORE generic online/distance
+  if (name.includes("master") || name.includes("post graduate") || name.includes("pg")) {
+    return (
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5" />
+      </svg>
+    );
+  }
+
+  if (name.includes("bachelor") || name.includes("under graduate") || name.includes("ug")) {
+    return (
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
       </svg>
     );
   }
@@ -813,9 +837,9 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                                   >
                                     <div className="flex items-center gap-2 min-w-0">
                                       <span className={isSubActive ? "text-[#0B57D0]" : "text-slate-400"}>
-                                        {renderCategoryIcon(sub.category?.name, currentMegaMenuData.type)}
+                                        {renderCategoryIcon(formatCategoryDisplayName(sub.category?.name), currentMegaMenuData.type)}
                                       </span>
-                                      <span className="truncate">{sub.category?.name}</span>
+                                      <span className="truncate">{formatCategoryDisplayName(sub.category?.name)}</span>
                                     </div>
                                     <RightOutlined
                                       className={`text-[9.5px] shrink-0 ml-1 transition-transform ${
@@ -1272,10 +1296,10 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                                 >
                                   <div className="flex items-center gap-3">
                                     <span className="text-[#0B57D0] text-base group-hover:scale-110 transition-transform">
-                                      {renderCategoryIcon(sub.category?.name, section.type)}
+                                      {renderCategoryIcon(formatCategoryDisplayName(sub.category?.name), section.type)}
                                     </span>
                                     <span className="font-semibold text-slate-800 text-[13.5px] group-hover:text-[#0B57D0]">
-                                      {sub.category?.name}
+                                      {formatCategoryDisplayName(sub.category?.name)}
                                     </span>
                                   </div>
                                   <RightOutlined className="text-[10px] text-slate-400 group-hover:text-[#0B57D0] group-hover:translate-x-0.5 transition-all" />
