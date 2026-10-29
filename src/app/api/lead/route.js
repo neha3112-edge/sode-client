@@ -9,6 +9,7 @@ import { NextResponse } from "next/server";
 function extractUTMParams(urlStr) {
   const params = {};
 
+
   if (!urlStr) {
     return params;
   }
@@ -27,9 +28,10 @@ function extractUTMParams(urlStr) {
       }
     }
 
-    const absoluteUrl = urlStr.startsWith("http")
-      ? urlStr
-      : `http://localhost${urlStr}`;
+    const absoluteUrl =
+      urlStr.startsWith("http")
+        ? urlStr
+        : `http://localhost${urlStr}`;
 
     const parsedUrl = new URL(absoluteUrl);
 

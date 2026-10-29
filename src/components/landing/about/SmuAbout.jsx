@@ -84,10 +84,10 @@ export default function SmuAbout({ about = {}, brand = {}, leader = null }) {
                   {leaderData.desc}
                 </p>
                 <div className="!mt-7 sm:!mt-8 space-y-1 text-center lg:text-left">
-                  <h3 className="text-[16.5px] sm:text-[18px] font-bold text-[#006372] m-0">
+                  <h3 className={brand.leaderNameClassName || about.leaderNameClassName || "text-[16.5px] sm:text-[18px] font-medium text-[#006372] m-0"}>
                     {leaderData.name}
                   </h3>
-                  <p className="text-[13.5px] sm:text-[14.5px] text-[#006372] font-medium m-0">
+                  <p className={brand.leaderDesignationClassName || about.leaderDesignationClassName || "text-[13.5px] sm:text-[14.5px] text-[#006372] font-medium m-0"}>
                     {leaderData.designation}
                   </p>
                 </div>

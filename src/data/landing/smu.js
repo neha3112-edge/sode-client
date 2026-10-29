@@ -16,6 +16,7 @@ export const smuData = {
   },
   brand: {
     slug: "smu",
+    admissionGridClass: "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4.5 sm:gap-4 lg:gap-3 xl:gap-4 w-full",
     statsLayout: "smu-clean",
     footerFormLayout: "smu-split",
     name: "Sikkim Manipal University Online",
@@ -32,7 +33,7 @@ export const smuData = {
     enquireSubtitle: "Academic Experts will assist you!",
     officialUrl: "https://distanceeducationschool.com/smu/",
     logo: "/assets/smu/logo.png",
-    logoWrapperClassName: "w-[190px] sm:w-[230px] lg:w-[260px] h-[46px] sm:h-[54px] lg:h-[60px]",
+    logoWrapperClassName: "w-[216px] sm:w-[235px] lg:w-[260px] h-[52px] sm:h-[56px] lg:h-[60px]",
     logoClassName: "",
     sodeLogo: "/assets/smu/new-des-logo.webp",
     showSodeLogo: false,
@@ -85,7 +86,7 @@ export const smuData = {
     compareUniversityName: "Sikkim Manipal University",
     arrowGif: "/assets/smu/arrow.gif",
     goldColor: "#ffc107",
-    statsNumberColor: "#ffb100",
+    statsNumberColor: "#f78d2d",
     badgeText: "Admissions Open 2026",
     hero: {
       backgroundImage: "/assets/smu/smu-front-desktop.webp",
@@ -166,7 +167,13 @@ export const smuData = {
     aboutTitleClassName: "text-[20px] min-[390px]:text-[21.5px] sm:text-[26px] md:text-[30px] lg:text-[36px] font-semibold text-white tracking-normal leading-[1.3] m-0 mb-5 sm:mb-6 text-center",
     aboutParagraphsClassName: "text-[15px] sm:text-[16px] lg:text-[17px] text-white leading-[1.7] font-normal text-center tracking-normal space-y-6 sm:space-y-7 max-w-3xl xl:max-w-4xl mx-auto px-1 sm:px-4",
     aboutLayout: "smu-banner",
+    leaderNameClassName: "text-[16.5px] sm:text-[18px] font-medium text-[#006372] m-0",
+    admissionGridClass: "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4.5 sm:gap-4 lg:gap-3 xl:gap-4 w-full",
+    statsLayout: "smu-clean",
+    statsNumberColor: "#f78d2d",
+    statsNumberClassName: "text-[34px] sm:text-[44px] lg:text-[54px] font-medium text-[#f78d2d] tracking-tight leading-none",
     faqLayout: "cards",
+    faqContainerClassName: "px-6 sm:px-8 lg:px-8",
     faqTitle: "FAQ'S | Frequently Asked Questions",
   },
   courses: [
@@ -349,6 +356,7 @@ export const smuData = {
     subtitleClassName:
       "text-[14px] sm:text-[14.5px] lg:text-[15.5px] text-center text-slate-700 tracking-[0.2px] mb-6 sm:mb-8 lg:mb-10 max-w-4xl mx-auto font-normal leading-relaxed m-0 px-4",
     fullWidth: true,
+    gridClass: "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4.5 sm:gap-4 lg:gap-3 xl:gap-4 w-full",
   },
   admissionSteps: [
     {

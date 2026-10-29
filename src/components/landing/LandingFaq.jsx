@@ -604,8 +604,8 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
   }
   if (isSmu) {
     return (
-      <section id="faqs" className="py-10 sm:py-14 lg:py-16 bg-white w-full select-none">
-        <div className="w-full px-4 sm:px-6 lg:px-8 max-w-[1240px] xl:max-w-[1300px] mx-auto">
+      <section id="faqs" className={`py-10 sm:py-14 lg:py-16 bg-white w-full select-none ${brand.faqSectionClassName || ""}`}>
+        <div className={`w-full max-w-[1240px] xl:max-w-[1300px] mx-auto ${brand.faqContainerClassName || "px-6 sm:px-8 lg:px-8"}`}>
           {/* Header: FAQ'S | Frequently Asked Questions */}
           <div className="mb-6 sm:mb-8 text-left">
             <h2 className="text-2xl sm:text-[28px] lg:text-[32px] tracking-tight m-0 inline-flex items-center flex-wrap gap-1.5 sm:gap-2">
