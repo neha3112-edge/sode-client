@@ -9,43 +9,32 @@ export default function VguApprovals({ approvals = [], brand = {} }) {
   const containerClass =
     cfg.containerClassName ||
     brand.approvalsContainerClassName ||
-    "max-w-[1360px] mx-auto px-6 sm:px-10 lg:px-14 xl:px-20";
+    "max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8";
   const sectionDescription =
     brand.approvalsDescription ||
     "Vivekananda Global University Online Courses are UGC-recognised and have top accreditations and approvals from the country's recognised statutory bodies.";
 
-  const buttonBg = cfg.buttonBg || cfg.buttonBackground || "#ffd508";
+  const buttonBg = cfg.buttonBg || cfg.buttonBackground || "#FFD508";
   const buttonTextColor = cfg.buttonTextColor || cfg.buttonColor || "#000000";
   const buttonText = cfg.buttonText || "Enquire Now";
 
   return (
-    <section id="approval" className="w-full py-8 sm:py-14 bg-white border-b border-slate-200 scroll-mt-20 select-none">
+    <section id="approval" className="w-full py-7 sm:py-8 lg:py-10 bg-white border-b border-slate-200 scroll-mt-20 select-none">
       <div id="approvals" className="sr-only"></div>
       <div className={containerClass}>
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-7 lg:gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
           {/* Left Column: Heading, Description, Enquire Button */}
           <div className="lg:col-span-5 text-left">
-            <h3 className="text-[22px] sm:text-[28px] lg:text-[34px] font-bold text-[#811811] leading-[1.22] tracking-tight m-0 mb-4 sm:mb-5">
-              Vivekananda Global
-              <br />
-              University Online
-              <br />
-              Accreditation &amp; Approval
-            </h3>
+            <h2 className="text-[20px] sm:text-[22px] lg:text-[24px] font-semibold text-[#811811] leading-[1.25] tracking-tight m-0 mb-2 sm:mb-2.5">
+              Vivekananda Global University <br className="hidden sm:inline" />
+              Online Accreditation &amp; Approval
+            </h2>
 
-            <p className="text-[13px] sm:text-[14px] text-[#374151] leading-[1.55] font-normal m-0 max-w-[440px]">
-              Vivekananda Global University Online
-              <br />
-              Courses are UGC-recognised and have
-              <br />
-              top accreditations and approvals from
-              <br />
-              the country&apos;s recognised statutory
-              <br />
-              bodies.
+            <p className="text-[13px] sm:text-[13.5px] text-[#4b5563] leading-[1.5] font-normal m-0 max-w-[440px]">
+              {sectionDescription.replace(/\n/g, " ")}
             </p>
 
-            <div className="pt-4 sm:pt-5">
+            <div className="pt-3.5 sm:pt-4">
               <button
                 type="button"
                 onClick={() => {
@@ -56,7 +45,7 @@ export default function VguApprovals({ approvals = [], brand = {} }) {
                   backgroundColor: buttonBg,
                   color: buttonTextColor,
                 }}
-                className="font-bold text-[14.5px] sm:text-[15px] px-8 py-3 rounded-[6px] hover:brightness-95 active:scale-95 transition-all cursor-pointer border-none leading-normal shadow-none inline-flex items-center justify-center"
+                className="font-bold text-[14px] px-6 py-2.5 rounded-[5px] hover:brightness-95 active:scale-95 transition-all cursor-pointer border-none leading-normal shadow-none inline-flex items-center justify-center"
               >
                 {buttonText}
               </button>
@@ -65,7 +54,7 @@ export default function VguApprovals({ approvals = [], brand = {} }) {
 
           {/* Right Column: Pill-shaped Accreditations Cards (2x2 Grid) */}
           <div className="lg:col-span-7">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4.5 lg:gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5">
               {approvals.map((appr, idx) => {
                 const data = normalizeApprovalItem(appr, idx);
                 const fullText = appr.text || appr.title || data.title || data.description;
@@ -91,42 +80,38 @@ export default function VguApprovals({ approvals = [], brand = {} }) {
                     if (fullText.includes("University Grants Commission")) {
                       return (
                         <>
-                          Recognised by the
+                          Recognised by the University
                           <br />
-                          University Grants Commission
+                          Grants Commission of India
                           <br />
-                          of India (UGC)
+                          (UGC)
                         </>
                       );
                     }
                     if (fullText.includes("National Assessment")) {
                       return (
                         <>
-                          Accredited by the
+                          Accredited by the National
                           <br />
-                          National Assessment and
+                          Assessment and Accreditation
                           <br />
-                          Accreditation Council (NAAC)
+                          Council (NAAC)
                         </>
                       );
                     }
                     if (fullText.includes("Technical Education")) {
                       return (
                         <>
-                          Approved by the
+                          Approved by the All India Council
                           <br />
-                          All India Council for
-                          <br />
-                          Technical Education (AICTE)
+                          for Technical Education (AICTE)
                         </>
                       );
                     }
                     if (fullText.includes("QS World")) {
                       return (
                         <>
-                          Globally ranked
-                          <br />
-                          by QS World
+                          Globally ranked by QS World
                           <br />
                           University Rankings
                         </>
@@ -139,19 +124,22 @@ export default function VguApprovals({ approvals = [], brand = {} }) {
                 return (
                   <div
                     key={data.id || idx}
-                    className={`bg-white ${cfg.cardRadius || brand.approvalsCardRadius || "rounded-full"} border border-slate-500/80 px-5 sm:px-6 py-4 sm:py-4.5 flex items-center gap-4 sm:gap-4.5 transition-all hover:border-slate-800 shadow-2xs ${cfg.cardClassName || "mx-3 sm:mx-0"}`}
+                    className="vgu-approval-card bg-white rounded-full border border-[#4D4D4D] px-4 sm:px-5 py-2.5 sm:py-3 flex items-center gap-3 sm:gap-3.5 transition-all hover:border-black shadow-2xs"
                   >
-                    <div className="relative w-[60px] h-[60px] sm:w-[68px] sm:h-[68px] shrink-0 flex items-center justify-center">
+                    <div className="relative w-[48px] h-[48px] sm:w-[50px] sm:h-[50px] shrink-0 flex items-center justify-center">
                       <Image
                         src={data.image}
                         alt={data.tag || "Approval"}
                         fill
                         className="object-contain"
-                        sizes="80px"
+                        sizes="60px"
                       />
                     </div>
                     <div className="min-w-0 flex-1 text-left">
-                      <p className="text-[13px] sm:text-[13.5px] lg:text-[14px] font-semibold text-[#1f2937] leading-[1.38] m-0">
+                      <p
+                        style={{ letterSpacing: "0.25px" }}
+                        className="text-[13px] sm:text-[13.5px] lg:text-[14px] font-medium text-[#000000] leading-[1.28] tracking-[0.25px] m-0"
+                      >
                         {renderCardText()}
                       </p>
                     </div>

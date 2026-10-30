@@ -11,7 +11,7 @@ export default function VguAbout({ about = {}, brand = {}, onOpenApply }) {
   const imageSrc = about.image || brand.campusImage || "/assets/all_universities_images/vgu/about-image-vgu.webp";
   const btnBg = cfg.buttonBg || "#ffd508";
   const btnTextColor = cfg.buttonTextColor || "#000000";
-  const titleColor = cfg.titleColor || about.titleColor || "#ffd508";
+  const titleColor = cfg.titleColor || about.titleColor || "#ffffff";
   const title = about.title || `About ${brand.name || "Vivekananda Global University Online"}`;
 
   const paragraphs =
@@ -64,8 +64,8 @@ export default function VguAbout({ about = {}, brand = {}, onOpenApply }) {
           )}
           <div className="lg:col-span-7 space-y-4.5 sm:space-y-5">
             <h2
-              className="text-[22px] sm:text-[30px] lg:text-[35px] font-semibold text-[#ffd508] text-center lg:text-left tracking-tight leading-[1.25] m-0 mb-1"
-              style={{ color: titleColor }}
+              className={cfg.titleClassName || "text-[22px] sm:text-[30px] lg:text-[35px] font-light text-white text-center lg:text-left tracking-[0.5px] leading-[1.25] m-0 mb-1"}
+              style={{ color: titleColor, letterSpacing: "0.5px", fontWeight: 300 }}
             >
               About Vivekananda Global
               <br />

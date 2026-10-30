@@ -195,6 +195,108 @@ export default function LandingDegree({
     );
   }
 
+  const isVgu =
+    brand.degreeLayout === "vgu" || brand.slug === "vgu";
+
+  if (isVgu) {
+    const vguFeatures =
+      features && features.length > 0
+        ? features
+        : [
+            {
+              title: "UGC Entitled",
+              desc: "Online VGU degrees approved by UGC are valued across India.",
+              icon: "/assets/all_universities_images/vgu/green-tick-icon.webp",
+            },
+            {
+              title: "NAAC Accreditation",
+              desc: "This shows that VGU University courses follow the latest higher-education quality standards.",
+              icon: "/assets/all_universities_images/vgu/green-tick-icon.webp",
+            },
+            {
+              title: "AICTE Approved",
+              desc: "All India Council for Technical Education guidelines are adhered to by Vivekananda Global University course admissions.",
+              icon: "/assets/all_universities_images/vgu/green-tick-icon.webp",
+            },
+            {
+              title: "Globally Acknowledged",
+              desc: "Online VGU degrees are recognised and accepted worldwide.",
+              icon: "/assets/all_universities_images/vgu/green-tick-icon.webp",
+            },
+          ];
+
+    return (
+      <section id="degree" className="py-10 sm:py-14 bg-white select-none scroll-mt-20">
+        <div className="max-w-[1080px] mx-auto px-4 sm:px-6">
+          <div className="relative bg-[#F3F3F8] rounded-[16px] sm:rounded-[20px] p-6 sm:p-10 lg:p-12 overflow-hidden shadow-xs">
+            {/* Soft white circular background accent on top-right */}
+            <div className="absolute -top-16 -right-16 sm:-top-20 sm:-right-20 w-[320px] sm:w-[420px] h-[320px] sm:h-[420px] rounded-full bg-white/75 pointer-events-none" />
+
+            <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+              {/* Left Column: Heading, 4 Points with green tick, Button */}
+              <div className="lg:col-span-7 text-left">
+                <h2 className="text-[23px] sm:text-[27px] lg:text-[29px] font-bold text-[#811811] leading-[1.25] tracking-tight m-0 mb-5 sm:mb-6">
+                  Globally Accepted <br />
+                  Online Vivekananda Global University <br />
+                  Degree
+                </h2>
+
+                <div className="space-y-4 sm:space-y-4.5">
+                  {vguFeatures.map((feat, idx) => (
+                    <div key={idx} className="flex items-start gap-3 sm:gap-3.5">
+                      <div className="relative w-[26px] h-[26px] shrink-0 mt-0.5">
+                        <Image
+                          src={feat.icon || "/assets/all_universities_images/vgu/green-tick-icon.webp"}
+                          alt="Tick"
+                          fill
+                          className="object-contain"
+                          sizes="30px"
+                        />
+                      </div>
+                      <div className="text-left">
+                        <h3 className="text-[14.5px] sm:text-[15px] font-bold text-[#212529] leading-tight m-0 mb-1">
+                          {feat.title}
+                        </h3>
+                        <p className="text-[12px] sm:text-[12.5px] text-[#4b5563] leading-[1.35] font-normal m-0 max-w-[460px]">
+                          {feat.desc}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="pt-6 sm:pt-7">
+                  <button
+                    type="button"
+                    onClick={() => onOpenApply?.(null, "Get Your Degree")}
+                    className="bg-[#FFD508] hover:brightness-95 active:scale-95 text-black font-bold text-[13.5px] sm:text-[14px] px-6 sm:px-7 py-2.5 rounded-[5px] border-none cursor-pointer shadow-none transition-all inline-flex items-center justify-center"
+                  >
+                    <span>{buttonText || "Get Your Degree"}</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Right Column: Sample Degree Certificate */}
+              <div className="lg:col-span-5 flex justify-center items-center">
+                <div className="relative w-[230px] sm:w-[255px] md:w-[270px] aspect-[1/1.38] bg-white rounded-[4px] shadow-[0_8px_25px_rgba(0,0,0,0.12)] border border-slate-200/80 overflow-hidden flex items-center justify-center p-1">
+                  <Image
+                    src={image || "/assets/all_universities_images/vgu/sample-degree-vgu.webp"}
+                    alt="Sample Degree Vivekananda Global University"
+                    fill
+                    className="object-contain p-0.5"
+                    sizes="(max-width: 640px) 240px, 280px"
+                    priority
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+
   const isRushford =
     brand.degreeLayout === "rushford" || brand.slug === "rushford";
 
@@ -775,8 +877,7 @@ export default function LandingDegree({
 
   const isTransparentCard =
     degreeInfo.cardBackground === "transparent" ||
-    degreeInfo.transparentCard ||
-    brand.slug === "vgu";
+    Boolean(degreeInfo.transparentCard);
 
   return (
     <section

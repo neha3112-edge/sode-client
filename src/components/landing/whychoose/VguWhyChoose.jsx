@@ -11,18 +11,13 @@ export default function VguWhyChoose({ whyChoose = [], brand = {}, onOpenApply }
     brand.whyChooseTitle ||
     `Why ${brand.name || "Vivekananda Global University Online"} is a Smart Choice for learners?`;
 
-  // Render title with responsive lines (3 lines on mobile, 2 lines on tablet/desktop)
+  // Render title matching reference: 2 lines with "Online is a" on first line
   const renderTitle = () => {
     if (typeof rawTitle === "string" && rawTitle.includes("Vivekananda Global University")) {
       return (
         <>
-          <span className="block sm:whitespace-nowrap">Why Vivekananda Global University</span>
-          <span className="block sm:whitespace-nowrap">
-            Online is a Smart Choice
-            <br className="sm:hidden" />
-            <span className="hidden sm:inline"> </span>
-            for learners?
-          </span>
+          <span className="block">Why Vivekananda Global University Online is a</span>
+          <span className="block">Smart Choice for learners?</span>
         </>
       );
     }
@@ -42,20 +37,26 @@ export default function VguWhyChoose({ whyChoose = [], brand = {}, onOpenApply }
     <section id="advantage" className="py-9 sm:py-12 bg-white border-b border-slate-200 select-none scroll-mt-20">
       <div id="Resources" className="sr-only"></div>
       <LandingContainer>
-        <div className="flex justify-center mb-4 sm:mb-4.5">
+        <div className="flex justify-center mb-5 sm:mb-6">
           <div
-            className={cfg.badgeClassName || "text-white px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 rounded-[8px] sm:rounded-[10px] text-center shadow-xs max-w-[490px] sm:max-w-none sm:inline-block mx-2 sm:mx-auto"}
-            style={{ backgroundColor: headerBg }}
+            className={cfg.badgeClassName || "text-white px-5 sm:px-8 py-3.5 sm:py-4 text-center shadow-md max-w-[620px] mx-auto"}
+            style={{
+              backgroundColor: headerBg,
+              borderRadius: "0px 10px 10px 10px",
+              ...cfg.badgeStyle,
+            }}
           >
-            <h2 className={cfg.headerTitleClassName || "text-[15.5px] sm:text-[16px] md:text-[18px] lg:text-[20px] font-semibold text-white tracking-wide leading-[1.3] m-0"}>
+            <h2 className={cfg.headerTitleClassName || "text-[18px] sm:text-[21px] lg:text-[24px] font-semibold text-white tracking-normal leading-[1.35] m-0"}>
               {renderTitle()}
             </h2>
           </div>
         </div>
 
         {brand.whyChooseDescription && (
-          <p className="text-center text-[12px] sm:text-[13px] text-slate-600 leading-[1.65] max-w-[960px] mx-auto mb-7 sm:mb-8 font-normal px-2">
-            {brand.whyChooseDescription}
+          <p className="text-center text-[12.5px] sm:text-[13px] text-[#222222] leading-[1.65] max-w-[1050px] mx-auto mb-8 sm:mb-10 font-normal px-4">
+            Vivekananda Global University Online is the most trusted university by students because of its recognised approvals and job-ready curriculum. VGU University courses are <br className="hidden md:inline" />
+            offered online with expert faculty, helpful resources like LMS that help students get strong knowledge and necessary skills, and a smooth Vivekananda Global University <br className="hidden md:inline" />
+            course admissions process.
           </p>
         )}
 
