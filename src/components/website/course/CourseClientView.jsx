@@ -612,11 +612,15 @@ export function CourseClientView({
       list.push({ id: "career-opportunities", label: "Career Opportunities" });
     }
     if (processedPrograms && processedPrograms.length > 0) {
-      const altLabel =
+      const rawAltLabel =
         courseData?.top_universities_title ||
         courseData?.peer_universities_title ||
         (processedPrograms[0]?.sectionTitle) ||
         "Top Universities";
+      const altLabel =
+        typeof rawAltLabel === "string"
+          ? rawAltLabel.replace(/\s+offering\b.*$/i, "").trim() || "Top Universities"
+          : "Top Universities";
       list.push({ id: "alternative", label: altLabel });
     }
     if (faqList && faqList.length > 0) {

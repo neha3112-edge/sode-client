@@ -44,11 +44,17 @@ export default function CourseAlternativeUniversities({
 
   if (!processedPrograms || processedPrograms.length === 0) return null;
 
-  const sectionTitle =
+  const rawTitle =
     courseData?.top_universities_title ||
     courseData?.peer_universities_title ||
     (Array.isArray(processedPrograms) && processedPrograms[0]?.sectionTitle) ||
-    `Top Alternative Universities Offering ${courseData?.name || "Online Courses"}`;
+    "Top Alternative Universities";
+
+  // Remove "Offering..." and the course name from the heading
+  const sectionTitle =
+    typeof rawTitle === "string"
+      ? rawTitle.replace(/\s+offering\b.*$/i, "").trim() || "Top Alternative Universities"
+      : "Top Alternative Universities";
 
   return (
     <div
