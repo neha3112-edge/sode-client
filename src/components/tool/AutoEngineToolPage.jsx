@@ -692,26 +692,12 @@ export default function AutoEngineToolPage({
             /* ===================================================== */
             <div className="space-y-8">
               {/* Question Heading */}
-              <div className="text-center space-y-2 max-w-2xl mx-auto">
-                <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-blue-50 text-[#072C50] text-xs font-bold border border-blue-100 uppercase tracking-wide">
-                  <span>{currentNode?.data?.badge || "YOUR PROFILE"}</span>
-                </div>
-
+              <div className="text-center max-w-3xl mx-auto mb-6">
                 <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#072C50] tracking-tight leading-tight m-0">
                   {currentNode?.data?.question ||
                     currentNode?.data?.title ||
                     "Choose Your Preference"}
                 </h2>
-
-                {currentNode?.data?.subtitle ? (
-                  <p className="text-xs sm:text-sm text-slate-500 m-0">
-                    {currentNode?.data?.subtitle}
-                  </p>
-                ) : (
-                  <p className="text-xs sm:text-sm text-slate-400 m-0">
-                    Select an option below to find universities aligned with your path.
-                  </p>
-                )}
               </div>
 
               {/* Search filter for large option lists */}
