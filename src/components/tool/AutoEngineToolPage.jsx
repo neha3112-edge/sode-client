@@ -776,19 +776,19 @@ export default function AutoEngineToolPage({
 
                       <div className="flex flex-col items-center w-full">
                         {/* Icon Container */}
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center group-hover:scale-105 transition-transform mb-1.5 shrink-0">
+                        <div className="mb-1 sm:mb-2 group-hover:scale-110 transition-transform flex items-center justify-center shrink-0">
                           {optLogo ? (
-                            <div className="w-6 h-6 sm:w-7 sm:h-7 relative">
+                            <div className="w-7 h-7 sm:w-8 sm:h-8 relative">
                               <Image
                                 src={optLogo}
                                 alt={optTitle}
                                 fill
-                                sizes="28px"
+                                sizes="32px"
                                 className="object-contain"
                               />
                             </div>
                           ) : (
-                            <IconComp className={`w-5 h-5 sm:w-6 sm:h-6 ${palette.text}`} />
+                            <IconComp className={`w-7 h-7 sm:w-8 sm:h-8 ${palette.text}`} />
                           )}
                         </div>
 
