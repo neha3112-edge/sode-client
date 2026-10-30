@@ -422,12 +422,12 @@ export default function AutoEngineToolPage({
           </div>
 
           {/* Centered Page Title & Subtitle in White */}
-          <div className="flex flex-col items-center justify-center gap-2 sm:gap-2.5">
+          <div className="flex flex-col items-center justify-center gap-1 sm:gap-1.5">
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white text-center tracking-tight m-0 leading-tight">
               {workflow?.name || toolTitle}
             </h1>
 
-            <p className="text-blue-100/90 text-xs sm:text-sm md:text-base text-center max-w-2xl mx-auto m-0 leading-relaxed">
+            <p className="text-blue-100/90 text-xs sm:text-sm md:text-base text-center max-w-2xl mx-auto m-0 leading-snug">
               {workflow?.description || toolDescription}
             </p>
           </div>
