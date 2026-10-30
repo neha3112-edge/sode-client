@@ -415,8 +415,8 @@ export default function AutoEngineToolPage({
       <div className="w-full bg-[#072C50] h-36 sm:h-44 md:h-52" />
 
       {/* ─── 2. FLOATING WHITE CONTAINER CARD ─── */}
-      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 md:px-8 -mt-20 sm:-mt-28 md:-mt-32 pb-16 md:pb-24">
-        <article className="w-full bg-white rounded-2xl sm:rounded-3xl shadow-xl border border-slate-100 p-6 sm:p-10 md:p-12 text-[#2D3748]">
+      <div className="relative z-10 max-w-6xl mx-auto px-2.5 sm:px-6 md:px-8 -mt-20 sm:-mt-28 md:-mt-32 pb-16 md:pb-24">
+        <article className="w-full bg-white rounded-2xl sm:rounded-3xl shadow-xl border border-slate-100 p-3 sm:p-8 md:p-12 text-[#2D3748]">
           {/* Centered Pill Badge */}
           <div className="flex justify-center mb-3">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FEF3C7] text-[#92400E] text-xs font-bold border border-amber-200">
@@ -728,9 +728,9 @@ export default function AutoEngineToolPage({
                 </div>
               )}
 
-              {/* ─── GRID OF OPTION CARDS (6 COLUMNS DESKTOP, 2 COLUMNS MOBILE, ASPECT RATIO 1:1) ─── */}
+              {/* ─── GRID OF OPTION CARDS (MATCHING CATEGORY GAP-1.5 SM:GAP-2.5) ─── */}
               <div
-                className={`grid gap-2 sm:gap-3 w-full mx-auto items-stretch ${
+                className={`grid gap-1.5 sm:gap-2.5 w-full mx-auto items-stretch ${
                   filteredOptions.length <= 4
                     ? "grid-cols-2 sm:grid-cols-4 max-w-2xl mx-auto"
                     : "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6"
