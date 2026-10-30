@@ -725,14 +725,12 @@ export default function AutoEngineToolPage({
                 </div>
               )}
 
-              {/* ─── GRID OF OPTION CARDS (CATEGORY CARD PROPORTIONS WITH BUTTON) ─── */}
+              {/* ─── GRID OF OPTION CARDS (7 COLUMNS DESKTOP, 2 COLUMNS MOBILE) ─── */}
               <div
                 className={`grid gap-2 sm:gap-3 w-full mx-auto items-stretch ${
                   filteredOptions.length <= 4
                     ? "grid-cols-2 sm:grid-cols-4 max-w-2xl mx-auto"
-                    : filteredOptions.length <= 6
-                    ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-6 max-w-4xl mx-auto"
-                    : "grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8"
+                    : "grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7"
                 }`}
               >
                 {filteredOptions.map((option, oIdx) => {
