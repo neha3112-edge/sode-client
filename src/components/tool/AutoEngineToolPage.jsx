@@ -649,38 +649,36 @@ export default function AutoEngineToolPage({
             /* ❓ INTERACTIVE QUESTION CARDS (NODE TRAVERSAL) */
             /* ===================================================== */
             <div className="space-y-8">
-              {/* Question Heading with Back Icon (Always Centered) */}
-              <div className="w-full flex items-center justify-center mb-4 sm:mb-6 px-1 text-center">
-                <div className="inline-flex items-center justify-center gap-1.5 sm:gap-2.5 max-w-full text-center">
-                  <div className="shrink-0">
-                    {history.length > 0 && !recommendations ? (
-                      <button
-                        type="button"
-                        onClick={handleBack}
-                        className="p-1 text-[#072C50] hover:text-[#0B3B7E] active:scale-90 flex items-center justify-center transition-transform cursor-pointer"
-                        title="Go Back to Previous Question"
-                        aria-label="Back"
-                      >
-                        <ArrowLeft className="w-4 h-4 sm:w-6 sm:h-6" />
-                      </button>
-                    ) : (
-                      <Link
-                        href="/tools"
-                        className="p-1 text-[#072C50] hover:text-[#0B3B7E] active:scale-90 flex items-center justify-center transition-transform cursor-pointer"
-                        title="Back to All Tools"
-                        aria-label="Back"
-                      >
-                        <ArrowLeft className="w-4 h-4 sm:w-6 sm:h-6" />
-                      </Link>
-                    )}
-                  </div>
-
-                  <h2 className="text-xs min-[360px]:text-sm sm:text-2xl md:text-3xl font-bold text-[#072C50] text-center tracking-tight leading-snug m-0">
-                    {currentNode?.data?.question ||
-                      currentNode?.data?.title ||
-                      "Choose Your Preference"}
-                  </h2>
+              {/* Question Heading with Back Icon (Between / Far-Left Back Icon + Centered Heading) */}
+              <div className="relative flex items-center justify-center w-full mb-4 sm:mb-6 min-h-[32px] sm:min-h-[40px]">
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 shrink-0 z-10">
+                  {history.length > 0 && !recommendations ? (
+                    <button
+                      type="button"
+                      onClick={handleBack}
+                      className="p-1 sm:p-1.5 text-[#072C50] hover:text-[#0B3B7E] active:scale-90 flex items-center justify-center transition-transform cursor-pointer"
+                      title="Go Back to Previous Question"
+                      aria-label="Back"
+                    >
+                      <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+                    </button>
+                  ) : (
+                    <Link
+                      href="/tools"
+                      className="p-1 sm:p-1.5 text-[#072C50] hover:text-[#0B3B7E] active:scale-90 flex items-center justify-center transition-transform cursor-pointer"
+                      title="Back to All Tools"
+                      aria-label="Back"
+                    >
+                      <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+                    </Link>
+                  )}
                 </div>
+
+                <h2 className="text-xs min-[360px]:text-sm sm:text-2xl md:text-3xl font-bold text-[#072C50] text-center tracking-tight leading-snug m-0 w-full px-8 sm:px-16">
+                  {currentNode?.data?.question ||
+                    currentNode?.data?.title ||
+                    "Choose Your Preference"}
+                </h2>
               </div>
 
               {/* Search filter for large option lists */}
