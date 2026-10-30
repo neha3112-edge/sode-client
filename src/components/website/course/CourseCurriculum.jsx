@@ -50,13 +50,13 @@ export default function CourseCurriculum({
     return (
       <div
         key={idx}
-        className="bg-white rounded-2xl border border-gray-200/90 p-4 sm:p-5 shadow-2xs flex flex-col items-center hover:border-[#08AEAA] transition-colors h-[360px] sm:h-[400px] w-full"
+        className="bg-white rounded-2xl border border-gray-200/90 p-3.5 sm:p-4 shadow-2xs flex flex-col items-center hover:border-[#08AEAA] transition-colors h-[250px] sm:h-[275px] w-full"
       >
-        <div className="bg-[#0C3A66] text-white px-5 py-1.5 rounded-full text-xs sm:text-sm font-semibold mb-3 shadow-xs shrink-0">
+        <div className="bg-[#0C3A66] text-white px-4 py-1 rounded-full text-xs sm:text-[13px] font-semibold mb-2.5 shadow-xs shrink-0">
           {semesterTitle}
         </div>
 
-        <div className="w-full h-px bg-gray-100 mb-3 sm:mb-4 shrink-0" />
+        <div className="w-full h-px bg-gray-100 mb-2.5 shrink-0" />
 
         <div className="w-full text-left space-y-3 text-xs sm:text-[13px] text-gray-700 m-0 p-0 flex-1 min-h-0 overflow-y-auto pr-1.5 scrollbar-thin [scrollbar-color:#cbd5e1_transparent]">
           {subjectsList.length > 0 && (
