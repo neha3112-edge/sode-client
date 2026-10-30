@@ -78,19 +78,67 @@ export default function AutoEngineToolModal() {
   const [selectedMultiOptions, setSelectedMultiOptions] = useState([]);
   const [submitting, setSubmitting] = useState(false);
 
-  // Directly fetch recommendations without showing lead form
+  // Directly fetch recommendations: tools wali API par slug aur ?q= laga kar
   const fetchRecommendationsDirectly = async (finalAnswers) => {
     setSubmitting(true);
     try {
+      const answersObj = finalAnswers || answers;
+
+      // Extract query terms from what the user selected in the tool
+      const queryTokens = [];
+
+      const isFiller = (v) => {
+        if (!v || typeof v !== "string") return true;
+        const s = v.toLowerCase().trim();
+        return ["no preference", "other", "all", "any", "default", "none"].includes(s);
+      };
+
+      const courseVal = answersObj.course || answersObj.Course || answersObj.check_course;
+      if (courseVal && typeof courseVal === "string" && !isFiller(courseVal)) {
+        queryTokens.push(courseVal.trim());
+      }
+
+      const specVal = answersObj.career_goal || answersObj.Specialization || answersObj.specialization || answersObj.subcourse;
+      if (specVal && typeof specVal === "string" && !isFiller(specVal)) {
+        queryTokens.push(specVal.trim());
+      }
+
+      const streamVal = answersObj.last_stream || answersObj.domain || answersObj.stream || answersObj.field;
+      if (streamVal && typeof streamVal === "string" && !isFiller(streamVal)) {
+        queryTokens.push(streamVal.trim());
+      }
+
+      const levelVal = answersObj.course_type || answersObj.degree_level || answersObj.program_level;
+      if (levelVal && typeof levelVal === "string" && !isFiller(levelVal)) {
+        queryTokens.push(levelVal.trim());
+      }
+
+      Object.entries(answersObj).forEach(([k, v]) => {
+        if (!v || typeof v !== "string" || ["tool_category", "selectedOption"].includes(k)) return;
+        const t = v.trim();
+        if (!isFiller(t) && !queryTokens.some((tok) => tok.toLowerCase() === t.toLowerCase())) {
+          queryTokens.push(t);
+        }
+      });
+
+      const searchQuery = queryTokens.join(" ").trim();
+
+      // Tools wali API par slug aur ?q= lagana
+      const endPointWithQ = searchQuery
+        ? `public/submit?q=${encodeURIComponent(searchQuery)}`
+        : "public/submit";
+
       const res = await dynamicPost({
         entity: "tool",
-        endPoint: "public/submit",
+        endPoint: endPointWithQ,
         body: {
-          slug: activeSlug,
+          slug: activeSlug || "",
+          q: searchQuery,
           leadData: {},
-          userAnswers: finalAnswers || answers,
+          userAnswers: answersObj,
         },
       });
+
       const payload = res?.result || res?.data || res;
       setResultPayload(payload);
       setRecommendations(payload?.recommendations || []);
@@ -516,66 +564,107 @@ export default function AutoEngineToolModal() {
                     <span className="text-xs text-slate-500">Based on your goals & skills</span>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {courses.map((course, idx) => (
-                      <div
-                        key={course._id || idx}
-                        className="p-5 rounded-2xl border border-slate-200 hover:border-blue-500 bg-white hover:shadow-lg transition-all flex flex-col justify-between gap-4 group"
-                      >
-                        <div className="space-y-2.5">
-                          <div className="flex items-start justify-between gap-3">
-                            <div className="flex items-center gap-3">
-                              <div className="w-11 h-11 rounded-xl bg-blue-50 group-hover:bg-blue-600 group-hover:text-white text-blue-600 flex items-center justify-center shrink-0 transition-all font-black text-sm">
-                                {course.name || "UG"}
-                              </div>
-                              <div>
-                                <h4 className="text-base font-bold text-slate-900 group-hover:text-blue-700 transition-colors leading-tight">
-                                  {course.displayName || course.name}
-                                </h4>
-                                <span className="text-xs text-slate-500 font-medium">
-                                  {course.duration || "2 Years (Online / Distance)"}
-                                </span>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5 sm:gap-3">
+                    {courses.map((course, idx) => {
+                      const courseLogoUrl = getMediaUrl(course.logo || course.header_logo);
+                      const courseTitle = course.displayName || course.name || "Program";
+                      const courseActionUrl = course.actionUrl || `/courses?course=${encodeURIComponent(course.slug || "")}`;
+
+                      return (
+                        <div
+                          key={course._id || idx}
+                          className="bg-white border border-slate-200/90 hover:border-blue-500 rounded-xl p-3 hover:shadow-md transition-all flex flex-col justify-between group"
+                        >
+                          <div>
+                            {/* Course Icon & Details Row */}
+                            <div className="flex items-start gap-2.5">
+                              {/* Direct Course Model Logo without bg / padding */}
+                              <a
+                                href={courseActionUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="relative w-8 h-8 sm:w-9 sm:h-9 shrink-0 flex items-center justify-start group-hover:scale-105 transition-transform mt-0.5"
+                              >
+                                {courseLogoUrl ? (
+                                  <Image
+                                    src={courseLogoUrl}
+                                    alt={courseTitle}
+                                    fill
+                                    unoptimized
+                                    sizes="36px"
+                                    className="object-contain object-left"
+                                  />
+                                ) : (
+                                  <span className="text-xs font-black text-[#072C50] tracking-tight">
+                                    {course.name?.slice(0, 4) || "DEG"}
+                                  </span>
+                                )}
+                              </a>
+
+                              {/* Course Title & Fees Range right under it */}
+                              <div className="min-w-0 flex-1">
+                                <a
+                                  href={courseActionUrl}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="block group-hover:text-[#0B57D0] transition-colors"
+                                >
+                                  <h4
+                                    className="text-xs sm:text-[13px] font-bold text-slate-900 leading-snug truncate m-0 group-hover:text-[#0B57D0] transition-colors"
+                                    title={courseTitle}
+                                  >
+                                    {courseTitle}
+                                  </h4>
+                                </a>
+
+                                {/* Fees Range directly under Course Title */}
+                                <div className="mt-0.5">
+                                  <span
+                                    className="text-[10.5px] sm:text-[11px] font-bold text-emerald-700 block truncate"
+                                    title={course.feeRange || course.startingFee || "Affordable Fees"}
+                                  >
+                                    {course.feeRange || course.startingFee || "Affordable Fees"}
+                                  </span>
+                                </div>
                               </div>
                             </div>
-                            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
-                              {course.matchScore || "95% Match"}
-                            </span>
+
+                            {/* Metadata Badges: Starts below the logo in a flex row */}
+                            <div className="flex items-center gap-2 mt-2 pt-0.5 text-[10px] text-slate-500 font-medium">
+                              {course.duration && (
+                                <span className="inline-flex items-center gap-1 text-slate-500 shrink-0">
+                                  <svg className="w-3 h-3 text-slate-400 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                                  </svg>
+                                  <span>{course.duration}</span>
+                                </span>
+                              )}
+                              {course.specializationsCount > 0 && (
+                                <span className="inline-flex items-center gap-1 text-slate-500 truncate">
+                                  <svg className="w-3 h-3 text-slate-400 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z" />
+                                  </svg>
+                                  <span className="truncate">{course.specializationsCount} Specialisation</span>
+                                </span>
+                              )}
+                            </div>
                           </div>
 
-                          <p className="text-xs text-slate-600 leading-relaxed line-clamp-2">
-                            {course.description}
-                          </p>
-
-                          <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                            {course.careerFit && (
-                              <span className="px-2 py-0.5 rounded-md bg-slate-100 text-[10px] font-semibold text-slate-700">
-                                🎯 {course.careerFit}
-                              </span>
-                            )}
-                            {course.skillsHighlighted && (
-                              <span className="px-2 py-0.5 rounded-md bg-blue-50 text-[10px] font-semibold text-blue-700">
-                                💡 {course.skillsHighlighted}
-                              </span>
-                            )}
+                          {/* Bottom Row: Only View Course → */}
+                          <div className="pt-2 mt-2 border-t border-slate-100/80 flex items-center justify-end">
+                            <a
+                              href={courseActionUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-[10.5px] sm:text-[11px] font-bold text-slate-900 hover:text-[#0B57D0] flex items-center gap-1 transition select-none"
+                            >
+                              <span>View Course</span>
+                              <span className="text-[12px] leading-none transition-transform group-hover:translate-x-0.5">→</span>
+                            </a>
                           </div>
                         </div>
-
-                        <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
-                          <span className="text-[11px] text-slate-400 font-medium">
-                            UGC-DEB Accredited Programs
-                          </span>
-                          <a
-                            href={`/courses/${course.slug || ""}`}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="px-3.5 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-600 text-blue-700 hover:text-white font-bold text-xs transition-colors flex items-center gap-1"
-                          >
-                            <span>Explore Course</span>
-                            <ChevronRight size={13} />
-                          </a>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}

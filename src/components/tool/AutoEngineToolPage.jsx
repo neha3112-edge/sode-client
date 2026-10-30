@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { dynamicRead, dynamicPost } from "@/services/request";
@@ -128,9 +128,9 @@ const CARD_PALETTES = [
 ];
 
 export default function AutoEngineToolPage({
-  toolSlug = "suggest-university",
-  toolTitle = "Suggest University",
-  toolDescription = "Find top accredited, UGC-DEB, and NAAC A++ approved universities based on location, budget, NIRF ranking, and placements.",
+  toolSlug = "",
+  toolTitle = "",
+  toolDescription = "",
 }) {
   const { openFormModal } = useFormModal();
   const [loading, setLoading] = useState(true);
@@ -152,68 +152,112 @@ export default function AutoEngineToolPage({
   const [selectedMultiOptions, setSelectedMultiOptions] = useState([]);
   const [submitting, setSubmitting] = useState(false);
 
-  // Directly fetch recommendations without showing lead form
-  const fetchRecommendationsDirectly = async (finalAnswers) => {
-    setSubmitting(true);
-    try {
-      const res = await dynamicPost({
-        entity: "tool",
-        endPoint: "public/submit",
-        body: {
-          slug: toolSlug,
-          leadData: {},
-          userAnswers: finalAnswers || answers,
-        },
-      });
-      const payload = res?.result || res?.data || res;
-      setResultPayload(payload);
-      setRecommendations(payload?.recommendations || []);
-      setCourses(payload?.courses || []);
-      setUserSummary(payload?.userSummary || {});
-      if (payload?.resultTitle) {
-        setResultHeader({
-          title: payload.resultTitle,
-          subtitle: payload.resultSubtitle || "Academic Report",
+  // Directly fetch recommendations: tools wali API par slug aur ?q= laga kar
+  const fetchRecommendationsDirectly = useCallback(
+    async (finalAnswers) => {
+      setSubmitting(true);
+      try {
+        const answersObj = finalAnswers || answers;
+
+        // Extract query terms from what the user selected in the tool
+        const queryTokens = [];
+
+        const isFiller = (v) => {
+          if (!v || typeof v !== "string") return true;
+          const s = v.toLowerCase().trim();
+          return ["no preference", "other", "all", "any", "default", "none"].includes(s);
+        };
+
+        const courseVal = answersObj.course || answersObj.Course || answersObj.check_course;
+        if (courseVal && typeof courseVal === "string" && !isFiller(courseVal)) {
+          queryTokens.push(courseVal.trim());
+        }
+
+        const specVal = answersObj.career_goal || answersObj.Specialization || answersObj.specialization || answersObj.subcourse;
+        if (specVal && typeof specVal === "string" && !isFiller(specVal)) {
+          queryTokens.push(specVal.trim());
+        }
+
+        const streamVal = answersObj.last_stream || answersObj.domain || answersObj.stream || answersObj.field;
+        if (streamVal && typeof streamVal === "string" && !isFiller(streamVal)) {
+          queryTokens.push(streamVal.trim());
+        }
+
+        const levelVal = answersObj.course_type || answersObj.degree_level || answersObj.program_level;
+        if (levelVal && typeof levelVal === "string" && !isFiller(levelVal)) {
+          queryTokens.push(levelVal.trim());
+        }
+
+        Object.entries(answersObj).forEach(([k, v]) => {
+          if (!v || typeof v !== "string" || ["tool_category", "selectedOption"].includes(k)) return;
+          const t = v.trim();
+          if (!isFiller(t) && !queryTokens.some((tok) => tok.toLowerCase() === t.toLowerCase())) {
+            queryTokens.push(t);
+          }
         });
+
+        const searchQuery = queryTokens.join(" ").trim();
+
+        // Tools wali API par slug aur ?q= lagana
+        const endPointWithQ = searchQuery
+          ? `public/submit?q=${encodeURIComponent(searchQuery)}`
+          : "public/submit";
+
+        const res = await dynamicPost({
+          entity: "tool",
+          endPoint: endPointWithQ,
+          body: {
+            slug: toolSlug || "",
+            q: searchQuery,
+            leadData: {},
+            userAnswers: answersObj,
+          },
+        });
+
+        const payload = res?.result || res?.data || res;
+        setResultPayload(payload);
+        setRecommendations(payload?.recommendations || []);
+        setCourses(payload?.courses || []);
+        setUserSummary(payload?.userSummary || {});
+        if (payload?.resultTitle) {
+          setResultHeader({
+            title: payload.resultTitle,
+            subtitle: payload.resultSubtitle || "Academic Report",
+          });
+        }
+      } catch (err) {
+        console.error("Error fetching AI recommendations:", err);
+      } finally {
+        setSubmitting(false);
       }
-    } catch (err) {
-      console.error("Error fetching AI recommendations:", err);
-    } finally {
-      setSubmitting(false);
-    }
-  };
+    },
+    [toolSlug, answers]
+  );
 
   // 1. Fetch Workflow Definition on Mount
   useEffect(() => {
     let isMounted = true;
-    setLoading(true);
-    setSubmitting(false);
-    setHistory([]);
-    setRecommendations(null);
-    setCourses([]);
-    setResultPayload(null);
-    setSelectedOtherId(null);
-    setOtherInputText("");
-    setSearchFilter("");
-    setSelectedMultiOptions([]);
 
-    let defaultAnswers = {};
-    if (toolSlug.includes("eligib")) {
-      defaultAnswers.tool_category = "Check Eligibility";
-    } else if (toolSlug.includes("uni")) {
-      defaultAnswers.tool_category = "Suggest University";
-    } else if (toolSlug.includes("course")) {
-      defaultAnswers.tool_category = "Suggest Course";
-    }
-    setAnswers(defaultAnswers);
+    const loadWorkflow = async () => {
+      setLoading(true);
+      setSubmitting(false);
+      setHistory([]);
+      setRecommendations(null);
+      setCourses([]);
+      setResultPayload(null);
+      setSelectedOtherId(null);
+      setOtherInputText("");
+      setSearchFilter("");
+      setSelectedMultiOptions([]);
+      setAnswers({});
 
-    dynamicRead({
-      entity: "tool",
-      endPoint: "public/by-slug",
-      slug: toolSlug,
-      revalidate: 0,
-    })
-      .then((data) => {
+      try {
+        const data = await dynamicRead({
+          entity: "tool",
+          endPoint: "public/by-slug",
+          slug: toolSlug || "",
+          revalidate: 0,
+        });
         if (!isMounted) return;
         const flowData = data?.result || data?.data || data;
         if (!flowData || !flowData.nodes) {
@@ -224,38 +268,43 @@ export default function AutoEngineToolPage({
         const nodes = flowData.nodes || [];
         const edges = flowData.edges || [];
 
+        // Dynamic start node resolution: find the first question node via the start edge
         let startNode = null;
-        if (toolSlug === "suggest-course") {
-          startNode = nodes.find((n) => n.id === "node_profile") || nodes.find((n) => n.id === "node_sc_q1");
-        } else if (toolSlug === "suggest-university") {
-          startNode = nodes.find((n) => n.id === "node_profile") || nodes.find((n) => n.id === "node_su_q1");
-        } else if (toolSlug === "check-eligibility") {
-          startNode = nodes.find((n) => n.id === "node_profile") || nodes.find((n) => n.id === "node_ce_q1");
+        const startEdge = edges.find(
+          (e) => e.source === "start" || (flowData.startNodeId && e.source === flowData.startNodeId)
+        );
+        if (startEdge) {
+          startNode = nodes.find((n) => n.id === startEdge.target);
         }
 
+        if (!startNode && flowData.startNodeId && flowData.startNodeId !== "start") {
+          startNode = nodes.find((n) => n.id === flowData.startNodeId);
+        }
+
+        // Fallback: find the first node with options that is not the 'start' trigger
         if (!startNode) {
-          const startEdge = edges.find(
-            (e) => e.source === "start" || e.source === flowData.startNodeId
+          startNode = nodes.find(
+            (n) =>
+              n.id !== "start" &&
+              n.type !== "start" &&
+              n.data?.type !== "start" &&
+              (n.data?.options?.length > 0 || n.data?.branches?.length > 0)
           );
-          startNode = startEdge ? nodes.find((n) => n.id === startEdge.target) : null;
         }
 
         if (!startNode) {
-          startNode =
-            nodes.find((n) => n.id === "node_q1_persona") ||
-            nodes.find((n) => n.id === "node_step1_persona") ||
-            nodes.find((n) => n.id === "node_step1_level") ||
-            nodes.find((n) => n.type !== "start") ||
-            nodes[0];
+          startNode = nodes.find((n) => n.id !== "start" && n.type !== "start") || nodes[0];
         }
 
         setCurrentNodeId(startNode?.id || null);
         setLoading(false);
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error("Failed to load AutoEngine tool workflow:", err);
         if (isMounted) setLoading(false);
-      });
+      }
+    };
+
+    loadWorkflow();
 
     return () => {
       isMounted = false;
@@ -291,6 +340,49 @@ export default function AutoEngineToolPage({
       return title.toLowerCase().includes(q);
     });
   }, [rawOptions, searchFilter]);
+
+  // Tool Type Visibility Rules:
+  // - Course Recommender tool -> shows Courses only
+  // - University Recommender tool -> shows Universities only
+  // - Eligibility Checker -> shows Eligibility Report & Universities
+  const shouldShowCourses = useMemo(() => {
+    if (resultPayload?.resultType === "course_list") return true;
+    if (resultPayload?.resultType === "university_list" || resultPayload?.resultType === "eligibility_report") return false;
+    const slug = String(toolSlug || workflow?.slug || "").toLowerCase();
+    if (slug.includes("uni")) return false;
+    return Boolean(courses && courses.length > 0);
+  }, [resultPayload, toolSlug, workflow?.slug, courses]);
+
+  const shouldShowUniversities = useMemo(() => {
+    if (resultPayload?.resultType === "university_list" || resultPayload?.resultType === "eligibility_report") return true;
+    if (resultPayload?.resultType === "course_list") return false;
+    const slug = String(toolSlug || workflow?.slug || "").toLowerCase();
+    if (slug.includes("course") && !slug.includes("uni")) return false;
+    return Boolean(recommendations && recommendations.length > 0);
+  }, [resultPayload, toolSlug, workflow?.slug, recommendations]);
+
+  // Auto-trigger recommendation fetch if current node is an action/end/lead node
+  useEffect(() => {
+    if (!currentNode || loading || submitting || resultPayload) return;
+    const opts = currentNode.data?.options || currentNode.data?.branches || [];
+    const isEnd =
+      currentNode.type === "tool_lead_form" ||
+      currentNode.data?.type === "tool_lead_form" ||
+      currentNode.type === "tool_recommendation" ||
+      currentNode.data?.type === "tool_recommendation" ||
+      currentNode.category === "ACTIONS" ||
+      currentNode.id === "node_lead_form" ||
+      currentNode.id?.toLowerCase().includes("lead") ||
+      currentNode.id?.toLowerCase().includes("result") ||
+      (!Array.isArray(opts) || opts.length === 0);
+
+    if (isEnd && Object.keys(answers).length > 0) {
+      const timer = setTimeout(() => {
+        fetchRecommendationsDirectly(answers);
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [currentNode, loading, submitting, resultPayload, answers, fetchRecommendationsDirectly]);
 
   // Handle Option Select
   const handleSelectOption = async (option, storeVariable, customText = "") => {
@@ -342,7 +434,19 @@ export default function AutoEngineToolPage({
 
       if (matchedEdge) {
         const nextNode = nodes.find((n) => n.id === matchedEdge.target);
-        if (nextNode && nextNode.type !== "tool_lead_form") {
+        const isEndNode =
+          !nextNode ||
+          nextNode.type === "tool_lead_form" ||
+          nextNode.data?.type === "tool_lead_form" ||
+          nextNode.type === "tool_recommendation" ||
+          nextNode.data?.type === "tool_recommendation" ||
+          nextNode.category === "ACTIONS" ||
+          nextNode.id === "node_lead_form" ||
+          nextNode.id?.toLowerCase().includes("lead") ||
+          nextNode.id?.toLowerCase().includes("result") ||
+          !(nextNode.data?.options?.length > 0 || nextNode.data?.branches?.length > 0);
+
+        if (nextNode && !isEndNode) {
           setHistory((prev) => [...prev, currentNodeId]);
           setCurrentNodeId(nextNode.id);
           return;
@@ -394,17 +498,33 @@ export default function AutoEngineToolPage({
     setHistory([]);
     setResultPayload(null);
     setSelectedMultiOptions([]);
+    setAnswers({});
+
     const nodes = workflow?.nodes || [];
+    const edges = workflow?.edges || [];
+
+    // Dynamic start node discovery from graph definition
     let startNode = null;
-    if (toolSlug === "suggest-course") {
-      startNode = nodes.find((n) => n.id === "node_profile") || nodes.find((n) => n.id === "node_sc_q1");
-    } else if (toolSlug === "suggest-university") {
-      startNode = nodes.find((n) => n.id === "node_profile") || nodes.find((n) => n.id === "node_su_q1");
-    } else if (toolSlug === "check-eligibility") {
-      startNode = nodes.find((n) => n.id === "node_profile") || nodes.find((n) => n.id === "node_ce_q1");
+    const startEdge = edges.find(
+      (e) => e.source === "start" || (workflow?.startNodeId && e.source === workflow.startNodeId)
+    );
+    if (startEdge) {
+      startNode = nodes.find((n) => n.id === startEdge.target);
+    }
+    if (!startNode && workflow?.startNodeId && workflow.startNodeId !== "start") {
+      startNode = nodes.find((n) => n.id === workflow.startNodeId);
     }
     if (!startNode) {
-      startNode = nodes.find((n) => n.type !== "start") || nodes[0];
+      startNode = nodes.find(
+        (n) =>
+          n.id !== "start" &&
+          n.type !== "start" &&
+          n.data?.type !== "start" &&
+          (n.data?.options?.length > 0 || n.data?.branches?.length > 0)
+      );
+    }
+    if (!startNode) {
+      startNode = nodes.find((n) => n.id !== "start" && n.type !== "start") || nodes[0];
     }
     setCurrentNodeId(startNode?.id || null);
   };
@@ -451,124 +571,193 @@ export default function AutoEngineToolPage({
                 Evaluating approvals, fees, placements, and eligibility...
               </p>
             </div>
-          ) : recommendations ? (
+          ) : (resultPayload || recommendations) ? (
             /* ===================================================== */
             /* 🏆 RECOMMENDATIONS & REPORT VIEW */
             /* ===================================================== */
             <div className="space-y-8">
-              {/* Header Badge */}
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div>
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#072C50] text-white text-[11px] font-bold mb-2">
-                    <Sparkles size={12} className="text-amber-300" />
-                    <span>AI MATCH REPORT</span>
-                  </div>
-                  <h3 className="text-lg sm:text-xl font-bold text-[#072C50] m-0">
-                    {resultHeader.title}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-600 m-0 mt-1">
-                    {resultHeader.subtitle}
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={handleRestart}
-                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold transition-all shadow-2xs shrink-0 cursor-pointer"
-                >
-                  <RotateCcw size={14} />
-                  <span>Restart Search</span>
-                </button>
-              </div>
-
-              {/* 🎓 1. RECOMMENDED COURSES */}
-              {courses && courses.length > 0 && (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-bold text-[#072C50] flex items-center gap-2">
-                      <GraduationCap className="text-[#0B3B7E]" size={22} />
-                      <span>Recommended Programs ({courses.length})</span>
-                    </h3>
-                    <span className="text-xs text-slate-500">
-                      Based on your preferences
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-                    {courses.map((course, idx) => (
+              {/* 🛡️ ELIGIBILITY BREAKDOWN (When Running Check Eligibility) */}
+              {resultPayload?.criteriaChecks && resultPayload.criteriaChecks.length > 0 && (
+                <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-3">
+                  <h4 className="text-sm font-bold text-[#072C50] flex items-center gap-2 m-0">
+                    <ShieldCheck size={18} className="text-emerald-600" />
+                    <span>Eligibility Verification Breakdown</span>
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    {resultPayload.criteriaChecks.map((c, idx) => (
                       <div
-                        key={course._id || idx}
-                        className="p-5 rounded-2xl border border-slate-200 hover:border-blue-500 bg-white hover:shadow-lg transition-all flex flex-col justify-between gap-4 group"
+                        key={idx}
+                        className={`p-3.5 rounded-xl border flex flex-col justify-between gap-1.5 ${c.status === "passed"
+                            ? "bg-emerald-50/50 border-emerald-200 text-emerald-900"
+                            : c.status === "provisional"
+                              ? "bg-amber-50/50 border-amber-200 text-amber-900"
+                              : "bg-rose-50/50 border-rose-200 text-rose-900"
+                          }`}
                       >
-                        <div className="space-y-3">
-                          <div className="flex items-start justify-between gap-3">
-                            <div className="flex items-center gap-3">
-                              <div className="w-11 h-11 rounded-xl bg-blue-50 group-hover:bg-[#072C50] group-hover:text-amber-400 text-[#072C50] flex items-center justify-center shrink-0 transition-all font-black text-sm">
-                                {course.name?.slice(0, 3) || "DEG"}
-                              </div>
-                              <div>
-                                <h4 className="text-base font-bold text-slate-900 group-hover:text-[#0B3B7E] transition-colors leading-tight">
-                                  {course.displayName || course.name}
-                                </h4>
-                                <span className="text-xs text-slate-500 font-medium">
-                                  {course.duration || "2 Years (Online / Distance)"}
-                                </span>
-                              </div>
-                            </div>
-                            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
-                              {course.matchScore || "95% Match"}
-                            </span>
-                          </div>
-
-                          <p className="text-xs text-slate-600 leading-relaxed line-clamp-2">
-                            {course.description || "Top rated degree curriculum designed for career progression."}
-                          </p>
-
-                          <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                            {course.careerFit && (
-                              <span className="px-2 py-0.5 rounded-md bg-slate-100 text-[10px] font-semibold text-slate-700">
-                                🎯 {course.careerFit}
-                              </span>
-                            )}
-                            {course.eligibilityHint && (
-                              <span className="px-2 py-0.5 rounded-md bg-blue-50 text-[10px] font-semibold text-blue-700">
-                                📋 {course.eligibilityHint}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="flex items-center justify-between pt-3 border-t border-slate-100">
-                          <span className="text-xs font-bold text-slate-900">
-                            {course.averageFee
-                              ? `₹${course.averageFee} Total Fees`
-                              : "Affordable Fees"}
-                          </span>
-                          <Link
-                            href={`/courses/${course.slug || "online-mba"}`}
-                            className="px-3.5 py-1.5 rounded-lg bg-[#0B3B7E] hover:bg-[#072859] text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1"
+                        <div className="flex items-center justify-between gap-1">
+                          <span className="text-xs font-bold">{c.criterion}</span>
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase shrink-0 ${c.status === "passed"
+                                ? "bg-emerald-100 text-emerald-800"
+                                : c.status === "provisional"
+                                  ? "bg-amber-100 text-amber-800"
+                                  : "bg-rose-100 text-rose-800"
+                              }`}
                           >
-                            <span>Explore Course</span>
-                            <ChevronRight size={14} />
-                          </Link>
+                            {c.status === "passed"
+                              ? "Verified"
+                              : c.status === "provisional"
+                                ? "Provisional"
+                                : "Not Met"}
+                          </span>
                         </div>
+                        <p className="text-[11px] opacity-90 m-0 leading-snug">{c.details}</p>
                       </div>
                     ))}
                   </div>
                 </div>
               )}
 
-              {/* 🏛️ 2. RECOMMENDED UNIVERSITIES */}
-              {recommendations && recommendations.length > 0 && (
+              {/* 🎓 1. RECOMMENDED COURSES (For Course Suggestion Tool) */}
+              {shouldShowCourses && courses && courses.length > 0 && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-bold text-[#072C50] flex items-center gap-2">
+                      <GraduationCap className="text-[#0B3B7E]" size={22} />
+                      <span>Recommended Programs ({courses.length})</span>
+                    </h3>
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={handleRestart}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all shrink-0 cursor-pointer"
+                      >
+                        <RotateCcw size={13} />
+                        <span>Restart</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                    {courses.map((course, idx) => {
+                      const courseLogoUrl = getMediaUrl(course.logo || course.header_logo);
+                      const courseTitle = course.displayName || course.name || "Program";
+                      const courseActionUrl = course.actionUrl || `/courses?course=${encodeURIComponent(course.slug || "")}`;
+
+                      return (
+                        <div
+                          key={course._id || idx}
+                          className="bg-white border border-slate-200/90 hover:border-blue-500 rounded-xl p-3 hover:shadow-md transition-all flex flex-col justify-between group"
+                        >
+                          <div>
+                            {/* Course Icon & Details Row */}
+                            <div className="flex items-start gap-2.5">
+                              {/* Direct Course Model Logo without bg / padding */}
+                              <Link
+                                href={courseActionUrl}
+                                className="relative w-8 h-8 sm:w-9 sm:h-9 shrink-0 flex items-center justify-start group-hover:scale-105 transition-transform mt-0.5"
+                              >
+                                {courseLogoUrl ? (
+                                  <Image
+                                    src={courseLogoUrl}
+                                    alt={courseTitle}
+                                    fill
+                                    unoptimized
+                                    sizes="36px"
+                                    className="object-contain object-left"
+                                  />
+                                ) : (
+                                  <span className="text-xs font-black text-[#072C50] tracking-tight">
+                                    {course.name?.slice(0, 4) || "DEG"}
+                                  </span>
+                                )}
+                              </Link>
+
+                              {/* Course Title & Fees Range right under it */}
+                              <div className="min-w-0 flex-1">
+                                <Link
+                                  href={courseActionUrl}
+                                  className="block group-hover:text-[#0B57D0] transition-colors"
+                                >
+                                  <h4
+                                    className="text-xs sm:text-[13px] font-bold text-slate-900 leading-snug truncate m-0 group-hover:text-[#0B57D0] transition-colors"
+                                    title={courseTitle}
+                                  >
+                                    {courseTitle}
+                                  </h4>
+                                </Link>
+
+                                {/* Fees Range directly under Course Title */}
+                                <div className="mt-0.5">
+                                  <span
+                                    className="text-[10.5px] sm:text-[11px] font-bold text-emerald-700 block truncate"
+                                    title={course.feeRange || course.startingFee || "Affordable Fees"}
+                                  >
+                                    {course.feeRange || course.startingFee || "Affordable Fees"}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Metadata Badges: Starts below the logo in a flex row */}
+                            <div className="flex items-center gap-2 mt-2 pt-0.5 text-[10px] text-slate-500 font-medium">
+                              {course.duration && (
+                                <span className="inline-flex items-center gap-1 text-slate-500 shrink-0">
+                                  <svg className="w-3 h-3 text-slate-400 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                                  </svg>
+                                  <span>{course.duration}</span>
+                                </span>
+                              )}
+                              {course.specializationsCount > 0 && (
+                                <span className="inline-flex items-center gap-1 text-slate-500 truncate">
+                                  <svg className="w-3 h-3 text-slate-400 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z" />
+                                  </svg>
+                                  <span className="truncate">{course.specializationsCount} Specialisation</span>
+                                </span>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Bottom Row: Only View Course → */}
+                          <div className="pt-2 mt-2 border-t border-slate-100/80 flex items-center justify-end">
+                            <Link
+                              href={courseActionUrl}
+                              className="text-[10.5px] sm:text-[11px] font-bold text-slate-900 hover:text-[#0B57D0] flex items-center gap-1 transition select-none"
+                            >
+                              <span>View Course</span>
+                              <span className="text-[12px] leading-none transition-transform group-hover:translate-x-0.5">→</span>
+                            </Link>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* 🏛️ 2. RECOMMENDED UNIVERSITIES (For University Suggestion Tool) */}
+              {shouldShowUniversities && recommendations && recommendations.length > 0 && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <h3 className="text-lg font-bold text-[#072C50] flex items-center gap-2">
                       <School className="text-[#0B3B7E]" size={22} />
                       <span>Top Matching Universities ({recommendations.length})</span>
                     </h3>
-                    <span className="text-xs text-slate-500">
-                      UGC-DEB Entitled & Valid
-                    </span>
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs text-slate-500 hidden sm:inline">
+                        UGC-DEB Entitled & Valid
+                      </span>
+                      <button
+                        type="button"
+                        onClick={handleRestart}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all shrink-0 cursor-pointer"
+                      >
+                        <RotateCcw size={13} />
+                        <span>Restart</span>
+                      </button>
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
