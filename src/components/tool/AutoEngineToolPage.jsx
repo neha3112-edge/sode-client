@@ -681,20 +681,6 @@ export default function AutoEngineToolPage({
                 </h2>
               </div>
 
-              {/* Search filter for large option lists */}
-              {rawOptions.length > 8 && (
-                <div className="max-w-md mx-auto relative mb-6">
-                  <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    placeholder="Search options..."
-                    value={searchFilter}
-                    onChange={(e) => setSearchFilter(e.target.value)}
-                    className="w-full pl-9 pr-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-[#072C50] transition-colors"
-                  />
-                </div>
-              )}
-
               {/* ─── OPTION CARDS (6 CARDS PER ROW ON DESKTOP, 4 ON MOBILE, ALWAYS CENTERED) ─── */}
               <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2.5 w-full mx-auto max-w-6xl">
                 {filteredOptions.map((option, oIdx) => {
