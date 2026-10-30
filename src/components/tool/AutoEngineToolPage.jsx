@@ -421,15 +421,16 @@ export default function AutoEngineToolPage({
             </span>
           </div>
 
-          {/* Centered Page Title in White */}
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white text-center tracking-tight m-0 mb-1.5 leading-tight">
-            {workflow?.name || toolTitle}
-          </h1>
+          {/* Centered Page Title & Subtitle in White */}
+          <div className="flex flex-col items-center justify-center gap-1 sm:gap-1.5">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white text-center tracking-tight m-0 leading-none">
+              {workflow?.name || toolTitle}
+            </h1>
 
-          {/* Subtitle in Light Blue / White */}
-          <p className="text-blue-100/90 text-xs sm:text-sm md:text-base text-center max-w-2xl mx-auto m-0 leading-tight">
-            {workflow?.description || toolDescription}
-          </p>
+            <p className="text-blue-100/90 text-xs sm:text-sm md:text-base text-center max-w-2xl mx-auto m-0 leading-snug">
+              {workflow?.description || toolDescription}
+            </p>
+          </div>
         </div>
       </div>
 
@@ -648,9 +649,9 @@ export default function AutoEngineToolPage({
             /* ❓ INTERACTIVE QUESTION CARDS (NODE TRAVERSAL) */
             /* ===================================================== */
             <div className="space-y-8">
-              {/* Question Heading with Back Button */}
-              <div className="flex items-center justify-between gap-2.5 sm:gap-4 max-w-3xl mx-auto mb-6">
-                <div className="shrink-0">
+              {/* Question Heading with Back Button (Full-width Between / Absolute Left) */}
+              <div className="relative flex items-center justify-center w-full mb-6 min-h-[40px]">
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 shrink-0">
                   {history.length > 0 && !recommendations ? (
                     <button
                       type="button"
@@ -672,13 +673,11 @@ export default function AutoEngineToolPage({
                   )}
                 </div>
 
-                <h2 className="text-base sm:text-2xl md:text-3xl font-bold text-[#072C50] text-center tracking-tight leading-tight m-0 flex-1">
+                <h2 className="text-base sm:text-2xl md:text-3xl font-bold text-[#072C50] text-center tracking-tight leading-tight m-0 w-full px-16 sm:px-24">
                   {currentNode?.data?.question ||
                     currentNode?.data?.title ||
                     "Choose Your Preference"}
                 </h2>
-
-                <div className="w-14 sm:w-16 shrink-0 hidden sm:block" />
               </div>
 
               {/* Search filter for large option lists */}
@@ -769,23 +768,6 @@ export default function AutoEngineToolPage({
                           </h3>
                         </div>
                       </div>
-
-                      {/* Pinned Bottom Button - Desktop / Tablet (sm+) */}
-                      <div className="w-full mt-2 hidden sm:block">
-                        <div
-                          className={`w-full py-1.5 sm:py-2 px-2 sm:px-3 rounded-full text-white font-bold text-[10px] sm:text-[11px] shadow-none transition-all flex items-center justify-center gap-1 cursor-pointer truncate ${isSelected
-                              ? "bg-emerald-600 hover:bg-emerald-700"
-                              : "bg-[#0B3B7E] hover:bg-[#072859]"
-                            }`}
-                        >
-                          <span className="truncate">
-                            {isSelected ? "Selected ✓" : optTitle}
-                          </span>
-                          <span className="w-3.5 h-3.5 rounded-full bg-white/20 flex items-center justify-center text-[9px] shrink-0 group-hover:translate-x-0.5 transition-transform">
-                            →
-                          </span>
-                        </div>
-                      </div>
                     </div>
                   );
                 })}
@@ -810,42 +792,6 @@ export default function AutoEngineToolPage({
               )}
             </div>
           )}
-
-          {/* ─── 4. BOTTOM FREE COUNSELING CALLOUT CARD (Matching ToolsView) ─── */}
-          <div className="mt-8 sm:mt-12 bg-gradient-to-r from-[#072C50] to-[#0D3B66] rounded-xl sm:rounded-2xl p-4 sm:p-7 md:p-8 text-white flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6 shadow-md text-center md:text-left">
-            <div className="space-y-1 sm:space-y-1.5 flex flex-col items-center md:items-start">
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-200 text-[10.5px] sm:text-xs font-semibold mb-0.5">
-                <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-300" />
-                <span>Need Personalized Guidance?</span>
-              </div>
-              <h3 className="text-base sm:text-lg md:text-xl font-bold text-white m-0">
-                Talk to Our Expert Academic Counselors
-              </h3>
-              <p className="text-[11px] sm:text-xs md:text-sm text-slate-300 m-0 max-w-xl">
-                Get 100% free guidance on selecting the right university, course eligibility, fees structure, and EMI options.
-              </p>
-            </div>
-
-            <button
-              type="button"
-              onClick={() =>
-                openFormModal({
-                  title: "Talk to Our Expert Academic Counselors",
-                  subtitle: "Get 100% free guidance on selecting the right university, course eligibility, fees structure, and EMI options.",
-                  submitButtonText: "Get Free Consultation",
-                })
-              }
-              style={{
-                background: "linear-gradient(180deg, #F3CE7F 0%, #E7B85D 100%)",
-                border: "1px solid rgba(226, 176, 83, 0.7)",
-                boxShadow: "0 4px 14px rgba(226, 176, 83, 0.35)",
-              }}
-              className="text-[#072C50] text-xs sm:text-sm font-extrabold px-6 py-2.5 sm:px-7 sm:py-3 rounded-full transition-all hover:scale-[1.02] active:scale-[0.98] inline-flex items-center justify-center gap-2 shrink-0 cursor-pointer w-fit mx-auto md:mx-0"
-            >
-              <span>Get Free Consultation</span>
-              <ArrowRight size={15} className="text-[#072C50]" />
-            </button>
-          </div>
         </article>
       </div>
     </div>
