@@ -649,35 +649,39 @@ export default function AutoEngineToolPage({
             /* ❓ INTERACTIVE QUESTION CARDS (NODE TRAVERSAL) */
             /* ===================================================== */
             <div className="space-y-8">
-              {/* Question Heading with Back Button (Mobile top-left / Desktop absolute-left) */}
-              <div className="relative w-full mb-4 sm:mb-6">
-                <div className="sm:absolute sm:left-0 sm:top-1/2 sm:-translate-y-1/2 mb-2.5 sm:mb-0 flex items-center justify-start shrink-0">
+              {/* Question Heading with Back Icon in Flex Row */}
+              <div className="flex items-center justify-between gap-2 sm:gap-4 w-full mb-4 sm:mb-6">
+                <div className="shrink-0">
                   {history.length > 0 && !recommendations ? (
                     <button
                       type="button"
                       onClick={handleBack}
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg sm:rounded-xl bg-slate-50 hover:bg-slate-100 text-[#072C50] text-xs font-bold border border-slate-200 transition-all cursor-pointer shadow-2xs"
+                      className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-50 hover:bg-slate-100 active:scale-95 text-[#072C50] border border-slate-200 flex items-center justify-center transition-all cursor-pointer shadow-2xs"
                       title="Go Back to Previous Question"
+                      aria-label="Back"
                     >
-                      <ArrowLeft size={14} />
-                      <span>Back</span>
+                      <ArrowLeft size={16} />
                     </button>
                   ) : (
                     <Link
                       href="/tools"
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg sm:rounded-xl bg-slate-50 hover:bg-slate-100 text-[#072C50] text-xs font-bold border border-slate-200 transition-all cursor-pointer shadow-2xs"
+                      className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-50 hover:bg-slate-100 active:scale-95 text-[#072C50] border border-slate-200 flex items-center justify-center transition-all cursor-pointer shadow-2xs"
+                      title="Back to All Tools"
+                      aria-label="Back"
                     >
-                      <ArrowLeft size={14} />
-                      <span>Back</span>
+                      <ArrowLeft size={16} />
                     </Link>
                   )}
                 </div>
 
-                <h2 className="text-sm min-[380px]:text-base sm:text-2xl md:text-3xl font-bold text-[#072C50] text-center tracking-tight leading-tight m-0 w-full px-1 sm:px-24">
+                <h2 className="text-sm min-[380px]:text-base sm:text-2xl md:text-3xl font-bold text-[#072C50] text-center tracking-tight leading-tight m-0 flex-1 px-1">
                   {currentNode?.data?.question ||
                     currentNode?.data?.title ||
                     "Choose Your Preference"}
                 </h2>
+
+                {/* Right spacer with matching width so the heading stays mathematically centered */}
+                <div className="w-8 sm:w-9 shrink-0" aria-hidden="true" />
               </div>
 
               {/* Search filter for large option lists */}
@@ -697,8 +701,8 @@ export default function AutoEngineToolPage({
               {/* ─── GRID OF OPTION CARDS (MATCHING CATEGORY ON MOBILE & DESKTOP) ─── */}
               <div
                 className={`grid grid-cols-4 gap-1.5 sm:gap-2.5 w-full mx-auto items-stretch ${filteredOptions.length <= 4
-                    ? "sm:grid-cols-4 max-w-2xl mx-auto"
-                    : "sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6"
+                  ? "sm:grid-cols-4 max-w-2xl mx-auto"
+                  : "sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6"
                   }`}
               >
                 {filteredOptions.map((option, oIdx) => {
@@ -728,8 +732,8 @@ export default function AutoEngineToolPage({
                         }
                       }}
                       className={`relative w-full aspect-square bg-white rounded-xl sm:rounded-2xl p-1.5 min-[360px]:p-2 sm:p-3 border flex flex-col items-center justify-center text-center cursor-pointer select-none transition-all duration-200 hover:-translate-y-0.5 group min-w-0 ${isSelected
-                          ? "border-blue-600 ring-2 ring-blue-500/20 bg-blue-50/20 shadow-xs"
-                          : "border-gray-200 hover:border-blue-500 hover:bg-gray-50/50"
+                        ? "border-blue-600 ring-2 ring-blue-500/20 bg-blue-50/20 shadow-xs"
+                        : "border-gray-200 hover:border-blue-500 hover:bg-gray-50/50"
                         }`}
                     >
                       <div className="flex flex-col items-center justify-center w-full">
