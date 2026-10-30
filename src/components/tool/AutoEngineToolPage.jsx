@@ -651,25 +651,25 @@ export default function AutoEngineToolPage({
             <div className="space-y-8">
               {/* Question Heading with Back Icon (Always aligned with Line 1) */}
               <div className="relative flex items-center justify-center w-full mb-4 sm:mb-6">
-                <div className="absolute left-0 top-0 h-[22px] min-[360px]:h-[24px] sm:h-[32px] md:h-[38px] flex items-center justify-center shrink-0 z-10">
+                <div className="absolute left-0 top-0 h-[20px] min-[360px]:h-[22px] sm:h-[30px] md:h-[34px] flex items-center justify-center shrink-0 z-10">
                   {history.length > 0 && !recommendations ? (
                     <button
                       type="button"
                       onClick={handleBack}
-                      className="p-1 sm:p-1.5 text-[#072C50] hover:text-[#0B3B7E] active:scale-90 flex items-center justify-center transition-transform cursor-pointer"
+                      className="p-0 text-[#072C50] hover:text-[#0B3B7E] active:scale-90 flex items-center justify-center transition-transform cursor-pointer"
                       title="Go Back to Previous Question"
                       aria-label="Back"
                     >
-                      <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+                      <ArrowLeft className="w-[17px] h-[17px] sm:w-5 sm:h-5" />
                     </button>
                   ) : (
                     <Link
                       href="/tools"
-                      className="p-1 sm:p-1.5 text-[#072C50] hover:text-[#0B3B7E] active:scale-90 flex items-center justify-center transition-transform cursor-pointer"
+                      className="p-0 text-[#072C50] hover:text-[#0B3B7E] active:scale-90 flex items-center justify-center transition-transform cursor-pointer"
                       title="Back to All Tools"
                       aria-label="Back"
                     >
-                      <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+                      <ArrowLeft className="w-[17px] h-[17px] sm:w-5 sm:h-5" />
                     </Link>
                   )}
                 </div>
