@@ -8,11 +8,11 @@
  * 1. Explicit override passed in function argument (e.g. university/counselor specific)
  * 2. Dynamic runtime number fetched from backend API or window.__CRM_WHATSAPP_NUMBER__
  * 3. Environment variable (NEXT_PUBLIC_WHATSAPP_NUMBER)
- * 4. Default fallback: "919355588876"
+ * 4. Default fallback: "9195828 23636"
  */
 
 export const DEFAULT_WHATSAPP_NUMBER =
-  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "919355588876";
+  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "9195828 23636";
 
 let runtimeBackendWhatsAppNumber = null;
 
@@ -118,7 +118,7 @@ function recordClickSession({ slug, title }) {
         headers: { "Content-Type": "application/json" },
         body: payload,
         keepalive: true,
-      }).catch(() => {});
+      }).catch(() => { });
     }
   } catch (err) {
     // Non-blocking
