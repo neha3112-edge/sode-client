@@ -509,7 +509,7 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
     const code = apiData?.approval?.code || apiData?.approval?.shortName;
     if (code) return `${code.toUpperCase()} APPROVED DIRECTORY 2026`;
     return "OFFICIAL ACCREDITATION DIRECTORY 2026";
-  }, [isNirfApproval, isNaacApproval, apiData?.approval]);
+  }, [isNirfApproval, isNaacApproval, apiData]);
 
   const heroTitle = useMemo(() => {
     if (apiData?.approval?.bannerTitle) return apiData.approval.bannerTitle;
@@ -518,7 +518,7 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
     if (isNaacApproval) return "NAAC Accredited Universities List";
     if (apiData?.approval?.name) return `${apiData.approval.name} Approved Universities`;
     return "Approved Universities Directory";
-  }, [apiData?.approval, isNirfApproval, isNaacApproval]);
+  }, [apiData, isNirfApproval, isNaacApproval]);
 
   const heroDescription = useMemo(() => {
     if (apiData?.approval?.shortDescription) return apiData.approval.shortDescription;
@@ -527,7 +527,7 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
       if (plain) return plain.length > 220 ? `${plain.slice(0, 220)}...` : plain;
     }
     return "Explore verified top-ranked and accredited online & distance universities recognized by NIRF, UGC-DEB, and statutory government bodies across India.";
-  }, [apiData?.approval]);
+  }, [apiData]);
 
   // Ant Design Table Columns: dynamically includes NAAC Grade or NIRF Rank column
   const columns = useMemo(() => {
@@ -827,9 +827,10 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
                 </div>
               )}
             </div>
+          </div>
 
-            {/* 3. Ant Design Table */}
-            <div className="bg-white rounded-xl border border-gray-200/90 shadow-2xs overflow-hidden approvals-table-wrapper">
+          {/* 3. Ant Design Table */}
+          <div className="bg-white rounded-xl border border-gray-200/90 shadow-2xs overflow-hidden approvals-table-wrapper">
         <Table
           columns={columns}
           dataSource={filteredUniversities}
