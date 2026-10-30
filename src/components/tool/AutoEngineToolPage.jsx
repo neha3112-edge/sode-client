@@ -695,8 +695,8 @@ export default function AutoEngineToolPage({
                 </div>
               )}
 
-              {/* ─── OPTION CARDS (ALWAYS CENTERED ON MOBILE & DESKTOP) ─── */}
-              <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-3 w-full mx-auto max-w-5xl">
+              {/* ─── OPTION CARDS (6 CARDS PER ROW ON DESKTOP, 4 ON MOBILE, ALWAYS CENTERED) ─── */}
+              <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2.5 w-full mx-auto max-w-6xl">
                 {filteredOptions.map((option, oIdx) => {
                   const optTitle =
                     typeof option === "object"
@@ -723,7 +723,7 @@ export default function AutoEngineToolPage({
                           handleSelectOption(option, storeVar);
                         }
                       }}
-                      className={`relative w-[calc(25%-5px)] sm:w-28 md:w-36 lg:w-40 aspect-square bg-white rounded-xl sm:rounded-2xl p-1.5 min-[360px]:p-2 sm:p-3 border flex flex-col items-center justify-center text-center cursor-pointer select-none transition-all duration-200 hover:-translate-y-0.5 group shrink-0 ${isSelected
+                      className={`relative w-[calc(25%-5px)] sm:w-28 md:w-32 lg:w-[calc(16.666%-9px)] lg:max-w-[145px] aspect-square bg-white rounded-xl sm:rounded-2xl p-1.5 min-[360px]:p-2 sm:p-3 border flex flex-col items-center justify-center text-center cursor-pointer select-none transition-all duration-200 hover:-translate-y-0.5 group shrink-0 ${isSelected
                         ? "border-blue-600 ring-2 ring-blue-500/20 bg-blue-50/20 shadow-xs"
                         : "border-gray-200 hover:border-blue-500 hover:bg-gray-50/50"
                         }`}
