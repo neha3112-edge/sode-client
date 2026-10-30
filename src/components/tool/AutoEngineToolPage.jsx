@@ -649,37 +649,38 @@ export default function AutoEngineToolPage({
             /* ❓ INTERACTIVE QUESTION CARDS (NODE TRAVERSAL) */
             /* ===================================================== */
             <div className="space-y-8">
-              {/* Question Heading with Back Icon inline right in front */}
-              <div className="flex items-center justify-center w-full mb-4 sm:mb-6 max-w-3xl mx-auto px-2">
-                <h2 className="text-sm min-[380px]:text-base sm:text-2xl md:text-3xl font-bold text-[#072C50] text-center tracking-tight leading-snug m-0">
-                  <span className="inline-flex items-center align-middle mr-1.5 sm:mr-2.5 -mt-0.5 shrink-0">
+              {/* Question Heading with Back Icon (Always Centered) */}
+              <div className="w-full flex items-center justify-center mb-4 sm:mb-6 px-1 text-center">
+                <div className="inline-flex items-center justify-center gap-1.5 sm:gap-2.5 max-w-full text-center">
+                  <div className="shrink-0">
                     {history.length > 0 && !recommendations ? (
                       <button
                         type="button"
                         onClick={handleBack}
-                        className="p-0.5 sm:p-1 text-[#072C50] hover:text-[#0B3B7E] active:scale-90 inline-flex items-center justify-center transition-transform cursor-pointer"
+                        className="p-1 text-[#072C50] hover:text-[#0B3B7E] active:scale-90 flex items-center justify-center transition-transform cursor-pointer"
                         title="Go Back to Previous Question"
                         aria-label="Back"
                       >
-                        <ArrowLeft className="w-4 h-4 min-[380px]:w-5 min-[380px]:h-5 sm:w-6 sm:h-6" />
+                        <ArrowLeft className="w-4 h-4 sm:w-6 sm:h-6" />
                       </button>
                     ) : (
                       <Link
                         href="/tools"
-                        className="p-0.5 sm:p-1 text-[#072C50] hover:text-[#0B3B7E] active:scale-90 inline-flex items-center justify-center transition-transform cursor-pointer"
+                        className="p-1 text-[#072C50] hover:text-[#0B3B7E] active:scale-90 flex items-center justify-center transition-transform cursor-pointer"
                         title="Back to All Tools"
                         aria-label="Back"
                       >
-                        <ArrowLeft className="w-4 h-4 min-[380px]:w-5 min-[380px]:h-5 sm:w-6 sm:h-6" />
+                        <ArrowLeft className="w-4 h-4 sm:w-6 sm:h-6" />
                       </Link>
                     )}
-                  </span>
-                  <span>
+                  </div>
+
+                  <h2 className="text-xs min-[360px]:text-sm sm:text-2xl md:text-3xl font-bold text-[#072C50] text-center tracking-tight leading-snug m-0">
                     {currentNode?.data?.question ||
                       currentNode?.data?.title ||
                       "Choose Your Preference"}
-                  </span>
-                </h2>
+                  </h2>
+                </div>
               </div>
 
               {/* Search filter for large option lists */}
@@ -696,11 +697,17 @@ export default function AutoEngineToolPage({
                 </div>
               )}
 
-              {/* ─── GRID OF OPTION CARDS (MATCHING CATEGORY ON MOBILE & DESKTOP) ─── */}
+              {/* ─── GRID OF OPTION CARDS (ALWAYS CENTERED ON MOBILE & DESKTOP) ─── */}
               <div
-                className={`grid grid-cols-4 gap-1.5 sm:gap-2.5 w-full mx-auto items-stretch ${filteredOptions.length <= 4
-                  ? "sm:grid-cols-4 max-w-2xl mx-auto"
-                  : "sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6"
+                className={`grid gap-1.5 sm:gap-2.5 w-full mx-auto items-stretch ${filteredOptions.length === 1
+                  ? "grid-cols-1 max-w-[160px]"
+                  : filteredOptions.length === 2
+                  ? "grid-cols-2 max-w-xs sm:max-w-md"
+                  : filteredOptions.length === 3
+                  ? "grid-cols-3 max-w-sm sm:max-w-xl"
+                  : filteredOptions.length === 4
+                  ? "grid-cols-4 max-w-md sm:max-w-2xl"
+                  : "grid-cols-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 max-w-4xl"
                   }`}
               >
                 {filteredOptions.map((option, oIdx) => {
