@@ -674,15 +674,14 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
         <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
           {/* Top Accreditation Logo */}
           {approvalLogoUrl ? (
-            <div className="mb-2.5 sm:mb-3 flex justify-center">
-              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white p-2 shadow-md border border-white/40 flex items-center justify-center overflow-hidden">
+            <div className="mb-2 sm:mb-2.5 flex justify-center">
+              <div className="relative h-12 sm:h-14 w-28 sm:w-36 flex items-center justify-center">
                 <Image
                   src={approvalLogoUrl}
                   alt={apiData?.approval?.name || "Accreditation Logo"}
-                  width={48}
-                  height={48}
+                  fill
                   unoptimized
-                  className="object-contain w-full h-full"
+                  className="object-contain"
                 />
               </div>
             </div>
