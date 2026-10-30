@@ -11,10 +11,12 @@ export default function CourseCurriculum({
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const carouselRef = useRef(null);
+  const mobileCarouselRef = useRef(null);
 
   if (!curriculumList || curriculumList.length === 0) return null;
 
   const hasCarousel = curriculumList.length > 4 && !isExpanded;
+  const hasMobileCarousel = curriculumList.length > 1 && !isExpanded;
 
   const renderCurriculumCard = (sem, idx) => {
     const rawLabel = sem.semester || sem.semesterName || `Semester ${idx + 1}`;
@@ -116,62 +118,118 @@ export default function CourseCurriculum({
         {courseData?.name || "Course"} Course Updated Syllabus 2026 {universityName ? `at ${universityName}` : ""}
       </h2>
 
-      {hasCarousel ? (
-        <div className="relative group/curriculum-carousel px-0 sm:px-1">
-          {/* Navigation Chevron Left */}
-          <button
-            type="button"
-            onClick={() => carouselRef.current?.prev()}
-            aria-label="Previous syllabus module"
-            className="absolute -left-2.5 sm:-left-4 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white border border-gray-200/90 shadow-md text-gray-700 hover:text-[#0C3A66] hover:border-gray-300 hover:shadow-lg flex items-center justify-center cursor-pointer transition-all active:scale-95"
-          >
-            <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-          </button>
+      {/* ── MOBILE: 1 SINGLE CARD ONLY PER SLIDE (slidesToShow: 1) ── */}
+      <div className="block md:hidden">
+        {hasMobileCarousel ? (
+          <div className="relative group/curriculum-carousel px-1">
+            {/* Navigation Chevron Left */}
+            <button
+              type="button"
+              onClick={() => mobileCarouselRef.current?.prev()}
+              aria-label="Previous syllabus module"
+              className="absolute -left-1 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white/95 border border-gray-200/90 shadow-md text-gray-700 hover:text-[#0C3A66] hover:border-gray-300 flex items-center justify-center cursor-pointer transition-all active:scale-95"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
 
-          {/* Antd Carousel Container */}
-          <Carousel
-            ref={carouselRef}
-            dots={false}
-            infinite={false}
-            draggable={true}
-            swipeToSlide={true}
-            touchMove={true}
-            slidesToShow={4}
-            slidesToScroll={1}
-            responsive={[
-              { breakpoint: 1280, settings: { slidesToShow: 4, slidesToScroll: 1 } },
-              { breakpoint: 1024, settings: { slidesToShow: 3, slidesToScroll: 1 } },
-              { breakpoint: 768, settings: { slidesToShow: 2, slidesToScroll: 1 } },
-              { breakpoint: 480, settings: { slidesToShow: 1, slidesToScroll: 1 } },
-            ]}
-            className="w-full [&_.slick-track]:flex! [&_.slick-track]:items-stretch! [&_.slick-slide]:h-auto! [&_.slick-slide]:flex! [&_.slick-slide>div]:h-full! [&_.slick-slide>div]:w-full! [&_.slick-slide>div]:flex! [&_.slick-slide>div]:flex-col!"
-          >
+            {/* Antd Carousel: Strictly 1 Single Full Card on Mobile */}
+            <Carousel
+              ref={mobileCarouselRef}
+              dots={true}
+              infinite={false}
+              draggable={true}
+              swipeToSlide={true}
+              touchMove={true}
+              slidesToShow={1}
+              slidesToScroll={1}
+              className="w-full [&_.slick-track]:flex! [&_.slick-track]:items-stretch! [&_.slick-slide]:h-auto! [&_.slick-slide]:flex! [&_.slick-slide>div]:h-full! [&_.slick-slide>div]:w-full! [&_.slick-slide>div]:flex! [&_.slick-slide>div]:flex-col! [&_.slick-dots]:relative! [&_.slick-dots]:mt-3.5! [&_.slick-dots]:mb-0! [&_.slick-dots_li]:w-2! [&_.slick-dots_li]:h-2! [&_.slick-dots_li]:mx-1! [&_.slick-dots_li_button]:w-2! [&_.slick-dots_li_button]:h-2! [&_.slick-dots_li_button]:rounded-full! [&_.slick-dots_li_button]:bg-slate-300! [&_.slick-dots_li.slick-active]:w-5! [&_.slick-dots_li.slick-active_button]:w-5! [&_.slick-dots_li.slick-active_button]:rounded-full! [&_.slick-dots_li.slick-active_button]:bg-[#0C3A66]!"
+            >
+              {curriculumList.map((sem, idx) => (
+                <div key={idx} className="px-3.5 py-1 h-full flex flex-col">
+                  {renderCurriculumCard(sem, idx)}
+                </div>
+              ))}
+            </Carousel>
+
+            {/* Navigation Chevron Right */}
+            <button
+              type="button"
+              onClick={() => mobileCarouselRef.current?.next()}
+              aria-label="Next syllabus module"
+              className="absolute -right-1 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white/95 border border-gray-200/90 shadow-md text-gray-700 hover:text-[#0C3A66] hover:border-gray-300 flex items-center justify-center cursor-pointer transition-all active:scale-95"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-3.5 animate-in fade-in duration-200">
             {curriculumList.map((sem, idx) => (
-              <div key={idx} className="p-1.5 sm:p-2 h-full flex flex-col">
+              <div key={idx} className="w-full h-full">
                 {renderCurriculumCard(sem, idx)}
               </div>
             ))}
-          </Carousel>
+          </div>
+        )}
+      </div>
 
-          {/* Navigation Chevron Right */}
-          <button
-            type="button"
-            onClick={() => carouselRef.current?.next()}
-            aria-label="Next syllabus module"
-            className="absolute -right-2.5 sm:-right-4 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white border border-gray-200/90 shadow-md text-gray-700 hover:text-[#0C3A66] hover:border-gray-300 hover:shadow-lg flex items-center justify-center cursor-pointer transition-all active:scale-95"
-          >
-            <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
-          </button>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 animate-in fade-in duration-200">
-          {curriculumList.map((sem, idx) => (
-            <div key={idx} className="w-full h-full">
-              {renderCurriculumCard(sem, idx)}
-            </div>
-          ))}
-        </div>
-      )}
+      {/* ── DESKTOP & TABLET: UP TO 4 CARDS ── */}
+      <div className="hidden md:block">
+        {hasCarousel ? (
+          <div className="relative group/curriculum-carousel px-1">
+            {/* Navigation Chevron Left */}
+            <button
+              type="button"
+              onClick={() => carouselRef.current?.prev()}
+              aria-label="Previous syllabus module"
+              className="absolute -left-4 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-white border border-gray-200/90 shadow-md text-gray-700 hover:text-[#0C3A66] hover:border-gray-300 hover:shadow-lg flex items-center justify-center cursor-pointer transition-all active:scale-95"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+
+            {/* Antd Carousel Container */}
+            <Carousel
+              ref={carouselRef}
+              dots={false}
+              infinite={false}
+              draggable={true}
+              swipeToSlide={true}
+              touchMove={true}
+              slidesToShow={4}
+              slidesToScroll={1}
+              responsive={[
+                { breakpoint: 1280, settings: { slidesToShow: 4, slidesToScroll: 1 } },
+                { breakpoint: 1024, settings: { slidesToShow: 3, slidesToScroll: 1 } },
+                { breakpoint: 768, settings: { slidesToShow: 2, slidesToScroll: 1 } },
+              ]}
+              className="w-full [&_.slick-track]:flex! [&_.slick-track]:items-stretch! [&_.slick-slide]:h-auto! [&_.slick-slide]:flex! [&_.slick-slide>div]:h-full! [&_.slick-slide>div]:w-full! [&_.slick-slide>div]:flex! [&_.slick-slide>div]:flex-col!"
+            >
+              {curriculumList.map((sem, idx) => (
+                <div key={idx} className="p-2 h-full flex flex-col">
+                  {renderCurriculumCard(sem, idx)}
+                </div>
+              ))}
+            </Carousel>
+
+            {/* Navigation Chevron Right */}
+            <button
+              type="button"
+              onClick={() => carouselRef.current?.next()}
+              aria-label="Next syllabus module"
+              className="absolute -right-4 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-white border border-gray-200/90 shadow-md text-gray-700 hover:text-[#0C3A66] hover:border-gray-300 hover:shadow-lg flex items-center justify-center cursor-pointer transition-all active:scale-95"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 animate-in fade-in duration-200">
+            {curriculumList.map((sem, idx) => (
+              <div key={idx} className="w-full h-full">
+                {renderCurriculumCard(sem, idx)}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* View More / View Less Toggle Button */}
       {curriculumList.length > 4 && (
