@@ -400,6 +400,8 @@ export default function LandingStats({ stats = [], brand = {} }) {
   // ==========================================
   // Classic Blue Banner (Amity, etc.)
   // ==========================================
+  const isAmity = brand.slug === "amity";
+
   return (
     <section
       id="stats"
@@ -408,8 +410,14 @@ export default function LandingStats({ stats = [], brand = {} }) {
         background: brand.statsBg || brand.primaryColor || "#08417b",
       }}
     >
-      <div className="max-w-6xl min-[1600px]:max-w-[1520px] min-[1920px]:max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-10 items-center justify-center">
+      <div
+        className={`${
+          isAmity
+            ? "w-full lg:w-[60%] min-[1920px]:w-full max-w-[1150px] lg:px-0"
+            : "max-w-6xl min-[1600px]:max-w-[1520px] min-[1920px]:max-w-[1680px] lg:px-8"
+        } mx-auto px-4 sm:px-6`}
+      >
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-6 xl:gap-8 min-[1920px]:gap-10 items-center justify-center">
           {stats.map((st, idx) => {
             const IconComponent = ICON_MAP[st.iconType] || BuildingIcon;
             const circleBg = st.circleBg || "bg-[#ffc107]";

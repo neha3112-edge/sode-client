@@ -1025,10 +1025,32 @@ export const amityData = {
    DESKTOP ONLY (1400px+)
 ============================================ */
 
-@media (min-width: 1400px) {
+/* ============================================
+   AMITY STATS - COMPACT & CENTERED (DESKTOP VIEW 1024px+)
+============================================ */
 
-  /* Same content width for both sections */
-  .landing-page--amity #stats > div,
+@media (min-width: 1024px) {
+  /* Compact centered Stats container matching Target Reference */
+  .landing-page--amity #stats > div {
+    width: 60% !important;
+    max-width: 1150px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Stats content remains in four columns */
+  .landing-page--amity #stats .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    align-items: center !important;
+    column-gap: 16px !important;
+  }
+}
+
+@media (min-width: 1400px) {
+  /* Why Choose container alignment */
   .landing-page--amity #whychoose > div {
     width: 100% !important;
     max-width: 1152px !important;
@@ -1039,17 +1061,18 @@ export const amityData = {
     box-sizing: border-box !important;
   }
 
-  /* Stats content remains in four columns */
+  .landing-page--amity #stats > div {
+    width: 60% !important;
+    max-width: 1150px !important;
+  }
+
   .landing-page--amity #stats .grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-    align-items: center !important;
     column-gap: 24px !important;
   }
 }
 
 /* Large Desktop */
 @media (min-width: 1536px) {
-  .landing-page--amity #stats > div,
   .landing-page--amity #whychoose > div {
     max-width: 1280px !important;
   }
@@ -1057,7 +1080,6 @@ export const amityData = {
 
 /* Extra Large Desktop */
 @media (min-width: 1600px) {
-  .landing-page--amity #stats > div,
   .landing-page--amity #whychoose > div {
     max-width: 1520px !important;
   }
@@ -1065,9 +1087,12 @@ export const amityData = {
 
 /* Full HD Desktop */
 @media (min-width: 1920px) {
-  .landing-page--amity #stats > div,
   .landing-page--amity #whychoose > div {
     max-width: 1680px !important;
+  }
+  .landing-page--amity #stats > div {
+    width: 100% !important;
+    max-width: 1150px !important;
   }
 }
     `,
