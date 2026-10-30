@@ -85,9 +85,9 @@ export default function CategoryDetailModal({
                 )}
               </div>
               <div className="min-w-0">
-                <h3 className="text-base sm:text-lg font-semibold text-gray-900 leading-tight tracking-tight truncate m-0">
+                <p className="text-base sm:text-lg font-semibold text-gray-900 leading-tight tracking-tight truncate m-0">
                   {activeCategory.label || activeCategory.name}
-                </h3>
+                </p>
                 <span className="text-xs text-slate-500 block mt-0.5 truncate">
                   {modalData.isUniversity
                     ? "Programs & Degrees Offered"
@@ -188,9 +188,9 @@ export default function CategoryDetailModal({
                           </div>
                         </div>
                         <div className="h-7 min-[360px]:h-8 sm:h-8.5 flex items-center justify-center w-full min-w-0 px-0.5 pb-0.5 shrink-0">
-                          <h5 className="text-[9.5px] min-[360px]:text-[10px] sm:text-[10.5px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors text-center w-full tracking-tight min-w-0 m-0">
+                          <p className="text-[9.5px] min-[360px]:text-[10px] sm:text-[10.5px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors text-center w-full tracking-tight min-w-0 m-0">
                             {formatTwoLineText(it.name)}
-                          </h5>
+                          </p>
                         </div>
                       </div>
                     ))}
@@ -272,9 +272,9 @@ export default function CategoryDetailModal({
                           </div>
                         </div>
                         <div className="h-7 min-[360px]:h-8 sm:h-8.5 flex items-center justify-center w-full min-w-0 px-0.5 pb-0.5 shrink-0">
-                          <h5 className="text-[9.5px] min-[360px]:text-[10px] sm:text-[10.5px] font-medium text-slate-800 group-hover:text-blue-600 transition-colors text-center w-full tracking-tight min-w-0 m-0 uppercase">
+                          <p className="text-[9.5px] min-[360px]:text-[10px] sm:text-[10.5px] font-medium text-slate-800 group-hover:text-blue-600 transition-colors text-center w-full tracking-tight min-w-0 m-0 uppercase">
                             {formatTwoLineText(crs.codeName || crs.shortName || crs.name)}
-                          </h5>
+                          </p>
                         </div>
                       </div>
                     ))}

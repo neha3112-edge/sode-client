@@ -4,18 +4,37 @@ import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Search, Award, Info } from "lucide-react";
+import { FakeUniversityIcon } from "@/components/common/FakeUniversityIcon";
 
 const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 import { Container } from "@/components/common/Container";
+import { FAKE_UNIVERSITIES_SLUG } from "@/constants/fakeUniversitiesData";
 
 export function AccreditationsView({ initialAccreditations = [] }) {
   const [searchQuery, setSearchQuery] = useState("");
   const currentYear = new Date().getFullYear();
 
   const accreditationsList = useMemo(() => {
-    if (!Array.isArray(initialAccreditations)) return [];
+    const rawList = Array.isArray(initialAccreditations) ? [...initialAccreditations] : [];
 
-    return initialAccreditations.map((item, idx) => {
+    // Ensure official UGC Fake Universities directory is present
+    const hasFake = rawList.some(
+      (item) =>
+        item.slug === FAKE_UNIVERSITIES_SLUG ||
+        (item.name || "").toLowerCase().includes("fake")
+    );
+    if (!hasFake) {
+      rawList.push({
+        _id: "ugc-deb-fake-universities-static",
+        title: "List of Fake Universities",
+        name: "List of Fake Universities",
+        slug: FAKE_UNIVERSITIES_SLUG,
+        code: "FAKE",
+        isFake: true,
+      });
+    }
+
+    return rawList.map((item, idx) => {
       const logo = item.logo || item.image || null;
       const title = item.title || item.name || item.code || "Accreditation";
       const description = item.description || item.name || "";
@@ -29,6 +48,7 @@ export function AccreditationsView({ initialAccreditations = [] }) {
         name: item.name || item.title || "",
         code: item.code || "",
         slug,
+        isFake: item.isFake || slug === FAKE_UNIVERSITIES_SLUG,
         universityCount: item.universityCount,
       };
     });
@@ -152,6 +172,13 @@ export function AccreditationsView({ initialAccreditations = [] }) {
                       <span className="block text-slate-700">Universities</span>
                     </div>
                   );
+                } else if (lower.includes("fake")) {
+                  renderedTitle = (
+                    <div className="text-[10px] sm:text-[11px] md:text-[12px] leading-[1.15]">
+                      <span className="block font-bold text-[#072C50]">List of Fake</span>
+                      <span className="block font-bold text-[#0284c7]">Universities</span>
+                    </div>
+                  );
                 }
 
                 return (
@@ -170,6 +197,10 @@ export function AccreditationsView({ initialAccreditations = [] }) {
                           sizes="(max-width: 768px) 72px, 80px"
                           className="object-contain group-hover:scale-105 transition-transform"
                         />
+                      ) : acc.isFake ? (
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center p-0.5">
+                          <FakeUniversityIcon size={46} />
+                        </div>
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
                           <Award className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-blue-600" />

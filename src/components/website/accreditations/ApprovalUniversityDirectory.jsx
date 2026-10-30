@@ -23,6 +23,9 @@ import { useFormModal } from "@/hooks/useFormModal";
 import { useCompare } from "@/hooks/useCompare";
 import { Container } from "@/components/common/Container";
 import { openWhatsAppBrochure } from "@/lib/whatsappBrochure";
+import { getAccreditationHeroContent } from "@/constants/accreditationStaticContent";
+import { isFakeUniversitiesSlug } from "@/constants/fakeUniversitiesData";
+import { FakeUniversityIcon } from "@/components/common/FakeUniversityIcon";
 
 const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 
@@ -37,6 +40,8 @@ function SmoothExpandedCard({
   handleCompareClick,
   isNaacApproval = false,
   isNirfApproval = false,
+  isFakeApproval = false,
+  openFormModal,
 }) {
   const [isMounted, setIsMounted] = useState(false);
   const compared = isInCompare(record.slug || record._id);
@@ -173,21 +178,23 @@ function SmoothExpandedCard({
             </div>
 
             {/* Courses Offered */}
-            <div className="pt-1">
-              <span className="text-xs font-normal text-gray-500 block mb-1">
-                Courses Offered:
-              </span>
-              <div className="flex flex-wrap gap-1.5">
-                {record.courses.map((course, cIdx) => (
-                  <span
-                    key={cIdx}
-                    className="bg-[#BAE6FD]/60 hover:bg-[#BAE6FD] text-[#0369A1] font-normal text-[11px] sm:text-xs px-2.5 py-0.5 rounded-full uppercase tracking-wider transition-colors select-none"
-                  >
-                    {course}
-                  </span>
-                ))}
+            {Array.isArray(record.courses) && record.courses.length > 0 && (
+              <div className="pt-1">
+                <span className="text-xs font-normal text-gray-500 block mb-1">
+                  Courses Offered:
+                </span>
+                <div className="flex flex-wrap gap-1.5">
+                  {record.courses.map((course, cIdx) => (
+                    <span
+                      key={cIdx}
+                      className="bg-[#BAE6FD]/60 hover:bg-[#BAE6FD] text-[#0369A1] font-normal text-[11px] sm:text-xs px-2.5 py-0.5 rounded-full uppercase tracking-wider transition-colors select-none"
+                    >
+                      {course}
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Action Buttons Row: 1 Row with 3 Equal Columns Full Width */}
             <div className="grid grid-cols-3 items-center gap-1.5 sm:gap-2 pt-2 border-t border-gray-100 w-full">
@@ -260,22 +267,25 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
 
   // Session change → refetch via request.dynamicList
   const handleSessionChange = async (val) => {
+    const pageSlug =
+      apiData?.approval?.pageSlug ||
+      initialData?.approval?.pageSlug ||
+      (Array.isArray(initialData?.approval?.slug)
+        ? initialData.approval.slug[0]
+        : initialData?.approval?.slug) ||
+      "";
+    if (isFakeUniversitiesSlug(pageSlug)) return;
+
     const sess = val === "all" ? "" : val;
     setSelectedSession(sess);
     setLoading(true);
     try {
-      const pageSlug =
-        apiData?.approval?.pageSlug ||
-        initialData?.approval?.pageSlug ||
-        (Array.isArray(initialData?.approval?.slug)
-          ? initialData.approval.slug[0]
-          : initialData?.approval?.slug) ||
-        "ugc-deb-approved-online-universities";
+      const targetSlug = pageSlug || "ugc-deb-approved-online-universities";
       const options = {};
       if (sess) options.session = sess;
       const res = await request.dynamicList({
         entity: "accreditations",
-        endPoint: `v1/approval-directory/${pageSlug}`,
+        endPoint: `v1/approval-directory/${targetSlug}`,
         options,
         revalidate: 0,
       });
@@ -500,42 +510,107 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
       .toLowerCase();
   }, [apiData]);
 
-  const isNaacApproval = approvalIdentifier.includes("naac");
-  const isNirfApproval = approvalIdentifier.includes("nirf");
-
-  const approvalLogoUrl = useMemo(() => {
-    const rawLogo = apiData?.approval?.logo || apiData?.approval?.image;
-    return getMediaUrl(rawLogo);
+  const currentSlug = useMemo(() => {
+    return (
+      apiData?.approval?.pageSlug ||
+      (Array.isArray(apiData?.approval?.slug)
+        ? apiData.approval.slug[0]
+        : apiData?.approval?.slug) ||
+      ""
+    );
   }, [apiData]);
 
+  const isFakeApproval = isFakeUniversitiesSlug(currentSlug) || approvalIdentifier.includes("fake");
+  const isNaacApproval = !isFakeApproval && approvalIdentifier.includes("naac");
+  const isNirfApproval = !isFakeApproval && approvalIdentifier.includes("nirf");
+
+  const approvalLogoUrl = useMemo(() => {
+    if (isFakeApproval) return null;
+    const rawLogo = apiData?.approval?.logo || apiData?.approval?.image;
+    return getMediaUrl(rawLogo);
+  }, [apiData, isFakeApproval]);
+
   const approvalBadge = useMemo(() => {
+    if (isFakeApproval) return "UGC LISTED FAKE UNIVERSITIES";
     if (isNirfApproval) return "NIRF RANKED UNIVERSITIES 2026";
     if (isNaacApproval) return "NAAC ACCREDITED UNIVERSITIES 2026";
     const code = apiData?.approval?.code || apiData?.approval?.shortName;
     if (code) return `${code.toUpperCase()} APPROVED DIRECTORY 2026`;
     return "OFFICIAL ACCREDITATION DIRECTORY 2026";
-  }, [isNirfApproval, isNaacApproval, apiData]);
+  }, [isFakeApproval, isNirfApproval, isNaacApproval, apiData]);
+
+  const staticHero = useMemo(() => {
+    return getAccreditationHeroContent(currentSlug, apiData?.approval);
+  }, [currentSlug, apiData]);
 
   const heroTitle = useMemo(() => {
+    if (staticHero?.title) return staticHero.title;
     if (apiData?.approval?.bannerTitle) return apiData.approval.bannerTitle;
     if (apiData?.approval?.title) return apiData.approval.title;
+    if (isFakeApproval) return "UGC-Listed Fake Universities";
     if (isNirfApproval) return "NIRF Ranked Universities List";
     if (isNaacApproval) return "NAAC Accredited Universities List";
     if (apiData?.approval?.name) return `${apiData.approval.name} Approved Universities`;
     return "Approved Universities Directory";
-  }, [apiData, isNirfApproval, isNaacApproval]);
+  }, [staticHero, apiData, isFakeApproval, isNirfApproval, isNaacApproval]);
 
   const heroDescription = useMemo(() => {
+    if (staticHero?.description) return staticHero.description;
     if (apiData?.approval?.shortDescription) return apiData.approval.shortDescription;
     if (apiData?.approval?.description && typeof apiData.approval.description === "string") {
       const plain = apiData.approval.description.replace(/<[^>]*>/g, "").trim();
       if (plain) return plain.length > 220 ? `${plain.slice(0, 220)}...` : plain;
     }
     return "Explore verified top-ranked and accredited online & distance universities recognized by NIRF, UGC-DEB, and statutory government bodies across India.";
-  }, [apiData]);
+  }, [staticHero, apiData]);
 
-  // Ant Design Table Columns: dynamically includes NAAC Grade or NIRF Rank column
+  // Ant Design Table Columns: dynamically includes NAAC Grade, NIRF Rank, or UGC Fake Status
   const columns = useMemo(() => {
+    if (isFakeApproval) {
+      return [
+        {
+          title: "UNIVERSITY NAME",
+          dataIndex: "name",
+          key: "name",
+          width: "44%",
+          render: (name) => (
+            <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+              <div className="w-8 h-8 rounded-lg shrink-0 flex items-center justify-center p-0.5">
+                <FakeUniversityIcon size={30} />
+              </div>
+              <div className="min-w-0 flex-1">
+                <span className="font-semibold text-gray-900 text-xs sm:text-[13px] block">
+                  {name}
+                </span>
+              </div>
+            </div>
+          ),
+        },
+        {
+          title: "STATE",
+          dataIndex: "state",
+          key: "state",
+          width: "26%",
+          render: (state) => (
+            <span className="text-gray-600 text-xs sm:text-[13px] font-normal break-words whitespace-normal block">
+              {state}
+            </span>
+          ),
+        },
+        {
+          title: "UGC STATUS",
+          dataIndex: "status",
+          key: "status",
+          width: "30%",
+          render: () => (
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-red-50 text-red-700 border border-red-200">
+              Fake / Unrecognized
+            </span>
+          ),
+        },
+      ];
+    }
+
     const hasNaacCol = isNaacApproval;
     const hasNirfCol = isNirfApproval;
 
@@ -648,7 +723,7 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
     });
 
     return cols;
-  }, [isNaacApproval, isNirfApproval, expandedRowKeys, closingRowKeys]);
+  }, [isFakeApproval, isNaacApproval, isNirfApproval, expandedRowKeys, closingRowKeys]);
 
   // Smooth Accordion Card Component for Expanded Details
   const renderExpandedCard = (record) => {
@@ -662,6 +737,8 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
         handleCompareClick={handleCompareClick}
         isNaacApproval={isNaacApproval}
         isNirfApproval={isNirfApproval}
+        isFakeApproval={isFakeApproval}
+        openFormModal={openFormModal}
       />
     );
   };
@@ -673,7 +750,13 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
       <div className="w-full bg-[#072C50] text-white pt-6 pb-20 sm:pt-8 sm:pb-24 md:pt-10 md:pb-28 px-4 relative">
         <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
           {/* Top Accreditation Logo */}
-          {approvalLogoUrl ? (
+          {isFakeApproval ? (
+            <div className="mb-2 sm:mb-2.5 flex justify-center">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/10 backdrop-blur-xs border border-white/20 p-2 flex items-center justify-center shadow-lg">
+                <FakeUniversityIcon size={52} />
+              </div>
+            </div>
+          ) : approvalLogoUrl ? (
             <div className="mb-2 sm:mb-2.5 flex justify-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -694,8 +777,8 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
             </h1>
 
             <p
-              className="text-blue-100/90 text-xs sm:text-sm md:text-base max-w-2xl mx-auto"
-              style={{ margin: 0, padding: 0, lineHeight: 1.25, marginTop: "4px" }}
+              className="text-blue-100/90 text-xs sm:text-sm md:text-base max-w-3xl mx-auto font-normal leading-tight"
+              style={{ margin: 0, padding: 0, lineHeight: 1.18, marginTop: "6px" }}
             >
               {heroDescription}
             </p>
@@ -721,109 +804,133 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
 
             {/* 2. Filters Bar: 2 columns on mobile, 4 columns on desktop */}
             <div className="w-full">
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5 w-full">
-                {/* Filter by NAAC Grade if NAAC approval */}
-                {isNaacApproval && (
+              {isFakeApproval ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5 w-full">
+                  {/* Filter By State */}
                   <Select
                     size="large"
-                    value={selectedNaac}
-                    onChange={setSelectedNaac}
+                    value={selectedState}
+                    onChange={setSelectedState}
                     className="approval-filter-select w-full"
                     suffixIcon={<ChevronDown size={14} className="text-gray-500" />}
                   >
-                    <Option value="all">All NAAC Grades</Option>
-                    {filterOptions.naac.map((grade) => (
-                      <Option key={grade} value={grade}>
-                        Grade {grade}
+                    <Option value="all">Filter by State (All States)</Option>
+                    {filterOptions.states.map((st) => (
+                      <Option key={st} value={st}>
+                        {st}
                       </Option>
                     ))}
                   </Select>
-                )}
 
-                {/* Filter by NIRF Rank if NIRF approval */}
-                {isNirfApproval && (
+                  <div className="flex items-center text-xs text-red-900 font-semibold px-3 py-2 bg-red-50/90 border border-red-200/80 rounded-lg">
+                    <span>Showing {filteredUniversities.length} UGC Unrecognized / Fake Institutions</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5 w-full">
+                  {/* Filter by NAAC Grade if NAAC approval */}
+                  {isNaacApproval && (
+                    <Select
+                      size="large"
+                      value={selectedNaac}
+                      onChange={setSelectedNaac}
+                      className="approval-filter-select w-full"
+                      suffixIcon={<ChevronDown size={14} className="text-gray-500" />}
+                    >
+                      <Option value="all">All NAAC Grades</Option>
+                      {filterOptions.naac.map((grade) => (
+                        <Option key={grade} value={grade}>
+                          Grade {grade}
+                        </Option>
+                      ))}
+                    </Select>
+                  )}
+
+                  {/* Filter by NIRF Rank if NIRF approval */}
+                  {isNirfApproval && (
+                    <Select
+                      size="large"
+                      value={selectedNirf}
+                      onChange={setSelectedNirf}
+                      className="approval-filter-select w-full"
+                      suffixIcon={<ChevronDown size={14} className="text-gray-500" />}
+                    >
+                      <Option value="all">All NIRF Ranks</Option>
+                      {filterOptions.nirf.map((rank) => (
+                        <Option key={rank} value={rank}>
+                          Rank {rank}
+                        </Option>
+                      ))}
+                    </Select>
+                  )}
+
+                  {/* Select Session if not NAAC and not NIRF */}
+                  {!isNaacApproval && !isNirfApproval && (
+                    <Select
+                      size="large"
+                      value={selectedSession || "all"}
+                      onChange={handleSessionChange}
+                      className="approval-filter-select w-full"
+                      suffixIcon={<ChevronDown size={14} className="text-gray-500" />}
+                    >
+                      <Option value="all">All Sessions</Option>
+                      {filterOptions.sessions.map((sess) => (
+                        <Option key={sess} value={sess}>
+                          List {sess}
+                        </Option>
+                      ))}
+                    </Select>
+                  )}
+
+                  {/* Filter By Course */}
                   <Select
                     size="large"
-                    value={selectedNirf}
-                    onChange={setSelectedNirf}
+                    value={selectedCourse}
+                    onChange={setSelectedCourse}
                     className="approval-filter-select w-full"
                     suffixIcon={<ChevronDown size={14} className="text-gray-500" />}
                   >
-                    <Option value="all">All NIRF Ranks</Option>
-                    {filterOptions.nirf.map((rank) => (
-                      <Option key={rank} value={rank}>
-                        Rank {rank}
+                    <Option value="all">Filter By Course</Option>
+                    {filterOptions.courses.map((course) => (
+                      <Option key={course} value={course}>
+                        {course}
                       </Option>
                     ))}
                   </Select>
-                )}
 
-                {/* Select Session if not NAAC and not NIRF */}
-                {!isNaacApproval && !isNirfApproval && (
+                  {/* Filter By State */}
                   <Select
                     size="large"
-                    value={selectedSession || "all"}
-                    onChange={handleSessionChange}
+                    value={selectedState}
+                    onChange={setSelectedState}
                     className="approval-filter-select w-full"
                     suffixIcon={<ChevronDown size={14} className="text-gray-500" />}
                   >
-                    <Option value="all">All Sessions</Option>
-                    {filterOptions.sessions.map((sess) => (
-                      <Option key={sess} value={sess}>
-                        List {sess}
+                    <Option value="all">Filter by State</Option>
+                    {filterOptions.states.map((st) => (
+                      <Option key={st} value={st}>
+                        {st}
                       </Option>
                     ))}
                   </Select>
-                )}
 
-                {/* Filter By Course */}
-                <Select
-                  size="large"
-                  value={selectedCourse}
-                  onChange={setSelectedCourse}
-                  className="approval-filter-select w-full"
-                  suffixIcon={<ChevronDown size={14} className="text-gray-500" />}
-                >
-                  <Option value="all">Filter By Course</Option>
-                  {filterOptions.courses.map((course) => (
-                    <Option key={course} value={course}>
-                      {course}
-                    </Option>
-                  ))}
-                </Select>
-
-                {/* Filter By State */}
-                <Select
-                  size="large"
-                  value={selectedState}
-                  onChange={setSelectedState}
-                  className="approval-filter-select w-full"
-                  suffixIcon={<ChevronDown size={14} className="text-gray-500" />}
-                >
-                  <Option value="all">Filter by State</Option>
-                  {filterOptions.states.map((st) => (
-                    <Option key={st} value={st}>
-                      {st}
-                    </Option>
-                  ))}
-                </Select>
-
-                {/* Filter HEI Type */}
-                <Select
-                  size="large"
-                  value={selectedHeiType}
-                  onChange={setSelectedHeiType}
-                  className="approval-filter-select w-full"
-                  suffixIcon={<ChevronDown size={14} className="text-gray-500" />}
-                >
-                  <Option value="all">Filter HEI Type</Option>
-                  {filterOptions.heiTypes.map((ht) => (
-                    <Option key={ht} value={ht}>
-                      {ht}
-                    </Option>
-                  ))}
-                </Select>
-              </div>
+                  {/* Filter HEI Type */}
+                  <Select
+                    size="large"
+                    value={selectedHeiType}
+                    onChange={setSelectedHeiType}
+                    className="approval-filter-select w-full"
+                    suffixIcon={<ChevronDown size={14} className="text-gray-500" />}
+                  >
+                    <Option value="all">Filter HEI Type</Option>
+                    {filterOptions.heiTypes.map((ht) => (
+                      <Option key={ht} value={ht}>
+                        {ht}
+                      </Option>
+                    ))}
+                  </Select>
+                </div>
+              )}
 
               {/* Reset Filter Button */}
               {hasActiveFilters && (
@@ -860,14 +967,20 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
                 return index % 2 === 1 ? "approval-row-odd" : "approval-row-even";
               }}
               onRow={(record) => ({
-                onClick: () => toggleRow(record._id),
-                className: "cursor-pointer group transition-colors",
+                onClick: () => {
+                  if (!isFakeApproval) toggleRow(record._id);
+                },
+                className: isFakeApproval ? "transition-colors" : "cursor-pointer group transition-colors",
               })}
-              expandable={{
-                showExpandColumn: false,
-                expandedRowRender: renderExpandedCard,
-                expandedRowKeys,
-              }}
+              expandable={
+                isFakeApproval
+                  ? undefined
+                  : {
+                      showExpandColumn: false,
+                      expandedRowRender: renderExpandedCard,
+                      expandedRowKeys,
+                    }
+              }
               locale={{
                 emptyText: (
                   <div className="py-10 px-4 text-center">

@@ -178,9 +178,9 @@ export default function AiToolsAndScholarship({ block, bIdx, counselors = [] }) 
 
                     {/* Title with Centered Short Accent Line */}
                     <div className="w-full flex flex-col items-center justify-center mb-1">
-                      <h3 className="text-xs sm:text-base font-semibold text-[#0F172A] tracking-tight m-0 pt-0.5 leading-tight text-center">
+                      <p className="text-xs sm:text-base font-semibold text-[#0F172A] tracking-tight m-0 pt-0.5 leading-tight text-center">
                         {fullName}
-                      </h3>
+                      </p>
                       <span className={`w-7 sm:w-8 border-b-2 ${underlineClass} mt-1 inline-block`} />
                     </div>
 

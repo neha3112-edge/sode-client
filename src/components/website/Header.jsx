@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 import { Button, Layout, Dropdown, Drawer, Collapse } from "antd";
 import { DownOutlined, MenuOutlined, CloseOutlined, RightOutlined, LeftOutlined } from "@ant-design/icons";
 import { Container } from "@/components/common/Container";
+import { FakeUniversityIcon } from "@/components/common/FakeUniversityIcon";
+import { FAKE_UNIVERSITIES_SLUG } from "@/constants/fakeUniversitiesData";
 
 const { Header: AntHeader } = Layout;
 
@@ -187,6 +189,10 @@ const getAccreditationTitle = (acc) => {
   const slug = (acc.slug || "").toLowerCase();
   const combined = `${name} ${slug}`.toLowerCase();
 
+  // Fake universities must be checked FIRST to avoid false matches on "ugc" or "deb"
+  if (combined.includes("fake")) {
+    return "List of Fake Universities";
+  }
   // Priority check statutory bodies first (to prevent false matches on generic words like online)
   if (combined.includes("naac")) {
     return "NAAC Accredited Universities";
@@ -217,6 +223,7 @@ const getAccreditationTitle = (acc) => {
 const getAccreditationBadge = (acc, title = "") => {
   const slug = (acc?.slug || "").toLowerCase();
   const lower = `${title} ${slug}`.toLowerCase();
+  if (lower.includes("fake")) return "UGC Listed";
   if (lower.includes("naac")) return "NAAC Grade";
   if (lower.includes("nirf")) return "NIRF Top Ranked";
   if (lower.includes("ugc")) return "UGC-DEB Approved";
@@ -235,6 +242,7 @@ const renderAccreditationCard = (acc, idx, onNavigate) => {
   const currentYear = new Date().getFullYear();
   const cardTitle = getAccreditationTitle(acc);
   const badgeText = getAccreditationBadge(acc, cardTitle);
+  const isFakeCard = acc.isFake || cardTitle.toLowerCase().includes("fake") || primarySlug.toLowerCase().includes("fake");
 
   return (
     <div
@@ -258,6 +266,10 @@ const renderAccreditationCard = (acc, idx, onNavigate) => {
                 sizes="40px"
                 className="object-contain object-left"
               />
+            ) : isFakeCard ? (
+              <div className="w-10 h-10 flex items-center justify-start shrink-0">
+                <FakeUniversityIcon size={38} />
+              </div>
             ) : (
               <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -274,12 +286,22 @@ const renderAccreditationCard = (acc, idx, onNavigate) => {
               onClick={() => onNavigate?.()}
               className="block group-hover:text-[#0B57D0] transition-colors"
             >
-              <h4
-                className="text-[13px] font-bold text-slate-900 leading-snug truncate m-0 group-hover:text-[#0B57D0] transition-colors"
-                title={cardTitle}
-              >
-                {cardTitle}
-              </h4>
+              {isFakeCard ? (
+                <h4
+                  className="text-[13px] font-bold leading-tight m-0"
+                  title="List of Fake Universities"
+                >
+                  <span className="block text-[#072C50]">List of Fake</span>
+                  <span className="block text-[#0284c7]">Universities</span>
+                </h4>
+              ) : (
+                <h4
+                  className="text-[13px] font-bold text-slate-900 leading-snug truncate m-0 group-hover:text-[#0B57D0] transition-colors"
+                  title={cardTitle}
+                >
+                  {cardTitle}
+                </h4>
+              )}
             </Link>
 
             {/* Badges Row */}
@@ -519,7 +541,34 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
   };
 
   const handleSelectMobileCategory = (catData) => {
-    setSelectedMobileCategory(catData);
+    let items = catData?.items || [];
+    const isApproval =
+      catData?.type === "accreditations" ||
+      (catData?.title || "").toLowerCase().includes("approval") ||
+      (catData?.title || "").toLowerCase().includes("accredit") ||
+      items.some((it) => it.is_approval);
+
+    if (isApproval) {
+      const hasFake = items.some((it) => (it.slug || it.name || it.title || "").toLowerCase().includes("fake"));
+      if (!hasFake) {
+        items = [
+          ...items,
+          {
+            _id: "ugc-deb-fake-universities-mobile-item",
+            name: "List of Fake Universities",
+            title: "List of Fake Universities",
+            slug: FAKE_UNIVERSITIES_SLUG,
+            is_approval: true,
+            isFake: true,
+          },
+        ];
+      }
+    }
+
+    setSelectedMobileCategory({
+      ...catData,
+      items,
+    });
     resetDrawerScroll();
     setTimeout(resetDrawerScroll, 10);
     setTimeout(resetDrawerScroll, 50);
@@ -1110,7 +1159,30 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                         ? (selectedSubCat.items || [])
                         : (subcats.length > 0 ? (subcats[0]?.items || []) : (currentMegaMenuData.currentGroup?.items || []));
 
-                      const approvals = allItems.filter((it) => it.is_approval);
+                      const rawApprovals = allItems.filter((it) => it.is_approval);
+                      const isApprovalsSubCat =
+                        rawApprovals.length > 0 ||
+                        (selectedSubCat?.category?.name || "").toLowerCase().includes("approval") ||
+                        (selectedSubCat?.category?.slug || "").toLowerCase().includes("approval") ||
+                        (selectedSubCat?.category?.name || "").toLowerCase().includes("accredit");
+
+                      let approvals = [...rawApprovals];
+                      if (isApprovalsSubCat) {
+                        const hasFake = approvals.some(
+                          (it) => (it.slug || it.name || it.title || "").toLowerCase().includes("fake")
+                        );
+                        if (!hasFake) {
+                          approvals.push({
+                            _id: "ugc-deb-fake-universities-header-item",
+                            name: "List of Fake Universities",
+                            title: "List of Fake Universities",
+                            slug: FAKE_UNIVERSITIES_SLUG,
+                            is_approval: true,
+                            isFake: true,
+                          });
+                        }
+                      }
+
                       const dynamicListings = allItems.filter((it) => it.is_dynamic_listing);
                       const regularUniversities = allItems.filter((it) => !it.is_dynamic_listing && !it.is_approval);
                       const hasAnyItems = approvals.length > 0 || dynamicListings.length > 0 || regularUniversities.length > 0;
@@ -1409,9 +1481,28 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                         (s) => (s.category?._id || s.category?.slug) === currentSubId
                       );
 
-                      const displayedItems = selectedSubCat
+                      let displayedItems = selectedSubCat
                         ? (selectedSubCat.items || [])
                         : (currentMegaMenuData.currentGroup?.items || []);
+
+                      if (Array.isArray(displayedItems)) {
+                        const hasFake = displayedItems.some(
+                          (it) => (it.slug || it.name || it.title || "").toLowerCase().includes("fake")
+                        );
+                        if (!hasFake) {
+                          displayedItems = [
+                            ...displayedItems,
+                            {
+                              _id: "ugc-deb-fake-universities-header-acc",
+                              name: "List of Fake Universities",
+                              title: "List of Fake Universities",
+                              slug: FAKE_UNIVERSITIES_SLUG,
+                              is_approval: true,
+                              isFake: true,
+                            },
+                          ];
+                        }
+                      }
 
                       if (displayedItems.length === 0) {
                         return (
@@ -1687,6 +1778,14 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                                   className="object-contain"
                                 />
                               </Link>
+                            ) : item.isFake || cardTitle.toLowerCase().includes("fake") ? (
+                              <Link
+                                href={cardUrl}
+                                onClick={() => closeMobile()}
+                                className="w-8 h-8 sm:w-9 sm:h-9 shrink-0 flex items-center justify-center"
+                              >
+                                <FakeUniversityIcon size={32} />
+                              </Link>
                             ) : (
                               <Link
                                 href={cardUrl}
@@ -1704,9 +1803,16 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                                 onClick={() => closeMobile()}
                                 className="block hover:text-[#0B57D0]"
                               >
-                                <h4 className="text-[11.5px] font-bold text-[#072C50] leading-snug line-clamp-2 m-0">
-                                  {cardTitle}
-                                </h4>
+                                {item.isFake || cardTitle.toLowerCase().includes("fake") ? (
+                                  <h4 className="text-[11.5px] font-bold leading-tight m-0">
+                                    <span className="block text-[#072C50]">List of Fake</span>
+                                    <span className="block text-[#0284c7]">Universities</span>
+                                  </h4>
+                                ) : (
+                                  <h4 className="text-[11.5px] font-bold text-[#072C50] leading-snug line-clamp-2 m-0">
+                                    {cardTitle}
+                                  </h4>
+                                )}
                               </Link>
                             </div>
                           </div>

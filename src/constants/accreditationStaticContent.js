@@ -67,21 +67,11 @@ export const ACCREDITATION_STATIC_CONTENT = {
       "Find Indian universities ranked by QS (Quacquarelli Symonds) and compare their positions in national and global rankings. Check universities based on ranking categories, academic performance, and other available details to find options that match your higher education goals. Before applying, verify the latest QS rankings and university information through official sources.",
   },
 
-  // 7. UGC-Listed Fake Universities
-  "ugc-listed-fake-universities": {
-    title: "UGC-Listed Fake Universities",
-    description:
-      "Find universities listed as fake or unauthorized by the University Grants Commission (UGC) in India. Check official UGC notices to identify institutions that are not legally permitted to award degrees. Before applying for admission, verify your chosen university's recognition status and program approval through the official UGC website.",
-  },
+  // 7. UGC-Listed Fake Universities (Single slug: ugc-deb-fake-universities)
   "ugc-deb-fake-universities": {
     title: "UGC-Listed Fake Universities",
     description:
-      "Find universities listed as fake or unauthorized by the University Grants Commission (UGC) in India. Check official UGC notices to identify institutions that are not legally permitted to award degrees. Before applying for admission, verify your chosen university's recognition status and program approval through the official UGC website.",
-  },
-  "fake-universities-list": {
-    title: "UGC-Listed Fake Universities",
-    description:
-      "Find universities listed as fake or unauthorized by the University Grants Commission (UGC) in India. Check official UGC notices to identify institutions that are not legally permitted to award degrees. Before applying for admission, verify your chosen university's recognition status and program approval through the official UGC website.",
+      "Find universities listed as fake or unauthorized by the University Grants Commission (UGC) in India. Check official UGC notices to identify institutions that are not legally permitted to award degrees. Before applying, verify your chosen university's recognition status and program approval through the official UGC website.",
   },
 };
 
@@ -111,8 +101,8 @@ export function getAccreditationHeroContent(slug = "", approval = null) {
     .toLowerCase();
 
   // 3. Keyword-based matching
-  if (candidateKeys.includes("fake")) {
-    return ACCREDITATION_STATIC_CONTENT["ugc-listed-fake-universities"];
+  if (normSlug === "ugc-deb-fake-universities" || candidateKeys.includes("fake")) {
+    return ACCREDITATION_STATIC_CONTENT["ugc-deb-fake-universities"];
   }
 
   if (candidateKeys.includes("wes")) {
