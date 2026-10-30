@@ -14,7 +14,7 @@ async function getRedirects(backendUrl) {
     const res = await fetch(`${backendUrl}/api/url-redirects/public/all`, {
       headers: { Accept: 'application/json' },
       next: { revalidate: 30 },
-      signal: AbortSignal.timeout(1500),
+      signal: AbortSignal.timeout(5000),
     });
     if (!res.ok) return cachedRedirects || [];
     const data = await res.json();
@@ -66,7 +66,7 @@ export async function proxy(req) {
 
   const backendUrl =
     process.env.NEXT_PUBLIC_DEV_REMOTE === 'remote' || process.env.NODE_ENV === 'production'
-      ? (process.env.NEXT_PUBLIC_REMOTE_BACKEND_SERVER || 'https://new.crm.api.mysode.com')
+      ? (process.env.NEXT_PUBLIC_REMOTE_BACKEND_SERVER || 'https://api.crm.mysode.com')
       : (process.env.NEXT_PUBLIC_LOCAL_BACKEND_SERVER || 'http://localhost:3000');
 
   const redirects = await getRedirects(backendUrl);

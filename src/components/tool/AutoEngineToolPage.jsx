@@ -32,6 +32,8 @@ import {
   Search,
   RotateCcw,
   Info,
+  Globe,
+  FileText,
 } from "lucide-react";
 import { ArrowRightOutlined } from "@ant-design/icons";
 
@@ -53,6 +55,68 @@ const iconMap = {
   UserCheck,
   CheckCircle2,
   XCircle,
+  Globe,
+  FileText,
+};
+
+// Smart fallback icon resolver so different options always get distinct, context-aware icons
+const resolveOptionIcon = (title = "", optIcon = null, idx = 0) => {
+  if (optIcon && iconMap[optIcon]) {
+    return iconMap[optIcon];
+  }
+
+  const t = String(title || "").toLowerCase().trim();
+
+  // 1. Roles / Person types
+  if (t.includes("student")) return GraduationCap;
+  if (t.includes("fresher")) return Sparkles;
+  if (t.includes("working") || t.includes("professional") || t.includes("job") || t.includes("employ")) return Briefcase;
+  if (t.includes("other")) return Layers;
+
+  // 2. Qualifications & Degrees
+  if (t.includes("10th") || t.includes("matric") || t.includes("secondary")) return BookOpen;
+  if (t.includes("12th") || t.includes("inter") || t.includes("senior secondary")) return BookOpen;
+  if (t.includes("diploma")) return FileText;
+  if (t.includes("bachelor") || t.includes("undergrad") || t.includes("graduation") || t.includes("degree")) return GraduationCap;
+  if (t.includes("master") || t.includes("post grad") || t.includes("pg") || t.includes("mba")) return Award;
+  if (t.includes("phd") || t.includes("doctorate") || t.includes("research")) return Award;
+
+  // 3. Streams / Courses
+  if (t.includes("engineer") || t.includes("b.tech") || t.includes("tech") || t.includes("computer") || t.includes("bca") || t.includes("mca") || t.includes("it")) return Laptop;
+  if (t.includes("manage") || t.includes("business") || t.includes("bba") || t.includes("commerce") || t.includes("b.com") || t.includes("m.com") || t.includes("finance")) return Briefcase;
+  if (t.includes("art") || t.includes("humanit") || t.includes("ba") || t.includes("ma") || t.includes("journalism")) return BookOpen;
+  if (t.includes("science") || t.includes("b.sc") || t.includes("m.sc")) return Building2;
+  if (t.includes("law") || t.includes("llb") || t.includes("legal")) return ShieldCheck;
+  if (t.includes("medical") || t.includes("health") || t.includes("nursing") || t.includes("pharma")) return UserCheck;
+  if (t.includes("design") || t.includes("animat") || t.includes("vfx")) return Code2;
+
+  // 4. Time Dedication / Schedule
+  if (t.includes("hour") || t.includes("week") || t.includes("month") || t.includes("time") || t.includes("dedicate") || t.includes("schedule") || t.includes("duration")) return Clock;
+
+  // 5. Budgets / Fees
+  if (t.includes("lakh") || t.includes("inr") || t.includes("₹") || t.includes("fee") || t.includes("budget") || t.includes("cost") || /\b\d+k\b/.test(t) || /\b\d+\s*lakh/.test(t)) return IndianRupee;
+
+  // 5. Mode / University type
+  if (t.includes("online") || t.includes("remote")) return Laptop;
+  if (t.includes("distance") || t.includes("open")) return Globe;
+  if (t.includes("regular") || t.includes("campus") || t.includes("offline")) return School;
+  if (t.includes("ugc") || t.includes("naac") || t.includes("govt") || t.includes("university")) return Building2;
+
+  // 6. Distinct fallback pool by index so adjacent cards never share the same icon
+  const fallbackIcons = [
+    GraduationCap,
+    Sparkles,
+    Briefcase,
+    Building2,
+    BookOpen,
+    Award,
+    Laptop,
+    Layers,
+    UserCheck,
+    Tag,
+  ];
+
+  return fallbackIcons[idx % fallbackIcons.length] || School;
 };
 
 // Colors to cycle through for card sparkles & underlines matching ToolsView
@@ -351,8 +415,8 @@ export default function AutoEngineToolPage({
       <div className="w-full bg-[#072C50] h-36 sm:h-44 md:h-52" />
 
       {/* ─── 2. FLOATING WHITE CONTAINER CARD ─── */}
-      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 md:px-8 -mt-20 sm:-mt-28 md:-mt-32 pb-16 md:pb-24">
-        <article className="w-full bg-white rounded-2xl sm:rounded-3xl shadow-xl border border-slate-100 p-6 sm:p-10 md:p-12 text-[#2D3748]">
+      <div className="relative z-10 max-w-6xl mx-auto px-2.5 sm:px-6 md:px-8 -mt-20 sm:-mt-28 md:-mt-32 pb-16 md:pb-24">
+        <article className="w-full bg-white rounded-2xl sm:rounded-3xl shadow-xl border border-slate-100 p-3 sm:p-8 md:p-12 text-[#2D3748]">
           {/* Centered Pill Badge */}
           <div className="flex justify-center mb-3">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FEF3C7] text-[#92400E] text-xs font-bold border border-amber-200">
@@ -628,26 +692,12 @@ export default function AutoEngineToolPage({
             /* ===================================================== */
             <div className="space-y-8">
               {/* Question Heading */}
-              <div className="text-center space-y-2 max-w-2xl mx-auto">
-                <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-blue-50 text-[#072C50] text-xs font-bold border border-blue-100 uppercase tracking-wide">
-                  <span>{currentNode?.data?.badge || "YOUR PROFILE"}</span>
-                </div>
-
+              <div className="text-center max-w-3xl mx-auto mb-6">
                 <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#072C50] tracking-tight leading-tight m-0">
                   {currentNode?.data?.question ||
                     currentNode?.data?.title ||
                     "Choose Your Preference"}
                 </h2>
-
-                {currentNode?.data?.subtitle ? (
-                  <p className="text-xs sm:text-sm text-slate-500 m-0">
-                    {currentNode?.data?.subtitle}
-                  </p>
-                ) : (
-                  <p className="text-xs sm:text-sm text-slate-400 m-0">
-                    Select an option below to find universities aligned with your path.
-                  </p>
-                )}
               </div>
 
               {/* Search filter for large option lists */}
@@ -664,14 +714,12 @@ export default function AutoEngineToolPage({
                 </div>
               )}
 
-              {/* ─── GRID OF OPTION CARDS (EQUAL HEIGHT & ALIGNED LIKE TOOLSVIEW) ─── */}
+              {/* ─── GRID OF OPTION CARDS (MATCHING CATEGORY ON MOBILE & DESKTOP) ─── */}
               <div
-                className={`grid gap-4 sm:gap-5 items-stretch ${
+                className={`grid grid-cols-4 gap-1.5 sm:gap-2.5 w-full mx-auto items-stretch ${
                   filteredOptions.length <= 4
-                    ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
-                    : filteredOptions.length <= 6
-                    ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
-                    : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+                    ? "sm:grid-cols-4 max-w-2xl mx-auto"
+                    : "sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6"
                 }`}
               >
                 {filteredOptions.map((option, oIdx) => {
@@ -679,10 +727,9 @@ export default function AutoEngineToolPage({
                     typeof option === "object"
                       ? option.title || option.name || option.text || option.label || ""
                       : String(option);
-                  const optSub =
-                    typeof option === "object" ? option.subtitle || option.desc : null;
                   const optIconName = typeof option === "object" ? option.icon : null;
-                  const IconComp = iconMap[optIconName] || iconMap["School"];
+                  const IconComp = resolveOptionIcon(optTitle, optIconName, oIdx);
+                  const optLogo = typeof option === "object" ? getMediaUrl(option.logo || option.image) : null;
 
                   const palette = CARD_PALETTES[oIdx % CARD_PALETTES.length];
 
@@ -701,49 +748,53 @@ export default function AutoEngineToolPage({
                           handleSelectOption(option, storeVar);
                         }
                       }}
-                      className={`relative bg-white rounded-2xl p-5 sm:p-6 shadow-xs hover:shadow-xl border flex flex-col items-center text-center justify-between transition-all duration-300 hover:-translate-y-1 group h-full cursor-pointer ${
+                      className={`relative w-full aspect-square bg-white rounded-xl sm:rounded-2xl p-1.5 min-[360px]:p-2 sm:p-3 border flex flex-col items-center justify-center text-center cursor-pointer select-none transition-all duration-200 hover:-translate-y-0.5 group min-w-0 ${
                         isSelected
-                          ? "border-[#0B3B7E] ring-2 ring-[#0B3B7E]/20 bg-blue-50/20"
-                          : "border-slate-100 hover:border-slate-200"
+                          ? "border-blue-600 ring-2 ring-blue-500/20 bg-blue-50/20 shadow-xs"
+                          : "border-gray-200 hover:border-blue-500 hover:bg-gray-50/50"
                       }`}
                     >
                       {/* Top Right Sparkle */}
                       <span
-                        className={`absolute top-3.5 right-3.5 ${palette.sparkle} font-black text-xs group-hover:rotate-12 transition-transform`}
+                        className={`absolute top-1.5 right-1.5 sm:top-2 sm:right-2 ${palette.sparkle} font-black text-[9px] sm:text-xs group-hover:rotate-12 transition-transform`}
                       >
                         ✦
                       </span>
 
-                      <div className="flex flex-col items-center w-full">
-                        {/* Fixed Height Icon Container */}
-                        <div className="w-14 h-14 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center group-hover:scale-110 transition-transform mb-3">
-                          <IconComp className={`w-7 h-7 ${palette.text}`} />
+                      <div className="flex flex-col items-center justify-center w-full">
+                        {/* Icon Container */}
+                        <div className="mb-1 sm:mb-1.5 group-hover:scale-110 transition-transform flex items-center justify-center shrink-0">
+                          {optLogo ? (
+                            <div className="w-5 h-5 min-[360px]:w-6 min-[360px]:h-6 sm:w-8 sm:h-8 relative">
+                              <Image
+                                src={optLogo}
+                                alt={optTitle}
+                                fill
+                                sizes="32px"
+                                className="object-contain"
+                              />
+                            </div>
+                          ) : (
+                            <IconComp className={`w-5 h-5 min-[360px]:w-6 min-[360px]:h-6 sm:w-8 sm:h-8 ${palette.text}`} />
+                          )}
                         </div>
 
-                        {/* Fixed Height Title Container */}
-                        <div className="w-full min-h-8 flex items-center justify-center mb-1">
-                          <h3 className="text-sm sm:text-base font-bold text-[#0F172A] tracking-tight m-0 leading-tight w-full text-center">
+                        {/* Title */}
+                        <div className="flex items-center justify-center w-full min-w-0 px-0.5 min-h-[22px] sm:min-h-[26px]">
+                          <h3 className="text-[10px] min-[360px]:text-[11px] sm:text-[13px] font-bold text-[#0F172A] tracking-tight m-0 leading-tight w-full text-center line-clamp-2">
                             <span
-                              className={`border-b-2 ${palette.underline} pb-0.5 inline-block group-hover:text-[#0B3B7E] transition-colors`}
+                              className={`border-b sm:border-b-2 ${palette.underline} pb-0.5 inline-block group-hover:text-[#0B3B7E] transition-colors`}
                             >
                               {optTitle}
                             </span>
                           </h3>
                         </div>
-
-                        {/* Fixed Height Description Container */}
-                        <div className="w-full min-h-12 flex items-center justify-center">
-                          <p className="text-[#64748B] text-xs leading-relaxed font-normal m-0 line-clamp-2 text-center">
-                            {optSub ||
-                              "Tailored university options and admission criteria"}
-                          </p>
-                        </div>
                       </div>
 
-                      {/* Pinned Bottom Button */}
-                      <div className="w-full mt-auto pt-4">
+                      {/* Pinned Bottom Button - Desktop / Tablet (sm+) */}
+                      <div className="w-full mt-2 hidden sm:block">
                         <div
-                          className={`w-full py-2.5 px-4 rounded-full text-white font-bold text-xs shadow-none transition-all flex items-center justify-center gap-1.5 cursor-pointer truncate ${
+                          className={`w-full py-1.5 sm:py-2 px-2 sm:px-3 rounded-full text-white font-bold text-[10px] sm:text-[11px] shadow-none transition-all flex items-center justify-center gap-1 cursor-pointer truncate ${
                             isSelected
                               ? "bg-emerald-600 hover:bg-emerald-700"
                               : "bg-[#0B3B7E] hover:bg-[#072859]"
@@ -752,7 +803,7 @@ export default function AutoEngineToolPage({
                           <span className="truncate">
                             {isSelected ? "Selected ✓" : optTitle}
                           </span>
-                          <span className="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center text-[10px] shrink-0 group-hover:translate-x-0.5 transition-transform">
+                          <span className="w-3.5 h-3.5 rounded-full bg-white/20 flex items-center justify-center text-[9px] shrink-0 group-hover:translate-x-0.5 transition-transform">
                             →
                           </span>
                         </div>

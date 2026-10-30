@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { resolveMediaMapping } from "@/lib/utils";
 
 const MINIO_PUBLIC_URL = (
-  process.env.NEXT_PUBLIC_MINIO_URL || "https://new.crm.api.mysode.com/minio"
+  process.env.NEXT_PUBLIC_MINIO_URL || "https://api.crm.mysode.com/minio"
 ).replace(/\/+$/, "");
 
 export async function GET(request, context) {

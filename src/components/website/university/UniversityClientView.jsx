@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, notFound } from "next/navigation";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
 import { useCompare } from "@/hooks/useCompare";
 import { useFormModal } from "@/hooks/useFormModal";
@@ -36,21 +36,43 @@ const getSafeText = (val, fallback = "") => {
 };
 
 export function UniversityClientView({ initialData, slug }) {
+  const data = initialData || null;
+  const uni =
+    (data && typeof data.result === "object" ? data.result : null) ||
+    (data && typeof data.universityId === "object" ? data.universityId : null) ||
+    data ||
+    null;
+
+  if (!uni || (!uni.name && !uni.tagline && !uni._id)) {
+    notFound();
+  }
+
   const router = useRouter();
   const { openFormModal } = useFormModal();
   const { addToCompare, compareList, isInCompare, setIsCompareDrawerOpen } = useCompare();
 
   const [activeCourseFilter, setActiveCourseFilter] = useState("ALL");
   const [visibleCoursesCount, setVisibleCoursesCount] = useState(5);
+  const [isMobileOrTablet, setIsMobileOrTablet] = useState(false);
 
-  const data = initialData || {};
-  const uni =
-    (data && typeof data.result === "object" ? data.result : null) ||
-    (data && typeof data.universityId === "object" ? data.universityId : null) ||
-    data ||
-    {};
+  useEffect(() => {
+    const handleResize = () => {
+      const isMob = typeof window !== "undefined" && window.innerWidth < 1024;
+      setIsMobileOrTablet(isMob);
+      setVisibleCoursesCount((prev) => {
+        if (prev === 5 || prev === 6) {
+          return isMob ? 6 : 5;
+        }
+        return prev;
+      });
+    };
 
-  const uniName = uni.name || data.name || data.tagline || "University";
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const uniName = uni.name || data?.name || data?.tagline || "University";
 
   useBreadcrumb(
     {
@@ -136,8 +158,30 @@ export function UniversityClientView({ initialData, slug }) {
   }, [uni.accreditations]);
 
   const approvalsSummary = useMemo(() => {
-    const found = accreditationsList.find((a) => /ugc/i.test(a.title));
-    return found ? (found.title.includes("DEB") ? found.title : `${found.title}-DEB`) : "UGC-DEB";
+    if (!accreditationsList || accreditationsList.length === 0) return "";
+
+    const getName = (a) => (typeof a === "string" ? a : (a?.title || a?.name || a?.code || "")).trim();
+
+    // 1. UGC / UGC-DEB
+    const ugcItem = accreditationsList.find((a) => /ugc/i.test(getName(a)));
+    if (ugcItem) {
+      const name = getName(ugcItem);
+      return name.toUpperCase().includes("DEB") ? name : `${name}-DEB`;
+    }
+
+    // 2. AICTE
+    const aicteItem = accreditationsList.find((a) => /aicte/i.test(getName(a)));
+    if (aicteItem) {
+      return getName(aicteItem);
+    }
+
+    // 3. Any other accreditation (NIRF, NAAC, etc.)
+    const otherItem = accreditationsList.find((a) => Boolean(getName(a)));
+    if (otherItem) {
+      return getName(otherItem);
+    }
+
+    return "";
   }, [accreditationsList]);
 
   const coursesList = useMemo(() => {
@@ -145,8 +189,8 @@ export function UniversityClientView({ initialData, slug }) {
       return uni.courses.map((c, idx) => ({
         ...c,
         _id: c._id || `c-${idx}`,
-        title: c.title || c.name || "",
-        name: c.name || c.title || "",
+        title: c.codeName || c.shortName || c.title || c.name || "",
+        name: c.codeName || c.shortName || c.name || c.title || "",
         slug: c.slug || `${slug || uni.slug}/${(c.title || c.name || "").toLowerCase().replace(/\s+/g, "-")}`,
         logo: c.logo || null,
         fees: c.fees || "",
@@ -166,7 +210,7 @@ export function UniversityClientView({ initialData, slug }) {
     const seen = new Set();
     const result = [];
     for (const c of coursesList) {
-      const rawShortName = (c.rawName || "").trim();
+      const rawShortName = (c.codeName || c.shortName || c.rawName || "").trim();
       const cleanShort = (rawShortName || c.title || c.name || "")
         .replace(/^(?:online|distance|odl)\s+/i, "")
         .trim();
@@ -329,6 +373,7 @@ export function UniversityClientView({ initialData, slug }) {
       {/* Hero Header Section */}
       <UniversityHero
         uniName={uniName}
+        slug={slug || uni?.slug || data?.slug}
         heroBannerUrl={heroBannerUrl}
         mobileHeroBannerUrl={mobileHeroBannerUrl}
         logoUrl={logoUrl}
@@ -337,11 +382,11 @@ export function UniversityClientView({ initialData, slug }) {
         coursePills={coursePills}
         openFormModal={handleOpenUniversityForm}
         handleUniversityCompare={handleUniversityCompare}
-        isInCompare={isInCompare(uni._id || data._id || slug)}
+        isInCompare={Boolean(isInCompare(uni) || isInCompare(slug) || isInCompare(uni._id) || isInCompare(data?._id))}
         locationText={locationText}
         establishedText={establishedText}
         approvalsSummary={approvalsSummary}
-        admissionDeadline={uni.admission_deadline}
+        admissionDeadline={uni.admission_deadline || uni.admissionDeadline}
         admissionStatus={uni.admission_status}
       />
 
@@ -386,6 +431,7 @@ export function UniversityClientView({ initialData, slug }) {
           logoUrl={logoUrl}
           heroBannerUrl={heroBannerUrl}
           openFormModal={handleOpenUniversityForm}
+          isMobileOrTablet={isMobileOrTablet}
         />
 
         {/* Why Choose Section */}
@@ -412,6 +458,7 @@ export function UniversityClientView({ initialData, slug }) {
         {/* Top Peer Universities Section */}
         <UniversityPeerUniversities
           topUniversities={topPeerUniversities}
+          title={uni.peer_universities_title || uni.top_universities_title || uni.top_ugc_deb_universities_title}
           openFormModal={handleOpenUniversityForm}
         />
 

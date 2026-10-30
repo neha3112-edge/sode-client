@@ -349,10 +349,12 @@ export default function AutoEngineToolModal() {
           </div>
 
           <button
+            type="button"
             onClick={closeTool}
-            className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/10 hover:bg-white/25 flex items-center justify-center text-slate-300 hover:text-white transition-colors cursor-pointer shrink-0 aspect-square"
+            className="w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer border-none shadow-xs text-white bg-white/10 hover:bg-white/25 shrink-0"
+            aria-label="Close"
           >
-            <X size={18} className="sm:w-5 sm:h-5" />
+            <X size={18} className="stroke-[2.5]" />
           </button>
 
           {/* Progress Bar under header */}

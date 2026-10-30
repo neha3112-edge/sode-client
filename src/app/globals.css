@@ -50,6 +50,25 @@ td,
   font-family: var(--font-roboto), Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
+/* Prevent virtual keyboard from popping up on mobile devices when tapping Select */
+.ant-select input,
+.ant-select-input,
+.ant-select-selection-search-input {
+  caret-color: transparent !important;
+}
+
+@media (max-width: 1024px) {
+  .ant-select input,
+  .ant-select-input,
+  .ant-select-selection-search-input,
+  .no-mobile-keyboard input {
+    pointer-events: none !important;
+    caret-color: transparent !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+  }
+}
+
 .font-poppins,
 .font-poppins *,
 .blog-poppins-layout,
@@ -284,6 +303,10 @@ body {
   max-height: 85vh !important;
   border-bottom-left-radius: 20px !important;
   border-bottom-right-radius: 20px !important;
+}
+
+.mobile-nav-drawer .ant-drawer-body {
+  padding: 0 !important;
 }
 
 /* =========================================================
@@ -594,16 +617,71 @@ a.auto-rendered-link:hover {
   z-index: 50 !important;
 }
 
-/* Hide Next.js dev overlay indicator badge covering bottom-left mobile buttons */
-nextjs-portal,
-[data-nextjs-dev-tools-button],
-[data-nextjs-toast],
-div[data-nextjs-dev-tools-button],
-button[data-nextjs-dev-tools-button],
-#nextjs-dev-tools,
-div:has(> #nextjs-dev-tools) {
-  display: none !important;
-  opacity: 0 !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
+  /* Hide Next.js dev overlay indicator badge covering bottom-left mobile buttons */
+  nextjs-portal,
+  [data-nextjs-dev-tools-button],
+  [data-nextjs-toast],
+  div[data-nextjs-dev-tools-button],
+  button[data-nextjs-dev-tools-button],
+  #nextjs-dev-tools,
+  div:has(> #nextjs-dev-tools) {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+
+  /* =========================================================
+     UNIVERSAL MODAL CLOSE BUTTON UI (Matching ModalOTP Reference)
+     High contrast, circular, backdrop-blurred over banners on mobile,
+     clean soft slate circle on desktop.
+  ========================================================= */
+  .ant-modal .ant-modal-close,
+  .ant-modal-close {
+    top: 10px !important;
+    right: 10px !important;
+    z-index: 50 !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 9999px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    background-color: rgba(0, 0, 0, 0.55) !important;
+    color: #ffffff !important;
+    backdrop-filter: blur(4px) !important;
+    -webkit-backdrop-filter: blur(4px) !important;
+  }
+
+  .ant-modal .ant-modal-close:hover,
+  .ant-modal-close:hover {
+    background-color: rgba(0, 0, 0, 0.75) !important;
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.45) !important;
+    transform: scale(1.05) !important;
+  }
+
+  @media (min-width: 768px) {
+    .ant-modal .ant-modal-close,
+    .ant-modal-close {
+      top: 14px !important;
+      right: 14px !important;
+      background-color: #f1f5f9 !important;
+      color: #475569 !important;
+      border: 1px solid #e2e8f0 !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06) !important;
+    }
+
+    .ant-modal .ant-modal-close:hover,
+    .ant-modal-close:hover {
+      background-color: #e2e8f0 !important;
+      color: #0f172a !important;
+      border-color: #cbd5e1 !important;
+    }
+  }
 }

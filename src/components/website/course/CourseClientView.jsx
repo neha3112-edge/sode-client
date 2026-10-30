@@ -1,13 +1,85 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, notFound } from "next/navigation";
 import { useFormModal } from "@/hooks/useFormModal";
 import { useCompare } from "@/hooks/useCompare";
 import { formatAdmissionDeadline } from "@/lib/utils";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
+import { openWhatsAppBrochure } from "@/lib/whatsappBrochure";
 
-const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
+const getMediaUrl = (obj) => {
+  if (!obj) return null;
+  let raw = null;
+  if (typeof obj === "string") {
+    raw = obj;
+  } else if (typeof obj === "object") {
+    raw = obj.url || obj.path || obj.src || (obj.fileName && typeof obj.fileName === "string" ? obj.fileName : null);
+  }
+  if (!raw || typeof raw !== "string") return null;
+  const trimmed = raw.trim();
+  if (!trimmed || trimmed === "[object Object]") return null;
+  if (/^[0-9a-fA-F]{24}$/.test(trimmed)) return null;
+
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+    return trimmed;
+  }
+  if (trimmed.startsWith("//")) {
+    return `https:${trimmed}`;
+  }
+  return trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+};
+
+const extractFeeText = (val) => {
+  if (!val) return "";
+  if (typeof val === "string") return val;
+  if (typeof val === "number") return `₹ ${Number(val).toLocaleString("en-IN")}`;
+  if (typeof val === "object") {
+    const defaultPlan = val.defaultPlan || (val.ledger?.semester ? "semester" : (val.ledger?.yearly ? "yearly" : "fullfees"));
+
+    if (defaultPlan === "fullfees" || (!val.ledger?.semester && !val.ledger?.yearly)) {
+      const full = val.ledger?.fullfees;
+      if (full?.formattedBasePayable) return String(full.formattedBasePayable);
+      if (full?.formattedPayable) return String(full.formattedPayable);
+      if (val.formattedBasePayable) return String(val.formattedBasePayable);
+      if (val.formattedNetPayable) return String(val.formattedNetPayable);
+      if (val.formattedActualFees) return String(val.formattedActualFees);
+      if (val.basePayable) return `₹ ${Number(val.basePayable).toLocaleString("en-IN")}`;
+      if (val.netPayable) return `₹ ${Number(val.netPayable).toLocaleString("en-IN")}`;
+      if (val.actualFees) return `₹ ${Number(val.actualFees).toLocaleString("en-IN")}`;
+      if (val.amount) return `₹ ${Number(val.amount).toLocaleString("en-IN")}`;
+      if (val.name) return String(val.name);
+    }
+
+    if (defaultPlan === "yearly" && val.ledger?.yearly) {
+      const yr = val.ledger.yearly;
+      if (yr.formattedBasePayable) return String(yr.formattedBasePayable);
+      if (yr.formattedPayable) return String(yr.formattedPayable);
+    }
+
+    if (defaultPlan === "semester" && val.ledger?.semester) {
+      const sem = val.ledger.semester;
+      if (sem.formattedBasePayable) return String(sem.formattedBasePayable);
+      if (sem.formattedPayable) return String(sem.formattedPayable);
+      if (val.formattedSemesterFees) return String(val.formattedSemesterFees);
+      if (val.semesterFees) return `₹ ${Number(val.semesterFees).toLocaleString("en-IN")} / Semester`;
+      if (val.formattedPerSemesterPayable) return String(val.formattedPerSemesterPayable);
+      if (val.perSemesterPayable) return `₹ ${Number(val.perSemesterPayable).toLocaleString("en-IN")} / Semester`;
+    }
+
+    if (val.ledger?.semester?.formattedBasePayable) return String(val.ledger.semester.formattedBasePayable);
+    if (val.formattedSemesterFees && !val.formattedSemesterFees.includes("NaN")) return String(val.formattedSemesterFees);
+    if (val.formattedBasePayable) return String(val.formattedBasePayable);
+    if (val.formattedNetPayable) return String(val.formattedNetPayable);
+    if (val.formattedActualFees) return String(val.formattedActualFees);
+    if (val.basePayable) return `₹ ${Number(val.basePayable).toLocaleString("en-IN")}`;
+    if (val.netPayable) return `₹ ${Number(val.netPayable).toLocaleString("en-IN")}`;
+    if (val.actualFees) return `₹ ${Number(val.actualFees).toLocaleString("en-IN")}`;
+    if (val.amount) return `₹ ${Number(val.amount).toLocaleString("en-IN")}`;
+    if (val.name) return String(val.name);
+  }
+  return "";
+};
 import CourseHero from "./CourseHero";
 import CourseQuickFacts from "./CourseQuickFacts";
 import CourseAbout from "./CourseAbout";
@@ -26,11 +98,33 @@ export function CourseClientView({
   initialCourses = [],
   slug = "",
 }) {
+  if (!initialData || (!initialData.name && !initialData.title && !initialData._id)) {
+    notFound();
+  }
+
   const router = useRouter();
   const { openFormModal } = useFormModal();
   const { toggleCompare, addToCompare, compareList, isInCompare, setIsCompareDrawerOpen } = useCompare();
-  const [selectedPlanTab, setSelectedPlanTab] = useState("semester");
   const courseData = initialData || {};
+
+  const paymentTypeName = (courseData?.paymentType?.name || courseData?.payment_type?.name || "").toLowerCase();
+  const isYearlyPayment = paymentTypeName.includes("year") || paymentTypeName.includes("annual");
+  const isSemesterPayment = paymentTypeName.includes("sem");
+  const isFullfeesPayment = paymentTypeName.includes("full") || paymentTypeName.includes("one") || paymentTypeName.includes("lump");
+
+  const initialPlanTab = useMemo(() => {
+    if (courseData?.ledger?.semester) return "semester";
+    if (courseData?.ledger?.yearly) return "yearly";
+    if (courseData?.ledger?.fullfees) return "fullfees";
+    if (courseData?.defaultPlan) return courseData.defaultPlan;
+    return "fullfees";
+  }, [courseData]);
+
+  const [selectedPlanTab, setSelectedPlanTab] = useState(initialPlanTab);
+
+  useEffect(() => {
+    setSelectedPlanTab(initialPlanTab);
+  }, [initialPlanTab]);
 
   const activeLedgerData = useMemo(() => {
     const rawLedger = courseData?.ledger || courseData?.feesLedger?.ledger;
@@ -53,6 +147,8 @@ export function CourseClientView({
     );
 
     const availableSummary =
+      (isYearlyPayment && yearEmi) ||
+      (isSemesterPayment && semEmi) ||
       (fullEmi?.available ? fullEmi : null) ||
       (yearEmi?.available ? yearEmi : null) ||
       (semEmi?.available ? semEmi : null) ||
@@ -72,12 +168,16 @@ export function CourseClientView({
       fullfees: full ? { ...full, emi: fullEmi } : null,
       yearly: year ? { ...year, emi: yearEmi } : null,
       semester: sem ? { ...sem, emi: semEmi } : null,
+      paymentTypeName: courseData?.paymentType?.name || promoData?.paymentTypeName || "",
+      durationMonths: Number(courseData?.durationMonths || 0),
+      totalSemesters: Number(courseData?.totalSemesters || 0),
+      totalYears: Number(courseData?.totalYears || 0),
       breakdown,
       formattedActualFees: promoData?.formattedActualFees || full?.formattedGross || null,
       emi: {
         fullfees: fullEmi,
-        yearly: yearEmi,
-        semester: semEmi,
+        yearly: year ? yearEmi : null,
+        semester: sem ? semEmi : null,
         summary: availableSummary,
         hasSpecificPaymentTypes,
       },
@@ -85,7 +185,7 @@ export function CourseClientView({
       coupon: promoData?.coupon || null,
       appliedPromoCode: promoData?.appliedPromoCode || null,
     };
-  }, [courseData]);
+  }, [courseData, isYearlyPayment, isSemesterPayment, isFullfeesPayment]);
 
   const rawCourses = useMemo(() => {
     if (Array.isArray(courseData?.topUniversities) && courseData.topUniversities.length > 0) {
@@ -159,15 +259,30 @@ export function CourseClientView({
   }, [courseData]);
 
   const approvalsSummary = useMemo(() => {
-    const found = approvalsList.find((a) => {
-      const name = typeof a === "string" ? a : (a.name || a.code || a.title || "");
-      return /ugc/i.test(name);
-    });
-    if (found) {
-      const name = typeof found === "string" ? found : (found.name || found.code || found.title || "");
-      return name.includes("DEB") ? name : `${name}-DEB`;
+    if (!approvalsList || approvalsList.length === 0) return "";
+
+    const getName = (a) => (typeof a === "string" ? a : (a?.name || a?.code || a?.title || "")).trim();
+
+    // 1. UGC / UGC-DEB
+    const ugcItem = approvalsList.find((a) => /ugc/i.test(getName(a)));
+    if (ugcItem) {
+      const name = getName(ugcItem);
+      return name.toUpperCase().includes("DEB") ? name : `${name}-DEB`;
     }
-    return "UGC-DEB";
+
+    // 2. AICTE
+    const aicteItem = approvalsList.find((a) => /aicte/i.test(getName(a)));
+    if (aicteItem) {
+      return getName(aicteItem);
+    }
+
+    // 3. Any other approval/accreditation (NIRF, NAAC, etc.)
+    const otherItem = approvalsList.find((a) => Boolean(getName(a)));
+    if (otherItem) {
+      return getName(otherItem);
+    }
+
+    return "";
   }, [approvalsList]);
 
   const highlightsList = useMemo(() => {
@@ -240,10 +355,11 @@ export function CourseClientView({
   const curriculumList = useMemo(() => {
     if (Array.isArray(courseData?.curriculum) && courseData.curriculum.length > 0) {
       return courseData.curriculum
-        .filter((c) => c && (c.semesterName || (Array.isArray(c.subjects) && c.subjects.length > 0)))
+        .filter((c) => c && (c.semesterName || (Array.isArray(c.subjects) && c.subjects.length > 0) || (Array.isArray(c.electives) && c.electives.length > 0)))
         .map((c, idx) => ({
           semester: c.semesterName || `Semester ${idx + 1}`,
           subjects: Array.isArray(c.subjects) ? c.subjects : [],
+          electives: Array.isArray(c.electives) ? c.electives : [],
         }));
     }
     if (Array.isArray(courseData?.syllabus) && courseData.syllabus.length > 0) {
@@ -252,6 +368,7 @@ export function CourseClientView({
         .map((s, idx) => ({
           semester: s.semester || `Semester ${idx + 1}`,
           subjects: Array.isArray(s.subjects) ? s.subjects : [],
+          electives: [],
         }));
     }
     return [];
@@ -322,24 +439,7 @@ export function CourseClientView({
         durationText = `${item.durationMonths} Months`;
       }
 
-      let feeText = null;
-      if (fees?.semesterFees) {
-        feeText = `₹ ${Number(fees.semesterFees).toLocaleString("en-IN")} / Semester`;
-      } else if (fees?.formattedSemesterFees) {
-        feeText = fees.formattedSemesterFees;
-      } else if (fees?.perSemesterPayable) {
-        feeText = `₹ ${Number(fees.perSemesterPayable).toLocaleString("en-IN")} / Semester`;
-      } else if (fees?.amount) {
-        feeText = `₹ ${Number(fees.amount).toLocaleString("en-IN")} INR`;
-      } else if (fees?.name) {
-        feeText = fees.name.includes("₹") ? `${fees.name} INR` : `₹ ${fees.name} INR`;
-      } else if (item.fullFee) {
-        feeText = item.fullFee.includes("₹") ? `${item.fullFee} INR` : `₹ ${item.fullFee} INR`;
-      } else if (item.amount) {
-        feeText = `₹ ${Number(item.amount).toLocaleString("en-IN")} INR`;
-      } else if (item.fee) {
-        feeText = `${item.fee} INR`;
-      }
+      let feeText = extractFeeText(fees) || (item.fullFee ? (item.fullFee.includes("₹") ? `${item.fullFee} INR` : `₹ ${item.fullFee} INR`) : (item.amount ? `₹ ${Number(item.amount).toLocaleString("en-IN")} INR` : (item.fee ? `${item.fee} INR` : null)));
 
       const slugify = (text) =>
         (text || "")
@@ -355,23 +455,25 @@ export function CourseClientView({
       const courseSlug = item.courseSlug || course?.slug || slugify(course?.shortName || course?.name || courseName);
       const subcourseSlug = item.subCourseSlug || subcourse?.slug || (subcourse?.name ? slugify(subcourse.name) : "");
 
-      let courseDetailHref = "/courses";
-      if (item.coursePageSlug && item.coursePageSlug.includes("/")) {
-        courseDetailHref = `/universities/${item.coursePageSlug}`;
-      } else if (item.slug && item.slug.includes("/")) {
-        courseDetailHref = `/universities/${item.slug}`;
-      } else if (uniSlug && courseSlug && subcourseSlug) {
-        courseDetailHref = `/universities/${encodeURIComponent(uniSlug)}/${encodeURIComponent(courseSlug)}/${encodeURIComponent(subcourseSlug)}`;
-      } else if (uniSlug && courseSlug) {
-        courseDetailHref = `/universities/${encodeURIComponent(uniSlug)}/${encodeURIComponent(courseSlug)}`;
-      } else if (courseSlug && subcourseSlug) {
-        courseDetailHref = `/courses/${encodeURIComponent(courseSlug)}/${encodeURIComponent(subcourseSlug)}`;
-      } else if (courseSlug) {
-        courseDetailHref = `/courses/${encodeURIComponent(courseSlug)}`;
-      } else if (item.slug) {
-        courseDetailHref = item.slug.includes("/")
-          ? `/universities/${item.slug}`
-          : `/courses/${encodeURIComponent(item.slug)}`;
+      let courseDetailHref = item.courseDetailHref || "/courses";
+      if (!item.courseDetailHref) {
+        if (item.coursePageSlug && item.coursePageSlug.includes("/")) {
+          courseDetailHref = `/universities/${item.coursePageSlug}`;
+        } else if (item.slug && item.slug.includes("/")) {
+          courseDetailHref = `/universities/${item.slug}`;
+        } else if (uniSlug && courseSlug && subcourseSlug) {
+          courseDetailHref = `/universities/${encodeURIComponent(uniSlug)}/${encodeURIComponent(courseSlug)}/${encodeURIComponent(subcourseSlug)}`;
+        } else if (uniSlug && courseSlug) {
+          courseDetailHref = `/universities/${encodeURIComponent(uniSlug)}/${encodeURIComponent(courseSlug)}`;
+        } else if (courseSlug && subcourseSlug) {
+          courseDetailHref = `/courses/${encodeURIComponent(courseSlug)}/${encodeURIComponent(subcourseSlug)}`;
+        } else if (courseSlug) {
+          courseDetailHref = `/courses/${encodeURIComponent(courseSlug)}`;
+        } else if (item.slug) {
+          courseDetailHref = item.slug.includes("/")
+            ? `/universities/${item.slug}`
+            : `/courses/${encodeURIComponent(item.slug)}`;
+        }
       }
 
       const uniLocation =
@@ -416,6 +518,26 @@ export function CourseClientView({
       }
     }
 
+    if (actionType === "Download Brochure") {
+      let effectiveSlug = slug || courseData?.slug || `${universityName || "course"}/${courseTitleForLead}`;
+      if (specName) {
+        const specSlug = String(specName)
+          .toLowerCase()
+          .replace(/^online\s+[a-z0-9+-]+\s+in\s+/i, "")
+          .replace(/^distance\s+[a-z0-9+-]+\s+in\s+/i, "")
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-|-$/g, "");
+        if (specSlug && !effectiveSlug.toLowerCase().includes(specSlug)) {
+          effectiveSlug = `${effectiveSlug.replace(/\/+$/, "")}/${specSlug}`;
+        }
+      }
+      openWhatsAppBrochure({
+        title: `${courseTitleForLead}${universityName ? ` - ${universityName}` : ""}`,
+        slug: effectiveSlug,
+      });
+      return;
+    }
+
     openFormModal({
       course: courseTitleForLead,
       university: universityName || "UPES",
@@ -445,7 +567,7 @@ export function CourseClientView({
         { label: "Home", href: "/" },
         { label: "Courses", href: "/courses" },
         ...(universityName && (courseData?.universitySlug || courseData?.universityId?.slug)
-          ? [{ label: universityName, href: `/university/${courseData.universitySlug || courseData.universityId?.slug}` }]
+          ? [{ label: universityName, href: `/universities/${courseData.universitySlug || courseData.universityId?.slug}` }]
           : universityName
             ? [{ label: universityName }]
             : []),
@@ -490,7 +612,12 @@ export function CourseClientView({
       list.push({ id: "career-opportunities", label: "Career Opportunities" });
     }
     if (processedPrograms && processedPrograms.length > 0) {
-      list.push({ id: "alternative", label: "Alternative Universities" });
+      const altLabel =
+        courseData?.top_universities_title ||
+        courseData?.peer_universities_title ||
+        (processedPrograms[0]?.sectionTitle) ||
+        "Top Universities";
+      list.push({ id: "alternative", label: altLabel });
     }
     if (faqList && faqList.length > 0) {
       list.push({ id: "faqs", label: "FAQs" });

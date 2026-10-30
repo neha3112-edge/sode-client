@@ -24,7 +24,7 @@ function resolveImg(mediaObj, fallback = "/assets/images/new_sode_tm_logo.png") 
   return mediaObj.url || mediaObj.src || mediaObj.path || fallback;
 }
 
-// ✦ AI Tools Button with Sparkling Effect & NEW Badge
+
 function AiToolButton({ label = "AI Tools", badge = "NEW", onClick, href, className = "" }) {
   const content = (
     <>
@@ -144,27 +144,276 @@ function getCoursePastelStyle(courseName = "") {
   };
 }
 
+// Helper to trim "Online" / "Distance" ONLY from course subcategories (e.g., Distance Master -> Master, Online Bachelor -> Bachelor)
+// Subcategories under universities (e.g. "Top Online Universities", "Top Distance Universities") MUST NEVER be trimmed!
+const formatCategoryDisplayName = (name = "", type = "programs") => {
+  if (!name) return "";
+  if (type === "programs") {
+    const cleaned = name.replace(/\b(online|distance)\b/gi, "").trim().replace(/\s+/g, " ");
+    return cleaned || name;
+  }
+  return name;
+};
+
+// Helper to format course display name with Mode + Course (e.g. Online BA, Online MBA, Distance MBA)
+const formatCourseDisplayName = (prog, currentGroup) => {
+  if (!prog) return "";
+  let name = (typeof prog === "string" ? prog : (prog.name || prog.title || "")).trim();
+
+  // Strip any accidental static/trailing "Course" or "Courses" (e.g. "BA Course" -> "BA", "Online BA Course" -> "Online BA")
+  name = name.replace(/\b(courses?)\b/gi, "").trim().replace(/\s+/g, " ");
+
+  // Check if name already starts with "Online" or "Distance"
+  const hasMode = /^(online|distance)\b/i.test(name);
+  if (hasMode) {
+    return name;
+  }
+
+  // If name doesn't have mode, determine from prog.slug or currentGroup
+  const isDistance = (typeof prog === "object" && prog?.slug ? prog.slug : "").toLowerCase().startsWith("distance-") ||
+    /distance/i.test(currentGroup?.category?.name || "") ||
+    /distance/i.test(currentGroup?.name || "");
+  const mode = isDistance ? "Distance" : "Online";
+
+  return `${mode} ${name}`.trim();
+};
+
+const cleanCourseDisplayName = formatCourseDisplayName;
+
+// 🎖️ Title Formatter & Resolver for Accreditations / Approvals
+const getAccreditationTitle = (acc) => {
+  if (!acc) return "Recognized Universities";
+  const name = (acc.name || acc.title || acc.code || "").trim();
+  const slug = (acc.slug || "").toLowerCase();
+  const combined = `${name} ${slug}`.toLowerCase();
+
+  // Priority check statutory bodies first (to prevent false matches on generic words like online)
+  if (combined.includes("naac")) {
+    return "NAAC Accredited Universities";
+  }
+  if (combined.includes("nirf")) {
+    return "NIRF Ranked Universities";
+  }
+  if (combined.includes("wes")) {
+    return "WES Approved Universities";
+  }
+  if (combined.includes("aicte")) {
+    return "AICTE Approved Universities";
+  }
+  if (combined.includes("online")) {
+    return "UGC Approved Online Universities";
+  }
+  if (combined.includes("distance") || combined.includes("deb")) {
+    return "UGC Approved Distance Universities";
+  }
+  if (combined.includes("ugc")) {
+    return "UGC Approved Universities";
+  }
+
+  return name || "Recognized Universities";
+};
+
+// 🎖️ Badge Text Resolver for Accreditations
+const getAccreditationBadge = (acc, title = "") => {
+  const slug = (acc?.slug || "").toLowerCase();
+  const lower = `${title} ${slug}`.toLowerCase();
+  if (lower.includes("naac")) return "NAAC Grade";
+  if (lower.includes("nirf")) return "NIRF Top Ranked";
+  if (lower.includes("ugc")) return "UGC-DEB Approved";
+  if (lower.includes("aicte")) return "AICTE Approved";
+  if (lower.includes("wes")) return "WES Recognized";
+  return "Govt. Approved";
+};
+
+// 🎖️ Standard Mega Menu Accreditation Card (Exact UI Matching University & Course Cards)
+const renderAccreditationCard = (acc, idx, onNavigate) => {
+  const primarySlug = acc.slug || "";
+  const cardUrl = primarySlug ? `/accreditations/${primarySlug}` : "/accreditations";
+  const logoUrl = acc.logo
+    ? (typeof acc.logo === "string" ? acc.logo : (acc.logo.url || acc.logo.path || null))
+    : null;
+  const currentYear = new Date().getFullYear();
+  const cardTitle = getAccreditationTitle(acc);
+  const badgeText = getAccreditationBadge(acc, cardTitle);
+
+  return (
+    <div
+      key={acc._id ? `${acc._id}-${idx}` : `acc-${idx}`}
+      className="bg-white border border-slate-200/90 rounded-xl p-3 hover:border-blue-400 hover:shadow-md transition-all flex flex-col justify-between group"
+    >
+      <div>
+        <div className="flex items-start gap-2.5">
+          {/* Accreditation / Approval Logo */}
+          <Link
+            href={cardUrl}
+            onClick={() => onNavigate?.()}
+            className="relative w-10 h-10 flex items-center justify-start shrink-0 group-hover:scale-105 transition-transform"
+          >
+            {logoUrl ? (
+              <Image
+                src={logoUrl}
+                alt={cardTitle}
+                fill
+                unoptimized
+                sizes="40px"
+                className="object-contain object-left"
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                </svg>
+              </div>
+            )}
+          </Link>
+
+          {/* Details */}
+          <div className="min-w-0 flex-1">
+            <Link
+              href={cardUrl}
+              onClick={() => onNavigate?.()}
+              className="block group-hover:text-[#0B57D0] transition-colors"
+            >
+              <h4
+                className="text-[13px] font-bold text-slate-900 leading-snug truncate m-0 group-hover:text-[#0B57D0] transition-colors"
+                title={cardTitle}
+              >
+                {cardTitle}
+              </h4>
+            </Link>
+
+            {/* Badges Row */}
+            <div className="flex items-center gap-2 mt-1 flex-wrap">
+              <span className="inline-flex items-center gap-1 text-[10px] text-slate-500 font-medium min-w-0">
+                <svg className="w-3.5 h-3.5 text-emerald-600 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span className="truncate">{badgeText}</span>
+              </span>
+              <span className="inline-flex items-center text-[9.5px] font-bold text-[#351C00] bg-[#E4BE75]/80 px-1.5 py-0.5 rounded-full leading-none whitespace-nowrap shrink-0">
+                List {currentYear}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Action Buttons Row */}
+      <div className="flex items-center justify-between pt-2.5 mt-2 border-t border-slate-100/80">
+        <Link
+          href={cardUrl}
+          onClick={() => onNavigate?.()}
+          className="px-3 py-1 text-[11px] font-semibold text-slate-700 bg-white border border-slate-300 rounded-2xl hover:bg-slate-50 hover:border-slate-400 transition inline-block select-none"
+        >
+          Know More
+        </Link>
+
+        <Link
+          href={primarySlug ? `/universities?approval=${encodeURIComponent(primarySlug)}` : "/universities"}
+          onClick={() => onNavigate?.()}
+          className="text-[11px] font-bold text-slate-900 hover:text-[#0B57D0] flex items-center gap-1 transition select-none"
+        >
+          <span>View Universities</span>
+          <span className="text-[12px] leading-none">→</span>
+        </Link>
+      </div>
+    </div>
+  );
+};
+
 // 🏛️ Dynamic Category Icon Renderer
 function renderCategoryIcon(categoryName = "", type = "programs") {
   const name = (categoryName || "").toLowerCase();
-  if (type === "universities") {
-    if (name.includes("global") || name.includes("international")) {
-      return (
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      );
-    }
-    if (name.includes("iit") || name.includes("iim") || name.includes("top")) {
-      return (
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-        </svg>
-      );
-    }
+
+  // 0. Accreditation / Approval category check
+  if (type === "accreditations" || name.includes("accredit") || name.includes("approval") || name.includes("recognition")) {
+    return (
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+      </svg>
+    );
+  }
+
+  // 1. Specific category checks first (avoiding "top" substring catch-all)
+  if (name.includes("city")) {
+    return (
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.75a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21" />
+      </svg>
+    );
+  }
+
+  if (name.includes("state")) {
+    return (
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+      </svg>
+    );
+  }
+
+  // Check specific degrees (Master, Bachelor) BEFORE generic online/distance
+  if (name.includes("master") || name.includes("post graduate") || name.includes("pg")) {
+    return (
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5" />
+      </svg>
+    );
+  }
+
+  if (name.includes("bachelor") || name.includes("under graduate") || name.includes("ug")) {
+    return (
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+      </svg>
+    );
+  }
+
+  if (name.includes("online")) {
+    return (
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0H3" />
+      </svg>
+    );
+  }
+
+  if (name.includes("distance")) {
+    return (
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+      </svg>
+    );
+  }
+
+  if (name.includes("iit") || name.includes("iim")) {
+    return (
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5" />
+      </svg>
+    );
+  }
+
+  if (name.includes("global") || name.includes("international") || name.includes("abroad")) {
+    return (
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    );
+  }
+
+  if (name.includes("ugc") || name.includes("approved") || name.includes("accredit")) {
     return (
       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+      </svg>
+    );
+  }
+
+  // Generic Top universities (Trophy/Star)
+  if (name.includes("top")) {
+    return (
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
       </svg>
     );
   }
@@ -191,6 +440,20 @@ function renderCategoryIcon(categoryName = "", type = "programs") {
       </svg>
     );
   }
+  if (name.includes("diploma") || name.includes("certificat")) {
+    return (
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+      </svg>
+    );
+  }
+  if (type === "universities") {
+    return (
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+      </svg>
+    );
+  }
   return (
     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5" />
@@ -203,8 +466,10 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
   const headerData = initialHeaderData?.result || initialHeaderData || {};
   const [activeMenuKey, setActiveMenuKey] = useState(null); // Key of the currently opened menu item
   const [activeCategoryIndex, setActiveCategoryIndex] = useState({});
+  const [activeSubCategory, setActiveSubCategory] = useState({});
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileActiveKeys, setMobileActiveKeys] = useState([]);
+  const [expandedMobileCategories, setExpandedMobileCategories] = useState({});
 
   const headerRef = useRef(null);
 
@@ -236,7 +501,41 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
         : [{ text: "Compare Universities", url: "/tools/compare-universities" }];
   }, [headerData]);
 
+  const mobileAiToolItem = useMemo(() => {
+    return rawMenuItems.find(
+      (item) =>
+        item.is_highlighted ||
+        (item.label || "").toLowerCase().includes("tool") ||
+        (item.url || "").includes("tool") ||
+        (item.url || "").includes("suggest")
+    );
+  }, [rawMenuItems]);
+
   const [selectedMobileCategory, setSelectedMobileCategory] = useState(null);
+
+  const resetDrawerScroll = () => {
+    if (typeof document !== "undefined") {
+      const drawerBody = document.querySelector(".ant-drawer-body");
+      if (drawerBody) {
+        drawerBody.scrollTop = 0;
+      }
+      const drawerContent = document.querySelector(".ant-drawer-content");
+      if (drawerContent) {
+        drawerContent.scrollTop = 0;
+      }
+    }
+  };
+
+  const handleSelectMobileCategory = (catData) => {
+    setSelectedMobileCategory(catData);
+    resetDrawerScroll();
+    setTimeout(resetDrawerScroll, 10);
+    setTimeout(resetDrawerScroll, 50);
+  };
+
+  useEffect(() => {
+    resetDrawerScroll();
+  }, [selectedMobileCategory]);
 
   const closeMobile = (url) => {
     setMobileMenuOpen(false);
@@ -251,12 +550,17 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
       .filter((m) => m.has_dropdown && Array.isArray(m.mega_menu) && m.mega_menu.length > 0)
       .map((m) => {
         const l = (m.label || "").toLowerCase();
-        const type = l.includes("universit") ? "universities" : "programs";
+        const type = (l.includes("accredit") || l.includes("approval") || l.includes("recognition"))
+          ? "accreditations"
+          : l.includes("universit")
+            ? "universities"
+            : "programs";
         const validCategories = m.mega_menu
           .filter((g) => g?.category && (g.items?.length > 0 || g.category.name))
           .map((g) => ({
             _id: g.category?._id || g.category?.name,
             name: g.category?.name || "",
+            subcategories: Array.isArray(g.subcategories) ? g.subcategories : [],
             items: g.items || [],
           }));
 
@@ -264,7 +568,11 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
           _id: m._id || m.label,
           title: m.label,
           type,
-          icon: type === "universities" ? (
+          icon: type === "accreditations" ? (
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+            </svg>
+          ) : type === "universities" ? (
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zm0 8.87L4.72 9 12 5.04 19.28 9 12 11.87zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z" />
             </svg>
@@ -296,6 +604,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
     const labelLower = (activeMenuItem.label || "").toLowerCase();
     const isUniversities = labelLower.includes("universit");
     const isPrograms = labelLower.includes("program") || labelLower.includes("course");
+    const isAccreditations = labelLower.includes("accredit") || labelLower.includes("approval") || labelLower.includes("recognition");
 
     const groups = Array.isArray(activeMenuItem.mega_menu) ? activeMenuItem.mega_menu : [];
     const validGroups = groups.filter((g) => g.category && (g.items?.length > 0 || g.category.name));
@@ -306,13 +615,21 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
 
     return {
       itemKey,
-      type: isUniversities ? "universities" : isPrograms ? "programs" : "generic",
-      sidebarHeaderTitle: isUniversities
-        ? "Top Universities"
-        : isPrograms
-          ? "Professional Courses"
-          : activeMenuItem.label,
-      sidebarIcon: isUniversities ? (
+      type: isAccreditations ? "accreditations" : isUniversities ? "universities" : isPrograms ? "programs" : "generic",
+      sidebarHeaderTitle: isAccreditations
+        ? "Accreditations & Approvals"
+        : isUniversities
+          ? "Top Universities"
+          : isPrograms
+            ? "Professional Courses"
+            : activeMenuItem.label,
+      sidebarIcon: isAccreditations ? (
+        <div className="w-7 h-7 rounded-full bg-[#0B57D0] text-white flex items-center justify-center shrink-0 shadow-xs">
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+          </svg>
+        </div>
+      ) : isUniversities ? (
         <div className="w-7 h-7 rounded-full bg-[#0B57D0] text-white flex items-center justify-center shrink-0 shadow-xs">
           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
             <path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zm0 8.87L4.72 9 12 5.04 19.28 9 12 11.87zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z" />
@@ -626,17 +943,21 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
 
           {/* Mobile Right Controls (Matching Mockup) */}
           <div className="flex lg:hidden items-center gap-2 shrink-0">
-            <Link
-              href="/tools"
-              onClick={() => setActiveMenuKey(null)}
-              className="relative inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EBF3FE] hover:bg-[#DCEBFD] text-[#0B57D0] border border-blue-200/80 font-bold text-xs transition-all shadow-xs shrink-0 select-none"
-            >
-              <span className="text-[#0B57D0] font-extrabold text-sm leading-none">✦</span>
-              <span className="text-[#072C50] font-bold text-xs">AI Tools</span>
-              <span className="absolute -top-1.5 -right-1 px-1.5 py-0.2 text-[8px] font-black uppercase tracking-wider rounded-full bg-black text-[#FFD166] border border-white leading-none shadow-xs">
-                NEW
-              </span>
-            </Link>
+            {mobileAiToolItem && (
+              <Link
+                href={mobileAiToolItem.url || "/tools"}
+                onClick={() => setActiveMenuKey(null)}
+                className="relative inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EBF3FE] hover:bg-[#DCEBFD] text-[#0B57D0] border border-blue-200/80 font-bold text-xs transition-all shadow-xs shrink-0 select-none"
+              >
+                <span className="text-[#0B57D0] font-extrabold text-sm leading-none">✦</span>
+                <span className="text-[#072C50] font-bold text-xs">{mobileAiToolItem.label || "AI Tools"}</span>
+                {(mobileAiToolItem.badge || "NEW") && (
+                  <span className="absolute -top-1.5 -right-1 px-1.5 py-0.2 text-[8px] font-black uppercase tracking-wider rounded-full bg-black text-[#FFD166] border border-white leading-none shadow-xs">
+                    {mobileAiToolItem.badge || "NEW"}
+                  </span>
+                )}
+              </Link>
+            )}
 
             <Link
               href="/tools/compare-universities"
@@ -695,32 +1016,85 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                   <div className="space-y-1">
                     {currentMegaMenuData.groups.map((grp, gIdx) => {
                       const isActive = currentMegaMenuData.currentIdx === gIdx;
+                      const grpKey = grp.category?._id || grp.category?.slug || `grp-${gIdx}`;
+                      const subcats = Array.isArray(grp.subcategories) ? grp.subcategories : [];
+                      const hasSubcategories = subcats.length > 0;
+                      const defaultSubId = hasSubcategories ? (subcats[0].category?._id || subcats[0].category?.slug) : null;
+                      const currentSubId = activeSubCategory[grpKey] || defaultSubId;
+
                       return (
-                        <button
-                          key={grp.category?._id || gIdx}
-                          type="button"
-                          onClick={() =>
-                            setActiveCategoryIndex((prev) => ({
-                              ...prev,
-                              [currentMegaMenuData.itemKey]: gIdx,
-                            }))
-                          }
-                          className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-left text-[12.5px] transition-all cursor-pointer select-none ${isActive
-                            ? "bg-[#EBF3FE] text-[#0B57D0] font-bold shadow-xs"
-                            : "text-slate-700 hover:bg-slate-50 hover:text-slate-900 font-medium"
-                            }`}
-                        >
-                          <div className="flex items-center gap-2 min-w-0">
-                            <span className={isActive ? "text-[#0B57D0]" : "text-slate-400"}>
-                              {renderCategoryIcon(grp.category?.name, currentMegaMenuData.type)}
-                            </span>
-                            <span className="truncate">{grp.category?.name}</span>
-                          </div>
-                          <RightOutlined
-                            className={`text-[9.5px] shrink-0 ml-1 transition-transform ${isActive ? "text-[#0B57D0] font-bold translate-x-0.5" : "text-slate-400"
+                        <div key={grp.category?._id || gIdx} className="space-y-1">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setActiveCategoryIndex((prev) => ({
+                                ...prev,
+                                [currentMegaMenuData.itemKey]: gIdx,
+                              }));
+                              if (hasSubcategories) {
+                                const firstSubId = subcats[0]?.category?._id || subcats[0]?.category?.slug;
+                                if (firstSubId) {
+                                  setActiveSubCategory((prev) => ({
+                                    ...prev,
+                                    [grpKey]: firstSubId,
+                                  }));
+                                }
+                              }
+                            }}
+                            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-left text-[12.5px] transition-all cursor-pointer select-none ${isActive
+                              ? "bg-[#EBF3FE] text-[#0B57D0] font-bold shadow-xs"
+                              : "text-slate-700 hover:bg-slate-50 hover:text-slate-900 font-medium"
                               }`}
-                          />
-                        </button>
+                          >
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span className={isActive ? "text-[#0B57D0]" : "text-slate-400"}>
+                                {renderCategoryIcon(grp.category?.name, currentMegaMenuData.type)}
+                              </span>
+                              <span className="truncate">{grp.category?.name}</span>
+                            </div>
+                            <RightOutlined
+                              className={`text-[9.5px] shrink-0 ml-1 transition-transform ${isActive ? "text-[#0B57D0] font-bold rotate-90" : "text-slate-400"
+                                }`}
+                            />
+                          </button>
+
+                          {/* Subcategories (Matches Exact Main Category Theme, Height & Font Size) */}
+                          {isActive && hasSubcategories && (
+                            <div className="pl-3 py-0.5 space-y-1">
+                              {subcats.map((sub, sIdx) => {
+                                const subId = sub.category?._id || sub.category?.slug || `sub-${sIdx}`;
+                                const isSubActive = currentSubId === subId;
+                                return (
+                                  <button
+                                    key={subId}
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setActiveSubCategory((prev) => ({ ...prev, [grpKey]: subId }));
+                                    }}
+                                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-left text-[12.5px] transition-all cursor-pointer select-none ${
+                                      isSubActive
+                                        ? "bg-[#EBF3FE] text-[#0B57D0] font-bold shadow-xs"
+                                        : "text-slate-700 hover:bg-slate-50 hover:text-slate-900 font-medium"
+                                    }`}
+                                  >
+                                    <div className="flex items-center gap-2 min-w-0">
+                                      <span className={isSubActive ? "text-[#0B57D0]" : "text-slate-400"}>
+                                        {renderCategoryIcon(formatCategoryDisplayName(sub.category?.name, currentMegaMenuData.type), currentMegaMenuData.type)}
+                                      </span>
+                                      <span className="truncate">{formatCategoryDisplayName(sub.category?.name, currentMegaMenuData.type)}</span>
+                                    </div>
+                                    <RightOutlined
+                                      className={`text-[9.5px] shrink-0 ml-1 transition-transform ${
+                                        isSubActive ? "text-[#0B57D0] font-bold translate-x-0.5" : "text-slate-400"
+                                      }`}
+                                    />
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
                       );
                     })}
                   </div>
@@ -731,12 +1105,38 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3.5">
                     {/* A. DYNAMIC UNIVERSITY / LISTING CARDS */}
                     {currentMegaMenuData.type === "universities" && (() => {
-                      const allItems = currentMegaMenuData.currentGroup?.items || [];
+                      const grpKey = currentMegaMenuData.currentGroup?.category?._id || currentMegaMenuData.currentGroup?.category?.slug || `grp-${currentMegaMenuData.currentIdx}`;
+                      const subcats = Array.isArray(currentMegaMenuData.currentGroup?.subcategories) ? currentMegaMenuData.currentGroup.subcategories : [];
+                      const defaultSubId = subcats.length > 0 ? (subcats[0].category?._id || subcats[0].category?.slug) : null;
+                      const currentSubId = activeSubCategory[grpKey] || defaultSubId;
+
+                      const selectedSubCat = currentSubId ? subcats.find(
+                        (s) => (s.category?._id || s.category?.slug) === currentSubId
+                      ) : (subcats.length > 0 ? subcats[0] : null);
+
+                      const allItems = selectedSubCat
+                        ? (selectedSubCat.items || [])
+                        : (subcats.length > 0 ? (subcats[0]?.items || []) : (currentMegaMenuData.currentGroup?.items || []));
+
+                      const approvals = allItems.filter((it) => it.is_approval);
                       const dynamicListings = allItems.filter((it) => it.is_dynamic_listing);
-                      const regularUniversities = allItems.filter((it) => !it.is_dynamic_listing);
+                      const regularUniversities = allItems.filter((it) => !it.is_dynamic_listing && !it.is_approval);
+                      const hasAnyItems = approvals.length > 0 || dynamicListings.length > 0 || regularUniversities.length > 0;
 
                       return (
                         <>
+                          {!hasAnyItems && (
+                            <div className="col-span-full py-12 text-center text-slate-400 font-medium text-xs">
+                              No universities, accreditations, or listings found in this category currently.
+                            </div>
+                          )}
+
+                          {/* Official Approvals & Accreditations (Matching Standard University & Course Card Grid) */}
+                          {approvals.length > 0 &&
+                            approvals.map((app, idx) =>
+                              renderAccreditationCard(app, idx, () => setActiveMenuKey(null))
+                            )
+                          }
                           {/* Dynamic Listings (Clean 2-Column Bulleted List with Header Text Color) */}
                           {dynamicListings.length > 0 && (
                             <div className="col-span-full grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3 p-1">
@@ -866,9 +1266,30 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                       );
                     })()}
 
-                    {/* B. DYNAMIC COURSE / PROGRAM CARDS (Screenshot 2) */}
-                    {currentMegaMenuData.type === "programs" &&
-                      currentMegaMenuData.currentGroup?.items?.map((prog, idx) => {
+                    {/* B. DYNAMIC COURSE / PROGRAM CARDS (Screenshot 2 with Subcategory filtering) */}
+                    {currentMegaMenuData.type === "programs" && (() => {
+                      const grpKey = currentMegaMenuData.currentGroup?.category?._id || currentMegaMenuData.currentGroup?.category?.slug || `grp-${currentMegaMenuData.currentIdx}`;
+                      const subcats = Array.isArray(currentMegaMenuData.currentGroup?.subcategories) ? currentMegaMenuData.currentGroup.subcategories : [];
+                      const defaultSubId = subcats.length > 0 ? (subcats[0].category?._id || subcats[0].category?.slug) : null;
+                      const currentSubId = activeSubCategory[grpKey] || defaultSubId;
+
+                      const selectedSubCat = subcats.find(
+                        (s) => (s.category?._id || s.category?.slug) === currentSubId
+                      );
+
+                      const displayedItems = selectedSubCat
+                        ? (selectedSubCat.items || [])
+                        : (subcats.length > 0 ? (subcats[0]?.items || []) : (currentMegaMenuData.currentGroup?.items || []));
+
+                      if (displayedItems.length === 0) {
+                        return (
+                          <div className="col-span-full py-12 text-center text-slate-400 font-medium text-xs">
+                            No courses found in this category currently.
+                          </div>
+                        );
+                      }
+
+                      return displayedItems.map((prog, idx) => {
                         const progSlug = (prog.slug && !/^[0-9a-fA-F]{24}$/.test(prog.slug))
                           ? prog.slug
                           : (prog.name ? prog.name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') : String(prog._id || ""));
@@ -894,6 +1315,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
 
                         const headerLogoObj = prog.header_logo || prog.effective_logo || prog.logo;
                         const headerLogoUrl = (headerLogoObj?.url || headerLogoObj?.path || typeof headerLogoObj === "string") ? resolveImg(headerLogoObj) : null;
+                        const courseDisplayName = formatCourseDisplayName(prog, currentMegaMenuData.currentGroup);
 
                         return (
                           <div
@@ -911,7 +1333,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                                   {headerLogoUrl ? (
                                     <Image
                                       src={headerLogoUrl}
-                                      alt={prog.name || "Course Logo"}
+                                      alt={courseDisplayName || "Course Logo"}
                                       fill
                                       unoptimized
                                       sizes="36px"
@@ -931,9 +1353,9 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                                   >
                                     <h4
                                       className="text-[13px] font-bold text-slate-900 leading-snug truncate m-0 group-hover:text-[#0B57D0] transition-colors"
-                                      title={prog.name}
+                                      title={courseDisplayName}
                                     >
-                                      {prog.name}
+                                      {courseDisplayName}
                                     </h4>
                                   </Link>
 
@@ -981,7 +1403,36 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                             </div>
                           </div>
                         );
-                      })}
+                      });
+                    })()}
+
+                    {/* C. DYNAMIC ACCREDITATION / APPROVAL CARDS */}
+                    {currentMegaMenuData.type === "accreditations" && (() => {
+                      const grpKey = currentMegaMenuData.currentGroup?.category?._id || currentMegaMenuData.currentGroup?.category?.slug || `grp-${currentMegaMenuData.currentIdx}`;
+                      const subcats = Array.isArray(currentMegaMenuData.currentGroup?.subcategories) ? currentMegaMenuData.currentGroup.subcategories : [];
+                      const defaultSubId = subcats.length > 0 ? (subcats[0].category?._id || subcats[0].category?.slug) : null;
+                      const currentSubId = activeSubCategory[grpKey] || defaultSubId;
+
+                      const selectedSubCat = subcats.find(
+                        (s) => (s.category?._id || s.category?.slug) === currentSubId
+                      );
+
+                      const displayedItems = selectedSubCat
+                        ? (selectedSubCat.items || [])
+                        : (currentMegaMenuData.currentGroup?.items || []);
+
+                      if (displayedItems.length === 0) {
+                        return (
+                          <div className="col-span-full py-12 text-center text-slate-400 font-medium text-xs">
+                            No accreditations or approvals found in this category currently.
+                          </div>
+                        );
+                      }
+
+                      return displayedItems.map((app, idx) =>
+                        renderAccreditationCard(app, idx, () => setActiveMenuKey(null))
+                      );
+                    })()}
 
                     {/* Empty State for category with no items */}
                     {(!currentMegaMenuData.currentGroup?.items || currentMegaMenuData.currentGroup.items.length === 0) && (
@@ -1006,11 +1457,16 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
           }}
           placement="top"
           closable={false}
+          className="mobile-nav-drawer"
           styles={{
             wrapper: { height: "auto", maxHeight: "92vh" },
-            section: { height: "auto", maxHeight: "92vh", borderBottomLeftRadius: "24px", borderBottomRightRadius: "24px", overflow: "hidden" },
             header: { padding: "8px 16px", backgroundColor: "#ffffff", borderBottom: "1px solid #f1f5f9" },
-            body: { padding: "14px 16px 28px", height: "auto", maxHeight: "calc(92vh - 64px)", overflowY: "auto" },
+            body: {
+              padding: 0,
+              height: "auto",
+              maxHeight: "calc(92vh - 64px)",
+              overflowY: "auto",
+            },
           }}
           title={
             <div className="flex items-center justify-between w-full">
@@ -1056,7 +1512,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
         >
           {!selectedMobileCategory ? (
             /* ── VIEW 1: CATEGORIES OVERVIEW (Matching Phone 1 Mockup) ── */
-            <div className="space-y-6">
+            <div className="p-4 space-y-6">
               {/* Dynamic Mega Menu Sections from database */}
               {mobileMegaSections.map((section) => (
                 <div key={section._id}>
@@ -1070,30 +1526,77 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                   </div>
 
                   <div className="space-y-1">
-                    {section.categories.map((cat, cIdx) => (
-                      <button
-                        key={cat._id || cIdx}
-                        type="button"
-                        onClick={() =>
-                          setSelectedMobileCategory({
-                            title: cat.name,
-                            type: section.type,
-                            items: cat.items || [],
-                          })
-                        }
-                        className="w-full flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-[#F0F6FE] active:bg-[#E2EDFC] transition-colors text-left border-none bg-transparent cursor-pointer group"
-                      >
-                        <div className="flex items-center gap-3">
-                          <span className="text-[#0B57D0] text-base group-hover:scale-110 transition-transform">
-                            {renderCategoryIcon(cat.name, section.type)}
-                          </span>
-                          <span className="font-semibold text-slate-800 text-[13.5px] group-hover:text-[#0B57D0]">
-                            {cat.name}
-                          </span>
+                    {section.categories.map((cat, cIdx) => {
+                      const hasSub = Array.isArray(cat.subcategories) && cat.subcategories.length > 0;
+                      const isExpanded = !!expandedMobileCategories[cat._id];
+
+                      return (
+                        <div key={cat._id || cIdx} className="space-y-1">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (hasSub) {
+                                setExpandedMobileCategories((prev) => ({
+                                  ...prev,
+                                  [cat._id]: !prev[cat._id],
+                                }));
+                              } else {
+                                handleSelectMobileCategory({
+                                  title: cat.name,
+                                  type: section.type,
+                                  items: cat.items || [],
+                                });
+                              }
+                            }}
+                            className="w-full flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-[#F0F6FE] active:bg-[#E2EDFC] transition-colors text-left border-none bg-transparent cursor-pointer group"
+                          >
+                            <div className="flex items-center gap-3">
+                              <span className="text-[#0B57D0] text-base group-hover:scale-110 transition-transform">
+                                {renderCategoryIcon(cat.name, section.type)}
+                              </span>
+                              <span className="font-semibold text-slate-800 text-[13.5px] group-hover:text-[#0B57D0]">
+                                {cat.name}
+                              </span>
+                            </div>
+                            <RightOutlined
+                              className={`text-[10px] text-slate-400 group-hover:text-[#0B57D0] transition-transform ${
+                                hasSub && isExpanded ? "rotate-90 text-[#0B57D0]" : "group-hover:translate-x-0.5"
+                              }`}
+                            />
+                          </button>
+
+                          {/* Subcategories under Category in Mobile (Same styling & size, no line border) */}
+                          {hasSub && isExpanded && (
+                            <div className="pl-4 space-y-1 py-0.5">
+                              {cat.subcategories.map((sub, sIdx) => (
+                                <button
+                                  key={sub.category?._id || sIdx}
+                                  type="button"
+                                  onClick={() =>
+                                    handleSelectMobileCategory({
+                                      title: sub.category?.name || `${cat.name} - Subcategory`,
+                                      type: section.type,
+                                      items: sub.items || [],
+                                    })
+                                  }
+                                  className="w-full flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-[#F0F6FE] active:bg-[#E2EDFC] transition-colors text-left border-none bg-transparent cursor-pointer group"
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <span className="text-[#0B57D0] text-base group-hover:scale-110 transition-transform">
+                                      {renderCategoryIcon(formatCategoryDisplayName(sub.category?.name, section.type), section.type)}
+                                    </span>
+                                    <span className="font-semibold text-slate-800 text-[13.5px] group-hover:text-[#0B57D0]">
+                                      {formatCategoryDisplayName(sub.category?.name, section.type)}
+                                    </span>
+                                  </div>
+                                  <RightOutlined className="text-[10px] text-slate-400 group-hover:text-[#0B57D0] group-hover:translate-x-0.5 transition-all" />
+                                </button>
+                              ))}
+                            </div>
+                          )}
                         </div>
-                        <RightOutlined className="text-[10px] text-slate-400 group-hover:text-[#0B57D0] group-hover:translate-x-0.5 transition-all" />
-                      </button>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               ))}
@@ -1103,11 +1606,15 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
           ) : (
             /* ── VIEW 2: 2-COLUMN CARDS GRID (Matching Phone 2 Mockup) ── */
             <div>
-              {/* Back Header */}
-              <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
+              {/* Back Header - Full touch to the top with solid background and zero gap */}
+              <div className="sticky top-0 bg-white z-30 flex items-center justify-between px-4 py-2.5 border-b border-slate-100 shadow-[0_2px_6px_rgba(0,0,0,0.03)]">
                 <button
                   type="button"
-                  onClick={() => setSelectedMobileCategory(null)}
+                  onClick={() => {
+                    setSelectedMobileCategory(null);
+                    resetDrawerScroll();
+                    setTimeout(resetDrawerScroll, 10);
+                  }}
                   className="inline-flex items-center gap-1.5 text-xs font-bold text-[#0B57D0] hover:text-[#072C50] transition-colors cursor-pointer bg-transparent border-none p-0"
                 >
                   <LeftOutlined className="text-[11px]" />
@@ -1119,17 +1626,29 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
               </div>
 
               {/* 2-Column Cards Grid */}
-              <div className="grid grid-cols-2 gap-2.5 pb-4">
+              <div className="p-4 pt-3">
+                <div className="grid grid-cols-2 gap-2.5 pb-4">
                 {selectedMobileCategory.items.map((item, idx) => {
                   const itemSlug = item.slug || item._id || item.name;
-                  const isUni = selectedMobileCategory.type === "universities" || !!item.location || item.courses_count !== undefined;
+                  const isAcc = selectedMobileCategory.type === "accreditations" || !!item.is_approval;
+                  const isProg = selectedMobileCategory.type === "programs";
+                  const isUni = !isAcc && !isProg && (selectedMobileCategory.type === "universities" || !!item.location || item.courses_count !== undefined);
                   const logoSrc = item.header_logo || item.logo || item.image || null;
-                  const detailUrl = isUni
-                    ? (item.url || `/universities/${encodeURIComponent(itemSlug)}`)
-                    : (item.url || `/courses?course=${encodeURIComponent(itemSlug)}`);
-                  const viewCoursesUrl = isUni
-                    ? `/courses?university=${encodeURIComponent(itemSlug)}`
-                    : detailUrl;
+                  const detailUrl = isAcc
+                    ? (item.url || `/accreditations/${encodeURIComponent(itemSlug)}`)
+                    : isUni
+                      ? (item.url || `/universities/${encodeURIComponent(itemSlug)}`)
+                      : (item.url || `/courses/${encodeURIComponent(itemSlug)}`);
+                  const secondaryUrl = isAcc
+                    ? "/universities"
+                    : isUni
+                      ? `/courses?university=${encodeURIComponent(itemSlug)}`
+                      : `/universities?course=${encodeURIComponent(itemSlug)}`;
+                  const secondaryLabel = isAcc
+                    ? "View Unis"
+                    : isUni
+                      ? "View Courses"
+                      : "View Unis";
 
                   if (item.is_dynamic_listing) {
                     return (
@@ -1147,10 +1666,99 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                     );
                   }
 
+                  if (item.is_approval) {
+                    const currentYear = new Date().getFullYear();
+                    const cardTitle = getAccreditationTitle(item);
+                    const badgeText = getAccreditationBadge(item, cardTitle);
+                    const cardUrl = item.slug ? `/accreditations/${item.slug}` : (item.url || "/accreditations");
+
+                    return (
+                      <div
+                        key={item._id || idx}
+                        className="bg-white border border-slate-200/90 rounded-2xl p-2.5 sm:p-3 flex flex-col justify-between shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:border-blue-300 transition-all"
+                      >
+                        <div>
+                          {/* Top Section: Logo Left + Title Right */}
+                          <div className="flex items-center gap-2">
+                            {logoSrc ? (
+                              <Link
+                                href={cardUrl}
+                                onClick={() => closeMobile()}
+                                className="relative w-8 h-8 sm:w-9 sm:h-9 shrink-0 flex items-center justify-center"
+                              >
+                                <Image
+                                  src={resolveImg(logoSrc)}
+                                  alt={cardTitle}
+                                  fill
+                                  unoptimized
+                                  sizes="36px"
+                                  className="object-contain"
+                                />
+                              </Link>
+                            ) : (
+                              <Link
+                                href={cardUrl}
+                                onClick={() => closeMobile()}
+                                className="flex items-center justify-center shrink-0 mt-0.5"
+                              >
+                                <span className="w-2 h-2 rounded-full bg-[#0B57D0]" />
+                              </Link>
+                            )}
+
+                            {/* Title */}
+                            <div className="flex-1 min-w-0 text-left">
+                              <Link
+                                href={cardUrl}
+                                onClick={() => closeMobile()}
+                                className="block hover:text-[#0B57D0]"
+                              >
+                                <h4 className="text-[11.5px] font-bold text-[#072C50] leading-snug line-clamp-2 m-0">
+                                  {cardTitle}
+                                </h4>
+                              </Link>
+                            </div>
+                          </div>
+
+                          {/* Badges Row */}
+                          <div className="flex items-center justify-between gap-1.5 mt-1.5 text-[9.5px] min-w-0">
+                            <span className="inline-flex items-center gap-1 text-slate-600 font-semibold min-w-0 truncate">
+                              <svg className="w-3 h-3 text-emerald-600 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                              </svg>
+                              <span className="truncate">{badgeText}</span>
+                            </span>
+                            <span className="inline-flex items-center text-[9px] font-bold text-[#351C00] bg-[#E4BE75]/80 px-1.5 py-0.5 rounded-full leading-none whitespace-nowrap shrink-0">
+                              List {currentYear}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Action Buttons Row */}
+                        <div className="flex items-center justify-between pt-2 mt-2 border-t border-slate-100">
+                          <Link
+                            href={cardUrl}
+                            onClick={() => closeMobile()}
+                            className="px-2.5 py-0.5 text-[10px] font-semibold text-slate-700 bg-white border border-slate-300 rounded-full hover:bg-slate-50 transition"
+                          >
+                            Know More
+                          </Link>
+                          <Link
+                            href={itemSlug ? `/universities?approval=${encodeURIComponent(itemSlug)}` : "/universities"}
+                            onClick={() => closeMobile()}
+                            className="text-[10px] font-bold text-[#072C50] hover:text-[#0B57D0] flex items-center gap-0.5 transition"
+                          >
+                            <span>View Unis</span>
+                            <span className="text-[11px]">→</span>
+                          </Link>
+                        </div>
+                      </div>
+                    );
+                  }
+
                   return (
                     <div
                       key={item._id || idx}
-                      className="bg-white border border-slate-200/90 rounded-2xl p-2.5 sm:p-3 flex flex-col justify-between shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:border-blue-300 transition-all"
+                      className="bg-white border border-slate-200/90 rounded-2xl p-2 sm:p-2.5 flex flex-col justify-between shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:border-blue-300 transition-all"
                     >
                       <div>
                         {/* Top Section: Logo Left + Title Right */}
@@ -1189,15 +1797,37 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                               className="block hover:text-[#0B57D0]"
                             >
                               <h4 className="text-[11.5px] font-bold text-[#072C50] leading-snug line-clamp-2 m-0">
-                                {item.name || item.title}
+                                {selectedMobileCategory?.type === "programs" ? formatCourseDisplayName(item, selectedMobileCategory) : (item.name || item.title)}
                               </h4>
                             </Link>
                           </div>
                         </div>
 
-                        {/* Full-width Badges Row (Only for non-dynamic listing universities) */}
-                        {!item.is_dynamic_listing && (item.approval || item.courses_count || item.duration) && (
-                          <div className="flex items-center gap-2 mt-1.5 text-[9.5px]">
+                        {/* Full-width Badges Row: For Courses (Duration & Specialisations Side-by-Side Left-Aligned) */}
+                        {isProg && (item.duration || item.specialisations_count > 0) && (
+                          <div className="flex items-center justify-start gap-1.5 mt-1 text-[8.5px] sm:text-[9px] min-w-0 overflow-hidden w-full text-left">
+                            {item.duration && (
+                              <span className="inline-flex items-center gap-0.5 text-slate-500 font-medium shrink-0 whitespace-nowrap">
+                                <svg className="w-2.5 h-2.5 text-slate-400 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                                </svg>
+                                <span>{item.duration}</span>
+                              </span>
+                            )}
+                            {item.specialisations_count > 0 && (
+                              <span className="inline-flex items-center gap-0.5 text-slate-500 font-medium min-w-0 truncate whitespace-nowrap">
+                                <svg className="w-2.5 h-2.5 text-slate-400 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                  <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z" />
+                                </svg>
+                                <span className="truncate">{item.specialisations_count} Specialisation</span>
+                              </span>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Full-width Badges Row: For Universities (Approval & Courses Count Matching Desktop) */}
+                        {!isProg && !item.is_dynamic_listing && (item.approval || item.courses_count > 0) && (
+                          <div className="flex items-center gap-2 mt-1.5 text-[9.5px] flex-wrap">
                             {item.approval && (
                               <span className="inline-flex items-center gap-1 text-slate-600 font-semibold whitespace-nowrap">
                                 <svg className="w-3 h-3 text-emerald-600 shrink-0" viewBox="0 0 20 20" fill="currentColor">
@@ -1206,12 +1836,12 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                                 <span className="truncate">{item.approval}</span>
                               </span>
                             )}
-                            {(item.courses_count || item.duration) && (
+                            {item.courses_count > 0 && (
                               <span className="inline-flex items-center gap-1 text-slate-500 font-medium whitespace-nowrap">
-                                <svg className="w-3 h-3 text-blue-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+                                <svg className="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                                 </svg>
-                                <span className="truncate">{item.courses_count ? `${item.courses_count}+ Courses` : item.duration}</span>
+                                <span className="truncate">{item.courses_count}+ Courses</span>
                               </span>
                             )}
                           </div>
@@ -1229,11 +1859,11 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                         </Link>
                         {!item.is_dynamic_listing && (
                           <Link
-                            href={viewCoursesUrl}
+                            href={secondaryUrl}
                             onClick={() => closeMobile()}
                             className="inline-flex items-center gap-0.5 text-[9.5px] font-bold text-[#072C50] hover:text-[#0B57D0] transition-colors whitespace-nowrap overflow-hidden"
                           >
-                            <span className="truncate">View Courses</span>
+                            <span className="truncate">{secondaryLabel}</span>
                             <RightOutlined className="text-[6.5px] shrink-0" />
                           </Link>
                         )}
@@ -1249,7 +1879,8 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                 </div>
               )}
             </div>
-          )}
+          </div>
+        )}
         </Drawer>
       </AntHeader>
     </>

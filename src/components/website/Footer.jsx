@@ -14,6 +14,58 @@ function resolveLegalUrl(target = "") {
   return `/${str}`;
 }
 
+function resolveFooterLink(link, colTitle = "") {
+  if (!link) return { url: "#", target: "_self" };
+  const rawUrl = (link.url || "").trim();
+  const label = (link.label || "").trim().toLowerCase();
+  const colName = (colTitle || "").toLowerCase();
+  const isUniCol = colName.includes("universit");
+
+  // 1. If link has associated CRM category populated
+  if (link.category) {
+    const catSlug = typeof link.category === "object" ? link.category.slug : link.category;
+    if (catSlug) {
+      if (link.category?.targetType === "COURSE" || link.category?.categoryType === "PROGRAM_LEVEL") {
+        return { ...link, url: `/courses?category=${encodeURIComponent(catSlug)}` };
+      }
+      return { ...link, url: `/universities?category=${encodeURIComponent(catSlug)}` };
+    }
+  }
+
+  // 2. If URL already has a specific query parameter or path that is not just plain "/universities"
+  if (rawUrl && rawUrl !== "/universities" && rawUrl !== "/universities/" && rawUrl !== "#") {
+    return link;
+  }
+
+  // 3. Fallback resolution for university links pointing to /universities or blank
+  if (isUniCol || rawUrl === "/universities" || rawUrl === "/universities/") {
+    if (label.includes("accredit") || (label.includes("approval") && !label.includes("ugc"))) {
+      return { ...link, url: "/accreditations" };
+    }
+    if (label.includes("iit") || label.includes("iim")) {
+      return { ...link, url: "/universities?category=iits-iims" };
+    }
+    if (label.includes("global") || label.includes("international") || label.includes("abroad")) {
+      return { ...link, url: "/universities?category=global-universities" };
+    }
+    if (label.includes("ugc") || label.includes("deb")) {
+      return { ...link, url: "/universities?category=ugc-approved--universities" };
+    }
+    if (label.includes("domestic") || label.includes("indian")) {
+      return { ...link, url: "/universities?category=domestic-universities" };
+    }
+    if (label.includes("online")) {
+      return { ...link, url: "/universities?category=top-online-universities" };
+    }
+    if (label.includes("distance")) {
+      return { ...link, url: "/universities?category=top-distance-universities" };
+    }
+    return { ...link, url: "/universities" };
+  }
+
+  return link;
+}
+
 export function Footer({
   initialHeaderData = null,
   initialFooterData = null,
@@ -118,9 +170,10 @@ export function Footer({
     {
       title: "UNIVERSITIES",
       links: [
-        { label: "UGC-DEB Universities", url: "/accreditations/ugc-deb-approved-distance-universities" },
-        { label: "Global Universities", url: "/universities" },
-        { label: "IITs & IIMs", url: "/universities" },
+        { label: "UGC-DEB Universities", url: "/universities?category=ugc-approved--universities" },
+        { label: "Global Universities", url: "/universities?category=global-universities" },
+        { label: "IITs & IIMs", url: "/universities?category=iits-iims" },
+        { label: "Accreditations", url: "/accreditations" },
       ],
     },
     {
@@ -143,7 +196,25 @@ export function Footer({
     },
   ];
 
-  const columnsToRender = dynamicColumns || fallbackColumns;
+  const rawCols = dynamicColumns || fallbackColumns;
+  const columnsToRender = rawCols.map((col) => {
+    const title = (col?.title || "").toLowerCase();
+    if (title.includes("universit")) {
+      const hasAccred = Array.isArray(col.links) && col.links.some(
+        (l) => (l?.label || "").toLowerCase().includes("accredit") || (l?.url || "").includes("accredit")
+      );
+      if (!hasAccred) {
+        return {
+          ...col,
+          links: [
+            ...(col.links || []),
+            { label: "Accreditations", url: "/accreditations" },
+          ],
+        };
+      }
+    }
+    return col;
+  });
 
   return (
     <>
@@ -365,8 +436,9 @@ export function Footer({
                   </h4>
                   <ul className="space-y-1.5 text-[13px] text-gray-300 leading-tight">
                     {Array.isArray(col.links) &&
-                      col.links.map((link, lIdx) => {
-                        if (link?.enabled === false) return null;
+                      col.links.map((rawLink, lIdx) => {
+                        if (rawLink?.enabled === false) return null;
+                        const link = resolveFooterLink(rawLink, col.title);
                         const isModal = link.is_modal;
 
                         return (

@@ -173,10 +173,17 @@ export function Hero({ initialHeroData = null }) {
                 </span>
               )}
 
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-[2.6rem] font-black tracking-tight leading-tight m-0">
-                <span className="text-rose-500">{title}</span>{" "}
-                <span className={isTransparentCard ? "text-white" : "text-slate-900"}>{highlight}</span>
-              </h1>
+              {index === 0 ? (
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-[2.6rem] font-black tracking-tight leading-tight m-0">
+                  <span className="text-rose-500">{title}</span>{" "}
+                  <span className={isTransparentCard ? "text-white" : "text-slate-900"}>{highlight}</span>
+                </h1>
+              ) : (
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl xl:text-[2.6rem] font-black tracking-tight leading-tight m-0">
+                  <span className="text-rose-500">{title}</span>{" "}
+                  <span className={isTransparentCard ? "text-white" : "text-slate-900"}>{highlight}</span>
+                </h2>
+              )}
 
               {heroData.subtitle && (
                 <p className={`text-sm sm:text-base font-semibold ${isTransparentCard ? "text-slate-200" : "text-slate-700"} m-0 leading-snug`}>
@@ -425,50 +432,257 @@ export function Hero({ initialHeroData = null }) {
     carouselSettings.show_arrows ?? carouselSettings.showArrows ?? heroData?.show_arrows ?? heroData?.showArrows
   );
 
-  const renderSlideHeading = (rawTitle, highlightText, isLight, titleColor) => {
-    if (!rawTitle) return null;
+  const hasFormattingTags = (str) => {
+    if (!str) return false;
+    return /\[(#[0-9a-fA-F]{3,8}|color|outline|stroke|divider|b|strong|extrabold)/i.test(str) || /<span[^>]*style=["\x27]color/i.test(str) || /<font[^>]*color/i.test(str) || /<\/?(?:b|strong)\b/i.test(str);
+  };
 
-    const defaultColor = titleColor || (isLight ? "#072C50" : "#ffffff");
-    const highlightColor = isLight ? "#965D2C" : "#F6DE95";
-    const lines = rawTitle.split("\n");
+  const parseLineTokens = (line, defaultColor) => {
+    const isLineBold = /\[\/?(?:b|strong|extrabold)\]|<\/?(?:b|strong)>/i.test(line);
+    const cleanedLine = line.replace(/\[\/?(?:b|strong|extrabold)\]/gi, '').replace(/<\/?(?:b|strong)>/gi, '');
+
+    const tagRegex = /(\[outline(?::([#a-zA-Z0-9]+))?\]([\s\S]*?)\[\/outline\])|(\[stroke(?::([#a-zA-Z0-9]+))?\]([\s\S]*?)\[\/stroke\])|(\[(#[0-9a-fA-F]{3,8})\]([\s\S]*?)\[\/\])|(\[color[:=]([#a-zA-Z0-9]+)\]([\s\S]*?)\[\/color\])|(<span[^>]*style=["\x27]color:\s*([^;"\x27]+)["\x27][^>]*>([\s\S]*?)<\/span>)|(<font[^>]*color=["\x27]([^"\x27]+)["\x27][^>]*>([\s\S]*?)<\/font>)/gi;
+
+    let lastIndex = 0;
+    const tokens = [];
+    let match;
+
+    while ((match = tagRegex.exec(cleanedLine)) !== null) {
+      if (match.index > lastIndex) {
+        tokens.push({ type: "text", content: cleanedLine.slice(lastIndex, match.index), isBold: isLineBold });
+      }
+
+      if (match[1]) {
+        tokens.push({ type: "outline", color: match[2] || defaultColor, content: match[3], isBold: isLineBold });
+      } else if (match[4]) {
+        tokens.push({ type: "outline", color: match[5] || defaultColor, content: match[6], isBold: isLineBold });
+      } else if (match[7]) {
+        tokens.push({ type: "color", color: match[8], content: match[9], isBold: isLineBold });
+      } else if (match[10]) {
+        tokens.push({ type: "color", color: match[11], content: match[12], isBold: isLineBold });
+      } else if (match[13]) {
+        tokens.push({ type: "color", color: match[14], content: match[15], isBold: isLineBold });
+      } else if (match[16]) {
+        tokens.push({ type: "color", color: match[17], content: match[18], isBold: isLineBold });
+      }
+
+      lastIndex = tagRegex.lastIndex;
+    }
+
+    if (lastIndex < cleanedLine.length) {
+      tokens.push({ type: "text", content: cleanedLine.slice(lastIndex), isBold: isLineBold });
+    }
+
+    return tokens.map((token) => {
+      let size = null;
+      let content = token.content;
+      const sizeMatch = /\[size[:=]([0-9a-zA-Z%pxrem]+)\]([\s\S]*?)\[\/size\]/i.exec(content);
+      if (sizeMatch) {
+        size = sizeMatch[1];
+        if (/^\d+$/.test(size)) size = `${size}px`;
+        content = content.replace(/\[size[:=][0-9a-zA-Z%pxrem]+\]/gi, '').replace(/\[\/size\]/gi, '');
+      }
+      return { ...token, content, size };
+    });
+  };
+
+  const renderFormattedContent = (rawText, defaultColor, isMobile = false) => {
+    if (!rawText) return null;
+    const rawLines = rawText.split("\n");
 
     return (
-      <div className="flex flex-col space-y-0.5 sm:space-y-1">
+      <div className="flex flex-col space-y-0 leading-none m-0">
+        {rawLines.map((line, lIdx) => {
+          const trimmed = line.trim();
+          if (!trimmed) return null;
+
+          if (
+            trimmed.toUpperCase() === "—— FROM ——" ||
+            trimmed.toUpperCase() === "--- FROM ---" ||
+            trimmed.toUpperCase() === "[DIVIDER]FROM[/DIVIDER]" ||
+            trimmed.toUpperCase().includes("[DIVIDER]")
+          ) {
+            const dividerText = trimmed.replace(/\[\/?divider\]|[—\-]/gi, "").trim() || "FROM";
+            const dividerColor = defaultColor === "#ffffff" ? "rgba(255, 255, 255, 0.75)" : "#726B50";
+            return (
+              <div
+                key={lIdx}
+                className={`flex items-center justify-center gap-2.5 xs:gap-3 py-1 my-0.5 ${
+                  isMobile ? "w-full max-w-[200px] xs:max-w-[230px]" : "w-full max-w-[280px]"
+                }`}
+              >
+                <span
+                  style={{ backgroundColor: dividerColor }}
+                  className="flex-1 h-[1px] inline-block opacity-70"
+                />
+                <span
+                  style={{ color: dividerColor }}
+                  className={
+                    isMobile
+                      ? "text-[10px] xs:text-[11px] font-normal uppercase tracking-[0.24em] shrink-0"
+                      : "text-xs md:text-sm font-normal uppercase tracking-[0.28em] shrink-0"
+                  }
+                >
+                  {dividerText}
+                </span>
+                <span
+                  style={{ backgroundColor: dividerColor }}
+                  className="flex-1 h-[1px] inline-block opacity-70"
+                />
+              </div>
+            );
+          }
+
+          const tokens = parseLineTokens(trimmed, defaultColor);
+
+          return (
+            <div key={lIdx} className="flex flex-wrap items-baseline gap-x-1.5 leading-none">
+              {tokens.map((token, tIdx) => {
+                if (token.type === "outline") {
+                  const isSamman = /^samman$/i.test(token.content.trim());
+                  return (
+                    <span
+                      key={tIdx}
+                      style={{
+                        color: token.color,
+                        letterSpacing: isSamman ? (isMobile ? "0.012em" : "0.04em") : "0.04em",
+                      }}
+                      className={
+                        isMobile
+                          ? (isSamman
+                            ? "text-[32px] xs:text-[36.5px] sm:text-[39px] font-black leading-[0.95] font-sans uppercase block"
+                            : "text-[24px] xs:text-[28px] font-black tracking-tight leading-[0.95] font-sans uppercase block")
+                          : "text-3xl sm:text-4xl md:text-5xl lg:text-[56px] font-black tracking-tight leading-[0.95] font-sans uppercase block"
+                      }
+                    >
+                      {token.content}
+                    </span>
+                  );
+                }
+
+                if (token.type === "color") {
+                  const isLargeNum = /^\d+\s*lakh\+?/i.test(token.content.trim());
+                  const isStudentsPath = /^(students\s+found\s+their|right\s+career\s+path)$/i.test(token.content.trim());
+                  const isGov = /^(governor|of\s+kerala|governor\s+of\s+kerala)$/i.test(token.content.trim());
+                  const isHonorable = /^honorable$/i.test(token.content.trim());
+                  const isArif = /^(honorable\s+)?(sh\.?\s+|shri\s+)?arif\s+mohammed\s+khan$/i.test(token.content.trim());
+                  const isRashtra = /^rashtra\s+nirmata(\s+samman)?$/i.test(token.content.trim());
+                  const isSamman = /^samman$/i.test(token.content.trim());
+                  const isGajendra = /^(sh\.?\s+|shri\s+)?(from\s+shri\s+)?gajendra\s+chauhan$/i.test(token.content.trim());
+                  const isCompareUni = /^(compare|50\+\s*universities|choose\s+with(\s+confidence\.?)?|confidence\.?)$/i.test(token.content.trim());
+
+                  let className = isMobile
+                    ? (isStudentsPath
+                      ? "text-[18.5px] xs:text-[21px] sm:text-[23px] font-black tracking-tight leading-[1.05] font-sans block"
+                      : "text-[17px] xs:text-[19px] sm:text-[20px] font-black leading-[1.02] font-sans inline")
+                    : "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.0] tracking-tight m-0 font-sans inline";
+
+                  if (isLargeNum) {
+                    className = isMobile
+                      ? "text-[28px] xs:text-[33px] sm:text-[36px] font-black tracking-tight leading-none block"
+                      : "text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-none block";
+                  } else if (isGov) {
+                    className = isMobile
+                      ? "text-[24px] xs:text-[29px] sm:text-[36px] font-black tracking-tight leading-[1] font-sans uppercase block"
+                      : "text-2xl sm:text-3xl md:text-[34px] lg:text-[40px] xl:text-[44px] font-black tracking-wide leading-none font-sans uppercase block";
+                  } else if (isHonorable) {
+                    className = isMobile
+                      ? "text-[8px] xs:text-[9px] font-extrabold tracking-wider uppercase block pt-2.5 xs:pt-3"
+                      : "text-xs sm:text-sm md:text-base lg:text-[18px] font-black tracking-wide leading-snug uppercase block pt-0.5";
+                  } else if (isArif) {
+                    className = isMobile
+                      ? "text-[11px] xs:text-[12.5px] font-black tracking-tight uppercase block"
+                      : "text-xs sm:text-sm md:text-base lg:text-[18px] font-black tracking-wide leading-snug block pt-0.5";
+                  } else if (isRashtra) {
+                    className = isMobile
+                      ? "text-[16px] xs:text-[18.5px] font-black tracking-tight leading-[0.95] font-sans uppercase block"
+                      : "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.0] tracking-tight font-sans block";
+                  } else if (isSamman) {
+                    className = isMobile
+                      ? "text-[32px] xs:text-[36.5px] sm:text-[39px] font-black tracking-tight leading-[0.95] font-sans uppercase block"
+                      : "text-3xl sm:text-4xl md:text-5xl lg:text-[56px] font-black tracking-tight leading-[0.95] font-sans uppercase block";
+                  } else if (isGajendra) {
+                    className = isMobile
+                      ? "text-[11px] xs:text-[13px] font-black tracking-tight uppercase block"
+                      : "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.0] tracking-tight font-sans block";
+                  } else if (isCompareUni && isMobile) {
+                    className = "text-[21px] xs:text-[24px] sm:text-[26px] font-black tracking-tight leading-[1.02] font-sans block";
+                  }
+
+                  return (
+                    <span
+                      key={tIdx}
+                      style={{
+                        color: token.color,
+                        fontSize: (!isMobile && token.size) ? token.size : undefined,
+                        WebkitTextStroke: (token.isBold || isGov) ? (isMobile ? "0.35px " + token.color : "0.5px " + token.color) : undefined,
+                      }}
+                      className={className}
+                    >
+                      {token.content}
+                    </span>
+                  );
+                }
+
+                // Default text token
+                const isCompareUni = /^(compare|50\+\s*universities|choose\s+with(\s+confidence\.?)?|confidence\.?)$/i.test(token.content.trim());
+                const isStudentsPath = /^(students\s+found\s+their|right\s+career\s+path)$/i.test(token.content.trim());
+                const isLargeNum = /^\d+\s*lakh\+?/i.test(token.content.trim());
+                const isArif = /^(honorable\s+)?(sh\.?\s+|shri\s+)?arif\s+mohammed\s+khan$/i.test(token.content.trim());
+                let textClassName = isMobile
+                  ? (isLargeNum
+                    ? "text-[28px] xs:text-[33px] sm:text-[36px] font-black tracking-tight leading-none block"
+                    : isCompareUni
+                      ? "text-[21px] xs:text-[24px] sm:text-[26px] font-black tracking-tight leading-[1.02] font-sans block"
+                      : isStudentsPath
+                        ? "text-[18.5px] xs:text-[21px] sm:text-[23px] font-black tracking-tight leading-[1.05] font-sans block"
+                        : "text-[17px] xs:text-[19px] sm:text-[20px] font-black leading-[1.02] font-sans inline")
+                  : (isArif
+                    ? "text-xs sm:text-sm md:text-base lg:text-[18px] font-black tracking-wide leading-snug block pt-0.5"
+                    : "text-lg sm:text-2xl md:text-[28px] lg:text-[34px] font-black leading-[1.0] tracking-tight m-0 font-sans inline");
+
+                return (
+                  <span
+                    key={tIdx}
+                    style={{
+                      color: defaultColor,
+                      fontSize: (!isMobile && token.size) ? token.size : undefined,
+                      WebkitTextStroke: token.isBold ? (isMobile ? "0.35px " + defaultColor : "0.5px " + defaultColor) : undefined,
+                    }}
+                    className={textClassName}
+                  >
+                    {token.content}
+                  </span>
+                );
+              })}
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
+  const renderSlideHeading = (rawTitle, highlightText, isLight, titleColor, isPrimary = true) => {
+    if (!rawTitle) return null;
+    const defaultColor = titleColor || (isLight ? "#072C50" : "#ffffff");
+
+    if (hasFormattingTags(rawTitle)) {
+      return renderFormattedContent(rawTitle, defaultColor, false);
+    }
+
+    const highlightColor = isLight ? "#965D2C" : "#F6DE95";
+    const lines = rawTitle.split("\n");
+    const HeadingTag = isPrimary ? "h1" : "h2";
+
+    return (
+      <HeadingTag className="flex flex-col space-y-0 m-0 leading-none">
         {lines.map((line, lIdx) => {
-          const isGovernorHeader = line.toUpperCase() === "GOVERNOR OF KERALA";
-          const isGovernorSub = line.toUpperCase().includes("ARIF MOHAMMED KHAN");
-
-          if (isGovernorHeader) {
-            return (
-              <h1
-                key={lIdx}
-                style={{ color: "#965D2C" }}
-                className="text-xl sm:text-2xl md:text-3xl lg:text-[34px] xl:text-[36px] font-black tracking-wide leading-none m-0 font-sans uppercase"
-              >
-                {line}
-              </h1>
-            );
-          }
-
-          if (isGovernorSub) {
-            return (
-              <span
-                key={lIdx}
-                style={{ color: "#072C50" }}
-                className="text-xs sm:text-sm md:text-[15px] lg:text-[16px] font-black tracking-wide leading-snug m-0 uppercase"
-              >
-                {line}
-              </span>
-            );
-          }
-
           let lineContent = line;
           if (highlightText && line.toLowerCase().includes(highlightText.toLowerCase())) {
             const idx = line.toLowerCase().indexOf(highlightText.toLowerCase());
             const before = line.slice(0, idx);
             const match = line.slice(idx, idx + highlightText.length);
             const after = line.slice(idx + highlightText.length);
-
             lineContent = (
               <>
                 {before}
@@ -479,16 +693,16 @@ export function Hero({ initialHeroData = null }) {
           }
 
           return (
-            <h1
+            <span
               key={lIdx}
               style={{ color: defaultColor }}
-              className="text-lg sm:text-2xl md:text-[28px] lg:text-[32px] font-black leading-[1.15] tracking-tight m-0 font-sans"
+              className="text-lg sm:text-2xl md:text-[25px] lg:text-[30px] xl:text-[34px] font-black leading-[1.0] tracking-tight m-0 font-sans block md:whitespace-nowrap"
             >
               {lineContent}
-            </h1>
+            </span>
           );
         })}
-      </div>
+      </HeadingTag>
     );
   };
 
@@ -522,13 +736,116 @@ export function Hero({ initialHeroData = null }) {
     );
   };
 
+  // ==============================================================
+  // 📱 MOBILE-SPECIFIC HELPERS (strictly for mobile view < 768px)
+  // ==============================================================
+  const renderMobileSlideBadge = (badgeText, isLight) => {
+    if (!badgeText) return null;
+
+    if (badgeText.startsWith("#1")) {
+      return (
+        <div className="inline-flex items-center gap-1 text-[9.5px] xs:text-[10.5px] tracking-wide whitespace-nowrap">
+          <span className="font-serif italic font-extrabold text-[#F3CE7F] text-xs xs:text-sm">#1</span>
+          <span className="font-medium text-slate-100 italic whitespace-nowrap">{badgeText.replace(/^#1\s*/, "")}</span>
+        </div>
+      );
+    }
+
+    const cleanText = badgeText.replace(/^[#★⭐\s*]+/i, "").trim() || badgeText;
+
+    return (
+      <div
+        style={{
+          borderColor: isLight ? "rgba(184, 139, 74, 0.7)" : "rgba(255, 255, 255, 0.35)",
+          backgroundColor: isLight ? "rgba(253, 247, 236, 0.9)" : "rgba(255, 255, 255, 0.12)",
+        }}
+        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[8px] xs:text-[9px] font-extrabold tracking-wide border shadow-2xs w-fit whitespace-nowrap max-w-[85vw] mb-2 xs:mb-2"
+      >
+        <span className="text-amber-500 font-bold text-[8.5px] leading-none">⭐</span>
+        <span style={{ color: isLight ? "#072C50" : "#ffffff" }} className="leading-tight font-extrabold uppercase tracking-wide whitespace-nowrap">
+          {cleanText}
+        </span>
+      </div>
+    );
+  };
+
+  const renderMobileSlideHeading = (rawTitle, highlightText, isLight, titleColor) => {
+    if (!rawTitle) return null;
+    const defaultColor = titleColor || (isLight ? "#072C50" : "#ffffff");
+
+    if (hasFormattingTags(rawTitle)) {
+      return renderFormattedContent(rawTitle, defaultColor, true);
+    }
+
+    const highlightColor = isLight ? "#965D2C" : "#F6DE95";
+    const lines = rawTitle.split("\n");
+
+    return (
+      <div className="flex flex-col space-y-0 m-0 leading-none">
+        {lines.map((line, lIdx) => {
+          let lineContent = line;
+          if (highlightText && line.toLowerCase().includes(highlightText.toLowerCase())) {
+            const idx = line.toLowerCase().indexOf(highlightText.toLowerCase());
+            const before = line.slice(0, idx);
+            const match = line.slice(idx, idx + highlightText.length);
+            const after = line.slice(idx + highlightText.length);
+            lineContent = (
+              <>
+                {before}
+                <span style={{ color: highlightColor }}>{match}</span>
+                {after}
+              </>
+            );
+          }
+
+          const isLargeNum = /^\d+\s*lakh\+?/i.test(line.trim());
+          const isStudentsPath = /^(students\s+found\s+their|right\s+career\s+path)$/i.test(line.trim());
+          const isCompareUni = /^(compare|50\+\s*universities|choose\s+with|confidence\.?)$/i.test(line.trim());
+          const isGov = /^(governor|of\s+kerala|governor\s+of\s+kerala)$/i.test(line.trim());
+          const isHonorable = /^honorable$/i.test(line.trim());
+          const isSamman = /^samman$/i.test(line.trim());
+          let lineClass = "text-[17px] xs:text-[19px] sm:text-[20px] font-black leading-[1.02] tracking-tight m-0 font-sans block";
+          if (isLargeNum) {
+            lineClass = "text-[28px] xs:text-[33px] sm:text-[36px] font-black tracking-tight leading-none m-0 font-sans block";
+          } else if (isGov) {
+            lineClass = "text-[24px] xs:text-[29px] sm:text-[36px] font-black tracking-tight leading-[1] m-0 font-sans uppercase block";
+          } else if (isSamman) {
+            lineClass = "text-[32px] xs:text-[36.5px] sm:text-[39px] font-black tracking-tight leading-[0.95] m-0 font-sans uppercase block";
+          } else if (isHonorable) {
+            lineClass = "text-[8px] xs:text-[9px] font-extrabold tracking-wider uppercase block pt-2.5 xs:pt-3";
+          } else if (isCompareUni) {
+            lineClass = "text-[21px] xs:text-[24px] sm:text-[26px] font-black tracking-tight leading-[1.02] m-0 font-sans block";
+          } else if (isStudentsPath) {
+            lineClass = "text-[18.5px] xs:text-[21px] sm:text-[23px] font-black tracking-tight leading-[1.05] m-0 font-sans block";
+          }
+
+          return (
+            <span
+              key={lIdx}
+              style={{ color: defaultColor }}
+              className={lineClass}
+            >
+              {lineContent}
+            </span>
+          );
+        })}
+      </div>
+    );
+  };
+
   const renderHeroContent = (data, isSlide = false, index = 0) => {
     if (!data) return null;
 
     const badgeText = data?.badge_text;
+    const mobileBadgeText = data?.mobile_badge_text || data?.badge_text_mobile || badgeText;
+
     const title = data?.title;
+    const mobileTitle = data?.mobile_title || data?.title_mobile || title;
+
     const highlightText = data?.highlight_text;
+
     const subtitle = data?.subtitle;
+    const mobileSubtitle = data?.mobile_subtitle || data?.subtitle_mobile || subtitle;
 
     const isLight = data?.title_color === "#072C50" || data?.title_color === "#965D2C";
     const titleColor = data?.title_color || (isLight ? "#072C50" : "#ffffff");
@@ -583,8 +900,9 @@ export function Hero({ initialHeroData = null }) {
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
         }}
-        className="relative w-full overflow-hidden aspect-[1.9/1] sm:aspect-[3.2/1] md:aspect-[3.8/1] lg:aspect-[4/1] min-h-[200px] sm:min-h-[220px] md:min-h-[240px] lg:min-h-[280px] max-h-[340px] flex items-center select-none py-3.5 sm:py-0"
+        className="relative w-full overflow-hidden aspect-[1.9/1] sm:aspect-[3.2/1] md:aspect-[3.8/1] lg:aspect-[4/1] max-h-[340px] flex items-center select-none py-2 sm:py-0"
       >
+        {/* Full-width banner image (Mobile & Desktop) */}
         {desktopBannerUrl && (
           <div className="absolute inset-0 w-full h-full pointer-events-none select-none overflow-hidden">
             <div className={`relative w-full h-full ${mobileBannerUrl && mobileBannerUrl !== desktopBannerUrl ? "hidden md:block" : "block"}`}>
@@ -620,35 +938,82 @@ export function Hero({ initialHeroData = null }) {
         )}
 
         {/* Mobile slide click target (if slide has a primary button/action) */}
-        {primaryBtn?.enabled !== false && (
-          primaryBtn?.is_modal ? (
-            <button
-              type="button"
-              onClick={handlePrimaryClick}
-              aria-label={primaryBtn.text || "Hero action"}
-              className="md:hidden absolute inset-0 z-20 w-full h-full bg-transparent border-0 cursor-pointer p-0 m-0"
-            />
-          ) : primaryBtn?.url ? (
-            <Link
-              href={primaryBtn.url}
-              aria-label={primaryBtn.text || "Hero action"}
-              className="md:hidden absolute inset-0 z-20 w-full h-full cursor-pointer"
-            />
-          ) : null
-        )}
+        {(!primaryBtn?.text || primaryBtn?.enabled === false || primaryBtn?.is_modal) ? (
+          <button
+            type="button"
+            onClick={handlePrimaryClick}
+            aria-label={primaryBtn?.text || "Hero action"}
+            className="md:hidden absolute inset-0 z-20 w-full h-full bg-transparent border-0 cursor-pointer p-0 m-0"
+          />
+        ) : primaryBtn?.url ? (
+          <Link
+            href={primaryBtn.url}
+            aria-label={primaryBtn.text || "Hero action"}
+            className="md:hidden absolute inset-0 z-20 w-full h-full cursor-pointer"
+          />
+        ) : null}
 
-        {/* Desktop-only: database text, headings, badges & CTA buttons */}
+        {/* 📱 MOBILE HERO VIEW (strictly md:hidden) */}
+        <Container className="md:hidden relative z-10 w-full h-full flex items-center pointer-events-auto">
+          <div className="w-[62%] xs:w-[58%] max-w-[260px] xs:max-w-[285px] flex flex-col justify-center items-start space-y-1 xs:space-y-1.5 z-10 py-1.5 xs:py-2 pl-2.5 xs:pl-3">
+            {renderMobileSlideBadge(mobileBadgeText, isLight)}
+            {renderMobileSlideHeading(mobileTitle, highlightText, isLight, titleColor)}
+
+            {mobileSubtitle && (
+              <p
+                style={{ color: isLight ? "#072C50" : (subtitleColor || "#cbd5e1") }}
+                className="text-[9px] xs:text-[9px] leading-tight font-normal line-clamp-3 max-w-full !mt-1.5 xs:!mt-2 whitespace-pre-line"
+              >
+                {(mobileSubtitle || "").replace(/\[\/?\]/g, "")}
+              </p>
+            )}
+
+            {/* Mobile Primary Button if enabled (e.g. Compare Now on Slide 4) */}
+            {primaryBtn?.enabled !== false && primaryBtn?.text && (
+              <div className="pt-0.5">
+                {primaryBtn?.is_modal ? (
+                  <button
+                    type="button"
+                    onClick={handlePrimaryClick}
+                    style={{
+                      background: "linear-gradient(180deg, #F3CE7F 0%, #E7B85D 100%)",
+                      color: "#072C50",
+                      border: "1px solid rgba(226, 176, 83, 0.6)",
+                    }}
+                    className="px-2 py-0.5 rounded-md font-bold text-[9.5px] xs:text-[10.5px] shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap"
+                  >
+                    {primaryBtn.text}
+                  </button>
+                ) : (
+                  <Link
+                    href={primaryBtn?.url || "/counselling"}
+                    style={{
+                      background: "linear-gradient(180deg, #F3CE7F 0%, #E7B85D 100%)",
+                      color: "#072C50",
+                      border: "1px solid rgba(226, 176, 83, 0.6)",
+                    }}
+                    className="inline-block px-2 py-0.5 rounded-md font-bold text-[9.5px] xs:text-[10.5px] shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap"
+                  >
+                    {primaryBtn.text}
+                  </Link>
+                )}
+              </div>
+            )}
+          </div>
+        </Container>
+
+        {/* 💻 DESKTOP HERO VIEW (hidden md:block - 100% UNTOUCHED from 88bde7c) */}
         <Container className="hidden md:block relative z-10 w-full pointer-events-auto">
-          <div className="w-full max-w-[70%] sm:max-w-[50%] md:max-w-[46%] lg:max-w-[44%] flex flex-col items-start space-y-1.5 sm:space-y-2 md:space-y-2.5">
+          <div className="w-full max-w-[70%] sm:max-w-[56%] md:max-w-[54%] lg:max-w-[54%] xl:max-w-[52%] flex flex-col items-start space-y-1.5 sm:space-y-2 md:space-y-2.5">
             {renderSlideBadge(badgeText, isLight)}
-            {renderSlideHeading(title, highlightText, isLight, titleColor)}
+            {renderSlideHeading(title, highlightText, isLight, titleColor, index === 0)}
 
             {subtitle && (
               <p
-                style={{ color: subtitleColor }}
-                className="text-[10px] sm:text-xs md:text-[13px] leading-tight sm:leading-relaxed font-normal line-clamp-2 max-w-sm sm:max-w-md lg:max-w-lg m-0"
+                style={{ color: isLight ? "#072C50" : (subtitleColor || "#cbd5e1") }}
+                className="text-[10px] sm:text-xs md:text-[13px] leading-tight sm:leading-tight font-normal line-clamp-3 max-w-sm sm:max-w-md lg:max-w-lg mt-2 sm:mt-2.5 whitespace-pre-line"
               >
-                {subtitle}
+                {(subtitle || "").replace(/\[\/?\]/g, "")}
               </p>
             )}
 
@@ -679,9 +1044,8 @@ export function Hero({ initialHeroData = null }) {
                       background: "linear-gradient(180deg, #F3CE7F 0%, #E7B85D 100%)",
                       color: "#072C50",
                       border: "1px solid rgba(226, 176, 83, 0.6)",
-                      boxShadow: isLight ? "0 4px 12px rgba(184, 139, 74, 0.35)" : "0 4px 12px rgba(0, 0, 0, 0.25)",
                     }}
-                    className="px-4 py-1.5 sm:px-5 sm:py-2 rounded-lg font-bold text-xs sm:text-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap"
+                    className="px-3.5 py-1.5 rounded-lg font-bold text-xs shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
                   >
                     {primaryBtn.text}
                   </button>
@@ -692,28 +1056,35 @@ export function Hero({ initialHeroData = null }) {
                       background: "linear-gradient(180deg, #F3CE7F 0%, #E7B85D 100%)",
                       color: "#072C50",
                       border: "1px solid rgba(226, 176, 83, 0.6)",
-                      boxShadow: isLight ? "0 4px 12px rgba(184, 139, 74, 0.35)" : "0 4px 12px rgba(0, 0, 0, 0.25)",
                     }}
-                    className="px-4 py-1.5 sm:px-5 sm:py-2 rounded-lg font-bold text-xs sm:text-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap"
+                    className="px-3.5 py-1.5 rounded-lg font-bold text-xs shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
                   >
                     {primaryBtn.text}
                   </Link>
                 )
               )}
 
-              {secondaryBtn?.enabled && secondaryBtn?.text && (
+              {secondaryBtn?.enabled !== false && secondaryBtn?.text && (
                 secondaryBtn?.is_modal ? (
                   <button
                     type="button"
                     onClick={handleSecondaryClick}
-                    className="hidden sm:inline-block px-4 py-1.5 sm:px-4.5 sm:py-2 rounded-lg font-bold text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap border border-white/30 bg-transparent text-white hover:bg-white/10"
+                    style={{
+                      borderColor: isLight ? "#EEC471" : "rgba(255, 255, 255, 0.4)",
+                      color: isLight ? "#072C50" : "#ffffff",
+                    }}
+                    className="px-3 py-1.5 rounded-lg font-medium text-xs border hover:bg-white/10 transition-all cursor-pointer"
                   >
                     {secondaryBtn.text}
                   </button>
                 ) : (
                   <Link
                     href={secondaryBtn?.url || "/courses"}
-                    className="hidden sm:inline-block px-4 py-1.5 sm:px-4.5 sm:py-2 rounded-lg font-bold text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap border border-white/30 bg-transparent text-white hover:bg-white/10"
+                    style={{
+                      borderColor: isLight ? "#EEC471" : "rgba(255, 255, 255, 0.4)",
+                      color: isLight ? "#072C50" : "#ffffff",
+                    }}
+                    className="px-3 py-1.5 rounded-lg font-medium text-xs border hover:bg-white/10 transition-all cursor-pointer"
                   >
                     {secondaryBtn.text}
                   </Link>
@@ -729,7 +1100,7 @@ export function Hero({ initialHeroData = null }) {
   return (
     <section
       id="hero-section"
-      className="relative w-full overflow-hidden aspect-[1.9/1] sm:aspect-[3.2/1] md:aspect-[3.8/1] lg:aspect-[4/1] min-h-[200px] sm:min-h-[220px] md:min-h-[240px] lg:min-h-[280px] max-h-[340px]"
+      className="relative w-full overflow-hidden aspect-[1.9/1] sm:aspect-[3.2/1] md:aspect-[3.8/1] lg:aspect-[4/1] max-h-[340px]"
     >
       {isCarousel ? (
         <div className="relative w-full h-full group/hero">

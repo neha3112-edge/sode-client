@@ -167,10 +167,10 @@ export function Category({ categories = [], universities = [], programs = [], co
         setActiveCategory(null);
       }
       const courseSlug = getItemSlug(item);
-      if (item.targetUrl && !/[0-9a-fA-F]{24}/.test(item.targetUrl)) {
+      if (item.targetUrl && !/[0-9a-fA-F]{24}/.test(item.targetUrl) && !item.targetUrl.includes("course=&") && item.targetUrl !== "/courses?course=") {
         router.push(item.targetUrl);
       } else {
-        router.push(`/courses?course=${encodeURIComponent(courseSlug)}`);
+        router.push(courseSlug ? `/courses?course=${encodeURIComponent(courseSlug)}` : `/courses`);
       }
       return;
     }
@@ -189,18 +189,16 @@ export function Category({ categories = [], universities = [], programs = [], co
       return;
     }
 
-    // 2. If Category Target Type is COURSE or modalType is COURSES
-    const isCourseCategory =
-      item.modalType === "COURSES" ||
-      item.targetType === "COURSE" ||
-      (Array.isArray(item.courses) && item.courses.length > 0);
+    // 2. If Category Target Type is COURSE or modalType is COURSES AND has courses
+    const hasCourses =
+      item.modalType !== "SUB_CATEGORIES" &&
+      ((Array.isArray(item.courses) && item.courses.length > 0) ||
+      (item.modalType === "COURSES" && Array.isArray(item.items) && item.items.length > 0));
 
-    if (isCourseCategory) {
+    if (hasCourses) {
       const courseItems = (Array.isArray(item.courses) && item.courses.length > 0)
         ? item.courses
-        : (Array.isArray(item.items) && item.items.length > 0)
-          ? item.items
-          : [];
+        : item.items;
 
       setModalData({
         category: item,

@@ -1,176 +1,18 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { EditOutlined, RedoOutlined } from "@ant-design/icons";
-import { Form, Input, Modal, Button, Select, message as staticMessage, App } from "antd";
-import { Phone, ShieldCheck, User, Mail, GraduationCap } from "lucide-react";
+import Image from "next/image";
+import { Form, Input, Button, Checkbox, Select, message as staticMessage, App } from "antd";
+import {
+  ArrowLeft,
+  X,
+  Mail,
+  User,
+  MapPin,
+  ArrowRight,
+  GraduationCap,
+} from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
-
-/* =========================================================
-   CLEAN COURSE NAME (STRIP MODES LIKE ONLINE / DISTANCE)
-========================================================= */
-function cleanCourseName(courseStr, uniName = "") {
-  if (!courseStr) return "";
-  let clean = String(courseStr).trim();
-  if (clean.includes("::")) {
-    const parts = clean.split("::");
-    clean = parts[0] || parts[1];
-  }
-
-  // Strip university name if attached (e.g. "- Sikkim Manipal University")
-  if (uniName) {
-    const escapedUni = String(uniName).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    clean = clean.replace(new RegExp(`[-–—|/]?\\s*${escapedUni}.*`, "gi"), "").trim();
-  }
-
-  // Strip generic university terms
-  clean = clean.replace(/[-–—|/]?\s*(online university|university|deemed university).*/gi, "").trim();
-
-  // Strip Mode keywords (Online, Distance, Hybrid, Regular, Open, Executive, ODL)
-  clean = clean.replace(/\b(online|distance|hybrid|regular|open|executive|odl)\b/gi, "").trim();
-  clean = clean.replace(/\s+/g, " ").replace(/^[-–—\s/:]+|[-–—\s/:]+$/g, "").trim();
-
-  // Convert short acronym slugs to uppercase (e.g. "ba" -> "BA", "mba" -> "MBA")
-  if (clean.length <= 5 && !clean.includes(" ")) {
-    clean = clean.toUpperCase();
-  }
-
-  return clean;
-}
-
-function isSameAsUniversity(courseName, uniName = "") {
-  if (!courseName) return false;
-  const c = String(courseName).toLowerCase().replace(/[^a-z0-9]/g, "");
-  if (!c) return true;
-  if (
-    c.includes("university") ||
-    c.includes("college") ||
-    c.includes("institute") ||
-    c.includes("vidyapeeth")
-  ) {
-    return true;
-  }
-  if (uniName) {
-    const u = String(uniName).toLowerCase().replace(/[^a-z0-9]/g, "");
-    if (u) {
-      if (c === u) return true;
-      if (c.length >= 6 && (u.includes(c) || c.includes(u))) return true;
-    }
-  }
-  return false;
-}
-
-/* =========================================================
-   AUTO-DETECT UNIVERSITY AND COURSE FROM CURRENT URL PATH
-========================================================= */
-function detectPageContext() {
-  if (typeof window === "undefined") return { university: "", course: "", isCoursePage: false };
-  try {
-    const path = window.location.pathname;
-    if (path.includes("/universities/")) {
-      const segments = path.split("/").filter(Boolean);
-      const uIndex = segments.indexOf("universities");
-      if (uIndex !== -1) {
-        const uniSlug = segments[uIndex + 1];
-        const courseSlug = segments[uIndex + 2];
-        const uniName = uniSlug
-          ? uniSlug.toLowerCase() === "upes"
-            ? "UPES"
-            : uniSlug
-              .split("-")
-              .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-              .join(" ")
-          : "";
-
-        if (courseSlug) {
-          return {
-            university: uniName,
-            course: cleanCourseName(courseSlug),
-            isCoursePage: true,
-          };
-        } else {
-          return {
-            university: uniName,
-            course: "",
-            isCoursePage: false,
-          };
-        }
-      }
-    }
-  } catch (err) {
-    // fallback
-  }
-  return { university: "", course: "", isCoursePage: false };
-}
-
-/* =========================================================
-   EXTRACT AVAILABLE COURSES FOR DROPDOWN (DYNAMIC FALLBACK)
-========================================================= */
-function getAvailableCourses(contextPayload, currentUni = "") {
-  const set = new Set();
-
-  // 1. From contextPayload.courses (passed from university view)
-  if (Array.isArray(contextPayload?.courses) && contextPayload.courses.length > 0) {
-    contextPayload.courses.forEach((c) => {
-      const clean = cleanCourseName(c, currentUni);
-      if (clean && !isSameAsUniversity(clean, currentUni)) set.add(clean);
-    });
-  }
-
-  // 2. From window.__CURRENT_PAGE_COURSES__ (cached by UniversityClientView)
-  if (typeof window !== "undefined" && Array.isArray(window.__CURRENT_PAGE_COURSES__)) {
-    window.__CURRENT_PAGE_COURSES__.forEach((c) => {
-      const clean = cleanCourseName(c, currentUni);
-      if (clean && !isSameAsUniversity(clean, currentUni)) set.add(clean);
-    });
-  }
-
-  // 3. Extract directly from DOM of the current university page
-  if (typeof document !== "undefined") {
-    document
-      .querySelectorAll(
-        "#programs a, #programs h3, #programs h4, [data-nav-label='Programs'] a, #university-courses-section a, #university-courses-section h3, #university-courses-section h4, [data-nav-label='Courses'] a, .university-courses-grid a"
-      )
-      .forEach((el) => {
-        const text = el.innerText?.trim();
-        const clean = cleanCourseName(text, currentUni);
-        if (
-          clean &&
-          clean.length <= 30 &&
-          !isSameAsUniversity(clean, currentUni) &&
-          !clean.toLowerCase().includes("filter") &&
-          !clean.toLowerCase().includes("apply") &&
-          !clean.toLowerCase().includes("brochure")
-        ) {
-          set.add(clean);
-        }
-      });
-
-    if (set.size === 0) {
-      document
-        .querySelectorAll("a[href*='/online-'], a[href*='/distance-']")
-        .forEach((el) => {
-          const text = el.innerText?.trim();
-          const clean = cleanCourseName(text, currentUni);
-          if (
-            clean &&
-            clean.length <= 30 &&
-            !isSameAsUniversity(clean, currentUni) &&
-            !clean.toLowerCase().includes("apply") &&
-            !clean.toLowerCase().includes("brochure")
-          ) {
-            set.add(clean);
-          }
-        });
-    }
-  }
-
-  if (set.size > 0) {
-    return Array.from(set);
-  }
-
-  return ["MBA", "BBA", "BCA", "MCA", "B.Com", "M.Com", "BA", "MA", "B.Sc", "M.Sc"];
-}
 
 /* =========================================================
    EXTRACT UTM & GOOGLE TRACKING PARAMS
@@ -189,18 +31,31 @@ function getUTMParams() {
   }
 
   return {
-    utm_source:
-      params.get("utm_source") || parsedData.utm_source || "Organic",
-    utm_medium:
-      params.get("utm_medium") || parsedData.utm_medium || "SODE CO IN Organic",
-    utm_campaign:
-      params.get("utm_campaign") || parsedData.utm_campaign || "",
+    utm_source: params.get("utm_source") || parsedData.utm_source || "Organic",
+    utm_medium: params.get("utm_medium") || parsedData.utm_medium || "SODE CO IN Organic",
+    utm_campaign: params.get("utm_campaign") || parsedData.utm_campaign || "",
     utm_term: params.get("utm_term") || parsedData.utm_term || "",
     utm_content: params.get("utm_content") || parsedData.utm_content || "",
     utm_adgroup: params.get("utm_adgroup") || parsedData.utm_adgroup || "",
     gclid: params.get("gclid") || parsedData.gclid || "",
   };
 }
+
+/* =========================================================
+   CRISP INDIAN TRICOLOR SVG ICON
+========================================================= */
+const IndiaFlagIcon = () => (
+  <svg
+    className="w-5 h-3.5 rounded-[2px] shadow-xs inline-block overflow-hidden shrink-0"
+    viewBox="0 0 640 480"
+  >
+    <path fill="#f93" d="M0 0h640v160H0z" />
+    <path fill="#fff" d="M0 160h640v160H0z" />
+    <path fill="#128807" d="M0 320h640v160H0z" />
+    <circle cx="320" cy="240" r="56" fill="none" stroke="#000080" strokeWidth="8" />
+    <circle cx="320" cy="240" r="14" fill="#000080" />
+  </svg>
+);
 
 export default function ModalOTP({
   open: controlledOpen,
@@ -212,35 +67,66 @@ export default function ModalOTP({
   const pathname = usePathname();
   const antdApp = App.useApp();
   const message = antdApp?.message || staticMessage;
-
   const [form] = Form.useForm();
+
   const [isOpen, setIsOpen] = useState(Boolean(controlledOpen));
-  const [step, setStep] = useState("phone"); // 'phone' | 'otp' | 'details'
+  // Steps: 'phone' (1) -> 'otp' (2) -> 'email' (3) -> 'course' (4) -> 'state' (5) -> 'name' (6)
+  const [step, setStep] = useState("phone");
+
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
   const [resendTimer, setResendTimer] = useState(30);
   const [canResend, setCanResend] = useState(false);
   const [contextPayload, setContextPayload] = useState(null);
+  const [stateOptions, setStateOptions] = useState([]);
+  const [courseOptions, setCourseOptions] = useState([]);
 
-  // Track if auto-opened by scroll or dismissed on current page
-  const hasAutoTriggeredRef = useRef(false);
-  const isDismissedRef = useRef(false);
-
-  // Reset scroll-trigger state when navigating to another page
+  // Fetch States from backend
   useEffect(() => {
-    hasAutoTriggeredRef.current = false;
-    isDismissedRef.current = false;
-  }, [pathname]);
+    let isMounted = true;
+    fetch("/api/state/v1/options")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!isMounted) return;
+        const list = Array.isArray(data?.result) ? data.result : [];
+        if (list.length > 0) {
+          const names = list.filter((s) => s?.name && !s.removed).map((s) => s.name);
+          if (names.length > 0) setStateOptions(names);
+        }
+      })
+      .catch(() => { });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
+  // Fetch Courses from backend
+  useEffect(() => {
+    let isMounted = true;
+    fetch("/api/courses/v1/options")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!isMounted) return;
+        const list = Array.isArray(data?.result) ? data.result : [];
+        if (list.length > 0) {
+          const names = list.filter((c) => c?.name && !c.removed).map((c) => c.name);
+          if (names.length > 0) setCourseOptions(names);
+        }
+      })
+      .catch(() => { });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
-
+  // Sync controlled open
   useEffect(() => {
     if (controlledOpen !== undefined) {
       setIsOpen(Boolean(controlledOpen));
     }
   }, [controlledOpen]);
 
-  // Resend Countdown Timer
+  // Resend countdown timer
   useEffect(() => {
     let interval = null;
     if (step === "otp" && resendTimer > 0) {
@@ -255,15 +141,22 @@ export default function ModalOTP({
     };
   }, [step, resendTimer]);
 
+  // Global event listener for modal triggers
   useEffect(() => {
     const handleTriggerClick = (e) => {
+      // Ignore clicks happening inside the modal dialog or antd popups/dropdowns
+      if (
+        e.target.closest("[data-modal-container='true']") ||
+        e.target.closest(".ant-select-dropdown") ||
+        e.target.closest(".ant-popover")
+      ) return;
+
       const target = e.target.closest(
-        `#${triggerId}, #${triggerId}-btn, [data-modal="${triggerId}"], [data-target="#${triggerId}"], [data-target="${triggerId}"], a[href="#${triggerId}"]`
+        `#${triggerId}-btn, [data-modal="${triggerId}"], [data-target="#${triggerId}"], [data-target="${triggerId}"], a[href="#${triggerId}"]`
       );
       if (target) {
         e.preventDefault();
         e.stopPropagation();
-        isDismissedRef.current = false;
         setIsOpen(true);
       }
     };
@@ -271,9 +164,11 @@ export default function ModalOTP({
     const handleCustomEvent = (e) => {
       if (e?.detail) {
         setContextPayload(e.detail);
+        if (e.detail.course || e.detail.defaultCourse) {
+          form.setFieldValue("course", e.detail.course || e.detail.defaultCourse);
+        }
       }
       if (!e.detail || e.detail.targetId === triggerId || !e.detail.targetId) {
-        isDismissedRef.current = false;
         setIsOpen(true);
       }
     };
@@ -289,10 +184,84 @@ export default function ModalOTP({
       window.removeEventListener("sode:open-counselling-modal", handleCustomEvent);
       window.removeEventListener("open-counselling-modal", handleCustomEvent);
     };
-  }, [triggerId]);
+  }, [triggerId, form]);
+
+  // 45% Scroll auto-popup listener
+  const hasTriggeredByScroll = useRef(false);
+
+  // Reset scroll trigger when route / page changes
+  useEffect(() => {
+    hasTriggeredByScroll.current = false;
+  }, [pathname]);
+
+  // Global 45% page scroll trigger to auto-open modal
+  useEffect(() => {
+    if (pathname === "/thank-you" || pathname?.startsWith("/thank-you")) return;
+
+    let ticking = false;
+
+    const handleScroll = () => {
+      if (hasTriggeredByScroll.current || isOpen) return;
+
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          if (hasTriggeredByScroll.current || isOpen) {
+            ticking = false;
+            return;
+          }
+
+          try {
+            if (typeof window !== "undefined" && sessionStorage.getItem("lead_submitted") === "true") {
+              ticking = false;
+              return;
+            }
+          } catch {
+            // ignore storage restrictions
+          }
+
+          const scrollTop = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
+          const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+
+          if (scrollHeight > 150) {
+            const scrollPercentage = (scrollTop / scrollHeight) * 100;
+            if (scrollPercentage >= 45) {
+              hasTriggeredByScroll.current = true;
+              setIsOpen(true);
+            }
+          }
+
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [pathname, isOpen]);
+
+  // Lock body scroll and listen for Escape key when modal is open
+  useEffect(() => {
+    if (!isOpen) return;
+
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        handleClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen]);
 
   const handleClose = () => {
-    isDismissedRef.current = true;
     setIsOpen(false);
     setStep("phone");
     setPhone("");
@@ -301,186 +270,234 @@ export default function ModalOTP({
     if (onCancel) onCancel();
   };
 
-  /* =========================================================
-     DETECT IF COURSE IS ALREADY KNOWN OR NEEDS SELECT DROPDOWN
-  ========================================================= */
-  const pageContext = detectPageContext();
+  const handleBack = () => {
+    if (step === "otp") setStep("phone");
+    else if (step === "email") setStep("otp");
+    else if (step === "course") setStep("email");
+    else if (step === "state") setStep("course");
+    else if (step === "name") setStep("state");
+  };
 
   const resolvedUni = (
     contextPayload?.university ||
     contextPayload?.university_name ||
     (typeof window !== "undefined" && window.__CURRENT_PAGE_UNIVERSITY__) ||
-    pageContext.university ||
-    "UPES"
+    "SODE"
   ).trim();
 
-  // 1. Explicitly passed course from button/card
-  const passedCourseRaw =
-    contextPayload?.course ||
-    contextPayload?.courseName ||
-    "";
+  /* =========================================================
+     STEP 1: SEND OTP (Antd Form)
+  ========================================================= */
+  const handleSendOtp = async (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    if (loading) return;
 
-  // 2. Global course from current course page (if on a course page)
-  const globalPageCourse =
-    (typeof window !== "undefined" && window.__CURRENT_PAGE_COURSE__) ||
-    pageContext.course ||
-    "";
+    try {
+      const values = await form.validateFields(["phone", "consent"]);
+      const phoneVal = values?.phone || form.getFieldValue("phone");
+      const clean = String(phoneVal || "").replace(/\D/g, "").slice(-10);
 
-  const rawCourse = passedCourseRaw || globalPageCourse || pageContext.course || "";
-  const cleanedCourse = cleanCourseName(rawCourse, resolvedUni) || pageContext.course || "";
+      setLoading(true);
+      const res = await fetch("/api/otp/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: clean, purpose: "counselling" }),
+      });
 
-  // If we are on a course page OR have a valid pre-selected course
-  const isLikelyUni = isSameAsUniversity(cleanedCourse, resolvedUni);
-  const isCoursePreSelected = Boolean(
-    pageContext.isCoursePage || (cleanedCourse && !isLikelyUni)
-  );
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data?.message || "Failed to send OTP");
+      }
 
-  const availableCourses = getAvailableCourses(contextPayload, resolvedUni);
+      setPhone(clean);
+      message.success(data?.message || `OTP sent to +91 ${clean}`);
+      setStep("otp");
+      setResendTimer(30);
+      setCanResend(false);
+      form.setFieldValue("otp", "");
+    } catch (err) {
+      if (err?.errorFields) return;
+      console.error("[ModalOTP handleSendOtp error]:", err);
+      message.error(err.message || "Something went wrong sending OTP");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   /* =========================================================
-     STEP 1: SEND OTP
+     STEP 2: VERIFY OTP (Antd Form)
   ========================================================= */
-  const handleSendOtp = async (values) => {
+  const handleVerifyOtp = async (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    if (loading) return;
+
+    try {
+      const values = await form.validateFields(["otp"]);
+      const otpVal = values?.otp || form.getFieldValue("otp");
+      const cleanPhone = phone || String(form.getFieldValue("phone") || "").replace(/\D/g, "").slice(-10);
+
+      setLoading(true);
+      const res = await fetch("/api/otp/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: cleanPhone, otp: String(otpVal).trim() }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data?.message || "Invalid OTP. Please check and try again.");
+      }
+
+      message.success("OTP verified successfully!");
+      setStep("email");
+    } catch (err) {
+      if (err?.errorFields) return;
+      message.error(err.message || "Invalid OTP. Please check and try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    if (!canResend) return;
+    const cleanPhone = phone || String(form.getFieldValue("phone") || "").replace(/\D/g, "").slice(-10);
+    if (!cleanPhone) return;
+
     setLoading(true);
     try {
-      const cleanPhone = String(values.phone).replace(/\D/g, "").slice(-10);
-      setPhone(cleanPhone);
-
       const res = await fetch("/api/otp/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phone: cleanPhone, purpose: "counselling" }),
       });
-
       const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.message || "Failed to send OTP");
-      }
-
-      setStep("otp");
+      if (!res.ok || !data.success) throw new Error(data?.message || "Failed to resend OTP");
+      message.success("OTP resent successfully!");
       setResendTimer(30);
       setCanResend(false);
+      form.setFieldValue("otp", "");
     } catch (err) {
-      console.error("OTP send error:", err);
-      form.setFields([
-        {
-          name: "phone",
-          errors: [err.message || "Something went wrong sending OTP"],
-        },
-      ]);
+      message.error(err.message || "Failed to resend OTP");
     } finally {
       setLoading(false);
     }
   };
 
   /* =========================================================
-     STEP 2: VERIFY OTP & CREATE INITIAL LEAD
+     STEP 3: EMAIL ADDRESS
   ========================================================= */
-  const handleVerifyOtp = async (values) => {
-    setLoading(true);
+  const handleNextToCourse = async (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     try {
-      const cleanPhone = phone;
-      const otpCode = String(values.otp).trim();
+      await form.validateFields(["email"]);
+      setStep("course");
+    } catch (err) {
+      // Handled by Antd Form
+    }
+  };
 
-      // 1. Verify OTP with Backend Service
-      const verifyRes = await fetch("/api/otp/verify", {
+  /* =========================================================
+     STEP 4: COURSE SELECTION
+  ========================================================= */
+  const handleNextToState = async (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    try {
+      await form.validateFields(["course"]);
+      setStep("state");
+    } catch (err) {
+      // Handled by Antd Form
+    }
+  };
+
+  /* =========================================================
+     STEP 5: YOUR STATE
+  ========================================================= */
+  const handleNextToName = async (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    try {
+      await form.validateFields(["state"]);
+      setStep("name");
+    } catch (err) {
+      // Handled by Antd Form
+    }
+  };
+
+  /* =========================================================
+     STEP 6: FULL NAME & FINAL SUBMIT
+  ========================================================= */
+  const handleFinalSubmit = async (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    if (loading) return;
+
+    try {
+      await form.validateFields(["name"]);
+      const values = form.getFieldsValue(true);
+      const cleanPhone = phone || String(values.phone || "").replace(/\D/g, "").slice(-10);
+
+      setLoading(true);
+      const payload = {
+        phone: cleanPhone,
+        name: String(values.name || "").trim(),
+        email: String(values.email || "").trim(),
+        course: values.course || "",
+        state: values.state || "",
+        university_name: resolvedUni,
+        form_name: contextPayload?.action || contextPayload?.title || "Book 1:1 Free Counseling",
+        source: contextPayload?.source || "SODE",
+        page_url: typeof window !== "undefined" ? window.location.href : "",
+        ...getUTMParams(),
+      };
+
+      const res = await fetch("/api/lead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: cleanPhone, otp: otpCode }),
+        body: JSON.stringify(payload),
       });
 
-      const verifyData = await verifyRes.json();
-      if (!verifyRes.ok || !verifyData.success) {
-        form.setFields([
-          {
-            name: "otp",
-            errors: [verifyData?.message || "Invalid OTP. Please enter the correct code."],
-          },
-        ]);
-        return;
+      const data = await res.json();
+      if (!res.ok || !data?.success) {
+        throw new Error(data?.message || "Failed to submit lead");
       }
 
-      // 2. Submit Lead immediately upon verification (so lead is captured)
-      const formName =
-        contextPayload?.action ||
-        contextPayload?.title ||
-        "Get 100% FREE Counseling";
+      try {
+        if (typeof window !== "undefined") {
+          sessionStorage.setItem("lead_submitted", "true");
+        }
+      } catch {
+        // ignore
+      }
 
-      const leadPayload = {
-        phone: cleanPhone,
-        name: "",
-        course: isCoursePreSelected ? cleanedCourse : "",
-        university_name: resolvedUni || "UPES",
-        form_name: formName,
-        source: contextPayload?.source || "SODE",
-        page_url: typeof window !== "undefined" ? window.location.href : "",
-        ...getUTMParams(),
-      };
-
-      console.log("🚀 [OTP VERIFIED] Creating Lead:", leadPayload);
-
-      await fetch("/api/lead", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(leadPayload),
-      });
-
-      // Proceed to Step 3: Full Name, Email & Course (if needed)
-      setStep("details");
-    } catch (err) {
-      console.error("Verification error:", err);
-      form.setFields([
-        {
-          name: "otp",
-          errors: [err.message || "Invalid OTP. Please enter the correct code."],
-        },
-      ]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  /* =========================================================
-     STEP 3: SAVE FULL NAME, EMAIL & COURSE (OR REDIRECT TO THANK YOU)
-  ========================================================= */
-  const handleSaveDetails = async (values) => {
-    setLoading(true);
-    try {
-      const cleanPhone = phone;
-      const finalCourse = cleanCourseName(
-        values?.course || (isCoursePreSelected ? cleanedCourse : "")
-      );
-
-      const formName =
-        contextPayload?.action ||
-        contextPayload?.title ||
-        "Get 100% FREE Counseling";
-
-      const updatePayload = {
-        phone: cleanPhone,
-        name: values?.name ? String(values.name).trim() : "",
-        email: values?.email ? String(values.email).trim() : "",
-        course: finalCourse,
-        university_name: resolvedUni || "UPES",
-        form_name: formName,
-        source: contextPayload?.source || "SODE",
-        page_url: typeof window !== "undefined" ? window.location.href : "",
-        ...getUTMParams(),
-      };
-
-      console.log("🚀 [SAVING DETAILS] Updating Lead:", updatePayload);
-
-      await fetch("/api/lead", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatePayload),
-      });
-
-      if (onFinish) onFinish(updatePayload);
+      if (onFinish) onFinish(payload);
       handleClose();
       router.push("/thank-you");
     } catch (err) {
-      console.error("Save details error:", err);
+      if (err?.errorFields) return;
+      console.error("Submit error:", err);
+      try {
+        if (typeof window !== "undefined") {
+          sessionStorage.setItem("lead_submitted", "true");
+        }
+      } catch {
+        // ignore
+      }
       handleClose();
       router.push("/thank-you");
     } finally {
@@ -488,248 +505,439 @@ export default function ModalOTP({
     }
   };
 
-  const handleSkip = () => {
-    handleClose();
-    router.push("/thank-you");
-  };
-
-  const handleResendOtp = async () => {
-    if (!canResend || !phone) return;
-    await handleSendOtp({ phone });
-  };
-
-  const modalTitle =
-    step === "details"
-      ? "Almost Done!"
-      : contextPayload?.title || "Get 100% FREE Counseling";
-
-  const modalSubtitle =
-    step === "phone"
-      ? "Enter your 10-digit mobile number to receive a verification OTP."
-      : step === "otp"
-        ? `We've sent a 6-digit OTP for +91 ${phone}. Check your server console to test.`
-        : !isCoursePreSelected
-          ? "Select your desired course and details, or skip directly."
-          : "Enter your full name and email ID, or skip directly.";
+  if (!isOpen) return null;
 
   return (
-    <Modal
-      id={triggerId}
-      open={isOpen}
-      onCancel={handleClose}
-      destroyOnHidden
-      centered
-      width={420}
-      className="counselling-otp-modal [&_.ant-modal-close]:top-3.5! [&_.ant-modal-close]:right-3.5! [&_.ant-modal-close]:text-gray-500! hover:[&_.ant-modal-close]:text-gray-800!"
-      footer={null}
-      mask={{ closable: true }}
-      closable={true}
-      focusable={{ focusTriggerAfterClose: false, autoFocusButton: null }}
-    >
-      <div className="pt-2 pb-1">
-        <h3 className="text-xl font-bold text-[#0C2B4E] mb-1">
-          {modalTitle}
-        </h3>
-        <p className="text-xs text-gray-500 mb-4">
-          {modalSubtitle}
-        </p>
-
-        <Form
-          form={form}
-          onFinish={
-            step === "phone"
-              ? handleSendOtp
-              : step === "otp"
-                ? handleVerifyOtp
-                : handleSaveDetails
-          }
-          layout="vertical"
-          requiredMark={false}
+    <>
+      <style jsx global>{`
+        .ant-select-dropdown,
+        .select-dropdown-high-z {
+          z-index: 100005 !important;
+        }
+      `}</style>
+      <div
+        data-modal-container="true"
+        className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs transition-opacity animate-in fade-in duration-200"
+      >
+        <div
+          className="relative w-full max-w-[390px] md:max-w-[740px] bg-white rounded-2xl md:rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row font-sans m-auto animate-in zoom-in-95 duration-200"
+          onClick={(e) => e.stopPropagation()}
         >
-          {step === "phone" && (
-            <>
-              <Form.Item
-                name="phone"
-                className="mb-4"
-                rules={[
-                  { required: true, message: "Please enter your phone number" },
-                  {
-                    pattern: /^[6-9]\d{9}$/,
-                    message: "Please enter a valid 10-digit phone number",
-                  },
-                ]}
-              >
-                <Input
-                  placeholder="Enter 10-digit Mobile Number"
-                  prefix={<Phone size={15} className="text-gray-400 mr-1" />}
-                  maxLength={10}
-                  disabled={loading}
-                />
-              </Form.Item>
+          {/* ==========================================
+            ❌ CLOSE BUTTON (Over Image on Mobile, Top-Right on Desktop)
+        ========================================== */}
+          <button
+            type="button"
+            onClick={handleClose}
+            aria-label="Close"
+            className="absolute top-2.5 right-2.5 md:top-3.5 md:right-3.5 z-30 w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer border-none shadow-xs text-white bg-black/40 hover:bg-black/60 md:text-slate-500 md:bg-slate-100 md:hover:bg-slate-200 md:hover:text-slate-800"
+          >
+            <X size={18} className="stroke-[2.5]" />
+          </button>
 
-              <Button
-                type="primary"
-                htmlType="submit"
-                loading={loading}
-                block
-                className="font-bold bg-[#0C2B4E] hover:bg-[#08203b] border-none shadow-sm cursor-pointer"
-              >
-                {loading ? "Sending OTP..." : "Get OTP & Counseling"}
-              </Button>
-            </>
+          {/* ==========================================
+            ⬅️ BACK BUTTON (When step !== 'phone')
+        ========================================== */}
+          {step !== "phone" && (
+            <button
+              type="button"
+              onClick={handleBack}
+              aria-label="Back"
+              className="absolute top-2.5 left-2.5 md:top-3.5 md:left-[44%] z-30 w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer border-none shadow-xs text-white bg-black/40 hover:bg-black/60 md:text-slate-600 md:bg-slate-100 md:hover:bg-slate-200 md:hover:text-slate-900"
+            >
+              <ArrowLeft size={18} className="stroke-[2.5]" />
+            </button>
           )}
 
-          {step === "otp" && (
-            <>
-              <div className="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-lg p-2.5 mb-4">
-                <div className="text-sm font-semibold text-slate-700 flex items-center gap-1.5">
-                  <Phone size={15} /> +91 {phone}
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setStep("phone");
-                    form.setFieldsValue({ otp: "" });
-                  }}
-                  className="text-xs text-[#0C2B4E] hover:underline flex items-center gap-1 font-semibold cursor-pointer border-none bg-transparent"
-                >
-                  <EditOutlined /> Change
-                </button>
-              </div>
+          {/* ==========================================
+            💻 DESKTOP LEFT BANNER (hidden on mobile, uses next/image)
+        ========================================== */}
+          <div className="hidden md:block md:w-[42%] bg-[#1E6FD9] relative shrink-0 self-start overflow-hidden">
+            <Image
+              src="/counseling-modal-desktop.png"
+              alt="Learn Online. Grow Your Career."
+              width={362}
+              height={632}
+              priority
+              sizes="(max-width: 768px) 100vw, 310px"
+              className="w-full h-auto block"
+            />
+          </div>
 
-              <Form.Item
-                name="otp"
-                className="mb-4"
-                rules={[
-                  { required: true, message: "Please enter the 6-digit OTP" },
-                  {
-                    pattern: /^\d{6}$/,
-                    message: "OTP must be exactly 6 digits",
-                  },
-                ]}
-              >
-                <Input
-                  placeholder="Enter 6-digit OTP"
-                  maxLength={6}
-                  disabled={loading}
-                  prefix={<ShieldCheck size={15} className="text-gray-400 mr-1" />}
-                />
-              </Form.Item>
+          {/* ==========================================
+            📱 MOBILE TOP BANNER (hidden on desktop, uses next/image)
+        ========================================== */}
+          <div className="block md:hidden w-full bg-[#1E6FD9] relative shrink-0 overflow-hidden">
+            <Image
+              src="/counseling-modal-mobile.png"
+              alt="Learn Online. Grow Your Career."
+              width={308}
+              height={103}
+              priority
+              sizes="(max-width: 480px) 100vw, 390px"
+              className="w-full h-auto block"
+            />
+          </div>
 
-              <div className="flex items-center justify-between text-xs text-gray-500 mb-4 px-1">
-                <span>Didn't receive code?</span>
-                {canResend ? (
-                  <button
-                    type="button"
-                    onClick={handleResendOtp}
-                    className="text-blue-500 hover:text-blue-600 text-xs font-medium cursor-pointer border-none bg-transparent flex items-center gap-1"
+          {/* ==========================================
+            FORM CONTENT (Right Side Desktop / Bottom Mobile)
+        ========================================== */}
+          <div className="w-full md:w-[58%] p-6 sm:p-8 md:p-9 flex flex-col justify-center items-center md:items-start relative bg-white self-stretch min-h-full">
+            <Form
+              form={form}
+              layout="vertical"
+              requiredMark={false}
+              validateTrigger="onSubmit"
+              className="w-full my-auto flex flex-col justify-center"
+            >
+              {/* ==========================================
+                STEP 1: PHONE NUMBER
+            ========================================== */}
+              {step === "phone" && (
+                <>
+                  <div className="w-full text-center md:text-left mb-5">
+                    <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center md:text-left">
+                      Book 1:1 Free Counseling
+                    </h2>
+                    <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center md:text-left">
+                      Enter your mobile number to receive an OTP
+                    </p>
+                  </div>
+
+                  <Form.Item
+                    name="phone"
+                    validateTrigger="onSubmit"
+                    rules={[
+                      { required: true, message: "Please enter your mobile number" },
+                      {
+                        validator: (_, value) => {
+                          const clean = String(value || "").replace(/\D/g, "").slice(-10);
+                          if (!clean || clean.length !== 10 || !/^[6-9]\d{9}$/.test(clean)) {
+                            return Promise.reject(new Error("Please enter a valid 10-digit mobile number"));
+                          }
+                          return Promise.resolve();
+                        },
+                      },
+                    ]}
+                    className="mb-0"
                   >
-                    <RedoOutlined /> Resend OTP
-                  </button>
-                ) : (
-                  <span className="text-gray-400">Resend in {resendTimer}s</span>
-                )}
-              </div>
+                    <Input
+                      type="tel"
+                      inputMode="numeric"
+                      autoFocus
+                      maxLength={10}
+                      placeholder="Enter your mobile number"
+                      onChange={() => {
+                        form.setFields([{ name: "phone", errors: [] }]);
+                      }}
+                      prefix={
+                        <div className="flex items-center gap-1.5 pr-2.5 border-r border-slate-300 shrink-0 select-none mr-2">
+                          <IndiaFlagIcon />
+                          <span className="text-xs sm:text-sm font-bold text-slate-800">+91</span>
+                        </div>
+                      }
+                      className="rounded-xl h-11 text-xs sm:text-sm font-semibold border-slate-300 hover:border-blue-500 focus:border-blue-600"
+                    />
+                  </Form.Item>
 
-              <Button
-                type="primary"
-                htmlType="submit"
-                loading={loading}
-                block
-                className="font-bold bg-[#0C2B4E] hover:bg-[#08203b] border-none shadow-sm cursor-pointer"
-              >
-                {loading ? "Verifying..." : "Verify OTP & Submit"}
-              </Button>
-            </>
-          )}
+                  <Button
+                    type="primary"
+                    loading={loading}
+                    onClick={handleSendOtp}
+                    className="w-full mt-4 h-11 rounded-xl font-bold text-sm sm:text-base text-white bg-[#1A73E8] hover:bg-[#1565C0]! border-none flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 cursor-pointer"
+                  >
+                    {loading ? "Sending OTP..." : "Get OTP"}
+                    {!loading && <ArrowRight size={16} className="stroke-[2.5]" />}
+                  </Button>
 
-          {step === "details" && (
-            <>
-              <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-2.5 mb-3 flex items-center justify-between">
-                <span className="text-xs font-semibold text-emerald-800">
-                  ✓ Verified: +91 {phone}
-                </span>
-                <span className="text-[11px] text-emerald-600 font-medium">Verified</span>
-              </div>
-
-              {/* Show Course Select ONLY if course is NOT already pre-selected */}
-              {!isCoursePreSelected && (
-                <Form.Item
-                  name="course"
-                  className="mb-3"
-                  rules={[{ required: true, message: "Please select a course" }]}
-                >
-                  <Select
-                    showSearch
-                    placeholder="Select Course"
-                    allowClear
-                    prefix={<GraduationCap size={15} className="text-gray-400 mr-1" />}
-                    className="w-full text-left"
-                    filterOption={(input, option) =>
-                      (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-                    }
-                    options={availableCourses.map((c) => ({
-                      label: c,
-                      value: c,
-                    }))}
-                  />
-                </Form.Item>
+                  <Form.Item
+                    name="consent"
+                    valuePropName="checked"
+                    initialValue={true}
+                    validateTrigger="onSubmit"
+                    rules={[
+                      {
+                        validator: (_, val) =>
+                          val ? Promise.resolve() : Promise.reject(new Error("Please accept the terms to proceed")),
+                      },
+                    ]}
+                    className="mt-3.5 mb-0"
+                  >
+                    <Checkbox className="text-[9.5px] sm:text-[10.5px] text-slate-500 leading-snug">
+                      I consent to share my details with UGC-DEB approved universities &amp; receive
+                      updates via mail/mobile.{" "}
+                      <a
+                        href="/disclaimer"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[#1A73E8] font-bold hover:underline"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Disclaimer
+                      </a>
+                    </Checkbox>
+                  </Form.Item>
+                </>
               )}
 
-              <Form.Item
-                name="name"
-                className="mb-3"
-                rules={[
-                  { required: true, message: "Please enter your full name" },
-                  { min: 2, message: "Name must be at least 2 characters" },
-                ]}
-              >
-                <Input
-                  placeholder="Full Name"
-                  prefix={<User size={15} className="text-gray-400 mr-1" />}
-                  disabled={loading}
-                />
-              </Form.Item>
+              {/* ==========================================
+                STEP 2: VERIFY OTP
+            ========================================== */}
+              {step === "otp" && (
+                <>
+                  <div className="w-full text-center md:text-left mb-5">
+                    <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center md:text-left">
+                      Verify Your Number
+                    </h2>
+                    <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center md:text-left">
+                      We've sent a 6-digit OTP to your WhatsApp number +91 {phone}{" "}
+                      <button
+                        type="button"
+                        onClick={() => setStep("phone")}
+                        className="text-[#1A73E8] font-bold hover:underline cursor-pointer border-none bg-transparent p-0 inline ml-1"
+                      >
+                        Edit
+                      </button>
+                    </p>
+                  </div>
 
-              <Form.Item
-                name="email"
-                className="mb-4"
-                rules={[
-                  { required: true, message: "Please enter your email ID" },
-                  { type: "email", message: "Please enter a valid email address" },
-                ]}
-              >
-                <Input
-                  type="email"
-                  placeholder="Email ID"
-                  prefix={<Mail size={15} className="text-gray-400 mr-1" />}
-                  disabled={loading}
-                />
-              </Form.Item>
+                  <Form.Item
+                    name="otp"
+                    validateTrigger="onSubmit"
+                    rules={[
+                      { required: true, message: "Please enter the complete OTP" },
+                      {
+                        validator: (_, val) => {
+                          const str = String(val || "").trim();
+                          if (!str || str.length < 6) {
+                            return Promise.reject(new Error("Please enter a valid 6-digit OTP"));
+                          }
+                          return Promise.resolve();
+                        },
+                      },
+                    ]}
+                    className="mb-0 text-center md:text-left [&_.ant-form-item-control-input-content]:flex [&_.ant-form-item-control-input-content]:justify-center md:[&_.ant-form-item-control-input-content]:justify-start"
+                  >
+                    <Input.OTP
+                      length={6}
+                      size="large"
+                      autoFocus
+                      onChange={() => {
+                        form.setFields([{ name: "otp", errors: [] }]);
+                      }}
+                      className="my-2 [&_input]:w-10! [&_input]:h-11! sm:[&_input]:w-12! sm:[&_input]:h-13! [&_input]:text-base! sm:[&_input]:text-lg! [&_input]:font-black! [&_input]:rounded-xl!"
+                    />
+                  </Form.Item>
 
-              <div className="grid grid-cols-2 gap-2 sm:gap-2.5">
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  loading={loading}
-                  className="w-full rounded-2xl font-semibold bg-[#0C2B4E] hover:bg-[#08203b] border-none shadow-sm cursor-pointer px-1 sm:px-3 text-xs sm:text-sm"
-                >
-                  {loading ? "Submitting..." : "Submit & Continue"}
-                </Button>
+                  <div className="mt-3 mb-2 flex items-center justify-center md:justify-start text-xs font-semibold">
+                    {canResend ? (
+                      <button
+                        type="button"
+                        onClick={handleResendOtp}
+                        className="text-[#1A73E8] hover:underline font-bold cursor-pointer border-none bg-transparent p-0"
+                      >
+                        Resend OTP
+                      </button>
+                    ) : (
+                      <span className="text-[#1A73E8] font-medium">
+                        Resend OTP (00:{String(resendTimer).padStart(2, "0")})
+                      </span>
+                    )}
+                  </div>
 
-                <Button
-                  type="default"
-                  onClick={handleSkip}
-                  disabled={loading}
-                  className="w-full rounded-2xl text-gray-600 hover:text-gray-900 border-slate-300 font-medium cursor-pointer shadow-none text-xs sm:text-sm"
-                >
-                  Skip →
-                </Button>
-              </div>
-            </>
-          )}
-        </Form>
+                  <Button
+                    type="primary"
+                    loading={loading}
+                    onClick={handleVerifyOtp}
+                    className="w-full mt-4 h-11 rounded-xl font-bold text-sm sm:text-base text-white bg-[#1A73E8] hover:bg-[#1565C0]! border-none flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 cursor-pointer"
+                  >
+                    {loading ? "Verifying..." : "Verify & Continue"}
+                    {!loading && <ArrowRight size={16} className="stroke-[2.5]" />}
+                  </Button>
+                </>
+              )}
+
+              {/* ==========================================
+                STEP 3: EMAIL ADDRESS
+            ========================================== */}
+              {step === "email" && (
+                <>
+                  <div className="w-full text-center md:text-left mb-5">
+                    <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center md:text-left">
+                      Your Email Address
+                    </h2>
+                    <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center md:text-left">
+                      Enter your email address to get updates and important information.
+                    </p>
+                  </div>
+
+                  <Form.Item
+                    name="email"
+                    validateTrigger="onSubmit"
+                    rules={[
+                      { required: true, message: "Please enter your email address" },
+                      { type: "email", message: "Please enter a valid email address" },
+                    ]}
+                    className="mb-0"
+                  >
+                    <Input
+                      type="email"
+                      autoFocus
+                      placeholder="Enter your Email Address"
+                      onChange={() => form.setFields([{ name: "email", errors: [] }])}
+                      prefix={<Mail size={16} className="text-slate-400 mr-2 shrink-0" />}
+                      className="rounded-xl h-11 text-xs sm:text-sm font-semibold border-slate-300 hover:border-blue-500 focus:border-blue-600"
+                    />
+                  </Form.Item>
+
+                  <Button
+                    type="primary"
+                    onClick={handleNextToCourse}
+                    className="w-full mt-5 h-11 rounded-xl font-bold text-sm sm:text-base text-white bg-[#1A73E8] hover:bg-[#1565C0]! border-none flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 cursor-pointer"
+                  >
+                    Continue
+                    <ArrowRight size={16} className="stroke-[2.5]" />
+                  </Button>
+                </>
+              )}
+
+              {/* ==========================================
+                STEP 4: COURSE SELECTION
+            ========================================== */}
+              {step === "course" && (
+                <>
+                  <div className="w-full text-center md:text-left mb-5">
+                    <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center md:text-left">
+                      Select Course
+                    </h2>
+                    <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center md:text-left">
+                      Choose the course or degree program you are interested in.
+                    </p>
+                  </div>
+
+                  <Form.Item
+                    name="course"
+                    validateTrigger="onSubmit"
+                    rules={[{ required: true, message: "Please select your course" }]}
+                    className="mb-0"
+                  >
+                    <Select
+                      showSearch
+                      autoFocus
+                      placeholder="Select Course"
+                      onChange={() => form.setFields([{ name: "course", errors: [] }])}
+                      prefix={<GraduationCap size={16} className="text-slate-400 mr-1 shrink-0" />}
+                      className="w-full h-11 rounded-xl text-xs sm:text-sm font-semibold [&_.ant-select-selector]:rounded-xl! [&_.ant-select-selector]:h-11! [&_.ant-select-selector]:flex! [&_.ant-select-selector]:items-center!"
+                      options={courseOptions.map((c) => ({ label: c, value: c }))}
+                      filterOption={(input, option) =>
+                        (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                      }
+                    />
+                  </Form.Item>
+
+                  <Button
+                    type="primary"
+                    onClick={handleNextToState}
+                    className="w-full mt-5 h-11 rounded-xl font-bold text-sm sm:text-base text-white bg-[#1A73E8] hover:bg-[#1565C0]! border-none flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 cursor-pointer"
+                  >
+                    Continue
+                    <ArrowRight size={16} className="stroke-[2.5]" />
+                  </Button>
+                </>
+              )}
+
+              {/* ==========================================
+                STEP 5: YOUR STATE
+            ========================================== */}
+              {step === "state" && (
+                <>
+                  <div className="w-full text-center md:text-left mb-5">
+                    <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center md:text-left">
+                      Your State
+                    </h2>
+                    <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center md:text-left">
+                      Please select your state as per your official ID or documents.
+                    </p>
+                  </div>
+
+                  <Form.Item
+                    name="state"
+                    validateTrigger="onSubmit"
+                    rules={[{ required: true, message: "Please select your state" }]}
+                    className="mb-0"
+                  >
+                    <Select
+                      showSearch
+                      autoFocus
+                      placeholder="Select State"
+                      onChange={() => form.setFields([{ name: "state", errors: [] }])}
+                      prefix={<MapPin size={16} className="text-slate-400 mr-1 shrink-0" />}
+                      className="w-full h-11 rounded-xl text-xs sm:text-sm font-semibold [&_.ant-select-selector]:rounded-xl! [&_.ant-select-selector]:h-11! [&_.ant-select-selector]:flex! [&_.ant-select-selector]:items-center!"
+                      options={stateOptions.map((st) => ({ label: st, value: st }))}
+                      filterOption={(input, option) =>
+                        (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                      }
+                    />
+                  </Form.Item>
+
+                  <Button
+                    type="primary"
+                    onClick={handleNextToName}
+                    className="w-full mt-5 h-11 rounded-xl font-bold text-sm sm:text-base text-white bg-[#1A73E8] hover:bg-[#1565C0]! border-none flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 cursor-pointer"
+                  >
+                    Continue
+                    <ArrowRight size={16} className="stroke-[2.5]" />
+                  </Button>
+                </>
+              )}
+
+              {/* ==========================================
+                STEP 6: FULL NAME (FINAL STEP)
+            ========================================== */}
+              {step === "name" && (
+                <>
+                  <div className="w-full text-center md:text-left mb-5">
+                    <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight m-0 text-center md:text-left">
+                      Your Full Name
+                    </h2>
+                    <p className="text-xs sm:text-[13px] text-slate-500 font-medium mt-1.5 mb-0 leading-normal text-center md:text-left">
+                      Please enter your full name as per your official ID or documents.
+                    </p>
+                  </div>
+
+                  <Form.Item
+                    name="name"
+                    validateTrigger="onSubmit"
+                    rules={[
+                      { required: true, message: "Please enter your full name" },
+                      { min: 2, message: "Name must be at least 2 characters" },
+                    ]}
+                    className="mb-0"
+                  >
+                    <Input
+                      type="text"
+                      autoFocus
+                      placeholder="Enter your Name"
+                      onChange={() => form.setFields([{ name: "name", errors: [] }])}
+                      prefix={<User size={16} className="text-slate-400 mr-2 shrink-0" />}
+                      className="rounded-xl h-11 text-xs sm:text-sm font-semibold border-slate-300 hover:border-blue-500 focus:border-blue-600"
+                    />
+                  </Form.Item>
+
+                  <Button
+                    type="primary"
+                    loading={loading}
+                    onClick={handleFinalSubmit}
+                    className="w-full mt-5 h-11 rounded-xl font-bold text-sm sm:text-base text-white bg-[#1A73E8] hover:bg-[#1565C0]! border-none flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 cursor-pointer"
+                  >
+                    {loading ? "Submitting..." : "Submit"}
+                  </Button>
+                </>
+              )}
+            </Form>
+          </div>
+        </div>
       </div>
-    </Modal>
+    </>
   );
 }

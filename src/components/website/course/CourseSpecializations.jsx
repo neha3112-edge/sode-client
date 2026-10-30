@@ -13,11 +13,32 @@ import {
   ShoppingCart,
   Download,
   ChevronRight,
+  X,
 } from "lucide-react";
 import { formatAdmissionDeadline } from "@/lib/utils";
 import { FaCalendar, FaClock } from "react-icons/fa";
 
-const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
+const getMediaUrl = (obj) => {
+  if (!obj) return null;
+  let raw = null;
+  if (typeof obj === "string") {
+    raw = obj;
+  } else if (typeof obj === "object") {
+    raw = obj.url || obj.path || obj.src || (typeof obj.fileName === "string" ? obj.fileName : null);
+  }
+  if (!raw || typeof raw !== "string") return null;
+  const trimmed = raw.trim();
+  if (!trimmed || trimmed === "[object Object]") return null;
+  if (/^[0-9a-fA-F]{24}$/.test(trimmed)) return null;
+
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+    return trimmed;
+  }
+  if (trimmed.startsWith("//")) {
+    return `https:${trimmed}`;
+  }
+  return trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+};
 
 const SPEC_ICONS = [Briefcase, BookOpen, GraduationCap, Award, Database, UserCog, ShoppingCart];
 
@@ -293,10 +314,11 @@ export default function CourseSpecializations({
         const specCurriculum = (() => {
           if (Array.isArray(selectedSpecModal?.curriculum) && selectedSpecModal.curriculum.length > 0) {
             return selectedSpecModal.curriculum
-              .filter((c) => c && Array.isArray(c.subjects) && c.subjects.length > 0)
+              .filter((c) => c && ((Array.isArray(c.subjects) && c.subjects.length > 0) || (Array.isArray(c.electives) && c.electives.length > 0)))
               .map((c, idx) => ({
                 semester: c.semesterName || `Semester ${idx + 1}`,
-                subjects: c.subjects,
+                subjects: Array.isArray(c.subjects) ? c.subjects : [],
+                electives: Array.isArray(c.electives) ? c.electives : [],
               }));
           }
           return [];
@@ -311,7 +333,12 @@ export default function CourseSpecializations({
             footer={null}
             width={1150}
             centered
-            className="max-w-[96vw] [&_.ant-modal-content]:rounded-3xl [&_.ant-modal-content]:p-4 sm:[&_.ant-modal-content]:p-6 md:[&_.ant-modal-content]:p-7 [&_.ant-modal-close]:top-4 [&_.ant-modal-close]:right-4 [&_.ant-modal-content]:max-h-[85vh] [&_.ant-modal-content]:overflow-y-auto [&_.ant-modal-content]:overflow-x-hidden"
+            closeIcon={
+              <span className="w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer border-none shadow-xs text-white bg-black/40 hover:bg-black/60 md:text-slate-500 md:bg-slate-100 md:hover:bg-slate-200 md:hover:text-slate-800">
+                <X size={18} className="stroke-[2.5]" />
+              </span>
+            }
+            className="max-w-[96vw] [&_.ant-modal-content]:rounded-3xl [&_.ant-modal-content]:p-4 sm:[&_.ant-modal-content]:p-6 md:[&_.ant-modal-content]:p-7 [&_.ant-modal-close]:top-2.5 [&_.ant-modal-close]:right-2.5 md:[&_.ant-modal-close]:top-3.5 md:[&_.ant-modal-close]:right-3.5 [&_.ant-modal-content]:max-h-[85vh] [&_.ant-modal-content]:overflow-y-auto [&_.ant-modal-content]:overflow-x-hidden"
           >
             <div className="flex flex-col md:flex-row items-stretch gap-5 sm:gap-6">
               {/* Left Column: Portrait Banner Card */}
@@ -376,7 +403,7 @@ export default function CourseSpecializations({
                       <div className="flex items-center gap-1.5">
                         <FaCalendar className="w-3 h-3 text-[#072C50] shrink-0" />
                         <span className="text-red-500">
-                          Admission Deadline : <strong className="font-semibold text-gray-500">{itemDeadline}</strong>
+                          Admission Deadline: <strong className="font-semibold text-gray-500">{itemDeadline}</strong>
                         </span>
                       </div>
                     )}
@@ -421,15 +448,37 @@ export default function CourseSpecializations({
                       </div>
 
                       <div className="col-span-12 md:col-span-9 bg-gradient-to-br from-blue-50/50 via-blue-50/30 to-slate-50/40 border border-blue-100/80 rounded-2xl p-3.5 sm:p-4 min-h-[135px] flex items-start">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 w-full">
-                          {(activeCurriculum?.subjects || []).map((sub, subIdx) => (
-                            <div key={subIdx} className="flex items-start gap-2 text-xs text-gray-700 leading-snug">
-                              <span className="text-gray-900 font-bold shrink-0 leading-none mt-0.5">•</span>
-                              <span className="font-medium text-gray-800 line-clamp-1">
-                                {typeof sub === "string" ? sub : sub.name || ""}
-                              </span>
-                            </div>
-                          ))}
+                        <div className="w-full space-y-3">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 w-full">
+                            {(activeCurriculum?.subjects || []).map((sub, subIdx) => (
+                              <div key={subIdx} className="flex items-start gap-2 text-xs text-gray-700 leading-snug">
+                                <span className="text-gray-900 font-bold shrink-0 leading-none mt-0.5">•</span>
+                                <span className="font-medium text-gray-800 line-clamp-1">
+                                  {typeof sub === "string" ? sub : sub.name || ""}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                          {(activeCurriculum?.electives || []).map((elec, eIdx) => {
+                            const title = elec.groupTitle || `Elective (Choose Any ${elec.selectCount || 1})`;
+                            const opts = Array.isArray(elec.options) ? elec.options : [];
+                            if (opts.length === 0) return null;
+                            return (
+                              <div key={eIdx} className="pt-2 border-t border-dashed border-amber-300 bg-amber-50/60 rounded-lg p-2">
+                                <div className="text-[11px] font-semibold text-amber-900 mb-1 inline-block bg-amber-100 px-1.5 py-0.5 rounded border border-amber-300">
+                                  {title}
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-xs text-amber-950">
+                                  {opts.map((opt, oIdx) => (
+                                    <div key={oIdx} className="flex items-start gap-1.5 leading-snug">
+                                      <span className="text-amber-600 font-semibold shrink-0">○</span>
+                                      <span className="font-medium">{typeof opt === "string" ? opt : opt.name}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     </div>

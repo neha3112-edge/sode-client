@@ -8,7 +8,27 @@ import { Plus, Check, ChevronDown } from "lucide-react";
 import { useCompare } from "@/hooks/useCompare";
 import { useFormModal } from "@/hooks/useFormModal";
 
-const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
+const getMediaUrl = (obj) => {
+  if (!obj) return null;
+  let raw = null;
+  if (typeof obj === "string") {
+    raw = obj;
+  } else if (typeof obj === "object") {
+    raw = obj.url || obj.path || obj.src || (typeof obj.fileName === "string" ? obj.fileName : null);
+  }
+  if (!raw || typeof raw !== "string") return null;
+  const trimmed = raw.trim();
+  if (!trimmed || trimmed === "[object Object]") return null;
+  if (/^[0-9a-fA-F]{24}$/.test(trimmed)) return null;
+
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+    return trimmed;
+  }
+  if (trimmed.startsWith("//")) {
+    return `https:${trimmed}`;
+  }
+  return trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+};
 
 export default function CourseAlternativeUniversities({
   processedPrograms,
@@ -24,14 +44,20 @@ export default function CourseAlternativeUniversities({
 
   if (!processedPrograms || processedPrograms.length === 0) return null;
 
+  const sectionTitle =
+    courseData?.top_universities_title ||
+    courseData?.peer_universities_title ||
+    (Array.isArray(processedPrograms) && processedPrograms[0]?.sectionTitle) ||
+    `Top Alternative Universities Offering ${courseData?.name || "Online Courses"}`;
+
   return (
     <div
       id="alternative"
-      data-nav-label="Alternative Universities"
+      data-nav-label={sectionTitle}
       className="scroll-mt-20 bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8"
     >
       <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-6 sm:mb-8 m-0">
-        Top Alternative Universities Offering {courseData?.name || "Online Courses"}
+        {sectionTitle}
       </h2>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
@@ -40,7 +66,6 @@ export default function CourseAlternativeUniversities({
           const cardTitle = item.cardTitle || item.title || "Course Program";
           const logoUrl = getMediaUrl(item.logoUrl);
           const providerName = item.providerName || null;
-          const coursesOfferedText = `${item.coursesCount || item.programsCount || 10}+ Programs`;
           const rawHref = item.courseDetailHref || `/courses`;
           const courseDetailHref =
             rawHref.startsWith("/courses/") && rawHref.split("/").length > 3
@@ -54,7 +79,12 @@ export default function CourseAlternativeUniversities({
             item.universityId?.slug ||
             uName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 
-          const inCmp = isInCompare(targetUniSlug || item._id || uName);
+          const inCmp = Boolean(
+            isInCompare(item) ||
+            isInCompare(targetUniSlug) ||
+            isInCompare(item._id) ||
+            isInCompare(uName)
+          );
 
           return (
             <div
@@ -62,7 +92,6 @@ export default function CourseAlternativeUniversities({
               className={`bg-gray-50 rounded-xl border border-gray-200 hover:border-blue-400 p-2 sm:p-2.5 hover:shadow-md transition-all flex flex-col items-center justify-between text-center relative group min-w-0 shadow-2xs ${index === 5 && visibleCount === 6 ? "flex lg:hidden" : "flex"
                 }`}
             >
-              {/* Top Right Corner Pinned Provider Badge */}
               {Boolean(providerName) && (
                 <div className="absolute top-0 right-0 z-10 pointer-events-none">
                   <span className="bg-[#FFF0F3] border-b border-l border-[#FFE4E6] text-[#E52E2E] text-[8.5px] sm:text-[9.5px] font-bold px-1.5 py-0.5 rounded-bl-lg rounded-tr-xl">
@@ -93,8 +122,8 @@ export default function CourseAlternativeUniversities({
                 )}
               </div>
 
-              {/* University Name & Courses Count */}
-              <div className="w-full space-y-0.5 my-0.5">
+              {/* University Name */}
+              <div className="w-full my-1">
                 <div className="min-h-7 sm:min-h-8 flex items-center justify-center">
                   <Link
                     href={courseDetailHref}
@@ -102,9 +131,6 @@ export default function CourseAlternativeUniversities({
                   >
                     {uName}
                   </Link>
-                </div>
-                <div className="text-[10px] sm:text-[11px] text-gray-500 font-normal flex items-center justify-center">
-                  <span className="truncate">{item.location || coursesOfferedText}</span>
                 </div>
               </div>
 
@@ -116,31 +142,12 @@ export default function CourseAlternativeUniversities({
                     const existingSlugs = (compareList || [])
                       .map((u) => u.uniSlug || u.slug || u._id || u.id)
                       .filter(Boolean);
-                    const allSlugs = currentUniSlug && !existingSlugs.includes(currentUniSlug)
-                      ? [currentUniSlug, ...existingSlugs, targetUniSlug]
-                      : [...existingSlugs, targetUniSlug];
-                    const combinedSlugs = Array.from(new Set(allSlugs)).filter(Boolean).slice(0, 3);
+                    const combinedSlugs = Array.from(new Set([...existingSlugs, targetUniSlug])).filter(Boolean).slice(0, 3);
                     const crsParam = courseData?.name || cardTitle || "";
                     router.push(
                       `/tools/compare-universities?university=${encodeURIComponent(combinedSlugs.join(","))}${crsParam ? `&course=${encodeURIComponent(crsParam)}` : ""}`
                     );
                   } else {
-                    // Also include current details page university if not already in compare
-                    if (currentUniSlug && !isInCompare(currentUniSlug)) {
-                      addToCompare({
-                        _id: currentUniSlug,
-                        slug: currentUniSlug,
-                        uniSlug: currentUniSlug,
-                        name: currentUniName || "University",
-                        uniName: currentUniName || "University",
-                        title: courseData?.name || "Program",
-                        courseName: courseData?.name || "",
-                        course: courseData?.name || "",
-                        logoUrl: currentUniLogo,
-                        logoSrc: currentUniLogo,
-                      });
-                    }
-
                     const targetItem = {
                       _id: targetUniSlug || item._id,
                       slug: targetUniSlug,
@@ -160,8 +167,8 @@ export default function CourseAlternativeUniversities({
                   }
                 }}
                 className={`w-full py-1 px-2 rounded-lg text-[10px] sm:text-[11px] font-semibold transition-all flex items-center justify-center gap-1 border cursor-pointer mt-1 ${inCmp
-                    ? "bg-teal-50 text-teal-700 border-teal-600 shadow-2xs hover:bg-teal-100"
-                    : "bg-white text-[#0a2540] border-gray-200 hover:bg-gray-50 hover:border-gray-300"
+                  ? "bg-teal-50 text-teal-700 border-teal-600 shadow-2xs hover:bg-teal-100"
+                  : "bg-white text-[#0a2540] border-gray-200 hover:bg-gray-50 hover:border-gray-300"
                   }`}
               >
                 {inCmp ? (

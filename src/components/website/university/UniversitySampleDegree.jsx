@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { Modal } from "antd";
-import { Eye, Check } from "lucide-react";
+import { Eye, Check, X } from "lucide-react";
 
 const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
 
@@ -118,6 +118,11 @@ export default function UniversitySampleDegree({
           footer={null}
           width={720}
           centered
+          closeIcon={
+            <span className="w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer border-none shadow-xs text-white bg-black/40 hover:bg-black/60 md:text-slate-500 md:bg-slate-100 md:hover:bg-slate-200 md:hover:text-slate-800">
+              <X size={18} className="stroke-[2.5]" />
+            </span>
+          }
         >
           <div className="pt-2 text-center">
             <h3 className="text-base sm:text-lg font-bold text-[#0C2B4E] m-0 mb-1">

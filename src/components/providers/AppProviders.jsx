@@ -13,6 +13,7 @@ import { BreadcrumbProvider } from "@/context/BreadcrumbContext";
 const CompareDrawerWidget = dynamic(() => import("@/components/website/CompareDrawerWidget"), { ssr: false });
 const AutoEngineToolModal = dynamic(() => import("@/components/tool/AutoEngineToolModal"), { ssr: false });
 const GlobalHtmlAutoRenderer = dynamic(() => import("@/components/providers/GlobalHtmlAutoRenderer"), { ssr: false });
+const AutoImageTitle = dynamic(() => import("@/components/common/AutoImageTitle"), { ssr: false });
 const ModalOTP = dynamic(() => import("@/components/website/ModalOTP"), { ssr: false });
 
 /**
@@ -35,6 +36,7 @@ export default function AppProviders({ children }) {
               <ToolWizardProvider>
                 <JsonLd />
                 <GlobalHtmlAutoRenderer />
+                <AutoImageTitle />
                 {children}
                 <CompareDrawerWidget />
                 <AutoEngineToolModal />

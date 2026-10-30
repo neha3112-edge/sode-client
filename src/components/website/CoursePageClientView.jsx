@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, notFound } from "next/navigation";
 import { Carousel, Table } from "antd";
 import { Container } from "@/components/common/Container";
 import SafeHtmlRenderer from "@/components/website/SafeHtmlRenderer";
@@ -71,6 +71,10 @@ function resolveMediaUrl(media) {
 }
 
 export default function CoursePageClientView({ page, slug, heroData = null }) {
+  if (!page || (!page.pageTitle && !page.title && !page._id)) {
+    notFound();
+  }
+
   const router = useRouter();
   const { openFormModal } = useFormModal();
   const { isInCompare, toggleCompare, addToCompare, compareList, setIsCompareDrawerOpen } = useCompare();
@@ -360,7 +364,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
     });
 
     return list.map((row, idx) => ({
-      key: row.category || idx,
+      key: row._id ? `${row._id}-${idx}` : `${row.category || "cat"}-${idx}`,
       category: row.category,
       details: row.details,
     }));
@@ -416,7 +420,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
   const modeComparisonDataSource = useMemo(
     () =>
       (comparisonRows || []).map((row, idx) => ({
-        key: row.category || idx,
+        key: row._id ? `${row._id}-${idx}` : `${row.category || "mode"}-${idx}`,
         category: row.category,
         online: row.online,
         regular: row.regular,
@@ -448,7 +452,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
   const syllabusDataSource = useMemo(
     () =>
       (currentSemesterData?.subjects || []).map((subj, idx) => ({
-        key: subj.subjectName || subj.name || idx,
+        key: subj._id ? `${subj._id}-${idx}` : `${subj.subjectName || subj.name || "subject"}-${idx}`,
         subjectName: subj.subjectName || subj.name || "",
         focusArea: subj.focusArea || subj.description || "",
       })),
@@ -485,7 +489,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
   const careerLevelDataSource = useMemo(
     () =>
       (experienceLevels || []).map((lvl, idx) => ({
-        key: lvl.level || idx,
+        key: lvl._id ? `${lvl._id}-${idx}` : `${lvl.level || "lvl"}-${idx}`,
         level: lvl.level,
         jobRoles: lvl.jobRoles,
         salaryRange: lvl.salaryRange,
@@ -523,7 +527,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
   const careerJobRoleDataSource = useMemo(
     () =>
       (jobRolesList || []).map((job, idx) => ({
-        key: job.role || idx,
+        key: job._id ? `${job._id}-${idx}` : `${job.role || "job"}-${idx}`,
         role: job.role,
         desc: job.desc,
         salary: job.salary,
@@ -1514,11 +1518,11 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
 
                 {/* Semester Pill Tabs */}
                 <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-6">
-                  {syllabusData.map((sem) => {
+                  {syllabusData.map((sem, sIdx) => {
                     const isActive = activeSemester === sem.semesterNumber;
                     return (
                       <button
-                        key={sem.semesterNumber}
+                        key={sem._id ? `${sem._id}-${sIdx}` : `sem-${sem.semesterNumber || sIdx}-${sIdx}`}
                         type="button"
                         onClick={() => {
                           setActiveSemester(sem.semesterNumber);
@@ -1599,13 +1603,20 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                 {/* University Cards Grid (Strictly Backend Data, 5-by-5 Incremental Display) */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
                   {universitiesList.slice(0, visibleUnisCount).map((uni, idx) => {
-                    const inCmp = typeof isInCompare === "function" ? isInCompare(uni._id || uni.slug || uni.name) : false;
+                    const inCmp = typeof isInCompare === "function" ? Boolean(isInCompare(uni) || isInCompare(uni.slug) || isInCompare(uni._id) || isInCompare(uni.name)) : false;
                     const coursesOfferedText = uni.programsCount
                       ? `${uni.programsCount} Programs`
                       : uni.coursesCount
                         ? `${uni.coursesCount}+ Programs`
                         : (uni.city || uni.state || "Recognized University");
-                    const uniHref = uni.slug ? `/universities/${uni.slug}` : "#";
+                    const rawUniTarget = uni.targetUrl || uni.official_website || (uni.slug ? `/universities/${uni.slug}` : '#');
+                    const isUniExternal = Boolean(
+                      uni.isExternal ||
+                      (typeof rawUniTarget === 'string' && (rawUniTarget.startsWith('http://') || rawUniTarget.startsWith('https://')))
+                    );
+                    const uniHref = isUniExternal
+                      ? (rawUniTarget.startsWith('http') ? rawUniTarget : `https://${rawUniTarget}`)
+                      : (uni.slug ? `/universities/${uni.slug}` : '#');
                     const uniLogo = resolveMediaUrl(uni.logo || uni.image);
 
                     return (
@@ -1636,6 +1647,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                           <div className="min-h-7 sm:min-h-8 flex items-center justify-center">
                             <Link
                               href={uniHref}
+                              {...(isUniExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                               className="text-xs sm:text-[12.5px] font-semibold text-[#0a2540] hover:text-blue-600 line-clamp-2 leading-tight m-0 w-full text-center no-underline transition-colors"
                             >
                               {uni.name}
@@ -1746,6 +1758,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                           </button>
                           <Link
                             href={uniHref}
+                            {...(isUniExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                             className="w-full bg-white hover:bg-gray-50 text-[#0a2540] hover:text-blue-600 border border-gray-200 text-[11px] sm:text-xs font-semibold py-1.5 px-1 rounded-md sm:rounded-lg text-center no-underline transition-colors flex items-center justify-center whitespace-nowrap leading-none"
                           >
                             Know More

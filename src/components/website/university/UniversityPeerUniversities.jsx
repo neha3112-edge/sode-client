@@ -11,6 +11,7 @@ const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.p
 
 export default function UniversityPeerUniversities({
   topUniversities = [],
+  title,
   openFormModal,
 }) {
   const router = useRouter();
@@ -19,6 +20,12 @@ export default function UniversityPeerUniversities({
 
   if (!topUniversities || topUniversities.length === 0) return null;
 
+  const sectionTitle =
+    title ||
+    topUniversities.title ||
+    (Array.isArray(topUniversities) && topUniversities[0]?.sectionTitle) ||
+    "Top UGC Approved Universities";
+
   return (
     <div
       id="top-universities"
@@ -26,15 +33,23 @@ export default function UniversityPeerUniversities({
       className="scroll-mt-20 bg-white rounded-xl border border-gray-200/90 shadow-xs p-5 sm:p-7 md:p-8"
     >
       <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight text-center mb-6 sm:mb-8 m-0">
-        Top UGC Approved Universities
+        {sectionTitle}
       </h2>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
         {topUniversities.slice(0, visibleTopUnis).map((peer, index) => {
-          const inCmp = isInCompare(peer._id || peer.slug || peer.name);
+          const cleanUniSlug = (peer.slug && !peer.slug.includes("/")) ? peer.slug : (peer.slug?.split("/")[0] || peer._id);
+          const inCmp = Boolean(
+            isInCompare(peer) ||
+            isInCompare(cleanUniSlug) ||
+            isInCompare(peer.slug) ||
+            isInCompare(peer._id) ||
+            isInCompare(peer.name)
+          );
           const peerLogo = peer.logo || peer.logoUrl;
           const providerName = peer.viaPartner || (peer.partner && peer.partner[0]?.name) || null;
-          const coursesOfferedText = `${peer.coursesCount || peer.programsCount || 10}+ Programs`;
+          const programsCount = Number(peer.coursesCount ?? peer.programsCount ?? 0) || 0;
+          const coursesOfferedText = `${programsCount} ${programsCount === 1 ? "Program" : "Programs"}`;
           const rawSlug = peer.slug || encodeURIComponent((peer.name || "").toLowerCase());
           const uniDetailHref = `/universities/${rawSlug}`;
 
@@ -104,6 +119,8 @@ export default function UniversityPeerUniversities({
                   } else {
                     const targetItem = {
                       _id: cleanUniSlug,
+                      id: peer._id,
+                      rawId: peer._id,
                       slug: cleanUniSlug,
                       uniSlug: cleanUniSlug,
                       name: peer.name,

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Button, Carousel, Form, Input, message as staticMessage, Modal, Table, App } from "antd";
@@ -8,7 +9,7 @@ import SafeHtmlRenderer from "@/components/website/SafeHtmlRenderer";
 import { useBreadcrumb } from "@/context/BreadcrumbContext";
 
 const getAssetPath = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || "");
-import { ArrowRight, CalendarIcon, Check, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Clock, Eye, Image as ImageIcon, Minus, Play, Plus, ThumbsDown, ThumbsUp, User, Video } from "lucide-react";
+import { ArrowRight, CalendarIcon, Check, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Clock, Eye, Image as ImageIcon, Minus, Play, Plus, ThumbsDown, ThumbsUp, User, Video, X } from "lucide-react";
 import { request } from "@/services/request";
 import BlogSidebar from "./BlogSidebar";
 
@@ -96,8 +97,6 @@ function PdfCanvasViewer({ url, title }) {
     const loadAndRender = async () => {
       try {
         if (typeof window === "undefined") return;
-
-        // Ensure PDF.js library is loaded
         if (!window.pdfjsLib) {
           await new Promise((resolve, reject) => {
             const existingScript = document.getElementById("pdfjs-engine-script");
@@ -126,8 +125,6 @@ function PdfCanvasViewer({ url, title }) {
         }
 
         if (isCancelled) return;
-
-        // Retrieve from memory cache or fetch document
         let pdfDoc = pdfDocCache.get(url);
         if (!pdfDoc) {
           const loadingTask = window.pdfjsLib.getDocument({
@@ -281,6 +278,11 @@ export default function BlogClientView({
   initialCategories = null,
   slug: propSlug,
 }) {
+  const blog = initialData?.blogId || initialData;
+  if (!blog || (!blog.title && !blog.headline && !blog._id)) {
+    notFound();
+  }
+
   const antdApp = App.useApp();
   const message = antdApp?.message || staticMessage;
   const [toolsList, setToolsList] = useState(
@@ -369,7 +371,6 @@ export default function BlogClientView({
     };
   }, [initialTools]);
 
-  const blog = initialData?.blogId || initialData || {};
   const [viewsCount, setViewsCount] = useState(
     blog?.viewsCount ?? blog?.views ?? 0
   );
@@ -523,7 +524,7 @@ export default function BlogClientView({
         if (res.result.likesCount != null) setLikesCount(res.result.likesCount);
         if (res.result.unlikesCount != null) setUnlikesCount(res.result.unlikesCount);
       }
-    } catch (_) {}
+    } catch (_) { }
   };
   const [commentsList, setCommentsList] = useState(
     Array.isArray(blog?.comments) ? blog.comments : []
@@ -1589,7 +1590,7 @@ export default function BlogClientView({
                                         }
                                         dataSource={sec.table.rows.map((row, idx) => ({
                                           ...row,
-                                          key: row.key || row._id || row.factor || row.name || row.col1 || idx,
+                                          key: row.key ? `${row.key}-${idx}` : (row._id ? `${row._id}-${idx}` : `${row.factor || row.name || row.col1 || "row"}-${idx}`),
                                         }))}
                                         pagination={false}
                                         size="small"
@@ -2290,6 +2291,11 @@ export default function BlogClientView({
         width={isMobile ? "96vw" : 920}
         centered
         destroyOnHidden
+        closeIcon={
+          <span className="w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer border-none shadow-xs text-slate-500 bg-slate-100 hover:bg-slate-200 hover:text-slate-800">
+            <X size={18} className="stroke-[2.5]" />
+          </span>
+        }
         className="pdf-preview-modal"
         style={{
           maxWidth: "calc(100vw - 16px)",

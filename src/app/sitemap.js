@@ -6,7 +6,7 @@ export default async function sitemap() {
   // Static Pages
   const staticPages = [
     "",
-    "/about",
+    "/about-us",
     "/contact",
     "/courses",
     "/universities",

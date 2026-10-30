@@ -45,9 +45,9 @@ export default function UniversityCarouselBlock({
                 <PartnerLogoIcon partner={child} />
               </div>
               <div className="flex items-center justify-center w-full min-w-0 px-0.5">
-                <h5 className="m-0 text-[9.5px] min-[360px]:text-[10px] sm:text-[10.5px] leading-[1.1] font-semibold text-gray-800 group-hover:text-blue-600 transition-colors text-center w-full min-w-0">
+                <span className="m-0 text-[9.5px] min-[360px]:text-[10px] sm:text-[10.5px] leading-[1.1] font-semibold text-gray-800 group-hover:text-blue-600 transition-colors text-center w-full min-w-0 block">
                   {formatTwoLineText(child.name)}
-                </h5>
+                </span>
               </div>
             </div>
           </div>

@@ -1,4 +1,5 @@
 import { cache } from "react";
+import { notFound } from "next/navigation";
 import { request } from "@/services/request";
 import { getPageMetaData, constructMetadata } from "@/constants/pageMetaData";
 import { UniversityClientView, CourseClientView } from "@/components/website";
@@ -52,6 +53,10 @@ function normalizeCourseData(pageRes) {
     fullFee: raw.fullFee || null,
     customContent: raw.customContent || "",
     topUniversities: Array.isArray(raw.topUniversities) ? raw.topUniversities : [],
+    collaborations: Array.isArray(raw.collaborations) ? raw.collaborations : [],
+    collaboratorLogos: Array.isArray(raw.collaboratorLogos) ? raw.collaboratorLogos : [],
+    partnerUnis: Array.isArray(raw.partnerUnis) ? raw.partnerUnis : [],
+    combinedUniversityName: raw.combinedUniversityName || raw.universityName || "",
   };
 }
 
@@ -164,6 +169,12 @@ export default async function UniversityOrCourseDetailPage({ params }) {
       getUniversityData(uniSlug),
       getPageMetaData(`/universities/${uniSlug}`),
     ]);
+
+    const uni = (initialData && typeof initialData.universityId === "object" ? initialData.universityId : initialData) || {};
+    if (!initialData || (!uni.name && !initialData.name && !initialData.tagline)) {
+      notFound();
+    }
+
     return (
       <>
         {pageMeta?.schemaMarkup && <JsonLdScript data={pageMeta.schemaMarkup} />}
@@ -171,13 +182,16 @@ export default async function UniversityOrCourseDetailPage({ params }) {
       </>
     );
   }
-
-  // 2+ segments -> Course under University
   const slugStr = slugArray.join("/");
   const [initialData, pageMeta] = await Promise.all([
     getCourseData(slugArray),
     getPageMetaData(`/universities/${slugStr}`),
   ]);
+
+  if (!initialData || (!initialData.name && !initialData.title)) {
+    notFound();
+  }
+
   const initialCourses =
     Array.isArray(initialData?.topUniversities) && initialData.topUniversities.length > 0
       ? initialData.topUniversities

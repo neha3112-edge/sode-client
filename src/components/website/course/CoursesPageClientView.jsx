@@ -27,25 +27,76 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useFormModal } from "@/hooks/useFormModal";
 import { useCompare } from "@/hooks/useCompare";
 import { formatAdmissionDeadline } from "@/lib/utils";
+import { openWhatsAppBrochure } from "@/lib/whatsappBrochure";
 import { FaCalendar, FaClock } from "react-icons/fa";
 import { getFullSpecName, getCleanSpecName } from "./CourseSpecializations";
 
-const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
+const getMediaUrl = (obj) => {
+  if (!obj) return null;
+  let raw = null;
+  if (typeof obj === "string") {
+    raw = obj;
+  } else if (typeof obj === "object") {
+    raw = obj.url || obj.path || obj.src || (obj.fileName && typeof obj.fileName === "string" ? obj.fileName : null);
+  }
+  if (!raw || typeof raw !== "string") return null;
+  const trimmed = raw.trim();
+  if (!trimmed || trimmed === "[object Object]") return null;
+  if (/^[0-9a-fA-F]{24}$/.test(trimmed)) return null;
+
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+    return trimmed;
+  }
+  if (trimmed.startsWith("//")) {
+    return `https:${trimmed}`;
+  }
+  return trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+};
 
 const extractFeeText = (val) => {
   if (!val) return "";
   if (typeof val === "string") return val;
   if (typeof val === "number") return `₹ ${Number(val).toLocaleString("en-IN")}`;
   if (typeof val === "object") {
-    if (val.formattedSemesterFees) return String(val.formattedSemesterFees);
-    if (val.semesterFees) return `₹ ${Number(val.semesterFees).toLocaleString("en-IN")} / Semester`;
-    if (val.formattedPerSemesterPayable) return String(val.formattedPerSemesterPayable);
-    if (val.perSemesterPayable) return `₹ ${Number(val.perSemesterPayable).toLocaleString("en-IN")} / Semester`;
-    if (val.formattedNetPayable) return String(val.formattedNetPayable);
-    if (val.netPayable) return `₹ ${Number(val.netPayable).toLocaleString("en-IN")}`;
+    const defaultPlan = val.defaultPlan || (val.ledger?.semester ? "semester" : (val.ledger?.yearly ? "yearly" : "fullfees"));
+
+    if (defaultPlan === "fullfees" || (!val.ledger?.semester && !val.ledger?.yearly)) {
+      const full = val.ledger?.fullfees;
+      if (full?.formattedBasePayable) return String(full.formattedBasePayable);
+      if (full?.formattedPayable) return String(full.formattedPayable);
+      if (val.formattedBasePayable) return String(val.formattedBasePayable);
+      if (val.formattedNetPayable) return String(val.formattedNetPayable);
+      if (val.formattedActualFees) return String(val.formattedActualFees);
+      if (val.basePayable) return `₹ ${Number(val.basePayable).toLocaleString("en-IN")}`;
+      if (val.netPayable) return `₹ ${Number(val.netPayable).toLocaleString("en-IN")}`;
+      if (val.actualFees) return `₹ ${Number(val.actualFees).toLocaleString("en-IN")}`;
+      if (val.amount) return `₹ ${Number(val.amount).toLocaleString("en-IN")}`;
+      if (val.name) return String(val.name);
+    }
+
+    if (defaultPlan === "yearly" && val.ledger?.yearly) {
+      const yr = val.ledger.yearly;
+      if (yr.formattedBasePayable) return String(yr.formattedBasePayable);
+      if (yr.formattedPayable) return String(yr.formattedPayable);
+    }
+
+    if (defaultPlan === "semester" && val.ledger?.semester) {
+      const sem = val.ledger.semester;
+      if (sem.formattedBasePayable) return String(sem.formattedBasePayable);
+      if (sem.formattedPayable) return String(sem.formattedPayable);
+      if (val.formattedSemesterFees) return String(val.formattedSemesterFees);
+      if (val.semesterFees) return `₹ ${Number(val.semesterFees).toLocaleString("en-IN")} / Semester`;
+      if (val.formattedPerSemesterPayable) return String(val.formattedPerSemesterPayable);
+      if (val.perSemesterPayable) return `₹ ${Number(val.perSemesterPayable).toLocaleString("en-IN")} / Semester`;
+    }
+
+    if (val.ledger?.semester?.formattedBasePayable) return String(val.ledger.semester.formattedBasePayable);
+    if (val.formattedSemesterFees && !val.formattedSemesterFees.includes("NaN")) return String(val.formattedSemesterFees);
     if (val.formattedBasePayable) return String(val.formattedBasePayable);
-    if (val.basePayable) return `₹ ${Number(val.basePayable).toLocaleString("en-IN")}`;
+    if (val.formattedNetPayable) return String(val.formattedNetPayable);
     if (val.formattedActualFees) return String(val.formattedActualFees);
+    if (val.basePayable) return `₹ ${Number(val.basePayable).toLocaleString("en-IN")}`;
+    if (val.netPayable) return `₹ ${Number(val.netPayable).toLocaleString("en-IN")}`;
     if (val.actualFees) return `₹ ${Number(val.actualFees).toLocaleString("en-IN")}`;
     if (val.amount) return `₹ ${Number(val.amount).toLocaleString("en-IN")}`;
     if (val.name) return String(val.name);
@@ -129,7 +180,12 @@ function FilterSidebarContent({
           <span>Category</span>
         </label>
         <Select
-          showSearch
+          showSearch={false}
+          onOpenChange={(open) => {
+            if (!open && typeof document !== "undefined" && document.activeElement && typeof document.activeElement.blur === "function") {
+              document.activeElement.blur();
+            }
+          }}
           placeholder="All Categories"
           value={currentCategoryValue}
           onChange={(val) => {
@@ -142,10 +198,6 @@ function FilterSidebarContent({
           }}
           className="w-full"
           options={categorySelectOptions}
-          optionFilterProp="label"
-          filterOption={(input, option) =>
-            (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-          }
         />
       </div>
 
@@ -156,7 +208,12 @@ function FilterSidebarContent({
           <span>Sub Category</span>
         </label>
         <Select
-          showSearch
+          showSearch={false}
+          onOpenChange={(open) => {
+            if (!open && typeof document !== "undefined" && document.activeElement && typeof document.activeElement.blur === "function") {
+              document.activeElement.blur();
+            }
+          }}
           placeholder="All Sub Categories"
           value={
             Array.isArray(activeSubcategory) && activeSubcategory.length > 0
@@ -169,10 +226,6 @@ function FilterSidebarContent({
           }}
           className="w-full"
           options={subcategorySelectOptions}
-          optionFilterProp="label"
-          filterOption={(input, option) =>
-            (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-          }
         />
       </div>
 
@@ -183,7 +236,12 @@ function FilterSidebarContent({
           <span>Course</span>
         </label>
         <Select
-          showSearch
+          showSearch={false}
+          onOpenChange={(open) => {
+            if (!open && typeof document !== "undefined" && document.activeElement && typeof document.activeElement.blur === "function") {
+              document.activeElement.blur();
+            }
+          }}
           placeholder="All Courses"
           value={
             (() => {
@@ -206,10 +264,6 @@ function FilterSidebarContent({
           }}
           className="w-full"
           options={courseSelectOptions}
-          optionFilterProp="label"
-          filterOption={(input, option) =>
-            (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-          }
         />
       </div>
 
@@ -220,7 +274,12 @@ function FilterSidebarContent({
           <span>Sub Course</span>
         </label>
         <Select
-          showSearch
+          showSearch={false}
+          onOpenChange={(open) => {
+            if (!open && typeof document !== "undefined" && document.activeElement && typeof document.activeElement.blur === "function") {
+              document.activeElement.blur();
+            }
+          }}
           placeholder="All Sub Courses"
           value={
             (() => {
@@ -243,10 +302,6 @@ function FilterSidebarContent({
           }}
           className="w-full"
           options={subcourseSelectOptions}
-          optionFilterProp="label"
-          filterOption={(input, option) =>
-            (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-          }
         />
       </div>
 
@@ -257,7 +312,12 @@ function FilterSidebarContent({
           <span>Institute</span>
         </label>
         <Select
-          showSearch
+          showSearch={false}
+          onOpenChange={(open) => {
+            if (!open && typeof document !== "undefined" && document.activeElement && typeof document.activeElement.blur === "function") {
+              document.activeElement.blur();
+            }
+          }}
           placeholder="All Institute"
           value={
             selectedUniversities && selectedUniversities.length > 0
@@ -271,10 +331,6 @@ function FilterSidebarContent({
           }}
           className="w-full"
           options={universityOptions}
-          optionFilterProp="label"
-          filterOption={(input, option) =>
-            (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-          }
         />
       </div>
 
@@ -547,6 +603,83 @@ export default function CoursesPageClientView({
     setDraftDurationRange([3, 48]);
   };
 
+  // Prevent virtual mobile keyboard from opening on mobile devices when tapping Ant Design Selects
+  useEffect(() => {
+    if (typeof window === "undefined" || typeof document === "undefined") return;
+
+    const neutralizeInput = (input) => {
+      if (!input) return;
+      try {
+        input.setAttribute("inputmode", "none");
+        input.setAttribute("readonly", "true");
+        input.setAttribute("tabindex", "-1");
+        input.style.caretColor = "transparent";
+        input.style.pointerEvents = "none";
+        // Neutralize Ant Design's focus() call on the internal input
+        input.focus = () => {};
+      } catch (_) {}
+    };
+
+    const disableSelectInputsKeyboard = () => {
+      const inputs = document.querySelectorAll(
+        ".ant-select input, .ant-select-input, .ant-select-selection-search-input"
+      );
+      inputs.forEach(neutralizeInput);
+    };
+
+    disableSelectInputsKeyboard();
+
+    // Neutralize input immediately before any click/tap handler runs (capture phase)
+    const handlePointerCapture = (e) => {
+      const select = e.target?.closest?.(".ant-select");
+      if (select) {
+        const input = select.querySelector("input");
+        if (input) neutralizeInput(input);
+      }
+    };
+
+    // Block any focus event on select inputs from reaching external listeners / mobile virtual keyboard emulators
+    const handleFocusCapture = (e) => {
+      const target = e.target;
+      if (
+        target &&
+        target.tagName === "INPUT" &&
+        target.closest &&
+        target.closest(".ant-select")
+      ) {
+        e.stopImmediatePropagation();
+        e.stopPropagation();
+        neutralizeInput(target);
+        try {
+          HTMLInputElement.prototype.blur.call(target);
+        } catch (_) {}
+      }
+    };
+
+    window.addEventListener("pointerdown", handlePointerCapture, true);
+    window.addEventListener("touchstart", handlePointerCapture, true);
+    window.addEventListener("mousedown", handlePointerCapture, true);
+    window.addEventListener("focus", handleFocusCapture, true);
+    window.addEventListener("focusin", handleFocusCapture, true);
+
+    let observer;
+    if (document.body) {
+      observer = new MutationObserver(() => {
+        disableSelectInputsKeyboard();
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+    }
+
+    return () => {
+      window.removeEventListener("pointerdown", handlePointerCapture, true);
+      window.removeEventListener("touchstart", handlePointerCapture, true);
+      window.removeEventListener("mousedown", handlePointerCapture, true);
+      window.removeEventListener("focus", handleFocusCapture, true);
+      window.removeEventListener("focusin", handleFocusCapture, true);
+      if (observer) observer.disconnect();
+    };
+  }, []);
+
   const { openFormModal } = useFormModal();
   const { toggleCompare, isInCompare, setIsCompareDrawerOpen, compareList } = useCompare();
 
@@ -658,6 +791,7 @@ export default function CoursesPageClientView({
 
     const allFlatUniversities = [
       ...(initialUniversities || []),
+      ...(universityOptions || []),
     ];
 
     const resolvedCategoryIds = Array.isArray(activeCategoryTab)
@@ -819,13 +953,21 @@ export default function CoursesPageClientView({
           uni.admission_deadline ||
           null;
 
+        const collabs = (Array.isArray(item.collaborations) && item.collaborations.length > 0)
+          ? item.collaborations
+          : (Array.isArray(item.partnerUnis) ? item.partnerUnis : []);
+        const effectiveUniName = item.combinedUniName || uniName;
+
         list.push({
           ...item,
           _uniqueKey: `${item._id || item.slug || cardTitle || "program"}-${index}`,
           title: cardTitle,
           cardTitle,
           displayName,
-          uniName,
+          uniName: effectiveUniName,
+          combinedUniName: effectiveUniName,
+          collaborations: collabs,
+          partnerUnis: collabs,
           uniObj: uni,
           courseObj: course,
           subcourseObj: subcourse,
@@ -971,8 +1113,16 @@ export default function CoursesPageClientView({
 
     if (Array.isArray(initialUniversities)) initialUniversities.forEach(addUni);
 
+    (processedPrograms || []).forEach((item) => {
+      if (item?.collaborations && Array.isArray(item.collaborations)) {
+        item.collaborations.forEach((collab) => {
+          if (collab) addUni(collab);
+        });
+      }
+    });
+
     return Array.from(map.values());
-  }, [initialUniversities]);
+  }, [initialUniversities, processedPrograms]);
 
   const courseSelectOptions = useMemo(() => {
     const list = [{ value: "all", label: "All Courses" }];
@@ -1069,7 +1219,12 @@ export default function CoursesPageClientView({
       <div className="lg:hidden flex items-center gap-2 mb-4 bg-white p-2.5 rounded-2xl border border-gray-200">
         <div className="flex-1 grid grid-cols-2 gap-2 min-w-0">
           <Select
-            showSearch
+            showSearch={false}
+            onOpenChange={(open) => {
+              if (!open && typeof document !== "undefined" && document.activeElement && typeof document.activeElement.blur === "function") {
+                document.activeElement.blur();
+              }
+            }}
             value={
               selectedCourse && selectedCourse !== "all"
                 ? selectedCourse
@@ -1090,10 +1245,14 @@ export default function CoursesPageClientView({
             options={categorySelectOptions}
             className="w-full"
             placeholder="Category"
-            optionFilterProp="label"
           />
           <Select
-            showSearch
+            showSearch={false}
+            onOpenChange={(open) => {
+              if (!open && typeof document !== "undefined" && document.activeElement && typeof document.activeElement.blur === "function") {
+                document.activeElement.blur();
+              }
+            }}
             value={
               Array.isArray(activeSubcategory) && activeSubcategory.length > 0
                 ? activeSubcategory[0]
@@ -1106,7 +1265,6 @@ export default function CoursesPageClientView({
             options={subcategorySelectOptions}
             className="w-full"
             placeholder="Sub Category"
-            optionFilterProp="label"
           />
         </div>
         <button
@@ -1160,45 +1318,90 @@ export default function CoursesPageClientView({
                     {/* Desktop Card Layout */}
                     <div className="hidden sm:flex items-center gap-5">
                       {/* Left: University Logo + Name */}
-                      <div className="w-28 sm:w-32 flex flex-col items-center justify-center text-center pr-4 border-r border-gray-200 shrink-0">
-                        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full p-1.5 flex items-center justify-center bg-white relative mb-1.5">
-                          {logoUrl ? (
-                            <Image
-                              src={logoUrl}
-                              alt={uniName}
-                              fill
-                              sizes="64px"
-                              loading={index < 3 ? "eager" : "lazy"}
-                              priority={index === 0}
-                              className="object-contain p-1"
-                            />
-                          ) : (
-                            <div className="w-full h-full rounded-full bg-blue-50 text-blue-600 font-bold flex items-center justify-center text-xs uppercase">
-                              {uniName.charAt(0)}
+                      <div className={`flex flex-col items-center justify-center text-center pr-4 border-r border-gray-200 shrink-0 ${item.collaborations && item.collaborations.length > 0 ? "w-32 sm:w-36" : "w-28 sm:w-32"}`}>
+                        {item.collaborations && item.collaborations.length > 0 ? (
+                          <div className="flex items-center justify-center gap-1.5 mb-1.5">
+                            <div className="w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center bg-white relative shrink-0">
+                              {logoUrl ? (
+                                <Image
+                                  src={logoUrl}
+                                  alt={uniName}
+                                  fill
+                                  sizes="48px"
+                                  loading={index < 3 ? "eager" : "lazy"}
+                                  priority={index === 0}
+                                  className="object-contain p-0.5"
+                                />
+                              ) : (
+                                <div className="w-full h-full rounded-full bg-blue-50 text-blue-600 font-bold flex items-center justify-center text-[10px] uppercase">
+                                  {uniName.charAt(0)}
+                                </div>
+                              )}
                             </div>
-                          )}
-                        </div>
-                        <span className="text-xs font-bold text-[#0a2540] line-clamp-2 leading-tight">
+                            <span className="text-gray-400 font-bold text-xs select-none">&amp;</span>
+                            {item.collaborations.map((collab, cIdx) => {
+                              const collabLogo = getMediaUrl(collab.logoUrl || collab.logo);
+                              return (
+                                <div key={cIdx} className="w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center bg-white relative shrink-0" title={collab.name}>
+                                  {collabLogo ? (
+                                    <Image
+                                      src={collabLogo}
+                                      alt={collab.name || "Collaborator Logo"}
+                                      fill
+                                      sizes="48px"
+                                      className="object-contain p-0.5"
+                                    />
+                                  ) : (
+                                    <div className="w-full h-full rounded-full bg-amber-50 text-amber-700 font-bold flex items-center justify-center text-[10px] uppercase">
+                                      {(collab.name || "C").charAt(0)}
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full p-1.5 flex items-center justify-center bg-white relative mb-1.5">
+                            {logoUrl ? (
+                              <Image
+                                src={logoUrl}
+                                alt={uniName}
+                                fill
+                                sizes="64px"
+                                loading={index < 3 ? "eager" : "lazy"}
+                                priority={index === 0}
+                                className="object-contain p-1"
+                              />
+                            ) : (
+                              <div className="w-full h-full rounded-full bg-blue-50 text-blue-600 font-bold flex items-center justify-center text-xs uppercase">
+                                {uniName.charAt(0)}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                        <span className="text-xs font-bold text-[#0a2540] leading-tight break-words">
                           {uniName}
                         </span>
                       </div>
 
                       {/* Right: Details & Actions */}
-                      <div className="flex-1 min-w-0 space-y-2.5">
+                      <div className={`flex-1 min-w-0 space-y-2.5 ${providerName ? "pr-24" : ""}`}>
 
                         {/* Title & Full Display Name Underneath */}
                         <Link
                           href={courseDetailHref}
                           className="hover:text-blue-600 transition-colors block text-left no-underline group"
                         >
-                          <h3 className="text-sm sm:text-base font-bold text-gray-900 leading-snug line-clamp-1 m-0">
+                          <h3 className="text-sm sm:text-base font-bold text-gray-900 leading-snug m-0 break-words">
                             {cardTitle}
                           </h3>
-                          {item.displayName && item.displayName.toLowerCase() !== cardTitle.toLowerCase() && (
-                            <span className="text-[11.5px] sm:text-xs font-normal text-gray-500 block leading-tight mt-0.5 tracking-tight">
-                              {item.displayName}
-                            </span>
-                          )}
+                          {item.displayName &&
+                            item.displayName.toLowerCase() !== cardTitle.toLowerCase() &&
+                            item.displayName.replace(/^online\s+/i, "").trim().toLowerCase() !== cardTitle.replace(/^online\s+/i, "").trim().toLowerCase() && (
+                              <span className="text-[11.5px] sm:text-xs font-normal text-gray-500 block leading-tight mt-0.5 tracking-tight">
+                                {item.displayName}
+                              </span>
+                            )}
                         </Link>
 
                         {/* Fee & Duration Row */}
@@ -1220,7 +1423,7 @@ export default function CoursesPageClientView({
                         )}
 
                         {/* Actions Row: Specializations | Know More | Apply Now | + Add to Compare */}
-                        <div className="flex items-center gap-2.5 pt-0.5">
+                        <div className="flex flex-wrap items-center gap-2 pt-0.5">
                           {Array.isArray(item.subcourses) && item.subcourses.length > 0 && (
                             <button
                               type="button"
@@ -1229,7 +1432,7 @@ export default function CoursesPageClientView({
                                 setSpecFullData(null);
                                 setSpecializationModalData(item);
                               }}
-                              className="bg-blue-50 hover:bg-blue-100 text-[#0B3B7E] border border-blue-200 text-xs font-bold px-3.5 py-1.5 rounded-lg transition-colors inline-flex items-center gap-1.5 cursor-pointer"
+                              className="bg-blue-50 hover:bg-blue-100 text-[#0B3B7E] border border-blue-200 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors inline-flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0"
                             >
                               <BookOpen className="w-3.5 h-3.5" />
                               <span>Specializations ({item.specializationsCount || item.subcourses.length})</span>
@@ -1238,7 +1441,7 @@ export default function CoursesPageClientView({
 
                           <Link
                             href={courseDetailHref}
-                            className="bg-[#0a2540] hover:bg-[#06182c] text-white text-xs font-semibold px-4 py-1.5 rounded-lg transition-colors inline-flex items-center justify-center no-underline"
+                            className="bg-[#0a2540] hover:bg-[#06182c] text-white text-xs font-semibold px-3.5 py-1.5 rounded-lg transition-colors inline-flex items-center justify-center no-underline whitespace-nowrap shrink-0"
                           >
                             Know More
                           </Link>
@@ -1254,7 +1457,7 @@ export default function CoursesPageClientView({
                                 submitButtonText: "Apply Now",
                               });
                             }}
-                            className="bg-[#F4D068] hover:bg-[#ebc557] text-gray-900 text-xs font-bold px-4 py-1.5 rounded-lg transition-colors border-none cursor-pointer inline-flex items-center justify-center"
+                            className="bg-[#F4D068] hover:bg-[#ebc557] text-gray-900 text-xs font-bold px-3.5 py-1.5 rounded-lg transition-colors border-none cursor-pointer inline-flex items-center justify-center whitespace-nowrap shrink-0"
                           >
                             Apply Now
                           </button>
@@ -1309,11 +1512,10 @@ export default function CoursesPageClientView({
                                     setIsCompareDrawerOpen(true);
                                   }
                                 }}
-                                className={`border text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors inline-flex items-center justify-center gap-1.5 cursor-pointer ml-1 ${
-                                  inCmp
-                                    ? "bg-teal-50 border-teal-500 text-teal-700 hover:bg-teal-100 font-bold"
-                                    : "border-gray-200 hover:border-gray-300 hover:bg-gray-50 bg-white text-gray-800"
-                                }`}
+                                className={`border text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors inline-flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0 ${inCmp
+                                  ? "bg-teal-50 border-teal-500 text-teal-700 hover:bg-teal-100 font-bold"
+                                  : "border-gray-200 hover:border-gray-300 hover:bg-gray-50 bg-white text-gray-800"
+                                  }`}
                               >
                                 {inCmp ? (
                                   <>
@@ -1336,26 +1538,69 @@ export default function CoursesPageClientView({
                     {/* Mobile Card Layout */}
                     <div className="flex sm:hidden flex-col gap-2.5">
                       {/* Mobile Top Row: Uni Logo + Uni Name & Provider Badge */}
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <div className="w-9 h-9 rounded-full border border-gray-200 p-1 flex items-center justify-center bg-white relative shrink-0">
-                            {logoUrl ? (
-                              <Image
-                                src={logoUrl}
-                                alt={uniName}
-                                fill
-                                sizes="36px"
-                                loading={index < 3 ? "eager" : "lazy"}
-                                priority={index === 0}
-                                className="object-contain p-0.5"
-                              />
-                            ) : (
-                              <span className="text-xs font-bold text-blue-600">
-                                {uniName.charAt(0)}
-                              </span>
-                            )}
-                          </div>
-                          <span className="text-xs font-bold text-[#0a2540]">
+                      <div className={`flex items-center min-w-0 ${providerName ? "pr-24" : ""}`}>
+                        <div className="flex items-center gap-2 min-w-0 flex-1">
+                          {item.collaborations && item.collaborations.length > 0 ? (
+                            <div className="flex items-center justify-center gap-1 shrink-0 self-center">
+                              <div className="w-8 h-8 flex items-center justify-center bg-white relative shrink-0">
+                                {logoUrl ? (
+                                  <Image
+                                    src={logoUrl}
+                                    alt={uniName}
+                                    fill
+                                    sizes="32px"
+                                    loading={index < 3 ? "eager" : "lazy"}
+                                    priority={index === 0}
+                                    className="object-contain p-0.5"
+                                  />
+                                ) : (
+                                  <span className="text-[10px] font-bold text-blue-600">
+                                    {uniName.charAt(0)}
+                                  </span>
+                                )}
+                              </div>
+                              <span className="text-gray-400 font-bold text-[10px] select-none inline-flex items-center justify-center leading-none self-center">&amp;</span>
+                              {item.collaborations.map((collab, cIdx) => {
+                                const collabLogo = getMediaUrl(collab.logoUrl || collab.logo);
+                                return (
+                                  <div key={cIdx} className="w-8 h-8 flex items-center justify-center bg-white relative shrink-0" title={collab.name}>
+                                    {collabLogo ? (
+                                      <Image
+                                        src={collabLogo}
+                                        alt={collab.name || "Collaborator Logo"}
+                                        fill
+                                        sizes="32px"
+                                        className="object-contain p-0.5"
+                                      />
+                                    ) : (
+                                      <span className="text-[10px] font-bold text-amber-600">
+                                        {(collab.name || "C").charAt(0)}
+                                      </span>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          ) : (
+                            <div className="w-9 h-9 flex items-center justify-center bg-white relative shrink-0">
+                              {logoUrl ? (
+                                <Image
+                                  src={logoUrl}
+                                  alt={uniName}
+                                  fill
+                                  sizes="36px"
+                                  loading={index < 3 ? "eager" : "lazy"}
+                                  priority={index === 0}
+                                  className="object-contain p-0.5"
+                                />
+                              ) : (
+                                <span className="text-xs font-bold text-blue-600">
+                                  {uniName.charAt(0)}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                          <span className="text-xs font-bold text-[#0a2540] leading-tight break-words min-w-0 flex-1 self-center">
                             {uniName}
                           </span>
                         </div>
@@ -1363,14 +1608,16 @@ export default function CoursesPageClientView({
 
                       {/* Title & Full Display Name Underneath — using <p> not <h3> to avoid duplicate headings in DOM (SEO) */}
                       <Link href={courseDetailHref} className="no-underline block">
-                        <p className="text-xs sm:text-sm font-bold text-gray-900 leading-snug line-clamp-1 m-0">
+                        <p className="text-xs sm:text-sm font-bold text-gray-900 leading-snug m-0 break-words">
                           {cardTitle}
                         </p>
-                        {item.displayName && item.displayName.toLowerCase() !== cardTitle.toLowerCase() && (
-                          <span className="text-[10px] sm:text-[11px] font-normal text-gray-500 block leading-tight mt-0.5 tracking-tight">
-                            {item.displayName}
-                          </span>
-                        )}
+                        {item.displayName &&
+                          item.displayName.toLowerCase() !== cardTitle.toLowerCase() &&
+                          item.displayName.replace(/^online\s+/i, "").trim().toLowerCase() !== cardTitle.replace(/^online\s+/i, "").trim().toLowerCase() && (
+                            <span className="text-[10px] sm:text-[11px] font-normal text-gray-500 block leading-tight mt-0.5 tracking-tight">
+                              {item.displayName}
+                            </span>
+                          )}
                       </Link>
 
                       {/* Fee & Duration + Compare */}
@@ -1441,11 +1688,10 @@ export default function CoursesPageClientView({
                                   setIsCompareDrawerOpen(true);
                                 }
                               }}
-                              className={`border text-[11px] font-semibold px-2.5 py-1 rounded-lg transition-colors inline-flex items-center justify-center gap-1 cursor-pointer shrink-0 self-center ${
-                                inCmp
-                                  ? "bg-teal-50 border-teal-500 text-teal-700 hover:bg-teal-100 font-bold"
-                                  : "border-gray-200 hover:border-gray-300 hover:bg-gray-50 bg-white text-gray-700"
-                              }`}
+                              className={`border text-[11px] font-semibold px-2.5 py-1 rounded-lg transition-colors inline-flex items-center justify-center gap-1 cursor-pointer shrink-0 self-center ${inCmp
+                                ? "bg-teal-50 border-teal-500 text-teal-700 hover:bg-teal-100 font-bold"
+                                : "border-gray-200 hover:border-gray-300 hover:bg-gray-50 bg-white text-gray-700"
+                                }`}
                             >
                               {inCmp ? (
                                 <>
@@ -1550,6 +1796,10 @@ export default function CoursesPageClientView({
 
       {/* Mobile Drawer Filter */}
       <Drawer
+        autoFocus={false}
+        focusTriggerAfterClose={false}
+        rootClassName="no-mobile-keyboard"
+        className="no-mobile-keyboard lg:hidden"
         title={
           <div className="flex items-center justify-between w-full pr-4">
             <div className="flex items-center gap-2">
@@ -1566,22 +1816,36 @@ export default function CoursesPageClientView({
           </div>
         }
         placement="bottom"
-        onClose={() => setIsMobileDrawerOpen(false)}
+        onClose={() => {
+          if (typeof document !== "undefined" && document.activeElement && typeof document.activeElement.blur === "function") {
+            document.activeElement.blur();
+          }
+          setIsMobileDrawerOpen(false);
+        }}
         open={isMobileDrawerOpen}
-        className="lg:hidden"
         footer={
           <div className="flex items-center gap-3 p-2 border-t border-gray-100">
             <button
               type="button"
-              onClick={() => setIsMobileDrawerOpen(false)}
-              className="flex-1 py-2.5 px-4 rounded-xl border border-gray-300 text-gray-700 font-semibold text-sm bg-white hover:bg-gray-50 cursor-pointer transition-colors"
+              onClick={() => {
+                if (typeof document !== "undefined" && document.activeElement && typeof document.activeElement.blur === "function") {
+                  document.activeElement.blur();
+                }
+                setIsMobileDrawerOpen(false);
+              }}
+              className="flex-1 py-2.5 px-4 rounded-xl border border-gray-300 text-gray-700 font-semibold text-sm bg-white hover:bg-gray-50 cursor-pointer transition-colors touch-manipulation active:scale-95"
             >
               Close
             </button>
             <button
               type="button"
-              onClick={handleApplyMobileFilters}
-              className="flex-1 py-2.5 px-4 rounded-xl bg-[#0a2540] hover:bg-[#06182c] text-white font-bold text-sm border-none cursor-pointer transition-colors shadow-sm"
+              onClick={() => {
+                if (typeof document !== "undefined" && document.activeElement && typeof document.activeElement.blur === "function") {
+                  document.activeElement.blur();
+                }
+                handleApplyMobileFilters();
+              }}
+              className="flex-1 py-2.5 px-4 rounded-xl bg-[#0a2540] hover:bg-[#06182c] text-white font-bold text-sm border-none cursor-pointer transition-colors shadow-sm touch-manipulation active:scale-95"
             >
               Apply Filter
             </button>
@@ -1755,10 +2019,11 @@ export default function CoursesPageClientView({
             const specCurriculum = (() => {
               if (Array.isArray(specFullData?.curriculum) && specFullData.curriculum.length > 0) {
                 return specFullData.curriculum
-                  .filter((c) => c && Array.isArray(c.subjects) && c.subjects.length > 0)
+                  .filter((c) => c && ((Array.isArray(c.subjects) && c.subjects.length > 0) || (Array.isArray(c.electives) && c.electives.length > 0)))
                   .map((c, idx) => ({
                     semester: c.semesterName || `Semester ${idx + 1}`,
-                    subjects: c.subjects,
+                    subjects: Array.isArray(c.subjects) ? c.subjects : [],
+                    electives: Array.isArray(c.electives) ? c.electives : [],
                   }));
               }
               return [];
@@ -1782,10 +2047,10 @@ export default function CoursesPageClientView({
                   <button
                     type="button"
                     onClick={handleCloseSpecModal}
-                    className="w-8 h-8 rounded-full bg-slate-100/90 hover:bg-slate-200 text-slate-500 hover:text-slate-900 transition-colors flex items-center justify-center cursor-pointer border-0 ml-auto shrink-0"
+                    className="w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer border-none shadow-xs text-white bg-black/40 hover:bg-black/60 md:text-slate-500 md:bg-slate-100 md:hover:bg-slate-200 md:hover:text-slate-800 ml-auto shrink-0"
                     aria-label="Close modal"
                   >
-                    <X className="w-4 h-4" />
+                    <X size={18} className="stroke-[2.5]" />
                   </button>
                 </div>
 
@@ -1858,7 +2123,7 @@ export default function CoursesPageClientView({
                           <div className="flex items-center gap-1.5">
                             <FaCalendar className="w-3 h-3 text-[#072C50] shrink-0" />
                             <span className="text-red-500">
-                              Admission Deadline : <strong className="font-semibold text-gray-500">{itemDeadline}</strong>
+                              Admission Deadline: <strong className="font-semibold text-gray-500">{itemDeadline}</strong>
                             </span>
                           </div>
                         )}
@@ -1903,15 +2168,37 @@ export default function CoursesPageClientView({
                           </div>
 
                           <div className="col-span-12 md:col-span-9 bg-gradient-to-br from-blue-50/50 via-blue-50/30 to-slate-50/40 border border-blue-100/80 rounded-2xl p-3.5 sm:p-4 min-h-[135px] flex items-start">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 w-full">
-                              {(activeCurriculum?.subjects || []).map((sub, subIdx) => (
-                                <div key={subIdx} className="flex items-start gap-2 text-xs text-gray-700 leading-snug">
-                                  <span className="text-gray-900 font-bold shrink-0 leading-none mt-0.5">•</span>
-                                  <span className="font-medium text-gray-800 line-clamp-1">
-                                    {typeof sub === "string" ? sub : sub.name || ""}
-                                  </span>
-                                </div>
-                              ))}
+                            <div className="w-full space-y-3">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 w-full">
+                                {(activeCurriculum?.subjects || []).map((sub, subIdx) => (
+                                  <div key={subIdx} className="flex items-start gap-2 text-xs text-gray-700 leading-snug">
+                                    <span className="text-gray-900 font-bold shrink-0 leading-none mt-0.5">•</span>
+                                    <span className="font-medium text-gray-800 line-clamp-1">
+                                      {typeof sub === "string" ? sub : sub.name || ""}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                              {(activeCurriculum?.electives || []).map((elec, eIdx) => {
+                                const title = elec.groupTitle || `Elective (Choose Any ${elec.selectCount || 1})`;
+                                const opts = Array.isArray(elec.options) ? elec.options : [];
+                                if (opts.length === 0) return null;
+                                return (
+                                  <div key={eIdx} className="pt-2 border-t border-dashed border-amber-300 bg-amber-50/60 rounded-lg p-2">
+                                    <div className="text-[11px] font-semibold text-amber-900 mb-1 inline-block bg-amber-100 px-1.5 py-0.5 rounded border border-amber-300">
+                                      {title}
+                                    </div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-xs text-amber-950">
+                                      {opts.map((opt, oIdx) => (
+                                        <div key={oIdx} className="flex items-start gap-1.5 leading-snug">
+                                          <span className="text-amber-600 font-semibold shrink-0">○</span>
+                                          <span className="font-medium">{typeof opt === "string" ? opt : opt.name}</span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                );
+                              })}
                             </div>
                           </div>
                         </div>
@@ -1924,13 +2211,25 @@ export default function CoursesPageClientView({
                         type="button"
                         onClick={() => {
                           const title = detailTitle;
+                          const specSlug =
+                            selectedSpecDetail?.slug ||
+                            (selectedSpecDetail?.name
+                              ? selectedSpecDetail.name
+                                .toLowerCase()
+                                .replace(/^online\s+[a-z0-9+-]+\s+in\s+/i, "")
+                                .replace(/^distance\s+[a-z0-9+-]+\s+in\s+/i, "")
+                                .replace(/[^a-z0-9]+/g, "-")
+                                .replace(/^-|-$/g, "")
+                              : "");
+                          const baseCourseSlug = specializationModalData?.slug || "courses";
+                          const fullSlug = specSlug && !baseCourseSlug.toLowerCase().includes(specSlug)
+                            ? `${baseCourseSlug.replace(/\/+$/, "")}/${specSlug}`
+                            : baseCourseSlug;
+
                           handleCloseSpecModal();
-                          openFormModal({
-                            title: "Download Brochure",
-                            subtitle: title,
-                            defaultCourse: title,
-                            formNameOverride: `BrochureModal_${specializationModalData.slug || modalUniName}_${selectedSpecDetail.slug || selectedSpecDetail.name}`,
-                            submitButtonText: "Download Brochure",
+                          openWhatsAppBrochure({
+                            title,
+                            slug: fullSlug,
                           });
                         }}
                         className="flex-1 min-w-0 bg-[#0C2B4E] hover:bg-[#071c33] text-white text-[11px] sm:text-xs md:text-sm font-bold py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 transition-all cursor-pointer shadow-sm border-none active:scale-95"
@@ -1970,10 +2269,10 @@ export default function CoursesPageClientView({
               <button
                 type="button"
                 onClick={handleCloseSpecModal}
-                className="absolute top-0 right-0 z-20 w-8 h-8 rounded-full bg-slate-100/90 hover:bg-slate-200 text-slate-500 hover:text-slate-900 transition-colors flex items-center justify-center cursor-pointer border-0"
+                className="absolute top-2.5 right-2.5 md:top-3.5 md:right-3.5 z-30 w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer border-none shadow-xs text-white bg-black/40 hover:bg-black/60 md:text-slate-500 md:bg-slate-100 md:hover:bg-slate-200 md:hover:text-slate-800"
                 aria-label="Close modal"
               >
-                <X className="w-4 h-4" />
+                <X size={18} className="stroke-[2.5]" />
               </button>
 
               <div className="flex flex-col md:flex-row gap-5 lg:gap-6 items-stretch">
@@ -2048,16 +2347,11 @@ export default function CoursesPageClientView({
                       {modalDeadline && (
                         <div className="flex items-center gap-1.5">
                           <Calendar className="w-3.5 h-3.5 text-gray-500 shrink-0" />
-                          <span className="text-red-500 font-bold">Admission Deadline :</span>
+                          <span className="text-red-500 font-bold">Admission Deadline:</span>
                           <span className="font-normal text-gray-800">{modalDeadline}</span>
                         </div>
                       )}
                     </div>
-
-                    {/* Overview paragraph */}
-                    <p className="text-xs sm:text-[12.5px] text-gray-600 leading-[1.35] sm:leading-normal line-clamp-3 m-0">
-                      {modalOverview}
-                    </p>
 
                     {/* Middle: Specializations Grid */}
                     <div className="pt-1.5">
@@ -2085,6 +2379,11 @@ export default function CoursesPageClientView({
                         </div>
                       </div>
                     </div>
+
+                    {/* Overview paragraph */}
+                    <p className="text-xs sm:text-[12.5px] text-gray-600 leading-relaxed m-0 font-normal">
+                      {modalOverview}
+                    </p>
                   </div>
 
                   {/* Bottom: Action Buttons */}
@@ -2093,12 +2392,9 @@ export default function CoursesPageClientView({
                       type="button"
                       onClick={() => {
                         handleCloseSpecModal();
-                        openFormModal({
-                          title: "Download Brochure",
-                          subtitle: modalCourseTitle,
-                          defaultCourse: modalCourseTitle,
-                          formNameOverride: `BrochureModal_${specializationModalData.slug || modalUniName}`,
-                          submitButtonText: "Download Brochure",
+                        openWhatsAppBrochure({
+                          title: modalCourseTitle,
+                          slug: specializationModalData?.slug || "courses",
                         });
                       }}
                       className="bg-[#0B2546] hover:bg-[#06182c] text-white text-xs sm:text-sm font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 flex-1 shadow-sm transition-all cursor-pointer border-none"

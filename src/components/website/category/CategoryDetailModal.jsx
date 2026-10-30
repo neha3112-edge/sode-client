@@ -23,23 +23,28 @@ export default function CategoryDetailModal({
     activeCategory?.itemType === "university"
   );
 
-  const exploreButtonText = isCourseModal
-    ? "Explore"
-    : isUniModal
-      ? "Explore"
-      : modalData?.isCoursesModal
-        ? "Explore"
-        : modalData?.isUniversitiesModal
-          ? "Explore"
-          : "Explore";
+  const showExploreButton = Boolean(isCourseModal || isUniModal);
 
   const handleExploreClick = () => {
     onClose();
-    if (isUniModal || modalData?.isUniversitiesModal) {
-      router.push("/universities");
+    if (isUniModal) {
+      const targetSlug = getItemSlug(activeCategory);
+      if (activeCategory?.targetUrl && !/[0-9a-fA-F]{24}/.test(activeCategory.targetUrl)) {
+        router.push(activeCategory.targetUrl);
+      } else {
+        router.push(`/universities/${encodeURIComponent(targetSlug)}`);
+      }
       return;
     }
-    router.push("/courses");
+    if (isCourseModal) {
+      const targetSlug = getItemSlug(activeCategory);
+      if (activeCategory?.targetUrl && !/[0-9a-fA-F]{24}/.test(activeCategory.targetUrl) && !activeCategory.targetUrl.includes("course=&") && activeCategory.targetUrl !== "/courses?course=") {
+        router.push(activeCategory.targetUrl);
+      } else {
+        router.push(targetSlug ? `/courses?course=${encodeURIComponent(targetSlug)}` : `/courses`);
+      }
+      return;
+    }
   };
 
   return (
@@ -96,22 +101,24 @@ export default function CategoryDetailModal({
             </div>
 
             <div className="flex items-center gap-2 shrink-0 ml-auto">
-              <button
-                type="button"
-                onClick={handleExploreClick}
-                className="inline-flex items-center justify-center gap-1 py-1 px-2 rounded-full text-xs font-bold text-[#0B3B7E] bg-blue-50/80 hover:bg-blue-100 border border-blue-200/80 transition-all cursor-pointer shadow-none group shrink-0"
-              >
-                <span className="leading-none">{exploreButtonText}</span>
-                <ChevronRight className="w-3.5 h-3.5 shrink-0 transition-transform duration-200 group-hover:translate-x-0.5" />
-              </button>
+              {showExploreButton && (
+                <button
+                  type="button"
+                  onClick={handleExploreClick}
+                  className="inline-flex items-center justify-center gap-1 py-1 px-2 rounded-full text-xs font-bold text-[#0B3B7E] bg-blue-50/80 hover:bg-blue-100 border border-blue-200/80 transition-all cursor-pointer shadow-none group shrink-0"
+                >
+                  <span className="leading-none">Explore</span>
+                  <ChevronRight className="w-3.5 h-3.5 shrink-0 transition-transform duration-200 group-hover:translate-x-0.5" />
+                </button>
+              )}
 
               <button
                 type="button"
                 onClick={onClose}
-                className="w-8 h-8 flex items-center justify-center cursor-pointer shrink-0 rounded-full hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-colors"
+                className="w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer border-none shadow-xs text-slate-500 bg-slate-100 hover:bg-slate-200 hover:text-slate-800 shrink-0"
                 aria-label="Close modal"
               >
-                <X className="w-4 h-4" />
+                <X size={18} className="stroke-[2.5]" />
               </button>
             </div>
           </div>
@@ -140,10 +147,13 @@ export default function CategoryDetailModal({
                           } else if (modalData.isCourseSubcategoriesModal) {
                             const courseSlug = getItemSlug(activeCategory);
                             const subSlug = getItemSlug(it);
-                            if (it.targetUrl && !/[0-9a-fA-F]{24}/.test(it.targetUrl)) {
+                            if (it.targetUrl && !/[0-9a-fA-F]{24}/.test(it.targetUrl) && !it.targetUrl.includes("course=&") && !it.targetUrl.endsWith("course=")) {
                               router.push(it.targetUrl);
                             } else {
-                              router.push(`/courses?course=${encodeURIComponent(courseSlug)}&subcategory=${encodeURIComponent(subSlug)}`);
+                              const q = [];
+                              if (courseSlug) q.push(`course=${encodeURIComponent(courseSlug)}`);
+                              if (subSlug) q.push(`subcategory=${encodeURIComponent(subSlug)}`);
+                              router.push(q.length > 0 ? `/courses?${q.join("&")}` : "/courses");
                             }
                           } else if (modalData.isCoursesModal || it.isCourse || it.itemType === "course") {
                             const courseSlug = getItemSlug(it);
@@ -152,10 +162,10 @@ export default function CategoryDetailModal({
                             } else {
                               router.push(`/courses?course=${encodeURIComponent(courseSlug)}`);
                             }
-                          } else if (parentCatSlug && parentCatSlug !== "all") {
-                            router.push(`/courses?category=${encodeURIComponent(parentCatSlug)}&subcategory=${encodeURIComponent(itemSlug)}`);
                           } else if (it.targetUrl && !/[0-9a-fA-F]{24}/.test(it.targetUrl)) {
                             router.push(it.targetUrl);
+                          } else if (parentCatSlug && parentCatSlug !== "all") {
+                            router.push(`/courses?category=${encodeURIComponent(parentCatSlug)}&subcategory=${encodeURIComponent(itemSlug)}`);
                           } else if (it.targetUrl && itemSlug && !isObjectId(itemSlug)) {
                             router.push(it.targetUrl.replace(/[0-9a-fA-F]{24}/g, encodeURIComponent(itemSlug)));
                           } else {
@@ -263,7 +273,7 @@ export default function CategoryDetailModal({
                         </div>
                         <div className="h-7 min-[360px]:h-8 sm:h-8.5 flex items-center justify-center w-full min-w-0 px-0.5 pb-0.5 shrink-0">
                           <h5 className="text-[9.5px] min-[360px]:text-[10px] sm:text-[10.5px] font-medium text-slate-800 group-hover:text-blue-600 transition-colors text-center w-full tracking-tight min-w-0 m-0 uppercase">
-                            {formatTwoLineText(crs.name)}
+                            {formatTwoLineText(crs.codeName || crs.shortName || crs.name)}
                           </h5>
                         </div>
                       </div>

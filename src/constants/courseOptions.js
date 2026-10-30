@@ -5,9 +5,6 @@
 const getAssetPath = (path) => path;
 
 export const DEFAULT_COURSE_OPTIONS = [
-  /* =========================
-     DOCTORATE
-  ========================== */
   {
     value: "__DOCTORATE__",
     label: "Doctorate ━━",
@@ -23,10 +20,6 @@ export const DEFAULT_COURSE_OPTIONS = [
     label: "MBA + DBA",
     brochureUrl: getAssetPath("/assets/pdf/edgewood_dba_mba.pdf"),
   },
-
-  /* =========================
-     MASTER
-  ========================== */
   {
     value: "__MASTER__",
     label: "Master ━━",

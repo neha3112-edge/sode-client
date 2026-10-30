@@ -2,6 +2,7 @@
 
 import React, { useEffect } from "react";
 import { Modal } from "antd";
+import { X } from "lucide-react";
 import { triggerFormConfetti } from "@/lib/confetti";
 import LandingLeadForm from "../LandingLeadForm";
 
@@ -70,10 +71,10 @@ export default function BrochureModal({
           <button
             type="button"
             onClick={onClose}
-            className="absolute top-2.5 right-2.5 z-50 flex items-center justify-center w-7 h-7 rounded-full bg-black/60 hover:bg-black/85 text-white font-bold text-xs transition-all shadow-md cursor-pointer border-none select-none"
+            className="absolute top-2.5 right-2.5 md:top-3.5 md:right-3.5 z-50 w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer border-none shadow-xs text-white bg-black/50 hover:bg-black/70 md:text-slate-500 md:bg-slate-100 md:hover:bg-slate-200 md:hover:text-slate-800"
             aria-label="Close modal"
           >
-            ✕
+            <X size={18} className="stroke-[2.5]" />
           </button>
           <LandingLeadForm
             brand={brand}

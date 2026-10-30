@@ -12,7 +12,6 @@ export async function generateMetadata() {
 }
 
 export default async function Home() {
-  // Parallel High-Speed Data Fetching with ISR Caching
   const [
     heroRes,
     universitiesRes,
