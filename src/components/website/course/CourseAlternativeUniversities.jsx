@@ -51,10 +51,17 @@ export default function CourseAlternativeUniversities({
     "Top Alternative Universities";
 
   // Remove "Offering..." and the course name from the heading
-  const sectionTitle =
+  let cleanedTitle =
     typeof rawTitle === "string"
       ? rawTitle.replace(/\s+offering\b.*$/i, "").trim() || "Top Alternative Universities"
       : "Top Alternative Universities";
+
+  // Ensure "Alternative" comes immediately after "Top" (e.g. "Top IITs & IIMs Alternative Universities" -> "Top Alternative IITs & IIMs Universities")
+  if (/^top\s+(.+?)\s+alternative\s+(universities|university)$/i.test(cleanedTitle)) {
+    cleanedTitle = cleanedTitle.replace(/^top\s+(.+?)\s+alternative\s+(universities|university)$/i, "Top Alternative $1 $2");
+  }
+
+  const sectionTitle = cleanedTitle;
 
   return (
     <div

@@ -617,10 +617,15 @@ export function CourseClientView({
         courseData?.peer_universities_title ||
         (processedPrograms[0]?.sectionTitle) ||
         "Top Universities";
-      const altLabel =
+      let altLabel =
         typeof rawAltLabel === "string"
           ? rawAltLabel.replace(/\s+offering\b.*$/i, "").trim() || "Top Universities"
           : "Top Universities";
+
+      if (/^top\s+(.+?)\s+alternative\s+(universities|university)$/i.test(altLabel)) {
+        altLabel = altLabel.replace(/^top\s+(.+?)\s+alternative\s+(universities|university)$/i, "Top Alternative $1 $2");
+      }
+
       list.push({ id: "alternative", label: altLabel });
     }
     if (faqList && faqList.length > 0) {
