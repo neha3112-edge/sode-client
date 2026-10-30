@@ -297,8 +297,8 @@ export default function AutoEngineToolPage({
     const optValue = customText
       ? customText
       : typeof option === "object"
-      ? option.title || option.text || option.id
-      : option;
+        ? option.title || option.text || option.id
+        : option;
     const handleId = typeof option === "object" ? option.id || optValue : String(option);
 
     const updatedAnswers = {
@@ -437,7 +437,7 @@ export default function AutoEngineToolPage({
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-[#072C50] text-xs font-bold border border-slate-200 transition-all cursor-pointer shadow-2xs"
                 >
                   <ArrowLeft size={14} />
-                  <span>All AI Tools</span>
+                  <span>Back</span>
                 </Link>
               )}
             </div>
@@ -449,12 +449,12 @@ export default function AutoEngineToolPage({
           </div>
 
           {/* Centered Page Title inside the card */}
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#072C50] text-center tracking-tight m-0 mb-3">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#072C50] text-center tracking-tight m-0 mb-1 sm:mb-1.5">
             {workflow?.name || toolTitle}
           </h1>
 
           {/* Subtitle */}
-          <p className="text-slate-600 text-xs sm:text-sm md:text-base text-center max-w-2xl mx-auto m-0 mb-6">
+          <p className="text-slate-600 text-xs sm:text-sm md:text-base text-center max-w-2xl mx-auto m-0 mb-4 sm:mb-6 leading-relaxed">
             {workflow?.description || toolDescription}
           </p>
 
@@ -697,11 +697,10 @@ export default function AutoEngineToolPage({
 
               {/* ─── GRID OF OPTION CARDS (MATCHING CATEGORY ON MOBILE & DESKTOP) ─── */}
               <div
-                className={`grid grid-cols-4 gap-1.5 sm:gap-2.5 w-full mx-auto items-stretch ${
-                  filteredOptions.length <= 4
+                className={`grid grid-cols-4 gap-1.5 sm:gap-2.5 w-full mx-auto items-stretch ${filteredOptions.length <= 4
                     ? "sm:grid-cols-4 max-w-2xl mx-auto"
                     : "sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6"
-                }`}
+                  }`}
               >
                 {filteredOptions.map((option, oIdx) => {
                   const optTitle =
@@ -729,11 +728,10 @@ export default function AutoEngineToolPage({
                           handleSelectOption(option, storeVar);
                         }
                       }}
-                      className={`relative w-full aspect-square bg-white rounded-xl sm:rounded-2xl p-1.5 min-[360px]:p-2 sm:p-3 border flex flex-col items-center justify-center text-center cursor-pointer select-none transition-all duration-200 hover:-translate-y-0.5 group min-w-0 ${
-                        isSelected
+                      className={`relative w-full aspect-square bg-white rounded-xl sm:rounded-2xl p-1.5 min-[360px]:p-2 sm:p-3 border flex flex-col items-center justify-center text-center cursor-pointer select-none transition-all duration-200 hover:-translate-y-0.5 group min-w-0 ${isSelected
                           ? "border-blue-600 ring-2 ring-blue-500/20 bg-blue-50/20 shadow-xs"
                           : "border-gray-200 hover:border-blue-500 hover:bg-gray-50/50"
-                      }`}
+                        }`}
                     >
                       {/* Top Right Sparkle */}
                       <span
@@ -775,11 +773,10 @@ export default function AutoEngineToolPage({
                       {/* Pinned Bottom Button - Desktop / Tablet (sm+) */}
                       <div className="w-full mt-2 hidden sm:block">
                         <div
-                          className={`w-full py-1.5 sm:py-2 px-2 sm:px-3 rounded-full text-white font-bold text-[10px] sm:text-[11px] shadow-none transition-all flex items-center justify-center gap-1 cursor-pointer truncate ${
-                            isSelected
+                          className={`w-full py-1.5 sm:py-2 px-2 sm:px-3 rounded-full text-white font-bold text-[10px] sm:text-[11px] shadow-none transition-all flex items-center justify-center gap-1 cursor-pointer truncate ${isSelected
                               ? "bg-emerald-600 hover:bg-emerald-700"
                               : "bg-[#0B3B7E] hover:bg-[#072859]"
-                          }`}
+                            }`}
                         >
                           <span className="truncate">
                             {isSelected ? "Selected ✓" : optTitle}
