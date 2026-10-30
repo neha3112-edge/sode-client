@@ -649,14 +649,14 @@ export default function AutoEngineToolPage({
             /* ❓ INTERACTIVE QUESTION CARDS (NODE TRAVERSAL) */
             /* ===================================================== */
             <div className="space-y-8">
-              {/* Question Heading with Back Button (Full-width Between / Absolute Left) */}
-              <div className="relative flex items-center justify-center w-full mb-6 min-h-[40px]">
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 shrink-0">
+              {/* Question Heading with Back Button (Mobile top-left / Desktop absolute-left) */}
+              <div className="relative w-full mb-4 sm:mb-6">
+                <div className="sm:absolute sm:left-0 sm:top-1/2 sm:-translate-y-1/2 mb-2.5 sm:mb-0 flex items-center justify-start shrink-0">
                   {history.length > 0 && !recommendations ? (
                     <button
                       type="button"
                       onClick={handleBack}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-[#072C50] text-xs font-bold border border-slate-200 transition-all cursor-pointer shadow-2xs"
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg sm:rounded-xl bg-slate-50 hover:bg-slate-100 text-[#072C50] text-xs font-bold border border-slate-200 transition-all cursor-pointer shadow-2xs"
                       title="Go Back to Previous Question"
                     >
                       <ArrowLeft size={14} />
@@ -665,7 +665,7 @@ export default function AutoEngineToolPage({
                   ) : (
                     <Link
                       href="/tools"
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-[#072C50] text-xs font-bold border border-slate-200 transition-all cursor-pointer shadow-2xs"
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg sm:rounded-xl bg-slate-50 hover:bg-slate-100 text-[#072C50] text-xs font-bold border border-slate-200 transition-all cursor-pointer shadow-2xs"
                     >
                       <ArrowLeft size={14} />
                       <span>Back</span>
@@ -673,7 +673,7 @@ export default function AutoEngineToolPage({
                   )}
                 </div>
 
-                <h2 className="text-base sm:text-2xl md:text-3xl font-bold text-[#072C50] text-center tracking-tight leading-tight m-0 w-full px-16 sm:px-24">
+                <h2 className="text-sm min-[380px]:text-base sm:text-2xl md:text-3xl font-bold text-[#072C50] text-center tracking-tight leading-tight m-0 w-full px-1 sm:px-24">
                   {currentNode?.data?.question ||
                     currentNode?.data?.title ||
                     "Choose Your Preference"}
