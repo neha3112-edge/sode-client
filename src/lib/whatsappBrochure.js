@@ -8,11 +8,11 @@
  * 1. Explicit override passed in function argument (e.g. university/counselor specific)
  * 2. Dynamic runtime number fetched from backend API or window.__CRM_WHATSAPP_NUMBER__
  * 3. Environment variable (NEXT_PUBLIC_WHATSAPP_NUMBER)
- * 4. Default fallback: "9195828 23636"
+ * 4. Default fallback: "919582823636"
  */
 
 export const DEFAULT_WHATSAPP_NUMBER =
-  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "9195828 23636";
+  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "919582823636";
 
 let runtimeBackendWhatsAppNumber = null;
 
