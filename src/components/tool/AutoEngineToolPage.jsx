@@ -414,32 +414,8 @@ export default function AutoEngineToolPage({
       {/* ─── 1. TOP DARK BLUE BANNER WITH PAGE TITLE & SUBTITLE ─── */}
       <div className="w-full bg-[#072C50] text-white pt-6 pb-20 sm:pt-8 sm:pb-24 md:pt-10 md:pb-28 px-4 relative">
         <div className="max-w-6xl mx-auto">
-          {/* Top Bar: Back Button (Left) & Centered Pill Badge */}
-          <div className="relative flex items-center justify-center mb-3 min-h-[36px]">
-            {/* Back Button on Left */}
-            <div className="absolute left-0">
-              {history.length > 0 && !recommendations ? (
-                <button
-                  type="button"
-                  onClick={handleBack}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/20 transition-all cursor-pointer shadow-xs backdrop-blur-xs"
-                  title="Go Back to Previous Question"
-                >
-                  <ArrowLeft size={14} />
-                  <span>Previous Step</span>
-                </button>
-              ) : (
-                <Link
-                  href="/tools"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/20 transition-all cursor-pointer shadow-xs backdrop-blur-xs"
-                >
-                  <ArrowLeft size={14} />
-                  <span>Back</span>
-                </Link>
-              )}
-            </div>
-
-            {/* Centered Pill Badge */}
+          {/* Top Bar: Centered Pill Badge */}
+          <div className="flex items-center justify-center mb-3 min-h-[36px]">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FEF3C7] text-[#92400E] text-xs font-bold border border-amber-200">
               ✦ AI POWERED
             </span>
@@ -672,13 +648,37 @@ export default function AutoEngineToolPage({
             /* ❓ INTERACTIVE QUESTION CARDS (NODE TRAVERSAL) */
             /* ===================================================== */
             <div className="space-y-8">
-              {/* Question Heading */}
-              <div className="text-center max-w-3xl mx-auto mb-6">
-                <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#072C50] tracking-tight leading-tight m-0">
+              {/* Question Heading with Back Button */}
+              <div className="flex items-center justify-between gap-2.5 sm:gap-4 max-w-3xl mx-auto mb-6">
+                <div className="shrink-0">
+                  {history.length > 0 && !recommendations ? (
+                    <button
+                      type="button"
+                      onClick={handleBack}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-[#072C50] text-xs font-bold border border-slate-200 transition-all cursor-pointer shadow-2xs"
+                      title="Go Back to Previous Question"
+                    >
+                      <ArrowLeft size={14} />
+                      <span>Back</span>
+                    </button>
+                  ) : (
+                    <Link
+                      href="/tools"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-[#072C50] text-xs font-bold border border-slate-200 transition-all cursor-pointer shadow-2xs"
+                    >
+                      <ArrowLeft size={14} />
+                      <span>Back</span>
+                    </Link>
+                  )}
+                </div>
+
+                <h2 className="text-base sm:text-2xl md:text-3xl font-bold text-[#072C50] text-center tracking-tight leading-tight m-0 flex-1">
                   {currentNode?.data?.question ||
                     currentNode?.data?.title ||
                     "Choose Your Preference"}
                 </h2>
+
+                <div className="w-14 sm:w-16 shrink-0 hidden sm:block" />
               </div>
 
               {/* Search filter for large option lists */}
