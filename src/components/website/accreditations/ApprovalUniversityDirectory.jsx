@@ -678,12 +678,18 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
           )}
 
           {/* Centered Page Title & Subtitle in White */}
-          <div className="flex flex-col items-center justify-center gap-1 sm:gap-1.5">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white text-center tracking-tight m-0 leading-tight">
+          <div className="flex flex-col items-center justify-center text-center">
+            <h1
+              className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white tracking-tight"
+              style={{ margin: 0, padding: 0, lineHeight: 1.1 }}
+            >
               {heroTitle}
             </h1>
 
-            <p className="text-blue-100/90 text-xs sm:text-sm md:text-base text-center max-w-2xl mx-auto m-0 leading-snug">
+            <p
+              className="text-blue-100/90 text-xs sm:text-sm md:text-base max-w-2xl mx-auto"
+              style={{ margin: 0, padding: 0, lineHeight: 1.25, marginTop: "4px" }}
+            >
               {heroDescription}
             </p>
           </div>
