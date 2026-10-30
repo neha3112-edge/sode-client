@@ -90,8 +90,11 @@ const resolveOptionIcon = (title = "", optIcon = null, idx = 0) => {
   if (t.includes("medical") || t.includes("health") || t.includes("nursing") || t.includes("pharma")) return UserCheck;
   if (t.includes("design") || t.includes("animat") || t.includes("vfx")) return Code2;
 
-  // 4. Budgets / Fees
-  if (t.includes("lakh") || t.includes("k") || t.includes("inr") || t.includes("₹") || t.includes("fee") || t.includes("budget") || t.includes("cost") || /\d+/.test(t)) return IndianRupee;
+  // 4. Time Dedication / Schedule
+  if (t.includes("hour") || t.includes("week") || t.includes("month") || t.includes("time") || t.includes("dedicate") || t.includes("schedule") || t.includes("duration")) return Clock;
+
+  // 5. Budgets / Fees
+  if (t.includes("lakh") || t.includes("inr") || t.includes("₹") || t.includes("fee") || t.includes("budget") || t.includes("cost") || /\b\d+k\b/.test(t) || /\b\d+\s*lakh/.test(t)) return IndianRupee;
 
   // 5. Mode / University type
   if (t.includes("online") || t.includes("remote")) return Laptop;
