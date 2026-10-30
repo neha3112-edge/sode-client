@@ -677,15 +677,16 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
             </div>
           )}
 
-          {/* Title H1 */}
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-white m-0">
-            {heroTitle}
-          </h1>
+          {/* Centered Page Title & Subtitle in White */}
+          <div className="flex flex-col items-center justify-center gap-1 sm:gap-1.5">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white text-center tracking-tight m-0 leading-tight">
+              {heroTitle}
+            </h1>
 
-          {/* Subtitle P */}
-          <p className="text-blue-100/90 text-xs sm:text-sm md:text-base text-center max-w-2xl mx-auto m-0 mt-2.5 leading-relaxed">
-            {heroDescription}
-          </p>
+            <p className="text-blue-100/90 text-xs sm:text-sm md:text-base text-center max-w-2xl mx-auto m-0 leading-snug">
+              {heroDescription}
+            </p>
+          </div>
         </div>
       </div>
 
