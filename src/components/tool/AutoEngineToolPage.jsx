@@ -656,20 +656,20 @@ export default function AutoEngineToolPage({
                     <button
                       type="button"
                       onClick={handleBack}
-                      className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-50 hover:bg-slate-100 active:scale-95 text-[#072C50] border border-slate-200 flex items-center justify-center transition-all cursor-pointer shadow-2xs"
+                      className="p-1 sm:p-1.5 text-[#072C50] hover:text-[#0B3B7E] active:scale-90 flex items-center justify-center transition-transform cursor-pointer"
                       title="Go Back to Previous Question"
                       aria-label="Back"
                     >
-                      <ArrowLeft size={16} />
+                      <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" />
                     </button>
                   ) : (
                     <Link
                       href="/tools"
-                      className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-50 hover:bg-slate-100 active:scale-95 text-[#072C50] border border-slate-200 flex items-center justify-center transition-all cursor-pointer shadow-2xs"
+                      className="p-1 sm:p-1.5 text-[#072C50] hover:text-[#0B3B7E] active:scale-90 flex items-center justify-center transition-transform cursor-pointer"
                       title="Back to All Tools"
                       aria-label="Back"
                     >
-                      <ArrowLeft size={16} />
+                      <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" />
                     </Link>
                   )}
                 </div>
@@ -681,7 +681,7 @@ export default function AutoEngineToolPage({
                 </h2>
 
                 {/* Right spacer with matching width so the heading stays mathematically centered */}
-                <div className="w-8 sm:w-9 shrink-0" aria-hidden="true" />
+                <div className="w-7 sm:w-8 shrink-0" aria-hidden="true" />
               </div>
 
               {/* Search filter for large option lists */}
