@@ -299,21 +299,13 @@ const renderAccreditationCard = (acc, idx, onNavigate) => {
       </div>
 
       {/* Action Buttons Row */}
-      <div className="flex items-center justify-between pt-2.5 mt-2 border-t border-slate-100/80">
+      <div className="flex items-center justify-end pt-2.5 mt-2 border-t border-slate-100/80">
         <Link
           href={cardUrl}
           onClick={() => onNavigate?.()}
-          className="px-3 py-1 text-[11px] font-semibold text-slate-700 bg-white border border-slate-300 rounded-2xl hover:bg-slate-50 hover:border-slate-400 transition inline-block select-none"
+          className="text-[11px] font-bold text-slate-900 hover:text-[#0B57D0] flex items-center gap-1 transition select-none group-hover:translate-x-0.5"
         >
-          Know More
-        </Link>
-
-        <Link
-          href={primarySlug ? `/universities?approval=${encodeURIComponent(primarySlug)}` : "/universities"}
-          onClick={() => onNavigate?.()}
-          className="text-[11px] font-bold text-slate-900 hover:text-[#0B57D0] flex items-center gap-1 transition select-none"
-        >
-          <span>View Universities</span>
+          <span>View List</span>
           <span className="text-[12px] leading-none">→</span>
         </Link>
       </div>
@@ -1734,20 +1726,13 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                         </div>
 
                         {/* Action Buttons Row */}
-                        <div className="flex items-center justify-between pt-2 mt-2 border-t border-slate-100">
+                        <div className="flex items-center justify-end pt-2 mt-2 border-t border-slate-100">
                           <Link
                             href={cardUrl}
                             onClick={() => closeMobile()}
-                            className="px-2.5 py-0.5 text-[10px] font-semibold text-slate-700 bg-white border border-slate-300 rounded-full hover:bg-slate-50 transition"
-                          >
-                            Know More
-                          </Link>
-                          <Link
-                            href={itemSlug ? `/universities?approval=${encodeURIComponent(itemSlug)}` : "/universities"}
-                            onClick={() => closeMobile()}
                             className="text-[10px] font-bold text-[#072C50] hover:text-[#0B57D0] flex items-center gap-0.5 transition"
                           >
-                            <span>View Unis</span>
+                            <span>View List</span>
                             <span className="text-[11px]">→</span>
                           </Link>
                         </div>
