@@ -649,35 +649,36 @@ export default function AutoEngineToolPage({
             /* ❓ INTERACTIVE QUESTION CARDS (NODE TRAVERSAL) */
             /* ===================================================== */
             <div className="space-y-8">
-              {/* Question Heading with Back Icon right in front */}
-              <div className="flex items-center justify-center gap-2 sm:gap-3 w-full mb-4 sm:mb-6 max-w-3xl mx-auto">
-                <div className="shrink-0">
-                  {history.length > 0 && !recommendations ? (
-                    <button
-                      type="button"
-                      onClick={handleBack}
-                      className="p-1 text-[#072C50] hover:text-[#0B3B7E] active:scale-90 flex items-center justify-center transition-transform cursor-pointer"
-                      title="Go Back to Previous Question"
-                      aria-label="Back"
-                    >
-                      <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" />
-                    </button>
-                  ) : (
-                    <Link
-                      href="/tools"
-                      className="p-1 text-[#072C50] hover:text-[#0B3B7E] active:scale-90 flex items-center justify-center transition-transform cursor-pointer"
-                      title="Back to All Tools"
-                      aria-label="Back"
-                    >
-                      <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" />
-                    </Link>
-                  )}
-                </div>
-
-                <h2 className="text-sm min-[380px]:text-base sm:text-2xl md:text-3xl font-bold text-[#072C50] text-center tracking-tight leading-tight m-0">
-                  {currentNode?.data?.question ||
-                    currentNode?.data?.title ||
-                    "Choose Your Preference"}
+              {/* Question Heading with Back Icon inline right in front */}
+              <div className="flex items-center justify-center w-full mb-4 sm:mb-6 max-w-3xl mx-auto px-2">
+                <h2 className="text-sm min-[380px]:text-base sm:text-2xl md:text-3xl font-bold text-[#072C50] text-center tracking-tight leading-snug m-0">
+                  <span className="inline-flex items-center align-middle mr-1.5 sm:mr-2.5 -mt-0.5 shrink-0">
+                    {history.length > 0 && !recommendations ? (
+                      <button
+                        type="button"
+                        onClick={handleBack}
+                        className="p-0.5 sm:p-1 text-[#072C50] hover:text-[#0B3B7E] active:scale-90 inline-flex items-center justify-center transition-transform cursor-pointer"
+                        title="Go Back to Previous Question"
+                        aria-label="Back"
+                      >
+                        <ArrowLeft className="w-4 h-4 min-[380px]:w-5 min-[380px]:h-5 sm:w-6 sm:h-6" />
+                      </button>
+                    ) : (
+                      <Link
+                        href="/tools"
+                        className="p-0.5 sm:p-1 text-[#072C50] hover:text-[#0B3B7E] active:scale-90 inline-flex items-center justify-center transition-transform cursor-pointer"
+                        title="Back to All Tools"
+                        aria-label="Back"
+                      >
+                        <ArrowLeft className="w-4 h-4 min-[380px]:w-5 min-[380px]:h-5 sm:w-6 sm:h-6" />
+                      </Link>
+                    )}
+                  </span>
+                  <span>
+                    {currentNode?.data?.question ||
+                      currentNode?.data?.title ||
+                      "Choose Your Preference"}
+                  </span>
                 </h2>
               </div>
 
