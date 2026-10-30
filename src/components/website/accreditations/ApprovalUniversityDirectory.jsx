@@ -672,28 +672,21 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
       {/* ── 1. TOP HERO HEADER (DARK BLUE BRANDING) ── */}
       <div className="w-full bg-[#072C50] text-white pt-6 pb-20 sm:pt-8 sm:pb-24 md:pt-10 md:pb-28 px-4 relative">
         <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
-          {/* Top Pill / Badge with Accreditation Logo */}
-          {approvalBadge && (
-            <div className="mb-2.5 sm:mb-3">
-              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FEF3C7] text-[#92400E] text-xs font-bold border border-amber-200 shadow-xs">
-                {approvalLogoUrl ? (
-                  <div className="w-5 h-5 rounded-full bg-white p-0.5 flex items-center justify-center shrink-0 overflow-hidden border border-amber-300">
-                    <Image
-                      src={approvalLogoUrl}
-                      alt={apiData?.approval?.name || "Accreditation Logo"}
-                      width={20}
-                      height={20}
-                      unoptimized
-                      className="object-contain w-full h-full"
-                    />
-                  </div>
-                ) : (
-                  <Sparkles size={13} className="text-amber-600 shrink-0" />
-                )}
-                <span>{approvalBadge}</span>
-              </span>
+          {/* Top Accreditation Logo */}
+          {approvalLogoUrl ? (
+            <div className="mb-2.5 sm:mb-3 flex justify-center">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white p-2 shadow-md border border-white/40 flex items-center justify-center overflow-hidden">
+                <Image
+                  src={approvalLogoUrl}
+                  alt={apiData?.approval?.name || "Accreditation Logo"}
+                  width={48}
+                  height={48}
+                  unoptimized
+                  className="object-contain w-full h-full"
+                />
+              </div>
             </div>
-          )}
+          ) : null}
 
           {/* Centered Page Title & Subtitle in White */}
           <div className="flex flex-col items-center justify-center text-center">
