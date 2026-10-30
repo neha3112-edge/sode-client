@@ -6,6 +6,7 @@ import { Form, Input, Select, Checkbox, message } from "antd";
 import { Phone } from "lucide-react";
 import { STATE_OPTIONS } from "@/constants/stateOptions";
 import LandingButton from "./LandingButton";
+import { resolveBrochurePdfUrl } from "@/lib/brochures";
 
 const DEFAULT_COURSES = [
   { value: "MBA", label: "MBA" },
@@ -137,6 +138,7 @@ export default function LandingLeadForm({
   maxWidth,
   className = "",
   style = {},
+  isBrochure = false,
   onSuccess,
   onOpenDisclaimer,
 }) {
@@ -548,9 +550,30 @@ export default function LandingLeadForm({
         body: JSON.stringify(leadPayload),
       });
 
+      // Handle Brochure Flow: store brochure URL & flag for Thank You page auto-open
+      const isBrochureRequest =
+        Boolean(isBrochure) ||
+        Boolean(title && title.toLowerCase().includes("brochure")) ||
+        Boolean(formName && formName.toLowerCase().includes("brochure")) ||
+        Boolean(buttonText && buttonText.toLowerCase().includes("brochure"));
+
+      if (isBrochureRequest && typeof window !== "undefined") {
+        const uniKey = activeBrand?.slug || activeUniversity;
+        const selectedCourseName = values.course || defaultCourse || "";
+        const finalBrochureUrl = resolveBrochurePdfUrl(uniKey, selectedCourseName, activeBrand);
+
+        if (finalBrochureUrl) {
+          sessionStorage.setItem("isBrochureFlow", "true");
+          sessionStorage.setItem("brochureUrl", finalBrochureUrl);
+        }
+      } else if (typeof window !== "undefined") {
+        sessionStorage.removeItem("isBrochureFlow");
+        sessionStorage.removeItem("brochureUrl");
+      }
+
       message.success(successMessage);
       form.resetFields();
-      onSuccess?.();
+      onSuccess?.(values);
       router.push("/thank-you");
     } catch {
       message.error(errorMessage);

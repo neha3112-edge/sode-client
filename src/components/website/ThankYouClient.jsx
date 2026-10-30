@@ -66,12 +66,12 @@ export default function ThankYouClient({
   const googleAdsId = initialData?.googleAdsId || "";
   const conversionLabel = initialData?.googleAdsConversionLabel || "";
 
-  const badgeText = initialData?.badgeText || "";
-  const title = initialData?.title || "";
-  const subtitle = initialData?.subtitle || "";
+  const badgeText = initialData?.badgeText || (isBrochure ? "BROCHURE READY" : "SUBMISSION RECEIVED");
+  const title = initialData?.title || (isBrochure ? "Thank You for Downloading the Brochure!" : "Thank You for Contacting Us!");
+  const subtitle = initialData?.subtitle || (isBrochure ? "Your official university brochure is being prepared and will open automatically in a new tab." : "Our expert academic counselors will get in touch with you shortly to guide you.");
 
-  const brochurePreparingText = initialData?.brochurePreparingText || "";
-  const brochureOpenedText = initialData?.brochureOpenedText || "";
+  const brochurePreparingText = initialData?.brochurePreparingText || "Opening your brochure in a new tab in 3 seconds...";
+  const brochureOpenedText = initialData?.brochureOpenedText || "Your brochure has opened in a new tab!";
 
   const homeButtonText = initialData?.homeButtonText || "";
   const homeButtonLink = initialData?.homeButtonLink || "/";
@@ -169,13 +169,13 @@ export default function ThankYouClient({
       currentProgress += 1;
       if (currentProgress <= 100) setProgress(currentProgress);
       if (currentProgress >= 100) window.clearInterval(progressInterval);
-    }, 10);
+    }, 30);
 
     const brochureTimer = window.setTimeout(() => {
       window.open(getBrochureUrl(), "_blank", "noopener,noreferrer");
       setBrochureOpened(true);
       clearBrochureSession();
-    }, 1000);
+    }, 3000);
 
     return () => {
       window.clearInterval(progressInterval);

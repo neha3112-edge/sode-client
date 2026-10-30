@@ -35,25 +35,6 @@ export default function BrochureModal({
     subtitle || brand.hero?.enquireSubtitle || "Academic Experts will assist you!";
 
   const handleSuccess = () => {
-    // Automatically trigger brochure PDF download if configured
-    const brochureUrl =
-      brand?.brochurePdf ||
-      brand?.brochureUrl ||
-      (brand?.slug === "iim" ? "/assets/iim/main_brochure.pdf" : null);
-
-    if (brochureUrl && typeof window !== "undefined") {
-      try {
-        const link = document.createElement("a");
-        link.href = brochureUrl;
-        link.download =
-          brochureUrl.split("/").pop() || `${universityName}_Brochure.pdf`;
-        link.target = "_blank";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } catch {}
-    }
-
     onClose?.();
   };
 
@@ -86,6 +67,7 @@ export default function BrochureModal({
             buttonText={buttonText}
             formName={activeTitle ? `${activeTitle} Modal` : "Modal Enquire Form"}
             maxWidth="100%"
+            isBrochure={true}
             onOpenDisclaimer={onOpenDisclaimer}
             onSuccess={handleSuccess}
           />
