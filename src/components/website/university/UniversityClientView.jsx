@@ -114,11 +114,10 @@ export function UniversityClientView({ initialData, slug }) {
     const raw = uni?.avg_rating ?? data?.avg_rating ?? uni?.rating ?? data?.rating;
     if (raw !== undefined && raw !== null && String(raw).trim() !== "") {
       const parsed = parseFloat(raw);
-      if (!isNaN(parsed)) return `${parsed}/5`;
-      return `${raw}/5`;
+      if (!isNaN(parsed) && parsed > 0) return `${parsed}/5`;
     }
-    return "4.8/5";
-  }, [uni?.avg_rating, data?.avg_rating, uni?.rating, data?.rating]);
+    return `${numericRating}/5`;
+  }, [numericRating, uni?.avg_rating, data?.avg_rating, uni?.rating, data?.rating]);
 
   const highlightsData = useMemo(() => {
     if (Array.isArray(uni.key_highlights) && uni.key_highlights.length > 0) {
