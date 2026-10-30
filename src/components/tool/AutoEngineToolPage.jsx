@@ -697,19 +697,8 @@ export default function AutoEngineToolPage({
                 </div>
               )}
 
-              {/* ─── GRID OF OPTION CARDS (ALWAYS CENTERED ON MOBILE & DESKTOP) ─── */}
-              <div
-                className={`grid gap-1.5 sm:gap-2.5 w-full mx-auto items-stretch ${filteredOptions.length === 1
-                  ? "grid-cols-1 max-w-[160px]"
-                  : filteredOptions.length === 2
-                  ? "grid-cols-2 max-w-xs sm:max-w-md"
-                  : filteredOptions.length === 3
-                  ? "grid-cols-3 max-w-sm sm:max-w-xl"
-                  : filteredOptions.length === 4
-                  ? "grid-cols-4 max-w-md sm:max-w-2xl"
-                  : "grid-cols-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 max-w-4xl"
-                  }`}
-              >
+              {/* ─── OPTION CARDS (ALWAYS CENTERED ON MOBILE & DESKTOP) ─── */}
+              <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-3 w-full mx-auto max-w-5xl">
                 {filteredOptions.map((option, oIdx) => {
                   const optTitle =
                     typeof option === "object"
@@ -736,7 +725,7 @@ export default function AutoEngineToolPage({
                           handleSelectOption(option, storeVar);
                         }
                       }}
-                      className={`relative w-full aspect-square bg-white rounded-xl sm:rounded-2xl p-1.5 min-[360px]:p-2 sm:p-3 border flex flex-col items-center justify-center text-center cursor-pointer select-none transition-all duration-200 hover:-translate-y-0.5 group min-w-0 ${isSelected
+                      className={`relative w-[calc(25%-5px)] sm:w-28 md:w-36 lg:w-40 aspect-square bg-white rounded-xl sm:rounded-2xl p-1.5 min-[360px]:p-2 sm:p-3 border flex flex-col items-center justify-center text-center cursor-pointer select-none transition-all duration-200 hover:-translate-y-0.5 group shrink-0 ${isSelected
                         ? "border-blue-600 ring-2 ring-blue-500/20 bg-blue-50/20 shadow-xs"
                         : "border-gray-200 hover:border-blue-500 hover:bg-gray-50/50"
                         }`}
