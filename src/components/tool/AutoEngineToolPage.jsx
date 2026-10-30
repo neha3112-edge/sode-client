@@ -1,141 +1,94 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
+import Link from "next/link";
+import Image from "next/image";
 import { dynamicRead, dynamicPost } from "@/services/request";
-import { ArrowLeft, ChevronRight, Search } from "lucide-react";
-import { Checkbox } from "antd";
+import { useFormModal } from "@/hooks/useFormModal";
 
-const getMediaUrl = (obj) => obj?.url || obj?.path || obj?.src || obj || null;
-const getOptionTitle = (opt) => opt?.title || opt?.name || opt?.label || opt || "";
-const getOptionId = (opt) => opt?.id || getOptionTitle(opt);
+const getMediaUrl = (obj) => (typeof obj === "string" ? obj : obj?.url || obj?.path || obj?.src || null);
+import {
+  ArrowLeft,
+  ArrowRight,
+  Sparkles,
+  School,
+  GraduationCap,
+  Award,
+  BookOpen,
+  IndianRupee,
+  CreditCard,
+  Briefcase,
+  Laptop,
+  CheckCircle2,
+  ChevronRight,
+  ShieldCheck,
+  Building2,
+  Layers,
+  Clock,
+  Code2,
+  Tag,
+  UserCheck,
+  XCircle,
+  Search,
+  RotateCcw,
+  Info,
+} from "lucide-react";
+import { ArrowRightOutlined } from "@ant-design/icons";
 
-// Helper to check if a node is a lead form or final action node
-const isLeadOrEndNode = (n) => {
-  if (!n) return true;
-  const nType = (n.type || "").toLowerCase();
-  const dType = (n.data?.type || "").toLowerCase();
-  const nId = (n.id || "").toLowerCase();
-  const category = (n.category || "").toUpperCase();
-  return (
-    nType === "tool_lead_form" ||
-    dType === "tool_lead_form" ||
-    nType === "tool_recommendation" ||
-    dType === "tool_recommendation" ||
-    nId.includes("lead_form") ||
-    nId.includes("leadform") ||
-    nId.includes("result") ||
-    nId.includes("submit") ||
-    category === "ACTIONS"
-  );
+const iconMap = {
+  School,
+  GraduationCap,
+  Award,
+  BookOpen,
+  IndianRupee,
+  CreditCard,
+  Briefcase,
+  Laptop,
+  Building2,
+  Layers,
+  Sparkles,
+  Clock,
+  Code2,
+  Tag,
+  UserCheck,
+  CheckCircle2,
+  XCircle,
 };
 
-// Helper to determine initial workflow start node (100% dynamic for any tool)
-const getStartNode = (nodes = [], edges = [], startNodeId = null) => {
-  let startNode = null;
+// Colors to cycle through for card sparkles & underlines matching ToolsView
+const CARD_PALETTES = [
+  { sparkle: "text-[#00ACC1]", underline: "border-[#00ACC1]", bg: "bg-[#00ACC1]/10", text: "text-[#00ACC1]" },
+  { sparkle: "text-[#AB47BC]", underline: "border-[#AB47BC]", bg: "bg-[#AB47BC]/10", text: "text-[#AB47BC]" },
+  { sparkle: "text-[#1E88E5]", underline: "border-[#1E88E5]", bg: "bg-[#1E88E5]/10", text: "text-[#1E88E5]" },
+  { sparkle: "text-[#EC407A]", underline: "border-[#EC407A]", bg: "bg-[#EC407A]/10", text: "text-[#EC407A]" },
+];
 
-  // 1. Direct edge from 'start' or startNodeId
-  const sId = startNodeId || "start";
-  const startEdge = edges.find((e) => e.source === sId || e.source === "start");
-  if (startEdge) {
-    startNode = nodes.find((n) => n.id === startEdge.target);
-  }
-
-  // 2. Direct startNodeId match
-  if (!startNode && startNodeId) {
-    startNode = nodes.find((n) => n.id === startNodeId && n.type !== "start" && n.id !== "start");
-  }
-
-  // 3. First non-start, non-action question node
-  if (!startNode) {
-    startNode = nodes.find(
-      (n) => n.type !== "start" && n.id !== "start" && n.category !== "ACTIONS" && !isLeadOrEndNode(n)
-    );
-  }
-
-  return startNode || nodes.find((n) => n.type !== "start") || nodes[0] || null;
-};
-
-// Helper to match outgoing edge from canvas connections
-const findMatchingEdge = (outgoingEdges = [], optValue = "", optionObj = null, optIndex = -1, currentNodeId = "") => {
-  if (!outgoingEdges || outgoingEdges.length === 0) return null;
-
-  // Linear flow: single outgoing edge
-  if (outgoingEdges.length === 1) {
-    return outgoingEdges[0];
-  }
-
-  const clean = (val) => String(val || "").toLowerCase().trim().replace(/[^a-z0-9]+/g, "");
-  const targetClean = clean(optValue);
-  const targetRawId = String(optionObj?.id || optionObj?.value || optionObj?._id || "").trim();
-  const targetRawClean = clean(targetRawId);
-
-  // 1. Exact match on sourceHandle or label
-  let matched = outgoingEdges.find((e) => {
-    const s = String(e.sourceHandle || "").trim();
-    const l = String(e.label || "").trim();
-    return s === optValue || l === optValue || (targetRawId && (s === targetRawId || l === targetRawId));
-  });
-  if (matched) return matched;
-
-  // 2. Case-insensitive / normalized alphanumeric match (e.g. 'Working Professional' vs 'working_professional')
-  matched = outgoingEdges.find((e) => {
-    const sClean = clean(e.sourceHandle);
-    const lClean = clean(e.label);
-    const idClean = clean(e.id);
-    return (
-      (sClean && targetClean && (sClean === targetClean || sClean.includes(targetClean) || targetClean.includes(sClean))) ||
-      (lClean && targetClean && (lClean === targetClean || lClean.includes(targetClean) || targetClean.includes(lClean))) ||
-      (targetRawClean && (sClean === targetRawClean || lClean === targetRawClean)) ||
-      (idClean && targetClean && idClean.includes(targetClean))
-    );
-  });
-  if (matched) return matched;
-
-  // 3. Branch index match (handles branch_0, branch_1, source_0, source-1, etc.)
-  if (optIndex >= 0) {
-    matched = outgoingEdges.find((e) => {
-      const s = String(e.sourceHandle || "").toLowerCase().trim();
-      return (
-        s === `branch_${optIndex}` ||
-        s === `branch_${optIndex + 1}` ||
-        s === `source_${optIndex}` ||
-        s === `source_${optIndex + 1}` ||
-        s === `${currentNodeId}-source-${optIndex + 1}` ||
-        s === String(optIndex) ||
-        s === String(optIndex + 1)
-      );
-    });
-    if (matched) return matched;
-  }
-
-  // 4. Fallback: Default / Else / generic handle
-  matched = outgoingEdges.find((e) => {
-    const s = String(e.sourceHandle || "").toLowerCase().trim();
-    return s === "default" || s === "else" || s === "fallback";
-  });
-  if (matched) return matched;
-
-  matched = outgoingEdges.find((e) => {
-    const s = String(e.sourceHandle || "").toLowerCase().trim();
-    return s === "source" || s === "" || !e.sourceHandle;
-  });
-  if (matched) return matched;
-
-  return outgoingEdges[0] || null;
-};
-
-export default function AutoEngineToolPage({ toolSlug = "suggest-university" }) {
+export default function AutoEngineToolPage({
+  toolSlug = "suggest-university",
+  toolTitle = "Suggest University",
+  toolDescription = "Find top accredited, UGC-DEB, and NAAC A++ approved universities based on location, budget, NIRF ranking, and placements.",
+}) {
+  const { openFormModal } = useFormModal();
   const [loading, setLoading] = useState(true);
   const [workflow, setWorkflow] = useState(null);
   const [history, setHistory] = useState([]);
   const [currentNodeId, setCurrentNodeId] = useState(null);
   const [answers, setAnswers] = useState({});
+  const [recommendations, setRecommendations] = useState(null);
+  const [courses, setCourses] = useState([]);
+  const [resultPayload, setResultPayload] = useState(null);
+  const [userSummary, setUserSummary] = useState(null);
+  const [resultHeader, setResultHeader] = useState({
+    title: "Great! Ready to discover courses that match your preferences?",
+    subtitle: "List of courses and accredited universities",
+  });
+  const [selectedOtherId, setSelectedOtherId] = useState(null);
+  const [otherInputText, setOtherInputText] = useState("");
   const [searchFilter, setSearchFilter] = useState("");
   const [selectedMultiOptions, setSelectedMultiOptions] = useState([]);
-  const [selectedOption, setSelectedOption] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  // Directly fetch recommendations without showing lead form and immediately redirect to backend target page
+  // Directly fetch recommendations without showing lead form
   const fetchRecommendationsDirectly = async (finalAnswers) => {
     setSubmitting(true);
     try {
@@ -149,20 +102,20 @@ export default function AutoEngineToolPage({ toolSlug = "suggest-university" }) 
         },
       });
       const payload = res?.result || res?.data || res;
-      const targetDestination =
-        payload?.redirectUrl ||
-        payload?.targetPage ||
-        (toolSlug?.includes("universit") ? "/universities" : "/courses");
-
-      if (typeof window !== "undefined") {
-        window.location.href = targetDestination;
+      setResultPayload(payload);
+      setRecommendations(payload?.recommendations || []);
+      setCourses(payload?.courses || []);
+      setUserSummary(payload?.userSummary || {});
+      if (payload?.resultTitle) {
+        setResultHeader({
+          title: payload.resultTitle,
+          subtitle: payload.resultSubtitle || "Academic Report",
+        });
       }
     } catch (err) {
-      console.error("Error submitting tool answers:", err);
-      const fallback = toolSlug?.includes("universit") ? "/universities" : "/courses";
-      if (typeof window !== "undefined") {
-        window.location.href = fallback;
-      }
+      console.error("Error fetching AI recommendations:", err);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -172,10 +125,23 @@ export default function AutoEngineToolPage({ toolSlug = "suggest-university" }) 
     setLoading(true);
     setSubmitting(false);
     setHistory([]);
+    setRecommendations(null);
+    setCourses([]);
+    setResultPayload(null);
+    setSelectedOtherId(null);
+    setOtherInputText("");
     setSearchFilter("");
     setSelectedMultiOptions([]);
-    setSelectedOption("");
-    setAnswers({});
+
+    let defaultAnswers = {};
+    if (toolSlug.includes("eligib")) {
+      defaultAnswers.tool_category = "Check Eligibility";
+    } else if (toolSlug.includes("uni")) {
+      defaultAnswers.tool_category = "Suggest University";
+    } else if (toolSlug.includes("course")) {
+      defaultAnswers.tool_category = "Suggest Course";
+    }
+    setAnswers(defaultAnswers);
 
     dynamicRead({
       entity: "tool",
@@ -191,7 +157,34 @@ export default function AutoEngineToolPage({ toolSlug = "suggest-university" }) 
         }
         setWorkflow(flowData);
 
-        const startNode = getStartNode(flowData.nodes, flowData.edges, flowData.startNodeId);
+        const nodes = flowData.nodes || [];
+        const edges = flowData.edges || [];
+
+        let startNode = null;
+        if (toolSlug === "suggest-course") {
+          startNode = nodes.find((n) => n.id === "node_profile") || nodes.find((n) => n.id === "node_sc_q1");
+        } else if (toolSlug === "suggest-university") {
+          startNode = nodes.find((n) => n.id === "node_profile") || nodes.find((n) => n.id === "node_su_q1");
+        } else if (toolSlug === "check-eligibility") {
+          startNode = nodes.find((n) => n.id === "node_profile") || nodes.find((n) => n.id === "node_ce_q1");
+        }
+
+        if (!startNode) {
+          const startEdge = edges.find(
+            (e) => e.source === "start" || e.source === flowData.startNodeId
+          );
+          startNode = startEdge ? nodes.find((n) => n.id === startEdge.target) : null;
+        }
+
+        if (!startNode) {
+          startNode =
+            nodes.find((n) => n.id === "node_q1_persona") ||
+            nodes.find((n) => n.id === "node_step1_persona") ||
+            nodes.find((n) => n.id === "node_step1_level") ||
+            nodes.find((n) => n.type !== "start") ||
+            nodes[0];
+        }
+
         setCurrentNodeId(startNode?.id || null);
         setLoading(false);
       })
@@ -211,56 +204,81 @@ export default function AutoEngineToolPage({ toolSlug = "suggest-university" }) 
     return workflow.nodes.find((n) => n.id === currentNodeId) || null;
   }, [workflow, currentNodeId]);
 
+  // Calculate Progress
+  const progressPercent = useMemo(() => {
+    if (recommendations) return 100;
+    if (!history) return 20;
+    return Math.min(25 + history.length * 25, 95);
+  }, [history, recommendations]);
+
   // Options helpers
   const rawOptions = useMemo(() => {
     return currentNode?.data?.options || currentNode?.data?.branches || [];
   }, [currentNode]);
 
   const filteredOptions = useMemo(() => {
-    const q = searchFilter.trim().toLowerCase();
-    return q ? rawOptions.filter((opt) => getOptionTitle(opt).toLowerCase().includes(q)) : rawOptions;
+    if (!searchFilter.trim()) return rawOptions;
+    const q = searchFilter.toLowerCase().trim();
+    return rawOptions.filter((opt) => {
+      const title =
+        typeof opt === "object"
+          ? opt.title || opt.name || opt.text || opt.label || ""
+          : String(opt);
+      return title.toLowerCase().includes(q);
+    });
   }, [rawOptions, searchFilter]);
 
   // Handle Option Select
   const handleSelectOption = async (option, storeVariable, customText = "") => {
-    const optValue = customText || getOptionTitle(option);
-    const handleId = getOptionId(option);
-
-    // Resolve original option object and index from rawOptions
-    const optIndex = rawOptions.findIndex((opt) => {
-      const t = getOptionTitle(opt);
-      const id = getOptionId(opt);
-      return (
-        t === optValue ||
-        id === handleId ||
-        t.toLowerCase().trim() === optValue.toLowerCase().trim() ||
-        id.toLowerCase().trim() === handleId.toLowerCase().trim()
-      );
-    });
-    const optionObj = optIndex >= 0 ? rawOptions[optIndex] : (typeof option === "object" ? option : null);
+    const optValue = customText
+      ? customText
+      : typeof option === "object"
+      ? option.title || option.text || option.id
+      : option;
+    const handleId = typeof option === "object" ? option.id || optValue : String(option);
 
     const updatedAnswers = {
       ...answers,
       [storeVariable || currentNodeId]: optValue,
       selectedOption: handleId,
     };
-    if (storeVariable) updatedAnswers[storeVariable] = optValue;
-
+    if (storeVariable) {
+      updatedAnswers[storeVariable] = optValue;
+    }
     setAnswers(updatedAnswers);
+    setSelectedOtherId(null);
+    setOtherInputText("");
     setSearchFilter("");
     setSelectedMultiOptions([]);
-    setSelectedOption("");
 
     try {
       const edges = workflow?.edges || [];
       const nodes = workflow?.nodes || [];
 
       const outgoingEdges = edges.filter((e) => e.source === currentNodeId);
-      const matchedEdge = findMatchingEdge(outgoingEdges, optValue, optionObj, optIndex, currentNodeId);
+      let matchedEdge = outgoingEdges.find(
+        (e) =>
+          e.sourceHandle === handleId ||
+          e.sourceHandle === optValue ||
+          e.label === optValue ||
+          (typeof option === "object" && option.id && e.sourceHandle === option.id)
+      );
+
+      if (!matchedEdge && outgoingEdges.length > 0 && updatedAnswers.tool_category) {
+        matchedEdge = outgoingEdges.find(
+          (e) =>
+            e.sourceHandle === updatedAnswers.tool_category ||
+            e.label === updatedAnswers.tool_category
+        );
+      }
+
+      if (!matchedEdge && outgoingEdges.length > 0) {
+        matchedEdge = outgoingEdges.find((e) => e.sourceHandle === "default") || outgoingEdges[0];
+      }
 
       if (matchedEdge) {
         const nextNode = nodes.find((n) => n.id === matchedEdge.target);
-        if (nextNode && !isLeadOrEndNode(nextNode)) {
+        if (nextNode && nextNode.type !== "tool_lead_form") {
           setHistory((prev) => [...prev, currentNodeId]);
           setCurrentNodeId(nextNode.id);
           return;
@@ -273,13 +291,6 @@ export default function AutoEngineToolPage({ toolSlug = "suggest-university" }) 
       await fetchRecommendationsDirectly(updatedAnswers);
     }
   };
-
-  // Auto-fetch recommendations if current node is a lead form or end step
-  useEffect(() => {
-    if (currentNode && isLeadOrEndNode(currentNode) && !loading && !submitting) {
-      fetchRecommendationsDirectly(answers);
-    }
-  }, [currentNode, loading, submitting]);
 
   // Multi-Select Handlers
   const handleToggleMultiOption = (optVal) => {
@@ -298,67 +309,318 @@ export default function AutoEngineToolPage({ toolSlug = "suggest-university" }) 
     );
   };
 
-  // Clear selected options when currentNodeId changes
-  useEffect(() => {
-    setSelectedOption("");
-    setSelectedMultiOptions([]);
-  }, [currentNodeId]);
-
-  const handleSingleSelectSubmit = async () => {
-    if (!selectedOption) return;
-    const storeVar = currentNode?.data?.variable || currentNodeId;
-    await handleSelectOption(selectedOption, storeVar);
-  };
-
   const handleBack = () => {
+    if (recommendations) {
+      setRecommendations(null);
+      setCourses([]);
+      setResultPayload(null);
+      return;
+    }
     if (history.length > 0) {
       const prevNodeId = history[history.length - 1];
       setHistory((prev) => prev.slice(0, -1));
       setCurrentNodeId(prevNodeId);
       setSelectedMultiOptions([]);
-      setSelectedOption("");
     }
+  };
+
+  const handleRestart = () => {
+    setRecommendations(null);
+    setCourses([]);
+    setHistory([]);
+    setResultPayload(null);
+    setSelectedMultiOptions([]);
+    const nodes = workflow?.nodes || [];
+    let startNode = null;
+    if (toolSlug === "suggest-course") {
+      startNode = nodes.find((n) => n.id === "node_profile") || nodes.find((n) => n.id === "node_sc_q1");
+    } else if (toolSlug === "suggest-university") {
+      startNode = nodes.find((n) => n.id === "node_profile") || nodes.find((n) => n.id === "node_su_q1");
+    } else if (toolSlug === "check-eligibility") {
+      startNode = nodes.find((n) => n.id === "node_profile") || nodes.find((n) => n.id === "node_ce_q1");
+    }
+    if (!startNode) {
+      startNode = nodes.find((n) => n.type !== "start") || nodes[0];
+    }
+    setCurrentNodeId(startNode?.id || null);
   };
 
   return (
     <div className="w-full bg-[#f8fafc] text-slate-800 font-sans min-h-screen">
-      {/* ─── 1. TOP DARK BLUE BANNER ─── */}
+      {/* ─── 1. TOP DARK BLUE BANNER (Matching Tools & Accreditations) ─── */}
       <div className="w-full bg-[#072C50] h-36 sm:h-44 md:h-52" />
+
       {/* ─── 2. FLOATING WHITE CONTAINER CARD ─── */}
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 md:px-8 -mt-20 sm:-mt-28 md:-mt-32 pb-16 md:pb-24">
         <article className="w-full bg-white rounded-2xl sm:rounded-3xl shadow-xl border border-slate-100 p-6 sm:p-10 md:p-12 text-[#2D3748]">
-          {/* Top Bar with Back Button on Left and Centered AI Powered Badge */}
-          <div className="relative flex items-center justify-center mb-2 min-h-8">
-            {history.length > 0 && !submitting && (
-              <button
-                type="button"
-                onClick={handleBack}
-                className="absolute left-0 top-1/2 -translate-y-1/2 inline-flex items-center gap-1.5 px-3 py-1 rounded-2xl text-xs font-semibold text-slate-600 hover:text-[#072C50] hover:bg-slate-100 transition-colors cursor-pointer border border-slate-200"
-              >
-                <ArrowLeft size={14} />
-                <span>Back</span>
-              </button>
-            )}
-            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#FEF3C7] text-[#92400E] text-xs font-bold border border-amber-200">
+          {/* Centered Pill Badge */}
+          <div className="flex justify-center mb-3">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FEF3C7] text-[#92400E] text-xs font-bold border border-amber-200">
               ✦ AI POWERED
             </span>
           </div>
 
-          {/* Body: Loading or Submitting Redirect or Questions */}
-          {loading ? (
+          {/* Centered Page Title inside the card */}
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#072C50] text-center tracking-tight m-0 mb-3">
+            {workflow?.name || toolTitle}
+          </h1>
+
+          {/* Subtitle */}
+          <p className="text-slate-600 text-xs sm:text-sm md:text-base text-center max-w-2xl mx-auto m-0 mb-6">
+            {workflow?.description || toolDescription}
+          </p>
+
+          {/* Full-width Divider Line */}
+          <div className="w-full h-px bg-slate-200/90 mb-6 sm:mb-8" />
+
+          {/* Step Progress & Navigation Bar */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mb-8 bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5 sm:p-4">
+            <div className="flex items-center gap-2.5 w-full sm:w-auto">
+              {history.length > 0 && !recommendations ? (
+                <button
+                  type="button"
+                  onClick={handleBack}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-[#072C50] text-xs font-bold border border-slate-200 transition-all cursor-pointer shadow-2xs"
+                  title="Go Back to Previous Question"
+                >
+                  <ArrowLeft size={14} />
+                  <span>Previous Step</span>
+                </button>
+              ) : (
+                <Link
+                  href="/tools"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-[#072C50] text-xs font-bold border border-slate-200 transition-all cursor-pointer shadow-2xs"
+                >
+                  <ArrowLeft size={14} />
+                  <span>All AI Tools</span>
+                </Link>
+              )}
+
+              <span className="text-xs font-bold text-slate-700">
+                {recommendations
+                  ? "Academic Match Report"
+                  : `Step ${history.length + 1} of 4`}
+              </span>
+            </div>
+
+            <div className="w-full sm:w-64 flex items-center gap-3">
+              <div className="flex-1 bg-slate-200 h-2.5 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-amber-400 via-blue-600 to-[#072C50] transition-all duration-500 rounded-full"
+                  style={{ width: `${progressPercent}%` }}
+                />
+              </div>
+              <span className="text-xs font-extrabold text-[#072C50] shrink-0">
+                {Math.round(progressPercent)}%
+              </span>
+            </div>
+          </div>
+
+          {/* Body: Loading or Results or Questions */}
+          {loading || submitting ? (
             <div className="py-20 flex flex-col items-center justify-center space-y-4">
               <div className="w-12 h-12 rounded-full border-4 border-[#072C50] border-t-transparent animate-spin" />
-              <p className="text-sm font-bold text-slate-700">Loading interactive tool...</p>
+              <p className="text-sm font-bold text-slate-700">
+                {submitting
+                  ? "AI Engine is analyzing 150+ UGC-DEB verified universities for you..."
+                  : "Loading interactive AI tool..."}
+              </p>
+              <p className="text-xs text-slate-400">
+                Evaluating approvals, fees, placements, and eligibility...
+              </p>
             </div>
-          ) : submitting ? (
-            <div className="py-24 flex flex-col items-center justify-center space-y-4 text-center">
-              <div className="w-12 h-12 rounded-full border-4 border-[#072C50] border-t-transparent animate-spin" />
-              <p className="text-base font-bold text-slate-800">
-                Filtering options based on your choices...
-              </p>
-              <p className="text-xs text-slate-500 max-w-sm">
-                Redirecting you to the filtered directory matching your preferences...
-              </p>
+          ) : recommendations ? (
+            /* ===================================================== */
+            /* 🏆 RECOMMENDATIONS & REPORT VIEW */
+            /* ===================================================== */
+            <div className="space-y-8">
+              {/* Header Badge */}
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#072C50] text-white text-[11px] font-bold mb-2">
+                    <Sparkles size={12} className="text-amber-300" />
+                    <span>AI MATCH REPORT</span>
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-bold text-[#072C50] m-0">
+                    {resultHeader.title}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-600 m-0 mt-1">
+                    {resultHeader.subtitle}
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleRestart}
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold transition-all shadow-2xs shrink-0 cursor-pointer"
+                >
+                  <RotateCcw size={14} />
+                  <span>Restart Search</span>
+                </button>
+              </div>
+
+              {/* 🎓 1. RECOMMENDED COURSES */}
+              {courses && courses.length > 0 && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-bold text-[#072C50] flex items-center gap-2">
+                      <GraduationCap className="text-[#0B3B7E]" size={22} />
+                      <span>Recommended Programs ({courses.length})</span>
+                    </h3>
+                    <span className="text-xs text-slate-500">
+                      Based on your preferences
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+                    {courses.map((course, idx) => (
+                      <div
+                        key={course._id || idx}
+                        className="p-5 rounded-2xl border border-slate-200 hover:border-blue-500 bg-white hover:shadow-lg transition-all flex flex-col justify-between gap-4 group"
+                      >
+                        <div className="space-y-3">
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex items-center gap-3">
+                              <div className="w-11 h-11 rounded-xl bg-blue-50 group-hover:bg-[#072C50] group-hover:text-amber-400 text-[#072C50] flex items-center justify-center shrink-0 transition-all font-black text-sm">
+                                {course.name?.slice(0, 3) || "DEG"}
+                              </div>
+                              <div>
+                                <h4 className="text-base font-bold text-slate-900 group-hover:text-[#0B3B7E] transition-colors leading-tight">
+                                  {course.displayName || course.name}
+                                </h4>
+                                <span className="text-xs text-slate-500 font-medium">
+                                  {course.duration || "2 Years (Online / Distance)"}
+                                </span>
+                              </div>
+                            </div>
+                            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+                              {course.matchScore || "95% Match"}
+                            </span>
+                          </div>
+
+                          <p className="text-xs text-slate-600 leading-relaxed line-clamp-2">
+                            {course.description || "Top rated degree curriculum designed for career progression."}
+                          </p>
+
+                          <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                            {course.careerFit && (
+                              <span className="px-2 py-0.5 rounded-md bg-slate-100 text-[10px] font-semibold text-slate-700">
+                                🎯 {course.careerFit}
+                              </span>
+                            )}
+                            {course.eligibilityHint && (
+                              <span className="px-2 py-0.5 rounded-md bg-blue-50 text-[10px] font-semibold text-blue-700">
+                                📋 {course.eligibilityHint}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+                          <span className="text-xs font-bold text-slate-900">
+                            {course.averageFee
+                              ? `₹${course.averageFee} Total Fees`
+                              : "Affordable Fees"}
+                          </span>
+                          <Link
+                            href={`/courses/${course.slug || "online-mba"}`}
+                            className="px-3.5 py-1.5 rounded-lg bg-[#0B3B7E] hover:bg-[#072859] text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1"
+                          >
+                            <span>Explore Course</span>
+                            <ChevronRight size={14} />
+                          </Link>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* 🏛️ 2. RECOMMENDED UNIVERSITIES */}
+              {recommendations && recommendations.length > 0 && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-bold text-[#072C50] flex items-center gap-2">
+                      <School className="text-[#0B3B7E]" size={22} />
+                      <span>Top Matching Universities ({recommendations.length})</span>
+                    </h3>
+                    <span className="text-xs text-slate-500">
+                      UGC-DEB Entitled & Valid
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+                    {recommendations.map((uni, idx) => (
+                      <div
+                        key={uni._id || idx}
+                        className="p-5 rounded-2xl border border-slate-200 hover:border-blue-500 bg-white hover:shadow-lg transition-all flex flex-col justify-between gap-4 group"
+                      >
+                        <div className="space-y-3">
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex items-center gap-3">
+                              {uni.logo ? (
+                                <div className="relative w-12 h-12 rounded-xl bg-white border border-slate-200 p-1 flex items-center justify-center shrink-0">
+                                  <Image
+                                    src={getMediaUrl(uni.logo)}
+                                    alt={uni.name}
+                                    fill
+                                    className="object-contain p-0.5"
+                                  />
+                                </div>
+                              ) : (
+                                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#072C50] to-[#0D3B66] text-white flex items-center justify-center shrink-0 font-black text-sm">
+                                  {uni.name?.slice(0, 2)?.toUpperCase()}
+                                </div>
+                              )}
+                              <div>
+                                <h4 className="text-base font-bold text-slate-900 group-hover:text-[#0B3B7E] transition-colors leading-tight">
+                                  {uni.name}
+                                </h4>
+                                <span className="text-xs text-slate-500 font-medium">
+                                  {uni.location || uni.city || "Online & Distance"}
+                                </span>
+                              </div>
+                            </div>
+
+                            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-blue-50 text-[#0B3B7E] border border-blue-200 shrink-0">
+                              {uni.matchScore || "98% Match"}
+                            </span>
+                          </div>
+
+                          <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-slate-600">
+                            {uni.naac && (
+                              <span className="px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 font-bold border border-amber-200">
+                                NAAC {uni.naac}
+                              </span>
+                            )}
+                            {uni.nirf && (
+                              <span className="px-2 py-0.5 rounded-md bg-purple-50 text-purple-800 font-bold border border-purple-200">
+                                NIRF #{uni.nirf}
+                              </span>
+                            )}
+                            <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 font-bold border border-emerald-200">
+                              UGC-DEB Approved
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+                          <span className="text-xs font-bold text-slate-900">
+                            {uni.fees || "Starting at ₹15,000/sem"}
+                          </span>
+                          <Link
+                            href={`/universities/${uni.slug || ""}`}
+                            className="px-3.5 py-1.5 rounded-lg bg-[#0B3B7E] hover:bg-[#072859] text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1"
+                          >
+                            <span>View Details</span>
+                            <ChevronRight size={14} />
+                          </Link>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
             /* ===================================================== */
@@ -367,15 +629,23 @@ export default function AutoEngineToolPage({ toolSlug = "suggest-university" }) 
             <div className="space-y-8">
               {/* Question Heading */}
               <div className="text-center space-y-2 max-w-2xl mx-auto">
-                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#072C50] tracking-tight leading-tight m-0">
+                <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-blue-50 text-[#072C50] text-xs font-bold border border-blue-100 uppercase tracking-wide">
+                  <span>{currentNode?.data?.badge || "YOUR PROFILE"}</span>
+                </div>
+
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#072C50] tracking-tight leading-tight m-0">
                   {currentNode?.data?.question ||
                     currentNode?.data?.title ||
                     "Choose Your Preference"}
-                </h1>
+                </h2>
 
-                {currentNode?.data?.subtitle && (
+                {currentNode?.data?.subtitle ? (
                   <p className="text-xs sm:text-sm text-slate-500 m-0">
                     {currentNode?.data?.subtitle}
+                  </p>
+                ) : (
+                  <p className="text-xs sm:text-sm text-slate-400 m-0">
+                    Select an option below to find universities aligned with your path.
                   </p>
                 )}
               </div>
@@ -394,66 +664,159 @@ export default function AutoEngineToolPage({ toolSlug = "suggest-university" }) 
                 </div>
               )}
 
-              {/* ─── SCROLLABLE CONTAINER FOR OPTIONS ─── */}
-              {rawOptions.length > 0 && (
-                <div className="overflow-y-auto max-h-110 pr-1.5 sm:pr-2 py-1">
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4 items-stretch">
-                    {filteredOptions.map((option, oIdx) => {
-                      const optTitle = getOptionTitle(option);
-                      const isMulti = Boolean(currentNode?.data?.isMultiSelect);
-                      const isSelected = isMulti ? selectedMultiOptions.includes(optTitle) : selectedOption === optTitle;
+              {/* ─── GRID OF OPTION CARDS (EQUAL HEIGHT & ALIGNED LIKE TOOLSVIEW) ─── */}
+              <div
+                className={`grid gap-4 sm:gap-5 items-stretch ${
+                  filteredOptions.length <= 4
+                    ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+                    : filteredOptions.length <= 6
+                    ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
+                    : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+                }`}
+              >
+                {filteredOptions.map((option, oIdx) => {
+                  const optTitle =
+                    typeof option === "object"
+                      ? option.title || option.name || option.text || option.label || ""
+                      : String(option);
+                  const optSub =
+                    typeof option === "object" ? option.subtitle || option.desc : null;
+                  const optIconName = typeof option === "object" ? option.icon : null;
+                  const IconComp = iconMap[optIconName] || iconMap["School"];
 
-                      return (
-                        <div
-                          key={oIdx}
-                          onClick={() => (isMulti ? handleToggleMultiOption(optTitle) : setSelectedOption(optTitle))}
-                          className={`relative bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 border transition-all duration-200 cursor-pointer flex items-center justify-center text-center group h-[72px] sm:h-20 select-none ${isSelected
-                            ? "border-[#1677ff] bg-blue-50/40 shadow-sm ring-2 ring-[#1677ff]/20"
-                            : "border-slate-200 hover:border-[#1677ff]/60 hover:shadow-md hover:bg-slate-50/30"
-                            }`}
-                        >
-                          <div className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3">
-                            <Checkbox checked={isSelected} className="pointer-events-none scale-95 sm:scale-100" />
-                          </div>
+                  const palette = CARD_PALETTES[oIdx % CARD_PALETTES.length];
 
-                          <div className="w-full px-2">
-                            <h2 className={`text-xs sm:text-sm font-bold tracking-tight m-0 leading-snug line-clamp-2 transition-colors ${isSelected ? "text-[#0B3B7E]" : "text-slate-800 group-hover:text-[#1677ff]"}`}>
-                              {optTitle}
-                            </h2>
-                          </div>
+                  const isMulti = Boolean(currentNode?.data?.isMultiSelect);
+                  const isSelected = isMulti && selectedMultiOptions.includes(optTitle);
+
+                  return (
+                    <div
+                      key={oIdx}
+                      onClick={() => {
+                        if (isMulti) {
+                          handleToggleMultiOption(optTitle);
+                        } else {
+                          const storeVar =
+                            currentNode?.data?.variable || currentNodeId;
+                          handleSelectOption(option, storeVar);
+                        }
+                      }}
+                      className={`relative bg-white rounded-2xl p-5 sm:p-6 shadow-xs hover:shadow-xl border flex flex-col items-center text-center justify-between transition-all duration-300 hover:-translate-y-1 group h-full cursor-pointer ${
+                        isSelected
+                          ? "border-[#0B3B7E] ring-2 ring-[#0B3B7E]/20 bg-blue-50/20"
+                          : "border-slate-100 hover:border-slate-200"
+                      }`}
+                    >
+                      {/* Top Right Sparkle */}
+                      <span
+                        className={`absolute top-3.5 right-3.5 ${palette.sparkle} font-black text-xs group-hover:rotate-12 transition-transform`}
+                      >
+                        ✦
+                      </span>
+
+                      <div className="flex flex-col items-center w-full">
+                        {/* Fixed Height Icon Container */}
+                        <div className="w-14 h-14 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center group-hover:scale-110 transition-transform mb-3">
+                          <IconComp className={`w-7 h-7 ${palette.text}`} />
                         </div>
-                      );
-                    })}
-                  </div>
+
+                        {/* Fixed Height Title Container */}
+                        <div className="w-full min-h-8 flex items-center justify-center mb-1">
+                          <h3 className="text-sm sm:text-base font-bold text-[#0F172A] tracking-tight m-0 leading-tight w-full text-center">
+                            <span
+                              className={`border-b-2 ${palette.underline} pb-0.5 inline-block group-hover:text-[#0B3B7E] transition-colors`}
+                            >
+                              {optTitle}
+                            </span>
+                          </h3>
+                        </div>
+
+                        {/* Fixed Height Description Container */}
+                        <div className="w-full min-h-12 flex items-center justify-center">
+                          <p className="text-[#64748B] text-xs leading-relaxed font-normal m-0 line-clamp-2 text-center">
+                            {optSub ||
+                              "Tailored university options and admission criteria"}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Pinned Bottom Button */}
+                      <div className="w-full mt-auto pt-4">
+                        <div
+                          className={`w-full py-2.5 px-4 rounded-full text-white font-bold text-xs shadow-none transition-all flex items-center justify-center gap-1.5 cursor-pointer truncate ${
+                            isSelected
+                              ? "bg-emerald-600 hover:bg-emerald-700"
+                              : "bg-[#0B3B7E] hover:bg-[#072859]"
+                          }`}
+                        >
+                          <span className="truncate">
+                            {isSelected ? "Selected ✓" : optTitle}
+                          </span>
+                          <span className="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center text-[10px] shrink-0 group-hover:translate-x-0.5 transition-transform">
+                            →
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Multi-Select Floating / Bottom Continue Bar */}
+              {currentNode?.data?.isMultiSelect && (
+                <div className="pt-4 flex items-center justify-between border-t border-slate-100">
+                  <span className="text-xs font-semibold text-slate-500">
+                    {selectedMultiOptions.length} option(s) selected
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleMultiSelectSubmit}
+                    disabled={selectedMultiOptions.length === 0}
+                    className="px-6 py-2.5 rounded-full bg-[#0B3B7E] hover:bg-[#072859] disabled:opacity-50 text-white font-bold text-xs transition-all shadow-md flex items-center gap-2 cursor-pointer"
+                  >
+                    <span>Continue with Selected</span>
+                    <ChevronRight size={14} />
+                  </button>
                 </div>
               )}
-
-              {/* ─── BOTTOM ACTION FOOTER (UNIFIED CONTINUE BUTTON) ─── */}
-              <div className="pt-6 mt-4 flex items-center justify-end border-t border-slate-100">
-                {rawOptions.length === 0 || isLeadOrEndNode(currentNode) ? (
-                  <button
-                    type="button"
-                    onClick={() => fetchRecommendationsDirectly(answers)}
-                    disabled={submitting}
-                    className="px-8 py-3 rounded-xl bg-[#0B3B7E] hover:bg-[#072859] text-white font-bold text-xs sm:text-sm transition-all shadow-md hover:shadow-lg flex items-center gap-2 cursor-pointer"
-                  >
-                    <span>{submitting ? "Redirecting..." : "View Matching Results"}</span>
-                    <ChevronRight size={16} />
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={currentNode?.data?.isMultiSelect ? handleMultiSelectSubmit : handleSingleSelectSubmit}
-                    disabled={currentNode?.data?.isMultiSelect ? selectedMultiOptions.length === 0 : !selectedOption}
-                    className="px-8 py-3 rounded-xl bg-[#0B3B7E] hover:bg-[#072859] disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-xs sm:text-sm transition-all shadow-md hover:shadow-lg flex items-center gap-2 cursor-pointer"
-                  >
-                    <span>Continue</span>
-                    <ChevronRight size={16} />
-                  </button>
-                )}
-              </div>
             </div>
           )}
+
+          {/* ─── 4. BOTTOM FREE COUNSELING CALLOUT CARD (Matching ToolsView) ─── */}
+          <div className="mt-8 sm:mt-12 bg-gradient-to-r from-[#072C50] to-[#0D3B66] rounded-xl sm:rounded-2xl p-4 sm:p-7 md:p-8 text-white flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6 shadow-md text-center md:text-left">
+            <div className="space-y-1 sm:space-y-1.5 flex flex-col items-center md:items-start">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-200 text-[10.5px] sm:text-xs font-semibold mb-0.5">
+                <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-300" />
+                <span>Need Personalized Guidance?</span>
+              </div>
+              <h3 className="text-base sm:text-lg md:text-xl font-bold text-white m-0">
+                Talk to Our Expert Academic Counselors
+              </h3>
+              <p className="text-[11px] sm:text-xs md:text-sm text-slate-300 m-0 max-w-xl">
+                Get 100% free guidance on selecting the right university, course eligibility, fees structure, and EMI options.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() =>
+                openFormModal({
+                  title: "Talk to Our Expert Academic Counselors",
+                  subtitle: "Get 100% free guidance on selecting the right university, course eligibility, fees structure, and EMI options.",
+                  submitButtonText: "Get Free Consultation",
+                })
+              }
+              style={{
+                background: "linear-gradient(180deg, #F3CE7F 0%, #E7B85D 100%)",
+                border: "1px solid rgba(226, 176, 83, 0.7)",
+                boxShadow: "0 4px 14px rgba(226, 176, 83, 0.35)",
+              }}
+              className="text-[#072C50] text-xs sm:text-sm font-extrabold px-6 py-2.5 sm:px-7 sm:py-3 rounded-full transition-all hover:scale-[1.02] active:scale-[0.98] inline-flex items-center justify-center gap-2 shrink-0 cursor-pointer w-fit mx-auto md:mx-0"
+            >
+              <span>Get Free Consultation</span>
+              <ArrowRight size={15} className="text-[#072C50]" />
+            </button>
+          </div>
         </article>
       </div>
     </div>
