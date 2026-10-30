@@ -263,6 +263,28 @@ export default function AutoEngineToolModal() {
     });
   }, [rawOptions, searchFilter]);
 
+  // Tool Type Visibility Rules:
+  // - Course Recommender tool -> shows Courses only
+  // - University Recommender tool -> shows Universities only
+  // - Eligibility Checker -> shows Eligibility Report & Universities
+  const shouldShowCourses = useMemo(() => {
+    const slug = String(activeSlug || workflow?.slug || "").toLowerCase();
+    if (slug.includes("course") && !slug.includes("uni")) return Boolean(courses && courses.length > 0);
+    if (resultPayload?.resultType === "course_list") return true;
+    if (resultPayload?.resultType === "university_list" || resultPayload?.resultType === "eligibility_report") return false;
+    if (slug.includes("uni")) return false;
+    return Boolean(courses && courses.length > 0);
+  }, [resultPayload, activeSlug, workflow?.slug, courses]);
+
+  const shouldShowUniversities = useMemo(() => {
+    const slug = String(activeSlug || workflow?.slug || "").toLowerCase();
+    if (slug.includes("course") && !slug.includes("uni")) return false;
+    if (slug.includes("uni") || slug.includes("suggest-me-a-university")) return Boolean(recommendations && recommendations.length > 0);
+    if (resultPayload?.resultType === "university_list" || resultPayload?.resultType === "eligibility_report") return true;
+    if (resultPayload?.resultType === "course_list") return false;
+    return Boolean(recommendations && recommendations.length > 0);
+  }, [resultPayload, activeSlug, workflow?.slug, recommendations]);
+
   // Handle Option Select (Next Step Traversal)
   const handleSelectOption = async (option, storeVariable, customText = "") => {
     const optValue = customText
@@ -547,14 +569,16 @@ export default function AutoEngineToolModal() {
                   )}
                 </div>
                 <span className="bg-blue-100 text-blue-900 px-3 py-1 rounded-full font-bold text-xs">
-                  {(courses?.length || 0) > 0 ? `${courses.length} Courses Matched` : `${recommendations.length} Universities Found`}
+                  {shouldShowCourses
+                    ? `${courses?.length || 0} Courses Matched`
+                    : `${recommendations?.length || 0} Universities Found`}
                 </span>
               </div>
 
               {/* ===================================================== */}
               {/* 🎓 1. LIST OF RECOMMENDED COURSES (IF APPLICABLE) */}
               {/* ===================================================== */}
-              {courses && courses.length > 0 && (
+              {shouldShowCourses && courses && courses.length > 0 && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <h3 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
@@ -672,7 +696,8 @@ export default function AutoEngineToolModal() {
               {/* ===================================================== */}
               {/* 🏛️ 2. TOP PARTNER UNIVERSITIES */}
               {/* ===================================================== */}
-              <div className="space-y-4 pt-2">
+              {shouldShowUniversities && recommendations && recommendations.length > 0 && (
+                <div className="space-y-4 pt-2">
                 <div className="flex items-center justify-between">
                   <h3 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
                     <School className="text-blue-600" size={20} />
@@ -793,6 +818,7 @@ export default function AutoEngineToolModal() {
                   })}
                 </div>
               </div>
+              )}
 
               {/* Free Counselling Footer CTA */}
               <div className="p-5 rounded-2xl bg-gradient-to-r from-blue-900 to-indigo-950 text-white flex flex-col sm:flex-row items-center justify-between gap-4">

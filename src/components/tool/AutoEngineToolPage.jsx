@@ -346,18 +346,20 @@ export default function AutoEngineToolPage({
   // - University Recommender tool -> shows Universities only
   // - Eligibility Checker -> shows Eligibility Report & Universities
   const shouldShowCourses = useMemo(() => {
+    const slug = String(toolSlug || workflow?.slug || "").toLowerCase();
+    if (slug.includes("course") && !slug.includes("uni")) return Boolean(courses && courses.length > 0);
     if (resultPayload?.resultType === "course_list") return true;
     if (resultPayload?.resultType === "university_list" || resultPayload?.resultType === "eligibility_report") return false;
-    const slug = String(toolSlug || workflow?.slug || "").toLowerCase();
     if (slug.includes("uni")) return false;
     return Boolean(courses && courses.length > 0);
   }, [resultPayload, toolSlug, workflow?.slug, courses]);
 
   const shouldShowUniversities = useMemo(() => {
-    if (resultPayload?.resultType === "university_list" || resultPayload?.resultType === "eligibility_report") return true;
-    if (resultPayload?.resultType === "course_list") return false;
     const slug = String(toolSlug || workflow?.slug || "").toLowerCase();
     if (slug.includes("course") && !slug.includes("uni")) return false;
+    if (slug.includes("uni") || slug.includes("suggest-me-a-university")) return Boolean(recommendations && recommendations.length > 0);
+    if (resultPayload?.resultType === "university_list" || resultPayload?.resultType === "eligibility_report") return true;
+    if (resultPayload?.resultType === "course_list") return false;
     return Boolean(recommendations && recommendations.length > 0);
   }, [resultPayload, toolSlug, workflow?.slug, recommendations]);
 
