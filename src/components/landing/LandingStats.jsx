@@ -402,6 +402,7 @@ export default function LandingStats({ stats = [], brand = {} }) {
   // ==========================================
   return (
     <section
+      id="stats"
       className="py-8 sm:py-12 lg:py-14 text-white border-y border-white/10 transition-colors"
       style={{
         background: brand.statsBg || brand.primaryColor || "#08417b",

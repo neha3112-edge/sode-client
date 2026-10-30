@@ -86,6 +86,12 @@ export function FieldCourse({
   className = "mb-0",
   selectClassName = "w-full h-[40px] text-[13px]",
 }) {
+  const normalizedCourses = React.useMemo(() => {
+    return courses.map((item) =>
+      typeof item === "string" ? { value: item, label: item } : item
+    );
+  }, [courses]);
+
   return (
     <Form.Item
       label={label}
@@ -95,7 +101,8 @@ export function FieldCourse({
     >
       <Select
         placeholder={placeholder}
-        options={courses}
+        options={normalizedCourses}
+        getPopupContainer={(trigger) => trigger.parentElement || document.body}
         className={selectClassName}
       />
     </Form.Item>
@@ -123,6 +130,10 @@ export function FieldState({
         placeholder={placeholder}
         options={stateOptions}
         showSearch
+        filterOption={(input, option) =>
+          (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+        }
+        getPopupContainer={(trigger) => trigger.parentElement || document.body}
         className={selectClassName}
       />
     </Form.Item>

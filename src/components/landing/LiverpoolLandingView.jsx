@@ -11,6 +11,7 @@ import ScholarshipModal from "./modals/ScholarshipModal";
 import CompareModal from "./modals/CompareModal";
 import LegalModal from "./modals/LegalModal";
 import IndiaFlag from "./forms/IndiaFlag";
+import { STATE_OPTIONS } from "@/constants/stateOptions";
 import LandingCompareBanner from "./LandingCompareBanner";
 import LandingFooter from "./LandingFooter";
 
@@ -91,15 +92,7 @@ const FAQS = [
   },
 ];
 
-const STATES = [
-  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Delhi",
-  "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
-  "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram",
-  "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana",
-  "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal", "Jammu and Kashmir",
-  "Puducherry", "Lakshadweep", "Ladakh", "Chandigarh", "Andaman and Nicobar Islands",
-  "Dadra and Nagar Haveli and Daman and Diu"
-];
+
 
 export default function LiverpoolLandingView({ data = {} }) {
   const router = useRouter();
@@ -111,7 +104,35 @@ export default function LiverpoolLandingView({ data = {} }) {
   const [isCompareOpen, setIsCompareOpen] = useState(false);
   const [legalModalState, setLegalModalState] = useState({ isOpen: false, type: "disclaimer" });
   const [modalTitle, setModalTitle] = useState("Download Brochure");
-  const [selectedCourse, setSelectedCourse] = useState(COURSE_LIST[0]);
+  const resolvedCourses = React.useMemo(() => {
+    const raw = (Array.isArray(data?.courses) && data.courses.length > 0)
+      ? data.courses
+      : COURSE_LIST;
+    const seen = new Set();
+    const result = [];
+    for (const item of raw) {
+      const val = typeof item === "string" ? item : (item?.value || item?.label);
+      const lbl = typeof item === "string" ? item : (item?.label || item?.value);
+      if (val && !seen.has(val)) {
+        seen.add(val);
+        result.push({ value: val, label: lbl });
+      }
+    }
+    return result;
+  }, [data?.courses]);
+
+  const [selectedCourse, setSelectedCourse] = useState(
+    () => resolvedCourses[0]?.value || COURSE_LIST[0]
+  );
+
+  useEffect(() => {
+    if (resolvedCourses.length > 0) {
+      setSelectedCourse((prev) => {
+        const isValid = resolvedCourses.some((c) => c.value === prev);
+        return isValid ? prev : resolvedCourses[0].value;
+      });
+    }
+  }, [resolvedCourses]);
 
   // Navbar Mobile Dropdown
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -203,38 +224,58 @@ export default function LiverpoolLandingView({ data = {} }) {
       return;
     }
 
+    if (isSubmitting) return;
     setIsSubmitting(true);
+
     try {
+      const searchParams =
+        typeof window !== "undefined"
+          ? new URLSearchParams(window.location.search)
+          : new URLSearchParams();
+
+      const utm_source = searchParams.get("utm_source") || undefined;
+      const utm_medium = searchParams.get("utm_medium") || undefined;
+      const utm_campaign = searchParams.get("utm_campaign") || undefined;
+      const utm_term = searchParams.get("utm_term") || undefined;
+      const utm_content = searchParams.get("utm_content") || undefined;
+
       const payload = {
-        name: formValues.fullName,
-        email: formValues.email,
-        phone: formValues.phone,
+        name: formValues.fullName.trim(),
+        email: formValues.email.trim(),
+        phone: String(formValues.phone || "").replace(/\D/g, "").slice(-10),
         course: formValues.course,
         state: formValues.state,
-        university: "Liverpool Business School",
-        source: "Liverpool LP",
-        pageUrl: typeof window !== "undefined" ? window.location.href : "",
+        form_name: "Hero Lead Form",
+        source: brand.source || "SODE",
+        sub_source: brand.slug || "liverpool",
+        page_url: typeof window !== "undefined" ? window.location.href : "",
+        ...(utm_source ? { utm_source } : {}),
+        ...(utm_medium ? { utm_medium } : {}),
+        ...(utm_campaign ? { utm_campaign } : {}),
+        ...(utm_term ? { utm_term } : {}),
+        ...(utm_content ? { utm_content } : {}),
       };
 
-      const res = await fetch("/api/leads", {
+      const res = await fetch("/api/lead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
-      if (res.ok) {
-        setFormSuccess(true);
-        triggerConfetti();
-        setTimeout(() => {
-          router.push("/thank-you");
-        }, 1200);
-      } else {
-        // Fallback thank you
-        setFormSuccess(true);
+      const resData = await res.json().catch(() => ({}));
+
+      if (!res.ok || !resData.success) {
+        throw new Error(resData.message || "Failed to submit enquiry. Please try again.");
       }
-    } catch (err) {
-      console.error(err);
+
       setFormSuccess(true);
+      triggerConfetti();
+      setTimeout(() => {
+        router.push("/thank-you");
+      }, 1200);
+    } catch (err) {
+      console.error("Lead submission error:", err);
+      alert(err.message || "Failed to submit enquiry. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -931,9 +972,9 @@ export default function LiverpoolLandingView({ data = {} }) {
                       className="form-control cursor-pointer"
                     >
                       <option value="" disabled>Select Your Course</option>
-                      {COURSE_LIST.map((c, i) => (
-                        <option key={i} value={c}>
-                          {c}
+                      {resolvedCourses.map((c, i) => (
+                        <option key={i} value={c.value}>
+                          {c.label}
                         </option>
                       ))}
                     </select>
@@ -946,7 +987,7 @@ export default function LiverpoolLandingView({ data = {} }) {
                       className="form-control cursor-pointer"
                     >
                       <option value="" disabled>Select Your State</option>
-                      {STATES.map((s, i) => (
+                      {STATE_OPTIONS.map((s, i) => (
                         <option key={i} value={s}>
                           {s}
                         </option>
@@ -1798,7 +1839,7 @@ export default function LiverpoolLandingView({ data = {} }) {
         isOpen={isBrochureOpen}
         onClose={() => setIsBrochureOpen(false)}
         universityName="Liverpool Business School"
-        courses={COURSE_LIST}
+        courses={resolvedCourses}
         selectedCourse={selectedCourse}
         title={modalTitle}
         brand={brand}
@@ -1809,7 +1850,8 @@ export default function LiverpoolLandingView({ data = {} }) {
         isOpen={isScholarshipOpen}
         onClose={() => setIsScholarshipOpen(false)}
         universityName="Liverpool Business School"
-        courses={COURSE_LIST}
+        courses={resolvedCourses}
+        selectedCourse={selectedCourse}
         brand={brand}
         onOpenDisclaimer={() => handleOpenLegal("disclaimer")}
       />
@@ -1818,7 +1860,8 @@ export default function LiverpoolLandingView({ data = {} }) {
         isOpen={isCompareOpen}
         onClose={() => setIsCompareOpen(false)}
         universityName="Liverpool Business School"
-        courses={COURSE_LIST}
+        courses={resolvedCourses}
+        selectedCourse={selectedCourse}
         brand={brand}
         onOpenDisclaimer={() => handleOpenLegal("disclaimer")}
       />

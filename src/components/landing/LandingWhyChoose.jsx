@@ -49,6 +49,7 @@ const WHY_CHOOSE_LAYOUTS = {
   classic: ClassicWhyChoose,
 };
 
+
 /**
  * Reusable Why Choose / Key Features Section Router & Container
  * Validates data, looks up layout from registry, and delegates rendering to modular layout component.

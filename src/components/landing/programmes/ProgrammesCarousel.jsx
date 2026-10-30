@@ -35,9 +35,8 @@ export default function ProgrammesCarousel({
   return (
     <section
       id={brand.programmesSectionId || (isSmu || brand.slug === "manipal" ? "programs" : "programmes")}
-      className={`w-full overflow-hidden relative select-none transition-colors ${
-        isSmu ? "pt-10 pb-12 sm:pt-12 sm:pb-14 text-slate-900" : "py-6 sm:py-8 lg:py-10"
-      }`}
+      className={`w-full overflow-hidden relative select-none transition-colors ${isSmu ? "pt-10 pb-12 sm:pt-12 sm:pb-14 text-slate-900" : "py-6 sm:py-8 lg:py-10"
+        }`}
       style={
         isSmu
           ? { background: "linear-gradient(to bottom, #ffffff 0%, #ffffff 56%, #efefef 56%, #efefef 100%)" }
@@ -58,13 +57,13 @@ export default function ProgrammesCarousel({
         ) : (
           <div>
             <h3
-              className="text-xl sm:text-2xl lg:text-[28px] font-bold m-0 tracking-tight leading-tight text-white"
+              className="programmes-subtitle text-[19px] sm:text-[22px] lg:text-[26px] font-bold m-0 tracking-normal leading-tight text-white"
               style={{ color: brand.programmesSubtitleColor || "#ffffff" }}
             >
               {brand.programmesSubtitle || displayUniversity}
             </h3>
             <h2
-              className="text-2xl sm:text-3xl lg:text-[36px] font-bold mt-1 m-0 tracking-tight leading-tight text-white"
+              className="programmes-title text-[19px] sm:text-[22px] lg:text-[26px] font-bold mt-1 sm:mt-1.5 m-0 tracking-normal leading-tight text-white"
               style={{ color: brand.programmesTitleColor || "#ffffff" }}
             >
               {brand.programmesTitle || title || "Online Degree Courses"}
@@ -150,9 +149,8 @@ export default function ProgrammesCarousel({
       {/* DESKTOP VIEW: Multiple Cards per slide (hidden md:block)      */}
       {/* ------------------------------------------------------------- */}
       <div
-        className={`hidden md:block w-full mx-auto px-4 sm:px-6 relative ${
-          isClean ? "max-w-[1140px] min-[1600px]:max-w-[1360px] min-[1920px]:max-w-[1520px]" : isSmu ? "max-w-[1200px] xl:max-w-[1240px] min-[1600px]:max-w-[1440px] min-[1920px]:max-w-[1600px] px-6 sm:px-10 lg:px-12" : "max-w-[1240px] xl:max-w-[1360px] min-[1600px]:max-w-[1520px] min-[1920px]:max-w-[1680px] sm:px-8 lg:px-10"
-        }`}
+        className={`hidden md:block w-full mx-auto px-4 sm:px-6 relative ${isClean ? "max-w-[1140px] min-[1600px]:max-w-[1360px] min-[1920px]:max-w-[1520px]" : isSmu ? "max-w-[1200px] xl:max-w-[1240px] min-[1600px]:max-w-[1440px] min-[1920px]:max-w-[1600px] px-6 sm:px-10 lg:px-12" : "max-w-[1240px] xl:max-w-[1360px] min-[1600px]:max-w-[1520px] min-[1920px]:max-w-[1680px] sm:px-8 lg:px-10"
+          }`}
       >
         <Button
           type="text"

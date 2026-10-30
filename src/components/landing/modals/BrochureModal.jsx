@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal } from "antd";
 import { triggerFormConfetti } from "@/lib/confetti";
 import LandingLeadForm from "../LandingLeadForm";
@@ -23,6 +23,8 @@ export default function BrochureModal({
   brand = {},
   onOpenDisclaimer,
 }) {
+  const [submitting, setSubmitting] = useState(false);
+
   useEffect(() => {
     if (isOpen) {
       triggerFormConfetti();
@@ -32,6 +34,11 @@ export default function BrochureModal({
   const activeTitle = title || brand.hero?.brochureModalTitle || "Download Brochure";
   const activeSubtitle =
     subtitle || brand.hero?.enquireSubtitle || "Academic Experts will assist you!";
+
+  const handleClose = () => {
+    if (submitting) return;
+    onClose?.();
+  };
 
   const handleSuccess = () => {
     // Automatically trigger brochure PDF download if configured
@@ -59,37 +66,61 @@ export default function BrochureModal({
   return (
     <Modal
       open={isOpen}
-      onCancel={onClose}
+      onCancel={handleClose}
       footer={null}
       centered
       width={400}
+      mask={{ closable: false }}
       destroyOnHidden
+      closable={false}
       className="enquire-lead-modal landing-lead-modal p-0 max-w-[calc(100vw-24px)] mx-auto"
-      modalRender={() => (
-        <div className="relative w-full rounded-2xl overflow-hidden shadow-2xl">
-          <button
-            type="button"
-            onClick={onClose}
-            className="absolute top-2.5 right-2.5 z-50 flex items-center justify-center w-7 h-7 rounded-full bg-black/60 hover:bg-black/85 text-white font-bold text-xs transition-all shadow-md cursor-pointer border-none select-none"
-            aria-label="Close modal"
-          >
-            ✕
-          </button>
-          <LandingLeadForm
-            brand={brand}
-            courses={courses}
-            defaultCourse={selectedCourse}
-            universityName={universityName}
-            title={activeTitle}
-            subtitle={activeSubtitle}
-            buttonText={buttonText}
-            formName={activeTitle ? `${activeTitle} Modal` : "Modal Enquire Form"}
-            maxWidth="100%"
-            onOpenDisclaimer={onOpenDisclaimer}
-            onSuccess={handleSuccess}
-          />
-        </div>
-      )}
-    />
+      styles={{
+        container: {
+          background: "transparent",
+          backgroundColor: "transparent",
+          padding: 0,
+          boxShadow: "none",
+          border: "none",
+        },
+        body: {
+          background: "transparent",
+          backgroundColor: "transparent",
+          padding: 0,
+        },
+      }}
+      classNames={{
+        container: "!bg-transparent !p-0 !shadow-none !border-none",
+        body: "!bg-transparent !p-0",
+      }}
+    >
+      <div
+        className="relative w-full rounded-2xl overflow-hidden shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          type="button"
+          onClick={handleClose}
+          disabled={submitting}
+          className="absolute top-2.5 right-2.5 z-50 flex items-center justify-center w-7 h-7 rounded-full bg-black/60 hover:bg-black/85 text-white font-bold text-xs transition-all shadow-md cursor-pointer border-none select-none disabled:opacity-50 disabled:cursor-not-allowed"
+          aria-label="Close modal"
+        >
+          ✕
+        </button>
+        <LandingLeadForm
+          brand={brand}
+          courses={courses}
+          defaultCourse={selectedCourse}
+          universityName={universityName}
+          title={activeTitle}
+          subtitle={activeSubtitle}
+          buttonText={buttonText}
+          formName={activeTitle ? `${activeTitle} Modal` : "Modal Enquire Form"}
+          maxWidth="100%"
+          onOpenDisclaimer={onOpenDisclaimer}
+          onSuccess={handleSuccess}
+          onSubmittingChange={setSubmitting}
+        />
+      </div>
+    </Modal>
   );
 }

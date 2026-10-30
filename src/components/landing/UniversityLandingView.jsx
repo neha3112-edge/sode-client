@@ -64,12 +64,49 @@ export default function UniversityLandingView({ data = {} }) {
     compareModal,
   } = data;
 
+  const resolvedCourses = React.useMemo(() => {
+    const raw =
+      (Array.isArray(courses) && courses.length > 0)
+        ? courses
+        : data.courses ||
+          brand.courses ||
+          brand.hero?.formCourseList ||
+          brand.hero?.form?.courseList ||
+          brand.form?.courseList ||
+          [];
+
+    const seen = new Set();
+    const result = [];
+    for (const item of raw) {
+      const val = typeof item === "string" ? item : (item?.value || item?.label);
+      const lbl = typeof item === "string" ? item : (item?.label || item?.value);
+      if (val && !seen.has(val)) {
+        seen.add(val);
+        result.push({ value: val, label: lbl });
+      }
+    }
+    return result;
+  }, [courses, data.courses, brand]);
+
   const [isBrochureOpen, setIsBrochureOpen] = useState(false);
-  const [selectedCourse, setSelectedCourse] = useState(courses[0]?.value || "MBA");
+  const [selectedCourse, setSelectedCourse] = useState(
+    () => resolvedCourses[0]?.value || ""
+  );
   const [modalTitle, setModalTitle] = useState("Download Brochure");
   const [isScholarshipOpen, setIsScholarshipOpen] = useState(false);
   const [isCompareOpen, setIsCompareOpen] = useState(false);
   const [legalModalState, setLegalModalState] = useState({ isOpen: false, type: "disclaimer" });
+
+  useEffect(() => {
+    if (resolvedCourses.length > 0) {
+      setSelectedCourse((prev) => {
+        const isValid = resolvedCourses.some((c) => c.value === prev);
+        return isValid ? prev : resolvedCourses[0].value;
+      });
+    } else {
+      setSelectedCourse("");
+    }
+  }, [resolvedCourses]);
 
   // 1. Initial page load trigger flag: modal opens once on first scroll down to Why Choose
   const initialTriggeredRef = useRef(false);
@@ -158,7 +195,11 @@ export default function UniversityLandingView({ data = {} }) {
   }, []);
 
   const handleOpenBrochure = (course, title) => {
-    if (course) setSelectedCourse(course);
+    if (course && resolvedCourses.some((c) => c.value === course)) {
+      setSelectedCourse(course);
+    } else if (resolvedCourses.length === 1) {
+      setSelectedCourse(resolvedCourses[0].value);
+    }
     setModalTitle(
       title ||
       brand.hero?.brochureButtonText ||
@@ -169,7 +210,11 @@ export default function UniversityLandingView({ data = {} }) {
   };
 
   const handleOpenApply = (course, title) => {
-    if (course) setSelectedCourse(course);
+    if (course && resolvedCourses.some((c) => c.value === course)) {
+      setSelectedCourse(course);
+    } else if (resolvedCourses.length === 1) {
+      setSelectedCourse(resolvedCourses[0].value);
+    }
     setModalTitle(title || "Apply Now");
     setIsBrochureOpen(true);
   };
@@ -230,7 +275,7 @@ export default function UniversityLandingView({ data = {} }) {
         {/* 2. Hero Section (#banner / #hero) */}
         <LandingHero
           brand={brand}
-          courses={courses}
+          courses={resolvedCourses}
           onOpenBrochure={(course, title) => handleOpenBrochure(course, title)}
           onOpenApply={(course, title) => handleOpenApply(course, title || "Apply Now")}
           onOpenDisclaimer={() => handleOpenLegal("disclaimer")}
@@ -795,7 +840,7 @@ export default function UniversityLandingView({ data = {} }) {
                   <LandingFooterForm
                     key="footerForm"
                     brand={{ ...brand, slug: brand.slug || slug }}
-                    courses={courses}
+                    courses={resolvedCourses}
                     onOpenDisclaimer={() => handleOpenLegal("disclaimer")}
                   />
                 ) : null;
@@ -859,7 +904,7 @@ export default function UniversityLandingView({ data = {} }) {
         isOpen={isBrochureOpen}
         onClose={() => setIsBrochureOpen(false)}
         universityName={brand.name}
-        courses={courses}
+        courses={resolvedCourses}
         selectedCourse={selectedCourse}
         title={modalTitle}
         brand={brand}
@@ -869,7 +914,8 @@ export default function UniversityLandingView({ data = {} }) {
         isOpen={isScholarshipOpen}
         onClose={() => setIsScholarshipOpen(false)}
         universityName={brand.name}
-        courses={courses}
+        courses={resolvedCourses}
+        selectedCourse={selectedCourse}
         brand={brand}
         scholarshipModal={scholarshipModal || brand.scholarshipModal}
         onOpenDisclaimer={() => handleOpenLegal("disclaimer")}
@@ -878,7 +924,8 @@ export default function UniversityLandingView({ data = {} }) {
         isOpen={isCompareOpen}
         onClose={() => setIsCompareOpen(false)}
         universityName={brand.name}
-        courses={courses}
+        courses={resolvedCourses}
+        selectedCourse={selectedCourse}
         brand={brand}
         compareModal={compareModal || brand.compareModal}
         onOpenDisclaimer={() => handleOpenLegal("disclaimer")}

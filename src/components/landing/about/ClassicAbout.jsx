@@ -55,9 +55,8 @@ export default function ClassicAbout({ about = {}, brand = {}, onOpenApply }) {
           {/* Image Column */}
           {imageSrc && (
             <div
-              className={`lg:col-span-6 flex items-center justify-center ${
-                isImageRight ? "order-1 lg:order-2" : "order-1 lg:order-1"
-              }`}
+              className={`lg:col-span-6 flex items-center justify-center ${isImageRight ? "order-1 lg:order-2" : "order-1 lg:order-1"
+                }`}
             >
               <div className="relative w-full aspect-[16/9] sm:aspect-[1.75/1] rounded-[6px] overflow-hidden shadow-xs border border-slate-100/90 bg-slate-50">
                 <Image
@@ -75,14 +74,12 @@ export default function ClassicAbout({ about = {}, brand = {}, onOpenApply }) {
 
           {/* Content Column */}
           <div
-            className={`space-y-4 text-left ${imageSrc ? "lg:col-span-6" : "lg:col-span-12"} ${
-              isImageRight ? "order-2 lg:order-1" : "order-2 lg:order-2"
-            } ${about.contentClassName || ""}`}
+            className={`space-y-4 text-left ${imageSrc ? "lg:col-span-6" : "lg:col-span-12"} ${isImageRight ? "order-2 lg:order-1" : "order-2 lg:order-2"
+              } ${about.contentClassName || ""}`}
           >
             <h2
-              className={`text-2xl sm:text-[28px] lg:text-[32px] font-bold tracking-tight m-0 leading-tight text-center sm:text-left ${
-                about.titleClassName || ""
-              }`}
+              className={`text-2xl sm:text-[28px] lg:text-[32px] font-bold tracking-tight m-0 leading-tight text-center sm:text-left ${about.titleClassName || ""
+                }`}
               style={{
                 color: about.titleColor || brand.primaryColor || "#08417b",
                 ...about.titleStyle,
@@ -93,9 +90,8 @@ export default function ClassicAbout({ about = {}, brand = {}, onOpenApply }) {
 
             {paragraphs.length > 0 && (
               <div
-                className={`space-y-3.5 text-[13.5px] sm:text-[14px] leading-relaxed font-normal ${
-                  about.paragraphClassName || "text-slate-700"
-                }`}
+                className={`space-y-3.5 text-[13.5px] sm:text-[14px] leading-relaxed font-normal ${about.paragraphClassName || "text-slate-700"
+                  }`}
                 style={{
                   color: about.textColor || "#334155",
                   ...about.paragraphStyle,

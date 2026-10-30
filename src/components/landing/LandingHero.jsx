@@ -473,7 +473,7 @@ export default function LandingHero({
 
         <LandingContainer
           className={joinClassNames(
-            "relative z-10 flex flex-col min-[1000px]:flex-row items-center justify-between gap-5 sm:gap-6 lg:gap-8 px-4 sm:px-6 lg:px-8 py-0 sm:py-1 lg:py-1",
+            "relative z-10 flex flex-col min-[1000px]:flex-row items-center justify-between gap-5 sm:gap-6 lg:gap-8 px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3.5 lg:py-3",
             hero.containerClassName
           )}
           style={{
@@ -782,7 +782,7 @@ export default function LandingHero({
             )}
 
             {/* Mobile Scholarship Coupon Button */}
-            {(brand.showCouponBtn || brand.showCouponButton || hero.showCouponBtn || hero.showCouponButton) && (
+            {(brand.showCouponBtn || brand.showCouponButton || hero.showCouponBtn || hero.showCouponButton) && !brand.hideMobileHeroCoupon && !hero.hideMobileHeroCoupon && (
               <div className="w-full flex justify-center md:hidden mb-3">
                 <button
                   type="button"

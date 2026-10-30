@@ -411,7 +411,10 @@ body:has(.landing-page-root)>div>main {
 ========================================================= */
 .enquire-lead-modal .ant-modal-content,
 .scholarship-lead-modal .ant-modal-content,
-.landing-lead-modal .ant-modal-content {
+.landing-lead-modal .ant-modal-content,
+.enquire-lead-modal .ant-modal-container,
+.scholarship-lead-modal .ant-modal-container,
+.landing-lead-modal .ant-modal-container {
   background: transparent !important;
   background-color: transparent !important;
   padding: 0 !important;

@@ -28,42 +28,56 @@ export function useFooterFormLogic({ brand = {} }) {
   );
 
   const onFinish = async (values) => {
+    if (loading) return;
     setLoading(true);
+
     try {
       const searchParams =
         typeof window !== "undefined"
           ? new URLSearchParams(window.location.search)
           : new URLSearchParams();
 
+      const utm_source = searchParams.get("utm_source") || undefined;
+      const utm_medium = searchParams.get("utm_medium") || undefined;
+      const utm_campaign = searchParams.get("utm_campaign") || undefined;
+      const utm_term = searchParams.get("utm_term") || undefined;
+      const utm_content = searchParams.get("utm_content") || undefined;
+
       const leadPayload = {
-        name: values.full_name,
-        email: values.email,
+        name: values.full_name?.trim(),
+        email: values.email?.trim(),
         phone: String(values.phone || "").replace(/\D/g, "").slice(-10),
         course: values.course,
         state: values.state,
-        university: universityName,
-        source: universityName,
         form_name: brand.footerFormName || "Footer Guidance Form",
-        utm_source: searchParams.get("utm_source") || `${universityName}_LP`,
-        utm_medium: searchParams.get("utm_medium") || "Direct",
-        utm_campaign:
-          searchParams.get("utm_campaign") ||
-          brand.utmCampaign ||
-          "Online_Admission_2026",
+        source: brand.source || "SODE",
+        sub_source: brand.slug || brand.name || universityName,
         page_url: typeof window !== "undefined" ? window.location.href : "",
+        ...(utm_source ? { utm_source } : {}),
+        ...(utm_medium ? { utm_medium } : {}),
+        ...(utm_campaign ? { utm_campaign } : {}),
+        ...(utm_term ? { utm_term } : {}),
+        ...(utm_content ? { utm_content } : {}),
       };
 
-      await fetch("/api/lead", {
+      const res = await fetch("/api/lead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(leadPayload),
       });
 
+      const resData = await res.json().catch(() => ({}));
+
+      if (!res.ok || !resData.success) {
+        throw new Error(resData.message || "Failed to submit enquiry. Please try again.");
+      }
+
       message.success("Thank you! Our expert counselor will contact you shortly.");
       form.resetFields();
       router.push("/thank-you");
-    } catch {
-      message.error("Failed to submit enquiry. Please try again.");
+    } catch (err) {
+      console.error("Footer form submission error:", err);
+      message.error(err.message || "Failed to submit enquiry. Please try again.");
     } finally {
       setLoading(false);
     }

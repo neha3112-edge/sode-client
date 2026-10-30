@@ -310,19 +310,20 @@ export default function LandingNavbar({
           <p className="m-0">{navbar.topbarText || brand.topbarText}</p>
         </div>
       )}
-      <header className="sticky top-0 z-50 bg-white border-b border-slate-200/80 shadow-[0px_2px_10px_rgba(0,0,0,0.06)]">
+      <header className={`sticky top-0 z-50 bg-white border-b border-slate-200/80 shadow-[0px_2px_10px_rgba(0,0,0,0.06)] ${navbar.headerClassName || brand.headerClassName || ""}`.trim()}>
 
         <LandingContainer
-          className="
+          className={`
           h-[80px]
           sm:h-20
           lg:h-22
           flex
           items-center
           justify-between
-          px-3
-          sm:px-6
-        "
+          px-0
+          sm:px-11
+          ${navbar.headerContainerClassName || brand.headerContainerClassName || ""}
+        `}
         >
 
           {/* =================================================
@@ -437,7 +438,7 @@ export default function LandingNavbar({
           <div className="shrink-0 pl-2 mr-1.5 sm:mr-3 flex items-center gap-4 sm:gap-6 lg:gap-8">
 
             {/* NAV LINKS */}
-            {navbar.navLinks?.length > 0 && (
+            {navbar.navLinks?.length > 0 && !navbar.hideDesktopNavLinks && !brand.hideDesktopNavLinks && (
               <ul className="hidden md:flex items-center gap-6 lg:gap-[52px] header_menu_list list-none m-0 p-0">
 
                 {navbar.navLinks.map((link, idx) => (
@@ -733,13 +734,14 @@ export default function LandingNavbar({
 
         {navbar.navLinks?.length > 0 &&
           isMobileNavOpen && (
-            <div className="md:hidden bg-white border-t border-slate-200 px-4 py-3 shadow-md">
-              <ul className="flex flex-col gap-2.5 list-none m-0 p-0">
+            <div className={`md:hidden bg-white border-t border-slate-200 shadow-md ${navbar.mobileMenuCenter || brand.mobileMenuCenter || slug === "amity" ? "px-0 py-0" : "px-4 py-3"}`}>
+              <ul className={`flex flex-col list-none m-0 p-0 ${navbar.mobileMenuCenter || brand.mobileMenuCenter || slug === "amity" ? "text-center gap-0" : "gap-2.5"}`}>
 
                 {navbar.navLinks.map(
                   (link, idx) => (
                     <li
                       key={`${link.label}-mobile-${idx}`}
+                      className={navbar.mobileMenuCenter || brand.mobileMenuCenter || slug === "amity" ? "border-b border-slate-100 last:border-b-0 text-center" : ""}
                     >
                       <a
                         href={link.href}
@@ -750,14 +752,14 @@ export default function LandingNavbar({
                             link
                           );
                         }}
-                        className="
+                        className={`
                         block
-                        py-1.5
-                        text-[15px]
-                        font-semibold
-                        text-slate-800
-                        hover:text-[#0055b8]
-                      "
+                        transition-colors
+                        ${navbar.mobileMenuCenter || brand.mobileMenuCenter || slug === "amity"
+                          ? "py-3.5 px-4 text-[16.5px] font-bold text-[#0e2246] hover:text-[#0055b8] text-center"
+                          : "py-1.5 text-[15px] font-semibold text-slate-800 hover:text-[#0055b8]"
+                        }
+                      `}
                       >
                         {link.label}
                       </a>
@@ -766,6 +768,38 @@ export default function LandingNavbar({
                 )}
 
               </ul>
+
+              {/* Mobile Menu Scholarship Coupon Button */}
+              {(navbar.showMobileMenuCoupon || navbar.showMobileCoupon || slug === "amity" || brand.slug === "amity") && (
+                <div className="pt-4 pb-2 px-3 flex justify-center mobile-menu-coupon-wrap">
+                  <Button
+                    type="text"
+                    onClick={(e) => {
+                      setIsMobileNavOpen(false);
+                      handleCouponClick(e);
+                    }}
+                    className="coupon-btn-main relative inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-[10px] !text-white font-bold text-[14.5px] cursor-pointer !border-none overflow-hidden select-none active:scale-95 shadow-md w-full max-w-[340px] !h-auto"
+                    style={{
+                      background: "linear-gradient(135deg, #2ecc71 0%, #27ae60 100%)",
+                    }}
+                  >
+                    <span className="moving-light-green-box" />
+                    <span className="relative w-6 h-6 rounded-full bg-white flex items-center justify-center shrink-0 shadow-xs z-10 overflow-hidden">
+                      <Image
+                        src={giftGif || "/assets/images/gift.gif"}
+                        alt="Gift"
+                        width={20}
+                        height={20}
+                        unoptimized
+                        className="w-4 h-4 object-contain"
+                      />
+                    </span>
+                    <span className="relative z-10 tracking-wide text-white font-bold drop-shadow-[0_1px_2px_rgba(0,0,0,0.15)] text-[14px]">
+                      {couponButtonText || "Scholarship Coupon Code"}
+                    </span>
+                  </Button>
+                </div>
+              )}
             </div>
           )}
 

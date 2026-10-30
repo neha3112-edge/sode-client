@@ -798,7 +798,7 @@ export const iimCustomCss = `
   }
 
   .landing-page--iim .overview1 h2 {
-    font-size: 24px !important;
+    font-size: 26px !important;
     font-weight: 800 !important;
     color: #111111 !important;
     text-align: left !important;

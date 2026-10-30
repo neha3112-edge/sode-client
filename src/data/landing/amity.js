@@ -72,6 +72,551 @@ export const amityData = {
       color: #08417b;
     }
 
+        /* =====================================================
+       AMITY HERO SECTION - LEFT SIDE CONTENT (LAPTOP & DESKTOP)
+       Exact match to Target Image 1 (Form is untouched)
+    ===================================================== */
+    @media (min-width: 1000px) {
+      /* Background image positioning */
+      .landing-page--amity #hero {
+        background-position: center top !important;
+        background-size: cover !important;
+        min-height: 420px !important;
+      }
+      .landing-page--amity #hero > div[aria-hidden="true"] {
+        background-position: center top !important;
+        background-size: cover !important;
+      }
+
+      /* Hero container: left padding locked to 39px, top padding 28px */
+      .landing-page--amity .amity-hero-container,
+      .landing-page--amity #hero > div > div {
+        padding-left: 39px !important;
+        padding-top: 28px !important;
+      }
+
+      /* Left Info Column: top aligned, width 360px */
+      .landing-page--amity .amity-hero-info-col,
+      .landing-page--amity .hero-info-col {
+        max-width: 360px !important;
+        width: 360px !important;
+        flex: none !important;
+        align-self: flex-start !important;
+        align-items: flex-start !important;
+        text-align: left !important;
+        padding-top: 30px !important;
+        margin: 5px 0 0 -10px !important;
+      }
+
+      /* 1. Hashtag: #YourFutureBeginsHere (Starts at Y = 50px) */
+      .landing-page--amity .amity-hero-hashtag,
+      .landing-page--amity .hero-info-col > p {
+        color: #444444 !important;
+        font-size: 17px !important;
+        font-weight: 400 !important;
+        margin: 18px 0 9px 0 !important;
+        line-height: 1 !important;
+        letter-spacing: 0.01em !important;
+      }
+
+      /* 2. Heading: Amity University Online (Starts at Y = 77px, Height = 25px) */
+      .landing-page--amity .amity-hero-heading,
+      .landing-page--amity .hero-info-col h1 {
+        color: #004172 !important;
+        font-size: 36px !important;
+        font-weight: 900 !important;
+        line-height: 1.15 !important;
+        margin-top: 0 !important;
+        margin-bottom: 6px !important;
+        white-space: nowrap !important;
+        letter-spacing: -0.07em !important;
+      }
+
+      /* 3. Subtitle: Learn from Anywhere, Grow Everywhere (Starts at Y = 105px) */
+      .landing-page--amity .amity-hero-tagline,
+      .landing-page--amity .hero-tagline,
+      .landing-page--amity .hero-info-col .amity-hero-tagline,
+      .landing-page--amity .hero-info-col > div:nth-of-type(1) {
+        color: #333333 !important;
+        font-size: 19.5px !important;
+        font-weight: 400 !important;
+        line-height: 1.3 !important;
+        margin-top: 0 !important;
+        margin-bottom: 22px !important;
+      }
+
+      /* 4. Course Box Wrapper (Width: 320px, Starts at Y = 169px) */
+      .landing-page--amity .amity-hero-course-wrapper,
+      .landing-page--amity .hero-info-col > div.relative.z-20 {
+        width: 320px !important;
+        max-width: 320px !important;
+        margin-top: 0 !important;
+        margin-bottom: 27px !important;
+        margin-left: 0 !important;
+        position: relative !important;
+      }
+
+      /* 5. Course Pill: Online Degree Courses : (Starts at Y = 154px) */
+      .landing-page--amity .amity-hero-course-label,
+      .landing-page--amity .hero-info-col > div.relative.z-20 > span {
+        left: -1px !important;
+        top: -11px !important;
+        background-color: #fdb913 !important;
+        color: #5a5959ff !important;
+        font-size: 16px !important;
+        font-weight: 800 !important;
+        padding: 4px 12px !important;
+        border-radius: 16px !important;
+        line-height: 1.4 !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08) !important;
+      }
+
+      /* 6. Course Box Interior */
+      .landing-page--amity .amity-hero-course-box,
+      .landing-page--amity .hero-info-col > div.relative.z-20 > div {
+        width: 340px !important;
+        border: 2px solid #004172 !important;
+        border-radius: 6px !important;
+        background-color: rgba(255, 255, 255, 0.95) !important;
+        padding: 12px 12px 8px 12px !important;
+        color: #004172 !important;
+        font-size: 20.5px !important;
+        font-weight: 700 !important;
+        line-height: 1.3 !important;
+        text-align: left !important;
+      }
+
+      /* 7. Download Brochure Button */
+      .landing-page--amity .amity-hero-btn,
+      .landing-page--amity .hero-brochure-btn {
+        width: 220px !important;
+        height: 34px !important;
+        min-height: 34px !important;
+        background: #ffffff !important;
+        background-color: #ffffff !important;
+        color: #004172 !important;
+        border: 1.5px solid #004172 !important;
+        border-radius: 4px !important;
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        padding: 0 18px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 6px !important;
+        margin-top: 15px !important;
+        align-self: flex-start !important;
+      }
+
+      .landing-page--amity .amity-hero-btn svg,
+      .landing-page--amity .hero-brochure-btn svg {
+        width: 13px !important;
+        height: 13px !important;
+      }
+
+      /* 8. Approvals Section Desktop/Laptop View */
+      .landing-page--amity #approvals {
+        background-color: #fff5c4 !important;
+      }
+
+      .landing-page--amity #approvals .grid {
+        display: grid !important;
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+        column-gap: 32px !important;
+        row-gap: 24px !important;
+        align-items: center !important;
+      }
+
+      .landing-page--amity #approvals .grid > div {
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+      }
+
+      .landing-page--amity #approvals .grid > div > div.relative {
+        width: 72px !important;
+        height: 72px !important;
+        min-width: 72px !important;
+        min-height: 72px !important;
+        flex-shrink: 0 !important;
+      }
+
+      .landing-page--amity #approvals .grid > div p {
+        font-size: 14px !important;
+        font-weight: 400 !important;
+        color: #111111 !important;
+        line-height: 1.3 !important;
+        margin: 0 !important;
+      }
+    }
+
+    /* =====================================================
+       AMITY HERO SECTION - TABLET VIEW (769px to 999px)
+    ===================================================== */
+    @media (min-width: 769px) and (max-width: 999px) {
+      .landing-page--amity .amity-hero-heading,
+      .landing-page--amity .hero-info-col h1 {
+        color: #004172 !important;
+        font-size: 32px !important;
+        font-weight: 800 !important;
+        line-height: 1.15 !important;
+      }
+
+      .landing-page--amity .amity-hero-tagline,
+      .landing-page--amity .hero-tagline,
+      .landing-page--amity .hero-info-col .amity-hero-tagline,
+      .landing-page--amity .hero-info-col > div:nth-of-type(1) {
+        color: #333333 !important;
+        font-size: 16px !important;
+        font-weight: 400 !important;
+        line-height: 1.3 !important;
+      }
+    }
+
+    /* =====================================================
+       AMITY HERO SECTION - MOBILE VIEW (max-width: 768px)
+       Pixel-Perfect Match to Target Image 1
+    ===================================================== */
+    @media (max-width: 768px) {
+      /* Hero container */
+      .landing-page--amity .amity-hero-container,
+      .landing-page--amity #hero > div > div {
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+        padding-top: 5px !important;
+        padding-bottom: 20px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+      }
+
+      /* Left Info Column */
+      .landing-page--amity .amity-hero-info-col,
+      .landing-page--amity .hero-info-col {
+        align-items: flex-start !important;
+        text-align: left !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 0 0 16px !important;
+        margin: 0 !important;
+      }
+
+      /* 1. Hashtag (#YourFutureBeginsHere) - Compact, regular weight */
+      .landing-page--amity .amity-hero-hashtag,
+      .landing-page--amity .hero-info-col > p {
+        color: #444444 !important;
+        font-size: 18px !important;
+        font-weight: 400 !important;
+        margin: 18px 0 8px 0 !important;
+        line-height: 1.2 !important;
+        text-align: left !important;
+        letter-spacing: 0 !important;
+      }
+
+      /* 2. Heading: Amity University Online (Large, prominent, bold, 2-line layout) */
+      .landing-page--amity .amity-hero-heading,
+      .landing-page--amity .hero-info-col h1 {
+        color: #004172 !important;
+        font-size: 36px !important;
+        font-weight: 900 !important;
+        line-height: 1 !important;
+        max-width: 260px !important;
+        margin: 2px 0 8px 0 !important;
+        white-space: normal !important;
+        letter-spacing: -0.06em !important;
+        text-align: left !important;
+      }
+
+      /* 3. Subtitle (Learn from Anywhere, Grow Everywhere) - 2 lines, normal weight */
+      .landing-page--amity .amity-hero-tagline,
+      .landing-page--amity .hero-tagline,
+      .landing-page--amity .hero-info-col .amity-hero-tagline,
+      .landing-page--amity .hero-info-col > div:nth-of-type(1) {
+        color: #333333 !important;
+        font-size: 19px !important;
+        font-weight: 400 !important;
+        line-height: 1.25 !important;
+        max-width: 250px !important;
+        margin: 4px 0 16px 0 !important;
+        text-align: left !important;
+      }
+
+      /* 4. Course Box Wrapper */
+      .landing-page--amity .amity-hero-course-wrapper,
+      .landing-page--amity .hero-info-col > div.relative.z-20 {
+        width: 100% !important;
+        max-width: 280px !important;
+        margin-top: 14px !important;
+        margin-bottom: 14px !important;
+        margin-left: 0 !important;
+        position: relative !important;
+        align-self: flex-start !important;
+      }
+
+      /* 5. Course Pill: Online Degree Courses : */
+      .landing-page--amity .amity-hero-course-label,
+      .landing-page--amity .hero-info-col > div.relative.z-20 > span {
+        left: 0px !important;
+        top: -5px !important;
+        background-color: #fdb913 !important;
+        color: #302f2fff !important;
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        padding: 2px 10px !important;
+        border-radius: 9999px !important;
+        line-height: 1.3 !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08) !important;
+      }
+
+      /* 6. Course Box Interior: 2 clear lines, bold dark blue */
+      .landing-page--amity .amity-hero-course-box,
+      .landing-page--amity .hero-info-col > div.relative.z-20 > div {
+        width: 100% !important;
+        max-width: 300px !important;
+        border: 2px solid #004172 !important;
+        border-radius: 6px !important;
+        background-color: rgba(255, 255, 255, 0.95) !important;
+        padding: 10px 10px 10px 10px !important;
+        color: #004172 !important;
+        font-size: 18.5px !important;
+        font-weight: 700 !important;
+        line-height: 1.35 !important;
+        text-align: left !important;
+      }
+
+      /* 7. Download Brochure Button */
+      .landing-page--amity .amity-hero-btn,
+      .landing-page--amity .hero-brochure-btn {
+        width: 215px !important;
+        height: 40px !important;
+        min-height: 36px !important;
+        background: #ffffff !important;
+        background-color: #ffffff !important;
+        color: #004172 !important;
+        border: 1.5px solid #004172 !important;
+        border-radius: 6px !important;
+        font-size: 15px !important;
+        font-weight: 600 !important;
+        padding: 0 14px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 6px !important;
+        margin-top: 12px !important;
+        margin-bottom: 0px !important;
+        align-self: flex-start !important;
+      }
+
+      /* 8. Campus Image (Building Photograph) */
+      .landing-page--amity .hero-mobile-image-wrapper {
+        width: 100% !important;
+        max-width: 100% !important;
+        border-radius: 16px !important;
+        overflow: hidden !important;
+        margin-top: 4px !important;
+        margin-bottom: 16px !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+      }
+
+      /* 9. Form Container & Card on Mobile */
+      .landing-page--amity .hero-form-col {
+        width: 100% !important;
+        max-width: 100% !important;
+        align-items: center !important;
+        margin: 0 0 12px 0 !important;
+      }
+
+      .landing-page--amity .hero-form-col .landing-lead-card {
+        width: 100% !important;
+        max-width: 360px !important;
+        border-radius: 14px !important;
+        margin-top:16px !important;
+      }
+
+     /* 10. APPROVALS SECTION - AMITY MOBILE VIEW */
+
+.landing-page--amity #approvals {
+  background-color: #fff5c4 !important;
+}
+
+.landing-page--amity #approvals .grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  column-gap: 22px !important;
+  row-gap: 28px !important;
+  align-items: center !important;
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+}
+
+.landing-page--amity #approvals .grid > div {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  min-width: 0 !important;
+}
+
+.landing-page--amity #approvals .grid > div > div.relative {
+  width: 60px !important;
+  height: 60px !important;
+  min-width: 60px !important;
+  min-height: 60px !important;
+  flex-shrink: 0 !important;
+}
+
+.landing-page--amity #approvals .grid > div p {
+  font-size: 11px !important;
+  font-weight: 400 !important;
+  color: #111111 !important;
+  line-height: 1.25 !important;
+  margin: 0 !important;
+  min-width: 0 !important;
+  overflow-wrap: break-word !important;
+}
+
+            /* 11. Why Choose Section Mobile View (Exact Match to Target Images) */
+      .landing-page--amity #whychoose,
+      .landing-page--amity #whyChoose,
+      #whychoose {
+        padding-top: 28px !important;
+        padding-bottom: 24px !important;
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+        background-color: #ffffff !important;
+      }
+
+      .landing-page--amity #whychoose .ant-layout-content,
+      #whychoose .ant-layout-content {
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+        box-sizing: border-box !important;
+      }
+
+      /* Heading: Exact 3-line layout, bold, dark blue */
+      .landing-page--amity #whychoose .whychoose-title,
+      .landing-page--amity #whychoose h2,
+      #whychoose .whychoose-title,
+      #whychoose h2 {
+        color: #08417b !important;
+        font-size: 35px !important;
+        font-weight: 800 !important;
+        line-height: 1.22 !important;
+        text-align: left !important;
+        margin-top: 0 !important;
+        margin-bottom: 24px !important;
+        letter-spacing: -0.02em !important;
+        max-width: 320px !important;
+      }
+
+      /* Points Stack / Grid */
+      .landing-page--amity #whychoose .whychoose-points-grid,
+      #whychoose .whychoose-points-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 20px !important;
+      }
+
+      /* Point Item */
+      .landing-page--amity #whychoose .whychoose-item,
+      #whychoose .whychoose-item {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        text-align: left !important;
+        gap: 4px !important;
+      }
+
+      /* Point Title */
+      .landing-page--amity #whychoose .whychoose-item-title,
+      .landing-page--amity #whychoose h3,
+      #whychoose .whychoose-item-title,
+      #whychoose h3 {
+        color: #08417b !important;
+        font-size: 18.5px !important;
+        font-weight: 700 !important;
+        line-height: 1.25 !important;
+        text-align: left !important;
+        margin: 0 0 4px 0 !important;
+      }
+
+      /* Point Description */
+      .landing-page--amity #whychoose .whychoose-item-desc,
+      .landing-page--amity #whychoose p,
+      #whychoose .whychoose-item-desc,
+      #whychoose p {
+        color: #333333 !important;
+        font-size: 13px !important;
+        font-weight: 400 !important;
+        line-height: 1.45 !important;
+        text-align: left !important;
+        max-width: 100% !important;
+        margin: 10px 0 0 0 !important;
+      }
+
+      /* Student Image Wrapper & Centering */
+      .landing-page--amity #whychoose .whychoose-image-wrapper,
+      #whychoose .whychoose-image-wrapper {
+        width: 280px !important;
+        max-width: 280px !important;
+        height: 270px !important;
+        margin: 20px auto 0 auto !important;
+        position: relative !important;
+      }
+
+      .landing-page--amity #whychoose .whychoose-student-img,
+      .landing-page--amity #whychoose .whychoose-image-wrapper img,
+      #whychoose .whychoose-student-img,
+      #whychoose .whychoose-image-wrapper img {
+        transform: scale(1) !important;
+        object-fit: contain !important;
+        object-position: bottom center !important;
+      }
+
+      /* Apply Now Button Container */
+      .landing-page--amity #whychoose .whychoose-mobile-btn-wrap,
+      #whychoose .whychoose-mobile-btn-wrap {
+        width: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+        margin-top: 8px !important;
+        margin-bottom: 0px !important;
+      }
+
+      /* Apply Now Button */
+      .landing-page--amity #whychoose .whychoose-btn,
+      .landing-page--amity #whychoose .whychoose-mobile-btn-wrap button,
+      #whychoose .whychoose-btn,
+      #whychoose .whychoose-mobile-btn-wrap button {
+        width: 150px !important;
+        height: 38px !important;
+        min-height: 38px !important;
+        background: #ffc738ff !important;
+        background-color: #ffc83dff !important;
+        color: #08417b !important;
+        font-size: 16px !important;
+        font-weight: 700 !important;
+        border-radius: 6px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 4px !important;
+        padding: 0 6px !important;
+        border: none !important;
+
+        cursor: pointer !important;
+      }
+
+      .landing-page--amity #whychoose .whychoose-btn svg,
+      .landing-page--amity #whychoose .whychoose-mobile-btn-wrap button svg,
+      #whychoose .whychoose-btn svg,
+      #whychoose .whychoose-mobile-btn-wrap button svg {
+        width: 16px !important;
+        height: 16px !important;
+        color: #08417b !important;
+        stroke: #08417b !important;
+      }
+    }
+
     /* Amity Navbar Logo - compact size matching target header */
     .amity-navbar-logo {
       width: 102px !important;
@@ -83,13 +628,449 @@ export const amityData = {
         height: 34px !important;
       }
     }
-    @media (min-width: 1024px) {
+        @media (min-width: 1024px) {
       .amity-navbar-logo {
-        width: 102px !important;
-        height: 35px !important;
+        width: 136px !important;
+        height: 47px !important;
       }
     }
-  `,
+    @media (min-width: 1280px) {
+      .amity-navbar-logo {
+        width: 146px !important;
+        height: 51px !important;
+      }
+    }
+
+    /* Amity Header & Approvals - Desktop View Left and Right Padding (1280px+) */
+    @media (min-width: 1280px) {
+      .landing-page--amity header {
+        padding-left: 40px !important;
+        padding-right: 30px !important;
+      }
+      .landing-page--amity header .ant-layout-content {
+        padding-left: 40px !important;
+        padding-right: 30px !important;
+      }
+      .landing-page--amity header .ant-layout-content > div:first-child {
+        margin-left: 0px !important;
+      }
+
+      /* Approval Section - Desktop View Left and Right Spacing matching Hero & Navbar */
+      .landing-page--amity #approvals > div:last-child {
+        padding-left: 40px !important;
+        padding-right: 30px !important;
+      }
+      .landing-page--amity #approvals > div:last-child > div {
+        max-width: 1152px !important;
+        padding-left: 40px !important;
+        padding-right: 30px !important;
+      }
+    }
+
+    @media (min-width: 1536px) {
+      .landing-page--amity #approvals > div:last-child > div {
+        max-width: 1280px !important;
+      }
+    }
+
+    @media (min-width: 1600px) {
+      .landing-page--amity #approvals > div:last-child > div {
+        max-width: 1520px !important;
+      }
+    }
+
+    @media (min-width: 1920px) {
+      .landing-page--amity #approvals > div:last-child > div {
+        max-width: 1680px !important;
+      }
+    }
+
+    /* Amity Header Navbar - Hide desktop nav text links so only Scholarship button shows on laptop & desktop */
+    .landing-page--amity .header_menu_list {
+      display: none !important;
+    }
+
+    /* Amity Mobile Header Menu Button (3 blue lines matching Image 3) */
+    .landing-page--amity header button[aria-label="Toggle menu"] {
+      color: #08417b !important;
+      background: transparent !important;
+      padding: 4px !important;
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+    }
+    .landing-page--amity header button[aria-label="Toggle menu"] svg {
+      stroke: #08417b !important;
+      width: 26px !important;
+      height: 26px !important;
+      stroke-width: 2.2 !important;
+    }
+    .landing-page--amity header button[aria-label="Toggle menu"]:hover,
+    .landing-page--amity header button[aria-label="Toggle menu"]:focus,
+    .landing-page--amity header button[aria-label="Toggle menu"]:active {
+      background: transparent !important;
+    }
+
+    /* Amity Mobile Header & Menu Styles */
+    @media (max-width: 767px) {
+      .landing-page--amity header {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+      }
+      .landing-page--amity header .ant-layout-content {
+        height: 68px !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+      }
+
+      /* Center Mobile Menu Dropdown */
+      .landing-page--amity header > div.md\:hidden {
+        background: #ffffff !important;
+        border-top: 1px solid #f0f2f5 !important;
+        box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.12) !important;
+        padding: 0 0 16px 0 !important;
+      }
+      .landing-page--amity header > div.md\:hidden ul {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        text-align: center !important;
+      }
+      .landing-page--amity header > div.md\:hidden ul li {
+        border-bottom: 1px solid #f0f2f5 !important;
+        text-align: center !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+      }
+      .landing-page--amity header > div.md\:hidden ul li a {
+        display: block !important;
+        width: 100% !important;
+        padding: 14px 16px !important;
+        color: #0e2246 !important;
+        font-size: 16.5px !important;
+        font-weight: 700 !important;
+        text-align: center !important;
+        letter-spacing: -0.01em !important;
+        transition: color 0.15s ease !important;
+      }
+      .landing-page--amity header > div.md\:hidden ul li a:hover,
+      .landing-page--amity header > div.md\:hidden ul li a:active {
+        color: #0055b8 !important;
+      }
+
+      /* Mobile Menu Coupon Button */
+      .landing-page--amity .mobile-menu-coupon-wrap {
+        padding-top: 16px !important;
+        padding-bottom: 6px !important;
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+        display: flex !important;
+        justify-content: center !important;
+      }
+      .landing-page--amity .mobile-menu-coupon-wrap .coupon-btn-main {
+        width: 100% !important;
+        max-width: 320px !important;
+        border-radius: 10px !important;
+        padding: 10px 18px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+      }
+
+      /* Hide Scholarship Coupon Button in Mobile Hero Section */
+      .landing-page--amity #hero .coupon-btn-main {
+        display: none !important;
+      }
+      } /* Mobile @media (max-width: 767px) ends here */
+
+
+    /* =====================================================
+       AMITY PROGRAMMES (ONLINE DEGREE COURSES) - DESKTOP VIEW (1400px+)
+       Matches Target Reference Image 1 exactly
+    ===================================================== */
+    @media only screen and (min-width: 1400px) {
+      /* 1. Section Spacing & Height */
+      .landing-page--amity #programmes {
+        padding-top: 52px !important;
+        padding-bottom: 72px !important;
+      }
+
+      /* 2. Heading Typography (2 centered white lines, regular 400-500 weight) */
+      .landing-page--amity #programmes .text-center.mb-5,
+      .landing-page--amity #programmes .text-center.mb-6 {
+        margin-bottom: 42px !important;
+      }
+
+      .landing-page--amity #programmes .programmes-subtitle {
+        font-size: 34px !important;
+        font-weight: 400 !important;
+        line-height: 1.2 !important;
+        color: #ffffff !important;
+        text-align: center !important;
+        letter-spacing: 0 !important;
+        margin: 0 !important;
+      }
+
+      .landing-page--amity #programmes .programmes-title {
+        font-size: 34px !important;
+        font-weight: 400 !important;
+        line-height: 1.2 !important;
+        color: #ffffff !important;
+        text-align: center !important;
+        margin-top: 6px !important;
+        letter-spacing: 0 !important;
+      }
+
+      /* 3. Wide Carousel Container (Outer margins ~50px, spanning available viewport) */
+      .landing-page--amity #programmes > div.hidden.md\:block {
+        max-width: 1830px !important;
+        width: calc(100% - 100px) !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+      }
+
+      /* 4. Carousel Navigation Arrows */
+      .landing-page--amity #programmes button[aria-label="Previous programme"] {
+        left: -38px !important;
+        color: #ffffff !important;
+      }
+      .landing-page--amity #programmes button[aria-label="Next programme"] {
+        right: -38px !important;
+        color: #ffffff !important;
+      }
+      .landing-page--amity #programmes button[aria-label="Previous programme"] svg,
+      .landing-page--amity #programmes button[aria-label="Next programme"] svg {
+        color: #ffffff !important;
+        stroke: #ffffff !important;
+        width: 34px !important;
+        height: 34px !important;
+      }
+
+      /* 5. Course Cards Layout & Dimensions */
+      .landing-page--amity #programmes .slick-track {
+        display: flex !important;
+        align-items: stretch !important;
+      }
+
+      .landing-page--amity #programmes .slick-slide {
+        height: inherit !important;
+        display: flex !important;
+      }
+
+      .landing-page--amity #programmes .slick-slide > div {
+        width: 100% !important;
+        display: flex !important;
+      }
+
+      .landing-page--amity #programmes .slick-slide > div > div {
+        width: 100% !important;
+        display: flex !important;
+      }
+
+      .landing-page--amity #programmes .ant-card {
+        border-radius: 8px !important;
+        overflow: hidden !important;
+        background-color: #ffffff !important;
+        border: 1px solid rgba(226, 232, 240, 0.8) !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        width: 100% !important;
+        min-height: 530px !important;
+        height: 100% !important;
+      }
+
+      .landing-page--amity #programmes .ant-card:hover {
+        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.14) !important;
+      }
+
+      .landing-page--amity #programmes .ant-card-body {
+        height: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        padding: 0 !important;
+      }
+
+      /* 6. Card Image Proportions (235px - 245px height) */
+      .landing-page--amity #programmes .ant-card .relative.w-full.bg-slate-100 {
+        height: 240px !important;
+        min-height: 240px !important;
+        max-height: 240px !important;
+        position: relative !important;
+        overflow: hidden !important;
+      }
+
+      .landing-page--amity #programmes .ant-card .relative.w-full.bg-slate-100 img {
+        object-fit: cover !important;
+        object-position: center !important;
+      }
+
+      /* 7. Graduation Badge (Green, top-left, 15-16px font) */
+      .landing-page--amity #programmes .ant-card .absolute.top-0.left-0 {
+        background-color: #008000 !important;
+        color: #ffffff !important;
+        font-size: 15.5px !important;
+        font-weight: 500 !important;
+        padding: 8px 14px !important;
+        border-bottom-right-radius: 6px !important;
+        letter-spacing: 0.01em !important;
+        line-height: 1.2 !important;
+        z-index: 10 !important;
+      }
+
+      /* 8. Course Card Typography */
+      .landing-page--amity #programmes .ant-card > div:first-child > div:last-child,
+      .landing-page--amity #programmes .ant-card .p-3\.5,
+      .landing-page--amity #programmes .ant-card .sm\:p-4 {
+        padding: 16px 20px 8px 20px !important;
+      }
+
+      /* Course Code (BBA, BCA, BCOM, BA) */
+      .landing-page--amity #programmes .ant-card h3 {
+        font-size: 28px !important;
+        font-weight: 700 !important;
+        line-height: 1.1 !important;
+        color: #08417b !important;
+        margin: 0 !important;
+        letter-spacing: -0.01em !important;
+      }
+
+      /* Full Course Name (Bachelor of Business Administration) */
+      .landing-page--amity #programmes .ant-card h3 + p {
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        line-height: 1.35 !important;
+        color: #08417b !important;
+        margin-top: 5px !important;
+        margin-bottom: 8px !important;
+      }
+
+      /* Description */
+      .landing-page--amity #programmes .ant-card h3 + p + p {
+        font-size: 13.5px !important;
+        font-weight: 400 !important;
+        line-height: 1.45 !important;
+        color: #444444 !important;
+        margin: 0 !important;
+        min-height: 80px !important;
+        -webkit-line-clamp: 4 !important;
+        display: -webkit-box !important;
+        -webkit-box-orient: vertical !important;
+        overflow: hidden !important;
+      }
+
+      /* 9. Card Footer Row (Divider, Button, Duration) */
+      .landing-page--amity #programmes .ant-card > div:last-child,
+      .landing-page--amity #programmes .ant-card .border-t {
+        padding: 12px 20px 16px 20px !important;
+        border-top: 1px solid #f1f5f9 !important;
+        margin-top: auto !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+      }
+
+      .landing-page--amity #programmes .ant-card .border-t button {
+        background-color: #ffd200 !important;
+        background: #ffd200 !important;
+        color: #000000 !important;
+        font-size: 13.5px !important;
+        font-weight: 700 !important;
+        padding: 7px 16px !important;
+        border-radius: 4px !important;
+        height: auto !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+      }
+
+      .landing-page--amity #programmes .ant-card .border-t button svg {
+        width: 13px !important;
+        height: 13px !important;
+        color: #000000 !important;
+      }
+
+      .landing-page--amity #programmes .ant-card .border-t > div {
+        font-size: 13.5px !important;
+        font-weight: 500 !important;
+        color: #333333 !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+      }
+
+      .landing-page--amity #programmes .ant-card .border-t > div svg {
+        width: 15px !important;
+        height: 15px !important;
+        color: #555555 !important;
+      }
+    }
+
+      .landing-page--amity #hero div:has(> .coupon-btn-main) {
+        display: none !important;
+      
+    }
+
+    /* ============================================
+   AMITY STATS + WHY CHOOSE CONTAINER ALIGNMENT
+   DESKTOP ONLY (1400px+)
+============================================ */
+
+@media (min-width: 1400px) {
+
+  /* Same content width for both sections */
+  .landing-page--amity #stats > div,
+  .landing-page--amity #whychoose > div {
+    width: 100% !important;
+    max-width: 1152px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-left: 40px !important;
+    padding-right: 40px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Stats content remains in four columns */
+  .landing-page--amity #stats .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    align-items: center !important;
+    column-gap: 24px !important;
+  }
+}
+
+/* Large Desktop */
+@media (min-width: 1536px) {
+  .landing-page--amity #stats > div,
+  .landing-page--amity #whychoose > div {
+    max-width: 1280px !important;
+  }
+}
+
+/* Extra Large Desktop */
+@media (min-width: 1600px) {
+  .landing-page--amity #stats > div,
+  .landing-page--amity #whychoose > div {
+    max-width: 1520px !important;
+  }
+}
+
+/* Full HD Desktop */
+@media (min-width: 1920px) {
+  .landing-page--amity #stats > div,
+  .landing-page--amity #whychoose > div {
+    max-width: 1680px !important;
+  }
+}
+    `,
 
   /* =======================================================
      BRAND / LANDING PAGE CONFIGURATION
@@ -104,6 +1085,7 @@ export const amityData = {
 
     name: "Amity University Online",
     shortName: "Amity",
+    compareUniversityName: "Amity University",
 
     hashtag: "#YourFutureBeginsHere",
 
@@ -141,7 +1123,8 @@ export const amityData = {
 
     showSodeLogo: false,
     logoWrapperClassName:
-      "w-[105px] sm:w-[115px] lg:w-[125px] h-9 sm:h-[38px] lg:h-[40px] amity-navbar-logo",
+      "w-[105px] sm:w-[115px] lg:w-[136px] xl:w-[146px] h-9 sm:h-[38px] lg:h-[47px] xl:h-[51px] amity-navbar-logo",
+    hideDesktopNavLinks: true,
 
     arrowGif:
       "/assets/all_universities_images/amity/arrow.gif",
@@ -168,8 +1151,21 @@ export const amityData = {
        NAVBAR CTA
     ===================================================== */
 
-    showCouponBtn: false,
-    showCouponButton: false,
+    showCouponBtn: true,
+    showCouponButton: true,
+    couponButtonText: "Scholarship Coupon Code",
+
+    hideMobileHeroCoupon: true,
+    mobileMenuCenter: true,
+    showMobileMenuCoupon: true,
+
+    navLinks: [
+      { label: "Courses", href: "#programmes" },
+      { label: "Approvals", href: "#approvals" },
+      { label: "About", href: "#about" },
+      { label: "Advantage", href: "#whychoose" },
+      { label: "FAQs", href: "#faqs" },
+    ],
 
     badgeText:
       "Admission Open 2026",
@@ -225,8 +1221,9 @@ export const amityData = {
       backgroundImage:
         "/assets/all_universities_images/amity/amity-bg-final.webp",
 
-      backgroundPosition:
-        "center center",
+      backgroundPosition: "center top",
+
+      desktopBackgroundPosition: "center top",
 
       backgroundSize:
         "cover",
@@ -251,6 +1248,19 @@ export const amityData = {
       noOverlay: true,
       mobileAlign: "left",
 
+      containerClassName: "amity-hero-container",
+      contentClassName: "amity-hero-info-col",
+      hashtagClassName: "amity-hero-hashtag",
+      headingClassName: "amity-hero-heading",
+      taglineClassName: "amity-hero-tagline",
+      taglineStyle: {
+        color: "#333333",
+      },
+      courseWrapperClassName: "amity-hero-course-wrapper",
+      courseLabelClassName: "amity-hero-course-label",
+      courseBoxClassName: "amity-hero-course-box",
+      buttonClassName: "amity-hero-btn",
+
       backgroundColor: "#ffffff",
 
       headingColor: "#004172",
@@ -258,6 +1268,12 @@ export const amityData = {
       taglineColor: "#333333",
 
       hashtagColor: "#444444",
+
+      courseLabel: "Online Degree Courses :",
+
+      coursePillBg: "#fdb913",
+
+      coursePillTextColor: "#000000",
 
       courseBorder: "#004172",
 
@@ -401,80 +1417,80 @@ export const amityData = {
     {
       image:
         "/assets/all_universities_images/amity/Ugc-approval.png",
-
+      title:
+        "Approved by the University Grants Commission of India",
       text:
         "Approved by the University Grants Commission of India",
-
       tag: "UGC-DEB",
     },
 
     {
       image:
         "/assets/all_universities_images/amity/NaacA+-approval.png",
-
+      title:
+        "NAAC Accredited with A+ Grade",
       text:
         "NAAC Accredited with A+ Grade",
-
       tag: "NAAC A+",
     },
 
     {
       image:
         "/assets/all_universities_images/amity/NIRF-Approval.png",
-
+      title:
+        "Ranked 32nd in NIRF (National Institutional Ranking Framework)",
       text:
         "Ranked 32nd in NIRF (National Institutional Ranking Framework)",
-
       tag: "NIRF #32",
     },
 
     {
       image:
         "/assets/all_universities_images/amity/AICTE-Approval.png",
-
+      title:
+        "Approved by All India Council for Technical Education",
       text:
         "Approved by All India Council for Technical Education",
-
       tag: "AICTE",
     },
 
     {
       image:
         "/assets/all_universities_images/amity/THE-approval.png",
-
+      title:
+        "Recognised by The World University Rankings (THE)",
       text:
         "Recognised by The World University Rankings (THE)",
-
       tag: "THE Ranked",
     },
 
     {
       image:
         "/assets/all_universities_images/amity/QS-approval.png",
-
+      title:
+        "Ranked by QS (Quacquarelli Symonds)",
       text:
         "Ranked by QS (Quacquarelli Symonds)",
-
       tag: "QS Asia Top 10",
     },
 
     {
       image:
         "/assets/all_universities_images/amity/WES-Approval.png",
-
+      title:
+        "Recognised by World Education Services (WES)",
       text:
         "Recognised by World Education Services (WES)",
-
       tag: "WES (USA/Canada)",
     },
 
     {
       image:
         "/assets/all_universities_images/amity/WASc-approval.png",
-
+      title:
+        "Accredited by Western Association of Schools and Colleges (WASC)",
       text:
         "Accredited by Western Association of Schools and Colleges (WASC)",
-
       tag: "WASC (USA)",
     },
   ],

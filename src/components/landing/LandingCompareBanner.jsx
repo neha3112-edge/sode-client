@@ -34,18 +34,18 @@ export default function LandingCompareBanner({ brand = {}, onOpenCompare }) {
       className={`compare_Section ${sectionBg} pt-8 sm:pt-9 md:pt-15 pb-8 sm:pb-9 md:pb-14 select-none`}
       style={{ backgroundColor: sectionBgColor }}
     >
-      <div className={`${brand.compareBoxMaxWidth || "max-w-[1700px] 2xl:max-w-[1900px]"} w-full mx-auto px-1 sm:px-3 md:px-14 lg:px-0px`}>
+      <div className={`${brand.compareBoxMaxWidth || "max-w-[1700px] 2xl:max-w-[1900px]"} w-full mx-auto px-2 sm:px-3 md:px-14 lg:px-0px`}>
         <div
-          className="compare_box relative rounded-xl sm:rounded-2xl px-6 sm:px-12 pt-7 pb-8 sm:pt-8 sm:pb-9 md:pt-9 md:pb-11 lg:pt-10 lg:pb-12 text-center text-white transition-colors flex flex-col items-center justify-center shadow-md min-h-[150px] sm:min-h-[173px] md:min-h-[191px]"
+          className="compare_box relative rounded-2xl sm:rounded-2xl px-4 sm:px-12 pt-8 pb-10 sm:pt-8 sm:pb-9 md:pt-9 md:pb-11 lg:pt-10 lg:pb-12 text-center text-white transition-colors flex flex-col items-center justify-center shadow-md min-h-[160px] sm:min-h-[173px] md:min-h-[191px]"
           style={{ background: bannerBg }}
         >
           {/* Heading */}
-          <h2 className="text-xl sm:text-2xl md:text-[30px] lg:text-[32px] font-semibold text-white  leading-tight tracking-wide m-0 -translate-y-2">
+          <h2 className="text-[26px] sm:text-2xl md:text-[30px] lg:text-[32px] font-bold sm:font-semibold text-white leading-tight tracking-wide sm:tracking-wide m-0 mb-1.5 sm:mb-0 sm:-translate-y-2">
             Still Confused?
           </h2>
 
           {/* Subtitle */}
-          <h3 className="text-xs sm:text-sm md:text-[17px] text-white/95 font-normal tracking-wide mt-1 sm:mt-1.5 max-w-xl sm:max-w-3xl mx-auto m-0 leading-snug px-1 -translate-y-2">
+          <h3 className="text-[15.5px] sm:text-sm md:text-[17px] text-white font-semibold sm:font-normal tracking-wide sm:tracking-wide mt-1 sm:mt-1.5 max-w-[265px] sm:max-w-xl md:max-w-3xl mx-auto m-0 leading-snug px-1 sm:-translate-y-2">
             {brand.compareSubtitle ||
               brand.compareBannerSubtitle ||
               `Compare ${universityName} with Top UGC-DEB Approved Universities`}

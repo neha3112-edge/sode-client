@@ -28,8 +28,8 @@ export default function FooterClassic({
     brand.desLogo ||
     brand.sodeFooterLogo ||
     (brand.sodeLogo &&
-    !brand.sodeLogo.includes("icon") &&
-    !brand.sodeLogo.includes("tm")
+      !brand.sodeLogo.includes("icon") &&
+      !brand.sodeLogo.includes("tm")
       ? brand.sodeLogo
       : "/assets/all_universities_images/ggu/new-des-logo.webp");
 
@@ -51,7 +51,7 @@ export default function FooterClassic({
       style={{ backgroundColor: footerBgColor }}
       id="footer-v1"
     >
-      <div className="w-full max-w-full mx-auto px-4 sm:px-8 text-center flex flex-col items-center">
+      <div className="w-full max-w-full mx-auto px-0 sm:px-0 text-center flex flex-col items-center">
         {/* SODE / Distance Education School Official Full Logo */}
         <div className="footer_sode_logo_container flex justify-center items-center mb-3 sm:mb-4">
           <Link
@@ -60,13 +60,13 @@ export default function FooterClassic({
             className="inline-block cursor-pointer"
             aria-label="Back to Top"
           >
-            <div className="relative w-[360px] sm:w-[520px] md:w-[640px] lg:w-[740px] xl:w-[780px] h-[95px] sm:h-[138px] md:h-[170px] lg:h-[196px] xl:h-[206px]">
+            <div className="relative w-[260px] sm:w-[340px] md:w-[420px] lg:w-[680px] xl:w-[740px] 2xl:w-[780px] h-[70px] sm:h-[90px] md:h-[110px] lg:h-[178px] xl:h-[194px] 2xl:h-[204px]">
               <Image
                 src={footerLogoSrc}
                 alt="Distance Education School - SODE School of Online & Distance Education"
                 fill
                 className="object-contain"
-                sizes="(max-width: 640px) 360px, (max-width: 768px) 520px, (max-width: 1024px) 640px, 780px"
+                sizes="(max-width: 639px) 360px, (max-width: 767px) 520px, (max-width: 1023px) 640px, (max-width: 1399px) 620px, 920px"
                 priority
               />
             </div>
@@ -76,38 +76,38 @@ export default function FooterClassic({
         {/* Agency Disclaimer Text */}
         <div
           id="footer-bottom-bar"
-          className="mt-1.5 sm:mt-2 px-2 sm:px-6 w-full max-w-[1090px] mx-auto text-center"
+          className="mt-2 sm:mt-3 lg:mt-4 px-3 sm:px-6 md:px-8 w-full max-w-[1380px] mx-auto text-center"
         >
-          <p className="m-0 text-[11px] sm:text-[11.5px] md:text-[12px] text-[#666666] leading-[1.62] font-normal tracking-[0.15px]">
+          <p className="m-0 text-[13.5px] sm:text-[13px] md:text-[12.5px] lg:text-[12px] xl:text-[14px] text-[#666666] leading-[1.55] sm:leading-[1.6] lg:leading-[1.5] font-normal tracking-normal max-w-none w-full mx-auto">
             {footerText}
           </p>
 
           {/* Legal Links */}
-          <div className="mt-3.5 sm:mt-4 mb-3.5 sm:mb-4 text-[11.5px] sm:text-[12px] font-medium text-[#111111] flex items-center justify-center gap-2 sm:gap-2.5">
+          <div className="mt-3.5 sm:mt-4 md:mt-4 lg:mt-4 mb-3.5 sm:mb-4 md:mb-5 lg:mb-2.5 text-[15px] sm:text-[13.5px] md:text-[13.5px] lg:text-[14.5px] font-medium text-[#111111] flex items-center justify-center flex-wrap gap-1 sm:gap-1.5">
             <button
               type="button"
               onClick={() => onOpenDisclaimer?.()}
-              className="hover:underline hover:text-black cursor-pointer font-medium text-[#111111] border-none bg-transparent p-0 transition-colors"
+              className="hover:underline hover:text-black cursor-pointer  text-[#000000] border-none bg-transparent p-0 transition-colors tracking-tight"
             >
               Disclaimer
             </button>
-            <span className="text-[#999999] font-normal px-0.5" aria-hidden="true">
+            <span className="text-[#888888] font-normal px-1" aria-hidden="true">
               |
             </span>
             <button
               type="button"
               onClick={() => onOpenTerms?.()}
-              className="hover:underline hover:text-black cursor-pointer font-medium text-[#111111] border-none bg-transparent p-0 transition-colors"
+              className="hover:underline hover:text-black cursor-pointer  text-[#000000] border-none bg-transparent p-0 transition-colors tracking-tight"
             >
               Terms & Conditions
             </button>
-            <span className="text-[#999999] font-normal px-0.5" aria-hidden="true">
+            <span className="text-[#888888] font-normal px-1" aria-hidden="true">
               |
             </span>
             <button
               type="button"
               onClick={() => onOpenPrivacy?.()}
-              className="hover:underline hover:text-black cursor-pointer font-medium text-[#111111] border-none bg-transparent p-0 transition-colors"
+              className="hover:underline hover:text-black cursor-pointer  text-[#000000] border-none bg-transparent p-0 transition-colors tracking-tight"
             >
               Privacy Policy
             </button>
@@ -118,7 +118,7 @@ export default function FooterClassic({
       {/* Brand Navy Copyright Bar (reusable across all landing pages) */}
       {!brand.hideFooterCopyright && (
         <div
-          className="mini-footer-bottom text-white pt-2 pb-[76px] lg:pb-2 px-4 sm:px-8 text-[11.5px] sm:text-[12px] tracking-wide font-normal transition-colors"
+          className="mini-footer-bottom text-white pt-2 pb-[76px] lg:pb-2 px-4 sm:px-8 text-[13.5px] sm:text-[12px] lg:text-[14px] tracking-wide font-normal transition-colors"
           style={{
             backgroundColor:
               brand.footerBottomBg ||

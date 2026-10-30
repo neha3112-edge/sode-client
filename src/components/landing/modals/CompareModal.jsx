@@ -13,6 +13,7 @@ export default function CompareModal({
   onClose,
   universityName = "University Online",
   courses = [],
+  selectedCourse = "",
   brand = {},
   compareModal = {},
   onOpenDisclaimer,
@@ -38,6 +39,7 @@ export default function CompareModal({
       onClose={onClose}
       universityName={universityName}
       courses={courses}
+      selectedCourse={selectedCourse}
       brand={brand}
       scholarshipModal={config}
       onOpenDisclaimer={onOpenDisclaimer}
