@@ -714,12 +714,12 @@ export default function AutoEngineToolPage({
                 </div>
               )}
 
-              {/* ─── GRID OF OPTION CARDS (MATCHING CATEGORY ON MOBILE & DESKTOP) ─── */}
+              {/* ─── GRID OF OPTION CARDS (2 COLUMNS MOBILE, 6 COLUMNS DESKTOP) ─── */}
               <div
-                className={`grid grid-cols-4 gap-1.5 sm:gap-2.5 w-full mx-auto items-stretch ${
+                className={`grid gap-1.5 sm:gap-2.5 w-full mx-auto items-stretch ${
                   filteredOptions.length <= 4
-                    ? "sm:grid-cols-4 max-w-2xl mx-auto"
-                    : "sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6"
+                    ? "grid-cols-2 sm:grid-cols-4 max-w-2xl mx-auto"
+                    : "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6"
                 }`}
               >
                 {filteredOptions.map((option, oIdx) => {
@@ -748,7 +748,7 @@ export default function AutoEngineToolPage({
                           handleSelectOption(option, storeVar);
                         }
                       }}
-                      className={`relative w-full aspect-square bg-white rounded-xl sm:rounded-2xl p-1 min-[360px]:p-1.5 sm:p-2.5 border flex flex-col items-center justify-center sm:justify-between text-center cursor-pointer select-none transition-all duration-200 hover:-translate-y-0.5 group min-w-0 ${
+                      className={`relative w-full aspect-square bg-white rounded-xl sm:rounded-2xl p-2 sm:p-2.5 border flex flex-col items-center justify-center text-center cursor-pointer select-none transition-all duration-200 hover:-translate-y-0.5 group min-w-0 ${
                         isSelected
                           ? "border-blue-600 ring-2 ring-blue-500/20 bg-blue-50/20 shadow-xs"
                           : "border-gray-200 hover:border-blue-500 hover:bg-gray-50/50"
@@ -761,11 +761,11 @@ export default function AutoEngineToolPage({
                         ✦
                       </span>
 
-                      <div className="flex flex-col items-center justify-center w-full my-auto sm:my-0">
+                      <div className="flex flex-col items-center justify-center w-full">
                         {/* Icon Container */}
-                        <div className="mb-0.5 sm:mb-2 group-hover:scale-110 transition-transform flex items-center justify-center shrink-0">
+                        <div className="mb-1 group-hover:scale-110 transition-transform flex items-center justify-center shrink-0">
                           {optLogo ? (
-                            <div className="w-5 h-5 min-[360px]:w-6 min-[360px]:h-6 sm:w-8 sm:h-8 relative">
+                            <div className="w-6 h-6 sm:w-8 sm:h-8 relative">
                               <Image
                                 src={optLogo}
                                 alt={optTitle}
@@ -775,13 +775,13 @@ export default function AutoEngineToolPage({
                               />
                             </div>
                           ) : (
-                            <IconComp className={`w-5 h-5 min-[360px]:w-6 min-[360px]:h-6 sm:w-8 sm:h-8 ${palette.text}`} />
+                            <IconComp className={`w-6 h-6 sm:w-8 sm:h-8 ${palette.text}`} />
                           )}
                         </div>
 
                         {/* Title */}
-                        <div className="h-6 min-[360px]:h-7 sm:h-auto sm:min-h-[26px] flex items-center justify-center w-full min-w-0 px-0.5">
-                          <h3 className="text-[10px] min-[360px]:text-[11px] sm:text-[13px] font-bold text-[#0F172A] tracking-tight m-0 leading-tight w-full text-center line-clamp-2">
+                        <div className="flex items-center justify-center w-full min-w-0 px-0.5 min-h-[22px] sm:min-h-[26px]">
+                          <h3 className="text-[11px] sm:text-[13px] font-bold text-[#0F172A] tracking-tight m-0 leading-tight w-full text-center line-clamp-2">
                             <span
                               className={`border-b sm:border-b-2 ${palette.underline} pb-0.5 inline-block group-hover:text-[#0B3B7E] transition-colors`}
                             >
@@ -791,10 +791,10 @@ export default function AutoEngineToolPage({
                         </div>
                       </div>
 
-                      {/* Pinned Bottom Button - Desktop / Tablet (sm+) */}
-                      <div className="w-full mt-2 pt-1 hidden sm:block">
+                      {/* Bottom Button (visible on both mobile and desktop with tight gap) */}
+                      <div className="w-full mt-1.5 sm:mt-2">
                         <div
-                          className={`w-full py-1.5 sm:py-2 px-2 sm:px-3 rounded-full text-white font-bold text-[10px] sm:text-[11px] shadow-none transition-all flex items-center justify-center gap-1 cursor-pointer truncate ${
+                          className={`w-full py-1 sm:py-1.5 px-2 sm:px-3 rounded-full text-white font-bold text-[9px] sm:text-[11px] shadow-none transition-all flex items-center justify-center gap-1 cursor-pointer truncate ${
                             isSelected
                               ? "bg-emerald-600 hover:bg-emerald-700"
                               : "bg-[#0B3B7E] hover:bg-[#072859]"
@@ -803,7 +803,7 @@ export default function AutoEngineToolPage({
                           <span className="truncate">
                             {isSelected ? "Selected ✓" : optTitle}
                           </span>
-                          <span className="w-3.5 h-3.5 rounded-full bg-white/20 flex items-center justify-center text-[9px] shrink-0 group-hover:translate-x-0.5 transition-transform">
+                          <span className="w-3.5 h-3.5 rounded-full bg-white/20 flex items-center justify-center text-[8px] sm:text-[9px] shrink-0 group-hover:translate-x-0.5 transition-transform">
                             →
                           </span>
                         </div>
