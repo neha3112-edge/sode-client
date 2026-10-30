@@ -23,7 +23,33 @@ export default function CourseCurriculum({
         {curriculumList.map((sem, idx) => {
           const rawLabel = sem.semester || sem.semesterName || `Semester ${idx + 1}`;
           const cleanLabel = String(rawLabel).trim();
-          const semesterTitle = /^\d+$/.test(cleanLabel) ? `Semester ${cleanLabel}` : cleanLabel;
+
+          // Check if term is like "Module 1: Introduction to Marketing"
+          const moduleMatch = cleanLabel.match(/^(module\s*\d+)\s*[:–—\-]\s*(.+)$/i);
+          let semesterTitle = cleanLabel;
+          let extractedGroupTitle = null;
+
+          if (moduleMatch) {
+            semesterTitle = moduleMatch[1]; // e.g. "Module 1"
+            extractedGroupTitle = moduleMatch[2].trim(); // e.g. "Introduction to Marketing"
+          } else if (/^\d+$/.test(cleanLabel)) {
+            semesterTitle = `Semester ${cleanLabel}`;
+          }
+
+          let electivesList = Array.isArray(sem.electives) ? [...sem.electives] : [];
+          let subjectsList = Array.isArray(sem.subjects) ? sem.subjects : [];
+
+          // If extracted module group title exists and electives is empty, seamlessly group topics into elective
+          if (extractedGroupTitle && electivesList.length === 0 && subjectsList.length > 0) {
+            electivesList = [
+              {
+                groupTitle: extractedGroupTitle,
+                selectCount: 1,
+                options: subjectsList.map((sub) => (typeof sub === "string" ? sub : sub?.name || "")),
+              },
+            ];
+            subjectsList = [];
+          }
 
           return (
             <div
@@ -37,9 +63,9 @@ export default function CourseCurriculum({
               <div className="w-full h-px bg-gray-100 mb-3 sm:mb-4 shrink-0" />
 
               <div className="w-full text-left space-y-3 text-xs sm:text-[13px] text-gray-700 m-0 p-0 flex-1 min-h-0 overflow-y-auto pr-1.5 scrollbar-thin [scrollbar-color:#cbd5e1_transparent]">
-                {Array.isArray(sem.subjects) && sem.subjects.length > 0 && (
+                {subjectsList.length > 0 && (
                   <ul className="space-y-2 sm:space-y-2.5 m-0 p-0 list-none">
-                    {sem.subjects.map((sub, sIdx) => {
+                    {subjectsList.map((sub, sIdx) => {
                       const subName = typeof sub === "string" ? sub : (sub.name || "");
 
                       return (
@@ -52,10 +78,11 @@ export default function CourseCurriculum({
                   </ul>
                 )}
 
-                {Array.isArray(sem.electives) && sem.electives.map((elec, eIdx) => {
+                {electivesList.map((elec, eIdx) => {
                   const opts = Array.isArray(elec.options) ? elec.options : [];
                   if (opts.length === 0) return null;
-                  const title = elec.groupTitle || `Elective (Choose Any ${elec.selectCount || 1})`;
+                  const rawTitle = elec.groupTitle || "Electives";
+                  const title = rawTitle.replace(/\s*\(\s*choose\s*any\s*\d*\s*\)/gi, "").trim() || "Electives";
 
                   return (
                     <div
