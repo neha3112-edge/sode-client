@@ -50,7 +50,7 @@ export default function CourseCurriculum({
     return (
       <div
         key={idx}
-        className="bg-white rounded-2xl border border-gray-200/90 p-3.5 sm:p-4 shadow-2xs flex flex-col items-center hover:border-[#08AEAA] transition-colors h-[250px] sm:h-[275px] w-full"
+        className="bg-white rounded-2xl border border-gray-200/90 p-3.5 sm:p-4 shadow-2xs flex flex-col items-center hover:border-[#08AEAA] transition-colors h-[300px] sm:h-[330px] w-full"
       >
         <div className="bg-[#0C3A66] text-white px-4 py-1 rounded-full text-xs sm:text-[13px] font-semibold mb-2.5 shadow-xs shrink-0">
           {semesterTitle}
