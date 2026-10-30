@@ -675,15 +675,12 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
           {/* Top Accreditation Logo */}
           {approvalLogoUrl ? (
             <div className="mb-2 sm:mb-2.5 flex justify-center">
-              <div className="relative h-12 sm:h-14 w-28 sm:w-36 flex items-center justify-center">
-                <Image
-                  src={approvalLogoUrl}
-                  alt={apiData?.approval?.name || "Accreditation Logo"}
-                  fill
-                  unoptimized
-                  className="object-contain"
-                />
-              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={approvalLogoUrl}
+                alt={apiData?.approval?.name || "Accreditation Logo"}
+                className="max-h-14 sm:max-h-16 md:max-h-18 max-w-full w-auto h-auto object-contain"
+              />
             </div>
           ) : null}
 
@@ -713,120 +710,120 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
           <div className="mb-3.5 sm:mb-4.5">
             {/* 1. Search Bar */}
             <div className="relative w-full mb-2 sm:mb-2.5">
-          <Input.Search
-            size="large"
-            placeholder="Search by University...."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="approval-search w-full"
-          />
-        </div>
-
-        {/* 2. Filters Bar: 2 columns on mobile, 4 columns on desktop */}
-        <div className="w-full">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5 w-full">
-            {/* Filter by NAAC Grade if NAAC approval */}
-            {isNaacApproval && (
-              <Select
+              <Input.Search
                 size="large"
-                value={selectedNaac}
-                onChange={setSelectedNaac}
-                className="approval-filter-select w-full"
-                suffixIcon={<ChevronDown size={14} className="text-gray-500" />}
-              >
-                <Option value="all">All NAAC Grades</Option>
-                {filterOptions.naac.map((grade) => (
-                  <Option key={grade} value={grade}>
-                    Grade {grade}
-                  </Option>
-                ))}
-              </Select>
-            )}
+                placeholder="Search by University...."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="approval-search w-full"
+              />
+            </div>
 
-            {/* Filter by NIRF Rank if NIRF approval */}
-            {isNirfApproval && (
-              <Select
-                size="large"
-                value={selectedNirf}
-                onChange={setSelectedNirf}
-                className="approval-filter-select w-full"
-                suffixIcon={<ChevronDown size={14} className="text-gray-500" />}
-              >
-                <Option value="all">All NIRF Ranks</Option>
-                {filterOptions.nirf.map((rank) => (
-                  <Option key={rank} value={rank}>
-                    Rank {rank}
-                  </Option>
-                ))}
-              </Select>
-            )}
+            {/* 2. Filters Bar: 2 columns on mobile, 4 columns on desktop */}
+            <div className="w-full">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5 w-full">
+                {/* Filter by NAAC Grade if NAAC approval */}
+                {isNaacApproval && (
+                  <Select
+                    size="large"
+                    value={selectedNaac}
+                    onChange={setSelectedNaac}
+                    className="approval-filter-select w-full"
+                    suffixIcon={<ChevronDown size={14} className="text-gray-500" />}
+                  >
+                    <Option value="all">All NAAC Grades</Option>
+                    {filterOptions.naac.map((grade) => (
+                      <Option key={grade} value={grade}>
+                        Grade {grade}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
 
-            {/* Select Session if not NAAC and not NIRF */}
-            {!isNaacApproval && !isNirfApproval && (
-              <Select
-                size="large"
-                value={selectedSession || "all"}
-                onChange={handleSessionChange}
-                className="approval-filter-select w-full"
-                suffixIcon={<ChevronDown size={14} className="text-gray-500" />}
-              >
-                <Option value="all">All Sessions</Option>
-                {filterOptions.sessions.map((sess) => (
-                  <Option key={sess} value={sess}>
-                    List {sess}
-                  </Option>
-                ))}
-              </Select>
-            )}
+                {/* Filter by NIRF Rank if NIRF approval */}
+                {isNirfApproval && (
+                  <Select
+                    size="large"
+                    value={selectedNirf}
+                    onChange={setSelectedNirf}
+                    className="approval-filter-select w-full"
+                    suffixIcon={<ChevronDown size={14} className="text-gray-500" />}
+                  >
+                    <Option value="all">All NIRF Ranks</Option>
+                    {filterOptions.nirf.map((rank) => (
+                      <Option key={rank} value={rank}>
+                        Rank {rank}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
 
-            {/* Filter By Course */}
-            <Select
-              size="large"
-              value={selectedCourse}
-              onChange={setSelectedCourse}
-              className="approval-filter-select w-full"
-              suffixIcon={<ChevronDown size={14} className="text-gray-500" />}
-            >
-              <Option value="all">Filter By Course</Option>
-              {filterOptions.courses.map((course) => (
-                <Option key={course} value={course}>
-                  {course}
-                </Option>
-              ))}
-            </Select>
+                {/* Select Session if not NAAC and not NIRF */}
+                {!isNaacApproval && !isNirfApproval && (
+                  <Select
+                    size="large"
+                    value={selectedSession || "all"}
+                    onChange={handleSessionChange}
+                    className="approval-filter-select w-full"
+                    suffixIcon={<ChevronDown size={14} className="text-gray-500" />}
+                  >
+                    <Option value="all">All Sessions</Option>
+                    {filterOptions.sessions.map((sess) => (
+                      <Option key={sess} value={sess}>
+                        List {sess}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
 
-            {/* Filter By State */}
-            <Select
-              size="large"
-              value={selectedState}
-              onChange={setSelectedState}
-              className="approval-filter-select w-full"
-              suffixIcon={<ChevronDown size={14} className="text-gray-500" />}
-            >
-              <Option value="all">Filter by State</Option>
-              {filterOptions.states.map((st) => (
-                <Option key={st} value={st}>
-                  {st}
-                </Option>
-              ))}
-            </Select>
+                {/* Filter By Course */}
+                <Select
+                  size="large"
+                  value={selectedCourse}
+                  onChange={setSelectedCourse}
+                  className="approval-filter-select w-full"
+                  suffixIcon={<ChevronDown size={14} className="text-gray-500" />}
+                >
+                  <Option value="all">Filter By Course</Option>
+                  {filterOptions.courses.map((course) => (
+                    <Option key={course} value={course}>
+                      {course}
+                    </Option>
+                  ))}
+                </Select>
 
-            {/* Filter HEI Type */}
-            <Select
-              size="large"
-              value={selectedHeiType}
-              onChange={setSelectedHeiType}
-              className="approval-filter-select w-full"
-              suffixIcon={<ChevronDown size={14} className="text-gray-500" />}
-            >
-              <Option value="all">Filter HEI Type</Option>
-              {filterOptions.heiTypes.map((ht) => (
-                <Option key={ht} value={ht}>
-                  {ht}
-                </Option>
-              ))}
-            </Select>
-          </div>
+                {/* Filter By State */}
+                <Select
+                  size="large"
+                  value={selectedState}
+                  onChange={setSelectedState}
+                  className="approval-filter-select w-full"
+                  suffixIcon={<ChevronDown size={14} className="text-gray-500" />}
+                >
+                  <Option value="all">Filter by State</Option>
+                  {filterOptions.states.map((st) => (
+                    <Option key={st} value={st}>
+                      {st}
+                    </Option>
+                  ))}
+                </Select>
+
+                {/* Filter HEI Type */}
+                <Select
+                  size="large"
+                  value={selectedHeiType}
+                  onChange={setSelectedHeiType}
+                  className="approval-filter-select w-full"
+                  suffixIcon={<ChevronDown size={14} className="text-gray-500" />}
+                >
+                  <Option value="all">Filter HEI Type</Option>
+                  {filterOptions.heiTypes.map((ht) => (
+                    <Option key={ht} value={ht}>
+                      {ht}
+                    </Option>
+                  ))}
+                </Select>
+              </div>
 
               {/* Reset Filter Button */}
               {hasActiveFilters && (
@@ -848,49 +845,49 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
 
           {/* 3. Ant Design Table */}
           <div className="bg-white rounded-xl border border-gray-200/90 shadow-2xs overflow-hidden approvals-table-wrapper">
-        <Table
-          columns={columns}
-          dataSource={filteredUniversities}
-          rowKey="_id"
-          pagination={false}
-          loading={loading}
-          className="approvals-antd-table"
-          rowClassName={(record, index) => {
-            const isExpanded = expandedRowKeys.includes(record._id);
-            if (isExpanded) {
-              return "approval-row-expanded-hidden";
-            }
-            return index % 2 === 1 ? "approval-row-odd" : "approval-row-even";
-          }}
-          onRow={(record) => ({
-            onClick: () => toggleRow(record._id),
-            className: "cursor-pointer group transition-colors",
-          })}
-          expandable={{
-            showExpandColumn: false,
-            expandedRowRender: renderExpandedCard,
-            expandedRowKeys,
-          }}
-          locale={{
-            emptyText: (
-              <div className="py-10 px-4 text-center">
-                <Building2 size={32} className="mx-auto text-gray-300 mb-2" />
-                <p className="font-normal text-gray-700 text-sm m-0">No Universities Found</p>
-                <p className="text-xs text-gray-500 mt-1 max-w-sm mx-auto font-normal">
-                  No universities match your filter criteria in {selectedSession} session.
-                </p>
-                <button
-                  type="button"
-                  onClick={handleResetFilters}
-                  className="mt-3 bg-[#122A46] hover:bg-[#0c1f34] text-white text-xs font-normal px-3.5 py-1.5 rounded-lg transition-all cursor-pointer shadow-2xs"
-                >
-                  Clear All Filters
-                </button>
-              </div>
-            ),
-          }}
-        />
-      </div>
+            <Table
+              columns={columns}
+              dataSource={filteredUniversities}
+              rowKey="_id"
+              pagination={false}
+              loading={loading}
+              className="approvals-antd-table"
+              rowClassName={(record, index) => {
+                const isExpanded = expandedRowKeys.includes(record._id);
+                if (isExpanded) {
+                  return "approval-row-expanded-hidden";
+                }
+                return index % 2 === 1 ? "approval-row-odd" : "approval-row-even";
+              }}
+              onRow={(record) => ({
+                onClick: () => toggleRow(record._id),
+                className: "cursor-pointer group transition-colors",
+              })}
+              expandable={{
+                showExpandColumn: false,
+                expandedRowRender: renderExpandedCard,
+                expandedRowKeys,
+              }}
+              locale={{
+                emptyText: (
+                  <div className="py-10 px-4 text-center">
+                    <Building2 size={32} className="mx-auto text-gray-300 mb-2" />
+                    <p className="font-normal text-gray-700 text-sm m-0">No Universities Found</p>
+                    <p className="text-xs text-gray-500 mt-1 max-w-sm mx-auto font-normal">
+                      No universities match your filter criteria in {selectedSession} session.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={handleResetFilters}
+                      className="mt-3 bg-[#122A46] hover:bg-[#0c1f34] text-white text-xs font-normal px-3.5 py-1.5 rounded-lg transition-all cursor-pointer shadow-2xs"
+                    >
+                      Clear All Filters
+                    </button>
+                  </div>
+                ),
+              }}
+            />
+          </div>
         </div>
       </div>
 
