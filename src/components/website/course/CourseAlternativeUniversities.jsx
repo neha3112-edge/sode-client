@@ -101,7 +101,7 @@ export default function CourseAlternativeUniversities({
               )}
 
               {/* Circular Logo Container without border */}
-              <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-full p-1 flex items-center justify-center bg-white relative my-0.5 shrink-0 overflow-hidden">
+              <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-full flex items-center justify-center relative my-0.5 shrink-0 overflow-hidden">
                 {logoUrl ? (
                   <Link href={courseDetailHref} className="relative w-full h-full block">
                     <Image
