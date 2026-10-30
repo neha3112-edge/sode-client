@@ -63,13 +63,13 @@ export default function FooterClassic({
             className="inline-block cursor-pointer"
             aria-label="Back to Top"
           >
-            <div className={`relative ${brand.footerLogoContainerClassName || "w-[240px] sm:w-[320px] md:w-[420px] lg:w-[480px] xl:w-[540px] h-[63px] sm:h-[84px] md:h-[110px] lg:h-[125px] xl:h-[141px]"}`}>
+            <div className={`relative ${brand.footerLogoContainerClassName || "w-[340px] sm:w-[520px] md:w-[680px] lg:w-[780px] xl:w-[880px] h-[90px] sm:h-[138px] md:h-[180px] lg:h-[206px] xl:h-[233px] max-w-[92vw] sm:max-w-full"}`}>
               <Image
                 src={footerLogoSrc}
                 alt="Distance Education School - SODE School of Online & Distance Education"
                 fill
                 className="object-contain"
-                sizes="(max-width: 640px) 360px, (max-width: 768px) 520px, (max-width: 1024px) 640px, 780px"
+                sizes="(max-width: 640px) 360px, (max-width: 768px) 540px, (max-width: 1024px) 780px, 920px"
                 priority
               />
             </div>

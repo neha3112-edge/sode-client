@@ -1,15 +1,41 @@
 "use client";
 
-import React from "react";
+import React, { useRef, useState } from "react";
 import Image from "next/image";
 import { Carousel } from "antd";
 import LandingContainer from "./LandingContainer";
+
+const GALGOTIAS_WHY_CHOOSE_SLIDES = [
+  {
+    icon: "/assets/galgotias/industry.webp",
+    title: "Industry-Expert Designed Programs",
+    desc: "Galgotias University online courses curriculum is enhanced in collaboration with industry-led academicians. It ensures that students gain not only relevant theoretical but also practical knowledge.",
+  },
+  {
+    icon: "/assets/galgotias/icon.webp",
+    title: "Advanced Learning Facilities",
+    desc: "Students enrolled in Galgotias University online courses benefit from modern digital infrastructure. It supports a learning environment that promotes accessible learning and engaging.",
+  },
+  {
+    icon: "/assets/galgotias/carrier.webp",
+    title: "Career-Oriented Education",
+    desc: "Modern organisations prefer and value individuals that develops advanced skills in respective sectors, such as the online MBA from Galgotias University. Similarly, all the courses are industry-focused and develop skills and knowledge.",
+  },
+  {
+    icon: "/assets/galgotias/lms.webp",
+    title: "Integrated Learning Management System (LMS)",
+    desc: "The LMS used in Galgotias University online classes is highly advanced. It permits students to attend lectures both live and recorded. They get access to study material and can track their progress easily.",
+  },
+];
 
 export default function LandingDegree({
   degreeInfo = {},
   brand = {},
   onOpenApply,
 }) {
+    const galgotiasCarouselRef = useRef(null);
+  const [galgotiasSlide, setGalgotiasSlide] = useState(0);
+
   if (!degreeInfo || Object.keys(degreeInfo).length === 0) return null;
 
   const {
@@ -21,6 +47,7 @@ export default function LandingDegree({
     images = null,
   } = degreeInfo;
 
+
   const isGalgotias =
     brand.degreeLayout === "galgotias" || brand.slug === "galgotias";
 
@@ -28,62 +55,138 @@ export default function LandingDegree({
     return (
       <section
         id="certificate"
-        className="py-12 sm:py-16 bg-[#f6f6f6] select-none scroll-mt-20 overflow-visible"
+        className="select-none scroll-mt-20 overflow-visible"
       >
-        <div className="w-full px-4 sm:px-8 lg:px-12 xl:px-16">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-            {/* Left Content */}
-            <div className="lg:col-span-6 text-left">
-              <h2 className="text-[26px] sm:text-[30px] lg:text-[32px] font-bold text-[#002266] m-0 mb-4 leading-[1.2]">
-                About the Sample Degree of <br />
-                Galgotias Online
-              </h2>
-              <p className="text-[13.5px] sm:text-[14px] text-[#555555] leading-relaxed mb-4 font-normal">
-                After completing their Galgotias University online courses, students receive a UGC recognised degree issued by Galgotias University Online. The degree holds academic credibility and relevance worldwide. It also reflects the specialisation pursued during the program.
-              </p>
+        {/* Yellow Advantage Section */}
+        <div id="advantage" className="scroll-mt-20">
+          {/* Desktop Banner: Only Yellow strip with heading */}
+          <div className="w-full bg-[#f9bc08] py-8 sm:py-10 lg:py-12 min-h-[90px] sm:min-h-[110px] lg:min-h-[125px] hidden sm:flex items-center justify-center px-4 text-center">
+            <h2 className="text-[26px] sm:text-[28px] md:text-[32px] lg:text-[34px] font-bold text-[#b11116] m-0 tracking-tight">
+              Why Choose Galgotias University Online
+            </h2>
+          </div>
 
-              <ul className="space-y-2.5 my-5 text-[13.5px] sm:text-[14px] text-[#333333] list-none p-0 m-0">
-                <li className="flex items-center gap-2.5 font-medium">
-                  <span className="w-4 h-4 rounded-full bg-[#28a745] text-white flex items-center justify-center text-[10px] font-bold shrink-0">✓</span>
-                  <span>NAAC A+ Accredited Degree</span>
-                </li>
-                <li className="flex items-center gap-2.5 font-medium">
-                  <span className="w-4 h-4 rounded-full bg-[#28a745] text-white flex items-center justify-center text-[10px] font-bold shrink-0">✓</span>
-                  <span>Globally Recognised</span>
-                </li>
-                <li className="flex items-center gap-2.5 font-medium">
-                  <span className="w-4 h-4 rounded-full bg-[#28a745] text-white flex items-center justify-center text-[10px] font-bold shrink-0">✓</span>
-                  <span>Flexible Online Learning Mode</span>
-                </li>
-              </ul>
+          {/* Mobile View: Yellow background with Heading + Slider */}
+          <div className="w-full bg-[#f9bc08] pt-8 pb-9 px-4 block sm:hidden text-center">
+            <h2 className="text-[22px] font-bold text-[#b11116] m-0 mb-5 leading-tight">
+              Why Choose Galgotias <br />
+              University Online
+            </h2>
 
-              <div className="pt-2">
-                <button
-                  type="button"
-                  onClick={() => onOpenApply?.(null, "Get Degree")}
-                  className="degree-btn inline-flex items-center justify-center bg-[#f9bc08] hover:bg-[#e0a807] text-white font-bold text-[14px] sm:text-[15px] px-8 py-2.5 rounded-full border-none cursor-pointer shadow-sm transition-all active:scale-95"
-                >
-                  Get Degree
-                </button>
+            <div className="max-w-[340px] mx-auto">
+              <Carousel
+                ref={galgotiasCarouselRef}
+                autoplay
+                autoplaySpeed={3500}
+                dots={false}
+                afterChange={(current) => setGalgotiasSlide(current)}
+              >
+                {GALGOTIAS_WHY_CHOOSE_SLIDES.map((slide, idx) => (
+                  <div key={idx} className="px-1 pb-1">
+                    <div className="bg-white rounded-[16px] px-5 py-6 text-center shadow-md flex flex-col items-center justify-center min-h-[250px]">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={slide.icon}
+                        alt={slide.title}
+                        className="w-[50px] h-[50px] object-contain mx-auto mb-3"
+                      />
+                      <h3 className="text-[15.5px] font-bold text-black m-0 mb-2 leading-snug">
+                        {slide.title}
+                      </h3>
+                      <p className="text-[13px] text-[#444444] leading-relaxed m-0 font-normal">
+                        {slide.desc}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </Carousel>
+
+              {/* Custom Carousel Dots (matches reference screenshot) */}
+              <div className="flex items-center justify-center gap-2 pt-4">
+                {GALGOTIAS_WHY_CHOOSE_SLIDES.map((_, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => galgotiasCarouselRef.current?.goTo(idx)}
+                    className={`w-3 h-3 rounded-full border-none p-0 cursor-pointer transition-all ${
+                      galgotiasSlide === idx ? "bg-black" : "bg-black/35"
+                    }`}
+                    aria-label={`Slide ${idx + 1}`}
+                  />
+                ))}
               </div>
             </div>
+          </div>
+        </div>
 
-            {/* Right Yellow Image Container */}
-            <div className="lg:col-span-6 pt-12 lg:pt-0">
-              <div className="cer2 bg-[#ffef97] rounded-[16px] px-3 sm:px-5 py-0 flex flex-row items-end justify-center gap-1 sm:gap-3 relative overflow-visible">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/assets/galgotias/image-01-galgotia.webp"
-                  alt="Galgotias Graduate"
-                  className="w-[170px] sm:w-[225px] md:w-[250px] max-w-[50%] h-auto object-contain shrink-0 block"
-                  style={{ marginTop: "-52px" }}
-                />
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/assets/galgotias/sample-galgotia.webp"
-                  alt="Galgotias Sample Degree"
-                  className="w-[180px] sm:w-[235px] md:w-[260px] max-w-[50%] h-auto object-contain my-3 sm:my-4 shadow-sm rounded-[4px] block"
-                />
+        {/* Degree Content Section */}
+        <div className="py-12 sm:py-16 bg-[#f6f6f6] overflow-visible">
+          <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+              {/* Left Content */}
+              <div className="lg:col-span-6 text-left">
+                <h2 className="text-[26px] sm:text-[30px] lg:text-[32px] font-bold text-[#002266] m-0 mb-4 leading-[1.2]">
+                  About the Sample Degree of <br />
+                  Galgotias Online
+                </h2>
+                <p className="text-[13.5px] sm:text-[14px] text-[#555555] leading-relaxed mb-4 font-normal">
+                  After completing their Galgotias University online courses, students receive a UGC recognised degree issued by Galgotias University Online. The degree holds academic credibility and relevance worldwide. It also reflects the specialisation pursued during the program.
+                </p>
+
+                <ul className="space-y-2.5 my-5 text-[13.5px] sm:text-[14px] text-[#333333] list-none p-0 m-0">
+                  <li className="flex items-center gap-2.5 font-medium">
+                    <span className="w-4 h-4 rounded-full bg-[#28a745] text-white flex items-center justify-center text-[10px] font-bold shrink-0">✓</span>
+                    <span>NAAC A+ Accredited Degree</span>
+                  </li>
+                  <li className="flex items-center gap-2.5 font-medium">
+                    <span className="w-4 h-4 rounded-full bg-[#28a745] text-white flex items-center justify-center text-[10px] font-bold shrink-0">✓</span>
+                    <span>Globally Recognised</span>
+                  </li>
+                  <li className="flex items-center gap-2.5 font-medium">
+                    <span className="w-4 h-4 rounded-full bg-[#28a745] text-white flex items-center justify-center text-[10px] font-bold shrink-0">✓</span>
+                    <span>Flexible Online Learning Mode</span>
+                  </li>
+                </ul>
+
+                <div className="pt-2">
+                  <button
+                    type="button"
+                    onClick={() => onOpenApply?.(null, "Get Degree")}
+                    className="degree-btn hidden sm:inline-flex items-center justify-center bg-[#f9bc08] hover:bg-[#e0a807] text-white font-bold text-[14px] sm:text-[15px] px-8 py-2.5 rounded-full border-none cursor-pointer shadow-sm transition-all active:scale-95"
+                  >
+                    Get Degree
+                  </button>
+                </div>
+              </div>
+
+              {/* Right Yellow Image Container */}
+              <div className="lg:col-span-6 pt-8 sm:pt-12 lg:pt-8">
+                <div className="cer2 bg-[#ffef97] rounded-[16px] px-3 sm:px-5 pt-4 sm:pt-0 pb-3 sm:pb-0 flex flex-col sm:flex-row items-center sm:items-end justify-center gap-2 sm:gap-3 relative overflow-visible">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/assets/galgotias/image-01-galgotia.webp"
+                    alt="Galgotias Graduate"
+                    className="w-[255px] sm:w-[245px] md:w-[270px] lg:w-[285px] max-w-[88%] sm:max-w-[50%] h-auto object-contain shrink-0 block"
+                    style={{ marginTop: "-52px" }}
+                  />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/assets/galgotias/sample-galgotia.webp"
+                    alt="Galgotias Sample Degree"
+                    className="w-[305px] sm:w-[260px] md:w-[285px] lg:w-[305px] max-w-[96%] sm:max-w-[50%] h-auto object-contain my-2 sm:my-4 shadow-sm rounded-[4px] block"
+                  />
+                </div>
+
+                {/* Mobile Button: centered below yellow card */}
+                <div className="block sm:hidden text-center mt-5">
+                  <button
+                    type="button"
+                    onClick={() => onOpenApply?.(null, "Get Degree")}
+                    className="degree-btn inline-flex items-center justify-center bg-[#f9bc08] hover:bg-[#e0a807] text-white font-bold text-[15px] px-9 py-2.5 rounded-full border-none cursor-pointer shadow-md transition-all active:scale-95"
+                  >
+                    Get Degree
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -189,7 +292,7 @@ export default function LandingDegree({
             </div>
 
             {/* Right Content */}
-            <div className="lg:col-span-6 text-left">
+            <div className="lg:col-span-6 text-left pl-4 sm:pl-6 lg:pl-10 pr-2 sm:pr-0">
               <p className="text-[13.5px] sm:text-[14.5px] font-bold text-slate-900 m-0 mb-2">
                 Launch Your Career with an Online Degree From
               </p>

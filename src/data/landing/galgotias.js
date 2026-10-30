@@ -141,9 +141,18 @@ export const galgotiasData = {
       .landing-page--galgotias .steps-wrapper {
         grid-template-columns: repeat(1, 1fr);
       }
-      .landing-page--galgotias .top-banner {
+      .landing-page--galgotias .top-banner,
+      .landing-page--galgotias #hero-section {
         background-image: unset !important;
         background-color: #b2171e !important;
+        padding-top: 15px !important;
+        padding-bottom: 25px !important;
+      }
+      .landing-page--galgotias .partners .desktop_partner {
+        display: none !important;
+      }
+      .landing-page--galgotias .partners .mobile_partner {
+        display: block !important;
       }
     }
   `,
@@ -179,6 +188,7 @@ export const galgotiasData = {
     campusImage: "/assets/all_universities_images/all_universities_images/galgotias/university.webp",
     callGif: "/assets/all_universities_images/all_universities_images/galgotias/call_icon.gif",
     giftGif: "/assets/all_universities_images/all_universities_images/galgotias/gift.gif",
+    arrowGif: "/assets/all_universities_images/all_universities_images/galgotias/arrow.gif",
     showFloatingCallOnMobile: true,
     showFloatingGift: true,
     primaryColor: "#BC1820",
@@ -200,22 +210,40 @@ export const galgotiasData = {
     aboutLayout: "galgotias",
     degreeLayout: "galgotias",
     recruitersLayout: "galgotias",
-    admissionTitle: "How can one apply to Galgotias University Online?",
+    admissionTitle: "How Can One Apply To Galgotias University Online?",
+    admissionHeadingColor: "#212529",
     admissionSubtitle:
       "Galgotias University online admission process is quite simple and convenient. Learners get an opportunity to learn accessibly and get a worldwide recognised degree. They can enrol in Galgotias University Apply Online through the following steps.",
     admissionLayout: "galgotias",
-    admissionContainerClass: "max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8",
-    admissionGridClass: "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-4 lg:gap-3 xl:gap-4 w-full max-w-[420px] sm:max-w-none mx-auto",
-    compareBoxMaxWidth: "max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8",
+    admissionContainerClass: "w-full max-w-full px-4 sm:px-6 lg:px-8 xl:px-12",
+    admissionGridClass: "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-4 lg:gap-3 xl:gap-4 w-full",
+    compareBoxMaxWidth: "w-full max-w-full px-4 sm:px-6 lg:px-8 xl:px-12",
+    compareBoxPadding: "",
     faqLayout: "galgotias",
     compareLayout: "galgotias",
 
     showFooterForm: false,
+    stickySplit: false,
+    stickyBarBg: "#bc1820",
+    stickyBrochureBg: "#25d366",
+    stickyBrochureTextColor: "#ffffff",
+    stickyApplyStyle: "white-red",
+    stickyApplyBg: "#ffffff",
+    stickyApplyTextColor: "#bc1820",
+    stickyBrochureAction: "whatsapp",
+    stickyBrochureIcon: "whatsapp",
+    showStickyBar: true,
+    showFloatingCallOnMobile: true,
+    showFloatingGift: true,
+    showFloatingGiftOnMobile: true,
+    footerBottomBg: "#0b3c66",
+    footerLogoContainerClassName:
+      "w-[340px] sm:w-[520px] md:w-[680px] lg:w-[780px] xl:w-[880px] h-[90px] sm:h-[138px] md:h-[180px] lg:h-[206px] xl:h-[233px] max-w-[92vw] sm:max-w-full",
+    showWhyChoose: false,
     sectionOrder: [
       "approvals",
       "programmes",
       "about",
-      "whyChoose",
       "degree",
       "recruiters",
       "admissionProcess",
@@ -260,8 +288,30 @@ export const galgotiasData = {
       taglineColor: "#333333",
       hashtagColor: "#555555",
       courseBorder: "#002b49",
-      formBackground: "#002b49",
-      formTitleColor: "#ffb800",
+      formBackground: "#ffffff",
+      formCardType: "white",
+      cardStyle: "white",
+      formTitleColor: "#002266",
+      enquireColor: "#002266",
+      formSubtitleColor: "#111111",
+      enquireSubtitleColor: "#111111",
+      phoneBadgeBackground: "#b11116",
+      phoneBadgeBg: "#b11116",
+      phoneBadgeColor: "#ffffff",
+      phoneBadgeIconColor: "#ffffff",
+      phoneBadgeRadius: "999px",
+      inputBorder: "#cccccc",
+      namePlaceholder: "Enter Your Name",
+      emailPlaceholder: "Enter Your Email",
+      phonePlaceholder: "Enter 10-digit Mobile Number",
+      coursePlaceholder: "Select Your Course",
+      statePlaceholder: "Select Your State",
+      submitButtonBackground: "#b11116",
+      submitBtnBg: "#b11116",
+      submitButtonTextColor: "#ffffff",
+      submitButtonRadius: "6px",
+      hideTermsCheckbox: true,
+      formCardRadius: "16px",
     },
 
     coursesStrip: [
@@ -272,6 +322,15 @@ export const galgotiasData = {
     faqLayout: "pill",
     faqShowPress: true,
     faqTitle: "FAQ's | Frequently Asked Questions",
+    courses: [
+      { value: "MBA", label: "MBA" },
+      { value: "MCA", label: "MCA" },
+      { value: "MCOM", label: "MCOM" },
+      { value: "MA", label: "MA" },
+      { value: "BBA", label: "BBA" },
+      { value: "BCA", label: "BCA" },
+      { value: "BCOM", label: "BCOM" },
+    ],
     footerDisclaimer:
       "SODE Counselling Services LLP acts as a marketing & counselling agency. All university names, logos, and trademarks mentioned are used for informational purposes only. We are not a university or an admission authority. Users are encouraged to verify information on the official website of the University before making decisions.",
   },
@@ -905,9 +964,10 @@ export const galgotiasData = {
   ],
 
   admissionProcess: {
-    title: "Admission Process for Galgotias Online for 2026",
+    title: "How Can One Apply To Galgotias University Online?",
+    headingColor: "#212529",
     subtitle:
-      "Here’s how you can apply for online courses at Galgotias University Online for 2026:",
+      "Galgotias University online admission process is quite simple and convenient. Learners get an opportunity to learn accessibly and get a worldwide recognised degree. They can enrol in Galgotias University Apply Online through the following steps.",
     steps: [
       {
         step: "Step 1:",
@@ -937,7 +997,7 @@ export const galgotiasData = {
       {
         num: 1,
         title: "Submit Form",
-        desc: "Fill out the form and submit your application online",
+        desc: "Fill in and submit your application form online",
         themeColor: "#ff7a00",
         borderColor: "#ff7a00",
         cardBg: "#fff8f0",
@@ -953,7 +1013,7 @@ export const galgotiasData = {
       {
         num: 3,
         title: "Choose University",
-        desc: "Select the course & university based on your interest",
+        desc: "Select the course & university according to your interest",
         themeColor: "#ff2a6d",
         borderColor: "#ff2a6d",
         cardBg: "#fff0f5",
@@ -961,7 +1021,7 @@ export const galgotiasData = {
       {
         num: 4,
         title: "Online Payment",
-        desc: "You need to pay the required fee amount",
+        desc: "You need to make a smooth online fee submission",
         themeColor: "#16a34a",
         borderColor: "#16a34a",
         cardBg: "#f0faf3",
@@ -969,7 +1029,7 @@ export const galgotiasData = {
       {
         num: 5,
         title: "Document Submit",
-        desc: "You will get an admission confirmation on your Email",
+        desc: "You need to upload all the required verified documents.",
         themeColor: "#8b5cf6",
         borderColor: "#8b5cf6",
         cardBg: "#f7f2ff",
@@ -977,7 +1037,7 @@ export const galgotiasData = {
       {
         num: 6,
         title: "Admission Confirm",
-        desc: "Get confirmation on your Email & WhatsApp",
+        desc: "Get Confirmation on your Email & Whatsapp",
         themeColor: "#ff7a00",
         borderColor: "#ff7a00",
         cardBg: "#fff8f0",
@@ -1051,57 +1111,51 @@ export const galgotiasData = {
   admissionSteps: [
     {
       num: 1,
-      title: "Submit Online Form",
-      desc: "Fill in basic personal and academic details in the online enquiry form.",
-      themeColor: "text-[#002b49]",
-      borderColor: "border-[#002b49]",
-      bottomBorder: "border-b-[4px] border-[#002b49]",
-      cardBg: "bg-[#f0f7ff]",
+      title: "Submit Form",
+      desc: "Fill in and submit your application form online",
+      themeColor: "#ff7a00",
+      borderColor: "#ff7a00",
+      cardBg: "#fff8f0",
     },
     {
       num: 2,
-      title: "Expert Counseling",
-      desc: "Connect with certified academic counselors for free profile evaluation & guidance.",
-      themeColor: "text-[#0066cc]",
-      borderColor: "border-[#0066cc]",
-      bottomBorder: "border-b-[4px] border-[#0066cc]",
-      cardBg: "bg-[#f0f7ff]",
+      title: "Expert's Counseling",
+      desc: "You will receive a call from our expert counselor",
+      themeColor: "#0066cc",
+      borderColor: "#0066cc",
+      cardBg: "#f0f7ff",
     },
     {
       num: 3,
-      title: "Program Selection",
-      desc: "Select your chosen online degree program and career specialization.",
-      themeColor: "text-[#e91e63]",
-      borderColor: "border-[#e91e63]",
-      bottomBorder: "border-b-[4px] border-[#e91e63]",
-      cardBg: "bg-[#fff0f5]",
+      title: "Choose University",
+      desc: "Select the course & university according to your interest",
+      themeColor: "#ff2a6d",
+      borderColor: "#ff2a6d",
+      cardBg: "#fff0f5",
     },
     {
       num: 4,
-      title: "Document Verification",
-      desc: "Upload academic certificates and ID proofs for swift digital verification.",
-      themeColor: "text-[#10b981]",
-      borderColor: "border-[#10b981]",
-      bottomBorder: "border-b-[4px] border-[#10b981]",
-      cardBg: "bg-[#f0fff4]",
+      title: "Online Payment",
+      desc: "You need to make a smooth online fee submission",
+      themeColor: "#16a34a",
+      borderColor: "#16a34a",
+      cardBg: "#f0faf3",
     },
     {
       num: 5,
-      title: "Fee Payment & 0% EMI",
-      desc: "Pay semester fee smoothly online with flexible 0% interest EMI options.",
-      themeColor: "text-[#8b5cf6]",
-      borderColor: "border-[#8b5cf6]",
-      bottomBorder: "border-b-[4px] border-[#8b5cf6]",
-      cardBg: "bg-[#f8f4ff]",
+      title: "Document Submit",
+      desc: "You need to upload all the required verified documents.",
+      themeColor: "#8b5cf6",
+      borderColor: "#8b5cf6",
+      cardBg: "#f7f2ff",
     },
     {
       num: 6,
-      title: "Admission Confirmation",
-      desc: "Receive official enrollment confirmation, student ID & LMS portal login credentials.",
-      themeColor: "text-[#002b49]",
-      borderColor: "border-[#002b49]",
-      bottomBorder: "border-b-[4px] border-[#002b49]",
-      cardBg: "bg-[#f0f7ff]",
+      title: "Admission Confirm",
+      desc: "Get Confirmation on your Email & Whatsapp",
+      themeColor: "#ff7a00",
+      borderColor: "#ff7a00",
+      cardBg: "#fff8f0",
     },
   ],
 

@@ -79,6 +79,8 @@ export const cuData = {
     footerSectionBgColor: "#f6f8fa",
     footerBottomBg: "#103663",
     footerLogo: "/assets/all_universities_images/all_universities_images/cu/new-des-logo.webp",
+    footerLogoContainerClassName:
+      "w-[340px] sm:w-[520px] md:w-[680px] lg:w-[780px] xl:w-[880px] h-[90px] sm:h-[138px] md:h-[180px] lg:h-[206px] xl:h-[233px] max-w-[92vw] sm:max-w-full",
     stickyBarBg: "#d11c1f",
     stickyApplyStyle: "white-red",
     stickyApplyBg: "#ffffff",
@@ -98,8 +100,8 @@ export const cuData = {
     approvalsTitle: "CU Online Awards & Recognition",
     degreeTitle: "Chandigarh University Online Learning Platform",
     degreeSubtitle: "Launch Your Career with an Online Degree From",
-    admissionTitle: "How To Apply For\nChandigarh University\nOnline Courses",
-    admissionHeadingClassName: "text-[23px] sm:text-[28px] lg:text-[34px] font-bold text-center tracking-tight mb-3 sm:mb-4 m-0 leading-[1.2] sm:leading-[1.25] whitespace-pre-line",
+    admissionTitle: "How To Apply For Chandigarh University Online Courses",
+    admissionHeadingClassName: "text-[23px] sm:text-[26px] md:text-[28px] lg:text-[34px] font-bold text-center tracking-tight mb-3 sm:mb-4 m-0 leading-[1.2] sm:leading-[1.25] whitespace-normal md:whitespace-nowrap",
     admissionContainerClass: "w-full max-w-full px-4 sm:px-6 lg:px-8 xl:px-12",
     admissionSubtitle:
       "The admission process for Chandigarh University course admissions is very simple and user-friendly. Here's a step-by-step guide to enrolling in a degree course at the university :",
@@ -583,10 +585,10 @@ export const cuData = {
     },
   ],
   enrollmentProcess: {
-    title: "How To Apply For\nChandigarh University\nOnline Courses",
+    title: "How To Apply For Chandigarh University Online Courses",
     titleColor: "#d11c1f",
     headingColor: "#d11c1f",
-    headingClassName: "text-[26px] sm:text-[32px] lg:text-[36px] font-bold text-center tracking-tight mb-3 sm:mb-4 m-0 leading-[1.2] whitespace-pre-line",
+    headingClassName: "text-[23px] sm:text-[26px] md:text-[28px] lg:text-[34px] font-bold text-center tracking-tight mb-3 sm:mb-4 m-0 leading-[1.2] whitespace-normal md:whitespace-nowrap",
     subtitleClassName: "text-[13px] sm:text-[14px] text-center text-slate-900 font-medium tracking-[0.2px] mb-6 sm:mb-8 max-w-[950px] mx-auto leading-[1.65] m-0 px-3 sm:px-4 whitespace-pre-line",
     subtitleStyle: {
       color: "#222222",

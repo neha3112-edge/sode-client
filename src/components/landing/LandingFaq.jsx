@@ -60,8 +60,9 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
     return (
       <section id="accordition" className="py-12 sm:py-16 bg-white select-none scroll-mt-20">
         <div className="max-w-[1100px] mx-auto px-4 sm:px-6">
-          <h2 className="text-[26px] sm:text-[32px] md:text-[34px] font-bold text-center text-[#bc1820] m-0 mb-8 sm:mb-10">
-            Frequently Asked Questions
+          <h2 className="text-[30px] sm:text-[32px] md:text-[34px] font-bold text-left text-[#bc1820] m-0 mb-6 sm:mb-8 leading-[1.2]">
+            Frequently Asked <br className="block sm:hidden" />
+            Questions
           </h2>
 
           <div className="space-y-3">
@@ -151,9 +152,9 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
   if (isCu) {
     return (
       <section id="faqs" className="py-12 sm:py-16 bg-white select-none scroll-mt-20">
-        <div className={brand.faqContainerClassName || brand.faqContainerClass || "max-w-[1240px] mx-auto px-8 sm:px-10 lg:px-14"}>
+        <LandingContainer className={brand.faqContainerClassName || "px-3 sm:px-6"}>
           <h2
-            className="text-[26px] sm:text-[32px] font-semibold text-[#d11c1f] tracking-tight mb-6 sm:mb-8 m-0"
+            className="text-[26px] sm:text-[32px] font-semibold text-[#d11c1f] tracking-tight mb-6 sm:mb-8 m-0 px-0 sm:px-1"
             style={{ color: brand.faqHeadingColor || brand.faqTitleColor || "#d11c1f" }}
           >
             {brand.faqTitle || "Frequently Asked Questions"}
@@ -170,7 +171,7 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
                   <button
                     type="button"
                     onClick={() => toggleFaq(idx)}
-                    className="w-full py-4 sm:py-5 px-1 sm:px-2 flex items-center justify-between text-left text-[15px] sm:text-[16px] font-medium text-slate-900 bg-transparent border-none cursor-pointer transition-colors hover:text-[#d11c1f]"
+                    className="w-full py-4 sm:py-5 px-0 sm:px-1 flex items-center justify-between text-left text-[15px] sm:text-[16px] font-medium text-slate-900 bg-transparent border-none cursor-pointer transition-colors hover:text-[#d11c1f]"
                   >
                     <span className="pr-4 leading-snug">{questionText}</span>
                     <span className="text-[#d11c1f] text-sm sm:text-base shrink-0 font-bold">
@@ -178,7 +179,7 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
                     </span>
                   </button>
                   {isOpen && (
-                    <div className="pb-5 pt-1 px-1 sm:px-2 text-xs sm:text-[14px] text-slate-600 leading-relaxed font-normal">
+                    <div className="pb-5 pt-1 px-0 sm:px-1 text-xs sm:text-[14px] text-slate-600 leading-relaxed font-normal">
                       <p className="m-0">{answerText}</p>
                     </div>
                   )}
@@ -186,7 +187,7 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
               );
             })}
           </div>
-        </div>
+        </LandingContainer>
       </section>
     );
   }

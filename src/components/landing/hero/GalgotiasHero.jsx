@@ -46,12 +46,7 @@ export default function GalgotiasHero({
   return (
     <section
       id="hero-section"
-      className="top-banner relative isolate overflow-hidden select-none"
-      style={{
-        backgroundImage: "url('/assets/galgotias/galgotias-desktop.webp')",
-        backgroundSize: "cover",
-        backgroundPosition: "center center",
-      }}
+      className="top-banner relative isolate overflow-hidden select-none bg-[#b2171e] lg:bg-cover lg:bg-center lg:bg-[url('/assets/galgotias/galgotias-desktop.webp')]"
     >
       <div className="max-w-[1240px] mx-auto px-4 sm:px-6 py-6 sm:py-10 md:py-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-center">
@@ -115,14 +110,14 @@ export default function GalgotiasHero({
             <button
               type="button"
               onClick={handleCouponClick}
-              className="coupon-btn-main coupon-button-mobile inline-flex items-center justify-center gap-3 w-full max-w-[340px] mx-auto py-2.5 px-4 rounded-[10px] text-white font-bold text-[15px] border-none cursor-pointer shadow-[0_8px_20px_rgba(46,204,113,0.35)] transition-transform active:scale-95"
+              className="coupon-btn-main coupon-button-mobile inline-flex items-center justify-center gap-2 w-full max-w-[270px] mx-auto py-1.5 px-3.5 rounded-[8px] text-white font-bold text-[13.5px] border-none cursor-pointer shadow-[0_6px_16px_rgba(46,204,113,0.35)] transition-transform active:scale-95"
               style={{ background: "linear-gradient(135deg, #2ecc71, #27ae60)" }}
             >
-              <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center shrink-0 shadow-xs">
+              <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center shrink-0 shadow-xs">
                 <img
                   src={giftIconSrc}
                   alt="Gift"
-                  className="w-5 h-5 object-contain"
+                  className="w-4 h-4 object-contain"
                 />
               </div>
               <span>Scholarship Coupon Code</span>
@@ -131,15 +126,13 @@ export default function GalgotiasHero({
 
           {/* Right Lead Form */}
           <div className="lg:col-span-5 flex justify-center lg:justify-end">
-            <div className="w-full max-w-[380px]">
+            <div className="w-full max-w-[370px]">
               <LandingLeadForm
                 brand={brand}
-                courses={courses}
-                variant="card"
+                courses={courses && courses.length > 0 ? courses : brand.courses}
+                variant="white-card"
                 title="Enquire Now"
                 subtitle="Academic Experts will assist you!"
-                primaryColor="#002266"
-                accentColor="#FFD508"
                 buttonText="Submit"
                 phoneText="+91 7065 7777 55"
                 phoneHref="7065777755"

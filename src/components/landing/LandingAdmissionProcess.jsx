@@ -56,7 +56,7 @@ export const GLOBAL_ADMISSION_STEPS = [
   {
     num: 5,
     title: "Document Submit",
-    desc: "You will get an admission confirmation on your Email",
+    desc: "You need to upload all the required verified documents.",
     themeColor: "#8b5cf6",
     borderColor: "#8b5cf6",
     cardBg: "#f7f2ff",
@@ -64,7 +64,7 @@ export const GLOBAL_ADMISSION_STEPS = [
   {
     num: 6,
     title: "Admission Confirm",
-    desc: "Get Confirmation on your Email , Whatsapp",
+    desc: "Get Confirmation on your Email & Whatsapp",
     themeColor: "#ff7a00",
     borderColor: "#ff7a00",
     cardBg: "#fff8f0",
@@ -206,7 +206,7 @@ export default function LandingAdmissionProcess({
   const headingColor =
     admissionProcess?.headingColor ||
     brand.admissionHeadingColor ||
-    (isSmu ? "#193579" : brand.primaryColor || "#08417b");
+    (brand.slug === "galgotias" ? "#212529" : isSmu ? "#193579" : brand.primaryColor || "#08417b");
 
   return (
     <section

@@ -164,7 +164,6 @@ export const smuData = {
     whyChooseTitleClassName: "text-[24px] sm:text-[30px] lg:text-[34px] font-semibold text-[#1a202c] m-0 tracking-tight leading-tight",
     whyChooseCardClassName: "smu-adv-card bg-white rounded-[10px] overflow-hidden shadow-[0px_4px_22px_rgba(0,0,0,0.07)] border border-slate-100 flex flex-col text-center transition-all duration-500 max-w-[325px] sm:max-w-[360px] md:max-w-none mx-auto",
     whyChooseHeaderClassName: "smu-adv-header py-3.5 px-3 text-white flex items-center justify-center min-h-[52px] sm:min-h-[56px] transition-all duration-500",
-    whyChooseItemTitleClassName: "font-bold text-white m-0 tracking-tight leading-snug text-[16px] sm:text-[17.5px]",
     whyChooseBodyClassName: "smu-adv-body bg-white p-4 sm:p-5 flex items-center justify-center min-h-[105px] sm:min-h-[115px] transition-all duration-500",
     whyChooseDescriptionClassName: "text-[15px] sm:text-[15.5px] text-[#444444] leading-relaxed m-0 font-normal",
     whyChooseLayout: "smu-advantages",
@@ -423,6 +422,7 @@ export const smuData = {
       q: "Q3. Is UGC accrediting Sikkim Manipal University Online?",
       a: "Yes, Sikkim Manipal University Online programs are approved by the University Grants Commission (UGC) and recognized by the UGC-DEB. SMU holds NAAC A+ accreditation, ensuring high-quality, credible degrees.",
     },
+
     {
       q: "Q4. Does Sikkim Manipal University have an EMI choice of course admissions?",
       a: "Yes, flexible semester fee payment options and 0% interest EMI plans are available to reduce financial burden for students and working professionals.",
