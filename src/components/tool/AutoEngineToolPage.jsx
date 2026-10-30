@@ -417,8 +417,32 @@ export default function AutoEngineToolPage({
       {/* ─── 2. FLOATING WHITE CONTAINER CARD ─── */}
       <div className="relative z-10 max-w-6xl mx-auto px-2.5 sm:px-6 md:px-8 -mt-20 sm:-mt-28 md:-mt-32 pb-16 md:pb-24">
         <article className="w-full bg-white rounded-2xl sm:rounded-3xl shadow-xl border border-slate-100 p-3 sm:p-8 md:p-12 text-[#2D3748]">
-          {/* Centered Pill Badge */}
-          <div className="flex justify-center mb-3">
+          {/* Top Bar: Back Button (Left) & Centered Pill Badge */}
+          <div className="relative flex items-center justify-center mb-4 min-h-[36px]">
+            {/* Back Button on Left */}
+            <div className="absolute left-0">
+              {history.length > 0 && !recommendations ? (
+                <button
+                  type="button"
+                  onClick={handleBack}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-[#072C50] text-xs font-bold border border-slate-200 transition-all cursor-pointer shadow-2xs"
+                  title="Go Back to Previous Question"
+                >
+                  <ArrowLeft size={14} />
+                  <span>Previous Step</span>
+                </button>
+              ) : (
+                <Link
+                  href="/tools"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-[#072C50] text-xs font-bold border border-slate-200 transition-all cursor-pointer shadow-2xs"
+                >
+                  <ArrowLeft size={14} />
+                  <span>All AI Tools</span>
+                </Link>
+              )}
+            </div>
+
+            {/* Centered Pill Badge */}
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FEF3C7] text-[#92400E] text-xs font-bold border border-amber-200">
               ✦ AI POWERED
             </span>
@@ -436,49 +460,6 @@ export default function AutoEngineToolPage({
 
           {/* Full-width Divider Line */}
           <div className="w-full h-px bg-slate-200/90 mb-6 sm:mb-8" />
-
-          {/* Step Progress & Navigation Bar */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mb-8 bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5 sm:p-4">
-            <div className="flex items-center gap-2.5 w-full sm:w-auto">
-              {history.length > 0 && !recommendations ? (
-                <button
-                  type="button"
-                  onClick={handleBack}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-[#072C50] text-xs font-bold border border-slate-200 transition-all cursor-pointer shadow-2xs"
-                  title="Go Back to Previous Question"
-                >
-                  <ArrowLeft size={14} />
-                  <span>Previous Step</span>
-                </button>
-              ) : (
-                <Link
-                  href="/tools"
-                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-[#072C50] text-xs font-bold border border-slate-200 transition-all cursor-pointer shadow-2xs"
-                >
-                  <ArrowLeft size={14} />
-                  <span>All AI Tools</span>
-                </Link>
-              )}
-
-              <span className="text-xs font-bold text-slate-700">
-                {recommendations
-                  ? "Academic Match Report"
-                  : `Step ${history.length + 1} of 4`}
-              </span>
-            </div>
-
-            <div className="w-full sm:w-64 flex items-center gap-3">
-              <div className="flex-1 bg-slate-200 h-2.5 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-amber-400 via-blue-600 to-[#072C50] transition-all duration-500 rounded-full"
-                  style={{ width: `${progressPercent}%` }}
-                />
-              </div>
-              <span className="text-xs font-extrabold text-[#072C50] shrink-0">
-                {Math.round(progressPercent)}%
-              </span>
-            </div>
-          </div>
 
           {/* Body: Loading or Results or Questions */}
           {loading || submitting ? (
