@@ -649,9 +649,9 @@ export default function AutoEngineToolPage({
             /* ❓ INTERACTIVE QUESTION CARDS (NODE TRAVERSAL) */
             /* ===================================================== */
             <div className="space-y-8">
-              {/* Question Heading with Back Icon (Between / Far-Left Back Icon + Centered Heading) */}
-              <div className="relative flex items-center justify-center w-full mb-4 sm:mb-6 min-h-[32px] sm:min-h-[40px]">
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 shrink-0 z-10">
+              {/* Question Heading with Back Icon (Always aligned with Line 1) */}
+              <div className="relative flex items-center justify-center w-full mb-4 sm:mb-6">
+                <div className="absolute left-0 top-0 h-[22px] min-[360px]:h-[24px] sm:h-[32px] md:h-[38px] flex items-center justify-center shrink-0 z-10">
                   {history.length > 0 && !recommendations ? (
                     <button
                       type="button"
