@@ -17,6 +17,7 @@ import {
   Check,
   X,
   RotateCcw,
+  Sparkles,
 } from "lucide-react";
 import { useFormModal } from "@/hooks/useFormModal";
 import { useCompare } from "@/hooks/useCompare";
@@ -502,6 +503,32 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
   const isNaacApproval = approvalIdentifier.includes("naac");
   const isNirfApproval = approvalIdentifier.includes("nirf");
 
+  const approvalBadge = useMemo(() => {
+    if (isNirfApproval) return "NIRF RANKED UNIVERSITIES 2026";
+    if (isNaacApproval) return "NAAC ACCREDITED UNIVERSITIES 2026";
+    const code = apiData?.approval?.code || apiData?.approval?.shortName;
+    if (code) return `${code.toUpperCase()} APPROVED DIRECTORY 2026`;
+    return "OFFICIAL ACCREDITATION DIRECTORY 2026";
+  }, [isNirfApproval, isNaacApproval, apiData?.approval]);
+
+  const heroTitle = useMemo(() => {
+    if (apiData?.approval?.bannerTitle) return apiData.approval.bannerTitle;
+    if (apiData?.approval?.title) return apiData.approval.title;
+    if (isNirfApproval) return "NIRF Ranked Universities List";
+    if (isNaacApproval) return "NAAC Accredited Universities List";
+    if (apiData?.approval?.name) return `${apiData.approval.name} Approved Universities`;
+    return "Approved Universities Directory";
+  }, [apiData?.approval, isNirfApproval, isNaacApproval]);
+
+  const heroDescription = useMemo(() => {
+    if (apiData?.approval?.shortDescription) return apiData.approval.shortDescription;
+    if (apiData?.approval?.description && typeof apiData.approval.description === "string") {
+      const plain = apiData.approval.description.replace(/<[^>]*>/g, "").trim();
+      if (plain) return plain.length > 220 ? `${plain.slice(0, 220)}...` : plain;
+    }
+    return "Explore verified top-ranked and accredited online & distance universities recognized by NIRF, UGC-DEB, and statutory government bodies across India.";
+  }, [apiData?.approval]);
+
   // Ant Design Table Columns: dynamically includes NAAC Grade or NIRF Rank column
   const columns = useMemo(() => {
     const hasNaacCol = isNaacApproval;
@@ -636,11 +663,39 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
 
 
   return (
-    <Container className={`pb-12 sm:pb-16 lg:pb-20 ${className || ""}`}>
-      {/* 🔍 Sticky Search & Filters Bar (Mobile & Desktop) */}
-      <div className="sticky top-0 z-30 bg-white py-2 mb-3 sm:mb-3.5">
-        {/* 1. Search Bar */}
-        <div className="relative w-full mb-2 sm:mb-2.5">
+    <div className={`w-full bg-[#f8fafc] text-slate-800 font-sans min-h-screen ${className || ""}`}>
+      {/* ── 1. TOP HERO HEADER (DARK BLUE BRANDING) ── */}
+      <div className="w-full bg-[#072C50] text-white pt-6 pb-20 sm:pt-8 sm:pb-24 md:pt-10 md:pb-28 px-4 relative">
+        <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
+          {/* Top Pill / Badge */}
+          {approvalBadge && (
+            <div className="mb-2.5 sm:mb-3">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FEF3C7] text-[#92400E] text-xs font-bold border border-amber-200 shadow-xs">
+                <Sparkles size={13} className="text-amber-600" />
+                <span>{approvalBadge}</span>
+              </span>
+            </div>
+          )}
+
+          {/* Title H1 */}
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-white m-0">
+            {heroTitle}
+          </h1>
+
+          {/* Subtitle P */}
+          <p className="text-blue-100/90 text-xs sm:text-sm md:text-base text-center max-w-2xl mx-auto m-0 mt-2.5 leading-relaxed">
+            {heroDescription}
+          </p>
+        </div>
+      </div>
+
+      {/* ── 2. FLOATING WHITE CONTAINER CARD (TABLE & FILTERS OVERLAPPING HERO) ── */}
+      <div className="relative z-10 max-w-7xl mx-auto px-2.5 sm:px-6 md:px-8 -mt-12 sm:-mt-16 md:-mt-20 pb-16 md:pb-24">
+        <div className="w-full bg-white rounded-2xl sm:rounded-3xl shadow-xl border border-slate-200/90 p-3 sm:p-5 md:p-6 text-[#2D3748]">
+          {/* 🔍 Search & Filters Bar */}
+          <div className="mb-3.5 sm:mb-4.5">
+            {/* 1. Search Bar */}
+            <div className="relative w-full mb-2 sm:mb-2.5">
           <Input.Search
             size="large"
             placeholder="Search by University...."
@@ -756,26 +811,25 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
             </Select>
           </div>
 
-          {/* Reset Filter Button */}
-          {hasActiveFilters && (
-            <div className="mt-2 pt-1.5 border-t border-gray-200/80 flex items-center justify-between text-xs text-gray-600 px-0.5">
-              <span className="font-normal text-gray-500">Active filters applied</span>
-              <button
-                type="button"
-                onClick={handleResetFilters}
-                className="text-[#122A46] hover:text-[#0c1f34] font-normal flex items-center gap-1 cursor-pointer transition-colors"
-                title="Reset All Filters"
-              >
-                <RotateCcw size={11} />
-                Reset All Filters
-              </button>
+              {/* Reset Filter Button */}
+              {hasActiveFilters && (
+                <div className="mt-2 pt-1.5 border-t border-gray-200/80 flex items-center justify-between text-xs text-gray-600 px-0.5">
+                  <span className="font-normal text-gray-500">Active filters applied</span>
+                  <button
+                    type="button"
+                    onClick={handleResetFilters}
+                    className="text-[#122A46] hover:text-[#0c1f34] font-normal flex items-center gap-1 cursor-pointer transition-colors"
+                    title="Reset All Filters"
+                  >
+                    <RotateCcw size={11} />
+                    Reset All Filters
+                  </button>
+                </div>
+              )}
             </div>
-          )}
-        </div>
-      </div>
 
-      {/* 3. Ant Design Table (Fits 100% width on mobile without scrolling, wrapping university names) */}
-      <div className="bg-white rounded-xl border border-gray-200/90 shadow-2xs overflow-hidden approvals-table-wrapper mb-6 sm:mb-8">
+            {/* 3. Ant Design Table */}
+            <div className="bg-white rounded-xl border border-gray-200/90 shadow-2xs overflow-hidden approvals-table-wrapper">
         <Table
           columns={columns}
           dataSource={filteredUniversities}
@@ -818,6 +872,8 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
             ),
           }}
         />
+      </div>
+        </div>
       </div>
 
       {/* Scoped CSS directly in component */}
@@ -1001,7 +1057,7 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
           `,
         }}
       />
-    </Container>
+    </div>
   );
 }
 

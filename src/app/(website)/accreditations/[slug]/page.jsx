@@ -47,7 +47,7 @@ export default async function AccreditationDirectoryDetailPage({ params }) {
   }
 
   return (
-    <div className="min-h-screen pt-2 sm:pt-3 pb-8 sm:pb-10">
+    <div className="w-full min-h-screen">
       <ApprovalUniversityDirectory initialData={initialData} />
     </div>
   );
