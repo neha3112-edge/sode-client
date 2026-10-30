@@ -30,11 +30,7 @@ import CompareModal from "./modals/CompareModal";
 import LegalModal from "./modals/LegalModal";
 import LiverpoolLandingView from "./LiverpoolLandingView";
 
-export default function UniversityLandingView({ data = {} }) {
-  if (data?.slug === "liverpool" || data?.brand?.slug === "liverpool") {
-    return <LiverpoolLandingView data={data} />;
-  }
-
+function MainUniversityLandingView({ data = {} }) {
   const {
     slug = "university",
     brand = {},
@@ -894,4 +890,11 @@ export default function UniversityLandingView({ data = {} }) {
       />
     </div>
   );
+}
+
+export default function UniversityLandingView({ data = {} }) {
+  if (data?.slug === "liverpool" || data?.brand?.slug === "liverpool") {
+    return <LiverpoolLandingView data={data} />;
+  }
+  return <MainUniversityLandingView data={data} />;
 }
