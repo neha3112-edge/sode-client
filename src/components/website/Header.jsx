@@ -155,12 +155,30 @@ const formatCategoryDisplayName = (name = "", type = "programs") => {
   return name;
 };
 
-// Helper to trim "Online" / "Distance" prefix from course card titles
-const cleanCourseDisplayName = (name = "") => {
-  if (!name) return "";
-  const cleaned = name.replace(/\b(online|distance)\b/gi, "").trim().replace(/\s+/g, " ");
-  return cleaned || name;
+// Helper to format course display name with Mode + Course (e.g. Online BA, Online MBA, Distance MBA)
+const formatCourseDisplayName = (prog, currentGroup) => {
+  if (!prog) return "";
+  let name = (typeof prog === "string" ? prog : (prog.name || prog.title || "")).trim();
+
+  // Strip any accidental static/trailing "Course" or "Courses" (e.g. "BA Course" -> "BA", "Online BA Course" -> "Online BA")
+  name = name.replace(/\b(courses?)\b/gi, "").trim().replace(/\s+/g, " ");
+
+  // Check if name already starts with "Online" or "Distance"
+  const hasMode = /^(online|distance)\b/i.test(name);
+  if (hasMode) {
+    return name;
+  }
+
+  // If name doesn't have mode, determine from prog.slug or currentGroup
+  const isDistance = (typeof prog === "object" && prog?.slug ? prog.slug : "").toLowerCase().startsWith("distance-") ||
+    /distance/i.test(currentGroup?.category?.name || "") ||
+    /distance/i.test(currentGroup?.name || "");
+  const mode = isDistance ? "Distance" : "Online";
+
+  return `${mode} ${name}`.trim();
 };
+
+const cleanCourseDisplayName = formatCourseDisplayName;
 
 // 🎖️ Title Formatter & Resolver for Accreditations / Approvals
 const getAccreditationTitle = (acc) => {
@@ -1297,7 +1315,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
 
                         const headerLogoObj = prog.header_logo || prog.effective_logo || prog.logo;
                         const headerLogoUrl = (headerLogoObj?.url || headerLogoObj?.path || typeof headerLogoObj === "string") ? resolveImg(headerLogoObj) : null;
-                        const courseDisplayName = cleanCourseDisplayName(prog.name);
+                        const courseDisplayName = formatCourseDisplayName(prog, currentMegaMenuData.currentGroup);
 
                         return (
                           <div
@@ -1779,7 +1797,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                               className="block hover:text-[#0B57D0]"
                             >
                               <h4 className="text-[11.5px] font-bold text-[#072C50] leading-snug line-clamp-2 m-0">
-                                {selectedMobileCategory?.type === "programs" ? cleanCourseDisplayName(item.name || item.title) : (item.name || item.title)}
+                                {selectedMobileCategory?.type === "programs" ? formatCourseDisplayName(item, selectedMobileCategory) : (item.name || item.title)}
                               </h4>
                             </Link>
                           </div>
