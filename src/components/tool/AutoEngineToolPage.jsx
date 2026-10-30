@@ -725,12 +725,12 @@ export default function AutoEngineToolPage({
                 </div>
               )}
 
-              {/* ─── GRID OF OPTION CARDS (7 COLUMNS DESKTOP, 2 COLUMNS MOBILE) ─── */}
+              {/* ─── GRID OF OPTION CARDS (6 COLUMNS DESKTOP, 2 COLUMNS MOBILE, ASPECT RATIO 1:1) ─── */}
               <div
                 className={`grid gap-2 sm:gap-3 w-full mx-auto items-stretch ${
                   filteredOptions.length <= 4
                     ? "grid-cols-2 sm:grid-cols-4 max-w-2xl mx-auto"
-                    : "grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7"
+                    : "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6"
                 }`}
               >
                 {filteredOptions.map((option, oIdx) => {
@@ -759,7 +759,7 @@ export default function AutoEngineToolPage({
                           handleSelectOption(option, storeVar);
                         }
                       }}
-                      className={`relative bg-white rounded-xl sm:rounded-2xl p-2.5 sm:p-3.5 border flex flex-col items-center text-center justify-between transition-all duration-200 hover:-translate-y-0.5 group cursor-pointer select-none min-w-0 ${
+                      className={`relative w-full aspect-square bg-white rounded-xl sm:rounded-2xl p-2 sm:p-2.5 border flex flex-col items-center text-center justify-between transition-all duration-200 hover:-translate-y-0.5 group cursor-pointer select-none min-w-0 ${
                         isSelected
                           ? "border-blue-600 ring-2 ring-blue-500/20 bg-blue-50/20 shadow-xs"
                           : "border-gray-200 hover:border-blue-500 hover:bg-gray-50/50"
