@@ -352,8 +352,8 @@ export default function BlogPageClientView({
       {/* 🔷 Compact Full-Bleed Dark Blue Hero Section */}
       <section className="w-full bg-[#072C50] text-white py-5 sm:py-6 md:py-7 px-4 sm:px-6 shadow-inner">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-[22px] sm:text-2xl md:text-3xl font-extrabold text-[#F3CE7F] tracking-tight mb-1.5 sm:mb-2">
-            Blogs & Articles
+          <h1 className="text-[22px] sm:text-2xl md:text-3xl font-extrabold text-[#F3CE7F] tracking-tight leading-tight mb-1 sm:mb-1.5">
+            Distance Education School Latest Blogs & Articles
           </h1>
           <p className="text-blue-100/90 text-[11px] sm:text-xs md:text-sm font-normal max-w-2xl sm:max-w-3xl mx-auto">
             Distance & Online education blogs and articles, featuring top courses and the best UGC universities according to facilities, support, & recognitions. Get the career guidance on the latest trends and updates in online/distance learning to help you achieve your academic & career goals.
@@ -396,16 +396,16 @@ export default function BlogPageClientView({
         {/* 🏷️ Browse By Categories Strip (Only if blogs have categories) */}
         {categoryList.length > 0 && (
           <div className="w-full">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-[18px] sm:text-lg font-bold text-slate-900 tracking-tight m-0">
-                Browse By Categories
+            <div className="flex items-start justify-between gap-3 mb-3">
+              <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 tracking-tight leading-tight m-0">
+                Discover Latest Blogs & Articles By Category
               </h2>
               <button
                 type="button"
                 onClick={() => {
                   setIsCategoriesExpanded((prev) => !prev);
                 }}
-                className="text-xs sm:text-sm font-semibold text-slate-600 hover:text-[#072C50] flex items-center gap-1 transition-colors cursor-pointer group select-none"
+                className="text-xs sm:text-sm font-semibold text-slate-600 hover:text-[#072C50] flex items-center gap-1 transition-colors cursor-pointer group select-none shrink-0 pt-0.5 sm:pt-1"
               >
                 <span>{isCategoriesExpanded ? "View Less" : "View All"}</span>
                 <ArrowRightOutlined className="text-[11px] group-hover:translate-x-0.5 transition-transform" />

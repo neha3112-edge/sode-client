@@ -825,9 +825,9 @@ export default function BlogSidebar({
       <div id="free-counseling" className="bg-white rounded-2xl border border-gray-200/90 shadow-md p-4 sm:p-6 relative scroll-mt-24">
         {/* Header */}
         <div className="text-center mb-5">
-          <h3 className="text-xl sm:text-2xl font-black text-[#0C2B4E] tracking-tight m-0">
+          <p className="text-xl sm:text-2xl font-black text-[#0C2B4E] tracking-tight m-0">
             Book 1:1 Free Counseling
-          </h3>
+          </p>
           <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1 m-0">
             Academic Experts will assist you!
           </p>
@@ -1042,9 +1042,9 @@ export default function BlogSidebar({
           <div className="w-6 h-6 rounded-md bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
             <Share2 size={14} className="stroke-[2.5]" />
           </div>
-          <h3 className="text-sm sm:text-[14.5px] font-bold text-slate-800 m-0">
+          <p className="text-sm sm:text-[14.5px] font-bold text-slate-800 m-0">
             Share This Page
-          </h3>
+          </p>
         </div>
 
         {/* Description */}
@@ -1123,9 +1123,9 @@ export default function BlogSidebar({
       {filteredRelated.length > 0 && (
         <div className="bg-white rounded-2xl border border-gray-200/90 shadow-xs p-5">
           <div className="border-b border-gray-100 pb-2.5 mb-3">
-            <h3 className="text-sm sm:text-[14.5px] font-bold text-slate-800 m-0">
+            <p className="text-sm sm:text-[14.5px] font-bold text-slate-800 m-0">
               Related Blogs
-            </h3>
+            </p>
           </div>
 
           <div className="space-y-3.5">
@@ -1185,9 +1185,9 @@ export default function BlogSidebar({
 
       {/* ─── CARD 4: GET EDUCATION UPDATES (SUBSCRIBE) ─── */}
       <div className="bg-[#0C2B4E] text-white rounded-2xl p-5 shadow-xs">
-        <h3 className="text-sm sm:text-[15px] font-bold text-white tracking-tight m-0">
-          Get Education Updates
-        </h3>
+        <p className="text-sm sm:text-[15px] font-bold text-white tracking-tight m-0">
+          Get Educational Updates
+        </p>
         <p className="text-xs text-blue-100/80 font-normal mt-1.5 mb-3.5 m-0">
           Subscribe to receive updates about Online Degree courses, university
           admissions, scholarships and educational opportunities.
@@ -1219,9 +1219,9 @@ export default function BlogSidebar({
       {filteredRecent.length > 0 && (
         <div className="bg-white rounded-2xl border border-gray-200/90 shadow-xs p-5">
           <div className="border-b border-gray-100 pb-2.5 mb-3">
-            <h3 className="text-sm sm:text-[14.5px] font-bold text-slate-800 m-0">
+            <p className="text-sm sm:text-[14.5px] font-bold text-slate-800 m-0">
               Recent Blogs
-            </h3>
+            </p>
           </div>
 
           <div className="space-y-3.5">
@@ -1283,9 +1283,9 @@ export default function BlogSidebar({
       {filteredPopular.length > 0 && (
         <div className="bg-white rounded-2xl border border-gray-200/90 shadow-xs p-5">
           <div className="border-b border-gray-100 pb-2.5 mb-3">
-            <h3 className="text-sm sm:text-[14.5px] font-bold text-slate-800 m-0">
+            <p className="text-sm sm:text-[14.5px] font-bold text-slate-800 m-0">
               Popular Blogs
-            </h3>
+            </p>
           </div>
 
           <div className="space-y-3.5">
@@ -1351,9 +1351,9 @@ export default function BlogSidebar({
             <div className="w-6 h-6 rounded-md bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
               <GraduationCap size={15} />
             </div>
-            <h3 className="text-sm sm:text-[14.5px] font-bold text-slate-800 m-0">
+            <p className="text-sm sm:text-[14.5px] font-bold text-slate-800 m-0">
               Popular Online Courses
-            </h3>
+            </p>
           </div>
 
           {/* 3 Columns Course Grid */}
@@ -1406,9 +1406,9 @@ export default function BlogSidebar({
               <div className="w-6 h-6 rounded-md bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
                 <Building2 size={15} />
               </div>
-              <h3 className="text-sm sm:text-[14.5px] font-bold text-slate-800 m-0">
+              <p className="text-sm sm:text-[14.5px] font-bold text-slate-800 m-0">
                 Top Online & Distance Universities
-              </h3>
+              </p>
             </div>
 
             {/* 3 Columns University Grid */}
@@ -1454,9 +1454,9 @@ export default function BlogSidebar({
         {/* ─── ABOUT THE AUTHOR ─── */}
         <div className="bg-white rounded-2xl border border-gray-200/90 shadow-xs p-5">
           <div className="border-b border-gray-100 pb-2.5 mb-3.5">
-            <h3 className="text-sm sm:text-[15px] font-bold text-slate-800 m-0">
+            <p className="text-sm sm:text-[15px] font-bold text-slate-800 m-0">
               About the Author
-            </h3>
+            </p>
           </div>
 
           <div className="flex items-center gap-3 mb-3">
@@ -1477,9 +1477,9 @@ export default function BlogSidebar({
               </div>
             )}
             <div>
-              <h4 className="text-[14.5px] sm:text-[15px] font-bold text-slate-900 m-0 leading-tight">
+              <p className="text-[14.5px] sm:text-[15px] font-bold text-slate-900 m-0 leading-tight">
                 {authorName}
-              </h4>
+              </p>
               <div className="flex items-center gap-1.5 mt-1">
                 <CheckCircle2 size={13.5} className="fill-[#1877F2] text-white shrink-0" />
                 <span className="text-xs text-slate-500 font-medium">
@@ -1566,9 +1566,9 @@ export default function BlogSidebar({
                 <span className="text-[11px] sm:text-xs text-slate-500 font-semibold block leading-tight">
                   Articles Written By
                 </span>
-                <h3 className="text-sm sm:text-lg font-bold text-slate-900 m-0 leading-snug">
+                <p className="text-sm sm:text-lg font-bold text-slate-900 m-0 leading-snug">
                   {authorName}
-                </h3>
+                </p>
               </div>
             </div>
 

@@ -4,17 +4,15 @@ export default function LegalPolicyView({ policy }) {
   if (!policy) return null;
 
   const title =
-    policy.banner_title ||
-    policy.title ||
-    (policy.slug === "privacy-policy" || policy.slug === "privacy"
+    policy.slug === "privacy-policy" || policy.slug === "privacy"
       ? "Privacy & Policies"
       : policy.slug === "refund-policy" || policy.slug === "refund"
-      ? "Refund and Cancellation"
+      ? "Refund and Cancellation Policy"
       : policy.slug === "terms-and-conditions" || policy.slug === "terms"
       ? "Terms & Conditions"
       : policy.slug === "disclaimer"
       ? "Disclaimer"
-      : "Policy");
+      : policy.banner_title || policy.title || "Policy";
 
   const introParagraphs = Array.isArray(policy.intro)
     ? policy.intro

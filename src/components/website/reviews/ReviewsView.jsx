@@ -111,9 +111,9 @@ function ReviewCard({ review, onOpenModal }) {
           <div className="flex items-center gap-2.5 min-w-0">
             <UserAvatar name={review.name} avatarUrl={review.avatar} />
             <div className="min-w-0">
-              <h3 className="font-bold text-slate-900 text-sm group-hover:text-[#11233E] transition-colors truncate">
+              <p className="font-bold text-slate-900 text-sm group-hover:text-[#11233E] transition-colors truncate m-0">
                 {review.name}
-              </h3>
+              </p>
               {review.time && (
                 <p className="text-[11px] text-slate-400 font-medium mt-0.5">
                   {review.time}
@@ -463,9 +463,9 @@ export default function ReviewsView({ data = null }) {
         {/* ─── 3. BOTTOM CTA BANNER ─── */}
         <div className="bg-[#11233E] rounded-2xl p-6 sm:p-8 text-white text-center shadow-md mb-12 relative overflow-hidden">
           <div className="relative z-10 max-w-xl mx-auto">
-            <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-2">
+            <p className="text-lg sm:text-xl md:text-2xl font-bold mb-2 m-0">
               Are you a Distance Education School Student?
-            </h2>
+            </p>
             <p className="text-xs sm:text-[13px] text-slate-200/90 mb-4">
               Your genuine feedback helps thousands of aspiring students make informed decisions about their higher education and career paths.
             </p>
@@ -508,9 +508,9 @@ export default function ReviewsView({ data = null }) {
             <div className="flex items-center gap-3 pr-6">
               <UserAvatar name={activeModalReview.name} avatarUrl={activeModalReview.avatar} />
               <div>
-                <h3 className="font-bold text-slate-900 text-sm">
+                <p className="font-bold text-slate-900 text-sm m-0">
                   {activeModalReview.name}
-                </h3>
+                </p>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <StarRating rating={activeModalReview.rating} size="w-3 h-3" />
                   <span className="text-[11px] text-slate-400 font-medium">

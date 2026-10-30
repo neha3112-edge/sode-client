@@ -71,9 +71,9 @@ export default function CourseApprovals({
               </div>
               <div className="w-full shrink-0 flex flex-col items-center justify-start text-center pt-1">
                 <div className="w-full h-4 sm:h-5 flex items-center justify-center">
-                  <h3 className="text-[10px] sm:text-[11.5px] md:text-[12.5px] font-bold text-gray-900 m-0 tracking-tight leading-tight line-clamp-1 w-full text-center">
+                  <p className="text-[10px] sm:text-[11.5px] md:text-[12.5px] font-bold text-gray-900 m-0 tracking-tight leading-tight line-clamp-1 w-full text-center">
                     {title}
-                  </h3>
+                  </p>
                 </div>
                 <div className="w-full h-[22px] sm:h-[26px] flex items-start justify-center mt-0.5">
                   {desc ? (

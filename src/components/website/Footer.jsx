@@ -232,12 +232,12 @@ export function Footer({
               style={{ backgroundColor: topCtaBg }}
             >
               <div className="text-left flex-1 min-w-0 pr-1">
-                <h3
+                <p
                   className="text-base sm:text-3xl md:text-[32px] font-extrabold tracking-tight leading-tight m-0"
                   style={{ color: topCtaText }}
                 >
                   {topCta?.heading || topCta?.title || "Have Any Doubt?"}
-                </h3>
+                </p>
                 <p
                   className="mt-0.5 sm:mt-1 text-[11px] sm:text-base md:text-lg font-medium leading-snug m-0"
                   style={{ color: topCtaText, opacity: 0.85 }}
@@ -289,12 +289,12 @@ export function Footer({
           <div className="grid grid-cols-1 gap-6 sm:gap-6 md:gap-8 lg:grid-cols-12 lg:gap-8 pb-4 sm:pb-3">
             {/* COLUMN 1: BRAND, CONTACT INFO, SOCIALS, GOOGLE RATING */}
             <div className="flex flex-col items-start lg:col-span-4">
-              <h4
+              <p
                 className="text-[13.5px] font-extrabold uppercase tracking-normal mb-2.5"
                 style={{ color: accentColor }}
               >
                 {brand?.name || "SODE COUNSELING SERVICES LLP"}
-              </h4>
+              </p>
 
               {/* Contact Information */}
               <div className="space-y-1.5 w-full">
@@ -428,12 +428,12 @@ export function Footer({
             >
               {columnsToRender.map((col, idx) => (
                 <div key={col?._id || idx} className="flex flex-col">
-                  <h4
+                  <p
                     className="mb-3 text-[13px] font-extrabold uppercase tracking-normal"
                     style={{ color: accentColor }}
                   >
                     {col.title}
-                  </h4>
+                  </p>
                   <ul className="space-y-1.5 text-[13px] text-gray-300 leading-tight">
                     {Array.isArray(col.links) &&
                       col.links.map((rawLink, lIdx) => {
@@ -553,12 +553,12 @@ export function Footer({
           ====================================================== */}
           {legal?.show_legal_notice !== false && legal?.disclaimer_text && (
             <div className="mt-5 sm:mt-4 mb-4 pt-2 sm:pt-0 w-full text-left">
-              <h5
+              <p
                 className="text-[12px] sm:text-[13px] font-bold uppercase tracking-wider mb-2 text-left"
                 style={{ color: accentColor }}
               >
                 {(legal?.legal_notice_heading || "LEGAL NOTICE").replace(/LEAGAL/gi, "LEGAL")}
-              </h5>
+              </p>
               <p className="text-[11px] sm:text-[12px] leading-normal text-left text-gray-300/90 font-normal">
                 {legal.disclaimer_text}
               </p>

@@ -257,9 +257,9 @@ export function ContactView({
               {(counselingFormTitle || counselingFormSubtitle || counselingPhone) && (
                 <div className="text-center mb-5">
                   {counselingFormTitle && (
-                    <h2 className="text-xl sm:text-2xl font-black text-[#072C50] tracking-tight m-0">
+                    <p className="text-xl sm:text-2xl font-black text-[#072C50] tracking-tight m-0">
                       {counselingFormTitle}
-                    </h2>
+                    </p>
                   )}
                   {counselingFormSubtitle && (
                     <p className="text-xs sm:text-sm text-slate-600 mt-1 font-medium m-0">
@@ -439,9 +439,9 @@ export function ContactView({
                     <EnvironmentOutlined />
                   </div>
                   <div>
-                    <h3 className="text-sm sm:text-base font-bold text-[#072C50] underline underline-offset-4 decoration-1 m-0">
+                    <p className="text-sm sm:text-base font-bold text-[#072C50] underline underline-offset-4 decoration-1 m-0">
                       Registered Office :
-                    </h3>
+                    </p>
                     <p className="text-xs sm:text-sm text-slate-700 font-normal leading-relaxed mt-1 m-0 max-w-md">
                       {registeredOffice}
                     </p>
@@ -456,9 +456,9 @@ export function ContactView({
                     <MailOutlined />
                   </div>
                   <div>
-                    <h3 className="text-sm sm:text-base font-bold text-[#072C50] underline underline-offset-4 decoration-1 m-0">
+                    <p className="text-sm sm:text-base font-bold text-[#072C50] underline underline-offset-4 decoration-1 m-0">
                       Email :
-                    </h3>
+                    </p>
                     <p className="text-xs sm:text-sm text-slate-700 font-normal mt-1 m-0">
                       <a
                         href={`mailto:${supportEmail}`}
@@ -478,9 +478,9 @@ export function ContactView({
                     <PhoneOutlined />
                   </div>
                   <div>
-                    <h3 className="text-sm sm:text-base font-bold text-[#072C50] underline underline-offset-4 decoration-1 m-0">
+                    <p className="text-sm sm:text-base font-bold text-[#072C50] underline underline-offset-4 decoration-1 m-0">
                       Contact :
-                    </h3>
+                    </p>
                     <p className="text-xs sm:text-sm text-slate-700 font-normal mt-1 m-0">
                       <a
                         href={`tel:${contactPhone.replace(/\s+/g, "")}`}

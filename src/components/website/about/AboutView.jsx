@@ -388,16 +388,16 @@ export function AboutView({ initialAboutData = null, initialReviews = [] }) {
                   <div className="relative z-10 space-y-1">
                     {item.studentName && (
                       <div>
-                        <span className="bg-[#0073b1] text-white text-[11px] sm:text-xs font-bold px-2.5 py-0.5 rounded-xs inline-block">
+                        <h3 className="bg-[#0073b1] text-white text-[11px] sm:text-xs font-bold px-2.5 py-0.5 rounded-xs inline-block m-0">
                           {item.studentName}
-                        </span>
+                        </h3>
                       </div>
                     )}
                     {item.course && (
                       <div>
-                        <span className="bg-[#ffc107] text-slate-900 text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-xs inline-block line-clamp-1">
+                        <p className="bg-[#ffc107] text-slate-900 text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-xs inline-block line-clamp-1 m-0">
                           {item.course}
-                        </span>
+                        </p>
                       </div>
                     )}
                   </div>
@@ -677,11 +677,11 @@ export function AboutView({ initialAboutData = null, initialReviews = [] }) {
         <section className="py-16 sm:py-20 max-w-6xl mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight m-0 inline-flex flex-wrap items-center justify-center gap-x-2">
-              <span className="text-slate-400 font-bold">How We Support</span>
+              <span className="text-slate-400 font-bold">How We Support</span>{" "}
               <span className="relative inline-block text-slate-800 font-extrabold pb-1">
                 Your
                 <span className="absolute bottom-0 left-0 w-full h-[3px] bg-slate-900 rounded-full"></span>
-              </span>
+              </span>{" "}
               <span className="text-[#0073b1] font-black">
                 Admission Journey
               </span>

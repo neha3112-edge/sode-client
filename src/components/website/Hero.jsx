@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Carousel } from "antd";
@@ -179,10 +179,10 @@ export function Hero({ initialHeroData = null }) {
                   <span className={isTransparentCard ? "text-white" : "text-slate-900"}>{highlight}</span>
                 </h1>
               ) : (
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl xl:text-[2.6rem] font-black tracking-tight leading-tight m-0">
+                <p className="text-2xl sm:text-3xl lg:text-4xl xl:text-[2.6rem] font-black tracking-tight leading-tight m-0">
                   <span className="text-rose-500">{title}</span>{" "}
                   <span className={isTransparentCard ? "text-white" : "text-slate-900"}>{highlight}</span>
-                </h2>
+                </p>
               )}
 
               {heroData.subtitle && (
@@ -424,6 +424,30 @@ export function Hero({ initialHeroData = null }) {
   const isCarousel = Boolean(
     heroData?.is_carousel && Array.isArray(heroData?.slides) && heroData.slides.length > 0
   );
+
+  // Demote any duplicate <h1> inside slick-cloned slides (created by infinite carousel loop)
+  useEffect(() => {
+    const demoteClonedHeadings = () => {
+      if (typeof document === "undefined") return;
+      const clonedH1s = document.querySelectorAll(".slick-cloned h1");
+      clonedH1s.forEach((el) => {
+        const p = document.createElement("p");
+        Array.from(el.attributes).forEach((attr) => p.setAttribute(attr.name, attr.value));
+        p.innerHTML = el.innerHTML;
+        el.parentNode?.replaceChild(p, el);
+      });
+    };
+
+    demoteClonedHeadings();
+    const t1 = setTimeout(demoteClonedHeadings, 100);
+    const t2 = setTimeout(demoteClonedHeadings, 300);
+    const t3 = setTimeout(demoteClonedHeadings, 800);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+    };
+  }, [heroData]);
   const carouselSettings = heroData?.carousel_settings || heroData?.carouselSettings || {};
   const isAutoplay = carouselSettings.autoplay !== false;
   const autoplayInterval = Number(carouselSettings.autoplay_interval || carouselSettings.autoplayInterval) || 5000;
@@ -486,12 +510,32 @@ export function Hero({ initialHeroData = null }) {
     });
   };
 
-  const renderFormattedContent = (rawText, defaultColor, isMobile = false) => {
+  const resolveTag = (tagOrBoolean, fallback = "p") => {
+    if (typeof tagOrBoolean === "boolean") {
+      return tagOrBoolean ? "h1" : "p";
+    }
+    if (typeof tagOrBoolean === "string" && tagOrBoolean.trim()) {
+      return tagOrBoolean.trim().toLowerCase();
+    }
+    return fallback;
+  };
+
+  const extractHeadingTag = (rawText, fallbackTag = "p") => {
+    const safeFallback = resolveTag(fallbackTag, "p");
+    if (!rawText || typeof rawText !== "string") return { tag: safeFallback, cleanText: rawText };
+    const match = rawText.match(/^<([a-zA-Z0-9]+)>([\s\S]*?)<\/\1>$/i);
+    if (match) {
+      return { tag: match[1].toLowerCase(), cleanText: match[2] };
+    }
+    return { tag: safeFallback, cleanText: rawText };
+  };
+
+  const renderFormattedContent = (rawText, defaultColor, isMobile = false, TagName = "p") => {
     if (!rawText) return null;
     const rawLines = rawText.split("\n");
 
     return (
-      <div className="flex flex-col space-y-0 leading-none m-0">
+      <TagName className="flex flex-col space-y-0 leading-none m-0 block">
         {rawLines.map((line, lIdx) => {
           const trimmed = line.trim();
           if (!trimmed) return null;
@@ -505,9 +549,9 @@ export function Hero({ initialHeroData = null }) {
             const dividerText = trimmed.replace(/\[\/?divider\]|[—\-]/gi, "").trim() || "FROM";
             const dividerColor = defaultColor === "#ffffff" ? "rgba(255, 255, 255, 0.75)" : "#726B50";
             return (
-              <div
+              <span
                 key={lIdx}
-                className={`flex items-center justify-center gap-2.5 xs:gap-3 py-1 my-0.5 ${
+                className={`flex items-center justify-center gap-2.5 xs:gap-3 py-1 my-0.5 block ${
                   isMobile ? "w-full max-w-[200px] xs:max-w-[230px]" : "w-full max-w-[280px]"
                 }`}
               >
@@ -529,14 +573,14 @@ export function Hero({ initialHeroData = null }) {
                   style={{ backgroundColor: dividerColor }}
                   className="flex-1 h-[1px] inline-block opacity-70"
                 />
-              </div>
+              </span>
             );
           }
 
           const tokens = parseLineTokens(trimmed, defaultColor);
 
           return (
-            <div key={lIdx} className="flex flex-wrap items-baseline gap-x-1.5 leading-none">
+            <span key={lIdx} className="flex flex-wrap items-baseline gap-x-1.5 leading-none block">
               {tokens.map((token, tIdx) => {
                 if (token.type === "outline") {
                   const isSamman = /^samman$/i.test(token.content.trim());
@@ -655,24 +699,25 @@ export function Hero({ initialHeroData = null }) {
                   </span>
                 );
               })}
-            </div>
+            </span>
           );
         })}
-      </div>
+      </TagName>
     );
   };
 
-  const renderSlideHeading = (rawTitle, highlightText, isLight, titleColor, isPrimary = true) => {
+  const renderSlideHeading = (rawTitle, highlightText, isLight, titleColor, headingTag = "h1") => {
     if (!rawTitle) return null;
     const defaultColor = titleColor || (isLight ? "#072C50" : "#ffffff");
+    const { tag: extractedTag, cleanText } = extractHeadingTag(rawTitle, headingTag);
+    const HeadingTag = resolveTag(extractedTag || headingTag, "h1");
 
-    if (hasFormattingTags(rawTitle)) {
-      return renderFormattedContent(rawTitle, defaultColor, false);
+    if (hasFormattingTags(cleanText)) {
+      return renderFormattedContent(cleanText, defaultColor, false, HeadingTag);
     }
 
     const highlightColor = isLight ? "#965D2C" : "#F6DE95";
-    const lines = rawTitle.split("\n");
-    const HeadingTag = isPrimary ? "h1" : "h2";
+    const lines = cleanText.split("\n");
 
     return (
       <HeadingTag className="flex flex-col space-y-0 m-0 leading-none">
@@ -769,19 +814,23 @@ export function Hero({ initialHeroData = null }) {
     );
   };
 
-  const renderMobileSlideHeading = (rawTitle, highlightText, isLight, titleColor) => {
+  const renderMobileSlideHeading = (rawTitle, highlightText, isLight, titleColor, headingTag = "p") => {
     if (!rawTitle) return null;
     const defaultColor = titleColor || (isLight ? "#072C50" : "#ffffff");
+    const { tag: extractedTag, cleanText } = extractHeadingTag(rawTitle, headingTag);
+    // Mobile view should always be <p> to avoid duplicate H1 tags with Desktop view in DOM
+    const resolved = resolveTag(extractedTag || headingTag, "p");
+    const HeadingTag = resolved === "h1" ? "p" : resolved;
 
-    if (hasFormattingTags(rawTitle)) {
-      return renderFormattedContent(rawTitle, defaultColor, true);
+    if (hasFormattingTags(cleanText)) {
+      return renderFormattedContent(cleanText, defaultColor, true, HeadingTag);
     }
 
     const highlightColor = isLight ? "#965D2C" : "#F6DE95";
-    const lines = rawTitle.split("\n");
+    const lines = cleanText.split("\n");
 
     return (
-      <div className="flex flex-col space-y-0 m-0 leading-none">
+      <HeadingTag className="flex flex-col space-y-0 m-0 leading-none block">
         {lines.map((line, lIdx) => {
           let lineContent = line;
           if (highlightText && line.toLowerCase().includes(highlightText.toLowerCase())) {
@@ -829,7 +878,7 @@ export function Hero({ initialHeroData = null }) {
             </span>
           );
         })}
-      </div>
+      </HeadingTag>
     );
   };
 
@@ -850,6 +899,7 @@ export function Hero({ initialHeroData = null }) {
     const isLight = data?.title_color === "#072C50" || data?.title_color === "#965D2C";
     const titleColor = data?.title_color || (isLight ? "#072C50" : "#ffffff");
     const subtitleColor = data?.subtitle_color || (isLight ? "#072C50" : "#cbd5e1");
+    const slideHeadingTag = (data?.heading_tag || data?.tag || (index === 0 ? "h1" : "p")).toLowerCase();
 
     const categoryItems = Array.isArray(data?.categories)
       ? data.categories
@@ -957,7 +1007,7 @@ export function Hero({ initialHeroData = null }) {
         <Container className="md:hidden relative z-10 w-full h-full flex items-center pointer-events-auto">
           <div className="w-[62%] xs:w-[58%] max-w-[260px] xs:max-w-[285px] flex flex-col justify-center items-start space-y-1 xs:space-y-1.5 z-10 py-1.5 xs:py-2 pl-2.5 xs:pl-3">
             {renderMobileSlideBadge(mobileBadgeText, isLight)}
-            {renderMobileSlideHeading(mobileTitle, highlightText, isLight, titleColor)}
+            {renderMobileSlideHeading(mobileTitle, highlightText, isLight, titleColor, slideHeadingTag)}
 
             {mobileSubtitle && (
               <p
@@ -1006,7 +1056,7 @@ export function Hero({ initialHeroData = null }) {
         <Container className="hidden md:block relative z-10 w-full pointer-events-auto">
           <div className="w-full max-w-[70%] sm:max-w-[56%] md:max-w-[54%] lg:max-w-[54%] xl:max-w-[52%] flex flex-col items-start space-y-1.5 sm:space-y-2 md:space-y-2.5">
             {renderSlideBadge(badgeText, isLight)}
-            {renderSlideHeading(title, highlightText, isLight, titleColor, index === 0)}
+            {renderSlideHeading(title, highlightText, isLight, titleColor, slideHeadingTag)}
 
             {subtitle && (
               <p

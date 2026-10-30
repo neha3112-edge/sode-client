@@ -186,9 +186,9 @@ export function ToolsView({ initialTools = [] }) {
           </div>
 
           {/* Heading */}
-          <h1 className="text-lg sm:text-3xl md:text-4xl font-extrabold text-[#0F172A] tracking-tight text-center m-0 mb-1">
+          <h2 className="text-lg sm:text-3xl md:text-4xl font-extrabold text-[#0F172A] tracking-tight text-center m-0 mb-1">
             Explore AI Powered Tools
-          </h1>
+          </h2>
 
           {/* Subtitle */}
           <p className="text-[#64748B] text-[11px] sm:text-sm md:text-base font-normal max-w-xl mx-auto text-center m-0 mb-4 sm:mb-8">

@@ -1136,9 +1136,9 @@ export default function BlogClientView({
                     className={`flex items-center justify-between cursor-pointer select-none ${tocOpen ? "mb-4" : "mb-0"
                       }`}
                   >
-                    <h2 className="text-base sm:text-lg font-bold text-[#0D3B66] m-0">
+                    <p className="text-base sm:text-lg font-bold text-[#0D3B66] m-0">
                       Table of Contents
-                    </h2>
+                    </p>
                     <button
                       type="button"
                       onClick={(e) => {
@@ -1656,9 +1656,9 @@ export default function BlogClientView({
                                           </span>
                                           <div className="space-y-0.5 min-w-0 flex-1">
                                             {titleText && (
-                                              <h4 className="font-bold text-slate-900 m-0 text-xs sm:text-sm">
+                                              <p className="font-bold text-slate-900 m-0 text-xs sm:text-sm">
                                                 {titleText}
-                                              </h4>
+                                              </p>
                                             )}
                                             {item?.desc && (
                                               <p className="text-gray-700 m-0 text-xs sm:text-sm whitespace-pre-line">
@@ -1724,9 +1724,9 @@ export default function BlogClientView({
                                 {sec.poll && Array.isArray(sec.poll.options) && sec.poll.options.length > 0 && (
                                   <div className="rounded-xl border border-blue-400 bg-white p-4 sm:p-5 my-2.5 shadow-2xs">
                                     {sec.poll.question && (
-                                      <h3 className="text-base sm:text-lg font-bold text-[#0D3B66] mb-3 m-0">
+                                      <p className="text-base sm:text-lg font-bold text-[#0D3B66] mb-3 m-0">
                                         {sec.poll.question}
-                                      </h3>
+                                      </p>
                                     )}
                                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                                       {sec.poll.options.map((optItem, optIdx) => {
@@ -1850,9 +1850,9 @@ export default function BlogClientView({
                                 {sec.importantNotice && (sec.importantNotice.title || sec.importantNotice.desc) && (
                                   <div className="space-y-1 pt-2">
                                     {sec.importantNotice.title && (
-                                      <h4 className="font-bold text-gray-900 text-xs sm:text-sm m-0">
+                                      <p className="font-bold text-gray-900 text-xs sm:text-sm m-0">
                                         {sec.importantNotice.title}
-                                      </h4>
+                                      </p>
                                     )}
                                     {sec.importantNotice.desc && (
                                       <p className="text-gray-700 text-xs sm:text-sm m-0 whitespace-pre-line">
@@ -1908,12 +1908,12 @@ export default function BlogClientView({
                           onClick={() => setOpenFaqIndex(isOpen ? -1 : idx)}
                           className="w-full flex items-center justify-between gap-3 p-2.5 sm:p-3 text-left cursor-pointer bg-transparent border-none outline-none"
                         >
-                          <span
-                            className={`text-xs sm:text-sm font-semibold ${isOpen ? "text-[#0C2B4E]" : "text-gray-900"
+                          <h3
+                            className={`text-xs sm:text-sm font-semibold m-0 ${isOpen ? "text-[#0C2B4E]" : "text-gray-900"
                               }`}
                           >
                             Q{idx + 1}. {cleanQuestion}
-                          </span>
+                          </h3>
                           <span
                             className={`flex items-center justify-center w-4 h-4 rounded-full shrink-0 transition-colors ${isOpen
                               ? "bg-[#0C2B4E] text-white"
@@ -1943,9 +1943,9 @@ export default function BlogClientView({
             👍 WAS THIS ARTICLE HELPFUL? (Helpful Feedback Card)
         ===================================================================== */}
             <div className="bg-[#f0f7ff] rounded-xl border border-blue-100 p-4 sm:p-5 mt-6">
-              <h3 className="text-base sm:text-lg font-bold text-[#0D3B66] m-0 mb-3 tracking-tight">
+              <p className="text-base sm:text-lg font-bold text-[#0D3B66] m-0 mb-3 tracking-tight">
                 Was This Article Helpful?
-              </h3>
+              </p>
               <div className="flex items-center gap-3">
                 <button
                   type="button"
@@ -1998,9 +1998,9 @@ export default function BlogClientView({
             💬 ADD COMMENTS SECTION
         ===================================================================== */}
             <div id="add-comments" className="mt-6 scroll-mt-20">
-              <h2 className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight m-0 mb-3">
+              <p className="text-xl sm:text-2xl font-bold text-[#0D3B66] tracking-tight m-0 mb-3">
                 Add Comments
-              </h2>
+              </p>
 
               <div className="bg-[#f8f9fa] rounded-2xl border border-gray-200/90 p-4 sm:p-6 space-y-4">
                 {/* Scrollable list of comments */}
@@ -2016,9 +2016,9 @@ export default function BlogClientView({
                           <User size={15} />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <h5 className="text-xs sm:text-sm font-bold text-gray-900 m-0">
+                          <p className="text-xs sm:text-sm font-bold text-gray-900 m-0">
                             {cmt.name}
-                          </h5>
+                          </p>
                           <p className="text-xs sm:text-sm text-slate-500 mt-0.5 m-0 font-normal">
                             {cmt.text || cmt.comment}
                           </p>
@@ -2034,9 +2034,9 @@ export default function BlogClientView({
 
                 {/* Leave a Comment Form */}
                 <div className="pt-1">
-                  <h4 className="text-xs sm:text-sm font-bold text-gray-900 m-0 mb-2">
+                  <p className="text-xs sm:text-sm font-bold text-gray-900 m-0 mb-2">
                     Leave a Comment
-                  </h4>
+                  </p>
 
                   <Form
                     form={commentForm}
@@ -2172,9 +2172,9 @@ export default function BlogClientView({
 
                             {/* Title with Centered Short Accent Line */}
                             <div className="w-full flex flex-col items-center justify-center mb-1">
-                              <h3 className="text-sm sm:text-base font-semibold text-[#0F172A] tracking-tight m-0 pt-0.5 leading-tight text-center">
+                              <p className="text-sm sm:text-base font-semibold text-[#0F172A] tracking-tight m-0 pt-0.5 leading-tight text-center">
                                 {tool.fullName}
-                              </h3>
+                              </p>
                               <span className={`w-7 sm:w-8 border-b-2 ${tool.underlineClass} mt-1.5 inline-block`} />
                             </div>
 

@@ -125,9 +125,9 @@ export default function UniversitySampleDegree({
           }
         >
           <div className="pt-2 text-center">
-            <h3 className="text-base sm:text-lg font-bold text-[#0C2B4E] m-0 mb-1">
+            <p className="text-base sm:text-lg font-bold text-[#0C2B4E] m-0 mb-1">
               {sampleDegreeData.title || `Sample Degree Certificate - ${uniName}`}
-            </h3>
+            </p>
             {sampleDegreeData.description && (
               <p className="text-xs text-gray-500 max-w-lg mx-auto mb-3">
                 {sampleDegreeData.description}

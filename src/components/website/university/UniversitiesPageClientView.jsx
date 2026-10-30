@@ -168,20 +168,26 @@ function UniversityCard({ uni }) {
   const inCompare = Boolean(isInCompare(uni) || isInCompare(slug));
 
   return (
-    <div className="bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col group h-full">
+    <div
+      className="bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col group h-full"
+      suppressHydrationWarning
+    >
       <Link
         href={`/universities/${slug}`}
         className="block relative h-32 sm:h-36 w-full overflow-hidden bg-slate-100 shrink-0 cursor-pointer"
+        suppressHydrationWarning
       >
         {imageSrc ? (
           <Image
             src={imageSrc}
             alt={imgAlt}
+            title={imgAlt}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             loading="eager"
             priority
             unoptimized
+            suppressHydrationWarning
             className="object-cover group-hover:scale-105 transition-transform duration-500"
             onError={() => setImgErr(true)}
           />
@@ -201,14 +207,16 @@ function UniversityCard({ uni }) {
         )}
 
         {logoUrl && (
-          <div className="absolute bottom-2.5 left-2.5 sm:bottom-3 sm:left-3 h-9 sm:h-11 w-24 sm:w-28 flex items-center justify-center z-10">
+          <div className="absolute bottom-2.5 left-2.5 sm:bottom-3 sm:left-3 h-9 sm:h-11 w-24 sm:w-28 flex items-center justify-center z-10" suppressHydrationWarning>
             <div className="relative w-full h-full">
               <Image
                 src={logoUrl}
                 alt={logoAlt}
+                title={logoAlt}
                 fill
                 unoptimized
                 sizes="110px"
+                suppressHydrationWarning
                 className="object-contain"
                 onError={() => setLogoErr(true)}
               />
@@ -652,9 +660,12 @@ export default function UniversitiesPageClientView({
               <Landmark className="w-5 h-5 sm:w-6 sm:h-6 text-[#F3CE7F]" />
             </div>
             <div>
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-white leading-tight m-0 tracking-tight font-sans">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-white leading-none m-0 tracking-tight font-sans">
                 Find India’s Top <span className="text-[#F3CE7F]">UGC- DEB Approved</span> Universities for You
               </h1>
+              <h2 className="text-xs sm:text-sm lg:text-[15px] font-medium text-slate-200/90 mt-0.5 sm:mt-1 leading-tight m-0">
+                Explore Top UGC-DEB-Approved Universities
+              </h2>
             </div>
           </div>
         </div>

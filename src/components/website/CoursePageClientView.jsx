@@ -1086,9 +1086,9 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                         </div>
                         <div className="w-full shrink-0 flex flex-col items-center justify-start text-center pt-1">
                           <div className="w-full h-4 sm:h-5 flex items-center justify-center">
-                            <h3 className="text-[10px] sm:text-[11.5px] md:text-[12.5px] font-bold text-gray-900 m-0 tracking-tight leading-tight line-clamp-1 w-full text-center">
+                            <p className="text-[10px] sm:text-[11.5px] md:text-[12.5px] font-bold text-gray-900 m-0 tracking-tight leading-tight line-clamp-1 w-full text-center">
                               {item.title}
-                            </h3>
+                            </p>
                           </div>
                           <div className="w-full h-[22px] sm:h-[26px] flex items-start justify-center mt-0.5">
                             {item.subtitle || item.description ? (
@@ -1275,9 +1275,9 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                           )}
                         </div>
                         <div className="space-y-1">
-                          <h4 className="font-bold text-sm sm:text-base text-gray-900 leading-snug">
+                          <h3 className="font-bold text-sm sm:text-base text-gray-900 leading-snug">
                             {card.title}
-                          </h4>
+                          </h3>
                           {card.description && (
                             <p className="text-xs text-gray-600 leading-relaxed font-normal">
                               {card.description}
@@ -1339,10 +1339,10 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                           </div>
 
                           {/* Title with Step Number in front */}
-                          <h4 className="font-bold text-[10.5px] sm:text-[11.5px] text-[#0F2A4A] leading-snug mb-1 sm:mb-1.5">
+                          <p className="font-bold text-[10.5px] sm:text-[11.5px] text-[#0F2A4A] leading-snug mb-1 sm:mb-1.5 m-0">
                             <span className="text-[#1C3569] font-bold mr-1">{stepNum}.</span>
                             {stepTitle}
-                          </h4>
+                          </p>
 
                           {/* Description */}
                           {stepDesc && (
@@ -2016,9 +2016,9 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                           </div>
                         )}
                         <div className="space-y-1">
-                          <h4 className="font-bold text-sm sm:text-base text-gray-900 leading-snug">
+                          <h3 className="font-bold text-sm sm:text-base text-gray-900 leading-snug">
                             {mstk.title}
-                          </h4>
+                          </h3>
                           {mstk.description && (
                             <p className="text-xs text-gray-600 leading-relaxed font-normal">
                               {mstk.description}

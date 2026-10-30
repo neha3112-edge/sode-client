@@ -358,7 +358,7 @@ function RankedUniversityCard({ item, index, features, isStatePage = false }) {
       <div className="flex-1 min-w-0 p-3 sm:p-5 lg:p-6 flex flex-col justify-between order-2 md:order-1">
         <div>
           <div className="border-b border-dashed border-slate-300 pb-2 mb-2.5 flex items-center justify-between gap-3">
-            <h2 className="text-lg sm:text-xl font-black text-[#072c50] flex flex-wrap items-center gap-1.5 leading-snug">
+            <p className="text-lg sm:text-xl font-black text-[#072c50] flex flex-wrap items-center gap-1.5 leading-snug m-0">
               <span className="text-[#f15a24] font-black mr-1">#{rank}.</span>
               <Link
                 href={cardLink}
@@ -367,7 +367,7 @@ function RankedUniversityCard({ item, index, features, isStatePage = false }) {
               >
                 {name}
               </Link>
-            </h2>
+            </p>
           </div>
 
           {plainDescription && (
@@ -613,12 +613,12 @@ function FAQSection({ faqs, pageTitle }) {
                 onClick={() => setOpenFaq(isOpen ? -1 : idx)}
                 className="w-full flex items-center justify-between gap-4 p-2.5 sm:p-3 text-left cursor-pointer bg-transparent border-none outline-none"
               >
-                <span
-                  className={`text-xs sm:text-[14px] font-semibold leading-snug ${isOpen ? "text-[#0C2B4E]" : "text-gray-900"
+                <p
+                  className={`text-xs sm:text-[14px] font-semibold leading-snug m-0 ${isOpen ? "text-[#0C2B4E]" : "text-gray-900"
                     }`}
                 >
                   Q{idx + 1}. {question}
-                </span>
+                </p>
                 <span
                   className={`flex items-center justify-center w-5 h-5 rounded-full shrink-0 transition-colors ${isOpen
                       ? "bg-[#0C2B4E] text-white"
@@ -748,7 +748,7 @@ export function DynamicListingClientView({ page }) {
           ) : (
             <div className="p-12 text-center bg-white rounded-2xl border border-slate-200 text-slate-500">
               <GraduationCap className="w-12 h-12 mx-auto text-slate-300 mb-2" />
-              <h3 className="font-bold text-slate-800 text-base">No universities matched your search criteria</h3>
+              <p className="font-bold text-slate-800 text-base m-0">No universities matched your search criteria</p>
               <p className="text-xs mt-1">Try resetting your filters or search terms.</p>
               <button
                 type="button"

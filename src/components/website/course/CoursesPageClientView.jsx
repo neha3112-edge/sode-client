@@ -1215,6 +1215,12 @@ export default function CoursesPageClientView({
 
   return (
     <WebsiteLayout py="py-4 sm:py-6" bg="#F1F4F9">
+      {/* ── SEO Heading Hierarchy (Screen Reader / Crawlers) ── */}
+      <h1 className="sr-only">Online Courses in India from Top Universities</h1>
+      <p className="sr-only">
+        Choose from a wide range of online degree and diploma courses offered by top universities in India. Whether you want to pursue an undergraduate degree, postgraduate program, or diploma course, you can find online programs in different specializations based on your academic interests and career goals.
+      </p>
+
       {/* Top Mobile Filter Bar (Visible only on mobile screen) */}
       <div className="lg:hidden flex items-center gap-2 mb-4 bg-white p-2.5 rounded-2xl border border-gray-200">
         <div className="flex-1 grid grid-cols-2 gap-2 min-w-0">
