@@ -664,14 +664,14 @@ export default function AutoEngineToolPage({
                 </div>
               )}
 
-              {/* ─── GRID OF OPTION CARDS (EQUAL HEIGHT & ALIGNED LIKE TOOLSVIEW) ─── */}
+              {/* ─── GRID OF OPTION CARDS (CATEGORY CARD PROPORTIONS WITH BUTTON) ─── */}
               <div
-                className={`grid gap-4 sm:gap-5 items-stretch ${
+                className={`grid gap-2 sm:gap-3 w-full mx-auto items-stretch ${
                   filteredOptions.length <= 4
-                    ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+                    ? "grid-cols-2 sm:grid-cols-4 max-w-2xl mx-auto"
                     : filteredOptions.length <= 6
-                    ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
-                    : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+                    ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-6 max-w-4xl mx-auto"
+                    : "grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8"
                 }`}
               >
                 {filteredOptions.map((option, oIdx) => {
@@ -679,10 +679,9 @@ export default function AutoEngineToolPage({
                     typeof option === "object"
                       ? option.title || option.name || option.text || option.label || ""
                       : String(option);
-                  const optSub =
-                    typeof option === "object" ? option.subtitle || option.desc : null;
                   const optIconName = typeof option === "object" ? option.icon : null;
                   const IconComp = iconMap[optIconName] || iconMap["School"];
+                  const optLogo = typeof option === "object" ? getMediaUrl(option.logo || option.image) : null;
 
                   const palette = CARD_PALETTES[oIdx % CARD_PALETTES.length];
 
@@ -701,28 +700,40 @@ export default function AutoEngineToolPage({
                           handleSelectOption(option, storeVar);
                         }
                       }}
-                      className={`relative bg-white rounded-2xl p-5 sm:p-6 shadow-xs hover:shadow-xl border flex flex-col items-center text-center justify-between transition-all duration-300 hover:-translate-y-1 group h-full cursor-pointer ${
+                      className={`relative bg-white rounded-xl sm:rounded-2xl p-2.5 sm:p-3.5 border flex flex-col items-center text-center justify-between transition-all duration-200 hover:-translate-y-0.5 group cursor-pointer select-none min-w-0 ${
                         isSelected
-                          ? "border-[#0B3B7E] ring-2 ring-[#0B3B7E]/20 bg-blue-50/20"
-                          : "border-slate-100 hover:border-slate-200"
+                          ? "border-blue-600 ring-2 ring-blue-500/20 bg-blue-50/20 shadow-xs"
+                          : "border-gray-200 hover:border-blue-500 hover:bg-gray-50/50"
                       }`}
                     >
                       {/* Top Right Sparkle */}
                       <span
-                        className={`absolute top-3.5 right-3.5 ${palette.sparkle} font-black text-xs group-hover:rotate-12 transition-transform`}
+                        className={`absolute top-2 right-2 ${palette.sparkle} font-black text-[10px] sm:text-xs group-hover:rotate-12 transition-transform`}
                       >
                         ✦
                       </span>
 
                       <div className="flex flex-col items-center w-full">
-                        {/* Fixed Height Icon Container */}
-                        <div className="w-14 h-14 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center group-hover:scale-110 transition-transform mb-3">
-                          <IconComp className={`w-7 h-7 ${palette.text}`} />
+                        {/* Icon Container */}
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center group-hover:scale-105 transition-transform mb-1.5 shrink-0">
+                          {optLogo ? (
+                            <div className="w-6 h-6 sm:w-7 sm:h-7 relative">
+                              <Image
+                                src={optLogo}
+                                alt={optTitle}
+                                fill
+                                sizes="28px"
+                                className="object-contain"
+                              />
+                            </div>
+                          ) : (
+                            <IconComp className={`w-5 h-5 sm:w-6 sm:h-6 ${palette.text}`} />
+                          )}
                         </div>
 
-                        {/* Fixed Height Title Container */}
-                        <div className="w-full min-h-8 flex items-center justify-center mb-1">
-                          <h3 className="text-sm sm:text-base font-bold text-[#0F172A] tracking-tight m-0 leading-tight w-full text-center">
+                        {/* Title */}
+                        <div className="w-full flex items-center justify-center min-h-[26px]">
+                          <h3 className="text-xs sm:text-[13px] font-bold text-[#0F172A] tracking-tight m-0 leading-tight w-full text-center line-clamp-2">
                             <span
                               className={`border-b-2 ${palette.underline} pb-0.5 inline-block group-hover:text-[#0B3B7E] transition-colors`}
                             >
@@ -730,20 +741,12 @@ export default function AutoEngineToolPage({
                             </span>
                           </h3>
                         </div>
-
-                        {/* Fixed Height Description Container */}
-                        <div className="w-full min-h-12 flex items-center justify-center">
-                          <p className="text-[#64748B] text-xs leading-relaxed font-normal m-0 line-clamp-2 text-center">
-                            {optSub ||
-                              "Tailored university options and admission criteria"}
-                          </p>
-                        </div>
                       </div>
 
                       {/* Pinned Bottom Button */}
-                      <div className="w-full mt-auto pt-4">
+                      <div className="w-full mt-2 pt-1">
                         <div
-                          className={`w-full py-2.5 px-4 rounded-full text-white font-bold text-xs shadow-none transition-all flex items-center justify-center gap-1.5 cursor-pointer truncate ${
+                          className={`w-full py-1.5 sm:py-2 px-2 sm:px-3 rounded-full text-white font-bold text-[10px] sm:text-[11px] shadow-none transition-all flex items-center justify-center gap-1 cursor-pointer truncate ${
                             isSelected
                               ? "bg-emerald-600 hover:bg-emerald-700"
                               : "bg-[#0B3B7E] hover:bg-[#072859]"
@@ -752,7 +755,7 @@ export default function AutoEngineToolPage({
                           <span className="truncate">
                             {isSelected ? "Selected ✓" : optTitle}
                           </span>
-                          <span className="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center text-[10px] shrink-0 group-hover:translate-x-0.5 transition-transform">
+                          <span className="w-3.5 h-3.5 rounded-full bg-white/20 flex items-center justify-center text-[9px] shrink-0 group-hover:translate-x-0.5 transition-transform">
                             →
                           </span>
                         </div>
