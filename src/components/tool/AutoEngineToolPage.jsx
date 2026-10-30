@@ -748,7 +748,7 @@ export default function AutoEngineToolPage({
                           handleSelectOption(option, storeVar);
                         }
                       }}
-                      className={`relative w-full aspect-square bg-white rounded-xl sm:rounded-2xl p-1 min-[360px]:p-1.5 sm:p-2.5 border flex flex-col items-center justify-center sm:justify-between text-center cursor-pointer select-none transition-all duration-200 hover:-translate-y-0.5 group min-w-0 ${
+                      className={`relative w-full aspect-square bg-white rounded-xl sm:rounded-2xl p-1.5 min-[360px]:p-2 sm:p-3 border flex flex-col items-center justify-center text-center cursor-pointer select-none transition-all duration-200 hover:-translate-y-0.5 group min-w-0 ${
                         isSelected
                           ? "border-blue-600 ring-2 ring-blue-500/20 bg-blue-50/20 shadow-xs"
                           : "border-gray-200 hover:border-blue-500 hover:bg-gray-50/50"
@@ -761,9 +761,9 @@ export default function AutoEngineToolPage({
                         ✦
                       </span>
 
-                      <div className="flex flex-col items-center justify-center w-full my-auto sm:my-0">
+                      <div className="flex flex-col items-center justify-center w-full">
                         {/* Icon Container */}
-                        <div className="mb-0.5 sm:mb-2 group-hover:scale-110 transition-transform flex items-center justify-center shrink-0">
+                        <div className="mb-1 sm:mb-1.5 group-hover:scale-110 transition-transform flex items-center justify-center shrink-0">
                           {optLogo ? (
                             <div className="w-5 h-5 min-[360px]:w-6 min-[360px]:h-6 sm:w-8 sm:h-8 relative">
                               <Image
@@ -780,7 +780,7 @@ export default function AutoEngineToolPage({
                         </div>
 
                         {/* Title */}
-                        <div className="h-6 min-[360px]:h-7 sm:h-auto sm:min-h-[26px] flex items-center justify-center w-full min-w-0 px-0.5">
+                        <div className="flex items-center justify-center w-full min-w-0 px-0.5 min-h-[22px] sm:min-h-[26px]">
                           <h3 className="text-[10px] min-[360px]:text-[11px] sm:text-[13px] font-bold text-[#0F172A] tracking-tight m-0 leading-tight w-full text-center line-clamp-2">
                             <span
                               className={`border-b sm:border-b-2 ${palette.underline} pb-0.5 inline-block group-hover:text-[#0B3B7E] transition-colors`}
@@ -792,7 +792,7 @@ export default function AutoEngineToolPage({
                       </div>
 
                       {/* Pinned Bottom Button - Desktop / Tablet (sm+) */}
-                      <div className="w-full mt-2 pt-1 hidden sm:block">
+                      <div className="w-full mt-2 hidden sm:block">
                         <div
                           className={`w-full py-1.5 sm:py-2 px-2 sm:px-3 rounded-full text-white font-bold text-[10px] sm:text-[11px] shadow-none transition-all flex items-center justify-center gap-1 cursor-pointer truncate ${
                             isSelected
