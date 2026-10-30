@@ -411,21 +411,18 @@ export default function AutoEngineToolPage({
 
   return (
     <div className="w-full bg-[#f8fafc] text-slate-800 font-sans min-h-screen">
-      {/* ─── 1. TOP DARK BLUE BANNER (Matching Tools & Accreditations) ─── */}
-      <div className="w-full bg-[#072C50] h-36 sm:h-44 md:h-52" />
-
-      {/* ─── 2. FLOATING WHITE CONTAINER CARD ─── */}
-      <div className="relative z-10 max-w-6xl mx-auto px-2.5 sm:px-6 md:px-8 -mt-20 sm:-mt-28 md:-mt-32 pb-16 md:pb-24">
-        <article className="w-full bg-white rounded-2xl sm:rounded-3xl shadow-xl border border-slate-100 p-3 sm:p-8 md:p-12 text-[#2D3748]">
+      {/* ─── 1. TOP DARK BLUE BANNER WITH PAGE TITLE & SUBTITLE ─── */}
+      <div className="w-full bg-[#072C50] text-white pt-6 pb-20 sm:pt-8 sm:pb-24 md:pt-10 md:pb-28 px-4 relative">
+        <div className="max-w-6xl mx-auto">
           {/* Top Bar: Back Button (Left) & Centered Pill Badge */}
-          <div className="relative flex items-center justify-center mb-4 min-h-[36px]">
+          <div className="relative flex items-center justify-center mb-3 min-h-[36px]">
             {/* Back Button on Left */}
             <div className="absolute left-0">
               {history.length > 0 && !recommendations ? (
                 <button
                   type="button"
                   onClick={handleBack}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-[#072C50] text-xs font-bold border border-slate-200 transition-all cursor-pointer shadow-2xs"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/20 transition-all cursor-pointer shadow-xs backdrop-blur-xs"
                   title="Go Back to Previous Question"
                 >
                   <ArrowLeft size={14} />
@@ -434,7 +431,7 @@ export default function AutoEngineToolPage({
               ) : (
                 <Link
                   href="/tools"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-[#072C50] text-xs font-bold border border-slate-200 transition-all cursor-pointer shadow-2xs"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/20 transition-all cursor-pointer shadow-xs backdrop-blur-xs"
                 >
                   <ArrowLeft size={14} />
                   <span>Back</span>
@@ -448,18 +445,21 @@ export default function AutoEngineToolPage({
             </span>
           </div>
 
-          {/* Centered Page Title inside the card */}
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#072C50] text-center tracking-tight m-0 mb-1 leading-none">
+          {/* Centered Page Title in White */}
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white text-center tracking-tight m-0 mb-1.5 leading-tight">
             {workflow?.name || toolTitle}
           </h1>
 
-          {/* Subtitle */}
-          <p className="text-slate-600 text-xs sm:text-sm md:text-base text-center max-w-2xl mx-auto m-0 mb-4 sm:mb-6 leading-tight">
+          {/* Subtitle in Light Blue / White */}
+          <p className="text-blue-100/90 text-xs sm:text-sm md:text-base text-center max-w-2xl mx-auto m-0 leading-tight">
             {workflow?.description || toolDescription}
           </p>
+        </div>
+      </div>
 
-          {/* Full-width Divider Line */}
-          <div className="w-full h-px bg-slate-200/90 mb-6 sm:mb-8" />
+      {/* ─── 2. FLOATING WHITE CONTAINER CARD (STARTS DIRECTLY WITH QUESTION & OPTIONS) ─── */}
+      <div className="relative z-10 max-w-6xl mx-auto px-2.5 sm:px-6 md:px-8 -mt-12 sm:-mt-16 md:-mt-20 pb-16 md:pb-24">
+        <article className="w-full bg-white rounded-2xl sm:rounded-3xl shadow-xl border border-slate-100 p-4 sm:p-8 md:p-10 text-[#2D3748]">
 
           {/* Body: Loading or Results or Questions */}
           {loading || submitting ? (
