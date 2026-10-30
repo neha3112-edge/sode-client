@@ -32,6 +32,8 @@ import {
   Search,
   RotateCcw,
   Info,
+  Globe,
+  FileText,
 } from "lucide-react";
 import { ArrowRightOutlined } from "@ant-design/icons";
 
@@ -53,6 +55,65 @@ const iconMap = {
   UserCheck,
   CheckCircle2,
   XCircle,
+  Globe,
+  FileText,
+};
+
+// Smart fallback icon resolver so different options always get distinct, context-aware icons
+const resolveOptionIcon = (title = "", optIcon = null, idx = 0) => {
+  if (optIcon && iconMap[optIcon]) {
+    return iconMap[optIcon];
+  }
+
+  const t = String(title || "").toLowerCase().trim();
+
+  // 1. Roles / Person types
+  if (t.includes("student")) return GraduationCap;
+  if (t.includes("fresher")) return Sparkles;
+  if (t.includes("working") || t.includes("professional") || t.includes("job") || t.includes("employ")) return Briefcase;
+  if (t.includes("other")) return Layers;
+
+  // 2. Qualifications & Degrees
+  if (t.includes("10th") || t.includes("matric") || t.includes("secondary")) return BookOpen;
+  if (t.includes("12th") || t.includes("inter") || t.includes("senior secondary")) return BookOpen;
+  if (t.includes("diploma")) return FileText;
+  if (t.includes("bachelor") || t.includes("undergrad") || t.includes("graduation") || t.includes("degree")) return GraduationCap;
+  if (t.includes("master") || t.includes("post grad") || t.includes("pg") || t.includes("mba")) return Award;
+  if (t.includes("phd") || t.includes("doctorate") || t.includes("research")) return Award;
+
+  // 3. Streams / Courses
+  if (t.includes("engineer") || t.includes("b.tech") || t.includes("tech") || t.includes("computer") || t.includes("bca") || t.includes("mca") || t.includes("it")) return Laptop;
+  if (t.includes("manage") || t.includes("business") || t.includes("bba") || t.includes("commerce") || t.includes("b.com") || t.includes("m.com") || t.includes("finance")) return Briefcase;
+  if (t.includes("art") || t.includes("humanit") || t.includes("ba") || t.includes("ma") || t.includes("journalism")) return BookOpen;
+  if (t.includes("science") || t.includes("b.sc") || t.includes("m.sc")) return Building2;
+  if (t.includes("law") || t.includes("llb") || t.includes("legal")) return ShieldCheck;
+  if (t.includes("medical") || t.includes("health") || t.includes("nursing") || t.includes("pharma")) return UserCheck;
+  if (t.includes("design") || t.includes("animat") || t.includes("vfx")) return Code2;
+
+  // 4. Budgets / Fees
+  if (t.includes("lakh") || t.includes("k") || t.includes("inr") || t.includes("₹") || t.includes("fee") || t.includes("budget") || t.includes("cost") || /\d+/.test(t)) return IndianRupee;
+
+  // 5. Mode / University type
+  if (t.includes("online") || t.includes("remote")) return Laptop;
+  if (t.includes("distance") || t.includes("open")) return Globe;
+  if (t.includes("regular") || t.includes("campus") || t.includes("offline")) return School;
+  if (t.includes("ugc") || t.includes("naac") || t.includes("govt") || t.includes("university")) return Building2;
+
+  // 6. Distinct fallback pool by index so adjacent cards never share the same icon
+  const fallbackIcons = [
+    GraduationCap,
+    Sparkles,
+    Briefcase,
+    Building2,
+    BookOpen,
+    Award,
+    Laptop,
+    Layers,
+    UserCheck,
+    Tag,
+  ];
+
+  return fallbackIcons[idx % fallbackIcons.length] || School;
 };
 
 // Colors to cycle through for card sparkles & underlines matching ToolsView
@@ -680,7 +741,7 @@ export default function AutoEngineToolPage({
                       ? option.title || option.name || option.text || option.label || ""
                       : String(option);
                   const optIconName = typeof option === "object" ? option.icon : null;
-                  const IconComp = iconMap[optIconName] || iconMap["School"];
+                  const IconComp = resolveOptionIcon(optTitle, optIconName, oIdx);
                   const optLogo = typeof option === "object" ? getMediaUrl(option.logo || option.image) : null;
 
                   const palette = CARD_PALETTES[oIdx % CARD_PALETTES.length];
