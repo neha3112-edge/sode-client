@@ -503,6 +503,11 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
   const isNaacApproval = approvalIdentifier.includes("naac");
   const isNirfApproval = approvalIdentifier.includes("nirf");
 
+  const approvalLogoUrl = useMemo(() => {
+    const rawLogo = apiData?.approval?.logo || apiData?.approval?.image;
+    return getMediaUrl(rawLogo);
+  }, [apiData]);
+
   const approvalBadge = useMemo(() => {
     if (isNirfApproval) return "NIRF RANKED UNIVERSITIES 2026";
     if (isNaacApproval) return "NAAC ACCREDITED UNIVERSITIES 2026";
@@ -667,11 +672,24 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
       {/* ── 1. TOP HERO HEADER (DARK BLUE BRANDING) ── */}
       <div className="w-full bg-[#072C50] text-white pt-6 pb-20 sm:pt-8 sm:pb-24 md:pt-10 md:pb-28 px-4 relative">
         <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
-          {/* Top Pill / Badge */}
+          {/* Top Pill / Badge with Accreditation Logo */}
           {approvalBadge && (
             <div className="mb-2.5 sm:mb-3">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FEF3C7] text-[#92400E] text-xs font-bold border border-amber-200 shadow-xs">
-                <Sparkles size={13} className="text-amber-600" />
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FEF3C7] text-[#92400E] text-xs font-bold border border-amber-200 shadow-xs">
+                {approvalLogoUrl ? (
+                  <div className="w-5 h-5 rounded-full bg-white p-0.5 flex items-center justify-center shrink-0 overflow-hidden border border-amber-300">
+                    <Image
+                      src={approvalLogoUrl}
+                      alt={apiData?.approval?.name || "Accreditation Logo"}
+                      width={20}
+                      height={20}
+                      unoptimized
+                      className="object-contain w-full h-full"
+                    />
+                  </div>
+                ) : (
+                  <Sparkles size={13} className="text-amber-600 shrink-0" />
+                )}
                 <span>{approvalBadge}</span>
               </span>
             </div>
