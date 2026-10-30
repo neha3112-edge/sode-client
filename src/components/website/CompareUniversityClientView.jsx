@@ -372,6 +372,12 @@ export default function CompareUniversityClientView({
       }
       return updated;
     });
+    setModalSelectedUnis((prev) =>
+      (prev || []).filter((u) => {
+        const keys = [u._id, u.id, u.slug, u.name].filter(Boolean);
+        return !keys.some((k) => String(k).toLowerCase().trim() === targetKey);
+      })
+    );
     const remaining = (compareList || []).filter((item) => {
       const keys = [item._id, item.id, item.slug, item.name].filter(Boolean);
       return !keys.some((k) => String(k).toLowerCase().trim() === targetKey);
@@ -435,9 +441,7 @@ export default function CompareUniversityClientView({
     const currentActive =
       comparedData?.length > 0
         ? comparedData
-        : initialComparedData?.length > 0
-          ? initialComparedData
-          : (compareList || []);
+        : (compareList?.length > 0 ? compareList : []);
     setModalSelectedUnis([...currentActive]);
     setIsUniModalOpen(true);
     const hasApprovalsLoaded = (modalUniversities || []).some(
@@ -566,6 +570,18 @@ export default function CompareUniversityClientView({
   };
 
   const handleBackToSelection = () => {
+    hasAutoOpenedModal.current = true;
+    setIsComparisonView(false);
+    const active =
+      comparedData?.length > 0
+        ? comparedData
+        : (compareList || []);
+    if (active.length > 0) {
+      setModalSelectedUnis([...active]);
+    }
+  };
+
+  const handleClearAll = () => {
     hasAutoOpenedModal.current = true;
     clearCompare();
     setComparedData([]);
@@ -1407,12 +1423,7 @@ export default function CompareUniversityClientView({
                   <div>
                     <button
                       type="button"
-                      onClick={() => {
-                        clearCompare();
-                        setComparedData([]);
-                        setIsComparisonView(false);
-                        syncCompareUrl([]);
-                      }}
+                      onClick={handleClearAll}
                       className="inline-flex items-center px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 font-medium text-xs transition-colors cursor-pointer"
                     >
                       Clear All
@@ -1680,8 +1691,8 @@ export default function CompareUniversityClientView({
                       })}
                     </div>
 
-                    {/* Show Me All Universities to Compare button */}
-                    <div className="flex items-center justify-center">
+                    {/* Show Me All Universities to Compare button & Compare Now */}
+                    <div className="flex flex-wrap items-center justify-center gap-3 my-2">
                       <button
                         type="button"
                         onClick={openUniversityModal}
@@ -1692,6 +1703,17 @@ export default function CompareUniversityClientView({
                         </span>
                         <RightOutlined className="text-xs text-slate-500 group-hover:text-blue-600 transition-transform group-hover:translate-x-0.5" />
                       </button>
+
+                      {activeUnisCount >= 2 && (
+                        <button
+                          type="button"
+                          onClick={handleStartCompare}
+                          className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-[#00B4D8] hover:bg-[#0096C7] text-white font-semibold text-xs sm:text-sm transition-all cursor-pointer border-none shadow-xs"
+                        >
+                          <span>Compare Now</span>
+                          <ArrowRightOutlined className="text-xs" />
+                        </button>
+                      )}
                     </div>
                   </div>
                 ) : (
@@ -1865,7 +1887,16 @@ export default function CompareUniversityClientView({
         destroyOnHidden={false}
         closable={false}
         footer={
-          <div className="flex items-center justify-end w-full">
+          <div className="flex items-center justify-between w-full">
+            {modalSelectedUnis.length > 0 ? (
+              <button
+                type="button"
+                onClick={() => setModalSelectedUnis([])}
+                className="text-xs font-semibold text-rose-500 hover:text-rose-700 bg-transparent border-none cursor-pointer py-1 px-2.5 rounded-xl hover:bg-rose-50 transition-colors"
+              >
+                Clear Selection ({modalSelectedUnis.length})
+              </button>
+            ) : <div />}
             <button
               type="button"
               onClick={handleApplyCompareFromModal}
