@@ -449,12 +449,12 @@ export default function AutoEngineToolPage({
           </div>
 
           {/* Centered Page Title inside the card */}
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#072C50] text-center tracking-tight m-0 mb-1 sm:mb-1.5">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#072C50] text-center tracking-tight m-0 mb-1 leading-none">
             {workflow?.name || toolTitle}
           </h1>
 
           {/* Subtitle */}
-          <p className="text-slate-600 text-xs sm:text-sm md:text-base text-center max-w-2xl mx-auto m-0 mb-4 sm:mb-6 leading-relaxed">
+          <p className="text-slate-600 text-xs sm:text-sm md:text-base text-center max-w-2xl mx-auto m-0 mb-4 sm:mb-6 leading-tight">
             {workflow?.description || toolDescription}
           </p>
 
