@@ -649,14 +649,14 @@ export default function AutoEngineToolPage({
             /* ❓ INTERACTIVE QUESTION CARDS (NODE TRAVERSAL) */
             /* ===================================================== */
             <div className="space-y-8">
-              {/* Question Heading with Back Icon in Flex Row */}
-              <div className="flex items-center justify-between gap-2 sm:gap-4 w-full mb-4 sm:mb-6">
+              {/* Question Heading with Back Icon right in front */}
+              <div className="flex items-center justify-center gap-2 sm:gap-3 w-full mb-4 sm:mb-6 max-w-3xl mx-auto">
                 <div className="shrink-0">
                   {history.length > 0 && !recommendations ? (
                     <button
                       type="button"
                       onClick={handleBack}
-                      className="p-1 sm:p-1.5 text-[#072C50] hover:text-[#0B3B7E] active:scale-90 flex items-center justify-center transition-transform cursor-pointer"
+                      className="p-1 text-[#072C50] hover:text-[#0B3B7E] active:scale-90 flex items-center justify-center transition-transform cursor-pointer"
                       title="Go Back to Previous Question"
                       aria-label="Back"
                     >
@@ -665,7 +665,7 @@ export default function AutoEngineToolPage({
                   ) : (
                     <Link
                       href="/tools"
-                      className="p-1 sm:p-1.5 text-[#072C50] hover:text-[#0B3B7E] active:scale-90 flex items-center justify-center transition-transform cursor-pointer"
+                      className="p-1 text-[#072C50] hover:text-[#0B3B7E] active:scale-90 flex items-center justify-center transition-transform cursor-pointer"
                       title="Back to All Tools"
                       aria-label="Back"
                     >
@@ -674,14 +674,11 @@ export default function AutoEngineToolPage({
                   )}
                 </div>
 
-                <h2 className="text-sm min-[380px]:text-base sm:text-2xl md:text-3xl font-bold text-[#072C50] text-center tracking-tight leading-tight m-0 flex-1 px-1">
+                <h2 className="text-sm min-[380px]:text-base sm:text-2xl md:text-3xl font-bold text-[#072C50] text-center tracking-tight leading-tight m-0">
                   {currentNode?.data?.question ||
                     currentNode?.data?.title ||
                     "Choose Your Preference"}
                 </h2>
-
-                {/* Right spacer with matching width so the heading stays mathematically centered */}
-                <div className="w-7 sm:w-8 shrink-0" aria-hidden="true" />
               </div>
 
               {/* Search filter for large option lists */}
