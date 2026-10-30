@@ -732,13 +732,6 @@ export default function AutoEngineToolPage({
                           : "border-gray-200 hover:border-blue-500 hover:bg-gray-50/50"
                         }`}
                     >
-                      {/* Top Right Sparkle */}
-                      <span
-                        className={`absolute top-1.5 right-1.5 sm:top-2 sm:right-2 ${palette.sparkle} font-black text-[9px] sm:text-xs group-hover:rotate-12 transition-transform`}
-                      >
-                        ✦
-                      </span>
-
                       <div className="flex flex-col items-center justify-center w-full">
                         {/* Icon Container */}
                         <div className="mb-1 sm:mb-1.5 group-hover:scale-110 transition-transform flex items-center justify-center shrink-0">
@@ -759,12 +752,8 @@ export default function AutoEngineToolPage({
 
                         {/* Title */}
                         <div className="flex items-center justify-center w-full min-w-0 px-0.5 min-h-[22px] sm:min-h-[26px]">
-                          <h3 className="text-[10px] min-[360px]:text-[11px] sm:text-[13px] font-bold text-[#0F172A] tracking-tight m-0 leading-tight w-full text-center line-clamp-2">
-                            <span
-                              className={`border-b sm:border-b-2 ${palette.underline} pb-0.5 inline-block group-hover:text-[#0B3B7E] transition-colors`}
-                            >
-                              {optTitle}
-                            </span>
+                          <h3 className="text-[10px] min-[360px]:text-[11px] sm:text-[13px] font-bold text-[#0F172A] tracking-tight m-0 leading-tight w-full text-center line-clamp-2 group-hover:text-[#0B3B7E] transition-colors">
+                            {optTitle}
                           </h3>
                         </div>
                       </div>
