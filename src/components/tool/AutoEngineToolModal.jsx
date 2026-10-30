@@ -681,78 +681,116 @@ export default function AutoEngineToolModal() {
                   <span className="text-xs text-slate-500">Government & NAAC A+ Approved</span>
                 </div>
 
-                <div className="grid grid-cols-1 gap-4">
-                  {recommendations.map((uni, idx) => (
-                    <div
-                      key={uni._id || idx}
-                      className="p-5 rounded-2xl border border-slate-200 hover:border-blue-400 bg-white hover:shadow-lg transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-4 group"
-                    >
-                      {/* Left: Logo & Details */}
-                      <div className="flex items-start gap-4 flex-1">
-                        <div className="w-16 h-16 rounded-xl bg-slate-50 border border-slate-100 p-2 flex items-center justify-center shrink-0">
-                          {uni.logo ? (
-                            <img
-                              src={getMediaUrl(uni.logo)}
-                              alt={uni.name}
-                              className="w-full h-full object-contain"
-                            />
-                          ) : (
-                            <School className="text-slate-400" size={28} />
-                          )}
-                        </div>
-                        <div className="space-y-1.5">
-                          <div className="flex items-center gap-2">
-                            <h4 className="text-base font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
-                              {uni.name}
-                            </h4>
-                            <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-xs">
-                              {uni.matchScore} Match
-                            </span>
-                          </div>
-                          <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-slate-500">
-                            {uni.accreditations?.map((acc, i) => (
-                              <span
-                                key={i}
-                                className="px-2 py-0.5 rounded-md bg-slate-100 font-semibold text-slate-700"
-                              >
-                                {acc}
-                              </span>
-                            ))}
-                            <span>• {uni.location}</span>
-                          </div>
-                          <div className="text-xs text-slate-600 space-y-0.5 pt-1">
-                            {uni.matchHighlights?.slice(0, 2).map((h, i) => (
-                              <div key={i} className="flex items-center gap-1.5 text-slate-700">
-                                <Check size={12} className="text-emerald-600 shrink-0" />
-                                <span>{h}</span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5 sm:gap-3">
+                  {recommendations.map((uni, idx) => {
+                    const uniLogoUrl = getMediaUrl(uni.logo);
+                    const uniTitle = uni.name || "University";
+                    const uniActionUrl = uni.actionUrl || `/universities/${uni.slug || ""}`;
+                    const uniLocation =
+                      uni.location ||
+                      [uni.city?.name || (typeof uni.city === "string" ? uni.city : null), uni.state?.name || (typeof uni.state === "string" ? uni.state : null)]
+                        .filter(Boolean)
+                        .join(", ") ||
+                      "India";
 
-                      {/* Right: Fees & Action Buttons */}
-                      <div className="w-full md:w-auto flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center gap-2 border-t md:border-t-0 pt-3 md:pt-0 border-slate-100 shrink-0">
-                        <div className="text-left md:text-right">
-                          <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider block">
-                            No-Cost EMI
-                          </span>
-                          <span className="text-sm font-extrabold text-blue-700">
-                            {uni.emiStartingAt}
-                          </span>
+                    return (
+                      <div
+                        key={uni._id || idx}
+                        className="bg-white border border-slate-200/90 hover:border-blue-500 rounded-xl p-3 hover:shadow-md transition-all flex flex-col justify-between group"
+                      >
+                        <div>
+                          {/* University Icon & Details Row */}
+                          <div className="flex items-start gap-2.5">
+                            {/* Direct University Model Logo without bg / padding */}
+                            <a
+                              href={uniActionUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="relative w-8 h-8 sm:w-9 sm:h-9 shrink-0 flex items-center justify-start group-hover:scale-105 transition-transform mt-0.5"
+                            >
+                              {uniLogoUrl ? (
+                                <Image
+                                  src={uniLogoUrl}
+                                  alt={uniTitle}
+                                  fill
+                                  unoptimized
+                                  sizes="36px"
+                                  className="object-contain object-left"
+                                />
+                              ) : (
+                                <span className="text-xs font-black text-[#072C50] tracking-tight">
+                                  {uni.name?.slice(0, 4)?.toUpperCase() || "UNI"}
+                                </span>
+                              )}
+                            </a>
+
+                            {/* University Title & Fees directly under it */}
+                            <div className="min-w-0 flex-1">
+                              <a
+                                href={uniActionUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="block group-hover:text-[#0B57D0] transition-colors"
+                              >
+                                <h4
+                                  className="text-xs sm:text-[13px] font-bold text-slate-900 leading-snug truncate m-0 group-hover:text-[#0B57D0] transition-colors"
+                                  title={uniTitle}
+                                >
+                                  {uniTitle}
+                                </h4>
+                              </a>
+
+                              {/* Fees directly under University Title */}
+                              <div className="mt-0.5">
+                                <span
+                                  className="text-[10.5px] sm:text-[11px] font-bold text-emerald-700 block truncate"
+                                  title={uni.fees || uni.startingFee || "Affordable Fees"}
+                                >
+                                  {uni.fees || uni.startingFee || "Affordable Fees"}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Metadata Badges: Location & NAAC Accreditation */}
+                          <div className="flex items-center gap-1.5 mt-2 pt-0.5 text-[10px] text-slate-500 font-medium">
+                            {uniLocation && (
+                              <span
+                                className="inline-flex items-center gap-1 text-slate-500 truncate min-w-0 flex-1"
+                                title={uniLocation}
+                              >
+                                <svg className="w-3 h-3 text-slate-400 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                                </svg>
+                                <span className="truncate">{uniLocation}</span>
+                              </span>
+                            )}
+                            {uni.naac && (
+                              <span className="inline-flex items-center gap-0.5 text-amber-700 font-bold shrink-0">
+                                <svg className="w-3 h-3 text-amber-500 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                </svg>
+                                <span>{uni.naac}</span>
+                              </span>
+                            )}
+                          </div>
                         </div>
-                        <a
-                          href={`/universities/${uni.slug || ""}`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="px-4 py-2 rounded-xl bg-[#1e2f4d] hover:bg-[#16243c] text-white font-bold text-xs shadow-sm hover:shadow-md transition-all flex items-center gap-1.5"
-                        >
-                          <span>View Details</span>
-                          <ChevronRight size={14} />
-                        </a>
+
+                        {/* Bottom Row: Only View University → */}
+                        <div className="pt-2 mt-2 border-t border-slate-100/80 flex items-center justify-end">
+                          <a
+                            href={uniActionUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-[10.5px] sm:text-[11px] font-bold text-slate-900 hover:text-[#0B57D0] flex items-center gap-1 transition select-none"
+                          >
+                            <span>View University</span>
+                            <span className="text-[12px] leading-none transition-transform group-hover:translate-x-0.5">→</span>
+                          </a>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
 

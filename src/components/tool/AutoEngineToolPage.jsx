@@ -588,20 +588,20 @@ export default function AutoEngineToolPage({
                       <div
                         key={idx}
                         className={`p-3.5 rounded-xl border flex flex-col justify-between gap-1.5 ${c.status === "passed"
-                            ? "bg-emerald-50/50 border-emerald-200 text-emerald-900"
-                            : c.status === "provisional"
-                              ? "bg-amber-50/50 border-amber-200 text-amber-900"
-                              : "bg-rose-50/50 border-rose-200 text-rose-900"
+                          ? "bg-emerald-50/50 border-emerald-200 text-emerald-900"
+                          : c.status === "provisional"
+                            ? "bg-amber-50/50 border-amber-200 text-amber-900"
+                            : "bg-rose-50/50 border-rose-200 text-rose-900"
                           }`}
                       >
                         <div className="flex items-center justify-between gap-1">
                           <span className="text-xs font-bold">{c.criterion}</span>
                           <span
                             className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase shrink-0 ${c.status === "passed"
-                                ? "bg-emerald-100 text-emerald-800"
-                                : c.status === "provisional"
-                                  ? "bg-amber-100 text-amber-800"
-                                  : "bg-rose-100 text-rose-800"
+                              ? "bg-emerald-100 text-emerald-800"
+                              : c.status === "provisional"
+                                ? "bg-amber-100 text-amber-800"
+                                : "bg-rose-100 text-rose-800"
                               }`}
                           >
                             {c.status === "passed"
@@ -746,9 +746,6 @@ export default function AutoEngineToolPage({
                       <span>Top Matching Universities ({recommendations.length})</span>
                     </h3>
                     <div className="flex items-center gap-3">
-                      <span className="text-xs text-slate-500 hidden sm:inline">
-                        UGC-DEB Entitled & Valid
-                      </span>
                       <button
                         type="button"
                         onClick={handleRestart}
@@ -760,75 +757,110 @@ export default function AutoEngineToolPage({
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-                    {recommendations.map((uni, idx) => (
-                      <div
-                        key={uni._id || idx}
-                        className="p-5 rounded-2xl border border-slate-200 hover:border-blue-500 bg-white hover:shadow-lg transition-all flex flex-col justify-between gap-4 group"
-                      >
-                        <div className="space-y-3">
-                          <div className="flex items-start justify-between gap-3">
-                            <div className="flex items-center gap-3">
-                              {uni.logo ? (
-                                <div className="relative w-12 h-12 rounded-xl bg-white border border-slate-200 p-1 flex items-center justify-center shrink-0">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                    {recommendations.map((uni, idx) => {
+                      const uniLogoUrl = getMediaUrl(uni.logo);
+                      const uniTitle = uni.name || "University";
+                      const uniActionUrl = uni.actionUrl || `/universities/${uni.slug || ""}`;
+                      const uniLocation =
+                        uni.location ||
+                        [uni.city?.name || (typeof uni.city === "string" ? uni.city : null), uni.state?.name || (typeof uni.state === "string" ? uni.state : null)]
+                          .filter(Boolean)
+                          .join(", ") ||
+                        "India";
+
+                      return (
+                        <div
+                          key={uni._id || idx}
+                          className="bg-white border border-slate-200/90 hover:border-blue-500 rounded-xl p-3 hover:shadow-md transition-all flex flex-col justify-between group"
+                        >
+                          <div>
+                            {/* University Icon & Details Row */}
+                            <div className="flex items-start gap-2.5">
+                              {/* Direct University Model Logo without bg / padding */}
+                              <Link
+                                href={uniActionUrl}
+                                className="relative w-8 h-8 sm:w-9 sm:h-9 shrink-0 flex items-center justify-start group-hover:scale-105 transition-transform mt-0.5"
+                              >
+                                {uniLogoUrl ? (
                                   <Image
-                                    src={getMediaUrl(uni.logo)}
-                                    alt={uni.name}
+                                    src={uniLogoUrl}
+                                    alt={uniTitle}
                                     fill
-                                    className="object-contain p-0.5"
+                                    unoptimized
+                                    sizes="36px"
+                                    className="object-contain object-left"
                                   />
+                                ) : (
+                                  <span className="text-xs font-black text-[#072C50] tracking-tight">
+                                    {uni.name?.slice(0, 4)?.toUpperCase() || "UNI"}
+                                  </span>
+                                )}
+                              </Link>
+
+                              {/* University Title & Fees directly under it */}
+                              <div className="min-w-0 flex-1">
+                                <Link
+                                  href={uniActionUrl}
+                                  className="block group-hover:text-[#0B57D0] transition-colors"
+                                >
+                                  <h4
+                                    className="text-xs sm:text-[13px] font-bold text-slate-900 leading-snug truncate m-0 group-hover:text-[#0B57D0] transition-colors"
+                                    title={uniTitle}
+                                  >
+                                    {uniTitle}
+                                  </h4>
+                                </Link>
+
+                                {/* Fees directly under University Title */}
+                                <div className="mt-0.5">
+                                  <span
+                                    className="text-[10.5px] sm:text-[11px] font-bold text-emerald-700 block truncate"
+                                    title={uni.fees || uni.startingFee || "Affordable Fees"}
+                                  >
+                                    {uni.fees || uni.startingFee || "Affordable Fees"}
+                                  </span>
                                 </div>
-                              ) : (
-                                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#072C50] to-[#0D3B66] text-white flex items-center justify-center shrink-0 font-black text-sm">
-                                  {uni.name?.slice(0, 2)?.toUpperCase()}
-                                </div>
-                              )}
-                              <div>
-                                <h4 className="text-base font-bold text-slate-900 group-hover:text-[#0B3B7E] transition-colors leading-tight">
-                                  {uni.name}
-                                </h4>
-                                <span className="text-xs text-slate-500 font-medium">
-                                  {uni.location || uni.city || "Online & Distance"}
-                                </span>
                               </div>
                             </div>
 
-                            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-blue-50 text-[#0B3B7E] border border-blue-200 shrink-0">
-                              {uni.matchScore || "98% Match"}
-                            </span>
+                            {/* Metadata Badges: Location & NAAC Accreditation */}
+                            <div className="flex items-center gap-1.5 mt-2 pt-0.5 text-[10px] text-slate-500 font-medium">
+                              {uniLocation && (
+                                <span
+                                  className="inline-flex items-center gap-1 text-slate-500 truncate min-w-0 flex-1"
+                                  title={uniLocation}
+                                >
+                                  <svg className="w-3 h-3 text-slate-400 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                                  </svg>
+                                  <span className="truncate">{uniLocation}</span>
+                                </span>
+                              )}
+                              {uni.naac && (
+                                <span className="inline-flex items-center gap-0.5 text-amber-700 font-bold shrink-0">
+                                  <svg className="w-3 h-3 text-amber-500 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                  </svg>
+                                  <span>{uni.naac}</span>
+                                </span>
+                              )}
+                            </div>
                           </div>
 
-                          <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-slate-600">
-                            {uni.naac && (
-                              <span className="px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 font-bold border border-amber-200">
-                                NAAC {uni.naac}
-                              </span>
-                            )}
-                            {uni.nirf && (
-                              <span className="px-2 py-0.5 rounded-md bg-purple-50 text-purple-800 font-bold border border-purple-200">
-                                NIRF #{uni.nirf}
-                              </span>
-                            )}
-                            <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 font-bold border border-emerald-200">
-                              UGC-DEB Approved
-                            </span>
+                          {/* Bottom Row: Only View University → */}
+                          <div className="pt-2 mt-2 border-t border-slate-100/80 flex items-center justify-end">
+                            <Link
+                              href={uniActionUrl}
+                              className="text-[10.5px] sm:text-[11px] font-bold text-slate-900 hover:text-[#0B57D0] flex items-center gap-1 transition select-none"
+                            >
+                              <span>View University</span>
+                              <span className="text-[12px] leading-none transition-transform group-hover:translate-x-0.5">→</span>
+                            </Link>
                           </div>
                         </div>
-
-                        <div className="flex items-center justify-between pt-3 border-t border-slate-100">
-                          <span className="text-xs font-bold text-slate-900">
-                            {uni.fees || "Starting at ₹15,000/sem"}
-                          </span>
-                          <Link
-                            href={`/universities/${uni.slug || ""}`}
-                            className="px-3.5 py-1.5 rounded-lg bg-[#0B3B7E] hover:bg-[#072859] text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1"
-                          >
-                            <span>View Details</span>
-                            <ChevronRight size={14} />
-                          </Link>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}
