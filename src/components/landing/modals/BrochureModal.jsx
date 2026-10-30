@@ -44,35 +44,35 @@ export default function BrochureModal({
       onCancel={onClose}
       footer={null}
       centered
-      width={400}
-      destroyOnHidden
-      className="enquire-lead-modal landing-lead-modal p-0 max-w-[calc(100vw-24px)] mx-auto"
-      modalRender={() => (
-        <div className="relative w-full rounded-2xl overflow-hidden shadow-2xl">
-          <button
-            type="button"
-            onClick={onClose}
-            className="absolute top-2.5 right-2.5 md:top-3.5 md:right-3.5 z-50 w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer border-none shadow-xs text-white bg-black/50 hover:bg-black/70 md:text-slate-500 md:bg-slate-100 md:hover:bg-slate-200 md:hover:text-slate-800"
-            aria-label="Close modal"
-          >
-            <X size={18} className="stroke-[2.5]" />
-          </button>
-          <LandingLeadForm
-            brand={brand}
-            courses={courses}
-            defaultCourse={selectedCourse}
-            universityName={universityName}
-            title={activeTitle}
-            subtitle={activeSubtitle}
-            buttonText={buttonText}
-            formName={activeTitle ? `${activeTitle} Modal` : "Modal Enquire Form"}
-            maxWidth="100%"
-            isBrochure={true}
-            onOpenDisclaimer={onOpenDisclaimer}
-            onSuccess={handleSuccess}
-          />
-        </div>
-      )}
-    />
+      width={420}
+      destroyOnClose={true}
+      closeIcon={null}
+      className="enquire-lead-modal landing-lead-modal p-0 max-w-[calc(100vw-24px)] mx-auto !pointer-events-auto"
+    >
+      <div className="relative w-full rounded-2xl overflow-hidden shadow-2xl pointer-events-auto">
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute top-2.5 right-2.5 md:top-3.5 md:right-3.5 z-50 w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer border-none shadow-xs text-white bg-black/50 hover:bg-black/70 md:text-slate-500 md:bg-slate-100 md:hover:bg-slate-200 md:hover:text-slate-800"
+          aria-label="Close modal"
+        >
+          <X size={18} className="stroke-[2.5]" />
+        </button>
+        <LandingLeadForm
+          brand={brand}
+          courses={courses}
+          defaultCourse={selectedCourse}
+          universityName={universityName}
+          title={activeTitle}
+          subtitle={activeSubtitle}
+          buttonText={buttonText || "Download Brochure"}
+          formName={activeTitle ? `${activeTitle} Modal` : "Modal Enquire Form"}
+          maxWidth="100%"
+          isBrochure={true}
+          onOpenDisclaimer={onOpenDisclaimer}
+          onSuccess={handleSuccess}
+        />
+      </div>
+    </Modal>
   );
 }

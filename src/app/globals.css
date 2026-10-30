@@ -617,6 +617,16 @@ a.auto-rendered-link:hover {
   z-index: 50 !important;
 }
 
+.enquire-lead-modal,
+.scholarship-lead-modal,
+.landing-lead-modal,
+.landing-lead-modal .ant-modal-content,
+.landing-lead-modal .ant-modal-body,
+.landing-lead-card,
+.landing-lead-card * {
+  pointer-events: auto !important;
+}
+
   /* Hide Next.js dev overlay indicator badge covering bottom-left mobile buttons */
   nextjs-portal,
   [data-nextjs-dev-tools-button],

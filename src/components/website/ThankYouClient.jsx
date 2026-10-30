@@ -38,24 +38,32 @@ export default function ThankYouClient({
 }) {
   const [progress, setProgress] = useState(0);
   const [brochureOpened, setBrochureOpened] = useState(false);
-  const [brochureUrl] = useState(() => {
-    if (typeof window === "undefined") return "";
-    try {
-      return sessionStorage.getItem("brochureUrl") || "";
-    } catch (e) {
-      return "";
-    }
-  });
+  const isBrochure = useSyncExternalStore(
+    () => () => {},
+    () => {
+      try {
+        return sessionStorage.getItem("isBrochureFlow") === "true";
+      } catch (e) {
+        return false;
+      }
+    },
+    () => false
+  );
+
+  const brochureUrl = useSyncExternalStore(
+    () => () => {},
+    () => {
+      try {
+        return sessionStorage.getItem("brochureUrl") || "";
+      } catch (e) {
+        return "";
+      }
+    },
+    () => ""
+  );
+
   const brochureProcessStarted = useRef(false);
   const conversionSent = useRef(false);
-  const [isBrochure] = useState(() => {
-    if (typeof window === "undefined") return false;
-    try {
-      return sessionStorage.getItem("isBrochureFlow") === "true";
-    } catch (e) {
-      return false;
-    }
-  });
   const isClientReady = useSyncExternalStore(
     () => () => {},
     () => true,
@@ -138,7 +146,13 @@ export default function ThankYouClient({
   ========================================================= */
 
   const getBrochureUrl = useCallback(() => {
-    return brochureUrl || "/assets/pdf/brochure.pdf";
+    if (brochureUrl) return brochureUrl;
+    if (typeof window !== "undefined") {
+      try {
+        return sessionStorage.getItem("brochureUrl") || "/assets/pdf/brochure.pdf";
+      } catch (e) {}
+    }
+    return "/assets/pdf/brochure.pdf";
   }, [brochureUrl]);
 
   /* =========================================================

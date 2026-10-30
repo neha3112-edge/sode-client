@@ -146,11 +146,7 @@ export default function LandingLeadForm({
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  React.useEffect(() => {
-    if (defaultCourse) {
-      form.setFieldsValue({ course: defaultCourse });
-    }
-  }, [defaultCourse, form]);
+
 
   /* -------------------------------------------------------------
      1. CONFIG RESOLUTION (PRIORITY FLOW)
@@ -514,6 +510,19 @@ export default function LandingLeadForm({
     (item) => (typeof item === "string" ? { value: item, label: item } : item)
   );
 
+  React.useEffect(() => {
+    if (defaultCourse && activeCourses?.length) {
+      const match = activeCourses.find(
+        (c) =>
+          String(c.value).toLowerCase() === String(defaultCourse).toLowerCase() ||
+          String(c.label).toLowerCase() === String(defaultCourse).toLowerCase()
+      );
+      form.setFieldsValue({ course: match ? match.value : defaultCourse });
+    } else if (defaultCourse) {
+      form.setFieldsValue({ course: defaultCourse });
+    }
+  }, [defaultCourse, activeCourses, form]);
+
   const stateOptions = STATE_OPTIONS.map((st) =>
     typeof st === "string" ? { value: st, label: st } : st
   );
@@ -848,7 +857,18 @@ export default function LandingLeadForm({
         form={form}
         layout="vertical"
         onFinish={onFinish}
-        initialValues={{ course: defaultCourse || undefined, terms: false }}
+        initialValues={{
+          course: (() => {
+            if (!defaultCourse) return undefined;
+            const match = activeCourses.find(
+              (c) =>
+                String(c.value).toLowerCase() === String(defaultCourse).toLowerCase() ||
+                String(c.label).toLowerCase() === String(defaultCourse).toLowerCase()
+            );
+            return match ? match.value : defaultCourse;
+          })(),
+          terms: false,
+        }}
         style={{ gap: fieldGap }}
         className="flex flex-col [&_.ant-form-item]:!mb-0 [&_.ant-form-item-label]:hidden [&_.ant-form-item-explain-error]:!text-red-500 [&_.ant-form-item-explain-error]:!text-[11px] [&_.ant-form-item-explain-error]:!pt-0.5 [&_.ant-select-custom_.ant-select-selector]:!bg-[var(--select-bg)] [&_.ant-select-custom_.ant-select-selector]:!border-[var(--select-border)] [&_.ant-select-custom_.ant-select-selector]:!h-[var(--select-height)] [&_.ant-select-custom_.ant-select-selector]:!rounded-[var(--select-radius)] [&_.ant-select-custom_.ant-select-selection-placeholder]:!text-[var(--select-placeholder-color)] [&_.ant-select-custom_.ant-select-selection-placeholder]:!leading-[var(--select-height)] [&_.ant-select-custom_.ant-select-selection-item]:!text-[var(--select-text-color)] [&_.ant-select-custom_.ant-select-selection-item]:!leading-[var(--select-height)]"
       >
