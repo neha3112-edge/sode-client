@@ -14,7 +14,7 @@ async function getRedirects(backendUrl) {
     const res = await fetch(`${backendUrl}/api/url-redirects/public/all`, {
       headers: { Accept: 'application/json' },
       next: { revalidate: 30 },
-      signal: AbortSignal.timeout(1500),
+      signal: AbortSignal.timeout(5000),
     });
     if (!res.ok) return cachedRedirects || [];
     const data = await res.json();
