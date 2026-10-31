@@ -320,9 +320,20 @@ function FilterSidebarContent({
           }}
           placeholder="All Institute"
           value={
-            selectedUniversities && selectedUniversities.length > 0
-              ? selectedUniversities[0]
-              : "all"
+            (() => {
+              if (!selectedUniversities || selectedUniversities.length === 0 || selectedUniversities[0] === "all") return "all";
+              const target = String(selectedUniversities[0]).trim().toLowerCase();
+              const targetSlug = target.replace(/[^a-z0-9]+/g, "-");
+              const found = universityOptions.find(
+                (opt) =>
+                  String(opt.value || "").toLowerCase() === target ||
+                  String(opt.slug || "").toLowerCase() === target ||
+                  String(opt.id || "").toLowerCase() === target ||
+                  String(opt.label || "").toLowerCase() === target ||
+                  String(opt.label || "").toLowerCase().replace(/[^a-z0-9]+/g, "-") === targetSlug
+              );
+              return found ? found.value : selectedUniversities[0];
+            })()
           }
           onChange={(val) => {
             if (val === "all") setSelectedUniversities([]);
@@ -740,12 +751,6 @@ export default function CoursesPageClientView({
   }, [searchParams]);
 
   useEffect(() => {
-    // Skip duplicate client-side fetch on initial page mount (SSR already loaded initialCoursesData)
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      return;
-    }
-
     const isDefault =
       activeCategoryTab === "all" &&
       (!activeSubcategory || activeSubcategory.length === 0) &&
@@ -758,6 +763,14 @@ export default function CoursesPageClientView({
       durationRange[1] >= 48 &&
       !appliedSearchTerm &&
       currentPage === 1;
+
+    // Skip duplicate client-side fetch on initial page mount ONLY IF no filters were provided in URL
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      if (isDefault && initialCoursesData?.programs?.length > 0) {
+        return;
+      }
+    }
 
     if (isDefault && initialCoursesData?.programs?.length > 0) {
       setCoursesData(initialCoursesData);
@@ -1100,7 +1113,7 @@ export default function CoursesPageClientView({
     const addUni = (uni) => {
       if (!uni) return;
       const name = uni.name || uni.title || uni.label || "";
-      const slug = uni.slug || (typeof uni.value === "string" && uni.value.includes("-") ? uni.value : "") || "";
+      const slug = uni.slug || (typeof uni.value === "string" && !/^[0-9a-fA-F]{24}$/.test(uni.value) ? uni.value : "") || "";
       const id = String(uni._id || (typeof uni.value === "string" && /^[0-9a-fA-F]{24}$/.test(uni.value) ? uni.value : ""));
 
       if (name && (slug || id)) {
@@ -1114,6 +1127,8 @@ export default function CoursesPageClientView({
     if (Array.isArray(initialUniversities)) initialUniversities.forEach(addUni);
 
     (processedPrograms || []).forEach((item) => {
+      if (item?.university) addUni(item.university);
+      if (item?.uniObj) addUni(item.uniObj);
       if (item?.collaborations && Array.isArray(item.collaborations)) {
         item.collaborations.forEach((collab) => {
           if (collab) addUni(collab);

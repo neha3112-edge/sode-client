@@ -1372,12 +1372,11 @@ export default function CompareUniversityClientView({
   const showComparisonTable = isComparisonView && canCompare;
 
   return (
-    <div className="bg-gray-100 min-h-screen text-gray-800 pb-12">
+    <div>
       {/* ── HERO & BACKDROP ── */}
       <div className="relative">
         {/* Dark Blue Curved Backdrop */}
         <div className="absolute inset-x-0 top-0 h-60 sm:h-65 bg-[#0F3759] border-b border-gray-200" />
-        
         {/* Content Container (dynamically max-w-7xl for table or max-w-5xl for selector) */}
         <div className={`relative z-10 mx-auto px-3 sm:px-6 transition-all ${showComparisonTable ? "max-w-7xl" : "max-w-5xl"}`}>
           {/* Header Title & Search Input */}
@@ -1901,11 +1900,10 @@ export default function CompareUniversityClientView({
               type="button"
               onClick={handleApplyCompareFromModal}
               disabled={modalSelectedUnis.length < 2}
-              className={`font-medium rounded-2xl py-1.5 px-4 border-none text-xs sm:text-sm inline-flex items-center gap-1.5 transition-all ${
-                modalSelectedUnis.length >= 2
-                  ? "bg-blue-500 hover:bg-blue-600 text-white cursor-pointer"
-                  : "bg-blue-100 text-blue-700 cursor-not-allowed"
-              }`}
+              className={`font-medium rounded-2xl py-1.5 px-4 border-none text-xs sm:text-sm inline-flex items-center gap-1.5 transition-all ${modalSelectedUnis.length >= 2
+                ? "bg-blue-500 hover:bg-blue-600 text-white cursor-pointer"
+                : "bg-blue-100 text-blue-700 cursor-not-allowed"
+                }`}
             >
               Compare Now <ArrowRightOutlined className="text-[10px]" />
             </button>

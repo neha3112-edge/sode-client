@@ -29,20 +29,100 @@ export default function HeroSearchBar({
 
   const safeNavigate = (href, item, fallbackParam = "course") => {
     setIsFocused(false);
-    if (!href) {
-      const slug = getItemSlug(item);
-      router.push(`/courses?${fallbackParam}=${encodeURIComponent(slug)}`);
-      return;
-    }
-    if (!/[0-9a-fA-F]{24}/.test(href)) {
+    const itemSlug = getItemSlug(item) || item?.slug || "";
+
+    // If it's a direct university offering link (e.g., /universities/amity/bba)
+    if (href && href.startsWith("/universities/")) {
       router.push(href);
       return;
     }
-    const slug = getItemSlug(item);
-    if (slug && !isObjectId(slug)) {
-      router.push(href.replace(/[0-9a-fA-F]{24}/g, encodeURIComponent(slug)));
+
+    // 1. Courses: exact reference to Category.jsx line 173!
+    // Always navigate to /courses?course=... so that CoursesPageClientView applies the course filter!
+    if (item?.itemType === "course" || fallbackParam === "course") {
+      const courseSlug = itemSlug || (href ? href.replace(/^\/courses\/?/, "").replace(/\/$/, "") : "");
+      router.push(courseSlug ? `/courses?course=${encodeURIComponent(courseSlug)}` : `/courses`);
       return;
     }
+
+    // 2. Specializations / SubCourses: /courses?subcourse=...
+    if (item?.itemType === "specialization" || fallbackParam === "subcourse") {
+      router.push(itemSlug ? `/courses?subcourse=${encodeURIComponent(itemSlug)}` : `/courses`);
+      return;
+    }
+
+    // 3. Categories: /courses?category=...
+    if (item?.itemType === "category" || fallbackParam === "category") {
+      router.push(itemSlug ? `/courses?category=${encodeURIComponent(itemSlug)}` : `/courses`);
+      return;
+    }
+
+    // 4. Subcategories: /courses?subcategory=...
+    if (item?.itemType === "subcategory" || fallbackParam === "subcategory") {
+      router.push(itemSlug ? `/courses?subcategory=${encodeURIComponent(itemSlug)}` : `/courses`);
+      return;
+    }
+
+    // 5. Universities: /courses?university=... or /universities/...
+    if (item?.itemType === "university" || fallbackParam === "university") {
+      const uSlug = itemSlug || (href ? href.replace(/^\/courses\?university=/, "").split("&")[0].replace(/\/$/, "") : "");
+      const activeCourse = (searchResults.courses || [])[0];
+      const activeCourseSlug =
+        item?.targetCourseSlug || getItemSlug(activeCourse) || activeCourse?.slug || "";
+      const activeSubcourse = (searchResults.specializations || [])[0];
+      const activeSubcourseSlug =
+        item?.targetSubcourseSlug || getItemSlug(activeSubcourse) || activeSubcourse?.slug || "";
+
+      // If href is provided and already has course/subcourse or is direct university page
+      if (href && !/[0-9a-fA-F]{24}/.test(href)) {
+        if (href.includes("course=") || href.includes("subcourse=")) {
+          router.push(href);
+          return;
+        }
+        if (href.startsWith("/courses?university=")) {
+          const sep = href.includes("?") ? "&" : "?";
+          if (activeCourseSlug) {
+            router.push(`${href}${sep}course=${encodeURIComponent(activeCourseSlug)}`);
+            return;
+          }
+          if (activeSubcourseSlug) {
+            router.push(`${href}${sep}subcourse=${encodeURIComponent(activeSubcourseSlug)}`);
+            return;
+          }
+          router.push(href);
+          return;
+        }
+        if (href.startsWith("/universities/")) {
+          router.push(href);
+          return;
+        }
+      }
+
+      const q = [];
+      if (uSlug) q.push(`university=${encodeURIComponent(uSlug)}`);
+      if (activeCourseSlug) q.push(`course=${encodeURIComponent(activeCourseSlug)}`);
+      else if (activeSubcourseSlug) q.push(`subcourse=${encodeURIComponent(activeSubcourseSlug)}`);
+
+      if (q.length > 0) {
+        router.push(`/courses?${q.join("&")}`);
+        return;
+      }
+
+      router.push(uSlug ? `/courses?university=${encodeURIComponent(uSlug)}` : `/courses`);
+      return;
+    }
+
+    if (!href) {
+      router.push(itemSlug ? `/courses?${fallbackParam}=${encodeURIComponent(itemSlug)}` : `/courses`);
+      return;
+    }
+
+    if (/^\/courses\/[^\?]+$/.test(href)) {
+      const target = href.replace(/^\/courses\//, "").replace(/\/$/, "");
+      router.push(`/courses?course=${encodeURIComponent(target)}`);
+      return;
+    }
+
     router.push(href);
   };
 
@@ -149,6 +229,19 @@ export default function HeroSearchBar({
     }
     if (!trimmed) return;
     setIsFocused(false);
+
+    // If query matches a course directly, use ?course=... exactly like Category.jsx!
+    const matchedCourse = (searchResults.courses || []).find(
+      (c) =>
+        (c.name || "").toLowerCase() === trimmed.toLowerCase() ||
+        (c.slug || "").toLowerCase() === trimmed.toLowerCase()
+    );
+    if (matchedCourse) {
+      const cSlug = getItemSlug(matchedCourse) || matchedCourse.slug;
+      router.push(`/courses?course=${encodeURIComponent(cSlug)}`);
+      return;
+    }
+
     router.push(`/courses?search=${encodeURIComponent(trimmed)}`);
   };
 
