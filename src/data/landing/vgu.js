@@ -691,7 +691,7 @@ export const vguData = {
         backgroundColor: "#811811",
       },
       headerTitleClassName:
-        "text-[17.5px] sm:text-[21px] lg:text-[24px] font-semibold text-white tracking-[0.6px] leading-[1.32] m-0",
+        "text-[17.5px] sm:text-[21px] lg:text-[24px] font-medium text-white tracking-[0.6px] leading-[1.32] m-0",
       titleClassName:
         "text-[17px] sm:text-[18px] font-medium text-slate-900 m-0 tracking-tight leading-snug mb-1.5",
       descClassName:

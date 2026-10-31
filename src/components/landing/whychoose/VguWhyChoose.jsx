@@ -56,8 +56,8 @@ export default function VguWhyChoose({ whyChoose = [], brand = {}, onOpenApply }
             }}
           >
             <h2
-              className={cfg.headerTitleClassName || "text-[17.5px] sm:text-[21px] lg:text-[24px] font-semibold text-white tracking-[0.6px] leading-[1.32] m-0"}
-              style={{ letterSpacing: "0.6px" }}
+              className={cfg.headerTitleClassName || "text-[17.5px] sm:text-[21px] lg:text-[24px] font-medium text-white tracking-[0.6px] leading-[1.32] m-0"}
+              style={{ letterSpacing: "0.6px", fontWeight: 500 }}
             >
               {renderTitle()}
             </h2>
