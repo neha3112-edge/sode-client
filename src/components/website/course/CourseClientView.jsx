@@ -355,9 +355,9 @@ export function CourseClientView({
   const curriculumList = useMemo(() => {
     if (Array.isArray(courseData?.curriculum) && courseData.curriculum.length > 0) {
       return courseData.curriculum
-        .filter((c) => c && (c.semesterName || (Array.isArray(c.subjects) && c.subjects.length > 0) || (Array.isArray(c.electives) && c.electives.length > 0)))
+        .filter((c) => c && (c.semesterName || c.term || (Array.isArray(c.subjects) && c.subjects.length > 0) || (Array.isArray(c.electives) && c.electives.length > 0)))
         .map((c, idx) => ({
-          semester: c.semesterName || `Semester ${idx + 1}`,
+          semester: c.term || c.semesterName || c.semester || `Semester ${idx + 1}`,
           subjects: Array.isArray(c.subjects) ? c.subjects : [],
           electives: Array.isArray(c.electives) ? c.electives : [],
         }));

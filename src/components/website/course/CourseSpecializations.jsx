@@ -314,9 +314,9 @@ export default function CourseSpecializations({
         const specCurriculum = (() => {
           if (Array.isArray(selectedSpecModal?.curriculum) && selectedSpecModal.curriculum.length > 0) {
             return selectedSpecModal.curriculum
-              .filter((c) => c && ((Array.isArray(c.subjects) && c.subjects.length > 0) || (Array.isArray(c.electives) && c.electives.length > 0)))
+              .filter((c) => c && (c.term || c.semesterName || (Array.isArray(c.subjects) && c.subjects.length > 0) || (Array.isArray(c.electives) && c.electives.length > 0)))
               .map((c, idx) => ({
-                semester: c.semesterName || `Semester ${idx + 1}`,
+                semester: c.term || c.semesterName || c.semester || `Semester ${idx + 1}`,
                 subjects: Array.isArray(c.subjects) ? c.subjects : [],
                 electives: Array.isArray(c.electives) ? c.electives : [],
               }));
