@@ -226,7 +226,7 @@ export default function LandingDegree({
           ];
 
     return (
-      <section id="degree" className="py-0 sm:py-14 bg-white select-none scroll-mt-20">
+      <section id="degree" className="py-0 sm:py-14 bg-white select-none scroll-mt-20 border-t-0 border-none">
         <div className="max-w-[1080px] mx-auto px-0 sm:px-6">
           <div className="relative bg-[#F3F3F8] rounded-none sm:rounded-[20px] px-5 py-8 sm:p-10 lg:p-12 overflow-hidden shadow-none sm:shadow-xs">
             {/* Soft white circular background accent on top-right */}
