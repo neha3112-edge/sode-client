@@ -168,7 +168,58 @@ export default function ThankYouClient({
   }, []);
 
   /* =========================================================
-     BROCHURE AUTO OPEN AFTER 3 SECONDS
+     AUTOMATIC BROCHURE DOWNLOAD & OPEN IN NEW TAB
+  ========================================================= */
+
+  const triggerDownloadAndOpen = useCallback((url) => {
+    if (!url) return;
+    const rawFileName = url.split("/").pop() || "Brochure.pdf";
+    const cleanFileName = decodeURIComponent(rawFileName);
+
+    // 1. Force file download directly to computer / device
+    fetch(url)
+      .then((res) => {
+        if (!res.ok) throw new Error("Fetch failed");
+        return res.blob();
+      })
+      .then((blob) => {
+        const blobUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = blobUrl;
+        a.download = cleanFileName;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+          try {
+            window.URL.revokeObjectURL(blobUrl);
+            document.body.removeChild(a);
+          } catch (e) {}
+        }, 1000);
+      })
+      .catch(() => {
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = cleanFileName;
+        a.target = "_blank";
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+          try {
+            document.body.removeChild(a);
+          } catch (e) {}
+        }, 500);
+      });
+
+    // 2. Also open in a new tab so user can read it instantly
+    try {
+      window.open(url, "_blank", "noopener,noreferrer");
+    } catch (e) {}
+
+    setBrochureOpened(true);
+  }, []);
+
+  /* =========================================================
+     AUTO DOWNLOAD TRIGGER AFTER 3 SECONDS
   ========================================================= */
 
   useEffect(() => {
@@ -178,24 +229,22 @@ export default function ThankYouClient({
     brochureProcessStarted.current = true;
 
     const brochureTimer = window.setTimeout(() => {
-      window.open(getBrochureUrl(), "_blank", "noopener,noreferrer");
-      setBrochureOpened(true);
-      clearBrochureSession();
+      const url = getBrochureUrl();
+      triggerDownloadAndOpen(url);
     }, 3000);
 
     return () => {
       window.clearTimeout(brochureTimer);
     };
-  }, [clearBrochureSession, getBrochureUrl, isBrochure, isClientReady]);
+  }, [getBrochureUrl, isBrochure, isClientReady, triggerDownloadAndOpen]);
 
   /* =========================================================
-     MANUAL BROCHURE OPEN
+     MANUAL BROCHURE DOWNLOAD HANDLER
   ========================================================= */
 
   const handleOpenBrochure = () => {
-    window.open(getBrochureUrl(), "_blank", "noopener,noreferrer");
-    setBrochureOpened(true);
-    clearBrochureSession();
+    const url = getBrochureUrl();
+    triggerDownloadAndOpen(url);
   };
 
   return (
@@ -317,7 +366,7 @@ export default function ThankYouClient({
                     onClick={handleOpenBrochure}
                     className="mt-3 text-xs text-slate-400 hover:text-slate-700 underline underline-offset-2 cursor-pointer transition-colors"
                   >
-                    Click here if the brochure does not open automatically
+                    Click here if the brochure does not download automatically
                   </button>
                 </div>
               )}
