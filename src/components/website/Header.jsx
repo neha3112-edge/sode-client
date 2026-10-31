@@ -1516,13 +1516,6 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                         renderAccreditationCard(app, idx, () => setActiveMenuKey(null))
                       );
                     })()}
-
-                    {/* Empty State for category with no items */}
-                    {(!currentMegaMenuData.currentGroup?.items || currentMegaMenuData.currentGroup.items.length === 0) && (
-                      <div className="col-span-full py-12 text-center text-slate-400 font-medium text-xs">
-                        No items found in this category currently.
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>
