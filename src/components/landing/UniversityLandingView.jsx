@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { Download } from "lucide-react";
 import { Carousel } from "antd";
+import LandingContainer from "./LandingContainer";
 import LandingNavbar, { LandingSubNav } from "./LandingNavbar";
 import LandingHero from "./LandingHero";
 import LandingApprovals from "./LandingApprovals";
@@ -344,12 +345,12 @@ export default function UniversityLandingView({ data = {} }) {
                 if (brand.slug === "iim" || brand.overviewLayout === "iim") {
                   return (
                     <section id="overview" key="overview">
-                      <div className="container">
+                      <LandingContainer className="container">
                         <div className="overview1">
                           <h2>{overviewData?.title || "The IIM Kozhikode HRM Analytics Certification Courses"}</h2>
                           <p>{overviewData?.paragraph || overviewData?.desc || "The certificate course of IIM Kozhikode in HR Analytics is a 6-month online program that helps professionals learn HR concepts with modern analytics. The course is 280 hours of expert learning, live faculty sessions, and industry projects. Learners receive hands-on training in tools such as Tableau, Excel, and Power BI. The course is recognized as one of the leading HR courses. It is ideal for HR professionals, managers, and MBA graduates seeking to advance their careers."}</p>
                         </div>
-                      </div>
+                      </LandingContainer>
                     </section>
                   );
                 }
@@ -445,7 +446,7 @@ export default function UniversityLandingView({ data = {} }) {
                 if (brand.slug === "iim") {
                   return (
                     <section className="certification" id="key-skills" key="keySkills">
-                      <div className="container">
+                      <LandingContainer className="container">
                         <h2>
                           Key Skills You Will Gain from the <span className="blue">IIM Kozhikode HR Analytics Course</span>
                         </h2>
@@ -464,7 +465,7 @@ export default function UniversityLandingView({ data = {} }) {
                             </div>
                           ))}
                         </div>
-                      </div>
+                      </LandingContainer>
                     </section>
                   );
                 }
@@ -500,7 +501,7 @@ export default function UniversityLandingView({ data = {} }) {
                 if (brand.slug === "iim") {
                   return (
                     <section id="courses" key="tools">
-                      <div className="container">
+                      <LandingContainer className="container">
                         <h2>
                           Tools &amp; Technologies You’ll Learn in <br /><span className="blue">the IIM Kozhikode HR Analytics Course</span>
                         </h2>
@@ -540,7 +541,7 @@ export default function UniversityLandingView({ data = {} }) {
                             </div>
                           ))}
                         </div>
-                      </div>
+                      </LandingContainer>
                     </section>
                   );
                 }

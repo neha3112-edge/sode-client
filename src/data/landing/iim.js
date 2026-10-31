@@ -818,12 +818,28 @@ export const iimCustomCss = `
     padding: 0 !important;
   }
 
-  @media only screen and (min-width: 992px) and (max-width: 1399px) {
+  @media only screen and (min-width: 1120px) {
     .landing-page--iim #overview {
       padding: 0 !important;
     }
-    .landing-page--iim #overview .container {
-      padding: 0 90px 0 75px !important;
+    .landing-page--iim #overview .container,
+    .landing-page--iim #overview .ant-layout-content {
+      max-width: 1120px !important;
+      width: 100% !important;
+      margin: 0 auto !important;
+      padding: 0 !important;
+    }
+  }
+  @media only screen and (min-width: 992px) and (max-width: 1119px) {
+    .landing-page--iim #overview {
+      padding: 0 !important;
+    }
+    .landing-page--iim #overview .container,
+    .landing-page--iim #overview .ant-layout-content {
+      max-width: 100% !important;
+      width: 100% !important;
+      margin: 0 auto !important;
+      padding: 0 20px !important;
     }
   }
 
@@ -1013,13 +1029,31 @@ export const iimCustomCss = `
 }
   }
 
-  @media only screen and (min-width: 992px) and (max-width: 1399px) {
+  @media only screen and (min-width: 1120px) {
     .landing-page--iim section.certification#key-skills {
       padding: 0 !important;
     }
-    .landing-page--iim section.certification#key-skills .container {
-      padding: 0 90px 0 75px !important;
+    .landing-page--iim section.certification#key-skills .container,
+    .landing-page--iim section.certification#key-skills .ant-layout-content {
+      max-width: 1120px !important;
+      width: 100% !important;
+      margin: 0 auto !important;
+      padding: 0 !important;
     }
+  }
+  @media only screen and (min-width: 992px) and (max-width: 1119px) {
+    .landing-page--iim section.certification#key-skills {
+      padding: 0 !important;
+    }
+    .landing-page--iim section.certification#key-skills .container,
+    .landing-page--iim section.certification#key-skills .ant-layout-content {
+      max-width: 100% !important;
+      width: 100% !important;
+      margin: 0 auto !important;
+      padding: 0 20px !important;
+    }
+  }
+  @media only screen and (min-width: 992px) and (max-width: 1399px) {
     .landing-page--iim .b1 {
       padding: 10px 12px !important;
       gap: 10px !important;
@@ -1278,13 +1312,31 @@ export const iimCustomCss = `
     display: inline !important;
   }
 
-  @media only screen and (min-width: 992px) and (max-width: 1399px) {
+  @media only screen and (min-width: 1120px) {
     .landing-page--iim section#courses {
       padding: 0 !important;
     }
-    .landing-page--iim #courses .container {
-      padding: 0 90px 0 75px !important;
+    .landing-page--iim #courses .container,
+    .landing-page--iim #courses .ant-layout-content {
+      max-width: 1120px !important;
+      width: 100% !important;
+      margin: 0 auto !important;
+      padding: 0 !important;
     }
+  }
+  @media only screen and (min-width: 992px) and (max-width: 1119px) {
+    .landing-page--iim section#courses {
+      padding: 0 !important;
+    }
+    .landing-page--iim #courses .container,
+    .landing-page--iim #courses .ant-layout-content {
+      max-width: 100% !important;
+      width: 100% !important;
+      margin: 0 auto !important;
+      padding: 0 20px !important;
+    }
+  }
+  @media only screen and (min-width: 992px) and (max-width: 1399px) {
     .landing-page--iim .course-info {
       gap: 16px !important;
     }
@@ -2301,10 +2353,18 @@ export const iimCustomCss = `
     @media only screen and (min-width: 1400px) {
       /* 1. Universal alignment across all containers */
       .landing-page--iim .container,
+      .landing-page--iim header .ant-layout-content,
+      .landing-page--iim header .iim-header-container,
+      .landing-page--iim #hero .iim-hero-container,
+      .landing-page--iim #hero .ant-layout-content,
+      .landing-page--iim #hero > main,
       .landing-page--iim #overview .container,
+      .landing-page--iim #overview .ant-layout-content,
       .landing-page--iim section.certification#key-skills .container,
+      .landing-page--iim section.certification#key-skills .ant-layout-content,
       .landing-page--iim #courses .container,
       .landing-page--iim section#courses .container,
+      .landing-page--iim #courses .ant-layout-content,
       .landing-page--iim #about .container,
       .landing-page--iim #benefits .container,
       .landing-page--iim #sample-degree .container,
@@ -2473,42 +2533,103 @@ export const iimCustomCss = `
   }
 
   /* =========================================================
-     18. HERO CONTAINER PADDING (Desktop / Laptop View)
-     Align hero content and form with Overview & Key Skills sections
+     18. DESKTOP VIEW CONTAINER & CONTENT ALIGNMENT
+     Align Navbar content and Hero content exactly to Key Skills section width
      ========================================================= */
-  @media only screen and (min-width: 992px) and (max-width: 1399px) {
-    .landing-page--iim #hero {
-      padding-left: 0 !important;
-      padding-right: 0 !important;
+  @media only screen and (min-width: 992px) {
+    .landing-page--iim header {
+      width: 100% !important;
     }
+    .landing-page--iim header .ant-layout-content,
+    .landing-page--iim header .iim-header-container,
+    .landing-page--iim header [class*="LandingContainer"],
     .landing-page--iim #hero .iim-hero-container,
     .landing-page--iim #hero .ant-layout-content,
-    .landing-page--iim #hero > main {
+    .landing-page--iim #hero > main,
+    .landing-page--iim #hero [class*="LandingContainer"],
+    .landing-page--iim section.certification#key-skills .container,
+    .landing-page--iim section.certification#key-skills .ant-layout-content,
+    .landing-page--iim section.certification#key-skills [class*="LandingContainer"],
+    .landing-page--iim #overview .container,
+    .landing-page--iim #overview .ant-layout-content,
+    .landing-page--iim #overview [class*="LandingContainer"],
+    .landing-page--iim #courses .container,
+    .landing-page--iim #courses .ant-layout-content,
+    .landing-page--iim #courses [class*="LandingContainer"] {
       max-width: 1120px !important;
       width: 100% !important;
       margin-left: auto !important;
       margin-right: auto !important;
-      padding-left: 75px !important;
-      padding-right: 90px !important;
       box-sizing: border-box !important;
     }
-  }
 
-  @media only screen and (min-width: 1400px) {
+    /* Navbar alignment: Align SODE Logo on left boundary and Menu Links on right boundary flush with Key Skills */
+    .landing-page--iim header .ant-layout-content > div:first-child,
+    .landing-page--iim header .iim-header-container > div:first-child {
+      margin-left: 0 !important;
+      padding-left: 0 !important;
+    }
+    .landing-page--iim header .header_menu_list {
+      margin-right: 0 !important;
+      padding-right: 0 !important;
+    }
+
+    /* Hero alignment: Align Hero Info on left boundary and Form Card on right boundary flush with Key Skills */
     .landing-page--iim #hero {
       padding-left: 0 !important;
       padding-right: 0 !important;
     }
+    .landing-page--iim #hero .hero-info-col {
+      padding-left: 0 !important;
+      margin-left: 0 !important;
+    }
+    .landing-page--iim #hero .hero-form-col {
+      padding-right: 0 !important;
+      margin-right: 0 !important;
+    }
+  }
+
+  @media only screen and (min-width: 1120px) {
+    .landing-page--iim header .ant-layout-content,
+    .landing-page--iim header .iim-header-container,
+    .landing-page--iim header [class*="LandingContainer"],
     .landing-page--iim #hero .iim-hero-container,
     .landing-page--iim #hero .ant-layout-content,
-    .landing-page--iim #hero > main {
-      max-width: 1130px !important;
-      width: 100% !important;
-      margin-left: auto !important;
-      margin-right: auto !important;
-      padding-left: 16px !important;
-      padding-right: 16px !important;
-      box-sizing: border-box !important;
+    .landing-page--iim #hero > main,
+    .landing-page--iim #hero [class*="LandingContainer"],
+    .landing-page--iim section.certification#key-skills .container,
+    .landing-page--iim section.certification#key-skills .ant-layout-content,
+    .landing-page--iim section.certification#key-skills [class*="LandingContainer"],
+    .landing-page--iim #overview .container,
+    .landing-page--iim #overview .ant-layout-content,
+    .landing-page--iim #overview [class*="LandingContainer"],
+    .landing-page--iim #courses .container,
+    .landing-page--iim #courses .ant-layout-content,
+    .landing-page--iim #courses [class*="LandingContainer"] {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+  }
+
+  @media only screen and (min-width: 992px) and (max-width: 1119px) {
+    .landing-page--iim header .ant-layout-content,
+    .landing-page--iim header .iim-header-container,
+    .landing-page--iim header [class*="LandingContainer"],
+    .landing-page--iim #hero .iim-hero-container,
+    .landing-page--iim #hero .ant-layout-content,
+    .landing-page--iim #hero > main,
+    .landing-page--iim #hero [class*="LandingContainer"],
+    .landing-page--iim section.certification#key-skills .container,
+    .landing-page--iim section.certification#key-skills .ant-layout-content,
+    .landing-page--iim section.certification#key-skills [class*="LandingContainer"],
+    .landing-page--iim #overview .container,
+    .landing-page--iim #overview .ant-layout-content,
+    .landing-page--iim #overview [class*="LandingContainer"],
+    .landing-page--iim #courses .container,
+    .landing-page--iim #courses .ant-layout-content,
+    .landing-page--iim #courses [class*="LandingContainer"] {
+      padding-left: 20px !important;
+      padding-right: 20px !important;
     }
   }
 `;
@@ -2572,6 +2693,7 @@ export const iimData = {
     showCouponButton: false,
     showFloatingGift: true,
     hideNavbarBadge: true,
+    headerContainerClassName: "iim-header-container",
     customCss: iimCustomCss,
     navLinks: [
       { label: "About", href: "#about" },
