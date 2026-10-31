@@ -589,3 +589,31 @@ a.auto-rendered-link:hover {
     border-color: #cbd5e1 !important;
   }
 }
+
+/* =========================================================
+   PREVENT MOBILE / IPHONE (iOS SAFARI) SCREEN ZOOM ON INPUT FOCUS
+========================================================= */
+@media screen and (max-width: 767px) {
+  input,
+  select,
+  textarea,
+  .ant-input,
+  .ant-input-affix-wrapper input,
+  .ant-select-selection-search-input {
+    font-size: 16px !important;
+  }
+}
+
+/* =========================================================
+   PREVENT MOBILE / IPHONE (iOS SAFARI) SCREEN ZOOM ON INPUT FOCUS
+========================================================= */
+@media screen and (max-width: 767px) {
+  input,
+  select,
+  textarea,
+  .ant-input,
+  .ant-input-affix-wrapper input,
+  .ant-select-selection-search-input {
+    font-size: 16px !important;
+  }
+}

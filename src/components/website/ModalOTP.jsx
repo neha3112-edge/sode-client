@@ -624,7 +624,6 @@ export default function ModalOTP({
                     <Input
                       type="tel"
                       inputMode="numeric"
-                      autoFocus
                       maxLength={10}
                       placeholder="Enter your mobile number"
                       onChange={() => {
@@ -636,7 +635,7 @@ export default function ModalOTP({
                           <span className="text-xs sm:text-sm font-bold text-slate-800">+91</span>
                         </div>
                       }
-                      className="rounded-xl h-11 text-xs sm:text-sm font-semibold border-slate-300 hover:border-blue-500 focus:border-blue-600"
+                      className="rounded-xl h-11 text-base sm:text-sm font-semibold border-slate-300 hover:border-blue-500 focus:border-blue-600"
                     />
                   </Form.Item>
 
@@ -721,7 +720,6 @@ export default function ModalOTP({
                     <Input.OTP
                       length={6}
                       size="large"
-                      autoFocus
                       onChange={() => {
                         form.setFields([{ name: "otp", errors: [] }]);
                       }}
@@ -782,11 +780,10 @@ export default function ModalOTP({
                   >
                     <Input
                       type="email"
-                      autoFocus
                       placeholder="Enter your Email Address"
                       onChange={() => form.setFields([{ name: "email", errors: [] }])}
                       prefix={<Mail size={16} className="text-slate-400 mr-2 shrink-0" />}
-                      className="rounded-xl h-11 text-xs sm:text-sm font-semibold border-slate-300 hover:border-blue-500 focus:border-blue-600"
+                      className="rounded-xl h-11 text-base sm:text-sm font-semibold border-slate-300 hover:border-blue-500 focus:border-blue-600"
                     />
                   </Form.Item>
 
@@ -823,11 +820,10 @@ export default function ModalOTP({
                   >
                     <Select
                       showSearch
-                      autoFocus
                       placeholder="Select Course"
                       onChange={() => form.setFields([{ name: "course", errors: [] }])}
                       prefix={<GraduationCap size={16} className="text-slate-400 mr-1 shrink-0" />}
-                      className="w-full h-11 rounded-xl text-xs sm:text-sm font-semibold [&_.ant-select-selector]:rounded-xl! [&_.ant-select-selector]:h-11! [&_.ant-select-selector]:flex! [&_.ant-select-selector]:items-center!"
+                      className="w-full h-11 rounded-xl text-base sm:text-sm font-semibold [&_.ant-select-selector]:rounded-xl! [&_.ant-select-selector]:h-11! [&_.ant-select-selector]:flex! [&_.ant-select-selector]:items-center!"
                       options={courseOptions.map((c) => ({ label: c, value: c }))}
                       filterOption={(input, option) =>
                         (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
@@ -868,11 +864,10 @@ export default function ModalOTP({
                   >
                     <Select
                       showSearch
-                      autoFocus
                       placeholder="Select State"
                       onChange={() => form.setFields([{ name: "state", errors: [] }])}
                       prefix={<MapPin size={16} className="text-slate-400 mr-1 shrink-0" />}
-                      className="w-full h-11 rounded-xl text-xs sm:text-sm font-semibold [&_.ant-select-selector]:rounded-xl! [&_.ant-select-selector]:h-11! [&_.ant-select-selector]:flex! [&_.ant-select-selector]:items-center!"
+                      className="w-full h-11 rounded-xl text-base sm:text-sm font-semibold [&_.ant-select-selector]:rounded-xl! [&_.ant-select-selector]:h-11! [&_.ant-select-selector]:flex! [&_.ant-select-selector]:items-center!"
                       options={stateOptions.map((st) => ({ label: st, value: st }))}
                       filterOption={(input, option) =>
                         (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
@@ -916,11 +911,10 @@ export default function ModalOTP({
                   >
                     <Input
                       type="text"
-                      autoFocus
                       placeholder="Enter your Name"
                       onChange={() => form.setFields([{ name: "name", errors: [] }])}
                       prefix={<User size={16} className="text-slate-400 mr-2 shrink-0" />}
-                      className="rounded-xl h-11 text-xs sm:text-sm font-semibold border-slate-300 hover:border-blue-500 focus:border-blue-600"
+                      className="rounded-xl h-11 text-base sm:text-sm font-semibold border-slate-300 hover:border-blue-500 focus:border-blue-600"
                     />
                   </Form.Item>
 
