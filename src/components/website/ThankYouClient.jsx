@@ -41,7 +41,10 @@ export default function ThankYouClient({
     () => () => {},
     () => {
       try {
-        return sessionStorage.getItem("isBrochureFlow") === "true";
+        const queryBrochure =
+          typeof window !== "undefined" &&
+          new URLSearchParams(window.location.search).get("brochure") === "1";
+        return queryBrochure || sessionStorage.getItem("isBrochureFlow") === "true";
       } catch (e) {
         return false;
       }
@@ -53,6 +56,10 @@ export default function ThankYouClient({
     () => () => {},
     () => {
       try {
+        const queryUrl =
+          typeof window !== "undefined" &&
+          new URLSearchParams(window.location.search).get("url");
+        if (queryUrl) return decodeURIComponent(queryUrl);
         return sessionStorage.getItem("brochureUrl") || "";
       } catch (e) {
         return "";
@@ -61,7 +68,7 @@ export default function ThankYouClient({
     () => ""
   );
 
-  const brochureProcessStarted = useRef(false);
+  const timerFired = useRef(false);
   const conversionSent = useRef(false);
   const isClientReady = useSyncExternalStore(
     () => () => {},
@@ -176,44 +183,47 @@ export default function ThankYouClient({
     const rawFileName = url.split("/").pop() || "Brochure.pdf";
     const cleanFileName = decodeURIComponent(rawFileName);
 
-    // 1. Force file download directly to computer / device
-    fetch(url)
-      .then((res) => {
-        if (!res.ok) throw new Error("Fetch failed");
-        return res.blob();
-      })
-      .then((blob) => {
-        const blobUrl = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = blobUrl;
-        a.download = cleanFileName;
-        document.body.appendChild(a);
-        a.click();
+    // 1. Direct file download
+    const downloadAnchor = document.createElement("a");
+    downloadAnchor.href = url;
+    downloadAnchor.setAttribute("download", cleanFileName);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    setTimeout(() => {
+      try {
+        document.body.removeChild(downloadAnchor);
+      } catch (e) {}
+    }, 500);
+
+    // 2. Open in new blank tab
+    try {
+      const win = window.open(url, "_blank", "noopener,noreferrer");
+      if (!win || win.closed || typeof win.closed === "undefined") {
+        const openAnchor = document.createElement("a");
+        openAnchor.href = url;
+        openAnchor.target = "_blank";
+        openAnchor.rel = "noopener noreferrer";
+        document.body.appendChild(openAnchor);
+        openAnchor.click();
         setTimeout(() => {
           try {
-            window.URL.revokeObjectURL(blobUrl);
-            document.body.removeChild(a);
-          } catch (e) {}
-        }, 1000);
-      })
-      .catch(() => {
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = cleanFileName;
-        a.target = "_blank";
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(() => {
-          try {
-            document.body.removeChild(a);
+            document.body.removeChild(openAnchor);
           } catch (e) {}
         }, 500);
-      });
-
-    // 2. Also open in a new tab so user can read it instantly
-    try {
-      window.open(url, "_blank", "noopener,noreferrer");
-    } catch (e) {}
+      }
+    } catch (e) {
+      const openAnchor = document.createElement("a");
+      openAnchor.href = url;
+      openAnchor.target = "_blank";
+      openAnchor.rel = "noopener noreferrer";
+      document.body.appendChild(openAnchor);
+      openAnchor.click();
+      setTimeout(() => {
+        try {
+          document.body.removeChild(openAnchor);
+        } catch (e) {}
+      }, 500);
+    }
 
     setBrochureOpened(true);
   }, []);
@@ -224,11 +234,10 @@ export default function ThankYouClient({
 
   useEffect(() => {
     if (!isClientReady || !isBrochure) return;
-    if (brochureProcessStarted.current) return;
-
-    brochureProcessStarted.current = true;
+    if (timerFired.current) return;
 
     const brochureTimer = window.setTimeout(() => {
+      timerFired.current = true;
       const url = getBrochureUrl();
       triggerDownloadAndOpen(url);
     }, 3000);

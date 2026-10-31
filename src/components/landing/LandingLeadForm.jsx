@@ -583,7 +583,14 @@ export default function LandingLeadForm({
       message.success(successMessage);
       form.resetFields();
       onSuccess?.(values);
-      router.push("/thank-you");
+      if (isBrochureRequest) {
+        const uniKey = activeBrand?.slug || activeUniversity;
+        const selectedCourseName = values.course || defaultCourse || "";
+        const finalBrochureUrl = resolveBrochurePdfUrl(uniKey, selectedCourseName, activeBrand);
+        router.push(`/thank-you?brochure=1&url=${encodeURIComponent(finalBrochureUrl)}`);
+      } else {
+        router.push("/thank-you");
+      }
     } catch {
       message.error(errorMessage);
     } finally {
