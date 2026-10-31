@@ -91,7 +91,7 @@ export default async function CompareUniversitiesToolPage({ searchParams }) {
     : [];
 
   return (
-    <main className="w-full min-h-screen bg-slate-50">
+    <div className="w-full bg-slate-50">
       <CompareUniversityClientView
         initialComparedData={initialComparedData}
         initialAllCourses={initialAllCourses}
@@ -105,6 +105,6 @@ export default async function CompareUniversitiesToolPage({ searchParams }) {
         initialSelectedCourse={courseParam}
         initialSelectedIds={urlIds}
       />
-    </main>
+    </div>
   );
 }

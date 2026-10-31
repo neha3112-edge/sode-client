@@ -315,10 +315,194 @@ export default function CompareUniversityClientView({
     return urlIds ? urlIds.split(",").map((s) => s.trim()).filter(Boolean) : [];
   }, [searchParams, compareList]);
 
+  const getCourseDegreeLevel = (c) => {
+    if (!c) return "Master";
+    const name = String(typeof c === "object" ? c.name || c.title || c.label || "" : c).trim();
+    const lowerName = name.toLowerCase();
+    const slug = String(typeof c === "object" ? c.slug || "" : "").toLowerCase();
+
+    let catStr = "";
+    if (typeof c === "object" && c.category) {
+      if (Array.isArray(c.category)) {
+        catStr = c.category
+          .map((cat) => (typeof cat === "object" ? cat.name || cat.slug || "" : String(cat)).toLowerCase())
+          .join(" ");
+      } else if (typeof c.category === "object") {
+        catStr = (c.category.name || c.category.slug || "").toLowerCase();
+      } else {
+        catStr = String(c.category).toLowerCase();
+      }
+    }
+
+    // 1. Doctorate / PhD / DBA
+    if (
+      lowerName.includes("ph.d") ||
+      lowerName.includes("phd") ||
+      lowerName.includes("dba") ||
+      lowerName.includes("doctor") ||
+      slug.includes("phd") ||
+      slug.includes("dba") ||
+      slug.includes("doctor") ||
+      catStr.includes("doctor") ||
+      catStr.includes("phd")
+    ) {
+      return "Doctorate";
+    }
+
+    // 2. Certificate & Diploma
+    if (
+      lowerName.includes("certificate") ||
+      lowerName.includes("certification") ||
+      lowerName.includes("diploma") ||
+      lowerName.includes("pgd") ||
+      slug.includes("certificate") ||
+      slug.includes("diploma") ||
+      catStr.includes("certificate") ||
+      catStr.includes("diploma")
+    ) {
+      return "Certificate";
+    }
+
+    // 3. Bachelor / Undergraduate
+    if (
+      catStr.includes("bachelor") ||
+      catStr.includes("under graduate") ||
+      catStr.includes("undergraduate") ||
+      catStr.includes("ug") ||
+      lowerName.startsWith("bachelor") ||
+      lowerName.includes(" bba") ||
+      lowerName.startsWith("bba") ||
+      lowerName.startsWith("bca") ||
+      lowerName.startsWith("bcom") ||
+      lowerName.startsWith("b.com") ||
+      lowerName.startsWith("bsc") ||
+      lowerName.startsWith("b.sc") ||
+      lowerName.startsWith("ba ") ||
+      lowerName === "ba" ||
+      lowerName.startsWith("b.a") ||
+      lowerName.startsWith("bajmc") ||
+      lowerName.startsWith("bjmc") ||
+      lowerName.startsWith("b.tech") ||
+      lowerName.startsWith("btech") ||
+      lowerName.startsWith("bsw") ||
+      lowerName.startsWith("b.ed") ||
+      lowerName.startsWith("bed") ||
+      lowerName.startsWith("llb") ||
+      lowerName.startsWith("b.") ||
+      lowerName.startsWith("b-") ||
+      /^b[a-z]{2,5}\b/i.test(lowerName)
+    ) {
+      return "Bachelor";
+    }
+
+    // 4. Master / Postgraduate
+    if (
+      catStr.includes("master") ||
+      catStr.includes("post graduate") ||
+      catStr.includes("postgraduate") ||
+      catStr.includes("pg") ||
+      lowerName.startsWith("master") ||
+      lowerName.includes(" mba") ||
+      lowerName.startsWith("mba") ||
+      lowerName.startsWith("mca") ||
+      lowerName.startsWith("mcom") ||
+      lowerName.startsWith("m.com") ||
+      lowerName.startsWith("msc") ||
+      lowerName.startsWith("m.sc") ||
+      lowerName.startsWith("ma ") ||
+      lowerName === "ma" ||
+      lowerName.startsWith("m.a") ||
+      lowerName.startsWith("majmc") ||
+      lowerName.startsWith("m.tech") ||
+      lowerName.startsWith("mtech") ||
+      lowerName.startsWith("msw") ||
+      lowerName.startsWith("m.ed") ||
+      lowerName.startsWith("med") ||
+      lowerName.startsWith("llm") ||
+      lowerName.startsWith("m.") ||
+      lowerName.startsWith("m-") ||
+      /^m[a-z]{2,5}\b/i.test(lowerName)
+    ) {
+      return "Master";
+    }
+
+    if (/^b[a-z]+/i.test(lowerName) || /^b\b/i.test(lowerName)) {
+      return "Bachelor";
+    }
+
+    return "Master";
+  };
+
   const courseSelectOptions = useMemo(() => {
-    return (availableCourses || [])
-      .filter((c) => c?.name)
-      .map((c) => ({ value: c.name, label: c.name }));
+    const list = availableCourses || [];
+    const masterCourses = [];
+    const bachelorCourses = [];
+    const doctorateCourses = [];
+    const certificateCourses = [];
+
+    const seen = new Set();
+
+    list.forEach((c) => {
+      const name = (typeof c === "object" ? c?.name : c || "").trim();
+      if (!name) return;
+      const lower = name.toLowerCase();
+      if (seen.has(lower)) return;
+      seen.add(lower);
+
+      const level = getCourseDegreeLevel(c);
+      const opt = {
+        value: name,
+        label: name,
+        key: String((typeof c === "object" ? c?._id : null) || name),
+      };
+
+      if (level === "Doctorate") {
+        doctorateCourses.push(opt);
+      } else if (level === "Certificate") {
+        certificateCourses.push(opt);
+      } else if (level === "Bachelor") {
+        bachelorCourses.push(opt);
+      } else {
+        masterCourses.push(opt);
+      }
+    });
+
+    const groups = [];
+
+    // Order: 1. Master -> 2. Bachelor -> 3. Doctorate -> 4. Certificate
+    if (masterCourses.length > 0) {
+      groups.push({
+        label: "Master Programs",
+        title: "Master",
+        options: masterCourses.sort((a, b) => a.label.localeCompare(b.label)),
+      });
+    }
+
+    if (bachelorCourses.length > 0) {
+      groups.push({
+        label: "Bachelor Programs",
+        title: "Bachelor",
+        options: bachelorCourses.sort((a, b) => a.label.localeCompare(b.label)),
+      });
+    }
+
+    if (doctorateCourses.length > 0) {
+      groups.push({
+        label: "Doctorate Programs",
+        title: "Doctorate",
+        options: doctorateCourses.sort((a, b) => a.label.localeCompare(b.label)),
+      });
+    }
+
+    if (certificateCourses.length > 0) {
+      groups.push({
+        label: "Certificate & Diploma",
+        title: "Certificate",
+        options: certificateCourses.sort((a, b) => a.label.localeCompare(b.label)),
+      });
+    }
+
+    return groups;
   }, [availableCourses]);
 
   const slotSelectOptions = useMemo(() => {
@@ -1374,32 +1558,35 @@ export default function CompareUniversityClientView({
   return (
     <div>
       {/* ── HERO & BACKDROP ── */}
-      <div className="relative">
+      <div className="relative pb-8 sm:pb-12">
         {/* Dark Blue Curved Backdrop */}
         <div className="absolute inset-x-0 top-0 h-60 sm:h-65 bg-[#0F3759] border-b border-gray-200" />
         {/* Content Container (dynamically max-w-7xl for table or max-w-5xl for selector) */}
         <div className={`relative z-10 mx-auto px-3 sm:px-6 transition-all ${showComparisonTable ? "max-w-7xl" : "max-w-5xl"}`}>
           {/* Header Title & Search Input */}
           <div className="max-w-2xl mx-auto text-center text-white space-y-4 p-6">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold m-0 tracking-tight">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold m-0 tracking-tight leading-[1.12]">
               <span className="text-[#FFB800] block">Compare Universities &amp;</span>
               <span className="text-white block">Choose Best For You!</span>
             </h1>
-            {/* Course Selector */}
-            <div className="max-w-2xl mx-auto mt-2">
-              <Select
-                showSearch
-                size="large"
-                allowClear
-                value={selectedCourse}
-                onChange={handleCourseChange}
-                placeholder="Select Course to Compare.... MBA, MCA..."
-                className="w-full rounded-4xl text-left font-normal text-gray-500 bg-white"
-                options={courseSelectOptions}
-                optionFilterProp="label"
-                filterOption={(input, opt) => (opt?.label ?? "").toLowerCase().includes(input.toLowerCase())}
-              />
-            </div>
+              {/* Course Selector */}
+              <div className="max-w-2xl mx-auto mt-4 sm:mt-6">
+                <Select
+                  showSearch
+                  size="large"
+                  allowClear
+                  value={selectedCourse}
+                  onChange={handleCourseChange}
+                  placeholder="Select Course to Compare.... MBA, MCA..."
+                  className="w-full rounded-4xl text-left font-normal text-gray-500 bg-white"
+                  options={courseSelectOptions}
+                  optionFilterProp="label"
+                  filterOption={(input, opt) => {
+                    const text = typeof opt?.label === "string" ? opt.label : typeof opt?.value === "string" ? opt.value : "";
+                    return text.toLowerCase().includes((input || "").toLowerCase().trim());
+                  }}
+                />
+              </div>
           </div>
 
           {/* ── SINGLE UNIFIED CARD (IN-PLACE CONTENT TOGGLE) ── */}
@@ -1635,7 +1822,7 @@ export default function CompareUniversityClientView({
               </div>
             ) : (
               /* Selector Card (Clean card with normal padding and margin) */
-              <div className="p-2 sm:p-4 text-center">
+              <div className="p-4 sm:p-6 text-center">
                 <p className="text-[11px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider m-0 text-center">
                   CHOOSE WHAT YOU WANT TO COMPARE
                 </p>
@@ -1734,8 +1921,9 @@ export default function CompareUniversityClientView({
                           />
                         </div>
                         <div>
-                          <h4 className="text-[11px] sm:text-sm font-bold text-[#0C3058] group-hover:text-blue-700 tracking-wide m-0 mb-1">
-                            TRENDING UNIVERSITIES
+                          <h4 className="text-[11px] sm:text-sm font-bold text-[#0C3058] group-hover:text-blue-700 tracking-wide m-0 mb-1 leading-snug">
+                            <span className="block">TRENDING</span>
+                            <span className="block">UNIVERSITIES</span>
                           </h4>
                           <p className="text-[9.5px] sm:text-[11px] text-slate-400 m-0">
                             Compare with popular and in-demand universities.
@@ -1758,8 +1946,9 @@ export default function CompareUniversityClientView({
                           />
                         </div>
                         <div>
-                          <h4 className="text-[11px] sm:text-sm font-bold text-[#0C3058] group-hover:text-amber-700 tracking-wide m-0 mb-1">
-                            RECOMMENDED UNIVERSITIES
+                          <h4 className="text-[11px] sm:text-sm font-bold text-[#0C3058] group-hover:text-amber-700 tracking-wide m-0 mb-1 leading-snug">
+                            <span className="block">RECOMMENDED</span>
+                            <span className="block">UNIVERSITIES</span>
                           </h4>
                           <p className="text-[9.5px] sm:text-[11px] text-slate-400 m-0">
                             Compare with popular and in-demand universities.
@@ -1782,8 +1971,9 @@ export default function CompareUniversityClientView({
                           />
                         </div>
                         <div>
-                          <h4 className="text-[11px] sm:text-sm font-bold text-[#0C3058] group-hover:text-rose-700 tracking-wide m-0 mb-1">
-                            STATE WISE UNIVERSITIES
+                          <h4 className="text-[11px] sm:text-sm font-bold text-[#0C3058] group-hover:text-rose-700 tracking-wide m-0 mb-1 leading-snug">
+                            <span className="block">STATE WISE</span>
+                            <span className="block">UNIVERSITIES</span>
                           </h4>
                           <p className="text-[9.5px] sm:text-[11px] text-slate-400 m-0">
                             Compare with popular and in-demand universities.
@@ -1806,8 +1996,9 @@ export default function CompareUniversityClientView({
                           />
                         </div>
                         <div>
-                          <h4 className="text-[11px] sm:text-sm font-bold text-[#0C3058] group-hover:text-emerald-700 tracking-wide m-0 mb-1">
-                            ACCREDITATION WISE UNIVERSITIES
+                          <h4 className="text-[11px] sm:text-sm font-bold text-[#0C3058] group-hover:text-emerald-700 tracking-wide m-0 mb-1 leading-snug">
+                            <span className="block">ACCREDITATION WISE</span>
+                            <span className="block">UNIVERSITIES</span>
                           </h4>
                           <p className="text-[9.5px] sm:text-[11px] text-slate-400 m-0">
                             Compare with popular and in-demand universities.

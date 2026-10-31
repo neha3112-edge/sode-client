@@ -68,12 +68,12 @@ export function AccreditationsView({ initialAccreditations = [] }) {
   }, [accreditationsList, searchQuery]);
 
   return (
-    <div className="w-full bg-[#f8fafc] text-slate-800 font-sans min-h-screen">
+    <div className="w-full bg-[#f8fafc] text-slate-800 font-sans">
       {/* ─── 1. TOP DARK NAVY BANNER ─── */}
       <div className="w-full bg-[#11233E] h-44 sm:h-52 md:h-64" />
 
       {/* ─── 2. FLOATING WHITE CONTAINER CARD ─── */}
-      <Container className="relative z-10 -mt-28 sm:-mt-36 md:-mt-44 pb-16 md:pb-24">
+      <Container className="relative z-10 -mt-28 sm:-mt-36 md:-mt-44 pb-8 sm:pb-12">
         <article className="w-full bg-white rounded-2xl sm:rounded-3xl shadow-sm border border-slate-200 p-3 sm:p-8 md:p-10 text-[#2D3748]">
           {/* Centered Page Title */}
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#0B1F38] text-center tracking-tight m-0 mb-2.5">
@@ -151,6 +151,13 @@ export function AccreditationsView({ initialAccreditations = [] }) {
                       <span className="block text-slate-700">Universities</span>
                     </div>
                   );
+                } else if (lower.includes("qs")) {
+                  renderedTitle = (
+                    <div className="text-[10px] sm:text-[11px] md:text-[12px] text-slate-800 leading-[1.15]">
+                      <span className="block font-semibold text-slate-900">QS Asia University</span>
+                      <span className="block text-slate-700">Ranking</span>
+                    </div>
+                  );
                 } else if (lower.includes("naac")) {
                   renderedTitle = (
                     <div className="text-[10px] sm:text-[11px] md:text-[12px] text-slate-800 leading-[1.15]">
@@ -185,7 +192,7 @@ export function AccreditationsView({ initialAccreditations = [] }) {
                   <CardWrapper
                     key={acc.id || idx}
                     {...cardProps}
-                    className="bg-white rounded-xl border border-gray-200 flex flex-col p-1.5 sm:p-2.5 md:p-3 items-center justify-between text-center aspect-square shadow-2xs hover:border-blue-300 transition-colors overflow-hidden shrink-0 w-[calc((100%-12px)/3)] sm:w-[calc((100%-20px)/3)] md:w-[calc((100%-60px)/6)] cursor-pointer no-underline group"
+                    className="bg-white rounded-xl border border-gray-200 flex flex-col p-1.5 sm:p-2.5 md:p-3 items-center justify-between text-center aspect-square shadow-2xs hover:border-blue-300 transition-colors overflow-hidden shrink-0 w-[calc((100%-12px)/3)] sm:w-[calc((100%-20px)/3)] md:w-[calc((100%-48px)/5)] cursor-pointer no-underline group"
                   >
                     {/* Top: Logo with University page scale (64px mobile, 80px desktop) */}
                     <div className="flex-1 min-h-0 max-h-12 sm:max-h-16 md:max-h-20 w-full relative flex items-center justify-center">
