@@ -44,9 +44,23 @@ export default function BrochureModal({
       onCancel={onClose}
       footer={null}
       centered
-      width={420}
+      width={400}
       destroyOnClose={true}
       closeIcon={null}
+      styles={{
+        content: {
+          padding: 0,
+          background: "transparent",
+          backgroundColor: "transparent",
+          boxShadow: "none",
+          border: "none",
+        },
+        body: {
+          padding: 0,
+          background: "transparent",
+          backgroundColor: "transparent",
+        },
+      }}
       className="enquire-lead-modal landing-lead-modal p-0 max-w-[calc(100vw-24px)] mx-auto !pointer-events-auto"
     >
       <div className="relative w-full rounded-2xl overflow-hidden shadow-2xl pointer-events-auto">

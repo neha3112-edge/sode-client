@@ -588,6 +588,9 @@ a.auto-rendered-link:hover {
    GLOBAL LEAD FORM MODALS (Brochure, Enquiry, Scholarship, Apply)
    Full cover: removes Ant Design white box and inner padding
 ========================================================= */
+.ant-modal.enquire-lead-modal .ant-modal-content,
+.ant-modal.scholarship-lead-modal .ant-modal-content,
+.ant-modal.landing-lead-modal .ant-modal-content,
 .enquire-lead-modal .ant-modal-content,
 .scholarship-lead-modal .ant-modal-content,
 .landing-lead-modal .ant-modal-content {
@@ -596,25 +599,26 @@ a.auto-rendered-link:hover {
   padding: 0 !important;
   box-shadow: none !important;
   border: none !important;
-  border-radius: 16px !important;
+  border-radius: 0 !important;
   overflow: visible !important;
 }
 
+.ant-modal.enquire-lead-modal .ant-modal-body,
+.ant-modal.scholarship-lead-modal .ant-modal-body,
+.ant-modal.landing-lead-modal .ant-modal-body,
 .enquire-lead-modal .ant-modal-body,
 .scholarship-lead-modal .ant-modal-body,
 .landing-lead-modal .ant-modal-body {
   padding: 0 !important;
   background: transparent !important;
   background-color: transparent !important;
-  border-radius: 16px !important;
+  border-radius: 0 !important;
 }
 
 .enquire-lead-modal .ant-modal-close,
 .scholarship-lead-modal .ant-modal-close,
 .landing-lead-modal .ant-modal-close {
-  top: 10px !important;
-  right: 10px !important;
-  z-index: 50 !important;
+  display: none !important;
 }
 
 .enquire-lead-modal,

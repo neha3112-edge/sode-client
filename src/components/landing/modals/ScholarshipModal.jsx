@@ -11,7 +11,7 @@ import LandingLeadForm from "../LandingLeadForm";
  * Uses the exact same reusable LandingLeadForm component as on the landing page,
  * inheriting the university's theme, colors, placeholders, and branding,
  * with the title set to "Get Scholarship Coupon Code" (or customized from JSON/CompareModal),
- * and full cover with the same open modal width (480px).
+ * and full cover with the same open modal width (400px).
  */
 export default function ScholarshipModal({
   isOpen,
@@ -61,9 +61,23 @@ export default function ScholarshipModal({
       onCancel={onClose}
       footer={null}
       centered
-      width={480}
+      width={400}
       destroyOnClose={true}
       closeIcon={null}
+      styles={{
+        content: {
+          padding: 0,
+          background: "transparent",
+          backgroundColor: "transparent",
+          boxShadow: "none",
+          border: "none",
+        },
+        body: {
+          padding: 0,
+          background: "transparent",
+          backgroundColor: "transparent",
+        },
+      }}
       className="scholarship-lead-modal landing-lead-modal p-0 max-w-[calc(100vw-24px)] mx-auto !pointer-events-auto"
     >
       <div className="relative w-full rounded-2xl overflow-hidden shadow-2xl pointer-events-auto">
