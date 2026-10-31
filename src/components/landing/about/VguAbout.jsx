@@ -83,7 +83,8 @@ export default function VguAbout({ about = {}, brand = {}, onOpenApply }) {
                 onClick={onOpenApply}
                 bg={btnBg}
                 textColor={btnTextColor}
-                className="!inline-flex !items-center !justify-center !font-bold !text-[14px] !px-8 !py-2.5 !rounded-[6px] shadow-xs hover:brightness-105 active:scale-95 border-none transition-all cursor-pointer"
+                className="!inline-flex !items-center !justify-center !font-semibold !tracking-[0.8px] !text-[14px] !px-8 !py-2.5 !rounded-[6px] shadow-xs hover:brightness-105 active:scale-95 border-none transition-all cursor-pointer"
+                style={{ letterSpacing: "0.8px", fontWeight: 600 }}
               >
                 {buttonText}
               </LandingButton>
