@@ -938,7 +938,7 @@ export const vguData = {
       },
     ],
     buttonText: "Get Your Degree",
-    image: "/assets/all_universities_images/vgu/sample-degree-vgu.webp",
+    image: "/assets/all_universities_images/vgu/sample-degree-vgu-clean.webp",
   },
   recruiters: {
     title: "Top Recruiters at VGU Online",
