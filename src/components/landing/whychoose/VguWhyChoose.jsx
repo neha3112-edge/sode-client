@@ -11,13 +11,22 @@ export default function VguWhyChoose({ whyChoose = [], brand = {}, onOpenApply }
     brand.whyChooseTitle ||
     `Why ${brand.name || "Vivekananda Global University Online"} is a Smart Choice for learners?`;
 
-  // Render title matching reference: 2 lines with "Online is a" on first line
+  // Render title matching reference: 3 lines on mobile (Image 2), 2 lines on desktop
   const renderTitle = () => {
-    if (typeof rawTitle === "string" && rawTitle.includes("Vivekananda Global University")) {
+    if (typeof rawTitle === "string" && rawTitle.includes("Vivekananda Global")) {
       return (
         <>
-          <span className="block">Why Vivekananda Global University Online is a</span>
-          <span className="block">Smart Choice for learners?</span>
+          {/* Mobile view lines matching Image 2 */}
+          <span className="sm:hidden">
+            <span className="block">Why Vivekananda Global</span>
+            <span className="block">University Online is a Smart</span>
+            <span className="block">Choice for learners?</span>
+          </span>
+          {/* Desktop / Tablet view lines */}
+          <span className="hidden sm:block">
+            <span className="block">Why Vivekananda Global University Online is a</span>
+            <span className="block">Smart Choice for learners?</span>
+          </span>
         </>
       );
     }
@@ -37,23 +46,23 @@ export default function VguWhyChoose({ whyChoose = [], brand = {}, onOpenApply }
     <section id="advantage" className="py-9 sm:py-12 bg-white border-b border-slate-200 select-none scroll-mt-20">
       <div id="Resources" className="sr-only"></div>
       <LandingContainer>
-        <div className="flex justify-center mb-5 sm:mb-6">
+        <div className="flex justify-center mb-5 sm:mb-6 px-3">
           <div
-            className={cfg.badgeClassName || "text-white px-5 sm:px-8 py-3.5 sm:py-4 text-center shadow-md max-w-[620px] mx-auto"}
+            className={cfg.badgeClassName || "text-white px-4 sm:px-8 py-3.5 sm:py-4 text-center shadow-md w-full max-w-[340px] sm:max-w-[540px] lg:max-w-[620px] mx-auto rounded-[12px] sm:rounded-[14px]"}
             style={{
               backgroundColor: headerBg,
-              borderRadius: "0px 10px 10px 10px",
+              borderRadius: "12px",
               ...cfg.badgeStyle,
             }}
           >
-            <h2 className={cfg.headerTitleClassName || "text-[18px] sm:text-[21px] lg:text-[24px] font-semibold text-white tracking-normal leading-[1.35] m-0"}>
+            <h2 className={cfg.headerTitleClassName || "text-[16px] sm:text-[20px] lg:text-[23px] font-semibold text-white tracking-normal leading-[1.3] m-0"}>
               {renderTitle()}
             </h2>
           </div>
         </div>
 
         {brand.whyChooseDescription && (
-          <p className="text-center text-[12.5px] sm:text-[13px] text-[#222222] leading-[1.65] max-w-[1050px] mx-auto mb-8 sm:mb-10 font-normal px-4">
+          <p className="text-center text-[12.5px] sm:text-[13px] text-[#4b5563] leading-[1.65] max-w-[1050px] mx-auto mb-8 sm:mb-10 font-normal px-4">
             Vivekananda Global University Online is the most trusted university by students because of its recognised approvals and job-ready curriculum. VGU University courses are <br className="hidden md:inline" />
             offered online with expert faculty, helpful resources like LMS that help students get strong knowledge and necessary skills, and a smooth Vivekananda Global University <br className="hidden md:inline" />
             course admissions process.
