@@ -588,12 +588,20 @@ a.auto-rendered-link:hover {
    GLOBAL LEAD FORM MODALS (Brochure, Enquiry, Scholarship, Apply)
    Full cover: removes Ant Design white box and inner padding
 ========================================================= */
+.ant-modal.enquire-lead-modal .ant-modal-container,
+.ant-modal.scholarship-lead-modal .ant-modal-container,
+.ant-modal.landing-lead-modal .ant-modal-container,
+.enquire-lead-modal .ant-modal-container,
+.scholarship-lead-modal .ant-modal-container,
+.landing-lead-modal .ant-modal-container,
+.ant-modal:has(.landing-lead-card) .ant-modal-container,
 .ant-modal.enquire-lead-modal .ant-modal-content,
 .ant-modal.scholarship-lead-modal .ant-modal-content,
 .ant-modal.landing-lead-modal .ant-modal-content,
 .enquire-lead-modal .ant-modal-content,
 .scholarship-lead-modal .ant-modal-content,
-.landing-lead-modal .ant-modal-content {
+.landing-lead-modal .ant-modal-content,
+.ant-modal:has(.landing-lead-card) .ant-modal-content {
   background: transparent !important;
   background-color: transparent !important;
   padding: 0 !important;
@@ -608,7 +616,8 @@ a.auto-rendered-link:hover {
 .ant-modal.landing-lead-modal .ant-modal-body,
 .enquire-lead-modal .ant-modal-body,
 .scholarship-lead-modal .ant-modal-body,
-.landing-lead-modal .ant-modal-body {
+.landing-lead-modal .ant-modal-body,
+.ant-modal:has(.landing-lead-card) .ant-modal-body {
   padding: 0 !important;
   background: transparent !important;
   background-color: transparent !important;
@@ -617,13 +626,15 @@ a.auto-rendered-link:hover {
 
 .enquire-lead-modal .ant-modal-close,
 .scholarship-lead-modal .ant-modal-close,
-.landing-lead-modal .ant-modal-close {
+.landing-lead-modal .ant-modal-close,
+.ant-modal:has(.landing-lead-card) .ant-modal-close {
   display: none !important;
 }
 
 .enquire-lead-modal,
 .scholarship-lead-modal,
 .landing-lead-modal,
+.landing-lead-modal .ant-modal-container,
 .landing-lead-modal .ant-modal-content,
 .landing-lead-modal .ant-modal-body,
 .landing-lead-card,

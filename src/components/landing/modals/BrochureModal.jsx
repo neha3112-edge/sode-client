@@ -48,6 +48,13 @@ export default function BrochureModal({
       destroyOnClose={true}
       closeIcon={null}
       styles={{
+        container: {
+          padding: 0,
+          background: "transparent",
+          backgroundColor: "transparent",
+          boxShadow: "none",
+          border: "none",
+        },
         content: {
           padding: 0,
           background: "transparent",
