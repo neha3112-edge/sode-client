@@ -38,7 +38,7 @@ export default function CourseAlternativeUniversities({
   currentUniLogo = null,
 }) {
   const router = useRouter();
-  const [visibleCount, setVisibleCount] = useState(5);
+  const [visibleCount, setVisibleCount] = useState(6);
   const { toggleCompare, addToCompare, isInCompare, setIsCompareDrawerOpen, compareList } = useCompare();
   const { openFormModal } = useFormModal();
 
@@ -228,8 +228,8 @@ export default function CourseAlternativeUniversities({
         })}
       </div>
 
-      {/* View More / View Less Buttons (Initial 5, opens +5 each click, then collapses back to 5) */}
-      {processedPrograms.length > 5 && (
+      {/* View More / View Less Buttons (Mobile 6, Desktop 5 initially) */}
+      {processedPrograms.length > 6 ? (
         <div className="flex items-center justify-center gap-3 mt-6">
           {visibleCount < processedPrograms.length ? (
             <button
@@ -247,7 +247,7 @@ export default function CourseAlternativeUniversities({
           ) : (
             <button
               type="button"
-              onClick={() => setVisibleCount(5)}
+              onClick={() => setVisibleCount(6)}
               className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
             >
               <span>View Less</span>
@@ -255,7 +255,31 @@ export default function CourseAlternativeUniversities({
             </button>
           )}
         </div>
-      )}
+      ) : processedPrograms.length === 6 ? (
+        visibleCount === 6 ? (
+          <div className="hidden lg:flex items-center justify-center gap-3 mt-6">
+            <button
+              type="button"
+              onClick={() => setVisibleCount(processedPrograms.length + 1)}
+              className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
+            >
+              <span>View More</span>
+              <ChevronDown className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        ) : (
+          <div className="hidden lg:flex items-center justify-center gap-3 mt-6">
+            <button
+              type="button"
+              onClick={() => setVisibleCount(6)}
+              className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
+            >
+              <span>View Less</span>
+              <ChevronDown className="w-3.5 h-3.5 rotate-180" />
+            </button>
+          </div>
+        )
+      ) : null}
     </div>
   );
 }

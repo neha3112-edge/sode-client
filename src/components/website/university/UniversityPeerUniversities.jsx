@@ -15,7 +15,7 @@ export default function UniversityPeerUniversities({
   openFormModal,
 }) {
   const router = useRouter();
-  const [visibleTopUnis, setVisibleTopUnis] = useState(5);
+  const [visibleTopUnis, setVisibleTopUnis] = useState(6);
   const { toggleCompare, compareList, isInCompare, setIsCompareDrawerOpen } = useCompare();
 
   if (!topUniversities || topUniversities.length === 0) return null;
@@ -181,8 +181,8 @@ export default function UniversityPeerUniversities({
         })}
       </div>
 
-      {/* View More / View Less Buttons (Initial 5, opens +5 each click, then collapses back to 5) */}
-      {topUniversities.length > 5 && (
+      {/* View More / View Less Buttons (Mobile 6, Desktop 5 initially) */}
+      {topUniversities.length > 6 ? (
         <div className="flex items-center justify-center gap-3 mt-6">
           {visibleTopUnis < topUniversities.length ? (
             <button
@@ -200,7 +200,7 @@ export default function UniversityPeerUniversities({
           ) : (
             <button
               type="button"
-              onClick={() => setVisibleTopUnis(5)}
+              onClick={() => setVisibleTopUnis(6)}
               className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
             >
               <span>View Less</span>
@@ -208,7 +208,31 @@ export default function UniversityPeerUniversities({
             </button>
           )}
         </div>
-      )}
+      ) : topUniversities.length === 6 ? (
+        visibleTopUnis === 6 ? (
+          <div className="hidden lg:flex items-center justify-center gap-3 mt-6">
+            <button
+              type="button"
+              onClick={() => setVisibleTopUnis(topUniversities.length + 1)}
+              className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
+            >
+              <span>View More</span>
+              <ChevronDown className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        ) : (
+          <div className="hidden lg:flex items-center justify-center gap-3 mt-6">
+            <button
+              type="button"
+              onClick={() => setVisibleTopUnis(6)}
+              className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
+            >
+              <span>View Less</span>
+              <ChevronDown className="w-3.5 h-3.5 rotate-180" />
+            </button>
+          </div>
+        )
+      ) : null}
     </div>
   );
 }

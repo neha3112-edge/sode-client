@@ -85,8 +85,8 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
   // Active FAQ Accordion State (open first by default)
   const [openFaqIndex, setOpenFaqIndex] = useState(0);
 
-  // Visible Universities in Top Universities Section (Initial 5, expands 5-by-5, then collapses back to 5)
-  const [visibleUnisCount, setVisibleUnisCount] = useState(5);
+  // Visible Universities in Top Universities Section (Initial 6 on mobile, 5 on desktop)
+  const [visibleUnisCount, setVisibleUnisCount] = useState(6);
 
   // Visible Overview Highlights Table Rows (Initial 5, expands 5-by-5, then collapses back to 5)
   const [visibleOverviewCount, setVisibleOverviewCount] = useState(5);
@@ -1622,7 +1622,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                     return (
                       <div
                         key={idx}
-                        className="bg-gray-50 rounded-xl border border-gray-200 hover:border-blue-400 p-2 sm:p-2.5 hover:shadow-md transition-all flex flex-col items-center justify-between text-center relative group min-w-0 shadow-2xs"
+                        className={`bg-gray-50 rounded-xl border border-gray-200 hover:border-blue-400 p-2 sm:p-2.5 hover:shadow-md transition-all flex flex-col items-center justify-between text-center relative group min-w-0 shadow-2xs ${idx === 5 && visibleUnisCount === 6 ? "flex lg:hidden" : "flex"}`}
                       >
                         {/* Circular Logo Container */}
                         <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-full p-1 flex items-center justify-center bg-white relative my-0.5 shrink-0 overflow-hidden border border-gray-100">
@@ -1769,8 +1769,8 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                   })}
                 </div>
 
-                {/* View More / View Less Buttons (Initial 5, opens +5 each click, then collapses back to 5) */}
-                {universitiesList.length > 5 && (
+                {/* View More / View Less Buttons (Mobile 6, Desktop 5 initially) */}
+                {universitiesList.length > 6 ? (
                   <div className="flex items-center justify-center gap-3 mt-6">
                     {visibleUnisCount < universitiesList.length ? (
                       <button
@@ -1788,7 +1788,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                     ) : (
                       <button
                         type="button"
-                        onClick={() => setVisibleUnisCount(5)}
+                        onClick={() => setVisibleUnisCount(6)}
                         className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
                       >
                         <span>View Less</span>
@@ -1796,7 +1796,31 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                       </button>
                     )}
                   </div>
-                )}
+                ) : universitiesList.length === 6 ? (
+                  visibleUnisCount === 6 ? (
+                    <div className="hidden lg:flex items-center justify-center gap-3 mt-6">
+                      <button
+                        type="button"
+                        onClick={() => setVisibleUnisCount(universitiesList.length + 1)}
+                        className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
+                      >
+                        <span>View More</span>
+                        <ChevronDown className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="hidden lg:flex items-center justify-center gap-3 mt-6">
+                      <button
+                        type="button"
+                        onClick={() => setVisibleUnisCount(6)}
+                        className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue-50 text-[#0077B6] hover:bg-blue-100 hover:text-blue-700 transition-colors text-xs font-semibold border border-blue-200/60 cursor-pointer shadow-2xs active:scale-95"
+                      >
+                        <span>View Less</span>
+                        <ChevronDown className="w-3.5 h-3.5 rotate-180" />
+                      </button>
+                    </div>
+                  )
+                ) : null}
               </div>
             )}
 
