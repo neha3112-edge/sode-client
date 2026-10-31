@@ -36,7 +36,6 @@ export default function ThankYouClient({
   conversionSource = "lp",
   initialData = null,
 }) {
-  const [progress, setProgress] = useState(0);
   const [brochureOpened, setBrochureOpened] = useState(false);
   const isBrochure = useSyncExternalStore(
     () => () => {},
@@ -74,9 +73,9 @@ export default function ThankYouClient({
   const googleAdsId = initialData?.googleAdsId || "";
   const conversionLabel = initialData?.googleAdsConversionLabel || "";
 
-  const badgeText = initialData?.badgeText || (isBrochure ? "BROCHURE READY" : "SUBMISSION RECEIVED");
-  const title = initialData?.title || (isBrochure ? "Thank You for Downloading the Brochure!" : "Thank You for Contacting Us!");
-  const subtitle = initialData?.subtitle || (isBrochure ? "Your official university brochure is being prepared and will open automatically in a new tab." : "Our expert academic counselors will get in touch with you shortly to guide you.");
+  const badgeText = isBrochure ? "" : (initialData?.badgeText || "SUBMISSION RECEIVED");
+  const title = isBrochure ? "Your Submission has been received" : (initialData?.title || "Thank You for Contacting Us!");
+  const subtitle = isBrochure ? "You'll be redirected to your brochure shortly..." : (initialData?.subtitle || "Our expert academic counselors will get in touch with you shortly to guide you.");
 
   const brochurePreparingText = initialData?.brochurePreparingText || "Opening your brochure in a new tab in 3 seconds...";
   const brochureOpenedText = initialData?.brochureOpenedText || "Your brochure has opened in a new tab!";
@@ -169,7 +168,7 @@ export default function ThankYouClient({
   }, []);
 
   /* =========================================================
-     BROCHURE PROGRESS AND AUTO OPEN
+     BROCHURE AUTO OPEN AFTER 3 SECONDS
   ========================================================= */
 
   useEffect(() => {
@@ -177,13 +176,6 @@ export default function ThankYouClient({
     if (brochureProcessStarted.current) return;
 
     brochureProcessStarted.current = true;
-    let currentProgress = 0;
-
-    const progressInterval = window.setInterval(() => {
-      currentProgress += 1;
-      if (currentProgress <= 100) setProgress(currentProgress);
-      if (currentProgress >= 100) window.clearInterval(progressInterval);
-    }, 30);
 
     const brochureTimer = window.setTimeout(() => {
       window.open(getBrochureUrl(), "_blank", "noopener,noreferrer");
@@ -192,7 +184,6 @@ export default function ThankYouClient({
     }, 3000);
 
     return () => {
-      window.clearInterval(progressInterval);
       window.clearTimeout(brochureTimer);
     };
   }, [clearBrochureSession, getBrochureUrl, isBrochure, isClientReady]);
@@ -302,46 +293,33 @@ export default function ThankYouClient({
                 </h1>
               )}
 
+              {subtitle && (
+                <p className="mx-auto max-w-lg text-base sm:text-lg leading-relaxed text-gray-700">
+                  {subtitle}
+                </p>
+              )}
+
               {/* =============================================
-                  BROCHURE DOWNLOAD PROGRESS
+                  BROCHURE ACTIONS (MATCHING IMAGE 2 DESIGN)
               ============================================== */}
 
               {isClientReady && isBrochure && (
-                <div className="mx-auto mb-5 w-full max-w-lg">
-                  {(brochureOpened ? brochureOpenedText : brochurePreparingText) && (
-                    <p className="text-sm leading-relaxed text-gray-600 md:text-base">
-                      {brochureOpened ? brochureOpenedText : brochurePreparingText}
-                    </p>
-                  )}
-
-                  {!brochureOpened && (
-                    <>
-                      <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-gray-200">
-                        <div
-                          className="h-full bg-[#22c55e] transition-all duration-75"
-                          style={{ width: `${progress}%` }}
-                        />
-                      </div>
-                      <p className="mt-2 text-xs text-gray-400">
-                        Preparing your brochure... {progress}%
-                      </p>
-                    </>
-                  )}
+                <div className="mt-6 flex flex-col items-center justify-center">
+                  <Link
+                    href={homeButtonLink || "/"}
+                    className="inline-flex items-center justify-center px-6 py-3.5 sm:px-8 sm:py-3.5 rounded-md bg-[#002B49] hover:bg-[#001f35] text-white font-semibold text-[15px] sm:text-[16px] transition-all shadow-md active:scale-98"
+                  >
+                    For More Information kindly Visit Us
+                  </Link>
 
                   <button
                     type="button"
                     onClick={handleOpenBrochure}
-                    className="mt-4 cursor-pointer text-sm font-semibold text-[#1C3569] underline underline-offset-4 transition-colors hover:text-[#8B7500]"
+                    className="mt-3 text-xs text-slate-400 hover:text-slate-700 underline underline-offset-2 cursor-pointer transition-colors"
                   >
-                    Click here if the brochure does not open
+                    Click here if the brochure does not open automatically
                   </button>
                 </div>
-              )}
-
-              {subtitle && (
-                <p className="mx-auto max-w-lg text-sm leading-relaxed text-gray-600 md:text-base">
-                  {subtitle}
-                </p>
               )}
             </div>
 
@@ -382,7 +360,7 @@ export default function ThankYouClient({
                 ACTION BUTTONS (ONLY IF CONFIGURED IN API)
             ================================================== */}
 
-            {(homeButtonText || exploreButtonText) && (
+            {!isBrochure && (homeButtonText || exploreButtonText) && (
               <div className="mx-auto max-w-md">
                 <div className="flex flex-col gap-3 sm:flex-row">
                   {homeButtonText && (
