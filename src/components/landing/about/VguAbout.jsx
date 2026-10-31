@@ -64,8 +64,8 @@ export default function VguAbout({ about = {}, brand = {}, onOpenApply }) {
           )}
           <div className="lg:col-span-7 space-y-4.5 sm:space-y-5">
             <h2
-              className={cfg.titleClassName || "text-[22px] sm:text-[30px] lg:text-[35px] font-light text-white text-center lg:text-left tracking-[0.5px] leading-[1.25] m-0 mb-1"}
-              style={{ color: titleColor, letterSpacing: "0.5px", fontWeight: 300 }}
+              className={cfg.titleClassName || "text-[22px] sm:text-[30px] lg:text-[35px] font-light text-[#ffd508] md:text-white text-center lg:text-left tracking-[0.5px] leading-[1.25] m-0 mb-1"}
+              style={{ letterSpacing: "0.5px", fontWeight: 300, ...(titleColor && titleColor !== "#ffffff" ? { color: titleColor } : {}) }}
             >
               About Vivekananda Global
               <br />

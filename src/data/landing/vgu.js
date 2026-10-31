@@ -701,7 +701,7 @@ export const vguData = {
     aboutConfig: {
       backgroundColor: "#2e6396",
       titleColor: "#ffffff",
-      titleClassName: "text-[22px] sm:text-[30px] lg:text-[35px] font-light text-white text-center lg:text-left tracking-[0.5px] leading-[1.25] m-0 mb-1",
+      titleClassName: "text-[22px] sm:text-[30px] lg:text-[35px] font-light text-[#ffd508] md:text-white text-center lg:text-left tracking-[0.5px] leading-[1.25] m-0 mb-1",
       backgroundImage: "/assets/all_universities_images/vgu/about-bg-vgu.webp",
       buttonBg: "#fec810",
       buttonTextColor: "#000000",
