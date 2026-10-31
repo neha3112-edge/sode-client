@@ -120,6 +120,7 @@ export default function UniversityCoursesSection({
   const [specFullData, setSpecFullData] = useState(null);
   const [loadingSpecDetail, setLoadingSpecDetail] = useState(false);
   const [activeSpecSem, setActiveSpecSem] = useState(0);
+  const [isOverviewExpanded, setIsOverviewExpanded] = useState(false);
   const brandColor = uni?.color_code || "#08AEAA";
 
   const handleCloseSpecModal = () => {
@@ -128,12 +129,14 @@ export default function UniversityCoursesSection({
     setSelectedSpecDetail(null);
     setSpecFullData(null);
     setActiveSpecSem(0);
+    setIsOverviewExpanded(false);
   };
 
   const handleBackToSpecList = () => {
     setSelectedSpecDetail(null);
     setSpecFullData(null);
     setActiveSpecSem(0);
+    setIsOverviewExpanded(false);
   };
 
   const handleOpenSpecDetail = async (sc, parentData) => {
@@ -142,6 +145,7 @@ export default function UniversityCoursesSection({
     setSpecFullData(null);
     setLoadingSpecDetail(true);
     setActiveSpecSem(0);
+    setIsOverviewExpanded(false);
 
     try {
       const cleanUni = String(slug || uni?.slug || "university").toLowerCase().trim();
@@ -526,7 +530,33 @@ export default function UniversityCoursesSection({
                   : `${cleanUniSlug}/${cleanCourseSlug}`;
 
                 return (
-                  <div className="relative text-left max-h-[82vh] overflow-y-auto pr-1 scrollbar-thin [scrollbar-color:#cbd5e1_transparent]">
+                  <div className="relative text-left max-h-[82vh] overflow-y-auto pr-2 spec-scrollbar">
+                    <style>{`
+                      .spec-scrollbar {
+                        scrollbar-width: auto !important;
+                        scrollbar-color: auto !important;
+                      }
+                      .spec-scrollbar::-webkit-scrollbar {
+                        width: 2.5px !important;
+                        height: 2.5px !important;
+                      }
+                      .spec-scrollbar::-webkit-scrollbar-track {
+                        background: transparent !important;
+                      }
+                      .spec-scrollbar::-webkit-scrollbar-thumb {
+                        background-color: #072C50 !important;
+                        border-radius: 9999px !important;
+                      }
+                      .spec-scrollbar::-webkit-scrollbar-thumb:hover {
+                        background-color: #0B2546 !important;
+                      }
+                      @supports (-moz-appearance: none) {
+                        .spec-scrollbar {
+                          scrollbar-width: thin !important;
+                          scrollbar-color: #072C50 transparent !important;
+                        }
+                      }
+                    `}</style>
                     {/* Top Bar with Back Button & Close Button */}
                     <div className="flex items-center justify-between pb-3 mb-2 border-b border-slate-100 gap-2">
                       <button
@@ -623,9 +653,44 @@ export default function UniversityCoursesSection({
                             )}
                           </div>
 
-                          <p className="text-xs sm:text-[13px] text-gray-600 leading-relaxed mb-0 font-normal">
-                            {specDesc}
-                          </p>
+                          {(() => {
+                            const text = specDesc || "";
+                            const isLong = text.length > 440;
+                            if (!isLong) {
+                              return (
+                                <p className="text-xs sm:text-[13px] text-gray-600 leading-relaxed mb-0 font-normal">
+                                  {text}
+                                </p>
+                              );
+                            }
+                            if (!isOverviewExpanded) {
+                              const truncated = text.slice(0, 400).replace(/\s+\S*$/, "");
+                              return (
+                                <p className="text-xs sm:text-[13px] text-gray-600 leading-relaxed mb-0 font-normal">
+                                  {truncated}...{" "}
+                                  <button
+                                    type="button"
+                                    onClick={() => setIsOverviewExpanded(true)}
+                                    className="inline font-bold text-[#072C50] hover:underline cursor-pointer bg-transparent border-none p-0 text-xs ml-0.5"
+                                  >
+                                    Read More
+                                  </button>
+                                </p>
+                              );
+                            }
+                            return (
+                              <p className="text-xs sm:text-[13px] text-gray-600 leading-relaxed mb-0 font-normal">
+                                {text}{" "}
+                                <button
+                                  type="button"
+                                  onClick={() => setIsOverviewExpanded(false)}
+                                  className="inline font-bold text-[#072C50] hover:underline cursor-pointer bg-transparent border-none p-0 text-xs ml-1"
+                                >
+                                  Read Less
+                                </button>
+                              </p>
+                            );
+                          })()}
                         </div>
 
                         {/* Course Curriculum Section */}
@@ -639,7 +704,7 @@ export default function UniversityCoursesSection({
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-4 items-stretch">
-                              <div className="col-span-12 md:col-span-3 grid grid-cols-3 md:flex md:flex-col gap-2">
+                              <div className="col-span-12 md:col-span-3 grid grid-cols-3 md:flex md:flex-col gap-2 max-h-[140px] md:max-h-[235px] overflow-y-auto pr-1.5 spec-scrollbar">
                                 {specCurriculum.map((sem, sIdx) => {
                                   const isActive = activeSpecSem === sIdx;
                                   return (
@@ -661,7 +726,7 @@ export default function UniversityCoursesSection({
                                 })}
                               </div>
 
-                              <div className="col-span-12 md:col-span-9 bg-linear-to-br from-blue-50/50 via-blue-50/30 to-slate-50/40 border border-blue-100/80 rounded-2xl p-3.5 sm:p-4 min-h-[135px] flex items-start">
+                              <div className="col-span-12 md:col-span-9 bg-linear-to-br from-blue-50/50 via-blue-50/30 to-slate-50/40 border border-blue-100/80 rounded-2xl p-3.5 sm:p-4 min-h-[135px] max-h-[235px] overflow-y-auto pr-1.5 spec-scrollbar flex items-start">
                                 <div className="w-full space-y-3">
                                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 w-full">
                                     {(activeCurriculum?.subjects || []).map((sub, subIdx) => (
@@ -772,6 +837,32 @@ export default function UniversityCoursesSection({
             ) : (
               // ── VIEW 1: SPECIALIZATIONS GRID OVERVIEW (INITIAL MODAL STATE) ──
               <div className="relative text-left">
+                <style>{`
+                  .spec-scrollbar {
+                    scrollbar-width: auto !important;
+                    scrollbar-color: auto !important;
+                  }
+                  .spec-scrollbar::-webkit-scrollbar {
+                    width: 2.5px !important;
+                    height: 2.5px !important;
+                  }
+                  .spec-scrollbar::-webkit-scrollbar-track {
+                    background: transparent !important;
+                  }
+                  .spec-scrollbar::-webkit-scrollbar-thumb {
+                    background-color: #072C50 !important;
+                    border-radius: 9999px !important;
+                  }
+                  .spec-scrollbar::-webkit-scrollbar-thumb:hover {
+                    background-color: #0B2546 !important;
+                  }
+                  @supports (-moz-appearance: none) {
+                    .spec-scrollbar {
+                      scrollbar-width: thin !important;
+                      scrollbar-color: #072C50 transparent !important;
+                    }
+                  }
+                `}</style>
                 {/* Close Button Top-Right */}
                 <button
                   type="button"
@@ -864,14 +955,14 @@ export default function UniversityCoursesSection({
                           </span>
                         </div>
 
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-1.5 sm:gap-2 max-h-36 sm:max-h-44 overflow-y-auto pr-1">
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-1.5 sm:gap-2 max-h-[118px] sm:max-h-[122px] overflow-y-auto pr-2 spec-scrollbar">
                           {specializationsList.map((sub, idx) => {
                             const subName = typeof sub === "string" ? sub : sub.name || "";
                             return (
                               <div
                                 key={idx}
                                 onClick={() => handleOpenSpecDetail(sub, selectedCourseSpec)}
-                                className="flex items-center gap-1.5 sm:gap-2 text-[10.5px] sm:text-xs font-semibold px-2.5 sm:px-3 py-2 rounded-lg sm:rounded-xl border transition-all cursor-pointer group/spec bg-gray-50 hover:bg-gray-100 text-[#072C50] border-gray-200/80 hover:border-gray-300"
+                                className="flex items-center gap-1.5 sm:gap-2 text-[10.5px] sm:text-xs font-semibold px-2.5 sm:px-3 py-1.5 rounded-full border transition-all cursor-pointer group/spec bg-gray-50 hover:bg-gray-100 text-[#072C50] border-[#072C50]"
                               >
                                 <CheckCircle2
                                   size={13}
@@ -911,11 +1002,44 @@ export default function UniversityCoursesSection({
                       </div>
                     )}
 
-                    {itemDesc && (
-                      <p className="text-xs sm:text-[13px] text-gray-600 leading-relaxed mb-0 font-normal">
-                        {itemDesc}
-                      </p>
-                    )}
+                    {itemDesc && (() => {
+                      const text = itemDesc || "";
+                      const isLong = text.length > 440;
+                      if (!isLong) {
+                        return (
+                          <p className="text-xs sm:text-[13px] text-gray-600 leading-relaxed mb-0 font-normal">
+                            {text}
+                          </p>
+                        );
+                      }
+                      if (!isOverviewExpanded) {
+                        const truncated = text.slice(0, 400).replace(/\s+\S*$/, "");
+                        return (
+                          <p className="text-xs sm:text-[13px] text-gray-600 leading-relaxed mb-0 font-normal">
+                            {truncated}...{" "}
+                            <button
+                              type="button"
+                              onClick={() => setIsOverviewExpanded(true)}
+                              className="inline font-bold text-[#072C50] hover:underline cursor-pointer bg-transparent border-none p-0 text-xs ml-0.5"
+                            >
+                              Read More
+                            </button>
+                          </p>
+                        );
+                      }
+                      return (
+                        <p className="text-xs sm:text-[13px] text-gray-600 leading-relaxed mb-0 font-normal">
+                          {text}{" "}
+                          <button
+                            type="button"
+                            onClick={() => setIsOverviewExpanded(false)}
+                            className="inline font-bold text-[#072C50] hover:underline cursor-pointer bg-transparent border-none p-0 text-xs ml-1"
+                          >
+                            Read Less
+                          </button>
+                        </p>
+                      );
+                    })()}
 
                     {/* Bottom: Action Buttons */}
                     <div className="flex items-center gap-2 sm:gap-3 pt-2 mt-auto w-full">

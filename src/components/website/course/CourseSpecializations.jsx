@@ -114,6 +114,7 @@ export default function CourseSpecializations({
 }) {
   const [selectedSpecModal, setSelectedSpecModal] = useState(null);
   const [activeSpecSem, setActiveSpecSem] = useState(0);
+  const [isOverviewExpanded, setIsOverviewExpanded] = useState(false);
   const [activeSpecId, setActiveSpecId] = useState(null);
   const specializationSectionRef = useRef(null);
   const hasAutoOpenedRef = useRef(false);
@@ -173,6 +174,7 @@ export default function CourseSpecializations({
 
   useEffect(() => {
     setActiveSpecSem(0);
+    setIsOverviewExpanded(false);
   }, [selectedSpecModal]);
 
   useEffect(() => {
@@ -340,6 +342,32 @@ export default function CourseSpecializations({
             }
             className="max-w-[96vw] [&_.ant-modal-content]:rounded-3xl [&_.ant-modal-content]:p-4 sm:[&_.ant-modal-content]:p-6 md:[&_.ant-modal-content]:p-7 [&_.ant-modal-close]:top-2.5 [&_.ant-modal-close]:right-2.5 md:[&_.ant-modal-close]:top-3.5 md:[&_.ant-modal-close]:right-3.5 [&_.ant-modal-content]:max-h-[85vh] [&_.ant-modal-content]:overflow-y-auto [&_.ant-modal-content]:overflow-x-hidden"
           >
+            <style>{`
+              .spec-scrollbar {
+                scrollbar-width: auto !important;
+                scrollbar-color: auto !important;
+              }
+              .spec-scrollbar::-webkit-scrollbar {
+                width: 2.5px !important;
+                height: 2.5px !important;
+              }
+              .spec-scrollbar::-webkit-scrollbar-track {
+                background: transparent !important;
+              }
+              .spec-scrollbar::-webkit-scrollbar-thumb {
+                background-color: #072C50 !important;
+                border-radius: 9999px !important;
+              }
+              .spec-scrollbar::-webkit-scrollbar-thumb:hover {
+                background-color: #0B2546 !important;
+              }
+              @supports (-moz-appearance: none) {
+                .spec-scrollbar {
+                  scrollbar-width: thin !important;
+                  scrollbar-color: #072C50 transparent !important;
+                }
+              }
+            `}</style>
             <div className="flex flex-col md:flex-row items-stretch gap-5 sm:gap-6">
               {/* Left Column: Portrait Banner Card */}
               <div className="relative w-full md:w-80 lg:w-88 shrink-0 h-36 sm:h-44 md:h-auto min-h-36 sm:min-h-44 md:min-h-[350px] md:max-h-[460px] rounded-xl sm:rounded-2xl overflow-hidden bg-slate-900 shadow-xs flex items-stretch">
@@ -409,9 +437,44 @@ export default function CourseSpecializations({
                     )}
                   </div>
 
-                  <p className="text-xs sm:text-[13px] text-gray-600 leading-relaxed mb-0 font-normal">
-                    {itemDesc}
-                  </p>
+                  {(() => {
+                    const text = itemDesc || "";
+                    const isLong = text.length > 440;
+                    if (!isLong) {
+                      return (
+                        <p className="text-xs sm:text-[13px] text-gray-600 leading-relaxed mb-0 font-normal">
+                          {text}
+                        </p>
+                      );
+                    }
+                    if (!isOverviewExpanded) {
+                      const truncated = text.slice(0, 400).replace(/\s+\S*$/, "");
+                      return (
+                        <p className="text-xs sm:text-[13px] text-gray-600 leading-relaxed mb-0 font-normal">
+                          {truncated}...{" "}
+                          <button
+                            type="button"
+                            onClick={() => setIsOverviewExpanded(true)}
+                            className="inline font-bold text-[#0B2546] hover:underline cursor-pointer bg-transparent border-none p-0 text-xs ml-0.5"
+                          >
+                            Read More
+                          </button>
+                        </p>
+                      );
+                    }
+                    return (
+                      <p className="text-xs sm:text-[13px] text-gray-600 leading-relaxed mb-0 font-normal">
+                        {text}{" "}
+                        <button
+                          type="button"
+                          onClick={() => setIsOverviewExpanded(false)}
+                          className="inline font-bold text-[#0B2546] hover:underline cursor-pointer bg-transparent border-none p-0 text-xs ml-1"
+                        >
+                          Read Less
+                        </button>
+                      </p>
+                    );
+                  })()}
                 </div>
 
                 {/* Course Curriculum Section */}
@@ -425,7 +488,7 @@ export default function CourseSpecializations({
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-4 items-stretch">
-                      <div className="col-span-12 md:col-span-3 grid grid-cols-3 md:flex md:flex-col gap-2">
+                      <div className="col-span-12 md:col-span-3 grid grid-cols-3 md:flex md:flex-col gap-2 max-h-[140px] md:max-h-[235px] overflow-y-auto pr-1.5 spec-scrollbar">
                         {specCurriculum.map((sem, sIdx) => {
                           const isActive = activeSpecSem === sIdx;
                           return (
@@ -447,7 +510,7 @@ export default function CourseSpecializations({
                         })}
                       </div>
 
-                      <div className="col-span-12 md:col-span-9 bg-gradient-to-br from-blue-50/50 via-blue-50/30 to-slate-50/40 border border-blue-100/80 rounded-2xl p-3.5 sm:p-4 min-h-[135px] flex items-start">
+                      <div className="col-span-12 md:col-span-9 bg-gradient-to-br from-blue-50/50 via-blue-50/30 to-slate-50/40 border border-blue-100/80 rounded-2xl p-3.5 sm:p-4 min-h-[135px] max-h-[235px] overflow-y-auto pr-1.5 spec-scrollbar flex items-start">
                         <div className="w-full space-y-3">
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 w-full">
                             {(activeCurriculum?.subjects || []).map((sub, subIdx) => (

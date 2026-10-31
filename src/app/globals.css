@@ -135,6 +135,39 @@ body {
 }
 
 /* =========================================================
+   CUSTOM THIN DARK BLUE SCROLLBAR (Specializations / Modals)
+========================================================= */
+.spec-scrollbar {
+  scrollbar-width: auto !important;
+  scrollbar-color: auto !important;
+}
+
+.spec-scrollbar::-webkit-scrollbar {
+  width: 2.5px !important;
+  height: 2.5px !important;
+}
+
+.spec-scrollbar::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+.spec-scrollbar::-webkit-scrollbar-thumb {
+  background: #072C50 !important;
+  border-radius: 9999px !important;
+}
+
+.spec-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #0B2546 !important;
+}
+
+@supports (-moz-appearance: none) {
+  .spec-scrollbar {
+    scrollbar-width: thin !important;
+    scrollbar-color: #072C50 transparent !important;
+  }
+}
+
+/* =========================================================
    ANT DESIGN COMPARISON MATRIX TABLE STYLING
 ========================================================= */
 .comparison-matrix-table {

@@ -490,12 +490,14 @@ export default function CoursesPageClientView({
   const [specFullData, setSpecFullData] = useState(null);
   const [loadingSpecDetail, setLoadingSpecDetail] = useState(false);
   const [activeSpecSem, setActiveSpecSem] = useState(0);
+  const [isOverviewExpanded, setIsOverviewExpanded] = useState(false);
 
   const handleOpenSpecDetail = async (sc, parentData) => {
     setSelectedSpecDetail(sc);
     setSpecFullData(null);
     setLoadingSpecDetail(true);
     setActiveSpecSem(0);
+    setIsOverviewExpanded(false);
 
     try {
       let slugPath = "";
@@ -562,6 +564,7 @@ export default function CoursesPageClientView({
     setSpecFullData(null);
     setLoadingSpecDetail(false);
     setActiveSpecSem(0);
+    setIsOverviewExpanded(false);
   };
 
   const handleBackToSpecList = () => {
@@ -569,6 +572,7 @@ export default function CoursesPageClientView({
     setSpecFullData(null);
     setLoadingSpecDetail(false);
     setActiveSpecSem(0);
+    setIsOverviewExpanded(false);
   };
 
   // Mobile Filter Draft State
@@ -2053,7 +2057,33 @@ export default function CoursesPageClientView({
             const activeCurriculum = specCurriculum[activeSpecSem] || specCurriculum[0];
 
             return (
-              <div className="relative text-left max-h-[82vh] overflow-y-auto pr-1 scrollbar-thin [scrollbar-color:#cbd5e1_transparent]">
+              <div className="relative text-left max-h-[82vh] overflow-y-auto pr-2 spec-scrollbar">
+                <style>{`
+                  .spec-scrollbar {
+                    scrollbar-width: auto !important;
+                    scrollbar-color: auto !important;
+                  }
+                  .spec-scrollbar::-webkit-scrollbar {
+                    width: 2.5px !important;
+                    height: 2.5px !important;
+                  }
+                  .spec-scrollbar::-webkit-scrollbar-track {
+                    background: transparent !important;
+                  }
+                  .spec-scrollbar::-webkit-scrollbar-thumb {
+                    background-color: #072C50 !important;
+                    border-radius: 9999px !important;
+                  }
+                  .spec-scrollbar::-webkit-scrollbar-thumb:hover {
+                    background-color: #0B2546 !important;
+                  }
+                  @supports (-moz-appearance: none) {
+                    .spec-scrollbar {
+                      scrollbar-width: thin !important;
+                      scrollbar-color: #072C50 transparent !important;
+                    }
+                  }
+                `}</style>
                 {/* Top Bar with Back Button & Close Button */}
                 <div className="flex items-center justify-between pb-3 mb-2 border-b border-slate-100 gap-2">
                   <button
@@ -2150,9 +2180,44 @@ export default function CoursesPageClientView({
                         )}
                       </div>
 
-                      <p className="text-xs sm:text-[13px] text-gray-600 leading-relaxed mb-0 font-normal">
-                        {itemDesc}
-                      </p>
+                      {(() => {
+                        const text = itemDesc || "";
+                        const isLong = text.length > 440;
+                        if (!isLong) {
+                          return (
+                            <p className="text-xs sm:text-[13px] text-gray-600 leading-relaxed mb-0 font-normal">
+                              {text}
+                            </p>
+                          );
+                        }
+                        if (!isOverviewExpanded) {
+                          const truncated = text.slice(0, 400).replace(/\s+\S*$/, "");
+                          return (
+                            <p className="text-xs sm:text-[13px] text-gray-600 leading-relaxed mb-0 font-normal">
+                              {truncated}...{" "}
+                              <button
+                                type="button"
+                                onClick={() => setIsOverviewExpanded(true)}
+                                className="inline font-bold text-[#0B2546] hover:underline cursor-pointer bg-transparent border-none p-0 text-xs ml-0.5"
+                              >
+                                Read More
+                              </button>
+                            </p>
+                          );
+                        }
+                        return (
+                          <p className="text-xs sm:text-[13px] text-gray-600 leading-relaxed mb-0 font-normal">
+                            {text}{" "}
+                            <button
+                              type="button"
+                              onClick={() => setIsOverviewExpanded(false)}
+                              className="inline font-bold text-[#0B2546] hover:underline cursor-pointer bg-transparent border-none p-0 text-xs ml-1"
+                            >
+                              Read Less
+                            </button>
+                          </p>
+                        );
+                      })()}
                     </div>
 
                     {/* Course Curriculum Section */}
@@ -2166,7 +2231,7 @@ export default function CoursesPageClientView({
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-4 items-stretch">
-                          <div className="col-span-12 md:col-span-3 grid grid-cols-3 md:flex md:flex-col gap-2">
+                          <div className="col-span-12 md:col-span-3 grid grid-cols-3 md:flex md:flex-col gap-2 max-h-[140px] md:max-h-[235px] overflow-y-auto pr-1.5 spec-scrollbar">
                             {specCurriculum.map((sem, sIdx) => {
                               const isActive = activeSpecSem === sIdx;
                               return (
@@ -2188,7 +2253,7 @@ export default function CoursesPageClientView({
                             })}
                           </div>
 
-                          <div className="col-span-12 md:col-span-9 bg-gradient-to-br from-blue-50/50 via-blue-50/30 to-slate-50/40 border border-blue-100/80 rounded-2xl p-3.5 sm:p-4 min-h-[135px] flex items-start">
+                          <div className="col-span-12 md:col-span-9 bg-gradient-to-br from-blue-50/50 via-blue-50/30 to-slate-50/40 border border-blue-100/80 rounded-2xl p-3.5 sm:p-4 min-h-[135px] max-h-[235px] overflow-y-auto pr-1.5 spec-scrollbar flex items-start">
                             <div className="w-full space-y-3">
                               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 w-full">
                                 {(activeCurriculum?.subjects || []).map((sub, subIdx) => (
@@ -2286,6 +2351,32 @@ export default function CoursesPageClientView({
           // ── VIEW 1: SPECIALIZATIONS GRID OVERVIEW (INITIAL MODAL STATE) ──
           return (
             <div className="relative text-left">
+              <style>{`
+                .spec-scrollbar {
+                  scrollbar-width: auto !important;
+                  scrollbar-color: auto !important;
+                }
+                .spec-scrollbar::-webkit-scrollbar {
+                  width: 2.5px !important;
+                  height: 2.5px !important;
+                }
+                .spec-scrollbar::-webkit-scrollbar-track {
+                  background: transparent !important;
+                }
+                .spec-scrollbar::-webkit-scrollbar-thumb {
+                  background-color: #072C50 !important;
+                  border-radius: 9999px !important;
+                }
+                .spec-scrollbar::-webkit-scrollbar-thumb:hover {
+                  background-color: #0B2546 !important;
+                }
+                @supports (-moz-appearance: none) {
+                  .spec-scrollbar {
+                    scrollbar-width: thin !important;
+                    scrollbar-color: #072C50 transparent !important;
+                  }
+                }
+              `}</style>
               {/* Close Button Top-Right */}
               <button
                 type="button"
@@ -2379,7 +2470,7 @@ export default function CoursesPageClientView({
                       <h4 className="text-xs sm:text-sm font-bold text-[#0B2546] mb-2">
                         {specCount} Specializations Available
                       </h4>
-                      <div className="max-h-[160px] sm:max-h-[175px] overflow-y-auto pr-1 scrollbar-thin [scrollbar-color:#cbd5e1_transparent]">
+                      <div className="max-h-[118px] sm:max-h-[122px] overflow-y-auto pr-2 spec-scrollbar">
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 sm:gap-2">
                           {subcourses.map((sc, idx) => (
                             <button
@@ -2389,7 +2480,7 @@ export default function CoursesPageClientView({
                                 // Transition in-place inside the modal without leaving the page!
                                 handleOpenSpecDetail(sc, specializationModalData);
                               }}
-                              className="group bg-gray-50 hover:bg-gray-100 border border-gray-200/80 hover:border-gray-300 rounded-full px-2.5 sm:px-3 py-1.5 flex items-center gap-1.5 sm:gap-2 text-left cursor-pointer transition-all duration-150 min-w-0 w-full"
+                              className="group bg-gray-50 hover:bg-gray-100 border border-[#0B2546] rounded-full px-2.5 sm:px-3 py-1.5 flex items-center gap-1.5 sm:gap-2 text-left cursor-pointer transition-all duration-150 min-w-0 w-full"
                             >
                               <CheckCircle2 className="w-3.5 h-3.5 text-[#0B2546] group-hover:scale-105 transition-transform shrink-0" />
                               <span className="text-[11px] sm:text-xs font-semibold text-[#0B2546] truncate">
@@ -2401,10 +2492,45 @@ export default function CoursesPageClientView({
                       </div>
                     </div>
 
-                    {/* Overview paragraph */}
-                    <p className="text-xs sm:text-[12.5px] text-gray-600 leading-relaxed m-0 font-normal">
-                      {modalOverview}
-                    </p>
+                    {/* Overview paragraph with inline Read More */}
+                    {(() => {
+                      const text = modalOverview || "";
+                      const isLong = text.length > 440;
+                      if (!isLong) {
+                        return (
+                          <p className="text-xs sm:text-[12.5px] text-gray-600 leading-relaxed m-0 font-normal">
+                            {text}
+                          </p>
+                        );
+                      }
+                      if (!isOverviewExpanded) {
+                        const truncated = text.slice(0, 400).replace(/\s+\S*$/, "");
+                        return (
+                          <p className="text-xs sm:text-[12.5px] text-gray-600 leading-relaxed m-0 font-normal">
+                            {truncated}...{" "}
+                            <button
+                              type="button"
+                              onClick={() => setIsOverviewExpanded(true)}
+                              className="inline font-bold text-[#0B2546] hover:underline cursor-pointer bg-transparent border-none p-0 text-xs ml-0.5"
+                            >
+                              Read More
+                            </button>
+                          </p>
+                        );
+                      }
+                      return (
+                        <p className="text-xs sm:text-[12.5px] text-gray-600 leading-relaxed m-0 font-normal">
+                          {text}{" "}
+                          <button
+                            type="button"
+                            onClick={() => setIsOverviewExpanded(false)}
+                            className="inline font-bold text-[#0B2546] hover:underline cursor-pointer bg-transparent border-none p-0 text-xs ml-1"
+                          >
+                            Read Less
+                          </button>
+                        </p>
+                      );
+                    })()}
                   </div>
 
                   {/* Bottom: Action Buttons */}
