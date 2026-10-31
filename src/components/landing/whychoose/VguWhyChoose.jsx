@@ -48,14 +48,17 @@ export default function VguWhyChoose({ whyChoose = [], brand = {}, onOpenApply }
       <LandingContainer>
         <div className="flex justify-center mb-5 sm:mb-6 px-3">
           <div
-            className={cfg.badgeClassName || "text-white px-4 sm:px-8 py-3.5 sm:py-4 text-center shadow-md w-full max-w-[340px] sm:max-w-[540px] lg:max-w-[620px] mx-auto rounded-[12px] sm:rounded-[14px]"}
+            className={cfg.badgeClassName || "text-white px-4 sm:px-8 py-3.5 sm:py-4 text-center shadow-md w-full max-w-[360px] sm:max-w-[540px] lg:max-w-[620px] mx-auto rounded-[12px] sm:rounded-[14px]"}
             style={{
               backgroundColor: headerBg,
               borderRadius: "12px",
               ...cfg.badgeStyle,
             }}
           >
-            <h2 className={cfg.headerTitleClassName || "text-[16px] sm:text-[20px] lg:text-[23px] font-semibold text-white tracking-normal leading-[1.3] m-0"}>
+            <h2
+              className={cfg.headerTitleClassName || "text-[17.5px] sm:text-[21px] lg:text-[24px] font-semibold text-white tracking-[0.6px] leading-[1.32] m-0"}
+              style={{ letterSpacing: "0.6px" }}
+            >
               {renderTitle()}
             </h2>
           </div>

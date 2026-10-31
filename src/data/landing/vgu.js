@@ -685,13 +685,13 @@ export const vguData = {
     whyChooseLayout: "vgu-grid",
     whyChooseConfig: {
       badgeClassName:
-        "text-white bg-[#811811] px-4 sm:px-8 py-3.5 sm:py-4 text-center shadow-md w-full max-w-[340px] sm:max-w-[540px] lg:max-w-[620px] mx-auto rounded-[12px] sm:rounded-[14px]",
+        "text-white bg-[#811811] px-4 sm:px-8 py-3.5 sm:py-4 text-center shadow-md w-full max-w-[360px] sm:max-w-[540px] lg:max-w-[620px] mx-auto rounded-[12px] sm:rounded-[14px]",
       badgeStyle: {
         borderRadius: "12px",
         backgroundColor: "#811811",
       },
       headerTitleClassName:
-        "text-[16px] sm:text-[20px] lg:text-[23px] font-semibold text-white tracking-normal leading-[1.3] m-0",
+        "text-[17.5px] sm:text-[21px] lg:text-[24px] font-semibold text-white tracking-[0.6px] leading-[1.32] m-0",
       titleClassName:
         "text-[17px] sm:text-[18px] font-medium text-slate-900 m-0 tracking-tight leading-snug mb-1.5",
       descClassName:
