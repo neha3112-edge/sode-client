@@ -871,13 +871,13 @@ export default function UniversityCoursesSection({
                               <div
                                 key={idx}
                                 onClick={() => handleOpenSpecDetail(sub, selectedCourseSpec)}
-                                className="flex items-center gap-1.5 sm:gap-2 text-[10.5px] sm:text-xs font-semibold px-2.5 sm:px-3 py-2 rounded-lg sm:rounded-xl border transition-all cursor-pointer group/spec bg-blue-50/50 text-[#0C2B4E] border-blue-100 hover:border-[#08AEAA] hover:bg-blue-100/70"
+                                className="flex items-center gap-1.5 sm:gap-2 text-[10.5px] sm:text-xs font-semibold px-2.5 sm:px-3 py-2 rounded-lg sm:rounded-xl border transition-all cursor-pointer group/spec bg-gray-50 hover:bg-gray-100 text-[#072C50] border-gray-200/80 hover:border-gray-300"
                               >
                                 <CheckCircle2
                                   size={13}
-                                  className="text-[#08AEAA] group-hover/spec:scale-110 transition-transform shrink-0"
+                                  className="text-[#072C50] group-hover/spec:scale-110 transition-transform shrink-0"
                                 />
-                                <span className="truncate leading-tight" title={subName}>
+                                <span className="truncate leading-tight font-semibold text-[#072C50]" title={subName}>
                                   {subName}
                                 </span>
                               </div>

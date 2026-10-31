@@ -2389,10 +2389,10 @@ export default function CoursesPageClientView({
                                 // Transition in-place inside the modal without leaving the page!
                                 handleOpenSpecDetail(sc, specializationModalData);
                               }}
-                              className="group bg-[#F4F9FD] hover:bg-[#EAF3FA] border border-[#DCEDF9] hover:border-sky-300 rounded-full px-2.5 sm:px-3 py-1.5 flex items-center gap-1.5 sm:gap-2 text-left cursor-pointer transition-all duration-150 min-w-0 w-full"
+                              className="group bg-gray-50 hover:bg-gray-100 border border-gray-200/80 hover:border-gray-300 rounded-full px-2.5 sm:px-3 py-1.5 flex items-center gap-1.5 sm:gap-2 text-left cursor-pointer transition-all duration-150 min-w-0 w-full"
                             >
-                              <CheckCircle2 className="w-3.5 h-3.5 text-sky-500 group-hover:text-sky-600 shrink-0" />
-                              <span className="text-[11px] sm:text-xs font-medium text-slate-700 group-hover:text-slate-900 truncate">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-[#0B2546] group-hover:scale-105 transition-transform shrink-0" />
+                              <span className="text-[11px] sm:text-xs font-semibold text-[#0B2546] truncate">
                                 {sc.name}
                               </span>
                             </button>
