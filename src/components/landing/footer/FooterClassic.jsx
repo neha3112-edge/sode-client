@@ -1,7 +1,11 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { DEFAULT_CLASSIC_DISCLAIMER } from "./footerDefaults";
+import {
+  DEFAULT_CLASSIC_DISCLAIMER,
+  DEFAULT_DISCLAIMER_CONTAINER_CLASS,
+  DEFAULT_DISCLAIMER_TEXT_CLASS,
+} from "./footerDefaults";
 
 /**
  * Footer Variant 1: Classic SODE Large Logo + Disclaimer Bar + Copyright Bar
@@ -76,9 +80,17 @@ export default function FooterClassic({
         {/* Agency Disclaimer Text */}
         <div
           id="footer-bottom-bar"
-          className="mt-2 sm:mt-3 lg:mt-4 px-3 sm:px-6 md:px-8 w-full max-w-[1380px] mx-auto text-center"
+          className={
+            brand.disclaimerContainerClassName ||
+            DEFAULT_DISCLAIMER_CONTAINER_CLASS
+          }
         >
-          <p className="m-0 text-[13.5px] sm:text-[13px] md:text-[12.5px] lg:text-[12px] xl:text-[14px] text-[#666666] leading-[1.55] sm:leading-[1.6] lg:leading-[1.5] font-normal tracking-normal max-w-none w-full mx-auto">
+          <p
+            className={
+              brand.disclaimerTextClassName ||
+              DEFAULT_DISCLAIMER_TEXT_CLASS
+            }
+          >
             {footerText}
           </p>
 

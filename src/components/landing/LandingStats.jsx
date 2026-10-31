@@ -3,7 +3,8 @@
 import React from "react";
 import Image from "next/image";
 import { BookOpen, Users, Globe, Trophy, Star } from "lucide-react";
-import { FaUser, FaClock, FaGraduationCap, FaIndianRupeeSign } from "react-icons/fa6";
+import { FaUser, FaClock, FaGraduationCap, FaIndianRupeeSign, FaUserGraduate } from "react-icons/fa6";
+import LandingContainer from "./LandingContainer";
 
 function BuildingIcon({ className }) {
   return (
@@ -15,23 +16,29 @@ function BuildingIcon({ className }) {
 
 function StudentCapIcon({ className }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-      <path d="M12 3L1 8.5l11 5.5 8.5-4.25V15h2V8.5L12 3zm-6 9.87v3.25c0 2.5 3.13 4.88 6 4.88s6-2.38 6-4.88v-3.25L12 16l-6-3.13z" />
-    </svg>
+    <FaUserGraduate className={className} />
   );
 }
 
 function LearnersIcon({ className }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-      <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
+      <circle cx="12" cy="4" r="2" />
+      <path d="M10 7h4a2 2 0 0 1 2 2v1h-8V9a2 2 0 0 1 2-2z" />
+      <circle cx="5.5" cy="7.5" r="1.5" />
+      <path d="M4 10.5h3a1.5 1.5 0 0 1 1.5 1.5v1H2.5v-1A1.5 1.5 0 0 1 4 10.5z" />
+      <circle cx="18.5" cy="7.5" r="1.5" />
+      <path d="M17 10.5h3a1.5 1.5 0 0 1 1.5 1.5v1h-6v-1a1.5 1.5 0 0 1 1.5-1.5z" />
+      <path d="M11 11.5a1 1 0 0 1 2 0v4.2l1.1-.3a1.2 1.2 0 0 1 1.4.6l.4.9a1.2 1.2 0 0 1-.3 1.4l-2.6 2.4a2 2 0 0 1-1.4.5H9.5a2 2 0 0 1-2-2v-3.5a2 2 0 0 1 .6-1.4l1.8-1.8 1.1 1.1v-3.5z" />
     </svg>
   );
 }
 
 function OpenBookIcon({ className }) {
   return (
-    <BookOpen className={className} strokeWidth={2.5} />
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1m0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5z" />
+    </svg>
   );
 }
 
@@ -400,8 +407,6 @@ export default function LandingStats({ stats = [], brand = {} }) {
   // ==========================================
   // Classic Blue Banner (Amity, etc.)
   // ==========================================
-  const isAmity = brand.slug === "amity";
-
   return (
     <section
       id="stats"
@@ -410,32 +415,38 @@ export default function LandingStats({ stats = [], brand = {} }) {
         background: brand.statsBg || brand.primaryColor || "#08417b",
       }}
     >
-      <div
-        className={`${
-          isAmity
-            ? "w-full lg:w-[60%] min-[1920px]:w-full max-w-[1150px] lg:px-0"
-            : "max-w-6xl min-[1600px]:max-w-[1520px] min-[1920px]:max-w-[1680px] lg:px-8"
-        } mx-auto px-4 sm:px-6`}
-      >
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-6 xl:gap-8 min-[1920px]:gap-10 items-center justify-center">
+      <LandingContainer className="amity-stats-container">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 lg:gap-4 items-center justify-between">
           {stats.map((st, idx) => {
             const IconComponent = ICON_MAP[st.iconType] || BuildingIcon;
             const circleBg = st.circleBg || "bg-[#ffc107]";
             return (
               <div key={idx} className="flex items-center gap-2.5 sm:gap-4 group justify-start">
-                {/* Colorful Circle */}
-                <div
-                  className={`w-12 h-12 sm:w-16 sm:h-16 lg:w-[70px] lg:h-[70px] rounded-full ${circleBg} flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition-transform duration-300`}
-                >
-                  <IconComponent className="w-6 h-6 sm:w-8 sm:h-8 lg:w-9 lg:h-9 text-white drop-shadow-xs" />
-                </div>
+                {/* Colorful Circle or Custom Image Badge */}
+                {st.iconImage ? (
+                  <div className="stat-icon-wrapper w-15 h-15 sm:w-18 sm:h-18 lg:w-[80px] lg:h-[80px] shrink-0 group-hover:scale-105 transition-transform duration-300 flex items-center justify-center">
+                    <Image
+                      src={st.iconImage}
+                      alt={st.label || "stat icon"}
+                      width={120}
+                      height={120}
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                ) : (
+                  <div
+                    className={`stat-icon-wrapper w-11 h-11 sm:w-14 sm:h-14 lg:w-[48px] lg:h-[48px] rounded-full ${circleBg} flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition-transform duration-300`}
+                  >
+                    <IconComponent className="w-6 h-6 sm:w-7 sm:h-7 lg:w-7 lg:h-7 text-white drop-shadow-xs" />
+                  </div>
+                )}
 
                 {/* Number & Label */}
                 <div className="flex flex-col min-w-0">
-                  <h3 className="text-[20px] sm:text-[26px] lg:text-[32px] font-extrabold text-white leading-tight tracking-tight m-0 truncate">
+                  <h3 className="text-[25px] sm:text-[31px] lg:text-[37px] font-semibold text-white leading-normal tracking-normal m-0 truncate">
                     {st.number}
                   </h3>
-                  <p className="text-[11px] sm:text-[12.5px] lg:text-[13px] text-white/95 font-medium leading-snug mt-0.5 m-0 line-clamp-2">
+                  <p className="text-[13px] sm:text-[14.5px] lg:text-[15px] text-white/95 font-normal leading-snug mt-0 m-0 line-clamp-2">
                     {st.label}
                   </p>
                 </div>
@@ -443,7 +454,7 @@ export default function LandingStats({ stats = [], brand = {} }) {
             );
           })}
         </div>
-      </div>
+      </LandingContainer>
     </section>
   );
 }

@@ -3,6 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { normalizeApprovalItem } from "../ApprovalCard";
+import LandingContainer from "../../LandingContainer";
 
 export default function AmityApprovals({
   approvals = [],
@@ -21,11 +22,11 @@ export default function AmityApprovals({
     <section id="approvals" className="w-full select-none scroll-mt-20">
       {/* Yellow Top Banner */}
       <div
-        className="w-full py-3 sm:py-4 px-4 text-center"
+        className="w-full py-3 sm:py-4 px-3 text-center"
         style={{ backgroundColor: headerBg }}
       >
         <h2
-          className="text-[19px] sm:text-[23px] lg:text-[26px] font-bold tracking-tight leading-snug m-0"
+          className="text-[19px] sm:text-[23px] lg:text-[26px] font-bold tracking-normal leading-snug m-0"
           style={{ color: headerTextColor }}
         >
           <span>{uniTitle}</span>
@@ -37,11 +38,11 @@ export default function AmityApprovals({
 
       {/* Cream Body with Approval Badges */}
       <div
-        className="w-full py-5 sm:py-8 lg:py-10 px-3 sm:px-6 lg:px-8"
+        className="w-full py-5 sm:py-8 lg:py-10 px-0.75 sm:px-1.5 lg:px-0"
         style={{ backgroundColor: sectionBg }}
       >
-        <div className="max-w-[1360px] min-[1600px]:max-w-[1520px] min-[1920px]:max-w-[1680px] mx-auto">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-2.5 min-[390px]:gap-x-3 sm:gap-x-8 lg:gap-x-10 gap-y-4 sm:gap-y-6 lg:gap-y-8 items-center">
+        <LandingContainer className="approvals-content-container">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-2.5 min-[390px]:gap-x-3 sm:gap-x-8 lg:gap-x-6 gap-y-4 sm:gap-y-6 lg:gap-y-8 items-center w-full">
             {approvals.map((item, idx) => {
               const data = normalizeApprovalItem(item, idx);
               return (
@@ -49,7 +50,7 @@ export default function AmityApprovals({
                   key={data.id}
                   className="flex items-center gap-2 sm:gap-3.5"
                 >
-                  <div className="relative w-12 h-12 min-[390px]:w-14 min-[390px]:h-14 sm:w-[72px] sm:h-[72px] lg:w-[80px] lg:h-[80px] shrink-0 flex items-center justify-center">
+                  <div className="relative w-12 h-12 min-[390px]:w-14 min-[390px]:h-14 sm:w-[72px] sm:h-[72px] lg:w-[72px] lg:h-[72px] shrink-0 flex items-center justify-center">
                     <Image
                       src={data.image}
                       alt={data.title || data.tag || `Approval ${idx + 1}`}
@@ -58,14 +59,14 @@ export default function AmityApprovals({
                       sizes="(max-width: 640px) 56px, 80px"
                     />
                   </div>
-                  <p className="text-[10px] min-[360px]:text-[11px] sm:text-[13.5px] lg:text-[14px] font-medium text-[#111111] leading-[1.25] sm:leading-[1.3] m-0">
+                  <p className="text-[10px] min-[360px]:text-[11px] sm:text-[13px] lg:text-[13px] font-normal text-[#111111] leading-[1.10] sm:leading-[1.2] m-0">
                     {data.title}
                   </p>
                 </div>
               );
             })}
           </div>
-        </div>
+        </LandingContainer>
       </div>
     </section>
   );

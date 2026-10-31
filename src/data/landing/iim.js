@@ -2088,11 +2088,11 @@ export const iimCustomCss = `
      ========================================================= */
   .landing-page--iim #faqs {
     margin: 45px 0 !important;
-    padding: 0 60px !important;
+    padding: 0 !important;
   }
 
   .landing-page--iim #faqs .container {
-    max-width: 1200px !important;
+    max-width: 1130px !important;
     margin: 0 auto !important;
     padding: 0 16px !important;
   }
@@ -2471,6 +2471,46 @@ export const iimCustomCss = `
    
     }
   }
+
+  /* =========================================================
+     18. HERO CONTAINER PADDING (Desktop / Laptop View)
+     Align hero content and form with Overview & Key Skills sections
+     ========================================================= */
+  @media only screen and (min-width: 992px) and (max-width: 1399px) {
+    .landing-page--iim #hero {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+    .landing-page--iim #hero .iim-hero-container,
+    .landing-page--iim #hero .ant-layout-content,
+    .landing-page--iim #hero > main {
+      max-width: 1120px !important;
+      width: 100% !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+      padding-left: 75px !important;
+      padding-right: 90px !important;
+      box-sizing: border-box !important;
+    }
+  }
+
+  @media only screen and (min-width: 1400px) {
+    .landing-page--iim #hero {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+    .landing-page--iim #hero .iim-hero-container,
+    .landing-page--iim #hero .ant-layout-content,
+    .landing-page--iim #hero > main {
+      max-width: 1130px !important;
+      width: 100% !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+      padding-left: 16px !important;
+      padding-right: 16px !important;
+      box-sizing: border-box !important;
+    }
+  }
 `;
 
 export const iimData = {
@@ -2583,6 +2623,7 @@ export const iimData = {
 
     hero: {
       style: "iim",
+      containerClassName: "iim-hero-container",
       backgroundImage: "/assets/all_universities_images/iim/iim_desktop_new_img.png",
       mobileBackgroundImage: "/assets/all_universities_images/iim/new_iim_mobile_bg.png",
       backgroundPosition: "center -140px",

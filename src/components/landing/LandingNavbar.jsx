@@ -324,6 +324,7 @@ export default function LandingNavbar({
           sm:px-11
           ${navbar.headerContainerClassName || brand.headerContainerClassName || ""}
         `}
+          style={navbar.headerContainerStyle || brand.headerContainerStyle}
         >
 
           {/* =================================================

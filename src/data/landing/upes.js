@@ -1379,7 +1379,7 @@ export const upesCustomCss = `
 
   .landing-page--upes #faqs > div {
     width: 100% !important;
-    max-width: 1140px !important;
+    max-width: 1130px !important;
     margin: 0 auto !important;
     padding-left: 15px !important;
     padding-right: 15px !important;

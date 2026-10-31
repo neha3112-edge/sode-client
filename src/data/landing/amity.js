@@ -88,10 +88,11 @@ export const amityData = {
         background-size: cover !important;
       }
 
-      /* Hero container: left padding locked to 39px, top padding 28px */
+      /* Hero container: unified alignment matching Navbar Logo & Coupon */
       .landing-page--amity .amity-hero-container,
       .landing-page--amity #hero > div > div {
-        padding-left: 39px !important;
+        padding-left: 15px !important;
+        padding-right: 15px !important;
         padding-top: 28px !important;
       }
 
@@ -222,7 +223,7 @@ export const amityData = {
       .landing-page--amity #approvals .grid {
         display: grid !important;
         grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-        column-gap: 32px !important;
+        column-gap: 24px !important;
         row-gap: 24px !important;
         align-items: center !important;
       }
@@ -641,47 +642,28 @@ export const amityData = {
       }
     }
 
-    /* Amity Header & Approvals - Desktop View Left and Right Padding (1280px+) */
-    @media (min-width: 1280px) {
+    /* Amity Header Navbar Desktop Alignment Baseline */
+    @media (min-width: 1024px) {
       .landing-page--amity header {
-        padding-left: 40px !important;
-        padding-right: 30px !important;
+        padding-left: 0px !important;
+        padding-right: 0px !important;
       }
       .landing-page--amity header .ant-layout-content {
-        padding-left: 40px !important;
-        padding-right: 30px !important;
+        width: 100% !important;
+        max-width: 1150px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+        box-sizing: border-box !important;
       }
       .landing-page--amity header .ant-layout-content > div:first-child {
         margin-left: 0px !important;
+        padding-left: 0px !important;
       }
-
-      /* Approval Section - Desktop View Left and Right Spacing matching Hero & Navbar */
-      .landing-page--amity #approvals > div:last-child {
-        padding-left: 40px !important;
-        padding-right: 30px !important;
-      }
-      .landing-page--amity #approvals > div:last-child > div {
-        max-width: 1152px !important;
-        padding-left: 40px !important;
-        padding-right: 30px !important;
-      }
-    }
-
-    @media (min-width: 1536px) {
-      .landing-page--amity #approvals > div:last-child > div {
-        max-width: 1280px !important;
-      }
-    }
-
-    @media (min-width: 1600px) {
-      .landing-page--amity #approvals > div:last-child > div {
-        max-width: 1520px !important;
-      }
-    }
-
-    @media (min-width: 1920px) {
-      .landing-page--amity #approvals > div:last-child > div {
-        max-width: 1680px !important;
+      .landing-page--amity header .ant-layout-content > div:last-child {
+        margin-right: 0px !important;
+        padding-right: 0px !important;
       }
     }
 
@@ -787,27 +769,100 @@ export const amityData = {
       }
       } /* Mobile @media (max-width: 767px) ends here */
 
-
     /* =====================================================
-       AMITY PROGRAMMES (ONLINE DEGREE COURSES) - DESKTOP VIEW (1400px+)
-       Matches Target Reference Image 1 exactly
+       AMITY ABOUT SECTION - MOBILE VIEW (< 1024px)
+       Apply Now button centered, exact divider spacing
     ===================================================== */
-    @media only screen and (min-width: 1400px) {
-      /* 1. Section Spacing & Height */
-      .landing-page--amity #programmes {
-        padding-top: 52px !important;
-        padding-bottom: 72px !important;
+    @media (max-width: 1023px) {
+      .landing-page--amity #about .about-apply-btn-wrapper {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        width: 100% !important;
+        text-align: center !important;
       }
 
-      /* 2. Heading Typography (2 centered white lines, regular 400-500 weight) */
+      .landing-page--amity #about .about-apply-btn {
+        margin-left: auto !important;
+        margin-right: auto !important;
+        height: 38px !important;
+        min-height: 38px !important;
+        font-size: 14.5px !important;
+        padding: 0 18px !important;
+      }
+
+      .landing-page--amity #about .about-divider {
+        margin-top: 39px !important;
+        margin-bottom: 28px !important;
+        height: 1px !important;
+        min-height: 1px !important;
+        background-color: #d1d5db !important;
+        border-top: 1px solid #d1d5db !important;
+        display: block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+      }
+
+      /* Amity Stats Mobile (< 1024px) */
+      .landing-page--amity #stats {
+        padding-top: 18px !important;
+        padding-bottom: 18px !important;
+      }
+      .landing-page--amity #stats .grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 16px 12px !important;
+        width: 100% !important;
+      }
+      .landing-page--amity #stats .grid > div {
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px !important;
+        width: 100% !important;
+      }
+      .landing-page--amity #stats .stat-icon-wrapper {
+        width: 44px !important;
+        height: 44px !important;
+        min-width: 44px !important;
+        min-height: 44px !important;
+      }
+      .landing-page--amity #stats h3 {
+        font-size: 22px !important;
+        font-weight: 700 !important;
+        line-height: 1.1 !important;
+        margin: 0 !important;
+      }
+      .landing-page--amity #stats p {
+        font-size: 11.5px !important;
+        font-weight: 500 !important;
+        line-height: 1.2 !important;
+        margin: 2px 0 0 0 !important;
+      }
+    }
+
+
+    /* =====================================================
+       AMITY PROGRAMMES (ONLINE DEGREE COURSES) - DESKTOP VIEW
+       Matches Target Reference Image 1 exactly (Full Width, Sleek Cards, AntD Carousel)
+    ===================================================== */
+    @media only screen and (min-width: 1024px) {
+      /* 1. Section Spacing & Height */
+      .landing-page--amity #programmes {
+        padding-top: 36px !important;
+        padding-bottom: 48px !important;
+        overflow: hidden !important;
+        width: 100% !important;
+      }
+
+      /* 2. Heading Typography (2 centered white lines) */
       .landing-page--amity #programmes .text-center.mb-5,
       .landing-page--amity #programmes .text-center.mb-6 {
-        margin-bottom: 42px !important;
+        margin-bottom: 26px !important;
       }
 
       .landing-page--amity #programmes .programmes-subtitle {
-        font-size: 34px !important;
-        font-weight: 400 !important;
+        font-size: 24px !important;
+        font-weight: 700 !important;
         line-height: 1.2 !important;
         color: #ffffff !important;
         text-align: center !important;
@@ -816,43 +871,43 @@ export const amityData = {
       }
 
       .landing-page--amity #programmes .programmes-title {
-        font-size: 34px !important;
-        font-weight: 400 !important;
+        font-size: 24px !important;
+        font-weight: 700 !important;
         line-height: 1.2 !important;
         color: #ffffff !important;
         text-align: center !important;
-        margin-top: 6px !important;
+        margin-top: 4px !important;
         letter-spacing: 0 !important;
       }
 
-      /* 3. Wide Carousel Container (Outer margins ~50px, spanning available viewport) */
+      /* 3. Programmes Carousel Container (Centered with 30px padding matching First Image) */
       .landing-page--amity #programmes > div.hidden.md\:block {
-        max-width: 1830px !important;
-        width: calc(100% - 100px) !important;
+        width: 100% !important;
+        max-width: 1024px !important;
         margin-left: auto !important;
         margin-right: auto !important;
-        padding-left: 0 !important;
-        padding-right: 0 !important;
+        padding-left: 30px !important;
+        padding-right: 30px !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
       }
 
-      /* 4. Carousel Navigation Arrows */
-      .landing-page--amity #programmes button[aria-label="Previous programme"] {
-        left: -38px !important;
-        color: #ffffff !important;
-      }
+      /* 4. Hide Navigation Arrows in Desktop View */
+      .landing-page--amity #programmes button[aria-label="Previous programme"],
       .landing-page--amity #programmes button[aria-label="Next programme"] {
-        right: -38px !important;
-        color: #ffffff !important;
-      }
-      .landing-page--amity #programmes button[aria-label="Previous programme"] svg,
-      .landing-page--amity #programmes button[aria-label="Next programme"] svg {
-        color: #ffffff !important;
-        stroke: #ffffff !important;
-        width: 34px !important;
-        height: 34px !important;
+        display: none !important;
       }
 
-      /* 5. Course Cards Layout & Dimensions */
+      /* 5. Course Cards Slider Layout */
+      .landing-page--amity #programmes .slick-slider {
+        width: 100% !important;
+      }
+
+      .landing-page--amity #programmes .slick-list {
+        overflow: hidden !important;
+        width: 100% !important;
+      }
+
       .landing-page--amity #programmes .slick-track {
         display: flex !important;
         align-items: stretch !important;
@@ -861,6 +916,8 @@ export const amityData = {
       .landing-page--amity #programmes .slick-slide {
         height: inherit !important;
         display: flex !important;
+        padding: 0 8px !important;
+        box-sizing: border-box !important;
       }
 
       .landing-page--amity #programmes .slick-slide > div {
@@ -873,149 +930,213 @@ export const amityData = {
         display: flex !important;
       }
 
+      /* 6. Card Container Dimensions & Flexbox (Pure Vertical Column, Clean Borderless) */
+      .landing-page--amity #programmes .classic-course-card,
       .landing-page--amity #programmes .ant-card {
-        border-radius: 8px !important;
+        border-radius: 6px !important;
         overflow: hidden !important;
         background-color: #ffffff !important;
-        border: 1px solid rgba(226, 232, 240, 0.8) !important;
+        border: none !important;
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
         display: flex !important;
         flex-direction: column !important;
         justify-content: space-between !important;
         width: 100% !important;
-        min-height: 530px !important;
+        min-height: 380px !important;
         height: 100% !important;
       }
 
+      .landing-page--amity #programmes .classic-course-card:hover,
       .landing-page--amity #programmes .ant-card:hover {
-        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.14) !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
       }
 
-      .landing-page--amity #programmes .ant-card-body {
+      .landing-page--amity #programmes .ant-card .ant-card-body {
         height: 100% !important;
         display: flex !important;
         flex-direction: column !important;
         justify-content: space-between !important;
         padding: 0 !important;
+        width: 100% !important;
       }
 
-      /* 6. Card Image Proportions (235px - 245px height) */
+      /* 7. Card Image Proportions (Reduced height 140px for Desktop View matching First Image) */
+      .landing-page--amity #programmes .classic-card-image-wrap,
+      .landing-page--amity #programmes .ant-card .classic-card-image-wrap,
       .landing-page--amity #programmes .ant-card .relative.w-full.bg-slate-100 {
-        height: 240px !important;
-        min-height: 240px !important;
-        max-height: 240px !important;
+        height: 140px !important;
+        min-height: 140px !important;
+        max-height: 140px !important;
+        width: 100% !important;
         position: relative !important;
         overflow: hidden !important;
+        border-top-left-radius: 6px !important;
+        border-top-right-radius: 6px !important;
       }
 
+      .landing-page--amity #programmes .classic-card-image-wrap img,
       .landing-page--amity #programmes .ant-card .relative.w-full.bg-slate-100 img {
         object-fit: cover !important;
         object-position: center !important;
+        width: 100% !important;
+        height: 100% !important;
       }
 
-      /* 7. Graduation Badge (Green, top-left, 15-16px font) */
+      /* 8. Graduation / Post Graduation Badge (Green rectangle, top-left, matching Image 1) */
+      .landing-page--amity #programmes .classic-card-badge,
+      .landing-page--amity #programmes .ant-card .classic-card-badge,
       .landing-page--amity #programmes .ant-card .absolute.top-0.left-0 {
         background-color: #008000 !important;
         color: #ffffff !important;
-        font-size: 15.5px !important;
-        font-weight: 500 !important;
-        padding: 8px 14px !important;
-        border-bottom-right-radius: 6px !important;
+        font-size: 13px !important;
+        font-weight: 600 !important;
+        padding: 6px 16px !important;
+        border-top-left-radius: 6px !important;
+        border-top-right-radius: 0 !important;
+        border-bottom-left-radius: 0 !important;
+        border-bottom-right-radius: 0 !important;
         letter-spacing: 0.01em !important;
         line-height: 1.2 !important;
         z-index: 10 !important;
+        box-shadow: none !important;
       }
 
-      /* 8. Course Card Typography */
-      .landing-page--amity #programmes .ant-card > div:first-child > div:last-child,
-      .landing-page--amity #programmes .ant-card .p-3\.5,
-      .landing-page--amity #programmes .ant-card .sm\:p-4 {
-        padding: 16px 20px 8px 20px !important;
+      /* 9. Course Card Content Padding & Typography (Matching Image 1) */
+      .landing-page--amity #programmes .classic-card-content,
+      .landing-page--amity #programmes .ant-card .classic-card-content,
+      .landing-page--amity #programmes .ant-card .p-4,
+      .landing-page--amity #programmes .ant-card .sm\:p-5 {
+        padding: 12px 16px 6px 16px !important;
+        display: flex !important;
+        flex-direction: column !important;
       }
 
-      /* Course Code (BBA, BCA, BCOM, BA) */
+      /* Course Code (MBA, MA, BCA, BBA, BCOM, MCA) */
+      .landing-page--amity #programmes .classic-card-title,
       .landing-page--amity #programmes .ant-card h3 {
-        font-size: 28px !important;
-        font-weight: 700 !important;
-        line-height: 1.1 !important;
-        color: #08417b !important;
+        font-size: 21px !important;
+        font-weight: 800 !important;
+        line-height: 1.15 !important;
+        color: #07427d !important;
         margin: 0 !important;
+        margin-bottom: 0px !important;
         letter-spacing: -0.01em !important;
       }
 
-      /* Full Course Name (Bachelor of Business Administration) */
+      /* Full Degree Name (Master of Business Administration, etc.) */
+      .landing-page--amity #programmes .classic-card-subtitle,
       .landing-page--amity #programmes .ant-card h3 + p {
-        font-size: 14px !important;
-        font-weight: 500 !important;
-        line-height: 1.35 !important;
-        color: #08417b !important;
-        margin-top: 5px !important;
-        margin-bottom: 8px !important;
+        font-size: 13px !important;
+        font-weight: 600 !important;
+        line-height: 1.3 !important;
+        color: #07427d !important;
+        margin-top: 0 !important;
+        margin-bottom: 2px !important;
+        letter-spacing: 0 !important;
       }
 
-      /* Description */
+      /* Description Paragraph */
+      .landing-page--amity #programmes .classic-card-desc,
       .landing-page--amity #programmes .ant-card h3 + p + p {
-        font-size: 13.5px !important;
+        font-size: 11.5px !important;
         font-weight: 400 !important;
-        line-height: 1.45 !important;
-        color: #444444 !important;
+        line-height: 1.5 !important;
+        color: #2b2b2b !important;
         margin: 0 !important;
-        min-height: 80px !important;
+        min-height: 58px !important;
         -webkit-line-clamp: 4 !important;
         display: -webkit-box !important;
         -webkit-box-orient: vertical !important;
         overflow: hidden !important;
+        letter-spacing: 0 !important;
       }
 
-      /* 9. Card Footer Row (Divider, Button, Duration) */
-      .landing-page--amity #programmes .ant-card > div:last-child,
-      .landing-page--amity #programmes .ant-card .border-t {
-        padding: 12px 20px 16px 20px !important;
-        border-top: 1px solid #f1f5f9 !important;
+      /* 10. Card Footer Container & Inset Divider (matching Image 1) */
+      .landing-page--amity #programmes .classic-card-footer {
+        padding: 0 16px 14px 16px !important;
         margin-top: auto !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+      }
+
+      .landing-page--amity #programmes .classic-card-footer-inner {
+        border-top: 1px solid #e8e8e8 !important;
+        padding-top: 10px !important;
         display: flex !important;
+        flex-direction: row !important;
         align-items: center !important;
         justify-content: space-between !important;
+        width: 100% !important;
       }
 
-      .landing-page--amity #programmes .ant-card .border-t button {
-        background-color: #ffd200 !important;
-        background: #ffd200 !important;
+      /* Button (Yellow #fdb913, rounded 4px, compact) */
+      .landing-page--amity #programmes .classic-card-btn,
+      .landing-page--amity #programmes .ant-card .classic-card-footer-inner button {
+        background-color: #fdb913 !important;
+        background: #fdb913 !important;
         color: #000000 !important;
-        font-size: 13.5px !important;
-        font-weight: 700 !important;
-        padding: 7px 16px !important;
+        font-size: 11.5px !important;
+        font-weight: 600 !important;
+        padding: 6px 12px !important;
         border-radius: 4px !important;
+        border: none !important;
         height: auto !important;
         display: inline-flex !important;
         align-items: center !important;
-        gap: 6px !important;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+        justify-content: center !important;
+        gap: 5px !important;
+        box-shadow: none !important;
+        cursor: pointer !important;
       }
 
-      .landing-page--amity #programmes .ant-card .border-t button svg {
-        width: 13px !important;
-        height: 13px !important;
+      .landing-page--amity #programmes .classic-card-btn svg,
+      .landing-page--amity #programmes .ant-card .classic-card-footer-inner button svg {
+        width: 11px !important;
+        height: 11px !important;
         color: #000000 !important;
       }
 
-      .landing-page--amity #programmes .ant-card .border-t > div {
-        font-size: 13.5px !important;
-        font-weight: 500 !important;
+      /* Duration (Hourglass + 24 / 36 Months) */
+      .landing-page--amity #programmes .classic-card-duration,
+      .landing-page--amity #programmes .ant-card .classic-card-footer-inner > div {
+        font-size: 12px !important;
+        font-weight: 600 !important;
         color: #333333 !important;
         display: flex !important;
         align-items: center !important;
-        gap: 6px !important;
+        gap: 5px !important;
       }
 
-      .landing-page--amity #programmes .ant-card .border-t > div svg {
-        width: 15px !important;
-        height: 15px !important;
-        color: #555555 !important;
+      .landing-page--amity #programmes .classic-card-duration svg,
+      .landing-page--amity #programmes .ant-card .classic-card-footer-inner > div svg {
+        width: 12.5px !important;
+        height: 12.5px !important;
+        color: #4b5563 !important;
       }
     }
 
-      .landing-page--amity #hero div:has(> .coupon-btn-main) {
+    /* Large Desktop Screen Scale (min-width: 1536px) */
+    @media only screen and (min-width: 1536px) {
+      .landing-page--amity #programmes .classic-card-image-wrap,
+      .landing-page--amity #programmes .ant-card .classic-card-image-wrap,
+      .landing-page--amity #programmes .ant-card .relative.w-full.bg-slate-100 {
+        height: 195px !important;
+        min-height: 195px !important;
+        max-height: 195px !important;
+      }
+
+      .landing-page--amity #programmes .classic-course-card,
+      .landing-page--amity #programmes .ant-card {
+        min-height: 420px !important;
+      }
+
+      .landing-page--amity #programmes .classic-card-title,
+      .landing-page--amity #programmes .ant-card h3 {
+        font-size: 25px !important;
+      }
+    }
+
+    .landing-page--amity #hero div:has(> .coupon-btn-main) {
         display: none !important;
       
     }
@@ -1025,74 +1146,349 @@ export const amityData = {
    DESKTOP ONLY (1400px+)
 ============================================ */
 
-/* ============================================
-   AMITY STATS - COMPACT & CENTERED (DESKTOP VIEW 1024px+)
-============================================ */
+/* =======================================================
+   AMITY LANDING PAGE - FULL PAGE UNIFIED CONTENT ALIGNMENT
+   Aligns ALL sections with Logo (left) & Scholarship Coupon (right)
+======================================================= */
 
 @media (min-width: 1024px) {
-  /* Compact centered Stats container matching Target Reference */
-  .landing-page--amity #stats > div {
-    width: 60% !important;
+  /* 1. Reset outer section wrappers so backgrounds stay 100% full width */
+  .landing-page--amity header,
+  .landing-page--amity #hero,
+  .landing-page--amity #approvals,
+  .landing-page--amity #approvals > div:last-child,
+  .landing-page--amity #programmes,
+  .landing-page--amity #about,
+  .landing-page--amity #stats,
+  .landing-page--amity #whychoose,
+  .landing-page--amity #process,
+  .landing-page--amity .apply-section,
+  .landing-page--amity .admission-process-section,
+  .landing-page--amity .compare_Section,
+  .landing-page--amity #compare,
+  .landing-page--amity footer {
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+  }
+
+  /* 2. Unified Content Container: Fixed max-width 1150px across all desktop screens */
+  .landing-page--amity header .ant-layout-content,
+  .landing-page--amity #hero .ant-layout-content,
+  .landing-page--amity #hero > div > div,
+  .landing-page--amity #approvals .ant-layout-content,
+  .landing-page--amity #approvals > div:last-child > main,
+  .landing-page--amity #approvals .approvals-content-container,
+  .landing-page--amity #approvals > div:last-child > div,
+  
+  .landing-page--amity #about .ant-layout-content,
+  .landing-page--amity #about > main,
+  .landing-page--amity #about > div,
+  .landing-page--amity #about .amity-about-container,
+  .landing-page--amity #stats .ant-layout-content,
+  .landing-page--amity #stats > main,
+  .landing-page--amity #stats > div,
+  .landing-page--amity #stats .amity-stats-container,
+  .landing-page--amity #whychoose .ant-layout-content,
+  .landing-page--amity #whychoose > main,
+  .landing-page--amity #whychoose > div,
+  .landing-page--amity #process > div,
+  .landing-page--amity .apply-section > div,
+  .landing-page--amity .admission-process-section > div,
+  .landing-page--amity section:has(.admission-step-card) > div,
+  .landing-page--amity .compare_Section > div,
+  .landing-page--amity #compare > div,
+  .landing-page--amity footer .media-footer-container {
+    width: 100% !important;
     max-width: 1150px !important;
     margin-left: auto !important;
     margin-right: auto !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
+    padding-left: 15px !important;
+    padding-right: 15px !important;
     box-sizing: border-box !important;
   }
 
-  /* Stats content remains in four columns */
+  /* =====================================================
+     AMITY FAQ ACCORDION STYLING (MATCHING IMAGES 1, 2 & 3)
+  ===================================================== */
+  .landing-page--amity #faqs {
+    padding-top: 28px !important;
+    padding-bottom: 40px !important;
+  }
+  .landing-page--amity #faqs h2 {
+    color: #08417b !important;
+    font-weight: 700 !important;
+    font-size: 26px !important;
+    margin-top: 0px !important;
+    margin-bottom: 20px !important;
+    text-align: left !important;
+  }
+  .landing-page--amity #faqs .border-t,
+  .landing-page--amity #faqs .divide-y {
+    border-top: none !important;
+  }
+  .landing-page--amity #faqs .faq-item-row {
+    border-bottom: 1px solid #e5e7eb !important;
+    border-top: none !important;
+  }
+  .landing-page--amity #faqs button {
+    padding-top: 13px !important;
+    padding-bottom: 13px !important;
+  }
+  .landing-page--amity #faqs button span:first-child {
+    font-size: 14.5px !important;
+    color: #808080 !important;
+    font-weight: 400 !important;
+    transition: color 0.15s ease !important;
+  }
+  .landing-page--amity #faqs button:hover span:first-child {
+    color: #000000 !important;
+  }
+  .landing-page--amity #faqs button[aria-expanded="true"] span:first-child {
+    color: #000000 !important;
+    font-weight: 600 !important;
+  }
+  .landing-page--amity #faqs button span:last-child {
+    font-size: 17px !important;
+    color: #808080 !important;
+    font-weight: 400 !important;
+    transition: color 0.15s ease !important;
+  }
+  .landing-page--amity #faqs button:hover span:last-child {
+    color: #808080 !important;
+  }
+  .landing-page--amity #faqs button[aria-expanded="true"] span:last-child {
+    color: #808080 !important;
+    font-weight: 700 !important;
+  }
+  .landing-page--amity #faqs .faq-answer-content,
+  .landing-page--amity #faqs .faq-item-row > div:last-child,
+  .landing-page--amity #faqs .divide-y > div > div:last-child {
+    font-size: 13.5px !important;
+    color: #000000 !important;
+    line-height: 1.6 !important;
+    padding-top: 4px !important;
+    padding-bottom: 14px !important;
+  }
+
+  /* Footer Disclaimer Full Cover on Desktop (Matching Image 1) */
+  .landing-page--amity footer #footer-bottom-bar {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    box-sizing: border-box !important;
+  }
+  .landing-page--amity footer #footer-bottom-bar p {
+    width: 100% !important;
+    max-width: 100% !important;
+    text-align: center !important;
+    font-size: 14px !important;
+    line-height: 1.6 !important;
+  }
+
+  /* 3. Header Navbar: Logo starts at left boundary, Coupon ends at right boundary */
+  .landing-page--amity header .ant-layout-content > div:first-child {
+    margin-left: 0px !important;
+    padding-left: 0px !important;
+  }
+  .landing-page--amity header .ant-layout-content > div:last-child {
+    margin-right: 0px !important;
+    padding-right: 0px !important;
+  }
+
+  /* 4. Hero info column alignment */
+  .landing-page--amity .amity-hero-info-col,
+  .landing-page--amity .hero-info-col {
+    margin-left: 0px !important;
+  }
+
+  /* 5. Stats Section: Content width and centered tight spacing matching Image 1 */
+  .landing-page--amity #stats {
+    padding-top: 24px !important;
+    padding-bottom: 24px !important;
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+  }
+  .landing-page--amity #stats .ant-layout-content,
+  .landing-page--amity #stats > main,
+  .landing-page--amity #stats > div,
+  .landing-page--amity #stats .amity-stats-container {
+    width: 100% !important;
+    max-width: 1150px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+    box-sizing: border-box !important;
+  }
   .landing-page--amity #stats .grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
     align-items: center !important;
-    column-gap: 16px !important;
-  }
-}
-
-@media (min-width: 1400px) {
-  /* Why Choose container alignment */
-  .landing-page--amity #whychoose > div {
     width: 100% !important;
-    max-width: 1152px !important;
+    gap: 46px !important;
+  }
+  .landing-page--amity #stats .grid > div {
+    flex: 0 0 auto !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+  }
+  .landing-page--amity #stats h3 {
+    font-size: 30px !important;
+    font-weight: 700 !important;
+    line-height: 1.1 !important;
+    letter-spacing: -0.01em !important;
+    color: #ffffff !important;
+    margin: 0 !important;
+  }
+  .landing-page--amity #stats p {
+    font-size: 13.5px !important;
+    font-weight: 500 !important;
+    line-height: 1.25 !important;
+    color: #ffffff !important;
+    white-space: nowrap !important;
+    margin: 2px 0 0 0 !important;
+  }
+  .landing-page--amity #stats .stat-icon-wrapper {
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    min-height: 48px !important;
+  }
+
+  /* 6. About Section: Matching Image 1 */
+  .landing-page--amity #about {
+    border-bottom: none !important;
+    padding-top: 36px !important;
+    padding-bottom: 0px !important;
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+  }
+
+  .landing-page--amity #about h2 {
+    color: #1f2937 !important;
+    font-weight: 600 !important;
+    font-size: 28px !important;
+    line-height: 1.25 !important;
+    font-family: var(--font-poppins), 'Poppins', sans-serif !important;
+    margin-bottom: 12px !important;
+    text-align: left !important;
+  }
+
+  .landing-page--amity #about p {
+    color: #333333 !important;
+    font-size: 13.5px !important;
+    line-height: 1.65 !important;
+    font-weight: 400 !important;
+    font-family: var(--font-poppins), 'Poppins', sans-serif !important;
+    margin-bottom: 12px !important;
+  }
+
+  .landing-page--amity #about .about-apply-btn,
+  .landing-page--amity #about button {
+    height: 42px !important;
+    min-height: 42px !important;
+    width: auto !important;
+    min-width: 135px !important;
+    padding: 0 20px !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    border: 2px solid #08417b !important;
+    border-radius: 4px !important;
+    color: #111827 !important;
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 7px !important;
+    box-shadow: none !important;
+    cursor: pointer !important;
+  }
+
+  .landing-page--amity #about .about-apply-btn svg,
+  .landing-page--amity #about button svg {
+    width: 16px !important;
+    height: 16px !important;
+    stroke-width: 2.4 !important;
+    color: #111827 !important;
+    margin-left: 2px !important;
+  }
+
+  .landing-page--amity #about .about-apply-btn:hover,
+  .landing-page--amity #about button:hover {
+    background-color: #f8fafc !important;
+    background: #f8fafc !important;
+    border-color: #08417b !important;
+  }
+
+  .landing-page--amity #about .about-divider {
+    height: 1px !important;
+    min-height: 1px !important;
+    background-color: #d1d5db !important;
+    background: #d1d5db !important;
+    border-top: 1px solid #d1d5db !important;
+    border-bottom: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    margin-top: 34px !important;
+    margin-bottom: 78px !important;
+    width: 100% !important;
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+  .landing-page--amity #about .ant-layout-content,
+  .landing-page--amity #about > main,
+  .landing-page--amity #about > div,
+  .landing-page--amity #about .amity-about-container {
+    width: 100% !important;
+    max-width: 1150px !important;
     margin-left: auto !important;
     margin-right: auto !important;
-    padding-left: 40px !important;
-    padding-right: 40px !important;
+    padding-left: 15px !important;
+    padding-right: 15px !important;
     box-sizing: border-box !important;
   }
-
-  .landing-page--amity #stats > div {
-    width: 60% !important;
-    max-width: 1150px !important;
+  .landing-page--amity #about .grid {
+    gap: 28px !important;
+    align-items: start !important;
   }
 
-  .landing-page--amity #stats .grid {
-    column-gap: 24px !important;
+  /* 7. Approvals Section: Vertically aligned with Logo (left) and Scholarship Button (right) */
+  .landing-page--amity #approvals,
+  .landing-page--amity #approvals > div {
+    padding-left: 0px !important;
+    padding-right: 0px !important;
   }
-}
-
-/* Large Desktop */
-@media (min-width: 1536px) {
-  .landing-page--amity #whychoose > div {
-    max-width: 1280px !important;
-  }
-}
-
-/* Extra Large Desktop */
-@media (min-width: 1600px) {
-  .landing-page--amity #whychoose > div {
-    max-width: 1520px !important;
-  }
-}
-
-/* Full HD Desktop */
-@media (min-width: 1920px) {
-  .landing-page--amity #whychoose > div {
-    max-width: 1680px !important;
-  }
-  .landing-page--amity #stats > div {
+  .landing-page--amity #approvals .ant-layout-content,
+  .landing-page--amity #approvals > div:last-child > main,
+  .landing-page--amity #approvals .approvals-content-container,
+  .landing-page--amity #approvals > div:last-child > div,
+  .landing-page--amity #approvals .max-w-\[1360px\] {
     width: 100% !important;
     max-width: 1150px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+    box-sizing: border-box !important;
+  }
+  .landing-page--amity #approvals .grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    column-gap: 24px !important;
+    row-gap: 24px !important;
+    align-items: center !important;
+    width: 100% !important;
+  }
+  .landing-page--amity #approvals .grid > div:nth-child(4n + 1) {
+    justify-self: start !important;
+  }
+  .landing-page--amity #approvals .grid > div:nth-child(4n) {
+    justify-self: end !important;
   }
 }
     `,
@@ -1210,6 +1606,20 @@ export const amityData = {
        PROGRAMMES CONFIGURATION
     ===================================================== */
     programmesMobileStack: true,
+    programmesFullWidth: true,
+    programmesHideArrows: true,
+    programmesCarousel: {
+      desktopSlides: 4,
+      laptopSlides: 4,
+      tabletSlides: 2,
+      centerMode: false,
+      centerPadding: "0px",
+      autoplay: true,
+      interval: 3000,
+      dots: false,
+      hideArrows: true,
+      slidesToScroll: 1,
+    },
     stickyCtaLayout: "default",
     stickyBrochureIcon: "whatsapp",
     stickyApplyStyle: "yellow",
@@ -1529,6 +1939,7 @@ export const amityData = {
       number: "30+",
       label: "Year Excellence",
       iconType: "building",
+      iconImage: "/assets/amity/Number-1-amity.png",
       circleBg: "bg-[#ffc107]",
     },
 
@@ -1536,6 +1947,7 @@ export const amityData = {
       number: "500+",
       label: "Hiring Partners",
       iconType: "graduation",
+      iconImage: "/assets/amity/Number-2-amity.png",
       circleBg: "bg-[#2196f3]",
     },
 
@@ -1543,6 +1955,7 @@ export const amityData = {
       number: "82K+",
       label: "Online Learners",
       iconType: "users",
+      iconImage: "/assets/amity/Number-3-amity.png",
       circleBg: "bg-[#4caf50]",
     },
 
@@ -1550,6 +1963,7 @@ export const amityData = {
       number: "60+",
       label: "In-Demand Specialization",
       iconType: "book",
+      iconImage: "/assets/amity/Number-4-amity.png",
       circleBg: "bg-[#e91e63]",
     },
   ],
@@ -1693,10 +2107,10 @@ export const amityData = {
     imagePosition: "left",
     buttonText: "Apply Now",
     backgroundColor: "#ffffff",
-    titleColor: "#08417b",
+    titleColor: "#1f2937",
     textColor: "#333333",
     buttonColor: "#08417b",
-    buttonTextColor: "#08417b",
+    buttonTextColor: "#111827",
     buttonBorderColor: "#08417b",
   },
 
@@ -1829,6 +2243,8 @@ export const amityData = {
   /* =======================================================
      FAQS
   ======================================================= */
+
+  faqDefaultOpenIndex: null,
 
   faqs: [
     {

@@ -41,13 +41,28 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
     brand.slug === "upes" ||
     brand.faqLayout === "upes";
 
+  const desktopWidthStyle = (
+    <style>{`
+      @media (min-width: 1024px) {
+        #faqs .container,
+        #faqs .ant-layout-content,
+        #faqs > div {
+          max-width: 1130px !important;
+          margin-left: auto !important;
+          margin-right: auto !important;
+        }
+      }
+    `}</style>
+  );
+
   // ==========================================
   // Layout: UPES Online FAQ
   // ==========================================
   if (isUpes) {
     return (
       <section id="faqs" className="scroll-mt-24">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-10">
+        {desktopWidthStyle}
+        <div className="w-full max-w-[1130px] mx-auto px-4 sm:px-6">
           <p id="faq-subh">{brand.faqSubtitle || "FAQ'S"}</p>
           <h3>{brand.faqTitle || "Frequently Asked Questions"}</h3>
 
@@ -87,7 +102,8 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
     const faqTitle = brand.faqTitle || "FAQ | Frequently Asked Question";
     return (
       <section id="faqs" aria-label="Frequently Asked Questions" className="py-10 sm:py-14 bg-white w-full select-none scroll-mt-24">
-        <div className="max-w-[1140px] mx-auto px-4 sm:px-6">
+        {desktopWidthStyle}
+        <div className="w-full max-w-[1130px] mx-auto px-4 sm:px-6">
           <h2 className="text-[22px] sm:text-[26px] lg:text-[28px] font-bold text-[#003399] text-left m-0 mb-6 sm:mb-8 tracking-tight">
             {faqTitle}
           </h2>
@@ -109,7 +125,7 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
                       {rawQuestion}
                     </h3>
                     <span
-                      className="w-6 h-6 rounded-[2px] bg-[#eef7ec] text-[#62B239] flex items-center justify-center font-bold text-[15px] leading-none shrink-0 ml-3 select-none"
+                      className="w-6 h-6 rounded-[2px] bg-[#808080] text-[#808080] flex items-center justify-center font-bold text-[15px] leading-none shrink-0 ml-3 select-none"
                     >
                       {isOpen ? "−" : "+"}
                     </span>
@@ -135,7 +151,8 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
     const faqTitle = brand.faqTitle || "FAQ | Frequently Asked Questions";
     return (
       <section id="faqs">
-        <div className="container">
+        {desktopWidthStyle}
+        <div className="container w-full max-w-[1130px] mx-auto px-4 sm:px-6">
           <div className="faq-title">
             <h2>{faqTitle}</h2>
           </div>
@@ -180,7 +197,8 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
 
     return (
       <section id="faqs" aria-label="Frequently Asked Questions" className="py-10 sm:py-14 bg-white w-full select-none scroll-mt-24">
-        <div className="max-w-[1140px] mx-auto px-4 sm:px-6 lg:px-8">
+        {desktopWidthStyle}
+        <div className="w-full max-w-[1130px] mx-auto px-4 sm:px-6">
           <h2 className="text-[22px] sm:text-[26px] lg:text-[28px] font-bold text-[#111111] text-left m-0 mb-6 sm:mb-8 tracking-tight">
             {faqTitle}
           </h2>
@@ -243,7 +261,8 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
         id="faqs"
         className={brand.faqSectionClassName || "py-10 sm:py-14 lg:py-16 bg-white w-full select-none"}
       >
-        <div className={brand.faqContainerClassName || "max-w-[1140px] mx-auto px-4 sm:px-6"}>
+        {desktopWidthStyle}
+        <div className={brand.faqContainerClassName || "w-full max-w-[1130px] mx-auto px-4 sm:px-6"}>
           {/* Header */}
           <h2
             className={
@@ -351,7 +370,8 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
   if (isSmu) {
     return (
       <section id="faqs" className="py-10 sm:py-14 lg:py-16 bg-white w-full select-none">
-        <div className="w-full px-4 sm:px-6 lg:px-8 max-w-[1240px] xl:max-w-[1300px] mx-auto">
+        {desktopWidthStyle}
+        <div className="w-full max-w-[1130px] mx-auto px-4 sm:px-6">
           {/* Header: FAQ'S | Frequently Asked Questions */}
           <div className="mb-6 sm:mb-8 text-left">
             <h2 className="text-2xl sm:text-[28px] lg:text-[32px] tracking-tight m-0 inline-flex items-center flex-wrap gap-1.5 sm:gap-2">
@@ -405,52 +425,53 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
   // Classic Divided List Layout (Amity, etc.)
   // ==========================================
   return (
-    <section id="faqs" className="py-10 sm:py-16 bg-white">
-      <LandingContainer>
+    <section id="faqs" className="pt-5 sm:pt-6 lg:pt-6 pb-10 sm:pb-14 bg-white">
+      {desktopWidthStyle}
+      <LandingContainer className="!max-w-[1130px] px-4 sm:px-6">
         {brand.faqTitleHtml ? (
-          <div className="mb-6 sm:mb-8" dangerouslySetInnerHTML={{ __html: brand.faqTitleHtml }} />
+          <div className="mb-4 sm:mb-5 lg:mb-5" dangerouslySetInnerHTML={{ __html: brand.faqTitleHtml }} />
         ) : (
           <h2
-            className="text-2xl sm:text-3xl font-semibold tracking-tight mb-6 sm:mb-8 text-left m-0"
+            className="text-2xl sm:text-[32px] font-semibold tracking-normal mb-3 sm:mb-4 lg:mb-4 text-left m-0"
             style={{ color: headingColor }}
           >
             {brand.faqTitle || "Frequently Asked Questions"}
           </h2>
         )}
 
-        {/* Clean Accordion List */}
-        <div className="w-full divide-y divide-slate-200 border-t border-slate-200">
+        {/* Clean Accordion List: Divider on BOTTOM of each question, none on top */}
+        <div className="w-full">
           {faqs.map((faq, idx) => {
             const isOpen = openIndex === idx;
             const rawQuestion = (faq.q || faq.question || "").replace(/^Q\d+[\.\:\s]*/i, "");
             const formattedQuestion = `Q${idx + 1}. ${rawQuestion}`;
 
             return (
-              <div key={idx} className="w-full">
+              <div key={idx} className="w-full border-b border-[#e5e7eb] faq-item-row">
                 <button
                   type="button"
                   onClick={() => toggleFaq(idx)}
-                  className="w-full py-4 text-left flex items-center justify-between gap-4 cursor-pointer bg-transparent border-none p-0 group"
+                  className="w-full py-3.5 sm:py-3.5 text-left flex items-center justify-between gap-4 cursor-pointer bg-transparent border-none p-0 group"
                   aria-expanded={isOpen}
                 >
                   <span
-                    className={`text-[14px] sm:text-[16px] leading-snug transition-colors ${isOpen
-                      ? "text-[#000000] font-semibold"
-                      : "text-[#000000] font-medium hover:text-[#08417b]"
+                    className={`faq-question-text text-[15px] sm:text-[15.5px] leading-normal transition-colors ${isOpen
+                      ? "text-black font-semibold"
+                      : "text-[#808080] font-normal hover:text-black"
                       }`}
                   >
                     {formattedQuestion}
                   </span>
                   <span
-                    className="font-bold text-xl sm:text-2xl leading-none shrink-0 w-6 text-right select-none"
-                    style={{ color: iconColor }}
+                    className="faq-icon-symbol font-semibold text-xl sm:text-2xl leading-none shrink-0 w-6 text-right select-none"
+                    style={{ color: brand.faqIconColor || iconColor || "#808080" }}
                   >
                     {isOpen ? "−" : "+"}
                   </span>
                 </button>
 
                 {isOpen && (
-                  <div className="pb-4 pt-1 text-[13.5px] sm:text-[15px] text-[#4d4d4d] leading-relaxed font-normal">
+                  <div className="pb-4 pt-0 text-[13px] sm:text-[13.5px] text-black leading-relaxed font-normal faq-answer-content">
                     {faq.a || faq.answer}
                   </div>
                 )}

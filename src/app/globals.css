@@ -454,3 +454,23 @@ div:has(> #nextjs-dev-tools) {
   visibility: hidden !important;
   pointer-events: none !important;
 }
+
+/* =========================================================
+   GLOBAL FOOTER DISCLAIMER FULL WIDTH COVER (DESKTOP VIEW)
+========================================================= */
+@media (min-width: 1024px) {
+  #footer-bottom-bar {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    box-sizing: border-box !important;
+  }
+  #footer-bottom-bar p {
+    width: 100% !important;
+    max-width: 100% !important;
+    text-align: center !important;
+    font-size: 14px !important;
+    line-height: 1.6 !important;
+  }
+}

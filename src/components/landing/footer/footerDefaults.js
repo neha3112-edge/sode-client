@@ -120,6 +120,12 @@ export const DEFAULT_ADDRESS =
 export const DEFAULT_CLASSIC_DISCLAIMER =
   "SODE Counselling Services LLP act as a marketing agency. All university names, logos, and trademarks mentioned are used for informational purposes only. We are not a university or an admission authority. Users are encouraged to verify information on the official website of the University before making decisions.";
 
+export const DEFAULT_DISCLAIMER_CONTAINER_CLASS =
+  "mt-2 sm:mt-3 lg:mt-4 px-3 sm:px-4 lg:px-6 w-full max-w-none mx-auto text-center";
+
+export const DEFAULT_DISCLAIMER_TEXT_CLASS =
+  "m-0 text-[13.5px] sm:text-[13px] md:text-[13px] lg:text-[14px] xl:text-[14px] text-[#666666] leading-[1.55] sm:leading-[1.6] lg:leading-[1.6] font-normal tracking-normal max-w-none w-full mx-auto";
+
 export const DEFAULT_COPYRIGHT_TEXT = `© ${new Date().getFullYear()} SODE Counseling Services LLP`;
 
 /**

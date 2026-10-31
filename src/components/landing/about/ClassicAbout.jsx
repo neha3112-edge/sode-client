@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { ArrowRight, User } from "lucide-react";
 import LandingButton from "../LandingButton";
+import LandingContainer from "../LandingContainer";
 
 /**
  * Reusable Default / Classic About Section
@@ -44,21 +45,21 @@ export default function ClassicAbout({ about = {}, brand = {}, onOpenApply }) {
   return (
     <section
       id="about"
-      className={`py-12 sm:py-16 md:py-20 select-none ${about.containerClassName || ""}`}
+      className={`pt-8 sm:pt-10 lg:pt-10 pb-0 select-none ${about.containerClassName || ""}`}
       style={{
         backgroundColor: sectionBg,
         ...about.sectionStyle,
       }}
     >
-      <div className="max-w-[1240px] min-[1600px]:max-w-[1520px] min-[1920px]:max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 xl:gap-14 items-center">
+      <LandingContainer className="amity-about-container">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 items-start pt-4 sm:pt-4 lg:pt-4 ">
           {/* Image Column */}
           {imageSrc && (
             <div
-              className={`lg:col-span-6 flex items-center justify-center ${isImageRight ? "order-1 lg:order-2" : "order-1 lg:order-1"
+              className={`lg:col-span-6 flex items-start justify-center ${isImageRight ? "order-1 lg:order-2" : "order-1 lg:order-1"
                 }`}
             >
-              <div className="relative w-full aspect-[16/9] sm:aspect-[1.75/1] rounded-[6px] overflow-hidden shadow-xs border border-slate-100/90 bg-slate-50">
+              <div className="relative w-full aspect-[16/9] sm:aspect-[1.82/1] rounded-[4px] overflow-hidden border border-slate-200/80 bg-slate-50">
                 <Image
                   src={imageSrc}
                   alt={imageAlt}
@@ -74,14 +75,14 @@ export default function ClassicAbout({ about = {}, brand = {}, onOpenApply }) {
 
           {/* Content Column */}
           <div
-            className={`space-y-4 text-left ${imageSrc ? "lg:col-span-6" : "lg:col-span-12"} ${isImageRight ? "order-2 lg:order-1" : "order-2 lg:order-2"
+            className={`space-y-3.5 text-left ${imageSrc ? "lg:col-span-6" : "lg:col-span-12"} ${isImageRight ? "order-2 lg:order-1" : "order-2 lg:order-2"
               } ${about.contentClassName || ""}`}
           >
             <h2
-              className={`text-2xl sm:text-[28px] lg:text-[32px] font-bold tracking-tight m-0 leading-tight text-center sm:text-left ${about.titleClassName || ""
+              className={`  pb-2 sm:pb-3 lg:pb-3 text-2xl sm:text-[32px] lg:text-[32px] font-medium font-poppins tracking-tight m-0 leading-tight text-left${about.titleClassName || ""
                 }`}
               style={{
-                color: about.titleColor || brand.primaryColor || "#08417b",
+                color: about.titleColor || "#1f2937",
                 ...about.titleStyle,
               }}
             >
@@ -90,10 +91,10 @@ export default function ClassicAbout({ about = {}, brand = {}, onOpenApply }) {
 
             {paragraphs.length > 0 && (
               <div
-                className={`space-y-3.5 text-[13.5px] sm:text-[14px] leading-relaxed font-normal ${about.paragraphClassName || "text-slate-700"
+                className={`space-y-3.5 text-[13px] sm:text-[13.5px] lg:text-[13.5px] leading-[1.65] font-normal ${about.paragraphClassName || ""
                   }`}
                 style={{
-                  color: about.textColor || "#334155",
+                  color: about.textColor || "#333333",
                   ...about.paragraphStyle,
                 }}
               >
@@ -124,24 +125,41 @@ export default function ClassicAbout({ about = {}, brand = {}, onOpenApply }) {
             )}
 
             {showApplyButton && (
-              <div className="pt-2 sm:pt-3 flex justify-center sm:justify-start">
-                <LandingButton
-                  variant="outline"
+              <div className="pt-2 sm:pt-2 flex justify-center lg:justify-start about-apply-btn-wrapper">
+                <button
+                  type="button"
                   onClick={onOpenApply}
-                  borderColor={buttonBorderColor}
-                  textColor={buttonTextColor}
-                  bg={buttonBg}
-                  icon={<ArrowRight className="w-4 h-4 stroke-[2.2]" />}
-                  iconPosition="right"
-                  className="!font-semibold !rounded-[4px] !py-2.5 !px-6 !text-[14.5px] sm:!text-[15px] border hover:!opacity-90 active:scale-95"
+                  className="about-apply-btn inline-flex items-center justify-center gap-2 px-6 h-[44px] border-2 border-[#08417b] text-[#111827] bg-white rounded-[4px] text-[16px] font-normal hover:bg-slate-50 transition-colors cursor-pointer shadow-none"
+                  style={{
+                    borderColor: buttonBorderColor || "#08417b",
+                    color: buttonTextColor || "#111827",
+                    backgroundColor: buttonBg !== "transparent" ? buttonBg : "#ffffff",
+                  }}
                 >
-                  {buttonText}
-                </LandingButton>
+                  <span>{buttonText}</span>
+                  <ArrowRight className="w-4 h-4 stroke-[2.4] ml-0.5 text-[#111827]" />
+                </button>
               </div>
             )}
           </div>
         </div>
-      </div>
+
+        {/* Section Divider Line (matching reference design) */}
+        {about.showDivider !== false && (
+          <div
+            className="about-divider w-full mt-9 sm:mt-9 lg:mt-[34px] mb-7 sm:mb-7 lg:mb-[78px]"
+            style={{
+              height: "1px",
+              backgroundColor: "#d1d5db",
+              borderTop: "1px solid #d1d5db",
+              width: "100%",
+              display: "block",
+              opacity: 1,
+              visibility: "visible",
+            }}
+          />
+        )}
+      </LandingContainer>
     </section>
   );
 }

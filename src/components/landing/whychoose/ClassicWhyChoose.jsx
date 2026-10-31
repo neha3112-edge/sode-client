@@ -13,7 +13,14 @@ export default function ClassicWhyChoose({ whyChoose = [], brand = {}, onOpenApp
   return (
     <section id="whychoose" className={brand.whyChooseSectionClass || "pt-8 pb-3 sm:pt-10 sm:pb-4 lg:pb-5 bg-white select-none"}>
       <LandingContainer>
-        <h2 className="whychoose-title relative z-20 text-xl sm:text-2xl lg:text-[33px] font-bold text-slate-900 tracking-normal m-0 text-center sm:text-left mb-0 sm:mb-0">
+        <h2
+          className="whychoose-title relative z-20
+    text-[30px] sm:text-2xl lg:text-[33px]
+    font-extrabold text-[#0f1b33]
+    tracking-wide leading-[1.25]
+    m-0 text-left
+    mb-6 sm:mb-0"
+        >
           {brand.whyChooseTitle || `Why Choose ${universityName} for Degree Courses`}
         </h2>
 

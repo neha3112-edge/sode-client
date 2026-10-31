@@ -473,7 +473,7 @@ export default function LandingHero({
 
         <LandingContainer
           className={joinClassNames(
-            "relative z-10 flex flex-col min-[1000px]:flex-row items-center justify-between gap-5 sm:gap-6 lg:gap-8 px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3.5 lg:py-3",
+            "relative z-10 flex flex-col min-[1000px]:flex-row items-center justify-between gap-5 sm:gap-6 lg:gap-8 min-[1000px]:!max-w-[1130px] px-3.5 sm:px-4 py-2.5 sm:py-3.5 lg:py-3",
             hero.containerClassName
           )}
           style={{
