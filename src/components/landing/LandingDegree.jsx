@@ -278,17 +278,15 @@ export default function LandingDegree({
 
               {/* Right Column: Sample Degree Certificate */}
               <div className="lg:col-span-5 flex justify-center items-center">
-                <div className="relative w-[215px] sm:w-[245px] md:w-[265px] bg-white rounded-[4px] shadow-[0_8px_25px_rgba(0,0,0,0.10)] border border-slate-200/80 p-2 sm:p-2.5 flex items-center justify-center">
-                  <div className="relative w-full aspect-[372/531]">
-                    <Image
-                      src={image || "/assets/all_universities_images/vgu/sample-degree-vgu-clean.webp"}
-                      alt="Sample Degree Vivekananda Global University"
-                      fill
-                      className="object-contain"
-                      sizes="(max-width: 640px) 240px, 280px"
-                      priority
-                    />
-                  </div>
+                <div className="relative w-[220px] sm:w-[255px] md:w-[275px] aspect-[369/527]">
+                  <Image
+                    src={image || "/assets/all_universities_images/vgu/sample-degree-vgu-clean.webp"}
+                    alt="Sample Degree Vivekananda Global University"
+                    fill
+                    className="object-contain"
+                    sizes="(max-width: 640px) 240px, 280px"
+                    priority
+                  />
                 </div>
               </div>
             </div>
