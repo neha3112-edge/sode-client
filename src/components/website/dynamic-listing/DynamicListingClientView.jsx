@@ -694,7 +694,7 @@ export function DynamicListingClientView({ page }) {
   const targetCourseName = page?.targetCourse?.name || "";
 
   return (
-    <main className="min-h-screen bg-slate-50/50">
+    <div className="w-full bg-slate-50/50">
       {/* ── 1. Hero Section ── */}
       {page?.hero?.enabled && (
         <DynamicHero
@@ -796,7 +796,7 @@ export function DynamicListingClientView({ page }) {
           )}
         </Container>
       </section>
-    </main>
+    </div>
   );
 }
 

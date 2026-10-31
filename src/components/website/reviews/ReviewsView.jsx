@@ -282,7 +282,7 @@ export default function ReviewsView({ data = null }) {
   };
 
   return (
-    <div className="w-full bg-[#F8FAFC] text-slate-800 font-sans min-h-screen">
+    <div className="w-full bg-[#F8FAFC] text-slate-800 font-sans">
       {/* ─── 1. HERO BANNER (Deep Midnight Navy #11233E) ─── */}
       <div className="w-full bg-[#11233E] text-white pt-8 sm:pt-12 pb-14 sm:pb-16">
         <Container className="text-center">

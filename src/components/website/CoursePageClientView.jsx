@@ -627,7 +627,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
   ]);
 
   return (
-    <div className="w-full bg-[#F8FAFC] text-slate-800 antialiased min-h-screen">
+    <div className="w-full bg-[#F8FAFC] text-slate-800 antialiased">
       {/* ── Custom CSS from builder / editor ── */}
       {page?.css && (
         <style

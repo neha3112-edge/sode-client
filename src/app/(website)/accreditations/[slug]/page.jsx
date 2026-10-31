@@ -43,7 +43,7 @@ export default async function AccreditationDirectoryDetailPage({ params }) {
   if (isFakeUniversitiesSlug(slug)) {
     const staticFakeData = getFakeUniversitiesStaticData(slug);
     return (
-      <div className="w-full min-h-screen">
+      <div className="w-full">
         <ApprovalUniversityDirectory initialData={staticFakeData} />
       </div>
     );
@@ -71,7 +71,7 @@ export default async function AccreditationDirectoryDetailPage({ params }) {
   }
 
   return (
-    <div className="w-full min-h-screen">
+    <div className="w-full">
       <ApprovalUniversityDirectory initialData={initialData} />
     </div>
   );

@@ -18,7 +18,7 @@ export function WebsiteLayout({
   bg = "#f8fafc",
 }) {
   return (
-    <Layout className="w-full min-h-screen font-sans" style={{ background: bg }}>
+    <Layout className="w-full font-sans" style={{ background: bg }}>
       <AntContent className={`w-full ${py} ${className}`} style={{ background: bg }}>
         {hasContainer ? <Container>{children}</Container> : children}
       </AntContent>

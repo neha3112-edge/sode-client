@@ -532,7 +532,7 @@ export default function AutoEngineToolPage({
   };
 
   return (
-    <div className="w-full bg-[#f8fafc] text-slate-800 font-sans min-h-screen">
+    <div className="w-full bg-[#f8fafc] text-slate-800 font-sans">
       {/* ─── 1. TOP DARK BLUE BANNER WITH PAGE TITLE & SUBTITLE ─── */}
       <div className="w-full bg-[#072C50] text-white pt-6 pb-20 sm:pt-8 sm:pb-24 md:pt-10 md:pb-28 px-4 relative">
         <div className="max-w-6xl mx-auto">
@@ -557,7 +557,7 @@ export default function AutoEngineToolPage({
       </div>
 
       {/* ─── 2. FLOATING WHITE CONTAINER CARD (STARTS DIRECTLY WITH QUESTION & OPTIONS) ─── */}
-      <div className="relative z-10 max-w-6xl mx-auto px-2.5 sm:px-6 md:px-8 -mt-12 sm:-mt-16 md:-mt-20 pb-16 md:pb-24">
+      <div className="relative z-10 max-w-6xl mx-auto px-2.5 sm:px-6 md:px-8 -mt-12 sm:-mt-16 md:-mt-20 pb-8 sm:pb-12">
         <article className="w-full bg-white rounded-2xl sm:rounded-3xl shadow-xl border border-slate-100 p-4 sm:p-8 md:p-10 text-[#2D3748]">
 
           {/* Body: Loading or Results or Questions */}

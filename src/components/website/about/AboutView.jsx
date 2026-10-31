@@ -258,7 +258,7 @@ export function AboutView({ initialAboutData = null, initialReviews = [] }) {
   ];
 
   return (
-    <div className="w-full min-h-screen bg-white font-sans text-slate-800">
+    <div className="w-full bg-white font-sans text-slate-800">
       {/* ========================================================
           1. HERO TEAM BANNER: FULL-WIDTH COMPACT HEIGHT
       ======================================================== */}

@@ -175,7 +175,7 @@ export function ToolsView({ initialTools = [] }) {
       <div className="w-full bg-[#072C50] h-36 sm:h-44 md:h-52" />
 
       {/* ─── 2. FLOATING WHITE CONTAINER CARD ─── */}
-      <div className="relative z-10 max-w-6xl mx-auto px-2.5 sm:px-6 md:px-8 -mt-20 sm:-mt-28 md:-mt-32 pb-16 md:pb-24">
+      <div className="relative z-10 max-w-6xl mx-auto px-2.5 sm:px-6 md:px-8 -mt-20 sm:-mt-28 md:-mt-32 pb-8 sm:pb-12">
         <article className="w-full bg-white rounded-2xl sm:rounded-3xl shadow-xl border border-slate-100 p-3.5 sm:p-10 md:p-14 text-[#2D3748]">
           {/* Top Badge */}
           <div className="flex justify-center mb-1.5 sm:mb-3">

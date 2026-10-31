@@ -24,12 +24,12 @@ export default function LegalPolicyView({ policy }) {
   const points = Array.isArray(policy.points) ? policy.points : [];
 
   return (
-    <div className="w-full bg-[#f8fafc] text-slate-800 font-sans min-h-screen">
+    <div className="w-full bg-[#f8fafc] text-slate-800 font-sans">
       {/* ─── WEBSITE DARK BLUE TOP BANNER (#072C50 - Website Base Color) ─── */}
       <div className="w-full bg-[#072C50] h-36 sm:h-44 md:h-52" />
 
       {/* ─── FLOATING WHITE CONTAINER CARD (Matching Screenshot 1) ─── */}
-      <div className="max-w-4xl lg:max-w-5xl mx-auto px-4 sm:px-6 md:px-8 -mt-20 sm:-mt-28 md:-mt-32 pb-16 md:pb-24">
+      <div className="max-w-4xl lg:max-w-5xl mx-auto px-4 sm:px-6 md:px-8 -mt-20 sm:-mt-28 md:-mt-32 pb-8 sm:pb-12">
         <article className="w-full bg-white rounded-2xl sm:rounded-3xl shadow-xl border border-slate-100 p-6 sm:p-10 md:p-14 text-[#2D3748] text-sm sm:text-[15px] md:text-[15.5px] leading-[1.8]">
           {/* Centered Page Title inside the card in dark blue */}
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#072C50] text-center tracking-tight m-0 mb-4 sm:mb-5">

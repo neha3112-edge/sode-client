@@ -934,7 +934,7 @@ export default function BlogClientView({
   const BLOG_BODY_TYPOGRAPHY = "[&_p]:text-xs sm:[&_p]:text-sm [&_p]:text-slate-700 [&_li]:text-xs sm:[&_li]:text-sm [&_li]:text-gray-700";
 
   return (
-    <div className="min-h-screen bg-gray-100 text-gray-800 pb-16">
+    <div className="w-full bg-gray-100 text-gray-800 pb-8 sm:pb-12">
       {/* ── Ant Design Table CSS (Strictly matching CoursePageClientView.jsx) ── */}
       <style>{`
         /* Ant Design Table Mobile-Fit & Crystal Clear Header Typography */

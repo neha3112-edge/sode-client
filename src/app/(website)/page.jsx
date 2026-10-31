@@ -40,8 +40,8 @@ export default async function Home() {
         : [];
 
   return (
-    <div className="flex flex-col min-h-screen text-slate-900 font-sans selection:bg-blue-600 selection:text-white">
-      <main className="flex w-full flex-1 flex-col">
+    <div className="w-full text-slate-900 font-sans selection:bg-blue-600 selection:text-white">
+      <div className="flex w-full flex-col">
         <Hero initialHeroData={heroData} />
         <Category
           universities={universities}
@@ -49,7 +49,7 @@ export default async function Home() {
           programs={programs}
           counselors={counselors}
         />
-      </main>
+      </div>
     </div>
   );
 }

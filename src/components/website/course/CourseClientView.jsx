@@ -646,7 +646,7 @@ export function CourseClientView({
   ]);
 
   return (
-    <div className="min-h-screen bg-gray-100 text-gray-800 antialiased font-sans pb-16">
+    <div className="w-full bg-gray-100 text-gray-800 antialiased font-sans pb-8 sm:pb-12">
       {/* Top Hero and Quick Facts */}
       <div className="pt-4 space-y-6 max-w-6xl mx-auto px-3 sm:px-4 md:px-0 mb-6">
         <CourseHero

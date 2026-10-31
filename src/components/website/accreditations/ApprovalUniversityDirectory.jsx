@@ -745,7 +745,7 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
 
 
   return (
-    <div className={`w-full bg-[#f8fafc] text-slate-800 font-sans min-h-screen ${className || ""}`}>
+    <div className={`w-full bg-[#f8fafc] text-slate-800 font-sans ${className || ""}`}>
       {/* ── 1. TOP HERO HEADER (DARK BLUE BRANDING) ── */}
       <div className="w-full bg-[#072C50] text-white pt-6 pb-20 sm:pt-8 sm:pb-24 md:pt-10 md:pb-28 px-4 relative">
         <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
@@ -787,7 +787,7 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
       </div>
 
       {/* ── 2. FLOATING WHITE CONTAINER CARD (TABLE & FILTERS OVERLAPPING HERO) ── */}
-      <div className="relative z-10 max-w-7xl mx-auto px-2.5 sm:px-6 md:px-8 -mt-12 sm:-mt-16 md:-mt-20 pb-16 md:pb-24">
+      <div className="relative z-10 max-w-7xl mx-auto px-2.5 sm:px-6 md:px-8 -mt-12 sm:-mt-16 md:-mt-20 pb-8 sm:pb-12">
         <div className="w-full bg-white rounded-2xl sm:rounded-3xl shadow-xl border border-slate-200/90 p-3 sm:p-5 md:p-6 text-[#2D3748]">
           {/* 🔍 Search & Filters Bar */}
           <div className="mb-3.5 sm:mb-4.5">

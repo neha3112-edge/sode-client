@@ -12,7 +12,7 @@ export default function BlogLayoutClient({ children }) {
         },
       }}
     >
-      <div className="blog-poppins-layout font-poppins min-h-screen">
+      <div className="blog-poppins-layout font-poppins w-full">
         {children}
       </div>
     </ConfigProvider>

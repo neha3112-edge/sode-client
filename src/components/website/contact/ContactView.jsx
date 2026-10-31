@@ -155,7 +155,7 @@ export function ContactView({
     Boolean(socialLinks?.instagram);
 
   return (
-    <div className="w-full min-h-screen bg-white font-sans text-slate-800">
+    <div className="w-full bg-white font-sans text-slate-800">
       <section
         className="relative w-full text-white pt-10 sm:pt-14 pb-32 sm:pb-36 md:pb-40 px-4 sm:px-6 lg:px-8 bg-cover bg-center bg-no-repeat bg-fixed"
         style={{

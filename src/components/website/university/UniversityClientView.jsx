@@ -368,7 +368,7 @@ export function UniversityClientView({ initialData, slug }) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 text-gray-800 antialiased font-sans pb-16 overflow-x-hidden">
+    <div className="w-full bg-gray-100 text-gray-800 antialiased font-sans pb-8 sm:pb-12 overflow-x-hidden">
       {/* Hero Header Section */}
       <UniversityHero
         uniName={uniName}

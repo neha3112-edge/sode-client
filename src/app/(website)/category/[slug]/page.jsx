@@ -51,8 +51,8 @@ export default async function CategoryDetailPage({ params }) {
   const programs = coursesRes?.result || coursesRes?.programs || [];
 
   return (
-    <div className="flex flex-col min-h-screen bg-white text-gray-700">
-      <main className="flex-1">
+    <div className="w-full bg-white text-gray-700">
+      <div className="w-full">
         {/* ── HERO BANNER ── */}
         <section className="bg-white border-b border-gray-200 py-12 md:py-16 text-center">
           <Container className="max-w-4xl mx-auto space-y-4">
@@ -194,7 +194,7 @@ export default async function CategoryDetailPage({ params }) {
             </div>
           </Container>
         </section>
-      </main>
+      </div>
     </div>
   );
 }
