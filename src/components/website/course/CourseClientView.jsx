@@ -175,7 +175,8 @@ export function CourseClientView({
       breakdown,
       formattedActualFees: promoData?.formattedActualFees || full?.formattedGross || null,
       emi: {
-        fullfees: fullEmi,
+        available: Boolean(availableSummary?.available || emi?.available || fullEmi?.available),
+        fullfees: fullEmi || (availableSummary?.available ? availableSummary : null),
         yearly: year ? yearEmi : null,
         semester: sem ? semEmi : null,
         summary: availableSummary,

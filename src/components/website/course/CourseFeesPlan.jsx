@@ -11,6 +11,7 @@ export default function CourseFeesPlan({
   courseData,
 }) {
   const [activeEmiSubTab, setActiveEmiSubTab] = useState(null);
+  const [activeEmiTypeTab, setActiveEmiTypeTab] = useState("no_cost");
 
   const paymentTypeName = (activeLedgerData?.paymentTypeName || "").toLowerCase();
   const isYearlySelected = paymentTypeName.includes("year") || paymentTypeName.includes("annual");
@@ -126,22 +127,28 @@ export default function CourseFeesPlan({
   }
 
   // 5. EMI Option Card
-  if (activeLedgerData?.emi?.available) {
+  const emiData = activeLedgerData?.emi;
+  const isEmiAvailable = Boolean(emiData?.available || emiData?.summary?.available);
+  if (isEmiAvailable) {
+    const summaryEmi = emiData?.summary || emiData;
+    const minEmiText = summaryEmi?.formattedMinMonthlyEmi
+      ? `Starting ${summaryEmi.formattedMinMonthlyEmi}`
+      : "Bank & NBFC EMI";
+
     planCards.push({
       id: "emi",
       isEmi: true,
-      title: (activeLedgerData.emi?.summary?.hasInterest && Number(activeLedgerData.emi?.summary?.interestRate) > 1) ? "Standard EMI" : "No-Cost EMI",
+      title: "No-Cost EMI",
       badge: {
-        text: (activeLedgerData.emi?.summary?.hasInterest && Number(activeLedgerData.emi?.summary?.interestRate) > 1) ? "EASY FINANCING" : "NO-COST EMI",
-        color: (activeLedgerData.emi?.summary?.hasInterest && Number(activeLedgerData.emi?.summary?.interestRate) > 1) ? "geekblue" : "orange",
+        text: "NO-COST EMI",
+        color: "orange",
       },
       hasDiscount: false,
-      payableFee: activeLedgerData.emi?.summary?.formattedMinMonthlyEmi ? `Starting ${activeLedgerData.emi.summary.formattedMinMonthlyEmi}` : "Bank & NBFC EMI",
-      subtitle: isYearlySelected
-        ? "Yearly Plan EMI"
-        : isSemesterSelected
-          ? "Semester EMI"
-          : (activeLedgerData.emi?.summary?.planName || "Bank & NBFC Financing"),
+      payableFee: minEmiText,
+      taxBadge: isTaxInclusive ? "Incl. Taxes" : null,
+      subtitle: summaryEmi?.cautionAmount > 0
+        ? `₹ ${Number(summaryEmi.cautionAmount).toLocaleString("en-IN")} Seat Booking • Easy Tenures`
+        : (summaryEmi?.planName || "3 to 48 Months Financing"),
       onClick: () => setSelectedPlanTab("emi"),
     });
   }
@@ -329,6 +336,20 @@ export default function CourseFeesPlan({
           );
         }
 
+        const hasNoCost = Boolean(currentEmi.noCostEmi?.enabled !== false && Array.isArray(currentEmi.noCostEmi?.tenures) && currentEmi.noCostEmi.tenures.length > 0);
+        const hasStandard = Boolean(currentEmi.standardEmi?.enabled !== false && Array.isArray(currentEmi.standardEmi?.tenures) && currentEmi.standardEmi.tenures.length > 0);
+
+        const activeCategory = activeEmiTypeTab === "standard" && hasStandard ? "standard" : (hasNoCost ? "no_cost" : (hasStandard ? "standard" : "all"));
+        const displayTenures = activeCategory === "standard"
+          ? (currentEmi.standardEmi?.tenures || currentEmi.tenures)
+          : (activeCategory === "no_cost" ? (currentEmi.noCostEmi?.tenures || currentEmi.tenures) : currentEmi.tenures);
+
+        const currentPartners = activeCategory === "standard"
+          ? (currentEmi.standardEmi?.partners || ["Propelld", "LiquiLoans", "Eduvanz"])
+          : (currentEmi.noCostEmi?.partners || ["Fibe", "Propelld", "Bank Credit Cards"]);
+
+        const cautionAmt = Number(currentEmi.cautionAmount || 0);
+
         return (
           <div className="mt-4 rounded-xl bg-amber-50/60 border border-amber-200/80 overflow-hidden shadow-2xs">
             {/* Full-width top attached Radio Group */}
@@ -365,9 +386,67 @@ export default function CourseFeesPlan({
               </div>
             )}
 
-            {/* Tenure Options Cards - Distinct Cards Spanning Full Width */}
-            {Array.isArray(currentEmi.tenures) && currentEmi.tenures.length > 0 && (() => {
-              const count = currentEmi.tenures.length;
+            {/* Top Category Selector: No Cost EMI vs Standard EMI */}
+            {(hasNoCost || hasStandard) && (
+              <div className="bg-white border-b border-amber-200/80 p-2 sm:p-2.5 flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setActiveEmiTypeTab("no_cost")}
+                    className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all cursor-pointer border ${
+                      activeCategory === "no_cost"
+                        ? "bg-emerald-600 text-white border-emerald-600 shadow-2xs"
+                        : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50"
+                    }`}
+                  >
+                    🏷️ 0% No-Cost EMI
+                  </button>
+
+                  {hasStandard && (
+                    <button
+                      type="button"
+                      onClick={() => setActiveEmiTypeTab("standard")}
+                      className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all cursor-pointer border ${
+                        activeCategory === "standard"
+                          ? "bg-blue-600 text-white border-blue-600 shadow-2xs"
+                          : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50"
+                      }`}
+                    >
+                      💳 Standard / Extended EMI
+                    </button>
+                  )}
+                </div>
+
+                {/* Facilitators list */}
+                {Array.isArray(currentPartners) && currentPartners.length > 0 && (
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-[10.5px] sm:text-xs font-semibold text-gray-500">Financed via:</span>
+                    {currentPartners.map((partner, pIdx) => (
+                      <span
+                        key={pIdx}
+                        className="px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-semibold bg-gray-100 text-gray-700 border border-gray-200"
+                      >
+                        {partner}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Caution Amount Notice Banner (e.g. upGrad ₹ 25,000 seat booking) */}
+            {cautionAmt > 0 && (
+              <div className="px-3.5 py-2 bg-purple-50/80 border-b border-purple-200/60 flex items-center gap-2 text-xs sm:text-[12.5px] text-purple-900">
+                <span className="text-sm">📌</span>
+                <span>
+                  <strong>Seat Booking Amount:</strong> ₹ {cautionAmt.toLocaleString("en-IN")} Caution Amount is paid upfront to reserve your seat in the program before loan disbursement.
+                </span>
+              </div>
+            )}
+
+            {/* Tenure Options Cards */}
+            {Array.isArray(displayTenures) && displayTenures.length > 0 && (() => {
+              const count = displayTenures.length;
               const gridColsClass =
                 count === 1
                   ? "grid-cols-1"
@@ -375,12 +454,12 @@ export default function CourseFeesPlan({
                     ? "grid-cols-1 sm:grid-cols-2"
                     : count === 3
                       ? "grid-cols-1 sm:grid-cols-3"
-                      : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4";
+                      : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
 
               return (
                 <div className="p-3 sm:p-4 w-full">
                   <div className={`grid ${gridColsClass} gap-3 w-full`}>
-                    {currentEmi.tenures.map((tenure, idx) => (
+                    {displayTenures.map((tenure, idx) => (
                       <div
                         key={idx}
                         className="bg-white rounded-xl border border-amber-200 p-3.5 sm:p-4 shadow-xs hover:shadow-md hover:border-amber-400 transition-all space-y-2.5 flex flex-col justify-between"
@@ -392,7 +471,7 @@ export default function CourseFeesPlan({
                             </span>
                             {tenure.interestRatePct && Number(tenure.interestRatePct) > 0 ? (
                               <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-2xl bg-blue-100 text-blue-800 border border-blue-300/60">
-                                {tenure.interestRatePct}% p.a. Interest
+                                {tenure.interestRatePct}% p.a.
                               </span>
                             ) : (
                               <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-2xl bg-emerald-100 text-emerald-800 border border-emerald-300/60">
@@ -405,34 +484,39 @@ export default function CourseFeesPlan({
                           </span>
                         </div>
 
-                        {(tenure.totalInterest > 0 || tenure.downPayment > 0 || tenure.interestAmount > 0) && (
-                          <div className="pt-2 border-t border-gray-100 text-[11px] space-y-1 text-gray-600">
-                            {(tenure.totalInterest > 0 || tenure.interestAmount > 0) && (
-                              <div className="flex justify-between items-center text-amber-900 font-medium">
-                                <span>Total Interest:</span>
-                                <span className="font-bold">
-                                  {tenure.formattedTotalInterest || `₹ ${(tenure.interestAmount || tenure.totalInterest).toLocaleString("en-IN")}`}
-                                </span>
-                              </div>
-                            )}
-                            {(tenure.totalPayableWithInterest > 0 || tenure.totalPayable > 0) && (
-                              <div className="flex justify-between items-center text-gray-900 font-semibold">
-                                <span>Total Payable:</span>
-                                <span className="font-bold text-[#0C2B4E]">
-                                  {tenure.formattedTotalPayableWithInterest || `₹ ${(tenure.totalPayable || tenure.totalPayableWithInterest).toLocaleString("en-IN")}`}
-                                </span>
-                              </div>
-                            )}
-                            {tenure.downPayment > 0 && (
-                              <div className="flex justify-between items-center text-amber-800 font-medium">
-                                <span>Downpayment:</span>
-                                <span className="font-bold">{tenure.formattedDownPayment}</span>
-                              </div>
-                            )}
-                          </div>
-                        )}
+                        <div className="pt-2 border-t border-gray-100 text-[11px] space-y-1 text-gray-600">
+                          {tenure.formattedTotalPayable && (
+                            <div className="flex justify-between items-center text-gray-900 font-semibold">
+                              <span>Total Loan:</span>
+                              <span className="font-bold text-[#0C2B4E]">
+                                {tenure.formattedTotalPayable}
+                              </span>
+                            </div>
+                          )}
+                          {tenure.interestAmount > 0 && (
+                            <div className="flex justify-between items-center text-amber-900 font-medium">
+                              <span>Interest:</span>
+                              <span className="font-bold">
+                                ₹ {Number(tenure.interestAmount).toLocaleString("en-IN")}
+                              </span>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     ))}
+                  </div>
+
+                  {/* Trust Footer */}
+                  <div className="mt-3.5 pt-3 border-t border-amber-200/70 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] sm:text-xs text-amber-900/80 font-medium">
+                    <span className="flex items-center gap-1.5">
+                      <svg className="w-4 h-4 text-emerald-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                      100% digital paperless approval with RBI-registered NBFC & banking partners.
+                    </span>
+                    <span className="text-amber-800 text-[10.5px]">
+                      Instant pre-approval • Zero physical paperwork
+                    </span>
                   </div>
                 </div>
               );
