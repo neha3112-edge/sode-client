@@ -9,6 +9,7 @@ export default function UniversityCarouselBlock({
   slidesToShowCount = 8,
   handleSlidePointerDown,
   handleSlidePointerMove,
+  handleSlidePointerUp,
   handleSlideClick,
 }) {
   const effectiveSlidesCount = Math.min(Number(slidesToShowCount) || 8, 8);
@@ -38,6 +39,8 @@ export default function UniversityCarouselBlock({
             <div
               onPointerDown={handleSlidePointerDown}
               onPointerMove={handleSlidePointerMove}
+              onPointerUp={handleSlidePointerUp}
+              onPointerCancel={handleSlidePointerUp}
               onClick={(e) => handleSlideClick(e, child)}
               className="w-full aspect-square bg-white hover:bg-gray-50 border border-gray-200 rounded-xl sm:rounded-2xl p-1.5 min-[360px]:p-2 sm:p-2.5 flex flex-col items-center justify-center text-center cursor-pointer transition-colors duration-200 group min-w-0"
             >

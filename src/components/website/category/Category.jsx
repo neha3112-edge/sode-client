@@ -28,9 +28,17 @@ export function Category({ categories = [], universities = [], programs = [], co
   const handleSlidePointerMove = (e) => {
     const diffX = Math.abs(e.clientX - (pointerStartPosRef.current.x || 0));
     const diffY = Math.abs(e.clientY - (pointerStartPosRef.current.y || 0));
-    if (diffX > 8 || diffY > 8) {
+    // ONLY genuine horizontal dragging of the carousel counts
+    // Vertical page scrolling must NEVER block card clicks!
+    if (diffX > 15 && diffX > diffY) {
       isDraggingRef.current = true;
     }
+  };
+
+  const handleSlidePointerUp = () => {
+    setTimeout(() => {
+      isDraggingRef.current = false;
+    }, 100);
   };
 
   const handleSlideClick = (e, child) => {
@@ -40,6 +48,20 @@ export function Category({ categories = [], universities = [], programs = [], co
     }
     handleCardClick(child);
   };
+
+  useEffect(() => {
+    const resetDrag = () => {
+      isDraggingRef.current = false;
+    };
+    if (typeof window !== "undefined") {
+      window.addEventListener("pointerup", resetDrag, true);
+      window.addEventListener("pointercancel", resetDrag, true);
+      return () => {
+        window.removeEventListener("pointerup", resetDrag, true);
+        window.removeEventListener("pointercancel", resetDrag, true);
+      };
+    }
+  }, []);
 
   useEffect(() => {
     const handleResize = () => {
@@ -408,6 +430,7 @@ export function Category({ categories = [], universities = [], programs = [], co
               handleCardClick={handleCardClick}
               handleSlidePointerDown={handleSlidePointerDown}
               handleSlidePointerMove={handleSlidePointerMove}
+              handleSlidePointerUp={handleSlidePointerUp}
               handleSlideClick={handleSlideClick}
               router={router}
             />

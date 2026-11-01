@@ -16,15 +16,18 @@ export default function CategorySectionBlock({
   handleCardClick,
   handleSlidePointerDown,
   handleSlidePointerMove,
+  handleSlidePointerUp,
   handleSlideClick,
   router,
 }) {
   const blockKey = String(block._id || block.slug || bIdx);
   const isCourse = Boolean(block.isCourseBlock);
   const isExpanded = isCourse
-    ? (visibleCounts[blockKey] || 8) >= block.children.length
+    ? (visibleCounts[blockKey] || 8) >= (block.children?.length || 0)
     : Boolean(expandedSections[blockKey]);
-  const currentVisibleCount = isCourse ? (visibleCounts[blockKey] || 8) : block.children.length;
+  const hasFewItems = Array.isArray(block.children) && block.children.length <= (Number(slidesToShowCount) || 8);
+  const shouldRenderGrid = isCourse || isExpanded || hasFewItems;
+  const currentVisibleCount = isCourse ? (visibleCounts[blockKey] || 8) : (block.children?.length || 0);
 
   const formattedTitle = (block.title || "")
     .toUpperCase()
@@ -50,7 +53,7 @@ export default function CategorySectionBlock({
           </div>
 
           {/* Content: Course Grid OR University Carousel */}
-          {isCourse || isExpanded ? (
+          {shouldRenderGrid ? (
             <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-1.5 sm:gap-2.5 w-full mx-auto items-stretch animate-in fade-in duration-200">
               {block.children.slice(0, currentVisibleCount).map((child, idx) => {
                 const isUni = !isCourse;
@@ -88,6 +91,7 @@ export default function CategorySectionBlock({
               slidesToShowCount={slidesToShowCount}
               handleSlidePointerDown={handleSlidePointerDown}
               handleSlidePointerMove={handleSlidePointerMove}
+              handleSlidePointerUp={handleSlidePointerUp}
               handleSlideClick={handleSlideClick}
             />
           )}
