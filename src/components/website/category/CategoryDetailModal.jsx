@@ -157,10 +157,16 @@ export default function CategoryDetailModal({
                             }
                           } else if (modalData.isCoursesModal || it.isCourse || it.itemType === "course") {
                             const courseSlug = getItemSlug(it);
-                            if (it.targetUrl && !/[0-9a-fA-F]{24}/.test(it.targetUrl)) {
+                            if (it.targetUrl && !/[0-9a-fA-F]{24}/.test(it.targetUrl) && it.targetUrl.includes("category=")) {
                               router.push(it.targetUrl);
                             } else {
-                              router.push(`/courses?course=${encodeURIComponent(courseSlug)}`);
+                              const q = [];
+                              const catSlug = (parentCatSlug && parentCatSlug !== "all" && !isObjectId(parentCatSlug))
+                                ? parentCatSlug
+                                : (it.categorySlug || "");
+                              if (catSlug && catSlug !== "all") q.push(`category=${encodeURIComponent(catSlug)}`);
+                              if (courseSlug) q.push(`course=${encodeURIComponent(courseSlug)}`);
+                              router.push(q.length > 0 ? `/courses?${q.join("&")}` : "/courses");
                             }
                           } else if (it.targetUrl && !/[0-9a-fA-F]{24}/.test(it.targetUrl)) {
                             router.push(it.targetUrl);

@@ -14,9 +14,8 @@ export async function generateMetadata() {
 
 export default async function CoursesPage({ searchParams }) {
   const resolvedSearchParams = searchParams ? await searchParams : {};
-  let initialCategories = [];
-  let initialUniversities = [];
-  let initialCoursesData = { programs: [], total: 0, totalPages: 1, page: 1 };
+  let initialCoursesData = { programs: [], total: 0, totalPages: 1, page: 1, filterOptions: null };
+  let initialFilterOptions = null;
 
   const queryOptions = {
     page: resolvedSearchParams.page || 1,
@@ -32,33 +31,22 @@ export default async function CoursesPage({ searchParams }) {
   };
 
   try {
-    const [catRes, unisRes, coursesRes] = await Promise.all([
-      request.dynamicList({
-        entity: "category",
-        endPoint: "v1/list",
-        revalidate: 600, // 10 min — categories rarely change
-      }),
-      request.dynamicOptions({
-        entity: "universities",
-        endPoint: "v1/options",
-        revalidate: 600, // 10 min — university list rarely changes
-      }),
-      request.dynamicList({
-        entity: "courses",
-        endPoint: "v1/list",
-        options: queryOptions,
-        revalidate: 300, // ISR cached 5 mins
-      }),
-    ]);
+    const coursesRes = await request.dynamicList({
+      entity: "courses",
+      endPoint: "v1/list",
+      options: queryOptions,
+      revalidate: 300, // ISR cached 5 mins
+    });
 
-    initialCategories = catRes?.result || catRes?.categories || catRes?.topCategories || (Array.isArray(catRes) ? catRes : []);
-    initialUniversities = unisRes?.result || unisRes || [];
     const programs = coursesRes?.result || coursesRes?.programs || [];
+    initialFilterOptions = coursesRes?.filters || coursesRes?.filter || coursesRes?.filterOptions || null;
     initialCoursesData = {
       programs,
       total: coursesRes?.pagination?.total ?? programs.length,
       totalPages: coursesRes?.pagination?.pages ?? 1,
       page: coursesRes?.pagination?.page ?? 1,
+      filters: initialFilterOptions,
+      filterOptions: initialFilterOptions,
     };
   } catch (err) {
     console.error("[Courses Page] Server fetch error:", err.message);
@@ -68,8 +56,7 @@ export default async function CoursesPage({ searchParams }) {
     <div className="w-full">
       <CoursesPageClientView
         initialCoursesData={initialCoursesData}
-        initialCategories={initialCategories}
-        initialUniversities={initialUniversities}
+        initialFilterOptions={initialFilterOptions}
       />
     </div>
   );

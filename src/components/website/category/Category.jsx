@@ -170,7 +170,11 @@ export function Category({ categories = [], universities = [], programs = [], co
       if (item.targetUrl && !/[0-9a-fA-F]{24}/.test(item.targetUrl) && !item.targetUrl.includes("course=&") && item.targetUrl !== "/courses?course=") {
         router.push(item.targetUrl);
       } else {
-        router.push(courseSlug ? `/courses?course=${encodeURIComponent(courseSlug)}` : `/courses`);
+        const catSlug = item.categorySlug || getItemSlug(item.category) || "";
+        const q = [];
+        if (catSlug && catSlug !== "all") q.push(`category=${encodeURIComponent(catSlug)}`);
+        if (courseSlug) q.push(`course=${encodeURIComponent(courseSlug)}`);
+        router.push(q.length > 0 ? `/courses?${q.join("&")}` : `/courses`);
       }
       return;
     }
