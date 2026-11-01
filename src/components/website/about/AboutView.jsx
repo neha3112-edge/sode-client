@@ -1023,7 +1023,7 @@ export function AboutView({ initialAboutData = null, initialReviews = null }) {
           onCancel={() => setActiveVideoModal(null)}
           footer={null}
           centered
-          destroyOnClose
+          destroyOnHidden
           width={activeVideoModal.isShort ? 380 : 760}
           className="p-0 [&_.ant-modal-content]:p-0! [&_.ant-modal-content]:rounded-2xl! [&_.ant-modal-content]:overflow-hidden! [&_.ant-modal-content]:bg-black!"
         >
