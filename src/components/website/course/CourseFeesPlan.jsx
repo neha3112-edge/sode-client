@@ -17,6 +17,10 @@ export default function CourseFeesPlan({
   const isSemesterSelected = paymentTypeName.includes("sem");
   const isFullfeesSelected = paymentTypeName.includes("full") || paymentTypeName.includes("one") || paymentTypeName.includes("lump");
 
+  const taxType = courseData?.feeConfig?.taxType || courseData?.taxType || activeLedgerData?.taxType;
+  const isTaxInclusive = taxType === "inclusive";
+  const isTaxExclusive = taxType === "exclusive_gst";
+
   // Build dynamic plan cards based on available plans in activeLedgerData (Fullfees is ALWAYS default)
   const planCards = [];
 
@@ -86,13 +90,42 @@ export default function CourseFeesPlan({
       ),
       grossFee: activeLedgerData.fullfees?.formattedGross,
       payableFee: activeLedgerData.fullfees?.formattedBasePayable || activeLedgerData.fullfees?.formattedPayable || "₹ 80,640",
+      taxBadge: isTaxInclusive ? "Incl. Taxes" : (isTaxExclusive ? "+18% GST" : null),
       extraOff: activeLedgerData.fullfees?.extraOff,
-      subtitle: "One-time lump sum • Max discount",
+      subtitle: isTaxInclusive
+        ? "One-time lump sum • Incl. of all taxes"
+        : (isTaxExclusive ? "One-time lump sum • +18% GST" : "One-time lump sum • Max discount"),
       onClick: () => setSelectedPlanTab("fullfees"),
     });
   }
 
-  // 4. EMI Option Card
+  // 4. Campus Immersion Card (Only Immersion Fee)
+  const immersionData = activeLedgerData?.immersion || courseData?.immersion || (courseData?.feeConfig?.hasImmersion ? {
+    hasImmersion: true,
+    amount: Number(courseData.feeConfig.immersionAmount) || 0,
+    label: courseData.feeConfig.immersionLabel || "Campus Immersion Fee",
+  } : null);
+
+  if (immersionData?.hasImmersion && Number(immersionData.amount) > 0) {
+    const formattedImmersionOnly = `₹ ${Number(immersionData.amount).toLocaleString("en-IN")}`;
+
+    planCards.push({
+      id: "immersion",
+      isImmersion: true,
+      title: "Campus Immersion",
+      badge: {
+        text: "OPTIONAL",
+        color: "purple",
+      },
+      hasDiscount: false,
+      payableFee: formattedImmersionOnly,
+      taxBadge: isTaxInclusive ? "Incl. Taxes" : null,
+      subtitle: isTaxInclusive ? "Incl. of applicable taxes" : "",
+      onClick: () => setSelectedPlanTab("immersion"),
+    });
+  }
+
+  // 5. EMI Option Card
   if (activeLedgerData?.emi?.available) {
     planCards.push({
       id: "emi",
@@ -156,6 +189,7 @@ export default function CourseFeesPlan({
         {planCards.map((card) => {
           const isSelected = selectedPlanTab === card.id;
           const isEmi = card.isEmi;
+          const isImmersion = card.isImmersion;
 
           return (
             <div
@@ -164,15 +198,21 @@ export default function CourseFeesPlan({
               className={`p-2 sm:p-3 rounded-xl border transition-all cursor-pointer relative flex flex-col justify-between space-y-1 ${isSelected
                 ? isEmi
                   ? "border-amber-600 bg-amber-50/40 shadow-md ring-1 ring-amber-500/20"
-                  : "border-[#0C2B4E] bg-blue-50/40 shadow-md ring-1 ring-[#0C2B4E]/10"
+                  : isImmersion
+                    ? "border-purple-600 bg-purple-50/50 shadow-md ring-1 ring-purple-500/30"
+                    : "border-[#0C2B4E] bg-blue-50/40 shadow-md ring-1 ring-[#0C2B4E]/10"
                 : isEmi
                   ? "border-amber-200 bg-amber-50/20 hover:border-amber-300 hover:shadow-xs"
-                  : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-xs"
+                  : isImmersion
+                    ? "border-purple-200 bg-purple-50/20 hover:border-purple-300 hover:shadow-xs"
+                    : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-xs"
                 }`}
             >
               <div className="space-y-1">
                 <div className="flex items-center justify-between gap-1 min-w-0">
-                  <span className={`text-[10px] sm:text-xs font-semibold uppercase tracking-tight truncate ${isEmi ? "text-amber-900" : "text-[#0C2B4E]"}`}>
+                  <span className={`text-[10px] sm:text-xs font-semibold uppercase tracking-tight truncate ${
+                    isEmi ? "text-amber-900" : isImmersion ? "text-purple-900" : "text-[#0C2B4E]"
+                  }`}>
                     {card.title}
                   </span>
                   {card.badge && (
@@ -190,9 +230,16 @@ export default function CourseFeesPlan({
                       {card.grossFee}
                     </span>
                   )}
-                  <span className={`text-sm sm:text-lg font-bold ${isEmi ? "text-amber-950" : "text-gray-900"}`}>
+                  <span className={`text-sm sm:text-lg font-bold ${
+                    isEmi ? "text-amber-950" : isImmersion ? "text-purple-950" : "text-gray-900"
+                  }`}>
                     {card.payableFee}
                   </span>
+                  {card.taxBadge && (
+                    <span className="text-[9px] sm:text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200/80 leading-none">
+                      {card.taxBadge}
+                    </span>
+                  )}
                 </div>
                 {card.extraOff && card.extraOff.hasExtraOff ? (
                   <div className="pt-0.5">
@@ -200,16 +247,34 @@ export default function CourseFeesPlan({
                       🏷️ {card.extraOff.badgeText} • {card.extraOff.finalPayableText || (card.extraOff.formattedFinalPayable ? `Pay ${card.extraOff.formattedFinalPayable}` : "")}
                     </span>
                   </div>
-                ) : (
-                  <p className={`text-[9.5px] sm:text-[11px] m-0 ${isEmi ? "text-amber-800/80 truncate" : "text-gray-500 truncate"}`}>
+                ) : card.subtitle ? (
+                  <p className={`text-[9.5px] sm:text-[11px] m-0 ${
+                    isEmi ? "text-amber-800/80 truncate" : isImmersion ? "text-purple-800/85 truncate" : "text-gray-500 truncate"
+                  }`}>
                     {card.subtitle}
                   </p>
-                )}
+                ) : null}
               </div>
             </div>
           );
         })}
       </div>
+
+      {/* Tax Handling Status Notice */}
+      {isTaxInclusive && (
+        <div className="flex items-center justify-center gap-1.5 text-[11px] sm:text-xs text-emerald-700 font-medium pt-0.5">
+          <svg className="w-3.5 h-3.5 text-emerald-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+          </svg>
+          <span>All fee amounts shown are inclusive of applicable taxes & GST</span>
+        </div>
+      )}
+      {isTaxExclusive && (
+        <div className="flex items-center justify-center gap-1.5 text-[11px] sm:text-xs text-amber-700 font-medium pt-0.5">
+          <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+          <span>* 18% GST applicable extra on all plans</span>
+        </div>
+      )}
 
       {/* Selected Non-EMI Plan Extra Off Banner */}
       {selectedPlanTab !== "emi" && activeLedgerData[selectedPlanTab] && activeLedgerData[selectedPlanTab]?.extraOff?.hasExtraOff && (

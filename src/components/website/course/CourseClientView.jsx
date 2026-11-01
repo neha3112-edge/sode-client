@@ -184,6 +184,13 @@ export function CourseClientView({
       scholarship: promoData?.scholarship || null,
       coupon: promoData?.coupon || null,
       appliedPromoCode: promoData?.appliedPromoCode || null,
+      immersion: courseData?.immersion || promoData?.immersion || rawLedger?.immersion || (courseData?.feeConfig?.hasImmersion ? {
+        hasImmersion: true,
+        amount: Number(courseData.feeConfig.immersionAmount) || 0,
+        label: courseData.feeConfig.immersionLabel || "Campus Immersion Fee",
+        baseFee: Number(courseData.feeConfig.amount) || 0,
+        totalWithImmersion: (Number(courseData.feeConfig.amount) || 0) + (Number(courseData.feeConfig.immersionAmount) || 0),
+      } : null),
     };
   }, [courseData, isYearlyPayment, isSemesterPayment, isFullfeesPayment]);
 
@@ -292,11 +299,16 @@ export function CourseClientView({
         .map((item) => {
           const rawVal = item.value || item.details || item.description;
           let finalVal = rawVal;
-          if (!finalVal || finalVal === "N/A" || finalVal === "") {
-            const lbl = (item.label || item.category || item.title || "").toLowerCase();
-            if (lbl.includes("fee")) {
-              finalVal = courseData?.fees || courseData?.fullFee || "Affordable EMI & Installments Available";
-            } else if (lbl.includes("specializ")) {
+          const lbl = (item.label || item.category || item.title || "").toLowerCase();
+          const hasImm = Boolean(courseData?.immersion?.hasImmersion || courseData?.feeConfig?.hasImmersion);
+
+          if (lbl.includes("fee")) {
+            const taxType = courseData?.feeConfig?.taxType || courseData?.taxType || activeLedgerData?.taxType;
+            const taxSuffix = taxType === "inclusive" ? " (Inclusive of all taxes)" : (taxType === "exclusive_gst" ? " (+ 18% GST)" : "");
+            const baseVal = (!finalVal || finalVal === "N/A" || finalVal === "") ? (courseData?.fees || courseData?.fullFee || "") : finalVal;
+            finalVal = baseVal ? `${baseVal}${taxSuffix}` : "Affordable EMI & Installments Available";
+          } else if (!finalVal || finalVal === "N/A" || finalVal === "") {
+            if (lbl.includes("specializ")) {
               finalVal = Array.isArray(courseData?.subCourses) && courseData?.subCourses.length > 0
                 ? `${courseData.subCourses.length} Specializations Available`
                 : "Core / General Program";
@@ -693,6 +705,7 @@ export function CourseClientView({
           selectedPlanTab={selectedPlanTab}
           setSelectedPlanTab={setSelectedPlanTab}
           openFormModal={openFormModal}
+          courseData={courseData}
         />
 
         {/* 3. Syllabus */}
