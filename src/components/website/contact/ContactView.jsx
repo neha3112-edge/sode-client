@@ -1,14 +1,15 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Form, Input, Select, Checkbox, Button, message } from "antd";
+import { Form, Input, Select, Checkbox, Button, message as staticMessage, App } from "antd";
 import {
   PhoneOutlined,
   MailOutlined,
   EnvironmentOutlined,
 } from "@ant-design/icons";
+import { CheckCircle2 } from "lucide-react";
 
 // Social Media SVGs
 function FacebookIcon({ className = "w-5 h-5 fill-white" }) {
@@ -45,31 +46,165 @@ function InstagramIcon({ className = "w-5 h-5 fill-white" }) {
   );
 }
 
-const COUNTRY_OPTIONS = [
-  { value: "+91", label: "🇮🇳 +91 (India)" },
-  { value: "+1", label: "🇺🇸 +1 (USA)" },
-  { value: "+44", label: "🇬🇧 +44 (UK)" },
-  { value: "+971", label: "🇦🇪 +971 (UAE)" },
-  { value: "+65", label: "🇸🇬 +65 (Singapore)" },
-  { value: "+61", label: "🇦🇺 +61 (Australia)" },
-  { value: "+966", label: "🇸🇦 +966 (Saudi)" },
-  { value: "+974", label: "🇶🇦 +974 (Qatar)" },
-];
+/* =========================================================
+   CRISP INDIAN TRICOLOR SVG ICON
+========================================================= */
+const IndiaFlagIcon = () => (
+  <svg
+    className="w-5 h-3.5 rounded-[2px] shadow-xs inline-block overflow-hidden shrink-0"
+    viewBox="0 0 640 480"
+  >
+    <path fill="#f93" d="M0 0h640v160H0z" />
+    <path fill="#fff" d="M0 160h640v160H0z" />
+    <path fill="#128807" d="M0 320h640v160H0z" />
+    <circle cx="320" cy="240" r="56" fill="none" stroke="#000080" strokeWidth="8" />
+    <circle cx="320" cy="240" r="14" fill="#000080" />
+  </svg>
+);
+
+/* =========================================================
+   EXTRACT UTM & GOOGLE TRACKING PARAMS
+========================================================= */
+function getUTMParams() {
+  if (typeof window === "undefined") return {};
+
+  const params = new URLSearchParams(window.location.search);
+  const storedData = localStorage.getItem("utm_data");
+  let parsedData = {};
+
+  try {
+    parsedData = storedData ? JSON.parse(storedData) : {};
+  } catch {
+    parsedData = {};
+  }
+
+  return {
+    utm_source:
+      params.get("utm_source") || parsedData.utm_source || "Contact Us Page",
+    utm_medium:
+      params.get("utm_medium") || parsedData.utm_medium || "Organic",
+    utm_campaign:
+      params.get("utm_campaign") || parsedData.utm_campaign || "",
+    utm_term: params.get("utm_term") || parsedData.utm_term || "",
+    utm_content: params.get("utm_content") || parsedData.utm_content || "",
+    utm_adgroup: params.get("utm_adgroup") || parsedData.utm_adgroup || "",
+    gclid: params.get("gclid") || parsedData.gclid || "",
+  };
+}
+
+/* =========================================================
+   DYNAMIC STATE & COURSE OPTIONS FETCH (/api/.../v1/options)
+========================================================= */
+let cachedStateOptions = null;
+let stateFetchPromise = null;
+
+async function fetchStateOptions() {
+  if (cachedStateOptions) return cachedStateOptions;
+  if (stateFetchPromise) return stateFetchPromise;
+
+  stateFetchPromise = (async () => {
+    try {
+      const res = await fetch("/api/state/v1/options");
+      if (!res.ok) throw new Error("Failed to fetch states");
+      const data = await res.json();
+      const list = Array.isArray(data?.result) ? data.result : [];
+      if (list.length > 0) {
+        cachedStateOptions = list
+          .filter((s) => s?.name && !s.removed)
+          .map((s) => ({
+            label: s.name,
+            value: s.name,
+          }));
+        return cachedStateOptions;
+      }
+    } catch (err) {
+      console.warn("Could not load dynamic states from /api/state/v1/options:", err);
+    } finally {
+      stateFetchPromise = null;
+    }
+    return null;
+  })();
+
+  return stateFetchPromise;
+}
+
+let cachedCourseOptions = null;
+let courseFetchPromise = null;
+
+async function fetchCourseOptions() {
+  if (cachedCourseOptions) return cachedCourseOptions;
+  if (courseFetchPromise) return courseFetchPromise;
+
+  courseFetchPromise = (async () => {
+    try {
+      const res = await fetch("/api/courses/v1/options");
+      if (!res.ok) throw new Error("Failed to fetch courses");
+      const data = await res.json();
+      const list = Array.isArray(data?.result) ? data.result : [];
+      if (list.length > 0) {
+        cachedCourseOptions = list
+          .filter((c) => c?.name && !c.removed)
+          .map((c) => ({
+            label: c.name,
+            value: c.name,
+          }));
+        return cachedCourseOptions;
+      }
+    } catch (err) {
+      console.warn("Could not load dynamic courses from /api/courses/v1/options:", err);
+    } finally {
+      courseFetchPromise = null;
+    }
+    return null;
+  })();
+
+  return courseFetchPromise;
+}
 
 export function ContactView({
   initialTenantData = null,
   initialCourses = [],
   initialStates = [],
 }) {
+  const antdApp = App.useApp();
+  const message = antdApp?.message || staticMessage;
   const router = useRouter();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-  const [countryCode, setCountryCode] = useState("+91");
 
   const tenant = initialTenantData?.result || initialTenantData || {};
 
-  // Dynamic Course list from backend only
-  const courseList = useMemo(() => {
+  // ── OTP State for Counseling Form (Antd Input.OTP) ──
+  const [otpStep, setOtpStep] = useState("idle"); // 'idle' | 'otp_sent' | 'verified'
+  const [isPhoneVerified, setIsPhoneVerified] = useState(false);
+  const [verifiedPhone, setVerifiedPhone] = useState("");
+  const [otpValue, setOtpValue] = useState("");
+  const [sendingOtp, setSendingOtp] = useState(false);
+  const [verifyingOtp, setVerifyingOtp] = useState(false);
+  const [resendTimer, setResendTimer] = useState(30);
+  const [canResend, setCanResend] = useState(false);
+
+  // Resend OTP Countdown Timer
+  useEffect(() => {
+    let interval = null;
+    if (otpStep === "otp_sent" && resendTimer > 0) {
+      interval = setInterval(() => {
+        setResendTimer((prev) => {
+          if (prev <= 1) {
+            setCanResend(true);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [otpStep, resendTimer]);
+
+  // Dynamic Course list from props with fallback fetch
+  const [dynamicCourseOptions, setDynamicCourseOptions] = useState(() => {
     if (Array.isArray(initialCourses) && initialCourses.length > 0) {
       return initialCourses
         .map((c) => ({
@@ -78,11 +213,11 @@ export function ContactView({
         }))
         .filter((c) => Boolean(c.value) && !c.value.startsWith("__"));
     }
-    return [];
-  }, [initialCourses]);
+    return cachedCourseOptions || [];
+  });
 
-  // Dynamic State list from backend only
-  const stateList = useMemo(() => {
+  // Dynamic State list from props with fallback fetch
+  const [dynamicStateOptions, setDynamicStateOptions] = useState(() => {
     if (Array.isArray(initialStates) && initialStates.length > 0) {
       return initialStates
         .map((s) => ({
@@ -91,13 +226,152 @@ export function ContactView({
         }))
         .filter((s) => Boolean(s.value));
     }
-    return [];
-  }, [initialStates]);
+    return cachedStateOptions || [];
+  });
+
+  useEffect(() => {
+    let isMounted = true;
+    if (dynamicCourseOptions.length === 0) {
+      fetchCourseOptions().then((opts) => {
+        if (isMounted && opts && opts.length > 0) {
+          setDynamicCourseOptions(opts);
+        }
+      });
+    }
+    if (dynamicStateOptions.length === 0) {
+      fetchStateOptions().then((opts) => {
+        if (isMounted && opts && opts.length > 0) {
+          setDynamicStateOptions(opts);
+        }
+      });
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [dynamicCourseOptions.length, dynamicStateOptions.length]);
+
+  // Send OTP handler
+  const handleSendOtp = async () => {
+    try {
+      const rawNumber = form.getFieldValue("phone");
+      const clean = String(rawNumber || "").replace(/\D/g, "").slice(-10);
+      if (!clean || clean.length !== 10) {
+        message.error("Please enter a valid 10-digit mobile number");
+        form.setFields([{ name: "phone", errors: ["Enter valid 10-digit number"] }]);
+        return;
+      }
+
+      setSendingOtp(true);
+      const res = await fetch("/api/otp/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: clean, purpose: "counselling" }),
+      });
+
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.success) {
+        throw new Error(data?.message || "Failed to send OTP");
+      }
+
+      setVerifiedPhone(clean);
+      setOtpStep("otp_sent");
+      setResendTimer(30);
+      setCanResend(false);
+      setOtpValue("");
+      message.success(data?.message || `6-digit OTP sent to your WhatsApp (+91 ${clean})`);
+    } catch (err) {
+      console.error("[ContactView handleSendOtp error]:", err);
+      message.error(err.message || "Failed to send OTP");
+    } finally {
+      setSendingOtp(false);
+    }
+  };
+
+  // Verify OTP handler
+  const handleVerifyOtp = async (inputOtp) => {
+    const code = String(inputOtp || otpValue || "").trim();
+    if (!code || code.length < 6) {
+      message.error("Please enter a valid 6-digit OTP");
+      return;
+    }
+    const rawNumber = form.getFieldValue("phone");
+    const cleanPhone = verifiedPhone || String(rawNumber || "").replace(/\D/g, "").slice(-10);
+
+    try {
+      setVerifyingOtp(true);
+      const res = await fetch("/api/otp/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: cleanPhone, otp: code }),
+      });
+
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.success) {
+        throw new Error(data?.message || "Invalid OTP. Please check and try again.");
+      }
+
+      setIsPhoneVerified(true);
+      setOtpStep("verified");
+      message.success("Mobile number verified successfully!");
+    } catch (err) {
+      message.error(err.message || "Invalid OTP. Please check and try again.");
+    } finally {
+      setVerifyingOtp(false);
+    }
+  };
+
+  // Resend OTP handler
+  const handleResendOtp = async () => {
+    if (!canResend) return;
+    const rawNumber = form.getFieldValue("phone");
+    const cleanPhone = verifiedPhone || String(rawNumber || "").replace(/\D/g, "").slice(-10);
+    if (!cleanPhone) return;
+
+    try {
+      setSendingOtp(true);
+      const res = await fetch("/api/otp/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: cleanPhone, purpose: "counselling" }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.success) throw new Error(data?.message || "Failed to resend OTP");
+
+      message.success("6-digit OTP resent to your WhatsApp!");
+      setResendTimer(30);
+      setCanResend(false);
+      setOtpValue("");
+    } catch (err) {
+      message.error(err.message || "Failed to resend OTP");
+    } finally {
+      setSendingOtp(false);
+    }
+  };
 
   const handleSubmit = async (values) => {
+    if (!isPhoneVerified) {
+      const rawNumber = values.phone || form.getFieldValue("phone");
+      const clean = String(rawNumber || "").replace(/\D/g, "").slice(-10);
+      if (!clean || clean.length !== 10) {
+        message.error("Please enter a valid 10-digit mobile number");
+        form.setFields([{ name: "phone", errors: ["Enter valid 10-digit number"] }]);
+        return;
+      }
+      if (otpStep === "otp_sent") {
+        message.warning("Please enter the 6-digit OTP sent to your WhatsApp to verify your number.");
+        return;
+      }
+      message.info("Please verify your mobile number with OTP first.");
+      handleSendOtp();
+      return;
+    }
+
     setLoading(true);
     try {
-      const fullPhone = `${countryCode} ${values.phone?.trim()}`;
+      const fullPhone = values.phone
+        ? `+91${String(values.phone).replace(/\D/g, "").slice(-10)}`
+        : "";
+
       const payload = {
         name: values.name?.trim(),
         email: values.email?.trim(),
@@ -106,8 +380,9 @@ export function ContactView({
         state: values.state,
         form_name: "Contact Us Page Counseling",
         source: "Contact Us",
-        utm_source: "Contact Us Page",
+        is_verified: true,
         page_url: typeof window !== "undefined" ? window.location.href : "",
+        ...getUTMParams(),
       };
 
       const response = await fetch("/api/lead", {
@@ -123,6 +398,9 @@ export function ContactView({
 
       message.success("Thank you! Our counseling expert will reach out to you shortly.");
       form.resetFields();
+      setIsPhoneVerified(false);
+      setOtpStep("idle");
+      setOtpValue("");
       router.push("/thank-you");
     } catch (err) {
       message.error(err.message || "Something went wrong. Please try again.");
@@ -173,7 +451,7 @@ export function ContactView({
             <div className="max-w-2xl">
               {contactHeroTitle && (
                 <>
-                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight m-0">
+                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight m-0 leading-tight">
                     {contactHeroTitle}
                   </h1>
                   <div className="w-14 h-1 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full mt-3 mb-4" />
@@ -181,7 +459,7 @@ export function ContactView({
               )}
 
               {contactHeroDescription && (
-                <p className="text-slate-300 text-xs sm:text-sm md:text-base leading-relaxed font-normal m-0 max-w-xl">
+                <p className="text-slate-300 text-xs sm:text-sm md:text-base leading-snug font-normal m-0 max-w-xl">
                   {contactHeroDescription}
                 </p>
               )}
@@ -257,12 +535,12 @@ export function ContactView({
               {(counselingFormTitle || counselingFormSubtitle || counselingPhone) && (
                 <div className="text-center mb-5">
                   {counselingFormTitle && (
-                    <p className="text-xl sm:text-2xl font-black text-[#072C50] tracking-tight m-0">
+                    <p className="text-xl sm:text-2xl font-black text-[#072C50] tracking-tight m-0 leading-tight">
                       {counselingFormTitle}
                     </p>
                   )}
                   {counselingFormSubtitle && (
-                    <p className="text-xs sm:text-sm text-slate-600 mt-1 font-medium m-0">
+                    <p className="text-xs sm:text-sm text-slate-600 mt-1 font-medium m-0 leading-snug">
                       {counselingFormSubtitle}
                     </p>
                   )}
@@ -300,12 +578,104 @@ export function ContactView({
                   <Input
                     size="large"
                     placeholder="Enter Your Name"
-                    className="h-11 rounded-lg border-slate-300 text-sm focus:border-blue-500"
+                    className="h-11 rounded-xl border-slate-300 text-sm focus:border-[#0C2B4E]"
                     disabled={loading}
                   />
                 </Form.Item>
 
-                {/* 2. Email */}
+                {/* 2. Mobile Number with +91 [India] prefix and Get OTP button */}
+                <Form.Item
+                  name="phone"
+                  rules={[
+                    { required: true, message: "Please enter your mobile number" },
+                    {
+                      pattern: /^[0-9]{10}$/,
+                      message: "Enter valid 10-digit number",
+                    },
+                  ]}
+                  className="mb-2"
+                >
+                  <Input
+                    prefix={
+                      <div className="flex items-center gap-1.5 pr-2.5 mr-2 border-r border-slate-200 select-none">
+                        <IndiaFlagIcon />
+                        <span className="font-semibold text-slate-700 text-xs">+91</span>
+                      </div>
+                    }
+                    suffix={
+                      isPhoneVerified ? (
+                        <span className="inline-flex items-center gap-1 text-green-600 font-bold text-xs select-none pr-1">
+                          <CheckCircle2 className="w-4 h-4 fill-green-600 text-white" />
+                          Verified
+                        </span>
+                      ) : (
+                        <Button
+                          type="primary"
+                          size="small"
+                          onClick={handleSendOtp}
+                          loading={sendingOtp}
+                          disabled={otpStep === "otp_sent"}
+                          className="bg-[#0C2B4E] hover:bg-[#08203b] text-white font-semibold text-xs rounded-lg h-7 px-3 border-none shadow-none cursor-pointer flex items-center justify-center"
+                        >
+                          Get OTP
+                        </Button>
+                      )
+                    }
+                    placeholder="Enter Mobile Number"
+                    maxLength={10}
+                    disabled={isPhoneVerified || loading}
+                    onChange={() => {
+                      if (otpStep !== "idle" && !isPhoneVerified) {
+                        setOtpStep("idle");
+                        setOtpValue("");
+                      }
+                    }}
+                    size="large"
+                    className="h-11 rounded-xl border-slate-300 text-sm focus:border-[#0C2B4E]"
+                  />
+                </Form.Item>
+
+                {/* 2.1 OTP Verification Box (shown when OTP sent and awaiting verification) */}
+                {otpStep === "otp_sent" && !isPhoneVerified && (
+                  <div className="mb-3.5 pt-1 pb-1 flex flex-col items-end">
+                    <span className="text-[11px] sm:text-xs text-slate-500 font-medium mb-1.5 text-right block">
+                      Enter 6-digit OTP Received in your Whatsapp
+                    </span>
+                    <div className="flex justify-end w-full">
+                      <Input.OTP
+                        length={6}
+                        size="large"
+                        value={otpValue}
+                        onChange={(val) => {
+                          setOtpValue(val);
+                          if (val && String(val).length === 6) {
+                            handleVerifyOtp(val);
+                          }
+                        }}
+                        autoFocus
+                        className="[&_input]:w-7! [&_input]:h-9! sm:[&_input]:w-8! sm:[&_input]:h-10! [&_input]:rounded-lg! [&_input]:text-sm! sm:[&_input]:text-base! [&_input]:font-bold! [&_input]:border-slate-300!"
+                      />
+                    </div>
+                    <div className="mt-2 text-right w-full">
+                      {canResend ? (
+                        <button
+                          type="button"
+                          onClick={handleResendOtp}
+                          disabled={sendingOtp}
+                          className="text-[#0C2B4E] hover:underline font-bold text-xs cursor-pointer border-none bg-transparent p-0"
+                        >
+                          Resend OTP
+                        </button>
+                      ) : (
+                        <span className="text-[#0C2B4E] font-medium text-xs">
+                          Resend OTP (00:{String(resendTimer).padStart(2, "0")})
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* 3. Email */}
                 <Form.Item
                   name="email"
                   rules={[
@@ -318,43 +688,12 @@ export function ContactView({
                     size="large"
                     type="email"
                     placeholder="Enter Your Email"
-                    className="h-11 rounded-lg border-slate-300 text-sm focus:border-blue-500"
+                    className="h-11 rounded-xl border-slate-300 text-sm focus:border-[#0C2B4E]"
                     disabled={loading}
                   />
                 </Form.Item>
 
-                {/* 3. Phone with Country Code Selector */}
-                <Form.Item
-                  name="phone"
-                  rules={[
-                    { required: true, message: "Please enter your phone number" },
-                    {
-                      pattern: /^[0-9]{7,15}$/,
-                      message: "Please enter a valid phone number (7-15 digits)",
-                    },
-                  ]}
-                  className="mb-3.5"
-                >
-                  <div className="flex gap-2">
-                    <Select
-                      size="large"
-                      value={countryCode}
-                      onChange={setCountryCode}
-                      options={COUNTRY_OPTIONS}
-                      className="w-36 sm:w-40 flex-shrink-0 h-11"
-                      styles={{ popup: { root: { zIndex: 100000 } } }}
-                      disabled={loading}
-                    />
-                    <Input
-                      size="large"
-                      placeholder="Enter Your Number"
-                      className="h-11 rounded-lg border-slate-300 text-sm flex-1 focus:border-blue-500"
-                      disabled={loading}
-                    />
-                  </div>
-                </Form.Item>
-
-                {/* 4. Course Select (Dynamic from backend) */}
+                {/* 4. Course Select (Dynamic from backend with search) */}
                 <Form.Item
                   name="course"
                   rules={[{ required: true, message: "Please select a course" }]}
@@ -363,14 +702,17 @@ export function ContactView({
                   <Select
                     size="large"
                     placeholder="Select Course"
-                    options={courseList}
-                    className="h-11 rounded-lg text-sm w-full"
+                    options={dynamicCourseOptions}
+                    showSearch
+                    optionFilterProp="label"
+                    loading={dynamicCourseOptions.length === 0}
+                    className="h-11 rounded-xl text-sm w-full [&_.ant-select-selector]:rounded-xl! [&_.ant-select-selector]:border-slate-300!"
                     styles={{ popup: { root: { zIndex: 100000 } } }}
                     disabled={loading}
                   />
                 </Form.Item>
 
-                {/* 5. State Select (Dynamic from backend) */}
+                {/* 5. State Select (Dynamic from backend with search) */}
                 <Form.Item
                   name="state"
                   rules={[{ required: true, message: "Please select your state" }]}
@@ -379,8 +721,11 @@ export function ContactView({
                   <Select
                     size="large"
                     placeholder="Select State"
-                    options={stateList}
-                    className="h-11 rounded-lg text-sm w-full"
+                    options={dynamicStateOptions}
+                    showSearch
+                    optionFilterProp="label"
+                    loading={dynamicStateOptions.length === 0}
+                    className="h-11 rounded-xl text-sm w-full [&_.ant-select-selector]:rounded-xl! [&_.ant-select-selector]:border-slate-300!"
                     styles={{ popup: { root: { zIndex: 100000 } } }}
                     disabled={loading}
                   />
@@ -393,7 +738,7 @@ export function ContactView({
                   initialValue={true}
                   className="mb-4"
                 >
-                  <Checkbox className="text-[11px] sm:text-xs text-slate-600 leading-tight">
+                  <Checkbox className="text-[11px] sm:text-xs text-slate-600 leading-snug">
                     {contactDisclaimerText || "I consent to share my details with UGC-DEB approved universities and receive updates via mail/mobile."}{" "}
                     <Link
                       href="/disclaimer"
@@ -425,7 +770,7 @@ export function ContactView({
           <div className="lg:col-span-6 w-full pt-6 sm:pt-8 lg:pt-10 lg:pl-8">
             {/* Company Name & Subtitle from Tenant (Render only if present) */}
             {(tenantName || tenantSubtitle) && (
-              <h2 className="text-xl sm:text-2xl md:text-[26px] font-black text-[#072C50] leading-snug tracking-tight m-0 mb-6">
+              <h2 className="text-xl sm:text-2xl md:text-[26px] font-black text-[#072C50] leading-tight tracking-tight m-0 mb-6">
                 {[tenantName, tenantSubtitle].filter(Boolean).join(" ")}
               </h2>
             )}
@@ -439,10 +784,10 @@ export function ContactView({
                     <EnvironmentOutlined />
                   </div>
                   <div>
-                    <p className="text-sm sm:text-base font-bold text-[#072C50] underline underline-offset-4 decoration-1 m-0">
+                    <p className="text-sm sm:text-base font-bold text-[#072C50] underline underline-offset-4 decoration-1 m-0 leading-snug">
                       Registered Office :
                     </p>
-                    <p className="text-xs sm:text-sm text-slate-700 font-normal leading-relaxed mt-1 m-0 max-w-md">
+                    <p className="text-xs sm:text-sm text-slate-700 font-normal leading-snug mt-1 m-0 max-w-md">
                       {registeredOffice}
                     </p>
                   </div>
@@ -456,10 +801,10 @@ export function ContactView({
                     <MailOutlined />
                   </div>
                   <div>
-                    <p className="text-sm sm:text-base font-bold text-[#072C50] underline underline-offset-4 decoration-1 m-0">
+                    <p className="text-sm sm:text-base font-bold text-[#072C50] underline underline-offset-4 decoration-1 m-0 leading-snug">
                       Email :
                     </p>
-                    <p className="text-xs sm:text-sm text-slate-700 font-normal mt-1 m-0">
+                    <p className="text-xs sm:text-sm text-slate-700 font-normal mt-1 m-0 leading-snug">
                       <a
                         href={`mailto:${supportEmail}`}
                         className="text-slate-800 hover:text-blue-600 transition-colors"
@@ -478,10 +823,10 @@ export function ContactView({
                     <PhoneOutlined />
                   </div>
                   <div>
-                    <p className="text-sm sm:text-base font-bold text-[#072C50] underline underline-offset-4 decoration-1 m-0">
+                    <p className="text-sm sm:text-base font-bold text-[#072C50] underline underline-offset-4 decoration-1 m-0 leading-snug">
                       Contact :
                     </p>
-                    <p className="text-xs sm:text-sm text-slate-700 font-normal mt-1 m-0">
+                    <p className="text-xs sm:text-sm text-slate-700 font-normal mt-1 m-0 leading-snug">
                       <a
                         href={`tel:${contactPhone.replace(/\s+/g, "")}`}
                         className="text-slate-800 hover:text-blue-600 font-medium transition-colors"
