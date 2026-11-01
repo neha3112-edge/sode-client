@@ -10,6 +10,7 @@ import {
   ShieldCheck,
   FileText,
   X,
+  Search,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -796,31 +797,42 @@ export default function UniversitiesPageClientView({
         </div>
 
         <div className="mt-3 sm:mt-4 flex flex-col lg:flex-row items-stretch lg:items-center gap-2 sm:gap-2.5 w-full">
-          <Input.Search
-            className="w-full lg:flex-1 lg:min-w-55"
-            allowClear
-            loading={isSearching}
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setCurrentPage(1);
-            }}
-            onSearch={(val) => {
-              setSearchTerm(val);
-              setDebouncedSearch(val);
-              setCurrentPage(1);
-            }}
-            placeholder="Search Universities Amity, Manipal, LPU etc.........."
-          />
+          <div className="w-full lg:flex-1 lg:min-w-55 h-[32px] bg-white rounded-[6px] flex items-center overflow-hidden border border-[#d9d9d9] hover:border-[#4096ff] focus-within:border-[#1d4ed8] focus-within:shadow-[0_0_0_2px_rgba(29,78,216,0.1)] transition-colors">
+            <Input
+              value={searchTerm}
+              allowClear
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
+              onPressEnter={(e) => {
+                setDebouncedSearch(e.target.value);
+                setCurrentPage(1);
+              }}
+              placeholder="Search Universities (Amity, Manipal, LPU...)"
+              className="w-full h-full border-0 bg-transparent text-sm shadow-none focus:shadow-none rounded-none pl-2.5 pr-1 [&_.ant-input]:!text-sm"
+            />
+            <button
+              type="button"
+              onClick={() => {
+                setDebouncedSearch(searchTerm);
+                setCurrentPage(1);
+              }}
+              aria-label="Search Universities"
+              className="h-full w-8 flex items-center justify-center bg-white hover:bg-slate-50 text-slate-500 hover:text-slate-800 border-l border-[#d9d9d9] shrink-0 transition-colors cursor-pointer"
+            >
+              <Search className="w-3.5 h-3.5" />
+            </button>
+          </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 lg:flex items-center gap-2 sm:gap-2.5 w-full lg:w-auto">
             <Select
               value={selectedTop}
               onChange={handleCategoryChange}
               placeholder={
-                <span className="flex items-center gap-1.5 text-slate-700">
+                <span className="flex items-center gap-1.5 text-slate-700 truncate">
                   <Landmark className="w-3.5 h-3.5 text-slate-600 shrink-0" />
-                  Select Category
+                  <span className="truncate">Category</span>
                 </span>
               }
               options={categoryOptions}
@@ -833,9 +845,9 @@ export default function UniversitiesPageClientView({
               value={selectedCourse}
               onChange={handleCourseChange}
               placeholder={
-                <span className="flex items-center gap-1.5 text-slate-700">
+                <span className="flex items-center gap-1.5 text-slate-700 truncate">
                   <GraduationCap className="w-3.5 h-3.5 text-slate-600 shrink-0" />
-                  Select Course
+                  <span className="truncate">Course</span>
                 </span>
               }
               options={visibleCourseOptions}
@@ -854,9 +866,9 @@ export default function UniversitiesPageClientView({
                 updateUrlParam("state", val);
               }}
               placeholder={
-                <span className="flex items-center gap-1.5 text-slate-700">
+                <span className="flex items-center gap-1.5 text-slate-700 truncate">
                   <MapPin className="w-3.5 h-3.5 text-slate-600 shrink-0" />
-                  Select State
+                  <span className="truncate">State</span>
                 </span>
               }
               options={stateOptions}
@@ -873,9 +885,9 @@ export default function UniversitiesPageClientView({
                 updateUrlParam("accreditation", val);
               }}
               placeholder={
-                <span className="flex items-center gap-1.5 text-slate-700">
+                <span className="flex items-center gap-1.5 text-slate-700 truncate">
                   <ShieldCheck className="w-3.5 h-3.5 text-slate-600 shrink-0" />
-                  Select Accreditation
+                  <span className="truncate">Accreditation</span>
                 </span>
               }
               options={accreditationOptions}
