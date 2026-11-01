@@ -76,8 +76,8 @@ export default function CategorySectionBlock({
                         <CourseIcon course={child} />
                       )}
                     </div>
-                    <div className="h-6 min-[360px]:h-7 sm:h-8 flex items-center justify-center w-full min-w-0">
-                      <span className="line-clamp-2 text-center leading-tight uppercase font-semibold text-[10px] min-[360px]:text-[11px] sm:text-xs text-gray-700 group-hover:text-blue-500 transition-colors w-full px-0.5">
+                    <div className="flex items-center justify-center w-full min-w-0 px-0.5">
+                      <span className="line-clamp-2 text-center leading-[1.1] font-semibold text-[9.5px] min-[360px]:text-[10px] sm:text-[10.5px] text-gray-700 group-hover:text-blue-500 transition-colors w-full">
                         {child.name}
                       </span>
                     </div>

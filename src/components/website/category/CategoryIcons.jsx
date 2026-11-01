@@ -94,16 +94,21 @@ export function PartnerLogoIcon({ partner }) {
   );
 }
 
+// v2 – normalize ALL CAPS names to Title Case for consistent card display
 export function formatTwoLineText(text = "") {
   if (!text) return "";
-  const cleaned = text.trim();
+  // Normalize: convert ALL CAPS to Title Case for consistent display
+  const raw = text.trim();
+  const cleaned = raw === raw.toUpperCase() && raw.length > 3
+    ? raw.replace(/\b\w+/g, (w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    : raw;
 
   // Custom smart splits for common education domains & institutions
   if (/^business\s*&\s*entrepr/i.test(cleaned)) {
     return (
       <span className="flex flex-col items-center justify-center leading-[1.1] text-center w-full min-w-0">
         <span className="block text-center w-full font-semibold truncate">Business &</span>
-        <span className="block text-center w-full font-semibold truncate text-[8.5px] min-[360px]:text-[9px] sm:text-[10px]">Entrepreneurship</span>
+        <span className="block text-center w-full font-semibold truncate">Entrepreneurship</span>
       </span>
     );
   }
@@ -127,7 +132,7 @@ export function formatTwoLineText(text = "") {
     return (
       <span className="flex flex-col items-center justify-center leading-[1.1] text-center w-full min-w-0">
         <span className="block text-center w-full font-semibold truncate">Energy &</span>
-        <span className="block text-center w-full font-semibold truncate text-[8.5px] min-[360px]:text-[9px] sm:text-[10px]">Infrastructure</span>
+        <span className="block text-center w-full font-semibold truncate">Infrastructure</span>
       </span>
     );
   }
@@ -143,7 +148,7 @@ export function formatTwoLineText(text = "") {
     return (
       <span className="flex flex-col items-center justify-center leading-[1.1] text-center w-full min-w-0">
         <span className="block text-center w-full font-semibold truncate">Journalism &</span>
-        <span className="block text-center w-full font-semibold truncate text-[8.5px] min-[360px]:text-[9px] sm:text-[10px]">Mass Comm.</span>
+        <span className="block text-center w-full font-semibold truncate">Mass Comm.</span>
       </span>
     );
   }
