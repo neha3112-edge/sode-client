@@ -57,11 +57,11 @@ export default function CategoryDetailModal({
       mask={{ closable: true }}
       keyboard={true}
       destroyOnHidden
-      width={620}
+      width={680}
       styles={{
         content: {
-          padding: "16px",
-          borderRadius: "20px",
+          padding: "12px",
+          borderRadius: "16px",
           border: "1px solid #e2e8f0",
           boxShadow: "0 25px 50px -12px rgba(15, 23, 42, 0.25)",
         },
@@ -73,9 +73,9 @@ export default function CategoryDetailModal({
       {activeCategory && (
         <div className="flex flex-col text-left min-h-0">
           {/* Modal Header */}
-          <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 mb-2.5 shrink-0 gap-3">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="w-10 h-10 flex items-center justify-center shrink-0">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-2 mb-2 shrink-0 gap-3">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center shrink-0">
                 {modalData.isUniversity ? (
                   <PartnerLogoIcon partner={activeCategory} />
                 ) : modalData.isCourseSubcategoriesModal || activeCategory.isCourse ? (
@@ -85,10 +85,10 @@ export default function CategoryDetailModal({
                 )}
               </div>
               <div className="min-w-0">
-                <p className="text-base sm:text-lg font-semibold text-gray-900 leading-tight tracking-tight truncate m-0">
+                <p className="text-sm sm:text-base font-bold text-gray-900 leading-tight tracking-tight truncate m-0">
                   {activeCategory.label || activeCategory.name}
                 </p>
-                <span className="text-xs text-slate-500 block mt-0.5 truncate">
+                <span className="text-[11px] text-slate-500 block mt-0.5 truncate">
                   {modalData.isUniversity
                     ? "Programs & Degrees Offered"
                     : modalData.isCourseSubcategoriesModal
@@ -105,7 +105,7 @@ export default function CategoryDetailModal({
                 <button
                   type="button"
                   onClick={handleExploreClick}
-                  className="inline-flex items-center justify-center gap-1 py-1 px-2 rounded-full text-xs font-bold text-[#0B3B7E] bg-blue-50/80 hover:bg-blue-100 border border-blue-200/80 transition-all cursor-pointer shadow-none group shrink-0"
+                  className="inline-flex items-center justify-center gap-1 py-1 px-2.5 rounded-full text-xs font-bold text-[#0B3B7E] bg-blue-50/80 hover:bg-blue-100 border border-blue-200/80 transition-all cursor-pointer shadow-none group shrink-0"
                 >
                   <span className="leading-none">Explore</span>
                   <ChevronRight className="w-3.5 h-3.5 shrink-0 transition-transform duration-200 group-hover:translate-x-0.5" />
@@ -115,21 +115,21 @@ export default function CategoryDetailModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer border-none shadow-xs text-slate-500 bg-slate-100 hover:bg-slate-200 hover:text-slate-800 shrink-0"
+                className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-all cursor-pointer border-none shadow-xs text-slate-500 bg-slate-100 hover:bg-slate-200 hover:text-slate-800 shrink-0"
                 aria-label="Close modal"
               >
-                <X size={18} className="stroke-[2.5]" />
+                <X size={16} className="stroke-[2.5]" />
               </button>
             </div>
           </div>
 
           {/* Modal Body */}
-          <div className="flex-1 overflow-y-auto max-h-[64vh] overscroll-contain pr-1 space-y-4 scrollbar-thin [scrollbar-color:#cbd5e1_transparent]">
+          <div className="flex-1 overflow-y-auto max-h-[64vh] overscroll-contain pr-0.5 space-y-4 scrollbar-thin [scrollbar-color:#cbd5e1_transparent]">
             {/* 1. Category Sub-categories, Courses, or Universities Grid */}
             {!modalData.isUniversity && (
               <div>
                 {modalData.items && modalData.items.length > 0 ? (
-                  <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-3">
+                  <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-1.5 sm:gap-2.5 w-full mx-auto items-stretch">
                     {modalData.items.map((it, idx) => (
                       <div
                         key={`${it._id || it.slug || idx}-${idx}`}
@@ -178,25 +178,23 @@ export default function CategoryDetailModal({
                             router.push(`/courses?subcategory=${encodeURIComponent(itemSlug)}`);
                           }
                         }}
-                        className="bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl p-1.5 min-[360px]:p-2 aspect-square flex flex-col items-center justify-between text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group min-w-0 w-full shadow-2xs overflow-hidden"
+                        className="w-full aspect-square bg-white hover:bg-gray-50 border border-gray-200 rounded-xl sm:rounded-xl p-1 min-[360px]:p-1.5 sm:p-2.5 flex flex-col items-center justify-center text-center cursor-pointer select-none transition-colors duration-200 group min-w-0"
                       >
-                        <div className="flex-1 flex items-center justify-center w-full min-h-0 pt-0.5">
-                          <div className="group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
-                            {modalData.isUniversitiesModal ? (
-                              <PartnerLogoIcon partner={it} />
-                            ) : modalData.isCourseSubcategoriesModal ? (
-                              <CategoryIcon cat={it} />
-                            ) : modalData.isCoursesModal || it.isCourse || it.itemType === "course" ? (
-                              <CourseIcon course={it} />
-                            ) : (
-                              <CategoryIcon cat={it} />
-                            )}
-                          </div>
+                        <div className="mb-0.5 sm:mb-1 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
+                          {modalData.isUniversitiesModal ? (
+                            <PartnerLogoIcon partner={it} />
+                          ) : modalData.isCourseSubcategoriesModal ? (
+                            <CategoryIcon cat={it} />
+                          ) : modalData.isCoursesModal || it.isCourse || it.itemType === "course" ? (
+                            <CourseIcon course={it} />
+                          ) : (
+                            <CategoryIcon cat={it} />
+                          )}
                         </div>
-                        <div className="h-7 min-[360px]:h-8 sm:h-8.5 flex items-center justify-center w-full min-w-0 px-0.5 pb-0.5 shrink-0">
-                          <p className="text-[9.5px] min-[360px]:text-[10px] sm:text-[10.5px] font-semibold text-slate-800 group-hover:text-blue-600 transition-colors text-center w-full tracking-tight min-w-0 m-0">
-                            {formatTwoLineText(it.name)}
-                          </p>
+                        <div className="h-6 min-[360px]:h-7 sm:h-8 flex items-center justify-center w-full min-w-0 px-0.5">
+                          <span className="line-clamp-2 text-center leading-tight font-semibold text-[10px] min-[360px]:text-[11px] sm:text-xs text-gray-700 group-hover:text-blue-500 transition-colors w-full px-0.5">
+                            {it.name || it.label}
+                          </span>
                         </div>
                       </div>
                     ))}
@@ -225,7 +223,7 @@ export default function CategoryDetailModal({
             {modalData.isUniversity && (
               <div>
                 {modalData.items && modalData.items.length > 0 ? (
-                  <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-3">
+                  <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-1.5 sm:gap-2.5 w-full mx-auto items-stretch">
                     {modalData.items.map((crs, idx) => (
                       <div
                         key={`${crs._id || crs.slug || idx}-${idx}`}
@@ -270,17 +268,15 @@ export default function CategoryDetailModal({
                             router.push(`/universities/${encodeURIComponent(uniSlug)}/${encodeURIComponent(crsSlug)}`);
                           }
                         }}
-                        className="bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl p-1.5 min-[360px]:p-2 aspect-square flex flex-col items-center justify-between text-center cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group min-w-0 w-full shadow-2xs overflow-hidden"
+                        className="w-full aspect-square bg-white hover:bg-gray-50 border border-gray-200 rounded-xl sm:rounded-xl p-1 min-[360px]:p-1.5 sm:p-2.5 flex flex-col items-center justify-center text-center cursor-pointer select-none transition-colors duration-200 group min-w-0"
                       >
-                        <div className="flex-1 flex items-center justify-center w-full min-h-0 pt-0.5">
-                          <div className="group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
-                            <CourseIcon course={crs} />
-                          </div>
+                        <div className="mb-0.5 sm:mb-1 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0">
+                          <CourseIcon course={crs} />
                         </div>
-                        <div className="h-7 min-[360px]:h-8 sm:h-8.5 flex items-center justify-center w-full min-w-0 px-0.5 pb-0.5 shrink-0">
-                          <p className="text-[9.5px] min-[360px]:text-[10px] sm:text-[10.5px] font-medium text-slate-800 group-hover:text-blue-600 transition-colors text-center w-full tracking-tight min-w-0 m-0 uppercase">
-                            {formatTwoLineText(crs.codeName || crs.shortName || crs.name)}
-                          </p>
+                        <div className="h-6 min-[360px]:h-7 sm:h-8 flex items-center justify-center w-full min-w-0 px-0.5">
+                          <span className="line-clamp-2 text-center leading-tight font-semibold text-[10px] min-[360px]:text-[11px] sm:text-xs text-gray-700 group-hover:text-blue-500 transition-colors w-full px-0.5">
+                            {crs.codeName || crs.shortName || crs.name}
+                          </span>
                         </div>
                       </div>
                     ))}
@@ -288,17 +284,14 @@ export default function CategoryDetailModal({
                 ) : (
                   <div className="bg-slate-50 border border-slate-200/80 p-6 rounded-2xl text-center flex flex-col items-center justify-center space-y-2 my-3">
                     <p className="text-xs sm:text-sm text-slate-600 font-medium">
-                      🎓 Explore degree programs and courses offered by {modalData.category?.name}.
+                      🏛️ Explore all courses and programs offered by {activeCategory.name}.
                     </p>
                     <button
                       type="button"
-                      onClick={() => {
-                        onClose();
-                        router.push(`/universities/${encodeURIComponent(getItemSlug(modalData.category))}`);
-                      }}
+                      onClick={handleExploreClick}
                       className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors cursor-pointer border-0"
                     >
-                      Explore University Page
+                      View University Page
                     </button>
                   </div>
                 )}

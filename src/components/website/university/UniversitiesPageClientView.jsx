@@ -23,11 +23,12 @@ function resolveCategoryMatch(paramVal, options = []) {
   const raw = String(paramVal).trim().toLowerCase();
   const clean = raw.replace(/^top-?/i, "").replace(/[^a-z0-9]/g, "");
 
-  // 1. Direct match on option value or label
+  // 1. Direct match on option value, label or slug
   const directMatch = options.find((opt) => {
     const val = String(opt.value || "").toLowerCase();
     const lbl = String(opt.label || "").toLowerCase();
-    return val === raw || lbl === raw;
+    const slg = String(opt.slug || "").toLowerCase();
+    return val === raw || lbl === raw || slg === raw;
   });
   if (directMatch) return directMatch.value;
 
@@ -35,32 +36,15 @@ function resolveCategoryMatch(paramVal, options = []) {
   const normMatch = options.find((opt) => {
     const valClean = String(opt.value || "").toLowerCase().replace(/^top-?/i, "").replace(/[^a-z0-9]/g, "");
     const lblClean = String(opt.label || "").toLowerCase().replace(/^top-?/i, "").replace(/[^a-z0-9]/g, "");
-    return valClean === clean || lblClean === clean;
+    const slgClean = String(opt.slug || "").toLowerCase().replace(/^top-?/i, "").replace(/[^a-z0-9]/g, "");
+    return (
+      valClean === clean ||
+      lblClean === clean ||
+      slgClean === clean ||
+      (clean && (valClean.includes(clean) || clean.includes(valClean)))
+    );
   });
   if (normMatch) return normMatch.value;
-
-  // 3. Keyword heuristic match
-  if (clean.includes("iit") || clean.includes("iim")) {
-    const iitOpt = options.find((opt) => {
-      const v = String(opt.value || opt.label || "").toLowerCase();
-      return v.includes("iit") || v.includes("iim");
-    });
-    if (iitOpt) return iitOpt.value;
-  }
-  if (clean.includes("global") || clean.includes("international")) {
-    const globalOpt = options.find((opt) => {
-      const v = String(opt.value || opt.label || "").toLowerCase();
-      return v.includes("global");
-    });
-    if (globalOpt) return globalOpt.value;
-  }
-  if (clean.includes("domestic") || clean.includes("indian")) {
-    const domOpt = options.find((opt) => {
-      const v = String(opt.value || opt.label || "").toLowerCase();
-      return v.includes("domestic");
-    });
-    if (domOpt) return domOpt.value;
-  }
 
   return paramVal;
 }
@@ -96,10 +80,26 @@ function resolveAccreditationMatch(paramVal, options = []) {
 
 function resolveCourseMatch(paramVal, options = []) {
   if (!paramVal) return null;
-  const raw = String(paramVal).trim().toLowerCase().replace(/[^a-z0-9]/g, "");
+  const raw = String(paramVal).trim().toLowerCase();
+  const clean = raw.replace(/^(online|distance|regular)\s+/i, "").replace(/[^a-z0-9]/g, "");
+
   const match = options.find((opt) => {
-    const val = String(opt.value || opt.label || "").toLowerCase().replace(/[^a-z0-9]/g, "");
-    return val === raw || val.includes(raw) || raw.includes(val);
+    const val = String(opt.value || "").toLowerCase();
+    const lbl = String(opt.label || "").toLowerCase();
+    const slg = String(opt.slug || "").toLowerCase();
+    const valClean = val.replace(/^(online|distance|regular)\s+/i, "").replace(/[^a-z0-9]/g, "");
+    const lblClean = lbl.replace(/^(online|distance|regular)\s+/i, "").replace(/[^a-z0-9]/g, "");
+    const slgClean = slg.replace(/^(online|distance|regular)\s+/i, "").replace(/[^a-z0-9]/g, "");
+
+    return (
+      val === raw ||
+      lbl === raw ||
+      slg === raw ||
+      valClean === clean ||
+      lblClean === clean ||
+      slgClean === clean ||
+      (clean.length >= 2 && (lblClean.includes(clean) || clean.includes(lblClean)))
+    );
   });
   return match ? match.value : paramVal;
 }
@@ -438,27 +438,84 @@ export default function UniversitiesPageClientView({
     return Array.from(s).sort();
   }, [allUniversities]);
 
-  // 🏛️ Dynamic Categories / Top options from API
-  const topOptions = useMemo(() => {
-    if (Array.isArray(filterOptions?.categories) && filterOptions.categories.length > 0) {
-      return filterOptions.categories.map((c) => ({
-        value: c.value || c.slug || c._id,
-        label: c.label || c.name,
-      }));
-    }
-    return [];
-  }, [filterOptions]);
+  // 🏛️ Dynamic Primary Categories from API (Certifications, Bachelors, Masters, Doctorate)
+  const categoryOptions = useMemo(() => {
+    const list = [];
+    const sourceList = filterOptions?.categories || [];
+    const seen = new Set();
 
-  // 🎓 Dynamic Courses from API (Deduplicated with actual Mode)
-  const courseOptions = useMemo(() => {
-    if (Array.isArray(filterOptions?.courses) && filterOptions.courses.length > 0) {
-      return filterOptions.courses.map((c) => ({
-        value: c.value || c.label || c.name,
-        label: c.label || c.name,
-      }));
+    sourceList.forEach((c) => {
+      if (!c) return;
+      const rawVal = c.slug || c.value || c._id;
+      const lbl = c.label || c.name || rawVal;
+      const val = String(rawVal).toLowerCase().trim();
+      if (/^top\s+/i.test(lbl) || val === "top-courses") return;
+
+      if (!seen.has(val)) {
+        seen.add(val);
+        list.push({
+          value: val,
+          label: lbl,
+          slug: val,
+        });
+      }
+    });
+
+    if (list.length === 0) {
+      return [
+        { value: "certifications", label: "Certifications", slug: "certifications" },
+        { value: "bachelors", label: "Bachelors", slug: "bachelors" },
+        { value: "masters", label: "Masters", slug: "masters" },
+        { value: "doctorate", label: "Doctorate", slug: "doctorate" },
+      ];
     }
-    return [];
-  }, [filterOptions]);
+    return list;
+  }, [filterOptions?.categories]);
+
+  // 🎓 All Dynamic Courses with categorySlug linking
+  const allCourseOptions = useMemo(() => {
+    const list = [];
+    const sourceList = filterOptions?.courses || [];
+    const seen = new Set();
+
+    sourceList.forEach((c) => {
+      if (!c) return;
+      const lbl = (c.label || c.name || c.displayName || "").trim();
+      if (!lbl) return;
+
+      const rawVal = c.slug || c.value || lbl.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+      const val = String(rawVal).toLowerCase().trim();
+      const catSlug = String(c.categorySlug || "").toLowerCase().trim();
+      const normKey = lbl.toUpperCase().replace(/[^A-Z0-9]/g, "");
+
+      if (!seen.has(normKey)) {
+        seen.add(normKey);
+        const truncatedLabel = lbl.length > 30 ? `${lbl.slice(0, 30).trim()}...` : lbl;
+        list.push({
+          value: val,
+          label: truncatedLabel,
+          title: lbl,
+          fullLabel: lbl,
+          slug: val,
+          name: lbl,
+          categorySlug: catSlug,
+        });
+      }
+    });
+    return list;
+  }, [filterOptions?.courses]);
+
+  // 🎓 Cascading visible courses based on selected Category
+  const visibleCourseOptions = useMemo(() => {
+    if (!selectedTop) return allCourseOptions;
+    const targetCat = String(selectedTop).toLowerCase().trim();
+
+    return allCourseOptions.filter((c) => {
+      if (!c.categorySlug) return true;
+      const cat = c.categorySlug.toLowerCase();
+      return cat === targetCat || cat.includes(targetCat) || targetCat.includes(cat);
+    });
+  }, [allCourseOptions, selectedTop]);
 
   // 📍 Dynamic States from API
   const stateOptions = useMemo(() => {
@@ -476,13 +533,67 @@ export default function UniversitiesPageClientView({
     if (Array.isArray(filterOptions?.accreditations) && filterOptions.accreditations.length > 0) {
       return filterOptions.accreditations.map((a) => ({
         value: typeof a === "object" ? a.value || a.name || a.code : a,
-        label: typeof a === "object" ? a.label || a.title || a.name : a,
+        label: typeof a === "object" ? a.label || a.name || a.code : a,
       }));
     }
     return [];
   }, [filterOptions]);
 
-  // 🔗 Sync state with URL search parameters (e.g. ?category=iits-iims or ?category=global-universities)
+  const handleCategoryChange = (catVal) => {
+    const cleanVal = catVal ? String(catVal).toLowerCase().trim() : null;
+    setSelectedTop(cleanVal);
+    setCurrentPage(1);
+    updateUrlParam("category", cleanVal);
+
+    // If current course doesn't belong to the new category, reset course
+    if (selectedCourse && cleanVal) {
+      const courseObj = allCourseOptions.find((c) => {
+        const cVal = String(c.value).toLowerCase();
+        const cSlug = String(c.slug).toLowerCase();
+        const cLbl = String(c.label).toLowerCase();
+        const sel = String(selectedCourse).toLowerCase();
+        return cVal === sel || cSlug === sel || cLbl === sel;
+      });
+
+      if (courseObj && courseObj.categorySlug) {
+        const cCat = courseObj.categorySlug.toLowerCase();
+        if (cCat !== cleanVal && !cCat.includes(cleanVal) && !cleanVal.includes(cCat)) {
+          setSelectedCourse(null);
+          updateUrlParam("course", null);
+        }
+      }
+    }
+  };
+
+  const handleCourseChange = (courseVal) => {
+    const cleanVal = courseVal ? String(courseVal).toLowerCase().trim() : null;
+    setSelectedCourse(cleanVal);
+    setCurrentPage(1);
+    updateUrlParam("course", cleanVal);
+
+    // Auto-select parent category if course belongs to one
+    if (cleanVal) {
+      const courseObj = allCourseOptions.find((c) => {
+        const cVal = String(c.value).toLowerCase();
+        const cSlug = String(c.slug).toLowerCase();
+        const cLbl = String(c.label).toLowerCase();
+        return cVal === cleanVal || cSlug === cleanVal || cLbl === cleanVal;
+      });
+
+      if (courseObj && courseObj.categorySlug) {
+        const catSlug = courseObj.categorySlug.toLowerCase();
+        const matchedCat = categoryOptions.find(
+          (cat) => cat.value.toLowerCase() === catSlug || cat.slug.toLowerCase() === catSlug
+        );
+        if (matchedCat && (!selectedTop || selectedTop !== matchedCat.value)) {
+          setSelectedTop(matchedCat.value);
+          updateUrlParam("category", matchedCat.value);
+        }
+      }
+    }
+  };
+
+  // 🔗 Sync state with URL search parameters
   useEffect(() => {
     if (!searchParams) return;
     const cat = searchParams.get("category") || searchParams.get("type") || searchParams.get("top");
@@ -491,18 +602,35 @@ export default function UniversitiesPageClientView({
     const appr = searchParams.get("accreditation") || searchParams.get("approval");
     const q = searchParams.get("search") || searchParams.get("q");
 
-    if (cat) {
-      const resolved = resolveCategoryMatch(cat, topOptions);
-      setSelectedTop(resolved);
-    } else {
-      setSelectedTop(null);
-    }
-
+    let resolvedCourse = null;
     if (crs) {
-      const resolved = resolveCourseMatch(crs, courseOptions);
-      setSelectedCourse(resolved);
+      resolvedCourse = resolveCourseMatch(crs, allCourseOptions);
+      setSelectedCourse(resolvedCourse);
     } else {
       setSelectedCourse(null);
+    }
+
+    if (cat) {
+      const resolved = resolveCategoryMatch(cat, categoryOptions);
+      setSelectedTop(resolved);
+    } else if (resolvedCourse) {
+      // Auto-select category if course is in URL
+      const courseObj = allCourseOptions.find(
+        (c) =>
+          String(c.value).toLowerCase() === String(resolvedCourse).toLowerCase() ||
+          String(c.slug).toLowerCase() === String(resolvedCourse).toLowerCase() ||
+          String(c.label).toLowerCase() === String(resolvedCourse).toLowerCase()
+      );
+      if (courseObj && courseObj.categorySlug) {
+        const matchedCat = categoryOptions.find(
+          (opt) => opt.value === courseObj.categorySlug || opt.slug === courseObj.categorySlug
+        );
+        if (matchedCat) {
+          setSelectedTop(matchedCat.value);
+        }
+      }
+    } else {
+      setSelectedTop(null);
     }
 
     if (st) {
@@ -522,7 +650,7 @@ export default function UniversitiesPageClientView({
       setSearchTerm(q);
       setDebouncedSearch(q);
     }
-  }, [searchParams, topOptions, courseOptions, stateOptions, accreditationOptions]);
+  }, [searchParams, categoryOptions, allCourseOptions, stateOptions, accreditationOptions]);
 
   const resetFilters = () => {
     setSearchTerm("");
@@ -571,73 +699,70 @@ export default function UniversitiesPageClientView({
       }
 
       if (selectedTop) {
-        const sel = selectedTop.toLowerCase();
-        const selNorm = sel.replace(/^top-?/i, "").replace(/[^a-z0-9]/g, "");
-        const isIit = selNorm.includes("iit") || selNorm.includes("iim");
-        const isGlobal = selNorm.includes("global");
-        const isDomestic = selNorm.includes("domestic");
-        const isUgc = selNorm.includes("ugc") || selNorm.includes("deb");
+        const selCat = String(selectedTop).toLowerCase().trim();
+        const selCatNorm = selCat.replace(/[^a-z0-9]/g, "");
 
-        // 1. Direct name / approval / type heuristics
-        const matchesHeuristic =
-          (isIit && (
-            /\b(iit|iim|iiit)\b/i.test(uni?.name || "") ||
-            (uni?.name || "").toLowerCase().includes("indian institute of")
-          )) ||
-          (isGlobal && (
-            (uni?.type || "").toLowerCase().includes("global") ||
-            (uni?.country && (typeof uni.country === "object" ? uni.country.name : uni.country) !== "India") ||
-            Boolean(uni?.isGlobal)
-          )) ||
-          (isUgc && (
-            Array.isArray(uni?.approvals) && uni.approvals.some((a) => {
-              const str = typeof a === "object" ? (a.name || a.code || "") : String(a);
-              return /ugc/i.test(str);
-            })
-          ));
+        // 1. Check university categorySlugs (from uniCourses + direct categories)
+        const uniCatSlugs = Array.isArray(uni?.categorySlugs)
+          ? uni.categorySlugs.map((s) => String(s).toLowerCase().trim())
+          : [];
 
-        if (!matchesHeuristic) {
-          const uniCats = Array.isArray(uni?.category)
-            ? uni.category
-            : (uni?.category ? [uni.category] : []);
-          const hasCategory = uniCats.some((c) => {
-            if (!c) return false;
-            const cSlug = (typeof c === "object" ? (c.slug || "") : "").toLowerCase();
-            const cName = (typeof c === "object" ? (c.name || "") : String(c || "")).toLowerCase();
-            const cCode = (typeof c === "object" ? (c.code || "") : "").toLowerCase();
-            const cId = (typeof c === "object" ? (c._id || "") : "").toString().toLowerCase();
-            const cNorm = (cSlug || cName).replace(/^top-?/i, "").replace(/[^a-z0-9]/g, "");
+        // 2. Check direct university categories
+        const uniCats = Array.isArray(uni?.category)
+          ? uni.category
+          : (uni?.category ? [uni.category] : []);
+        const directCatSlugs = uniCats.map((c) =>
+          typeof c === "object" ? String(c.slug || c.name || "").toLowerCase() : String(c).toLowerCase()
+        );
 
-            return (
-              (cSlug && cSlug === sel) ||
-              (cName && cName === sel) ||
-              (cCode && cCode === sel) ||
-              (cId && cId === sel) ||
-              (cNorm && cNorm === selNorm) ||
-              (isIit && cNorm.includes("iit")) ||
-              (isGlobal && cNorm.includes("global")) ||
-              (isDomestic && cNorm.includes("domestic")) ||
-              (cSlug && sel.includes(cSlug)) ||
-              (cSlug && cSlug.includes(sel)) ||
-              (cName && sel.includes(cName)) ||
-              (cName && cName.includes(sel))
-            );
-          });
-          if (!hasCategory) return false;
-        }
+        // 3. Inferred categories from university course names
+        const uniCourses = Array.isArray(uni?.courses)
+          ? uni.courses.map((c) => (typeof c === "object" ? c?.name || c?.displayName || "" : String(c)))
+          : [];
+        const inferredCourseCats = [];
+        uniCourses.forEach((cn) => {
+          const ucn = String(cn).toUpperCase();
+          if (/^M\b|^MASTER|MBA|MCA|MSC|MCOM|MA\b/i.test(ucn) && !/DIPLOMA/i.test(ucn)) inferredCourseCats.push("masters");
+          if (/^B\b|^BACHELOR|BBA|BCA|BSC|BCOM|BA\b|BTECH/i.test(ucn) && !/DIPLOMA/i.test(ucn)) inferredCourseCats.push("bachelors");
+          if (/PHD|DOCTOR|DBA/i.test(ucn)) inferredCourseCats.push("doctorate");
+          if (/CERTIFICATE/i.test(ucn)) inferredCourseCats.push("certifications");
+        });
+
+        const allUniCategories = [...uniCatSlugs, ...directCatSlugs, ...inferredCourseCats];
+
+        const hasCategory = allUniCategories.some((cat) => {
+          const catNorm = cat.replace(/[^a-z0-9]/g, "");
+          return cat === selCat || catNorm === selCatNorm;
+        });
+
+        if (!hasCategory) return false;
       }
 
       if (selectedCourse) {
-        const cTarget = selectedCourse
-          .toLowerCase()
-          .replace(/^(online|distance|regular)\s+/i, "")
-          .replace(/[^a-z0-9]/g, "");
-        const uniCourses = Array.isArray(uni?.courses)
-          ? uni.courses.map((c) => (typeof c === "object" ? c?.name || c?.displayName || c?.title || "" : String(c)).toLowerCase().replace(/[^a-z0-9]/g, ""))
+        const selCourse = String(selectedCourse).toLowerCase().trim();
+        const selCourseNorm = selCourse.replace(/^(online|distance|regular)\s+/i, "").replace(/[^a-z0-9]/g, "");
+
+        const uniCourseSlugs = Array.isArray(uni?.courseSlugs)
+          ? uni.courseSlugs.map((s) => String(s).toLowerCase())
           : [];
-        if (uniCourses.length > 0 && !uniCourses.some((c) => c === cTarget || c.includes(cTarget))) {
-          return false;
-        }
+
+        const uniCourses = Array.isArray(uni?.courses)
+          ? uni.courses.map((c) => (typeof c === "object" ? c?.name || c?.displayName || "" : String(c)).toLowerCase())
+          : [];
+
+        const hasCourse =
+          uniCourseSlugs.some((s) => s === selCourse || s === selCourseNorm || s.includes(selCourseNorm)) ||
+          uniCourses.some((c) => {
+            const cClean = c.replace(/^(online|distance|regular)\s+/i, "").replace(/[^a-z0-9]/g, "");
+            return (
+              c === selCourse ||
+              cClean === selCourseNorm ||
+              cClean.includes(selCourseNorm) ||
+              (selCourseNorm.length >= 3 && selCourseNorm.includes(cClean))
+            );
+          });
+
+        if (!hasCourse) return false;
       }
 
       return true;
@@ -691,18 +816,14 @@ export default function UniversitiesPageClientView({
           <div className="grid grid-cols-2 sm:grid-cols-4 lg:flex items-center gap-2 sm:gap-2.5 w-full lg:w-auto">
             <Select
               value={selectedTop}
-              onChange={(val) => {
-                setSelectedTop(val);
-                setCurrentPage(1);
-                updateUrlParam("category", val);
-              }}
+              onChange={handleCategoryChange}
               placeholder={
                 <span className="flex items-center gap-1.5 text-slate-700">
                   <Landmark className="w-3.5 h-3.5 text-slate-600 shrink-0" />
                   Select Category
                 </span>
               }
-              options={topOptions}
+              options={categoryOptions}
               allowClear
               className="w-full lg:w-auto lg:min-w-41.25"
               popupMatchSelectWidth={false}
@@ -710,21 +831,19 @@ export default function UniversitiesPageClientView({
 
             <Select
               value={selectedCourse}
-              onChange={(val) => {
-                setSelectedCourse(val);
-                setCurrentPage(1);
-                updateUrlParam("course", val);
-              }}
+              onChange={handleCourseChange}
               placeholder={
                 <span className="flex items-center gap-1.5 text-slate-700">
                   <GraduationCap className="w-3.5 h-3.5 text-slate-600 shrink-0" />
                   Select Course
                 </span>
               }
-              options={courseOptions}
+              options={visibleCourseOptions}
               allowClear
               className="w-full lg:w-auto lg:min-w-36.25"
               popupMatchSelectWidth={false}
+              styles={{ popup: { root: { maxWidth: 300 } } }}
+              classNames={{ popup: { root: "max-w-[300px]" } }}
             />
 
             <Select
@@ -785,24 +904,22 @@ export default function UniversitiesPageClientView({
             )}
             {selectedTop && (
               <span className="inline-flex items-center gap-1 bg-white/15 text-white text-[11px] font-semibold px-2 py-0.5 rounded-md border border-white/20">
-                Category: {topOptions.find((o) => o.value === selectedTop)?.label || selectedTop}
+                Category: {categoryOptions.find((o) => o.value === selectedTop)?.label || selectedTop}
                 <X
                   className="w-3 h-3 cursor-pointer hover:text-amber-300"
                   onClick={() => {
-                    setSelectedTop(null);
-                    updateUrlParam("category", null);
+                    handleCategoryChange(null);
                   }}
                 />
               </span>
             )}
             {selectedCourse && (
               <span className="inline-flex items-center gap-1 bg-white/15 text-white text-[11px] font-semibold px-2 py-0.5 rounded-md border border-white/20">
-                Course: {courseOptions.find((o) => o.value === selectedCourse)?.label || selectedCourse}
+                Course: {allCourseOptions.find((o) => o.value === selectedCourse || o.slug === selectedCourse)?.label || selectedCourse}
                 <X
                   className="w-3 h-3 cursor-pointer hover:text-amber-300"
                   onClick={() => {
-                    setSelectedCourse(null);
-                    updateUrlParam("course", null);
+                    handleCourseChange(null);
                   }}
                 />
               </span>

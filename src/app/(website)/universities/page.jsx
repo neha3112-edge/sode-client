@@ -37,10 +37,13 @@ export default async function UniversitiesPage() {
         : Array.isArray(uniRes.value)
           ? uniRes.value
           : [];
+      if (uniRes.value?.filters || uniRes.value?.filterOptions) {
+        initialOptions = uniRes.value.filters || uniRes.value.filterOptions;
+      }
     }
 
-    if (optionsRes.status === "fulfilled" && optionsRes.value) {
-      initialOptions = optionsRes.value?.result || null;
+    if (!initialOptions && optionsRes.status === "fulfilled" && optionsRes.value) {
+      initialOptions = optionsRes.value?.result || optionsRes.value?.filters || null;
     }
   } catch (err) {
     console.error("[Universities Page] Server fetch error:", err.message);
