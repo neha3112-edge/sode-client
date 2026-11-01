@@ -283,7 +283,6 @@ export function CourseClientView({
       return getName(aicteItem);
     }
 
-    // 3. Any other approval/accreditation (NIRF, NAAC, etc.)
     const otherItem = approvalsList.find((a) => Boolean(getName(a)));
     if (otherItem) {
       return getName(otherItem);
