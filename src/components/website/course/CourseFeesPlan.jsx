@@ -336,17 +336,22 @@ export default function CourseFeesPlan({
           );
         }
 
-        const hasNoCost = Boolean(currentEmi.noCostEmi?.enabled !== false && Array.isArray(currentEmi.noCostEmi?.tenures) && currentEmi.noCostEmi.tenures.length > 0);
-        const hasStandard = Boolean(currentEmi.standardEmi?.enabled !== false && Array.isArray(currentEmi.standardEmi?.tenures) && currentEmi.standardEmi.tenures.length > 0);
+        const hasNoCost = Boolean(currentEmi.noCostEmi?.enabled !== false && (currentEmi.noCostEmi?.facilitators?.length > 0 || currentEmi.noCostEmi?.tenures?.length > 0));
+        const hasStandard = Boolean(currentEmi.standardEmi?.enabled !== false && (currentEmi.standardEmi?.facilitators?.length > 0 || currentEmi.standardEmi?.tenures?.length > 0));
 
         const activeCategory = activeEmiTypeTab === "standard" && hasStandard ? "standard" : (hasNoCost ? "no_cost" : (hasStandard ? "standard" : "all"));
-        const displayTenures = activeCategory === "standard"
-          ? (currentEmi.standardEmi?.tenures || currentEmi.tenures)
-          : (activeCategory === "no_cost" ? (currentEmi.noCostEmi?.tenures || currentEmi.tenures) : currentEmi.tenures);
 
         const currentPartners = activeCategory === "standard"
-          ? (currentEmi.standardEmi?.partners || ["Propelld", "LiquiLoans", "Eduvanz"])
-          : (currentEmi.noCostEmi?.partners || ["Fibe", "Propelld", "Bank Credit Cards"]);
+          ? (currentEmi.standardEmi?.partners || ["Propelld"])
+          : (currentEmi.noCostEmi?.partners || ["Fibe", "Propelld"]);
+
+        const activeFacilitators = activeCategory === "standard"
+          ? (currentEmi.standardEmi?.facilitators?.length > 0
+              ? currentEmi.standardEmi.facilitators
+              : (currentEmi.standardEmi?.tenures ? [{ name: currentPartners[0] || "Propelld", tenures: currentEmi.standardEmi.tenures }] : []))
+          : (currentEmi.noCostEmi?.facilitators?.length > 0
+              ? currentEmi.noCostEmi.facilitators
+              : (currentEmi.noCostEmi?.tenures ? [{ name: currentPartners[0] || "Fibe", tenures: currentEmi.noCostEmi.tenures }] : []));
 
         const cautionAmt = Number(currentEmi.cautionAmount || 0);
 
@@ -444,83 +449,89 @@ export default function CourseFeesPlan({
               </div>
             )}
 
-            {/* Tenure Options Cards */}
-            {Array.isArray(displayTenures) && displayTenures.length > 0 && (() => {
-              const count = displayTenures.length;
-              const gridColsClass =
-                count === 1
-                  ? "grid-cols-1"
-                  : count === 2
-                    ? "grid-cols-1 sm:grid-cols-2"
-                    : count === 3
-                      ? "grid-cols-1 sm:grid-cols-3"
-                      : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
+            {/* Facilitator-Wise Tenure Blocks (Exact upGrad Multi-Facilitator Structure) */}
+            {Array.isArray(activeFacilitators) && activeFacilitators.length > 0 && (
+              <div className="p-3 sm:p-4 space-y-4 w-full">
+                {activeFacilitators.map((fac, fIdx) => (
+                  <div key={fIdx} className="space-y-2">
+                    <div className="flex items-center justify-between pb-1 border-b border-amber-200/60">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs sm:text-sm font-extrabold text-[#0C2B4E] uppercase tracking-wide">
+                          {fac.name}
+                        </span>
+                        <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                          {activeCategory === "no_cost" ? "0% Interest Credit Facilitator" : `${fac.tenures?.[0]?.interestRatePct || 12}% p.a. Reducing Rate`}
+                        </span>
+                      </div>
+                      <span className="text-[10.5px] font-medium text-gray-500">
+                        {fac.tenures?.length || 0} Tenures Available
+                      </span>
+                    </div>
 
-              return (
-                <div className="p-3 sm:p-4 w-full">
-                  <div className={`grid ${gridColsClass} gap-3 w-full`}>
-                    {displayTenures.map((tenure, idx) => (
-                      <div
-                        key={idx}
-                        className="bg-white rounded-xl border border-amber-200 p-3.5 sm:p-4 shadow-xs hover:shadow-md hover:border-amber-400 transition-all space-y-2.5 flex flex-col justify-between"
-                      >
-                        <div>
-                          <div className="flex items-center justify-between gap-1 mb-1.5">
-                            <span className="text-xs sm:text-sm font-extrabold text-amber-950 block">
-                              {tenure.months} Months Tenure
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 w-full">
+                      {fac.tenures?.map((tenure, idx) => (
+                        <div
+                          key={idx}
+                          className="bg-white rounded-xl border border-amber-200 p-3.5 sm:p-4 shadow-xs hover:shadow-md hover:border-amber-400 transition-all space-y-2 flex flex-col justify-between"
+                        >
+                          <div>
+                            <div className="flex items-center justify-between gap-1 mb-1">
+                              <span className="text-xs sm:text-sm font-extrabold text-amber-950 block">
+                                {tenure.months} Months Tenure
+                              </span>
+                              {tenure.isNoCost ? (
+                                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-2xl bg-emerald-100 text-emerald-800 border border-emerald-300/60">
+                                  0% Interest
+                                </span>
+                              ) : (
+                                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-2xl bg-blue-100 text-blue-800 border border-blue-300/60">
+                                  {tenure.interestRatePct}% p.a.
+                                </span>
+                              )}
+                            </div>
+                            <span className="text-base sm:text-lg font-black text-gray-900 block">
+                              {tenure.formattedMonthlyFee}
                             </span>
-                            {tenure.interestRatePct && Number(tenure.interestRatePct) > 0 ? (
-                              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-2xl bg-blue-100 text-blue-800 border border-blue-300/60">
-                                {tenure.interestRatePct}% p.a.
-                              </span>
-                            ) : (
-                              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-2xl bg-emerald-100 text-emerald-800 border border-emerald-300/60">
-                                0% Interest
-                              </span>
+                          </div>
+
+                          <div className="pt-2 border-t border-gray-100 text-[11px] space-y-1 text-gray-600">
+                            {tenure.formattedTotalPayable && (
+                              <div className="flex justify-between items-center text-gray-900 font-semibold">
+                                <span>Total Loan:</span>
+                                <span className="font-bold text-[#0C2B4E]">
+                                  {tenure.formattedTotalPayable}
+                                </span>
+                              </div>
+                            )}
+                            {tenure.interestAmount > 0 && (
+                              <div className="flex justify-between items-center text-amber-900 font-medium">
+                                <span>Interest:</span>
+                                <span className="font-bold">
+                                  ₹ {Number(tenure.interestAmount).toLocaleString("en-IN")}
+                                </span>
+                              </div>
                             )}
                           </div>
-                          <span className="text-base sm:text-lg font-black text-gray-900 block">
-                            {tenure.formattedMonthlyFee}
-                          </span>
                         </div>
-
-                        <div className="pt-2 border-t border-gray-100 text-[11px] space-y-1 text-gray-600">
-                          {tenure.formattedTotalPayable && (
-                            <div className="flex justify-between items-center text-gray-900 font-semibold">
-                              <span>Total Loan:</span>
-                              <span className="font-bold text-[#0C2B4E]">
-                                {tenure.formattedTotalPayable}
-                              </span>
-                            </div>
-                          )}
-                          {tenure.interestAmount > 0 && (
-                            <div className="flex justify-between items-center text-amber-900 font-medium">
-                              <span>Interest:</span>
-                              <span className="font-bold">
-                                ₹ {Number(tenure.interestAmount).toLocaleString("en-IN")}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
+                ))}
 
-                  {/* Trust Footer */}
-                  <div className="mt-3.5 pt-3 border-t border-amber-200/70 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] sm:text-xs text-amber-900/80 font-medium">
-                    <span className="flex items-center gap-1.5">
-                      <svg className="w-4 h-4 text-emerald-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                      </svg>
-                      100% digital paperless approval with RBI-registered NBFC & banking partners.
-                    </span>
-                    <span className="text-amber-800 text-[10.5px]">
-                      Instant pre-approval • Zero physical paperwork
-                    </span>
-                  </div>
+                {/* Trust Footer */}
+                <div className="mt-3.5 pt-3 border-t border-amber-200/70 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] sm:text-xs text-amber-900/80 font-medium">
+                  <span className="flex items-center gap-1.5">
+                    <svg className="w-4 h-4 text-emerald-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    Credit facility provided by third party facilitators (Fibe, Propelld) with instant digital approval.
+                  </span>
+                  <span className="text-amber-800 text-[10.5px]">
+                    Instant pre-approval • Zero physical paperwork
+                  </span>
                 </div>
-              );
-            })()}
+              </div>
+            )}
           </div>
         );
       })()}
