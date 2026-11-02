@@ -69,7 +69,7 @@ export default function ScholarshipModal({
       footer={null}
       centered
       width={400}
-      destroyOnClose={true}
+      destroyOnHidden={true}
       closeIcon={null}
       styles={{
         container: {

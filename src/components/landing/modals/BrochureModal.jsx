@@ -52,7 +52,7 @@ export default function BrochureModal({
       footer={null}
       centered
       width={400}
-      destroyOnClose={true}
+      destroyOnHidden={true}
       closeIcon={null}
       styles={{
         container: {
