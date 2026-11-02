@@ -207,7 +207,7 @@ export default function LandingAdmissionProcess({
           brand.admissionContainerClass ||
           enrollmentProcess?.containerClass ||
           admissionProcess?.containerClass ||
-          "w-full px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto"
+          "w-full px-4 sm:px-6 lg:px-8 max-w-[1560px] mx-auto"
         }`}
       >
         {/* Heading */}
