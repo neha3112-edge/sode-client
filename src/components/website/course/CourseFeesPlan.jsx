@@ -135,6 +135,13 @@ export default function CourseFeesPlan({
       ? `Starting ${summaryEmi.formattedMinMonthlyEmi}`
       : "Bank & NBFC EMI";
 
+    const allMonths = summaryEmi?.allTenures?.map((t) => t.months) || summaryEmi?.tenures?.map((t) => t.months) || [];
+    const minM = allMonths.length > 0 ? Math.min(...allMonths) : null;
+    const maxM = allMonths.length > 0 ? Math.max(...allMonths) : null;
+    const financingSubtitle = minM && maxM
+      ? (minM === maxM ? `${minM} Months Financing` : `${minM} to ${maxM} Months Financing`)
+      : (summaryEmi?.planName || "Flexible Financing");
+
     planCards.push({
       id: "emi",
       isEmi: true,
@@ -148,7 +155,7 @@ export default function CourseFeesPlan({
       taxBadge: isTaxInclusive ? "Incl. Taxes" : null,
       subtitle: summaryEmi?.cautionAmount > 0
         ? `₹ ${Number(summaryEmi.cautionAmount).toLocaleString("en-IN")} Seat Booking • Easy Tenures`
-        : (summaryEmi?.planName || "3 to 48 Months Financing"),
+        : financingSubtitle,
       onClick: () => setSelectedPlanTab("emi"),
     });
   }
