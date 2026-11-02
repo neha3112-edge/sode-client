@@ -24,7 +24,7 @@ export default function UniversityPeerUniversities({
     title ||
     topUniversities.title ||
     (Array.isArray(topUniversities) && topUniversities[0]?.sectionTitle) ||
-    "Top UGC Approved Universities";
+    "Top Universities";
 
   return (
     <div
@@ -36,7 +36,17 @@ export default function UniversityPeerUniversities({
         {sectionTitle}
       </h2>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+      <div className={`grid gap-3 sm:gap-4 ${
+        topUniversities.length === 1
+          ? "grid-cols-1 max-w-xs mx-auto"
+          : topUniversities.length === 2
+          ? "grid-cols-2 max-w-xl mx-auto"
+          : topUniversities.length === 3
+          ? "grid-cols-2 sm:grid-cols-3 max-w-3xl mx-auto"
+          : topUniversities.length === 4
+          ? "grid-cols-2 sm:grid-cols-4 max-w-5xl mx-auto"
+          : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-5"
+      }`}>
         {topUniversities.slice(0, visibleTopUnis).map((peer, index) => {
           const cleanUniSlug = (peer.slug && !peer.slug.includes("/")) ? peer.slug : (peer.slug?.split("/")[0] || peer._id);
           const inCmp = Boolean(
@@ -69,10 +79,10 @@ export default function UniversityPeerUniversities({
                 </div>
               )}
 
-              {/* Circular Logo Container without border */}
+              {/* Logo Container (Clean, no bg, no border, no padding) */}
               <Link
                 href={uniDetailHref}
-                className="w-11 h-11 sm:w-14 sm:h-14 rounded-full p-1 flex items-center justify-center bg-white relative my-0.5 shrink-0 overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+                className="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center relative my-1 shrink-0 cursor-pointer hover:opacity-90 transition-opacity"
               >
                 {peerLogo ? (
                   <Image
@@ -83,7 +93,7 @@ export default function UniversityPeerUniversities({
                     className="object-contain"
                   />
                 ) : (
-                  <div className="w-full h-full rounded-full bg-blue-50 text-blue-600 font-semibold flex items-center justify-center text-xs uppercase">
+                  <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 font-semibold flex items-center justify-center text-xs uppercase">
                     {peer.initial || (peer.name && peer.name.charAt(0)) || "U"}
                   </div>
                 )}
