@@ -185,13 +185,17 @@ export function CourseClientView({
       scholarship: promoData?.scholarship || null,
       coupon: promoData?.coupon || null,
       appliedPromoCode: promoData?.appliedPromoCode || null,
-      immersion: courseData?.immersion || promoData?.immersion || rawLedger?.immersion || (courseData?.feeConfig?.hasImmersion ? {
-        hasImmersion: true,
-        amount: Number(courseData.feeConfig.immersionAmount) || 0,
-        label: courseData.feeConfig.immersionLabel || "Campus Immersion Fee",
-        baseFee: Number(courseData.feeConfig.amount) || 0,
-        totalWithImmersion: (Number(courseData.feeConfig.amount) || 0) + (Number(courseData.feeConfig.immersionAmount) || 0),
-      } : null),
+      hasProgramPacks: Boolean(
+        courseData?.hasProgramPacks ||
+        courseData?.feeConfig?.hasProgramPacks ||
+        rawLedger?.hasProgramPacks
+      ),
+      programPacks:
+        courseData?.programPacks ||
+        courseData?.feeConfig?.programPacks ||
+        rawLedger?.programPacks ||
+        [],
+      immersion: courseData?.immersion || promoData?.immersion || rawLedger?.immersion || null,
     };
   }, [courseData, isYearlyPayment, isSemesterPayment, isFullfeesPayment]);
 

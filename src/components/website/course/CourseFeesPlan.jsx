@@ -100,30 +100,75 @@ export default function CourseFeesPlan({
     });
   }
 
-  // 4. Campus Immersion Card (Only Immersion Fee)
-  const immersionData = activeLedgerData?.immersion || courseData?.immersion || (courseData?.feeConfig?.hasImmersion ? {
-    hasImmersion: true,
-    amount: Number(courseData.feeConfig.immersionAmount) || 0,
-    label: courseData.feeConfig.immersionLabel || "Campus Immersion Fee",
-  } : null);
+  // 4. Campus Immersion & Program Pack Cards
+  const programPacks =
+    courseData?.programPacks ||
+    activeLedgerData?.programPacks ||
+    courseData?.feeConfig?.programPacks ||
+    [];
 
-  if (immersionData?.hasImmersion && Number(immersionData.amount) > 0) {
-    const formattedImmersionOnly = `₹ ${Number(immersionData.amount).toLocaleString("en-IN")}`;
+  if (Array.isArray(programPacks) && programPacks.length > 0) {
+    programPacks.forEach((pack, idx) => {
+      // If title is "Course Fee" / "Base Program" and Full Fees card is already present, avoid duplicate card
+      const isBaseCourseFee = /^(course fee|base program|full fees)$/i.test((pack.title || "").trim());
+      if (isBaseCourseFee && activeLedgerData?.fullfees) {
+        return;
+      }
 
-    planCards.push({
-      id: "immersion",
-      isImmersion: true,
-      title: "Campus Immersion",
-      badge: {
-        text: "OPTIONAL",
-        color: "purple",
-      },
-      hasDiscount: false,
-      payableFee: formattedImmersionOnly,
-      taxBadge: isTaxInclusive ? "Incl. Taxes" : null,
-      subtitle: isTaxInclusive ? "Incl. of applicable taxes" : "",
-      onClick: () => setSelectedPlanTab("immersion"),
+      const packAmt = Number(pack.totalFee) || 0;
+      const formattedPackFee = `₹ ${packAmt.toLocaleString("en-IN")}`;
+      const packId = `pack_${idx}`;
+
+      planCards.push({
+        id: packId,
+        isImmersion: true,
+        title: pack.title || "Immersion Fee",
+        badge: pack.badge
+          ? {
+              text: pack.badge,
+              color: "purple",
+            }
+          : {
+              text: "OPTIONAL",
+              color: "purple",
+            },
+        hasDiscount: false,
+        payableFee: formattedPackFee,
+        taxBadge: isTaxInclusive ? "Incl. Taxes" : null,
+        subtitle:
+          pack.subtitle ||
+          (pack.inclusions?.length
+            ? `${pack.inclusions.length} Inclusions Included`
+            : (isTaxInclusive ? "Incl. of applicable taxes" : "")),
+        onClick: () => setSelectedPlanTab(packId),
+        packData: pack,
+      });
     });
+  } else {
+    const immersionData = activeLedgerData?.immersion || courseData?.immersion || (courseData?.feeConfig?.hasImmersion ? {
+      hasImmersion: true,
+      amount: Number(courseData.feeConfig.immersionAmount) || 0,
+      label: courseData.feeConfig.immersionLabel || "Campus Immersion Fee",
+    } : null);
+
+    if (immersionData?.hasImmersion && Number(immersionData.amount) > 0) {
+      const formattedImmersionOnly = `₹ ${Number(immersionData.amount).toLocaleString("en-IN")}`;
+
+      planCards.push({
+        id: "immersion",
+        isImmersion: true,
+        title: immersionData.label || "Campus Immersion",
+        badge: {
+          text: "OPTIONAL",
+          color: "purple",
+        },
+        hasDiscount: false,
+        payableFee: formattedImmersionOnly,
+        taxBadge: isTaxInclusive ? "Incl. Taxes" : null,
+        subtitle: isTaxInclusive ? "Incl. of applicable taxes" : "",
+        onClick: () => setSelectedPlanTab("immersion"),
+      });
+    }
   }
 
   // 5. EMI Option Card
@@ -319,6 +364,49 @@ export default function CourseFeesPlan({
           </div>
         </div>
       )}
+
+      {/* Selected Program Pack / Immersion Inclusions Banner */}
+      {(() => {
+        const selectedPlanCard = planCards.find((c) => c.id === selectedPlanTab);
+        if (!selectedPlanCard?.packData) return null;
+        return (
+          <div className="p-3 sm:p-4 rounded-xl bg-purple-50/60 border border-purple-200/80 space-y-2">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-[#0C2B4E] text-xs sm:text-sm">
+                  {selectedPlanCard.packData.title}
+                </span>
+                {selectedPlanCard.packData.badge && (
+                  <Tag color="purple" className="m-0 text-[10px] font-bold">
+                    {selectedPlanCard.packData.badge}
+                  </Tag>
+                )}
+              </div>
+              <div className="text-right">
+                <span className="text-[10px] uppercase font-bold text-purple-800 tracking-wider block">
+                  Total Payable Fee
+                </span>
+                <span className="text-sm sm:text-base font-black text-purple-950">
+                  ₹ {Number(selectedPlanCard.packData.totalFee || 0).toLocaleString("en-IN")}
+                </span>
+              </div>
+            </div>
+
+            {Array.isArray(selectedPlanCard.packData.inclusions) && selectedPlanCard.packData.inclusions.length > 0 && (
+              <div className="pt-2 border-t border-purple-200/60">
+                <ul className="space-y-1 text-xs text-purple-950 list-none p-0 m-0">
+                  {selectedPlanCard.packData.inclusions.map((inc, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <span className="text-purple-600 font-bold">✓</span>
+                      <span>{inc}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       {/* EMI Breakdown View - Exact Radio Group UI from yesterday */}
       {selectedPlanTab === "emi" && activeLedgerData.emi && (() => {
