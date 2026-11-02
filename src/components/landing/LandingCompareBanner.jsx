@@ -21,44 +21,6 @@ export default function LandingCompareBanner({ brand = {}, onOpenCompare }) {
       (brand.name ? brand.name.replace(/\s*Online\s*$/i, "") : "Amity University"));
 
 
-
-
-
-  const isIim =
-    brand.slug === "iim" ||
-    brand.compareLayout === "iim";
-
-  if (isIim) {
-    return (
-      <div className="compare_Section" id="compare-universities">
-        <div className="compare_box">
-          <h2>Still Confused?</h2>
-          <h4>
-            {brand.compareSubtitle ||
-              `Compare ${universityName} with Top UGC-DEB Approved Universities`}
-          </h4>
-          <Link
-            href="#compare-universities"
-            className="compare_btn"
-            onClick={(e) => {
-              e.preventDefault();
-              onOpenCompare?.();
-            }}
-          >
-            <Image
-              src={brand.arrowGif || "/assets/iim/arrow.gif"}
-              alt="Compare universities"
-              width={70}
-              height={70}
-              unoptimized
-            />
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-
   const sectionBg = brand.compareSectionBg || "bg-[#f6f8fa]";
   const sectionBgColor =
     brand.compareSectionBgColor && brand.compareSectionBgColor !== "#ffffff"
