@@ -57,6 +57,16 @@ const IndiaFlagIcon = () => (
   </svg>
 );
 
+const LANDING_SLUGS = new Set([
+  "amity", "lpu", "mu", "mangalayatan", "mangalayatan-university",
+  "manipal", "cu", "galgotias", "smu", "sikkim-manipal", "sikkim-manipal-university",
+  "vgu", "shoolini", "upes", "upes-online", "ggu", "golden-gate", "golden-gate-university",
+  "esgci", "esgci-paris", "esgci-online", "rushford", "rushford-business-school",
+  "rushford-university", "rushford-online", "liverpool", "liverpool-business-school",
+  "ljmu", "ljmu-online", "edgewood", "edgewood-university", "iim", "iim-kozhikode",
+  "uu", "uttaranchal", "uttaranchal-university", "iiitb", "ssbm", "ssbm-geneva"
+]);
+
 export default function ModalOTP({
   open: controlledOpen,
   onCancel,
@@ -68,6 +78,9 @@ export default function ModalOTP({
   const antdApp = App.useApp();
   const message = antdApp?.message || staticMessage;
   const [form] = Form.useForm();
+
+  const cleanPath = (pathname || "").replace(/^\/+|\/+$/g, "").toLowerCase();
+  const isLandingPage = LANDING_SLUGS.has(cleanPath);
 
   const [isOpen, setIsOpen] = useState(Boolean(controlledOpen));
   // Steps: 'phone' (1) -> 'otp' (2) -> 'email' (3) -> 'course' (4) -> 'state' (5) -> 'name' (6)
@@ -196,7 +209,7 @@ export default function ModalOTP({
 
   // Global 45% page scroll trigger to auto-open modal
   useEffect(() => {
-    if (pathname === "/thank-you" || pathname?.startsWith("/thank-you")) return;
+    if (pathname === "/thank-you" || pathname?.startsWith("/thank-you") || isLandingPage) return;
 
     let ticking = false;
 
@@ -505,7 +518,7 @@ export default function ModalOTP({
     }
   };
 
-  if (!isOpen) return null;
+  if (isLandingPage || !isOpen) return null;
 
   return (
     <>
