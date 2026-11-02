@@ -158,29 +158,25 @@ export default function ProgrammesCarousel({
 
       {/* ------------------------------------------------------------- */}
       {/* DESKTOP VIEW: Multiple Cards per slide (hidden md:block)      */}
-      {/* ------------------------------------------------------------- */}
-      {isSmu ? (
+      {/* ------------------------------------------------------------- */}      {isSmu ? (
         <LandingContainer className="hidden md:block relative px-3 sm:px-6">
-        <Button
-          type="text"
-          onClick={() => desktopCarouselRef.current?.prev()}
-          aria-label="Previous programme"
-          className="flex absolute left-0 sm:-left-3 lg:-left-5 top-1/2 -translate-y-1/2 z-20 text-[#222222] hover:!text-[#ee3024] transition-colors p-1 !bg-transparent !border-none cursor-pointer items-center justify-center active:scale-90 !h-auto !w-auto"
-        >
-          <ChevronLeft className="w-6 h-6 sm:w-8 sm:h-8 stroke-[2.5]" />
-        </Button>
+          <Button
+            type="text"
+            onClick={() => desktopCarouselRef.current?.prev()}
+            aria-label="Previous programme"
+            className="flex absolute left-0 sm:-left-3 lg:-left-5 top-1/2 -translate-y-1/2 z-20 text-[#222222] hover:!text-[#ee3024] transition-colors p-1 !bg-transparent !border-none cursor-pointer items-center justify-center active:scale-90 !h-auto !w-auto"
+          >
+            <ChevronLeft className="w-6 h-6 sm:w-8 sm:h-8 stroke-[2.5]" />
+          </Button>
 
-
-            <Button
-              type="text"
-              onClick={() => desktopCarouselRef.current?.next()}
-              aria-label="Next programme"
-              className="flex absolute right-0 sm:-right-3 lg:-right-5 top-1/2 -translate-y-1/2 z-20 text-[#222222] hover:!text-[#ee3024] transition-colors p-1 !bg-transparent !border-none cursor-pointer items-center justify-center active:scale-90 !h-auto !w-auto"
-            >
-              <ChevronRight className="w-6 h-6 sm:w-8 sm:h-8 stroke-[2.5]" />
-            </Button>
-          </>
-        )}
+          <Button
+            type="text"
+            onClick={() => desktopCarouselRef.current?.next()}
+            aria-label="Next programme"
+            className="flex absolute right-0 sm:-right-3 lg:-right-5 top-1/2 -translate-y-1/2 z-20 text-[#222222] hover:!text-[#ee3024] transition-colors p-1 !bg-transparent !border-none cursor-pointer items-center justify-center active:scale-90 !h-auto !w-auto"
+          >
+            <ChevronRight className="w-6 h-6 sm:w-8 sm:h-8 stroke-[2.5]" />
+          </Button>
 
         <div className={`w-full ${isFullWidth ? "px-0 overflow-hidden" : "px-5 sm:px-0"} [&_.slick-dots]:!relative [&_.slick-dots]:!mt-5 [&_.slick-dots]:!mb-0 [&_.slick-dots_li]:!w-2 [&_.slick-dots_li]:!h-2 [&_.slick-dots_li]:!mx-1 [&_.slick-dots_li_button]:!w-2 [&_.slick-dots_li_button]:!h-2 [&_.slick-dots_li_button]:!rounded-full [&_.slick-dots_li_button]:!bg-slate-300 [&_.slick-dots_li.slick-active_button]:!bg-[#ee3024]`}>
           <Carousel

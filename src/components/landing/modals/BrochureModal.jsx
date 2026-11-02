@@ -86,10 +86,14 @@ export default function BrochureModal({
           aria-label="Close modal"
         >
           <X size={18} className="stroke-[2.5]" />
-          boxShadow: "none",
-          border: "none",
-        },
-        body: {
+        </button>
+        <LandingLeadForm
+          brand={brand}
+          courses={courses}
+          defaultCourse={selectedCourse}
+          universityName={universityName}
+          title={activeTitle}
+          subtitle={activeSubtitle}
           buttonText={buttonText || "Download Brochure"}
           formName={activeTitle ? `${activeTitle} Modal` : "Modal Enquire Form"}
           maxWidth="100%"
