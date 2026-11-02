@@ -34,6 +34,12 @@ export default function LandingHero({
     brand.slug === "uu" ||
     brand.slug === "mu";
 
+  const isSsbm =
+    brand.slug === "ssbm" ||
+    brand.name?.toLowerCase().includes("ssbm");
+
+  const HeroContainer = isSsbm ? "div" : LandingContainer;
+
   /* ----------------------------- Helpers ----------------------------- */
 
   const joinClassNames = (...values) =>
@@ -471,9 +477,11 @@ export default function LandingHero({
 
         {renderOverlay()}
 
-        <LandingContainer
+        <HeroContainer
           className={joinClassNames(
-            "relative z-10 flex flex-col min-[1000px]:flex-row items-center justify-between gap-5 sm:gap-6 lg:gap-8 min-[1000px]:!max-w-[1130px] px-3.5 sm:px-4 py-2.5 sm:py-3.5 lg:py-3",
+            isSsbm
+              ? "ssbm-hero-container relative z-10 flex flex-col min-[1000px]:flex-row items-center justify-between gap-5 sm:gap-6 lg:gap-8 w-full max-w-[1140px] mx-auto px-4 sm:px-6 box-border"
+              : "relative z-10 flex flex-col min-[1000px]:flex-row items-center justify-between gap-5 sm:gap-6 lg:gap-8 min-[1000px]:!max-w-[1130px] px-3.5 sm:px-4 py-2.5 sm:py-3.5 lg:py-3",
             hero.containerClassName
           )}
           style={{
@@ -883,7 +891,7 @@ export default function LandingHero({
               style={hero.formStyle}
             />
           </div>
-        </LandingContainer>
+        </HeroContainer>
       </section>
 
       {/* --------------------- OPTIONAL BOTTOM STRIP --------------------- */}

@@ -376,6 +376,86 @@ export default function UniversityLandingView({ data = {} }) {
                     </section>
                   );
                 }
+                if (brand.slug === "ssbm" || brand.overviewLayout === "ssbm") {
+                  return (
+                    <section
+                      id="overview"
+                      key="overview"
+                      className="overview-section py-7 sm:py-8 lg:py-10 bg-white text-center select-none scroll-mt-20 w-full"
+                    >
+                      <div className="ssbm-overview-container w-full max-w-[1140px] mx-auto px-4 sm:px-6 box-border">
+                        <h2 className="text-[24px] sm:text-[28px] lg:text-[30px] font-bold text-[#111111] leading-tight m-0 mb-3">
+                          {brand.overviewTitle || (
+                            <span>
+                              <span style={{ color: "#000000" }}>Course</span>{" "}
+                              <span style={{ color: "#c11f28" }}>Overview</span>
+                            </span>
+                          )}
+                        </h2>
+                        <p className="text-[12px] sm:text-[13px] text-[#222222] leading-[1.5] tracking-normal mt-0 mb-5 w-full mx-auto font-normal">
+                          {brand.overviewDescription ||
+                            "The Online SSBM DBA program offers a strong path with many silent features. The SSBM University not only offers a well-recognised degree program but also includes PwC India's Board Advisory Certification, with patent-to-idea guidance, where Swiss expert faculty guide learners in conducting practical research and turning their ideas into theory. SSBM Doctorate online course also offers support in research, publishing, and leadership development for working professionals. The learner also takes advantage of practical boardroom skills enhancement, expert mentorship, global publishing opportunities, and allows them to interact with elite networks. The SSBM DBA online program offers the mixture of academic depth with real-world application, helping professionals increase their strategic decision-making and help themselves establish an influential leader. Students after taking the SSBM DBA admission can also expect a major salary increase."}
+                        </p>
+
+                        {brand.overviewItems && brand.overviewItems.length > 0 && (
+                          <div className="overview_lists grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-3.5 my-5 w-full">
+                            {brand.overviewItems.map((item, idx) => (
+                              <div
+                                key={idx}
+                                className="overview_list_inner bg-[#f1f1f1] px-4 py-2.5 rounded-[4px] flex items-center gap-3 text-left"
+                              >
+                                <span className="text-[#c11f28] shrink-0 text-[26px]">
+                                  {item.icon}
+                                </span>
+                                <div className="head_inner leading-tight">
+                                  <h3 className="text-[14px] sm:text-[14.5px] font-bold text-[#111111] m-0 mb-0.5">
+                                    {item.title}
+                                  </h3>
+                                  <p className="text-[12px] sm:text-[12.5px] text-[#555555] m-0 font-medium">
+                                    {item.value}
+                                  </p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        <div className="overview-cta-row flex flex-wrap items-center justify-center gap-3 mt-5">
+                          <button
+                            type="button"
+                            onClick={() => handleOpenBrochure()}
+                            className="downloadBrochureBtn inline-flex items-center gap-2 px-5 sm:px-6 py-2 sm:py-2.5 rounded-[4px] font-bold text-[13.5px] sm:text-[14px] text-white hover:brightness-95 transition-all cursor-pointer border-none shadow-none active:scale-95"
+                            style={{
+                              backgroundColor: "#c11f28",
+                            }}
+                          >
+                            <span>{brand.overviewButtonText || "Get Curriculum"}</span>
+                            <Download className="w-4 h-4 stroke-[2.5]" />
+                          </button>
+                          {brand.overviewSecondaryBtnText && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const target =
+                                  document.getElementById("whychoose") ||
+                                  document.getElementById("benefits");
+                                if (target) {
+                                  target.scrollIntoView({ behavior: "smooth" });
+                                } else {
+                                  handleOpenApply();
+                                }
+                              }}
+                              className="overviewKnowMoreBtn inline-flex items-center gap-1.5 px-5 sm:px-6 py-2 sm:py-2.5 rounded-[4px] bg-black text-white font-bold text-[13.5px] sm:text-[14px] hover:brightness-125 transition-all cursor-pointer border-none shadow-none active:scale-95"
+                            >
+                              <span>{brand.overviewSecondaryBtnText}</span>
+                              <span className="text-[11px] leading-none select-none">&#9660;</span>
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </section>
+                  );
+                }
                 return (
                   <section id="overview" key="overview" className="overview-section py-12 sm:py-16 bg-white text-center select-none scroll-mt-20">
                     <div className="max-w-[1050px] mx-auto px-4 sm:px-6">

@@ -4,7 +4,15 @@ import React, { useState } from "react";
 import LandingContainer from "./LandingContainer";
 
 export default function LandingFaq({ faqs = [], universityName = "University Online", brand = {} }) {
-  const defaultOpen = brand.faqDefaultOpenIndex !== undefined ? brand.faqDefaultOpenIndex : 0;
+  const isSsbm =
+    brand.slug === "ssbm" ||
+    brand.faqLayout === "ssbm" ||
+    brand.faqLayout === "ssbm-cards";
+
+  const defaultOpen =
+    brand.faqDefaultOpenIndex !== undefined
+      ? brand.faqDefaultOpenIndex
+      : 0;
   const [openIndex, setOpenIndex] = useState(defaultOpen); // default active index or null
   const headingColor = brand.faqHeaderColor || brand.primaryColor || "#08417b";
   const iconColor = brand.faqIconColor || brand.primaryColor || "#fd202a";
@@ -410,6 +418,110 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
                   {isOpen && (
                     <div className="px-4 sm:px-5 py-4 border-t border-[#dee2e6] bg-white text-[13px] sm:text-[13.5px] text-[#495057] leading-[1.65] font-normal">
                       {faq.a}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ==========================================
+  // Layout: SSBM Cards Layout (Red left border, separate boxes, clean title)
+  // ==========================================
+  if (isSsbm) {
+    const faqTitle = brand.faqTitle || "FAQ-Frequently Asked Questions";
+    const primaryRed = brand.primaryColor || "#c11f28";
+
+    return (
+      <section
+        id="faqs"
+        className="pt-6 sm:pt-8 lg:pt-9 pb-10 sm:pb-14 bg-white w-full select-none scroll-mt-20"
+      >
+        <style>{`
+          #faqs,
+          .landing-page--ssbm #faqs {
+            background-color: #ffffff !important;
+            width: 100% !important;
+          }
+          #faqs .ssbm-faq-container,
+          .landing-page--ssbm #faqs .ssbm-faq-container {
+            width: 100% !important;
+            max-width: 1140px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            box-sizing: border-box !important;
+          }
+          @media (max-width: 639px) {
+            #faqs .ssbm-faq-container,
+            .landing-page--ssbm #faqs .ssbm-faq-container {
+              padding-left: 16px !important;
+              padding-right: 16px !important;
+            }
+          }
+          @media (min-width: 640px) and (max-width: 1023px) {
+            #faqs .ssbm-faq-container,
+            .landing-page--ssbm #faqs .ssbm-faq-container {
+              padding-left: 24px !important;
+              padding-right: 24px !important;
+            }
+          }
+          @media (min-width: 1024px) {
+            #faqs .ssbm-faq-container,
+            .landing-page--ssbm #faqs .ssbm-faq-container {
+              max-width: 1140px !important;
+              padding-left: 16px !important;
+              padding-right: 16px !important;
+            }
+          }
+        `}</style>
+        <div className="ssbm-faq-container w-full max-w-[1140px] mx-auto px-4 sm:px-6 box-border">
+          {/* Header */}
+          <div className="mb-4 sm:mb-5 lg:mb-6 text-left">
+            <h2 className="text-[22px] sm:text-[26px] lg:text-[28px] font-bold text-[#111111] tracking-normal m-0 leading-tight">
+              {faqTitle}
+            </h2>
+          </div>
+
+          {/* Cards List */}
+          <div className="space-y-2.5 sm:space-y-3 w-full">
+            {faqs.map((faq, idx) => {
+              const isOpen = openIndex === idx;
+              const rawQuestion = (faq.q || faq.question || "")
+                .replace(/^Q\d+[\.\:\-\s]*/i, "")
+                .trim();
+              const answerText = faq.a || faq.answer || "";
+
+              return (
+                <div
+                  key={idx}
+                  className="w-full bg-white border border-[#dcdcdc] rounded-[3px] overflow-hidden transition-all shadow-none"
+                  style={{
+                    borderLeft: `4px solid ${primaryRed}`,
+                  }}
+                >
+                  <button
+                    type="button"
+                    onClick={() => toggleFaq(idx)}
+                    className={`w-full px-4 sm:px-5 ${
+                      isOpen ? "pt-3.5 pb-2 sm:pt-4 sm:pb-2.5" : "py-3 sm:py-3.5"
+                    } text-left flex items-center justify-between gap-4 cursor-pointer bg-white hover:bg-[#fafafa] transition-colors border-none m-0`}
+                    aria-expanded={isOpen}
+                  >
+                    <span className="text-[13.5px] sm:text-[14.5px] font-bold text-[#111111] leading-snug">
+                      {rawQuestion}
+                    </span>
+                    <span className="font-bold text-base sm:text-lg text-[#111111] leading-none shrink-0 ml-3 select-none">
+                      +
+                    </span>
+                  </button>
+
+                  {isOpen && (
+                    <div className="px-4 sm:px-5 pb-3.5 sm:pb-4 pt-0 text-[12.5px] sm:text-[13px] text-[#333333] leading-relaxed bg-white">
+                      {answerText}
                     </div>
                   )}
                 </div>
