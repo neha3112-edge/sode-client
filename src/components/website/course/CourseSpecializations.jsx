@@ -310,11 +310,29 @@ export default function CourseSpecializations({
         })();
 
         const itemFeesFormatted =
-          activeLedgerData?.semester?.formattedPayable ||
           selectedSpecModal.fees ||
           selectedSpecModal.fee ||
+          activeLedgerData?.semester?.formattedPayable ||
           courseData?.calculatedSemesterFee ||
           "";
+
+        const itemGrossFee =
+          selectedSpecModal.grossFee ||
+          (selectedSpecModal.fees ? "" : (activeLedgerData?.semester?.formattedGross || courseData?.grossFullFee || ""));
+
+        const itemDiscountPct =
+          selectedSpecModal.discountPercentage ||
+          (selectedSpecModal.fees ? 0 : (activeLedgerData?.semester?.discountPercentage || 0));
+
+        const itemDiscountBadge =
+          selectedSpecModal.discountBadge ||
+          (itemDiscountPct > 0 ? `${itemDiscountPct}% OFF` : "");
+
+        const hasDiscount = Boolean(
+          (selectedSpecModal.hasDiscount || itemDiscountPct > 0) &&
+          itemGrossFee &&
+          itemGrossFee !== itemFeesFormatted
+        );
 
         const specDesktopBannerRaw =
           selectedSpecModal?.bannerImage ||
@@ -449,7 +467,19 @@ export default function CourseSpecializations({
                       </div>
                     )}
                     {itemFeesFormatted && (
-                      <span className="font-bold text-gray-500">{itemFeesFormatted}</span>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        {hasDiscount && itemGrossFee && (
+                          <span className="text-xs sm:text-[13px] font-bold text-gray-400 line-through decoration-red-600 decoration-1.5">
+                            {itemGrossFee}
+                          </span>
+                        )}
+                        <span className="font-bold text-gray-700">{itemFeesFormatted}</span>
+                        {itemDiscountBadge && (
+                          <span className="text-[10px] sm:text-[10.5px] font-bold text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+                            {itemDiscountBadge}
+                          </span>
+                        )}
+                      </div>
                     )}
                     {itemDeadline && (
                       <div className="flex items-center gap-1.5">
