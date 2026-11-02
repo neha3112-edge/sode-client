@@ -221,7 +221,7 @@ export const uuData = {
     whyChooseStudentImage: "/assets/all_universities_images/uu/image-2nd.webp",
     whyChooseBg: "#0A3C7D",
     whyChooseBtnText: "Apply Now",
-    whyChooseDescription: 
+    whyChooseDescription:
       "Uttaranchal University Online courses are UGC-Entitled offers the convenience & flexibility of online education with the equivalency of a conventional, on-campus degree. Through Uttaranchal University Online, leading international faculty, it offer world-class education in a true sense.",
 
     // About Configuration
