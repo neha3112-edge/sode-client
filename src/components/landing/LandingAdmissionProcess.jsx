@@ -202,7 +202,7 @@ export default function LandingAdmissionProcess({
           `,
         }}
       />
-      <div className={`w-full mx-auto box-border ${brand.admissionContainerClass || "w-full max-w-full px-4 sm:px-6 lg:px-8 xl:px-12"}`}>
+      <div className={`w-full mx-auto box-border ${brand.admissionContainerClass || "w-full max-w-full px-0 sm:px-2 lg:px-0"}`}>
         {/* Heading */}
         {hasEnrollmentPrefix ? (
           <h2 className="text-2xl sm:text-3xl lg:text-[30px] xl:text-[32px] font-bold text-center tracking-tight mb-2.5 sm:mb-3 lg:mb-2 m-0">
@@ -250,7 +250,7 @@ export default function LandingAdmissionProcess({
             enrollmentProcess?.gridClass ||
             (rawSteps.length <= 4
               ? "grid grid-cols-2 lg:grid-cols-4 max-w-4xl mx-auto gap-4 w-full"
-              : "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 lg:gap-3 xl:gap-4 w-full max-w-[420px] sm:max-w-none mx-auto"
+              : "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3 lg:gap-3 xl:gap-3.5 w-full mx-auto"
             )
           }
         >
