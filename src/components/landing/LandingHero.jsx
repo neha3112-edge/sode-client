@@ -38,7 +38,9 @@ export default function LandingHero({
     brand.slug === "ssbm" ||
     brand.name?.toLowerCase().includes("ssbm");
 
-  const HeroContainer = isSsbm ? "div" : LandingContainer;
+  const isUu = brand.slug === "uu";
+
+  const HeroContainer = isSsbm || isUu ? "div" : LandingContainer;
 
   /* ----------------------------- Helpers ----------------------------- */
 
@@ -99,9 +101,11 @@ export default function LandingHero({
       ? `url("${backgroundImage}")`
       : undefined,
     backgroundPosition:
-      hero.backgroundPosition ||
-      hero.desktopBackgroundPosition ||
-      "center center",
+      isUu
+        ? "center top"
+        : (hero.backgroundPosition ||
+           hero.desktopBackgroundPosition ||
+           "center center"),
     backgroundSize:
       hero.backgroundSize ||
       hero.desktopBackgroundSize ||
@@ -116,6 +120,12 @@ export default function LandingHero({
     ...hero.backgroundStyle,
     ...hero.desktopBackgroundStyle,
   };
+
+  if (isUu) {
+    desktopBackgroundStyle.backgroundPosition = "center top";
+    desktopBackgroundStyle.backgroundSize = "cover";
+    desktopBackgroundStyle.backgroundRepeat = "no-repeat";
+  }
 
   const mobileBackgroundStyle = {
     backgroundImage: mobileBackgroundImage
@@ -457,9 +467,10 @@ export default function LandingHero({
             aria-hidden="true"
             className={joinClassNames(
               "absolute inset-0 -z-20 hidden min-[1000px]:block",
+              isUu ? "uu-desktop-bg" : "",
               hero.backgroundClassName
             )}
-            style={desktopBackgroundStyle}
+            style={isUu ? { ...desktopBackgroundStyle, backgroundPosition: "center top", backgroundSize: "cover", backgroundRepeat: "no-repeat" } : desktopBackgroundStyle}
           />
         )}
 
@@ -481,6 +492,8 @@ export default function LandingHero({
           className={joinClassNames(
             isSsbm
               ? "ssbm-hero-container relative z-10 flex flex-col min-[1000px]:flex-row items-center justify-between gap-5 sm:gap-6 lg:gap-8 w-full max-w-[1140px] mx-auto px-4 sm:px-6 box-border"
+              : isUu
+              ? "uu-hero-container uu-container relative z-10 flex flex-col min-[1000px]:flex-row items-center justify-between gap-5 sm:gap-6 lg:gap-8 w-full mx-auto box-border"
               : "relative z-10 flex flex-col min-[1000px]:flex-row items-center justify-between gap-5 sm:gap-6 lg:gap-8 min-[1000px]:!max-w-[1130px] px-3.5 sm:px-4 py-2.5 sm:py-3.5 lg:py-3",
             hero.containerClassName
           )}
@@ -567,7 +580,22 @@ export default function LandingHero({
                 }
                 style={taglineStyle}
               >
-                {Array.isArray(taglineText)
+                {hero.mobileTaglineText ? (
+                  <>
+                    <span className="hidden min-[1000px]:inline">
+                      {Array.isArray(taglineText)
+                        ? taglineText.map((item, index) => (
+                          <React.Fragment key={`tagline-${index}`}>
+                            {item}
+                          </React.Fragment>
+                        ))
+                        : taglineText}
+                    </span>
+                    <span className="inline min-[1000px]:hidden">
+                      {hero.mobileTaglineText}
+                    </span>
+                  </>
+                ) : Array.isArray(taglineText)
                   ? taglineText.map((item, index) => (
                     <React.Fragment key={`tagline-${index}`}>
                       {item}

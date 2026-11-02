@@ -528,8 +528,18 @@ export default function LandingLeadForm({
 
   // Synchronize course selection: preselect valid course, auto-select if single course
   React.useEffect(() => {
-    if (defaultCourse && activeCourses.some((c) => c.value === defaultCourse)) {
-      form.setFieldsValue({ course: defaultCourse });
+    if (defaultCourse) {
+      const matched = activeCourses.find(
+        (c) =>
+          c.value === defaultCourse ||
+          c.label === defaultCourse ||
+          c.value?.toLowerCase() === defaultCourse?.toLowerCase() ||
+          c.label?.toLowerCase().includes(defaultCourse?.toLowerCase()) ||
+          defaultCourse?.toLowerCase().includes(c.value?.toLowerCase())
+      );
+      if (matched) {
+        form.setFieldsValue({ course: matched.value });
+      }
     } else if (activeCourses.length === 1) {
       form.setFieldsValue({ course: activeCourses[0].value });
     }

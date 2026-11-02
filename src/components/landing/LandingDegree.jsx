@@ -253,20 +253,23 @@ export default function LandingDegree({
     return (
       <section
         id="degree"
-        className="w-full relative select-none py-10 sm:py-16 lg:py-20 bg-white scroll-mt-20"
+        className="certificate w-full relative select-none py-8 sm:py-12 lg:py-14 bg-white scroll-mt-20 font-poppins"
       >
-        <div className="max-w-[1180px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-            {/* Left: Text Info + Button */}
-            <div className="lg:col-span-6 flex flex-col items-center lg:items-start text-center lg:text-left">
-              <h2 className="text-[24px] xs:text-[26px] sm:text-[34px] lg:text-[38px] font-bold leading-tight m-0 mb-4 text-slate-900">
-                <span className="text-[#62B239] block mb-1">{subtitleGreen}</span>
-                <span className="block whitespace-nowrap sm:whitespace-normal">{line1}</span>
+        <div className="uu-container w-full mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-12 items-center">
+            {/* Col 1: Spacer */}
+            <div className="hidden lg:block lg:col-span-1" />
+
+            {/* Col 5: Left Info */}
+            <div className="lg:col-span-5 flex flex-col items-center lg:items-start text-center lg:text-left">
+              <h2 className="cer-h text-[26px] xs:text-[28px] sm:text-[34px] lg:text-[38px] font-semibold leading-[1.15] m-0 mb-4 text-[#222222] font-poppins">
+                <span className="sp text-[#62B239] block mb-1 font-semibold">{subtitleGreen}</span>
+                <span className="block">{line1}</span>
                 <span className="block">{line2}</span>
               </h2>
 
               {description && (
-                <p className="text-[13px] sm:text-[14.5px] text-[#444444] font-normal leading-relaxed m-0 mb-6 max-w-lg">
+                <p className="text-[14px] sm:text-[15px] text-[#333333] font-normal leading-relaxed m-0 mb-6 font-poppins max-w-lg">
                   {description}
                 </p>
               )}
@@ -275,37 +278,43 @@ export default function LandingDegree({
                 <button
                   type="button"
                   onClick={() => onOpenApply?.()}
-                  className="px-8 py-2.5 border-2 border-[#0A3C7D] text-[#0A3C7D] hover:bg-[#0A3C7D] hover:text-white font-semibold text-[14px] rounded-[4px] bg-white transition-all cursor-pointer shadow-2xs active:scale-95"
+                  className="btn1 px-10 py-2 border-2 border-[#0A3C7D] text-black hover:bg-[#0A3C7D] hover:text-white font-normal text-[15px] rounded-none bg-white transition-all cursor-pointer font-poppins"
                 >
                   {buttonText || "Get Degree"}
                 </button>
               </div>
             </div>
 
-            {/* Right: Certificate Image */}
-            <div className="lg:col-span-6 flex flex-col items-center justify-center">
-              <div className="relative w-full max-w-[320px] sm:max-w-[380px] h-[450px] sm:h-[520px] drop-shadow-md">
+            {/* Col 2: Spacer */}
+            <div className="hidden lg:block lg:col-span-2" />
+
+            {/* Col 3: Right Certificate Image */}
+            <div className="lg:col-span-3 flex flex-col items-center justify-center mt-6 lg:mt-0">
+              <div className="relative w-full max-w-[210px] sm:max-w-[230px] h-[285px] sm:h-[315px]">
                 <Image
                   src={image || "/assets/all_universities_images/uu/sample-degree-uttarancha1.webp"}
                   alt="Uttaranchal University Online Degree"
                   fill
-                  className="object-contain"
-                  sizes="(max-width: 640px) 320px, 380px"
+                  className="object-contain cert-img"
+                  sizes="(max-width: 640px) 210px, 230px"
                   priority
                 />
               </div>
 
               {/* Mobile button below image */}
-              <div className="block lg:hidden mt-5">
+              <div className="block lg:hidden mt-6 text-center">
                 <button
                   type="button"
                   onClick={() => onOpenApply?.()}
-                  className="px-8 py-2.5 border-2 border-[#0A3C7D] text-[#0A3C7D] hover:bg-[#0A3C7D] hover:text-white font-semibold text-[14px] rounded-[4px] bg-white transition-all cursor-pointer shadow-2xs active:scale-95"
+                  className="btn1 px-10 py-2 border-2 border-[#0A3C7D] text-black hover:bg-[#0A3C7D] hover:text-white font-normal text-[15px] rounded-none bg-white transition-all cursor-pointer font-poppins"
                 >
                   {buttonText || "Get Degree"}
                 </button>
               </div>
             </div>
+
+            {/* Col 1: Spacer */}
+            <div className="hidden lg:block lg:col-span-1" />
           </div>
         </div>
       </section>

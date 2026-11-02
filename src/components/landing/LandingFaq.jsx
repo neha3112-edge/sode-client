@@ -9,9 +9,12 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
     brand.faqLayout === "ssbm" ||
     brand.faqLayout === "ssbm-cards";
 
+  const isUuBrand = brand.slug === "uu" || brand.faqLayout === "uu";
   const defaultOpen =
     brand.faqDefaultOpenIndex !== undefined
       ? brand.faqDefaultOpenIndex
+      : isUuBrand
+      ? null
       : 0;
   const [openIndex, setOpenIndex] = useState(defaultOpen); // default active index or null
   const headingColor = brand.faqHeaderColor || brand.primaryColor || "#08417b";
@@ -105,43 +108,133 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
 
   // ==========================================
   // Layout: Uttaranchal University (UU) FAQ
+  // Exact 1:1 Match with Reference Images & distanceeducationschool.com/uu (Poppins font)
   // ==========================================
   if (isUu) {
     const faqTitle = brand.faqTitle || "FAQ | Frequently Asked Question";
     return (
-      <section id="faqs" aria-label="Frequently Asked Questions" className="py-10 sm:py-14 bg-white w-full select-none scroll-mt-24">
-        {desktopWidthStyle}
-        <div className="w-full max-w-[1130px] mx-auto px-4 sm:px-6">
-          <h2 className="text-[22px] sm:text-[26px] lg:text-[28px] font-bold text-[#003399] text-left m-0 mb-6 sm:mb-8 tracking-tight">
+      <section
+        id="faqs"
+        aria-label="Frequently Asked Questions"
+        className="py-8 sm:py-10 bg-white w-full select-none scroll-mt-24 font-poppins"
+        style={{ fontFamily: "'Poppins', sans-serif" }}
+      >
+        <div
+          className="uu-container w-full mx-auto"
+          style={{ fontFamily: "'Poppins', sans-serif" }}
+        >
+          <h2
+            className="text-[25px] font-semibold text-[#011C39] text-left m-0 mb-5 tracking-tight font-poppins"
+            style={{
+              fontFamily: "'Poppins', sans-serif",
+              fontSize: "25px",
+              fontWeight: 600,
+              color: "#011C39",
+              marginTop: "0px",
+              marginBottom: "20px",
+              lineHeight: 1.2,
+            }}
+          >
             {faqTitle}
           </h2>
 
-          <div className="w-full divide-y divide-slate-200">
+          <div className="w-full" style={{ fontFamily: "'Poppins', sans-serif" }}>
             {faqs.map((faq, idx) => {
               const isOpen = openIndex === idx;
               const rawQuestion = (faq.q || faq.question || "").replace(/^Q\d+[\.\:\s]*/i, "");
 
               return (
-                <div key={idx} className="py-3 sm:py-3.5 transition-all">
+                <div
+                  key={idx}
+                  className="faq-item bg-white my-2.5 rounded-[5px] border-b border-[#cccccc] overflow-hidden transition-all"
+                  style={{
+                    backgroundColor: "#ffffff",
+                    marginTop: "10px",
+                    marginBottom: "10px",
+                    borderRadius: "5px",
+                    borderBottom: "1px solid #cccccc",
+                    overflow: "hidden",
+                  }}
+                >
                   <button
                     type="button"
                     onClick={() => toggleFaq(idx)}
-                    className="w-full text-left flex items-center justify-between gap-4 cursor-pointer bg-transparent border-none p-0 m-0"
+                    className={`faq-question w-full text-left flex items-center justify-between gap-4 cursor-pointer p-[15px] border-none m-0 transition-colors select-none font-poppins ${
+                      isOpen
+                        ? "active bg-[#62B239] text-white rounded-t-[5px]"
+                        : "bg-white text-black hover:text-[#011C39] rounded-[5px]"
+                    }`}
+                    style={{
+                      fontFamily: "'Poppins', sans-serif",
+                      fontSize: "15px",
+                      fontWeight: 400,
+                      lineHeight: "1.4",
+                      padding: "15px",
+                      backgroundColor: isOpen ? "#62B239" : "#ffffff",
+                      color: isOpen ? "#ffffff" : "#000000",
+                      borderRadius: isOpen ? "5px 5px 0 0" : "5px",
+                      border: "none",
+                      outline: "none",
+                    }}
                     aria-expanded={isOpen}
                   >
-                    <h3 className="text-[13.5px] sm:text-[15px] font-normal sm:font-medium text-[#222222] leading-snug m-0">
-                      {rawQuestion}
-                    </h3>
                     <span
-                      className="w-6 h-6 rounded-[2px] bg-[#808080] text-[#808080] flex items-center justify-center font-bold text-[15px] leading-none shrink-0 ml-3 select-none"
+                      className="text-[15px] font-normal leading-normal text-inherit font-poppins"
+                      style={{
+                        fontFamily: "'Poppins', sans-serif",
+                        fontSize: "15px",
+                        fontWeight: 400,
+                        lineHeight: "1.4",
+                        color: "inherit",
+                      }}
+                    >
+                      {rawQuestion}
+                    </span>
+                    <span
+                      className="icon w-[25px] h-[22px] rounded-[2px] bg-[#f7f7f7] text-[#62B239] flex items-center justify-center font-bold text-[16px] leading-none shrink-0 select-none mr-0"
+                      style={{
+                        backgroundColor: "#f7f7f7",
+                        color: "#62B239",
+                        fontWeight: 700,
+                        fontSize: "16px",
+                        width: "25px",
+                        height: "22px",
+                        borderRadius: "2px",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        lineHeight: 1,
+                        flexShrink: 0,
+                      }}
                     >
                       {isOpen ? "−" : "+"}
                     </span>
                   </button>
 
                   {isOpen && (
-                    <div className="pt-2.5 pb-1 text-[13px] sm:text-[13.5px] text-[#555555] leading-relaxed font-normal">
-                      <p className="m-0 leading-relaxed font-normal">
+                    <div
+                      className="faq-answer p-[15px] bg-[#f9f9f9] text-[14px] text-[#444444] leading-relaxed font-normal font-poppins"
+                      style={{
+                        fontFamily: "'Poppins', sans-serif",
+                        fontSize: "14px",
+                        fontWeight: 400,
+                        lineHeight: "1.6",
+                        backgroundColor: "#f9f9f9",
+                        color: "#444444",
+                        padding: "15px",
+                      }}
+                    >
+                      <p
+                        className="m-0 leading-relaxed font-normal"
+                        style={{
+                          fontFamily: "'Poppins', sans-serif",
+                          fontSize: "14px",
+                          fontWeight: 400,
+                          lineHeight: "1.6",
+                          color: "#444444",
+                          margin: 0,
+                        }}
+                      >
                         {faq.a || faq.answer}
                       </p>
                     </div>
