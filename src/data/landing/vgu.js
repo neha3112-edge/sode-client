@@ -1,6 +1,443 @@
 // VGU Landing Data
+export const vguCustomCss = `
+  /* =======================================================
+     PAGE-SPECIFIC CSS FOR VGU ONLINE
+  ======================================================= */
+  html,
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    overflow-x: clip !important;
+  }
+
+  .landing-page--vgu,
+  .landing-page-root {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: clip !important;
+  }
+
+  .landing-page--vgu header,
+  .landing-page--vgu main,
+  .landing-page--vgu section,
+  .landing-page--vgu #hero,
+  .landing-page--vgu footer {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  .landing-page--vgu header,
+  .landing-page--vgu .landing-navbar-header {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 50 !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05) !important;
+  }
+
+  /* Compact sleek Navbar Height */
+  .landing-page--vgu header .landing-navbar-container {
+    height: 66px !important;
+    min-height: 66px !important;
+  }
+  @media (min-width: 640px) {
+    .landing-page--vgu header .landing-navbar-container {
+      height: 70px !important;
+      min-height: 70px !important;
+    }
+  }
+  @media (min-width: 1024px) {
+    .landing-page--vgu header .landing-navbar-container {
+      height: 72px !important;
+      min-height: 72px !important;
+    }
+  }
+
+  /* Completely remove any SODE logo or branding from header */
+  .landing-page--vgu header a[aria-label="Distance Education School"],
+  .landing-page--vgu header a[aria-label="SODE"],
+  .landing-page--vgu .des_logo {
+    display: none !important;
+  }
+
+  /* Coupon Button on Navbar */
+  .landing-page--vgu .coupon-btn-main {
+    background: #28a745 !important;
+    background-color: #28a745 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 14px rgba(40, 167, 69, 0.35) !important;
+  }
+
+  /* Hero Section */
+  .landing-page--vgu #hero {
+    background-color: #811811;
+  }
+
+  /* Hero Title: Strictly 2 lines on Desktop, 3 lines on Mobile */
+  @media (min-width: 641px) {
+    .landing-page--vgu #hero h1 {
+      display: flex !important;
+      flex-direction: column !important;
+      line-height: 1.18 !important;
+      margin-top: 0 !important;
+      margin-bottom: 0.35rem !important;
+    }
+    .landing-page--vgu #hero h1 .vgu-hero-title-line1,
+    .landing-page--vgu #hero h1 .vgu-hero-title-line2 {
+      display: block !important;
+      white-space: nowrap !important;
+      width: fit-content !important;
+    }
+    .landing-page--vgu #hero h1 .vgu-title-part1,
+    .landing-page--vgu #hero h1 .vgu-title-part2 {
+      display: inline !important;
+      white-space: nowrap !important;
+    }
+    .landing-page--vgu #hero h1 .vgu-hero-title-line1,
+    .landing-page--vgu #hero h1 .vgu-hero-title-line2 {
+      font-size: clamp(26px, 2.5vw, 34px) !important;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .landing-page--vgu #hero h1 {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      text-align: left !important;
+      gap: 1px !important;
+      margin-top: 0 !important;
+      margin-bottom: 12px !important;
+    }
+    .landing-page--vgu #hero h1 .vgu-hero-title-line1 {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      white-space: normal !important;
+      width: 100% !important;
+      gap: 1px !important;
+    }
+    .landing-page--vgu #hero h1 .vgu-title-part1,
+    .landing-page--vgu #hero h1 .vgu-title-part2,
+    .landing-page--vgu #hero h1 .vgu-hero-title-line2 {
+      display: block !important;
+      white-space: nowrap !important;
+      font-size: clamp(23px, 6.8vw, 28px) !important;
+      line-height: 1.2 !important;
+      font-weight: 800 !important;
+      color: #ffffff !important;
+      letter-spacing: -0.01em !important;
+    }
+
+    .landing-page--vgu #hero div[class*="tagline"],
+    .landing-page--vgu #hero p[class*="tagline"] {
+      font-size: 13.5px !important;
+      line-height: 1.48 !important;
+      color: #ffffff !important;
+      opacity: 0.95 !important;
+      margin-top: 10px !important;
+      margin-bottom: 16px !important;
+      max-width: 100% !important;
+      text-align: left !important;
+    }
+
+    .landing-page--vgu #hero [class*="courseStrip"] {
+      font-size: clamp(18px, 5.2vw, 21px) !important;
+      font-weight: 800 !important;
+      line-height: 1.32 !important;
+      color: #ffffff !important;
+      margin-top: 14px !important;
+      margin-bottom: 18px !important;
+      letter-spacing: 0.02em !important;
+      text-align: left !important;
+    }
+    .landing-page--vgu #hero [class*="courseStrip"] div {
+      font-weight: 800 !important;
+      color: #ffffff !important;
+    }
+  }
+
+  /* Completely remove coupon buttons from hero in mobile view */
+  @media (max-width: 1024px) {
+    .landing-page--vgu #hero .coupon-btn-main,
+    .landing-page--vgu #hero button.coupon-btn-main,
+    .landing-page--vgu #hero .hero-form-col .coupon-btn-main {
+      display: none !important;
+      visibility: hidden !important;
+      height: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+  }
+
+  @media (min-width: 1000px) {
+    .landing-page--vgu #hero {
+      background-position: center top !important;
+      background-size: cover !important;
+    }
+  }
+
+  /* Download brochure button: Desktop */
+  @media (min-width: 769px) {
+    .landing-page--vgu .hero-brochure-btn {
+      background-color: #0da651 !important;
+      border-radius: 9999px !important;
+      border: none !important;
+      color: #ffffff !important;
+      box-shadow: 0 4px 14px rgba(13, 166, 81, 0.4) !important;
+      transition: all 0.2s ease-in-out;
+    }
+    .landing-page--vgu .hero-brochure-btn:hover {
+      background-color: #0b8f45 !important;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(13, 166, 81, 0.45) !important;
+    }
+  }
+
+  /* Download brochure button: Mobile */
+  @media (max-width: 768px) {
+    .landing-page--vgu .hero-brochure-btn,
+    .landing-page--vgu #hero .hero-brochure-btn {
+      background: transparent !important;
+      background-color: transparent !important;
+      border: 2px solid #ffffff !important;
+      color: #ffffff !important;
+      border-radius: 9999px !important;
+      padding: 8px 24px !important;
+      font-size: 14.5px !important;
+      font-weight: 700 !important;
+      box-shadow: none !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+      align-self: flex-start !important;
+      margin-top: 6px !important;
+      margin-bottom: 18px !important;
+    }
+    .landing-page--vgu .hero-brochure-btn svg,
+    .landing-page--vgu #hero .hero-brochure-btn svg {
+      fill: #ffffff !important;
+      color: #ffffff !important;
+      width: 15px !important;
+      height: 15px !important;
+    }
+
+    .landing-page--vgu #hero .hero-mobile-image-wrapper {
+      border-radius: 18px !important;
+      overflow: hidden !important;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2) !important;
+      border: 1px solid rgba(255, 255, 255, 0.22) !important;
+      margin-top: 14px !important;
+      margin-bottom: 20px !important;
+      width: 100% !important;
+      max-width: 440px !important;
+    }
+    .landing-page--vgu #hero .hero-mobile-image-wrapper img {
+      border-radius: 18px !important;
+      width: 100% !important;
+      height: auto !important;
+      display: block !important;
+    }
+  }
+
+  /* Right Form Card */
+  .landing-page--vgu .landing-lead-card {
+    background: #ffffff !important;
+    border-radius: 16px !important;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.16) !important;
+    border: none !important;
+  }
+
+  /* Form Inputs and Selects inside card */
+  .landing-page--vgu .landing-lead-card input,
+  .landing-page--vgu .landing-lead-card .ant-input,
+  .landing-page--vgu .landing-lead-card .ant-select-selector {
+    background-color: #f0f3f5 !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 6px !important;
+    font-size: 13px !important;
+    color: #1e293b !important;
+  }
+
+  .landing-page--vgu .landing-lead-card input::placeholder,
+  .landing-page--vgu .landing-lead-card .ant-input::placeholder,
+  .landing-page--vgu .landing-lead-card .ant-select-selection-placeholder {
+    color: #94a3b8 !important;
+    font-size: 13px !important;
+  }
+
+  .landing-page--vgu .landing-lead-card .ant-select-selector {
+    display: flex !important;
+    align-items: center !important;
+    height: 38px !important;
+  }
+
+  .landing-page--vgu .landing-lead-card .ant-select-selection-item {
+    line-height: 38px !important;
+  }
+
+  /* Form Phone Badge */
+  .landing-page--vgu .landing-lead-card a[href^="tel"] {
+    background-color: #7a161d !important;
+    color: #ffffff !important;
+    border-radius: 9999px !important;
+    font-weight: 700 !important;
+    padding: 6px 16px !important;
+    box-shadow: 0 2px 8px rgba(122, 22, 29, 0.3) !important;
+  }
+
+  /* Submit Button */
+  .landing-page--vgu .landing-lead-card button[type="submit"] {
+    background: #7a161d !important;
+    background-color: #7a161d !important;
+    color: #ffffff !important;
+    border-radius: 8px !important;
+    border: none !important;
+    height: 40px !important;
+    font-weight: 700 !important;
+    font-size: 15px !important;
+    box-shadow: 0 4px 12px rgba(122, 22, 29, 0.3) !important;
+    transition: all 0.2s ease-in-out;
+  }
+  .landing-page--vgu .landing-lead-card button[type="submit"]:hover {
+    background-color: #8c1a22 !important;
+    box-shadow: 0 6px 16px rgba(122, 22, 29, 0.4) !important;
+  }
+
+  /* Section-by-Section Match with distanceeducationschool.com/vgu */
+
+  /* Approvals Section */
+  .landing-page--vgu #approval,
+  .landing-page--vgu #approvals {
+    background-color: #ffffff !important;
+  }
+  .landing-page--vgu #approval .grid > div,
+  .landing-page--vgu #approvals .grid > div {
+    border-radius: 9999px !important;
+  }
+  @media (max-width: 639px) {
+    .landing-page--vgu #approval .grid > div,
+    .landing-page--vgu #approvals .grid > div {
+      margin-left: 12px !important;
+      margin-right: 12px !important;
+    }
+  }
+  .landing-page--vgu #approval h3,
+  .landing-page--vgu #approvals h3,
+  .landing-page--vgu #approval h2,
+  .landing-page--vgu #approvals h2 {
+    color: #811811 !important;
+  }
+
+  /* Program Courses Section */
+  .landing-page--vgu #program {
+    background-color: #f7f7f7 !important;
+  }
+  .landing-page--vgu #program h2 {
+    color: #35529a !important;
+  }
+
+  /* About Section */
+  .landing-page--vgu #about {
+    background-image: url("/assets/all_universities_images/vgu/about-bg-vgu.webp") !important;
+    background-repeat: no-repeat !important;
+    background-size: cover !important;
+    background-position: center !important;
+  }
+
+  /* Advantage / Resources Section */
+  .landing-page--vgu #advantage h2,
+  .landing-page--vgu #Resources h2 {
+    background-color: #811811 !important;
+    color: #ffffff !important;
+  }
+
+  /* Degree Section */
+  .landing-page--vgu #degree {
+    background-color: #F3F3F8 !important;
+  }
+  .landing-page--vgu #degree h2 {
+    color: #811811 !important;
+  }
+
+  /* Recruiters / Partners Section */
+  .landing-page--vgu #partners {
+    background-color: #ffffff !important;
+  }
+  .landing-page--vgu #partners h2 {
+    background-color: #811811 !important;
+    color: #ffffff !important;
+  }
+
+  /* Apply Section */
+  .landing-page--vgu .apply-section {
+    background-color: #ffffff !important;
+  }
+  .landing-page--vgu .apply-section h2 {
+    color: #193579 !important;
+  }
+
+  /* FAQ Section */
+  .landing-page--vgu #faq,
+  .landing-page--vgu #faqs {
+    background-color: #F3F3F8 !important;
+  }
+  .landing-page--vgu #faq h2,
+  .landing-page--vgu #faqs h2 {
+    color: #811811 !important;
+  }
+
+  /* Compare Universities Section */
+  .landing-page--vgu .compare_box {
+    background-color: #851b1f !important;
+    border-radius: 20px !important;
+  }
+
+  /* Mobile Floating Actions & Sticky Bar Precision Matching */
+  @media (max-width: 768px) {
+    .landing-page--vgu .floating-call-btn {
+      width: 58px !important;
+      height: 58px !important;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35), 0 0 25px rgba(46, 204, 113, 0.6) !important;
+      border-radius: 50px !important;
+    }
+
+    .landing-page--vgu .floating-gift-btn {
+      width: 54px !important;
+      height: 54px !important;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25) !important;
+      border-radius: 50px !important;
+    }
+
+    .landing-page--vgu .footer_sticky_buttons {
+      background: #d11c1f !important;
+      padding: 8px 12px !important;
+    }
+
+    .landing-page--vgu .footer_sticky_buttons .wp_btn {
+      background: #25d366 !important;
+      color: #ffffff !important;
+      border-radius: 100px !important;
+      font-size: 14.5px !important;
+      font-weight: 700 !important;
+    }
+
+    .landing-page--vgu .footer_sticky_buttons .apply_btn {
+      background: #ffffff !important;
+      color: #ee3024 !important;
+      border-radius: 100px !important;
+      font-size: 14.5px !important;
+      font-weight: 700 !important;
+    }
+  }
+`;
+
 export const vguData = {
   slug: "vgu",
+  customCss: vguCustomCss,
   meta: {
     title: "Vivekananda Global University Online | VGU Online Courses",
     description:
@@ -17,6 +454,8 @@ export const vguData = {
   },
   brand: {
     slug: "vgu",
+    pageStyle: { margin: 0, padding: 0 },
+    pageClassName: "!m-0 !p-0 w-full",
     name: "Vivekananda Global University Online",
     shortName: "VGU Online",
     hashtag: "",
@@ -29,27 +468,77 @@ export const vguData = {
     enquireTitle: "Enquire Now",
     enquireSubtitle: "Academic Experts will assist you!",
     officialUrl: "https://distanceeducationschool.com/vgu/",
-    logo: "/assets/vgu/vgu-logo.webp",
-    sodeLogo: "/assets/vgu/sode-icon.png",
-    showSodeLogo: true,
+    navbarHeightClass: "h-[66px] sm:h-[70px] lg:h-[72px]",
+    headerClassName: "!sticky !top-0 !z-50 bg-white shadow-[0px_2px_10px_rgba(0,0,0,0.06)]",
+    headerStyle: {
+      position: "sticky",
+      top: 0,
+      zIndex: 50,
+      backgroundColor: "#ffffff",
+    },
+    logo: "/assets/all_universities_images/vgu/vgu-logo.webp",
+    logoWrapperClassName: "w-[260px] sm:w-[285px] md:w-[305px] lg:w-[320px] h-[52px] sm:h-[56px] lg:h-[58px]",
+    logoClassName: "object-contain object-left",
+    navLinks: [
+      { label: "Courses", href: "#program" },
+      { label: "Approvals", href: "#approval" },
+      { label: "About", href: "#about" },
+      { label: "Advantage", href: "#advantage" },
+      { label: "FAQs", href: "#faqs" },
+    ],
+    hideDesktopNavLinks: true,
+    mobileMenuIconColor: "#08417b",
+    sodeIcon: null,
+    sodeLogo: null,
+    callGif: "/assets/all_universities_images/vgu/call_icon.gif",
+    giftGif: "/assets/all_universities_images/vgu/gift.gif",
+    arrowGif: "/assets/all_universities_images/vgu/arrow.gif",
+    showFloatingCallOnMobile: true,
+    stickyBarBg: "#811811",
+    stickyApplyStyle: "white-red",
+    stickyApplyBg: "#ffffff",
+    stickyApplyTextColor: "#e53935",
+    stickyBrochureAction: "whatsapp",
+    stickyBrochureIcon: "whatsapp",
+    stickyBrochureBg: "#25d366",
+    stickyBrochureTextColor: "#ffffff",
+    showSodeLogo: false,
+    hideSodeLogo: true,
     showCouponButton: true,
+    showMobileCouponButton: false,
+    hideMobileCouponButton: true,
     showFooterForm: false,
     couponButtonText: "Scholarship Coupon Code",
-    couponButtonColor: "#22c55e",
-    campusImage: "/assets/vgu/university.webp",
-    buildingAboutImage: "/assets/vgu/about-image-vgu.webp",
-    whyChooseStudentImage: "/assets/vgu/university.webp",
+    couponButtonColor: "#28a745",
+    couponBtnBg: "#28a745",
+    footerLogoContainerClassName:
+      "w-[340px] sm:w-[520px] md:w-[680px] lg:w-[780px] xl:w-[880px] h-[90px] sm:h-[138px] md:h-[180px] lg:h-[206px] xl:h-[233px] max-w-[92vw] sm:max-w-full",
+    footerDisclaimerContainerClassName: "max-w-[1090px] lg:max-w-none",
+    footerBottomBg: "#0b3c66",
+    campusImage: "/assets/all_universities_images/vgu/university.webp",
+    buildingAboutImage: "/assets/all_universities_images/vgu/about-image-vgu.webp",
+    whyChooseStudentImage: "/assets/all_universities_images/vgu/university.webp",
     primaryColor: "#811811",
     themeBg: "bg-[#811811]",
     themeBorder: "border-[#811811]",
     accentColor: "#f78d2d",
     compareBannerColor: "#811811",
+    compareBannerBg: "#811811",
+    compareBoxMaxWidth: "w-full max-w-full px-4 sm:px-6 lg:px-8 xl:px-12",
+    compareBoxPadding: "",
     compareUniversityName: "Vivekananda Global University",
     goldColor: "#ffc107",
     badgeText: "Admissions Open 2026",
     hero: {
-      backgroundImage: "/assets/vgu/vgu-desktop.webp",
-      mobileBackgroundImage: "/assets/vgu/university.webp",
+      backgroundImage: "/assets/all_universities_images/vgu/vgu-desktop.webp",
+      backgroundPosition: "center top",
+      backgroundSize: "cover",
+      mobileBackgroundImage: "",
+      mobileStudentImage: "/assets/all_universities_images/vgu/university.webp",
+      mobileStudentImageWrapperClassName: "block lg:hidden w-full max-w-[440px] mx-auto rounded-[18px] overflow-hidden my-3.5 shadow-md border border-white/20",
+      mobileStudentImageClassName: "w-full h-auto object-cover block rounded-[18px]",
+      showMobileCouponButton: false,
+      hideMobileCouponButton: true,
       noOverlay: true,
       backgroundColor: "#811811",
       titleColor: "#ffffff",
@@ -57,71 +546,169 @@ export const vguData = {
       coursesColor: "#ffffff",
       hashtagColor: "#ffffff",
       hideCourseBox: true,
-      contentClassName: "lg:max-w-[580px] xl:max-w-[620px]",
-      headingClassName: "text-[24px] sm:text-[28px] md:text-[31px] lg:text-[33px] xl:text-[35px] font-extrabold text-white leading-[1.18] tracking-tight whitespace-pre-line",
-      taglineClassName: "mt-2.5 mb-2 text-[13.5px] sm:text-[14.5px] font-normal leading-relaxed text-white/95 max-w-[490px]",
-      courseStripClassName: "my-2.5 space-y-0.5 text-[17px] sm:text-[19px] lg:text-[20.5px] font-extrabold text-white tracking-wide leading-snug",
-      buttonBackground: "#008000",
-      buttonRadius: "rounded-full",
+      alignLeftMobile: true,
+      mobileAlign: "left",
+      minHeight: "480px",
+      containerClassName: "max-w-[1360px] min-[1600px]:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6 lg:py-8",
+      contentClassName: "w-full min-[1000px]:max-w-[500px] xl:max-w-[540px] text-left items-start z-10",
+      titleHtml: '<span class="vgu-hero-title-line1"><span class="vgu-title-part1">Vivekananda Global</span> <span class="vgu-title-part2">University</span></span><span class="vgu-hero-title-line2">Online Degree Programs</span>',
+      headingClassName: "font-extrabold text-white leading-[1.18] tracking-tight text-left m-0",
+      taglineClassName: "mt-3.5 mb-3 text-[13.5px] sm:text-[14px] lg:text-[14.5px] font-normal leading-[1.5] text-white/95 max-w-[440px] text-left",
+      coursesStrip: [
+        "MBA | MSC | MA | MCA | MA-",
+        "JMC | BBA | BCA | BA",
+      ],
+      courseStripClassName: "my-3.5 space-y-1 text-[17px] sm:text-[19px] lg:text-[21px] font-extrabold text-white tracking-wide leading-tight text-left",
+      courseStripItemClassName: "tracking-wide font-extrabold",
+      showBrochureButton: true,
+      brochureButtonText: "Download Brochure",
       buttonTextColor: "#ffffff",
-      buttonClassName: "mt-3.5 py-2.5 px-7 rounded-full text-white font-bold text-[14px] bg-[#008000] hover:bg-[#006e00] inline-flex items-center gap-2 shadow-md transition-all border-none",
+      buttonRadius: "9999px",
+      buttonClassName: "!rounded-full max-md:!bg-transparent max-md:!border-2 max-md:!border-white md:!bg-[#0da651] md:hover:!bg-[#0c9548] md:!border-none text-white font-semibold text-[14px] sm:text-[15px] py-2 px-6 sm:px-7 inline-flex items-center gap-2 shadow-md transition-all self-start mt-2 mb-2 !h-auto",
+      formContainerClassName: "w-full sm:w-[350px] min-[1000px]:w-[340px] xl:w-[350px] shrink-0 flex flex-col items-center min-[1000px]:items-end justify-center z-20",
       formCardType: "white",
       formBackground: "#ffffff",
-      formTitleColor: "#811811",
-      formPhoneBg: "#6b130e",
-      phoneBadgeBackground: "#6b130e",
-      phoneBadgeBg: "#6b130e",
+      formTitleColor: "#7a161d",
+      formPhoneBg: "#7a161d",
+      phoneBadgeBackground: "#7a161d",
+      phoneBadgeBg: "#7a161d",
       formPhoneColor: "#ffffff",
       phonePlaceholder: "Enter 10-digit Mobile Number",
-      submitButtonBackground: "#811811",
+      submitButtonBackground: "#7a161d",
       submitButtonTextColor: "#ffffff",
       hideTermsCheckbox: true,
-      minHeight: "520px",
-      containerClassName: "max-w-[1400px] px-6 sm:px-10 lg:px-12 py-8 lg:py-10",
       headingFont: "'Plus Jakarta Sans', sans-serif",
+      formCourseList: [
+        { value: "MBA", label: "MBA" },
+        { value: "MSC", label: "MSC" },
+        { value: "MA", label: "MA" },
+        { value: "MCA", label: "MCA" },
+        { value: "MA-JMC", label: "MA-JMC" },
+        { value: "BBA", label: "BBA" },
+        { value: "BCA", label: "BCA" },
+        { value: "BA", label: "BA" },
+      ],
+      form: {
+        variant: "white",
+        title: "Enquire Now",
+        subtitle: "Academic Experts will assist you!",
+        phoneText: "+91 7065 7777 55",
+        showPhoneBadge: true,
+        namePlaceholder: "Enter Your Name",
+        emailPlaceholder: "Enter Your Email",
+        phonePlaceholder: "Enter 10-digit Mobile Number",
+        coursePlaceholder: "Select Your Course",
+        statePlaceholder: "Select Your State",
+        submitText: "Submit",
+        hideTermsCheckbox: true,
+        phoneBeforeEmail: false,
+        courseList: [
+          { value: "MBA", label: "MBA" },
+          { value: "MSC", label: "MSC" },
+          { value: "MA", label: "MA" },
+          { value: "MCA", label: "MCA" },
+          { value: "MA-JMC", label: "MA-JMC" },
+          { value: "BBA", label: "BBA" },
+          { value: "BCA", label: "BCA" },
+          { value: "BA", label: "BA" },
+        ],
+        colors: {
+          background: "#ffffff",
+          title: "#7a161d",
+          subtitle: "#334155",
+          phoneBackground: "#7a161d",
+          phoneText: "#ffffff",
+          phoneIcon: "#ffffff",
+          inputBackground: "#f0f3f5",
+          inputBorder: "1px solid #e2e8f0",
+          inputText: "#1e293b",
+          inputPlaceholder: "#94a3b8",
+          selectBackground: "#f0f3f5",
+          selectBorder: "1px solid #e2e8f0",
+          selectText: "#1e293b",
+          selectPlaceholder: "#94a3b8",
+          countryCodeBackground: "#f0f3f5",
+          countryCodeBorder: "#cbd5e1",
+          countryCodeText: "#1e293b",
+          submitBackground: "#7a161d",
+          submitText: "#ffffff",
+        },
+        layout: {
+          padding: "18px 20px 20px",
+          borderRadius: "16px",
+          maxWidth: "350px",
+          fieldHeight: "38px",
+          fieldRadius: "6px",
+          fieldGap: "9px",
+          submitButtonRadius: "8px",
+          boxShadow: "0 10px 35px rgba(0, 0, 0, 0.15)",
+        },
+      },
     },
     coursesStrip: [
-      "MBA | MSC | MA | MCA |",
-      "MA-JMC | BBA | BCA | BA",
+      "MBA | MSC | MA | MCA | MA-",
+      "JMC | BBA | BCA | BA",
     ],
-    approvalsTitle: "Vivekananda Global University Online Accreditation & Approval",
+    approvalsTitle:
+      "Vivekananda Global\nUniversity Online\nAccreditation & Approval",
     approvalsDescription:
-      "Vivekananda Global University Online Courses are UGC-recognised and have top accreditations and approvals from the country's recognised statutory bodies.",
+      "Vivekananda Global University Online\nCourses are UGC-recognised and have\ntop accreditations and approvals from\nthe country's recognised statutory\nbodies.",
     approvalsLayout: "vgu-badges",
     approvalsConfig: {
-      containerClassName: "max-w-[1340px] mx-auto px-6 sm:px-12 md:px-16 lg:px-24 xl:px-32",
-      titleClassName: "text-[22px] sm:text-[26px] lg:text-[28px] font-normal text-[#811811] leading-tight tracking-tight m-0",
-      buttonBg: "#ffc107",
+      containerClassName: "max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8",
+      cardRadius: "rounded-full",
+      cardClassName: "mx-3 sm:mx-0",
+      titleClassName: "text-[20px] sm:text-[22px] lg:text-[24px] font-semibold text-[#811811] leading-[1.25] tracking-tight m-0",
+      buttonBg: "#ffd508",
       buttonTextColor: "#000000",
       buttonText: "Enquire Now",
     },
-    programmesTitle: "VGU Online | Vivekananda Global University Online Courses",
+    programmesTitle:
+      "VGU Online |\nVivekananda Global\nUniversity\nOnline Courses",
     programmesLayout: "vgu-cards",
-    cardSize: "small",
+    cardSize: "medium",
     programmesConfig: {
-      containerClassName: "max-w-[1160px] mx-auto px-4 sm:px-6 lg:px-8",
-      gridClassName: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5",
-      cardClassName: "bg-white rounded-[12px] overflow-hidden shadow-[0_4px_16px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] transition-all duration-300 flex flex-col justify-between group",
-      imageHeight: "h-32 sm:h-36",
-      titleClassName: "text-[20px] sm:text-[22px] font-extrabold m-0 tracking-tight leading-tight",
-      subtitleClassName: "text-[11px] sm:text-[11.5px] font-semibold text-slate-800 mt-1 mb-1.5 line-clamp-1",
-      descClassName: "text-[10px] sm:text-[10.5px] text-slate-600 leading-[1.45] line-clamp-3 min-h-[46px] m-0",
-      padding: "p-3 sm:p-3.5",
-      buttonClassName: "font-bold text-[10.5px] sm:text-[11px] py-1.5 px-2 rounded-full inline-flex items-center justify-center gap-1 shadow-xs transition-all cursor-pointer border-none",
+      containerClassName: "max-w-[1140px] mx-auto px-4 sm:px-6 lg:px-8",
+      headingClassName:
+        "text-center text-[22px] sm:text-[24px] md:text-[28px] lg:text-[30px] font-semibold text-[#203061] tracking-tight mb-7 sm:mb-9 leading-[1.25]",
+      gridClassName: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6 justify-items-center",
+      cardClassName: "bg-white rounded-[10px] overflow-hidden shadow-[0_12px_24px_rgba(0,0,0,0.18)] hover:shadow-[0_18px_30px_rgba(0,0,0,0.24)] transition-all duration-300 flex flex-col justify-between group w-full max-w-[300px] sm:max-w-[260px] lg:max-w-[250px] relative border border-slate-100",
+      imageHeight: "h-[135px] sm:h-[140px]",
+      titleClassName: "text-[26px] sm:text-[28px] font-bold text-[#811811] m-0 tracking-tight leading-none mb-1",
+      subtitleClassName: "text-[12px] sm:text-[12.5px] font-semibold text-[#1f2937] mt-0 mb-2 leading-snug line-clamp-1",
+      descClassName: "text-[11px] text-[#4b5563] leading-[1.38] font-normal m-0 px-1 line-clamp-5",
     },
-    whyChooseTitle: "Why Vivekananda Global University Online is a Smart Choice for learners?",
+    whyChooseTitle:
+      "Why Vivekananda Global University Online is a\nSmart Choice for learners?",
     whyChooseDescription:
-      "Vivekananda Global University Online is the most trusted university by students because of its recognised approvals and job-ready curriculum. VGU University courses are offered online with expert faculty, helpful resources like LMS that help students get strong knowledge and necessary skills, and a smooth Vivekananda Global University course admissions process.",
+      "Vivekananda Global University Online is the most trusted university by students because of its recognised approvals and job-ready curriculum. VGU University courses are\noffered online with expert faculty, helpful resources like LMS that help students get strong knowledge and necessary skills, and a smooth Vivekananda Global University\ncourse admissions process.",
     whyChooseLayout: "vgu-grid",
+    whyChooseConfig: {
+      badgeClassName:
+        "text-white bg-[#811811] px-4 sm:px-8 py-3.5 sm:py-4 text-center shadow-md w-full max-w-[360px] sm:max-w-[540px] lg:max-w-[620px] mx-auto rounded-[12px] sm:rounded-[14px]",
+      badgeStyle: {
+        borderRadius: "12px",
+        backgroundColor: "#811811",
+      },
+      headerTitleClassName:
+        "text-[17.5px] sm:text-[21px] lg:text-[24px] font-medium text-white tracking-[0.6px] leading-[1.32] m-0",
+      titleClassName:
+        "text-[17px] sm:text-[18px] font-medium text-slate-900 m-0 tracking-tight leading-snug mb-1.5",
+      descClassName:
+        "text-[12.5px] sm:text-[13px] text-slate-600 leading-relaxed font-normal m-0 max-w-[310px]",
+    },
     aboutLayout: "vgu-banner",
     aboutConfig: {
       backgroundColor: "#2e6396",
-      backgroundImage: "/assets/vgu/university.webp",
+      titleColor: "#ffffff",
+      titleClassName: "text-[22px] sm:text-[30px] lg:text-[35px] font-semibold text-[#ffd508] md:text-white text-center lg:text-left tracking-[1px] leading-[1.25] m-0 mb-1",
+      backgroundImage: "/assets/all_universities_images/vgu/about-bg-vgu.webp",
       buttonBg: "#fec810",
       buttonTextColor: "#000000",
-      containerClassName: "max-w-[1340px] mx-auto px-6 sm:px-12 md:px-16 lg:px-24 xl:px-32",
+      containerClassName: "max-w-[1280px] mx-auto px-6 sm:px-10 lg:px-12",
     },
     faqLayout: "vgu",
+    faqTitle: "Frequently Asked\nQuestions",
     faqConfig: {
       titleColor: "#811811",
       itemBg: "#f8f9fa",
@@ -129,9 +716,16 @@ export const vguData = {
       iconColor: "#ffffff",
       activeQuestionColor: "#811811",
       questionPrefix: "» ",
-      containerClassName: "max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8",
+      containerClassName: "max-w-[1240px] mx-auto px-5 sm:px-8 lg:px-8",
+      titleClassName:
+        "text-[24px] sm:text-[28px] md:text-[32px] font-bold text-center m-0 mb-6 sm:mb-8 md:mb-10 tracking-tight leading-[1.25] whitespace-normal sm:whitespace-nowrap",
+      cardClassName:
+        "rounded-[8px] sm:rounded-[10px] overflow-hidden bg-white shadow-xs border border-slate-200/70 transition-all",
     },
+    admissionContainerClass: "w-full max-w-full px-4 sm:px-6 lg:px-8 xl:px-12",
     admissionHeadingColor: "#203061",
+    admissionGridClass:
+      "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-4 lg:gap-3 xl:gap-4 w-full",
   },
   courses: [
     { value: "MBA", label: "MBA - Master of Business Administration" },
@@ -145,23 +739,41 @@ export const vguData = {
   ],
   approvals: [
     {
-      image: "/assets/vgu/ugc-1.webp",
-      text: "Recognised by the University Grants Commission of India (UGC)",
+      image: "/assets/all_universities_images/vgu/ugc-1.webp",
+      text: "Recognised by the University\nGrants Commission of India\n(UGC)",
+      lines: [
+        "Recognised by the University",
+        "Grants Commission of India",
+        "(UGC)",
+      ],
       tag: "UGC",
     },
     {
-      image: "/assets/vgu/naac-a-1.webp",
-      text: "Accredited by the National Assessment and Accreditation Council (NAAC)",
+      image: "/assets/all_universities_images/vgu/naac-a-1.webp",
+      text: "Accredited by the National\nAssessment and Accreditation\nCouncil (NAAC)",
+      lines: [
+        "Accredited by the National",
+        "Assessment and Accreditation",
+        "Council (NAAC)",
+      ],
       tag: "NAAC A+",
     },
     {
-      image: "/assets/vgu/aicte-1.webp",
-      text: "Approved by the All India Council for Technical Education (AICTE)",
+      image: "/assets/all_universities_images/vgu/aicte-1.webp",
+      text: "Approved by the All India Council\nfor Technical Education (AICTE)",
+      lines: [
+        "Approved by the All India Council",
+        "for Technical Education (AICTE)",
+      ],
       tag: "AICTE",
     },
     {
-      image: "/assets/vgu/qs.webp",
-      text: "Globally ranked by QS World University Rankings",
+      image: "/assets/all_universities_images/vgu/qs.webp",
+      text: "Globally ranked by QS World\nUniversity Rankings",
+      lines: [
+        "Globally ranked by QS World",
+        "University Rankings",
+      ],
       tag: "QS Ranked",
     },
   ],
@@ -173,7 +785,7 @@ export const vguData = {
       title: "Master of Business Administration",
       level: "Post Graduation",
       duration: "24 Months",
-      image: "/assets/vgu/mba-vgu.webp",
+      image: "/assets/all_universities_images/vgu/mba-vgu.webp",
       description:
         "A flexible Vivekananda Global University Online MBA course helps students build strong business skills. It helps learners for leadership roles with real-world knowledge.",
     },
@@ -183,7 +795,7 @@ export const vguData = {
       title: "Master of Computer Applications",
       level: "Post Graduation",
       duration: "24 Months",
-      image: "/assets/vgu/mca-vgu.webp",
+      image: "/assets/all_universities_images/vgu/mca-vgu.webp",
       description:
         "Online VGU offers its MCA program, which enhances the student learning experience with practical IT skills and boosts career growth through industry-focused courses.",
     },
@@ -193,7 +805,7 @@ export const vguData = {
       title: "Master of Science",
       level: "Post Graduation",
       duration: "24 Months",
-      image: "/assets/vgu/msc-vgu.webp",
+      image: "/assets/all_universities_images/vgu/msc-vgu.webp",
       description:
         "A research-focused online MSc program offered by Online VGU that helps students enhance analytical skills through their well-written online VGU university courses.",
     },
@@ -203,7 +815,7 @@ export const vguData = {
       title: "Master of Arts",
       level: "Post Graduation",
       duration: "24 Months",
-      image: "/assets/vgu/ma-vgu.webp",
+      image: "/assets/all_universities_images/vgu/ma-vgu.webp",
       description:
         "The university offers online MA courses with multiple specialisations, such as English and Economics. Overall, help students deepen their knowledge in academic research.",
     },
@@ -213,7 +825,7 @@ export const vguData = {
       title: "Master of Journalism and Mass Communication",
       level: "Post Graduation",
       duration: "24 Months",
-      image: "/assets/vgu/mjmc.webp",
+      image: "/assets/all_universities_images/vgu/mjmc.webp",
       description:
         "Online VGU offers the MA-JMC program that is designed for learners who are interested in News Reporting, Public Relations, Advertising, News Editing, and Broadcast Media.",
     },
@@ -223,7 +835,7 @@ export const vguData = {
       title: "Bachelor of Business Administration",
       level: "Graduation",
       duration: "36 Months",
-      image: "/assets/vgu/bba-vgu.webp",
+      image: "/assets/all_universities_images/vgu/bba-vgu.webp",
       description:
         "An industry-aligned Online BBA offer by online VGU is a program that helps students improve communication, analytical, and management skills for business.",
     },
@@ -233,7 +845,7 @@ export const vguData = {
       title: "Bachelor of Computer Applications",
       level: "Graduation",
       duration: "36 Months",
-      image: "/assets/vgu/bca-vgu.webp",
+      image: "/assets/all_universities_images/vgu/bca-vgu.webp",
       description:
         "The VGU Online BCA program builds strong computer application skills and prepares students for tech careers. They get an opportunity to learn programming, database management, web development, etc.",
     },
@@ -243,96 +855,112 @@ export const vguData = {
       title: "Bachelor of Arts",
       level: "Graduation",
       duration: "36 Months",
-      image: "/assets/vgu/ba-vgu.webp",
+      image: "/assets/all_universities_images/vgu/ba-vgu.webp",
       description:
         "Online VGU offers a flexible Online BA program that helps students broaden their knowledge and career through well-designed VGU university Course admissions.",
     },
   ],
   about: {
     title: "About Vivekananda Global University Online",
+    titleColor: "#ffffff",
     text1:
       "Vivekananda Global University Online is one of the most preferred universities for online courses. With the NAAC A+ accreditation and UGC entitlement, the VGU online degree is valued and recognised worldwide. It provides a wide range of flexible and affordable online UG and PG courses for students interested in higher education. The Vivekananda Global University course admissions are fully online and accessible to all.",
     text2:
       "The university combines expert faculty, academic excellence, modern learning, and industry-aligned online courses. Start your journey today with online VGU for a pathway that leads to your career goals.",
-    image: "/assets/vgu/about-image-vgu.webp",
+    image: "/assets/all_universities_images/vgu/about-image-vgu.webp",
     buttonText: "Apply Now",
   },
   whyChoose: [
     {
       title: "UGC-entitles & NAAC A+",
       desc: "Top-accredited degrees at online VGU that are recognised all over India and worldwide.",
-      image: "/assets/vgu/ugc-vgu.webp",
+      image: "/assets/all_universities_images/vgu/ugc-vgu.webp",
     },
     {
       title: "Industry-oriented programs",
       desc: "Career-relevant undergraduate and postgraduate courses at VGU online are designed to match the industry standards.",
-      image: "/assets/vgu/hiring-vgu.webp",
+      image: "/assets/all_universities_images/vgu/hiring-vgu.webp",
     },
     {
       title: "Flexible Learning",
       desc: "Start your career journey with flexible learning options at Vivekananda Global University's online courses.",
-      image: "/assets/vgu/classroom-vgu.webp",
+      image: "/assets/all_universities_images/vgu/classroom-vgu.webp",
     },
     {
       title: "Dual Degree Opportunities",
       desc: "The university invites students who want to pursue more than one degree at a time with its dual degree programs.",
-      image: "/assets/vgu/placement-vgu.webp",
+      image: "/assets/all_universities_images/vgu/placement-vgu.webp",
     },
     {
       title: "Affordable Fee Structure",
       desc: "The online courses at Vivekananda Global University are budget-friendly and come with financial support, including EMI and scholarship options.",
-      image: "/assets/vgu/emi-vgu.webp",
+      image: "/assets/all_universities_images/vgu/emi-vgu.webp",
     },
     {
       title: "Examination On-Demand",
       desc: "VGU online provides an opportunity for students to take assessments and exams at their own pace and schedule.",
-      image: "/assets/vgu/courses-vgu.webp",
+      image: "/assets/all_universities_images/vgu/courses-vgu.webp",
     },
   ],
+  degreeLayout: "vgu",
   degreeInfo: {
     title: "Globally Accepted\nOnline Vivekananda Global University\nDegree",
-    cardBackground: "#f2f5fa",
-    buttonBg: "#fec810",
+    cardBackground: "transparent",
+    sectionBg: "#F3F3F8",
+    buttonBg: "#ffd508",
     buttonTextColor: "#000000",
     sectionPadding: "py-6 sm:py-8",
-    cardPadding: "p-5 sm:p-7 lg:p-8",
+    cardPadding: "p-0",
+    imageWrapperClassName:
+      "w-full max-w-[390px] sm:max-w-[460px] lg:max-w-[500px] aspect-square mx-auto flex items-center justify-center",
+    imageClassName:
+      "object-contain scale-125 sm:scale-130 lg:scale-135 transition-transform duration-300", 
     features: [
       {
         title: "UGC Entitled",
         desc: "Online VGU degrees approved by UGC are valued across India.",
-        icon: "/assets/vgu/green-tick-icon.webp",
+        icon: "/assets/all_universities_images/vgu/green-tick-icon.webp",
       },
       {
         title: "NAAC Accreditation",
         desc: "This shows that VGU University courses follow the latest higher-education quality standards.",
-        icon: "/assets/vgu/green-tick-icon.webp",
+        icon: "/assets/all_universities_images/vgu/green-tick-icon.webp",
       },
       {
         title: "AICTE Approved",
         desc: "All India Council for Technical Education guidelines are adhered to by Vivekananda Global University course admissions.",
-        icon: "/assets/vgu/green-tick-icon.webp",
+        icon: "/assets/all_universities_images/vgu/green-tick-icon.webp",
       },
       {
         title: "Globally Acknowledged",
         desc: "Online VGU degrees are recognised and accepted worldwide.",
-        icon: "/assets/vgu/green-tick-icon.webp",
+        icon: "/assets/all_universities_images/vgu/green-tick-icon.webp",
       },
     ],
     buttonText: "Get Your Degree",
-    image: "/assets/vgu/sample-degree-vgu.webp",
+    image: "/assets/all_universities_images/vgu/sample-degree-vgu-clean.webp",
   },
   recruiters: {
     title: "Top Recruiters at VGU Online",
-    image: "/assets/vgu/placement-partner-vgu.webp",
+    badgeClassName: "bg-[#811811] text-white px-5 sm:px-10 py-2.5 sm:py-3 rounded-[14px] rounded-tl-none text-center shadow-xs inline-flex items-center justify-center",
+    titleClassName: "text-[17.5px] sm:text-[21px] font-semibold text-white tracking-normal leading-none whitespace-nowrap m-0",
+    image: "/assets/all_universities_images/vgu/placement-partner-vgu.webp",
+    desktopImage: "/assets/all_universities_images/vgu/placement-partner-vgu.webp",
+    mobileImage: "/assets/all_universities_images/vgu/hairing-partner-vgu-mobile.webp",
     containerClassName: "max-w-[1280px] mx-auto px-4 sm:px-6",
     aspectRatio: "aspect-[2.4/1] sm:aspect-[2.6/1]",
     imageClassName: "scale-110 sm:scale-115 md:scale-120",
     sectionPadding: "pt-7 pb-4 sm:pt-9 sm:pb-6",
   },
   admissionProcess: {
-    title: "How to Apply for Vivekananda Global University Online Courses",
-    titleColor: "#203061",
-    sectionPadding: "pt-7 pb-10 sm:pt-9 sm:pb-12",
+    title:
+      "How to Apply for Vivekananda Global University Online Courses",
+    headingClassName:
+      "text-[22px] sm:text-[25px] md:text-[27px] lg:text-[28px] xl:text-[30px] font-bold text-center tracking-tight mb-2 sm:mb-2.5 lg:mb-2 m-0 leading-[1.2] lg:whitespace-nowrap",
+    titleColor: "#172b4d",
+    gridClass:
+      "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-4 lg:gap-3 xl:gap-4 w-full",
+    sectionPadding: "pt-10 sm:pt-14 lg:pt-16 pb-10 sm:pb-12 lg:pb-14",
     subtitle:
       "Students can easily enrol in Vivekananda Global University Online courses. Candidates can conveniently apply by selecting their desired program. Follow these steps to secure admission in the university.",
   },

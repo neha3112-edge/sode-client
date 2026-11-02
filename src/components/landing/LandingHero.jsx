@@ -2,10 +2,13 @@
 
 import React from "react";
 import Image from "next/image";
+import { Button } from "antd";
+import confetti from "canvas-confetti";
 
 import LandingContainer from "./LandingContainer";
 import LandingLeadForm from "./LandingLeadForm";
 import LandingButton from "./LandingButton";
+import GalgotiasHero from "./hero/GalgotiasHero";
 
 /**
  * Reusable Landing Hero Component
@@ -21,8 +24,8 @@ export default function LandingHero({
   brand = {},
   courses = [],
   onOpenBrochure,
-  onOpenDisclaimer,
   onOpenApply,
+  onOpenDisclaimer,
   onOpenScholarship,
 }) {
   const hero = brand?.hero || {};
@@ -32,7 +35,26 @@ export default function LandingHero({
     brand.slug === "manipal" ||
     brand.slug === "amity" ||
     brand.slug === "uu" ||
-    brand.slug === "mu";
+    brand.slug === "mu" ||
+    brand.slug === "cu";
+  if (brand.slug === "galgotias" || hero.heroStyle === "galgotias") {
+    return (
+      <GalgotiasHero
+        brand={brand}
+        courses={courses}
+        onOpenBrochure={onOpenBrochure}
+        onOpenApply={onOpenApply}
+        onOpenScholarship={onOpenScholarship}
+        onOpenDisclaimer={onOpenDisclaimer}
+      />
+    );
+  }
+
+  const isSsbm =
+    brand.slug === "ssbm" ||
+    brand.name?.toLowerCase().includes("ssbm");
+
+  const HeroContainer = isSsbm ? "div" : LandingContainer;
 
   /* ----------------------------- Helpers ----------------------------- */
 
@@ -198,12 +220,18 @@ export default function LandingHero({
         <div
           className={
             hero.courseStripClassName ||
-            "my-2 space-y-0.5 text-[17px] sm:text-[20px] lg:text-[22px] font-extrabold leading-snug"
+            "my-1.5 space-y-0.5 text-[17px] sm:text-[20px] lg:text-[22px] font-extrabold leading-snug"
           }
           style={courseBoxStyle}
         >
           {courseLines.map((line, index) => (
-            <div key={`course-line-${index}`}>{line}</div>
+            <div
+              key={`course-line-${index}`}
+              className={hero.courseStripItemClassName}
+              style={hero.courseStripItemStyle}
+            >
+              {line}
+            </div>
           ))}
         </div>
       );
@@ -214,7 +242,7 @@ export default function LandingHero({
         <div
           className={
             hero.courseStripClassName ||
-            "my-2 space-y-0.5 text-[16px] sm:text-[18px] lg:text-[19px] font-bold leading-snug"
+            "my-1.5 space-y-0.5 text-[16px] sm:text-[18px] lg:text-[19px] font-bold leading-snug"
           }
           style={courseBoxStyle}
         >
@@ -229,8 +257,8 @@ export default function LandingHero({
       <div
         className={joinClassNames(
           isLeftAligned
-            ? "relative z-20 w-[318px] max-w-full self-start my-2 sm:w-fit"
-            : "relative z-20 w-full sm:w-fit my-2",
+            ? "relative z-20 w-[318px] max-w-full self-start my-1.5 sm:my-2 sm:w-fit"
+            : "relative z-20 w-full sm:w-fit my-1.5 sm:my-2",
           hero.courseWrapperClassName
         )}
         style={hero.courseWrapperStyle}
@@ -352,7 +380,7 @@ export default function LandingHero({
       return (
         <div
           className={joinClassNames(
-            "flex flex-wrap items-center gap-3 sm:gap-4 pt-3",
+            "flex flex-wrap items-center gap-3 sm:gap-4 pt-2",
             hero.actionButtonsWrapperClassName
           )}
           style={hero.actionButtonsWrapperStyle}
@@ -450,7 +478,7 @@ export default function LandingHero({
           <div
             aria-hidden="true"
             className={joinClassNames(
-              "absolute inset-0 -z-20 hidden md:block",
+              "absolute inset-0 -z-20 hidden min-[1000px]:block",
               hero.backgroundClassName
             )}
             style={desktopBackgroundStyle}
@@ -462,7 +490,7 @@ export default function LandingHero({
           <div
             aria-hidden="true"
             className={joinClassNames(
-              "absolute inset-0 -z-20 md:hidden",
+              "absolute inset-0 -z-20 min-[1000px]:hidden",
               hero.mobileBackgroundClassName || hero.backgroundClassName
             )}
             style={mobileBackgroundStyle}
@@ -471,20 +499,23 @@ export default function LandingHero({
 
         {renderOverlay()}
 
-        <LandingContainer
+        <HeroContainer
           className={joinClassNames(
-            "relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6 sm:gap-8 lg:gap-8 px-4 sm:px-6 lg:px-8 py-4 sm:py-7 lg:py-6",
+            isSsbm
+              ? "ssbm-hero-container relative z-10 flex flex-col min-[1000px]:flex-row items-center justify-between gap-5 sm:gap-6 lg:gap-8 w-full max-w-[1140px] mx-auto px-4 sm:px-6 box-border"
+              : "relative z-10 flex flex-col min-[1000px]:flex-row items-center justify-between gap-5 sm:gap-6 lg:gap-8 px-4 sm:px-6 lg:px-8 py-2.5 sm:py-4 lg:py-4",
             hero.containerClassName
           )}
           style={{
             minHeight: hero.minHeight,
+            maxWidth: hero.contentMaxWidth,
             ...hero.containerStyle,
           }}
         >
           {/* ------------------------- LEFT CONTENT ------------------------- */}
           <div
             className={joinClassNames(
-              "hero-info-col relative z-10 flex w-full flex-col lg:flex-1",
+              "hero-info-col relative z-10 flex w-full flex-col min-[1000px]:flex-1",
               isLeftAligned
                 ? "items-start text-left"
                 : "items-center sm:items-start text-center sm:text-left",
@@ -511,18 +542,20 @@ export default function LandingHero({
               )
             )}
 
-            {(hero.hashtagText || brand.hashtag) && (
+            {!hero.hideHashtag && hero.showHashtag !== false && (hero.hashtagText || hero.hashtag || brand.hashtagText || brand.hashtag) && (
               <p
                 className={
                   hero.hashtagClassName ||
+                  brand.hashtagClassName ||
                   "m-0 text-[13px] sm:text-[14px] font-bold tracking-wide"
                 }
                 style={{
-                  color: hero.hashtagColor,
+                  color: hero.hashtagColor || brand.hashtagColor,
+                  ...brand.hashtagStyle,
                   ...hero.hashtagStyle,
                 }}
               >
-                {hero.hashtagText || brand.hashtag}
+                {hero.hashtagText || hero.hashtag || brand.hashtagText || brand.hashtag}
               </p>
             )}
 
@@ -530,7 +563,7 @@ export default function LandingHero({
               <h1
                 className={
                   hero.headingClassName ||
-                  "mt-1 mb-1 text-[30px] sm:text-[36px] lg:text-[42px] font-extrabold leading-[1.12] tracking-tight whitespace-pre-line"
+                  "mt-0 mb-1 text-[30px] sm:text-[36px] lg:text-[42px] font-extrabold leading-[1.12] tracking-tight whitespace-pre-line"
                 }
                 style={headingStyle}
                 dangerouslySetInnerHTML={{ __html: hero.titleHtml || hero.headlineHtml }}
@@ -539,7 +572,7 @@ export default function LandingHero({
               <h1
                 className={
                   hero.headingClassName ||
-                  "mt-1 mb-1 text-[30px] sm:text-[36px] lg:text-[42px] font-extrabold leading-[1.12] tracking-tight whitespace-pre-line"
+                  "mt-0 mb-1 text-[30px] sm:text-[36px] lg:text-[42px] font-extrabold leading-[1.12] tracking-tight whitespace-pre-line"
                 }
                 style={headingStyle}
               >
@@ -555,7 +588,7 @@ export default function LandingHero({
               <div
                 className={
                   hero.taglineClassName ||
-                  "mt-1 mb-2 text-[15px] sm:text-[17px] lg:text-[18px] font-medium leading-snug max-w-[520px]"
+                  "mt-0.5 mb-1.5 text-[15px] sm:text-[17px] lg:text-[18px] font-medium leading-snug max-w-[520px]"
                 }
                 style={taglineStyle}
               >
@@ -573,7 +606,7 @@ export default function LandingHero({
               <p
                 className={
                   hero.descriptionClassName ||
-                  "mt-2 mb-3 text-[14px] sm:text-[15.5px] leading-relaxed max-w-[520px]"
+                  "mt-1 mb-2 text-[14px] sm:text-[15.5px] leading-relaxed max-w-[520px]"
                 }
                 style={descriptionStyle}
               >
@@ -639,12 +672,18 @@ export default function LandingHero({
               </div>
             )}
 
+            {/* Courses before pricing stats if configured */}
+            {hero.coursesBeforePricingStats &&
+              !hero.coursesBeforeTagline &&
+              !hero.coursesFirst &&
+              renderCourseContent()}
+
             {/* Dynamic Pricing Stats (from LP JSON) */}
             {Array.isArray(hero.pricingStats) && hero.pricingStats.length > 0 && (
               <div
                 className={
                   hero.pricingStatsClassName ||
-                  "flex items-center justify-center sm:justify-start gap-6 pt-2 my-2"
+                  "flex items-center justify-start gap-6 pt-1 my-2.5"
                 }
                 style={hero.pricingStatsStyle}
               >
@@ -653,7 +692,10 @@ export default function LandingHero({
                     {idx > 0 && <div className="h-9 w-[1px] bg-slate-300" />}
                     <div>
                       <p
-                        className="text-xs font-semibold uppercase tracking-wider m-0"
+                        className={
+                          hero.pricingStatLabelClassName ||
+                          "text-xs font-semibold uppercase tracking-wider m-0"
+                        }
                         style={{
                           color:
                             hero.pricingStatLabelColor ||
@@ -663,7 +705,13 @@ export default function LandingHero({
                       >
                         {stat.label}
                       </p>
-                      <h3 className="text-xl sm:text-2xl font-black text-slate-900 mt-0.5 m-0">
+                      <h3
+                        className={
+                          hero.pricingStatValueClassName ||
+                          "text-xl sm:text-2xl font-black text-slate-900 mt-0.5 m-0"
+                        }
+                        style={hero.pricingStatValueStyle}
+                      >
                         {stat.value}
                       </h3>
                     </div>
@@ -695,7 +743,8 @@ export default function LandingHero({
             )}
 
             {/* Courses after tagline/description */}
-            {!hero.coursesBeforeTagline &&
+            {!hero.coursesBeforePricingStats &&
+              !hero.coursesBeforeTagline &&
               !hero.coursesFirst &&
               renderCourseContent()}
 
@@ -709,7 +758,7 @@ export default function LandingHero({
           {(hero.image || hero.desktopImage || hero.studentImage || hero.centerImage || brand.heroStudentImage) && (
             <div
               className={joinClassNames(
-                "hidden lg:flex lg:flex-1 justify-center items-end self-end pointer-events-none -mb-4 sm:-mb-6 lg:-mb-6 z-10",
+                "hidden min-[1000px]:flex min-[1000px]:flex-1 justify-center items-end self-end pointer-events-none -mb-2.5 sm:-mb-3.5 lg:-mb-3 z-10",
                 hero.imageWrapperClassName || hero.studentImageWrapperClassName
               )}
               style={hero.imageWrapperStyle || hero.studentImageWrapperStyle}
@@ -739,33 +788,28 @@ export default function LandingHero({
           {/* --------------------------- RIGHT FORM -------------------------- */}
           <div
             className={joinClassNames(
-              "hero-form-col relative z-20 w-full sm:w-[350px] lg:w-[340px] xl:w-[360px] shrink-0 flex flex-col items-center lg:items-end justify-center",
+              "hero-form-col relative z-20 w-full sm:w-[350px] min-[1000px]:w-[340px] xl:w-[360px] shrink-0 flex flex-col items-center min-[1000px]:items-end justify-center",
               hero.formContainerClassName
             )}
             style={hero.formContainerStyle}
           >
-            {(hero.mobileImage || hero.mobileStudentImage) && (
+            {(hero.mobileStudentImage || hero.mobileImage) && (
               <div
                 className={joinClassNames(
-                  "hero-mobile-image-wrapper block md:hidden relative",
-                  hero.mobileStudentImage
-                    ? "w-full overflow-visible"
-                    : "w-full aspect-[926/433] overflow-hidden rounded-2xl mb-3 shadow-md",
-                  hero.mobileImageWrapperClassName || hero.mobileStudentImageWrapperClassName
+                  "hero-mobile-image-wrapper block min-[1000px]:hidden w-full max-w-[440px] mx-auto my-3 sm:my-3.5 relative",
+                  hero.mobileStudentImageWrapperClassName || hero.mobileImageWrapperClassName
                 )}
                 style={hero.mobileStudentImageWrapperStyle || hero.mobileImageWrapperStyle}
               >
-                <Image
-                  src={hero.mobileImage || hero.mobileStudentImage}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={hero.mobileStudentImage || hero.mobileImage}
                   alt={brand.name || "University"}
-                  fill
                   className={joinClassNames(
-                    hero.mobileStudentImage ? "object-contain object-bottom" : "object-cover",
-                    hero.mobileImageClassName || hero.mobileStudentImageClassName
+                    "w-full h-auto object-cover rounded-[16px] shadow-md border border-slate-200/60 block",
+                    hero.mobileStudentImageClassName || hero.mobileImageClassName
                   )}
                   style={hero.mobileStudentImageStyle || hero.mobileImageStyle}
-                  sizes="(max-width: 768px) 100vw, 420px"
-                  priority
                 />
                 {(hero.mobileImageBadge || hero.imageBadge) && (
                   <div className="absolute top-2.5 right-2.5 bg-white/95 px-2.5 py-1.5 rounded-lg shadow z-10 flex items-center justify-center">
@@ -782,7 +826,15 @@ export default function LandingHero({
             )}
 
             {/* Mobile Scholarship Coupon Button */}
-            {(brand.showCouponBtn || brand.showCouponButton || hero.showCouponBtn || hero.showCouponButton) && (
+            {!hero.showMobileCouponButton &&
+              hero.showMobileCouponButton !== false &&
+              brand.showMobileCouponButton !== false &&
+              hero.hideMobileCouponButton !== true &&
+              brand.hideMobileCouponButton !== true &&
+              !brand.hideMobileHeroCoupon &&
+              !hero.hideMobileHeroCoupon &&
+              brand.slug !== "cu" &&
+              (brand.showCouponBtn || brand.showCouponButton || hero.showCouponBtn || hero.showCouponButton) && (
               <div className="w-full flex justify-center md:hidden mb-3">
                 <button
                   type="button"
@@ -839,6 +891,128 @@ export default function LandingHero({
               </div>
             )}
 
+            {hero.showMobileCouponButton === true &&
+              hero.hideMobileCouponButton !== true &&
+              brand.hideMobileCouponButton !== true &&
+              brand.slug !== "vgu" &&
+              brand.slug !== "lpu" && (
+              <div className="w-full block lg:hidden my-2 mb-3.5 flex justify-center">
+                <Button
+                  type="text"
+                  onClick={(e) => {
+                    try {
+                      if (typeof window !== "undefined") {
+                        const rect = e?.currentTarget?.getBoundingClientRect();
+                        const x = rect ? (rect.left + rect.width / 2) / window.innerWidth : 0.5;
+                        const y = rect ? (rect.top + rect.height / 2) / window.innerHeight : 0.5;
+                        confetti({
+                          particleCount: 55,
+                          spread: 60,
+                          origin: { x, y },
+                          zIndex: 99999,
+                          colors: ["#2ecc71", "#27ae60", "#f1c40f", "#e67e22", "#e74c3c"],
+                        });
+                      }
+                    } catch { }
+                    if (onOpenScholarship) {
+                      onOpenScholarship();
+                    } else if (onOpenApply) {
+                      onOpenApply();
+                    }
+                  }}
+                  aria-label="Get Scholarship Coupon Code"
+                  style={{
+                    ...(brand.couponBtnBg || hero.couponBtnBg || brand.themeGradient
+                      ? {
+                        "--coupon-btn-bg":
+                          brand.couponBtnBg ||
+                          hero.couponBtnBg ||
+                          brand.themeGradient,
+                      }
+                      : brand.couponButtonColor
+                        ? {
+                          backgroundColor:
+                            brand.couponButtonColor,
+                        }
+                        : {
+                          backgroundColor:
+                            "#22c55e",
+                        }),
+
+                    "--coupon-shadow-start":
+                      brand.couponShadowColor ||
+                      "rgba(46, 204, 113, 0.65)",
+
+                    "--coupon-shadow-mid1":
+                      brand.couponShadowColorMid1 ||
+                      "rgba(46, 204, 113, 0.42)",
+
+                    "--coupon-shadow-mid2":
+                      brand.couponShadowColorMid2 ||
+                      "rgba(46, 204, 113, 0.22)",
+
+                    "--coupon-shadow-mid3":
+                      brand.couponShadowColorMid3 ||
+                      "rgba(46, 204, 113, 0.08)",
+
+                    "--coupon-shadow-end":
+                      "rgba(46, 204, 113, 0)",
+                  }}
+                  className={joinClassNames(
+                    "coupon-btn-main relative inline-flex items-center gap-2 sm:gap-2.5 !text-white font-bold cursor-pointer !border-none overflow-hidden select-none hover:!brightness-105 active:scale-95 !h-auto",
+                    hero.couponButtonClassName ||
+                    brand.couponButtonClassName ||
+                    (brand.slug === "cu"
+                      ? "w-full max-w-[290px] sm:max-w-[310px] mx-auto justify-center py-2.5 px-4 rounded-[8px]"
+                      : "pl-5 sm:pl-7 md:pl-8 pr-4.5 sm:pr-6 md:pr-7 py-1 sm:py-1.5 rounded-[8px] text-[10px] sm:text-[11px] md:text-[11.5px]")
+                  )}
+                >
+                  {/* Moving Light Green Box */}
+                  <span className="moving-light-green-box" />
+
+                  {/* Gift Icon */}
+                  <span
+                    className={joinClassNames(
+                      "relative rounded-full bg-white flex items-center justify-center shrink-0 shadow-xs z-10 p-0 overflow-hidden",
+                      brand.slug === "cu"
+                        ? "-ml-1 w-6 h-6 sm:w-6.5 sm:h-6.5"
+                        : "-ml-1.5 sm:-ml-2.5 w-6 h-6 sm:w-7 sm:h-7"
+                    )}
+                  >
+                    <Image
+                      src={
+                        brand.giftGif ||
+                        "/assets/images/gift.gif"
+                      }
+                      alt="Scholarship Gift"
+                      width={24}
+                      height={24}
+                      unoptimized
+                      className={
+                        brand.slug === "cu"
+                          ? "w-5 h-5 sm:w-5.5 sm:h-5.5 object-contain"
+                          : "w-5 h-5 sm:w-6 sm:h-6 object-contain"
+                      }
+                    />
+                  </span>
+
+                  {/* Coupon Text */}
+                  <span
+                    className={joinClassNames(
+                      "relative z-10 tracking-wide whitespace-nowrap text-white font-bold drop-shadow-[0_1px_2px_rgba(0,0,0,0.15)]",
+                      hero.couponButtonTextClassName ||
+                      brand.couponButtonTextClassName ||
+                      (brand.slug === "cu"
+                        ? "text-[13.5px] sm:text-[14px]"
+                        : "text-[14px] sm:text-[15px] md:text-[15.5px]")
+                    )}
+                  >
+                    {brand.couponButtonText || "Scholarship Coupon Code"}
+                  </span>
+                </Button>
+              </div>
+            )}
+
             <LandingLeadForm
               config={hero.form}
               brand={brand}
@@ -883,7 +1057,7 @@ export default function LandingHero({
               style={hero.formStyle}
             />
           </div>
-        </LandingContainer>
+        </HeroContainer>
       </section>
 
       {/* --------------------- OPTIONAL BOTTOM STRIP --------------------- */}
@@ -895,18 +1069,26 @@ export default function LandingHero({
           }
           style={hero.bottomStrip.style}
         >
-          <LandingContainer className="max-w-[1360px] px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+          <LandingContainer className={brand?.slug === "lpu" ? "px-3 sm:px-6" : "max-w-[1360px] min-[1600px]:max-w-[1520px] min-[1920px]:max-w-[1680px] px-4 sm:px-6 lg:px-8"}>
+            <div className={hero.bottomStrip.innerClassName || "flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left"}>
               <div>
                 {hero.bottomStrip.textHtml ? (
                   <p
-                    className="text-base sm:text-xl font-bold text-slate-800 m-0"
+                    className={
+                      hero.bottomStrip.textClassName ||
+                      "text-base sm:text-xl font-bold text-slate-800 m-0"
+                    }
                     dangerouslySetInnerHTML={{
                       __html: hero.bottomStrip.textHtml,
                     }}
                   />
                 ) : (
-                  <p className="text-base sm:text-xl font-bold text-slate-800 m-0">
+                  <p
+                    className={
+                      hero.bottomStrip.textClassName ||
+                      "text-base sm:text-xl font-bold text-slate-800 m-0"
+                    }
+                  >
                     {hero.bottomStrip.text}
                   </p>
                 )}

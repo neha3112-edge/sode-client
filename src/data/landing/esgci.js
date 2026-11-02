@@ -33,40 +33,66 @@ export const esgciCustomCss = `
     color: #04903c !important;
   }
 
-  /* Hero Section */
+/* ESGCI HERO - LAPTOP & DESKTOP */
+@media (min-width: 1024px) {
+
   .landing-page--esgci #hero {
-    background-image: url(/assets/all_universities_images/esgci/esgci_new_desktop_bg.png) !important;
+    padding: 12px 40px 20px !important;
+    min-height: 0 !important;
+    height: auto !important;
     background-position: center top !important;
     background-size: cover !important;
-    background-repeat: no-repeat !important;
-    padding: 30px 15px !important;
-    min-height: auto !important;
-    position: relative !important;
   }
 
-  .landing-page--esgci #hero > div.absolute {
-    display: none !important;
+  /* Main hero content container */
+  .landing-page--esgci #hero .hero-info-col {
+    align-self: flex-start !important;
+    align-items: flex-start !important;
+    text-align: left !important;
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+    gap: 0 !important;
   }
 
+  /* Online DBA Heading */
   .landing-page--esgci #hero h1 {
     font-family: 'Anton', sans-serif !important;
-    font-size: 60px !important;
-    line-height: 1 !important;
+    font-size: 76px !important;
     font-weight: 900 !important;
-    letter-spacing: 0.5px !important;
+    line-height: 1 !important;
+    letter-spacing: 0 !important;
     color: #04903c !important;
-    margin: 8px 0 !important;
+    margin: 4px 0 12px !important;
   }
+
+  /* Left content text alignment */
+  .landing-page--esgci #hero .hero-info-col p,
+  .landing-page--esgci #hero .hero-info-col h2 {
+    text-align: left !important;
+  }
+
+  /* Brochure button */
+  .landing-page--esgci #hero .hero-brochure-btn {
+    margin-top: 18px !important;
+    align-self: flex-start !important;
+  }
+
+  /* Form stays top aligned */
+  .landing-page--esgci #hero .hero-form-col {
+    align-self: flex-start !important;
+    margin-top: 0 !important;
+  }
+}
 
   /* Achievement Bar */
   .landing-page--esgci .achievement {
     background-color: #000000 !important;
-    padding: 28px 12px !important;
+    padding: 18px 8px !important;
   }
   .landing-page--esgci .ac1 h3 {
     color: #04903c !important;
-    font-size: 21px !important;
-    font-weight: 800 !important;
+    font-size: 18px !important;
+    font-weight: 700 !important;
     margin-bottom: 6px !important;
     font-family: 'Outfit', sans-serif !important;
   }
@@ -91,20 +117,20 @@ export const esgciCustomCss = `
 
   /* Buttons */
   .landing-page--esgci .downloadBrochureBtn {
-    background-color: #fff000 !important;
+    background-color: #04903c !important;
     color: #000000 !important;
     font-weight: 700 !important;
     border-radius: 5px !important;
     transition: all 0.2s ease !important;
   }
   .landing-page--esgci .downloadBrochureBtn:hover {
-    background-color: #f0e200 !important;
+    background-color: #04903c !important;
   }
 
   .landing-page--esgci .enquireNowBtn {
-    background-color: #fff000 !important;
+    background-color: #04903c !important;
     color: #000000 !important;
-    font-weight: 700 !important;
+    font-weight: 500 !important;
     border-radius: 5px !important;
   }
 
@@ -198,104 +224,19 @@ export const esgciCustomCss = `
       line-height: 1 !important;
     }
 
-    .landing-page--esgci #hero .hero-info-col > div:first-child {
-      display: none !important;
+    /* About - Mobile */
+    .landing-page--esgci #about {
+      background-color: #000000 !important;
+      background-image: none !important;
     }
-
-    .landing-page--esgci #hero .hero-brochure-btn {
-      display: none !important;
-    }
-
-    .landing-page--esgci #hero .hero-form-col {
-  width: 100% !important;
-      max-width: 100% !important;
-      display: flex !important;
-      justify-content: center !important;
-      align-items: center !important;
-      z-index: 20 !important;
-      position: relative !important;
-      padding-left: 0 !important;
-      padding-right: 0 !important;
-      margin-left: 0 !important;
-      margin-right: 0 !important;
-    }
-
-    .landing-page--esgci .hero-mobile-image-wrapper img {
-      width: 100% !important;
-  max-width: none !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  object-position: center top !important;
-  display: block !important;
-  transform: scaleX(1.15) !important;
-  transform-origin: center center !important;
-    }
-
-
-     /* About - Mobile */
-  .landing-page--esgci #about {
-    background-color: #000000 !important;
-    background-image: none !important;
-  }
     .landing-page--esgci #benefits {
-  background-image: url(/assets/all_universities_images/esgci/benefits-mobile.webp) !important;
-  background-size: 100% 100% !important;
-  background-position: center center !important;
-  background-repeat: no-repeat !important;
-  padding-top: 36px !important;
-  padding-bottom: 45px !important;
-  min-height: 1000px !important;
-}
-
-    .landing-page--esgci .call_fix_image img {
-      width: 60px !important;
-      bottom: 140px !important;
-      right: 9px !important;
-    }
-
-    /* Footer Sticky Bar (50/50 Split Flush Full Width) */
-    .landing-page--esgci .footer_sticky_buttons {
-      gap: 0px !important;
-      padding: 0px !important;
-      padding-bottom: max(0px, env(safe-area-inset-bottom)) !important;
-      background: transparent !important;
-      grid-template-columns: 1fr 1fr !important;
-      width: 100% !important;
-      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.15) !important;
-    }
-    .landing-page--esgci .footer_sticky_buttons a,
-    .landing-page--esgci .footer_sticky_buttons button,
-    .landing-page--esgci .footer_sticky_buttons .wp_btn,
-    .landing-page--esgci .footer_sticky_buttons .apply_btn {
-      border-radius: 0px !important;
-      padding: 12px 6px !important;
-      font-size: 14.5px !important;
-      font-weight: 700 !important;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      border: none !important;
-      height: 48px !important;
-      box-shadow: none !important;
-      width: 100% !important;
-      font-family: 'Outfit', sans-serif !important;
-    }
-    .landing-page--esgci .footer_sticky_buttons .wp_btn {
-      background: #20c968 !important;
-      background-color: #20c968 !important;
-      color: #ffffff !important;
-      gap: 7px !important;
-    }
-    .landing-page--esgci .footer_sticky_buttons .apply_btn {
-      background: #fff000 !important;
-      background-color: #fff000 !important;
-      color: #000000 !important;
-      gap: 6px !important;
-    }
-    .landing-page--esgci .footer_sticky_buttons .wp_btn svg {
-      width: 18px !important;
-      height: 18px !important;
-      color: #ffffff !important;
+      background-image: url(/assets/all_universities_images/esgci/benefits-mobile.webp) !important;
+      background-size: 100% 100% !important;
+      background-position: center center !important;
+      background-repeat: no-repeat !important;
+      padding-top: 36px !important;
+      padding-bottom: 45px !important;
+      min-height: 1000px !important;
     }
   }
 `;
@@ -378,9 +319,9 @@ export const esgciData = {
         <Image
           src="/assets/all_universities_images/esgci/esgci_new_logo.png"
           alt="ESGCI"
-          width={180}
-          height={55}
-          className="h-[36px] sm:h-[46px] w-auto object-contain"
+          width={150}
+          height={45}
+          className="h-[26px] sm:h-[36px] lg:h-[32px] w-auto object-contain"
         />
       ),
       welcomeContainerClassName: "!mb-2 !mt-0 !text-left hidden md:block",
@@ -393,8 +334,8 @@ export const esgciData = {
         fontSize: "15px",
         fontWeight: "600",
         letterSpacing: "0.1px",
-        marginTop: "2px",
-        marginBottom: "2px",
+        marginTop: "8px",
+        marginBottom: "12px",
       },
 
       headlineText: "Online DBA",
@@ -439,7 +380,7 @@ export const esgciData = {
           textAlign: "center",
           lineHeight: "1.2",
           display: "block",
-          marginTop: "4px",
+          marginTop: "8px",
           marginBottom: "4px",
         },
       },
@@ -449,7 +390,7 @@ export const esgciData = {
       coursesStrip: [
         "Earn a prestigious Online DBA from Paris-based ESGCI while advancing your career from anywhere in the world.",
       ],
-      courseStripClassName: "!text-[13.5px] sm:text-[14px] !text-[#222222] !leading-[1.4] !max-w-[360px] !font-normal !mb-3 !border-none !p-0 !bg-transparent text-center mx-auto",
+      courseStripClassName: "!text-[13.5px] sm:text-[14px] !text-[#222222] !leading-[1.4] !max-w-[310px] !font-normal !mb-3 !border-none !p-0 !bg-transparent !text-left !ml-0 !mr-auto !self-start",
       courseStripStyle: {
         fontFamily: "'Outfit', sans-serif",
         color: "#222222",
@@ -457,9 +398,9 @@ export const esgciData = {
         lineHeight: "1.4",
         fontWeight: "400",
         maxWidth: "360px",
-        marginTop: "2px",
+        marginTop: "6px",
         marginBottom: "8px",
-        textAlign: "center",
+        textAlign: "left",
         border: "none",
         background: "transparent",
         boxShadow: "none",
@@ -468,12 +409,12 @@ export const esgciData = {
       brochureButtonText: "Download Brochure",
       buttonStyle: {
         fontFamily: "'Outfit', sans-serif",
-        background: "#fff000",
-        backgroundColor: "#fff000",
-        color: "#000000",
+        background: "#04903c",
+        backgroundColor: "#04903c",
+        color: "#fff",
         borderRadius: "5px",
         fontSize: "15px",
-        fontWeight: "700",
+        fontWeight: "400",
         padding: "10px 24px",
       },
 

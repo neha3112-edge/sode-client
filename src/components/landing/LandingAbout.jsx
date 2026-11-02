@@ -15,6 +15,8 @@ import MuAbout from "./about/MuAbout";
 import VguAbout from "./about/VguAbout";
 import SmuAbout from "./about/SmuAbout";
 import ManipalAbout from "./about/ManipalAbout";
+import CuAbout from "./about/CuAbout";
+import UpesAbout from "./about/UpesAbout";
 import ShooliniAbout from "./about/ShooliniAbout";
 import IiitbAbout from "./about/IiitbAbout";
 
@@ -23,6 +25,8 @@ import IiitbAbout from "./about/IiitbAbout";
  * Decouples university brand identity (slug) from visual layout rendering.
  */
 const ABOUT_LAYOUTS = {
+  upes: UpesAbout,
+  cu: CuAbout,
   classic: ClassicAbout,
   iiitb: IiitbAbout,
   imageRight: ClassicAbout,
@@ -32,6 +36,7 @@ const ABOUT_LAYOUTS = {
   iim: IimAbout,
   uu: UuAbout,
   ssbm: SsbmAbout,
+  upes: UpesAbout,
   liverpool: LiverpoolAbout,
   rushford: RushfordAbout,
   esgci: EsgciAbout,
@@ -62,7 +67,7 @@ export default function LandingAbout({
   }
 
   // 2. Resolve layout from JSON configuration
-  const layout = brand?.aboutLayout || about?.layout || "classic";
+  const layout = brand?.aboutLayout || about?.layout || brand?.slug || "classic";
   const AboutComponent = ABOUT_LAYOUTS[layout] || ClassicAbout;
 
   // 3. Render matched layout component

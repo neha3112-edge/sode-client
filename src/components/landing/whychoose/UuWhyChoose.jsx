@@ -22,7 +22,7 @@ export default function UuWhyChoose({ whyChoose = [], brand = {}, onOpenApply })
       className="w-full select-none py-10 sm:py-16 lg:py-20 scroll-mt-20 text-white"
       style={{ backgroundColor: bg }}
     >
-      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1240px] min-[1600px]:max-w-[1520px] min-[1920px]:max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-center">
           {/* Left: Student Image */}
           <div className="lg:col-span-5 flex justify-center">

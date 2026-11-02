@@ -12,6 +12,8 @@ import ShooliniApprovals from "./layouts/ShooliniApprovals";
 import VguApprovals from "./layouts/VguApprovals";
 import SmuApprovals from "./layouts/SmuApprovals";
 import ApprovalsSlider from "./layouts/ApprovalsSlider";
+import UpesApprovals from "./layouts/UpesApprovals";
+import CuApprovals from "./layouts/CuApprovals";
 import MUApprovals from "./layouts/MUApprovals";
 import IIITBApprovals from "./layouts/IIITBApprovals";
 
@@ -22,6 +24,8 @@ import IIITBApprovals from "./layouts/IIITBApprovals";
  */
 export const APPROVAL_LAYOUTS = {
   // Standard Layout Names
+  upes: UpesApprovals,
+  cu: CuApprovals,
   classic: ClassicApprovals,
   amity: AmityApprovals,
   table: GalgotiasApprovals,

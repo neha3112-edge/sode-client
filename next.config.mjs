@@ -7,6 +7,7 @@ const BACKEND_URL =
     : (process.env.NEXT_PUBLIC_LOCAL_BACKEND_SERVER || "http://localhost:3000").replace(/\/+$/, "");
 
 const nextConfig = {
+  devIndicators: false,
   trailingSlash: true,
   skipTrailingSlashRedirect: true,
   reactStrictMode: true,

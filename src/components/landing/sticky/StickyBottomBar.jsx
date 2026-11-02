@@ -13,7 +13,10 @@ function getApplyButtonStyles(stickyBar) {
     "white-red": { bg: "#ffffff", text: "#d32f2f" },
     "white-orange": { bg: "#ffffff", text: "#DC520A" },
     "white-accent": { bg: "#ffffff", text: "#f97316" },
+    "white-pink": { bg: "#ffffff", text: "#f2167d" },
+    "white-blue": { bg: "#ffffff", text: "#074a76" },
     "white-brand": { bg: "#ffffff", text: stickyBar.brandColor || "#003468" },
+    "pink": { bg: "#f2167d", text: "#ffffff" },
     "red": { bg: "#c11f28", text: "#ffffff" },
     "orange": { bg: "#DC520A", text: "#ffffff" },
     "blue": { bg: "#01519a", text: "#ffffff" },
@@ -69,7 +72,7 @@ export default function StickyBottomBar({
         {stickyBar.brochureAction === "whatsapp" ? (
           <Link
             href={whatsappUrl}
-            className="wp_btn flex items-center justify-center gap-2 h-[48px] font-bold text-[14.5px] no-underline border-none rounded-none cursor-pointer active:opacity-90"
+            className="wp_btn flex items-center justify-center gap-2 h-[48px] font-normal text-[14.5px] no-underline border-none rounded-none cursor-pointer active:opacity-90"
             style={{
               backgroundColor: brochureStyles.backgroundColor,
               color: brochureStyles.color,
@@ -78,7 +81,7 @@ export default function StickyBottomBar({
             {stickyBar.brochureIcon === "download" ? (
               <Download className="w-4 h-4 shrink-0" style={{ color: brochureStyles.color }} />
             ) : (
-              <FaWhatsapp className="w-[18px] h-[18px] shrink-0" style={{ color: brochureStyles.color }} />
+              <FaWhatsapp className="w-5 h-5 shrink-0" style={{ color: brochureStyles.color }} />
             )}
             <span>{labels.brochure}</span>
           </Link>
@@ -86,7 +89,7 @@ export default function StickyBottomBar({
           <button
             type="button"
             onClick={() => onOpenBrochure?.()}
-            className="wp_btn flex items-center justify-center gap-2 h-[48px] font-bold text-[14.5px] border-none rounded-none cursor-pointer active:opacity-90"
+            className="wp_btn flex items-center justify-center gap-2 h-[48px] font-normal text-[14.5px] border-none rounded-none cursor-pointer active:opacity-90"
             style={{
               backgroundColor: brochureStyles.backgroundColor,
               color: brochureStyles.color,
@@ -95,7 +98,7 @@ export default function StickyBottomBar({
             {stickyBar.brochureIcon === "download" ? (
               <Download className="w-4 h-4 shrink-0" style={{ color: brochureStyles.color }} />
             ) : (
-              <FaWhatsapp className="w-[18px] h-[18px] shrink-0" style={{ color: brochureStyles.color }} />
+              <FaWhatsapp className="w-5 h-5 shrink-0" style={{ color: brochureStyles.color }} />
             )}
             <span>{labels.brochure}</span>
           </button>
@@ -105,7 +108,7 @@ export default function StickyBottomBar({
         <button
           type="button"
           onClick={() => onOpenApply?.()}
-          className="apply_btn flex items-center justify-center gap-1.5 h-[48px] rounded-none font-bold text-[14.5px] border-none cursor-pointer active:opacity-90"
+          className="apply_btn flex items-center justify-center gap-1.5 h-[48px] rounded-none font-normal text-[14.5px] border-none cursor-pointer active:opacity-90"
           style={{
             backgroundColor: applyStyles.backgroundColor,
             color: applyStyles.color,
@@ -114,7 +117,7 @@ export default function StickyBottomBar({
           <span>{labels.apply}</span>
           {!stickyBar.hideApplyArrow && (
             <span
-              className="text-[17px] leading-none font-bold"
+              className="text-[22px] sm:text-[24px] leading-none font-bold -mt-0.5 ml-0.5 inline-block"
               style={{ color: applyStyles.color }}
             >
               »
@@ -134,7 +137,7 @@ export default function StickyBottomBar({
       {stickyBar.brochureAction === "whatsapp" ? (
         <Link
           href={whatsappUrl}
-          className="wp_btn flex items-center justify-center gap-1.5 py-2 px-3 rounded-full font-bold text-[13.5px] sm:text-sm no-underline shadow-sm active:opacity-90 border-none cursor-pointer"
+          className="wp_btn flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-full font-normal text-[15px] sm:text-[15.5px] no-underline shadow-sm active:opacity-90 border-none cursor-pointer"
           style={{
             backgroundColor: brochureStyles.backgroundColor,
             color: brochureStyles.color,
@@ -143,7 +146,7 @@ export default function StickyBottomBar({
           {stickyBar.brochureIcon === "download" ? (
             <Download className="w-4 h-4 shrink-0" style={{ color: brochureStyles.color }} />
           ) : (
-            <FaWhatsapp className="w-[18px] h-[18px] shrink-0" style={{ color: brochureStyles.color }} />
+            <FaWhatsapp className="w-5 h-5 shrink-0" style={{ color: brochureStyles.color }} />
           )}
           <span>{labels.brochure}</span>
         </Link>
@@ -151,7 +154,7 @@ export default function StickyBottomBar({
         <button
           type="button"
           onClick={() => onOpenBrochure?.()}
-          className="wp_btn flex items-center justify-center gap-1.5 sm:gap-2 py-2 px-3 rounded-full font-bold text-[13.5px] sm:text-sm border-none cursor-pointer shadow-sm active:opacity-90 relative z-10"
+          className="wp_btn flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 px-3 rounded-full font-normal text-[15px] sm:text-[15.5px] border-none cursor-pointer shadow-sm active:opacity-90 relative z-10"
           style={{
             backgroundColor: brochureStyles.backgroundColor,
             color: brochureStyles.color,
@@ -160,7 +163,7 @@ export default function StickyBottomBar({
           {stickyBar.brochureIcon === "download" ? (
             <Download className="w-4 h-4 shrink-0" style={{ color: brochureStyles.color }} />
           ) : (
-            <FaWhatsapp className="w-[18px] h-[18px] shrink-0" style={{ color: brochureStyles.color }} />
+            <FaWhatsapp className="w-5 h-5 shrink-0" style={{ color: brochureStyles.color }} />
           )}
           <span>{labels.brochure}</span>
         </button>
@@ -170,7 +173,7 @@ export default function StickyBottomBar({
       <button
         type="button"
         onClick={() => onOpenApply?.()}
-        className="apply_btn flex items-center justify-center gap-1.5 py-2 px-3 rounded-full font-bold text-[13.5px] sm:text-sm border-none shadow-sm cursor-pointer active:opacity-90"
+        className="apply_btn flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-full font-normal text-[15px] sm:text-[15.5px] border-none shadow-sm cursor-pointer active:opacity-90"
         style={{
           backgroundColor: applyStyles.backgroundColor,
           color: applyStyles.color,
@@ -179,7 +182,7 @@ export default function StickyBottomBar({
         <span>{labels.apply}</span>
         {!stickyBar.hideApplyArrow && (
           <span
-            className="text-[16px] leading-none font-bold"
+            className="text-[22px] sm:text-[24px] leading-none font-bold -mt-0.5 ml-0.5 inline-block"
             style={{ color: applyStyles.color }}
           >
             »
@@ -189,3 +192,4 @@ export default function StickyBottomBar({
     </div>
   );
 }
+

@@ -13,6 +13,8 @@ import GguProgrammes from "./programmes/GguProgrammes";
 import IiitbProgrammes from "./programmes/IiitbProgrammes";
 import UuProgrammes from "./programmes/UuProgrammes";
 import SsbmProgrammes from "./programmes/SsbmProgrammes";
+import CuProgrammes from "./programmes/CuProgrammes";
+import UpesProgrammes from "./programmes/UpesProgrammes";
 import ProgrammesCarousel from "./programmes/ProgrammesCarousel";
 
 /**
@@ -27,6 +29,8 @@ const PROGRAMME_LAYOUT_ALIASES = {
   "vgu-cards": "vgu",
   "vgu-grid": "vgu",
   grid: "shoolini",
+  cu: "cu",
+  upes: "upes",
 };
 
 /**
@@ -43,6 +47,8 @@ const PROGRAMME_LAYOUTS = {
   uu: UuProgrammes,
   iiitb: IiitbProgrammes,
   ssbm: SsbmProgrammes,
+  upes: UpesProgrammes,
+  cu: CuProgrammes,
   ggu: GguProgrammes,
   mu: MuGrid,
   vgu: VguGrid,

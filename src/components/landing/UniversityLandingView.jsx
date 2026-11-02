@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { Download } from "lucide-react";
 import { Carousel } from "antd";
+import LandingContainer from "./LandingContainer";
 import LandingNavbar, { LandingSubNav } from "./LandingNavbar";
 import LandingHero from "./LandingHero";
 import LandingApprovals from "./LandingApprovals";
@@ -30,11 +31,7 @@ import CompareModal from "./modals/CompareModal";
 import LegalModal from "./modals/LegalModal";
 import LiverpoolLandingView from "./LiverpoolLandingView";
 
-export default function UniversityLandingView({ data = {} }) {
-  if (data?.slug === "liverpool" || data?.brand?.slug === "liverpool") {
-    return <LiverpoolLandingView data={data} />;
-  }
-
+function MainUniversityLandingView({ data = {} }) {
   const {
     slug = "university",
     brand = {},
@@ -64,12 +61,49 @@ export default function UniversityLandingView({ data = {} }) {
     compareModal,
   } = data;
 
+  const resolvedCourses = React.useMemo(() => {
+    const raw =
+      (Array.isArray(courses) && courses.length > 0)
+        ? courses
+        : data.courses ||
+          brand.courses ||
+          brand.hero?.formCourseList ||
+          brand.hero?.form?.courseList ||
+          brand.form?.courseList ||
+          [];
+
+    const seen = new Set();
+    const result = [];
+    for (const item of raw) {
+      const val = typeof item === "string" ? item : (item?.value || item?.label);
+      const lbl = typeof item === "string" ? item : (item?.label || item?.value);
+      if (val && !seen.has(val)) {
+        seen.add(val);
+        result.push({ value: val, label: lbl });
+      }
+    }
+    return result;
+  }, [courses, data.courses, brand]);
+
   const [isBrochureOpen, setIsBrochureOpen] = useState(false);
-  const [selectedCourse, setSelectedCourse] = useState(courses[0]?.value || "MBA");
+  const [selectedCourse, setSelectedCourse] = useState(
+    () => resolvedCourses[0]?.value || ""
+  );
   const [modalTitle, setModalTitle] = useState("Download Brochure");
   const [isScholarshipOpen, setIsScholarshipOpen] = useState(false);
   const [isCompareOpen, setIsCompareOpen] = useState(false);
   const [legalModalState, setLegalModalState] = useState({ isOpen: false, type: "disclaimer" });
+
+  useEffect(() => {
+    if (resolvedCourses.length > 0) {
+      setSelectedCourse((prev) => {
+        const isValid = resolvedCourses.some((c) => c.value === prev);
+        return isValid ? prev : resolvedCourses[0].value;
+      });
+    } else {
+      setSelectedCourse("");
+    }
+  }, [resolvedCourses]);
 
   // 1. Initial page load trigger flag: modal opens once on first scroll down to Why Choose
   const initialTriggeredRef = useRef(false);
@@ -109,6 +143,7 @@ export default function UniversityLandingView({ data = {} }) {
 
       // If user is currently in the middle of smooth-scrolling upwards to top from SODE click, ignore
       if (isScrollingToTopFromSodeRef.current) return;
+      if (brand.disableAutoScholarshipPopup) return;
 
       // Only trigger if:
       // A) First time on page load (!initialTriggeredRef.current)
@@ -158,7 +193,11 @@ export default function UniversityLandingView({ data = {} }) {
   }, []);
 
   const handleOpenBrochure = (course, title) => {
-    if (course) setSelectedCourse(course);
+    if (course && resolvedCourses.some((c) => c.value === course)) {
+      setSelectedCourse(course);
+    } else if (resolvedCourses.length === 1) {
+      setSelectedCourse(resolvedCourses[0].value);
+    }
     setModalTitle(
       title ||
       brand.hero?.brochureButtonText ||
@@ -169,7 +208,11 @@ export default function UniversityLandingView({ data = {} }) {
   };
 
   const handleOpenApply = (course, title) => {
-    if (course) setSelectedCourse(course);
+    if (course && resolvedCourses.some((c) => c.value === course)) {
+      setSelectedCourse(course);
+    } else if (resolvedCourses.length === 1) {
+      setSelectedCourse(resolvedCourses[0].value);
+    }
     setModalTitle(title || "Apply Now");
     setIsBrochureOpen(true);
   };
@@ -230,7 +273,7 @@ export default function UniversityLandingView({ data = {} }) {
         {/* 2. Hero Section (#banner / #hero) */}
         <LandingHero
           brand={brand}
-          courses={courses}
+          courses={resolvedCourses}
           onOpenBrochure={(course, title) => handleOpenBrochure(course, title)}
           onOpenApply={(course, title) => handleOpenApply(course, title || "Apply Now")}
           onOpenDisclaimer={() => handleOpenLegal("disclaimer")}
@@ -238,7 +281,7 @@ export default function UniversityLandingView({ data = {} }) {
         />
 
         {/* 2.5 Sub-Navigation Sticky Bar */}
-        {(brand.showSubNav === true || brand.slug === "galgotias" || slug === "galgotias") && (
+        {brand.showSubNav === true && (
           <LandingSubNav
             brand={{ ...brand, slug: brand.slug || slug }}
             onOpenApply={() => handleOpenApply()}
@@ -299,12 +342,12 @@ export default function UniversityLandingView({ data = {} }) {
                 if (brand.slug === "iim" || brand.overviewLayout === "iim") {
                   return (
                     <section id="overview" key="overview">
-                      <div className="container">
+                      <LandingContainer className="container">
                         <div className="overview1">
                           <h2>{overviewData?.title || "The IIM Kozhikode HRM Analytics Certification Courses"}</h2>
                           <p>{overviewData?.paragraph || overviewData?.desc || "The certificate course of IIM Kozhikode in HR Analytics is a 6-month online program that helps professionals learn HR concepts with modern analytics. The course is 280 hours of expert learning, live faculty sessions, and industry projects. Learners receive hands-on training in tools such as Tableau, Excel, and Power BI. The course is recognized as one of the leading HR courses. It is ideal for HR professionals, managers, and MBA graduates seeking to advance their careers."}</p>
                         </div>
-                      </div>
+                      </LandingContainer>
                     </section>
                   );
                 }
@@ -326,6 +369,86 @@ export default function UniversityLandingView({ data = {} }) {
                           <span>{overviewData.buttonText || "Download Brochure"}</span>
                           <Download className="w-4 h-4 stroke-[2.5]" />
                         </button>
+                      </div>
+                    </section>
+                  );
+                }
+                if (brand.slug === "ssbm" || brand.overviewLayout === "ssbm") {
+                  return (
+                    <section
+                      id="overview"
+                      key="overview"
+                      className="overview-section py-7 sm:py-8 lg:py-10 bg-white text-center select-none scroll-mt-20 w-full"
+                    >
+                      <div className="ssbm-overview-container w-full max-w-[1140px] mx-auto px-4 sm:px-6 box-border">
+                        <h2 className="text-[24px] sm:text-[28px] lg:text-[30px] font-bold text-[#111111] leading-tight m-0 mb-3">
+                          {brand.overviewTitle || (
+                            <span>
+                              <span style={{ color: "#000000" }}>Course</span>{" "}
+                              <span style={{ color: "#c11f28" }}>Overview</span>
+                            </span>
+                          )}
+                        </h2>
+                        <p className="text-[12px] sm:text-[13px] text-[#222222] leading-[1.5] tracking-normal mt-0 mb-5 w-full mx-auto font-normal">
+                          {brand.overviewDescription ||
+                            "The Online SSBM DBA program offers a strong path with many silent features. The SSBM University not only offers a well-recognised degree program but also includes PwC India's Board Advisory Certification, with patent-to-idea guidance, where Swiss expert faculty guide learners in conducting practical research and turning their ideas into theory. SSBM Doctorate online course also offers support in research, publishing, and leadership development for working professionals. The learner also takes advantage of practical boardroom skills enhancement, expert mentorship, global publishing opportunities, and allows them to interact with elite networks. The SSBM DBA online program offers the mixture of academic depth with real-world application, helping professionals increase their strategic decision-making and help themselves establish an influential leader. Students after taking the SSBM DBA admission can also expect a major salary increase."}
+                        </p>
+
+                        {brand.overviewItems && brand.overviewItems.length > 0 && (
+                          <div className="overview_lists grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-3.5 my-5 w-full">
+                            {brand.overviewItems.map((item, idx) => (
+                              <div
+                                key={idx}
+                                className="overview_list_inner bg-[#f1f1f1] px-4 py-2.5 rounded-[4px] flex items-center gap-3 text-left"
+                              >
+                                <span className="text-[#c11f28] shrink-0 text-[26px]">
+                                  {item.icon}
+                                </span>
+                                <div className="head_inner leading-tight">
+                                  <h3 className="text-[14px] sm:text-[14.5px] font-bold text-[#111111] m-0 mb-0.5">
+                                    {item.title}
+                                  </h3>
+                                  <p className="text-[12px] sm:text-[12.5px] text-[#555555] m-0 font-medium">
+                                    {item.value}
+                                  </p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        <div className="overview-cta-row flex flex-wrap items-center justify-center gap-3 mt-5">
+                          <button
+                            type="button"
+                            onClick={() => handleOpenBrochure()}
+                            className="downloadBrochureBtn inline-flex items-center gap-2 px-5 sm:px-6 py-2 sm:py-2.5 rounded-[4px] font-bold text-[13.5px] sm:text-[14px] text-white hover:brightness-95 transition-all cursor-pointer border-none shadow-none active:scale-95"
+                            style={{
+                              backgroundColor: "#c11f28",
+                            }}
+                          >
+                            <span>{brand.overviewButtonText || "Get Curriculum"}</span>
+                            <Download className="w-4 h-4 stroke-[2.5]" />
+                          </button>
+                          {brand.overviewSecondaryBtnText && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const target =
+                                  document.getElementById("whychoose") ||
+                                  document.getElementById("benefits");
+                                if (target) {
+                                  target.scrollIntoView({ behavior: "smooth" });
+                                } else {
+                                  handleOpenApply();
+                                }
+                              }}
+                              className="overviewKnowMoreBtn inline-flex items-center gap-1.5 px-5 sm:px-6 py-2 sm:py-2.5 rounded-[4px] bg-black text-white font-bold text-[13.5px] sm:text-[14px] hover:brightness-125 transition-all cursor-pointer border-none shadow-none active:scale-95"
+                            >
+                              <span>{brand.overviewSecondaryBtnText}</span>
+                              <span className="text-[11px] leading-none select-none">&#9660;</span>
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </section>
                   );
@@ -400,7 +523,7 @@ export default function UniversityLandingView({ data = {} }) {
                 if (brand.slug === "iim") {
                   return (
                     <section className="certification" id="key-skills" key="keySkills">
-                      <div className="container">
+                      <LandingContainer className="container">
                         <h2>
                           Key Skills You Will Gain from the <span className="blue">IIM Kozhikode HR Analytics Course</span>
                         </h2>
@@ -419,7 +542,7 @@ export default function UniversityLandingView({ data = {} }) {
                             </div>
                           ))}
                         </div>
-                      </div>
+                      </LandingContainer>
                     </section>
                   );
                 }
@@ -455,7 +578,7 @@ export default function UniversityLandingView({ data = {} }) {
                 if (brand.slug === "iim") {
                   return (
                     <section id="courses" key="tools">
-                      <div className="container">
+                      <LandingContainer className="container">
                         <h2>
                           Tools &amp; Technologies You’ll Learn in <br /><span className="blue">the IIM Kozhikode HR Analytics Course</span>
                         </h2>
@@ -495,7 +618,7 @@ export default function UniversityLandingView({ data = {} }) {
                             </div>
                           ))}
                         </div>
-                      </div>
+                      </LandingContainer>
                     </section>
                   );
                 }
@@ -702,6 +825,7 @@ export default function UniversityLandingView({ data = {} }) {
                     key="recruiters"
                     brand={brand}
                     recruiters={activeRecruiters || brand.recruiters}
+                    onOpenApply={handleOpenApply}
                   />
                 ) : null;
               case "offersAndPlacement":
@@ -795,7 +919,7 @@ export default function UniversityLandingView({ data = {} }) {
                   <LandingFooterForm
                     key="footerForm"
                     brand={{ ...brand, slug: brand.slug || slug }}
-                    courses={courses}
+                    courses={resolvedCourses}
                     onOpenDisclaimer={() => handleOpenLegal("disclaimer")}
                   />
                 ) : null;
@@ -843,6 +967,7 @@ export default function UniversityLandingView({ data = {} }) {
         onOpenDisclaimer={() => handleOpenLegal("disclaimer")}
         onOpenTerms={() => handleOpenLegal("terms")}
         onOpenPrivacy={() => handleOpenLegal("privacy")}
+        onOpenCompare={() => setIsCompareOpen(true)}
       />
 
       {/* Floating Sticky CTAs */}
@@ -859,7 +984,7 @@ export default function UniversityLandingView({ data = {} }) {
         isOpen={isBrochureOpen}
         onClose={() => setIsBrochureOpen(false)}
         universityName={brand.name}
-        courses={courses}
+        courses={resolvedCourses}
         selectedCourse={selectedCourse}
         title={modalTitle}
         brand={brand}
@@ -869,7 +994,8 @@ export default function UniversityLandingView({ data = {} }) {
         isOpen={isScholarshipOpen}
         onClose={() => setIsScholarshipOpen(false)}
         universityName={brand.name}
-        courses={courses}
+        courses={resolvedCourses}
+        selectedCourse={selectedCourse}
         brand={brand}
         scholarshipModal={scholarshipModal || brand.scholarshipModal}
         onOpenDisclaimer={() => handleOpenLegal("disclaimer")}
@@ -878,7 +1004,8 @@ export default function UniversityLandingView({ data = {} }) {
         isOpen={isCompareOpen}
         onClose={() => setIsCompareOpen(false)}
         universityName={brand.name}
-        courses={courses}
+        courses={resolvedCourses}
+        selectedCourse={selectedCourse}
         brand={brand}
         compareModal={compareModal || brand.compareModal}
         onOpenDisclaimer={() => handleOpenLegal("disclaimer")}
@@ -891,4 +1018,11 @@ export default function UniversityLandingView({ data = {} }) {
       />
     </div>
   );
+}
+
+export default function UniversityLandingView({ data = {} }) {
+  if (data?.slug === "liverpool" || data?.brand?.slug === "liverpool") {
+    return <LiverpoolLandingView data={data} />;
+  }
+  return <MainUniversityLandingView data={data} />;
 }

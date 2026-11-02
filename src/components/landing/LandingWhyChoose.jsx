@@ -16,6 +16,8 @@ import IimWhyChoose from "./whychoose/IimWhyChoose";
 import IiitbWhyChoose from "./whychoose/IiitbWhyChoose";
 import UuWhyChoose from "./whychoose/UuWhyChoose";
 import SsbmWhyChoose from "./whychoose/SsbmWhyChoose";
+import CuWhyChoose from "./whychoose/CuWhyChoose";
+import UpesWhyChoose from "./whychoose/UpesWhyChoose";
 import ClassicWhyChoose from "./whychoose/ClassicWhyChoose";
 
 /**
@@ -23,11 +25,14 @@ import ClassicWhyChoose from "./whychoose/ClassicWhyChoose";
  * Separates layout rendering strategy from university identity (slug).
  */
 const WHY_CHOOSE_LAYOUTS = {
+  upes: UpesWhyChoose,
+  cu: CuWhyChoose,
   lpu: LpuWhyChoose,
   iim: IimWhyChoose,
   uu: UuWhyChoose,
   iiitb: IiitbWhyChoose,
   ssbm: SsbmWhyChoose,
+  upes: UpesWhyChoose,
   galgotias: GalgotiasWhyChoose,
   "galgotias-grid": GalgotiasWhyChoose,
   liverpool: LiverpoolWhyChoose,
@@ -47,18 +52,20 @@ const WHY_CHOOSE_LAYOUTS = {
   classic: ClassicWhyChoose,
 };
 
+
 /**
  * Reusable Why Choose / Key Features Section Router & Container
  * Validates data, looks up layout from registry, and delegates rendering to modular layout component.
  */
 export default function LandingWhyChoose({ whyChoose = [], brand = {}, onOpenApply }) {
-  // 1. Guard against empty data before layout resolution
-  if (!Array.isArray(whyChoose) || whyChoose.length === 0) {
+  // 1. Resolve layout purely from configuration
+  const layout = brand?.whyChooseLayout || brand?.slug || "classic";
+
+  // 2. Guard against empty data unless layout provides built-in fallback data (e.g. CU)
+  if ((!Array.isArray(whyChoose) || whyChoose.length === 0) && layout !== "cu") {
     return null;
   }
 
-  // 2. Resolve layout purely from configuration
-  const layout = brand?.whyChooseLayout || "classic";
   const WhyChooseComponent = WHY_CHOOSE_LAYOUTS[layout] || ClassicWhyChoose;
 
   // 3. Render matched layout component

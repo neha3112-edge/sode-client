@@ -1,3 +1,8 @@
+// Bypass SSL altname mismatch for remote CRM API server in development/node runtime
+if (typeof process !== "undefined" && process.env.NODE_TLS_REJECT_UNAUTHORIZED !== "0") {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+}
+
 const requiredPublicEnv = {
   appName: process.env.NEXT_PUBLIC_APP_NAME,
   devRemote: process.env.NEXT_PUBLIC_DEV_REMOTE,

@@ -36,7 +36,10 @@ export async function getPageMetaData(path = "/") {
   try {
     const res = await fetch(
       `${API_BASE_URL}pagemeta/website-read?path=${encodeURIComponent(cleanPath)}`,
-      getFetchCacheOptions(300, "pagemeta")
+      {
+        ...getFetchCacheOptions(300, "pagemeta"),
+        signal: AbortSignal.timeout(2000),
+      }
     );
 
     if (!res.ok) return null;
@@ -48,7 +51,9 @@ export async function getPageMetaData(path = "/") {
 
     return null;
   } catch (error) {
-    console.warn(`Error fetching PageMeta for ${cleanPath}:`, error?.message);
+    if (process.env.NODE_ENV === "production" || process.env.DEBUG) {
+      console.warn(`Error fetching PageMeta for ${cleanPath}:`, error?.message);
+    }
     return null;
   }
 }

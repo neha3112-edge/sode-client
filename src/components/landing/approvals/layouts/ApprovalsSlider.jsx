@@ -88,7 +88,7 @@ export default function ApprovalsSlider({
       className="w-full py-4 sm:py-5 lg:py-6 bg-white border-b border-slate-200/80 select-none scroll-mt-20 overflow-hidden"
       style={{ backgroundColor: brand?.approvalsBg || "#ffffff" }}
     >
-      <div className="max-w-[1280px] xl:max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1280px] xl:max-w-[1360px] min-[1600px]:max-w-[1520px] min-[1920px]:max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Heading */}
         <div className="text-center mb-3 sm:mb-4 max-w-4xl mx-auto">
           {brand?.approvalsTitleHtml ? (

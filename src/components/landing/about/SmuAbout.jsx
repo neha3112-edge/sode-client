@@ -2,11 +2,16 @@
 
 import React from "react";
 import Image from "next/image";
+import LandingContainer from "../LandingContainer";
 
 export default function SmuAbout({ about = {}, brand = {}, leader = null }) {
   const universityName = brand.name || "Sikkim Manipal University Online";
   const title = about.title || `About ${universityName}`;
-  const imageSrc = about.image || brand.campusImage || "/assets/images/smu_hero_model.webp";
+  const imageSrc =
+    about.image ||
+    brand.aboutImage ||
+    brand.campusImage ||
+    "/assets/all_universities_images/all_universities_images/smu/finance-smu.png";
   const leaderData = leader || about.leader;
 
   const paragraphs =
@@ -14,34 +19,47 @@ export default function SmuAbout({ about = {}, brand = {}, leader = null }) {
       ? about.paragraphs
       : [about.p1, about.p2, about.p3, about.text1, about.text2, about.text3].filter(Boolean);
 
+  const titleText = about.title || brand.aboutTitle || title;
+  const titleLines = typeof titleText === "string" ? titleText.split("\n") : [titleText];
+
   return (
     <div id="about" className="w-full">
-      <section className="w-full pt-10 sm:pt-14 pb-0 bg-transparent overflow-visible relative select-none">
-        <div className="w-full bg-[#006372] relative overflow-visible">
-          <div className="max-w-[1240px] xl:max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative">
-            <div className="flex flex-col md:flex-row items-center md:items-end justify-between gap-4 md:gap-8">
+      <section className="w-full pt-16 sm:pt-20 md:pt-28 lg:pt-32 pb-0 bg-transparent overflow-visible relative select-none">
+        <div className="w-full bg-[#006372] relative overflow-visible shadow-sm">
+          <LandingContainer className="px-3 sm:px-6 relative overflow-visible">
+            <div className="flex flex-col md:flex-row items-center md:items-stretch justify-between relative min-h-[380px] lg:min-h-[440px]">
               {imageSrc && (
-                <div className="w-[200px] sm:w-[230px] md:w-[260px] lg:w-[280px] shrink-0 -mt-10 sm:-mt-12 md:-mt-16 lg:-mt-20 relative z-10 self-center md:self-end">
-                  <div className="relative w-full h-[280px] sm:h-[320px] md:h-[350px] lg:h-[380px]">
+                <div className="hidden md:block w-[260px] md:w-[300px] lg:w-[350px] xl:w-[380px] shrink-0 relative">
+                  <div className="absolute bottom-0 left-0 w-full h-[460px] md:h-[520px] lg:h-[580px] xl:h-[620px] pointer-events-none z-10">
                     <Image
                       src={imageSrc}
                       alt={title}
                       fill
                       priority
                       className="object-contain object-bottom"
-                      sizes="(max-width: 768px) 230px, 280px"
+                      sizes="(max-width: 1024px) 350px, 390px"
                     />
                   </div>
                 </div>
               )}
-              <div className="flex-1 py-8 sm:py-10 md:py-12 text-center text-white space-y-3.5 max-w-4xl mx-auto px-2">
-                <h2 className="text-[22px] sm:text-[26px] lg:text-[30px] font-bold text-white tracking-tight leading-tight m-0 text-center">
-                  {title}
+              <div className="flex-1 py-12 sm:py-14 md:py-16 lg:py-20 text-center text-white max-w-4xl xl:max-w-5xl mx-auto px-2 sm:px-6 relative z-0 flex flex-col justify-center">
+                <h2 className={brand.aboutTitleClassName || about.titleClassName || "text-[20px] min-[390px]:text-[21.5px] sm:text-[26px] md:text-[30px] lg:text-[36px] font-semibold text-white tracking-normal leading-[1.3] m-0 mb-5 sm:mb-6 text-center"}>
+                  {titleLines.map((line, idx) => (
+                    <span
+                      key={idx}
+                      className={`block ${idx === 0 ? "whitespace-nowrap" : ""}`}
+                    >
+                      {line}
+                    </span>
+                  ))}
                 </h2>
                 {paragraphs.length > 0 && (
-                  <div className="space-y-3 text-[12px] sm:text-[12.5px] lg:text-[13px] text-white/95 leading-[1.65] font-normal text-center">
+                  <div className={brand.aboutParagraphsClassName || about.paragraphsClassName || "text-[15px] sm:text-[16px] lg:text-[17px] text-white leading-[1.7] font-normal text-center tracking-normal space-y-6 sm:space-y-7 max-w-3xl xl:max-w-4xl mx-auto px-1 sm:px-4"}>
                     {paragraphs.map((p, idx) => (
-                      <p key={idx} className="m-0 max-w-3xl mx-auto">
+                      <p
+                        key={idx}
+                        className={brand.aboutParagraphClassName || about.paragraphClassName || "m-0"}
+                      >
                         {p}
                       </p>
                     ))}
@@ -49,47 +67,47 @@ export default function SmuAbout({ about = {}, brand = {}, leader = null }) {
                 )}
               </div>
             </div>
-          </div>
+          </LandingContainer>
         </div>
       </section>
 
       {leaderData && (
-        <section className="w-full bg-white py-10 sm:py-14 lg:py-16">
-          <div className="max-w-[1240px] xl:max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-              <div className="lg:col-span-8 space-y-4 sm:space-y-5 text-left">
-                <h2 className="text-[22px] sm:text-[25px] lg:text-[28px] xl:text-[29px] font-bold text-[#111827] tracking-tight leading-[1.25]">
-                  {leaderData.sectionTitle || (
-                    <>The Visionary Leader Behind {universityName}</>
-                  )}
+        <section className="w-full bg-white py-10 sm:py-14 lg:py-20 border-b border-slate-100">
+          <LandingContainer className="px-3 sm:px-6">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-16 items-center">
+              <div className="lg:col-span-8 space-y-3.5 sm:space-y-4.5 text-center lg:text-left order-2 lg:order-1">
+                <h2 className="text-[24px] sm:text-[28px] lg:text-[34px] font-bold text-black tracking-tight leading-[1.25] m-0 text-center lg:text-left">
+                  <span className="block lg:inline">The Visionary Leader Behind </span>
+                  <span className="block lg:inline">Sikkim Manipal University </span>
+                  <span className="block lg:inline">Online</span>
                 </h2>
-                <p className="text-[13px] sm:text-[13.5px] lg:text-[14px] text-[#475467] leading-[1.7] font-normal max-w-2xl">
+                <p className="text-[15px] sm:text-[15.5px] lg:text-[16.5px] text-black leading-[1.75] font-normal max-w-4xl xl:max-w-5xl mx-auto lg:mx-0 text-center lg:text-left m-0 px-1 sm:px-0">
                   {leaderData.desc}
                 </p>
-                <div className="pt-3 sm:pt-4 space-y-0.5">
-                  <h3 className="text-[15px] sm:text-[16px] font-bold text-[#074a76]">
+                <div className="!mt-7 sm:!mt-8 space-y-1 text-center lg:text-left">
+                  <h3 className={brand.leaderNameClassName || about.leaderNameClassName || "text-[16.5px] sm:text-[18px] font-medium text-[#006372] m-0"}>
                     {leaderData.name}
                   </h3>
-                  <p className="text-[13px] sm:text-[14px] text-[#074a76] font-medium m-0">
+                  <p className={brand.leaderDesignationClassName || about.leaderDesignationClassName || "text-[13.5px] sm:text-[14.5px] text-[#006372] font-medium m-0"}>
                     {leaderData.designation}
                   </p>
                 </div>
               </div>
               {leaderData.image && (
-                <div className="lg:col-span-4 flex justify-center lg:justify-end">
-                  <div className="relative w-full max-w-[320px] sm:max-w-[340px] lg:max-w-[350px] aspect-[350/392] rounded-[16px] sm:rounded-[20px] overflow-hidden bg-[#eef1f5] shadow-xs">
+                <div className="lg:col-span-4 flex justify-center lg:justify-end order-1 lg:order-2">
+                  <div className="relative w-full max-w-[280px] sm:max-w-[320px] lg:max-w-[380px] aspect-[350/390] rounded-[20px] overflow-hidden bg-[#eef1f5] shadow-md border border-slate-100">
                     <Image
                       src={leaderData.image}
                       alt={leaderData.name}
                       fill
                       className="object-cover object-top"
-                      sizes="(max-width: 768px) 320px, 350px"
+                      sizes="(max-width: 768px) 320px, 380px"
                     />
                   </div>
                 </div>
               )}
             </div>
-          </div>
+          </LandingContainer>
         </section>
       )}
     </div>

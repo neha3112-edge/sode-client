@@ -30,6 +30,7 @@ export default function LandingFooter({
   onOpenDisclaimer,
   onOpenTerms,
   onOpenPrivacy,
+  onOpenCompare,
 }) {
   const layout = resolveFooterLayout(variant, version, brand);
 
@@ -47,6 +48,7 @@ export default function LandingFooter({
         onOpenDisclaimer={onOpenDisclaimer}
         onOpenTerms={onOpenTerms}
         onOpenPrivacy={onOpenPrivacy}
+        onOpenCompare={onOpenCompare}
       />
     );
   }
@@ -59,6 +61,7 @@ export default function LandingFooter({
       onOpenDisclaimer={onOpenDisclaimer}
       onOpenTerms={onOpenTerms}
       onOpenPrivacy={onOpenPrivacy}
+      onOpenCompare={onOpenCompare}
     />
   );
 }

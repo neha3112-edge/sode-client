@@ -17,15 +17,15 @@ export default function EsgciAbout({ about = {}, brand = {}, onOpenApply }) {
   return (
     <section
       id="about"
-      className="w-full relative select-none py-14 sm:py-18 text-white text-center scroll-mt-20"
+      className="w-full relative select-none py-14 sm:py-18 text-white text-start scroll-mt-15"
       style={{ backgroundColor: bg }}
     >
-      <div className="max-w-[900px] mx-auto px-4 sm:px-6">
-        <h2 className="text-[28px] sm:text-[36px] font-bold text-white mb-4 uppercase tracking-wide m-0">
+      <div className="max-w-[900px] mx-0 px-12 sm:px-16">
+        <h2 className="text-[24px] sm:text-[32px] font-bold text-white mb-4 uppercase tracking-wide m-0">
           {title}
         </h2>
         {paragraphs.length > 0 && (
-          <div className="space-y-4 text-[14px] sm:text-[15.5px] leading-relaxed text-white/95 font-normal mt-4">
+          <div className=" max-w-[600px] space-y-3 text-[12px] sm:text-[13.5px] leading-tight text-white/95 font-normal mt-3">
             {paragraphs.map((p, idx) => (
               <p key={idx} className="m-0">
                 {p}
@@ -38,7 +38,7 @@ export default function EsgciAbout({ about = {}, brand = {}, onOpenApply }) {
             onClick={onOpenApply}
             bg="#fff000"
             textColor="#000000"
-            className="!px-8 !py-3 !font-bold !text-[15px] !rounded-[5px] hover:brightness-95 border-none shadow-xs active:scale-95"
+            className="!px-7 !py-2 !font-medium !text-[15px] !rounded-[5px] hover:brightness-95 border-none shadow-xs active:scale-95"
           >
             {buttonText}
           </LandingButton>

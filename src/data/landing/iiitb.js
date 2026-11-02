@@ -126,6 +126,14 @@ export const iiitbCustomCss = `
 
   /* Why Choose Section */
 
+  /* About Section */
+  .landing-page--iiitb .about-section {
+    background: #005a8d !important;
+    color: #ffffff !important;
+  }
+
+  /* Why Choose Section */
+
 /* Why Choose Section */
 .landing-page--iiitb .why-section {
   width: 100% !important;
@@ -872,9 +880,9 @@ export const iiitbData = {
       },
 
       taglineText: (
-        <span key="iiitb-byline" className="hero-byline-text text-[15px] sm:text-[15.5px] font-semibold text-black block">
-          By <span key="inst" className="underline">IIIT Bangalore</span> via{" "}
-          <span key="partner" className="underline">upGrad</span>
+        <span className="hero-byline-text text-[15px] sm:text-[15.5px] font-semibold text-black block">
+          By <span className="underline">IIIT Bangalore</span> via{" "}
+          <span className="underline">upGrad</span>
         </span>
       ),
       taglineStyle: {

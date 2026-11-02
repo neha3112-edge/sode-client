@@ -36,26 +36,40 @@ export default function ThankYouClient({
   conversionSource = "lp",
   initialData = null,
 }) {
-  const [progress, setProgress] = useState(0);
   const [brochureOpened, setBrochureOpened] = useState(false);
-  const [brochureUrl] = useState(() => {
-    if (typeof window === "undefined") return "";
-    try {
-      return sessionStorage.getItem("brochureUrl") || "";
-    } catch (e) {
-      return "";
-    }
-  });
-  const brochureProcessStarted = useRef(false);
+  const isBrochure = useSyncExternalStore(
+    () => () => {},
+    () => {
+      try {
+        const queryBrochure =
+          typeof window !== "undefined" &&
+          new URLSearchParams(window.location.search).get("brochure") === "1";
+        return queryBrochure || sessionStorage.getItem("isBrochureFlow") === "true";
+      } catch (e) {
+        return false;
+      }
+    },
+    () => false
+  );
+
+  const brochureUrl = useSyncExternalStore(
+    () => () => {},
+    () => {
+      try {
+        const queryUrl =
+          typeof window !== "undefined" &&
+          new URLSearchParams(window.location.search).get("url");
+        if (queryUrl) return decodeURIComponent(queryUrl);
+        return sessionStorage.getItem("brochureUrl") || "";
+      } catch (e) {
+        return "";
+      }
+    },
+    () => ""
+  );
+
+  const timerFired = useRef(false);
   const conversionSent = useRef(false);
-  const [isBrochure] = useState(() => {
-    if (typeof window === "undefined") return false;
-    try {
-      return sessionStorage.getItem("isBrochureFlow") === "true";
-    } catch (e) {
-      return false;
-    }
-  });
   const isClientReady = useSyncExternalStore(
     () => () => {},
     () => true,
@@ -66,12 +80,12 @@ export default function ThankYouClient({
   const googleAdsId = initialData?.googleAdsId || "";
   const conversionLabel = initialData?.googleAdsConversionLabel || "";
 
-  const badgeText = initialData?.badgeText || "";
-  const title = initialData?.title || "";
-  const subtitle = initialData?.subtitle || "";
+  const badgeText = isBrochure ? "" : (initialData?.badgeText || "SUBMISSION RECEIVED");
+  const title = isBrochure ? "Your Submission has been received" : (initialData?.title || "Thank You for Contacting Us!");
+  const subtitle = isBrochure ? "You'll be redirected to your brochure shortly..." : (initialData?.subtitle || "Our expert academic counselors will get in touch with you shortly to guide you.");
 
-  const brochurePreparingText = initialData?.brochurePreparingText || "";
-  const brochureOpenedText = initialData?.brochureOpenedText || "";
+  const brochurePreparingText = initialData?.brochurePreparingText || "Opening your brochure in a new tab in 3 seconds...";
+  const brochureOpenedText = initialData?.brochureOpenedText || "Your brochure has opened in a new tab!";
 
   const homeButtonText = initialData?.homeButtonText || "";
   const homeButtonLink = initialData?.homeButtonLink || "/";
@@ -138,7 +152,13 @@ export default function ThankYouClient({
   ========================================================= */
 
   const getBrochureUrl = useCallback(() => {
-    return brochureUrl || "/assets/pdf/brochure.pdf";
+    if (brochureUrl) return brochureUrl;
+    if (typeof window !== "undefined") {
+      try {
+        return sessionStorage.getItem("brochureUrl") || "/assets/pdf/brochure.pdf";
+      } catch (e) {}
+    }
+    return "/assets/pdf/brochure.pdf";
   }, [brochureUrl]);
 
   /* =========================================================
@@ -155,42 +175,85 @@ export default function ThankYouClient({
   }, []);
 
   /* =========================================================
-     BROCHURE PROGRESS AND AUTO OPEN
+     AUTOMATIC BROCHURE DOWNLOAD & OPEN IN NEW TAB
+  ========================================================= */
+
+  const triggerDownloadAndOpen = useCallback((url) => {
+    if (!url) return;
+    const rawFileName = url.split("/").pop() || "Brochure.pdf";
+    const cleanFileName = decodeURIComponent(rawFileName);
+
+    // 1. Direct file download
+    const downloadAnchor = document.createElement("a");
+    downloadAnchor.href = url;
+    downloadAnchor.setAttribute("download", cleanFileName);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    setTimeout(() => {
+      try {
+        document.body.removeChild(downloadAnchor);
+      } catch (e) {}
+    }, 500);
+
+    // 2. Open in new blank tab
+    try {
+      const win = window.open(url, "_blank", "noopener,noreferrer");
+      if (!win || win.closed || typeof win.closed === "undefined") {
+        const openAnchor = document.createElement("a");
+        openAnchor.href = url;
+        openAnchor.target = "_blank";
+        openAnchor.rel = "noopener noreferrer";
+        document.body.appendChild(openAnchor);
+        openAnchor.click();
+        setTimeout(() => {
+          try {
+            document.body.removeChild(openAnchor);
+          } catch (e) {}
+        }, 500);
+      }
+    } catch (e) {
+      const openAnchor = document.createElement("a");
+      openAnchor.href = url;
+      openAnchor.target = "_blank";
+      openAnchor.rel = "noopener noreferrer";
+      document.body.appendChild(openAnchor);
+      openAnchor.click();
+      setTimeout(() => {
+        try {
+          document.body.removeChild(openAnchor);
+        } catch (e) {}
+      }, 500);
+    }
+
+    setBrochureOpened(true);
+  }, []);
+
+  /* =========================================================
+     AUTO DOWNLOAD TRIGGER AFTER 3 SECONDS
   ========================================================= */
 
   useEffect(() => {
     if (!isClientReady || !isBrochure) return;
-    if (brochureProcessStarted.current) return;
-
-    brochureProcessStarted.current = true;
-    let currentProgress = 0;
-
-    const progressInterval = window.setInterval(() => {
-      currentProgress += 1;
-      if (currentProgress <= 100) setProgress(currentProgress);
-      if (currentProgress >= 100) window.clearInterval(progressInterval);
-    }, 10);
+    if (timerFired.current) return;
 
     const brochureTimer = window.setTimeout(() => {
-      window.open(getBrochureUrl(), "_blank", "noopener,noreferrer");
-      setBrochureOpened(true);
-      clearBrochureSession();
-    }, 1000);
+      timerFired.current = true;
+      const url = getBrochureUrl();
+      triggerDownloadAndOpen(url);
+    }, 3000);
 
     return () => {
-      window.clearInterval(progressInterval);
       window.clearTimeout(brochureTimer);
     };
-  }, [clearBrochureSession, getBrochureUrl, isBrochure, isClientReady]);
+  }, [getBrochureUrl, isBrochure, isClientReady, triggerDownloadAndOpen]);
 
   /* =========================================================
-     MANUAL BROCHURE OPEN
+     MANUAL BROCHURE DOWNLOAD HANDLER
   ========================================================= */
 
   const handleOpenBrochure = () => {
-    window.open(getBrochureUrl(), "_blank", "noopener,noreferrer");
-    setBrochureOpened(true);
-    clearBrochureSession();
+    const url = getBrochureUrl();
+    triggerDownloadAndOpen(url);
   };
 
   return (
@@ -288,46 +351,33 @@ export default function ThankYouClient({
                 </h1>
               )}
 
+              {subtitle && (
+                <p className="mx-auto max-w-lg text-base sm:text-lg leading-relaxed text-gray-700">
+                  {subtitle}
+                </p>
+              )}
+
               {/* =============================================
-                  BROCHURE DOWNLOAD PROGRESS
+                  BROCHURE ACTIONS (MATCHING IMAGE 2 DESIGN)
               ============================================== */}
 
               {isClientReady && isBrochure && (
-                <div className="mx-auto mb-5 w-full max-w-lg">
-                  {(brochureOpened ? brochureOpenedText : brochurePreparingText) && (
-                    <p className="text-sm leading-relaxed text-gray-600 md:text-base">
-                      {brochureOpened ? brochureOpenedText : brochurePreparingText}
-                    </p>
-                  )}
-
-                  {!brochureOpened && (
-                    <>
-                      <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-gray-200">
-                        <div
-                          className="h-full bg-[#22c55e] transition-all duration-75"
-                          style={{ width: `${progress}%` }}
-                        />
-                      </div>
-                      <p className="mt-2 text-xs text-gray-400">
-                        Preparing your brochure... {progress}%
-                      </p>
-                    </>
-                  )}
+                <div className="mt-6 flex flex-col items-center justify-center">
+                  <Link
+                    href={homeButtonLink || "/"}
+                    className="inline-flex items-center justify-center px-6 py-3.5 sm:px-8 sm:py-3.5 rounded-md bg-[#002B49] hover:bg-[#001f35] text-white font-semibold text-[15px] sm:text-[16px] transition-all shadow-md active:scale-98"
+                  >
+                    For More Information kindly Visit Us
+                  </Link>
 
                   <button
                     type="button"
                     onClick={handleOpenBrochure}
-                    className="mt-4 cursor-pointer text-sm font-semibold text-[#1C3569] underline underline-offset-4 transition-colors hover:text-[#8B7500]"
+                    className="mt-3 text-xs text-slate-400 hover:text-slate-700 underline underline-offset-2 cursor-pointer transition-colors"
                   >
-                    Click here if the brochure does not open
+                    Click here if the brochure does not download automatically
                   </button>
                 </div>
-              )}
-
-              {subtitle && (
-                <p className="mx-auto max-w-lg text-sm leading-relaxed text-gray-600 md:text-base">
-                  {subtitle}
-                </p>
               )}
             </div>
 
@@ -368,7 +418,7 @@ export default function ThankYouClient({
                 ACTION BUTTONS (ONLY IF CONFIGURED IN API)
             ================================================== */}
 
-            {(homeButtonText || exploreButtonText) && (
+            {!isBrochure && (homeButtonText || exploreButtonText) && (
               <div className="mx-auto max-w-md">
                 <div className="flex flex-col gap-3 sm:flex-row">
                   {homeButtonText && (

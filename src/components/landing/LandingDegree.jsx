@@ -1,15 +1,41 @@
 "use client";
 
-import React from "react";
+import React, { useRef, useState } from "react";
 import Image from "next/image";
 import { Carousel } from "antd";
 import LandingContainer from "./LandingContainer";
+
+const GALGOTIAS_WHY_CHOOSE_SLIDES = [
+  {
+    icon: "/assets/galgotias/industry.webp",
+    title: "Industry-Expert Designed Programs",
+    desc: "Galgotias University online courses curriculum is enhanced in collaboration with industry-led academicians. It ensures that students gain not only relevant theoretical but also practical knowledge.",
+  },
+  {
+    icon: "/assets/galgotias/icon.webp",
+    title: "Advanced Learning Facilities",
+    desc: "Students enrolled in Galgotias University online courses benefit from modern digital infrastructure. It supports a learning environment that promotes accessible learning and engaging.",
+  },
+  {
+    icon: "/assets/galgotias/carrier.webp",
+    title: "Career-Oriented Education",
+    desc: "Modern organisations prefer and value individuals that develops advanced skills in respective sectors, such as the online MBA from Galgotias University. Similarly, all the courses are industry-focused and develop skills and knowledge.",
+  },
+  {
+    icon: "/assets/galgotias/lms.webp",
+    title: "Integrated Learning Management System (LMS)",
+    desc: "The LMS used in Galgotias University online classes is highly advanced. It permits students to attend lectures both live and recorded. They get access to study material and can track their progress easily.",
+  },
+];
 
 export default function LandingDegree({
   degreeInfo = {},
   brand = {},
   onOpenApply,
 }) {
+    const galgotiasCarouselRef = useRef(null);
+  const [galgotiasSlide, setGalgotiasSlide] = useState(0);
+
   if (!degreeInfo || Object.keys(degreeInfo).length === 0) return null;
 
   const {
@@ -17,9 +43,259 @@ export default function LandingDegree({
     description = "",
     features = [],
     buttonText = "Get Your Degree",
-    image = "/assets/vgu/sample-degree-vgu.webp",
+    image = "/assets/all_universities_images/vgu/sample-degree-vgu.webp",
     images = null,
   } = degreeInfo;
+
+
+  const isGalgotias =
+    brand.degreeLayout === "galgotias" || brand.slug === "galgotias";
+
+  if (isGalgotias) {
+    return (
+      <section
+        id="certificate"
+        className="select-none scroll-mt-20 overflow-visible"
+      >
+        {/* Yellow Advantage Section */}
+        <div id="advantage" className="scroll-mt-20">
+          {/* Desktop Banner: Only Yellow strip with heading */}
+          <div className="w-full bg-[#f9bc08] py-8 sm:py-10 lg:py-12 min-h-[90px] sm:min-h-[110px] lg:min-h-[125px] hidden sm:flex items-center justify-center px-4 text-center">
+            <h2 className="text-[26px] sm:text-[28px] md:text-[32px] lg:text-[34px] font-bold text-[#b11116] m-0 tracking-tight">
+              Why Choose Galgotias University Online
+            </h2>
+          </div>
+
+          {/* Mobile View: Yellow background with Heading + Slider */}
+          <div className="w-full bg-[#f9bc08] pt-8 pb-9 px-4 block sm:hidden text-center">
+            <h2 className="text-[22px] font-bold text-[#b11116] m-0 mb-5 leading-tight">
+              Why Choose Galgotias <br />
+              University Online
+            </h2>
+
+            <div className="max-w-[340px] mx-auto">
+              <Carousel
+                ref={galgotiasCarouselRef}
+                autoplay
+                autoplaySpeed={3500}
+                dots={false}
+                afterChange={(current) => setGalgotiasSlide(current)}
+              >
+                {GALGOTIAS_WHY_CHOOSE_SLIDES.map((slide, idx) => (
+                  <div key={idx} className="px-1 pb-1">
+                    <div className="bg-white rounded-[16px] px-5 py-6 text-center shadow-md flex flex-col items-center justify-center min-h-[250px]">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={slide.icon}
+                        alt={slide.title}
+                        className="w-[50px] h-[50px] object-contain mx-auto mb-3"
+                      />
+                      <h3 className="text-[15.5px] font-bold text-black m-0 mb-2 leading-snug">
+                        {slide.title}
+                      </h3>
+                      <p className="text-[13px] text-[#444444] leading-relaxed m-0 font-normal">
+                        {slide.desc}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </Carousel>
+
+              {/* Custom Carousel Dots (matches reference screenshot) */}
+              <div className="flex items-center justify-center gap-2 pt-4">
+                {GALGOTIAS_WHY_CHOOSE_SLIDES.map((_, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => galgotiasCarouselRef.current?.goTo(idx)}
+                    className={`w-3 h-3 rounded-full border-none p-0 cursor-pointer transition-all ${
+                      galgotiasSlide === idx ? "bg-black" : "bg-black/35"
+                    }`}
+                    aria-label={`Slide ${idx + 1}`}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Degree Content Section */}
+        <div className="py-12 sm:py-16 bg-[#f6f6f6] overflow-visible">
+          <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+              {/* Left Content */}
+              <div className="lg:col-span-6 text-left">
+                <h2 className="text-[26px] sm:text-[30px] lg:text-[32px] font-bold text-[#002266] m-0 mb-4 leading-[1.2]">
+                  About the Sample Degree of <br />
+                  Galgotias Online
+                </h2>
+                <p className="text-[13.5px] sm:text-[14px] text-[#555555] leading-relaxed mb-4 font-normal">
+                  After completing their Galgotias University online courses, students receive a UGC recognised degree issued by Galgotias University Online. The degree holds academic credibility and relevance worldwide. It also reflects the specialisation pursued during the program.
+                </p>
+
+                <ul className="space-y-2.5 my-5 text-[13.5px] sm:text-[14px] text-[#333333] list-none p-0 m-0">
+                  <li className="flex items-center gap-2.5 font-medium">
+                    <span className="w-4 h-4 rounded-full bg-[#28a745] text-white flex items-center justify-center text-[10px] font-bold shrink-0">✓</span>
+                    <span>NAAC A+ Accredited Degree</span>
+                  </li>
+                  <li className="flex items-center gap-2.5 font-medium">
+                    <span className="w-4 h-4 rounded-full bg-[#28a745] text-white flex items-center justify-center text-[10px] font-bold shrink-0">✓</span>
+                    <span>Globally Recognised</span>
+                  </li>
+                  <li className="flex items-center gap-2.5 font-medium">
+                    <span className="w-4 h-4 rounded-full bg-[#28a745] text-white flex items-center justify-center text-[10px] font-bold shrink-0">✓</span>
+                    <span>Flexible Online Learning Mode</span>
+                  </li>
+                </ul>
+
+                <div className="pt-2">
+                  <button
+                    type="button"
+                    onClick={() => onOpenApply?.(null, "Get Degree")}
+                    className="degree-btn hidden sm:inline-flex items-center justify-center bg-[#f9bc08] hover:bg-[#e0a807] text-white font-bold text-[14px] sm:text-[15px] px-8 py-2.5 rounded-full border-none cursor-pointer shadow-sm transition-all active:scale-95"
+                  >
+                    Get Degree
+                  </button>
+                </div>
+              </div>
+
+              {/* Right Yellow Image Container */}
+              <div className="lg:col-span-6 pt-8 sm:pt-12 lg:pt-8">
+                <div className="cer2 bg-[#ffef97] rounded-[16px] px-3 sm:px-5 pt-4 sm:pt-0 pb-3 sm:pb-0 flex flex-col sm:flex-row items-center sm:items-end justify-center gap-2 sm:gap-3 relative overflow-visible">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/assets/galgotias/image-01-galgotia.webp"
+                    alt="Galgotias Graduate"
+                    className="w-[255px] sm:w-[245px] md:w-[270px] lg:w-[285px] max-w-[88%] sm:max-w-[50%] h-auto object-contain shrink-0 block"
+                    style={{ marginTop: "-52px" }}
+                  />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/assets/galgotias/sample-galgotia.webp"
+                    alt="Galgotias Sample Degree"
+                    className="w-[305px] sm:w-[260px] md:w-[285px] lg:w-[305px] max-w-[96%] sm:max-w-[50%] h-auto object-contain my-2 sm:my-4 shadow-sm rounded-[4px] block"
+                  />
+                </div>
+
+                {/* Mobile Button: centered below yellow card */}
+                <div className="block sm:hidden text-center mt-5">
+                  <button
+                    type="button"
+                    onClick={() => onOpenApply?.(null, "Get Degree")}
+                    className="degree-btn inline-flex items-center justify-center bg-[#f9bc08] hover:bg-[#e0a807] text-white font-bold text-[15px] px-9 py-2.5 rounded-full border-none cursor-pointer shadow-md transition-all active:scale-95"
+                  >
+                    Get Degree
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  const isVgu =
+    brand.degreeLayout === "vgu" || brand.slug === "vgu";
+
+  if (isVgu) {
+    const vguFeatures =
+      features && features.length > 0
+        ? features
+        : [
+            {
+              title: "UGC Entitled",
+              desc: "Online VGU degrees approved by UGC are valued across India.",
+              icon: "/assets/all_universities_images/vgu/green-tick-icon.webp",
+            },
+            {
+              title: "NAAC Accreditation",
+              desc: "This shows that VGU University courses follow the latest higher-education quality standards.",
+              icon: "/assets/all_universities_images/vgu/green-tick-icon.webp",
+            },
+            {
+              title: "AICTE Approved",
+              desc: "All India Council for Technical Education guidelines are adhered to by Vivekananda Global University course admissions.",
+              icon: "/assets/all_universities_images/vgu/green-tick-icon.webp",
+            },
+            {
+              title: "Globally Acknowledged",
+              desc: "Online VGU degrees are recognised and accepted worldwide.",
+              icon: "/assets/all_universities_images/vgu/green-tick-icon.webp",
+            },
+          ];
+
+    return (
+      <section id="degree" className="py-0 sm:py-14 bg-white select-none scroll-mt-20 border-t-0 border-none">
+        <div className="max-w-[1080px] mx-auto px-0 sm:px-6">
+          <div className="relative bg-[#F3F3F8] rounded-none sm:rounded-[20px] px-5 py-8 sm:p-10 lg:p-12 overflow-hidden shadow-none sm:shadow-xs">
+            {/* Soft white circular background accent on top-right */}
+            <div className="absolute -top-16 -right-16 sm:-top-20 sm:-right-20 w-[320px] sm:w-[420px] h-[320px] sm:h-[420px] rounded-full bg-white/75 pointer-events-none" />
+
+            <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+              {/* Left Column: Heading, 4 Points with green tick, Button */}
+              <div className="lg:col-span-7 text-left">
+                <h2 className="text-[23px] sm:text-[27px] lg:text-[29px] font-bold text-[#811811] leading-[1.25] tracking-tight m-0 mb-5 sm:mb-6">
+                  Globally Accepted <br />
+                  Online Vivekananda Global University <br />
+                  Degree
+                </h2>
+
+                <div className="space-y-4 sm:space-y-4.5">
+                  {vguFeatures.map((feat, idx) => (
+                    <div key={idx} className="flex items-start gap-3 sm:gap-3.5">
+                      <div className="relative w-[26px] h-[26px] shrink-0 mt-0.5">
+                        <Image
+                          src={feat.icon || "/assets/all_universities_images/vgu/green-tick-icon.webp"}
+                          alt="Tick"
+                          fill
+                          className="object-contain"
+                          sizes="30px"
+                        />
+                      </div>
+                      <div className="text-left">
+                        <h3 className="text-[14.5px] sm:text-[15px] font-bold text-[#212529] leading-tight m-0 mb-1">
+                          {feat.title}
+                        </h3>
+                        <p className="text-[12px] sm:text-[12.5px] text-[#4b5563] leading-[1.35] font-normal m-0 max-w-[460px]">
+                          {feat.desc}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="pt-6 sm:pt-7">
+                  <button
+                    type="button"
+                    onClick={() => onOpenApply?.(null, "Get Your Degree")}
+                    className="bg-[#FFD508] hover:brightness-95 active:scale-95 text-black font-bold text-[13.5px] sm:text-[14px] px-6 sm:px-7 py-2.5 rounded-[5px] border-none cursor-pointer shadow-none transition-all inline-flex items-center justify-center"
+                  >
+                    <span>{buttonText || "Get Your Degree"}</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Right Column: Sample Degree Certificate */}
+              <div className="lg:col-span-5 flex justify-center items-center">
+                <div className="relative w-[220px] sm:w-[255px] md:w-[275px] aspect-[398/544] rounded-[4px] border border-slate-300/90 shadow-xs overflow-hidden bg-white">
+                  <Image
+                    src={image || "/assets/all_universities_images/vgu/sample-degree-vgu-clean.webp"}
+                    alt="Sample Degree Vivekananda Global University"
+                    fill
+                    className="object-contain"
+                    sizes="(max-width: 640px) 240px, 280px"
+                    priority
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
 
   const isRushford =
     brand.degreeLayout === "rushford" || brand.slug === "rushford";
@@ -90,6 +366,70 @@ export default function LandingDegree({
     );
   }
 
+  const isCu =
+    brand.degreeLayout === "cu" || brand.slug === "cu";
+
+  if (isCu) {
+    const certImage =
+      image || brand.degreeImage || "/assets/cu/CU-sample-degree.png";
+    return (
+      <section
+        id="certificate"
+        className="py-16 sm:py-24 bg-white select-none scroll-mt-20"
+      >
+        <LandingContainer className="px-3 sm:px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+            {/* Left Degree Image */}
+            <div className="lg:col-span-6 flex justify-center lg:justify-start">
+              <div className="relative w-full max-w-[620px] lg:max-w-[640px] h-[280px] sm:h-[400px] lg:h-[480px]">
+                <Image
+                  src={certImage}
+                  alt="Sample Degree"
+                  fill
+                  priority
+                  className="object-contain object-center lg:object-left"
+                  sizes="(max-width: 1024px) 100vw, 640px"
+                />
+              </div>
+            </div>
+
+            {/* Right Content */}
+            <div className="lg:col-span-6 text-left pl-4 sm:pl-6 lg:pl-10 pr-2 sm:pr-0">
+              <p className="text-[13.5px] sm:text-[14.5px] font-bold text-slate-900 m-0 mb-2">
+                Launch Your Career with an Online Degree From
+              </p>
+              <h2 className="text-[25px] sm:text-[32px] lg:text-[36px] font-bold text-[#d11c1f] m-0 leading-[1.2] mb-3.5">
+                <span className="block">Chandigarh University</span>
+                <span className="block">Online Learning Platform</span>
+              </h2>
+              <p className="text-[12.5px] sm:text-[13px] text-slate-600 leading-[1.65] m-0 font-normal max-w-[490px] mb-3.5">
+                Choose from a wide range of UGC-approved online degrees designed to
+                provide you with in-demand skills for today&apos;s dynamic work
+                environment.
+              </p>
+              <ul className="space-y-1.5 text-[12.5px] sm:text-[13px] text-slate-700 font-normal list-disc pl-4 m-0 mb-5">
+                <li>Industry-expert faculty</li>
+                <li>Flexible scheduling</li>
+                <li>Future-ready curriculum</li>
+                <li>Globally recognized degree</li>
+              </ul>
+              <div className="pt-1 pb-4">
+                <button
+                  type="button"
+                  onClick={() => onOpenApply?.()}
+                  className="bg-[#d11c1f] hover:bg-[#b51619] text-white font-bold text-[13px] sm:text-[14px] px-6 py-2.5 rounded-[6px] shadow-sm inline-flex items-center gap-2 cursor-pointer border-none transition-all active:scale-95"
+                >
+                  <span>Know More</span>
+                  <span className="text-[14px] leading-none">➔</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </LandingContainer>
+      </section>
+    );
+  }
+
   const isEsgci =
     brand.degreeLayout === "esgci" || brand.slug === "esgci";
 
@@ -99,7 +439,7 @@ export default function LandingDegree({
         id="sample-degree"
         className="degree-section py-10 sm:py-16 bg-white select-none scroll-mt-20"
       >
-        <div className="max-w-[1140px] mx-auto px-4 sm:px-6">
+        <div className="max-w-[1140px] min-[1600px]:max-w-[1440px] mx-auto px-4 sm:px-6">
           <div className="degree grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
             {/* Degree display */}
             <div className="flex justify-center">
@@ -237,6 +577,119 @@ export default function LandingDegree({
             </div>
           </div>
         </div>
+      </section>
+    );
+  }
+
+  const isLpu =
+    brand.degreeLayout === "lpu" ||
+    brand.slug === "lpu";
+
+  if (isLpu) {
+    const certImage =
+      image ||
+      degreeInfo.image ||
+      brand.degreeImage ||
+      "/assets/all_universities_images/lpu/sample-certificate-lpu.webp";
+
+    const titleH2 = degreeInfo.title || "";
+    const subtitleH3 = degreeInfo.subtitle || "";
+    const descriptionText = description || degreeInfo.desc || "";
+
+    const defaultFeatures = [
+      {
+        title: "Top University Degree",
+        desc: "Students earn a recognised qualification from Lovely Professional University. It offers valid degree for all career-focused programs like LPU MBA Online, LPU MCA Online, and LPU Online BCA.",
+      },
+      {
+        title: "Universally Accepted Degree",
+        desc: "Professionals can upgrade themselves through a globally recognised, UGC-approved degree. These online degrees are accepted worldwide by all employers and academic institutions.",
+      },
+      {
+        title: "Equivalent to Campus Programs",
+        desc: "LPU Online degrees are officially equivalent to regular classroom degrees. These degrees meet all academic standards requirements and offer crucial job-ready skills.",
+      },
+      {
+        title: "Top-Tier Degree Achievement",
+        desc: "Graduates from a UGC-approved LPU online university join the strong alumni network globally. The degrees hold relevance in India and beyond.",
+      },
+    ];
+
+    const activeFeatures =
+      features && features.length > 0 ? features : defaultFeatures;
+
+    const hideCertOnMobile = Boolean(
+      degreeInfo.hideCertificateOnMobile ??
+      degreeInfo.hideCertOnMobile ??
+      brand.hideDegreeCertOnMobile
+    );
+
+    const sectionClassName = degreeInfo.sectionClassName || brand.degreeSectionClassName || "";
+    const containerClassName = degreeInfo.containerClassName || brand.degreeContainerClassName || "";
+    const titleClassName = degreeInfo.titleClassName || "";
+    const subtitleClassName = degreeInfo.subtitleClassName || "";
+    const descClassName = degreeInfo.descClassName || "";
+    const gridClassName = degreeInfo.featuresGridClassName || "";
+    const defaultCardClassName = degreeInfo.cardClassName || "";
+    const defaultCardTitleClassName = degreeInfo.cardTitleClassName || "";
+    const defaultCardDescClassName = degreeInfo.cardDescClassName || "";
+    const buttonClassName = degreeInfo.buttonClassName || "";
+    const buttonContainerClassName = degreeInfo.buttonContainerClassName || "pt-2 flex justify-start";
+
+    return (
+      <section id="Degreeinfo" className={sectionClassName}>
+        <LandingContainer className={containerClassName}>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-8 lg:gap-12 items-center">
+            {/* Left: Certificate Image */}
+            <div className={`${hideCertOnMobile ? "hidden lg:flex" : "flex"} lg:col-span-5 justify-center`}>
+              <div className="relative w-full max-w-[340px] sm:max-w-[380px] lg:max-w-[420px] aspect-[666/825] rounded-[4px] overflow-hidden shadow-md bg-white border border-slate-200/90">
+                <Image
+                  src={certImage}
+                  alt="LPU Online Degree"
+                  fill
+                  className="object-contain"
+                  sizes="(max-width: 640px) 340px, (max-width: 1024px) 380px, 420px"
+                  priority
+                />
+              </div>
+            </div>
+
+            {/* Right: Info & Feature Boxes */}
+            <div className="lg:col-span-7 text-left space-y-4">
+              <div>
+                {titleH2 && <h2 className={titleClassName}>{titleH2}</h2>}
+                {subtitleH3 && <h3 className={subtitleClassName}>{subtitleH3}</h3>}
+                {descriptionText && <p className={descClassName}>{descriptionText}</p>}
+              </div>
+
+              <div className={gridClassName}>
+                {activeFeatures.map((feat, idx) => (
+                  <div
+                    key={idx}
+                    className={feat.cardClassName || defaultCardClassName}
+                  >
+                    <h4 className={feat.titleClassName || defaultCardTitleClassName}>
+                      {feat.title}
+                    </h4>
+                    <p className={feat.descClassName || defaultCardDescClassName}>
+                      {feat.desc || feat.description}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              <div className={buttonContainerClassName}>
+                <button
+                  type="button"
+                  onClick={() => onOpenApply?.()}
+                  className={buttonClassName}
+                >
+                  <span>{degreeInfo.buttonText || "Get FREE Career Assistance"}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </LandingContainer>
       </section>
     );
   }
@@ -418,18 +871,33 @@ export default function LandingDegree({
     brand.degreeLayout === "imageLeft" ||
     isGgu;
 
-  const titleColor = brand.degreeTitleColor || (isGgu ? "#003468" : "#811811");
-  const btnBg = brand.degreeBtnBg || (isGgu ? "#DC520A" : "#ffc107");
-  const btnTextColor = brand.degreeBtnTextColor || (isGgu ? "#ffffff" : "#020617");
+  const titleColor = degreeInfo.titleColor || brand.degreeTitleColor || (isGgu ? "#003468" : "#811811");
+  const btnBg = degreeInfo.buttonBg || brand.degreeBtnBg || (isGgu ? "#DC520A" : "#ffc107");
+  const btnTextColor = degreeInfo.buttonTextColor || brand.degreeBtnTextColor || (isGgu ? "#ffffff" : "#020617");
+
+  const isTransparentCard =
+    degreeInfo.cardBackground === "transparent" ||
+    Boolean(degreeInfo.transparentCard);
 
   return (
     <section
       id="degree"
       className={`select-none ${isGgu ? "bg-[#F6F6F6] pt-2 pb-14 sm:pb-16" : "py-12 sm:py-16 bg-[#f4f7fb]"
         }`}
+      style={degreeInfo.sectionBg ? { backgroundColor: degreeInfo.sectionBg } : {}}
     >
       <LandingContainer>
-        <div className="bg-white rounded-[8px] sm:rounded-[12px] shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-slate-100/80 p-6 sm:p-10 lg:p-12 max-w-[1140px] mx-auto">
+        <div
+          className={`max-w-[1140px] min-[1600px]:max-w-[1360px] min-[1920px]:max-w-[1480px] mx-auto ${isTransparentCard
+              ? "bg-transparent px-5 sm:px-8 lg:px-10 py-2 shadow-none border-none"
+              : "bg-white rounded-[8px] sm:rounded-[12px] shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-slate-100/80 p-6 sm:p-10 lg:p-12"
+            }`}
+          style={
+            !isTransparentCard && degreeInfo.cardBackground
+              ? { backgroundColor: degreeInfo.cardBackground }
+              : {}
+          }
+        >
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             {/* Image Column */}
             <div
@@ -442,16 +910,18 @@ export default function LandingDegree({
                     {images.map((imgSrc, idx) => (
                       <div
                         key={idx}
-                        className={`relative w-full ${isGgu
-                          ? "max-w-[380px] sm:max-w-[440px] aspect-[583/499]"
-                          : "h-[250px] sm:h-[300px] rounded-[10px] overflow-hidden shadow-lg border border-slate-200 bg-white"
-                          }`}
+                        className={`relative w-full ${degreeInfo.imageWrapperClassName || (isTransparentCard
+                            ? "max-w-[360px] sm:max-w-[420px] aspect-square mx-auto"
+                            : isGgu
+                            ? "max-w-[380px] sm:max-w-[440px] aspect-[583/499]"
+                            : "h-[250px] sm:h-[300px] rounded-[10px] overflow-hidden shadow-lg border border-slate-200 bg-white"
+                          )}`}
                       >
                         <Image
                           src={imgSrc}
                           alt={`Sample Degree ${idx + 1}`}
                           fill
-                          className={isGgu ? "object-contain" : "object-contain p-2"}
+                          className={degreeInfo.imageClassName || (isGgu ? "object-contain" : "object-contain p-2")}
                           sizes="(max-width: 1024px) 380px, 440px"
                         />
                       </div>
@@ -460,16 +930,18 @@ export default function LandingDegree({
                 </div>
               ) : (
                 <div
-                  className={`relative w-full ${isGgu
-                    ? "max-w-[360px] sm:max-w-[410px] aspect-[583/499]"
-                    : "max-w-[340px] sm:max-w-[420px] h-[250px] sm:h-[300px] rounded-[10px] overflow-hidden shadow-lg border border-slate-200 bg-white"
-                    }`}
+                  className={`relative w-full ${degreeInfo.imageWrapperClassName || (isTransparentCard
+                      ? "max-w-[360px] sm:max-w-[420px] aspect-square mx-auto"
+                      : isGgu
+                      ? "max-w-[360px] sm:max-w-[410px] aspect-[583/499]"
+                      : "max-w-[340px] sm:max-w-[420px] h-[250px] sm:h-[300px] rounded-[10px] overflow-hidden shadow-lg border border-slate-200 bg-white"
+                    )}`}
                 >
                   <Image
                     src={image}
                     alt="Sample Degree"
                     fill
-                    className={isGgu ? "object-contain" : "object-contain p-2"}
+                    className={degreeInfo.imageClassName || (isGgu ? "object-contain" : "object-contain p-2")}
                     sizes="(max-width: 1024px) 360px, 410px"
                     priority
                   />

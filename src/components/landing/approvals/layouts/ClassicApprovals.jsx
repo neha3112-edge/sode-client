@@ -25,7 +25,7 @@ export default function ClassicApprovals({
       className="py-12 sm:py-16 text-white select-none scroll-mt-20"
       style={{ backgroundColor: bg }}
     >
-      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 text-center">
+      <div className="max-w-[1240px] min-[1600px]:max-w-[1520px] min-[1920px]:max-w-[1680px] mx-auto px-4 sm:px-6 text-center">
         <h2 className="text-2xl sm:text-3xl lg:text-[34px] font-bold text-white tracking-tight mb-8 sm:mb-12 m-0">
           {activeTitle || brand?.approvalsTitle || "Recognitions & Accreditations"}
         </h2>

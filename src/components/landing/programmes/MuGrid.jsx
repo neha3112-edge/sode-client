@@ -47,7 +47,7 @@ export default function MuGrid({
         ...brand.programmesSectionStyle,
       }}
     >
-      <div className={`max-w-[1240px] mx-auto px-4 sm:px-6 ${brand.programmesContainerClassName || ""}`}>
+      <div className={`max-w-[1240px] min-[1600px]:max-w-[1520px] min-[1920px]:max-w-[1680px] mx-auto px-4 sm:px-6 ${brand.programmesContainerClassName || ""}`}>
         {/* Section Heading */}
         <h2
           className={`text-center font-bold text-[#193579] uppercase tracking-wide m-0 ${

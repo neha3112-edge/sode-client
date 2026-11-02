@@ -1,0 +1,512 @@
+=== HEADER HTML ===
+<div class="logo">
+        <a class="des_logo" href="https://distanceeducationschool.com/mu/"><img src="assets/images/sode-icon.png" loading="lazy" width="200px"></a>
+        <hr>
+        <a class="mang_logo" href="https://distanceeducationschool.com/mu/"><img src="assets/images/mang-logo.webp" loading="lazy" width="200px"></a>
+    </div>
+    <!-- <input id="menu-toggle" type="checkbox" />
+    <label class="menu-button-container" for="menu-toggle">
+        <div class="menu-button"></div>
+    </label> -->
+    <!-- <ul class="menu">
+        <li><a href="#program">Courses</a> <span class="separator">|</span></li>
+        <li><a href="#approvals">Approvals</a> <span class="separator">|</span> </li>
+        <li><a href="#about">About</a><span class="separator">|</span></li>
+        <li><a href="#Advantage">Advantage</a> <span class="separator">|</span></li>
+        <li><a href="#faq">FAQ</a> <span class="separator">|</span></li>
+    </ul> -->
+    <!-- <h1 class="header_heading">Admission Closing Soon for the Session 2026-27</h1> -->
+    <button type="button" class="coupon-btn" onclick="openForm()">
+        <img src="assets/images/gift.gif">Scholarship Coupon Code
+    </button>
+</div>
+</div>    
+
+=== HERO / TOP-BANNER HTML ===
+<div class="top-banner">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8" id="main-content"> 
+                    <h5 class="welcome">Welcome to SODE</h5>
+                    <p class="sode_content">(School of Online & Distance Education)</p>
+                    <h1><span class="yellow">Mangalayatan University </span><br>Online Degree Courses</h1><br>
+                    <p class="banner_content">Students can advance their higher education goals with Mangalayatan University Online from the comfort of their home. They can enhance their career with industry-relevant courses and expert guidance from experienced faculty.</p>
+                    <!-- <h2>MBA | MCA | MCOM | MA | MSC <br>BBA | BCA | BCOM | BA | BSC </h2> 
+                    -->
+                   
+                   
+                    <button class="topbtn" onclick="openBrochureModal(this)" data-pdf="assets/brochures/main_brochure.pdf">Download Brochure <i class="fa fa-download"></i></button>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="d-block d-lg-none d-md-none">
+                      <img src="assets/images/mu-mobile.webp" width="100%"
+                            style="margin-top:-40px; position:relative; margin-left:8px;">
+                    </div>
+                    <button type="button" class="coupon-btn coupon-button-mobile" onclick="openForm()">
+        <img src="assets/images/gift.gif">Scholarship Coupon Code
+    </button>
+                    <div id="form">
+    <!-- <center><p class="ads">Admisssion Open 2023</p></center> -->
+    <div class="frm-heading">
+		<h5><strong><span class="blue">&nbsp;Enquire Now </span> <br></strong></h5>
+        <p>Academic Experts will assist you!
+        </p>
+		
+    </div>
+	
+    <div class="call_fix_text_section">
+    <a class="call_fix_text" href="tel:07065777755"><i class="fa fa-phone"></i> +91 7065 7777 55</a>
+    </div>
+
+    <!-- <center><p>Have Doubt? Talk FREE to Our Expert</p></center> -->
+    <form action="mail.php" method="post" name="form" id="myForm">
+
+        <!-- <label>Name<span class="required">*</span></label> -->
+        <input type="text" name="full_name" id="full_name" class="form-control" placeholder="Enter Your Name" required>
+<!-- 
+        <label>Email ID <span class="required">*</span></label> -->
+        <input type="email" name="email" id="email" class="form-control" placeholder="Enter Your Email" required>
+
+        <!-- <label>Phone <span class="required">*</span></label> -->
+        <input type="tel" id="phone" name="phone" class="form-control" placeholder="Enter your Number" required width="100%">
+
+     
+        <!-- <label>Course <span class="required">*</span></label> -->
+        <select name="course" class="form-control" id="course" style="margin-top:10px;" required >
+          <option value="" selected disabled>Select Your Course</option>
+			<option value="MA">MA - Master of Arts</option>
+            <option value="MBA">MBA - Master of Business Administration</option>
+            <option value="MCA">MCA - Master of Computer Application</option>
+			 <option value="MCOM">MCOM - Master of Commerce</option>
+			<option value="MSC">MSC - Master of Science</option>
+			<option value="BA">BA - Bachelor of Arts</option>
+			  <option value="BBA">BBA - Bachelor of Business Administration</option>
+            <option value="BCA">BCA - Bachelor of Computer Application</option>
+			<option value="BCOM">BCOM - Bachelor of Commerce</option>
+			<option value="BSC">BSC - Bachelor of Science</option>
+            <option value="BSC">BLIS - Bachelor of Library and Information Science</option>
+            <option value="BSC">BJMC - Bachelor of Journalism and Mass Communication</option>
+            <option value="BSC">MLIS - Master of Library and Information Science </option>
+            <option value="MBA">MBA Plus - Master of Business Administration Plus </option>
+            
+            </select>
+
+        <!-- <label>State <span class="required">*</span></label> -->
+        <select name="state" class="form-control" id="state" required>
+            <option value="" hidden>Select Your State</option>
+            <option value="Andhra Pradesh">Andhra Pradesh</option>
+            <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+            <option value="Assam">Assam</option>
+            <option value="Bihar">Bihar </option>
+            <option value="Chhattisgarh">Chhattisgarh</option>
+            <option value="Delhi">Delhi</option>
+            <option value="Goa">Goa</option>
+            <option value="Gujarat">Gujarat </option>
+            <option value="Haryana">Haryana</option>
+            <option value="Himachal Pradesh">Himachal Pradesh</option>
+            <option value="Jharkhand">Jharkhand </option>
+            <option value="Karnataka">Karnataka</option>
+            <option value="Kerala">Kerala</option>
+            <option value="Madhya Pradesh">Madhya Pradesh </option>
+            <option value="Maharashtra">Maharashtra</option>
+            <option value="Manipur">Manipur</option>
+            <option value="Meghalaya">Meghalaya </option>
+            <option value="Mizoram">Mizoram</option>
+            <option value="Nagaland">Nagaland</option>
+            <option value="Odisha">Odisha </option>
+            <option value="Punjab">Punjab</option>
+            <option value="Rajasthan">Rajasthan</option>
+            <option value="Sikkim">Sikkim </option>
+            <option value="Tamil Nadu">Tamil Nadu</option>
+            <option value="Telangana">Telangana</option>
+            <option value="Tripura">Tripura </option>
+            <option value="Uttar Pradesh">Uttar Pradesh</option>
+            <option value="Uttarakhand">Uttarakhand </option>
+            <option value="West Bengal">West Bengal </option>
+			<option value="Jammu and Kashmir">Jammu and Kashmir</option>
+			 <option value="Puducherry">Puducherry</option>
+			 <option value="Lakshadweep">Lakshadweep</option>
+			 <option value="Ladakh">Ladakh</option>
+			 <option value="Chandigarh">Chandigarh</option>
+			 <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
+			 <option value="Dadra and Nagar Haveli and Daman and Diu">Dadra and Nagar Haveli and Daman and Diu</option>
+        </select>
+
+        <div id="checkboxWrapper" style="display: flex; flex-direction: column; gap: 5px;">
+  <div style="display: flex; align-items: center; gap: 8px;">
+    <input type="checkbox" id="disclaimer" name="disclaimer" />
+    <span style="font-size: 10px; line-height:1;">I consent to receive university updates via email and mobile number. <span class="disclaimer_popup" onclick="disclaimerModal()">Disclaimer</span></span>
+  </div>
+  <span class="checkbox-error" style="color: red; font-size: 13px; display: none;"></span>
+</div>
+        <input type="hidden" name="source" id="source" class="form-control" value="Mang LP" required>
+        <input type="hidden" name="form_name" id="form_name" class="form-control" value="Enquiry Form">
+        <input type="hidden" name="sub_source" id="sub_source" class="form-control" value="">
+        <input type="hidden" name="utm_source" id="utm_source" class="form-control" value="">
+        <input type="hidden" name="utm_campaign" id="utm_campaign" class="form-control" value="">
+        <input type="hidden" name="utm_medium" id="utm_medium" class="form-control" value="">
+        <input type="hidden" name="utm_term" id="utm_term" class="form-control" value="">
+        <input type="hidden" name="utm_content" id="utm_content" class="form-control" value="">
+        <input type="hidden" name="page_url" id="page_url" class="form-control" value="">
+<br>
+        <center><button type="submit" name="submit" value="submit" class="sub-btn" id="button">Submit</button></center>
+    </form>
+</div>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const currentUrl = window.location.href;
+
+    // Sab forms me page_url fill karega
+    document.querySelectorAll('input[name="page_url"]').forEach(input => {
+        input.value = currentUrl;
+    });
+});
+</script>                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="approvals_container container">
+    <div id="approvals">
+
+
+=== APPROVALS HTML ===
+<div class="approvals_container container">
+    <div id="approvals">
+<h1>Mangalayatan University Online</h1>
+    <h3>Approvals & Recognition</h3>
+    
+
+    
+        <div class="row">
+
+                <div class="col-md-3" id="apr">
+                     <img src="assets/images/ugc-mang-66d581c42878a.webp"> <h2>UGC Entitled</h2>
+          
+					<p>Courses of Mangalayatan University online are UGC-recognised and nationally accepted.</p>
+                    </div>
+
+                   
+                <div class="col-md-3" id="apr">
+                     <img src="assets/images/naac-mangalayatan.webp"> <h2>NAAC A+ Graded</h2>
+                   
+					<p>The university is NAAC A+ accredited as well as ensuring the highest academic standards.</p>
+                    </div>
+
+                   
+              
+                <div class="col-md-3" id="apr">
+                     <img src="assets/images/AICTE-logo.png"> <h2>AICTE Accredited</h2>
+                   
+					<p>Mangalayatan University is  AICTE-approved for industry relevance.</p>
+                </div>
+			 <div class="col-md-3" id="apr">
+                     <img src="assets/images/aiu-logo.webp"> <h2>Member of AIU</h2>
+               
+					<p>The university is a recognised member of the Association of Indian Universities (AIU).</p>
+                    </div>
+            </div>
+        </div>
+       
+</div>
+
+    <!-- startcourse -->
+
+<div id="program">
+
+
+=== PROGRAMMES HTML (first 1000 chars) ===
+<h2 id="pro-hd">Programs Offered <br><span class="secondary_heading"> By Mangalayatan University Online</span></h2>
+
+
+            <div class="tab">
+    <button class="tablinks active"  id="defaultOpen" onclick="openCourse(event, 'Master')">Master</button>
+  <button class="tablinks" onclick="openCourse(event, 'Bachelor')">Bachelor</button>
+  
+</div>
+            <div class="content">
+    <div id="Bachelor" class="tabContent" style="display:none;">
+        <div class="row">
+        <div class="col-md-4">
+                <div class="card-box">
+                <img src="assets/images/bba-mu.webp">
+                    <div class="card-box-info">
+                    <h2>Online BBA</h2>
+                    <span class="C1">Bachelor of Business Administration </span>
+                    <div class="cd1">
+                    <p> <i class="fa fa-clock-o" id="icon1"></i><span class="org"> Duration :</span><br> 3 Years</p>
+                    <p>  <i class="fa fa-graduation-cap"></i><span class="org"> Eligibility : </span><br>12th Passed</p>
+                    </div>
+                                    
+                        <p>Students can build strong business foundat
+
+=== ABOUT HTML ===
+<h2>About Mangalayatan University Online</h2>
+                    <!-- <p style="color:#193579;"><b>Discover the Unmatched Qualities That Set Us Apart</b></p><br> -->
+                    <p>Mangalayatan University Online is a University with NAAC A+ accreditation. It was started in 2006 in Aligarh, Uttar Pradesh. The university is a UGC approved University, and shows its commitment to high academic standards and quality education. This university has managed to graduate 7, 000+ students over the years, and it has been able to support 3,500+ students presently, including both Indian and foreign learners. Mangalayatan University online courses are based on online and distance learning. They have a purpose of providing affordable and flexible education to the needs of modern learners. Online Mangalayatan University will allow individuals to complete a recognised degree without having to sacrifice their jobs and commitments.
+                        <br><br>
+                        The admission process is convenient and student-friendly at Mangalayatan University. Therefore, the experience of enrolling in this university becomes simple. Mangalayatan University open the doorways to career-oriented education supported by academic excellence and online ease. Individuals can get on their way to achieving career aspirations with Mangalayatan University, where quality meets flexibility.
+
+</p>
+<br>
+
+<button class="btn2" onclick='openPopup()'>Apply Now <i class="fa fa-arrow-right"></i></button><br><br>
+                </div>
+                 <!-- <div class="col-md-5">
+                     <img src="assets/images/about-mu-img1.webp" width="100%">
+                 </div> -->
+                
+            </div>
+         
+
+        </div>
+</div>
+
+
+
+
+    <div id="Advantage">
+        <div class="container" >
+            <div class="row">
+                <div class="col-md-12">
+                        
+
+=== WHY CHOOSE HTML ===
+<h2>Why Choose <br><span class="secondary_heading">Mangalayatan University Online Degree Courses?</span></h2>
+                </div>
+            </div>
+            <br>
+        
+         <div class="row">
+            <div class="col-md-4">
+                <div class="adv-b">
+                    <img src="assets/images/recorded-live-lectures-mu.webp"> 
+                    <p><b>Recognised and</b><br>Accredited Degree</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="adv-b">
+                    <img src="assets/images/various-specialisation-mu.webp"> 
+                    <p><b>Flexible Learning</b><br>Schedule</p>
+                   
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="adv-b">
+                    <img src="assets/images/placement-assistance-mu.webp"> 
+                    <p><b>Affordable Online</b><br>
+                    Programs</p>
+                </div>
+            </div>
+
+
+            <div class="col-md-4">
+                <div class="adv-b">
+                    <img src="assets/images/24x7-instant-mu.webp"> 
+                    <p><b>Future Leadership</b><br>Pathways</p>
+                </div>
+            </div>
+
+
+            <div class="col-md-4">
+                <div class="adv-b">
+                    <img src="assets/images/digital-library-mu.webp"> 
+                    <p><b>Profession-Oriented
+                    </b><br>Programs</p>
+                </div>
+            </div>
+
+
+            <div class="col-md-4">
+                <div class="adv-b">
+                    <img src="assets/images/24x7-instant-mu.webp"> 
+                    <p><b>Global Career </b><br> Reach </p>
+                </div>
+            </div>
+         </div>
+        </div>
+    </div>
+
+    <div id="midScrollTrigger" style="height:1px;"></div>
+
+    <div id="placement">
+        <div class="container" >
+            <div class="row">
+                <div class="col-md-12">
+                        
+
+=== RECRUITERS HTML ===
+<h2>Mangalayatan University Top-Tier Hiring Partners</h2><br>
+                        <p>The Mangalayatan University online collaborates with several renowned and reputable companies across various fields. These partnerships open pathways to outstanding career opportunities. Altogether, empowering students and offering them a golden chance to secure a position in such highest ranked organisations and companies like Amazon, Infosys, Capgemini and numerous others.
+</p>
+                </div>
+            </div>
+            <br>
+        
+            <div class="slider owl-carousel">
+            <div class="slide">
+            <div class="item">
+                <img src="assets/images/p1-mu.webp" width="100%">
+            </div>
+            </div>
+
+            <div class="slide">
+            <div class="item">
+              <img src="assets/images/p2-mu.webp" width="100%">
+            </div>
+            </div>
+
+            <div class="slide">
+            <div class="item">
+             <img src="assets/images/p3-mu.webp" width="100%">
+            </div>
+            </div>
+
+            <div class="slide">
+            <div class="item">
+              <img src="assets/images/p4-mu.webp" width="100%">
+            </div>
+            </div>
+
+
+            <div class="slide">
+            <div class="item">
+             <img src="assets/images/p6-mu.webp" width="100%">
+            </div>
+            </div>
+
+            <!-- <div class="slide">
+            <div class="item">
+             <img src="assets/images/p7-mu.webp" width="100%">
+            </div>
+            </div> -->
+
+            <!-- <div class="slide">
+            <div class="item">
+             <img src="assets/images/p8-mu.webp" width="100%">
+            </div>
+            </div> -->
+
+            <div class="slide">
+            <div class="item">
+             <img src="assets/images/p9-mu.webp" width="100%">
+            </div>
+            </div>
+        </div>
+        </div>
+    </div>
+
+
+
+    
+
+=== SODE ABOUT HTML ===
+<section id="sode_about">
+        <h1>About SODE <br><span class="secondary_heading sode_secondary">(School of Online and Distance Education)</span></h1>
+        <p>SODE is India's top educational platform, transforming the way learners engage with higher education. We make higher education easier without compromising on the quality. We help students and working professionals find the right online and distance degree programs. We simplify every step with expert guidance and personalised support.
+<br><br>
+
+Over the years, we've become an Edtech platform trusted by thousands of learners. We focus on supporting working professionals who want to continue their education without stepping away from their personal or professional responsibilities. We understand their challenges, so we offer powerful tools to make their journey smoother, which include University Comparison, Eligibility Checks, Smart University Recommendations, and Free Video Counselling Sessions.
+</p>
+        <div class="sode_about_button">
+        <button class="btn2 get_help_btn" onclick="openPopup()">Get Help </button>
+        <a href="javascript:void(0);" class="compare_btn" onclick="openComparePopup()">
+    Compare University
+</a>
+       </div>
+    </section>
+
+
+
+    
+
+=== APPLY SECTION HTML ===
+<section class="apply-section">
+    <h2>How to Apply for Mangalayatan University Online Courses</h2>
+    <p class="section-desc">
+        The admission process for Mangalayatan University course admissions is very simple and user-friendly.
+        Here’s a step-by-step guide to enrolling in a degree course at the university :
+    </p>
+
+    <div class="steps-wrapper">
+
+        <div class="step-card orange">
+            <div class="step-number">1</div>
+            <h4>Submit Form</h4>
+            <p>Fill in and submit your application form online</p>
+        </div>
+
+        <div class="step-card blue">
+            <div class="step-number">2</div>
+            <h4>Expert's Counseling</h4>
+            <p>You will receive a call from our expert counselor</p>
+        </div>
+
+        <div class="step-card pink">
+            <div class="step-number">3</div>
+            <h4>Choose University</h4>
+            <p>Select the course & university according to your interest</p>
+        </div>
+
+        <div class="step-card green">
+            <div class="step-number">4</div>
+            <h4>Online Payment</h4>
+            <p>You need to make a smooth online fee submission</p>
+        </div>
+
+        <div class="step-card purple">
+            <div class="step-number">5</div>
+            <h4>Document Submit</h4>
+            <p>You need to upload all the required verified documents.</p>
+        </div>
+
+        <div class="step-card orange">
+            <div class="step-number">6</div>
+            <h4>Admission Confirm</h4>
+            <p>Get Confirmation on your Email & Whatsapp</p>
+        </div>
+
+    </div>
+</section>
+
+
+
+
+    <!-- start accordion section -->
+    
+
+=== FAQ HTML ===
+<section id="faq">
+        <div class="container">
+       
+            <h2><span class="bl">FAQ - </span>Frequently Asked Questions</h2><br>
+            <div class="accordion">
+                <div class="accordion-item">
+                    <button id="accordion-button-1" aria-expanded="false">
+                        <span class="accordion-title"><i class="fa fa-angle-double-right"></i> Q1- Is the Online learning of Mangalayatan University UGC-approved?
+
+                        </span>
+                        <span class="icon" aria-hidden="true"></span>
+                    </button>
+                    <div class="accordion-content">
+                        <p>
+                      Yes, Online learning of Mangalayatan University has University Grants Commission (UG) approval,  and is recognised under the guidelines of UGC-DEB (Distance Education Bureau).
+
+                        </p>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <button id="accordion-button-1" aria-expanded="false">
+                        <span class="accordion-title"> <i class="fa fa-angle-double-right"></i> Q2- Is there any entrance exam for Mangalayatan University mca online program?
+
+                        </span>
+                        <span class="icon" aria-hidden="true"></span>
+                    </button>
+                    <div class="accordion-content">
+                        <p>No, Mangalayata
+

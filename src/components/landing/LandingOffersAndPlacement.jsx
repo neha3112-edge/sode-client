@@ -29,7 +29,7 @@ export default function LandingOffersAndPlacement({ offersAndPlacements, brand =
         id="copilot"
         className="w-full py-10 sm:py-14 lg:py-16 bg-[#08202D] text-white select-none scroll-mt-20"
       >
-        <div className="max-w-[1140px] mx-auto px-4 sm:px-6">
+        <div className="max-w-[1140px] min-[1600px]:max-w-[1440px] min-[1920px]:max-w-[1600px] mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-center">
             <div className="text-left">
               <h2 className="text-[22px] sm:text-[28px] lg:text-[32px] font-semibold text-white mb-3 sm:mb-4 leading-tight tracking-tight">

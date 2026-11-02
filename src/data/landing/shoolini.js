@@ -149,6 +149,9 @@ export const shooliniData = {
       },
 
       brochureButtonText: "Download Brochure",
+      mobileStudentImage: "/assets/all_universities_images/shoolini/university.webp",
+      mobileStudentImageWrapperClassName: "block lg:hidden w-full max-w-[440px] mx-auto rounded-[16px] overflow-hidden my-3.5 shadow-md",
+      mobileStudentImageClassName: "w-full h-auto object-cover block rounded-[16px]",
       buttonBorder: "none",
       buttonStyle: {
         background: "linear-gradient(to right, #fd202a, #ff4be5)",

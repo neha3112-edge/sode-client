@@ -17,19 +17,143 @@ export const galgotiasData = {
     ],
   },
   theme: {
-    primaryColor: "#002b49",
-    accentColor: "#ffb800",
-    heroBg: "#ffffff",
+    primaryColor: "#BC1820",
+    accentColor: "#f9bc08",
+    heroBg: "#b2171e",
     tableHeaderBg: "#e1f0fa",
     tableBorderColor: "#cfe2f3",
     footerBg: "#111111",
   },
+  fontFamily: "Montserrat",
   customCss: `
     /* =========================================================
        PAGE-SPECIFIC CSS FOR GALGOTIAS ONLINE
     ========================================================= */
-    #hero h1 {
-      letter-spacing: -0.02em;
+    html,
+    body {
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      overflow-x: clip !important;
+    }
+
+    .landing-page--galgotias,
+    .landing-page--galgotias * {
+      box-sizing: border-box;
+    }
+
+    .landing-page--galgotias {
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      overflow-x: clip !important;
+      font-family: 'Montserrat', sans-serif !important;
+    }
+
+    .landing-page--galgotias header,
+    .landing-page--galgotias .landing-navbar-header {
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 50 !important;
+      background-color: #ffffff !important;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    :root {
+      --primary-color: #BC1820;
+      --secondary-color: #f9bc08;
+      --dark-blue: #002266;
+    }
+    .landing-page--galgotias .yellow {
+      color: #FFD508 !important;
+    }
+    .landing-page--galgotias .steps-wrapper {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 15px;
+    }
+    .landing-page--galgotias .step-card {
+      background: #fff;
+      padding: 20px 14px;
+      border-radius: 14px;
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .landing-page--galgotias .step-card h4 {
+      font-size: 15px;
+      margin: 15px 0 8px;
+      color: #000;
+      font-weight: 600;
+    }
+    .landing-page--galgotias .step-card p {
+      font-size: 12px !important;
+      color: #444;
+      line-height: 1.35;
+      margin: 0;
+    }
+    .landing-page--galgotias .step-number {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      margin: 0 auto;
+      font-size: 19px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+    }
+    .landing-page--galgotias .step-card::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 5px;
+      width: 100%;
+      border-radius: 0 0 14px 14px;
+    }
+    .landing-page--galgotias .orange .step-number { border: 3px solid #ff8c32; color: #ff8c32; }
+    .landing-page--galgotias .orange::after { background: #ff8c32; }
+    .landing-page--galgotias .orange { background: #fff4e9; }
+    .landing-page--galgotias .blue .step-number { border: 3px solid #0b5ed7; color: #0b5ed7; }
+    .landing-page--galgotias .blue::after { background: #0b5ed7; }
+    .landing-page--galgotias .blue { background: #f2f8ff; }
+    .landing-page--galgotias .pink .step-number { border: 3px solid #ff2d6f; color: #ff2d6f; }
+    .landing-page--galgotias .pink::after { background: #ff2d6f; }
+    .landing-page--galgotias .pink { background: #fff1f6; }
+    .landing-page--galgotias .green .step-number { border: 3px solid #1faa59; color: #1faa59; }
+    .landing-page--galgotias .green::after { background: #1faa59; }
+    .landing-page--galgotias .green { background: #effff5; }
+    .landing-page--galgotias .purple .step-number { border: 3px solid #8e2de2; color: #8e2de2; }
+    .landing-page--galgotias .purple::after { background: #8e2de2; }
+    .landing-page--galgotias .purple { background: #f9f0ff; }
+    @media (max-width: 1200px) {
+      .landing-page--galgotias .steps-wrapper {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+    @media (max-width: 768px) {
+      .landing-page--galgotias .steps-wrapper {
+        grid-template-columns: repeat(1, 1fr);
+      }
+      .landing-page--galgotias .top-banner,
+      .landing-page--galgotias #hero-section {
+        background-image: unset !important;
+        background-color: #b2171e !important;
+        padding-top: 15px !important;
+        padding-bottom: 25px !important;
+      }
+      .landing-page--galgotias .partners .desktop_partner {
+        display: none !important;
+      }
+      .landing-page--galgotias .partners .mobile_partner {
+        display: block !important;
+      }
     }
   `,
   brand: {
@@ -45,52 +169,86 @@ export const galgotiasData = {
     enquireTitle: "Enquire Now",
     enquireSubtitle: "Academic Experts will assist you!",
     officialUrl: "https://galgotiasuniversity.edu.in",
-    logo: "/assets/galgotias/galgotias_banner.webp",
-    sodeLogo: "/assets/images/new-des-logo.webp",
-    sodeIcon: "/assets/images/sode_icon.png",
-    showSodeLogo: true,
-    campusImage: "/assets/galgotias/galgotias_banner.webp",
-    buildingAboutImage: "/assets/galgotias/galgotias_banner.webp",
-    whyChooseStudentImage: "/assets/images/why_choose_student.png",
-    primaryColor: "#002b49",
-    themeBg: "bg-[#002b49]",
-    themeBorder: "border-[#002b49]",
-    accentColor: "#ffb800",
-    goldColor: "#ffb800",
+    logo: "/assets/all_universities_images/all_universities_images/galgotias/logo-GU-online.png",
+    logoWrapperClassName: "w-[245px] sm:w-[270px] md:w-[290px] lg:w-[310px] h-[42px] sm:h-[46px] md:h-[48px] lg:h-[52px]",
+    navbarHeightClass: "h-[62px] sm:h-[68px] lg:h-[72px]",
+    sodeLogo: null,
+    sodeIcon: null,
+    showSodeLogo: false,
+    showMobileMenu: true,
+    mobileMenuIconColor: "#08417b",
+    hideDesktopNavLinks: true,
+    navLinks: [
+      { label: "Courses", href: "#program" },
+      { label: "Approvals", href: "#approvals" },
+      { label: "About", href: "#about" },
+      { label: "Why Galgotias", href: "#advantage" },
+      { label: "FAQs", href: "#accordition" },
+    ],
+    campusImage: "/assets/all_universities_images/all_universities_images/galgotias/university.webp",
+    callGif: "/assets/all_universities_images/all_universities_images/galgotias/call_icon.gif",
+    giftGif: "/assets/all_universities_images/all_universities_images/galgotias/gift.gif",
+    arrowGif: "/assets/all_universities_images/all_universities_images/galgotias/arrow.gif",
+    showFloatingCallOnMobile: true,
+    showFloatingGift: true,
+    primaryColor: "#BC1820",
+    themeBg: "bg-[#BC1820]",
+    themeBorder: "border-[#BC1820]",
+    accentColor: "#f9bc08",
+    goldColor: "#FFD508",
     badgeText: "Admission Open 2026",
-    showCouponBtn: false,
-    showCouponButton: false,
-
-    approvalsTitle: "Recognitions & Accreditations",
-    approvalsSubtitle:
-      "Galgotias University Online holds prestigious national and international recognitions ensuring highest academic standards.",
-    approvalsBannerBg: "#002b49",
-    approvalsHeaderColor: "#002b49",
-    approvalsBg: "#f0f7ff",
-    approvalsCircleBorder: "#ffb800",
-
-    showSubNav: true,
-    navbarVariant: "des",
+    showCouponBtn: true,
+    showCouponButton: true,
+    showSubNav: false,
+    navbarVariant: "galgotias",
     heroStyle: "galgotias",
-    whyChooseTitle: "Advantages of Galgotias University Online",
-    whyChooseLayout: "galgotias-grid",
-    programmesTitle: "Courses Offered by Galgotias University Online",
+    whyChooseTitle: "Why Choose Galgotias University Online",
+    whyChooseLayout: "galgotias",
+    programmesTitle: "Galgotias University online courses",
     programmesLayout: "galgotias",
+    approvalsLayout: "galgotias",
+    aboutLayout: "galgotias",
+    degreeLayout: "galgotias",
+    recruitersLayout: "galgotias",
+    admissionTitle: "How Can One Apply To Galgotias University Online?",
+    admissionHeadingColor: "#212529",
+    admissionSubtitle:
+      "Galgotias University online admission process is quite simple and convenient. Learners get an opportunity to learn accessibly and get a worldwide recognised degree. They can enrol in Galgotias University Apply Online through the following steps.",
+    admissionLayout: "galgotias",
+    admissionContainerClass: "w-full max-w-full px-4 sm:px-6 lg:px-8 xl:px-12",
+    admissionGridClass: "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-4 lg:gap-3 xl:gap-4 w-full",
+    compareBoxMaxWidth: "w-full max-w-full px-4 sm:px-6 lg:px-8 xl:px-12",
+    compareBoxPadding: "",
+    faqLayout: "galgotias",
+    compareLayout: "galgotias",
 
     showFooterForm: false,
+    stickySplit: false,
+    stickyBarBg: "#bc1820",
+    stickyBrochureBg: "#25d366",
+    stickyBrochureTextColor: "#ffffff",
+    stickyApplyStyle: "white-red",
+    stickyApplyBg: "#ffffff",
+    stickyApplyTextColor: "#bc1820",
+    stickyBrochureAction: "whatsapp",
+    stickyBrochureIcon: "whatsapp",
+    showStickyBar: true,
+    showFloatingCallOnMobile: true,
+    showFloatingGift: true,
+    showFloatingGiftOnMobile: true,
+    footerBottomBg: "#0b3c66",
+    footerLogoContainerClassName:
+      "w-[340px] sm:w-[520px] md:w-[680px] lg:w-[780px] xl:w-[880px] h-[90px] sm:h-[138px] md:h-[180px] lg:h-[206px] xl:h-[233px] max-w-[92vw] sm:max-w-full",
+    showWhyChoose: false,
     sectionOrder: [
-      "about",
       "approvals",
-      "whyChoose",
       "programmes",
-      "emi",
-      "admissionProcess",
-      "exam",
-      "recruiters",
+      "about",
       "degree",
-      "compareBanner",
-      "testimonials",
+      "recruiters",
+      "admissionProcess",
       "faqs",
+      "compareBanner",
     ],
 
     hero: {
@@ -130,8 +288,30 @@ export const galgotiasData = {
       taglineColor: "#333333",
       hashtagColor: "#555555",
       courseBorder: "#002b49",
-      formBackground: "#002b49",
-      formTitleColor: "#ffb800",
+      formBackground: "#ffffff",
+      formCardType: "white",
+      cardStyle: "white",
+      formTitleColor: "#002266",
+      enquireColor: "#002266",
+      formSubtitleColor: "#111111",
+      enquireSubtitleColor: "#111111",
+      phoneBadgeBackground: "#b11116",
+      phoneBadgeBg: "#b11116",
+      phoneBadgeColor: "#ffffff",
+      phoneBadgeIconColor: "#ffffff",
+      phoneBadgeRadius: "999px",
+      inputBorder: "#cccccc",
+      namePlaceholder: "Enter Your Name",
+      emailPlaceholder: "Enter Your Email",
+      phonePlaceholder: "Enter 10-digit Mobile Number",
+      coursePlaceholder: "Select Your Course",
+      statePlaceholder: "Select Your State",
+      submitButtonBackground: "#b11116",
+      submitBtnBg: "#b11116",
+      submitButtonTextColor: "#ffffff",
+      submitButtonRadius: "6px",
+      hideTermsCheckbox: true,
+      formCardRadius: "16px",
     },
 
     coursesStrip: [
@@ -142,6 +322,15 @@ export const galgotiasData = {
     faqLayout: "pill",
     faqShowPress: true,
     faqTitle: "FAQ's | Frequently Asked Questions",
+    courses: [
+      { value: "MBA", label: "MBA" },
+      { value: "MCA", label: "MCA" },
+      { value: "MCOM", label: "MCOM" },
+      { value: "MA", label: "MA" },
+      { value: "BBA", label: "BBA" },
+      { value: "BCA", label: "BCA" },
+      { value: "BCOM", label: "BCOM" },
+    ],
     footerDisclaimer:
       "SODE Counselling Services LLP acts as a marketing & counselling agency. All university names, logos, and trademarks mentioned are used for informational purposes only. We are not a university or an admission authority. Users are encouraged to verify information on the official website of the University before making decisions.",
   },
@@ -499,9 +688,9 @@ export const galgotiasData = {
   },
 
   recruiters: {
-    title: "Top Galgotias Online Recruiters from Different Industries",
+    title: "Galgotias University CODE Top Hiring Partners",
     subtitle:
-      "Galgotias University’s online programs have helped graduates land roles in top companies, highlighting the quality of education. Here are some notable recruiting partners. Their students get an opportunity to work with:",
+      "Online Galgotias University Collaborates with highly renowned and reputable companies across several sectors . These partnerships are a gateway to numerous career opportunities. Altogether, the university empowers learners to learn and grow as well as secure a high rank in top industry-leading organisations such as Abbott, Jio etc.",
     points: [
       "Multiple Hiring 500+ Partners",
       "1,00,000+ job and placement opportunities",
@@ -775,9 +964,10 @@ export const galgotiasData = {
   ],
 
   admissionProcess: {
-    title: "Admission Process for Galgotias Online for 2026",
+    title: "How Can One Apply To Galgotias University Online?",
+    headingColor: "#212529",
     subtitle:
-      "Here’s how you can apply for online courses at Galgotias University Online for 2026:",
+      "Galgotias University online admission process is quite simple and convenient. Learners get an opportunity to learn accessibly and get a worldwide recognised degree. They can enrol in Galgotias University Apply Online through the following steps.",
     steps: [
       {
         step: "Step 1:",
@@ -807,7 +997,7 @@ export const galgotiasData = {
       {
         num: 1,
         title: "Submit Form",
-        desc: "Fill out the form and submit your application online",
+        desc: "Fill in and submit your application form online",
         themeColor: "#ff7a00",
         borderColor: "#ff7a00",
         cardBg: "#fff8f0",
@@ -823,7 +1013,7 @@ export const galgotiasData = {
       {
         num: 3,
         title: "Choose University",
-        desc: "Select the course & university based on your interest",
+        desc: "Select the course & university according to your interest",
         themeColor: "#ff2a6d",
         borderColor: "#ff2a6d",
         cardBg: "#fff0f5",
@@ -831,7 +1021,7 @@ export const galgotiasData = {
       {
         num: 4,
         title: "Online Payment",
-        desc: "You need to pay the required fee amount",
+        desc: "You need to make a smooth online fee submission",
         themeColor: "#16a34a",
         borderColor: "#16a34a",
         cardBg: "#f0faf3",
@@ -839,7 +1029,7 @@ export const galgotiasData = {
       {
         num: 5,
         title: "Document Submit",
-        desc: "You will get an admission confirmation on your Email",
+        desc: "You need to upload all the required verified documents.",
         themeColor: "#8b5cf6",
         borderColor: "#8b5cf6",
         cardBg: "#f7f2ff",
@@ -847,7 +1037,7 @@ export const galgotiasData = {
       {
         num: 6,
         title: "Admission Confirm",
-        desc: "Get confirmation on your Email & WhatsApp",
+        desc: "Get Confirmation on your Email & Whatsapp",
         themeColor: "#ff7a00",
         borderColor: "#ff7a00",
         cardBg: "#fff8f0",
@@ -921,80 +1111,74 @@ export const galgotiasData = {
   admissionSteps: [
     {
       num: 1,
-      title: "Submit Online Form",
-      desc: "Fill in basic personal and academic details in the online enquiry form.",
-      themeColor: "text-[#002b49]",
-      borderColor: "border-[#002b49]",
-      bottomBorder: "border-b-[4px] border-[#002b49]",
-      cardBg: "bg-[#f0f7ff]",
+      title: "Submit Form",
+      desc: "Fill in and submit your application form online",
+      themeColor: "#ff7a00",
+      borderColor: "#ff7a00",
+      cardBg: "#fff8f0",
     },
     {
       num: 2,
-      title: "Expert Counseling",
-      desc: "Connect with certified academic counselors for free profile evaluation & guidance.",
-      themeColor: "text-[#0066cc]",
-      borderColor: "border-[#0066cc]",
-      bottomBorder: "border-b-[4px] border-[#0066cc]",
-      cardBg: "bg-[#f0f7ff]",
+      title: "Expert's Counseling",
+      desc: "You will receive a call from our expert counselor",
+      themeColor: "#0066cc",
+      borderColor: "#0066cc",
+      cardBg: "#f0f7ff",
     },
     {
       num: 3,
-      title: "Program Selection",
-      desc: "Select your chosen online degree program and career specialization.",
-      themeColor: "text-[#e91e63]",
-      borderColor: "border-[#e91e63]",
-      bottomBorder: "border-b-[4px] border-[#e91e63]",
-      cardBg: "bg-[#fff0f5]",
+      title: "Choose University",
+      desc: "Select the course & university according to your interest",
+      themeColor: "#ff2a6d",
+      borderColor: "#ff2a6d",
+      cardBg: "#fff0f5",
     },
     {
       num: 4,
-      title: "Document Verification",
-      desc: "Upload academic certificates and ID proofs for swift digital verification.",
-      themeColor: "text-[#10b981]",
-      borderColor: "border-[#10b981]",
-      bottomBorder: "border-b-[4px] border-[#10b981]",
-      cardBg: "bg-[#f0fff4]",
+      title: "Online Payment",
+      desc: "You need to make a smooth online fee submission",
+      themeColor: "#16a34a",
+      borderColor: "#16a34a",
+      cardBg: "#f0faf3",
     },
     {
       num: 5,
-      title: "Fee Payment & 0% EMI",
-      desc: "Pay semester fee smoothly online with flexible 0% interest EMI options.",
-      themeColor: "text-[#8b5cf6]",
-      borderColor: "border-[#8b5cf6]",
-      bottomBorder: "border-b-[4px] border-[#8b5cf6]",
-      cardBg: "bg-[#f8f4ff]",
+      title: "Document Submit",
+      desc: "You need to upload all the required verified documents.",
+      themeColor: "#8b5cf6",
+      borderColor: "#8b5cf6",
+      cardBg: "#f7f2ff",
     },
     {
       num: 6,
-      title: "Admission Confirmation",
-      desc: "Receive official enrollment confirmation, student ID & LMS portal login credentials.",
-      themeColor: "text-[#002b49]",
-      borderColor: "border-[#002b49]",
-      bottomBorder: "border-b-[4px] border-[#002b49]",
-      cardBg: "bg-[#f0f7ff]",
+      title: "Admission Confirm",
+      desc: "Get Confirmation on your Email & Whatsapp",
+      themeColor: "#ff7a00",
+      borderColor: "#ff7a00",
+      cardBg: "#fff8f0",
     },
   ],
 
   faqs: [
     {
-      q: "Q1. Is Galgotias University online degree valid in India?",
-      a: "Yes, the Galgotias University online degree is valid in India. The university's courses are approved by the University Grants Commission. This makes its degree valid to the top companies.",
+      q: "Q1. Does Galgotias University Online have any scholarships or EMI?",
+      a: "Galgotias Online has both scholarships and EMI criteria. Students can easily access by clicking on the scholarship coupon code, and EMI opinions are also awarded by the university.",
     },
     {
-      q: "Q2. What is the admission process of Galgotias Online University?",
-      a: "The admission process of Galgotias Online University is straightforward. Interested candidates can apply online through the university portal by submitting their documents and paying the application fee.",
+      q: "Q2. What is the structure of Galgotias Online MBA Fees for different specialisations?",
+      a: "Galgotias Online MBA Fees depend on the specialisation preferred by the student. In case students want to know the fees, they would download the brochure from the button that appears below the courses.",
     },
     {
-      q: "Q3. Who can apply for Galgotias online courses?",
-      a: "Candidates who meet the eligibility criteria for their respective programs, including 10+2 for undergraduate courses and graduation for postgraduate programs, can apply.",
+      q: "Q3. What is the procedure to access the resources to enrol in the Online MBA from Galgotias University?",
+      a: "The university has an advanced digital Learning Management System (LMS) that comprises live lectures, both live and recorded, and online resources such as study notes.",
     },
     {
-      q: "Q4. Can working professionals enroll in Galgotias online MBA program?",
-      a: "Yes, working professionals can enroll in the Galgotias Online MBA program. The flexible schedule and online learning format make it ideal for working individuals.",
+      q: "Q4. How can an individual take the online admission at Galgotias University?",
+      a: "Galgotias University online admission process is quite convenient. It includes completing the application form, payment of fees, uploading documents, verification and confirmation of admission.",
     },
     {
-      q: "Q5. Does Galgotias University offer online courses?",
-      a: "Yes, Galgotias University offers various UGC-approved online degree programs including MBA, MCA, M.Com, MA, BBA, BCA, and B.Com.",
+      q: "Q5. Is the Online MBA from Galgotias University recommended for learners and working professionals?",
+      a: "Yes, if a student wants to pursue a course such as an online MBA from Galgotias University, then it is highly recommended. It is because it provides a flexible learning process and develops high-level management skills.",
     },
   ],
 
