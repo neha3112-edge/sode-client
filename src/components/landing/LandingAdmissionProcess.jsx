@@ -202,14 +202,7 @@ export default function LandingAdmissionProcess({
           `,
         }}
       />
-      <div
-        className={`w-full mx-auto box-border ${
-          brand.admissionContainerClass ||
-          enrollmentProcess?.containerClass ||
-          admissionProcess?.containerClass ||
-          "w-full px-4 sm:px-6 lg:px-8 max-w-[1560px] mx-auto"
-        }`}
-      >
+      <div className="w-full max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8 box-border">
         {/* Heading */}
         {hasEnrollmentPrefix ? (
           <h2 className="text-2xl sm:text-3xl lg:text-[30px] xl:text-[32px] font-bold text-center tracking-tight mb-2.5 sm:mb-3 lg:mb-2 m-0">
@@ -250,14 +243,7 @@ export default function LandingAdmissionProcess({
         )}
 
         {/* Responsive Step Cards Grid */}
-        <div
-          className={
-            brand.admissionGridClass ||
-            admissionProcess?.gridClass ||
-            enrollmentProcess?.gridClass ||
-            "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-3.5 lg:gap-4 w-full mx-auto"
-          }
-        >
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-3.5 lg:gap-4 w-full mx-auto">
           {rawSteps.map((step, idx) => {
             // Default multi-color palette cycle matching Image 2
             const defaultPalette = DEFAULT_STEP_PALETTE[idx % DEFAULT_STEP_PALETTE.length];
