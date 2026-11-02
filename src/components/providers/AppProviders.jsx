@@ -1,12 +1,13 @@
 "use client";
 
-import React from "react";
+import React, { Suspense } from "react";
 import dynamic from "next/dynamic";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { App, ConfigProvider } from "antd";
 
 import SWRProvider from "@/components/providers/SWRProvider";
 import JsonLd from "@/components/common/JsonLd";
+import TopLoadingBar from "@/components/common/TopLoadingBar";
 import { ToolWizardProvider } from "@/components/tool/ToolWizardContext";
 import { BreadcrumbProvider } from "@/context/BreadcrumbContext";
 
@@ -34,6 +35,9 @@ export default function AppProviders({ children }) {
           <SWRProvider>
             <BreadcrumbProvider>
               <ToolWizardProvider>
+                <Suspense fallback={null}>
+                  <TopLoadingBar />
+                </Suspense>
                 <JsonLd />
                 <GlobalHtmlAutoRenderer />
                 <AutoImageTitle />
