@@ -285,6 +285,30 @@ export default function CourseSpecializations({
         const itemDeadline = formatAdmissionDeadline(selectedSpecModal.admissionDeadline || courseData?.admissionDeadline || "");
         const itemDesc = selectedSpecModal.description?.trim() || "";
 
+        const rawEligibility =
+          (Array.isArray(selectedSpecModal?.eligibility) && selectedSpecModal.eligibility.length > 0)
+            ? selectedSpecModal.eligibility
+            : (selectedSpecModal?.eligibility || courseData?.eligibility);
+
+        const eligibilityItems = (() => {
+          if (Array.isArray(rawEligibility)) {
+            return rawEligibility
+              .map((it) => (typeof it === "string" ? it.replace(/^[•\-\*\s]+/, "").trim() : String(it || "").trim()))
+              .filter(Boolean);
+          }
+          if (typeof rawEligibility === "string" && rawEligibility.trim()) {
+            const str = rawEligibility.trim();
+            if (str.includes("•")) {
+              return str.split("•").map((s) => s.replace(/^[•\-\*\s]+/, "").trim()).filter(Boolean);
+            }
+            if (str.includes("\n")) {
+              return str.split("\n").map((s) => s.replace(/^[•\-\*\s]+/, "").trim()).filter(Boolean);
+            }
+            return [str.replace(/^[•\-\*\s]+/, "").trim()];
+          }
+          return [];
+        })();
+
         const itemFeesFormatted =
           activeLedgerData?.semester?.formattedPayable ||
           selectedSpecModal.fees ||
@@ -417,7 +441,7 @@ export default function CourseSpecializations({
                     {modalTitle}
                   </h3>
 
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-gray-500 font-medium mb-2.5">
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500 font-medium mb-1.5">
                     {itemDuration && (
                       <div className="flex items-center gap-1.5">
                         <FaClock className="w-3 h-3 text-[#072C50] shrink-0" />
@@ -436,6 +460,19 @@ export default function CourseSpecializations({
                       </div>
                     )}
                   </div>
+
+                  {eligibilityItems.length > 0 && (
+                    <div className="mb-1.5">
+                      <ul className="space-y-0.5 text-gray-700 list-none p-0 m-0">
+                        {eligibilityItems.map((item, i) => (
+                          <li key={i} className="flex items-start gap-1.5 text-xs sm:text-[12px] text-gray-700 leading-tight">
+                            <span className="w-1.5 h-1.5 rounded-full bg-gray-600 mt-1 shrink-0" />
+                            <span className="font-normal">{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
 
                   {(() => {
                     const text = itemDesc || "";
