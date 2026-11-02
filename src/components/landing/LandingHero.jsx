@@ -50,6 +50,12 @@ export default function LandingHero({
     );
   }
 
+  const isSsbm =
+    brand.slug === "ssbm" ||
+    brand.name?.toLowerCase().includes("ssbm");
+
+  const HeroContainer = isSsbm ? "div" : LandingContainer;
+
   /* ----------------------------- Helpers ----------------------------- */
 
   const joinClassNames = (...values) =>
@@ -493,9 +499,11 @@ export default function LandingHero({
 
         {renderOverlay()}
 
-        <LandingContainer
+        <HeroContainer
           className={joinClassNames(
-            "relative z-10 flex flex-col min-[1000px]:flex-row items-center justify-between gap-5 sm:gap-6 lg:gap-8 px-4 sm:px-6 lg:px-8 py-2.5 sm:py-4 lg:py-4",
+            isSsbm
+              ? "ssbm-hero-container relative z-10 flex flex-col min-[1000px]:flex-row items-center justify-between gap-5 sm:gap-6 lg:gap-8 w-full max-w-[1140px] mx-auto px-4 sm:px-6 box-border"
+              : "relative z-10 flex flex-col min-[1000px]:flex-row items-center justify-between gap-5 sm:gap-6 lg:gap-8 px-4 sm:px-6 lg:px-8 py-2.5 sm:py-4 lg:py-4",
             hero.containerClassName
           )}
           style={{
@@ -823,6 +831,8 @@ export default function LandingHero({
               brand.showMobileCouponButton !== false &&
               hero.hideMobileCouponButton !== true &&
               brand.hideMobileCouponButton !== true &&
+              !brand.hideMobileHeroCoupon &&
+              !hero.hideMobileHeroCoupon &&
               brand.slug !== "cu" &&
               (brand.showCouponBtn || brand.showCouponButton || hero.showCouponBtn || hero.showCouponButton) && (
               <div className="w-full flex justify-center md:hidden mb-3">
@@ -1047,7 +1057,7 @@ export default function LandingHero({
               style={hero.formStyle}
             />
           </div>
-        </LandingContainer>
+        </HeroContainer>
       </section>
 
       {/* --------------------- OPTIONAL BOTTOM STRIP --------------------- */}

@@ -1,7 +1,11 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { DEFAULT_CLASSIC_DISCLAIMER } from "./footerDefaults";
+import {
+  DEFAULT_CLASSIC_DISCLAIMER,
+  DEFAULT_DISCLAIMER_CONTAINER_CLASS,
+  DEFAULT_DISCLAIMER_TEXT_CLASS,
+} from "./footerDefaults";
 
 /**
  * Footer Variant 1: Classic SODE Large Logo + Disclaimer Bar + Copyright Bar
@@ -54,7 +58,7 @@ export default function FooterClassic({
       style={{ backgroundColor: footerBgColor }}
       id="footer-v1"
     >
-      <div className="w-full max-w-full mx-auto px-4 sm:px-8 text-center flex flex-col items-center">
+      <div className="w-full max-w-full mx-auto px-0 sm:px-0 text-center flex flex-col items-center">
         {/* SODE / Distance Education School Official Full Logo */}
         <div className="footer_sode_logo_container flex justify-center items-center mb-3 sm:mb-4">
           <Link
@@ -82,6 +86,7 @@ export default function FooterClassic({
           className={`mt-1.5 sm:mt-2 px-2 sm:px-6 w-full ${brand.footerDisclaimerContainerClassName || "max-w-[1090px] lg:max-w-none"} mx-auto text-center`}
         >
           <p className={`m-0 text-[11px] sm:text-[11.5px] md:text-[12px] ${brand.footerDisclaimerClassName || "lg:text-[10px] xl:text-[11px] min-[1400px]:text-[11.5px] min-[1600px]:text-[12px] lg:whitespace-nowrap"} text-[#666666] leading-[1.62] font-normal tracking-[0.15px]`}>
+
             {footerText}
           </p>
 
@@ -94,7 +99,7 @@ export default function FooterClassic({
             >
               Disclaimer
             </button>
-            <span className="text-[#999999] font-normal px-0.5" aria-hidden="true">
+            <span className="text-[#888888] font-normal px-1" aria-hidden="true">
               |
             </span>
             <button
@@ -104,7 +109,7 @@ export default function FooterClassic({
             >
               Terms & Conditions
             </button>
-            <span className="text-[#999999] font-normal px-0.5" aria-hidden="true">
+            <span className="text-[#888888] font-normal px-1" aria-hidden="true">
               |
             </span>
             <button

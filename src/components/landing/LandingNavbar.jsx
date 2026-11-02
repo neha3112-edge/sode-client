@@ -341,22 +341,22 @@ export default function LandingNavbar({
         </div>
       )}
       <header
-        className={`landing-navbar-header sticky top-0 z-50 relative bg-white border-b border-slate-200/80 shadow-[0px_2px_10px_rgba(0,0,0,0.06)] ${navbar.headerClassName || ""}`}
-        style={navbar.headerStyle}
+        className={`landing-navbar-header sticky top-0 z-50 relative bg-white border-b border-slate-200/80 shadow-[0px_2px_10px_rgba(0,0,0,0.06)] ${navbar.headerClassName || brand.headerClassName || ""}`.trim()}
+        style={{ ...(brand.headerStyle || {}), ...(navbar.headerStyle || {}) }}
       >
 
         <LandingContainer
           className={`
           landing-navbar-container
-          ${navbar.navbarHeightClass || navbar.containerHeight || "h-[64px] sm:h-[68px] lg:h-[72px]"}
+          ${navbar.navbarHeightClass || navbar.containerHeight || brand.navbarHeightClass || brand.containerHeight || "h-[64px] sm:h-[68px] lg:h-[72px]"}
           flex
           items-center
           justify-between
           px-3
           sm:px-6
-          ${navbar.navbarContainerClassName || ""}
+          ${navbar.navbarContainerClassName || brand.navbarContainerClassName || navbar.headerContainerClassName || brand.headerContainerClassName || ""}
         `}
-          style={navbar.navbarContainerStyle}
+          style={{ ...(brand.headerContainerStyle || {}), ...(navbar.navbarContainerStyle || {}) }}
         >
 
           {/* =================================================
@@ -364,7 +364,7 @@ export default function LandingNavbar({
             Positioning remains reusable/fixed.
         ================================================= */}
 
-          <div className="flex items-center min-w-0 shrink-0 ml-0 sm:ml-1 md:ml-2">
+          <div className="flex items-center min-w-0 shrink-0 ml-0 lg:-ml-6">
 
             {/* SODE ICON */}
             {shouldShowSodeLogo && (
@@ -385,8 +385,8 @@ export default function LandingNavbar({
                   relative
                   shrink-0
                   ${shouldShowSodeLogoOnLeftOnMobile
-                      ? "w-11 sm:w-13 lg:w-[76px] h-11 sm:h-12 lg:h-[58px]"
-                      : "w-10 sm:w-12 md:w-14 lg:w-[76px] h-10 sm:h-12 md:h-13 lg:h-[58px]"
+                      ? "w-11 sm:w-13 lg:w-[73px] h-11 sm:h-12 lg:h-[55px]"
+                      : "w-10 sm:w-12 md:w-14 lg:w-[73px] h-10 sm:h-12 md:h-13 lg:h-[55px]"
                     }
                 `}
                 >
@@ -471,24 +471,24 @@ export default function LandingNavbar({
           <div className="shrink-0 pl-2 mr-1.5 sm:mr-3 flex items-center gap-4 sm:gap-6 lg:gap-8">
 
             {/* NAV LINKS */}
-            {navbar.navLinks?.length > 0 && !navbar.hideDesktopNavLinks && (
+            {navbar.navLinks?.length > 0 && !navbar.hideDesktopNavLinks && !brand.hideDesktopNavLinks && (
               <ul className="hidden md:flex items-center gap-5 lg:gap-8 header_menu_list list-none m-0 p-0">
 
                 {activeNavLinks.map((link, idx) => (
                   <li key={`${link.label}-${idx}`}>
                     <a
                       href={link.href}
-                      onClick={(e) =>
-                        handleNavLinkClick(e, link)
-                      }
+                      onClick={(e) => handleNavLinkClick(e, link)}
                       className="
-                      text-[#111111]
-                      hover:text-[#0055b8]
-                      font-semibold
-                      text-[14px]
-                      lg:text-[15.5px]
-                      transition-colors
-                    "
+    text-[#0b2340]
+    hover:text-[#0055b8]
+    font-medium
+    text-[16px]
+    lg:text-[17px]
+    leading-normal
+    transition-colors
+    whitespace-nowrap
+  "
                     >
                       {link.label}
                     </a>
@@ -770,6 +770,7 @@ export default function LandingNavbar({
           MOBILE MENU DROPDOWN
       ================================================= */}
 
+
         {shouldShowMobileMenu && (
           <div
             className={`md:hidden absolute top-full left-0 right-0 w-full z-50 grid transition-all duration-300 ease-in-out bg-white border-[#e5e9f0] shadow-2xl overflow-hidden ${isMobileNavOpen ? "grid-rows-[1fr] opacity-100 border-t" : "grid-rows-[0fr] opacity-0 border-t-0 pointer-events-none"}`}
@@ -777,11 +778,14 @@ export default function LandingNavbar({
             <div className="overflow-y-auto max-h-[calc(100vh-80px)] min-h-0">
               <ul className="flex flex-col list-none m-0 p-0 w-full">
 
+
                 {activeNavLinks.map(
                   (link, idx) => (
                     <li
                       key={`${link.label}-mobile-${idx}`}
+
                       className="w-full border-b border-[#e5e9f0]"
+
                     >
                       <a
                         href={link.href}
@@ -792,6 +796,7 @@ export default function LandingNavbar({
                             link
                           );
                         }}
+
                         style={{
                           color:
                             navbar.mobileMenuLinkColor ||
@@ -813,6 +818,7 @@ export default function LandingNavbar({
                         transition-colors
                         no-underline
                       "
+
                       >
                         {link.label}
                       </a>
@@ -822,15 +828,18 @@ export default function LandingNavbar({
 
               </ul>
 
+
               {/* Mobile Dropdown Scholarship Coupon Button */}
               {isMobileDropdownCouponVisible && (
                 <div className="w-full flex justify-center items-center pt-3 pb-4 px-4 bg-white">
+
                   <Button
                     type="text"
                     onClick={(e) => {
                       setIsMobileNavOpen(false);
                       handleCouponClick(e);
                     }}
+
                     aria-label="Get Scholarship Coupon Code"
                     style={{
                       ...(couponBtnBg ||
@@ -909,10 +918,12 @@ export default function LandingNavbar({
                         alt="Scholarship Gift"
                         width={18}
                         height={18}
+
                         unoptimized
                         className="w-4 h-4 object-contain"
                       />
                     </span>
+
 
                     {/* Coupon Text */}
                     <span
@@ -928,6 +939,7 @@ export default function LandingNavbar({
                       sm:text-[13.5px]
                     "
                     >
+
                       {couponButtonText || "Scholarship Coupon Code"}
                     </span>
                   </Button>

@@ -23,6 +23,7 @@ export default function LandingCompareBanner({ brand = {}, onOpenCompare }) {
 
 
 
+
   const isIim =
     brand.slug === "iim" ||
     brand.compareLayout === "iim";
@@ -57,6 +58,7 @@ export default function LandingCompareBanner({ brand = {}, onOpenCompare }) {
     );
   }
 
+
   const sectionBg = brand.compareSectionBg || "bg-[#f6f8fa]";
   const sectionBgColor =
     brand.compareSectionBgColor && brand.compareSectionBgColor !== "#ffffff"
@@ -71,7 +73,7 @@ export default function LandingCompareBanner({ brand = {}, onOpenCompare }) {
 
   return (
     <section
-      className={`compare_Section ${sectionBg} pt-8 sm:pt-9 md:pt-10 pb-8 sm:pb-9 md:pb-10 select-none`}
+      className={`compare_Section ${sectionBg} pt-8 sm:pt-9 md:pt-15 pb-8 sm:pb-9 md:pb-14 select-none`}
       style={{ backgroundColor: sectionBgColor }}
     >
       <div className={`${brand.compareBoxMaxWidth || (brand.slug === "lpu" ? "w-full max-w-full px-4 sm:px-6 lg:px-8 xl:px-12" : (brand.compareFullWidth ? "max-w-full" : "max-w-[1760px] 2xl:max-w-[1640px]"))} w-full mx-auto ${brand.compareBoxPadding || (brand.slug === "lpu" || brand.compareFullWidth ? "" : "px-3 sm:px-5 md:px-6")}`}>
@@ -81,6 +83,7 @@ export default function LandingCompareBanner({ brand = {}, onOpenCompare }) {
         >
           {/* Heading */}
           <h2 className="text-[22px] sm:text-2xl md:text-[30px] lg:text-[32px] font-bold text-white tracking-normal leading-tight m-0">
+
             Still Confused?
           </h2>
 

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Form, Input, Select, Checkbox, message } from "antd";
+import { Form, Input, Select, Checkbox, App, message as staticMessage } from "antd";
 import { Phone } from "lucide-react";
 import { STATE_OPTIONS } from "@/constants/stateOptions";
 import LandingButton from "./LandingButton";
@@ -141,12 +141,13 @@ export default function LandingLeadForm({
   isBrochure = false,
   onSuccess,
   onOpenDisclaimer,
+  onSubmittingChange,
 }) {
   const [form] = Form.useForm();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-
-
+  const app = App.useApp?.();
+  const message = app?.message || staticMessage;
 
   /* -------------------------------------------------------------
      1. CONFIG RESOLUTION (PRIORITY FLOW)
@@ -498,18 +499,37 @@ export default function LandingLeadForm({
      6. COURSES & STATE OPTIONS
   ------------------------------------------------------------- */
   const rawCourses =
-    formConfig.courseList ||
     courseList ||
     courses ||
+    formConfig.courseList ||
     heroConfig.formCourseList ||
     activeBrand.courses ||
     data?.courses ||
-    DEFAULT_COURSES;
+    [];
 
-  const activeCourses = (rawCourses.length > 0 ? rawCourses : DEFAULT_COURSES).map(
-    (item) => (typeof item === "string" ? { value: item, label: item } : item)
-  );
+  const activeCourses = React.useMemo(() => {
+    const list = Array.isArray(rawCourses) && rawCourses.length > 0 ? rawCourses : [];
+    const seen = new Set();
+    const result = [];
+    for (const item of list) {
+      const val = typeof item === "string" ? item : (item?.value || item?.label);
+      const lbl = typeof item === "string" ? item : (item?.label || item?.value);
+      if (val && !seen.has(val)) {
+        seen.add(val);
+        result.push({ value: val, label: lbl });
+      }
+    }
+    return result;
+  }, [rawCourses]);
 
+  const rawStates = formConfig.stateList || heroConfig.formStateList || activeBrand.stateList || STATE_OPTIONS;
+  const stateOptions = React.useMemo(() => {
+    return rawStates.map((st) =>
+      typeof st === "string" ? { value: st, label: st } : st
+    );
+  }, [rawStates]);
+
+  // Synchronize course selection
   React.useEffect(() => {
     if (defaultCourse && activeCourses?.length) {
       const match = activeCourses.find(
@@ -520,44 +540,59 @@ export default function LandingLeadForm({
       form.setFieldsValue({ course: match ? match.value : defaultCourse });
     } else if (defaultCourse) {
       form.setFieldsValue({ course: defaultCourse });
+    } else if (activeCourses.length === 1) {
+      form.setFieldsValue({ course: activeCourses[0].value });
     }
   }, [defaultCourse, activeCourses, form]);
 
-  const stateOptions = STATE_OPTIONS.map((st) =>
-    typeof st === "string" ? { value: st, label: st } : st
-  );
-
   /* -------------------------------------------------------------
-     7. FORM SUBMISSION HANDLER (API UNCHANGED)
+     7. FORM SUBMISSION HANDLER (API INTEGRATION)
   ------------------------------------------------------------- */
   const onFinish = async (values) => {
+    if (loading) return;
     setLoading(true);
+    onSubmittingChange?.(true);
+
     try {
       const searchParams =
         typeof window !== "undefined"
           ? new URLSearchParams(window.location.search)
           : new URLSearchParams();
 
+      const utm_source = searchParams.get("utm_source") || undefined;
+      const utm_medium = searchParams.get("utm_medium") || undefined;
+      const utm_campaign = searchParams.get("utm_campaign") || undefined;
+      const utm_term = searchParams.get("utm_term") || undefined;
+      const utm_content = searchParams.get("utm_content") || undefined;
+
       const leadPayload = {
-        name: values.full_name,
-        email: values.email,
+        name: values.full_name?.trim(),
+        email: values.email?.trim(),
         phone: String(values.phone || "").replace(/\D/g, "").slice(-10),
         course: values.course,
         state: values.state,
-        university: activeUniversity,
-        source: activeUniversity,
         form_name: activeFormName,
-        utm_source: searchParams.get("utm_source") || `${activeUniversity}_LP`,
-        utm_medium: searchParams.get("utm_medium") || "Direct",
-        utm_campaign: searchParams.get("utm_campaign") || "Online_Admission_2026",
+        source: activeBrand.source || "SODE",
+        sub_source: activeBrand.slug || activeBrand.name || activeUniversity,
         page_url: typeof window !== "undefined" ? window.location.href : "",
+        ...(utm_source ? { utm_source } : {}),
+        ...(utm_medium ? { utm_medium } : {}),
+        ...(utm_campaign ? { utm_campaign } : {}),
+        ...(utm_term ? { utm_term } : {}),
+        ...(utm_content ? { utm_content } : {}),
       };
 
-      await fetch("/api/lead", {
+      const response = await fetch("/api/lead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(leadPayload),
       });
+
+      const resData = await response.json().catch(() => ({}));
+
+      if (!response.ok || !resData.success) {
+        throw new Error(resData.message || errorMessage);
+      }
 
       // Handle Brochure Flow: store brochure URL & flag for Thank You page auto-open
       const isBrochureRequest =
@@ -591,10 +626,12 @@ export default function LandingLeadForm({
       } else {
         router.push("/thank-you");
       }
-    } catch {
-      message.error(errorMessage);
+    } catch (err) {
+      console.error("Lead submission error:", err);
+      message.error(err?.message || errorMessage);
     } finally {
       setLoading(false);
+      onSubmittingChange?.(false);
     }
   };
 
@@ -692,6 +729,7 @@ export default function LandingLeadForm({
       <Select
         placeholder={coursePlaceholder}
         options={activeCourses}
+        getPopupContainer={(trigger) => trigger.parentElement || document.body}
         className="w-full text-[13px] ant-select-custom"
       />
     </Form.Item>
@@ -707,6 +745,11 @@ export default function LandingLeadForm({
       <Select
         placeholder={statePlaceholder}
         options={stateOptions}
+        showSearch
+        filterOption={(input, option) =>
+          (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+        }
+        getPopupContainer={(trigger) => trigger.parentElement || document.body}
         className="w-full text-[13px] ant-select-custom"
       />
     </Form.Item>

@@ -631,6 +631,7 @@ a.auto-rendered-link:hover {
   display: none !important;
 }
 
+
 .enquire-lead-modal,
 .scholarship-lead-modal,
 .landing-lead-modal,
@@ -656,56 +657,24 @@ a.auto-rendered-link:hover {
     pointer-events: none !important;
   }
 
-  /* =========================================================
-     UNIVERSAL MODAL CLOSE BUTTON UI (Matching ModalOTP Reference)
-     High contrast, circular, backdrop-blurred over banners on mobile,
-     clean soft slate circle on desktop.
-  ========================================================= */
-  .ant-modal .ant-modal-close,
-  .ant-modal-close {
-    top: 10px !important;
-    right: 10px !important;
-    z-index: 50 !important;
-    width: 32px !important;
-    height: 32px !important;
-    border-radius: 9999px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    cursor: pointer !important;
-    border: 1px solid rgba(255, 255, 255, 0.25) !important;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    background-color: rgba(0, 0, 0, 0.55) !important;
-    color: #ffffff !important;
-    backdrop-filter: blur(4px) !important;
-    -webkit-backdrop-filter: blur(4px) !important;
-  }
+  /*
 
-  .ant-modal .ant-modal-close:hover,
-  .ant-modal-close:hover {
-    background-color: rgba(0, 0, 0, 0.75) !important;
-    color: #ffffff !important;
-    border-color: rgba(255, 255, 255, 0.45) !important;
-    transform: scale(1.05) !important;
+/* =========================================================
+   GLOBAL FOOTER DISCLAIMER FULL WIDTH COVER (DESKTOP VIEW)
+========================================================= */
+@media (min-width: 1024px) {
+  #footer-bottom-bar {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    box-sizing: border-box !important;
   }
-
-  @media (min-width: 768px) {
-    .ant-modal .ant-modal-close,
-    .ant-modal-close {
-      top: 14px !important;
-      right: 14px !important;
-      background-color: #f1f5f9 !important;
-      color: #475569 !important;
-      border: 1px solid #e2e8f0 !important;
-      backdrop-filter: none !important;
-      -webkit-backdrop-filter: none !important;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06) !important;
-    }
-
-    .ant-modal .ant-modal-close:hover,
-    .ant-modal-close:hover {
-      background-color: #e2e8f0 !important;
-      color: #0f172a !important;
-      border-color: #cbd5e1 !important;
-    }
+  #footer-bottom-bar p {
+    width: 100% !important;
+    max-width: 100% !important;
+    text-align: center !important;
+    font-size: 14px !important;
+    line-height: 1.6 !important;
   }
+}

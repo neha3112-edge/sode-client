@@ -27,18 +27,27 @@ export default function ProgrammesCarousel({
   // Data-driven carousel configuration
   const carouselConfig = brand.programmesCarousel || brand.carousel || {};
   const desktopSlides = carouselConfig.desktopSlides || (isClean || isSmu ? 3 : 4);
+  const laptopSlides = carouselConfig.laptopSlides || (isClean || isSmu ? 3 : 3);
   const tabletSlides = carouselConfig.tabletSlides || 2;
   const mobileSlides = carouselConfig.mobileSlides || 1;
   const showDots = carouselConfig.dots ?? false;
   const isAutoplay = carouselConfig.autoplay ?? true;
   const autoplaySpeed = carouselConfig.interval || (isSmu ? 7500 : intervalTime);
+  const isFullWidth = Boolean(brand.programmesFullWidth || carouselConfig.fullWidth);
+  const showDesktopArrows =
+    carouselConfig.arrows !== false &&
+    !carouselConfig.hideArrows &&
+    !brand.programmesHideArrows;
+  const centerMode = Boolean(carouselConfig.centerMode);
+  const centerPadding = carouselConfig.centerPadding || "0px";
+  const slidesToScroll = carouselConfig.slidesToScroll || 1;
+  const transitionSpeed = carouselConfig.speed || 800;
 
   return (
     <section
       id={brand.programmesSectionId || (isSmu || brand.slug === "manipal" ? "programs" : "programmes")}
-      className={`w-full overflow-hidden relative select-none transition-colors ${
-        isSmu ? "pt-10 pb-12 sm:pt-12 sm:pb-14 text-slate-900" : "py-6 sm:py-8 lg:py-10"
-      }`}
+      className={`w-full overflow-hidden relative select-none transition-colors ${isSmu ? "pt-10 pb-12 sm:pt-12 sm:pb-14 text-slate-900" : "py-6 sm:py-8 lg:py-10"
+        }`}
       style={
         isSmu
           ? { background: "linear-gradient(to bottom, #ffffff 0%, #ffffff 56%, #efefef 56%, #efefef 100%)" }
@@ -48,7 +57,7 @@ export default function ProgrammesCarousel({
       {/* Heading */}
       <div className="text-center mb-5 sm:mb-6 px-4 max-w-4xl mx-auto">
         {isClean ? (
-          <h2 className="text-2xl sm:text-3xl lg:text-[32px] font-bold m-0 tracking-tight leading-tight">
+          <h2 className="text-2xl sm:text-3xl lg:text-[32px] font-semibold m-0 tracking-normal leading-normal">
             <span className="text-[#ee3024]">{brand.programmesPrefix || "Programs Offered by "}</span>
             <span className="text-[#192f59]">{brand.programmesHighlight || displayUniversity}</span>
           </h2>
@@ -59,13 +68,13 @@ export default function ProgrammesCarousel({
         ) : (
           <div>
             <h3
-              className="text-xl sm:text-2xl lg:text-[28px] font-bold m-0 tracking-tight leading-tight text-white"
+              className="programmes-subtitle text-[19px] sm:text-[22px] lg:text-[26px] font-bold m-0 tracking-normal leading-tight text-white"
               style={{ color: brand.programmesSubtitleColor || "#ffffff" }}
             >
               {brand.programmesSubtitle || displayUniversity}
             </h3>
             <h2
-              className="text-2xl sm:text-3xl lg:text-[36px] font-bold mt-1 m-0 tracking-tight leading-tight text-white"
+              className="programmes-title text-[19px] sm:text-[22px] lg:text-[26px] font-bold mt-1 sm:mt-1.5 m-0 tracking-normal leading-tight text-white"
               style={{ color: brand.programmesTitleColor || "#ffffff" }}
             >
               {brand.programmesTitle || title || "Online Degree Courses"}
@@ -161,27 +170,69 @@ export default function ProgrammesCarousel({
           <ChevronLeft className="w-6 h-6 sm:w-8 sm:h-8 stroke-[2.5]" />
         </Button>
 
-        <Button
-          type="text"
-          onClick={() => desktopCarouselRef.current?.next()}
-          aria-label="Next programme"
-          className="flex absolute right-0 sm:-right-3 lg:-right-5 top-1/2 -translate-y-1/2 z-20 text-[#222222] hover:!text-[#ee3024] transition-colors p-1 !bg-transparent !border-none cursor-pointer items-center justify-center active:scale-90 !h-auto !w-auto"
-        >
-          <ChevronRight className="w-6 h-6 sm:w-8 sm:h-8 stroke-[2.5]" />
-        </Button>
 
-        <div className="w-full px-5 sm:px-0 [&_.slick-dots]:!relative [&_.slick-dots]:!mt-5 [&_.slick-dots]:!mb-0 [&_.slick-dots_li]:!w-2 [&_.slick-dots_li]:!h-2 [&_.slick-dots_li]:!mx-1 [&_.slick-dots_li_button]:!w-2 [&_.slick-dots_li_button]:!h-2 [&_.slick-dots_li_button]:!rounded-full [&_.slick-dots_li_button]:!bg-slate-300 [&_.slick-dots_li.slick-active_button]:!bg-[#ee3024]">
+            <Button
+              type="text"
+              onClick={() => desktopCarouselRef.current?.next()}
+              aria-label="Next programme"
+              className="flex absolute right-0 sm:-right-3 lg:-right-5 top-1/2 -translate-y-1/2 z-20 text-[#222222] hover:!text-[#ee3024] transition-colors p-1 !bg-transparent !border-none cursor-pointer items-center justify-center active:scale-90 !h-auto !w-auto"
+            >
+              <ChevronRight className="w-6 h-6 sm:w-8 sm:h-8 stroke-[2.5]" />
+            </Button>
+          </>
+        )}
+
+        <div className={`w-full ${isFullWidth ? "px-0 overflow-hidden" : "px-5 sm:px-0"} [&_.slick-dots]:!relative [&_.slick-dots]:!mt-5 [&_.slick-dots]:!mb-0 [&_.slick-dots_li]:!w-2 [&_.slick-dots_li]:!h-2 [&_.slick-dots_li]:!mx-1 [&_.slick-dots_li_button]:!w-2 [&_.slick-dots_li_button]:!h-2 [&_.slick-dots_li_button]:!rounded-full [&_.slick-dots_li_button]:!bg-slate-300 [&_.slick-dots_li.slick-active_button]:!bg-[#ee3024]`}>
           <Carousel
             ref={desktopCarouselRef}
             autoplay={isAutoplay}
             autoplaySpeed={autoplaySpeed}
+            speed={transitionSpeed}
             dots={showDots}
             slidesToShow={desktopSlides}
-            slidesToScroll={1}
+            slidesToScroll={slidesToScroll}
+            centerMode={centerMode}
+            centerPadding={centerPadding}
             infinite={programmes.length > 1}
+            arrows={false}
+            draggable
             responsive={[
-              { breakpoint: 1280, settings: { slidesToShow: desktopSlides } },
-              { breakpoint: 1024, settings: { slidesToShow: tabletSlides } },
+              {
+                breakpoint: 1536,
+                settings: {
+                  slidesToShow: desktopSlides,
+                  slidesToScroll: slidesToScroll,
+                  centerMode: centerMode,
+                  centerPadding: centerPadding,
+                },
+              },
+              {
+                breakpoint: 1280,
+                settings: {
+                  slidesToShow: desktopSlides,
+                  slidesToScroll: slidesToScroll,
+                  centerMode: centerMode,
+                  centerPadding: centerPadding,
+                },
+              },
+              {
+                breakpoint: 1024,
+                settings: {
+                  slidesToShow: desktopSlides,
+                  slidesToScroll: slidesToScroll,
+                  centerMode: centerMode,
+                  centerPadding: centerPadding,
+                },
+              },
+              {
+                breakpoint: 768,
+                settings: {
+                  slidesToShow: tabletSlides,
+                  slidesToScroll: 1,
+                  centerMode: false,
+                  centerPadding: "0px",
+                },
+              },
             ]}
           >
             {programmes.map((c, idx) => (
@@ -299,7 +350,7 @@ function CleanCard({ c, brand, onSelectCourseForBrochure }) {
         <Button
           type="primary"
           onClick={() => onSelectCourseForBrochure?.(c.code || c.title)}
-          className="w-full h-auto py-2.5 px-4 rounded-[5px] !text-white font-semibold text-[13px] sm:text-[13.5px] flex items-center justify-center gap-2 !border-none cursor-pointer transition-opacity hover:!opacity-95 shadow-xs"
+          className="w-full h-auto py-2.5 px-4 rounded-[5px] !text-white font-light text-[13px] sm:text-[13.5px] flex items-center justify-center gap-2 !border-none cursor-pointer transition-opacity hover:!opacity-95 shadow-xs"
           style={{ background: brand.programmeBtnBg || "linear-gradient(270deg, #ff6600 0%, #ee3024 100%)" }}
         >
           <span>{brand.programmeBtnLabel || "Download Brochure"}</span>
@@ -353,6 +404,7 @@ function SmuCard({ c, brand, onSelectCourseForBrochure, onOpenApply }) {
               (brand.slug === "vgu" ? "#008000" : brand.hero?.buttonBackground || "#074a76"),
             color: brand.courseBrochureTextColor || "#ffffff",
           }}
+
         >
           <span>Get Brochure</span>
           <FaDownload className="w-3 h-3 text-white shrink-0" />
@@ -413,10 +465,10 @@ function ClassicCard({ c, brand, onSelectCourseForBrochure, isMobile = false }) 
     <Card
       variant="borderless"
       styles={{ body: { padding: 0 } }}
-      className="bg-white rounded-[8px] overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col justify-between h-full group text-left border border-slate-200/80"
+      className="classic-course-card bg-white rounded-[6px] overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col justify-between h-full group text-left border-none"
     >
       <div>
-        <div className="relative h-44 sm:h-44 xl:h-48 w-full bg-slate-100 overflow-hidden">
+        <div className="classic-card-image-wrap relative h-[150px] lg:h-[150px] xl:h-[155px] w-full bg-slate-100 overflow-hidden">
           <Image
             src={c.image || "/assets/all_universities_images/amity/MBA-amity.png"}
             alt={c.title}
@@ -424,41 +476,43 @@ function ClassicCard({ c, brand, onSelectCourseForBrochure, isMobile = false }) 
             className="object-cover group-hover:scale-105 transition-transform duration-300"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
           />
-          <div className="absolute top-0 left-0 bg-[#008a00] text-white text-[11px] sm:text-[11.5px] font-semibold px-2.5 sm:px-3 py-1 rounded-br-[4px] tracking-wide select-none shadow-xs">
+          <div className="classic-card-badge absolute top-0 left-0 bg-[#008000] text-white text-[16px] font-medium h-[44px] min-h-[44px] flex items-center justify-center px-4 tracking-wide select-none shadow-none rounded-none rounded-tl-[6px]">
             {levelText}
           </div>
         </div>
 
-        <div className="p-3.5 sm:p-4 pb-2">
-          <h3 className="text-[20px] sm:text-[22px] xl:text-[24px] font-bold m-0 leading-tight tracking-tight" style={{ color: brand.primaryColor || "#08417b" }}>
+        <div className="classic-card-content p-4 sm:p-4.5 pb-2">
+          <h3 className="classic-card-title text-[24px] sm:text-[26px] font-bold m-0 leading-tight tracking-normal" style={{ color: brand.primaryColor || "#08417b" }}>
             {c.code || c.id?.toUpperCase() || c.title}
           </h3>
-          <p className="text-[12.5px] sm:text-[13px] font-semibold mt-1 mb-1.5 line-clamp-1" style={{ color: brand.primaryColor || "#08417b" }}>
+          <p className="classic-card-subtitle text-[13.5px] sm:text-[14px] font-medium mt-0 mb-2 line-clamp-1" style={{ color: brand.primaryColor || "#08417b" }}>
             {c.title}
           </p>
-          <p className={`text-[11.5px] sm:text-[12px] text-[#444444] leading-[1.5] ${isMobile ? "min-h-0" : "line-clamp-3 sm:line-clamp-4 min-h-[54px] sm:min-h-[72px]"} m-0`}>
+          <p className={`classic-card-desc text-[12px] sm:text-[13.5px] text-[#2b2b2b] leading-[1.35] ${isMobile ? "min-h-0" : "line-clamp-4 min-h-[108px]"} m-0`}>
             {c.description}
           </p>
         </div>
       </div>
 
-      <div className="px-3.5 sm:px-4 pt-2 pb-3.5 flex items-center justify-between border-t border-slate-100 mt-1">
-        <Button
-          type="primary"
-          onClick={() => onSelectCourseForBrochure?.(c.code || c.title)}
-          className="active:scale-95 font-bold text-[11.5px] sm:text-[12px] h-auto px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-[4px] inline-flex items-center gap-1.5 !border-none cursor-pointer transition-all shadow-xs shrink-0"
-          style={{
-            background: brand.programmeBtnBg || "#ffd200",
-            color: brand.programmeBtnText || "#000000",
-          }}
-        >
-          <span>{c.buttonText || brand.programmeCardBtnText || "Get Brochure"}</span>
-          <FaDownload className="w-3 h-3 text-black shrink-0" />
-        </Button>
+      <div className="classic-card-footer px-4 sm:px-4.5 pb-4 pt-0 mt-auto">
+        <div className="classic-card-footer-inner flex items-center justify-between border-t border-[#e8e8e8] pt-3">
+          <Button
+            type="primary"
+            onClick={() => onSelectCourseForBrochure?.(c.code || c.title)}
+            className="classic-card-btn active:scale-95 font-normal text-[12px] h-auto px-4 py-1.5 rounded-[4px] inline-flex items-center gap-1.5 !border-none cursor-pointer transition-all shadow-none shrink-0"
+            style={{
+              background: brand.programmeBtnBg || "#fdb913",
+              color: brand.programmeBtnText || "#000000",
+            }}
+          >
+            <span>{c.buttonText || brand.programmeCardBtnText || "Get Brochure"}</span>
+            <FaDownload className="w-3 h-3 text-black shrink-0" />
+          </Button>
 
-        <div className="flex items-center gap-1 text-[11.5px] sm:text-[12px] font-medium text-[#333333] select-none shrink-0">
-          <Hourglass className="w-3.5 h-3.5 text-[#555555]" />
-          <span>{durationText}</span>
+          <div className="classic-card-duration flex items-center gap-1.5 text-[12.5px] font-semibold text-[#333333] select-none shrink-0">
+            <Hourglass className="w-3.5 h-3.5 text-[#555555]" />
+            <span>{durationText}</span>
+          </div>
         </div>
       </div>
     </Card>

@@ -283,8 +283,8 @@ export const ssbmCustomCss = `
 
   .landing-page--ssbm #overview p {
     text-align: center !important;
-    font-size: 14px !important;
-    line-height: 1.55 !important;
+    font-size: 13px !important;
+    line-height: 1.05 !important;
     color: #111111 !important;
     max-width: 1205px !important;
     margin: 0 auto 18px auto !important;
@@ -337,7 +337,7 @@ export const ssbmCustomCss = `
     font-weight: 500 !important;
     color: #555555 !important;
     margin: 0 !important;
-    line-height: 1.2 !important;
+    line-height: 1.0 !important;
     text-align: left !important;
   }
 
@@ -549,9 +549,9 @@ export const ssbmCustomCss = `
       font-weight: 800 !important;
     }
     .landing-page--ssbm #overview p {
-      font-size: 13.5px !important;
+      font-size: 13px !important;
       font-weight: 400 !important;
-      line-height: 1.55 !important;
+      line-height: 1.05 !important;
       color: #222222 !important;
       text-align: center !important;
       margin: 0 auto 20px auto !important;
@@ -798,14 +798,179 @@ export const ssbmCustomCss = `
     }
   }
 
-  /* FAQ */
+  /* SSBM Hero Section Container Width matching FAQ Section (1140px on desktop) */
+  .landing-page--ssbm #hero,
+  .landing-page--ssbm #hero-section {
+    width: 100% !important;
+  }
+  .landing-page--ssbm #hero .ssbm-hero-container,
+  .landing-page--ssbm #hero .ant-layout-content,
+  .landing-page--ssbm #hero .hero-container {
+    width: 100% !important;
+    max-width: 1140px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box !important;
+  }
   @media (max-width: 639px) {
-    .landing-page--ssbm .faq-section {
-      padding: 36px 12px !important;
+    .landing-page--ssbm #hero .ssbm-hero-container,
+    .landing-page--ssbm #hero .ant-layout-content {
+      padding-left: 16px !important;
+      padding-right: 16px !important;
     }
-    .landing-page--ssbm .faq-section h2,
-    .landing-page--ssbm .faq-header h2 {
-      font-size: 20px !important;
+  }
+  @media (min-width: 640px) and (max-width: 1023px) {
+    .landing-page--ssbm #hero .ssbm-hero-container,
+    .landing-page--ssbm #hero .ant-layout-content {
+      padding-left: 24px !important;
+      padding-right: 24px !important;
+    }
+  }
+  @media (min-width: 1024px) {
+    .landing-page--ssbm #hero .ssbm-hero-container,
+    .landing-page--ssbm #hero .ant-layout-content {
+      max-width: 1140px !important;
+      padding-left: 16px !important;
+      padding-right: 16px !important;
+    }
+  }
+
+  /* SSBM Hero Form Card Compact Styling Matching Image 1 */
+  .landing-page--ssbm #hero .landing-lead-card {
+    max-width: 320px !important;
+    padding: 14px 18px 12px !important;
+    border-radius: 10px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12) !important;
+  }
+  .landing-page--ssbm #hero .landing-lead-card h2 {
+    font-size: 18px !important;
+    line-height: 1.2 !important;
+    margin-bottom: 2px !important;
+  }
+  .landing-page--ssbm #hero .landing-lead-card p {
+    font-size: 11.5px !important;
+    margin-top: 1px !important;
+    margin-bottom: 4px !important;
+  }
+  .landing-page--ssbm #hero .landing-lead-card .flex.justify-center {
+    margin-top: 2px !important;
+    margin-bottom: 8px !important;
+  }
+  .landing-page--ssbm #hero .landing-lead-card a[href^="tel:"] {
+    padding: 3px 14px !important;
+    font-size: 12px !important;
+    height: auto !important;
+    border-radius: 9999px !important;
+  }
+  .landing-page--ssbm #hero .landing-lead-card .ant-input,
+  .landing-page--ssbm #hero .landing-lead-card .ant-select-selector {
+    height: 33px !important;
+    min-height: 33px !important;
+    font-size: 12px !important;
+    border-radius: 4px !important;
+  }
+  .landing-page--ssbm #hero .landing-lead-card .ant-select-selection-item,
+  .landing-page--ssbm #hero .landing-lead-card .ant-select-selection-placeholder {
+    line-height: 31px !important;
+    font-size: 12px !important;
+  }
+  .landing-page--ssbm #hero .landing-lead-card .ant-form-item {
+    margin-bottom: 6px !important;
+  }
+  .landing-page--ssbm #hero .landing-lead-card .ant-checkbox-wrapper {
+    font-size: 9.5px !important;
+    line-height: 1.2 !important;
+    margin-top: 2px !important;
+    margin-bottom: 4px !important;
+  }
+  .landing-page--ssbm #hero .landing-lead-card button[type="submit"] {
+    height: 35px !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    border-radius: 4px !important;
+    margin-top: 4px !important;
+  }
+
+  /* SSBM Course Overview Section Styling - Width strictly matches FAQ (1140px on desktop) */
+  .landing-page--ssbm #overview {
+    width: 100% !important;
+    background-color: #ffffff !important;
+  }
+  .landing-page--ssbm #overview .ssbm-overview-container,
+  .landing-page--ssbm #overview > div {
+    width: 100% !important;
+    max-width: 1140px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box !important;
+  }
+  @media (max-width: 639px) {
+    .landing-page--ssbm #overview .ssbm-overview-container,
+    .landing-page--ssbm #overview > div {
+      padding-left: 16px !important;
+      padding-right: 16px !important;
+    }
+  }
+  @media (min-width: 640px) and (max-width: 1023px) {
+    .landing-page--ssbm #overview .ssbm-overview-container,
+    .landing-page--ssbm #overview > div {
+      padding-left: 24px !important;
+      padding-right: 24px !important;
+    }
+  }
+  @media (min-width: 1024px) {
+    .landing-page--ssbm #overview .ssbm-overview-container,
+    .landing-page--ssbm #overview > div {
+      max-width: 1140px !important;
+      padding-left: 16px !important;
+      padding-right: 16px !important;
+    }
+  }
+
+  /* FAQ Section Styling (Matching Target Card Box Layout & Uniform Width) */
+  .landing-page--ssbm #faqs {
+    background-color: #ffffff !important;
+    width: 100% !important;
+  }
+  .landing-page--ssbm #faqs .ssbm-faq-container,
+  .landing-page--ssbm #faqs .ant-layout-content,
+  #faqs .ssbm-faq-container,
+  #faqs .ant-layout-content {
+    width: 100% !important;
+    max-width: 1140px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box !important;
+  }
+  @media (max-width: 639px) {
+    .landing-page--ssbm #faqs .ssbm-faq-container,
+    .landing-page--ssbm #faqs .ant-layout-content {
+      padding-left: 16px !important;
+      padding-right: 16px !important;
+    }
+    .landing-page--ssbm #faqs h2 {
+      font-size: 22px !important;
+    }
+  }
+  @media (min-width: 640px) and (max-width: 1023px) {
+    .landing-page--ssbm #faqs .ssbm-faq-container,
+    .landing-page--ssbm #faqs .ant-layout-content {
+      padding-left: 24px !important;
+      padding-right: 24px !important;
+    }
+    .landing-page--ssbm #faqs h2 {
+      font-size: 26px !important;
+    }
+  }
+  @media (min-width: 1024px) {
+    .landing-page--ssbm #faqs .ssbm-faq-container,
+    .landing-page--ssbm #faqs .ant-layout-content {
+      max-width: 1140px !important;
+      padding-left: 16px !important;
+      padding-right: 16px !important;
+    }
+    .landing-page--ssbm #faqs h2 {
+      font-size: 28px !important;
     }
   }
 
@@ -908,6 +1073,9 @@ export const ssbmData = {
     desLogo: "/assets/all_universities_images/ssbm/new-des-logo.webp",
     footerLogo: "/assets/all_universities_images/ssbm/new-des-logo.webp",
     footerBottomBg: "#c11f28",
+    faqLayout: "ssbm",
+    faqTitle: "FAQ-Frequently Asked Questions",
+    faqDefaultOpenIndex: 0,
     phone: "+91 7065 7777 55",
     phoneDisplay: "+91 7065 7777 55",
     enquireTitle: "Admission Open",
@@ -939,55 +1107,55 @@ export const ssbmData = {
     hero: {
       backgroundImage: "/assets/all_universities_images/ssbm/ssbm_new_Desktop_bg.png",
       backgroundPosition: "center center",
-      backgroundSize: "155% auto",
+      backgroundSize: "cover",
       desktopBackgroundPosition: "center center",
-      desktopBackgroundSize: "155% auto",
+      desktopBackgroundSize: "cover",
       mobileBackgroundImage: "/assets/all_universities_images/ssbm/mobile_new_bg_main.png",
       mobileStudentImage: "/assets/all_universities_images/ssbm/ssbm_new_mobile_img.png",
       mobileStudentImageWrapperClassName: "!w-full !aspect-[801/687] !relative !overflow-hidden",
       mobileStudentImageClassName: "!w-full !max-w-none !object-cover !object-top",
       noOverlay: true,
-      minHeight: "570px",
-      containerClassName: "!py-3 lg:!py-5 !min-h-[500px]",
-      contentClassName: "items-center text-center md:!items-start md:!text-left lg:max-w-[500px]",
+      minHeight: "auto",
+      containerClassName: "!py-3.5 sm:!py-4 lg:!py-5",
+      contentClassName: "items-center text-center md:!items-start md:!text-left lg:max-w-[480px]",
 
       welcomeText: (
         <Image
           src="/assets/all_universities_images/ssbm/ssbm_new_logo.png"
           alt="SSBM Geneva upGrad"
-          width={185}
-          height={48}
-          className="hidden md:block h-[38px] sm:h-[44px] w-auto object-contain select-none"
+          width={180}
+          height={42}
+          className="hidden md:block h-[34px] sm:h-[38px] w-auto object-contain select-none"
         />
       ),
-      welcomeClassName: "hero-welcome hidden md:block !mb-3 !mt-0 !text-left",
-      welcomeContainerClassName: "hero-welcome hidden md:block !mb-3 !mt-0 !text-left",
+      welcomeClassName: "hero-welcome hidden md:block !mb-2.5 !mt-0 !text-left",
+      welcomeContainerClassName: "hero-welcome hidden md:block !mb-2.5 !mt-0 !text-left",
       welcomeBadgeClassName: "!bg-transparent !p-0 !min-w-0 !shadow-none !border-none !rounded-none !block",
 
       hashtagText: "GLOBAL DOCTOR OF BUSINESS ADMINISTRATION",
-      hashtagClassName: "text-center md:!text-left m-0 text-[13px] sm:text-[14px] font-bold tracking-wide",
+      hashtagClassName: "text-center md:!text-left m-0 text-[11.5px] sm:text-[12.5px] font-bold tracking-wide",
       hashtagStyle: {
         fontFamily: "'Outfit', sans-serif",
         color: "#000000",
-        fontSize: "14px",
+        fontSize: "12.5px",
         fontWeight: "700",
         letterSpacing: "0.2px",
         marginTop: "0px",
-        marginBottom: "3px",
+        marginBottom: "2px",
         whiteSpace: "nowrap",
       },
 
       headlineText: "Online DBA",
       headingFont: "'Anton', sans-serif",
-      headingClassName: "!whitespace-pre-line !leading-[1] text-[48px] sm:text-[60px] lg:text-[68px] text-[#c11f28] text-center md:!text-left",
+      headingClassName: "!whitespace-pre-line !leading-[1] text-[40px] sm:text-[46px] lg:text-[50px] text-[#c11f28] text-center md:!text-left",
       headingStyle: {
         fontFamily: "'Anton', sans-serif",
         color: "#c11f28",
-        fontSize: "68px",
+        fontSize: "50px",
         lineHeight: "1",
-        fontWeight: "500",
-        marginTop: "2px",
-        marginBottom: "6px",
+        fontWeight: "600",
+        marginTop: "1px",
+        marginBottom: "4px",
       },
 
       taglineText: (
@@ -995,37 +1163,37 @@ export const ssbmData = {
           By <u className="font-bold underline">SSBM Geneva</u> via <u className="font-bold underline">upGrad</u>
         </span>
       ),
-      taglineClassName: "text-center md:!text-left mt-1 mb-2",
+      taglineClassName: "text-center md:!text-left mt-0.5 mb-1.5",
       taglineStyle: {
         fontFamily: "'Outfit', sans-serif",
         color: "#000000",
-        fontSize: "15.5px",
+        fontSize: "14px",
         fontWeight: "600",
         lineHeight: "1.3",
-        marginTop: "2px",
-        marginBottom: "8px",
+        marginTop: "1px",
+        marginBottom: "6px",
       },
 
       description:
         "Take your leadership journey into your hands with top-notch Swiss quality education that is designed for working professionals. This Online SSBM Doctorate is for students seeking greater opportunities and wanting to improve the real business world.",
-      descriptionClassName: "text-center md:!text-left !text-[13.5px] sm:!text-[14px] !leading-[1.5] !text-[#000000] !max-w-[360px] sm:!max-w-[440px] mx-auto md:mx-0 !my-0 !mb-3 !font-normal",
+      descriptionClassName: "text-center md:!text-left !text-[12px] sm:!text-[12.5px] !leading-[1.45] !text-[#222222] !max-w-[430px] mx-auto md:mx-0 !my-0 !mb-2.5 !font-normal",
 
       coursesStrip: [
-        <div key="cl" className="hero-checklist space-y-1.5 mb-3 flex flex-col items-center md:items-start text-center md:text-left">
-          <div className="flex items-center gap-2 text-[14px] font-medium text-[#000000]">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" className="w-[17px] h-[17px] fill-black shrink-0">
+        <div key="cl" className="hero-checklist space-y-1 mb-3 flex flex-col items-center md:items-start text-center md:text-left">
+          <div className="flex items-center gap-2 text-[12.5px] font-medium text-[#000000]">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" className="w-[15px] h-[15px] fill-black shrink-0">
               <path d="M128 96C92.7 96 64 124.7 64 160L64 400L128 400L128 160L512 160L512 400L576 400L576 160C576 124.7 547.3 96 512 96L128 96zM19.2 448C8.6 448 0 456.6 0 467.2C0 509.6 34.4 544 76.8 544L563.2 544C605.6 544 640 509.6 640 467.2C640 456.6 631.4 448 620.8 448L19.2 448z" />
             </svg>
             <span>100% Online Learning</span>
           </div>
-          <div className="flex items-center gap-2 text-[14px] font-medium text-[#000000]">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" className="w-[17px] h-[17px] fill-black shrink-0">
+          <div className="flex items-center gap-2 text-[12.5px] font-medium text-[#000000]">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" className="w-[15px] h-[15px] fill-black shrink-0">
               <path d="M415.9 344L225 344C227.9 408.5 242.2 467.9 262.5 511.4C273.9 535.9 286.2 553.2 297.6 563.8C308.8 574.3 316.5 576 320.5 576C324.5 576 332.2 574.3 343.4 563.8C354.8 553.2 367.1 535.8 378.5 511.4C398.8 467.9 413.1 408.5 416 344zM224.9 296L415.8 296C413 231.5 398.7 172.1 378.4 128.6C367 104.2 354.7 86.8 343.3 76.2C332.1 65.7 324.4 64 320.4 64C316.4 64 308.7 65.7 297.5 76.2C286.1 86.8 273.8 104.2 262.4 128.6C242.1 172.1 227.8 231.5 224.9 296zM176.9 296C180.4 210.4 202.5 130.9 234.8 78.7C142.7 111.3 74.9 195.2 65.5 296L176.9 296zM65.5 344C74.9 444.8 142.7 528.7 234.8 561.3C202.5 509.1 180.4 429.6 176.9 344L65.5 344zM463.9 344C460.4 429.6 438.3 509.1 406 561.3C498.1 528.6 565.9 444.8 575.3 344L463.9 344zM575.3 296C565.9 195.2 498.1 111.3 406 78.7C438.3 130.9 460.4 210.4 463.9 296L575.3 296z" />
             </svg>
             <span>Worldwide circle with a DBA Degree</span>
           </div>
-          <div className="flex items-center gap-2 text-[14px] font-medium text-[#000000]">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" className="w-[17px] h-[17px] fill-black shrink-0">
+          <div className="flex items-center gap-2 text-[12.5px] font-medium text-[#000000]">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" className="w-[15px] h-[15px] fill-black shrink-0">
               <path d="M224 64C206.3 64 192 78.3 192 96L192 128L160 128C124.7 128 96 156.7 96 192L96 240L544 240L544 192C544 156.7 515.3 128 480 128L448 128L448 96C448 78.3 433.7 64 416 64C398.3 64 384 78.3 384 96L384 128L256 128L256 96C256 78.3 241.7 64 224 64zM96 288L96 480C96 515.3 124.7 544 160 544L480 544C515.3 544 544 515.3 544 480L544 288L96 288z" />
             </svg>
             <span>36 Months</span>
@@ -1047,16 +1215,29 @@ export const ssbmData = {
             background: "#c11f28",
             backgroundColor: "#c11f28",
             color: "#ffffff",
-            borderRadius: "6px",
-            fontSize: "15px",
+            borderRadius: "4px",
+            fontSize: "13.5px",
             fontWeight: "700",
-            padding: "10px 22px",
+            padding: "8px 20px",
             border: "none",
             boxShadow: "0 4px 12px rgba(193, 31, 40, 0.25)",
           },
         },
       ],
 
+      form: {
+        variant: "white-card",
+        layout: {
+          maxWidth: "320px",
+          padding: "14px 18px 12px",
+          borderRadius: "10px",
+          fieldHeight: "33px",
+          fieldGap: "6px",
+          fieldRadius: "4px",
+          boxShadow: "0 8px 30px rgba(0, 0, 0, 0.12)",
+          border: "1px solid rgba(0, 0, 0, 0.06)",
+        },
+      },
       cardStyle: "white",
       formBackground: "#ffffff",
       formCardType: "white",
@@ -1071,8 +1252,8 @@ export const ssbmData = {
         backgroundColor: "#c11f28",
         color: "#ffffff",
         borderRadius: "9999px",
-        padding: "3px 16px",
-        fontSize: "13px",
+        padding: "3px 14px",
+        fontSize: "12px",
         fontWeight: "700",
       },
       submitBtnBg: "#c11f28",
@@ -1087,6 +1268,7 @@ export const ssbmData = {
     stickyApplyStyle: "red",
 
     // Overview Section
+    overviewLayout: "ssbm",
     overviewTitle: (
       <span>
         <span style={{ color: "#000000" }}>Course</span>{" "}
