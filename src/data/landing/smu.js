@@ -37,6 +37,7 @@ export const smuData = {
     logoClassName: "",
     sodeLogo: "/assets/smu/new-des-logo.webp",
     showSodeLogo: false,
+
     navLinks: [
       { label: "Courses", href: "#program" },
       { label: "Approvals", href: "#approvals" },
@@ -169,7 +170,7 @@ export const smuData = {
     whyChooseLayout: "smu-advantages",
     aboutTitle: "About Sikkim Manipal University\nOnline",
     aboutTitleClassName: "text-[20px] min-[390px]:text-[21.5px] sm:text-[26px] md:text-[30px] lg:text-[36px] font-semibold text-white tracking-normal leading-[1.3] m-0 mb-5 sm:mb-6 text-center",
-    aboutParagraphsClassName: "text-[15px] sm:text-[16px] lg:text-[17px] text-white leading-[1.7] font-normal text-center tracking-normal space-y-6 sm:space-y-7 max-w-3xl xl:max-w-4xl mx-auto px-1 sm:px-4",
+    aboutParagraphsClassName: "text-[15px] sm:text-[16px] lg:textzz-[17px] text-white leading-[1.7] font-normal text-center tracking-normal space-y-6 sm:space-y-7 max-w-3xl xl:max-w-4xl mx-auto px-1 sm:px-4",
     aboutLayout: "smu-banner",
     leaderNameClassName: "text-[16.5px] sm:text-[18px] font-medium text-[#006372] m-0",
     admissionGridClass: "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4.5 sm:gap-4 lg:gap-3 xl:gap-4 w-full",
@@ -386,6 +387,7 @@ export const smuData = {
       desc: "Select the course & university according to your interest",
       themeColor: "#ff2a6d",
       cardBg: "bg-[#fff0f5]",
+
     },
     {
       num: 4,
