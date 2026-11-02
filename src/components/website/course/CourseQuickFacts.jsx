@@ -77,7 +77,9 @@ export default function CourseQuickFacts({
                   Eligibility
                 </span>
                 <span className="text-xs sm:text-sm font-bold text-gray-900 block leading-tight truncate">
-                  {courseData?.eligibility || "10+2 / Graduation"}
+                  {Array.isArray(courseData?.eligibility)
+                    ? courseData.eligibility.join(" • ")
+                    : (courseData?.eligibility || "10+2 / Graduation")}
                 </span>
               </>
             )}

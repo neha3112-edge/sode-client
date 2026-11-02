@@ -316,10 +316,12 @@ export function CourseClientView({
               finalVal = "Available on Request";
             }
           }
+          const isElig = lbl.includes("eligib");
           return {
             _id: item._id,
             label: item.label || item.category || item.title || "Category",
             value: finalVal,
+            items: item.items || (isElig && Array.isArray(courseData?.eligibility) ? courseData.eligibility : null),
           };
         });
     }
@@ -331,7 +333,16 @@ export function CourseClientView({
         value: courseData.fullName ? `${courseData.name} (${courseData.fullName})` : courseData.name,
       });
     }
-    if (courseData?.eligibility) list.push({ label: "Eligibility", value: courseData.eligibility });
+    if (courseData?.eligibility) {
+      const eligVal = Array.isArray(courseData.eligibility)
+        ? courseData.eligibility.join(" • ")
+        : courseData.eligibility;
+      list.push({
+        label: "Eligibility",
+        value: eligVal,
+        items: Array.isArray(courseData.eligibility) ? courseData.eligibility : [courseData.eligibility],
+      });
+    }
     if (courseData?.fees) {
       const feeLabel = courseData.paymentType?.name
         ? `${courseData.paymentType.name} Fee`

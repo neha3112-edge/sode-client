@@ -330,7 +330,36 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
         key: "details",
         width: "64%",
         onCell: () => ({ className: "text-gray-800 font-normal" }),
-        render: (text) => {
+        render: (text, record) => {
+          const cat = (record?.category || "").toLowerCase();
+          if (cat.includes("eligib")) {
+            let items = [];
+            if (Array.isArray(record?.items) && record.items.length > 0) {
+              items = record.items;
+            } else if (Array.isArray(text) && text.length > 0) {
+              items = text;
+            } else if (typeof text === "string" && text.trim()) {
+              items = text.split(/(?:\s*[•\n\r]+\s*|;\s+)/);
+            }
+
+            const cleanItems = items
+              .map((it) => (typeof it === "string" ? it.replace(/^[•\-\*\s]+/, "").trim() : String(it || "").trim()))
+              .filter(Boolean);
+
+            if (cleanItems.length > 0) {
+              return (
+                <ul className="space-y-1.5 my-0.5 text-gray-800 list-none p-0 m-0">
+                  {cleanItems.map((item, i) => (
+                    <li key={i} className="flex items-start gap-1.5 text-xs sm:text-[13.5px] -ml-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-gray-600 mt-1.5 shrink-0" />
+                      <span className="leading-snug">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              );
+            }
+          }
+
           if (typeof text === "string" && text.includes("Read More")) {
             const parts = text.split("Read More");
             return (

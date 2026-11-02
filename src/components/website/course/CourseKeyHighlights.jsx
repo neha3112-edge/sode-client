@@ -3,10 +3,40 @@
 import React from "react";
 import { formatAdmissionDeadline } from "@/lib/utils";
 
-function renderHighlightValue(val, label = "") {
+function renderHighlightValue(val, label = "", itemsProp = null) {
+  const lblLower = (label || "").toLowerCase();
+
+  // 1. Eligibility rendered in styled bullet points
+  if (lblLower.includes("eligib")) {
+    let items = [];
+    if (Array.isArray(itemsProp) && itemsProp.length > 0) {
+      items = itemsProp;
+    } else if (Array.isArray(val) && val.length > 0) {
+      items = val;
+    } else if (typeof val === "string" && val.trim()) {
+      items = val.split(/(?:\s*[•\n\r]+\s*|;\s+)/);
+    }
+
+    const cleanItems = items
+      .map((it) => (typeof it === "string" ? it.replace(/^[•\-\*\s]+/, "").trim() : String(it || "").trim()))
+      .filter(Boolean);
+
+    if (cleanItems.length > 0) {
+      return (
+        <ul className="space-y-1.5 my-0.5 text-gray-800 list-none p-0 m-0">
+          {cleanItems.map((item, i) => (
+            <li key={i} className="flex items-start gap-1.5 text-xs sm:text-[13.5px] -ml-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-gray-600 mt-1.5 shrink-0" />
+              <span className="leading-relaxed">{item}</span>
+            </li>
+          ))}
+        </ul>
+      );
+    }
+  }
+
   if (typeof val !== "string") return val;
 
-  const lblLower = (label || "").toLowerCase();
   if (lblLower.includes("deadline") || lblLower.includes("admission")) {
     val = formatAdmissionDeadline(val);
   }
@@ -91,19 +121,23 @@ export default function CourseKeyHighlights({
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 text-xs sm:text-[13.5px] bg-white">
-              {highlightsList.map((row, idx) => (
-                <tr
-                  key={row._id || idx}
-                  className="bg-white hover:bg-blue-50/30 transition-colors"
-                >
-                  <td className="py-2.5 px-4 sm:px-6 font-bold text-gray-900 border-r border-gray-200 whitespace-nowrap">
-                    {row.label}
-                  </td>
-                  <td className="py-2.5 px-4 sm:px-6 text-gray-800 font-normal">
-                    {renderHighlightValue(row.value, row.label)}
-                  </td>
-                </tr>
-              ))}
+              {highlightsList.map((row, idx) => {
+                const isElig = (row.label || "").toLowerCase().includes("eligib");
+                const eligItems = row.items || (isElig && Array.isArray(courseData?.eligibility) ? courseData.eligibility : null);
+                return (
+                  <tr
+                    key={row._id || idx}
+                    className="bg-white hover:bg-blue-50/30 transition-colors"
+                  >
+                    <td className="py-2.5 px-4 sm:px-6 font-bold text-gray-900 border-r border-gray-200 whitespace-nowrap">
+                      {row.label}
+                    </td>
+                    <td className="py-2.5 px-4 sm:px-6 text-gray-800 font-normal">
+                      {renderHighlightValue(row.value, row.label, eligItems)}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
