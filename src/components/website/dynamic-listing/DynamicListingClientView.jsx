@@ -613,12 +613,12 @@ function FAQSection({ faqs, pageTitle }) {
                 onClick={() => setOpenFaq(isOpen ? -1 : idx)}
                 className="w-full flex items-center justify-between gap-4 p-2.5 sm:p-3 text-left cursor-pointer bg-transparent border-none outline-none"
               >
-                <p
+                <h3
                   className={`text-xs sm:text-[14px] font-semibold leading-snug m-0 ${isOpen ? "text-[#0C2B4E]" : "text-gray-900"
                     }`}
                 >
                   Q{idx + 1}. {question}
-                </p>
+                </h3>
                 <span
                   className={`flex items-center justify-center w-5 h-5 rounded-full shrink-0 transition-colors ${isOpen
                       ? "bg-[#0C2B4E] text-white"

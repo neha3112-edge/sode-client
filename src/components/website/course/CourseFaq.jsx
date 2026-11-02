@@ -42,12 +42,12 @@ export default function CourseFaq({
                 onClick={() => setOpenFaq(isOpen ? -1 : idx)}
                 className="w-full flex items-center justify-between gap-4 p-2 sm:p-2.5 text-left cursor-pointer bg-transparent border-none outline-none"
               >
-                <span
-                  className={`text-xs sm:text-[14px] font-semibold leading-snug ${isOpen ? "text-[#0C2B4E]" : "text-gray-900"
+                <h3
+                  className={`text-xs sm:text-[14px] font-semibold leading-snug m-0 ${isOpen ? "text-[#0C2B4E]" : "text-gray-900"
                     }`}
                 >
                   Q{idx + 1}. {question}
-                </span>
+                </h3>
                 <span
                   className={`flex items-center justify-center w-4 h-4 rounded-full shrink-0 transition-colors ${isOpen
                     ? "bg-[#0C2B4E] text-white"

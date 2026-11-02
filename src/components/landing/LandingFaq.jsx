@@ -267,9 +267,9 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
                         borderBottomLeftRadius: isOpen ? "0px" : "8px",
                       }}
                     />
-                    <span className={questionClass}>
+                    <h3 className={`${questionClass} m-0`}>
                       {formattedQuestion}
-                    </span>
+                    </h3>
                     <span
                       className={
                         brand.faqIconBadgeClassName ||
@@ -336,9 +336,9 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
                     className="w-full px-4 sm:px-5 py-3.5 sm:py-4 text-left flex items-center justify-between gap-4 cursor-pointer bg-[#f8f9fa] hover:bg-[#f1f3f5] transition-colors border-none m-0"
                     aria-expanded={isOpen}
                   >
-                    <span className="text-[13.5px] sm:text-[14.5px] font-bold text-[#212529] leading-snug">
+                    <h3 className="text-[13.5px] sm:text-[14.5px] font-bold text-[#212529] leading-snug m-0">
                       {formattedQuestion}
-                    </span>
+                    </h3>
                     <span className="font-bold text-lg sm:text-xl text-[#212529] leading-none shrink-0 ml-3 select-none">
                       {isOpen ? "-" : "+"}
                     </span>
@@ -390,14 +390,14 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
                   className="w-full py-4 text-left flex items-center justify-between gap-4 cursor-pointer bg-transparent border-none p-0 group"
                   aria-expanded={isOpen}
                 >
-                  <span
-                    className={`text-[14px] sm:text-[16px] leading-snug transition-colors ${isOpen
+                  <h3
+                    className={`text-[14px] sm:text-[16px] leading-snug transition-colors m-0 ${isOpen
                       ? "text-[#000000] font-semibold"
                       : "text-[#000000] font-medium hover:text-[#08417b]"
                       }`}
                   >
                     {formattedQuestion}
-                  </span>
+                  </h3>
                   <span
                     className="font-bold text-xl sm:text-2xl leading-none shrink-0 w-6 text-right select-none"
                     style={{ color: iconColor }}
