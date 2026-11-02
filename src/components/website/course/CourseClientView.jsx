@@ -503,10 +503,15 @@ export function CourseClientView({
         }
       }
 
-      const uniLocation =
-        uni.city && uni.state
-          ? `${uni.city}, ${uni.state}`
-          : uni.location || uni.city || uni.state || item.location || "";
+      const uniLocation = (() => {
+        if (uni.city && uni.state) {
+          if (String(uni.city).toLowerCase() === String(uni.state).toLowerCase()) {
+            return uni.country ? `${uni.city}, ${uni.country}` : uni.city;
+          }
+          return `${uni.city}, ${uni.state}`;
+        }
+        return uni.location || uni.city || uni.state || item.location || "";
+      })();
 
       list.push({
         ...item,
@@ -692,8 +697,6 @@ export function CourseClientView({
           approvalsSummary={approvalsSummary}
         />
       </div>
-
-      {/* Auto Sticky Tabs Header based on present sections */}
       <CourseStickyNav
         sections={availableSections}
         courseName={displayCourseTitle}
