@@ -202,7 +202,14 @@ export default function LandingAdmissionProcess({
           `,
         }}
       />
-      <div className={`w-full mx-auto box-border ${brand.admissionContainerClass || "w-full max-w-full px-0 sm:px-2 lg:px-0"}`}>
+      <div
+        className={`w-full mx-auto box-border ${
+          brand.admissionContainerClass ||
+          enrollmentProcess?.containerClass ||
+          admissionProcess?.containerClass ||
+          "w-full px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto"
+        }`}
+      >
         {/* Heading */}
         {hasEnrollmentPrefix ? (
           <h2 className="text-2xl sm:text-3xl lg:text-[30px] xl:text-[32px] font-bold text-center tracking-tight mb-2.5 sm:mb-3 lg:mb-2 m-0">
@@ -215,7 +222,7 @@ export default function LandingAdmissionProcess({
               enrollmentProcess?.headingClassName ||
               admissionProcess?.headingClassName ||
               brand.admissionHeadingClassName ||
-              `text-[22px] sm:text-[26px] lg:text-[30px] xl:text-[32px] font-medium text-center ${brand.admissionTrackingWide ? "tracking-wide" : "tracking-tight"} mb-2 sm:mb-2.5 lg:mb-2 m-0 leading-[1.2] sm:leading-tight whitespace-pre-line`
+              `text-[22px] sm:text-[26px] lg:text-[30px] xl:text-[32px] font-bold text-center ${brand.admissionTrackingWide ? "tracking-wide" : "tracking-tight"} mb-2 sm:mb-2.5 lg:mb-2 m-0 leading-[1.2] sm:leading-tight whitespace-pre-line`
             }
             style={{
               color: headingColor,
@@ -248,10 +255,7 @@ export default function LandingAdmissionProcess({
             brand.admissionGridClass ||
             admissionProcess?.gridClass ||
             enrollmentProcess?.gridClass ||
-            (rawSteps.length <= 4
-              ? "grid grid-cols-2 lg:grid-cols-4 max-w-4xl mx-auto gap-4 w-full"
-              : "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3 lg:gap-3 xl:gap-3.5 w-full mx-auto"
-            )
+            "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-3.5 lg:gap-4 w-full mx-auto"
           }
         >
           {rawSteps.map((step, idx) => {

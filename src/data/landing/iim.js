@@ -2719,8 +2719,9 @@ export const iimData = {
     faqAccentColor: "#17479E",
     faqTitle: "FAQ | Frequently Asked Questions",
     admissionTitle: "How to Apply for IIM Kozhikode University Online Courses",
-    admissionSubtitle: "Students can easily enrol in IIM Kozhikode University Online courses. Candidates can conveniently apply by selecting their desired program. Follow these steps to secure admission in the university.",
-    admissionContainerClass: "w-full max-w-full px-0 sm:px-2 lg:px-0",
+    admissionSubtitle: "The admission process for IIM Kozhikode University course admissions is very simple and user-friendly. Here's a step-by-step guide to enrolling in a degree course at the university :",
+    admissionHeadingColor: "#17479E",
+    admissionContainerClass: "w-full px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto",
 
     // Global Compare Banner Configuration
     compareBannerBg: "#17479E",
