@@ -16,7 +16,7 @@ export default function ClassicWhyChoose({ whyChoose = [], brand = {}, onOpenApp
         <h2
           className="whychoose-title relative z-20
     text-[30px] sm:text-2xl lg:text-[33px]
-    font-extrabold text-[#0f1b33]
+    font-bold text-[#0f1b33]
     tracking-wide leading-[1.25]
     m-0 text-left
     mb-6 sm:mb-0"

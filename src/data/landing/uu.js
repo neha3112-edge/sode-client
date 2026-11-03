@@ -43,9 +43,14 @@ export const uuData = {
     showCouponBtn: true,
     showCouponButton: true,
     couponButtonText: "Scholarship Coupon Code",
-    couponBtnBg: "#22c55e",
-    couponButtonColor: "#22c55e",
-    showSodeLogo: true,
+    couponBtnBg: "linear-gradient(135deg, #2ecc71, #27ae60)",
+    couponButtonColor: "#27ae60",
+    showSodeLogo: false,
+    hideSodeLogo: true,
+    hideNavDivider: true,
+    showCouponPillWrapper: false,
+    couponWrapperBg: null,
+    logoWrapperClassName: "w-44 sm:w-48 md:w-52 lg:w-[190px] h-11 sm:h-12 lg:h-[48px]",
     footerBg: "#010d2a",
 
     hideDesktopNavLinks: true,
@@ -207,12 +212,19 @@ export const uuData = {
         }
       }
 
-      /* Navbar alignment with container boundaries */
-      .landing-page--uu header .flex.items-center.min-w-0.shrink-0 {
-        margin-left: 0 !important;
+      /* ========================================================================= */
+      /* NAVBAR STYLING: EXACT 1:1 MATCH WITH REFERENCE IMAGE 1 */
+      /* ========================================================================= */
+      .landing-page--uu header {
+        background-color: #ffffff !important;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08) !important;
+        border-bottom: 1px solid #eef2f6 !important;
       }
-      .landing-page--uu header .shrink-0.pl-2 {
-        margin-right: 0 !important;
+
+      .landing-page--uu header,
+      .landing-page--uu header .uu-container {
+        height: 70px !important;
+        min-height: 70px !important;
       }
 
       /* ========================================================================= */
@@ -365,10 +377,10 @@ export const uuData = {
       .landing-page--uu #about .about-title {
         color: #222222 !important;
         font-family: 'Poppins', sans-serif !important;
-        font-size: 28px !important;
+        font-size: 30px !important;
         font-weight: 500 !important;
         line-height: 1.2 !important;
-        margin-bottom: 16px !important;
+        margin-bottom: 14px !important;
       }
 
       @media (min-width: 1024px) {
@@ -379,7 +391,7 @@ export const uuData = {
         .landing-page--uu #about h2,
         .landing-page--uu #about .about-title {
           font-size: 30px !important;
-          margin-bottom: 18px !important;
+          margin-bottom: 16px !important;
         }
       }
 
@@ -450,23 +462,66 @@ export const uuData = {
         color: #003399 !important;
       }
 
+      /* ========================================================================= */
+      /* ONLINE DEGREE PROGRAMS / WHY CHOOSE (#whychoose) - EXACT 1:1 MATCH */
+      /* ========================================================================= */
+      .landing-page--uu #whychoose,
+      .landing-page--uu #whychoose * {
+        font-family: 'Poppins', var(--font-poppins), sans-serif !important;
+      }
+
       .landing-page--uu #whychoose {
         background-color: #0A3C7D !important;
         color: #ffffff !important;
+        padding-top: 48px !important;
+        padding-bottom: 48px !important;
       }
 
       .landing-page--uu #whychoose h2,
       .landing-page--uu #whychoose h3 {
         color: #ffffff !important;
+        font-family: 'Poppins', sans-serif !important;
+        font-weight: 500 !important;
+        letter-spacing: normal !important;
+        line-height: 1.2 !important;
       }
 
-      .landing-page--uu #whychoose p {
-        color: rgba(255, 255, 255, 0.9) !important;
-      }
-
-      .landing-page--uu #whychoose button {
-        background: #62B239 !important;
+      .landing-page--uu #whychoose p.whychoose-desc {
         color: #ffffff !important;
+        font-family: 'Poppins', sans-serif !important;
+        font-size: 13px !important;
+        line-height: 1.5 !important;
+        font-weight: 400 !important;
+      }
+
+      .landing-page--uu #whychoose .whychoose-item-title {
+        color: #ffffff !important;
+        font-family: 'Poppins', var(--font-poppins), sans-serif !important;
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        line-height: 1.25 !important;
+      }
+
+      .landing-page--uu #whychoose button.whychoose-apply-btn {
+        background-color: #62B239 !important;
+        color: #ffffff !important;
+        font-family: 'Poppins', var(--font-poppins), sans-serif !important;
+        font-size: 12px !important;
+        font-weight: 500 !important;
+        padding: 7px 22px !important;
+        border-radius: 5px !important;
+        border: none !important;
+        box-shadow: none !important;
+        height: auto !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        cursor: pointer !important;
+        transition: background-color 0.2s ease !important;
+      }
+
+      .landing-page--uu #whychoose button.whychoose-apply-btn:hover {
+        background-color: #529930 !important;
       }
 
       /* Certificate / Degree Section - Exact Match with Reference */

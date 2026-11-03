@@ -91,8 +91,8 @@ export default function UuProgrammes({
   );
 
   return (
-    <section id="program" className="py-8 sm:py-12 bg-[#ffffff] select-none scroll-mt-20">
-      <div className="uu-container w-full mx-auto">
+    <section id="program" className="py-8 sm:py-12 bg-[#ffffff] select-none scroll-mt-20 font-poppins" style={{ fontFamily: "'Poppins', var(--font-poppins), sans-serif" }}>
+      <div className="uu-container w-full mx-auto font-poppins">
         {/* 1. Undergraduate Programs Section */}
         {ugPrograms.length > 0 && (
           <div className="mb-10 sm:mb-12">

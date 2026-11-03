@@ -296,6 +296,128 @@ export default function LandingNavbar({
   }
 
   /* =======================================================
+     UTTARANCHAL UNIVERSITY (UU) NAVBAR
+     Exact 1:1 match with Image 1 & unified container system
+  ======================================================= */
+  const isUu = slug === "uu" || brand.slug === "uu";
+
+  if (isUu) {
+    return (
+      <header className="sticky top-0 z-50 bg-white border-b border-slate-200/80 shadow-[0_2px_10px_rgba(0,0,0,0.08)] select-none font-poppins" style={{ fontFamily: "'Poppins', var(--font-poppins), sans-serif" }}>
+        <div className="uu-container w-full mx-auto flex items-center justify-between h-[64px] sm:h-[70px]">
+          {/* LEFT: Uttaranchal University Logo only */}
+          <div className="flex items-center min-w-0 shrink-0">
+            <Link
+              href="#hero"
+              onClick={handleScrollTop}
+              className="flex items-center min-w-0 shrink-0 cursor-pointer"
+              aria-label={name || "Uttaranchal University Online"}
+            >
+              <div className="relative shrink-0 w-[170px] sm:w-[190px] h-[44px] sm:h-[48px]">
+                <Image
+                  src={logo || "/assets/all_universities_images/uu/uttranchal-logo.png"}
+                  alt={name || "Uttaranchal University Online"}
+                  fill
+                  priority
+                  className="object-contain object-left"
+                  sizes="220px"
+                />
+              </div>
+            </Link>
+          </div>
+
+          {/* RIGHT: Scholarship Coupon Button (Desktop) & Mobile Menu Toggle */}
+          <div className="shrink-0 flex items-center gap-3">
+            {/* Desktop Scholarship Coupon Button */}
+            {isCouponVisible && (
+              <button
+                type="button"
+                onClick={handleCouponClick}
+                aria-label="Get Scholarship Coupon Code"
+                className="hidden md:inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-[8px] bg-gradient-to-r from-[#2ecc71] to-[#27ae60] text-white font-bold text-[13.5px] sm:text-[14px] cursor-pointer border-none shadow-[0_4px_14px_rgba(46,204,113,0.4)] hover:shadow-[0_8px_20px_rgba(46,204,113,0.55)] hover:-translate-y-0.5 active:scale-95 transition-all select-none whitespace-nowrap"
+              >
+                <span className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white flex items-center justify-center shrink-0 shadow-xs overflow-hidden">
+                  <Image
+                    src={giftGif || "/assets/images/gift.gif"}
+                    alt="Scholarship Gift"
+                    width={22}
+                    height={22}
+                    unoptimized
+                    className="w-4 h-4 sm:w-5 sm:h-5 object-contain"
+                  />
+                </span>
+                <span>{couponButtonText || "Scholarship Coupon Code"}</span>
+              </button>
+            )}
+
+            {/* Mobile Menu Toggle Button */}
+            {navbar.navLinks?.length > 0 && (
+              <button
+                type="button"
+                className="md:hidden p-2 rounded-lg text-[#0A3C7D] hover:bg-slate-100 transition-colors"
+                onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
+                aria-label="Toggle menu"
+                aria-expanded={isMobileNavOpen}
+              >
+                <svg className="w-7 h-7" fill="none" stroke="#0A3C7D" viewBox="0 0 24 24">
+                  {isMobileNavOpen ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 6h16M4 12h16M4 18h16" />
+                  )}
+                </svg>
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Mobile Dropdown Menu (if open) */}
+        {isMobileNavOpen && navbar.navLinks?.length > 0 && (
+          <div className="md:hidden bg-white border-t border-slate-100 shadow-lg px-4 py-3 flex flex-col gap-2">
+            {navbar.navLinks.map((link, idx) => (
+              <a
+                key={`${link.label}-${idx}`}
+                href={link.href}
+                onClick={(e) => {
+                  setIsMobileNavOpen(false);
+                  handleNavLinkClick(e, link);
+                }}
+                className="text-[#112244] font-medium text-[15px] py-2 border-b border-slate-50 hover:text-[#0A3C7D]"
+              >
+                {link.label}
+              </a>
+            ))}
+            {isCouponVisible && (
+              <div className="pt-2 pb-1">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    setIsMobileNavOpen(false);
+                    handleCouponClick(e);
+                  }}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-[8px] bg-gradient-to-r from-[#2ecc71] to-[#27ae60] text-white font-bold text-[14px] shadow-sm border-none"
+                >
+                  <span className="w-5 h-5 rounded-full bg-white flex items-center justify-center shrink-0">
+                    <Image
+                      src={giftGif || "/assets/images/gift.gif"}
+                      alt="Scholarship Gift"
+                      width={18}
+                      height={18}
+                      unoptimized
+                      className="w-4 h-4 object-contain"
+                    />
+                  </span>
+                  <span>{couponButtonText || "Scholarship Coupon Code"}</span>
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+      </header>
+    );
+  }
+
+  /* =======================================================
      STANDARD UNIVERSITY NAVBAR
      
      IMPORTANT:
