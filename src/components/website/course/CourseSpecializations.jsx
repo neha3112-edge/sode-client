@@ -548,9 +548,9 @@ export default function CourseSpecializations({
                 {specCurriculum.length > 0 && (
                   <div>
                     <div className="flex items-center gap-3 mb-2.5">
-                      <h4 className="text-sm sm:text-base font-bold text-[#0C2B4E] m-0 tracking-tight shrink-0">
+                      <p className="text-sm sm:text-base font-bold text-[#0C2B4E] m-0 tracking-tight shrink-0">
                         Course Curriculum
-                      </h4>
+                      </p>
                       <div className="flex-1 h-px bg-gray-200" />
                     </div>
 

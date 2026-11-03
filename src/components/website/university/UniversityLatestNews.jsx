@@ -7,9 +7,9 @@ export default function UniversityLatestNews({ news = [] }) {
 
   return (
     <div className="bg-[#ebf4ff] border border-blue-200/80 rounded-3xl p-6 sm:p-7 shadow-xs">
-      <h3 className="text-xl sm:text-2xl font-extrabold text-[#112959] text-center tracking-tight">
+      <h2 className="text-xl sm:text-2xl font-extrabold text-[#112959] text-center tracking-tight">
         Latest News
-      </h3>
+      </h2>
       <div className="border-b border-blue-200/80 my-4" />
 
       <div className="space-y-4">

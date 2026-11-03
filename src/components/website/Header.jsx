@@ -287,20 +287,20 @@ const renderAccreditationCard = (acc, idx, onNavigate) => {
               className="block group-hover:text-[#0B57D0] transition-colors"
             >
               {isFakeCard ? (
-                <h4
+                <p
                   className="text-[13px] font-bold leading-tight m-0"
                   title="List of Fake Universities"
                 >
                   <span className="block text-[#072C50]">List of Fake</span>
                   <span className="block text-[#0284c7]">Universities</span>
-                </h4>
+                </p>
               ) : (
-                <h4
+                <p
                   className="text-[13px] font-bold text-slate-900 leading-snug truncate m-0 group-hover:text-[#0B57D0] transition-colors"
                   title={cardTitle}
                 >
                   {cardTitle}
-                </h4>
+                </p>
               )}
             </Link>
 
@@ -1048,9 +1048,9 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                   {/* Top Section Header */}
                   <div className="flex items-center gap-2.5 pb-3 mb-2 border-b border-slate-100/80">
                     {currentMegaMenuData.sidebarIcon}
-                    <h3 className="text-[14px] font-bold text-[#072C50] m-0">
+                    <p className="text-[14px] font-bold text-[#072C50] m-0">
                       {currentMegaMenuData.sidebarHeaderTitle}
-                    </h3>
+                    </p>
                   </div>
 
                   {/* Vertical Categories List */}
@@ -1267,12 +1267,12 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                                         onClick={() => setActiveMenuKey(null)}
                                         className="block group-hover:text-[#0B57D0] transition-colors"
                                       >
-                                        <h4
+                                        <p
                                           className="text-[13px] font-bold text-slate-900 leading-snug truncate m-0 group-hover:text-[#0B57D0] transition-colors"
                                           title={uni.name}
                                         >
                                           {uni.name}
-                                        </h4>
+                                        </p>
                                       </Link>
 
                                       {/* Dynamic Badges: Approvals & Course Count */}
@@ -1415,12 +1415,12 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                                     onClick={() => setActiveMenuKey(null)}
                                     className="block group-hover:text-[#0B57D0] transition-colors"
                                   >
-                                    <h4
+                                    <p
                                       className="text-[13px] font-bold text-slate-900 leading-snug truncate m-0 group-hover:text-[#0B57D0] transition-colors"
                                       title={courseDisplayName}
                                     >
                                       {courseDisplayName}
-                                    </h4>
+                                    </p>
                                   </Link>
 
                                   {/* Metadata: Dynamic Duration & Specialisations */}
@@ -1596,9 +1596,9 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                     <div className="w-7 h-7 rounded-lg bg-[#0B57D0] text-white flex items-center justify-center shrink-0 shadow-xs">
                       {section.icon}
                     </div>
-                    <h3 className="font-extrabold text-[15px] text-[#072C50] m-0 tracking-tight">
+                    <p className="font-extrabold text-[15px] text-[#072C50] m-0 tracking-tight">
                       {section.title}
-                    </h3>
+                    </p>
                   </div>
 
                   <div className="space-y-1">
@@ -1797,14 +1797,14 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                                 className="block hover:text-[#0B57D0]"
                               >
                                 {item.isFake || cardTitle.toLowerCase().includes("fake") ? (
-                                  <h4 className="text-[11.5px] font-bold leading-tight m-0">
+                                  <p className="text-[11.5px] font-bold leading-tight m-0">
                                     <span className="block text-[#072C50]">List of Fake</span>
                                     <span className="block text-[#0284c7]">Universities</span>
-                                  </h4>
+                                  </p>
                                 ) : (
-                                  <h4 className="text-[11.5px] font-bold text-[#072C50] leading-snug line-clamp-2 m-0">
+                                  <p className="text-[11.5px] font-bold text-[#072C50] leading-snug line-clamp-2 m-0">
                                     {cardTitle}
-                                  </h4>
+                                  </p>
                                 )}
                               </Link>
                             </div>
@@ -1880,9 +1880,9 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                               onClick={() => closeMobile()}
                               className="block hover:text-[#0B57D0]"
                             >
-                              <h4 className="text-[11.5px] font-bold text-[#072C50] leading-snug line-clamp-2 m-0">
+                              <p className="text-[11.5px] font-bold text-[#072C50] leading-snug line-clamp-2 m-0">
                                 {selectedMobileCategory?.type === "programs" ? formatCourseDisplayName(item, selectedMobileCategory) : (item.name || item.title)}
-                              </h4>
+                              </p>
                             </Link>
                           </div>
                         </div>

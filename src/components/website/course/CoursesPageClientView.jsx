@@ -1903,7 +1903,7 @@ export default function CoursesPageClientView({
           <div className="flex items-center justify-between w-full pr-4">
             <div className="flex items-center gap-2">
               <SlidersHorizontal className="w-4 h-4 text-gray-900" />
-              <h3 className="font-bold text-base text-gray-900 m-0">Filters</h3>
+              <p className="font-bold text-base text-gray-900 m-0">Filters</p>
             </div>
             {activeFilterCount > 0 && (
               <span className="text-xs bg-blue-50 text-blue-700 font-bold px-2.5 py-0.5 rounded-full">
@@ -2296,9 +2296,9 @@ export default function CoursesPageClientView({
                     {specCurriculum.length > 0 && (
                       <div>
                         <div className="flex items-center gap-3 mb-2.5">
-                          <h4 className="text-sm sm:text-base font-bold text-[#0C2B4E] m-0 tracking-tight shrink-0">
+                          <p className="text-sm sm:text-base font-bold text-[#0C2B4E] m-0 tracking-tight shrink-0">
                             Course Curriculum
-                          </h4>
+                          </p>
                           <div className="flex-1 h-px bg-gray-200" />
                         </div>
 
@@ -2539,9 +2539,9 @@ export default function CoursesPageClientView({
 
                     {/* Middle: Specializations Grid */}
                     <div className="pt-1.5">
-                      <h4 className="text-xs sm:text-sm font-bold text-[#0B2546] mb-2">
+                      <p className="text-xs sm:text-sm font-bold text-[#0B2546] mb-2 m-0">
                         {specCount} Specializations Available
-                      </h4>
+                      </p>
                       <div>
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 sm:gap-2">
                           {subcourses.map((sc, idx) => (

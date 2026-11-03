@@ -697,9 +697,9 @@ export default function UniversityCoursesSection({
                         {specCurriculum.length > 0 ? (
                           <div>
                             <div className="flex items-center gap-3 mb-2.5">
-                              <h4 className="text-sm sm:text-base font-bold text-[#0C2B4E] m-0 tracking-tight shrink-0">
+                              <p className="text-sm sm:text-base font-bold text-[#0C2B4E] m-0 tracking-tight shrink-0">
                                 Course Curriculum
-                              </h4>
+                              </p>
                               <div className="flex-1 h-px bg-gray-200" />
                             </div>
 
@@ -947,9 +947,9 @@ export default function UniversityCoursesSection({
                     {specializationsList.length > 0 ? (
                       <div className="my-1">
                         <div className="flex items-center justify-between gap-2.5 sm:gap-3 mb-2">
-                          <h4 className="text-xs sm:text-sm md:text-base font-bold text-[#0C2B4E] m-0 tracking-tight shrink-0">
+                          <p className="text-xs sm:text-sm md:text-base font-bold text-[#0C2B4E] m-0 tracking-tight shrink-0">
                             {specializationsList.length} Specializations Available
-                          </h4>
+                          </p>
                           <span className="text-[10px] sm:text-[11px] text-gray-500 font-normal">
                             Click specialization to view details
                           </span>

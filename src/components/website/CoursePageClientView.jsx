@@ -1368,10 +1368,10 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                           </div>
 
                           {/* Title with Step Number in front */}
-                          <p className="font-bold text-[10.5px] sm:text-[11.5px] text-[#0F2A4A] leading-snug mb-1 sm:mb-1.5 m-0">
+                          <h3 className="font-bold text-[10.5px] sm:text-[11.5px] text-[#0F2A4A] leading-snug mb-1 sm:mb-1.5 m-0">
                             <span className="text-[#1C3569] font-bold mr-1">{stepNum}.</span>
                             {stepTitle}
-                          </p>
+                          </h3>
 
                           {/* Description */}
                           {stepDesc && (

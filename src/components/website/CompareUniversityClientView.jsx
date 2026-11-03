@@ -1715,9 +1715,9 @@ export default function CompareUniversityClientView({
                             <span className="text-xs font-bold text-[#1C3569]">{(uni.name || "U")[0]}</span>
                           )}
                         </div>
-                        <h4 className="text-[11px] font-bold text-[#1C3569] m-0 line-clamp-2">
+                        <p className="text-[11px] font-bold text-[#1C3569] m-0 line-clamp-2">
                           {uni.isCourseOffering ? uni.title : uni.name}
-                        </h4>
+                        </p>
                       </div>
                     ))}
                     {comparedData.length < 3 && (
@@ -1854,7 +1854,7 @@ export default function CompareUniversityClientView({
                                   <span className="text-xs sm:text-sm font-semibold text-[#0C3058]">{displayTitle}</span>
                                 )}
                               </div>
-                              <h4 className="text-[10px] sm:text-xs font-semibold text-[#0C3058] m-0 text-center w-full px-0.5 break-words">{displayTitle}</h4>
+                              <p className="text-[10px] sm:text-xs font-semibold text-[#0C3058] m-0 text-center w-full px-0.5 break-words">{displayTitle}</p>
                               {isOffering && uni.uniName && <p className="text-[9px] sm:text-[10px] font-medium text-teal-700 m-0 text-center w-full px-0.5 mt-0.5 break-words">{uni.uniName}</p>}
                             </div>
                           );
@@ -1921,10 +1921,10 @@ export default function CompareUniversityClientView({
                           />
                         </div>
                         <div>
-                          <h4 className="text-[11px] sm:text-sm font-bold text-[#0C3058] group-hover:text-blue-700 tracking-wide m-0 mb-1 leading-snug">
+                          <p className="text-[11px] sm:text-sm font-bold text-[#0C3058] group-hover:text-blue-700 tracking-wide m-0 mb-1 leading-snug">
                             <span className="block">TRENDING</span>
                             <span className="block">UNIVERSITIES</span>
-                          </h4>
+                          </p>
                           <p className="text-[9.5px] sm:text-[11px] text-slate-400 m-0">
                             Compare with popular and in-demand universities.
                           </p>
@@ -1946,10 +1946,10 @@ export default function CompareUniversityClientView({
                           />
                         </div>
                         <div>
-                          <h4 className="text-[11px] sm:text-sm font-bold text-[#0C3058] group-hover:text-amber-700 tracking-wide m-0 mb-1 leading-snug">
+                          <p className="text-[11px] sm:text-sm font-bold text-[#0C3058] group-hover:text-amber-700 tracking-wide m-0 mb-1 leading-snug">
                             <span className="block">RECOMMENDED</span>
                             <span className="block">UNIVERSITIES</span>
-                          </h4>
+                          </p>
                           <p className="text-[9.5px] sm:text-[11px] text-slate-400 m-0">
                             Compare with popular and in-demand universities.
                           </p>
@@ -1971,10 +1971,10 @@ export default function CompareUniversityClientView({
                           />
                         </div>
                         <div>
-                          <h4 className="text-[11px] sm:text-sm font-bold text-[#0C3058] group-hover:text-rose-700 tracking-wide m-0 mb-1 leading-snug">
+                          <p className="text-[11px] sm:text-sm font-bold text-[#0C3058] group-hover:text-rose-700 tracking-wide m-0 mb-1 leading-snug">
                             <span className="block">STATE WISE</span>
                             <span className="block">UNIVERSITIES</span>
-                          </h4>
+                          </p>
                           <p className="text-[9.5px] sm:text-[11px] text-slate-400 m-0">
                             Compare with popular and in-demand universities.
                           </p>
@@ -1996,10 +1996,10 @@ export default function CompareUniversityClientView({
                           />
                         </div>
                         <div>
-                          <h4 className="text-[11px] sm:text-sm font-bold text-[#0C3058] group-hover:text-emerald-700 tracking-wide m-0 mb-1 leading-snug">
+                          <p className="text-[11px] sm:text-sm font-bold text-[#0C3058] group-hover:text-emerald-700 tracking-wide m-0 mb-1 leading-snug">
                             <span className="block">ACCREDITATION WISE</span>
                             <span className="block">UNIVERSITIES</span>
-                          </h4>
+                          </p>
                           <p className="text-[9.5px] sm:text-[11px] text-slate-400 m-0">
                             Compare with popular and in-demand universities.
                           </p>
@@ -2216,9 +2216,9 @@ export default function CompareUniversityClientView({
                           </div>
                         )}
                       </div>
-                      <h4 className="text-[11px] sm:text-xs font-semibold text-[#0C3058] group-hover:text-blue-600 text-center line-clamp-2 px-1 min-h-[28px] sm:min-h-[32px] flex items-center justify-center m-0 mt-1">
+                      <p className="text-[11px] sm:text-xs font-semibold text-[#0C3058] group-hover:text-blue-600 text-center line-clamp-2 px-1 min-h-[28px] sm:min-h-[32px] flex items-center justify-center m-0 mt-1">
                         {st.name}
-                      </h4>
+                      </p>
                       <div className="w-full border-t border-slate-100 my-1" />
                       <div className="text-center w-full">
                         <span className="text-[11px] sm:text-xs font-semibold text-blue-500 group-hover:text-blue-600 transition-colors">
@@ -2255,9 +2255,9 @@ export default function CompareUniversityClientView({
                           </span>
                         )}
                       </div>
-                      <h4 className="text-[11px] sm:text-xs font-semibold text-[#0C3058] group-hover:text-blue-600 text-center line-clamp-2 px-1 min-h-[28px] sm:min-h-[32px] flex items-center justify-center m-0 mt-1">
+                      <p className="text-[11px] sm:text-xs font-semibold text-[#0C3058] group-hover:text-blue-600 text-center line-clamp-2 px-1 min-h-[28px] sm:min-h-[32px] flex items-center justify-center m-0 mt-1">
                         {app.code || app.name}
-                      </h4>
+                      </p>
                       <div className="w-full border-t border-slate-100 my-1" />
                       <div className="text-center w-full">
                         <span className="text-[11px] sm:text-xs font-semibold text-blue-500 group-hover:text-blue-600 transition-colors">
@@ -2301,9 +2301,9 @@ export default function CompareUniversityClientView({
                         )}
                       </div>
                       {/* University Name */}
-                      <h4 className="text-[11px] sm:text-xs font-semibold text-[#0C3058] text-center line-clamp-2 px-1 min-h-[28px] sm:min-h-[32px] flex items-center justify-center m-0 mt-1">
+                      <p className="text-[11px] sm:text-xs font-semibold text-[#0C3058] text-center line-clamp-2 px-1 min-h-[28px] sm:min-h-[32px] flex items-center justify-center m-0 mt-1">
                         {uni.name}
-                      </h4>
+                      </p>
 
                       {/* Divider */}
                       <div className="w-full border-t border-slate-100 my-1" />

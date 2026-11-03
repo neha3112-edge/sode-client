@@ -41,9 +41,9 @@ function CounselorCard({ counselor, isMobile = false }) {
 
       {/* Right: Counselor Details */}
       <div className={`flex-1 min-w-0 ${isMobile ? "p-3" : "p-3.5 sm:p-4 md:p-4.5"} flex flex-col justify-center`}>
-        <h4 className={`${isMobile ? "text-[14.5px]" : "text-[15px] sm:text-[16px]"} font-bold text-slate-900 m-0 leading-tight truncate`}>
+        <h3 className={`${isMobile ? "text-[14.5px]" : "text-[15px] sm:text-[16px]"} font-bold text-slate-900 m-0 leading-tight truncate`}>
           {counselorName}
-        </h4>
+        </h3>
 
         {counselor.designation && (
           <p className="text-[11px] text-slate-500 font-medium m-0 mt-0.5 truncate">

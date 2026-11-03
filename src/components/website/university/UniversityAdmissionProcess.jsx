@@ -85,9 +85,9 @@ export default function UniversityAdmissionProcess({ admissionProcess }) {
                 </div>
 
                 {/* Step Title */}
-                <p className="font-bold text-[14px] text-gray-900 leading-snug mb-1.5 whitespace-nowrap m-0">
+                <h3 className="font-bold text-[14px] text-gray-900 leading-snug mb-1.5 whitespace-nowrap m-0">
                   {step.title}
-                </p>
+                </h3>
 
                 {/* Step Description */}
                 {step.description && (

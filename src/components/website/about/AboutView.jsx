@@ -1040,9 +1040,9 @@ export function AboutView({ initialAboutData = null, initialReviews = null }) {
             {(activeVideoModal.studentName || activeVideoModal.course) && (
               <div className="w-full p-3.5 bg-slate-900 text-white flex items-center justify-between gap-3 border-t border-white/10">
                 <div>
-                  <h4 className="text-sm font-bold text-white m-0">
+                  <p className="text-sm font-bold text-white m-0">
                     {activeVideoModal.studentName}
-                  </h4>
+                  </p>
                   {activeVideoModal.course && (
                     <p className="text-xs text-amber-400 font-medium m-0">
                       {activeVideoModal.course}
