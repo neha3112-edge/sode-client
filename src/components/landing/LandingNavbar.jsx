@@ -295,6 +295,64 @@ export default function LandingNavbar({
     );
   }
 
+    /* =======================================================
+     MANIPAL UNIVERSITY ONLINE NAVBAR
+     Exact 1:1 match with Image 1 (Height 54px-56px, FAQ max-width)
+  ======================================================= */
+  const isManipal = slug === "manipal" || brand.slug === "manipal";
+
+  if (isManipal) {
+    return (
+      <header className="sticky top-0 z-50 bg-white border-b border-slate-200/80 shadow-[0_2px_10px_rgba(0,0,0,0.06)] select-none h-[54px] sm:h-[56px] flex items-center">
+        <div className="w-full max-w-[1130px] mx-auto px-4 sm:px-6 flex items-center justify-between h-[54px] sm:h-[56px]">
+          {/* LEFT: Manipal University Logo only (No SODE icon, No divider) */}
+          <div className="flex items-center min-w-0 shrink-0">
+            <Link
+              href="#hero"
+              onClick={handleScrollTop}
+              className="flex items-center min-w-0 shrink-0 cursor-pointer"
+              aria-label={name || "Manipal University Online"}
+            >
+              <div className="relative shrink-0 w-[140px] sm:w-[155px] h-[44px] sm:h-[46px]">
+                <Image
+                  src={logo || "/assets/manipal_v1_images/manipal-logo.webp"}
+                  alt={name || "Manipal University Online"}
+                  fill
+                  priority
+                  className="object-contain object-left"
+                  sizes="180px"
+                />
+              </div>
+            </Link>
+          </div>
+
+          {/* RIGHT: Scholarship Coupon Code Button */}
+          {isCouponVisible && (
+            <div className="shrink-0 flex items-center">
+              <button
+                type="button"
+                onClick={handleCouponClick}
+                aria-label="Get Scholarship Coupon Code"
+                className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1 sm:py-1.5 h-[32px] sm:h-[34px] rounded-[7px] sm:rounded-[8px] bg-gradient-to-r from-[#2ecc71] to-[#27ae60] text-white font-bold text-[12px] sm:text-[13px] cursor-pointer border-none shadow-[0_3px_10px_rgba(46,204,113,0.35)] hover:shadow-[0_5px_14px_rgba(46,204,113,0.45)] active:scale-95 transition-all select-none whitespace-nowrap"
+              >
+                <span className="w-5 h-5 rounded-full bg-white flex items-center justify-center shrink-0 shadow-xs overflow-hidden">
+                  <Image
+                    src={giftGif || "/assets/manipal_v1_images/gift.gif"}
+                    alt="Scholarship Gift"
+                    width={20}
+                    height={20}
+                    unoptimized
+                    className="w-3.5 h-3.5 sm:w-4 sm:h-4 object-contain"
+                  />
+                </span>
+                <span>{couponButtonText || "Scholarship Coupon Code"}</span>
+              </button>
+            </div>
+          )}
+        </div>
+      </header>
+    );
+  }
   /* =======================================================
      UTTARANCHAL UNIVERSITY (UU) NAVBAR
      Exact 1:1 match with Image 1 & unified container system
@@ -354,12 +412,12 @@ export default function LandingNavbar({
             {navbar.navLinks?.length > 0 && (
               <button
                 type="button"
-                className="md:hidden p-2 rounded-lg text-[#0A3C7D] hover:bg-slate-100 transition-colors"
+                className="md:hidden p-1.5 rounded-lg text-[#0A3C7D] hover:bg-slate-50 transition-colors focus:outline-none"
                 onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
                 aria-label="Toggle menu"
                 aria-expanded={isMobileNavOpen}
               >
-                <svg className="w-7 h-7" fill="none" stroke="#0A3C7D" viewBox="0 0 24 24">
+                <svg className="w-6 h-6" fill="none" stroke="#0A3C7D" viewBox="0 0 24 24">
                   {isMobileNavOpen ? (
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
                   ) : (
@@ -371,40 +429,58 @@ export default function LandingNavbar({
           </div>
         </div>
 
-        {/* Mobile Dropdown Menu (if open) */}
+        {/* Mobile Dropdown Menu (if open) - Exact match with Image 2 */}
         {isMobileNavOpen && navbar.navLinks?.length > 0 && (
-          <div className="md:hidden bg-white border-t border-slate-100 shadow-lg px-4 py-3 flex flex-col gap-2">
-            {navbar.navLinks.map((link, idx) => (
-              <a
-                key={`${link.label}-${idx}`}
-                href={link.href}
-                onClick={(e) => {
-                  setIsMobileNavOpen(false);
-                  handleNavLinkClick(e, link);
-                }}
-                className="text-[#112244] font-medium text-[15px] py-2 border-b border-slate-50 hover:text-[#0A3C7D]"
-              >
-                {link.label}
-              </a>
-            ))}
+          <div className="md:hidden bg-white border-t border-slate-100 shadow-[0_12px_24px_rgba(0,0,0,0.08)] py-3 px-0 flex flex-col items-center">
+            <div className="w-full flex flex-col items-center">
+              {navbar.navLinks.map((link, idx) => {
+                // Divider lines matching Image 2: after Approvals, after About, and after FAQs
+                const showDividerAfter =
+                  link.label === "Approvals" ||
+                  link.label === "About" ||
+                  link.label === "FAQs" ||
+                  idx === 1 ||
+                  idx === 2 ||
+                  idx === navbar.navLinks.length - 1;
+
+                return (
+                  <React.Fragment key={`${link.label}-${idx}`}>
+                    <a
+                      href={link.href}
+                      onClick={(e) => {
+                        setIsMobileNavOpen(false);
+                        handleNavLinkClick(e, link);
+                      }}
+                      className="w-full text-center text-[#112244] font-medium text-[15.5px] py-2.5 hover:text-[#0A3C7D] transition-colors font-poppins block"
+                    >
+                      {link.label}
+                    </a>
+                    {showDividerAfter && (
+                      <div className="w-full h-px bg-[#F0F0F0]" />
+                    )}
+                  </React.Fragment>
+                );
+              })}
+            </div>
+
             {isCouponVisible && (
-              <div className="pt-2 pb-1">
+              <div className="w-full pt-4 pb-2 px-4 flex justify-center">
                 <button
                   type="button"
                   onClick={(e) => {
                     setIsMobileNavOpen(false);
                     handleCouponClick(e);
                   }}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-[8px] bg-gradient-to-r from-[#2ecc71] to-[#27ae60] text-white font-bold text-[14px] shadow-sm border-none"
+                  className="inline-flex items-center justify-center gap-2.5 py-2.5 px-6 rounded-[8px] bg-gradient-to-r from-[#2ecc71] to-[#27ae60] text-white font-bold text-[14px] shadow-[0_4px_12px_rgba(46,204,113,0.35)] hover:shadow-[0_6px_16px_rgba(46,204,113,0.45)] border-none active:scale-95 transition-all cursor-pointer font-poppins"
                 >
-                  <span className="w-5 h-5 rounded-full bg-white flex items-center justify-center shrink-0">
+                  <span className="w-5 h-5 rounded-full bg-white flex items-center justify-center shrink-0 shadow-xs overflow-hidden">
                     <Image
                       src={giftGif || "/assets/images/gift.gif"}
                       alt="Scholarship Gift"
                       width={18}
                       height={18}
                       unoptimized
-                      className="w-4 h-4 object-contain"
+                      className="w-3.5 h-3.5 object-contain"
                     />
                   </span>
                   <span>{couponButtonText || "Scholarship Coupon Code"}</span>
@@ -879,9 +955,9 @@ export default function LandingNavbar({
                         block
                         transition-colors
                         ${navbar.mobileMenuCenter || brand.mobileMenuCenter || slug === "amity"
-                          ? "py-3.5 px-4 text-[16.5px] font-bold text-[#0e2246] hover:text-[#0055b8] text-center"
-                          : "py-1.5 text-[15px] font-semibold text-slate-800 hover:text-[#0055b8]"
-                        }
+                            ? "py-3.5 px-4 text-[16.5px] font-bold text-[#0e2246] hover:text-[#0055b8] text-center"
+                            : "py-1.5 text-[15px] font-semibold text-slate-800 hover:text-[#0055b8]"
+                          }
                       `}
                       >
                         {link.label}

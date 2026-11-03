@@ -19,21 +19,21 @@ export default function UuAbout({ about = {}, brand = {}, onOpenApply }) {
   const buttonText = about.buttonText || "Apply Now";
 
   return (
-    <section id="about" className="w-full relative select-none py-10 sm:py-14 bg-white scroll-mt-20 font-poppins">
+    <section id="about" className="w-full relative select-none py-8 sm:py-10 bg-white scroll-mt-20 font-poppins">
       <div className="uu-container w-full mx-auto">
         {/* Top: About Text + Campus Image */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center mb-12 sm:mb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-7 lg:gap-8 items-start mb-8 sm:mb-10">
           <div className="lg:col-span-7 text-left">
-            <span className="about-subtitle text-[#62B239] font-medium sm:font-semibold text-[24px] sm:text-[28px] lg:text-[30px] block mb-1 font-poppins leading-tight">
+            <span className="about-subtitle text-[#62B239] font-medium text-[24px] sm:text-[26px] lg:text-[28px] block mb-1 font-poppins leading-tight">
               {subtitleText}
             </span>
-            <h2 className="about-title text-[24px] sm:text-[28px] lg:text-[30px] font-medium text-[#222222] leading-tight m-0 mb-4 sm:mb-5 font-poppins">
+            <h2 className="about-title text-[26px] sm:text-[29px] lg:text-[32px] font-medium text-[#222222] leading-tight m-0 mb-3.5 sm:mb-4 font-poppins">
               {mainTitle}
             </h2>
             {paragraphs.length > 0 && (
-              <div className="text-[14px] sm:text-[14.5px] leading-[1.65] text-[#444444] font-normal mb-7 font-poppins space-y-3">
+              <div className="about-para-wrap text-[13.5px] sm:text-[14px] leading-[1.55] text-[#444444] font-normal mb-6 sm:mb-7 font-poppins space-y-3">
                 {paragraphs.map((p, idx) => (
-                  <p key={idx} className="m-0 leading-[1.65]">
+                  <p key={idx} className="about-para m-0 leading-[1.55] tracking-normal">
                     {p}
                   </p>
                 ))}
@@ -43,7 +43,7 @@ export default function UuAbout({ about = {}, brand = {}, onOpenApply }) {
               <button
                 type="button"
                 onClick={() => onOpenApply?.()}
-                className="btn-apply px-11 py-2 border-2 border-[#0A3C7D] text-black hover:bg-[#0A3C7D] hover:text-white font-normal text-[15px] rounded-none bg-white transition-all cursor-pointer font-poppins"
+                className="btn-apply px-10 py-2 border-2 border-[#0A3C7D] text-[#111111] hover:bg-[#0A3C7D] hover:text-white font-normal text-[14.5px] rounded-none bg-white transition-all cursor-pointer font-poppins"
               >
                 {buttonText}
               </button>
@@ -51,14 +51,14 @@ export default function UuAbout({ about = {}, brand = {}, onOpenApply }) {
           </div>
 
           {imageSrc && (
-            <div className="lg:col-span-5 flex justify-center">
-              <div className="relative w-full aspect-[16/10] rounded-[8px] overflow-hidden shadow-xs">
+            <div className="lg:col-span-5 flex justify-center lg:justify-end items-start pt-1">
+              <div className="relative w-full max-w-[360px] h-[235px] sm:h-[245px] rounded-[8px] overflow-hidden shadow-none">
                 <Image
                   src={imageSrc}
                   alt={mainTitle}
                   fill
                   className="object-cover"
-                  sizes="(max-width: 1024px) 100vw, 42vw"
+                  sizes="(max-width: 1024px) 100vw, 360px"
                 />
               </div>
             </div>
@@ -68,18 +68,18 @@ export default function UuAbout({ about = {}, brand = {}, onOpenApply }) {
         {/* Bottom: Why Choose Cards */}
         {whyChooseCards.length > 0 && (
           <div>
-            <h3 className="text-center text-[22px] sm:text-[26px] lg:text-[28px] font-bold text-[#111111] m-0 mb-8 sm:mb-10 font-poppins">
-              {whyChooseHeading} <span className="text-[#62B239]">{whyChooseHighlight}</span>
+            <h3 className="about-whychoose-title text-center text-[22px] sm:text-[25px] lg:text-[28px] font-medium text-[#222222] tracking-normal leading-[1.25] m-0 mb-7 sm:mb-9 font-poppins">
+              {whyChooseHeading} <span className="text-[#62B239] font-medium">{whyChooseHighlight}</span>
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 w-full mx-auto">
               {whyChooseCards.map((card, idx) => (
                 <div
                   key={idx}
-                  className="bg-[#f8f9fa] rounded-[8px] p-5 sm:p-6 flex items-start gap-4 border border-slate-100 shadow-2xs hover:shadow-xs transition-shadow text-left"
+                  className="about-whychoose-card bg-[#F7F7F7] rounded-[8px] p-5 sm:p-6 flex items-start gap-4 sm:gap-5 border-0 shadow-none text-left transition-colors"
                 >
                   {(card.icon || card.image) && (
-                    <div className="relative w-12 h-12 sm:w-14 sm:h-14 shrink-0 flex items-center justify-center">
+                    <div className="about-card-icon relative w-12 h-12 sm:w-14 sm:h-14 shrink-0 flex items-center justify-center">
                       <Image
                         src={card.icon || card.image}
                         alt={card.title}
@@ -89,11 +89,11 @@ export default function UuAbout({ about = {}, brand = {}, onOpenApply }) {
                       />
                     </div>
                   )}
-                  <div>
-                    <h4 className="text-[15px] sm:text-[16px] font-bold text-[#111111] m-0 mb-1 leading-snug">
+                  <div className="about-card-content flex-1 min-w-0">
+                    <h4 className="about-card-title text-[15.5px] sm:text-[16.5px] font-semibold text-[#222222] tracking-normal m-0 mb-1.5 leading-snug font-poppins">
                       {card.title}
                     </h4>
-                    <p className="text-[12px] sm:text-[12.5px] text-[#555555] leading-relaxed m-0 font-normal">
+                    <p className="about-card-desc text-[13px] sm:text-[13.5px] text-[#444444] font-normal leading-[1.55] tracking-normal m-0 font-poppins">
                       {card.desc || card.description}
                     </p>
                   </div>

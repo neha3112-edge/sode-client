@@ -58,9 +58,8 @@ export const uuData = {
     navLinks: [
       { label: "Courses", href: "#program" },
       { label: "Approvals", href: "#approvals" },
-      { label: "Why Choose", href: "#whychoose" },
       { label: "About", href: "#about" },
-      { label: "Degree", href: "#degree" },
+      { label: "Advantage", href: "#whychoose" },
       { label: "FAQs", href: "#faqs" },
     ],
 
@@ -365,44 +364,57 @@ export const uuData = {
 
       .landing-page--uu #about .about-subtitle {
         color: #62B239 !important;
-        font-family: 'Poppins', sans-serif !important;
+        font-family: 'Poppins', var(--font-poppins), sans-serif !important;
         font-size: 28px !important;
         font-weight: 500 !important;
         line-height: 1.2 !important;
         margin-bottom: 4px !important;
         display: block !important;
+        letter-spacing: normal !important;
       }
 
       .landing-page--uu #about h2,
       .landing-page--uu #about .about-title {
         color: #222222 !important;
-        font-family: 'Poppins', sans-serif !important;
-        font-size: 30px !important;
+        font-family: 'Poppins', var(--font-poppins), sans-serif !important;
+        font-size: 32px !important;
         font-weight: 500 !important;
         line-height: 1.2 !important;
         margin-bottom: 14px !important;
+        letter-spacing: normal !important;
       }
 
-      @media (min-width: 1024px) {
+      @media (max-width: 639px) {
         .landing-page--uu #about .about-subtitle {
-          font-size: 30px !important;
+          font-size: 24px !important;
           margin-bottom: 4px !important;
         }
         .landing-page--uu #about h2,
         .landing-page--uu #about .about-title {
-          font-size: 30px !important;
-          margin-bottom: 16px !important;
+          font-size: 26px !important;
+          margin-bottom: 12px !important;
         }
+      }
+
+      .landing-page--uu #about p.about-para,
+      .landing-page--uu #about .about-para-wrap p {
+        font-family: 'Poppins', var(--font-poppins), sans-serif !important;
+        font-size: 14px !important;
+        line-height: 1.55 !important;
+        font-weight: 400 !important;
+        color: #444444 !important;
+        letter-spacing: normal !important;
+        margin: 0px !important;
       }
 
       .landing-page--uu #about .btn-apply {
         border: 2px solid #0A3C7D !important;
-        color: #000000 !important;
+        color: #111111 !important;
         background-color: #ffffff !important;
         border-radius: 0px !important;
-        font-size: 15px !important;
+        font-size: 14.5px !important;
         font-weight: 400 !important;
-        padding: 8px 44px !important;
+        padding: 8px 40px !important;
         line-height: 1.4 !important;
         cursor: pointer !important;
         transition: all 0.2s ease-in-out !important;
@@ -412,6 +424,68 @@ export const uuData = {
       .landing-page--uu #about .btn-apply:hover {
         background-color: #0A3C7D !important;
         color: #ffffff !important;
+      }
+
+      /* About Section - Why Choose Uttaranchal University Online? */
+      .landing-page--uu #about .about-whychoose-title {
+        font-family: 'Poppins', var(--font-poppins), sans-serif !important;
+        font-weight: 500 !important;
+        font-size: 28px !important;
+        line-height: 1.25 !important;
+        color: #222222 !important;
+        letter-spacing: normal !important;
+        text-align: center !important;
+        margin-top: 0px !important;
+        margin-bottom: 36px !important;
+      }
+
+      .landing-page--uu #about .about-whychoose-title span {
+        color: #62B239 !important;
+        font-weight: 500 !important;
+      }
+
+      @media (max-width: 639px) {
+        .landing-page--uu #about .about-whychoose-title {
+          font-size: 22px !important;
+          margin-bottom: 24px !important;
+        }
+      }
+
+      .landing-page--uu #about .about-whychoose-card {
+        background-color: #F7F7F7 !important;
+        border: none !important;
+        box-shadow: none !important;
+        border-radius: 8px !important;
+      }
+
+      .landing-page--uu #about .about-card-title {
+        font-family: 'Poppins', var(--font-poppins), sans-serif !important;
+        font-weight: 600 !important;
+        font-size: 16.5px !important;
+        line-height: 1.3 !important;
+        color: #222222 !important;
+        letter-spacing: normal !important;
+        margin-top: 0px !important;
+        margin-bottom: 6px !important;
+      }
+
+      .landing-page--uu #about .about-card-desc {
+        font-family: 'Poppins', var(--font-poppins), sans-serif !important;
+        font-weight: 400 !important;
+        font-size: 13.5px !important;
+        line-height: 1.55 !important;
+        color: #444444 !important;
+        letter-spacing: normal !important;
+        margin: 0px !important;
+      }
+
+      @media (max-width: 639px) {
+        .landing-page--uu #about .about-card-title {
+          font-size: 15.5px !important;
+        }
+        .landing-page--uu #about .about-card-desc {
+          font-size: 13px !important;
+        }
       }
 
       .landing-page--uu #program h2,
@@ -1413,12 +1487,12 @@ export const uuData = {
     features: [
       {
         title: "Engagement",
-        desc: "Uttaranchal University online offers top tier support to its students and mentorship for personalised learning",
+        desc: "Uttaranchal University online offers top-tier support to its students and mentorship for personalised learning.",
         icon: "/assets/all_universities_images/uu/icon-uttaranchal-1.webp",
       },
       {
         title: "Student-Friendly Study",
-        desc: "Uttaranchal University's online, user friendly, learner centric LMS, live and interactive sessions, and well-designed self learning materials.",
+        desc: "Uttaranchal University's online, user-friendly, learner-centric LMS, live and interactive sessions, and well-designed, self learning materials.",
         icon: "/assets/all_universities_images/uu/icon-uttaranchal-2.webp",
       },
       {

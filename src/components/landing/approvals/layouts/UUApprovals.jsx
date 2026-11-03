@@ -12,12 +12,12 @@ export default function UUApprovals({ approvals = [], brand = {} }) {
   return (
     <section id="approvals" className="w-full py-6 sm:py-7 lg:py-8 bg-white select-none scroll-mt-20 font-poppins">
       <div className="uu-container w-full mx-auto text-center font-poppins">
-        <h2 className="text-[20px] sm:text-[24px] lg:text-[27px] font-semibold leading-tight m-0 mb-2 sm:mb-2.5 font-poppins">
+        <h2 className="text-[20px] sm:text-[26px] lg:text-[28px] font-medium leading-tight m-0 mb-2 sm:mb-2.5 font-poppins">
           <span className="text-[#003399]">{heading} </span>
           <span className="text-[#62B239]">{highlight}</span>
         </h2>
         {subtitle && (
-          <p className="hidden sm:block text-[12.5px] sm:text-[13px] lg:text-[13.5px] text-[#444444] font-normal leading-[1.6] max-w-[1140px] mx-auto mb-5 sm:mb-7 font-poppins">
+          <p className="hidden sm:block text-[12px] sm:text-[12.5px] lg:text-[12.5px] text-[#444444] font-normal leading-[1.5] max-w-[1140px] mx-auto mb-2 sm:mb-2 font-poppins">
             {subtitle}
           </p>
         )}
