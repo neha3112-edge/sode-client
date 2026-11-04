@@ -94,24 +94,6 @@ const nextConfig = {
       },
     ];
   },
-
-  webpack(config, { isServer }) {
-    if (!isServer) {
-      const originalEntry = config.entry;
-      config.entry = async () => {
-        const entries = await originalEntry();
-        for (const key of Object.keys(entries)) {
-          if (Array.isArray(entries[key])) {
-            entries[key] = entries[key].filter(
-              (entry) => typeof entry !== "string" || !entry.includes("next/dist/client/polyfills")
-            );
-          }
-        }
-        return entries;
-      };
-    }
-    return config;
-  },
 };
 
 export default nextConfig;
