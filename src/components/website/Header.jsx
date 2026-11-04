@@ -840,8 +840,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                 priority
                 loading="eager"
                 fetchPriority="high"
-                unoptimized
-                sizes="(max-width: 768px) 160px, 200px"
+                sizes="(max-width: 640px) 144px, 176px"
                 className="object-contain object-left cursor-pointer"
               />
             </div>
@@ -1563,8 +1562,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                     priority
                     loading="eager"
                     fetchPriority="high"
-                    unoptimized
-                    sizes="(max-width: 768px) 160px, 200px"
+                    sizes="(max-width: 640px) 144px, 176px"
                     className="object-contain object-left cursor-pointer"
                   />
                 </div>
