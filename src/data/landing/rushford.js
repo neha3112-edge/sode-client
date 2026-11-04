@@ -35,17 +35,9 @@ export const rushfordCustomCss = `
 
   /* Hero Section */
   .landing-page--rushford #hero {
-    background-image: url(/assets/all_universities_images/rushford/rushford_new_desktop_bg.png) !important;
-    background-position: center top !important;
-    background-size: cover !important;
-    background-repeat: no-repeat !important;
     padding: 24px 20px !important;
     min-height: auto !important;
     position: relative !important;
-  }
-
-  .landing-page--rushford #hero > div.absolute {
-    display: none !important;
   }
 
   .landing-page--rushford #hero h1 {
@@ -361,10 +353,6 @@ export const rushfordCustomCss = `
 
     /* Hero Mobile */
     .landing-page--rushford #hero {
-      background-image: url(/assets/all_universities_images/rushford/mobile_new_bg_main.png) !important;
-      background-size: 100% auto !important;
-      background-position: center top !important;
-      background-repeat: no-repeat !important;
       padding: 16px 0px 24px 0px !important;
     }
 

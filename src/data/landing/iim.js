@@ -146,10 +146,6 @@ export const iimCustomCss = `
      3. HERO SECTION (#hero)
      ========================================================= */
  .landing-page--iim #hero {
-  background-image: url("/assets/all_universities_images/iim/iim_desktop_new_img.png") !important;
-  background-size: cover !important;
-  background-position: center bottom !important;
-  background-repeat: no-repeat !important;
   padding: 6px 0 36px 0 !important;
   margin: 0 !important;
   position: relative !important;
@@ -358,10 +354,6 @@ export const iimCustomCss = `
 
   @media only screen and (max-width: 768px) {
     .landing-page--iim #hero {
-      background-image: url("/assets/all_universities_images/iim/new_iim_mobile_bg.png") !important;
-      background-size: cover !important;
-      background-position: center top !important;
-      background-repeat: no-repeat !important;
       padding: 16px 0 40px 0 !important;
       margin: 0 !important;
       position: relative !important;

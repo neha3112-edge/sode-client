@@ -75,7 +75,7 @@ export default function GguAbout({ about = {}, brand = {}, onOpenApply }) {
               height={450}
               priority
               className="w-full h-auto block"
-              sizes="100vw"
+              sizes="(max-width: 1024px) 100vw, 1px"
             />
           </div>
         )}

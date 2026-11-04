@@ -1,16 +1,19 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 
 export default function GalgotiasAbout({ brand = {}, onOpenApply }) {
   return (
     <div id="about" className="w-full select-none scroll-mt-20">
       {/* Full Width Image with seamless bottom gradient to black */}
       <div className="relative overflow-hidden w-full">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           src="/assets/galgotias/galgotia-about.webp"
           alt="Galgotias University"
+          width={1440}
+          height={380}
+          sizes="100vw"
           className="w-full h-[150px] sm:h-[220px] md:h-auto max-h-[380px] object-cover block"
         />
         <div

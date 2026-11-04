@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 
 export default function GalgotiasApprovals({ brand = {} }) {
   const items = [
@@ -47,9 +48,11 @@ export default function GalgotiasApprovals({ brand = {} }) {
           {items.map((item, idx) => (
             <div key={idx} className="flex items-center gap-3.5 sm:gap-4 text-left">
               <div className="w-[72px] h-[72px] sm:w-[80px] sm:h-[80px] rounded-full bg-white p-2.5 shrink-0 flex items-center justify-center shadow-xs">
-                <img
+                <Image
                   src={item.img}
                   alt={item.title}
+                  width={60}
+                  height={60}
                   className="w-full h-full object-contain"
                 />
               </div>

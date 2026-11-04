@@ -198,10 +198,6 @@ export const esgciCustomCss = `
   /* Mobile Specific Styles matching live https://distanceeducationschool.com/esgci/ */
   @media (max-width: 768px) {
     .landing-page--esgci #hero {
-      background-image: url(/assets/all_universities_images/esgci/mobile_new_bg_main.png) !important;
-      background-size: cover !important;
-      background-position: center top !important;
-      background-repeat: no-repeat !important;
       padding: 20px 0px !important;
     }
 

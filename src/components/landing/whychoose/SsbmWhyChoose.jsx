@@ -13,12 +13,23 @@ export default function SsbmWhyChoose({ whyChoose = [], brand = {}, onOpenApply 
     <section
       id="benefits"
       data-section="whychoose"
-      className="benefits-section w-full select-none scroll-mt-20 text-white relative bg-cover"
-      style={{
-        backgroundImage: `url(${brand.whyChooseBgImage || "/assets/all_universities_images/ssbm/Global.webp"})`,
-      }}
+      className="benefits-section w-full select-none scroll-mt-20 text-white relative overflow-hidden"
     >
-      <div className="max-w-[1240px] min-[1600px]:max-w-[1520px] min-[1920px]:max-w-[1680px] mx-auto px-4 sm:px-6">
+      <Image
+        src={brand.whyChooseBgImage || "/assets/all_universities_images/ssbm/Global.webp"}
+        alt=""
+        fill
+        sizes="(min-width: 768px) 100vw, 1px"
+        className="hidden md:block object-cover object-center pointer-events-none -z-10"
+      />
+      <Image
+        src={brand.whyChooseMobileBgImage || "/assets/all_universities_images/ssbm/Global-mobile.webp"}
+        alt=""
+        fill
+        sizes="(max-width: 768px) 100vw, 1px"
+        className="block md:hidden object-cover object-center pointer-events-none -z-10"
+      />
+      <div className="max-w-[1240px] min-[1600px]:max-w-[1520px] min-[1920px]:max-w-[1680px] mx-auto px-4 sm:px-6 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           {/* Left Spacer for Desktop Background Alignment */}
           <div className="hidden lg:block lg:col-span-4" />

@@ -1555,12 +1555,16 @@ export default function LiverpoolLandingView({ data = {} }) {
       ───────────────────────────────────────────────────────────── */}
       <section
         id="about"
-        className="py-14 sm:py-20 text-white select-none scroll-mt-20 bg-cover bg-center"
-        style={{
-          backgroundImage: `url(${ASSET_BASE}/ljmu-rev.png)`,
-        }}
+        className="relative py-14 sm:py-20 text-white select-none scroll-mt-20 overflow-hidden"
       >
-        <div className="container max-w-[1140px] mx-auto px-4 sm:px-6">
+        <Image
+          src={`${ASSET_BASE}/ljmu-rev.png`}
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover object-center pointer-events-none -z-10"
+        />
+        <div className="container max-w-[1140px] mx-auto px-4 sm:px-6 relative z-10">
           <div className="about-cnt max-w-2xl text-left">
             <div className="ab1">
               <h2 className="text-[26px] sm:text-[32px] font-bold text-white mb-4 leading-tight m-0">

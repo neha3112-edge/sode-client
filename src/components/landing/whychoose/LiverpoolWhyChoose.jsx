@@ -12,12 +12,16 @@ export default function LiverpoolWhyChoose({ whyChoose = [], brand = {}, onOpenA
   return (
     <section
       id="why-choose"
-      className="mba-offer-section w-full select-none py-14 sm:py-18 relative bg-cover bg-center scroll-mt-20 text-white"
-      style={{
-        backgroundImage: `url(${brand.whyChooseBgImage || "/assets/all_universities_images/liverpool/MID.webp"})`,
-      }}
+      className="mba-offer-section w-full select-none py-14 sm:py-18 relative overflow-hidden scroll-mt-20 text-white"
     >
-      <div className="max-w-[1140px] mx-auto px-4 sm:px-6">
+      <Image
+        src={brand.whyChooseBgImage || "/assets/all_universities_images/liverpool/MID.webp"}
+        alt=""
+        fill
+        sizes="100vw"
+        className="object-cover object-center pointer-events-none -z-10"
+      />
+      <div className="max-w-[1140px] mx-auto px-4 sm:px-6 relative z-10">
         <h2 className="text-[26px] sm:text-[34px] font-bold text-center mb-10 sm:mb-14 leading-snug m-0">
           {heading} <br />
           <span className="text-[#2de1c2]">{subHeading}</span>

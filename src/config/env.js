@@ -1,5 +1,10 @@
-// Bypass SSL altname mismatch for remote CRM API server in development/node runtime
-if (typeof process !== "undefined" && process.env.NODE_TLS_REJECT_UNAUTHORIZED !== "0") {
+// Bypass SSL altname mismatch for remote CRM API server in development runtime only if required
+if (
+  process.env.NODE_ENV === "development" &&
+  process.env.NEXT_PUBLIC_DEV_REMOTE === "remote" &&
+  typeof process !== "undefined" &&
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED !== "0"
+) {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 }
 

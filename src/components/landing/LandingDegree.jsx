@@ -84,10 +84,11 @@ export default function LandingDegree({
                 {GALGOTIAS_WHY_CHOOSE_SLIDES.map((slide, idx) => (
                   <div key={idx} className="px-1 pb-1">
                     <div className="bg-white rounded-[16px] px-5 py-6 text-center shadow-md flex flex-col items-center justify-center min-h-[250px]">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
+                      <Image
                         src={slide.icon}
                         alt={slide.title}
+                        width={50}
+                        height={50}
                         className="w-[50px] h-[50px] object-contain mx-auto mb-3"
                       />
                       <h3 className="text-[15.5px] font-bold text-black m-0 mb-2 leading-snug">
@@ -162,17 +163,19 @@ export default function LandingDegree({
               {/* Right Yellow Image Container */}
               <div className="lg:col-span-6 pt-8 sm:pt-12 lg:pt-8">
                 <div className="cer2 bg-[#ffef97] rounded-[16px] px-3 sm:px-5 pt-4 sm:pt-0 pb-3 sm:pb-0 flex flex-col sm:flex-row items-center sm:items-end justify-center gap-2 sm:gap-3 relative overflow-visible">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  <Image
                     src="/assets/galgotias/image-01-galgotia.webp"
                     alt="Galgotias Graduate"
+                    width={285}
+                    height={350}
                     className="w-[255px] sm:w-[245px] md:w-[270px] lg:w-[285px] max-w-[88%] sm:max-w-[50%] h-auto object-contain shrink-0 block"
                     style={{ marginTop: "-52px" }}
                   />
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  <Image
                     src="/assets/galgotias/sample-galgotia.webp"
                     alt="Galgotias Sample Degree"
+                    width={305}
+                    height={220}
                     className="w-[305px] sm:w-[260px] md:w-[285px] lg:w-[305px] max-w-[96%] sm:max-w-[50%] h-auto object-contain my-2 sm:my-4 shadow-sm rounded-[4px] block"
                   />
                 </div>

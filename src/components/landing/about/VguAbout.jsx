@@ -37,13 +37,16 @@ export default function VguAbout({ about = {}, brand = {}, onOpenApply }) {
       style={{ backgroundColor: sectionBg, ...cfg.sectionStyle }}
     >
       {bgImage && (
-        <div
-          className="absolute inset-0 bg-cover bg-center pointer-events-none"
-          style={{
-            backgroundImage: `url(${bgImage})`,
-            ...cfg.bgImageStyle,
-          }}
-        />
+        <div className="absolute inset-0 pointer-events-none -z-0">
+          <Image
+            src={bgImage}
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover object-center pointer-events-none"
+            style={cfg.bgImageStyle}
+          />
+        </div>
       )}
 
       <div className={`relative z-10 ${containerClass}`}>

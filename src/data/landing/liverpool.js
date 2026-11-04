@@ -36,10 +36,6 @@ export const liverpoolCustomCss = `
 
   /* Hero Section */
   .landing-page--liverpool #hero {
-    background-image: url(/assets/all_universities_images/liverpool/liverpool_desktop_new_bg.webp) !important;
-    background-position: center top !important;
-    background-size: cover !important;
-    background-repeat: no-repeat !important;
     padding: 60px 15px 30px !important;
     min-height: auto !important;
     position: relative !important;
@@ -47,14 +43,8 @@ export const liverpoolCustomCss = `
 
   @media (max-width: 768px) {
     .landing-page--liverpool #hero {
-      background-image: url(/assets/all_universities_images/liverpool/ljmu-mobile-front-image-697204236914a.webp) !important;
-      background-position: center top !important;
       padding: 20px 10px !important;
     }
-  }
-
-  .landing-page--liverpool #hero > div.absolute {
-    display: none !important;
   }
 
   .landing-page--liverpool #hero h1 {

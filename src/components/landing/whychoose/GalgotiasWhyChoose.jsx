@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef } from "react";
+import Image from "next/image";
 import { Carousel } from "antd";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -129,9 +130,11 @@ export default function GalgotiasWhyChoose({ brand = {} }) {
               {SLIDES.map((item, idx) => (
                 <div key={idx} className="px-2.5 py-1 box-border h-full">
                   <div className="item bg-white rounded-[12px] p-6 text-center shadow-xs flex flex-col items-center justify-start min-h-[250px] h-full transition-transform hover:-translate-y-1">
-                    <img
+                    <Image
                       src={item.icon}
                       alt={item.title}
+                      width={50}
+                      height={50}
                       className="w-[50px] h-[50px] object-contain mb-3 mx-auto"
                     />
                     <h3 className="text-[15px] sm:text-[15.5px] font-bold text-[#111111] mb-2 leading-snug">

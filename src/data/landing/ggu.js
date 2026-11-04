@@ -74,18 +74,11 @@ export const gguCustomCss = `
      3. HERO SECTION (#hero)
      ========================================================= */
   .landing-page--ggu #hero {
-    background-image: url(/assets/all_universities_images/ggu/ggu_desktop_new_bg.png) !important;
-    background-position: center top !important;
-    background-size: cover !important;
-    background-repeat: no-repeat !important;
     padding: 0px 20px !important;
     min-height: auto !important;
     position: relative !important;
     display: flex !important;
     align-items: center !important;
-  }
-  .landing-page--ggu #hero > div.absolute {
-    display: none !important;
   }
   .landing-page--ggu #hero .hero-info-col {
     max-width: 540px !important;
@@ -155,10 +148,6 @@ export const gguCustomCss = `
   }
   @media (max-width: 768px) {
     .landing-page--ggu #hero {
-      background-image: url(/assets/all_universities_images/ggu/mobile_new_bg_main.png) !important;
-      background-position: center top !important;
-      background-size: cover !important;
-      background-repeat: no-repeat !important;
       padding: 24px 0 30px 0 !important;
       min-height: auto !important;
       display: block !important;

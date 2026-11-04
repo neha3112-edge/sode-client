@@ -46,8 +46,18 @@ export default function GalgotiasHero({
   return (
     <section
       id="hero-section"
-      className="top-banner relative isolate overflow-hidden select-none bg-[#b2171e] lg:bg-cover lg:bg-center lg:bg-[url('/assets/galgotias/galgotias-desktop.webp')]"
+      className="top-banner relative isolate overflow-hidden select-none bg-[#b2171e]"
     >
+      <div className="hidden lg:block absolute inset-0 -z-10 pointer-events-none">
+        <Image
+          src="/assets/galgotias/galgotias-desktop.webp"
+          alt=""
+          fill
+          priority
+          sizes="(min-width: 1024px) 100vw, 1px"
+          className="object-cover object-center"
+        />
+      </div>
       <div className="max-w-[1240px] mx-auto px-4 sm:px-6 py-6 sm:py-10 md:py-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-center">
           {/* Left Text Content */}
@@ -98,9 +108,12 @@ export default function GalgotiasHero({
 
           {/* Mobile Campus Building Image (matches reference screenshot) */}
           <div className="block lg:hidden w-full max-w-[420px] mx-auto my-1.5 rounded-[18px] overflow-hidden shadow-lg border border-white/10">
-            <img
+            <Image
               src={campusImgSrc}
               alt="Galgotias University Online Campus"
+              width={420}
+              height={260}
+              sizes="(max-width: 1024px) 100vw, 420px"
               className="w-full h-auto object-cover block"
             />
           </div>
@@ -114,9 +127,12 @@ export default function GalgotiasHero({
               style={{ background: "linear-gradient(135deg, #2ecc71, #27ae60)" }}
             >
               <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center shrink-0 shadow-xs">
-                <img
+                <Image
                   src={giftIconSrc}
                   alt="Gift"
+                  width={16}
+                  height={16}
+                  unoptimized
                   className="w-4 h-4 object-contain"
                 />
               </div>

@@ -69,18 +69,7 @@ export const upesCustomCss = `
   /* 3. Hero Section */
   .landing-page--upes #hero {
     background-color: #ffffff !important;
-    background-image: url("/assets/all_universities_images/upes/upes-home-desktop.webp") !important;
-    background-size: cover !important;
-    background-position: center top !important;
-    background-repeat: no-repeat !important;
     padding: 24px 0 24px 0 !important;
-  }
-  .landing-page--upes #hero div[aria-hidden="true"],
-  .landing-page--upes #hero div.-z-20 {
-    background-image: url("/assets/all_universities_images/upes/upes-home-desktop.webp") !important;
-    background-position: center top !important;
-    background-size: cover !important;
-    background-repeat: no-repeat !important;
   }
 
  @media (min-width: 1000px) {

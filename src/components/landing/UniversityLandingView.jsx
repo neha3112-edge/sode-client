@@ -557,7 +557,7 @@ function MainUniversityLandingView({ data = {} }) {
                           <div key={idx} className="bg-white border border-slate-200 rounded-[12px] p-6 shadow-xs hover:shadow-md transition-shadow flex flex-col justify-start">
                             {skill.icon && (
                               <div className="relative w-12 h-12 mb-4">
-                                <Image src={skill.icon} alt={skill.title} fill className="object-contain" />
+                                <Image src={skill.icon} alt={skill.title} fill sizes="48px" className="object-contain" />
                               </div>
                             )}
                             <h3 className="text-[17px] font-bold text-[#111111] mb-2 leading-snug">
@@ -633,7 +633,7 @@ function MainUniversityLandingView({ data = {} }) {
                           <div key={idx} className="bg-white border border-slate-200 rounded-[12px] p-6 shadow-xs hover:shadow-md transition-shadow text-center flex flex-col items-center">
                             {t.image && (
                               <div className="relative w-16 h-16 mb-4">
-                                <Image src={t.image} alt={t.name} fill className="object-contain" />
+                                <Image src={t.image} alt={t.name} fill sizes="64px" className="object-contain" />
                               </div>
                             )}
                             <h3 className="text-[18px] font-bold text-[#111111] mb-2">

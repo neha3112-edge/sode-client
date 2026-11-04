@@ -340,14 +340,6 @@ export const vguCustomCss = `
     color: #35529a !important;
   }
 
-  /* About Section */
-  .landing-page--vgu #about {
-    background-image: url("/assets/all_universities_images/vgu/about-bg-vgu.webp") !important;
-    background-repeat: no-repeat !important;
-    background-size: cover !important;
-    background-position: center !important;
-  }
-
   /* Advantage / Resources Section */
   .landing-page--vgu #advantage h2,
   .landing-page--vgu #Resources h2 {

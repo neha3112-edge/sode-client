@@ -758,10 +758,11 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
             </div>
           ) : approvalLogoUrl ? (
             <div className="mb-2 sm:mb-2.5 flex justify-center">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 src={approvalLogoUrl}
                 alt={apiData?.approval?.name || "Accreditation Logo"}
+                width={120}
+                height={64}
                 className="max-h-14 sm:max-h-16 md:max-h-18 max-w-full w-auto h-auto object-contain"
               />
             </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import LandingButton from "../LandingButton";
 
 export default function SsbmAbout({ about = {}, brand = {}, onOpenApply }) {
@@ -23,12 +24,16 @@ export default function SsbmAbout({ about = {}, brand = {}, onOpenApply }) {
   return (
     <section
       id="about"
-      className="w-full relative select-none py-7 sm:py-9 lg:py-10 text-white scroll-mt-20 bg-cover bg-center"
-      style={{
-        backgroundImage: `url(${bgImage})`,
-      }}
+      className="w-full relative select-none py-7 sm:py-9 lg:py-10 text-white scroll-mt-20 overflow-hidden"
     >
-      <div className="w-full max-w-[1440px] mx-auto px-5 sm:px-10 lg:px-14">
+      <Image
+        src={bgImage}
+        alt=""
+        fill
+        sizes="100vw"
+        className="object-cover object-center pointer-events-none -z-10"
+      />
+      <div className="w-full max-w-[1440px] mx-auto px-5 sm:px-10 lg:px-14 relative z-10">
         <div className="max-w-[640px] lg:max-w-[680px] text-left">
           <h2 className="text-[24px] sm:text-[28px] lg:text-[32px] font-bold text-white mb-2.5 sm:mb-3 uppercase tracking-wide m-0">
             {title}

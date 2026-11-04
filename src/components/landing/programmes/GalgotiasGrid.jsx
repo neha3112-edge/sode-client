@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 
 const COURSES_LIST = [
   {
@@ -77,10 +78,12 @@ export default function GalgotiasGrid({
               className="card-box bg-[#333333] rounded-[10px] shadow-[0_0_8px_rgba(0,0,0,0.2)] hover:-translate-y-1.5 transition-transform duration-300 flex flex-col justify-between overflow-hidden text-left"
             >
               <div>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={c.image}
                   alt={c.title}
+                  width={300}
+                  height={145}
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                   className="w-full h-[135px] sm:h-[145px] object-cover rounded-t-[10px]"
                 />
                 <div className="p-3.5 sm:p-4 text-white">

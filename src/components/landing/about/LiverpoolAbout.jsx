@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import LandingButton from "../LandingButton";
 
 export default function LiverpoolAbout({ about = {}, brand = {}, onOpenApply }) {
@@ -21,10 +22,16 @@ export default function LiverpoolAbout({ about = {}, brand = {}, onOpenApply }) 
   return (
     <section
       id="about"
-      className="w-full relative select-none py-14 sm:py-20 bg-cover bg-center scroll-mt-20 text-white"
-      style={{ backgroundImage: `url(${bgImg})` }}
+      className="w-full relative select-none py-14 sm:py-20 overflow-hidden scroll-mt-20 text-white"
     >
-      <div className="max-w-[1240px] mx-auto px-4 sm:px-8">
+      <Image
+        src={bgImg}
+        alt=""
+        fill
+        sizes="100vw"
+        className="object-cover object-center pointer-events-none -z-10"
+      />
+      <div className="max-w-[1240px] mx-auto px-4 sm:px-8 relative z-10">
         <div className="max-w-2xl bg-black/45 backdrop-blur-xs p-6 sm:p-10 rounded-[12px] border border-white/10 shadow-xl text-left">
           <h2 className="text-[26px] sm:text-[32px] font-bold mb-4 text-white m-0">
             {title}

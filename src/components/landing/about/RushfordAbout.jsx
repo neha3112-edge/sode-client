@@ -56,7 +56,7 @@ export default function RushfordAbout({ about = {}, brand = {}, onOpenApply }) {
           width={700}
           height={450}
           className="w-full h-auto object-cover block"
-          sizes="100vw"
+          sizes="(max-width: 768px) 100vw, 1px"
         />
       </div>
     </section>

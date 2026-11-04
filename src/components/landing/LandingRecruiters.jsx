@@ -34,14 +34,18 @@ export default function LandingRecruiters({
             {desc}
           </p>
           <div className="w-full flex justify-center">
-            <img
+            <Image
               src="/assets/galgotias/partner-desktop.webp"
               alt="Galgotias Top Hiring Partners"
+              width={1350}
+              height={400}
               className="hidden sm:block w-full max-w-[1350px] h-auto object-contain p-2"
             />
-            <img
+            <Image
               src="/assets/galgotias/partner-mobile.webp"
               alt="Galgotias Top Hiring Partners"
+              width={500}
+              height={350}
               className="block sm:hidden w-full max-w-[500px] h-auto object-contain p-2"
             />
           </div>
@@ -119,7 +123,7 @@ export default function LandingRecruiters({
                   alt="LPU Hiring Partners"
                   fill
                   className="object-contain"
-                  sizes="(max-width: 1024px) 100vw, 58vw"
+                  sizes="(max-width: 640px) 1px, (max-width: 1024px) 100vw, 58vw"
                   priority
                 />
               </div>
@@ -131,7 +135,7 @@ export default function LandingRecruiters({
                   width={600}
                   height={906}
                   className="w-full h-auto object-contain block mx-auto"
-                  sizes="100vw"
+                  sizes="(max-width: 640px) 100vw, 1px"
                   priority
                 />
               </div>

@@ -36,10 +36,6 @@ export const ssbmCustomCss = `
 
   /* Hero Section */
   .landing-page--ssbm #hero {
-    background-image: url(/assets/all_universities_images/ssbm/ssbm_new_Desktop_bg.png) !important;
-    background-position: center center !important;
-   background-size: 115% auto !important;
-    background-repeat: no-repeat !important;
     padding: 20px 16px 20px !important;
     min-height: 570px !important;
     position: relative !important;
@@ -47,10 +43,6 @@ export const ssbmCustomCss = `
     align-items: center !important;
   }
 
- .landing-page--ssbm #hero > div.absolute {
-  background-position: center center !important;
-  background-size: 130% auto !important;
-}
   .landing-page--ssbm #hero h1 {
     font-size: 68px !important;
     font-family: 'Anton', sans-serif !important;
@@ -63,10 +55,6 @@ export const ssbmCustomCss = `
 
  @media (max-width: 768px) {
   .landing-page--ssbm #hero {
-    background-image: url(/assets/all_universities_images/ssbm/mobile_new_bg_main.png) !important;
-    background-position: center center !important;
-    background-size: 150% auto !important;
-    background-repeat: no-repeat !important;
     padding: 16px 0px 35px !important;
     min-height: auto !important;
     display: block !important;
@@ -457,18 +445,8 @@ export const ssbmCustomCss = `
     border-radius: 50% !important;
   }
 
-  /* Benefits / Why Choose */
-  .landing-page--ssbm #benefits {
-    background-image: url(/assets/all_universities_images/ssbm/Global.webp) !important;
-    background-size: cover !important;
-    background-position: center !important;
-  }
 @media (max-width: 768px) {
   .landing-page--ssbm #benefits {
-    background-image: url(/assets/all_universities_images/ssbm/Global-mobile.webp) !important;
-    background-size: 100% 100% !important;
-    background-position: center center !important;
-    background-repeat: no-repeat !important;
     padding-top: 30px !important;
     padding-bottom: 350px !important;
     padding-left: 15px !important;
@@ -476,13 +454,6 @@ export const ssbmCustomCss = `
     min-height: 1000px !important;
   }
 }
-
-  /* About */
-  .landing-page--ssbm #about {
-    background-image: url(/assets/all_universities_images/ssbm/About-pic.webp) !important;
-    background-size: cover !important;
-    background-position: center !important;
-  }
 
   /* Degree */
   .landing-page--ssbm #sample-degree h2 {

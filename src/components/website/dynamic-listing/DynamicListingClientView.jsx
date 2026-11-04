@@ -98,7 +98,7 @@ function DynamicHero({ hero, pageTitle, targetCourseName }) {
               fill
               priority
               loading="eager"
-              unoptimized
+              sizes="100vw"
               className="object-cover object-center opacity-30"
             />
             <div className="absolute inset-0 bg-black/40 pointer-events-none" />
@@ -221,9 +221,8 @@ function DynamicHero({ hero, pageTitle, targetCourseName }) {
                       alt={title}
                       fill
                       priority
-                      loading="eager"
+                      sizes="(max-width: 1024px) 100vw, 40vw"
                       className="object-cover object-center group-hover:scale-105 transition-transform duration-300"
-                      unoptimized
                     />
                     <div className="absolute inset-0 bg-black/25 group-hover:bg-black/10 transition-colors flex items-center justify-center">
                       <div className="w-12 sm:w-16 h-8 sm:h-11 bg-[#FF0000] rounded-lg sm:rounded-xl flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">

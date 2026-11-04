@@ -36,10 +36,6 @@ export const edgewoodCustomCss = `
 
   /* Hero Section */
   .landing-page--edgewood #hero {
-    background-image: url(/assets/all_universities_images/edgewood/edgewood_desktop_new_bg.png) !important;
-    background-position: center top !important;
-    background-size: cover !important;
-    background-repeat: no-repeat !important;
     padding: 30px 15px !important;
     min-height: auto !important;
     position: relative !important;
@@ -47,14 +43,8 @@ export const edgewoodCustomCss = `
 
   @media (max-width: 768px) {
     .landing-page--edgewood #hero {
-      background-image: url(/assets/all_universities_images/edgewood/mobile_new_bg_main.png) !important;
-      background-position: center top !important;
       padding: 20px 10px !important;
     }
-  }
-
-  .landing-page--edgewood #hero > div.absolute {
-    display: none !important;
   }
 
   .landing-page--edgewood #hero h1 {

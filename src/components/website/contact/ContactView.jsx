@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Form, Input, Select, Checkbox, Button, message as staticMessage, App } from "antd";
@@ -435,15 +436,23 @@ export function ContactView({
   return (
     <div className="w-full bg-white font-sans text-slate-800">
       <section
-        className="relative w-full text-white pt-10 sm:pt-14 pb-32 sm:pb-36 md:pb-40 px-4 sm:px-6 lg:px-8 bg-cover bg-center bg-no-repeat bg-fixed"
+        className="relative w-full text-white pt-10 sm:pt-14 pb-32 sm:pb-36 md:pb-40 px-4 sm:px-6 lg:px-8 overflow-hidden"
         style={{
-          backgroundImage: bannerImgUrl ? `url("${bannerImgUrl}")` : undefined,
           backgroundColor: "#111827",
-          backgroundAttachment: "fixed",
         }}
       >
+        {bannerImgUrl && (
+          <Image
+            src={bannerImgUrl}
+            alt={contactHeroTitle || "Contact Banner"}
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-center pointer-events-none -z-0"
+          />
+        )}
         {/* Semi-transparent dark overlay so background image is clearly visible while ensuring text readability */}
-        <div className="absolute inset-0 bg-black/45 pointer-events-none" />
+        <div className="absolute inset-0 bg-black/45 pointer-events-none z-0" />
 
         <div className="relative max-w-6xl mx-auto flex flex-col md:flex-row items-start justify-between gap-8 z-10">
           {/* Left Title & Paragraph (Dynamically rendered from Tenant model) */}

@@ -78,12 +78,6 @@ export const muData = {
       }
 
       /* ── HERO / TOP-BANNER ── */
-      .landing-page--mu #hero,
-      .landing-page--mu .top-banner {
-        background-image: url('/assets/mu/front-desktop-image-mangalayatan-final.webp') !important;
-        background-size: cover !important;
-        background-position: center top !important;
-      }
       .landing-page--mu .welcome {
         width: fit-content !important;
         padding: 6px 20px !important;
@@ -159,12 +153,6 @@ export const muData = {
 
       /* ── HERO MOBILE RESPONSIVE (MATCHING IMAGE 1) ── */
       @media (max-width: 767px) {
-        .landing-page--mu #hero,
-        .landing-page--mu .top-banner {
-          background-image: url('/assets/all_universities_images/all_universities_images/mu/bg-mobile.webp') !important;
-          background-size: cover !important;
-          background-position: center top !important;
-        }
         .landing-page--mu .hero-info-col {
           align-items: flex-start !important;
           text-align: left !important;

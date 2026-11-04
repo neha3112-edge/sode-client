@@ -110,51 +110,6 @@ export default function LandingHero({
     ...(hero.sectionBackgroundStyle || {}),
   };
 
-  const desktopBackgroundStyle = {
-    backgroundImage: backgroundImage
-      ? `url("${backgroundImage}")`
-      : undefined,
-    backgroundPosition:
-      hero.backgroundPosition ||
-      hero.desktopBackgroundPosition ||
-      "center center",
-    backgroundSize:
-      hero.backgroundSize ||
-      hero.desktopBackgroundSize ||
-      "cover",
-    backgroundRepeat:
-      hero.backgroundRepeat ||
-      hero.desktopBackgroundRepeat ||
-      "no-repeat",
-    backgroundAttachment:
-      hero.backgroundAttachment ||
-      hero.desktopBackgroundAttachment,
-    ...hero.backgroundStyle,
-    ...hero.desktopBackgroundStyle,
-  };
-
-  const mobileBackgroundStyle = {
-    backgroundImage: mobileBackgroundImage
-      ? `url("${mobileBackgroundImage}")`
-      : undefined,
-    backgroundPosition:
-      hero.mobileBackgroundPosition ||
-      hero.backgroundPosition ||
-      "center center",
-    backgroundSize:
-      hero.mobileBackgroundSize ||
-      hero.backgroundSize ||
-      "cover",
-    backgroundRepeat:
-      hero.mobileBackgroundRepeat ||
-      hero.backgroundRepeat ||
-      "no-repeat",
-    backgroundAttachment:
-      hero.mobileBackgroundAttachment ||
-      hero.backgroundAttachment,
-    ...hero.mobileBackgroundStyle,
-  };
-
   /* --------------------------- Text Styles --------------------------- */
 
   const headingStyle = {
@@ -478,11 +433,27 @@ export default function LandingHero({
           <div
             aria-hidden="true"
             className={joinClassNames(
-              "absolute inset-0 -z-20 hidden min-[1000px]:block",
+              "absolute inset-0 -z-20 hidden min-[1000px]:block overflow-hidden",
               hero.backgroundClassName
             )}
-            style={desktopBackgroundStyle}
-          />
+          >
+            <Image
+              src={backgroundImage}
+              alt=""
+              fill
+              priority
+              sizes="(min-width: 1000px) 100vw, 1px"
+              className="object-cover pointer-events-none"
+              style={{
+                objectPosition:
+                  hero.backgroundPosition ||
+                  hero.desktopBackgroundPosition ||
+                  "center center",
+                ...hero.backgroundStyle,
+                ...hero.desktopBackgroundStyle,
+              }}
+            />
+          </div>
         )}
 
         {/* Mobile Background */}
@@ -490,11 +461,27 @@ export default function LandingHero({
           <div
             aria-hidden="true"
             className={joinClassNames(
-              "absolute inset-0 -z-20 min-[1000px]:hidden",
+              "absolute inset-0 -z-20 min-[1000px]:hidden overflow-hidden",
               hero.mobileBackgroundClassName || hero.backgroundClassName
             )}
-            style={mobileBackgroundStyle}
-          />
+          >
+            <Image
+              src={mobileBackgroundImage}
+              alt=""
+              fill
+              priority
+              sizes="(max-width: 1000px) 100vw, 1px"
+              className="object-cover pointer-events-none"
+              style={{
+                objectPosition:
+                  hero.mobileBackgroundPosition ||
+                  hero.backgroundPosition ||
+                  "center center",
+                ...hero.backgroundStyle,
+                ...hero.mobileBackgroundStyle,
+              }}
+            />
+          </div>
         )}
 
         {renderOverlay()}
@@ -801,10 +788,12 @@ export default function LandingHero({
                 )}
                 style={hero.mobileStudentImageWrapperStyle || hero.mobileImageWrapperStyle}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={hero.mobileStudentImage || hero.mobileImage}
                   alt={brand.name || "University"}
+                  width={500}
+                  height={300}
+                  sizes="(max-width: 768px) 100vw, 440px"
                   className={joinClassNames(
                     "w-full h-auto object-cover rounded-[16px] shadow-md border border-slate-200/60 block",
                     hero.mobileStudentImageClassName || hero.mobileImageClassName

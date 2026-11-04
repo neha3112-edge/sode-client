@@ -48,7 +48,7 @@ export default function UpesAbout({ about = {}, brand = {}, onOpenApply }) {
             alt={title}
             fill
             className="object-cover object-center"
-            sizes="100vw"
+            sizes="(max-width: 1024px) 100vw, 1px"
           />
         </div>
       </div>

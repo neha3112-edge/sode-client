@@ -42,10 +42,6 @@ export const iiitbCustomCss = `
 
   /* Hero Section */
   .landing-page--iiitb #hero {
-    background-image: url(/assets/all_universities_images/iiitb/iiitb_desktop_new_bg.png) !important;
-    background-size: cover !important;
-    background-position: center top !important;
-    background-repeat: no-repeat !important;
     padding: 30px 15px !important;
     min-height: auto !important;
     position: relative !important;
@@ -283,9 +279,6 @@ export const iiitbCustomCss = `
   /* ── IIITB MOBILE RESPONSIVE ── */
   @media (max-width: 768px) {
     .landing-page--iiitb #hero {
-      background-image: url(/assets/all_universities_images/iiitb/mobile_new_bg_main.png) !important;
-      background-size: 90% auto !important;
-      background-position: center top !important;
       padding: 16px 12px 35px !important;
       overflow-x: clip !important;
     }

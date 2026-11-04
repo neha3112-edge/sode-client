@@ -69,6 +69,7 @@ export default function LandingCompareBanner({ brand = {}, onOpenCompare }) {
                   src={brand.arrowGif || brand.arrowIcon || "/assets/all_universities_images/ggu/arrow.gif" || "/assets/images/arrow.gif"}
                   alt="Compare down arrow"
                   fill
+                  sizes="68px"
                   className="object-contain rounded-full scale-[1.13]"
                   unoptimized
                 />

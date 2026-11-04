@@ -144,13 +144,22 @@ export function Hero({ initialHeroData = null }) {
       <section
         style={{
           backgroundColor: bgCol,
-          ...(bgImgUrl
-            ? { backgroundImage: `url(${bgImgUrl})`, backgroundSize: "cover", backgroundPosition: "center" }
-            : {}),
         }}
         className="w-full py-8 sm:py-12 lg:py-16 px-4 sm:px-6 lg:px-10 border-b border-slate-800 relative overflow-hidden"
       >
-        {bgImgUrl && <div className="absolute inset-0 bg-black/50 z-0 pointer-events-none" />}
+        {bgImgUrl && (
+          <>
+            <Image
+              src={bgImgUrl}
+              alt={title || "Hero Background"}
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover object-center pointer-events-none -z-0"
+            />
+            <div className="absolute inset-0 bg-black/50 z-0 pointer-events-none" />
+          </>
+        )}
 
         <div
           style={{ backgroundColor: isTransparentCard ? "transparent" : cardBg }}
@@ -940,19 +949,17 @@ export function Hero({ initialHeroData = null }) {
       }
     };
 
+    const isPrioritySlide = index <= 1;
+
     return (
       <div
         key={data?._id || index}
         style={{
           backgroundColor: bgColor,
-          backgroundImage: desktopBannerUrl ? `url("${desktopBannerUrl}")` : "none",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
         }}
         className="relative w-full overflow-hidden aspect-[1.9/1] sm:aspect-[3.2/1] md:aspect-[3.8/1] lg:aspect-[4/1] max-h-[340px] flex items-center select-none py-2 sm:py-0"
       >
-        {/* Full-width banner image (Mobile & Desktop) */}
+        {/* Full-width banner image (Mobile & Desktop) - Optimized with Next.js Image for LCP */}
         {desktopBannerUrl && (
           <div className="absolute inset-0 w-full h-full pointer-events-none select-none overflow-hidden">
             <div className={`relative w-full h-full ${mobileBannerUrl && mobileBannerUrl !== desktopBannerUrl ? "hidden md:block" : "block"}`}>
@@ -960,10 +967,9 @@ export function Hero({ initialHeroData = null }) {
                 src={desktopBannerUrl}
                 alt={title || "Hero banner"}
                 fill
-                priority={true}
-                loading="eager"
-                fetchPriority="high"
-                unoptimized
+                priority={isPrioritySlide}
+                loading={isPrioritySlide ? "eager" : "lazy"}
+                fetchPriority={isPrioritySlide ? "high" : "low"}
                 sizes={mobileBannerUrl && mobileBannerUrl !== desktopBannerUrl ? "(min-width: 768px) 100vw, 1px" : "100vw"}
                 className="object-cover object-center"
               />
@@ -975,10 +981,9 @@ export function Hero({ initialHeroData = null }) {
                   src={mobileBannerUrl}
                   alt={title || "Hero mobile banner"}
                   fill
-                  priority={true}
-                  loading="eager"
-                  fetchPriority="high"
-                  unoptimized
+                  priority={isPrioritySlide}
+                  loading={isPrioritySlide ? "eager" : "lazy"}
+                  fetchPriority={isPrioritySlide ? "high" : "low"}
                   sizes="(max-width: 767px) 100vw, 1px"
                   className="object-cover object-center"
                 />
