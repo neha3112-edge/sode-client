@@ -64,10 +64,7 @@ export default function RootLayout({ children }) {
       className={`${roboto.variable} ${poppins.variable} ${jakarta.variable} font-sans h-full antialiased`}
     >
       <head>
-        <link rel="preconnect" href="https://api.crm.mysode.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://api.crm.mysode.com" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body className={`${roboto.className} min-h-full flex flex-col`} suppressHydrationWarning>
         <AppProviders>
