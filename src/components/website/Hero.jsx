@@ -949,7 +949,7 @@ export function Hero({ initialHeroData = null }) {
       }
     };
 
-    const isPrioritySlide = index <= 1;
+    const isFirstSlide = index === 0;
 
     return (
       <div
@@ -967,9 +967,9 @@ export function Hero({ initialHeroData = null }) {
                 src={desktopBannerUrl}
                 alt={title || "Hero banner"}
                 fill
-                priority={isPrioritySlide}
-                loading={isPrioritySlide ? "eager" : "lazy"}
-                fetchPriority={isPrioritySlide ? "high" : "low"}
+                priority={isFirstSlide}
+                loading="eager"
+                fetchPriority={isFirstSlide ? "high" : "auto"}
                 sizes={mobileBannerUrl && mobileBannerUrl !== desktopBannerUrl ? "(min-width: 768px) 100vw, 1px" : "100vw"}
                 className="object-cover object-center"
               />
@@ -981,9 +981,9 @@ export function Hero({ initialHeroData = null }) {
                   src={mobileBannerUrl}
                   alt={title || "Hero mobile banner"}
                   fill
-                  priority={isPrioritySlide}
-                  loading={isPrioritySlide ? "eager" : "lazy"}
-                  fetchPriority={isPrioritySlide ? "high" : "low"}
+                  priority={isFirstSlide}
+                  loading="eager"
+                  fetchPriority={isFirstSlide ? "high" : "auto"}
                   sizes="(max-width: 767px) 100vw, 1px"
                   className="object-cover object-center"
                 />
