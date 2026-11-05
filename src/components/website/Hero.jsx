@@ -968,8 +968,6 @@ export function Hero({ initialHeroData = null }) {
                 alt={title || "Hero banner"}
                 fill
                 priority={isFirstSlide}
-                loading="eager"
-                fetchPriority={isFirstSlide ? "high" : "auto"}
                 sizes={mobileBannerUrl && mobileBannerUrl !== desktopBannerUrl ? "(min-width: 768px) 100vw, 1px" : "100vw"}
                 className="object-cover object-center"
               />
@@ -982,8 +980,6 @@ export function Hero({ initialHeroData = null }) {
                   alt={title || "Hero mobile banner"}
                   fill
                   priority={isFirstSlide}
-                  loading="eager"
-                  fetchPriority={isFirstSlide ? "high" : "auto"}
                   sizes="(max-width: 767px) 100vw, 1px"
                   className="object-cover object-center"
                 />

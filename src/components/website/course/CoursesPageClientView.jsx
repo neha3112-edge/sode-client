@@ -1427,7 +1427,6 @@ export default function CoursesPageClientView({
                                   alt={uniName}
                                   fill
                                   sizes="48px"
-                                  loading={index < 3 ? "eager" : "lazy"}
                                   priority={index === 0}
                                   className="object-contain p-0.5"
                                 />
@@ -1467,7 +1466,6 @@ export default function CoursesPageClientView({
                                 alt={uniName}
                                 fill
                                 sizes="64px"
-                                loading={index < 3 ? "eager" : "lazy"}
                                 priority={index === 0}
                                 className="object-contain p-1"
                               />
@@ -1648,7 +1646,6 @@ export default function CoursesPageClientView({
                                     alt={uniName}
                                     fill
                                     sizes="32px"
-                                    loading={index < 3 ? "eager" : "lazy"}
                                     priority={index === 0}
                                     className="object-contain p-0.5"
                                   />
@@ -1688,7 +1685,6 @@ export default function CoursesPageClientView({
                                   alt={uniName}
                                   fill
                                   sizes="36px"
-                                  loading={index < 3 ? "eager" : "lazy"}
                                   priority={index === 0}
                                   className="object-contain p-0.5"
                                 />
