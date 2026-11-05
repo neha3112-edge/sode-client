@@ -16,7 +16,7 @@ async function fetchFromApi(path, options = {}, revalidate = 900) {
     const tags = options?.tags || (typeof path === "string" ? [path.split("/")[0]] : []);
     const fetchOptions = {
       ...getFetchCacheOptions(revalidate, tags),
-      signal: options?.signal || AbortSignal.timeout(options?.timeout || 2500),
+      signal: options?.signal || AbortSignal.timeout(options?.timeout || 12000),
     };
     const res = await fetch(url, fetchOptions);
     if (!res.ok) return null;
@@ -37,7 +37,7 @@ async function postToApi(path, body = {}, options = {}) {
         ...options.headers,
       },
       body: JSON.stringify(body),
-      signal: options?.signal || AbortSignal.timeout(options?.timeout || 5000),
+      signal: options?.signal || AbortSignal.timeout(options?.timeout || 12000),
     });
     if (!res.ok) return null;
     return await res.json();

@@ -386,6 +386,7 @@ function FilterSidebarContent({
             max={1000000}
             step={25000}
             value={feeRange}
+            ariaLabelForHandle={["Minimum Fee", "Maximum Fee"]}
             onChange={(val) => {
               if (setFeeRange) setFeeRange(val);
             }}
@@ -434,6 +435,7 @@ function FilterSidebarContent({
             max={48}
             step={3}
             value={durationRange}
+            ariaLabelForHandle={["Minimum Duration", "Maximum Duration"]}
             onChange={(val) => {
               if (setDurationRange) setDurationRange(val);
             }}
@@ -493,18 +495,18 @@ export default function CoursesPageClientView({
   const initialQuery = searchParams?.get("search") || "";
   const initialUnis = searchParams?.get("university") ? searchParams.get("university").split(",").map((u) => u.trim()) : [];
 
-  const initialHadNoFilters = useRef(
+  const hadNoFilters =
     (!searchParams || searchParams.toString() === "") &&
     initialCat === "all" &&
     (!initialSubcatArr || initialSubcatArr.length === 0) &&
     !initialCourse &&
     !initialSubCourse &&
     !initialQuery &&
-    (!initialUnis || initialUnis.length === 0)
-  );
+    (!initialUnis || initialUnis.length === 0);
 
-  const defaultCoursesDataRef = useRef(initialHadNoFilters.current ? initialCoursesData : null);
-  const defaultFilterOptionsRef = useRef(initialHadNoFilters.current ? (initialFilterOptions || initialCoursesData?.filterOptions || null) : null);
+  const initialHadNoFilters = useRef(hadNoFilters);
+  const defaultCoursesDataRef = useRef(hadNoFilters ? initialCoursesData : null);
+  const defaultFilterOptionsRef = useRef(hadNoFilters ? (initialFilterOptions || initialCoursesData?.filterOptions || null) : null);
 
   const [appliedSearchTerm, setAppliedSearchTerm] = useState(initialQuery);
   const [activeCategoryTab, setActiveCategoryTab] = useState(initialCat);
@@ -769,6 +771,7 @@ export default function CoursesPageClientView({
     const subCourse = searchParams?.get("subCourse") || searchParams?.get("subcourseId") || searchParams?.get("subcourse") || searchParams?.get("specialization") || searchParams?.get("specializationId");
     const q = searchParams?.get("search") || searchParams?.get("q");
     const uni = searchParams?.get("university") || searchParams?.get("universityId");
+    const p = Number(searchParams?.get("page")) || 1;
 
     if (cat !== null && cat !== undefined) {
       setActiveCategoryTab(cat || "all");
@@ -788,7 +791,7 @@ export default function CoursesPageClientView({
     if (uni) {
       setSelectedUniversities(uni.split(",").map((u) => u.trim()));
     }
-    setCurrentPage(1);
+    setCurrentPage(p);
   }, [searchParams]);
 
   useEffect(() => {
@@ -882,6 +885,7 @@ export default function CoursesPageClientView({
     })
       .then((res) => {
         if (!isMounted) return;
+        if (!res || !res.success) return;
         const programs = res?.result || res?.programs || [];
         const incomingFilters = res?.filters || res?.filter || res?.filterOptions;
         if (incomingFilters) {
@@ -891,7 +895,7 @@ export default function CoursesPageClientView({
           programs,
           total: res?.pagination?.total ?? programs.length,
           totalPages: res?.pagination?.pages ?? 1,
-          page: res?.pagination?.page ?? 1,
+          page: res?.pagination?.page ?? currentPage,
         };
         setCoursesData(newCoursesData);
 
@@ -1924,6 +1928,13 @@ export default function CoursesPageClientView({
                 onChange={(page) => {
                   setCurrentPage(page);
                   if (typeof window !== "undefined") {
+                    const url = new URL(window.location.href);
+                    if (page > 1) {
+                      url.searchParams.set("page", String(page));
+                    } else {
+                      url.searchParams.delete("page");
+                    }
+                    window.history.pushState({}, "", url.toString());
                     window.scrollTo({ top: 0, behavior: "smooth" });
                   }
                 }}

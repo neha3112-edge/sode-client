@@ -842,6 +842,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                 alt={logoAlt}
                 fill
                 priority
+                fetchPriority="high"
                 sizes="(max-width: 640px) 144px, 176px"
                 className="object-contain object-left cursor-pointer"
               />
@@ -1532,6 +1533,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
           }}
           placement="top"
           closable={false}
+          destroyOnClose
           className="mobile-nav-drawer"
           styles={{
             wrapper: { height: "auto", maxHeight: "92vh" },
