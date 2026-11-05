@@ -96,7 +96,7 @@ export default function GlobalBreadcrumb() {
                 ) : (
                   <Link
                     href={item.href}
-                    className="hover:text-blue-600 transition-colors shrink-0"
+                    className="text-blue-700 hover:text-blue-800 font-medium transition-colors shrink-0"
                   >
                     {item.label}
                   </Link>

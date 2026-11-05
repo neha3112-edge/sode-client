@@ -434,7 +434,7 @@ export function Footer({
                   >
                     {col.title}
                   </p>
-                  <ul className="space-y-1.5 text-[13px] text-gray-300 leading-tight">
+                  <ul className="space-y-2 text-[13px] text-gray-300 leading-tight">
                     {Array.isArray(col.links) &&
                       col.links.map((rawLink, lIdx) => {
                         if (rawLink?.enabled === false) return null;
@@ -442,12 +442,12 @@ export function Footer({
                         const isModal = link.is_modal;
 
                         return (
-                          <li key={link?._id || lIdx} className="flex items-center gap-1.5">
+                          <li key={link?._id || lIdx} className="flex items-center gap-1.5 min-h-[28px]">
                             {isModal ? (
                               <button
                                 type="button"
                                 onClick={() => openExpertForm(link.label, "Get expert guidance and counseling")}
-                                className="cursor-pointer text-left text-gray-300 hover:text-white transition-colors"
+                                className="cursor-pointer text-left text-gray-300 hover:text-white transition-colors py-0.5 inline-block"
                               >
                                 {link.label}
                               </button>
@@ -455,7 +455,7 @@ export function Footer({
                               <Link
                                 href={link.url || "#"}
                                 target={link.target || "_self"}
-                                className="text-gray-300 hover:text-white transition-colors truncate"
+                                className="text-gray-300 hover:text-white transition-colors truncate py-0.5 inline-block"
                                 title={link.label}
                               >
                                 {link.label}

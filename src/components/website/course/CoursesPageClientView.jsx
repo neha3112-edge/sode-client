@@ -181,7 +181,7 @@ function FilterSidebarContent({
           <button
             type="button"
             onClick={handleClearFilters}
-            className="text-xs font-semibold text-rose-500 hover:text-rose-600 flex items-center gap-1 cursor-pointer bg-transparent border-none p-0"
+            className="text-xs font-semibold text-rose-600 hover:text-rose-700 flex items-center gap-1 cursor-pointer bg-transparent border-none p-0"
           >
             <RotateCcw className="w-3 h-3" />
             <span>Reset Filter</span>
@@ -196,6 +196,7 @@ function FilterSidebarContent({
           <span>Category</span>
         </label>
         <Select
+          aria-label="Filter by Category"
           showSearch={false}
           onOpenChange={(open) => {
             if (!open && typeof document !== "undefined" && document.activeElement && typeof document.activeElement.blur === "function") {
@@ -227,6 +228,7 @@ function FilterSidebarContent({
           <span>Course</span>
         </label>
         <Select
+          aria-label="Filter by Course"
           showSearch={false}
           onOpenChange={(open) => {
             if (!open && typeof document !== "undefined" && document.activeElement && typeof document.activeElement.blur === "function") {
@@ -267,6 +269,7 @@ function FilterSidebarContent({
           <span>Specialization</span>
         </label>
         <Select
+          aria-label="Filter by Specialization"
           showSearch={false}
           onOpenChange={(open) => {
             if (!open && typeof document !== "undefined" && document.activeElement && typeof document.activeElement.blur === "function") {
@@ -309,6 +312,7 @@ function FilterSidebarContent({
           <span>Institute</span>
         </label>
         <Select
+          aria-label="Filter by Institute"
           showSearch={false}
           onOpenChange={(open) => {
             if (!open && typeof document !== "undefined" && document.activeElement && typeof document.activeElement.blur === "function") {
@@ -384,8 +388,16 @@ function FilterSidebarContent({
             value={feeRange}
             onChange={(val) => {
               if (setFeeRange) setFeeRange(val);
+            }}
+            onChangeComplete={() => {
               if (typeof setCurrentPage === "function") setCurrentPage(1);
             }}
+            handleRender={(node, info) =>
+              React.cloneElement(node, {
+                "aria-label": info.index === 0 ? "Minimum Fee" : "Maximum Fee",
+                title: info.index === 0 ? "Minimum Fee" : "Maximum Fee",
+              })
+            }
             tooltip={{
               formatter: (val) => `₹ ${Number(val).toLocaleString("en-IN")}`,
             }}
@@ -396,7 +408,7 @@ function FilterSidebarContent({
             }}
             className="my-2"
           />
-          <div className="flex justify-between text-[10px] font-medium text-gray-400">
+          <div className="flex justify-between text-[10px] font-medium text-gray-500">
             <span>₹0</span>
             <span>₹5L</span>
             <span>₹10L+</span>
@@ -424,8 +436,16 @@ function FilterSidebarContent({
             value={durationRange}
             onChange={(val) => {
               if (setDurationRange) setDurationRange(val);
+            }}
+            onChangeComplete={() => {
               if (typeof setCurrentPage === "function") setCurrentPage(1);
             }}
+            handleRender={(node, info) =>
+              React.cloneElement(node, {
+                "aria-label": info.index === 0 ? "Minimum Duration" : "Maximum Duration",
+                title: info.index === 0 ? "Minimum Duration" : "Maximum Duration",
+              })
+            }
             tooltip={{
               formatter: (val) => `${val} Months`,
             }}
@@ -436,7 +456,7 @@ function FilterSidebarContent({
             }}
             className="my-2"
           />
-          <div className="flex justify-between text-[10px] font-medium text-gray-400">
+          <div className="flex justify-between text-[10px] font-medium text-gray-500">
             <span>3 Mos</span>
             <span>24 Mos</span>
             <span>48+ Mos</span>
@@ -460,11 +480,11 @@ export default function CoursesPageClientView({
   const [initialCategories, setInitialCategories] = useState(initialCategoriesProp);
   const [initialUniversities, setInitialUniversities] = useState(initialUniversitiesProp);
 
-  const [currentPage, setCurrentPage] = useState(1);
+  const searchParams = useSearchParams();
+  const initialPage = Number(searchParams?.get("page")) || 1;
+  const [currentPage, setCurrentPage] = useState(initialPage);
   const isInitialMount = useRef(true);
   const ITEMS_PER_PAGE = 10;
-
-  const searchParams = useSearchParams();
   const initialCat = searchParams?.get("category") || "all";
   const initialSubcat = searchParams?.get("subcategory") || searchParams?.get("subCategory") || "";
   const initialSubcatArr = initialSubcat ? initialSubcat.split(",").map((s) => s.trim()) : [];
@@ -494,6 +514,22 @@ export default function CoursesPageClientView({
   const [selectedUniversities, setSelectedUniversities] = useState(initialUnis);
   const [feeRange, setFeeRange] = useState([0, 1000000]);
   const [durationRange, setDurationRange] = useState([3, 48]);
+  const [debouncedFeeRange, setDebouncedFeeRange] = useState([0, 1000000]);
+  const [debouncedDurationRange, setDebouncedDurationRange] = useState([3, 48]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedFeeRange(feeRange);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [feeRange]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedDurationRange(durationRange);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [durationRange]);
   const [selectedDuration, setSelectedDuration] = useState("all");
   const [selectedFee, setSelectedFee] = useState("all");
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
@@ -762,10 +798,10 @@ export default function CoursesPageClientView({
       !selectedCourse &&
       !selectedSubCourse &&
       (!selectedUniversities || selectedUniversities.length === 0) &&
-      feeRange[0] === 0 &&
-      feeRange[1] >= 1000000 &&
-      durationRange[0] <= 3 &&
-      durationRange[1] >= 48 &&
+      debouncedFeeRange[0] === 0 &&
+      debouncedFeeRange[1] >= 1000000 &&
+      debouncedDurationRange[0] <= 3 &&
+      debouncedDurationRange[1] >= 48 &&
       !appliedSearchTerm &&
       currentPage === 1;
 
@@ -836,10 +872,10 @@ export default function CoursesPageClientView({
         course: resolvedCourseId,
         subcourse: resolvedSubCourseId,
         university: resolvedUniversityIds,
-        minFee: feeRange[0] > 0 ? feeRange[0] : undefined,
-        maxFee: feeRange[1] < 1000000 ? feeRange[1] : undefined,
-        minDuration: durationRange[0] > 3 ? durationRange[0] : undefined,
-        maxDuration: durationRange[1] < 48 ? durationRange[1] : undefined,
+        minFee: debouncedFeeRange[0] > 0 ? debouncedFeeRange[0] : undefined,
+        maxFee: debouncedFeeRange[1] < 1000000 ? debouncedFeeRange[1] : undefined,
+        minDuration: debouncedDurationRange[0] > 3 ? debouncedDurationRange[0] : undefined,
+        maxDuration: debouncedDurationRange[1] < 48 ? debouncedDurationRange[1] : undefined,
         search: appliedSearchTerm,
       },
       revalidate: 300,
@@ -880,8 +916,8 @@ export default function CoursesPageClientView({
     selectedCourse,
     selectedSubCourse,
     selectedUniversities,
-    feeRange,
-    durationRange,
+    debouncedFeeRange,
+    debouncedDurationRange,
     appliedSearchTerm,
   ]);
 
@@ -1233,6 +1269,8 @@ export default function CoursesPageClientView({
     setSelectedFee("all");
     setFeeRange([0, 1000000]);
     setDurationRange([3, 48]);
+    setDebouncedFeeRange([0, 1000000]);
+    setDebouncedDurationRange([3, 48]);
     setCurrentPage(1);
 
     if (router && pathname) {
@@ -1280,6 +1318,7 @@ export default function CoursesPageClientView({
     <WebsiteLayout py="py-4 sm:py-6" bg="#F1F4F9">
       {/* ── SEO Heading Hierarchy (Screen Reader / Crawlers) ── */}
       <h1 className="sr-only">Online Courses in India from Top Universities</h1>
+      <h2 className="sr-only">Explore Online and Distance Degree Courses</h2>
       <p className="sr-only">
         Choose from a wide range of online degree and diploma courses offered by top universities in India. Whether you want to pursue an undergraduate degree, postgraduate program, or diploma course, you can find online programs in different specializations based on your academic interests and career goals.
       </p>
@@ -1288,6 +1327,7 @@ export default function CoursesPageClientView({
       <div className="lg:hidden flex items-center gap-2 mb-4 bg-white p-2.5 rounded-2xl border border-gray-200 shadow-xs">
         <div className="flex-1 grid grid-cols-2 gap-1.5 sm:gap-2 min-w-0">
           <Select
+            aria-label="Filter by Category"
             showSearch={false}
             onOpenChange={(open) => {
               if (!open && typeof document !== "undefined" && document.activeElement && typeof document.activeElement.blur === "function") {
@@ -1311,6 +1351,7 @@ export default function CoursesPageClientView({
             placeholder="All Categories"
           />
           <Select
+            aria-label="Filter by Specialization"
             showSearch={false}
             onOpenChange={(open) => {
               if (!open && typeof document !== "undefined" && document.activeElement && typeof document.activeElement.blur === "function") {
@@ -1388,6 +1429,7 @@ export default function CoursesPageClientView({
           {processedPrograms.length > 0 ? (
             <div className="space-y-3">
               {processedPrograms.map((item, index) => {
+                const isAboveTheFold = index < 3;
                 const uniName = item.uniName || "Institute";
                 const cardTitle = item.cardTitle || item.title || "Course Program";
                 const logoUrl = item.logoUrl;
@@ -1427,7 +1469,8 @@ export default function CoursesPageClientView({
                                   alt={uniName}
                                   fill
                                   sizes="48px"
-                                  priority={index === 0}
+                                  priority={isAboveTheFold}
+                                  fetchPriority={index === 0 ? "high" : undefined}
                                   className="object-contain p-0.5"
                                 />
                               ) : (
@@ -1466,7 +1509,8 @@ export default function CoursesPageClientView({
                                 alt={uniName}
                                 fill
                                 sizes="64px"
-                                priority={index === 0}
+                                priority={isAboveTheFold}
+                                fetchPriority={index === 0 ? "high" : undefined}
                                 className="object-contain p-1"
                               />
                             ) : (
@@ -1646,7 +1690,8 @@ export default function CoursesPageClientView({
                                     alt={uniName}
                                     fill
                                     sizes="32px"
-                                    priority={index === 0}
+                                    priority={isAboveTheFold}
+                                    fetchPriority={index === 0 ? "high" : undefined}
                                     className="object-contain p-0.5"
                                   />
                                 ) : (
@@ -1685,7 +1730,8 @@ export default function CoursesPageClientView({
                                   alt={uniName}
                                   fill
                                   sizes="36px"
-                                  priority={index === 0}
+                                  priority={isAboveTheFold}
+                                  fetchPriority={index === 0 ? "high" : undefined}
                                   className="object-contain p-0.5"
                                 />
                               ) : (
@@ -1868,7 +1914,7 @@ export default function CoursesPageClientView({
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-6 pb-2 px-1">
-              <span className="text-xs font-semibold text-slate-500 text-center sm:text-left">
+              <span className="text-xs font-semibold text-slate-600 text-center sm:text-left">
                 Showing {Math.min((currentPage - 1) * ITEMS_PER_PAGE + 1, totalCount)}–{Math.min(currentPage * ITEMS_PER_PAGE, totalCount)} of {totalCount} courses
               </span>
               <Pagination
