@@ -423,18 +423,17 @@ export function Footer({
 
             {/* COLUMNS 2, 3, 4: NAVIGATION SECTIONS */}
             <div
-              className="lg:col-span-8 grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-8 sm:gap-8 pt-2 sm:pt-0"
-              style={{ rowGap: "30px" }}
+              className="lg:col-span-8 grid grid-cols-2 gap-x-4 gap-y-6 sm:flex sm:flex-wrap sm:gap-10 lg:gap-14 xl:gap-16 pt-2 sm:pt-0"
             >
               {columnsToRender.map((col, idx) => (
-                <div key={col?._id || idx} className="flex flex-col">
+                <div key={col?._id || idx} className="flex flex-col sm:min-w-[140px]">
                   <p
                     className="mb-3 text-[13px] font-extrabold uppercase tracking-normal"
                     style={{ color: accentColor }}
                   >
                     {col.title}
                   </p>
-                  <ul className="space-y-2 text-[13px] text-gray-300 leading-tight">
+                  <ul className="space-y-1 text-[13px] text-gray-300 leading-tight">
                     {Array.isArray(col.links) &&
                       col.links.map((rawLink, lIdx) => {
                         if (rawLink?.enabled === false) return null;
@@ -442,12 +441,12 @@ export function Footer({
                         const isModal = link.is_modal;
 
                         return (
-                          <li key={link?._id || lIdx} className="flex items-center gap-1.5 min-h-[28px]">
+                          <li key={link?._id || lIdx} className="flex items-center gap-1.5">
                             {isModal ? (
                               <button
                                 type="button"
                                 onClick={() => openExpertForm(link.label, "Get expert guidance and counseling")}
-                                className="cursor-pointer text-left text-gray-300 hover:text-white transition-colors py-0.5 inline-block"
+                                className="cursor-pointer text-left text-gray-300 hover:text-white transition-colors"
                               >
                                 {link.label}
                               </button>
@@ -455,7 +454,7 @@ export function Footer({
                               <Link
                                 href={link.url || "#"}
                                 target={link.target || "_self"}
-                                className="text-gray-300 hover:text-white transition-colors truncate py-0.5 inline-block"
+                                className="text-gray-300 hover:text-white transition-colors truncate"
                                 title={link.label}
                               >
                                 {link.label}
@@ -549,10 +548,13 @@ export function Footer({
           </div>
 
           {/* =====================================================
-              3. LEGAL NOTICE SECTION
+              3. LEGAL NOTICE SECTION (Only when explicitly enabled and valid)
           ====================================================== */}
-          {legal?.show_legal_notice !== false && legal?.disclaimer_text && (
-            <div className="mt-5 sm:mt-4 mb-4 pt-2 sm:pt-0 w-full text-left">
+          {Boolean(legal?.show_legal_notice) &&
+            legal?.disclaimer_text &&
+            !legal?.disclaimer_text?.includes("Dayananda Sagar") &&
+            !legal?.disclaimer_text?.includes("DistanceEducationSchool.com") && (
+            <div className="mt-4 mb-3 w-full text-left">
               <p
                 className="text-[12px] sm:text-[13px] font-bold uppercase tracking-wider mb-2 text-left"
                 style={{ color: accentColor }}

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { LANDING_SOURCE_MAP } from "@/data/landing";
 
 /*
 |--------------------------------------------------------------------------
@@ -177,6 +178,38 @@ export async function POST(req) {
     |--------------------------------------------------------------------------
     */
 
+    /*
+    |--------------------------------------------------------------------------
+    | Resolve dynamic source (Separate sources for Landing Pages vs Main SODE)
+    |--------------------------------------------------------------------------
+    */
+
+    let finalSource = source;
+
+    if (!finalSource || finalSource === "SODE") {
+      if (page_url) {
+        try {
+          const parsedUrl = new URL(
+            page_url.startsWith("http")
+              ? page_url
+              : `https://sode.co.in/${page_url.replace(/^\/+/, "")}`
+          );
+          const firstSegment = parsedUrl.pathname
+            .replace(/^\/+|\/+$/g, "")
+            .split("/")[0]
+            ?.toLowerCase();
+
+          if (firstSegment && LANDING_SOURCE_MAP[firstSegment]) {
+            finalSource = LANDING_SOURCE_MAP[firstSegment];
+          }
+        } catch (_) {}
+      }
+    }
+
+    if (!finalSource) {
+      finalSource = "SODE";
+    }
+
     const leadName = name ? String(name).trim() : "";
     const resolvedUni = String(university_name || university || "").trim();
     const resolvedState =
@@ -195,7 +228,7 @@ export async function POST(req) {
       university_name: resolvedUni,
       state: resolvedState,
       form_name: form_name || "Get 100% FREE Counseling",
-      source: source || "SODE",
+      source: finalSource,
       sub_source: sub_source || "",
       utm_source: finalUtmSource,
       utm_medium: finalUtmMedium,
