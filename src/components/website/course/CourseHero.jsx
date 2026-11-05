@@ -98,13 +98,12 @@ export default function CourseHero({
                 fill
                 sizes={
                   safeMobileHeroBannerSrc && safeMobileHeroBannerSrc !== safeHeroBannerSrc
-                    ? "(min-width: 768px) 50vw, 1px"
-                    : "(max-width: 768px) 100vw, 50vw"
+                    ? "(min-width: 1200px) 576px, (min-width: 768px) 50vw, 1px"
+                    : "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 576px"
                 }
                 className={`object-cover object-center ${safeMobileHeroBannerSrc && safeMobileHeroBannerSrc !== safeHeroBannerSrc ? "hidden md:block" : "block"
                   }`}
                 priority
-                loading="eager"
                 fetchPriority="high"
               />
             )}
@@ -116,7 +115,6 @@ export default function CourseHero({
                 sizes="(max-width: 767px) 100vw, 1px"
                 className="object-cover object-center block md:hidden"
                 priority
-                loading="eager"
                 fetchPriority="high"
               />
             )}
@@ -134,8 +132,6 @@ export default function CourseHero({
                   src={safeUniversityLogoSrc}
                   alt={effectiveUniName || "University Logo"}
                   fill
-                  priority
-                  loading="eager"
                   sizes="(max-width: 640px) 44px, 56px"
                   className="object-contain"
                 />
@@ -152,8 +148,6 @@ export default function CourseHero({
                       src={collab.logo}
                       alt={collab.name || "Collaborator Logo"}
                       fill
-                      priority
-                      loading="eager"
                       sizes="(max-width: 640px) 44px, 56px"
                       className="object-contain"
                     />
