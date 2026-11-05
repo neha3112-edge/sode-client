@@ -16,6 +16,7 @@ import SsbmProgrammes from "./programmes/SsbmProgrammes";
 import CuProgrammes from "./programmes/CuProgrammes";
 import UpesProgrammes from "./programmes/UpesProgrammes";
 import ProgrammesCarousel from "./programmes/ProgrammesCarousel";
+import ManipalProgrammes from "./programmes/ManipalProgrammes";
 
 /**
  * Layout Aliases Map: Normalizes legacy and variant layout names to canonical keys.
@@ -39,6 +40,7 @@ const PROGRAMME_LAYOUT_ALIASES = {
  */
 const PROGRAMME_LAYOUTS = {
   carousel: ProgrammesCarousel,
+  manipal: ManipalProgrammes,
   galgotias: GalgotiasGrid,
   lpu: LpuGrids,
   liverpool: LiverpoolProgrammes,

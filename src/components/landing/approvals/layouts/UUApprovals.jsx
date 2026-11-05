@@ -10,33 +10,36 @@ export default function UUApprovals({ approvals = [], brand = {} }) {
   const subtitle = brand?.approvalsSubtitle || brand?.approvalsDescription || null;
 
   return (
-    <section id="approvals" className="w-full py-8 sm:py-14 lg:py-16 bg-white select-none scroll-mt-20">
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 className="text-[22px] sm:text-[30px] lg:text-[34px] font-bold leading-tight m-0 mb-4 sm:mb-3">
-          <span className="text-[#111111]">{heading} </span>
+    <section id="approvals" className="w-full py-6 sm:py-7 lg:py-8 bg-white select-none scroll-mt-20 font-poppins">
+      <div className="uu-container w-full mx-auto text-center font-poppins">
+        <h2 className="text-[20px] sm:text-[26px] lg:text-[28px] font-medium leading-tight m-0 mb-2 sm:mb-2.5 font-poppins">
+          <span className="text-[#003399]">{heading} </span>
           <span className="text-[#62B239]">{highlight}</span>
         </h2>
         {subtitle && (
-          <p className="hidden sm:block text-[12.5px] sm:text-[13.5px] text-[#444444] font-normal leading-relaxed max-w-4xl mx-auto mb-8 sm:mb-12">
+          <p className="hidden sm:block text-[12px] sm:text-[12.5px] lg:text-[12.5px] text-[#444444] font-normal leading-[1.5] max-w-[1140px] mx-auto mb-2 sm:mb-2 font-poppins">
             {subtitle}
           </p>
         )}
 
-        <div className="grid grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-6 lg:gap-10 items-center justify-items-center max-w-[1200px] mx-auto">
+        <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 sm:gap-4 md:gap-6 lg:gap-8 items-center justify-items-center w-full max-w-full mx-auto">
           {approvals.map((item, idx) => {
             const data = normalizeApprovalItem(item, idx);
             return (
               <div
-                key={data.id}
-                className="relative w-full max-w-[110px] sm:max-w-[150px] h-[70px] sm:h-[95px] lg:h-[105px] flex items-center justify-center transition-transform hover:scale-105 duration-200"
+                key={data.id || idx}
+                className="w-full flex items-center justify-center p-1 sm:p-2 transition-transform hover:scale-105 duration-200"
               >
-                <Image
-                  src={data.image}
-                  alt={data.title || `Approval ${idx + 1}`}
-                  fill
-                  className="object-contain"
-                  sizes="(max-width: 640px) 110px, 160px"
-                />
+                <div className="relative w-full max-w-[115px] sm:max-w-[135px] md:max-w-[155px] lg:max-w-[175px] flex items-center justify-center">
+                  <Image
+                    src={data.image}
+                    alt={data.title || `Approval ${idx + 1}`}
+                    width={270}
+                    height={270}
+                    className="w-full h-auto object-contain mx-auto"
+                    sizes="(max-width: 640px) 33vw, 16vw"
+                  />
+                </div>
               </div>
             );
           })}
