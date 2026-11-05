@@ -51,12 +51,10 @@ export default async function UniversitiesPage() {
 
   return (
     <div className="w-full">
-      <Suspense fallback={<div className="w-full min-h-[60vh] flex items-center justify-center text-slate-400">Loading Universities...</div>}>
-        <UniversitiesPageClientView
-          initialUniversities={initialUniversities}
-          initialOptions={initialOptions}
-        />
-      </Suspense>
+      <UniversitiesPageClientView
+        initialUniversities={initialUniversities}
+        initialOptions={initialOptions}
+      />
     </div>
   );
 }

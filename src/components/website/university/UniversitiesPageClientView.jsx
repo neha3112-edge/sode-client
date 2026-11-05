@@ -121,13 +121,15 @@ function resolveMediaUrl(media) {
   return media.url || media.path || media.src || null;
 }
 
-function UniversityCard({ uni }) {
+function UniversityCard({ uni, index = 0 }) {
   const router = useRouter();
   const { toggleCompare, compareList, isInCompare, setIsCompareDrawerOpen } = useCompare();
   const [logoErr, setLogoErr] = useState(false);
   const [imgErr, setImgErr] = useState(false);
 
   if (!uni) return null;
+
+  const isFirstCard = index === 0;
 
   const name = uni?.name || "University";
   const slug =
@@ -185,6 +187,9 @@ function UniversityCard({ uni }) {
             title={imgAlt}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 384px"
+            priority={isFirstCard}
+            loading="eager"
+            fetchPriority={isFirstCard ? "high" : "auto"}
             className="object-cover group-hover:scale-105 transition-transform duration-500"
             onError={() => setImgErr(true)}
           />
@@ -968,8 +973,8 @@ export default function UniversitiesPageClientView({
       {filtered.length > 0 ? (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {paginatedUniversities.map((uni) => (
-              <UniversityCard key={uni?.slug || String(uni?._id)} uni={uni} />
+            {paginatedUniversities.map((uni, idx) => (
+              <UniversityCard key={uni?.slug || String(uni?._id)} uni={uni} index={idx} />
             ))}
           </div>
 
