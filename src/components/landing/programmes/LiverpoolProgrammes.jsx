@@ -30,6 +30,7 @@ export default function LiverpoolProgrammes({
               className="slide bg-white rounded-[10px] shadow-[0_0_8px_rgba(0,0,0,0.12)] border border-slate-100 overflow-hidden flex flex-col justify-between"
             >
               <div>
+                {c.image ? (
                 <div className="relative w-full aspect-[16/10] overflow-hidden bg-slate-100">
                   <Image
                     src={c.image}
@@ -39,6 +40,7 @@ export default function LiverpoolProgrammes({
                     sizes="(max-width: 768px) 100vw, 33vw"
                   />
                 </div>
+              ) : null}
                 <div className="p-5">
                   <h3 className="text-[18px] sm:text-[19px] font-bold text-[#111111] mb-2 leading-snug">
                     {c.title}

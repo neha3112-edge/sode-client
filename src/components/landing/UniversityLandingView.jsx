@@ -25,16 +25,14 @@ import LandingFooter from "./LandingFooter";
 import LandingStickyCtas from "./LandingStickyCtas";
 import LandingEmiSection from "./LandingEmiSection";
 import LandingExamSection from "./LandingExamSection";
+import LandingSpecializations from "./specializations/LandingSpecializations";
 import BrochureModal from "./modals/BrochureModal";
 import ScholarshipModal from "./modals/ScholarshipModal";
 import CompareModal from "./modals/CompareModal";
 import LegalModal from "./modals/LegalModal";
 import LiverpoolLandingView from "./LiverpoolLandingView";
 
-export default function UniversityLandingView({ data = {} }) {
-  if (data?.slug === "liverpool" || data?.brand?.slug === "liverpool") {
-    return <LiverpoolLandingView data={data} />;
-  }
+function DefaultUniversityLandingView({ data = {} }) {
 
   const {
     slug = "university",
@@ -79,6 +77,17 @@ export default function UniversityLandingView({ data = {} }) {
     const seen = new Set();
     const result = [];
     for (const item of raw) {
+      if (Array.isArray(item?.options)) {
+        for (const opt of item.options) {
+          const val = typeof opt === "string" ? opt : (opt?.value || opt?.label);
+          const lbl = typeof opt === "string" ? opt : (opt?.label || opt?.value);
+          if (val && !seen.has(val)) {
+            seen.add(val);
+            result.push({ value: val, label: lbl });
+          }
+        }
+        continue;
+      }
       const val = typeof item === "string" ? item : (item?.value || item?.label);
       const lbl = typeof item === "string" ? item : (item?.label || item?.value);
       if (val && !seen.has(val)) {
@@ -102,7 +111,7 @@ export default function UniversityLandingView({ data = {} }) {
     if (resolvedCourses.length > 0) {
       setSelectedCourse((prev) => {
         const isValid = resolvedCourses.some((c) => c.value === prev);
-        return isValid ? prev : resolvedCourses[0].value;
+        return isValid ? prev : (resolvedCourses[0]?.value || "");
       });
     } else {
       setSelectedCourse("");
@@ -193,7 +202,7 @@ export default function UniversityLandingView({ data = {} }) {
     checkWhyChooseReached();
 
     return () => window.removeEventListener("scroll", checkWhyChooseReached);
-  }, []);
+  }, [brand.scholarshipTriggerId]);
 
   const handleOpenBrochure = (course, title) => {
     if (course && resolvedCourses.some((c) => c.value === course)) {
@@ -760,6 +769,15 @@ export default function UniversityLandingView({ data = {} }) {
                     brand={{ ...brand, slug: brand.slug || slug }}
                   />
                 );
+              case "specializations":
+                return (
+                  <LandingSpecializations
+                    key="specializations"
+                    specializations={data.specializations || brand.specializations}
+                    brand={brand}
+                    onOpenApply={handleOpenApply}
+                  />
+                );
               case "programmes":
                 return (
                   <LandingProgrammes
@@ -1019,4 +1037,14 @@ export default function UniversityLandingView({ data = {} }) {
       />
     </div>
   );
+}
+
+
+export default function UniversityLandingView({ data = {} }) {
+  if (data?.slug === "liverpool" || data?.brand?.slug === "liverpool") {
+    return <LiverpoolLandingView data={data} />;
+  }
+
+  
+  return <DefaultUniversityLandingView data={data} />;
 }

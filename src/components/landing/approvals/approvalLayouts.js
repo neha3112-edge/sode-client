@@ -12,9 +12,11 @@ import ShooliniApprovals from "./layouts/ShooliniApprovals";
 import VguApprovals from "./layouts/VguApprovals";
 import SmuApprovals from "./layouts/SmuApprovals";
 import ApprovalsSlider from "./layouts/ApprovalsSlider";
+import ManipalApprovals from "./layouts/ManipalApprovals";
 import MUApprovals from "./layouts/MUApprovals";
 import IIITBApprovals from "./layouts/IIITBApprovals";
 import UpesApprovals from "./layouts/UpesApprovals";
+import EdgewoodApprovals from "./layouts/EdgewoodApprovals";
 
 /**
  * Layout Registry Mapping
@@ -43,6 +45,7 @@ export const APPROVAL_LAYOUTS = {
   slider: ApprovalsSlider,
   "circle-carousel": ApprovalsSlider,
   "circle-slider": ApprovalsSlider,
+  edgewood: EdgewoodApprovals,
 
   // Fallbacks by legacy slug (for zero-downtime backward compatibility)
   galgotias: GalgotiasApprovals,

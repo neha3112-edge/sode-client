@@ -125,14 +125,14 @@ export default function LiverpoolLandingView({ data = {} }) {
     () => resolvedCourses[0]?.value || COURSE_LIST[0]
   );
 
-  useEffect(() => {
-    if (resolvedCourses.length > 0) {
-      setSelectedCourse((prev) => {
-        const isValid = resolvedCourses.some((c) => c.value === prev);
-        return isValid ? prev : resolvedCourses[0].value;
-      });
+  // Track previous resolved courses to update selectedCourse during render if options change
+  const [prevResolvedCourses, setPrevResolvedCourses] = useState(resolvedCourses);
+  if (prevResolvedCourses !== resolvedCourses) {
+    setPrevResolvedCourses(resolvedCourses);
+    if (resolvedCourses.length > 0 && !resolvedCourses.some((c) => c.value === selectedCourse)) {
+      setSelectedCourse(resolvedCourses[0].value);
     }
-  }, [resolvedCourses]);
+  }
 
   // Navbar Mobile Dropdown
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -159,21 +159,6 @@ export default function LiverpoolLandingView({ data = {} }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formSuccess, setFormSuccess] = useState(false);
 
-  // Auto scroll trigger for coupon code
-  useEffect(() => {
-    let triggered = false;
-    const handleScroll = () => {
-      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-      if (scrollHeight > 0 && (window.scrollY / scrollHeight) >= 0.45 && !triggered) {
-        triggered = true;
-        triggerConfetti();
-        setIsScholarshipOpen(true);
-      }
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   const triggerConfetti = () => {
     try {
       confetti({
@@ -188,6 +173,21 @@ export default function LiverpoolLandingView({ data = {} }) {
       // safe fallback
     }
   };
+
+  // Auto scroll trigger for coupon code
+  useEffect(() => {
+    let triggered = false;
+    const handleScroll = () => {
+      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+      if (scrollHeight > 0 && (window.scrollY / scrollHeight) >= 0.45 && !triggered) {
+        triggered = true;
+        triggerConfetti();
+        setIsScholarshipOpen(true);
+      }
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleOpenBrochure = (course = null, title = "Download Brochure") => {
     if (course) setSelectedCourse(course);
@@ -298,10 +298,7 @@ export default function LiverpoolLandingView({ data = {} }) {
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
       />
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@300;400;500;600;700;800;900&display=swap"
-      />
+
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@300;400;500;600;700;800;900&display=swap');
         @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css');
@@ -1400,7 +1397,8 @@ export default function LiverpoolLandingView({ data = {} }) {
                     <Image
                       src={c.image}
                       alt={c.title}
-                      fill
+                      width={600}
+                      height={375}
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       className="w-full h-full object-cover"
                     />

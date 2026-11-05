@@ -26,6 +26,7 @@ export default function EsgciProgrammes({
               key={idx}
               className="programme-card bg-[#f5f5f5] rounded-[4px] overflow-hidden border-none shadow-none flex flex-col justify-between text-left"
             >
+              {p.image ? (
               <div className="relative w-full aspect-[16/10] overflow-hidden bg-slate-100">
                 <Image
                   src={p.image}
@@ -35,6 +36,7 @@ export default function EsgciProgrammes({
                   sizes="(max-width: 768px) 100vw, 33vw"
                 />
               </div>
+            ) : null}
               <div className="p-5 flex-1 flex flex-col justify-between text-left">
                 <div>
                   <h3 className="text-[17px] sm:text-[18px] font-bold text-[#111111] mb-2 leading-snug">

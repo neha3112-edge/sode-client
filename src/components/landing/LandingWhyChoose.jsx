@@ -18,6 +18,8 @@ import UuWhyChoose from "./whychoose/UuWhyChoose";
 import SsbmWhyChoose from "./whychoose/SsbmWhyChoose";
 import UpesWhyChoose from "./whychoose/UpesWhyChoose";
 import ClassicWhyChoose from "./whychoose/ClassicWhyChoose";
+import ManipalWhyChoose from "./whychoose/ManipalWhyChoose";
+import EdgewoodWhyChoose from "./whychoose/EdgewoodWhyChoose";
 
 /**
  * Registry of available Why Choose layouts.
@@ -47,6 +49,7 @@ const WHY_CHOOSE_LAYOUTS = {
   slider: SliderWhyChoose,
   manipal: SliderWhyChoose,
   classic: ClassicWhyChoose,
+  edgewood: EdgewoodWhyChoose,
 };
 
 

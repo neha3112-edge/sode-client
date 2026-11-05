@@ -18,6 +18,7 @@ import ManipalAbout from "./about/ManipalAbout";
 import ShooliniAbout from "./about/ShooliniAbout";
 import IiitbAbout from "./about/IiitbAbout";
 import UpesAbout from "./about/UpesAbout";
+import EdgewoodAbout from "./about/EdgewoodAbout";
 
 /**
  * Reusable Registry of About Section Layouts.
@@ -45,6 +46,7 @@ const ABOUT_LAYOUTS = {
   "smu-banner": SmuAbout,
   campusStats: ManipalAbout,
   manipal: ManipalAbout,
+  edgewood: EdgewoodAbout,
 };
 
 /**

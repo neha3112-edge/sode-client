@@ -1,7 +1,15 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 /** @type {import('next').NextConfig} */
 const MINIO_PUBLIC_URL = process.env.NEXT_PUBLIC_MINIO_URL || "https://new.crm.api.mysode.com/minio";
 
 const nextConfig = {
+  turbopack: {
+    root: __dirname,
+  },
   devIndicators: false,
   trailingSlash: true,
   reactStrictMode: true,
@@ -28,7 +36,7 @@ const nextConfig = {
       },
       {
         protocol: "http",
-        hostname: "localhost",
+        hostname: "**",
       },
     ],
   },

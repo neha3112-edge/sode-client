@@ -44,9 +44,11 @@ export default function LpuGrids({ programmes, brand = {}, onSelectCourseForBroc
             key={prog.code}
             className="bg-white rounded-[12px] p-4 sm:p-5 shadow-[0_4px_20px_rgba(0,0,0,0.06)] border border-slate-100 flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5 hover:shadow-lg transition-shadow"
           >
+            {prog.image ? (
             <div className="relative w-32 sm:w-36 h-32 sm:h-36 shrink-0 rounded-[10px] overflow-hidden bg-slate-50">
               <Image src={prog.image} alt={prog.title} fill className="object-cover" sizes="150px" />
             </div>
+          ) : null}
             <div className="flex-1 text-left space-y-1 w-full">
               <h2 className="text-2xl sm:text-[28px] font-black text-slate-900 tracking-tight leading-none m-0">
                 {prog.code}

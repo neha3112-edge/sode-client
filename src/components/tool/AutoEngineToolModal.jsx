@@ -76,6 +76,25 @@ export default function AutoEngineToolModal() {
   const [selectedMultiOptions, setSelectedMultiOptions] = useState([]);
   const [submitting, setSubmitting] = useState(false);
 
+  // Track previous isOpen state to reset on open without cascading renders
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+  if (prevIsOpen !== isOpen) {
+    setPrevIsOpen(isOpen);
+    if (isOpen) {
+      setLoading(true);
+      setSubmitting(false);
+      setHistory([]);
+      setRecommendations(null);
+      setCourses([]);
+      setResultPayload(null);
+      setSelectedOtherId(null);
+      setOtherInputText("");
+      setSearchFilter("");
+      setSelectedMultiOptions([]);
+      setAnswers({ ...initialAnswers });
+    }
+  }
+
   // Directly fetch recommendations without showing lead form
   const fetchRecommendationsDirectly = async (finalAnswers) => {
     setSubmitting(true);
@@ -112,19 +131,6 @@ export default function AutoEngineToolModal() {
     if (!isOpen) return;
 
     let isMounted = true;
-    setLoading(true);
-    setSubmitting(false);
-    setHistory([]);
-    setRecommendations(null);
-    setCourses([]);
-    setResultPayload(null);
-    setSelectedOtherId(null);
-    setOtherInputText("");
-    setSearchFilter("");
-    setSelectedMultiOptions([]);
-
-    const mergedAnswers = { ...initialAnswers };
-    setAnswers(mergedAnswers);
 
     dynamicRead({
       entity: "tool",
@@ -598,9 +604,11 @@ export default function AutoEngineToolModal() {
                       <div className="flex items-start gap-4 flex-1">
                         <div className="w-16 h-16 rounded-xl bg-slate-50 border border-slate-100 p-2 flex items-center justify-center shrink-0">
                           {uni.logo ? (
-                            <img
+                            <Image
                               src={uni.logo}
                               alt={uni.name}
+                              width={64}
+                              height={64}
                               className="w-full h-full object-contain"
                             />
                           ) : (

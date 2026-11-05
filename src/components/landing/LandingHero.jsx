@@ -32,7 +32,8 @@ export default function LandingHero({
     brand.slug === "manipal" ||
     brand.slug === "amity" ||
     brand.slug === "uu" ||
-    brand.slug === "mu";
+    brand.slug === "mu" ||
+    brand.slug === "edgewood";
 
   const isSsbm =
     brand.slug === "ssbm" ||
@@ -40,7 +41,12 @@ export default function LandingHero({
 
   const isUu = brand.slug === "uu";
 
-  const HeroContainer = isSsbm || isUu ? "div" : LandingContainer;
+  const isManipal =
+    brand.slug === "manipal" ||
+    brand.name?.toLowerCase().includes("manipal");
+
+  const isEdgewood = brand.slug === "edgewood";
+  const HeroContainer = isSsbm || isUu || isManipal || isEdgewood ? "div" : LandingContainer;
 
   /* ----------------------------- Helpers ----------------------------- */
 
@@ -60,6 +66,12 @@ export default function LandingHero({
       : Array.isArray(brand.coursesStrip)
         ? brand.coursesStrip
         : [];
+
+  const mobileCourseLines = Array.isArray(hero.mobileCoursesStrip)
+    ? hero.mobileCoursesStrip
+    : Array.isArray(brand.mobileCoursesStrip)
+      ? brand.mobileCoursesStrip
+      : courseLines;
 
   const headingText =
     hero.headingText ||
@@ -218,9 +230,18 @@ export default function LandingHero({
           }
           style={courseBoxStyle}
         >
-          {courseLines.map((line, index) => (
-            <div key={`course-line-${index}`}>{line}</div>
-          ))}
+          {/* Mobile courses strip (below sm) */}
+          <div className="block sm:hidden space-y-0.5">
+            {mobileCourseLines.map((line, index) => (
+              <div key={`mobile-course-line-${index}`}>{line}</div>
+            ))}
+          </div>
+          {/* Desktop/tablet courses strip (sm and up) */}
+          <div className="hidden sm:block space-y-1 sm:space-y-1.5">
+            {courseLines.map((line, index) => (
+              <div key={`course-line-${index}`}>{line}</div>
+            ))}
+          </div>
         </div>
       );
     }
@@ -307,10 +328,11 @@ export default function LandingHero({
         style={hero.logoContainerStyle}
       >
         <div
-          className={
+          className={joinClassNames(
+            "relative",
             hero.logoWrapperClassName ||
-            "relative w-44 sm:w-56 h-11 sm:h-[52px]"
-          }
+            "w-44 sm:w-56 h-11 sm:h-[52px]"
+          )}
         >
           <Image
             src={logoSrc}
@@ -494,7 +516,11 @@ export default function LandingHero({
               ? "ssbm-hero-container relative z-10 flex flex-col min-[1000px]:flex-row items-center justify-between gap-5 sm:gap-6 lg:gap-8 w-full max-w-[1140px] mx-auto px-4 sm:px-6 box-border"
               : isUu
               ? "uu-hero-container uu-container relative z-10 flex flex-col min-[1000px]:flex-row items-center justify-between gap-5 sm:gap-6 lg:gap-8 w-full mx-auto box-border"
-              : "relative z-10 flex flex-col min-[1000px]:flex-row items-center justify-between gap-5 sm:gap-6 lg:gap-8 min-[1000px]:!max-w-[1130px] px-3.5 sm:px-4 py-2.5 sm:py-3.5 lg:py-3",
+              : isManipal
+              ? "manipal-hero-container relative z-10 flex flex-col min-[1000px]:flex-row items-start justify-between gap-5 sm:gap-6 lg:gap-8 w-full max-w-[1130px] mx-auto px-4 sm:px-6 pt-2 sm:pt-3 lg:pt-4 pb-8 sm:pb-10 min-[1000px]:pb-12 xl:pb-14 min-[1000px]:min-h-[580px] xl:min-h-[610px] box-border"
+              : isEdgewood
+              ? "edgewood-hero-container relative z-10 flex flex-col min-[1000px]:flex-row items-start justify-between gap-6 sm:gap-8 w-full max-w-[1140px] mx-auto px-4 sm:px-6 pt-6 sm:pt-8 pb-8 min-[1000px]:pb-10 box-border"
+              : "relative z-10 flex flex-col min-[1000px]:flex-row items-center justify-between gap-5 sm:gap-6 lg:gap-8 min-[1000px]:!max-w-[1130px] mx-auto px-3.5 sm:px-4 py-2.5 sm:py-3.5 lg:py-3",
             hero.containerClassName
           )}
           style={{
@@ -626,23 +652,28 @@ export default function LandingHero({
                 )}
                 style={hero.approvalIconsContainerStyle}
               >
-                {hero.approvalIcons.map((app, idx) => (
-                  <div
-                    key={`approval-icon-${idx}`}
-                    className={
-                      hero.approvalIconWrapperClassName ||
-                      "relative w-14 h-14 sm:w-16 sm:h-16 lg:w-[68px] lg:h-[68px] flex items-center justify-center transition-transform hover:scale-105"
-                    }
-                  >
-                    <Image
-                      src={app.img || app.src}
-                      alt={app.alt || "Approval"}
-                      fill
-                      className="object-contain"
-                      sizes="68px"
-                    />
-                  </div>
-                ))}
+                {hero.approvalIcons.map((app, idx) => {
+                  const iconSrc = app.img || app.src;
+                  if (!iconSrc) return null;
+                  return (
+                    <div
+                      key={`approval-icon-${idx}`}
+                      className={joinClassNames(
+                        "relative",
+                        hero.approvalIconWrapperClassName ||
+                        "w-14 h-14 sm:w-16 sm:h-16 lg:w-[68px] lg:h-[68px] flex items-center justify-center transition-transform hover:scale-105"
+                      )}
+                    >
+                      <Image
+                        src={iconSrc}
+                        alt={app.alt || "Approval"}
+                        fill
+                        className="object-contain"
+                        sizes="68px"
+                      />
+                    </div>
+                  );
+                })}
               </div>
             )}
 
@@ -708,6 +739,12 @@ export default function LandingHero({
               </div>
             )}
 
+            {/* Courses before highlight box */}
+            {hero.coursesBeforeHighlight &&
+              !hero.coursesBeforeTagline &&
+              !hero.coursesFirst &&
+              renderCourseContent()}
+
             {hero.highlightBox && (
               <div
                 className={
@@ -730,8 +767,9 @@ export default function LandingHero({
               </div>
             )}
 
-            {/* Courses after tagline/description */}
-            {!hero.coursesBeforeTagline &&
+            {/* Courses after tagline/description (if not rendered above) */}
+            {!hero.coursesBeforeHighlight &&
+              !hero.coursesBeforeTagline &&
               !hero.coursesFirst &&
               renderCourseContent()}
 
@@ -776,6 +814,7 @@ export default function LandingHero({
           <div
             className={joinClassNames(
               "hero-form-col relative z-20 w-full sm:w-[350px] min-[1000px]:w-[340px] xl:w-[360px] shrink-0 flex flex-col items-center min-[1000px]:items-end justify-center",
+              isManipal && "min-[1000px]:-mt-1",
               hero.formContainerClassName
             )}
             style={hero.formContainerStyle}
@@ -783,10 +822,7 @@ export default function LandingHero({
             {(hero.mobileImage || hero.mobileStudentImage) && (
               <div
                 className={joinClassNames(
-                  "hero-mobile-image-wrapper block min-[1000px]:hidden relative",
-                  hero.mobileStudentImage
-                    ? "w-full overflow-visible"
-                    : "w-full aspect-[926/433] overflow-hidden rounded-2xl mb-3 shadow-md",
+                  "hero-mobile-image-wrapper block min-[1000px]:hidden relative w-full aspect-[926/433] sm:aspect-[926/400] overflow-hidden rounded-2xl mb-3 shadow-md",
                   hero.mobileImageWrapperClassName || hero.mobileStudentImageWrapperClassName
                 )}
                 style={hero.mobileStudentImageWrapperStyle || hero.mobileImageWrapperStyle}
@@ -882,7 +918,7 @@ export default function LandingHero({
               courseList={hero.formCourseList || hero.form?.courseList || courses}
               universityName={hero.formUniversityName || hero.form?.universityName || brand.name}
               variant={
-                hero.formCardType === "white"
+                hero.formCardType === "white" || hero.cardStyle === "white" || isManipal
                   ? "white-card"
                   : hero.formCardType || "card"
               }
@@ -915,7 +951,7 @@ export default function LandingHero({
               phoneHref={hero.phoneHref || brand.phone}
               showPhoneBadge={hero.showPhoneBadge !== false}
               onOpenDisclaimer={onOpenDisclaimer}
-              className={hero.formClassName}
+              className={joinClassNames(isManipal && "-mt-7 sm:-mt-8 min-[1000px]:mt-0 relative z-20", hero.formClassName)}
               style={hero.formStyle}
             />
           </div>

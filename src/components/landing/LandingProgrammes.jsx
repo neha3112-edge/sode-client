@@ -16,6 +16,7 @@ import SsbmProgrammes from "./programmes/SsbmProgrammes";
 import UpesProgrammes from "./programmes/UpesProgrammes";
 import ProgrammesCarousel from "./programmes/ProgrammesCarousel";
 import ManipalProgrammes from "./programmes/ManipalProgrammes";
+import EdgewoodProgrammes from "./programmes/EdgewoodProgrammes";
 
 /**
  * Layout Aliases Map: Normalizes legacy and variant layout names to canonical keys.
@@ -48,6 +49,7 @@ const PROGRAMME_LAYOUTS = {
   ssbm: SsbmProgrammes,
   upes: UpesProgrammes,
   ggu: GguProgrammes,
+  edgewood: EdgewoodProgrammes,
   mu: MuGrid,
   vgu: VguGrid,
   shoolini: ShooliniGrid,

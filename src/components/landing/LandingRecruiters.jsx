@@ -44,7 +44,7 @@ export default function LandingRecruiters({
         <div className="container">
           <div className="placement-section">
             <h2><strong>PLACEMENTS</strong> PARTNERS</h2>
-            {partners.map((p, idx) => (
+            {partners.map((p, idx) => p.image ? (
               <Image
                 key={idx}
                 src={p.image}
@@ -53,7 +53,7 @@ export default function LandingRecruiters({
                 height={40}
                 className="placement-img object-contain"
               />
-            ))}
+            ) : null)}
           </div>
         </div>
       </section>
@@ -73,7 +73,7 @@ export default function LandingRecruiters({
               {title}
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4 items-center justify-center">
-              {partners.map((p, idx) => (
+              {partners.map((p, idx) => p.image ? (
                 <div key={idx} className="bg-white rounded-[8px] h-[70px] p-2 flex items-center justify-center shadow-xs border border-slate-200/60">
                   <div className="relative w-full h-full">
                     <Image
@@ -85,7 +85,7 @@ export default function LandingRecruiters({
                     />
                   </div>
                 </div>
-              ))}
+              ) : null)}
             </div>
           </div>
         </LandingContainer>

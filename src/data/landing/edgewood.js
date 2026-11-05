@@ -63,7 +63,7 @@ export const edgewoodCustomCss = `
     line-height: 1 !important;
     font-weight: 900 !important;
     letter-spacing: 0.5px !important;
-    color: #000000 !important;
+    color: #ba0000 !important;
     margin: 10px 0 !important;
   }
 
@@ -75,26 +75,98 @@ export const edgewoodCustomCss = `
 
   /* Buttons */
   .landing-page--edgewood .downloadBrochureBtn {
-    background-color: #F1BA00 !important;
-    color: #ff0000 !important;
+    background-color: #ba0000 !important;
+    color: #ffffff !important;
     font-weight: 700 !important;
     border-radius: 6px !important;
     transition: all 0.2s ease !important;
   }
   .landing-page--edgewood .downloadBrochureBtn:hover {
-    background-color: #d9a700 !important;
+    background-color: #990000 !important;
   }
 
   .landing-page--edgewood .enquireNowBtn {
-    background-color: #F1BA00 !important;
-    color: #000000 !important;
+    background-color: #ba0000 !important;
+    color: #ffffff !important;
     font-weight: 700 !important;
     border-radius: 4px !important;
   }
 
+  /* Accreditation Section */
+  .landing-page--edgewood .accreditation-section {
+    padding: 40px 20px 60px 20px !important;
+    background-color: #ffffff !important;
+    text-align: center !important;
+    margin: 0px !important;
+  }
+  .landing-page--edgewood .accreditation-header {
+    margin-bottom: 30px !important;
+  }
+  .landing-page--edgewood .accreditation-header h2 {
+    color: #ba0000 !important;
+    font-size: 28px !important;
+    font-weight: 800 !important;
+    letter-spacing: 1px !important;
+    text-transform: uppercase !important;
+    margin: 0 !important;
+  }
+  .landing-page--edgewood .accreditation-header p {
+    font-size: 22px !important;
+    color: #444444 !important;
+    margin-top: 5px !important;
+    margin-bottom: 0 !important;
+    font-weight: 800 !important;
+    padding-top: 0px !important;
+  }
+  .landing-page--edgewood .accreditation-container {
+    display: grid !important;
+    justify-content: center !important;
+    gap: 25px !important;
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+  .landing-page--edgewood .accreditation-card {
+    flex: 1 !important;
+    padding: 40px 25px !important;
+    border: 2px solid #e0e0e0 !important;
+    border-radius: 25px !important;
+    background: #ffffff !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+  }
+  .landing-page--edgewood .accreditation-card:hover {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05) !important;
+  }
+  .landing-page--edgewood .logo-box {
+    height: 120px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-bottom: 25px !important;
+  }
+  .landing-page--edgewood .accreditation-card h3 {
+    font-size: 18px !important;
+    font-weight: 800 !important;
+    color: #002147 !important;
+    margin-bottom: 15px !important;
+    line-height: 1.3 !important;
+    margin-top: 0 !important;
+  }
+  .landing-page--edgewood .accreditation-card p {
+    font-size: 14px !important;
+    color: #666666 !important;
+    line-height: 1.6 !important;
+    margin: 0 !important;
+  }
+  @media (max-width: 992px) {
+    .landing-page--edgewood .accreditation-container {
+      grid-template-columns: repeat(1, 1fr) !important;
+    }
+  }
+
   /* Compare section */
   .landing-page--edgewood .compare_box {
-    background-color: #1a1a1a !important;
+    background-color: #ba0000 !important;
   }
 
   /* Footer bottom */
@@ -135,9 +207,12 @@ export const edgewoodData = {
   brand: {
     name: "Edgewood University Online",
     slug: "edgewood",
-    primaryColor: "#F1BA00",
-    themeColor: "#F1BA00",
-    accentColor: "#F1BA00",
+    primaryColor: "#ba0000",
+    themeColor: "#ba0000",
+    accentColor: "#ba0000",
+    submitBtnBg: "#ba0000",
+    hideTermsCheckbox: true,
+    formTitleColor: "#ba0000",
     fontFamily: "Montserrat",
     showSodeLogo: true,
     sodeIcon: "/assets/all_universities_images/edgewood/new_sode_tm_logo.png",
@@ -164,8 +239,9 @@ export const edgewoodData = {
       "programmes",
       "about",
       "approvals",
-      "degree",
+      "specializations",
       "whyChoose",
+      "degree",
       "admissionProcess",
       "faqs",
       "compareBanner",
@@ -180,154 +256,234 @@ export const edgewoodData = {
       minHeight: "480px",
 
       welcomeText: (
-        <Image
-          src="/assets/all_universities_images/edgewood/edgewood-university-black.png"
-          alt="Edgewood University"
-          width={160}
-          height={50}
-          className="h-[36px] sm:h-[44px] w-auto object-contain"
-        />
+        <div className="flex items-center gap-3 mb-2">
+          <Image
+            src="/assets/all_universities_images/edgewood/edgewood-university-black.png"
+            alt="Edgewood University"
+            width={160}
+            height={50}
+            className="h-[36px] sm:h-[44px] w-auto object-contain"
+          />
+          <div className="h-6 w-[1.5px] bg-slate-300 mx-1" />
+          <span className="text-[#ea1e24] font-black text-[22px] tracking-tight">upGrad</span>
+        </div>
       ),
       welcomeContainerClassName: "!mb-2 !mt-0 !text-left",
       welcomeBadgeClassName: "!bg-transparent !p-0 !min-w-0 !shadow-none !border-none !rounded-none !block",
 
-      hashtagText: (
-        <span key="edgewood-hashtag" className="inline-block px-3 py-1 bg-black text-white text-[12px] font-semibold rounded-[5px]">
-          Learn Business Leadership Skills With
-        </span>
-      ),
+      hashtagText: "Learn Business\nLeadership Skills With",
       hashtagStyle: {
         fontFamily: "'Montserrat', sans-serif",
-        marginTop: "6px",
-        marginBottom: "2px",
+        fontSize: "18px",
+        fontWeight: "700",
+        color: "#111111",
+        lineHeight: "1.3",
+        whiteSpace: "pre-line",
+        marginTop: "8px",
+        marginBottom: "4px",
       },
 
-      headlineText: "DBA  MBA + DBA",
+      headlineText: "EdgeWood\nOnline University",
       headingFont: "'Anton', sans-serif",
-      headingClassName: "!whitespace-pre-line !leading-[1] font-black text-[50px] sm:text-[60px] text-[#000000]",
+      headingClassName: "!whitespace-pre-line !leading-[1] font-black text-[50px] sm:text-[58px] text-[#ba0000]",
       headingStyle: {
         fontFamily: "'Anton', sans-serif",
-        color: "#000000",
-        fontSize: "60px",
+        color: "#ba0000",
+        fontSize: "58px",
         lineHeight: "1",
         fontWeight: "900",
-        marginTop: "6px",
-        marginBottom: "6px",
+        letterSpacing: "0.5px",
+        marginTop: "4px",
+        marginBottom: "8px",
       },
 
       taglineText: (
         <span key="edgewood-tagline">
-          By <u className="font-semibold">Edgewood University</u> via <u className="font-semibold">upGrad</u>
+          By <u className="font-bold">Edgewood University</u> via <strong className="font-black">upGrad</strong>
         </span>
       ),
       taglineStyle: {
         fontFamily: "'Montserrat', sans-serif",
-        color: "#000000",
+        color: "#111111",
         fontSize: "15px",
-        fontWeight: "500",
-        lineHeight: "1.3",
+        fontWeight: "600",
+        lineHeight: "1.4",
         marginTop: "2px",
-        marginBottom: "8px",
+        marginBottom: "10px",
       },
 
+      coursesBeforeHighlight: true,
+      courseLabel: "Online",
+      courseLabelStyle: {
+        backgroundColor: "#f1ba00",
+        color: "#000000",
+        fontWeight: "800",
+        fontSize: "11px",
+        borderRadius: "9999px",
+        padding: "2px 14px",
+        top: "-11px",
+      },
+      courseBoxStyle: {
+        borderColor: "#94a3b8",
+        backgroundColor: "#ffffff",
+        borderRadius: "12px",
+        padding: "8px 18px",
+        borderWidth: "1.5px",
+      },
+      courseStripStyle: {
+        color: "#ba0000",
+        fontFamily: "'Montserrat', sans-serif",
+        fontWeight: "900",
+        fontSize: "22px",
+        letterSpacing: "0.5px",
+      },
+      courseLines: ["DBA | MBA + DBA"],
+
       highlightBox: {
-        text: "Globally recognised U.S. accreditation (HLC)\nNo GMAT/GRE + flexible pay-per-month model",
-        className: "!w-full !p-0 !bg-transparent !text-black !text-[15px] sm:text-[17px] !font-semibold !text-left !shadow-none !m-0",
+        lines: [
+          "☑ Globally recognised U.S. accreditation (HLC)",
+          "☑ No GMAT/GRE + flexible pay-per-month model",
+        ],
+        className: "!w-full !p-0 !bg-transparent !text-black !text-[14px] sm:text-[14.5px] !font-bold !text-left !shadow-none !my-3",
         style: {
           fontFamily: "'Montserrat', sans-serif",
           backgroundColor: "transparent",
-          color: "#000000",
+          color: "#111111",
           border: "none",
           padding: 0,
-          fontSize: "15px",
+          fontSize: "14px",
           fontWeight: "600",
           textAlign: "left",
-          lineHeight: "1.5",
+          lineHeight: "1.7",
           display: "block",
-          marginTop: "6px",
-          marginBottom: "8px",
-          whiteSpace: "pre-line",
         },
       },
 
-      coursesStrip: [
-        <div key="edgewood-pills" className="grid grid-cols-2 gap-2 max-w-[420px] my-3">
-          <span key="edgewood-online" className="border-2 border-black py-2 px-3 rounded-[5px] text-[#000] font-semibold text-[12.5px] sm:text-[13px] text-center bg-white/70">
-            100% Online
-          </span>
-          <span key="edgewood-hlc" className="border-2 border-black py-2 px-3 rounded-[5px] text-[#000] font-semibold text-[12.5px] sm:text-[13px] text-center bg-white/70">
-            HLC Accredited
-          </span>
-          <span key="edgewood-pwc" className="border-2 border-black py-2 px-3 rounded-[5px] text-[#000] font-semibold text-[12.5px] sm:text-[13px] text-center bg-white/70">
-            PwC Certificate
-          </span>
-          <span key="edgewood-gmat" className="border-2 border-black py-2 px-3 rounded-[5px] text-[#000] font-semibold text-[12.5px] sm:text-[13px] text-center bg-white/70">
-            No GMAT/GRE
-          </span>
-        </div>,
-      ],
-
-      brochureButtonText: "Download Brochure",
+      brochureButtonText: "Download Broucher",
+      buttonVariant: "primary",
+      buttonBackground: "#ba0000",
+      buttonTextColor: "#ffffff",
+      buttonBorder: "none",
       buttonStyle: {
         fontFamily: "'Montserrat', sans-serif",
-        background: "#F1BA00",
-        backgroundColor: "#F1BA00",
-        color: "#ff0000",
+        backgroundColor: "#ba0000",
+        background: "#ba0000",
+        color: "#ffffff",
         borderRadius: "6px",
         fontSize: "14px",
         fontWeight: "700",
-        padding: "10px 22px",
+        padding: "10px 24px",
         border: "none",
+        cursor: "pointer",
       },
 
       cardStyle: "white",
       formBackground: "#ffffff",
       formCardType: "white",
-      enquireTitle: "Admission Open",
+      enquireTitle: "Enquire Now",
       enquireSubtitle: "Academic Experts will assist you!",
-      enquireColor: "#1a1a1a",
+      enquireColor: "#ba0000",
       enquireSubtitleColor: "#333333",
-      phoneBadgeBg: "#F1BA00",
-      phoneBadgeBackground: "#F1BA00",
+      hideTermsCheckbox: true,
+      showPhoneBadge: true,
+      phoneDisplay: "+91 7065 7777 55",
+      phoneBadgeBg: "#ba0000",
+      phoneBadgeBackground: "#ba0000",
+      phoneBadgeColor: "#ffffff",
       phoneBadgeStyle: {
-        background: "#F1BA00",
-        backgroundColor: "#F1BA00",
-        color: "#000000",
+        background: "#ba0000",
+        backgroundColor: "#ba0000",
+        color: "#ffffff",
         borderRadius: "9999px",
-        padding: "3px 14px",
-        fontSize: "12px",
+        padding: "5px 16px",
+        fontSize: "13px",
+        fontWeight: "700",
       },
-      submitBtnBg: "#F1BA00",
-      submitButtonBackground: "#F1BA00",
-      submitButtonRadius: "6px",
-      submitButtonTextColor: "#000000",
+      phoneBeforeEmail: true,
+      submitBtnBg: "#ba0000",
+      submitButtonBackground: "#ba0000",
+      submitButtonRadius: "4px",
+      submitButtonTextColor: "#ffffff",
+      submitButtonText: "Submit",
     },
 
-    // Stats Section (same as Liverpool grey layout)
-    statsLayout: "liverpool",
+    // Stats Section (Crimson red bar with white icons)
+    statsLayout: "edgewood",
+
+    scholarshipModal: {
+      titleText: "Get Scholarship Coupon Code",
+      title: "Get Scholarship Coupon Code",
+      titleColor: "#ba0000",
+      subtitleText: "Academic Experts will assist you!",
+      subtitle: "Academic Experts will assist you!",
+      subtitleColor: "#333333",
+      submitBtnBg: "#ba0000",
+      submitButtonBg: "#ba0000",
+      submitButtonBackground: "#ba0000",
+      submitButtonRadius: "4px",
+      submitButtonTextColor: "#ffffff",
+      submitBtnText: "Submit",
+      buttonText: "Submit",
+      hideTermsCheckbox: true,
+      formName: "Scholarship Coupon Modal",
+    },
+    brochureModal: {
+      titleText: "Download Brochure",
+      title: "Download Brochure",
+      titleColor: "#ba0000",
+      subtitleText: "Academic Experts will assist you!",
+      subtitle: "Academic Experts will assist you!",
+      subtitleColor: "#333333",
+      submitBtnBg: "#ba0000",
+      submitButtonBg: "#ba0000",
+      submitButtonBackground: "#ba0000",
+      submitButtonRadius: "4px",
+      submitButtonTextColor: "#ffffff",
+      submitBtnText: "Submit",
+      buttonText: "Submit",
+      hideTermsCheckbox: true,
+      formName: "Download Brochure Modal",
+    },
+    compareModal: {
+      titleText: "Get Scholarship Coupon Code",
+      title: "Get Scholarship Coupon Code",
+      titleColor: "#ba0000",
+      subtitleText: "Academic Experts will assist you!",
+      subtitle: "Academic Experts will assist you!",
+      subtitleColor: "#333333",
+      submitBtnBg: "#ba0000",
+      submitButtonBg: "#ba0000",
+      submitButtonBackground: "#ba0000",
+      submitButtonRadius: "4px",
+      submitButtonTextColor: "#ffffff",
+      submitBtnText: "Submit",
+      buttonText: "Submit",
+      hideTermsCheckbox: true,
+      formName: "Compare Universities Modal",
+    },
 
     // Programmes Section (same as Liverpool card grid layout)
-    programmesLayout: "liverpool",
+    programmesLayout: "edgewood",
     programmesTitle: "Courses Offered",
     programmesSubtitle: "By Edgewood University Online",
 
     // About Section (use rushford layout — two-column text + image)
-    aboutLayout: "rushford",
+    aboutLayout: "edgewood",
     aboutTitle: "About Edgewood University Online",
 
     // Approvals Section (use rushford/card layout)
-    approvalsLayout: "rushford",
-    approvalsTitle: "Accreditation Of",
+    approvalsLayout: "edgewood",
+    approvalsTitle: "ACCREDITATION OF",
     approvalsSubtitle: "Edgewood University Online",
 
     // Degree Layout
-    degreeLayout: "imageLeft",
+    degreeLayout: "edgewood",
     degreeTitleColor: "#111111",
     degreeBtnBg: "#F1BA00",
     degreeBtnTextColor: "#000000",
 
     // Why Choose
-    whyChooseLayout: "rushford",
+    whyChooseLayout: "edgewood",
     whyChooseTitle: "Learning Outcomes Of",
     whyChooseSubtitle: "Edgewood University Online",
     whyChooseImage: "/assets/all_universities_images/edgewood/about-bg-image-edgewood.webp",
@@ -339,13 +495,14 @@ export const edgewoodData = {
       "Students can easily enrol in Edgewood University Online courses. Candidates can conveniently apply by selecting their desired program. Follow these steps to secure admission in the university.",
 
     // FAQ
-    faqLayout: "ggu",
+    faqLayout: "edgewood",
     faqTitle: "FAQ-Frequently Asked Question",
-    faqAccentColor: "#F1BA00",
+    faqHeaderColor: "#0056b3",
+    faqAccentColor: "#0056b3",
     faqDefaultOpenIndex: 0,
 
     // Compare Banner
-    compareBannerBg: "#1a1a1a",
+    compareBannerBg: "#ba0000",
     compareUniversityName: "Edgewood University",
     compareSubtitle: "Compare Edgewood University with Top World Renowned Universities",
     compareSectionBg: "bg-white",
@@ -363,27 +520,27 @@ export const edgewoodData = {
     whatsappText: "I want to download the Edgewood University Online Program brochure",
   },
 
-  // Stats (4 column grey-box layout)
+  // Stats (4 column crimson-red achievement bar)
   stats: [
     {
       icon: "graduation",
-      label: "95+ Years",
-      value: "Years of legacy",
+      label: "95+",
+      desc: "Years of legacy",
     },
     {
       icon: "users",
-      label: "5 Lakh+",
-      value: "Enrollments",
+      label: "5 lakh+",
+      desc: "Enrollments",
     },
     {
       icon: "user",
       label: "PwC",
-      value: "Certificate",
+      desc: "Certificate",
     },
     {
       icon: "book",
       label: "Dual",
-      value: "Degree",
+      desc: "Degree",
     },
   ],
 
@@ -504,6 +661,50 @@ export const edgewoodData = {
     "MBA + DBA in Leadership",
   ],
 
+  // Specializations Section (DBA / MBA + DBA tabs)
+  specializations: {
+    title: "Specializations of Edgewood University Online DBA / MBA + DBA",
+    tabs: [
+      { id: "dba", label: "DBA" },
+      { id: "dba-mba", label: "MBA + DBA" },
+    ],
+    items: {
+      dba: [
+        {
+          id: "dba-leadership",
+          title: "DBA Leadership",
+          image: "/assets/all_universities_images/edgewood/leadership-edgewood.webp",
+          description:
+            "Edgewood University Online DBA leadership builds leadership skills that enable students to learn management and strategic decision-making skills, using applied research to solve real organisational challenges in senior roles, and to gain skilled knowledge.",
+        },
+        {
+          id: "dba-finance",
+          title: "DBA Finance",
+          image: "/assets/all_universities_images/edgewood/finanance-edgewood.webp",
+          description:
+            "Finance Specializations in Edgewood University's Online DBA develop advanced expertise in financial strategy, risk management, and corporate decision-making. This curriculum help student use research-led frameworks to manage complex financial problems.",
+        },
+      ],
+      "dba-mba": [
+        {
+          id: "mba-dba-leadership",
+          title: "MBA + DBA Leadership",
+          image: "/assets/all_universities_images/edgewood/leadership-edgewood-2.webp",
+          description:
+            "Edgewood University Online DBA Learning in MBA + DBA Leadership combines MBA leadership skills with doctoral-level applied research, preparing professionals for senior management, consulting, and enterprise growth roles.",
+        },
+        {
+          id: "mba-dba-finance",
+          title: "MBA + DBA Finance",
+          image: "/assets/all_universities_images/edgewood/Finance.webp",
+          description:
+            "Edgewood University Online DBA Learning in MBA + DBA Finance blends MBA finance fundamentals with advanced doctoral research, supporting strategic investment, risk control, and high-level corporate finance decisions.",
+        },
+      ],
+    },
+  },
+
+
   // Admission Process Steps
   admissionSteps: [
     {
@@ -594,15 +795,37 @@ export const edgewoodData = {
   scholarshipModal: {
     modalBg: "#ffffff",
     titleText: "Get Scholarship Coupon Code",
-    titleColor: "#1a1a1a",
-    submitButtonBg: "#F1BA00",
-    submitButtonTextColor: "#000000",
+    title: "Get Scholarship Coupon Code",
+    titleColor: "#ba0000",
+    subtitleText: "Academic Experts will assist you!",
+    subtitle: "Academic Experts will assist you!",
+    subtitleColor: "#333333",
+    submitBtnBg: "#ba0000",
+    submitButtonBg: "#ba0000",
+    submitButtonBackground: "#ba0000",
+    submitButtonTextColor: "#ffffff",
+    submitButtonRadius: "4px",
+    submitBtnText: "Submit",
+    buttonText: "Submit",
+    hideTermsCheckbox: true,
+    formName: "Scholarship Coupon Modal",
   },
   compareModal: {
     modalBg: "#ffffff",
-    titleText: "Compare Universities",
-    titleColor: "#1a1a1a",
-    submitButtonBg: "#F1BA00",
-    submitButtonTextColor: "#000000",
+    titleText: "Get Scholarship Coupon Code",
+    title: "Get Scholarship Coupon Code",
+    titleColor: "#ba0000",
+    subtitleText: "Academic Experts will assist you!",
+    subtitle: "Academic Experts will assist you!",
+    subtitleColor: "#333333",
+    submitBtnBg: "#ba0000",
+    submitButtonBg: "#ba0000",
+    submitButtonBackground: "#ba0000",
+    submitButtonTextColor: "#ffffff",
+    submitButtonRadius: "4px",
+    submitBtnText: "Submit",
+    buttonText: "Submit",
+    hideTermsCheckbox: true,
+    formName: "Compare Universities Modal",
   },
 };

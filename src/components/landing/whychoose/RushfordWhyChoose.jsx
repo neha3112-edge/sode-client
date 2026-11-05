@@ -15,7 +15,7 @@ export default function RushfordWhyChoose({ whyChoose = [], brand = {}, onOpenAp
       data-section="whychoose"
       className="benefits-section w-full bg-[#EFEFEF] select-none mt-1 sm:mt-9 lg:mt-[42px] mb-0 lg:mb-[45px] pt-4 sm:pt-9 lg:pt-12 pb-0 scroll-mt-20 overflow-hidden"
     >
-      <div className="max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1130px] mx-auto px-4 sm:px-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-end">
           {/* Desktop Left Image - flush with bottom of section on desktop/laptop */}
           <div className="hidden lg:flex lg:col-span-5 justify-center items-end self-end">

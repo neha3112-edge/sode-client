@@ -61,6 +61,7 @@ export default function ApprovalCard({
           className={`bg-white/95 rounded-[12px] p-5 sm:p-6 flex flex-col items-center justify-center shadow-md hover:shadow-lg transition-shadow text-slate-900 text-center ${className}`}
           style={style}
         >
+          {data.image ? (
           <div className="relative w-20 h-16 sm:w-24 sm:h-18 mb-3">
             <Image
               src={data.image}
@@ -70,6 +71,7 @@ export default function ApprovalCard({
               sizes="96px"
             />
           </div>
+        ) : null}
           <h3 className="text-xs sm:text-sm font-bold text-slate-900 m-0 line-clamp-2">
             {data.title}
           </h3>
@@ -84,6 +86,7 @@ export default function ApprovalCard({
     case "horizontal-amity":
       return (
         <div className={`flex items-center gap-3 sm:gap-3.5 ${className}`} style={style}>
+          {data.image ? (
           <div className="relative w-16 h-16 sm:w-[72px] sm:h-[72px] lg:w-[80px] lg:h-[80px] shrink-0 flex items-center justify-center">
             <Image
               src={data.image}
@@ -93,6 +96,7 @@ export default function ApprovalCard({
               sizes="(max-width: 640px) 64px, 80px"
             />
           </div>
+        ) : null}
           <p className="text-[13px] sm:text-[13.5px] lg:text-[14px] font-medium text-[#111111] leading-[1.3] m-0">
             {data.title}
           </p>
@@ -102,6 +106,7 @@ export default function ApprovalCard({
     case "badge-circle":
       return (
         <div className={`flex flex-col items-center min-w-[130px] sm:min-w-[150px] ${className}`} style={style}>
+          {data.image ? (
           <div className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-white flex items-center justify-center p-3 shadow-md">
             <Image
               src={data.image}
@@ -111,6 +116,7 @@ export default function ApprovalCard({
               sizes="128px"
             />
           </div>
+        ) : null}
           <div className="mt-3 text-center">
             <p className="text-sm sm:text-base font-extrabold text-white leading-tight m-0">
               {data.title}

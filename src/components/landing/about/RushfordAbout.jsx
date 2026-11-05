@@ -20,7 +20,7 @@ export default function RushfordAbout({ about = {}, brand = {}, onOpenApply }) {
 
   return (
     <section id="about" className="w-full relative select-none scroll-mt-20">
-      <div className="max-w-[1240px] mx-auto px-4 sm:px-6">
+      <div className="max-w-[1130px] mx-auto px-4 sm:px-6">
         <div className="about-cnt py-10 sm:py-14 lg:py-16">
           <div className="ab1 max-w-[660px]">
             <h2 className="text-[26px] sm:text-[32px] font-semibold text-white mb-4 sm:mb-5 tracking-wide m-0 uppercase font-sans">

@@ -13,7 +13,7 @@ export default function RushfordProgrammes({
 
   return (
     <section id="courses" className="py-10 sm:py-12 bg-[#ffffff] select-none scroll-mt-20">
-      <div className="max-w-[1240px] mx-auto px-4 sm:px-6">
+      <div className="max-w-[1130px] mx-auto px-4 sm:px-6">
         <div className="text-center mb-6 sm:mb-7">
           <h2 className="text-[28px] sm:text-[32px] font-light text-[#111111] m-0 tracking-normal">
             {heading}
@@ -32,6 +32,7 @@ export default function RushfordProgrammes({
               className="bg-[#F2F2F2] rounded-[10px] overflow-hidden border border-slate-200/90 shadow-[0_2px_6px_rgba(0,0,0,0.05)] flex flex-col justify-between hover:shadow-md transition-shadow group h-full"
             >
               <div>
+                {p.image ? (
                 <div className="course-card-img-wrap relative w-full h-[165px] sm:h-[170px] overflow-hidden bg-slate-100">
                   <Image
                     src={p.image}
@@ -41,6 +42,7 @@ export default function RushfordProgrammes({
                     sizes="(max-width: 768px) 100vw, 33vw"
                   />
                 </div>
+              ) : null}
                 {/* Multicolor Border strip */}
                 <div
                   className="h-[5px] w-full"

@@ -14,7 +14,7 @@ export default function RushfordApprovals({ approvals = [], brand = {} }) {
       className="certification w-full pt-10 sm:pt-14 pb-6 sm:pb-8 bg-white text-center select-none scroll-mt-20"
       style={{ backgroundColor: brand?.approvalsBg || "#ffffff" }}
     >
-      <div className="max-w-[1140px] mx-auto px-4 sm:px-6">
+      <div className="max-w-[1130px] mx-auto px-4 sm:px-6">
         <h2 className="text-[#111111] text-[26px] sm:text-[32px] font-bold text-center m-0 tracking-tight mb-1.5">
           {sectionTitle}
         </h2>

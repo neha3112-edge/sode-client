@@ -69,7 +69,7 @@ export default function BrochureModal({
       onCancel={handleClose}
       footer={null}
       centered
-      width={400}
+      width={brand?.modalWidth || 480}
       mask={{ closable: false }}
       destroyOnHidden
       closable={false}
@@ -101,13 +101,18 @@ export default function BrochureModal({
           type="button"
           onClick={handleClose}
           disabled={submitting}
-          className="absolute top-2.5 right-2.5 z-50 flex items-center justify-center w-7 h-7 rounded-full bg-black/60 hover:bg-black/85 text-white font-bold text-xs transition-all shadow-md cursor-pointer border-none select-none disabled:opacity-50 disabled:cursor-not-allowed"
+          className={`absolute top-2.5 right-2.5 z-50 flex items-center justify-center w-7 h-7 rounded-full transition-all cursor-pointer border-none select-none disabled:opacity-50 disabled:cursor-not-allowed ${
+            brand?.formStyle === "white" || brand?.hero?.cardStyle === "white"
+              ? "text-gray-500 hover:text-black hover:bg-gray-100 text-sm font-semibold"
+              : "bg-black/60 hover:bg-black/85 text-white font-bold text-xs shadow-md"
+          }`}
           aria-label="Close modal"
         >
           ✕
         </button>
         <LandingLeadForm
           brand={brand}
+          config={brand?.brochureModal}
           courses={courses}
           defaultCourse={selectedCourse}
           universityName={universityName}

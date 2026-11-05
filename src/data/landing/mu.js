@@ -498,6 +498,44 @@ export const muData = {
           color: #f97316 !important;
         }
       }
+
+      /* ── COURSE SELECT DROPDOWN (Matching distanceeducationschool.com/mu/) ── */
+      .landing-course-dropdown .ant-select-item-group,
+      .ant-select-dropdown .ant-select-item-group {
+        font-weight: 700 !important;
+        color: #000000 !important;
+        font-size: 13.5px !important;
+        padding: 8px 12px 4px !important;
+        cursor: default !important;
+        letter-spacing: 0.2px !important;
+      }
+      .landing-course-dropdown .ant-select-item-option,
+      .ant-select-dropdown .ant-select-item-option {
+        font-size: 13px !important;
+        color: #222222 !important;
+        padding: 5px 14px !important;
+        min-height: 28px !important;
+      }
+      .landing-course-dropdown .ant-select-item-option-content,
+      .ant-select-dropdown .ant-select-item-option-content {
+        font-size: 13px !important;
+        color: #222222 !important;
+        font-weight: 400 !important;
+      }
+      .landing-course-dropdown .ant-select-item-option-selected:not(.ant-select-item-option-disabled),
+      .ant-select-dropdown .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+        background-color: #1877f2 !important;
+        color: #ffffff !important;
+        font-weight: 500 !important;
+      }
+      .landing-course-dropdown .ant-select-item-option-selected:not(.ant-select-item-option-disabled) .ant-select-item-option-content,
+      .ant-select-dropdown .ant-select-item-option-selected:not(.ant-select-item-option-disabled) .ant-select-item-option-content {
+        color: #ffffff !important;
+      }
+      .landing-course-dropdown .ant-select-item-option-active:not(.ant-select-item-option-selected),
+      .ant-select-dropdown .ant-select-item-option-active:not(.ant-select-item-option-selected) {
+        background-color: #eff6ff !important;
+      }
     `,
 
     // Section Sequence exactly matching https://distanceeducationschool.com/mu/
@@ -698,22 +736,37 @@ export const muData = {
     faqDefaultOpenIndex: 0, // 👈 0 = Q1 khula rahega (jaise image me h)
   },
 
-  // Courses List for Enquiry Form Dropdown
+  // Courses List for Enquiry Form Dropdown (Matching distanceeducationschool.com/mu/)
   courses: [
-    { value: "MA", label: "MA - Master of Arts" },
-    { value: "MBA", label: "MBA - Master of Business Administration" },
-    { value: "MCA", label: "MCA - Master of Computer Application" },
-    { value: "MCOM", label: "MCOM - Master of Commerce" },
-    { value: "MSC", label: "MSC - Master of Science" },
-    { value: "BA", label: "BA - Bachelor of Arts" },
-    { value: "BBA", label: "BBA - Bachelor of Business Administration" },
-    { value: "BCA", label: "BCA - Bachelor of Computer Application" },
-    { value: "BCOM", label: "BCOM - Bachelor of Commerce" },
-    { value: "BSC", label: "BSC - Bachelor of Science" },
-    { value: "BLIS", label: "BLIS - Bachelor of Library and Information Science" },
-    { value: "BJMC", label: "BJMC - Bachelor of Journalism and Mass Communication" },
-    { value: "MLIS", label: "MLIS - Master of Library and Information Science" },
-    { value: "MBA Plus", label: "MBA Plus - Master of Business Administration Plus" },
+    {
+      label: "Online Courses ━━",
+      title: "Online Courses",
+      options: [
+        { value: "MA", label: "MA" },
+        { value: "MBA", label: "MBA" },
+        { value: "MBA PLUS", label: "MBA PLUS" },
+        { value: "MCA", label: "MCA" },
+        { value: "MCOM", label: "MCOM" },
+        { value: "MSC", label: "MSC" },
+        { value: "BA", label: "BA" },
+        { value: "BBA", label: "BBA" },
+        { value: "BCA", label: "BCA" },
+      ],
+    },
+    {
+      label: "Distance Courses ━━",
+      title: "Distance Courses",
+      options: [
+        { value: "Distance MA", label: "MA" },
+        { value: "Distance MBA", label: "MBA" },
+        { value: "MLIS", label: "MLIS" },
+        { value: "Distance BA", label: "BA" },
+        { value: "BCOM", label: "BCOM" },
+        { value: "BSC", label: "BSC" },
+        { value: "BLIS", label: "BLIS" },
+        { value: "DLIS", label: "DLIS" },
+      ],
+    },
   ],
 
   // Approvals & Recognitions

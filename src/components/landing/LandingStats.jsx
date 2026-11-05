@@ -88,13 +88,46 @@ export default function LandingStats({ stats = [], brand = {} }) {
     !isIimLayout &&
     (brand.statsLayout === "ssbm" || brand.slug === "ssbm");
 
+  const isEdgewoodLayout =
+    brand.statsLayout === "edgewood" || brand.slug === "edgewood";
+
   const isIiitbLayout =
     !isEsgciLayout &&
     !isRushfordLayout &&
     !isLiverpoolLayout &&
     !isIimLayout &&
     !isSsbmLayout &&
+    !isEdgewoodLayout &&
     (brand.statsLayout === "iiitb" || brand.slug === "iiitb");
+
+  // ==========================================
+  // Edgewood Layout: Crimson Red Achievement Bar (#stats)
+  // ==========================================
+  if (isEdgewoodLayout) {
+    return (
+      <div id="stats" className="achievement py-6 bg-[#ba0000] text-white select-none">
+        <div className="max-w-[1140px] min-[1600px]:max-w-[1440px] min-[1920px]:max-w-[1600px] mx-auto px-4 sm:px-6">
+          <div className="ach grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 text-white">
+            {stats.map((st, idx) => (
+              <div key={idx} className="ac1 flex items-center justify-center sm:justify-start gap-3.5">
+                <div className="w-12 h-12 min-w-[48px] min-h-[48px] aspect-square rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm">
+                  <StudentCapIcon className="w-6 h-6 text-[#ba0000] shrink-0" />
+                </div>
+                <div className="text-left">
+                  <h3 className="text-[22px] sm:text-[24px] font-black text-white m-0 leading-tight">
+                    {st.label || st.value}
+                  </h3>
+                  <p className="text-[13px] sm:text-[14px] font-medium text-white/90 m-0 mt-0.5 leading-snug">
+                    {st.desc || st.text || st.value || st.label}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // ==========================================
   // IIITB Layout: Dark Box with 4 Column Highlights (.HighLights #stats)

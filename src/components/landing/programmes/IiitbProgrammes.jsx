@@ -37,6 +37,7 @@ export default function IiitbProgrammes({
               className="course-card bg-white rounded-[14px] overflow-hidden shadow-[0_10px_25px_rgba(0,0,0,0.08)] flex flex-col justify-between hover:shadow-lg transition-shadow duration-300"
             >
               <div>
+                {c.image ? (
                 <div className="relative w-full h-[160px] overflow-hidden bg-slate-100">
                   <Image
                     src={c.image}
@@ -46,6 +47,7 @@ export default function IiitbProgrammes({
                     sizes="(max-width: 768px) 100vw, 33vw"
                   />
                 </div>
+              ) : null}
                 <div className="course-content p-5">
                   <h3 className="text-[17px] sm:text-[18px] font-bold text-[#111111] mb-2 leading-snug">
                     {c.title}

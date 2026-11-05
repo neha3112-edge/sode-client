@@ -35,6 +35,7 @@ export default function UuProgrammes({
       className="w-full bg-[#f8f8f8] rounded-[16px] overflow-hidden shadow-[0_4px_16px_rgba(0,0,0,0.06)] flex flex-col justify-between hover:shadow-lg transition-all duration-300"
     >
       <div>
+        {c.image ? (
         <div className="relative w-full aspect-[500/230] overflow-hidden bg-slate-100">
           <Image
             src={c.image}
@@ -44,6 +45,7 @@ export default function UuProgrammes({
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         </div>
+        ) : null}
         {/* Solid Green accent bar between image and content */}
         <div className="h-[6px] bg-[#62B239] w-full" />
         <div className="px-5 sm:px-6 pt-5 pb-2 flex flex-col">

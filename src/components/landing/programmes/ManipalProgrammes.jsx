@@ -147,12 +147,12 @@ export default function ManipalProgrammes({
       {/* ------------------------------------------------------------- */}
       {/* 3. MOBILE CAROUSEL VIEW (active below md)                      */}
       {/* ------------------------------------------------------------- */}
-      <div className="block md:hidden relative w-full max-w-[340px] sm:max-w-[360px] mx-auto px-6">
+      <div className="block md:hidden relative w-full max-w-[360px] mx-auto px-6">
         <button
           type="button"
           onClick={() => mobileCarouselRef.current?.prev()}
           aria-label="Previous programme"
-          className="absolute -left-1 top-1/2 -translate-y-1/2 z-20 text-[#111111] hover:text-[#ee3024] p-1 bg-transparent border-none cursor-pointer flex items-center justify-center active:scale-90"
+          className="absolute -left-1 top-[46%] -translate-y-1/2 z-20 text-[#111111] hover:text-[#ee3024] p-1 bg-transparent border-none cursor-pointer flex items-center justify-center active:scale-90"
         >
           <ChevronLeft className="w-5 h-5 stroke-[2.5]" />
         </button>
@@ -161,17 +161,17 @@ export default function ManipalProgrammes({
           type="button"
           onClick={() => mobileCarouselRef.current?.next()}
           aria-label="Next programme"
-          className="absolute -right-1 top-1/2 -translate-y-1/2 z-20 text-[#111111] hover:text-[#ee3024] p-1 bg-transparent border-none cursor-pointer flex items-center justify-center active:scale-90"
+          className="absolute -right-1 top-[46%] -translate-y-1/2 z-20 text-[#111111] hover:text-[#ee3024] p-1 bg-transparent border-none cursor-pointer flex items-center justify-center active:scale-90"
         >
           <ChevronRight className="w-5 h-5 stroke-[2.5]" />
         </button>
 
-        <div className="w-full">
+        <div className="w-full [&_.slick-dots]:!relative [&_.slick-dots]:!mt-4 [&_.slick-dots]:!mb-0 [&_.slick-dots_li]:!w-2.5 [&_.slick-dots_li]:!h-2.5 [&_.slick-dots_li]:!mx-1 [&_.slick-dots_li_button]:!w-2.5 [&_.slick-dots_li_button]:!h-2.5 [&_.slick-dots_li_button]:!rounded-full [&_.slick-dots_li_button]:!bg-[#d9d9d9] [&_.slick-dots_li.slick-active_button]:!bg-[#999999]">
           <Carousel
             ref={mobileCarouselRef}
             autoplay={true}
             autoplaySpeed={4000}
-            dots={false}
+            dots={brand?.programmesCarousel?.mobileDots !== undefined ? Boolean(brand.programmesCarousel.mobileDots) : true}
             slidesToShow={1}
             slidesToScroll={1}
             infinite={programmes.length > 1}
@@ -181,26 +181,26 @@ export default function ManipalProgrammes({
             {programmes.map((c, idx) => (
               <div
                 key={`mobile-${c.id || c.code}-${idx}`}
-                className="box-border px-1.5 py-1 outline-none"
+                className="box-border px-1 py-1 outline-none"
               >
-                <div className="bg-white rounded-[6px] shadow-[0px_2px_12px_rgba(0,0,0,0.08)] px-[20px] pt-[32px] pb-[26px] flex flex-col justify-between h-[410px] text-left border-none select-text">
+                <div className="bg-white rounded-[6px] shadow-[0px_2px_12px_rgba(0,0,0,0.08)] px-[20px] pt-[28px] pb-[22px] flex flex-col justify-between h-[410px] text-left border-none select-text">
                   <div>
                     <h3 className="text-[26px] font-bold text-[#212529] m-0 tracking-tight leading-none">
                       {c.code || c.id?.toUpperCase()}
                     </h3>
 
-                    <h4 className="text-[18px] font-medium text-[#212529] mt-3 mb-3 leading-[1.25] min-h-[46px] line-clamp-2">
+                    <h4 className="text-[17px] font-medium text-[#212529] mt-2.5 mb-2.5 leading-[1.25] min-h-[44px] line-clamp-2">
                       {c.title}
                     </h4>
 
-                    <p className="text-[13px] text-[#212529] leading-[20px] font-normal m-0 line-clamp-6">
+                    <p className="text-[13px] text-[#333333] leading-[20px] font-normal m-0 line-clamp-6">
                       {c.description}
                     </p>
                   </div>
 
                   <div className="mt-4 pt-1">
                     {cardLogo && (
-                      <div className="relative w-[110px] h-[26px] mb-3.5">
+                      <div className="relative w-[115px] h-[26px] mb-3.5">
                         <Image
                           src={cardLogo}
                           alt={brand.name || "University Logo"}
@@ -214,7 +214,7 @@ export default function ManipalProgrammes({
                     <button
                       type="button"
                       onClick={() => onSelectCourseForBrochure?.(c.code || c.title)}
-                      className="w-full h-[42px] rounded-[5px] bg-gradient-to-r from-[#ee3024] to-[#ff6600] text-white font-medium text-[14.5px] flex items-center justify-center gap-2 cursor-pointer border-none shadow-xs active:scale-[0.98] transition-all"
+                      className="w-full h-[40px] rounded-[5px] bg-gradient-to-r from-[#ee3024] to-[#ff6600] text-white font-medium text-[14.5px] flex items-center justify-center gap-2 cursor-pointer border-none shadow-xs active:scale-[0.98] transition-all"
                     >
                       <span>Download Brochure</span>
                       <svg

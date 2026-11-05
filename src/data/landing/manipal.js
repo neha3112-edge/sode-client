@@ -15,17 +15,38 @@ export const manipalData = {
     ],
   },
   courses: [
-    { value: "MBA", label: "MBA" },
-    { value: "MCA", label: "MCA" },
-    { value: "MCOM", label: "MCOM" },
-    { value: "MA-JMC", label: "MA-JMC" },
-    { value: "MA", label: "MA" },
-    { value: "BBA", label: "BBA" },
-    { value: "BCOM", label: "BCOM" },
-    { value: "BCA", label: "BCA" },
-    { value: "MSC", label: "MSC" },
+    {
+      label: "Online Courses ━━",
+      title: "Online Courses",
+      options: [
+        { value: "MA", label: "MA" },
+        { value: "MBA", label: "MBA" },
+        { value: "MBA PLUS", label: "MBA PLUS" },
+        { value: "MCA", label: "MCA" },
+        { value: "MCOM", label: "MCOM" },
+        { value: "MSC", label: "MSC" },
+        { value: "BA", label: "BA" },
+        { value: "BBA", label: "BBA" },
+        { value: "BCA", label: "BCA" },
+      ],
+    },
+    {
+      label: "Distance Courses ━━",
+      title: "Distance Courses",
+      options: [
+        { value: "Distance MA", label: "MA" },
+        { value: "Distance MBA", label: "MBA" },
+        { value: "MLIS", label: "MLIS" },
+        { value: "Distance BA", label: "BA" },
+        { value: "BCOM", label: "BCOM" },
+        { value: "BSC", label: "BSC" },
+        { value: "BLIS", label: "BLIS" },
+        { value: "DLIS", label: "DLIS" },
+      ],
+    },
   ],
   brand: {
+    slug: "manipal",
     name: "Manipal University Online",
     shortName: "Manipal",
     hashtag: "#EmpowerToLeadTomorrow",
@@ -77,21 +98,70 @@ export const manipalData = {
     footerFormTitleColor: "#ffffff",
     footerFormSubtitle:
       "Confused about courses or universities?\nShare your details, and our education experts will guide you with the right information.",
-    testimonialsDots: true,
+    testimonialsDots: false,
     badgeText: "Admissions Open 2026",
     showCouponBtn: true,
+    hideMobileHeroCoupon: true,
     hideSodeLogo: true,
     showSodeLogo: false,
     headerContainerClassName: "max-w-[1130px]",
     couponBtnBg: "#22c55e",
     showCouponPillWrapper: false,
-    faqTitleHtml: '<h2 class="text-2xl sm:text-3xl font-bold tracking-tight m-0"><span style="color: #08417b">FAQs</span> <span style="color: #08417b" class="font-normal mx-1">|</span> <span style="color: #ee3024">Frequently Asked Questions</span></h2>',
+    customCss: `
+      /* MANIPAL LEAD FORM CARD - PURE WHITE CARD MATCHING DISTANCEEDUCATION.COM/MANIPAL/ */
+      .landing-page--manipal .landing-lead-card--hero,
+      .landing-page--manipal .landing-lead-form-root {
+        background-color: #ffffff !important;
+        background: #ffffff !important;
+        box-shadow: 0 5px 20px #ccc !important;
+        border-radius: 12px !important;
+      }
+      .landing-page--manipal .landing-lead-card--hero input,
+      .landing-page--manipal .landing-lead-form-root input {
+        background-color: #f7f7f7 !important;
+        color: #1e293b !important;
+        border: 1px solid #e5e7eb !important;
+      }
+      .landing-page--manipal .landing-lead-card--hero .ant-select-selector,
+      .landing-page--manipal .landing-lead-form-root .ant-select-selector {
+        background-color: #f7f7f7 !important;
+        color: #1e293b !important;
+        border: 1px solid #e5e7eb !important;
+      }
+      /* ── COURSE SELECT DROPDOWN (Matching distanceeducationschool.com and user image) ── */
+      .landing-course-dropdown .ant-select-item-group,
+      .ant-select-dropdown .ant-select-item-group {
+        font-weight: 700 !important;
+        color: #000000 !important;
+        font-size: 13.5px !important;
+        padding: 8px 12px 4px !important;
+        cursor: default !important;
+        letter-spacing: 0.2px !important;
+      }
+      .landing-course-dropdown .ant-select-item-option,
+      .ant-select-dropdown .ant-select-item-option {
+        font-weight: 400 !important;
+        color: #222222 !important;
+        font-size: 13px !important;
+        padding: 6px 16px !important;
+      }
+      .landing-course-dropdown .ant-select-item-option-selected,
+      .ant-select-dropdown .ant-select-item-option-selected {
+        background-color: #1677ff !important;
+        color: #ffffff !important;
+        font-weight: 600 !important;
+      }
+
+    `,
+
+    faqTitleHtml: '<h2 class="text-[25px] sm:text-[28px] lg:text-[32px] font-bold tracking-tight m-0"><span style="color: #08417b">FAQs</span> <span style="color: #08417b" class="font-normal mx-1.5">|</span> <span style="color: #ee3024">Frequently Asked Questions</span></h2>',
     faqIconColor: "#08417b",
     hero: {
       backgroundImage: "/assets/manipal_v1_images/banner-manipal-des-final.webp",
       mobileBackgroundImage: "/assets/manipal_v1_images/banner-muj-mobile1.webp",
       mobileImage: "/assets/all_universities_images/manipal/university.webp",
-      mobileImageWrapperClassName: "aspect-[926/433] !h-auto",
+      mobileImageWrapperClassName: "aspect-[926/433] !h-auto !mb-0 rounded-2xl",
+      hideMobileHeroCoupon: true,
       backgroundPosition: "center 0%",
       mobileBackgroundPosition: "top center",
       backgroundSize: "cover",
@@ -99,55 +169,63 @@ export const manipalData = {
       isDarkTheme: true,
       noOverlay: true,
       cardStyle: "white",
+      formCardType: "white",
+      formBackground: "#ffffff",
+      formClassName: "!bg-white shadow-[0_5px_20px_#ccc] !rounded-[12px]",
       mobileAlign: "left",
-      contentClassName: "items-start text-left lg:max-w-[620px] xl:max-w-[660px]",
+      contentClassName: "items-start text-left max-w-full lg:max-w-[520px] pt-4 sm:pt-6 min-[1000px]:pt-[68px] xl:pt-[76px]",
 
       hashtagText: "#EmpowerToLeadTomorrow",
+      hashtagClassName: "text-[12.5px] sm:text-[14px] lg:text-[15px] font-semibold text-white tracking-wide m-0 mb-2 sm:mb-3 lg:mb-3.5 text-left",
       hashtagStyle: {
         color: "#ffffff",
-        fontSize: "14px",
         fontWeight: "600",
         letterSpacing: "0.2px",
-        marginBottom: "4px",
       },
 
       headlineText: "Manipal University Online",
       headingFont: "'Oswald', sans-serif",
-      headingClassName: "text-[32px] sm:text-[38px] lg:text-[42px] xl:text-[46px] font-bold text-white leading-tight tracking-tight sm:whitespace-nowrap mt-1 mb-2 text-left",
+      headingClassName: "text-[27px] xs:text-[29px] sm:text-[36px] lg:text-[42px] xl:text-[44px] font-bold text-white leading-[1.08] tracking-tight sm:whitespace-nowrap mt-0 mb-2.5 sm:mb-4 lg:mb-4 text-left",
       headingStyle: {
         color: "#ffffff",
-        lineHeight: "1.12",
+        lineHeight: "1.08",
       },
 
       taglineText: "Education that empowers your\nambition",
-      taglineClassName: "whitespace-pre-line text-white font-bold text-[18px] sm:text-[22px] lg:text-[24px] leading-snug my-2.5 max-w-[480px] text-left",
+      taglineClassName: "whitespace-pre-line text-white font-bold text-[17px] xs:text-[18.5px] sm:text-[21px] lg:text-[24px] leading-snug mt-1 mb-3 sm:mb-6 lg:mb-9 max-w-[480px] text-left",
       taglineStyle: {
         color: "#ffffff",
         fontWeight: "700",
+        lineHeight: "1.25",
       },
 
       hideCourseBox: true,
-      coursesStrip: [
+      mobileCoursesStrip: [
         "MBA | MCA | MCOM | MA-JMC | MA",
         "| BBA | BCOM | BCA | MSC",
       ],
-      courseStripClassName: "my-3 text-[17px] sm:text-[20px] lg:text-[21px] font-bold text-white tracking-wide space-y-1 text-left",
+      coursesStrip: [
+        "MBA | MCA | MCOM | MA-JMC | MA |",
+        "BBA | BCOM | BCA | MSC",
+      ],
+      courseStripClassName: "mt-1 mb-4 sm:mb-6 lg:mb-8 text-[15px] xs:text-[16.5px] sm:text-[20px] lg:text-[22px] xl:text-[23px] font-bold text-white tracking-normal space-y-1 sm:space-y-2 text-left",
       courseStripStyle: {
         color: "#ffffff",
         fontWeight: "700",
       },
 
       brochureButtonText: "Download Brochure",
-      buttonClassName: "self-start",
+      buttonClassName: "self-start !h-[38px] sm:!h-auto !py-1.5 sm:!py-[11px] !px-4 sm:!px-[26px] !text-[13.5px] sm:!text-[15px] !rounded-[6px]",
       buttonStyle: {
-        background: "#f35a06",
-        backgroundColor: "#f35a06",
+        background: "linear-gradient(90deg, #ee3024 0%, #ff6600 100%)",
+        backgroundColor: "#ee3024",
         color: "#ffffff",
-        borderRadius: "4px",
-        fontSize: "14px",
+        borderRadius: "6px",
+        fontSize: "15px",
         fontWeight: "700",
-        padding: "10px 22px",
-        boxShadow: "0 4px 12px rgba(243, 90, 6, 0.35)",
+        padding: "11px 26px",
+        boxShadow: "0 4px 14px rgba(238, 48, 36, 0.4)",
+        border: "none",
       },
 
       /* Global Reusable Form Configuration (Matching Amity schema) */
@@ -166,34 +244,55 @@ export const manipalData = {
         phoneText: "+91 7065 7777 55",
         phoneHref: "+917065777755",
         courseList: [
-          { value: "MBA", label: "MBA" },
-          { value: "MCA", label: "MCA" },
-          { value: "MCOM", label: "MCOM" },
-          { value: "MA-JMC", label: "MA-JMC" },
-          { value: "MA", label: "MA" },
-          { value: "BBA", label: "BBA" },
-          { value: "BCOM", label: "BCOM" },
-          { value: "BCA", label: "BCA" },
-          { value: "MSC", label: "MSC" },
+          {
+            label: "Online Courses ━━",
+            title: "Online Courses",
+            options: [
+              { value: "MA", label: "MA" },
+              { value: "MBA", label: "MBA" },
+              { value: "MBA PLUS", label: "MBA PLUS" },
+              { value: "MCA", label: "MCA" },
+              { value: "MCOM", label: "MCOM" },
+              { value: "MSC", label: "MSC" },
+              { value: "BA", label: "BA" },
+              { value: "BBA", label: "BBA" },
+              { value: "BCA", label: "BCA" },
+            ],
+          },
+          {
+            label: "Distance Courses ━━",
+            title: "Distance Courses",
+            options: [
+              { value: "Distance MA", label: "MA" },
+              { value: "Distance MBA", label: "MBA" },
+              { value: "MLIS", label: "MLIS" },
+              { value: "Distance BA", label: "BA" },
+              { value: "BCOM", label: "BCOM" },
+              { value: "BSC", label: "BSC" },
+              { value: "BLIS", label: "BLIS" },
+              { value: "DLIS", label: "DLIS" },
+            ],
+          },
         ],
+        variant: "white",
         colors: {
           background: "#ffffff",
           title: "#ee3024",
-          subtitle: "#333333",
-          phoneBackground: "#f35a06",
+          subtitle: "#484848",
+          phoneBackground: "linear-gradient(270deg, #ff6600 0%, #ee3024 100%)",
           phoneText: "#ffffff",
           phoneIcon: "#ffffff",
-          inputBackground: "#ffffff",
+          inputBackground: "#f7f7f7",
           inputText: "#1e293b",
-          inputPlaceholder: "#888888",
-          inputBorder: "#d1d5db",
-          selectBackground: "#ffffff",
+          inputPlaceholder: "#777777",
+          inputBorder: "#e5e7eb",
+          selectBackground: "#f7f7f7",
           selectText: "#1e293b",
-          selectPlaceholder: "#888888",
-          selectBorder: "#d1d5db",
-          countryCodeBackground: "#f8fafc",
+          selectPlaceholder: "#777777",
+          selectBorder: "#e5e7eb",
+          countryCodeBackground: "#f7f7f7",
           countryCodeText: "#1e293b",
-          countryCodeBorder: "#d1d5db",
+          countryCodeBorder: "#e5e7eb",
           consentText: "#475569",
           disclaimer: "#0066cc",
           submitBackground: "#22c55e",
@@ -224,11 +323,12 @@ export const manipalData = {
     approvalsBannerBg: "#ffffff",
     approvalsHeaderColor: "#ee3024",
     approvalsBg: "#ffffff",
-    approvalsDots: true,
+    approvalsDots: false,
     approvalsMobileSlides: 2,
     approvalsShowCircleBorder: true,
     approvalsCarousel: {
-      dots: true,
+      dots: false,
+      mobileDots: true,
       mobileSlides: 2,
       desktopSlides: 4,
       tabletSlides: 3,
@@ -240,6 +340,7 @@ export const manipalData = {
     programmesCarousel: {
       mobileSlides: 1,
       dots: false,
+      mobileDots: true,
       desktopSlides: 3,
       tabletSlides: 2,
     },
@@ -268,13 +369,14 @@ export const manipalData = {
       "Manipal University's online degree courses redefine academic excellence with flexible learning approaches and advanced digital education tools.",
     whyChooseBg: "#fdf8f4",
     whyChooseLayout: "slider",
-    whyChooseDots: true,
+    whyChooseDots: false,
     whyChooseMobileSlides: 1,
     whyChooseCarousel: {
       desktopSlides: 4,
       tabletSlides: 2,
       mobileSlides: 1,
-      dots: true,
+      dots: false,
+      mobileDots: true,
     },
     aboutLayout: "campusStats",
     aboutHighlight: "Manipal University Online",
@@ -284,32 +386,37 @@ export const manipalData = {
       "SODE Counselling Services LLP act as a marketing agency. All university names, logos, and trademarks mentioned are used for informational purposes only. We are not a university or an admission authority. Users are encouraged to verify information on the official website of the University before making decisions.",
   },
   courses: [
-    { value: "BBA", label: "BBA" },
-    { value: "BCOM", label: "BCOM" },
-    { value: "BCA", label: "BCA" },
-    { value: "MA", label: "MA" },
-    { value: "MBA", label: "MBA" },
-    { value: "MCOM", label: "MCOM" },
-    { value: "MA-JMC", label: "MA-JMC" },
-    { value: "MCA", label: "MCA" },
-    { value: "MSC", label: "MSC" },
+    {
+      label: "Online Courses ━━",
+      title: "Online Courses",
+      options: [
+        { value: "MA", label: "MA" },
+        { value: "MBA", label: "MBA" },
+        { value: "MBA PLUS", label: "MBA PLUS" },
+        { value: "MCA", label: "MCA" },
+        { value: "MCOM", label: "MCOM" },
+        { value: "MSC", label: "MSC" },
+        { value: "BA", label: "BA" },
+        { value: "BBA", label: "BBA" },
+        { value: "BCA", label: "BCA" },
+      ],
+    },
+    {
+      label: "Distance Courses ━━",
+      title: "Distance Courses",
+      options: [
+        { value: "Distance MA", label: "MA" },
+        { value: "Distance MBA", label: "MBA" },
+        { value: "MLIS", label: "MLIS" },
+        { value: "Distance BA", label: "BA" },
+        { value: "BCOM", label: "BCOM" },
+        { value: "BSC", label: "BSC" },
+        { value: "BLIS", label: "BLIS" },
+        { value: "DLIS", label: "DLIS" },
+      ],
+    },
   ],
   approvals: [
-    {
-      image: "/assets/manipal_v1_images/aicte.webp",
-      text: "AICTE Approved: All India Council of Technical Education ensures academic standards are met.",
-      tag: "AICTE",
-    },
-    {
-      image: "/assets/manipal_v1_images/QS_Asia_2025.webp",
-      text: "QS Asia 2026: Amongst South Asia's Top 200 Universities (2026).",
-      tag: "QS Asia 2026",
-    },
-    {
-      image: "/assets/manipal_v1_images/THE_World_Rankings_2024.webp",
-      text: "THE World Rankings 2024: Ranked 1201–1500 (globally) and 59th (India), validating Manipal Online quality.",
-      tag: "THE Ranked",
-    },
     {
       image: "/assets/manipal_v1_images/naac.webp",
       text: "NAAC A+ Grade: Rajasthan's 1ST NAAC A+ accredited university.",
@@ -330,23 +437,23 @@ export const manipalData = {
       text: "WES Recognised: Manipal University online courses are WES-recognised, validating for overseas education or jobs.",
       tag: "WES Recognised",
     },
+    {
+      image: "/assets/manipal_v1_images/aicte.webp",
+      text: "AICTE Approved: All India Council of Technical Education ensures academic standards are met.",
+      tag: "AICTE",
+    },
+    {
+      image: "/assets/manipal_v1_images/QS_Asia_2025.webp",
+      text: "QS Asia 2026: Amongst South Asia's Top 200 Universities (2026).",
+      tag: "QS Asia 2026",
+    },
+    {
+      image: "/assets/manipal_v1_images/THE_World_Rankings_2024.webp",
+      text: "THE World Rankings 2024: Ranked 1201–1500 (globally) and 59th (India), validating Manipal Online quality.",
+      tag: "THE Ranked",
+    },
   ],
   whyChoose: [
-    {
-      title: "Next Gen Pedagogy",
-      desc: "Manipal University delivers future-focused, innovative learning methods.",
-      image: "/assets/manipal_v1_images/next-gen-pedagogy.webp",
-    },
-    {
-      title: "World Class Education",
-      desc: "The university ensures quality learning with global academic standards.",
-      image: "/assets/manipal_v1_images/world-class-education.webp",
-    },
-    {
-      title: "Multi-disciplinary Courses",
-      desc: "Numerous degrees and programs with popular specialisations are available at Manipal University Online.",
-      image: "/assets/manipal_v1_images/multidisciplinary-programs.webp",
-    },
     {
       title: "Robust Alumni Network",
       desc: "The university has a strong alumni network and supports career growth & guidance.",
@@ -361,6 +468,21 @@ export const manipalData = {
       title: "Attractive Scholarships",
       desc: "Scholarships are available for all online courses offered by Manipal University Online .",
       image: "/assets/manipal_v1_images/attractive-scholarships.webp",
+    },
+    {
+      title: "Next Gen Pedagogy",
+      desc: "Manipal University delivers future-focused, innovative learning methods.",
+      image: "/assets/manipal_v1_images/next-gen-pedagogy.webp",
+    },
+    {
+      title: "World Class Education",
+      desc: "The university ensures quality learning with global academic standards.",
+      image: "/assets/manipal_v1_images/world-class-education.webp",
+    },
+    {
+      title: "Multi-disciplinary Courses",
+      desc: "Numerous degrees and programs with popular specialisations are available at Manipal University Online.",
+      image: "/assets/manipal_v1_images/multidisciplinary-programs.webp",
     },
   ],
   programmes: [
@@ -505,12 +627,6 @@ export const manipalData = {
   ],
   testimonials: [
     {
-      name: "Rohan Kaywal",
-      course: "Online BBA",
-      image: "/assets/manipal_v1_images/rohan.webp",
-      text: "I wanted to specialize in marketing, which is why I decided to start by pursuing an online BBA. As a working professional, an online degree was the best choice for me. The faculty at MUJ are experienced & guide us well and the student portal is user-friendly",
-    },
-    {
       name: "Madona Khanna",
       course: "Online BCA",
       image: "/assets/manipal_v1_images/madona.webp",
@@ -529,6 +645,12 @@ export const manipalData = {
       text: "After taking a career break for over a year, I wanted to upskill myself to get a better job. I’m glad I chose to pursue my online MBA through Online Manipal, as the degree is equivalent to a regular on-campus degree. Flexible classes have allowed me to manage my work and academics.",
     },
     {
+      name: "Rohan Kaywal",
+      course: "Online BBA",
+      image: "/assets/manipal_v1_images/rohan.webp",
+      text: "I wanted to specialize in marketing, which is why I decided to start by pursuing an online BBA. As a working professional, an online degree was the best choice for me. The faculty at MUJ are experienced & guide us well and the student portal is user-friendly",
+    },
+    {
       name: "Vishnu J",
       course: "Online MCA",
       image: "/assets/manipal_v1_images/vishnu.webp",
@@ -536,9 +658,9 @@ export const manipalData = {
     },
     {
       name: "Menka Sharma",
-      course: "Online BCom",
+      course: "Online MCA",
       image: "/assets/manipal_v1_images/menka-sharma.webp",
-      text: "The support from the university advisors and faculty has been outstanding. Even though it's online, you never feel alone. The live interactive sessions and peer forums make the entire experience engaging.",
+      text: "I always wanted to pursue my higher education dream without quitting my job, and MUJ has made it possible for me through their online degrees. My online MCA degree has given me wings to fly and chase my career aspirations.",
     },
   ],
   enrollmentProcess: {

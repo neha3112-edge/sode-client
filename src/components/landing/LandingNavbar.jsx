@@ -299,11 +299,19 @@ export default function LandingNavbar({
      MANIPAL UNIVERSITY ONLINE NAVBAR
      Exact 1:1 match with Image 1 (Height 54px-56px, FAQ max-width)
   ======================================================= */
-  const isManipal = slug === "manipal" || brand.slug === "manipal";
+  const isManipal = slug === "manipal" || brand.slug === "manipal" || brand.name?.toLowerCase().includes("manipal");
 
   if (isManipal) {
+    const manipalNavLinks = [
+      { label: "Courses", href: "#programs", fallbackHref: "#program" },
+      { label: "Approvals", href: "#approvals" },
+      { label: "About", href: "#about" },
+      { label: "Advantage", href: "#advantage", fallbackHref: "#whychoose" },
+      { label: "FAQs", href: "#faq", fallbackHref: "#faqs" },
+    ];
+
     return (
-      <header className="sticky top-0 z-50 bg-white border-b border-slate-200/80 shadow-[0_2px_10px_rgba(0,0,0,0.06)] select-none h-[54px] sm:h-[56px] flex items-center">
+      <header className="sticky top-0 z-50 bg-white border-b border-slate-200/80 shadow-[0_2px_10px_rgba(0,0,0,0.06)] select-none">
         <div className="w-full max-w-[1130px] mx-auto px-4 sm:px-6 flex items-center justify-between h-[54px] sm:h-[56px]">
           {/* LEFT: Manipal University Logo only (No SODE icon, No divider) */}
           <div className="flex items-center min-w-0 shrink-0">
@@ -326,14 +334,14 @@ export default function LandingNavbar({
             </Link>
           </div>
 
-          {/* RIGHT: Scholarship Coupon Code Button */}
-          {isCouponVisible && (
-            <div className="shrink-0 flex items-center">
+          {/* RIGHT: Scholarship Coupon Code Button (Desktop) & Hamburger Icon (Mobile) */}
+          <div className="shrink-0 flex items-center">
+            {isCouponVisible && (
               <button
                 type="button"
                 onClick={handleCouponClick}
                 aria-label="Get Scholarship Coupon Code"
-                className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1 sm:py-1.5 h-[32px] sm:h-[34px] rounded-[7px] sm:rounded-[8px] bg-gradient-to-r from-[#2ecc71] to-[#27ae60] text-white font-bold text-[12px] sm:text-[13px] cursor-pointer border-none shadow-[0_3px_10px_rgba(46,204,113,0.35)] hover:shadow-[0_5px_14px_rgba(46,204,113,0.45)] active:scale-95 transition-all select-none whitespace-nowrap"
+                className="hidden md:inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1 sm:py-1.5 h-[32px] sm:h-[34px] rounded-[7px] sm:rounded-[8px] bg-gradient-to-r from-[#2ecc71] to-[#27ae60] text-white font-bold text-[12px] sm:text-[13px] cursor-pointer border-none shadow-[0_3px_10px_rgba(46,204,113,0.35)] hover:shadow-[0_5px_14px_rgba(46,204,113,0.45)] active:scale-95 transition-all select-none whitespace-nowrap"
               >
                 <span className="w-5 h-5 rounded-full bg-white flex items-center justify-center shrink-0 shadow-xs overflow-hidden">
                   <Image
@@ -347,9 +355,87 @@ export default function LandingNavbar({
                 </span>
                 <span>{couponButtonText || "Scholarship Coupon Code"}</span>
               </button>
-            </div>
-          )}
+            )}
+
+            {/* Mobile Hamburger / Close Toggle Button matching Image 1 */}
+            <button
+              type="button"
+              className="md:hidden p-1.5 rounded-lg text-[#17479E] focus:outline-none cursor-pointer border-none bg-transparent"
+              onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
+              aria-label="Toggle menu"
+            >
+              {isMobileNavOpen ? (
+                <svg className="w-6 h-6" fill="none" stroke="#17479E" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg className="w-6 h-6" fill="none" stroke="#17479E" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              )}
+            </button>
+          </div>
         </div>
+
+        {/* MOBILE DROPDOWN ACCORDION MENU (Matching Image 1 & distanceeducationschool.com/manipal/) */}
+        {isMobileNavOpen && (
+          <div className="md:hidden w-full bg-white border-t border-[#f0f2f5] shadow-[0_12px_24px_rgba(0,0,0,0.12)]">
+            <ul className="list-none p-0 m-0 w-full flex flex-col">
+              {manipalNavLinks.map((item) => (
+                <li key={item.label} className="w-full text-center border-b border-[#f0f2f5] bg-white">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      const targetId = item.href.replace("#", "");
+                      const fallbackId = item.fallbackHref?.replace("#", "");
+                      const el =
+                        document.getElementById(targetId) ||
+                        (fallbackId && document.getElementById(fallbackId));
+                      if (el) {
+                        const navHeight = 65;
+                        const targetY =
+                          el.getBoundingClientRect().top +
+                          window.pageYOffset -
+                          navHeight;
+                        window.scrollTo({
+                          top: targetY,
+                          behavior: "smooth",
+                        });
+                      }
+                      setIsMobileNavOpen(false);
+                    }}
+                    className="w-full py-2.5 px-5 text-center text-[#112244] hover:text-[#17479E] font-semibold text-[15px] tracking-wide hover:bg-slate-50 transition-colors bg-white border-none cursor-pointer"
+                  >
+                    {item.label}
+                  </button>
+                </li>
+              ))}
+              <li className="w-full flex items-center justify-center py-3.5 px-4 bg-white">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    handleCouponClick(e);
+                    setIsMobileNavOpen(false);
+                  }}
+                  className="w-full max-w-[280px] mx-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 h-[40px] rounded-[8px] bg-gradient-to-r from-[#2ecc71] to-[#27ae60] text-white font-bold text-[14px] cursor-pointer border-none shadow-[0_6px_18px_rgba(46,204,113,0.45)] hover:shadow-[0_8px_22px_rgba(46,204,113,0.55)] active:scale-95 transition-all select-none"
+                >
+                  <span className="w-5 h-5 rounded-full bg-white flex items-center justify-center shrink-0 shadow-xs overflow-hidden">
+                    <Image
+                      src={giftGif || "/assets/manipal_v1_images/gift.gif"}
+                      alt="Scholarship Gift"
+                      width={20}
+                      height={20}
+                      unoptimized
+                      className="w-3.5 h-3.5 object-contain"
+                    />
+                  </span>
+                  <span>{couponButtonText || "Scholarship Coupon Code"}</span>
+                </button>
+              </li>
+            </ul>
+          </div>
+        )}
       </header>
     );
   }

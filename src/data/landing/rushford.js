@@ -33,6 +33,78 @@ export const rushfordCustomCss = `
     color: #e0007a !important;
   }
 
+  /* Desktop Max-Width Container Alignment matching https://distanceeducationschool.com/rushford/ */
+  @media (min-width: 1024px) {
+    .landing-page--rushford header.navbar .container,
+    .landing-page--rushford header.navbar .ant-layout-content {
+      max-width: 1130px !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+
+    .landing-page--rushford #hero > div:not([aria-hidden="true"]):not(.absolute) {
+      max-width: 1130px !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+
+    .landing-page--rushford #courses > div {
+      max-width: 1130px !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+
+    .landing-page--rushford #about > div:not(.mb-view) {
+      max-width: 1130px !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+
+    .landing-page--rushford #accreditations > div {
+      max-width: 1130px !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+
+    .landing-page--rushford #sample-degree > div {
+      max-width: 1130px !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+
+    .landing-page--rushford #copilot > div {
+      max-width: 1130px !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+
+    .landing-page--rushford #benefits > div {
+      max-width: 1130px !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+
+    .landing-page--rushford #placement > div,
+    .landing-page--rushford #placement .container {
+      max-width: 1130px !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+
+    .landing-page--rushford #faqs > div,
+    .landing-page--rushford #faqs .container {
+      max-width: 1130px !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+
+    .landing-page--rushford .compare_box {
+      max-width: 1130px !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+  }
+
   /* Hero Section */
   .landing-page--rushford #hero {
     background-image: url(/assets/all_universities_images/rushford/rushford_new_desktop_bg.png) !important;

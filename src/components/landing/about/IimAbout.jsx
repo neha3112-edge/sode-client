@@ -44,7 +44,7 @@ export default function IimAbout({ about = {}, brand = {} }) {
               <h2>
                 Accreditations and Recognitions of IIM <br />Kozhikode
               </h2>
-              {accreditations.map((acc, idx) => (
+              {accreditations.map((acc, idx) => acc.image ? (
                 <div key={idx} className="acc-card">
                   <Image
                     src={acc.image}
@@ -54,7 +54,7 @@ export default function IimAbout({ about = {}, brand = {} }) {
                     className="img-responsive object-contain"
                   />
                 </div>
-              ))}
+              ) : null)}
             </div>
           </div>
 

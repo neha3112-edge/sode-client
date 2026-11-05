@@ -14,8 +14,8 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
     brand.faqDefaultOpenIndex !== undefined
       ? brand.faqDefaultOpenIndex
       : isUuBrand
-      ? null
-      : 0;
+        ? null
+        : 0;
   const [openIndex, setOpenIndex] = useState(defaultOpen); // default active index or null
   const headingColor = brand.faqHeaderColor || brand.primaryColor || "#08417b";
   const iconColor = brand.faqIconColor || brand.primaryColor || "#fd202a";
@@ -52,6 +52,10 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
     brand.slug === "upes" ||
     brand.faqLayout === "upes";
 
+  const isEdgewood =
+    brand.slug === "edgewood" ||
+    brand.faqLayout === "edgewood";
+
   const desktopWidthStyle = (
     <style>{`
       @media (min-width: 1024px) {
@@ -65,6 +69,56 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
       }
     `}</style>
   );
+
+  // ==========================================
+  // Layout: Edgewood FAQ
+  // ==========================================
+  if (isEdgewood) {
+    return (
+      <section id="faqs" className="faq-section py-12 sm:py-16 bg-white scroll-mt-24 select-none">
+        <div className="w-full max-w-[1000px] mx-auto px-4 sm:px-6">
+          <div className="faq-header text-center mb-8 sm:mb-10">
+            <h2 className="text-[#0056b3] text-[26px] sm:text-[32px] font-extrabold tracking-tight m-0">
+              {brand.faqTitle || "FAQ-Frequently Asked Question"}
+            </h2>
+          </div>
+          <div className="faq-container flex flex-col gap-3.5 sm:gap-4">
+            {faqs.map((faq, idx) => {
+              const isOpen = openIndex === idx;
+              return (
+                <div
+                  key={idx}
+                  className={`faq-item rounded-[15px] overflow-hidden transition-all duration-200 ${
+                    isOpen
+                      ? "active bg-[#f1f1f1] border-none shadow-xs"
+                      : "bg-white border border-[#dddddd]"
+                  }`}
+                >
+                  <button
+                    type="button"
+                    onClick={() => toggleFaq(idx)}
+                    className="faq-question w-full text-left py-4 px-5 sm:py-5 sm:px-6 flex items-center gap-3.5 sm:gap-4 cursor-pointer select-none bg-transparent border-none"
+                  >
+                    <span className="status-icon w-5 h-5 min-w-[20px] h-[20px] rounded-[4px] bg-[#0056b3] text-white flex items-center justify-center font-bold text-[14px] leading-none shrink-0">
+                      {isOpen ? "−" : "+"}
+                    </span>
+                    <span className="text-[#0056b3] font-bold text-[15px] sm:text-[16px] leading-snug">
+                      {faq.q || faq.question}
+                    </span>
+                  </button>
+                  {isOpen && (
+                    <div className="faq-answer px-5 pb-5 pt-0 sm:px-6 sm:pb-6 pl-[48px] sm:pl-[60px] pr-5 sm:pr-8 text-[#555555] text-[14px] sm:text-[15px] leading-relaxed">
+                      <p className="m-0">{faq.a || faq.answer}</p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   // ==========================================
   // Layout: UPES Online FAQ
@@ -159,11 +213,10 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
                   <button
                     type="button"
                     onClick={() => toggleFaq(idx)}
-                    className={`faq-question w-full text-left flex items-center justify-between gap-4 cursor-pointer p-[15px] border-none m-0 transition-colors select-none font-poppins ${
-                      isOpen
+                    className={`faq-question w-full text-left flex items-center justify-between gap-4 cursor-pointer p-[15px] border-none m-0 transition-colors select-none font-poppins ${isOpen
                         ? "active bg-[#62B239] text-white rounded-t-[5px]"
                         : "bg-white text-black hover:text-[#011C39] rounded-[5px]"
-                    }`}
+                      }`}
                     style={{
                       fontFamily: "'Poppins', sans-serif",
                       fontSize: "15px",
@@ -599,9 +652,8 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
                   <button
                     type="button"
                     onClick={() => toggleFaq(idx)}
-                    className={`w-full px-4 sm:px-5 ${
-                      isOpen ? "pt-3.5 pb-2 sm:pt-4 sm:pb-2.5" : "py-3 sm:py-3.5"
-                    } text-left flex items-center justify-between gap-4 cursor-pointer bg-white hover:bg-[#fafafa] transition-colors border-none m-0`}
+                    className={`w-full px-4 sm:px-5 ${isOpen ? "pt-3.5 pb-2 sm:pt-4 sm:pb-2.5" : "py-3 sm:py-3.5"
+                      } text-left flex items-center justify-between gap-4 cursor-pointer bg-white hover:bg-[#fafafa] transition-colors border-none m-0`}
                     aria-expanded={isOpen}
                   >
                     <span className="text-[13.5px] sm:text-[14.5px] font-bold text-[#111111] leading-snug">
@@ -622,6 +674,76 @@ export default function LandingFaq({ faqs = [], universityName = "University Onl
             })}
           </div>
         </div>
+      </section>
+    );
+  }
+
+  // ==========================================
+  // Layout: Manipal Online FAQ (Exact 1:1 with First Image)
+  // ==========================================
+  const isManipal =
+    brand.slug === "manipal" ||
+    brand.name?.toLowerCase().includes("manipal") ||
+    brand.faqLayout === "manipal";
+
+  if (isManipal) {
+    return (
+      <section id="faqs" className="pt-6 sm:pt-8 lg:pt-9 pb-10 sm:pb-14 bg-white font-['Poppins',sans-serif] scroll-mt-20">
+        {desktopWidthStyle}
+        <LandingContainer className="!max-w-[1130px] px-4 sm:px-6">
+          {brand.faqTitleHtml ? (
+            <div className="mb-4 sm:mb-5 lg:mb-6" dangerouslySetInnerHTML={{ __html: brand.faqTitleHtml }} />
+          ) : (
+            <h2 className="text-[25px] sm:text-[28px] lg:text-[32px] font-bold tracking-tight mb-4 sm:mb-5 lg:mb-6 text-left m-0">
+              <span className="text-[#08417b]">FAQs</span>
+              <span className="text-[#08417b] font-normal mx-2">|</span>
+              <span className="text-[#ee3024]">Frequently Asked Questions</span>
+            </h2>
+          )}
+
+          <div className="w-full">
+            {faqs.map((faq, idx) => {
+              const isOpen = openIndex === idx;
+              const rawQuestion = (faq.q || faq.question || "").replace(/^Q\d+[\.\:\s]*/i, "").trim();
+              const formattedQuestion = idx === 0 ? `Q1 ${rawQuestion}` : `Q${idx + 1}. ${rawQuestion}`;
+
+              return (
+                <div key={idx} className="w-full border-b border-[#dfdfdf]">
+                  <button
+                    type="button"
+                    onClick={() => toggleFaq(idx)}
+                    className="w-full py-3.5 sm:py-[17px] text-left flex items-center justify-between gap-4 cursor-pointer bg-transparent border-none p-0 group"
+                    aria-expanded={isOpen}
+                  >
+                    <span
+                      className="text-[14.5px] sm:text-[15.5px] lg:text-[16px] font-medium leading-normal tracking-normal text-[#111111]"
+                    >
+                      {formattedQuestion}
+                    </span>
+
+                    <span className="shrink-0 flex items-center justify-center w-5 select-none" style={{ color: "#08417b" }}>
+                      {isOpen ? (
+                        <svg className="w-3.5 h-3.5 text-[#08417b]" viewBox="0 0 16 16" fill="currentColor">
+                          <rect y="7" width="16" height="2" rx="1" />
+                        </svg>
+                      ) : (
+                        <svg className="w-3.5 h-3.5 text-[#08417b]" viewBox="0 0 16 16" fill="currentColor">
+                          <path fillRule="evenodd" d="M8 1a1 1 0 0 1 1 1v5h5a1 1 0 1 1 0 2H9v5a1 1 0 1 1-2 0V9H2a1 1 0 0 1 0-2h5V2a1 1 0 0 1 1-1z" clipRule="evenodd" />
+                        </svg>
+                      )}
+                    </span>
+                  </button>
+
+                  {isOpen && (
+                    <div className="pt-0.5 pb-4 sm:pb-5 text-[12.5px] sm:text-[13px] lg:text-[13.5px] text-[#333333] leading-[1.5] font-normal tracking-normal">
+                      {faq.a || faq.answer}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </LandingContainer>
       </section>
     );
   }

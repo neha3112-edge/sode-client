@@ -34,7 +34,8 @@ export default function SsbmProgrammes({
               <div key={idx} className="px-1 box-border outline-none py-1">
                 <div className="bg-[#F2F2F2] rounded-none sm:rounded-[2px] overflow-hidden border border-[#e5e5e5] flex flex-col justify-between text-left h-full transition-shadow">
                   {/* Card Image */}
-                  <div className="relative w-full h-[190px] overflow-hidden bg-slate-200">
+                  {p.image ? (
+                    <div className="relative w-full h-[190px] overflow-hidden bg-slate-200">
                     <Image
                       src={p.image}
                       alt={p.title}
@@ -43,6 +44,7 @@ export default function SsbmProgrammes({
                       sizes="(max-width: 768px) 100vw, 33vw"
                     />
                   </div>
+                  ) : null}
 
                   {/* Card Content */}
                   <div className="p-5 flex-1 flex flex-col justify-between bg-[#F2F2F2]">
@@ -88,7 +90,8 @@ export default function SsbmProgrammes({
               <div key={idx} className="px-2.5 sm:px-3 box-border outline-none py-1">
                 <div className="bg-[#F2F2F2] rounded-none sm:rounded-[2px] overflow-hidden border border-[#e5e5e5] flex flex-col justify-between text-left h-full transition-shadow">
                   {/* Card Image */}
-                  <div className="relative w-full h-[180px] sm:h-[195px] overflow-hidden bg-slate-200">
+                  {p.image ? (
+                    <div className="relative w-full h-[180px] sm:h-[195px] overflow-hidden bg-slate-200">
                     <Image
                       src={p.image}
                       alt={p.title}
@@ -97,6 +100,7 @@ export default function SsbmProgrammes({
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     />
                   </div>
+                  ) : null}
 
                   {/* Card Content */}
                   <div className="p-5 sm:p-5 flex-1 flex flex-col justify-between bg-[#F2F2F2]">

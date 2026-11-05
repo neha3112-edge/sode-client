@@ -29,6 +29,7 @@ export default function UpesProgrammes({
             <Clock className="w-3.5 h-3.5 shrink-0" />
             <span>{course.duration || "24 Months"}</span>
           </div>
+          {course.image ? (
           <div className="relative w-full h-[185px] sm:h-[195px] bg-slate-100 overflow-hidden">
             <Image
               src={course.image}
@@ -38,6 +39,7 @@ export default function UpesProgrammes({
               sizes="(max-width: 768px) 100vw, 33vw"
             />
           </div>
+          ) : null}
           <div className="card-box-cnt">
             <h3>{courseTitle}</h3>
             <p className="full-course-name">({fullCourseName})</p>

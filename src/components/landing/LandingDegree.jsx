@@ -21,6 +21,63 @@ export default function LandingDegree({
     images = null,
   } = degreeInfo;
 
+  const isEdgewood =
+    brand.degreeLayout === "edgewood" || brand.slug === "edgewood";
+
+  if (isEdgewood) {
+    const certImage =
+      image ||
+      (images && images[0]) ||
+      "/assets/all_universities_images/edgewood/sample-certficate-edgewood.webp";
+
+    return (
+      <section
+        id="sample-certificate"
+        className="certificate-slider-section py-14 sm:py-20 bg-white select-none scroll-mt-20"
+      >
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-14 items-center">
+            {/* Certificate display */}
+            <div className="flex justify-center">
+              <div className="relative w-full max-w-[500px] h-[320px] sm:h-[380px] shadow-[0_4px_25px_rgba(0,0,0,0.08)] rounded-[12px] overflow-hidden p-2 bg-white">
+                <Image
+                  src={certImage}
+                  alt={title || "Sample Certification"}
+                  fill
+                  className="object-contain"
+                  sizes="(max-width: 1024px) 100vw, 500px"
+                  priority
+                />
+              </div>
+            </div>
+
+            {/* Certificate content */}
+            <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
+              <h2 className="text-[30px] sm:text-[38px] md:text-[42px] font-black text-[#111111] leading-tight m-0 mb-1">
+                Sample Certification
+              </h2>
+              <p className="text-[16px] sm:text-[18px] font-bold text-[#ba0000] m-0 mb-4">
+                Edgewood University Online
+              </p>
+              <p className="text-[14px] sm:text-[15px] text-[#444444] leading-relaxed mb-6 font-normal">
+                {description ||
+                  "Edgewood University Online offers two certifications after completion of their degree: PwC and the certificate of Edgewood University. These two certificates help students prepare for top-board level roles. In the partnership of PwC India, it teaches strategic thinking, handling stakeholders, governance, and compliance through live lecture which teaching studnet a real-world expertise guidance, which buld confinace to succeed in a business career with Edgewood University Online MBA + DBA and MBA."}
+              </p>
+              <button
+                type="button"
+                onClick={() => onOpenApply?.()}
+                className="inline-flex items-center gap-2 bg-[#ba0000] hover:bg-[#990000] text-white font-bold text-[15px] px-8 py-3 rounded-full border-none cursor-pointer transition-all active:scale-95 shadow-md"
+              >
+                <span>{buttonText || "Get Degree"}</span>
+                <span className="text-[16px]">→</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   const isRushford =
     brand.degreeLayout === "rushford" || brand.slug === "rushford";
 
@@ -32,7 +89,7 @@ export default function LandingDegree({
         id="sample-degree"
         className="degree-section pt-0 pb-12 sm:pb-16 bg-white select-none scroll-mt-20"
       >
-        <div className="max-w-[1140px] mx-auto px-4 sm:px-6">
+        <div className="max-w-[1130px] mx-auto px-4 sm:px-6">
           <div className="degree grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
             {/* Degree display */}
             <div className="flex justify-center">
@@ -99,7 +156,7 @@ export default function LandingDegree({
         id="sample-degree"
         className="degree-section py-10 sm:py-16 bg-white select-none scroll-mt-20"
       >
-        <div className="max-w-[1140px] mx-auto px-4 sm:px-6">
+        <div className="max-w-[1130px] mx-auto px-4 sm:px-6">
           <div className="degree grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
             {/* Degree display */}
             <div className="flex justify-center">

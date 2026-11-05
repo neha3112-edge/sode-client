@@ -299,6 +299,7 @@ export default function LandingLeadForm({
   const hideTerms =
     formConfig.hideTermsCheckbox ??
     heroConfig.hideTermsCheckbox ??
+    activeBrand.hideTermsCheckbox ??
     false;
 
   const phoneBeforeEmail =
@@ -320,8 +321,9 @@ export default function LandingLeadForm({
 
   const titleColor =
     colors.title ||
+    formConfig.titleColor ||
     (isWhiteCard
-      ? heroConfig.formTitleColor || heroConfig.enquireColor || "#ee3024"
+      ? formConfig.enquireColor || heroConfig.formTitleColor || heroConfig.enquireColor || activeBrand.enquireColor || activeBrand.formTitleColor || "#ee3024"
       : accentColor ||
         heroConfig.formAccentColor ||
         activeBrand.accentColor ||
@@ -439,6 +441,8 @@ export default function LandingLeadForm({
 
   const submitBg =
     colors.submitBackground ||
+    formConfig.submitBtnBg ||
+    formConfig.submitButtonBackground ||
     submitBtnConfig.background ||
     heroConfig.submitButtonBackground ||
     heroConfig.submitBtnBg ||
@@ -495,17 +499,43 @@ export default function LandingLeadForm({
   /* -------------------------------------------------------------
      6. COURSES & STATE OPTIONS
   ------------------------------------------------------------- */
-  const rawCourses =
-    courseList ||
-    courses ||
-    formConfig.courseList ||
-    heroConfig.formCourseList ||
-    activeBrand.courses ||
-    data?.courses ||
-    [];
-
   const activeCourses = React.useMemo(() => {
-    const list = Array.isArray(rawCourses) && rawCourses.length > 0 ? rawCourses : [];
+    const rawList =
+      courseList ||
+      courses ||
+      formConfig.courseList ||
+      heroConfig.formCourseList ||
+      activeBrand.courses ||
+      data?.courses ||
+      [];
+    const list = Array.isArray(rawList) && rawList.length > 0 ? rawList : [];
+    const hasGroups = list.some((item) => Array.isArray(item?.options));
+
+    if (hasGroups) {
+      return list.map((group, gIdx) => {
+        if (Array.isArray(group?.options)) {
+          return {
+            label: group.label || group.title || `Group ${gIdx + 1}`,
+            title: group.title || (typeof group.label === "string" ? group.label : undefined),
+            options: group.options.map((opt) => {
+              if (typeof opt === "string") {
+                return { value: opt, label: opt };
+              }
+              return {
+                value: opt.value ?? opt.label,
+                label: opt.label ?? opt.value,
+                key: opt.key,
+                disabled: opt.disabled,
+              };
+            }),
+          };
+        }
+        const val = typeof group === "string" ? group : (group?.value || group?.label);
+        const lbl = typeof group === "string" ? group : (group?.label || group?.value);
+        return { value: val, label: lbl };
+      });
+    }
+
     const seen = new Set();
     const result = [];
     for (const item of list) {
@@ -517,19 +547,30 @@ export default function LandingLeadForm({
       }
     }
     return result;
-  }, [rawCourses]);
+  }, [
+    courseList,
+    courses,
+    formConfig.courseList,
+    heroConfig.formCourseList,
+    activeBrand.courses,
+    data?.courses,
+  ]);
 
-  const rawStates = formConfig.stateList || heroConfig.formStateList || activeBrand.stateList || STATE_OPTIONS;
   const stateOptions = React.useMemo(() => {
+    const rawStates = formConfig.stateList || heroConfig.formStateList || activeBrand.stateList || STATE_OPTIONS;
     return rawStates.map((st) =>
       typeof st === "string" ? { value: st, label: st } : st
     );
-  }, [rawStates]);
+  }, [formConfig.stateList, heroConfig.formStateList, activeBrand.stateList]);
 
   // Synchronize course selection: preselect valid course, auto-select if single course
   React.useEffect(() => {
+    const allOptions = activeCourses.flatMap((c) =>
+      Array.isArray(c?.options) ? c.options : [c]
+    );
+
     if (defaultCourse) {
-      const matched = activeCourses.find(
+      const matched = allOptions.find(
         (c) =>
           c.value === defaultCourse ||
           c.label === defaultCourse ||
@@ -540,8 +581,8 @@ export default function LandingLeadForm({
       if (matched) {
         form.setFieldsValue({ course: matched.value });
       }
-    } else if (activeCourses.length === 1) {
-      form.setFieldsValue({ course: activeCourses[0].value });
+    } else if (allOptions.length === 1) {
+      form.setFieldsValue({ course: allOptions[0].value });
     }
   }, [defaultCourse, activeCourses, form]);
 
@@ -701,6 +742,7 @@ export default function LandingLeadForm({
       <Select
         placeholder={coursePlaceholder}
         options={activeCourses}
+        classNames={{ popup: { root: "landing-course-dropdown" } }}
         getPopupContainer={(trigger) => trigger.parentElement || document.body}
         className="w-full text-[13px] ant-select-custom"
       />
@@ -721,6 +763,7 @@ export default function LandingLeadForm({
         filterOption={(input, option) =>
           (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
         }
+        classNames={{ popup: { root: "landing-state-dropdown" } }}
         getPopupContainer={(trigger) => trigger.parentElement || document.body}
         className="w-full text-[13px] ant-select-custom"
       />
