@@ -1,19 +1,14 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useMemo } from "react";
-import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Button, Layout, Dropdown } from "antd";
+import { Button, Layout, Dropdown, Drawer, Collapse } from "antd";
 import { DownOutlined, MenuOutlined, CloseOutlined, RightOutlined, LeftOutlined } from "@ant-design/icons";
 import { Container } from "@/components/common/Container";
 import { FakeUniversityIcon } from "@/components/common/FakeUniversityIcon";
 import { FAKE_UNIVERSITIES_SLUG } from "@/constants/fakeUniversitiesData";
-
-const MobileNavDrawer = dynamic(() => import("./header/MobileNavDrawer"), {
-  ssr: false,
-});
 
 const { Header: AntHeader } = Layout;
 
@@ -27,8 +22,13 @@ const goldBtnStyle = {
 
 function resolveImg(mediaObj, fallback = "/assets/images/new_sode_tm_logo.png") {
   if (!mediaObj) return fallback;
-  if (typeof mediaObj === "string") return mediaObj;
-  return mediaObj.url || mediaObj.src || mediaObj.path || fallback;
+  let raw = typeof mediaObj === "string" ? mediaObj : (mediaObj.url || mediaObj.src || mediaObj.path || null);
+  if (!raw || typeof raw !== "string") return fallback;
+  const trimmed = raw.trim();
+  if (!trimmed || trimmed === "[object Object]") return fallback;
+  // If it's a 24-character hexadecimal MongoDB ObjectId, it is an unpopulated ID, not an image URL
+  if (/^[0-9a-fA-F]{24}$/.test(trimmed)) return fallback;
+  return trimmed;
 }
 
 
@@ -486,6 +486,8 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
   const [activeCategoryIndex, setActiveCategoryIndex] = useState({});
   const [activeSubCategory, setActiveSubCategory] = useState({});
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileActiveKeys, setMobileActiveKeys] = useState([]);
+  const [expandedMobileCategories, setExpandedMobileCategories] = useState({});
 
   const headerRef = useRef(null);
 
@@ -526,6 +528,66 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
         (item.url || "").includes("suggest")
     );
   }, [rawMenuItems]);
+
+  const [selectedMobileCategory, setSelectedMobileCategory] = useState(null);
+
+  const resetDrawerScroll = () => {
+    if (typeof document !== "undefined") {
+      const drawerBody = document.querySelector(".ant-drawer-body");
+      if (drawerBody) {
+        drawerBody.scrollTop = 0;
+      }
+      const drawerContent = document.querySelector(".ant-drawer-content");
+      if (drawerContent) {
+        drawerContent.scrollTop = 0;
+      }
+    }
+  };
+
+  const handleSelectMobileCategory = (catData) => {
+    let items = catData?.items || [];
+    const isApproval =
+      catData?.type === "accreditations" ||
+      (catData?.title || "").toLowerCase().includes("approval") ||
+      (catData?.title || "").toLowerCase().includes("accredit") ||
+      items.some((it) => it.is_approval);
+
+    if (isApproval) {
+      const hasFake = items.some((it) => (it.slug || it.name || it.title || "").toLowerCase().includes("fake"));
+      if (!hasFake) {
+        items = [
+          ...items,
+          {
+            _id: "ugc-deb-fake-universities-mobile-item",
+            name: "List of Fake Universities",
+            title: "List of Fake Universities",
+            slug: FAKE_UNIVERSITIES_SLUG,
+            is_approval: true,
+            isFake: true,
+          },
+        ];
+      }
+    }
+
+    setSelectedMobileCategory({
+      ...catData,
+      items,
+    });
+    resetDrawerScroll();
+    setTimeout(resetDrawerScroll, 10);
+    setTimeout(resetDrawerScroll, 50);
+  };
+
+  useEffect(() => {
+    resetDrawerScroll();
+  }, [selectedMobileCategory]);
+
+  const closeMobile = (url) => {
+    setMobileMenuOpen(false);
+    setSelectedMobileCategory(null);
+    setMobileActiveKeys([]);
+    if (url) router.push(url);
+  };
 
   // Dynamic Mega Menu Sections for Mobile (100% Dynamic from backend database)
   const mobileMegaSections = useMemo(() => {
@@ -630,6 +692,115 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
       currentIdx,
     };
   }, [activeMenuItem, activeCategoryIndex]);
+
+  // Mobile Drawer Menu structure built 100% dynamically from rawMenuItems
+  const { mobileCollapseItems, mobileLinkItems } = useMemo(() => {
+    const mobileCollapse = [];
+    const mobileLinks = [];
+
+    rawMenuItems.forEach((item, idx) => {
+      const itemKey = item._id || item.label || `item-${idx}`;
+      const hasMega = item.has_dropdown && Array.isArray(item.mega_menu) && item.mega_menu.length > 0;
+      const hasDropdownItems = item.has_dropdown && Array.isArray(item.dropdown_items) && item.dropdown_items.length > 0;
+
+      if (hasMega) {
+        mobileCollapse.push({
+          key: itemKey,
+          label: (
+            <span className="flex items-center gap-2 font-bold text-[14.5px] text-[#072C50]">
+              <span>{item.label}</span>
+              {item.badge && (
+                <span className="text-[9px] bg-amber-100 text-amber-900 font-extrabold px-1.5 py-0.5 rounded-full uppercase">
+                  {item.badge}
+                </span>
+              )}
+            </span>
+          ),
+          children: (
+            <div className="space-y-4 pt-1">
+              {item.mega_menu.map((grp, gIdx) => (
+                <div key={grp.category?._id ? `${grp.category._id}-${gIdx}` : `${grp.category?.name || "cat"}-${gIdx}`} className="space-y-2">
+                  <span className="text-[12px] font-extrabold uppercase text-[#0B57D0] tracking-wider block">
+                    {grp.category?.name}
+                  </span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {grp.items?.map((subItem, sIdx) => {
+                      const isUni = !!subItem.location || subItem.courses_count !== undefined;
+                      const subSlug = (subItem.slug && !/^[0-9a-fA-F]{24}$/.test(subItem.slug))
+                        ? subItem.slug
+                        : (subItem.name ? subItem.name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') : String(subItem._id || ""));
+
+                      let subUrl = subItem.url;
+                      if (subUrl && /[0-9a-fA-F]{24}/.test(subUrl)) {
+                        subUrl = subUrl.replace(/[0-9a-fA-F]{24}/g, encodeURIComponent(subSlug));
+                      }
+                      if (!subUrl) {
+                        subUrl = isUni
+                          ? `/universities/${encodeURIComponent(subSlug)}`
+                          : `/courses?course=${encodeURIComponent(subSlug)}`;
+                      }
+                      return (
+                        <Link
+                          key={subItem._id ? `${subItem._id}-${sIdx}` : `${subItem.slug || subItem.name || sIdx}-${sIdx}`}
+                          href={subUrl}
+                          onClick={() => closeMobile()}
+                          className="p-2.5 rounded-lg border border-slate-200 bg-white flex items-center justify-between cursor-pointer hover:border-blue-300 transition-colors"
+                        >
+                          <div>
+                            <div className="text-xs font-bold text-slate-900">{subItem.name}</div>
+                            {(subItem.duration || subItem.courses_count || subItem.approval) && (
+                              <div className="text-[10px] text-slate-500">
+                                {subItem.duration && <span>{subItem.duration}</span>}
+                                {subItem.approval && <span> • {subItem.approval}</span>}
+                                {subItem.courses_count > 0 && <span> • {subItem.courses_count}+ Courses</span>}
+                              </div>
+                            )}
+                          </div>
+                          <RightOutlined className="text-[10px] text-slate-400" />
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ),
+        });
+      } else if (hasDropdownItems) {
+        mobileCollapse.push({
+          key: itemKey,
+          label: (
+            <span className="flex items-center gap-2 font-bold text-[14.5px] text-[#072C50]">
+              <span>{item.label}</span>
+            </span>
+          ),
+          children: (
+            <div className="space-y-1.5 pt-1">
+              {item.dropdown_items.map((subItem) => (
+                <Link
+                  key={subItem._id || subItem.url}
+                  href={subItem.url || "#"}
+                  onClick={() => closeMobile()}
+                  className="flex items-center justify-between p-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-slate-50 hover:text-[#0B57D0]"
+                >
+                  <span>{subItem.label}</span>
+                  {subItem.badge && (
+                    <span className="text-[9px] bg-amber-100 text-amber-900 font-extrabold px-1.5 py-0.5 rounded-full uppercase">
+                      {subItem.badge}
+                    </span>
+                  )}
+                </Link>
+              ))}
+            </div>
+          ),
+        });
+      } else {
+        mobileLinks.push(item);
+      }
+    });
+
+    return { mobileCollapseItems: mobileCollapse, mobileLinkItems: mobileLinks };
+  }, [rawMenuItems]);
 
   return (
     <>
@@ -843,6 +1014,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
               type="button"
               onClick={() => {
                 setMobileMenuOpen(!mobileMenuOpen);
+                setSelectedMobileCategory(null);
               }}
               className="w-8 h-8 rounded-lg flex items-center justify-center text-[#072C50] hover:bg-slate-100 transition-colors cursor-pointer border-none bg-transparent ml-0.5"
               aria-label="Toggle menu"
@@ -1206,7 +1378,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
 
 
                         const headerLogoObj = prog.header_logo || prog.effective_logo || prog.logo;
-                        const headerLogoUrl = (headerLogoObj?.url || headerLogoObj?.path || typeof headerLogoObj === "string") ? resolveImg(headerLogoObj) : null;
+                        const headerLogoUrl = resolveImg(headerLogoObj, null);
                         const courseDisplayName = formatCourseDisplayName(prog, currentMegaMenuData.currentGroup);
 
                         return (
@@ -1350,17 +1522,443 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
           </>
         )}
 
-        {/* Mobile Navigation Drawer — Code-split with dynamic import */}
-        {mobileMenuOpen && (
-          <MobileNavDrawer
-            open={mobileMenuOpen}
-            onClose={() => setMobileMenuOpen(false)}
-            headerData={headerData}
-            logoUrl={logoUrl}
-            logoAlt={logoAlt}
-            mobileMegaSections={mobileMegaSections}
-          />
+        {/* Mobile Navigation Drawer — Matching Mockup (Phone 1 & Phone 2) */}
+        <Drawer
+          open={mobileMenuOpen}
+          onClose={() => {
+            setMobileMenuOpen(false);
+            setSelectedMobileCategory(null);
+            setMobileActiveKeys([]);
+          }}
+          placement="top"
+          closable={false}
+          className="mobile-nav-drawer"
+          styles={{
+            wrapper: { height: "auto", maxHeight: "92vh" },
+            header: { padding: "8px 16px", backgroundColor: "#ffffff", borderBottom: "1px solid #f1f5f9" },
+            body: {
+              padding: 0,
+              height: "auto",
+              maxHeight: "calc(92vh - 64px)",
+              overflowY: "auto",
+            },
+          }}
+          title={
+            <div className="flex items-center justify-between w-full">
+              {/* Logo on Left with Header dimensions */}
+              <Link
+                href={headerData?.logo_url || "/"}
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  setSelectedMobileCategory(null);
+                }}
+                className="flex items-center"
+              >
+                <div style={{ height: "48px" }} className="relative w-36 sm:w-44 flex items-center justify-start">
+                  <Image
+                    src={logoUrl}
+                    alt={logoAlt}
+                    fill
+                    sizes="(max-width: 640px) 144px, 176px"
+                    className="object-contain object-left cursor-pointer"
+                  />
+                </div>
+              </Link>
+
+              {/* Close Button on Right */}
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  setSelectedMobileCategory(null);
+                  setMobileActiveKeys([]);
+                }}
+                className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-700 transition-colors border-none cursor-pointer p-0 shrink-0"
+                aria-label="Close"
+              >
+                <CloseOutlined className="text-[13px] font-bold" />
+              </button>
+            </div>
+          }
+        >
+          {!selectedMobileCategory ? (
+            /* ── VIEW 1: CATEGORIES OVERVIEW (Matching Phone 1 Mockup) ── */
+            <div className="p-4 space-y-6">
+              {/* Dynamic Mega Menu Sections from database */}
+              {mobileMegaSections.map((section) => (
+                <div key={section._id}>
+                  <div className="flex items-center gap-2.5 mb-2.5">
+                    <div className="w-7 h-7 rounded-lg bg-[#0B57D0] text-white flex items-center justify-center shrink-0 shadow-xs">
+                      {section.icon}
+                    </div>
+                    <p className="font-extrabold text-[15px] text-[#072C50] m-0 tracking-tight">
+                      {section.title}
+                    </p>
+                  </div>
+
+                  <div className="space-y-1">
+                    {section.categories.map((cat, cIdx) => {
+                      const hasSub = Array.isArray(cat.subcategories) && cat.subcategories.length > 0;
+                      const isExpanded = !!expandedMobileCategories[cat._id];
+
+                      return (
+                        <div key={cat._id || cIdx} className="space-y-1">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (hasSub) {
+                                setExpandedMobileCategories((prev) => ({
+                                  ...prev,
+                                  [cat._id]: !prev[cat._id],
+                                }));
+                              } else {
+                                handleSelectMobileCategory({
+                                  title: cat.name,
+                                  type: section.type,
+                                  items: cat.items || [],
+                                });
+                              }
+                            }}
+                            className="w-full flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-[#F0F6FE] active:bg-[#E2EDFC] transition-colors text-left border-none bg-transparent cursor-pointer group"
+                          >
+                            <div className="flex items-center gap-3">
+                              <span className="text-[#0B57D0] text-base group-hover:scale-110 transition-transform">
+                                {renderCategoryIcon(cat.name, section.type)}
+                              </span>
+                              <span className="font-semibold text-slate-800 text-[13.5px] group-hover:text-[#0B57D0]">
+                                {cat.name}
+                              </span>
+                            </div>
+                            <RightOutlined
+                              className={`text-[10px] text-slate-400 group-hover:text-[#0B57D0] transition-transform ${
+                                hasSub && isExpanded ? "rotate-90 text-[#0B57D0]" : "group-hover:translate-x-0.5"
+                              }`}
+                            />
+                          </button>
+
+                          {/* Subcategories under Category in Mobile (Same styling & size, no line border) */}
+                          {hasSub && isExpanded && (
+                            <div className="pl-4 space-y-1 py-0.5">
+                              {cat.subcategories.map((sub, sIdx) => (
+                                <button
+                                  key={sub.category?._id || sIdx}
+                                  type="button"
+                                  onClick={() =>
+                                    handleSelectMobileCategory({
+                                      title: sub.category?.name || `${cat.name} - Subcategory`,
+                                      type: section.type,
+                                      items: sub.items || [],
+                                    })
+                                  }
+                                  className="w-full flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-[#F0F6FE] active:bg-[#E2EDFC] transition-colors text-left border-none bg-transparent cursor-pointer group"
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <span className="text-[#0B57D0] text-base group-hover:scale-110 transition-transform">
+                                      {renderCategoryIcon(formatCategoryDisplayName(sub.category?.name, section.type), section.type)}
+                                    </span>
+                                    <span className="font-semibold text-slate-800 text-[13.5px] group-hover:text-[#0B57D0]">
+                                      {formatCategoryDisplayName(sub.category?.name, section.type)}
+                                    </span>
+                                  </div>
+                                  <RightOutlined className="text-[10px] text-slate-400 group-hover:text-[#0B57D0] group-hover:translate-x-0.5 transition-all" />
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+
+              {/* End of categories */}
+            </div>
+          ) : (
+            /* ── VIEW 2: 2-COLUMN CARDS GRID (Matching Phone 2 Mockup) ── */
+            <div>
+              {/* Back Header - Full touch to the top with solid background and zero gap */}
+              <div className="sticky top-0 bg-white z-30 flex items-center justify-between px-4 py-2.5 border-b border-slate-100 shadow-[0_2px_6px_rgba(0,0,0,0.03)]">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedMobileCategory(null);
+                    resetDrawerScroll();
+                    setTimeout(resetDrawerScroll, 10);
+                  }}
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[#0B57D0] hover:text-[#072C50] transition-colors cursor-pointer bg-transparent border-none p-0"
+                >
+                  <LeftOutlined className="text-[11px]" />
+                  <span>Back</span>
+                </button>
+                <span className="text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-full line-clamp-1 max-w-[170px]">
+                  {selectedMobileCategory.title}
+                </span>
+              </div>
+
+              {/* 2-Column Cards Grid */}
+              <div className="p-4 pt-3">
+                <div className="grid grid-cols-2 gap-2.5 pb-4">
+                {selectedMobileCategory.items.map((item, idx) => {
+                  const itemSlug = item.slug || item._id || item.name;
+                  const isAcc = selectedMobileCategory.type === "accreditations" || !!item.is_approval;
+                  const isProg = selectedMobileCategory.type === "programs";
+                  const isUni = !isAcc && !isProg && (selectedMobileCategory.type === "universities" || !!item.location || item.courses_count !== undefined);
+                  const logoSrc = item.header_logo || item.logo || item.image || null;
+                  const detailUrl = isAcc
+                    ? (item.url || `/accreditations/${encodeURIComponent(itemSlug)}`)
+                    : isUni
+                      ? (item.url || `/universities/${encodeURIComponent(itemSlug)}`)
+                      : (item.url || `/courses/${encodeURIComponent(itemSlug)}`);
+                  const secondaryUrl = isAcc
+                    ? "/universities"
+                    : isUni
+                      ? `/courses?university=${encodeURIComponent(itemSlug)}`
+                      : `/universities?course=${encodeURIComponent(itemSlug)}`;
+                  const secondaryLabel = isAcc
+                    ? "View Unis"
+                    : isUni
+                      ? "View Courses"
+                      : "View Unis";
+
+                  if (item.is_dynamic_listing) {
+                    return (
+                      <Link
+                        key={item._id || idx}
+                        href={detailUrl}
+                        onClick={() => closeMobile()}
+                        className="col-span-2 flex items-center gap-2.5 py-1.5 px-2 rounded-lg hover:bg-slate-50 transition-colors group select-none text-left"
+                      >
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#072C50] group-hover:bg-[#0B57D0] shrink-0 transition-transform group-hover:scale-125" />
+                        <span className="text-[12.5px] font-medium text-[#072C50] group-hover:text-[#0B57D0] transition-colors leading-snug truncate">
+                          {item.name || item.title}
+                        </span>
+                      </Link>
+                    );
+                  }
+
+                  if (item.is_approval) {
+                    const currentYear = new Date().getFullYear();
+                    const cardTitle = getAccreditationTitle(item);
+                    const badgeText = getAccreditationBadge(item, cardTitle);
+                    const cardUrl = item.slug ? `/accreditations/${item.slug}` : (item.url || "/accreditations");
+
+                    return (
+                      <div
+                        key={item._id || idx}
+                        className="bg-white border border-slate-200/90 rounded-2xl p-2.5 sm:p-3 flex flex-col justify-between shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:border-blue-300 transition-all"
+                      >
+                        <div>
+                          {/* Top Section: Logo Left + Title Right */}
+                          <div className="flex items-center gap-2">
+                            {logoSrc ? (
+                              <Link
+                                href={cardUrl}
+                                onClick={() => closeMobile()}
+                                className="relative w-8 h-8 sm:w-9 sm:h-9 shrink-0 flex items-center justify-center"
+                              >
+                                <Image
+                                  src={resolveImg(logoSrc)}
+                                  alt={cardTitle}
+                                  fill
+                                                    sizes="36px"
+                                  className="object-contain"
+                                />
+                              </Link>
+                            ) : item.isFake || cardTitle.toLowerCase().includes("fake") ? (
+                              <Link
+                                href={cardUrl}
+                                onClick={() => closeMobile()}
+                                className="w-8 h-8 sm:w-9 sm:h-9 shrink-0 flex items-center justify-center"
+                              >
+                                <FakeUniversityIcon size={32} />
+                              </Link>
+                            ) : (
+                              <Link
+                                href={cardUrl}
+                                onClick={() => closeMobile()}
+                                className="flex items-center justify-center shrink-0 mt-0.5"
+                              >
+                                <span className="w-2 h-2 rounded-full bg-[#0B57D0]" />
+                              </Link>
+                            )}
+
+                            {/* Title */}
+                            <div className="flex-1 min-w-0 text-left">
+                              <Link
+                                href={cardUrl}
+                                onClick={() => closeMobile()}
+                                className="block hover:text-[#0B57D0]"
+                              >
+                                {item.isFake || cardTitle.toLowerCase().includes("fake") ? (
+                                  <p className="text-[11.5px] font-bold leading-tight m-0">
+                                    <span className="block text-[#072C50]">List of Fake</span>
+                                    <span className="block text-[#0284c7]">Universities</span>
+                                  </p>
+                                ) : (
+                                  <p className="text-[11.5px] font-bold text-[#072C50] leading-snug line-clamp-2 m-0">
+                                    {cardTitle}
+                                  </p>
+                                )}
+                              </Link>
+                            </div>
+                          </div>
+
+                          {/* Badges Row */}
+                          <div className="flex items-center justify-between gap-1.5 mt-1.5 text-[9.5px] min-w-0">
+                            <span className="inline-flex items-center gap-1 text-slate-600 font-semibold min-w-0 truncate">
+                              <svg className="w-3 h-3 text-emerald-600 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                              </svg>
+                              <span className="truncate">{badgeText}</span>
+                            </span>
+                            <span className="inline-flex items-center text-[9px] font-bold text-[#351C00] bg-[#E4BE75]/80 px-1.5 py-0.5 rounded-full leading-none whitespace-nowrap shrink-0">
+                              List {currentYear}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Action Buttons Row */}
+                        <div className="flex items-center justify-end pt-2 mt-2 border-t border-slate-100">
+                          <Link
+                            href={cardUrl}
+                            onClick={() => closeMobile()}
+                            className="text-[10px] font-bold text-[#072C50] hover:text-[#0B57D0] flex items-center gap-0.5 transition"
+                          >
+                            <span>View List</span>
+                            <span className="text-[11px]">→</span>
+                          </Link>
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div
+                      key={item._id || idx}
+                      className="bg-white border border-slate-200/90 rounded-2xl p-2 sm:p-2.5 flex flex-col justify-between shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:border-blue-300 transition-all"
+                    >
+                      <div>
+                        {/* Top Section: Logo Left + Title Right */}
+                        <div className="flex items-center gap-2">
+                          {/* Logo or Bullet */}
+                          {logoSrc ? (
+                            <Link
+                              href={detailUrl}
+                              onClick={() => closeMobile()}
+                              className="relative w-8 h-8 sm:w-9 sm:h-9 shrink-0 flex items-center justify-center"
+                            >
+                              <Image
+                                src={resolveImg(logoSrc)}
+                                alt={item.name || item.title || "Logo"}
+                                fill
+                                                sizes="36px"
+                                className="object-contain"
+                              />
+                            </Link>
+                          ) : (
+                            <Link
+                              href={detailUrl}
+                              onClick={() => closeMobile()}
+                              className="flex items-center justify-center shrink-0 mt-0.5"
+                            >
+                              <span className="w-2 h-2 rounded-full bg-[#0B57D0]" />
+                            </Link>
+                          )}
+
+                          {/* Title */}
+                          <div className="flex-1 min-w-0 text-left">
+                            <Link
+                              href={detailUrl}
+                              onClick={() => closeMobile()}
+                              className="block hover:text-[#0B57D0]"
+                            >
+                              <p className="text-[11.5px] font-bold text-[#072C50] leading-snug line-clamp-2 m-0">
+                                {selectedMobileCategory?.type === "programs" ? formatCourseDisplayName(item, selectedMobileCategory) : (item.name || item.title)}
+                              </p>
+                            </Link>
+                          </div>
+                        </div>
+
+                        {/* Full-width Badges Row: For Courses (Duration & Specialisations Side-by-Side Left-Aligned) */}
+                        {isProg && (item.duration || item.specialisations_count > 0) && (
+                          <div className="flex items-center justify-start gap-1.5 mt-1 text-[8.5px] sm:text-[9px] min-w-0 overflow-hidden w-full text-left">
+                            {item.duration && (
+                              <span className="inline-flex items-center gap-0.5 text-slate-500 font-medium shrink-0 whitespace-nowrap">
+                                <svg className="w-2.5 h-2.5 text-slate-400 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                                </svg>
+                                <span>{item.duration}</span>
+                              </span>
+                            )}
+                            {item.specialisations_count > 0 && (
+                              <span className="inline-flex items-center gap-0.5 text-slate-500 font-medium min-w-0 truncate whitespace-nowrap">
+                                <svg className="w-2.5 h-2.5 text-slate-400 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                  <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z" />
+                                </svg>
+                                <span className="truncate">{item.specialisations_count} Specialisation</span>
+                              </span>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Full-width Badges Row: For Universities (Approval & Courses Count Matching Desktop) */}
+                        {!isProg && !item.is_dynamic_listing && (item.approval || item.courses_count > 0) && (
+                          <div className="flex items-center gap-2 mt-1.5 text-[9.5px] flex-wrap">
+                            {item.approval && (
+                              <span className="inline-flex items-center gap-1 text-slate-600 font-semibold whitespace-nowrap">
+                                <svg className="w-3 h-3 text-emerald-600 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                </svg>
+                                <span className="truncate">{item.approval}</span>
+                              </span>
+                            )}
+                            {item.courses_count > 0 && (
+                              <span className="inline-flex items-center gap-1 text-slate-500 font-medium whitespace-nowrap">
+                                <svg className="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                </svg>
+                                <span className="truncate">{item.courses_count}+ Courses</span>
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Bottom Action Buttons */}
+                      <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between gap-1">
+                        <Link
+                          href={detailUrl}
+                          onClick={() => closeMobile()}
+                          className="inline-flex items-center justify-center px-2 py-1 text-[9.5px] font-bold text-[#072C50] hover:text-[#0B57D0] border border-slate-300 rounded-2xl bg-white hover:bg-slate-50 transition-colors whitespace-nowrap"
+                        >
+                          Know More
+                        </Link>
+                        {!item.is_dynamic_listing && (
+                          <Link
+                            href={secondaryUrl}
+                            onClick={() => closeMobile()}
+                            className="inline-flex items-center gap-0.5 text-[9.5px] font-bold text-[#072C50] hover:text-[#0B57D0] transition-colors whitespace-nowrap overflow-hidden"
+                          >
+                            <span className="truncate">{secondaryLabel}</span>
+                            <RightOutlined className="text-[6.5px] shrink-0" />
+                          </Link>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {selectedMobileCategory.items.length === 0 && (
+                <div className="py-8 text-center text-slate-400 text-xs">
+                  No items found in this category.
+                </div>
+              )}
+            </div>
+          </div>
         )}
+        </Drawer>
       </AntHeader>
     </>
   );
