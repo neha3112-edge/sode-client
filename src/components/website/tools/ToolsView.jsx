@@ -191,7 +191,7 @@ export function ToolsView({ initialTools = [] }) {
           </h2>
 
           {/* Subtitle */}
-          <p className="text-[#64748B] text-[11px] sm:text-sm md:text-base font-normal max-w-xl mx-auto text-center m-0 mb-4 sm:mb-8">
+          <p className="text-[#334155] text-[11px] sm:text-sm md:text-base font-normal max-w-xl mx-auto text-center m-0 mb-4 sm:mb-8">
             Make smarter education decisions with AI-powered tools
           </p>
 
