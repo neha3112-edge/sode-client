@@ -129,7 +129,7 @@ function UniversityCard({ uni, index = 0 }) {
 
   if (!uni) return null;
 
-  const isFirstCard = index === 0;
+  const isAboveTheFold = index < 2;
 
   const name = uni?.name || "University";
   const slug =
@@ -187,8 +187,8 @@ function UniversityCard({ uni, index = 0 }) {
             title={imgAlt}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 384px"
-            priority={isFirstCard}
-            fetchPriority={isFirstCard ? "high" : undefined}
+            priority={isAboveTheFold}
+            fetchPriority={isAboveTheFold ? "high" : undefined}
             className="object-cover group-hover:scale-105 transition-transform duration-500"
             onError={() => setImgErr(true)}
           />
