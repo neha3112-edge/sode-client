@@ -105,6 +105,7 @@ export default function CourseHero({
                   }`}
                 priority
                 loading="eager"
+                fetchPriority="high"
               />
             )}
             {safeMobileHeroBannerSrc && safeMobileHeroBannerSrc !== safeHeroBannerSrc && (
@@ -116,6 +117,7 @@ export default function CourseHero({
                 className="object-cover object-center block md:hidden"
                 priority
                 loading="eager"
+                fetchPriority="high"
               />
             )}
           </>

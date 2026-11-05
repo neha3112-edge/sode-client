@@ -184,11 +184,7 @@ function UniversityCard({ uni }) {
             alt={imgAlt}
             title={imgAlt}
             fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            loading="eager"
-            priority
-            unoptimized
-            suppressHydrationWarning
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 384px"
             className="object-cover group-hover:scale-105 transition-transform duration-500"
             onError={() => setImgErr(true)}
           />
@@ -215,9 +211,7 @@ function UniversityCard({ uni }) {
                 alt={logoAlt}
                 title={logoAlt}
                 fill
-                unoptimized
-                sizes="110px"
-                suppressHydrationWarning
+                sizes="(max-width: 640px) 96px, 112px"
                 className="object-contain"
                 onError={() => setLogoErr(true)}
               />
