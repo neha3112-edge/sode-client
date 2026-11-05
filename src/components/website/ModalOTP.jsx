@@ -571,7 +571,6 @@ export default function ModalOTP({
               alt="Learn Online. Grow Your Career."
               width={362}
               height={632}
-              priority
               sizes="(max-width: 768px) 100vw, 310px"
               className="w-full h-auto block"
             />
@@ -586,7 +585,6 @@ export default function ModalOTP({
               alt="Learn Online. Grow Your Career."
               width={308}
               height={103}
-              priority
               sizes="(max-width: 480px) 100vw, 390px"
               className="w-full h-auto block"
             />

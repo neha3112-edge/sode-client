@@ -35,8 +35,6 @@ export default function UniversitySampleDegree({
                 src={getMediaUrl(sampleDegreeData.imageUrl)}
                 alt={sampleDegreeData.title || `Sample Degree ${uniName}`}
                 fill
-                priority
-                loading="eager"
                 sizes="(max-width: 1024px) 100vw, 460px"
                 className="object-contain rounded-xl transition-transform duration-300 group-hover:scale-[1.02]"
               />

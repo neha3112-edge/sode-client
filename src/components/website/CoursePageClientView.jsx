@@ -688,6 +688,8 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                     alt=""
                     fill
                     priority
+                    loading="eager"
+                    fetchPriority="high"
                     sizes="100vw"
                     className="object-cover object-center opacity-30"
                   />
@@ -976,7 +978,6 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                         fill
                         className="object-contain object-center"
                         sizes="(max-width: 640px) 140px, 200px"
-                        unoptimized
                       />
                     </div>
                   </div>
@@ -1105,8 +1106,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                               fill
                               sizes="(max-width: 768px) 64px, 80px"
                               className="object-contain"
-                              unoptimized
-                            />
+                                  />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center">
                               <Award className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-blue-600" />
@@ -1243,8 +1243,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                               width={40}
                               height={40}
                               className="object-contain"
-                              unoptimized
-                            />
+                                  />
                           ) : (
                             <ShieldCheck className="w-6 h-6 sm:w-7 sm:h-7 text-[#0077B6]" />
                           )}
@@ -1297,8 +1296,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                               width={40}
                               height={40}
                               className="object-contain"
-                              unoptimized
-                            />
+                                  />
                           ) : (
                             <Building2 className="w-6 h-6 sm:w-7 sm:h-7 text-[#0077B6]" />
                           )}
@@ -1358,8 +1356,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                                 width={65}
                                 height={55}
                                 className="object-contain"
-                                unoptimized
-                              />
+                                      />
                             ) : (
                               <span className="font-bold text-sky-600 text-sm sm:text-base">
                                 {stepNum}
@@ -1662,8 +1659,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                               fill
                               sizes="56px"
                               className="object-contain"
-                              unoptimized
-                            />
+                                  />
                           ) : (
                             <div className="w-full h-full rounded-full bg-blue-50 text-blue-600 font-semibold flex items-center justify-center text-xs uppercase">
                               {uni.name ? uni.name.charAt(0) : "U"}
@@ -2012,8 +2008,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                               fill
                               sizes="(max-width: 640px) 45vw, (max-width: 768px) 30vw, 180px"
                               className="object-contain"
-                              unoptimized
-                            />
+                                  />
                           </div>
                         ) : (
                           <span className="font-bold text-slate-800 text-xs sm:text-sm truncate px-1 text-center">
@@ -2061,8 +2056,7 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                               width={24}
                               height={24}
                               className="object-contain"
-                              unoptimized
-                            />
+                                  />
                           </div>
                         ) : (
                           <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-red-600 text-white flex items-center justify-center font-bold text-xs sm:text-sm shadow-2xs">

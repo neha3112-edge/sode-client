@@ -98,6 +98,7 @@ function DynamicHero({ hero, pageTitle, targetCourseName }) {
               fill
               priority
               loading="eager"
+              fetchPriority="high"
               sizes="100vw"
               className="object-cover object-center opacity-30"
             />
@@ -221,6 +222,8 @@ function DynamicHero({ hero, pageTitle, targetCourseName }) {
                       alt={title}
                       fill
                       priority
+                      loading="eager"
+                      fetchPriority="high"
                       sizes="(max-width: 1024px) 100vw, 40vw"
                       className="object-cover object-center group-hover:scale-105 transition-transform duration-300"
                     />
@@ -284,7 +287,6 @@ function DynamicHero({ hero, pageTitle, targetCourseName }) {
                         fill
                         className="object-contain object-center"
                         sizes="(max-width: 640px) 140px, 200px"
-                        unoptimized
                       />
                     </div>
                   </div>
@@ -520,11 +522,8 @@ function RankedUniversityCard({ item, index, features, isStatePage = false }) {
               src={desktopImageUrl}
               alt={name}
               fill
-              priority={index < 2}
-              loading={index < 2 ? "eager" : "lazy"}
               sizes="(min-width: 768px) 420px, 1px"
               className="object-cover object-center hidden md:block group-hover/media:scale-105 transition-transform duration-500"
-              unoptimized
             />
           )}
           {/* Mobile Image (Banner Image - Specialization modal style) */}
@@ -533,11 +532,8 @@ function RankedUniversityCard({ item, index, features, isStatePage = false }) {
               src={mobileBannerUrl}
               alt={name}
               fill
-              priority={index < 2}
-              loading={index < 2 ? "eager" : "lazy"}
               sizes="(max-width: 767px) 100vw, 1px"
               className="object-cover object-center block md:hidden group-hover/media:scale-105 transition-transform duration-500"
-              unoptimized
             />
           )}
           {logoUrl && (
@@ -547,11 +543,8 @@ function RankedUniversityCard({ item, index, features, isStatePage = false }) {
                   src={logoUrl}
                   alt={name}
                   fill
-                  priority={index < 2}
-                  loading={index < 2 ? "eager" : "lazy"}
                   sizes="(max-width: 640px) 40px, 56px"
                   className="object-contain"
-                  unoptimized
                 />
               </div>
             </div>

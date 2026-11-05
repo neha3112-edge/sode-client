@@ -237,7 +237,6 @@ export function ToolsView({ initialTools = [] }) {
                           alt={tool.name}
                           width={55}
                           height={55}
-                          unoptimized
                         />
                       ) : (
                         tool.icon

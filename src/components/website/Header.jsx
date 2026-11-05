@@ -262,7 +262,6 @@ const renderAccreditationCard = (acc, idx, onNavigate) => {
                 src={logoUrl}
                 alt={cardTitle}
                 fill
-                unoptimized
                 sizes="40px"
                 className="object-contain object-left"
               />
@@ -1250,8 +1249,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                                           src={logoUrl}
                                           alt={uni.name || "University Logo"}
                                           fill
-                                          unoptimized
-                                          sizes="40px"
+                                                                    sizes="40px"
                                           className="object-contain object-left"
                                         />
                                       ) : (
@@ -1398,8 +1396,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                                       src={headerLogoUrl}
                                       alt={courseDisplayName || "Course Logo"}
                                       fill
-                                      unoptimized
-                                      sizes="36px"
+                                                            sizes="36px"
                                       className="object-contain object-left"
                                     />
                                   ) : (
@@ -1764,8 +1761,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                                   src={resolveImg(logoSrc)}
                                   alt={cardTitle}
                                   fill
-                                  unoptimized
-                                  sizes="36px"
+                                                    sizes="36px"
                                   className="object-contain"
                                 />
                               </Link>
@@ -1856,8 +1852,7 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                                 src={resolveImg(logoSrc)}
                                 alt={item.name || item.title || "Logo"}
                                 fill
-                                unoptimized
-                                sizes="36px"
+                                                sizes="36px"
                                 className="object-contain"
                               />
                             </Link>

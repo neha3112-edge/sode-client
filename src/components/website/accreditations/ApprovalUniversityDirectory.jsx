@@ -83,8 +83,7 @@ function SmoothExpandedCard({
                       alt={record.name}
                       width={46}
                       height={46}
-                      unoptimized
-                      className="object-contain w-full h-full"
+                                            className="object-contain w-full h-full"
                     />
                   ) : (
                     <span className="font-semibold text-base sm:text-lg text-[#122A46]">
@@ -629,8 +628,7 @@ export default function ApprovalUniversityDirectory({ initialData = null, classN
                   alt={name}
                   width={40}
                   height={40}
-                  unoptimized
-                  className="object-contain w-full h-full"
+                                    className="object-contain w-full h-full"
                 />
               ) : (
                 <span className="font-semibold text-xs sm:text-sm text-[#122A46]">

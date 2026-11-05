@@ -74,7 +74,6 @@ export default function FooterClassic({
                 fill
                 className="object-contain"
                 sizes="(max-width: 640px) 360px, (max-width: 768px) 540px, (max-width: 1024px) 780px, 920px"
-                priority
               />
             </div>
           </Link>

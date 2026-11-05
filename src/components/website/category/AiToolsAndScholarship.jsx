@@ -169,7 +169,6 @@ export default function AiToolsAndScholarship({ block, bIdx, counselors = [] }) 
                           alt={fullName}
                           width={55}
                           height={55}
-                          unoptimized
                         />
                       ) : (
                         iconSvg

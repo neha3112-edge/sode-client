@@ -88,7 +88,6 @@ export default function CompareDrawerWidget() {
                     alt={displayName}
                     width={16}
                     height={16}
-                    unoptimized
                     className="w-4 h-4 object-contain rounded-xs shrink-0"
                   />
                 ) : (
@@ -156,7 +155,6 @@ export default function CompareDrawerWidget() {
                         alt={displayName}
                         width={24}
                         height={24}
-                        unoptimized
                         className="w-full h-full object-contain"
                       />
                     ) : (

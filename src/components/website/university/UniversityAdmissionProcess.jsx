@@ -77,7 +77,6 @@ export default function UniversityAdmissionProcess({ admissionProcess }) {
                       width={24}
                       height={24}
                       className="object-contain w-full h-full"
-                      unoptimized
                     />
                   ) : (
                     step.stepNumber || idx + 1

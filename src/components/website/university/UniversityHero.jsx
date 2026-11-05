@@ -40,6 +40,8 @@ export default function UniversityHero({
                 fill
                 sizes={mobileHeroBannerUrl && mobileHeroBannerUrl !== heroBannerUrl ? "(min-width: 640px) 100vw, 1px" : "100vw"}
                 priority
+                loading="eager"
+                fetchPriority="high"
                 className={`object-cover object-center ${mobileHeroBannerUrl && mobileHeroBannerUrl !== heroBannerUrl ? "hidden sm:block" : "block"}`}
               />
             )}
@@ -50,6 +52,8 @@ export default function UniversityHero({
                 fill
                 sizes="(max-width: 639px) 100vw, 1px"
                 priority
+                loading="eager"
+                fetchPriority="high"
                 className="object-cover object-center block sm:hidden"
               />
             )}

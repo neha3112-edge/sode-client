@@ -757,8 +757,7 @@ export default function BlogSidebar({
               src={imgUrl}
               alt={itemTitle}
               fill
-              unoptimized
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
+                            className="object-cover transition-transform duration-300 group-hover:scale-105"
               sizes="(max-width: 640px) 100vw, 320px"
             />
           ) : (
@@ -1149,8 +1148,7 @@ export default function BlogSidebar({
                         src={imgUrl}
                         alt={title}
                         fill
-                        unoptimized
-                        className="object-cover transition-transform duration-300 ease-out group-hover:scale-110"
+                                                className="object-cover transition-transform duration-300 ease-out group-hover:scale-110"
                         sizes="64px"
                       />
                     ) : (
@@ -1245,8 +1243,7 @@ export default function BlogSidebar({
                         src={imgUrl}
                         alt={title}
                         fill
-                        unoptimized
-                        className="object-cover transition-transform duration-300 ease-out group-hover:scale-110"
+                                                className="object-cover transition-transform duration-300 ease-out group-hover:scale-110"
                         sizes="64px"
                       />
                     ) : (
@@ -1309,8 +1306,7 @@ export default function BlogSidebar({
                         src={imgUrl}
                         alt={title}
                         fill
-                        unoptimized
-                        className="object-cover transition-transform duration-300 ease-out group-hover:scale-110"
+                                                className="object-cover transition-transform duration-300 ease-out group-hover:scale-110"
                         sizes="64px"
                       />
                     ) : (
@@ -1467,8 +1463,7 @@ export default function BlogSidebar({
                   alt={authorName}
                   fill
                   sizes="48px"
-                  unoptimized
-                  className="object-cover"
+                                    className="object-cover"
                 />
               </div>
             ) : (
@@ -1553,8 +1548,7 @@ export default function BlogSidebar({
                     alt={authorName}
                     fill
                     sizes="52px"
-                    unoptimized
-                    className="object-cover"
+                                        className="object-cover"
                   />
                 </div>
               ) : (

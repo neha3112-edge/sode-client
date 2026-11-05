@@ -1116,8 +1116,7 @@ export default function BlogClientView({
                     priority
                     fetchPriority="high"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
-                    unoptimized
-                    className="w-full h-auto object-contain block"
+                                        className="w-full h-auto object-contain block"
                   />
                 </div>
               )}
@@ -1318,8 +1317,7 @@ export default function BlogClientView({
                                                 alt={altText}
                                                 width={1041}
                                                 height={585}
-                                                unoptimized
-                                                className="w-full h-auto object-contain block"
+                                                                                                className="w-full h-auto object-contain block"
                                                 sizes="(max-width: 768px) 100vw, 900px"
                                               />
                                             </div>
@@ -2163,8 +2161,7 @@ export default function BlogClientView({
                                   alt={tool.fullName}
                                   width={55}
                                   height={55}
-                                  unoptimized
-                                />
+                                                                  />
                               ) : (
                                 tool.iconSvg
                               )}

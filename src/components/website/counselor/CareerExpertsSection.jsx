@@ -28,7 +28,6 @@ function CounselorCard({ counselor, isMobile = false }) {
             src={avatarUrl}
             alt={counselorName}
             fill
-            unoptimized
             sizes="(max-width: 768px) 140px, 180px"
             className="object-cover object-top"
           />

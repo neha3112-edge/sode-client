@@ -614,8 +614,7 @@ export default function AutoEngineToolModal() {
                                     src={courseLogoUrl}
                                     alt={courseTitle}
                                     fill
-                                    unoptimized
-                                    sizes="36px"
+                                                                        sizes="36px"
                                     className="object-contain object-left"
                                   />
                                 ) : (
@@ -738,8 +737,7 @@ export default function AutoEngineToolModal() {
                                   src={uniLogoUrl}
                                   alt={uniTitle}
                                   fill
-                                  unoptimized
-                                  sizes="36px"
+                                                                    sizes="36px"
                                   className="object-contain object-left"
                                 />
                               ) : (
