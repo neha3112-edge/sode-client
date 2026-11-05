@@ -44,6 +44,59 @@ const PAGE_CONTEXT_BADGE = {
 export function Hero({ initialHeroData = null }) {
   const carouselRef = useRef(null);
   const { openFormModal } = useFormModal();
+  const [canAutoplay, setCanAutoplay] = useState(false);
+
+  useEffect(() => {
+    // Delay autoplay slightly on initial load so first slide establishes LCP cleanly
+    const t = setTimeout(() => setCanAutoplay(true), 4000);
+    return () => clearTimeout(t);
+  }, []);
+
+  // Demote duplicate <h1> and sanitize interactive elements inside slick-cloned slides (created by infinite carousel loop)
+  useEffect(() => {
+    const sanitizeClonedSlides = () => {
+      if (typeof document === "undefined") return;
+      const clonedH1s = document.querySelectorAll(".slick-cloned h1");
+      clonedH1s.forEach((el) => {
+        const p = document.createElement("p");
+        Array.from(el.attributes).forEach((attr) => p.setAttribute(attr.name, attr.value));
+        p.innerHTML = el.innerHTML;
+        el.parentNode?.replaceChild(p, el);
+      });
+
+      // Remove keyboard and screen-reader focus from aria-hidden cloned elements
+      const clonedInteractive = document.querySelectorAll(
+        ".slick-cloned a, .slick-cloned button, .slick-cloned input, .slick-cloned select, .slick-cloned [tabindex]:not([tabindex='-1'])"
+      );
+      clonedInteractive.forEach((el) => {
+        el.setAttribute("tabindex", "-1");
+        el.setAttribute("aria-hidden", "true");
+      });
+    };
+
+    sanitizeClonedSlides();
+    const t1 = setTimeout(sanitizeClonedSlides, 100);
+    const t2 = setTimeout(sanitizeClonedSlides, 300);
+    const t3 = setTimeout(sanitizeClonedSlides, 800);
+    const t4 = setTimeout(sanitizeClonedSlides, 2000);
+
+    const observer = new MutationObserver(() => {
+      sanitizeClonedSlides();
+    });
+
+    const carouselEl = document.querySelector(".hero-carousel");
+    if (carouselEl) {
+      observer.observe(carouselEl, { childList: true, subtree: true });
+    }
+
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+      clearTimeout(t4);
+      observer.disconnect();
+    };
+  }, [initialHeroData]);
 
   const heroData = initialHeroData?.result || initialHeroData || {};
   if (!heroData || Object.keys(heroData).length === 0 || (!heroData.title && !heroData.custom_html && !heroData.customHtml && (!heroData.slides || heroData.slides.length === 0))) {
@@ -434,29 +487,6 @@ export function Hero({ initialHeroData = null }) {
     heroData?.is_carousel && Array.isArray(heroData?.slides) && heroData.slides.length > 0
   );
 
-  // Demote any duplicate <h1> inside slick-cloned slides (created by infinite carousel loop)
-  useEffect(() => {
-    const demoteClonedHeadings = () => {
-      if (typeof document === "undefined") return;
-      const clonedH1s = document.querySelectorAll(".slick-cloned h1");
-      clonedH1s.forEach((el) => {
-        const p = document.createElement("p");
-        Array.from(el.attributes).forEach((attr) => p.setAttribute(attr.name, attr.value));
-        p.innerHTML = el.innerHTML;
-        el.parentNode?.replaceChild(p, el);
-      });
-    };
-
-    demoteClonedHeadings();
-    const t1 = setTimeout(demoteClonedHeadings, 100);
-    const t2 = setTimeout(demoteClonedHeadings, 300);
-    const t3 = setTimeout(demoteClonedHeadings, 800);
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      clearTimeout(t3);
-    };
-  }, [heroData]);
   const carouselSettings = heroData?.carousel_settings || heroData?.carouselSettings || {};
   const isAutoplay = carouselSettings.autoplay !== false;
   const autoplayInterval = Number(carouselSettings.autoplay_interval || carouselSettings.autoplayInterval) || 5000;
@@ -968,8 +998,8 @@ export function Hero({ initialHeroData = null }) {
                 alt={title || "Hero banner"}
                 fill
                 priority={isFirstSlide}
-                loading={isFirstSlide ? undefined : "lazy"}
-                fetchPriority={isFirstSlide ? "high" : undefined}
+                loading={isFirstSlide ? "eager" : undefined}
+                fetchPriority={isFirstSlide ? "high" : "low"}
                 sizes={mobileBannerUrl && mobileBannerUrl !== desktopBannerUrl ? "(min-width: 768px) 100vw, 1px" : "100vw"}
                 className="object-cover object-center"
               />
@@ -982,8 +1012,8 @@ export function Hero({ initialHeroData = null }) {
                   alt={title || "Hero mobile banner"}
                   fill
                   priority={isFirstSlide}
-                  loading={isFirstSlide ? undefined : "lazy"}
-                  fetchPriority={isFirstSlide ? "high" : undefined}
+                  loading={isFirstSlide ? "eager" : undefined}
+                  fetchPriority={isFirstSlide ? "high" : "low"}
                   sizes="(max-width: 767px) 100vw, 1px"
                   className="object-cover object-center"
                 />
@@ -1040,17 +1070,16 @@ export function Hero({ initialHeroData = null }) {
                     {primaryBtn.text}
                   </button>
                 ) : (
-                  <Link
-                    href={primaryBtn?.url || "/counselling"}
+                  <span
                     style={{
                       background: "linear-gradient(180deg, #F3CE7F 0%, #E7B85D 100%)",
                       color: "#072C50",
                       border: "1px solid rgba(226, 176, 83, 0.6)",
                     }}
-                    className="inline-block px-2 py-0.5 rounded-md font-bold text-[9.5px] xs:text-[10.5px] shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap"
+                    className="inline-block px-2 py-0.5 rounded-md font-bold text-[9.5px] xs:text-[10.5px] shadow-sm pointer-events-none whitespace-nowrap"
                   >
                     {primaryBtn.text}
-                  </Link>
+                  </span>
                 )}
               </div>
             )}
@@ -1172,7 +1201,7 @@ export function Hero({ initialHeroData = null }) {
 
           <Carousel
             ref={carouselRef}
-            autoplay={isAutoplay}
+            autoplay={isAutoplay && canAutoplay}
             autoplaySpeed={autoplayInterval}
             dots={showDots}
             arrows={false}
@@ -1187,6 +1216,24 @@ export function Hero({ initialHeroData = null }) {
           >
             {heroData.slides.map((slide, idx) => renderHeroContent(slide, true, idx))}
           </Carousel>
+
+          <style jsx global>{`
+            .hero-carousel .slick-dots li {
+              margin: 0 4px !important;
+            }
+            .hero-carousel .slick-dots li button {
+              position: relative !important;
+            }
+            .hero-carousel .slick-dots li button::before {
+              content: "" !important;
+              position: absolute !important;
+              top: 50% !important;
+              left: 50% !important;
+              transform: translate(-50%, -50%) !important;
+              min-width: 44px !important;
+              min-height: 44px !important;
+            }
+          `}</style>
 
           {showArrows && heroData.slides.length > 1 && (
             <button

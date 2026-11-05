@@ -179,8 +179,8 @@ export function ToolsView({ initialTools = [] }) {
         <article className="w-full bg-white rounded-2xl sm:rounded-3xl shadow-xl border border-slate-100 p-3.5 sm:p-10 md:p-14 text-[#2D3748]">
           {/* Top Badge */}
           <div className="flex justify-center mb-1.5 sm:mb-3">
-            <div className="inline-flex items-center gap-1.5 px-3 py-0.5 sm:px-4 sm:py-1 rounded-full bg-[#F5E5BA] text-[#8C6228] border border-[#E9D195] text-[10px] sm:text-xs font-bold shadow-none">
-              <span className="text-[#8C6228] text-xs sm:text-sm font-extrabold">✦</span>
+            <div className="inline-flex items-center gap-1.5 px-3 py-0.5 sm:px-4 sm:py-1 rounded-full bg-[#F5E5BA] text-[#5c3c0d] border border-[#E9D195] text-[10px] sm:text-xs font-bold shadow-none">
+              <span className="text-[#5c3c0d] text-xs sm:text-sm font-extrabold">✦</span>
               <span className="tracking-wider uppercase text-[10px] sm:text-[11px]">AI POWERED</span>
             </div>
           </div>
