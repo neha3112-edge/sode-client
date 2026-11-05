@@ -1554,9 +1554,6 @@ export function Header({ initialHeaderData = null, siteLogo = null }) {
                     src={logoUrl}
                     alt={logoAlt}
                     fill
-                    priority
-                    loading="eager"
-                    fetchPriority="high"
                     sizes="(max-width: 640px) 144px, 176px"
                     className="object-contain object-left cursor-pointer"
                   />

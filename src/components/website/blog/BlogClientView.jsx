@@ -1112,7 +1112,6 @@ export default function BlogClientView({
                     alt={pageTitle}
                     width={1200}
                     height={500}
-                    loading="eager"
                     priority
                     fetchPriority="high"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"

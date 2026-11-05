@@ -688,7 +688,6 @@ export default function CoursePageClientView({ page, slug, heroData = null }) {
                     alt=""
                     fill
                     priority
-                    loading="eager"
                     fetchPriority="high"
                     sizes="100vw"
                     className="object-cover object-center opacity-30"

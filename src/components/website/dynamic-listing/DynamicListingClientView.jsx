@@ -97,7 +97,6 @@ function DynamicHero({ hero, pageTitle, targetCourseName }) {
               alt=""
               fill
               priority
-              loading="eager"
               fetchPriority="high"
               sizes="100vw"
               className="object-cover object-center opacity-30"
@@ -222,7 +221,6 @@ function DynamicHero({ hero, pageTitle, targetCourseName }) {
                       alt={title}
                       fill
                       priority
-                      loading="eager"
                       fetchPriority="high"
                       sizes="(max-width: 1024px) 100vw, 40vw"
                       className="object-cover object-center group-hover:scale-105 transition-transform duration-300"
