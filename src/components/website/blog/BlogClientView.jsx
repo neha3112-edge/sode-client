@@ -1114,8 +1114,8 @@ export default function BlogClientView({
                     height={500}
                     priority
                     fetchPriority="high"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
-                                        className="w-full h-auto object-contain block"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 800px"
+                    className="w-full h-auto object-contain block"
                   />
                 </div>
               )}
