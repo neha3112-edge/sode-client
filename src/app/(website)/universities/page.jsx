@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import React from "react";
 import { request } from "@/services/request";
 import { getPageMetaData, constructMetadata } from "@/constants/pageMetaData";
 import { UniversitiesPageClientView } from "@/components/website";
@@ -12,16 +12,25 @@ export async function generateMetadata() {
   });
 }
 
-export default async function UniversitiesPage() {
+export default async function UniversitiesPage({ searchParams }) {
+  const resolvedSearchParams = searchParams ? await searchParams : {};
   let initialUniversities = [];
   let initialOptions = null;
+
+  const queryOptions = {
+    items: 100,
+    category: resolvedSearchParams.category || resolvedSearchParams.type || resolvedSearchParams.top || undefined,
+    course: resolvedSearchParams.course || undefined,
+    state: resolvedSearchParams.state || undefined,
+    search: resolvedSearchParams.search || resolvedSearchParams.q || undefined,
+  };
 
   try {
     const [uniRes, optionsRes] = await Promise.allSettled([
       request.dynamicList({
         entity: "universities",
         endPoint: "v1/list",
-        options: { items: 100 },
+        options: queryOptions,
         revalidate: 900,
       }),
       request.dynamicList({
