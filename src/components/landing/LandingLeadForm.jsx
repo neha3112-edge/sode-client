@@ -819,12 +819,15 @@ export default function LandingLeadForm({
       variant="submit"
       loading={loading}
       radius={submitRadius}
-      className="w-full text-[14px] sm:text-[15px] font-bold mt-1 shadow-sm"
+      className="w-full text-[14px] sm:text-[15px] font-bold mt-1 shadow-none border-none"
       style={{
         height: "40px",
         background: submitBg,
+        backgroundColor: submitBg,
         color: submitTextColor,
-        border: submitBorder !== "none" ? submitBorder : undefined,
+        border: submitBorder !== "none" ? submitBorder : "none",
+        boxShadow: "none",
+        outline: "none",
       }}
     >
       {activeSubmitText}

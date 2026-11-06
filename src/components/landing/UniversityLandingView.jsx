@@ -30,6 +30,7 @@ import ScholarshipModal from "./modals/ScholarshipModal";
 import CompareModal from "./modals/CompareModal";
 import LegalModal from "./modals/LegalModal";
 import LiverpoolLandingView from "./LiverpoolLandingView";
+import AmityLandingView from "./universities/amity/AmityLandingView";
 
 function MainUniversityLandingView({ data = {} }) {
   const {
@@ -1021,6 +1022,9 @@ function MainUniversityLandingView({ data = {} }) {
 }
 
 export default function UniversityLandingView({ data = {} }) {
+  if (data?.slug === "amity" || data?.brand?.slug === "amity") {
+    return <AmityLandingView data={data} />;
+  }
   if (data?.slug === "liverpool" || data?.brand?.slug === "liverpool") {
     return <LiverpoolLandingView data={data} />;
   }

@@ -5,10 +5,10 @@ import Image from "next/image";
 import { Button } from "antd";
 import confetti from "canvas-confetti";
 
-import LandingContainer from "./LandingContainer";
 import LandingLeadForm from "./LandingLeadForm";
 import LandingButton from "./LandingButton";
 import GalgotiasHero from "./hero/GalgotiasHero";
+import { Container } from "@/components/common/Container";
 
 /**
  * Reusable Landing Hero Component
@@ -54,7 +54,7 @@ export default function LandingHero({
     brand.slug === "ssbm" ||
     brand.name?.toLowerCase().includes("ssbm");
 
-  const HeroContainer = isSsbm ? "div" : LandingContainer;
+  const HeroContainer = isSsbm ? "div" : Container;
 
   /* ----------------------------- Helpers ----------------------------- */
 
@@ -490,7 +490,7 @@ export default function LandingHero({
           className={joinClassNames(
             isSsbm
               ? "ssbm-hero-container relative z-10 flex flex-col min-[1000px]:flex-row items-center justify-between gap-5 sm:gap-6 lg:gap-8 w-full max-w-[1140px] mx-auto px-4 sm:px-6 box-border"
-              : "relative z-10 flex flex-col min-[1000px]:flex-row items-center justify-between gap-5 sm:gap-6 lg:gap-8 px-4 sm:px-6 lg:px-8 py-2.5 sm:py-4 lg:py-4",
+              : "relative z-10 flex flex-col min-[1000px]:flex-row items-center justify-between gap-5 sm:gap-6 lg:gap-8",
             hero.containerClassName
           )}
           style={{
@@ -824,183 +824,183 @@ export default function LandingHero({
               !hero.hideMobileHeroCoupon &&
               brand.slug !== "cu" &&
               (brand.showCouponBtn || brand.showCouponButton || hero.showCouponBtn || hero.showCouponButton) && (
-              <div className="w-full flex justify-center md:hidden mb-3">
-                <button
-                  type="button"
-                  onClick={onOpenScholarship}
-                  style={{
-                    background:
-                      hero.couponBtnBg ||
-                      brand.couponBtnBg ||
-                      "linear-gradient(135deg, #2ecc71 0%, #27ae60 100%)",
-                    backgroundColor:
-                      hero.couponBtnBg ||
-                      brand.couponBtnBg ||
-                      "#22c55e",
-                    "--coupon-btn-bg":
-                      hero.couponBtnBg ||
-                      brand.couponBtnBg ||
-                      "linear-gradient(135deg, #2ecc71 0%, #27ae60 100%)",
-                    "--coupon-shadow-start":
-                      hero.couponShadowColor ||
-                      brand.couponShadowColor ||
-                      "rgba(46, 204, 113, 0.75)",
-                    "--coupon-shadow-mid1":
-                      hero.couponShadowColorMid1 ||
-                      brand.couponShadowColorMid1 ||
-                      "rgba(46, 204, 113, 0.45)",
-                    "--coupon-shadow-mid2":
-                      hero.couponShadowColorMid2 ||
-                      brand.couponShadowColorMid2 ||
-                      "rgba(46, 204, 113, 0.25)",
-                    "--coupon-shadow-mid3":
-                      hero.couponShadowColorMid3 ||
-                      brand.couponShadowColorMid3 ||
-                      "rgba(46, 204, 113, 0.1)",
-                    "--coupon-shadow-end":
-                      "rgba(46, 204, 113, 0)",
-                  }}
-                  className="coupon-btn-main relative w-[80%] max-w-[290px] mx-auto inline-flex items-center justify-center gap-2.5 py-1.5 px-4 rounded-[10px] !text-white font-bold text-[14px] sm:text-[15px] cursor-pointer !border-none overflow-hidden select-none hover:!brightness-105 active:scale-95"
-                >
-                  <span className="moving-light-green-box" />
-                  <span className="relative w-7 h-7 rounded-full bg-white flex items-center justify-center shrink-0 shadow-xs z-10 overflow-hidden p-0.5">
-                    <Image
-                      src={brand.giftGif || hero.giftGif || "/assets/images/gift.gif"}
-                      alt="Scholarship"
-                      width={20}
-                      height={20}
-                      unoptimized
-                      className="w-5 h-5 object-contain"
-                    />
-                  </span>
-                  <span className="relative z-10 font-bold tracking-wide">
-                    {hero.couponButtonText || brand.couponButtonText || "Scholarship Coupon Code"}
-                  </span>
-                </button>
-              </div>
-            )}
+                <div className="w-full flex justify-center md:hidden mb-3">
+                  <button
+                    type="button"
+                    onClick={onOpenScholarship}
+                    style={{
+                      background:
+                        hero.couponBtnBg ||
+                        brand.couponBtnBg ||
+                        "linear-gradient(135deg, #2ecc71 0%, #27ae60 100%)",
+                      backgroundColor:
+                        hero.couponBtnBg ||
+                        brand.couponBtnBg ||
+                        "#22c55e",
+                      "--coupon-btn-bg":
+                        hero.couponBtnBg ||
+                        brand.couponBtnBg ||
+                        "linear-gradient(135deg, #2ecc71 0%, #27ae60 100%)",
+                      "--coupon-shadow-start":
+                        hero.couponShadowColor ||
+                        brand.couponShadowColor ||
+                        "rgba(46, 204, 113, 0.75)",
+                      "--coupon-shadow-mid1":
+                        hero.couponShadowColorMid1 ||
+                        brand.couponShadowColorMid1 ||
+                        "rgba(46, 204, 113, 0.45)",
+                      "--coupon-shadow-mid2":
+                        hero.couponShadowColorMid2 ||
+                        brand.couponShadowColorMid2 ||
+                        "rgba(46, 204, 113, 0.25)",
+                      "--coupon-shadow-mid3":
+                        hero.couponShadowColorMid3 ||
+                        brand.couponShadowColorMid3 ||
+                        "rgba(46, 204, 113, 0.1)",
+                      "--coupon-shadow-end":
+                        "rgba(46, 204, 113, 0)",
+                    }}
+                    className="coupon-btn-main relative w-[80%] max-w-[290px] mx-auto inline-flex items-center justify-center gap-2.5 py-1.5 px-4 rounded-[10px] !text-white font-bold text-[14px] sm:text-[15px] cursor-pointer !border-none overflow-hidden select-none hover:!brightness-105 active:scale-95"
+                  >
+                    <span className="moving-light-green-box" />
+                    <span className="relative w-7 h-7 rounded-full bg-white flex items-center justify-center shrink-0 shadow-xs z-10 overflow-hidden p-0.5">
+                      <Image
+                        src={brand.giftGif || hero.giftGif || "/assets/images/gift.gif"}
+                        alt="Scholarship"
+                        width={20}
+                        height={20}
+                        unoptimized
+                        className="w-5 h-5 object-contain"
+                      />
+                    </span>
+                    <span className="relative z-10 font-bold tracking-wide">
+                      {hero.couponButtonText || brand.couponButtonText || "Scholarship Coupon Code"}
+                    </span>
+                  </button>
+                </div>
+              )}
 
             {hero.showMobileCouponButton === true &&
               hero.hideMobileCouponButton !== true &&
               brand.hideMobileCouponButton !== true &&
               brand.slug !== "vgu" &&
               brand.slug !== "lpu" && (
-              <div className="w-full block lg:hidden my-2 mb-3.5 flex justify-center">
-                <Button
-                  type="text"
-                  onClick={(e) => {
-                    try {
-                      if (typeof window !== "undefined") {
-                        const rect = e?.currentTarget?.getBoundingClientRect();
-                        const x = rect ? (rect.left + rect.width / 2) / window.innerWidth : 0.5;
-                        const y = rect ? (rect.top + rect.height / 2) / window.innerHeight : 0.5;
-                        confetti({
-                          particleCount: 55,
-                          spread: 60,
-                          origin: { x, y },
-                          zIndex: 99999,
-                          colors: ["#2ecc71", "#27ae60", "#f1c40f", "#e67e22", "#e74c3c"],
-                        });
-                      }
-                    } catch { }
-                    if (onOpenScholarship) {
-                      onOpenScholarship();
-                    } else if (onOpenApply) {
-                      onOpenApply();
-                    }
-                  }}
-                  aria-label="Get Scholarship Coupon Code"
-                  style={{
-                    ...(brand.couponBtnBg || hero.couponBtnBg || brand.themeGradient
-                      ? {
-                        "--coupon-btn-bg":
-                          brand.couponBtnBg ||
-                          hero.couponBtnBg ||
-                          brand.themeGradient,
-                      }
-                      : brand.couponButtonColor
-                        ? {
-                          backgroundColor:
-                            brand.couponButtonColor,
+                <div className="w-full block lg:hidden my-2 mb-3.5 flex justify-center">
+                  <Button
+                    type="text"
+                    onClick={(e) => {
+                      try {
+                        if (typeof window !== "undefined") {
+                          const rect = e?.currentTarget?.getBoundingClientRect();
+                          const x = rect ? (rect.left + rect.width / 2) / window.innerWidth : 0.5;
+                          const y = rect ? (rect.top + rect.height / 2) / window.innerHeight : 0.5;
+                          confetti({
+                            particleCount: 55,
+                            spread: 60,
+                            origin: { x, y },
+                            zIndex: 99999,
+                            colors: ["#2ecc71", "#27ae60", "#f1c40f", "#e67e22", "#e74c3c"],
+                          });
                         }
-                        : {
-                          backgroundColor:
-                            "#22c55e",
-                        }),
-
-                    "--coupon-shadow-start":
-                      brand.couponShadowColor ||
-                      "rgba(46, 204, 113, 0.65)",
-
-                    "--coupon-shadow-mid1":
-                      brand.couponShadowColorMid1 ||
-                      "rgba(46, 204, 113, 0.42)",
-
-                    "--coupon-shadow-mid2":
-                      brand.couponShadowColorMid2 ||
-                      "rgba(46, 204, 113, 0.22)",
-
-                    "--coupon-shadow-mid3":
-                      brand.couponShadowColorMid3 ||
-                      "rgba(46, 204, 113, 0.08)",
-
-                    "--coupon-shadow-end":
-                      "rgba(46, 204, 113, 0)",
-                  }}
-                  className={joinClassNames(
-                    "coupon-btn-main relative inline-flex items-center gap-2 sm:gap-2.5 !text-white font-bold cursor-pointer !border-none overflow-hidden select-none hover:!brightness-105 active:scale-95 !h-auto",
-                    hero.couponButtonClassName ||
-                    brand.couponButtonClassName ||
-                    (brand.slug === "cu"
-                      ? "w-full max-w-[290px] sm:max-w-[310px] mx-auto justify-center py-2.5 px-4 rounded-[8px]"
-                      : "pl-5 sm:pl-7 md:pl-8 pr-4.5 sm:pr-6 md:pr-7 py-1 sm:py-1.5 rounded-[8px] text-[10px] sm:text-[11px] md:text-[11.5px]")
-                  )}
-                >
-                  {/* Moving Light Green Box */}
-                  <span className="moving-light-green-box" />
-
-                  {/* Gift Icon */}
-                  <span
-                    className={joinClassNames(
-                      "relative rounded-full bg-white flex items-center justify-center shrink-0 shadow-xs z-10 p-0 overflow-hidden",
-                      brand.slug === "cu"
-                        ? "-ml-1 w-6 h-6 sm:w-6.5 sm:h-6.5"
-                        : "-ml-1.5 sm:-ml-2.5 w-6 h-6 sm:w-7 sm:h-7"
-                    )}
-                  >
-                    <Image
-                      src={
-                        brand.giftGif ||
-                        "/assets/images/gift.gif"
+                      } catch { }
+                      if (onOpenScholarship) {
+                        onOpenScholarship();
+                      } else if (onOpenApply) {
+                        onOpenApply();
                       }
-                      alt="Scholarship Gift"
-                      width={24}
-                      height={24}
-                      unoptimized
-                      className={
-                        brand.slug === "cu"
-                          ? "w-5 h-5 sm:w-5.5 sm:h-5.5 object-contain"
-                          : "w-5 h-5 sm:w-6 sm:h-6 object-contain"
-                      }
-                    />
-                  </span>
+                    }}
+                    aria-label="Get Scholarship Coupon Code"
+                    style={{
+                      ...(brand.couponBtnBg || hero.couponBtnBg || brand.themeGradient
+                        ? {
+                          "--coupon-btn-bg":
+                            brand.couponBtnBg ||
+                            hero.couponBtnBg ||
+                            brand.themeGradient,
+                        }
+                        : brand.couponButtonColor
+                          ? {
+                            backgroundColor:
+                              brand.couponButtonColor,
+                          }
+                          : {
+                            backgroundColor:
+                              "#22c55e",
+                          }),
 
-                  {/* Coupon Text */}
-                  <span
+                      "--coupon-shadow-start":
+                        brand.couponShadowColor ||
+                        "rgba(46, 204, 113, 0.65)",
+
+                      "--coupon-shadow-mid1":
+                        brand.couponShadowColorMid1 ||
+                        "rgba(46, 204, 113, 0.42)",
+
+                      "--coupon-shadow-mid2":
+                        brand.couponShadowColorMid2 ||
+                        "rgba(46, 204, 113, 0.22)",
+
+                      "--coupon-shadow-mid3":
+                        brand.couponShadowColorMid3 ||
+                        "rgba(46, 204, 113, 0.08)",
+
+                      "--coupon-shadow-end":
+                        "rgba(46, 204, 113, 0)",
+                    }}
                     className={joinClassNames(
-                      "relative z-10 tracking-wide whitespace-nowrap text-white font-bold drop-shadow-[0_1px_2px_rgba(0,0,0,0.15)]",
-                      hero.couponButtonTextClassName ||
-                      brand.couponButtonTextClassName ||
+                      "coupon-btn-main relative inline-flex items-center gap-2 sm:gap-2.5 !text-white font-bold cursor-pointer !border-none overflow-hidden select-none hover:!brightness-105 active:scale-95 !h-auto",
+                      hero.couponButtonClassName ||
+                      brand.couponButtonClassName ||
                       (brand.slug === "cu"
-                        ? "text-[13.5px] sm:text-[14px]"
-                        : "text-[14px] sm:text-[15px] md:text-[15.5px]")
+                        ? "w-full max-w-[290px] sm:max-w-[310px] mx-auto justify-center py-2.5 px-4 rounded-[8px]"
+                        : "pl-5 sm:pl-7 md:pl-8 pr-4.5 sm:pr-6 md:pr-7 py-1 sm:py-1.5 rounded-[8px] text-[10px] sm:text-[11px] md:text-[11.5px]")
                     )}
                   >
-                    {brand.couponButtonText || "Scholarship Coupon Code"}
-                  </span>
-                </Button>
-              </div>
-            )}
+                    {/* Moving Light Green Box */}
+                    <span className="moving-light-green-box" />
+
+                    {/* Gift Icon */}
+                    <span
+                      className={joinClassNames(
+                        "relative rounded-full bg-white flex items-center justify-center shrink-0 shadow-xs z-10 p-0 overflow-hidden",
+                        brand.slug === "cu"
+                          ? "-ml-1 w-6 h-6 sm:w-6.5 sm:h-6.5"
+                          : "-ml-1.5 sm:-ml-2.5 w-6 h-6 sm:w-7 sm:h-7"
+                      )}
+                    >
+                      <Image
+                        src={
+                          brand.giftGif ||
+                          "/assets/images/gift.gif"
+                        }
+                        alt="Scholarship Gift"
+                        width={24}
+                        height={24}
+                        unoptimized
+                        className={
+                          brand.slug === "cu"
+                            ? "w-5 h-5 sm:w-5.5 sm:h-5.5 object-contain"
+                            : "w-5 h-5 sm:w-6 sm:h-6 object-contain"
+                        }
+                      />
+                    </span>
+
+                    {/* Coupon Text */}
+                    <span
+                      className={joinClassNames(
+                        "relative z-10 tracking-wide whitespace-nowrap text-white font-bold drop-shadow-[0_1px_2px_rgba(0,0,0,0.15)]",
+                        hero.couponButtonTextClassName ||
+                        brand.couponButtonTextClassName ||
+                        (brand.slug === "cu"
+                          ? "text-[13.5px] sm:text-[14px]"
+                          : "text-[14px] sm:text-[15px] md:text-[15.5px]")
+                      )}
+                    >
+                      {brand.couponButtonText || "Scholarship Coupon Code"}
+                    </span>
+                  </Button>
+                </div>
+              )}
 
             <LandingLeadForm
               config={hero.form}

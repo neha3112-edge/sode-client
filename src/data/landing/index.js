@@ -1,4 +1,3 @@
-import { amityData } from "./amity";
 import { lpuData } from "./lpu";
 import { muData } from "./mu";
 import { manipalData } from "./manipal";
@@ -19,7 +18,6 @@ import { iiitbData } from "./iiitb";
 import { ssbmData } from "./ssbm";
 
 export const LANDING_REGISTRY = {
-  amity: amityData,
   lpu: lpuData,
   mu: muData,
   mangalayatan: muData,
@@ -145,7 +143,6 @@ export function getLandingData(slug) {
 }
 
 export {
-  amityData,
   lpuData,
   muData,
   manipalData,

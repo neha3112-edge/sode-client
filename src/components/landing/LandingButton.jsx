@@ -77,11 +77,14 @@ export default function LandingButton({
 
     case "submit":
       variantClasses =
-        "!font-bold shadow-sm hover:!opacity-95 active:scale-[0.98] transition-all cursor-pointer rounded-[6px] text-[14px] sm:text-[15px] h-[38px] sm:h-[40px]";
+        "!font-bold hover:!opacity-95 active:scale-[0.98] transition-all cursor-pointer rounded-[6px] text-[14px] sm:text-[15px] h-[38px] sm:h-[40px]";
       defaultStyle = {
         background: "#28a745",
+        backgroundColor: "#28a745",
         color: "#ffffff",
         border: "none",
+        boxShadow: "none",
+        outline: "none",
       };
       break;
 
@@ -155,7 +158,7 @@ export default function LandingButton({
   const resolvedBorder =
     border ||
     (borderColor ? `2px solid ${borderColor}` : undefined) ||
-    style.border;
+    (style?.border !== undefined ? style.border : defaultStyle.border);
 
   const resolvedRadius =
     props.radius ||
@@ -173,6 +176,8 @@ export default function LandingButton({
     ...(!hasBorderClass && resolvedBorder === undefined && defaultStyle.border
       ? { border: defaultStyle.border }
       : {}),
+    ...(defaultStyle.boxShadow ? { boxShadow: defaultStyle.boxShadow } : {}),
+    ...(defaultStyle.outline ? { outline: defaultStyle.outline } : {}),
     ...style,
     ...(resolvedBg ? { background: resolvedBg, backgroundColor: resolvedBg } : {}),
     ...(resolvedColor ? { color: resolvedColor } : {}),
