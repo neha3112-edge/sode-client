@@ -59,6 +59,7 @@ export default function AmityLandingView() {
 
       {/* 10. Footer Section (Form, Still Confused Compare, SODE Logo, Disclaimer & Floating CTA) */}
       <AmityFooter
+        onOpenApply={() => setIsBrochureOpen(true)}
         onOpenScholarship={() => setIsScholarshipOpen(true)}
         onOpenCompare={() => setIsBrochureOpen(true)}
         onOpenDisclaimer={() =>

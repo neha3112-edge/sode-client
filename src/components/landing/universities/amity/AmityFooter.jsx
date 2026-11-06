@@ -47,6 +47,7 @@ const INDIAN_STATES = [
 ];
 
 export default function AmityFooter({
+  onOpenApply,
   onOpenScholarship,
   onOpenCompare,
   onOpenDisclaimer,
@@ -284,14 +285,16 @@ export default function AmityFooter({
             aria-label="Compare Universities"
             className="absolute -bottom-8 sm:-bottom-9 left-1/2 -translate-x-1/2 cursor-pointer transition-transform duration-200 hover:scale-105 select-none bg-transparent border-none p-0 focus:outline-none"
           >
-            <Image
-              src={amityImg("arrow.gif")}
-              alt="Compare University"
-              width={70}
-              height={70}
-              className="w-[66px] h-[66px] sm:w-[70px] sm:h-[70px] rounded-full object-contain"
-              unoptimized
-            />
+            <div className="relative w-[66px] h-[66px] sm:w-[70px] sm:h-[70px] rounded-full overflow-hidden">
+              <Image
+                src={amityImg("arrow.gif")}
+                alt="Compare University"
+                fill
+                sizes="70px"
+                className="object-contain"
+                unoptimized
+              />
+            </div>
           </button>
         </div>
       </section>
@@ -305,19 +308,21 @@ export default function AmityFooter({
             onClick={onOpenCompare}
             className="cursor-pointer bg-transparent border-none p-0 inline-block focus:outline-none"
           >
-            <Image
-              src={amityImg("new-des-logo.webp")}
-              alt="Distance Education School - SODE"
-              width={420}
-              height={120}
-              className="w-full max-w-[320px] sm:max-w-312.5 h-auto object-contain mx-auto"
-            />
+            <div className="relative w-[300px] sm:w-[380px] md:w-[420px] h-[75px] sm:h-[95px] md:h-[105px]">
+              <Image
+                src={amityImg("new-des-logo.webp")}
+                alt="Distance Education School - SODE"
+                fill
+                sizes="(max-width: 640px) 300px, 420px"
+                className="object-contain"
+              />
+            </div>
           </button>
         </div>
 
         {/* Disclaimer Paragraph & Legal Links (#footer-bottom-bar) - Full width edge-to-edge */}
         <div className="w-full px-4 sm:px-8 lg:px-10 pt-1 pb-6 sm:pb-7 text-center">
-          <p className="text-[#555555] text-[11.5px] sm:text-[12px] md:text-[12.5px] leading-[1.65] m-0 mb-2.5 max-w-full">
+          <p className="text-[#555555] text-[11px] sm:text-[12px] md:text-[12.5px] leading-[1.32] sm:leading-[1.38] m-0 mb-2 max-w-full">
             SODE Counselling Services LLP act as a marketing agency. All university names, logos,
             and trademarks mentioned are used for informational purposes only. We are not a
             university or an admission authority. Users are encouraged to verify information on
@@ -352,25 +357,25 @@ export default function AmityFooter({
         </div>
 
         {/* Bottom Dark Copyright Strip (.mini-footer-bottom) */}
-        <div className="w-full bg-[#08417b] py-2.5 sm:py-3 text-center text-white text-[12px] sm:text-[13px] font-normal tracking-wide">
+        <div className="w-full bg-[#08417b] py-2.5 sm:py-3 pb-16 md:pb-3 text-center text-white text-[12px] sm:text-[13px] font-normal tracking-wide">
           © 2026 SODE Counseling Services LLP
         </div>
       </section>
 
-      {/* 4. Floating Fixed Call & Scholarship Buttons */}
-      <div className="fixed bottom-5 right-4 sm:right-6 z-50 flex flex-col items-center gap-3">
+      {/* 4. Floating Fixed Call & Scholarship Buttons (Hidden on mobile as bottom sticky CTA bar is present) */}
+      <div className="hidden md:flex fixed bottom-5 right-4 sm:right-6 z-40 flex-col items-center gap-2.5 sm:gap-3">
         {/* Call Floating Button */}
         <a
           href="tel:07065777755"
           aria-label="Call Now"
-          className="w-[54px] h-[54px] sm:w-[60px] sm:h-[60px] rounded-full overflow-hidden shadow-[0_10px_25px_rgba(0,0,0,0.3)] transition-transform duration-200 hover:scale-110 flex items-center justify-center bg-[#25d366]"
+          className="relative w-[48px] h-[48px] sm:w-[56px] sm:h-[56px] rounded-full overflow-hidden shadow-[0_10px_25px_rgba(0,0,0,0.3)] transition-transform duration-200 hover:scale-110 flex items-center justify-center bg-[#25d366]"
         >
           <Image
             src={amityImg("call_icon.gif")}
             alt="Call Us"
-            width={60}
-            height={60}
-            className="w-full h-full object-cover rounded-full"
+            fill
+            sizes="56px"
+            className="object-cover rounded-full"
             unoptimized
           />
         </a>
@@ -380,17 +385,41 @@ export default function AmityFooter({
           type="button"
           onClick={onOpenScholarship}
           aria-label="Open Scholarship Coupon"
-          className="w-[54px] h-[54px] sm:w-[60px] sm:h-[60px] rounded-full overflow-hidden shadow-[0_10px_25px_rgba(0,0,0,0.3)] transition-transform duration-200 hover:scale-110 flex items-center justify-center bg-[#fbcb12] border-none cursor-pointer p-0"
+          className="relative w-[48px] h-[48px] sm:w-[56px] sm:h-[56px] rounded-full overflow-hidden shadow-[0_10px_25px_rgba(0,0,0,0.3)] transition-transform duration-200 hover:scale-110 flex items-center justify-center bg-[#fbcb12] border-none cursor-pointer p-0"
         >
           <Image
             src={amityImg("gift.gif")}
             alt="Scholarship Gift"
-            width={60}
-            height={60}
-            className="w-full h-full object-cover rounded-full"
+            fill
+            sizes="56px"
+            className="object-cover rounded-full"
             unoptimized
           />
         </button>
+      </div>
+
+      {/* 5. Mobile Sticky Bottom Action Bar (Only on mobile <= md) */}
+      <div className="block md:hidden fixed bottom-0 left-0 right-0 z-50 p-2 shadow-[0_-4px_20px_rgba(0,0,0,0.18)] bg-[#08417b]">
+        <div className="grid grid-cols-2 gap-2">
+          {/* WhatsApp Get Brochure */}
+          <a
+            href="https://api.whatsapp.com/send/?phone=+917065777755&text=I%20want%20to%20Download%20Online%20Amity%20Brochure"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-[#25d366] text-white font-bold text-[13.5px] py-2 px-3 rounded-full flex items-center justify-center gap-1.5 no-underline shadow-sm"
+          >
+            <span>💬 Get Brochure</span>
+          </a>
+
+          {/* Apply Now Popup Button */}
+          <button
+            type="button"
+            onClick={onOpenApply}
+            className="bg-[#ffd508] hover:bg-[#fbcb12] text-black font-bold text-[13.5px] py-2 px-3 rounded-full flex items-center justify-center gap-1 border-none cursor-pointer shadow-sm active:scale-95 transition-all"
+          >
+            <span>Apply Now »</span>
+          </button>
+        </div>
       </div>
     </footer>
   );

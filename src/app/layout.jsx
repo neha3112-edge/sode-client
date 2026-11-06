@@ -1,4 +1,4 @@
-import { Roboto, Poppins, Plus_Jakarta_Sans } from "next/font/google";
+import { Roboto } from "next/font/google";
 import "./globals.css";
 import AppProviders from "@/components/providers/AppProviders";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -8,19 +8,6 @@ const roboto = Roboto({
   subsets: ["latin"],
   variable: "--font-roboto",
   weight: ["300", "400", "500", "700", "900"],
-  display: "swap",
-});
-
-const poppins = Poppins({
-  subsets: ["latin"],
-  variable: "--font-poppins",
-  weight: ["300", "400", "500", "600", "700", "800", "900"],
-  display: "swap",
-});
-
-const jakarta = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  variable: "--font-jakarta",
   display: "swap",
 });
 
@@ -61,7 +48,7 @@ export default function RootLayout({ children }) {
     <html
       lang="en-IN"
       suppressHydrationWarning
-      className={`${roboto.variable} ${poppins.variable} ${jakarta.variable} font-sans h-full antialiased`}
+      className={`${roboto.variable} font-sans h-full antialiased`}
     >
       <head>
         <link rel="dns-prefetch" href="https://api.crm.mysode.com" />
@@ -76,4 +63,3 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
-

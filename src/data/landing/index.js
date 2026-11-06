@@ -1,6 +1,5 @@
 import { lpuData } from "./lpu";
 import { muData } from "./mu";
-import { manipalData } from "./manipal";
 import { cuData } from "./cu";
 import { galgotiasData } from "./galgotias";
 import { smuData } from "./smu";
@@ -22,7 +21,6 @@ export const LANDING_REGISTRY = {
   mu: muData,
   mangalayatan: muData,
   "mangalayatan-university": muData,
-  manipal: manipalData,
   cu: cuData,
   galgotias: galgotiasData,
   smu: smuData,
@@ -145,7 +143,6 @@ export function getLandingData(slug) {
 export {
   lpuData,
   muData,
-  manipalData,
   cuData,
   galgotiasData,
   smuData,
