@@ -20,7 +20,7 @@ export default function StickyFloatingActions({
   };
 
   return (
-    <div className="fixed bottom-[80px] lg:bottom-6 right-3 sm:right-6 z-40 flex flex-col items-center gap-2.5 sm:gap-3 pointer-events-auto">
+    <div className="hidden md:flex fixed bottom-[80px] lg:bottom-6 right-3 sm:right-6 z-40 flex flex-col items-center gap-2.5 sm:gap-3 pointer-events-auto">
       {/* 1. Call Button */}
       {floatingCall?.enabled && (
         <Link

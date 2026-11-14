@@ -101,38 +101,41 @@ export default function MuFooter({ onOpenScholarship, onOpenBrochure, onOpenLega
         </div>
       </section>
 
-      {/* 3. Floating Call Button (.call_fix_image) */}
-      <a
-        href="tel:+919582828828"
-        aria-label="Call Now"
-        className="fixed z-[9999] right-[9px] sm:right-[10px] bottom-[135px] md:bottom-[85px] transition-transform duration-200 hover:scale-110"
-      >
-        <Image
-          src={muImg("call_icon.gif")}
-          alt="Call Us"
-          width={65}
-          height={65}
-          className="w-[58px] sm:w-[65px] h-[58px] sm:h-[65px] rounded-full shadow-[0_15px_35px_rgba(0,0,0,0.4),0_0_35px_rgba(46,204,113,0.9)] block"
-          unoptimized
-        />
-      </a>
+      {/* 3. Floating Fixed Call & Scholarship Buttons (Hidden on mobile as bottom sticky CTA bar is present) */}
+      <div className="hidden md:flex fixed bottom-5 right-4 sm:right-6 z-40 flex-col items-center gap-2.5 sm:gap-3">
+        {/* Call Floating Button */}
+        <a
+          href="tel:+919582828828"
+          aria-label="Call Now"
+          className="relative w-[48px] h-[48px] sm:w-[56px] sm:h-[56px] rounded-full overflow-hidden shadow-[0_10px_25px_rgba(0,0,0,0.3)] transition-transform duration-200 hover:scale-110 flex items-center justify-center bg-[#25d366]"
+        >
+          <Image
+            src={muImg("call_icon.gif")}
+            alt="Call Us"
+            fill
+            sizes="56px"
+            className="object-cover rounded-full"
+            unoptimized
+          />
+        </a>
 
-      {/* 4. Floating Scholarship Coupon Button (.coupon-btn) */}
-      <button
-        type="button"
-        onClick={onOpenScholarship}
-        aria-label="Open Scholarship Coupon"
-        className="fixed z-[99999] right-[9px] sm:right-[10px] bottom-[70px] md:bottom-[15px] border-none bg-transparent p-0 cursor-pointer transition-transform duration-200 hover:scale-110"
-      >
-        <Image
-          src={muImg("gift.gif")}
-          alt="Scholarship Gift"
-          width={60}
-          height={60}
-          className="w-[58px] sm:w-[60px] h-[58px] sm:h-[60px] rounded-full shadow-[0_10px_25px_rgba(0,0,0,0.3),0_0_20px_rgba(46,204,113,0.6)] block"
-          unoptimized
-        />
-      </button>
+        {/* Scholarship Floating Gift Button */}
+        <button
+          type="button"
+          onClick={onOpenScholarship}
+          aria-label="Open Scholarship Coupon"
+          className="relative w-[48px] h-[48px] sm:w-[56px] sm:h-[56px] rounded-full overflow-hidden shadow-[0_10px_25px_rgba(0,0,0,0.3)] transition-transform duration-200 hover:scale-110 flex items-center justify-center bg-[#fbcb12] border-none cursor-pointer p-0"
+        >
+          <Image
+            src={muImg("gift.gif")}
+            alt="Scholarship Gift"
+            fill
+            sizes="56px"
+            className="object-cover rounded-full"
+            unoptimized
+          />
+        </button>
+      </div>
 
       {/* 5. Mobile Sticky Bottom Action Bar (.footer_sticky_buttons) */}
       <div className="block md:hidden fixed bottom-0 left-0 right-0 z-[99999] bg-[#f97316] p-2.5 shadow-[0_-4px_20px_rgba(0,0,0,0.18)]">
