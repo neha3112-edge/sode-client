@@ -6,36 +6,33 @@ import { smuImg } from "./constants";
 
 export default function SmuAbout() {
   return (
-    <section className="bg-[#005a69] text-white py-12 sm:py-16 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          {/* Left Student Image */}
-          <div className="lg:col-span-5 flex justify-center">
-            <div className="relative w-full max-w-sm sm:max-w-md h-72 sm:h-96 rounded-2xl overflow-hidden shadow-2xl border-4 border-white/10 flex items-center justify-center bg-[#004e5b]">
-              <Image
-                src={smuImg("university.webp")}
-                alt="About Sikkim Manipal University Online"
-                width={500}
-                height={500}
-                className="w-full h-full object-cover"
-                priority
-              />
-            </div>
-          </div>
+    <section className="w-full bg-[#006372] text-white relative mt-12 lg:mt-16 select-none">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 relative">
+        {/* Left Student Cutout - Locked strictly to bottom: 0 of teal banner, head pops up at top */}
+        <div className="hidden lg:block absolute bottom-0 left-4 sm:left-6 w-[215px] xl:w-[235px] z-10 pointer-events-none">
+          <Image
+            src={smuImg("finance-smu.png")}
+            alt="Sikkim Manipal University Online Student"
+            width={350}
+            height={536}
+            sizes="(max-width: 1024px) 100vw, 235px"
+            className="w-full h-auto object-contain object-bottom block"
+            style={{ width: "100%", height: "auto" }}
+            priority
+          />
+        </div>
 
-          {/* Right Text Content */}
-          <div className="lg:col-span-7 space-y-5">
-            <div className="inline-block text-xs sm:text-sm font-semibold uppercase tracking-wider bg-white/15 px-3 py-1 rounded-full text-[#ffc107]">
-              Academic Legacy
-            </div>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white leading-tight">
-              About Sikkim Manipal University Online
-            </h2>
-            <div className="w-16 h-1 bg-[#ffb100] rounded-full" />
-            <p className="text-gray-200 text-sm sm:text-base leading-relaxed">
-              Sikkim Manipal University (SMU) is one of the most prestigious private institutions which is known for its credible education for over 27 years. The university offers a wide range of programs across multiple domains. SMU Online offers flexible, UGC-entitled and NAAC A+ accredited online degree programs for learners across India.
+        {/* Content - text centered with left offset on desktop so student never overlaps */}
+        <div className="lg:pl-[220px] xl:pl-[245px] py-8 lg:py-10 text-center flex flex-col items-center justify-center">
+          <h2 className="text-[20px] sm:text-[24px] lg:text-[28px] font-bold text-white tracking-tight leading-tight mb-3 text-center">
+            About Sikkim Manipal University Online
+          </h2>
+
+          <div className="space-y-3 text-center text-white text-[13px] sm:text-[13.5px] leading-[1.5] sm:leading-[1.55] font-normal w-full max-w-4xl">
+            <p className="m-0">
+              Sikkim Manipal University (SMU)is one of the most prestigious private institutions which is known for its credible education for over 27 years. The university offers a wide range of programs across multiple domains.SMU Online offers flexible, UGC-entitled and NAAC A+ accredited online degree programs for learners across India.
             </p>
-            <p className="text-gray-200 text-sm sm:text-base leading-relaxed">
+            <p className="m-0">
               Students get access to choose from Sikkim Manipal University courses which include BA, BCom, MCA, MA etc. Online MBA Sikkim Manipal University is crafted for working professionals and students. Learners get to interact with experienced faculty, a curriculum fulfilling present-day industry requirements, and advanced digital learning platforms. It enables them to gain recognised qualifications for career growth while studying anytime and anywhere.
             </p>
           </div>

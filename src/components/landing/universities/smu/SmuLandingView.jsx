@@ -11,6 +11,7 @@ import SmuLeader from "./SmuLeader";
 import SmuStats from "./SmuStats";
 import SmuProcess from "./SmuProcess";
 import SmuFaq from "./SmuFaq";
+import SmuGuidance from "./SmuGuidance";
 import SmuFooter from "./SmuFooter";
 import ScholarshipModal from "../../modals/ScholarshipModal";
 import BrochureModal from "../../modals/BrochureModal";
@@ -34,9 +35,15 @@ export default function SmuLandingView() {
   };
 
   const handleOpenLegal = (type) => {
+    const normalized =
+      type === "Terms & Conditions" || type === "terms"
+        ? "terms"
+        : type === "Privacy Policy" || type === "privacy"
+        ? "privacy"
+        : "disclaimer";
     setLegalModalState({
       isOpen: true,
-      type: type === "Terms & Conditions" ? "terms" : type === "Privacy Policy" ? "privacy" : "disclaimer",
+      type: normalized,
     });
   };
 
@@ -85,7 +92,10 @@ export default function SmuLandingView() {
       {/* 10. FAQ Accordion */}
       <SmuFaq />
 
-      {/* 11. Footer Section */}
+      {/* 11. Get Expert Guidance & Free Counselling */}
+      <SmuGuidance onOpenDisclaimer={() => handleOpenLegal("disclaimer")} />
+
+      {/* 12. Footer Section */}
       <SmuFooter
         onOpenScholarship={() => setIsScholarshipOpen(true)}
         onOpenBrochure={handleOpenBrochure}

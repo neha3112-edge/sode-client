@@ -28,25 +28,24 @@ export default function SmuApprovals() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const renderBadge = (item) => (
-    <div key={item.title + item.rank} className="flex flex-col items-center text-center px-3 py-2 select-none">
-      {/* Direct image without extra background */}
-      <div className="relative w-[130px] h-[130px] sm:w-[145px] sm:h-[145px] mx-auto mb-2 flex items-center justify-center">
-        <Image
-          src={item.image}
-          alt={item.title}
-          width={145}
-          height={145}
-          className="w-auto h-auto max-w-full max-h-full object-contain"
-        />
-      </div>
+  const renderBadge = (item, index) => (
+    <div key={index} className="px-2 sm:px-3 py-2 select-none outline-none">
+      <div className="flex flex-col items-center text-center">
+        {/* Direct image without extra background */}
+        <div className="relative w-[130px] h-[120px] sm:w-[150px] sm:h-[135px] mx-auto flex items-center justify-center">
+          <Image
+            src={item.image}
+            alt={item.title}
+            width={150}
+            height={135}
+            className="w-full h-full object-contain"
+          />
+        </div>
 
-      <h4 className="text-[#111827] font-bold text-[14px] sm:text-[15px] leading-tight m-0">
-        {item.title}
-      </h4>
-      <p className="text-[#555555] font-semibold text-[11.5px] sm:text-[12px] leading-tight m-0 mt-0.5 tracking-wide">
-        {item.rank}
-      </p>
+        <p className="text-[#333333] text-[12.5px] sm:text-[13.5px] leading-snug font-normal text-center mt-3 px-1 min-h-[38px] sm:min-h-[42px] flex items-center justify-center">
+          {item.title}
+        </p>
+      </div>
     </div>
   );
 
@@ -67,12 +66,12 @@ export default function SmuApprovals() {
         </div>
 
         {/* Carousel with Navigation Arrows */}
-        <div className="relative px-8 sm:px-12">
+        <div className="relative px-6 sm:px-10 max-w-[1140px] mx-auto">
           {/* Left Arrow */}
           <button
             type="button"
             onClick={() => carouselRef.current?.prev()}
-            className="absolute left-0 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white hover:bg-gray-50 border border-gray-200 shadow-sm flex items-center justify-center text-gray-700 cursor-pointer z-10"
+            className="absolute -left-1 sm:-left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white hover:bg-gray-50 border border-gray-200 shadow-sm flex items-center justify-center text-gray-700 hover:text-black cursor-pointer z-10 transition-colors"
             aria-label="Previous"
           >
             <LeftOutlined className="text-[12px]" />
@@ -84,7 +83,7 @@ export default function SmuApprovals() {
             dots={false}
             arrows={false}
             autoplay={true}
-            autoplaySpeed={3500}
+            autoplaySpeed={2500}
             slidesToShow={slidesToShow}
             slidesToScroll={1}
             infinite={true}
@@ -96,7 +95,7 @@ export default function SmuApprovals() {
           <button
             type="button"
             onClick={() => carouselRef.current?.next()}
-            className="absolute right-0 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white hover:bg-gray-50 border border-gray-200 shadow-sm flex items-center justify-center text-gray-700 cursor-pointer z-10"
+            className="absolute -right-1 sm:-right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white hover:bg-gray-50 border border-gray-200 shadow-sm flex items-center justify-center text-gray-700 hover:text-black cursor-pointer z-10 transition-colors"
             aria-label="Next"
           >
             <RightOutlined className="text-[12px]" />
@@ -106,4 +105,3 @@ export default function SmuApprovals() {
     </section>
   );
 }
-

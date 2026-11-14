@@ -1,60 +1,112 @@
 "use client";
 
 import React from "react";
-import { SMU_PROCESS_STEPS } from "./constants";
 
-export default function SmuProcess({ onOpenBrochure }) {
+const ADMISSION_STEPS = [
+  {
+    step: 1,
+    title: "Submit Form",
+    description: "Fill in and submit your application form online",
+    bgColor: "bg-[#fff6ee]",
+    accentBorder: "border-[#ff7a00]",
+    accentText: "text-[#ff7a00]",
+    bottomBar: "bg-[#ff7a00]",
+  },
+  {
+    step: 2,
+    title: "Expert's Counseling",
+    description: "You will receive a call from our expert counselor",
+    bgColor: "bg-[#f0f7ff]",
+    accentBorder: "border-[#0066cc]",
+    accentText: "text-[#0066cc]",
+    bottomBar: "bg-[#0066cc]",
+  },
+  {
+    step: 3,
+    title: "Choose University",
+    description: "Select the course & university according to your interest",
+    bgColor: "bg-[#fff0f5]",
+    accentBorder: "border-[#ff2a6d]",
+    accentText: "text-[#ff2a6d]",
+    bottomBar: "bg-[#ff2a6d]",
+  },
+  {
+    step: 4,
+    title: "Online Payment",
+    description: "You need to make a smooth online fee submission",
+    bgColor: "bg-[#f0faf3]",
+    accentBorder: "border-[#16a34a]",
+    accentText: "text-[#16a34a]",
+    bottomBar: "bg-[#16a34a]",
+  },
+  {
+    step: 5,
+    title: "Document Submit",
+    description: "You need to upload all the required verified documents.",
+    bgColor: "bg-[#f7f2ff]",
+    accentBorder: "border-[#8b5cf6]",
+    accentText: "text-[#8b5cf6]",
+    bottomBar: "bg-[#8b5cf6]",
+  },
+  {
+    step: 6,
+    title: "Admission Confirm",
+    description: "Get Confirmation on your Email & Whatsapp",
+    bgColor: "bg-[#fff6ee]",
+    accentBorder: "border-[#ff7a00]",
+    accentText: "text-[#ff7a00]",
+    bottomBar: "bg-[#ff7a00]",
+  },
+];
+
+export default function SmuProcess() {
   return (
-    <section className="py-14 sm:py-16 bg-[#fbfcfd]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Heading */}
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#1a202c] tracking-tight">
-            How to take admission in Sikkim Manipal University Online?
-          </h2>
-          <div className="w-20 h-1 bg-[#f58220] mx-auto mt-3 rounded-full" />
-          <p className="text-gray-600 text-sm sm:text-base mt-3">
-            Admissions in Sikkim Manipal University Online is a convenient process. Any eligible candidate can enrol in their desired courses. Follow these steps to secure your admission:
-          </p>
-        </div>
+    <section
+      id="process"
+      className="w-full bg-white py-6 sm:py-8 lg:py-9 px-4 sm:px-5 md:px-6 lg:px-8 scroll-mt-16 sm:scroll-mt-20 select-none text-center"
+    >
+      {/* Section Heading */}
+      <h2 className="text-[#074a76] font-bold text-[22px] sm:text-[26px] md:text-[30px] leading-tight text-center mb-0">
+        How To Take Admission In Sikkim Manipal University Online?
+      </h2>
 
-        {/* 6 Step Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-5">
-          {SMU_PROCESS_STEPS.map((step) => (
-            <div
-              key={step.num}
-              className={`rounded-2xl p-5 border-2 ${step.borderColor} ${step.cardBg} flex flex-col justify-between hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1`}
-            >
-              <div>
-                <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center font-black text-white text-base shadow-sm mb-4"
-                  style={{ backgroundColor: step.themeColor }}
-                >
-                  {String(step.num).padStart(2, "0")}
-                </div>
-                <h3 className={`font-bold text-base mb-2 ${step.textColor}`}>
-                  {step.title}
-                </h3>
-                <p className="text-xs text-gray-600 leading-relaxed">
-                  {step.desc}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
+      {/* Description */}
+      <p className="max-w-[920px] mx-auto pt-2 pb-4 sm:pb-5 text-[#555555] text-[12.5px] sm:text-[13.5px] leading-[1.38] text-center m-0">
+        Admissions in Sikkim Manipal University Online is a convenient process. Any eligible candidate can enrol in their desired courses. Follow these steps to secure your admission:
+      </p>
 
-        {/* Action button */}
-        <div className="text-center mt-10">
-          <button
-            type="button"
-            onClick={() => onOpenBrochure?.("Sikkim Manipal University Online Admission")}
-            className="inline-flex items-center gap-2 bg-[#074a76] hover:bg-[#063b5e] text-white font-bold py-3.5 px-8 rounded-full shadow-lg hover:shadow-xl transition-all cursor-pointer text-sm sm:text-base"
+      {/* 6 Step Cards without narrow container constraint - spans full width matching Amity & Manipal */}
+      <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-3.5 lg:gap-4 w-full">
+        {ADMISSION_STEPS.map((item) => (
+          <div
+            key={item.step}
+            className={`relative ${item.bgColor} rounded-[14px] px-3.5 py-4 sm:py-4.5 shadow-[0_4px_18px_rgba(0,0,0,0.04)] flex flex-col items-center text-center`}
           >
-            Start Your Admission Now »
-          </button>
-        </div>
+            {/* Step Number Circle */}
+            <div
+              className={`w-11 h-11 sm:w-11.5 sm:h-11.5 rounded-full border-[2.5px] sm:border-[3px] bg-white font-bold text-[18px] sm:text-[19px] flex items-center justify-center mx-auto shrink-0 mb-1.5 ${item.accentBorder} ${item.accentText}`}
+            >
+              {item.step}
+            </div>
+
+            {/* Title */}
+            <h4 className="text-black font-semibold text-[14.5px] sm:text-[15px] mt-1.5 mb-1 leading-tight tracking-tight">
+              {item.title}
+            </h4>
+
+            {/* Description */}
+            <p className="text-[#444444] text-[11px] sm:text-[11.5px] leading-[1.3] m-0 max-w-[200px]">
+              {item.description}
+            </p>
+
+            {/* Bottom Color Accent Bar */}
+            <span
+              className={`absolute bottom-0 left-0 right-0 h-[4px] sm:h-[5px] rounded-b-[14px] ${item.bottomBar}`}
+              aria-hidden="true"
+            />
+          </div>
+        ))}
       </div>
     </section>
   );
 }
-

@@ -21,24 +21,24 @@ export const INDIAN_STATES = [
 
 export const SMU_APPROVALS = [
   {
-    image: smuImg("iirf-main.png"),
-    title: "IIRF",
-    rank: "1 RANK 2023",
-  },
-  {
     image: smuImg("NAAC.png"),
-    title: "NAAC",
-    rank: "A+ GRADE",
+    title: "NAAC Accredited with A+ Grade",
   },
   {
-    image: smuImg("IIRF.png"),
-    title: "IIRF",
-    rank: "1 RANK",
+    image: smuImg("iirf-main.png"),
+    title: "Recognized among India's leading universities in 2025",
   },
   {
     image: smuImg("UGC.png"),
-    title: "UGC-DEB",
-    rank: "ENTITLED",
+    title: "UGC-Entitled Online Degrees",
+  },
+  {
+    image: smuImg("WURI_logo.webp"),
+    title: "Recognised among the top global universities",
+  },
+  {
+    image: smuImg("IIRF.png"),
+    title: "IIRF Rank 1 – Top Private University in North East (2023)",
   },
 ];
 

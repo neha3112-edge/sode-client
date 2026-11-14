@@ -9,13 +9,13 @@ import { SMU_PROGRAMMES } from "./constants";
 
 export default function SmuProgrammes({ onOpenBrochure, onOpenApply }) {
   const carouselRef = useRef(null);
-  const [slidesToShow, setSlidesToShow] = useState(3);
+  const [slidesToShow, setSlidesToShow] = useState(1);
 
   useEffect(() => {
     const handleResize = () => {
       if (typeof window === "undefined") return;
       const width = window.innerWidth;
-      if (width < 640) {
+      if (width < 768) {
         setSlidesToShow(1);
       } else if (width < 1024) {
         setSlidesToShow(2);
@@ -29,16 +29,16 @@ export default function SmuProgrammes({ onOpenBrochure, onOpenApply }) {
   }, []);
 
   const renderCard = (prog) => (
-    <div key={prog.code} className="px-2.5 sm:px-3 py-2 text-left">
-      <div className="bg-white rounded-[10px] overflow-hidden border border-gray-200/90 shadow-[0_4px_16px_rgba(0,0,0,0.06)] hover:shadow-lg transition-all flex flex-col justify-between h-full">
+    <div key={prog.code} className="p-2 sm:p-3 text-left">
+      <div className="max-w-sm sm:max-w-none mx-auto bg-white rounded-xl overflow-hidden border border-gray-200/90 shadow-[0_4px_16px_rgba(0,0,0,0.06)] hover:shadow-lg transition-all flex flex-col justify-between h-full">
         {/* Top Thumbnail Image */}
         <div className="relative w-full h-[180px] sm:h-[195px] overflow-hidden bg-gray-100">
           <Image
             src={prog.image}
             alt={prog.title}
-            fill
-            className="object-cover"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 380px"
+            width={400}
+            height={220}
+            className="w-full h-full object-cover"
           />
         </div>
 
@@ -80,36 +80,52 @@ export default function SmuProgrammes({ onOpenBrochure, onOpenApply }) {
   return (
     <section
       id="programs"
-      className="w-full bg-[#f8fafc] py-10 sm:py-14 scroll-mt-16 sm:scroll-mt-20 select-none text-center"
+      className="w-full bg-[#f8fafc] pt-6 pb-3 sm:py-12 md:py-14 scroll-mt-16 sm:scroll-mt-20 select-none text-center"
     >
       <Container>
         {/* Section Heading */}
-        <h2 className="font-bold text-[22px] sm:text-[28px] md:text-[32px] leading-tight text-[#111827] m-0 mb-6 sm:mb-8">
+        <h2 className="font-bold text-[20px] sm:text-[28px] md:text-[32px] leading-tight text-[#111827] m-0 mb-4 sm:mb-8">
           Programs offered by Sikkim Manipal University Online
         </h2>
 
         {/* Carousel with Navigation Arrows */}
-        <div className="relative px-6 sm:px-10">
+        <div className="relative px-2 sm:px-8">
           {/* Left Arrow */}
           <button
             type="button"
             onClick={() => carouselRef.current?.prev()}
-            className="absolute left-0 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white hover:bg-gray-50 border border-gray-200 shadow-sm flex items-center justify-center text-gray-700 cursor-pointer z-10"
+            className="absolute -left-1 sm:-left-3 top-1/2 -translate-y-1/2 z-10 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white hover:bg-gray-50 border border-gray-200 shadow-md flex items-center justify-center text-[#074a76] cursor-pointer"
             aria-label="Previous"
           >
-            <LeftOutlined className="text-[12px]" />
+            <LeftOutlined className="text-xs sm:text-sm font-bold" />
           </button>
 
           <Carousel
             key={`smu-programmes-${slidesToShow}`}
             ref={carouselRef}
-            dots={false}
+            dots={true}
             arrows={false}
             autoplay={true}
             autoplaySpeed={4000}
             slidesToShow={slidesToShow}
             slidesToScroll={1}
             infinite={true}
+            responsive={[
+              {
+                breakpoint: 768,
+                settings: {
+                  slidesToShow: 1,
+                  slidesToScroll: 1,
+                },
+              },
+              {
+                breakpoint: 1024,
+                settings: {
+                  slidesToShow: 2,
+                  slidesToScroll: 1,
+                },
+              },
+            ]}
           >
             {SMU_PROGRAMMES.map(renderCard)}
           </Carousel>
@@ -118,14 +134,13 @@ export default function SmuProgrammes({ onOpenBrochure, onOpenApply }) {
           <button
             type="button"
             onClick={() => carouselRef.current?.next()}
-            className="absolute right-0 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white hover:bg-gray-50 border border-gray-200 shadow-sm flex items-center justify-center text-gray-700 cursor-pointer z-10"
+            className="absolute -right-1 sm:-right-3 top-1/2 -translate-y-1/2 z-10 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white hover:bg-gray-50 border border-gray-200 shadow-md flex items-center justify-center text-[#074a76] cursor-pointer"
             aria-label="Next"
           >
-            <RightOutlined className="text-[12px]" />
+            <RightOutlined className="text-xs sm:text-sm font-bold" />
           </button>
         </div>
       </Container>
     </section>
   );
 }
-

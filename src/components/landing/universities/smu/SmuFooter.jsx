@@ -2,211 +2,161 @@
 
 import React from "react";
 import Image from "next/image";
-import { PhoneOutlined } from "@ant-design/icons";
 import { smuImg } from "./constants";
 
 export default function SmuFooter({ onOpenScholarship, onOpenBrochure, onOpenLegal }) {
   return (
     <>
-      <footer className="bg-[#05324f] text-white">
-        {/* Top Counseling Banner */}
-        <div className="bg-[#074a76] py-8 sm:py-10 border-b border-white/10">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
-              <div>
-                <h3 className="text-xl sm:text-2xl font-black text-white">
-                  Get 100% Free Distance & Online Education Counselling
-                </h3>
-                <p className="text-sm text-gray-200 mt-1">
-                  Connect with experienced career advisors to choose the right online program.
-                </p>
-              </div>
+      {/* 1. Still Confused? Comparison Card Section (Full Width, No Boxed Container - Matches Amity & Manipal) */}
+      <section className="w-full bg-[#f6f8fa] px-5 sm:px-10 lg:px-[60px] pt-8 sm:pt-10 pb-0 select-none">
+        <div className="w-full bg-[#f05525] rounded-[20px] px-6 py-8 sm:py-10 flex flex-col items-center justify-center text-center text-white relative shadow-sm">
+          <h2 className="text-white font-bold text-[24px] sm:text-[28px] md:text-[32px] leading-tight m-0">
+            Still Confused?
+          </h2>
+          <h4 className="text-white font-normal text-[14px] sm:text-[15px] leading-snug mt-2 mb-2 sm:mb-3">
+            Compare Sikkim Manipal University with Top UGC-DEB Approved Universities
+          </h4>
 
-              <div className="flex flex-wrap items-center justify-center gap-3">
-                <a
-                  href="tel:+917065777755"
-                  className="inline-flex items-center gap-2 bg-[#f58220] hover:bg-[#e07113] text-white font-bold py-3 px-6 rounded-full shadow-lg transition-all text-sm"
-                >
-                  <PhoneOutlined />
-                  <span>+91 7065 7777 55</span>
-                </a>
-                <button
-                  type="button"
-                  onClick={() => onOpenBrochure?.("Footer Counseling")}
-                  className="bg-white hover:bg-gray-100 text-[#074a76] font-bold py-3 px-6 rounded-full shadow-lg transition-all text-sm cursor-pointer"
-                >
-                  Book Free Session
-                </button>
-              </div>
+          {/* Circular Downward Arrow (Overlapping Bottom) */}
+          <button
+            type="button"
+            onClick={() => onOpenBrochure?.("Still Confused Compare")}
+            aria-label="Compare Universities"
+            className="absolute -bottom-8 sm:-bottom-9 left-1/2 -translate-x-1/2 cursor-pointer transition-transform duration-200 hover:scale-105 select-none bg-transparent border-none p-0 focus:outline-none z-10"
+          >
+            <div className="relative w-[66px] h-[66px] sm:w-[70px] sm:h-[70px] rounded-full overflow-hidden">
+              <Image
+                src={smuImg("arrow.gif")}
+                alt="Compare University"
+                fill
+                sizes="70px"
+                className="object-contain"
+                unoptimized
+              />
             </div>
+          </button>
+        </div>
+      </section>
+
+      {/* 2. SODE Logo, Legal Disclaimer & Copyright (Full Width Edge-to-Edge - Matches Amity & Manipal) */}
+      <section className="w-full bg-white pt-10 sm:pt-12 pb-0 text-center select-none">
+        {/* SODE Logo */}
+        <div className="w-full flex justify-center mb-2.5 sm:mb-3 px-5">
+          <button
+            type="button"
+            onClick={() => onOpenBrochure?.("Footer Logo Click")}
+            className="cursor-pointer bg-transparent border-none p-0 inline-block focus:outline-none"
+          >
+            <div className="relative w-[300px] sm:w-[380px] md:w-[420px] h-[75px] sm:h-[95px] md:h-[105px]">
+              <Image
+                src={smuImg("new-des-logo.webp")}
+                alt="Distance Education School - SODE"
+                fill
+                sizes="(max-width: 640px) 300px, 420px"
+                className="object-contain"
+              />
+            </div>
+          </button>
+        </div>
+
+        {/* Disclaimer Paragraph & Legal Links - Full width edge-to-edge */}
+        <div className="w-full px-4 sm:px-8 lg:px-10 pt-1 pb-6 sm:pb-7 text-center">
+          <p className="text-[#555555] text-[11px] sm:text-[12px] md:text-[12.5px] leading-[1.32] sm:leading-[1.38] m-0 mb-2 max-w-full">
+            SODE Counselling Services LLP act as a marketing agency. All university names, logos,
+            and trademarks mentioned are used for informational purposes only. We are not a
+            university or an admission authority. Users are encouraged to verify information on
+            the official website of the University before making decisions.
+          </p>
+
+          <div className="flex items-center justify-center gap-2 text-[12px] sm:text-[12.5px] text-[#222222] font-semibold">
+            <button
+              type="button"
+              onClick={() => onOpenLegal?.("Disclaimer")}
+              className="hover:underline text-[#222222] cursor-pointer bg-transparent border-none p-0 font-semibold"
+            >
+              Disclaimer
+            </button>
+            <span className="text-gray-400">|</span>
+            <button
+              type="button"
+              onClick={() => onOpenLegal?.("Terms & Conditions")}
+              className="hover:underline text-[#222222] cursor-pointer bg-transparent border-none p-0 font-semibold"
+            >
+              Terms &amp; Conditions
+            </button>
+            <span className="text-gray-400">|</span>
+            <button
+              type="button"
+              onClick={() => onOpenLegal?.("Privacy Policy")}
+              className="hover:underline text-[#222222] cursor-pointer bg-transparent border-none p-0 font-semibold"
+            >
+              Privacy Policy
+            </button>
           </div>
         </div>
 
-        {/* Still Confused / Compare Section */}
-        <div className="py-10 bg-[#063b5c] border-b border-white/10">
-          <div className="max-w-4xl mx-auto px-4 text-center">
-            <h2 className="text-2xl sm:text-3xl font-black text-white">
-              Still Confused?
-            </h2>
-            <p className="text-sm sm:text-base text-gray-200 mt-2 font-medium">
-              Compare Sikkim Manipal University with Top UGC-DEB Approved Universities
-            </p>
-            <div className="mt-5 flex justify-center items-center gap-3">
-              <button
-                type="button"
-                onClick={() => onOpenBrochure?.("Still Confused Compare")}
-                className="inline-flex items-center gap-2 bg-[#28a745] hover:bg-[#218838] text-white font-bold py-3 px-6 rounded-full shadow-lg transition-transform hover:scale-105 cursor-pointer text-sm"
-              >
-                <span>Compare University</span>
-                <Image
-                  src={smuImg("arrow.gif")}
-                  alt="Explore"
-                  width={30}
-                  height={18}
-                  className="w-7 h-4 object-contain inline-block ml-1"
-                />
-              </button>
-            </div>
-          </div>
+        {/* Bottom Dark Blue Copyright Strip */}
+        <div className="w-full bg-[#0b3c66] py-2.5 sm:py-3 pb-16 md:pb-3 text-center text-white text-[12px] sm:text-[13px] font-normal tracking-wide">
+          © 2026 SODE Counseling Services LLP
         </div>
+      </section>
 
-        {/* Compare / Brand Strip */}
-        <div className="py-8 border-b border-white/10 bg-[#05324f]">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-4">
-              <div className="bg-white p-2 rounded-xl">
-                <Image
-                  src={smuImg("new-des-logo.webp")}
-                  alt="Distance Education School"
-                  width={140}
-                  height={40}
-                  className="h-8 w-auto object-contain"
-                />
-              </div>
-              <div className="text-xs text-gray-300 max-w-md">
-                India&apos;s leading platform providing authentic counseling, fee comparisons, and admission assistance for top online universities.
-              </div>
-            </div>
+      {/* 3. Floating Call Button (.call_fix_image) */}
+      <a
+        href="tel:07065777755"
+        aria-label="Call Now"
+        className="fixed z-[9999] right-[9px] sm:right-[10px] bottom-[135px] md:bottom-[85px] transition-transform duration-200 hover:scale-110"
+      >
+        <Image
+          src={smuImg("call_icon.gif")}
+          alt="Call Us"
+          width={65}
+          height={65}
+          className="w-[58px] sm:w-[65px] h-[58px] sm:h-[65px] rounded-full shadow-[0_15px_35px_rgba(0,0,0,0.4),0_0_35px_rgba(46,204,113,0.9)] block"
+          unoptimized
+        />
+      </a>
 
-            <div className="flex items-center gap-3">
-              <span className="text-xs text-gray-300">Compare 100+ Online Universities:</span>
-              <button
-                type="button"
-                onClick={() => onOpenBrochure?.("Footer Compare")}
-                className="bg-[#28a745] hover:bg-[#218838] text-white text-xs font-bold py-2 px-4 rounded-full transition-colors cursor-pointer inline-flex items-center gap-1.5"
-              >
-                <span>Compare Now</span>
-                <Image
-                  src={smuImg("arrow.gif")}
-                  alt="Explore"
-                  width={28}
-                  height={16}
-                  className="w-6 h-3.5 object-contain"
-                />
-              </button>
-            </div>
-          </div>
+      {/* 4. Floating Scholarship Coupon Button (.coupon-btn) */}
+      <button
+        type="button"
+        onClick={onOpenScholarship}
+        aria-label="Open Scholarship Coupon"
+        className="fixed z-[99999] right-[9px] sm:right-[10px] bottom-[70px] md:bottom-[15px] border-none bg-transparent p-0 cursor-pointer transition-transform duration-200 hover:scale-110"
+      >
+        <Image
+          src={smuImg("gift.gif")}
+          alt="Scholarship Gift"
+          width={60}
+          height={60}
+          className="w-[58px] sm:w-[60px] h-[58px] sm:h-[60px] rounded-full shadow-[0_10px_25px_rgba(0,0,0,0.3),0_0_20px_rgba(46,204,113,0.6)] block"
+          unoptimized
+        />
+      </button>
+
+      {/* 5. Mobile Sticky Bottom Action Bar (.footer_sticky_buttons) */}
+      <div className="block md:hidden fixed bottom-0 left-0 right-0 z-[99999] bg-[#084b77] p-2.5 shadow-[0_-4px_20px_rgba(0,0,0,0.18)]">
+        <div className="grid grid-cols-2 gap-2">
+          {/* WhatsApp Get Brochure */}
+          <a
+            href="https://api.whatsapp.com/send/?phone=+917065777755&text=I%20want%20to%20Download%20Online%20Sikkim%20Manipal%20University%20Brochure"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-[#25d366] text-white flex items-center justify-center gap-1.5 py-2 px-3 rounded-full text-[15px] font-bold no-underline shadow-sm"
+          >
+            <span>💬 Get Brochure</span>
+          </a>
+
+          {/* Apply Now Popup Button */}
+          <button
+            type="button"
+            onClick={() => onOpenBrochure?.("Mobile Bottom Bar Apply")}
+            className="bg-white text-[#084b77] flex items-center justify-center gap-1 py-2 px-3 rounded-full text-[15px] font-bold border-none cursor-pointer shadow-sm active:scale-95 transition-all"
+          >
+            <span>Apply Now »</span>
+          </button>
         </div>
-
-        {/* Disclaimer & Copyright */}
-        <div className="py-6 bg-[#04283f] text-gray-400 text-xs">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-3">
-            <p className="leading-relaxed">
-              <strong className="text-gray-300">Disclaimer:</strong> SODE Counselling Services LLP act as a marketing agency. All university names, logos, and trademarks mentioned are used for informational purposes only. We are not a university or an admission authority. Users are encouraged to verify information on the official website of the University before making decisions.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-2 pt-2 border-t border-white/5 text-[11px]">
-              <div>
-                © 2026 SODE Counseling Services LLP
-              </div>
-              <div className="flex items-center gap-4">
-                <button
-                  type="button"
-                  onClick={() => onOpenLegal?.("Disclaimer")}
-                  className="hover:text-white transition-colors cursor-pointer"
-                >
-                  Disclaimer
-                </button>
-                <button
-                  type="button"
-                  onClick={() => onOpenLegal?.("Terms & Conditions")}
-                  className="hover:text-white transition-colors cursor-pointer"
-                >
-                  Terms &amp; Conditions
-                </button>
-                <button
-                  type="button"
-                  onClick={() => onOpenLegal?.("Privacy Policy")}
-                  className="hover:text-white transition-colors cursor-pointer"
-                >
-                  Privacy Policy
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </footer>
-
-      {/* Floating Action Buttons for Desktop / Tablet (Hidden on Mobile) */}
-      <div className="hidden md:flex fixed right-5 bottom-6 z-40 flex-col items-center gap-3">
-        {/* Scholarship Coupon Gift */}
-        <button
-          type="button"
-          onClick={onOpenScholarship}
-          aria-label="Scholarship Coupon"
-          className="group relative flex items-center justify-center w-14 h-14 bg-white rounded-full shadow-2xl border-2 border-[#28a745] hover:scale-110 transition-transform cursor-pointer"
-        >
-          <Image
-            src={smuImg("gift.gif")}
-            alt="Scholarship Gift"
-            width={40}
-            height={40}
-            className="w-10 h-10 object-contain"
-          />
-          <span className="absolute right-full mr-3 px-3 py-1 bg-gray-900 text-white text-xs font-semibold rounded-lg shadow-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-            Claim Scholarship Coupon
-          </span>
-        </button>
-
-        {/* Call / WhatsApp Floating Button */}
-        <a
-          href="https://wa.me/917065777755?text=Hi%2C%20I%20am%20interested%20in%20Sikkim%20Manipal%20University%20Online"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Chat on WhatsApp"
-          className="group relative flex items-center justify-center w-14 h-14 bg-[#25d366] rounded-full shadow-2xl hover:scale-110 transition-transform cursor-pointer"
-        >
-          <Image
-            src={smuImg("call_icon.gif")}
-            alt="Contact"
-            width={34}
-            height={34}
-            className="w-8 h-8 object-contain"
-          />
-          <span className="absolute right-full mr-3 px-3 py-1 bg-gray-900 text-white text-xs font-semibold rounded-lg shadow-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-            Chat on WhatsApp
-          </span>
-        </a>
-      </div>
-
-      {/* Mobile Sticky Bottom CTA Bar */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 px-3 py-2.5 flex items-center gap-2 shadow-[0_-4px_12px_rgba(0,0,0,0.1)]">
-        <button
-          type="button"
-          onClick={() => onOpenBrochure?.("Mobile Bottom Bar Brochure")}
-          className="flex-1 bg-[#f58220] hover:bg-[#e07113] text-white font-bold py-2.5 px-3 rounded-lg text-center text-xs shadow transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-        >
-          <span>💬</span>
-          <span>Get Brochure</span>
-        </button>
-        <button
-          type="button"
-          onClick={() => onOpenBrochure?.("Mobile Bottom Bar Apply")}
-          className="flex-1 bg-[#074a76] hover:bg-[#063a5d] text-white font-bold py-2.5 px-3 rounded-lg text-center text-xs shadow transition-colors flex items-center justify-center gap-1 cursor-pointer"
-        >
-          <span>Apply Now »</span>
-        </button>
       </div>
     </>
   );
 }
-
