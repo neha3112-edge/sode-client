@@ -278,21 +278,21 @@ export default function ManipalFooter({
       {/* 3. SODE Logo, Legal Disclaimer & Copyright */}
       <section className="w-full bg-white pt-6 sm:pt-8 pb-0 text-center">
         {/* SODE Logo */}
-        <div className="w-full flex justify-center mb-2.5 sm:mb-3 px-5">
+        <div className="w-full flex justify-center mb-3 sm:mb-4 px-4">
           <button
             type="button"
             onClick={onOpenCompare}
-            className="cursor-pointer bg-transparent border-none p-0 inline-block focus:outline-none"
+            className="cursor-pointer bg-transparent border-none p-0 inline-block focus:outline-none w-full max-w-[360px] sm:max-w-[520px] md:max-w-[700px] lg:max-w-[800px] xl:max-w-[850px]"
           >
-            <div className="relative w-[300px] sm:w-[380px] md:w-[420px] h-[75px] sm:h-[95px] md:h-[105px]">
-              <Image
-                src={manipalImg("new-des-logo.webp")}
-                alt="Distance Education School - SODE"
-                fill
-                sizes="(max-width: 640px) 300px, 420px"
-                className="object-contain"
-              />
-            </div>
+            <Image
+              src={manipalImg("new-des-logo.webp")}
+              alt="Distance Education School - SODE"
+              width={2002}
+              height={522}
+              priority
+              className="w-full h-auto object-contain mx-auto"
+              sizes="(max-width: 640px) 360px, (max-width: 768px) 520px, (max-width: 1024px) 700px, 850px"
+            />
           </button>
         </div>
 

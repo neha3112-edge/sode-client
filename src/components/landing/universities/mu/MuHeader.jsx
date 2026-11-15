@@ -68,7 +68,7 @@ export default function MuHeader({ onOpenScholarship }) {
               <button
                 type="button"
                 onClick={onOpenScholarship}
-                className="header-coupon-shine hidden lg:inline-flex items-center gap-2 bg-[#25a244] hover:bg-[#1f8b39] text-white font-bold text-xs sm:text-sm py-2 px-3.5 sm:px-5 rounded-full shadow-sm hover:shadow transition-all cursor-pointer border-none"
+                className="header-coupon-shine hidden lg:inline-flex items-center gap-2 bg-[#25a244] hover:bg-[#1f8b39] text-white font-bold text-xs sm:text-sm py-2 px-3.5 sm:px-5 rounded-md shadow-sm hover:shadow transition-all cursor-pointer border-none"
               >
                 <span className="relative w-5 h-5 rounded-full overflow-hidden bg-white flex items-center justify-center shrink-0 shadow-xs">
                   <Image
