@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import { FaWhatsapp } from "react-icons/fa";
 import { cuImg } from "./constants";
 
 export default function CuFooter({ onOpenScholarship, onOpenBrochure, onOpenLegal }) {
@@ -145,9 +146,10 @@ export default function CuFooter({ onOpenScholarship, onOpenBrochure, onOpenLega
             href="https://api.whatsapp.com/send/?phone=+917065777755&text=I%20want%20to%20Download%20Online%20Chandigarh%20University%20Brochure"
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-[#25d366] text-white flex items-center justify-center gap-1.5 py-2 px-3 rounded-full text-[15px] font-bold no-underline shadow-sm"
+            className="bg-[#25d366] text-white flex items-center justify-center gap-1.5 py-2 px-3 rounded-full text-[15px] font-bold no-underline shadow-sm active:scale-95 transition-all"
           >
-            <span>💬 Get Brochure</span>
+            <FaWhatsapp className="text-[18px] shrink-0" />
+            <span>Get Brochure</span>
           </a>
 
           {/* Apply Now Popup Button */}

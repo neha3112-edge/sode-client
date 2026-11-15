@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
+import { FaWhatsapp } from "react-icons/fa";
 import { Form, Input, Select, Checkbox, Button } from "antd";
 import { Container } from "@/components/common/Container";
 import { amityImg } from "./constants";
@@ -406,9 +407,10 @@ export default function AmityFooter({
             href="https://api.whatsapp.com/send/?phone=+917065777755&text=I%20want%20to%20Download%20Online%20Amity%20Brochure"
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-[#25d366] text-white font-bold text-[13.5px] py-2 px-3 rounded-full flex items-center justify-center gap-1.5 no-underline shadow-sm"
+            className="bg-[#25d366] text-white font-bold text-[13.5px] py-2 px-3 rounded-full flex items-center justify-center gap-1.5 no-underline shadow-sm active:scale-95 transition-all"
           >
-            <span>💬 Get Brochure</span>
+            <FaWhatsapp className="text-[17px] shrink-0" />
+            <span>Get Brochure</span>
           </a>
 
           {/* Apply Now Popup Button */}
