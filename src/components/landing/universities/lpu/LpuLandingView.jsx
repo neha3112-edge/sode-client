@@ -15,6 +15,7 @@ import LpuFooter from "./LpuFooter";
 import ScholarshipModal from "../../modals/ScholarshipModal";
 import BrochureModal from "../../modals/BrochureModal";
 import LegalModal from "../../modals/LegalModal";
+import useAutoScrollForm from "../../useAutoScrollForm";
 import { LPU_COURSES } from "./constants";
 
 export default function LpuLandingView() {
@@ -25,6 +26,9 @@ export default function LpuLandingView() {
     isOpen: false,
     type: "disclaimer",
   });
+
+  // Auto-open enquiry form at 45% scroll depth
+  useAutoScrollForm(() => setIsBrochureOpen(true), 45);
 
   const handleOpenBrochure = (courseCode) => {
     if (typeof courseCode === "string") {

@@ -16,6 +16,7 @@ import SmuFooter from "./SmuFooter";
 import ScholarshipModal from "../../modals/ScholarshipModal";
 import BrochureModal from "../../modals/BrochureModal";
 import LegalModal from "../../modals/LegalModal";
+import useAutoScrollForm from "../../useAutoScrollForm";
 import { SMU_COURSES } from "./constants";
 
 export default function SmuLandingView() {
@@ -26,6 +27,9 @@ export default function SmuLandingView() {
     isOpen: false,
     type: "disclaimer",
   });
+
+  // Auto-open enquiry form at 45% scroll depth
+  useAutoScrollForm(() => setIsBrochureOpen(true), 45);
 
   const handleOpenBrochure = (courseCode) => {
     if (typeof courseCode === "string") {

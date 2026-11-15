@@ -14,6 +14,7 @@ import AmityFooter from "./AmityFooter";
 import ScholarshipModal from "../../modals/ScholarshipModal";
 import BrochureModal from "../../modals/BrochureModal";
 import LegalModal from "../../modals/LegalModal";
+import useAutoScrollForm from "../../useAutoScrollForm";
 
 export default function AmityLandingView() {
   const [isScholarshipOpen, setIsScholarshipOpen] = useState(false);
@@ -22,6 +23,9 @@ export default function AmityLandingView() {
     isOpen: false,
     type: "disclaimer",
   });
+
+  // Auto-open enquiry form at 45% scroll depth
+  useAutoScrollForm(() => setIsBrochureOpen(true), 45);
 
   return (
     <div className="w-full min-h-screen bg-white">

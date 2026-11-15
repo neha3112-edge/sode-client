@@ -15,6 +15,7 @@ import CuFooter from "./CuFooter";
 import ScholarshipModal from "../../modals/ScholarshipModal";
 import BrochureModal from "../../modals/BrochureModal";
 import LegalModal from "../../modals/LegalModal";
+import useAutoScrollForm from "../../useAutoScrollForm";
 import { CU_COURSES } from "./constants";
 
 export default function CuLandingView() {
@@ -25,6 +26,9 @@ export default function CuLandingView() {
     isOpen: false,
     type: "disclaimer",
   });
+
+  // Auto-open enquiry form at 45% scroll depth
+  useAutoScrollForm(() => setIsBrochureOpen(true), 45);
 
   const handleOpenBrochure = (courseCode) => {
     if (typeof courseCode === "string") {

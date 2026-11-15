@@ -19,24 +19,23 @@ export default function VguFooter({ onOpenScholarship, onOpenBrochure, onOpenLeg
           </h4>
 
           {/* Circular Downward Arrow (Overlapping Bottom) */}
-          <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 z-10">
-            <button
-              type="button"
-              onClick={onOpenCompare}
-              aria-label="Compare Universities"
-              className="w-12 h-12 sm:w-13 sm:h-13 rounded-full bg-white shadow-md flex items-center justify-center p-1.5 border-none cursor-pointer transition-transform duration-200 hover:scale-110 active:scale-95"
-            >
-              <div className="relative w-8 h-8 rounded-full overflow-hidden flex items-center justify-center">
-                <Image
-                  src={vguImg("arrow.gif")}
-                  alt="Scroll down to compare"
-                  fill
-                  className="object-cover"
-                  unoptimized
-                />
-              </div>
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={onOpenCompare}
+            aria-label="Compare Universities"
+            className="absolute -bottom-8 sm:-bottom-9 left-1/2 -translate-x-1/2 cursor-pointer transition-transform duration-200 hover:scale-105 select-none bg-transparent border-none p-0 focus:outline-none z-10"
+          >
+            <div className="relative w-[66px] h-[66px] sm:w-[70px] sm:h-[70px] rounded-full overflow-hidden">
+              <Image
+                src={vguImg("arrow.gif")}
+                alt="Compare University"
+                fill
+                sizes="70px"
+                className="object-contain"
+                unoptimized
+              />
+            </div>
+          </button>
         </div>
       </section>
 
