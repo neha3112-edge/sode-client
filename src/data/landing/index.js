@@ -1,9 +1,4 @@
-import { lpuData } from "./lpu";
-import { cuData } from "./cu";
 import { galgotiasData } from "./galgotias";
-import { smuData } from "./smu";
-import { vguData } from "./vgu";
-import { shooliniData } from "./shoolini";
 import { upesData } from "./upes";
 import { gguData } from "./ggu";
 import { esgciData } from "./esgci";
@@ -11,19 +6,11 @@ import { rushfordData } from "./rushford";
 import { liverpoolData } from "./liverpool";
 import { edgewoodData } from "./edgewood";
 import { iimData } from "./iim";
-import { uuData } from "./uu";
 import { iiitbData } from "./iiitb";
 import { ssbmData } from "./ssbm";
 
 export const LANDING_REGISTRY = {
-  lpu: lpuData,
-  cu: cuData,
   galgotias: galgotiasData,
-  smu: smuData,
-  vgu: vguData,
-  "sikkim-manipal-university": smuData,
-  "sikkim-manipal": smuData,
-  shoolini: shooliniData,
   upes: upesData,
   "upes-online": upesData,
   ggu: gguData,
@@ -49,11 +36,6 @@ export const LANDING_REGISTRY = {
   "iim-kozhikode": iimData,
   "iim-hr": iimData,
   iimk: iimData,
-  uu: uuData,
-  "uu-online": uuData,
-  uttaranchal: uuData,
-  "uttaranchal-university": uuData,
-  "uttaranchal-university-online": uuData,
   iiitb: iiitbData,
   "iiit-bangalore": iiitbData,
   "iiit-b": iiitbData,
@@ -137,12 +119,7 @@ export function getLandingData(slug) {
 }
 
 export {
-  lpuData,
-  cuData,
   galgotiasData,
-  smuData,
-  vguData,
-  shooliniData,
   upesData,
   gguData,
   esgciData,
@@ -150,7 +127,6 @@ export {
   liverpoolData,
   edgewoodData,
   iimData,
-  uuData,
   iiitbData,
   ssbmData,
 };
