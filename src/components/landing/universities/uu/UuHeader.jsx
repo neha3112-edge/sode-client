@@ -139,10 +139,10 @@ export default function UuHeader({ onOpenScholarship }) {
 
       {/* Mobile Drawer */}
       <Drawer
-        placement="right"
+        placement="top"
         onClose={() => setMobileMenuOpen(false)}
         open={mobileMenuOpen}
-        styles={{ wrapper: { width: 285 }, body: { padding: 0 } }}
+        styles={{ body: { padding: 0 } }}
         closable={false}
       >
         <div className="flex flex-col h-full bg-white select-none">

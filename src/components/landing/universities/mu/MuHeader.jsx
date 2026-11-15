@@ -101,9 +101,9 @@ export default function MuHeader({ onOpenScholarship }) {
       <Drawer
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
-        placement="right"
+        placement="top"
         closeIcon={null}
-        styles={{ wrapper: { width: 280 }, body: { padding: 0 } }}
+        styles={{ body: { padding: 0 } }}
       >
         <div className="p-4 border-b border-gray-100 flex items-center justify-between">
           <Image
