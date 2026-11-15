@@ -31,14 +31,16 @@ export default function SmuProgrammes({ onOpenBrochure, onOpenApply }) {
   const renderCard = (prog) => (
     <div key={prog.code} className="p-2 sm:p-3 text-left">
       <div className="max-w-sm sm:max-w-none mx-auto bg-white rounded-xl overflow-hidden border border-gray-200/90 shadow-[0_4px_16px_rgba(0,0,0,0.06)] hover:shadow-lg transition-all flex flex-col justify-between h-full">
-        {/* Top Thumbnail Image */}
-        <div className="relative w-full h-[180px] sm:h-[195px] overflow-hidden bg-gray-100">
+        {/* Top Thumbnail Image - Free Size */}
+        <div className="w-full overflow-hidden bg-gray-100 rounded-t-xl">
           <Image
             src={prog.image}
             alt={prog.title}
-            width={400}
-            height={220}
-            className="w-full h-full object-cover"
+            width={600}
+            height={350}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            className="w-full h-auto object-contain block"
+            style={{ width: "100%", height: "auto" }}
           />
         </div>
 

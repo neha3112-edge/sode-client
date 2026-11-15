@@ -126,17 +126,19 @@ export default function AmityProgrammes({ onOpenBrochure }) {
   const renderCard = (course, isMobile = false) => (
     <div
       className={`w-full ${
-        isMobile ? "max-w-[340px] sm:max-w-[360px] mx-auto h-auto" : "h-[375px]"
+        isMobile ? "max-w-[340px] sm:max-w-[360px] mx-auto h-auto" : "min-h-[375px] h-auto"
       } bg-white rounded-[10px] overflow-hidden shadow-md flex flex-col select-none text-left`}
     >
-      {/* Card Thumbnail Image */}
-      <div className="relative w-full h-[155px] shrink-0 bg-gray-100 overflow-hidden">
+      {/* Card Thumbnail Image - Free Size */}
+      <div className="relative w-full shrink-0 bg-gray-100 overflow-hidden">
         <Image
           src={course.image}
           alt={course.title}
-          fill
+          width={600}
+          height={350}
           sizes={isMobile ? "360px" : "(max-width: 1024px) 33vw, 25vw"}
-          className="object-cover"
+          className="w-full h-auto object-contain block"
+          style={{ width: "100%", height: "auto" }}
         />
         {/* Level Badge (Graduation / Post Graduation) */}
         <span className="absolute top-0 left-0 bg-[#00a651] text-white text-[11px] font-semibold px-2.5 py-0.5 rounded-br-[5px] select-none shadow-xs">

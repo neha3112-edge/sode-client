@@ -64,14 +64,16 @@ export default function MuProgrammes({ onOpenBrochure, onOpenApply }) {
               key={prog.code}
               className="bg-white rounded-xl overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 border border-gray-200/90 flex flex-col justify-between"
             >
-              {/* Card Image */}
-              <div className="relative w-full h-[175px] sm:h-[185px] overflow-hidden bg-gray-100 shrink-0">
+              {/* Card Image - Free Size */}
+              <div className="w-full overflow-hidden bg-gray-100 rounded-t-xl shrink-0">
                 <Image
                   src={prog.image}
                   alt={prog.title}
-                  fill
+                  width={600}
+                  height={380}
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 380px"
-                  className="object-cover"
+                  className="w-full h-auto object-contain block"
+                  style={{ width: "100%", height: "auto" }}
                 />
               </div>
 

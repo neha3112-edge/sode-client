@@ -13,14 +13,17 @@ export default function UuProgrammes({ onOpenBrochure, onOpenApply }) {
       key={course.title}
       className="bg-white rounded-xl overflow-hidden shadow-xs hover:shadow-md transition-shadow duration-300 border border-gray-100 flex flex-col"
     >
-      {/* Course Banner Image */}
-      <div className="relative w-full h-[180px] sm:h-[195px] overflow-hidden">
+      {/* Course Banner Image - Free Size (Natural Aspect Ratio) */}
+      <div className="w-full overflow-hidden rounded-t-xl bg-gray-50">
         <Image
           src={course.image}
           alt={course.title}
-          fill
+          width={600}
+          height={380}
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          className="object-cover transition-transform duration-300 hover:scale-105"
+          className="w-full h-auto object-contain block transition-transform duration-300 hover:scale-105"
+          style={{ width: "100%", height: "auto" }}
+          priority
         />
       </div>
 

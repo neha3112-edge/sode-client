@@ -27,14 +27,16 @@ export default function VguProgrammes({ onOpenBrochure, onOpenApply }) {
               key={prog.code}
               className="bg-white rounded-xl overflow-hidden border border-gray-200/80 shadow-xs hover:shadow-md transition-all flex flex-col justify-between"
             >
-              {/* Card Image with Duration Badge */}
-              <div className="relative w-full h-[170px] sm:h-[180px] overflow-hidden bg-gray-100 shrink-0">
+              {/* Card Image with Duration Badge - Free Size */}
+              <div className="relative w-full overflow-hidden bg-gray-100 rounded-t-xl shrink-0">
                 <Image
                   src={prog.image}
                   alt={prog.title}
-                  fill
+                  width={600}
+                  height={380}
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 320px"
-                  className="object-cover"
+                  className="w-full h-auto object-contain block"
+                  style={{ width: "100%", height: "auto" }}
                 />
                 <span className="absolute top-2.5 right-2.5 bg-black/85 text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full z-10">
                   {prog.duration}
