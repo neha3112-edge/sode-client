@@ -41,6 +41,7 @@ export default function UuDegree({ onOpenApply }) {
               width={1085}
               height={1477}
               className="w-full h-auto max-w-[380px] sm:max-w-[420px] object-contain"
+              style={{ width: "100%", height: "auto" }}
               sizes="(max-width: 640px) 100vw, 420px"
             />
           </div>

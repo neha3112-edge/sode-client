@@ -24,6 +24,7 @@ export default function CuDegree({ onOpenApply }) {
                 height={509}
                 priority
                 className="w-full h-auto object-contain"
+                style={{ width: "100%", height: "auto" }}
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 520px, 540px"
               />
             </div>

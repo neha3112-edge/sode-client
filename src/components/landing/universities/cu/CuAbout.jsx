@@ -57,6 +57,7 @@ export default function CuAbout({ onOpenApply }) {
                 height={763}
                 priority
                 className="w-full h-auto object-contain"
+                style={{ width: "100%", height: "auto" }}
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 560px, 700px"
               />
             </div>

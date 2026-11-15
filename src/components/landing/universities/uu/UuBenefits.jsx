@@ -20,6 +20,7 @@ export default function UuBenefits({ onOpenApply }) {
               height={600}
               priority
               className="w-full h-auto max-w-[503px] object-contain"
+              style={{ width: "100%", height: "auto" }}
               sizes="(max-width: 1024px) 100vw, 503px"
             />
           </div>
@@ -44,12 +45,12 @@ export default function UuBenefits({ onOpenApply }) {
                   key={benefit.title}
                   className="flex items-center gap-3 bg-white/10 hover:bg-white/15 px-3.5 py-2.5 rounded-lg transition-colors border border-white/10"
                 >
-                  <div className="relative w-6 h-6 shrink-0 flex items-center justify-center">
+                  <div className="relative w-6 h-6 shrink-0">
                     <Image
                       src={benefit.icon}
                       alt={benefit.title}
-                      width={22}
-                      height={22}
+                      fill
+                      sizes="24px"
                       className="object-contain brightness-0 invert"
                     />
                   </div>

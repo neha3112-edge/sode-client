@@ -44,6 +44,7 @@ export default function UuAbout({ onOpenApply }) {
               width={1693}
               height={1100}
               className="w-full h-auto object-contain rounded-lg"
+              style={{ width: "100%", height: "auto" }}
               sizes="(max-width: 1024px) 100vw, 520px"
             />
           </div>

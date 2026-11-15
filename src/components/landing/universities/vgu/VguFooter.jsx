@@ -55,6 +55,7 @@ export default function VguFooter({ onOpenScholarship, onOpenBrochure, onOpenLeg
               height={522}
               priority
               className="w-full h-auto object-contain mx-auto"
+              style={{ width: "100%", height: "auto" }}
               sizes="(max-width: 640px) 360px, (max-width: 768px) 520px, (max-width: 1024px) 700px, 850px"
             />
           </button>
