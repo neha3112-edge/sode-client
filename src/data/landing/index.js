@@ -2,7 +2,6 @@ import { upesData } from "./upes";
 import { rushfordData } from "./rushford";
 import { liverpoolData } from "./liverpool";
 import { iimData } from "./iim";
-import { iiitbData } from "./iiitb";
 import { ssbmData } from "./ssbm";
 
 export const LANDING_REGISTRY = {
@@ -21,10 +20,6 @@ export const LANDING_REGISTRY = {
   "iim-kozhikode": iimData,
   "iim-hr": iimData,
   iimk: iimData,
-  iiitb: iiitbData,
-  "iiit-bangalore": iiitbData,
-  "iiit-b": iiitbData,
-  "iiitb-online": iiitbData,
   ssbm: ssbmData,
   "ssbm-geneva": ssbmData,
   "ssbm-online": ssbmData,
@@ -108,6 +103,5 @@ export {
   rushfordData,
   liverpoolData,
   iimData,
-  iiitbData,
   ssbmData,
 };

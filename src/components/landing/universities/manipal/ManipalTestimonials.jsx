@@ -61,8 +61,8 @@ export default function ManipalTestimonials() {
       <Container>
         {/* Section Heading */}
         <h2 className="font-bold text-[22px] sm:text-[26px] md:text-[28px] leading-tight text-center m-0 mb-4 sm:mb-5">
-          <span className="text-[#ee3024]">What Our Students </span>
-          <span className="text-[#111827]">Say</span>
+          <span className="text-[#111827]">What Learners Say </span>
+          <span className="text-[#ee3024]">About Manipal University Online</span>
         </h2>
 
         {/* Carousel Container */}
