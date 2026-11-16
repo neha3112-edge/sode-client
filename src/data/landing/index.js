@@ -1,7 +1,6 @@
 import { upesData } from "./upes";
 import { rushfordData } from "./rushford";
 import { liverpoolData } from "./liverpool";
-import { iimData } from "./iim";
 import { ssbmData } from "./ssbm";
 
 export const LANDING_REGISTRY = {
@@ -16,10 +15,6 @@ export const LANDING_REGISTRY = {
   "ljmu": liverpoolData,
   "ljmu-online": liverpoolData,
   "liverpool-online": liverpoolData,
-  iim: iimData,
-  "iim-kozhikode": iimData,
-  "iim-hr": iimData,
-  iimk: iimData,
   ssbm: ssbmData,
   "ssbm-geneva": ssbmData,
   "ssbm-online": ssbmData,
@@ -102,6 +97,5 @@ export {
   upesData,
   rushfordData,
   liverpoolData,
-  iimData,
   ssbmData,
 };
