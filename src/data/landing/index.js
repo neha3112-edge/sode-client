@@ -3,7 +3,6 @@ import { gguData } from "./ggu";
 import { esgciData } from "./esgci";
 import { rushfordData } from "./rushford";
 import { liverpoolData } from "./liverpool";
-import { edgewoodData } from "./edgewood";
 import { iimData } from "./iim";
 import { iiitbData } from "./iiitb";
 import { ssbmData } from "./ssbm";
@@ -26,10 +25,6 @@ export const LANDING_REGISTRY = {
   "ljmu": liverpoolData,
   "ljmu-online": liverpoolData,
   "liverpool-online": liverpoolData,
-  edgewood: edgewoodData,
-  "edgewood-university": edgewoodData,
-  "edgewood-online": edgewoodData,
-  "edgewood-college": edgewoodData,
   iim: iimData,
   "iim-kozhikode": iimData,
   "iim-hr": iimData,
@@ -122,7 +117,6 @@ export {
   esgciData,
   rushfordData,
   liverpoolData,
-  edgewoodData,
   iimData,
   iiitbData,
   ssbmData,
