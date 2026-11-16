@@ -130,8 +130,8 @@ export default function GguSpecializations({ onOpenApply }) {
               ]}
             >
               {currentList.map((item) => (
-                <div key={item.id} className="p-2 sm:p-2.5 h-full w-full flex flex-col">
-                  <div className="bg-white rounded-[14px] border border-gray-100 shadow-[0_3px_15px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_25px_rgba(0,0,0,0.09)] transition-all duration-200 overflow-hidden flex flex-col h-full w-full justify-between">
+                <div key={item.id} className="px-1.5 sm:px-2 py-2 h-full w-full flex flex-col">
+                  <div className="bg-white rounded-[12px] border border-gray-100 shadow-[0_3px_15px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_25px_rgba(0,0,0,0.09)] transition-all duration-200 overflow-hidden flex flex-col h-full w-full justify-between">
                     {/* Card Thumbnail */}
                     <div className="relative w-full aspect-[16/10] bg-gray-100 shrink-0">
                       <Image
@@ -145,23 +145,23 @@ export default function GguSpecializations({ onOpenApply }) {
                       <div className="absolute bottom-0 inset-x-0 h-[3px] bg-gradient-to-r from-pink-500 via-orange-400 to-[#003468]" />
                     </div>
 
-                    {/* Card Body with Consistent Vertical Spacing */}
-                    <div className="p-5 sm:p-6 flex flex-col flex-1 justify-between">
+                    {/* Card Body with Tight Spacing */}
+                    <div className="p-4 sm:p-4.5 flex flex-col flex-1 justify-between">
                       <div className="flex-1 flex flex-col">
-                        <h3 className="text-[16px] sm:text-[17px] font-bold text-neutral-900 m-0 mb-2 leading-snug min-h-[46px] flex items-center">
+                        <h3 className="text-[16px] sm:text-[17px] font-bold text-neutral-900 m-0 mb-1.5 leading-snug">
                           {item.title}
                         </h3>
-                        <p className="text-neutral-600 text-[12.5px] sm:text-[13px] leading-relaxed m-0 mb-5 font-normal flex-1">
+                        <p className="text-neutral-600 text-[12.5px] sm:text-[13px] leading-relaxed m-0 mb-4 font-normal flex-1">
                           {item.description}
                         </p>
                       </div>
 
                       {/* Apply Now Button - Pinned to bottom */}
-                      <div className="pt-2">
+                      <div className="pt-1">
                         <button
                           type="button"
                           onClick={() => onOpenApply?.(item.title, "Apply Now")}
-                          className="w-auto px-6 py-2 bg-[#003468] hover:bg-[#002246] text-white rounded-[5px] text-[13px] font-bold transition-colors border-none cursor-pointer active:scale-98"
+                          className="w-auto px-5 py-2 bg-[#003468] hover:bg-[#002246] text-white rounded-[5px] text-[13px] font-bold transition-colors border-none cursor-pointer active:scale-98"
                         >
                           Apply Now
                         </button>

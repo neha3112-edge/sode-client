@@ -52,8 +52,8 @@ export default function GguFaq() {
 
                 {/* Accordion Content */}
                 {isOpen && (
-                  <div className="px-5 sm:px-6 pb-4 pt-1 border-t border-gray-100 bg-neutral-50/50">
-                    <p className="text-[13px] sm:text-[13.5px] leading-relaxed text-neutral-600 m-0 font-normal">
+                  <div className="px-5 sm:px-6 pb-4 pt-2 border-t border-gray-100 bg-white">
+                    <p className="text-[13px] sm:text-[13.5px] leading-relaxed text-[#555555] m-0 font-normal">
                       {faq.a}
                     </p>
                   </div>
