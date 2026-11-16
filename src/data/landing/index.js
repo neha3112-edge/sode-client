@@ -1,5 +1,4 @@
 import { upesData } from "./upes";
-import { gguData } from "./ggu";
 import { rushfordData } from "./rushford";
 import { liverpoolData } from "./liverpool";
 import { iimData } from "./iim";
@@ -9,9 +8,6 @@ import { ssbmData } from "./ssbm";
 export const LANDING_REGISTRY = {
   upes: upesData,
   "upes-online": upesData,
-  ggu: gguData,
-  "golden-gate": gguData,
-  "golden-gate-university": gguData,
   rushford: rushfordData,
   "rushford-business-school": rushfordData,
   "rushford-university": rushfordData,
@@ -109,7 +105,6 @@ export function getLandingData(slug) {
 
 export {
   upesData,
-  gguData,
   rushfordData,
   liverpoolData,
   iimData,
