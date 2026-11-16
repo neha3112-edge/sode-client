@@ -102,14 +102,17 @@ export default function IiitbFooter({
           </div>
         </div>
 
-        {/* Bottom Dark Copyright Bar */}
-        <div className="w-full bg-[#003b6f] py-3 text-center text-white text-[12px] sm:text-[13px] font-normal tracking-wide">
-          &copy; 2026 SODE Counseling Services LLP
+        {/* Bottom Dark Copyright Bar - Perfectly Centered */}
+        <div className="w-full bg-[#003b6f] py-3 sm:py-3.5 px-4 flex items-center justify-center text-center text-white text-[12px] sm:text-[13px] font-normal tracking-wide leading-normal">
+          <span>&copy; 2026 SODE Counseling Services LLP</span>
         </div>
       </section>
 
+      {/* Mobile Sticky Bar Clearance Spacer */}
+      <div className="md:hidden h-14 w-full bg-transparent" />
+
       {/* 3. Floating Action Buttons - Hidden on mobile, visible on desktop */}
-      <div className="hidden md:flex fixed bottom-5 right-4 sm:right-6 z-40 flex-col items-center gap-2.5 sm:gap-3 pointer-events-auto">
+      <div className="hidden md:flex fixed bottom-14 sm:bottom-16 right-4 sm:right-6 z-40 flex-col items-center gap-2.5 sm:gap-3 pointer-events-auto">
         {/* Floating Call Button */}
         <a
           href="tel:+917065777755"

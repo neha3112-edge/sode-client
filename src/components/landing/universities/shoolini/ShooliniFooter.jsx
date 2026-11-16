@@ -102,14 +102,17 @@ export default function ShooliniFooter({
           </div>
         </div>
 
-        {/* Dark Red/Crimson Copyright Bottom Strip */}
-        <div className="w-full bg-[#111827] text-white py-3 px-4 text-xs sm:text-[13px] tracking-wide font-normal">
-          © 2026 SODE Counseling Services LLP
+        {/* Dark Red/Crimson Copyright Bottom Strip - Perfectly Centered */}
+        <div className="w-full bg-[#111827] text-white py-3 sm:py-3.5 px-4 flex items-center justify-center text-center text-xs sm:text-[13px] tracking-wide font-normal leading-normal">
+          <span>© 2026 SODE Counseling Services LLP</span>
         </div>
       </section>
 
+      {/* Mobile Sticky Bar Clearance Spacer */}
+      <div className="md:hidden h-14 w-full bg-transparent" />
+
       {/* 3. Floating Fixed Call & Scholarship Buttons - Hidden on mobile because of sticky bottom bar */}
-      <div className="hidden md:flex fixed bottom-5 right-4 sm:right-6 z-40 flex-col items-center gap-2.5 sm:gap-3 pointer-events-auto">
+      <div className="hidden md:flex fixed bottom-14 sm:bottom-16 right-4 sm:right-6 z-40 flex-col items-center gap-2.5 sm:gap-3 pointer-events-auto">
         {/* Call Floating Button */}
         <a
           href="tel:07065777755"
