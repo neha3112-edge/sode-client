@@ -108,8 +108,8 @@ export default function ShooliniFooter({
         </div>
       </section>
 
-      {/* 3. Floating Fixed Call & Scholarship Buttons (Visible on desktop & mobile above sticky bar matching Reference) */}
-      <div className="fixed bottom-[64px] md:bottom-5 right-3 md:right-6 z-40 flex flex-col items-center gap-2 sm:gap-3">
+      {/* 3. Floating Fixed Call & Scholarship Buttons - Hidden on mobile because of sticky bottom bar */}
+      <div className="hidden md:flex fixed bottom-5 right-4 sm:right-6 z-40 flex-col items-center gap-2.5 sm:gap-3 pointer-events-auto">
         {/* Call Floating Button */}
         <a
           href="tel:07065777755"

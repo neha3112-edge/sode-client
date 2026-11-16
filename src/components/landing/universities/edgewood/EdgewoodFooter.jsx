@@ -109,7 +109,7 @@ export default function EdgewoodFooter({
       </section>
 
       {/* Floating Action Buttons - Hidden on mobile because of sticky bottom bar */}
-      <div className="hidden md:flex fixed bottom-20 sm:bottom-24 right-4 z-40 flex-col gap-2.5 items-end pointer-events-auto">
+      <div className="hidden md:flex fixed bottom-5 right-4 sm:right-6 z-40 flex-col items-center gap-2.5 sm:gap-3 pointer-events-auto">
         {/* Floating Call Button */}
         <a
           href="tel:+917065777755"
