@@ -74,7 +74,7 @@ export default function GalgotiasLandingView() {
   };
 
   return (
-    <div className="w-full min-h-screen bg-white font-sans text-neutral-900 overflow-x-clip">
+    <div className="w-full min-h-screen bg-white font-sans text-neutral-900">
       {/* 1. Header */}
       <GalgotiasHeader onOpenScholarship={() => setIsScholarshipOpen(true)} />
 

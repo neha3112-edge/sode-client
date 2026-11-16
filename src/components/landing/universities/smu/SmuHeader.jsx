@@ -67,7 +67,7 @@ export default function SmuHeader({ onOpenScholarship }) {
         }
       `}</style>
 
-      <header className="w-full bg-white border-b border-gray-100 py-2.5 sm:py-3 sticky top-0 z-40 select-none shadow-xs">
+      <header className="sticky top-0 z-50 w-full bg-white border-b border-gray-100 py-2.5 sm:py-3 select-none shadow-xs">
         <Container className="flex items-center justify-between">
           {/* Left: SMU Logo */}
           <Link href="/smu" className="relative inline-flex items-center">

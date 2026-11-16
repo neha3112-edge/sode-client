@@ -45,7 +45,7 @@ export default function CuHeader({ onOpenScholarship }) {
         }
       `}</style>
 
-      <header className="sticky top-0 z-40 w-full bg-white border-b border-gray-100 shadow-xs select-none">
+      <header className="sticky top-0 z-50 w-full bg-white border-b border-gray-100 shadow-xs select-none">
         <Container>
           <div className="flex items-center justify-between h-16 sm:h-[72px]">
             {/* Logo */}

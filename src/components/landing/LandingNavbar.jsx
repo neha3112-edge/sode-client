@@ -341,7 +341,7 @@ export default function LandingNavbar({
         </div>
       )}
       <header
-        className={`landing-navbar-header sticky top-0 z-50 relative bg-white border-b border-slate-200/80 shadow-[0px_2px_10px_rgba(0,0,0,0.06)] ${navbar.headerClassName || brand.headerClassName || ""}`.trim()}
+        className={`landing-navbar-header sticky top-0 z-50 bg-white border-b border-slate-200/80 shadow-[0px_2px_10px_rgba(0,0,0,0.06)] ${navbar.headerClassName || brand.headerClassName || ""}`.trim()}
         style={{ ...(brand.headerStyle || {}), ...(navbar.headerStyle || {}) }}
       >
 

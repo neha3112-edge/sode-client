@@ -166,12 +166,16 @@ export default function LandingLeadForm({
      2. THEME & CARD VARIANT
   ------------------------------------------------------------- */
   const isWhiteCard =
-    formConfig.variant === "white" ||
-    formConfig.variant === "white-card" ||
+    variant === "white" ||
     variant === "white-card" ||
     variant === "whiteCard" ||
+    formConfig.variant === "white" ||
+    formConfig.variant === "white-card" ||
     heroConfig.formCardType === "white" ||
-    heroConfig.cardStyle === "white";
+    heroConfig.cardStyle === "white" ||
+    activeBrand.hero?.cardStyle === "white" ||
+    activeBrand.hero?.formCardType === "white" ||
+    activeBrand.formCardType === "white";
 
   const isCard =
     formConfig.variant === "card" ||
@@ -312,11 +316,17 @@ export default function LandingLeadForm({
   /* -------------------------------------------------------------
      4. COLORS & STYLING RESOLUTION
   ------------------------------------------------------------- */
+  const activePrimaryColor =
+    primaryColor ||
+    heroConfig.primaryColor ||
+    activeBrand.primaryColor ||
+    "#04903c";
+
   const cardBg =
     colors.background ||
     (isWhiteCard
       ? "#ffffff"
-      : primaryColor ||
+      : activePrimaryColor ||
         heroConfig.formBackground ||
         activeBrand.primaryColor ||
         "#08417b");
@@ -324,7 +334,7 @@ export default function LandingLeadForm({
   const titleColor =
     colors.title ||
     (isWhiteCard
-      ? heroConfig.formTitleColor || heroConfig.enquireColor || "#ee3024"
+      ? heroConfig.formTitleColor || heroConfig.enquireColor || activePrimaryColor
       : accentColor ||
         heroConfig.formAccentColor ||
         activeBrand.accentColor ||
@@ -336,15 +346,16 @@ export default function LandingLeadForm({
     heroConfig.formSubtitleColor ||
     heroConfig.enquireSubtitleColor ||
     activeBrand.enquireSubtitleColor ||
-    (isWhiteCard ? "#475569" : "#ffffff");
+    (isWhiteCard ? "#333333" : "#ffffff");
 
   const phoneBadgeBg =
     colors.phoneBackground ||
     phoneBtnConfig.background ||
     heroConfig.phoneBadgeBackground ||
+    heroConfig.phoneBadgeBg ||
     heroConfig.formPhoneBg ||
     (isWhiteCard
-      ? heroConfig.phoneBadgeBg || "#f78d2d"
+      ? heroConfig.phoneBadgeBg || activePrimaryColor
       : accentColor ||
         heroConfig.formAccentColor ||
         activeBrand.accentColor ||
@@ -355,7 +366,7 @@ export default function LandingLeadForm({
     colors.phoneText ||
     phoneBtnConfig.textColor ||
     heroConfig.phoneBadgeColor ||
-    (isWhiteCard ? "#ffffff" : "#000000");
+    "#ffffff";
 
   const phoneBadgeIconColor =
     colors.phoneIcon ||
@@ -382,12 +393,12 @@ export default function LandingLeadForm({
   const inputPlaceholder =
     colors.inputPlaceholder ||
     heroConfig.inputPlaceholder ||
-    (isFilled ? "#71717a" : isWhiteCard ? "#94a3b8" : "#888888");
+    (isFilled ? "#71717a" : isWhiteCard ? "#888888" : "#888888");
 
   const inputBorder =
     colors.inputBorder ||
     heroConfig.inputBorder ||
-    (isFilled ? "none" : isWhiteCard ? "#cccccc" : "transparent");
+    (isFilled ? "none" : isWhiteCard ? "#d1d5db" : "transparent");
 
   const selectBg =
     colors.selectBackground ||
@@ -426,7 +437,7 @@ export default function LandingLeadForm({
   const countryCodeBorder =
     colors.countryCodeBorder ||
     heroConfig.countryCodeBorder ||
-    (isFilled ? "#d1d5db" : isWhiteCard ? "#cccccc" : "#d1d5db");
+    (isFilled ? "#d1d5db" : isWhiteCard ? "#d1d5db" : "#d1d5db");
 
   const consentColor =
     colors.consentText ||
@@ -445,6 +456,7 @@ export default function LandingLeadForm({
     submitBtnConfig.background ||
     heroConfig.submitButtonBackground ||
     heroConfig.submitBtnBg ||
+    activePrimaryColor ||
     activeBrand.submitBtnBg ||
     "#22c55e";
 
@@ -463,15 +475,15 @@ export default function LandingLeadForm({
     layout.submitButtonRadius ||
     submitBtnConfig.radius ||
     heroConfig.submitButtonRadius ||
-    "8px";
+    "6px";
 
   /* -------------------------------------------------------------
      5. LAYOUT & DIMENSIONS
   ------------------------------------------------------------- */
-  const cardMaxWidth = maxWidth || layout.maxWidth || "360px";
+  const cardMaxWidth = maxWidth || layout.maxWidth || "380px";
   const cardPadding =
     layout.padding ||
-    (isWhiteCard ? "18px 18px" : isCard ? "14px 16px 16px" : "14px");
+    (isWhiteCard ? "22px 20px" : isCard ? "14px 16px 16px" : "14px");
   const cardRadius =
     layout.borderRadius ||
     heroConfig.formCardRadius ||
@@ -483,17 +495,17 @@ export default function LandingLeadForm({
     heroConfig.formShadow ||
     heroConfig.formCardShadow ||
     (isWhiteCard
-      ? "0 10px 25px -5px rgba(0, 0, 0, 0.16), 0 8px 10px -6px rgba(0, 0, 0, 0.1)"
+      ? "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05)"
       : isCard
       ? "0 10px 25px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.2)"
       : "none");
   const cardBorder =
     layout.border ||
-    (isWhiteCard ? "1px solid rgba(226, 232, 240, 0.9)" : "none");
+    (isWhiteCard ? "1px solid rgba(0, 0, 0, 0.08)" : "none");
 
-  const fieldHeight = layout.fieldHeight || "38px";
+  const fieldHeight = layout.fieldHeight || "42px";
   const fieldRadius = layout.fieldRadius || "6px";
-  const fieldGap = layout.fieldGap || "8px";
+  const fieldGap = layout.fieldGap || "10px";
 
   /* -------------------------------------------------------------
      6. COURSES & STATE OPTIONS
@@ -786,10 +798,11 @@ export default function LandingLeadForm({
 
   const renderPhoneButton = () => {
     if (!hasPhoneBadge || !activePhoneText) return null;
+    const cleanPhone = (activePhoneHref || "").replace(/^tel:/, "");
     return (
-      <div className="flex justify-center mt-1.5 mb-2.5">
+      <div className="flex justify-center mt-2 mb-3">
         <LandingButton
-          href={`tel:${activePhoneHref}`}
+          href={`tel:${cleanPhone}`}
           variant="phone"
           skewEffect={true}
           radius={phoneBadgeRadius}

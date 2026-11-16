@@ -86,7 +86,7 @@ export default function EdgewoodLandingView() {
   };
 
   return (
-    <div className="w-full min-h-screen bg-white font-sans text-neutral-900 overflow-x-hidden">
+    <div className="w-full min-h-screen bg-white font-sans text-neutral-900">
       {/* 1. Header with SODE logo and Navigation */}
       <EdgewoodHeader />
 

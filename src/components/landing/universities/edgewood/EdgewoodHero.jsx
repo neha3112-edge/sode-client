@@ -130,14 +130,15 @@ export default function EdgewoodHero({
         </div>
 
         {/* 8. White Enquire Now Form Card */}
-        <div className="w-full max-w-[370px] mx-auto mt-5">
+        <div className="w-full max-w-[380px] mx-auto mt-5">
           <LandingLeadForm
             brand={brand}
             courses={EDGEWOOD_COURSES}
-            variant="white-card"
-            title="Enquire Now"
+            variant="white"
+            title="Admission Open"
             subtitle="Academic Experts will assist you!"
             buttonText="Submit"
+            primaryColor="#b2171e"
             phoneText="+91 7065 7777 55"
             phoneHref="7065777755"
             showPhoneBadge={true}
@@ -225,14 +226,15 @@ export default function EdgewoodHero({
 
           {/* Right Lead Form */}
           <div className="col-span-5 flex justify-end">
-            <div className="w-full max-w-[370px]">
+            <div className="w-full max-w-[380px]">
               <LandingLeadForm
                 brand={brand}
                 courses={EDGEWOOD_COURSES}
-                variant="white-card"
-                title="Enquire Now"
+                variant="white"
+                title="Admission Open"
                 subtitle="Academic Experts will assist you!"
                 buttonText="Submit"
+                primaryColor="#b2171e"
                 phoneText="+91 7065 7777 55"
                 phoneHref="7065777755"
                 showPhoneBadge={true}
