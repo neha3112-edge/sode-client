@@ -1,4 +1,3 @@
-import { galgotiasData } from "./galgotias";
 import { upesData } from "./upes";
 import { gguData } from "./ggu";
 import { esgciData } from "./esgci";
@@ -10,7 +9,6 @@ import { iiitbData } from "./iiitb";
 import { ssbmData } from "./ssbm";
 
 export const LANDING_REGISTRY = {
-  galgotias: galgotiasData,
   upes: upesData,
   "upes-online": upesData,
   ggu: gguData,
@@ -119,7 +117,6 @@ export function getLandingData(slug) {
 }
 
 export {
-  galgotiasData,
   upesData,
   gguData,
   esgciData,

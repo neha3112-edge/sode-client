@@ -62,7 +62,7 @@ export default function ShooliniHero({ onOpenBrochure, onOpenDisclaimer }) {
           }
         }
         .shoolini-phone-shine {
-          position: relative;
+          position: relative; 
           overflow: hidden;
         }
         .shoolini-phone-shine::before {
