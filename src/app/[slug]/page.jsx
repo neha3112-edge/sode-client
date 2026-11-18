@@ -11,8 +11,6 @@ import {
   MobileBottomNav,
 } from "@/components/website";
 import GlobalBreadcrumb from "@/components/common/GlobalBreadcrumb";
-import { getLandingData } from "@/data/landing";
-import UniversityLandingView from "@/components/landing/UniversityLandingView";
 
 export const revalidate = 600;
 
@@ -91,9 +89,6 @@ export async function generateMetadata({ params }) {
   const slug = resolvedParams?.slug;
   if (!slug) return {};
 
-  const landingData = getLandingData(slug);
-  if (landingData?.meta) return landingData.meta;
-
   try {
     const [resolved, pageMeta] = await Promise.all([
       getPageData(slug),
@@ -119,12 +114,6 @@ export async function generateMetadata({ params }) {
 export default async function DynamicSlugPage({ params }) {
   const resolvedParams = await params;
   const slug = resolvedParams?.slug || "";
-
-  // Isolated Landing Pages — no shared layout
-  const landingData = getLandingData(slug);
-  if (landingData) {
-    return <UniversityLandingView data={landingData} />;
-  }
 
   // Resolve page type + layout data + hero data — ALL concurrently in parallel
   const [resolved, { headerData, footerData, legalPolicies }, heroRes] = await Promise.all([

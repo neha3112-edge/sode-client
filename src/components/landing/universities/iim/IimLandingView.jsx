@@ -132,6 +132,8 @@ export default function IimLandingView() {
         brand={{
           primaryColor: "#17479E",
           hero: { primaryColor: "#17479E" },
+          slug: "iim",
+          brochurePdf: "/assets/iim/main_brochure.pdf",
         }}
       />
 

@@ -408,7 +408,7 @@ export function resolveBrochurePdfUrl(university, course, brandFallback = {}) {
         return new RegExp('(^|[_\\-\\s])' + code + '([_\\-\\s\\.]|$)', 'i').test(lower);
       });
       if (match) {
-        return encodeURI(`/LP Brochures/LP Brochures/${slug}/${match}`);
+        return encodeURI(`/assets/${slug}/${match}`);
       }
     }
 
@@ -424,11 +424,11 @@ export function resolveBrochurePdfUrl(university, course, brandFallback = {}) {
       );
     });
     if (mainBrochure) {
-      return encodeURI(`/LP Brochures/LP Brochures/${slug}/${mainBrochure}`);
+      return encodeURI(`/assets/${slug}/${mainBrochure}`);
     }
 
     // 3. Fallback to first available file in university folder
-    return encodeURI(`/LP Brochures/LP Brochures/${slug}/${files[0]}`);
+    return encodeURI(`/assets/${slug}/${files[0]}`);
   }
 
   // Fallback to configured brand brochure or default

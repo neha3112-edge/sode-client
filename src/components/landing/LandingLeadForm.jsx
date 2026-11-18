@@ -7,6 +7,7 @@ import { Phone } from "lucide-react";
 import { STATE_OPTIONS } from "@/constants/stateOptions";
 import LandingButton from "./LandingButton";
 import { resolveBrochurePdfUrl } from "@/lib/brochures";
+import { THANK_YOU_UNIVERSITIES } from "./thankYouConfig";
 
 const DEFAULT_COURSES = [
   { value: "MBA", label: "MBA" },
@@ -630,13 +631,20 @@ export default function LandingLeadForm({
       message.success(successMessage);
       form.resetFields();
       onSuccess?.(values);
+
+      // Determine dedicated thank-you route if on a supported LP university page
+      const currentPathSlug = typeof window !== "undefined" ? window.location.pathname.split("/").filter(Boolean)[0] : "";
+      const rawUni = (activeBrand?.slug || activeUniversity || currentPathSlug || "").toLowerCase().trim();
+      const hasDedicatedThankYou = Boolean(THANK_YOU_UNIVERSITIES[rawUni]);
+      const thankYouBase = hasDedicatedThankYou ? `/${rawUni}/thank-you` : "/thank-you";
+
       if (isBrochureRequest) {
-        const uniKey = activeBrand?.slug || activeUniversity;
+        const uniKey = activeBrand?.slug || activeUniversity || rawUni;
         const selectedCourseName = values.course || defaultCourse || "";
         const finalBrochureUrl = resolveBrochurePdfUrl(uniKey, selectedCourseName, activeBrand);
-        router.push(`/thank-you?brochure=1&url=${encodeURIComponent(finalBrochureUrl)}`);
+        router.push(`${thankYouBase}?brochure=1&url=${encodeURIComponent(finalBrochureUrl)}`);
       } else {
-        router.push("/thank-you");
+        router.push(thankYouBase);
       }
     } catch (err) {
       console.error("Lead submission error:", err);
